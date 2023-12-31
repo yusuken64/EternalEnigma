@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a615cddea2edfde4b856265aa092fb06, type: 3}
+  m_Name: Equipment_Weapon_Excalibur
+  m_EditorClassIdentifier: 
+  ItemName: Excalibur
+  ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
+  EquipmentSlot: 0
+  StatModification:
+    HPMax: 0
+    HP: 0
+    Strength: 10
+    Defense: 0
+    EXP: 0
+    Level: 0
+    Floor: 0
+    Hunger: 0
+    Gold: 0
+    HungerAccumulate: 0
+    HPRegenAcccumlate: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0

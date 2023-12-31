@@ -9,8 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e4574954cd26aa4795b2a79daaa5154, type: 3}
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: Spell_Explosion
   m_EditorClassIdentifier: 
-  ItemName: Spell:Explosion
+  ItemName: Spell_Explosion
   ItemEffectDefinition: {fileID: 11400000, guid: dcd471b28467691419fcf17be1e43592, type: 2}
+  StackStartMin: 1
+  StackStartMax: 1
+  StackMax: 0

@@ -5,7 +5,7 @@ public class EquipableInventoryItem : InventoryItem
 {
 	private readonly EquipmentItemDefinition equipmentItemDefinition;
 	public EquipmentSlot EquipmentSlot => equipmentItemDefinition.EquipmentSlot;
-	public EquipableInventoryItem(EquipmentItemDefinition equipmentItemDefinition, int? stock = null) : base(equipmentItemDefinition)
+	public EquipableInventoryItem(EquipmentItemDefinition equipmentItemDefinition, int? stock = null) : base(equipmentItemDefinition, stock)
 	{
 		this.equipmentItemDefinition = equipmentItemDefinition;
 	}
@@ -14,6 +14,11 @@ public class EquipableInventoryItem : InventoryItem
 	{
 		if (equipmentItemDefinition == null) { return new(); }
 		return equipmentItemDefinition.GetEquipmentStatModification();
+	}
+
+	internal override bool ShouldRemoveAfterUse()
+	{
+		return false;
 	}
 }
 

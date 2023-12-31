@@ -1,13 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemDefinition", menuName = "Game/Item/ItemDefinition")]
-public class ItemDefinition : ScriptableObject
+public abstract class ItemDefinition : ScriptableObject
 {
 	public string ItemName;
 	public ItemEffectDefinition ItemEffectDefinition;
 
-	public bool HasStacks;
-	public int StackStartMin; //randomize value between stackcstartmin and stackstarmax on pickup
-	public int StackStartMax;
+	public int StackStartMin = 1; //randomize value between stackcstartmin and stackstarmax on pickup
+	public int StackStartMax = 1;
 	public int StackMax;
+
+	abstract internal InventoryItem AsInventoryItem(int? stock);
+
+	internal int? InitializeStack(int? stock)
+	{
+		if (stock == null &&
+			StackMax > 0)
+		{
+			stock = UnityEngine.Random.Range(StackStartMin, StackMax);
+		}
+
+		return stock;
+	}
+
 }

@@ -17,7 +17,7 @@ internal class AddInventoryItemAction : GameAction
 	{
 		if (attacker is Player player)
 		{
-			player.Inventory.Add(new InventoryItem(itemDefinition));
+			player.Inventory.Add(itemDefinition.AsInventoryItem(null));
 		}
 
 		return new();

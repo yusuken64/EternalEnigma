@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-	public List<InventoryItem> InventoryItems;
+	public List<InventoryItem> InventoryItems = new();
 
 	public EquipableInventoryItem EquipedWeapon;
 	public EquipableInventoryItem EquipedShield;

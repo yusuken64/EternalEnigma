@@ -20,7 +20,7 @@ internal class UseInventoryItemAction : GameAction
 			item.Decrement();
 		}
 
-		if (item.HasStacks && item.StackIsEmpty())
+		if (item.ShouldRemoveAfterUse())
 		{
 			player.Inventory.Remove(item);
 		}

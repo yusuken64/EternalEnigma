@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 
 [Serializable]
-public class InventoryItem
+public abstract class InventoryItem
 {
 	public string ItemName => ItemDefinition.ItemName;
-
-	public bool HasStacks => ItemDefinition.HasStacks;
+	public bool IsConsumable => ItemDefinition.StackMax == 0;
+	public bool HasStacks => ItemDefinition.StackMax > 0;
 
 	public ItemDefinition ItemDefinition;
-
 	public int? StackStock;
 
 	public InventoryItem(ItemDefinition itemDefinition, int? stock = null)
 	{
 		ItemDefinition = itemDefinition;
+		stock = itemDefinition.InitializeStack(stock);
 		StackStock = stock;
 	}
+
+	internal abstract bool ShouldRemoveAfterUse();
 
 	internal List<GameAction> GetGameActions(Character attacker, Character target, InventoryItem item)
 	{
@@ -30,6 +32,6 @@ public class InventoryItem
 
 	internal bool StackIsEmpty()
 	{
-		return StackStock.Value <= 0;
+		return !StackStock.HasValue || StackStock.Value <= 0;
 	}
 }

@@ -9,36 +9,13 @@ public class ItemManager : MonoBehaviour
 
 	public InventoryItem GetAsInventoryItem(ItemDefinition itemDefinition, int? stock)
 	{
-		stock = InitializeStack(itemDefinition, stock);
-
-		if (itemDefinition is EquipmentItemDefinition equipmentItemDefinition)
-		{
-			return new EquipableInventoryItem(equipmentItemDefinition, stock);
-		}
-		return new InventoryItem(itemDefinition, stock);
-	}
-
-	private static int? InitializeStack(ItemDefinition itemDefinition, int? stock)
-	{
-		if (stock == null &&
-			itemDefinition.HasStacks)
-		{
-			stock = UnityEngine.Random.Range(itemDefinition.StackStartMin, itemDefinition.StackMax);
-		}
-
-		return stock;
+		return itemDefinition.AsInventoryItem(stock);
 	}
 
 	internal InventoryItem GetAsInventoryItemByName(string itemName, int? stock = null)
 	{
-		var first = ItemDefinitions.First(x => x.ItemName == itemName);
-		if (first is EquipmentItemDefinition equipEffectDefinition)
-		{
-			return new EquipableInventoryItem(equipEffectDefinition);
-		}
-
-		stock = InitializeStack(first, stock);
-		return new InventoryItem(ItemDefinitions.First(x => x.ItemName == itemName), stock);
+		var itemDefinition = ItemDefinitions.First(x => x.ItemName == itemName);
+		return itemDefinition.AsInventoryItem(stock);
 	}
 
 	internal ItemDefinition GetRandomDrop(Enemy enemy)

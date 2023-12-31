@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e4574954cd26aa4795b2a79daaa5154, type: 3}
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: Arrows_WoodenArrows
   m_EditorClassIdentifier: 
   ItemName: Wooden Arrows
   ItemEffectDefinition: {fileID: 11400000, guid: 2ec7ff01782d689449b4f1aed5d34936, type: 2}
-  HasStacks: 1
   StackStartMin: 4
   StackStartMax: 20
   StackMax: 20

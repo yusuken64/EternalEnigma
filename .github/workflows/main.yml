@@ -1,0 +1,52 @@
+name: Build project
+
+on: [push, pull_request]
+
+jobs:
+  buildForAllSupportedPlatforms:
+    name: Build for ${{ matrix.targetPlatform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          #- StandaloneWindows64 # Build a Windows 64-bit standalone.
+          - WebGL # WebGL.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ matrix.targetPlatform }}
+          restore-keys: Library-
+      - uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: ${{ matrix.targetPlatform }}
+          projectPath: .
+          buildsPath: ./build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+      - name: Set Version
+        run: |
+          echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+      - name: Set itch.io channel
+        run: echo "itchio_channel=${{ matrix.targetPlatform }}" >> $GITHUB_ENV
+      - name: Set itch.io project
+        run: echo "itchio_project=juicychicken/eternal-enigma-avarices-abyss" >> $GITHUB_ENV 
+      - name: Upload ${{ matrix.preset }} to itch.io project
+        uses: robpc/itchio-upload-action@v1
+        with:
+          path: build/${{ matrix.preset }}
+          project: ${{ env.itchio_project }}
+          channel: ${{ env.itchio_channel }}
+          version: ${{ env.version }}
+          api-key: ${{ secrets.ITCHIO_API_KEY }}

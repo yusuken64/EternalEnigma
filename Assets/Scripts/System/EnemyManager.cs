@@ -46,14 +46,16 @@ public class EnemyManager : MonoBehaviour
 	[ContextMenu("Set Animation Looping")]
 	public void SetAnimationLooping()
 	{
-		var animators = EnemyPrefabs.Select(x => x.Animator);
-
-		foreach (var animator in animators)
+		foreach (var enemy in EnemyPrefabs)
 		{
+			var animator = enemy.Animator;
 			var clips = animator.runtimeAnimatorController.animationClips;
 			foreach (var clip in clips
 				.Where(x => x.name.Contains("Attack")))
 			{
+				Debug.Log($"Updating {enemy.name} {clip.name}");
+
+				clip.wrapMode = WrapMode.Once;
 				AnimationClipSettings clipSettings = AnimationUtility.GetAnimationClipSettings(clip);
 				clipSettings.loopTime = false;
 				AnimationUtility.SetAnimationClipSettings(clip, clipSettings);
@@ -66,6 +68,7 @@ public class EnemyManager : MonoBehaviour
 			EditorUtility.SetDirty(x);
 			AssetDatabase.SaveAssets();
 		});
+		AssetDatabase.Refresh();
 	}
 
 	[ContextMenu("AssignMonsterStats")]

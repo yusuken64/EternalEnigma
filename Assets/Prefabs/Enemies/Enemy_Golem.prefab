@@ -1337,6 +1337,8 @@ MonoBehaviour:
     HPRegenAcccumlateThreshold: 3
     DropRate: 0
   Inventory: {fileID: 0}
+  ActionsPerTurnMax: 1
+  AttacksPerTurnMax: 1
   CurrentEnemyState: 0
   Animator: {fileID: 7378365251370065405}
 --- !u!1 &5646790942219880143

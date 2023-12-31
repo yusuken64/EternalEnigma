@@ -83,7 +83,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter.BaseStats.EXP = 0;
 		PlayerCharacter.SyncStats();
 		PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Bread"));
-		PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Wooden Arrows"));
+		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Wooden Arrows"));
 		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Excalibur"));
 
 		UpdateUI();

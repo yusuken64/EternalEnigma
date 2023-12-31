@@ -41,7 +41,7 @@ jobs:
       - name: Set itch.io channel
         run: echo "itchio_channel=${{ matrix.targetPlatform }}" >> $GITHUB_ENV
       - name: Set itch.io project
-        run: echo "itchio_project=juicychicken/slay-queen-gatekeeper" >> $GITHUB_ENV 
+        run: echo "itchio_project=juicychicken/eternal-enigma-avarices-abyss" >> $GITHUB_ENV 
       - name: Upload ${{ matrix.preset }} to itch.io project
         uses: robpc/itchio-upload-action@v1
         with:

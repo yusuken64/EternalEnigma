@@ -4,16 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CombinedCoroutines : MonoBehaviour
+public class SimultaneousCoroutines
 {
-    private List<IEnumerator> runningCoroutines = new List<IEnumerator>();
+	public SimultaneousCoroutines(UnityEngine.MonoBehaviour context)
+	{
+		this.context = context;
+	}
 
-    public IEnumerator RunCoroutines(List<IEnumerator> routines)
+    private List<IEnumerator> runningCoroutines = new List<IEnumerator>();
+	private readonly MonoBehaviour context;
+
+	public IEnumerator RunCoroutines(List<IEnumerator> routines)
     {
         foreach (var routine in routines)
         {
             runningCoroutines.Add(routine);
-            StartCoroutine(HandleCoroutine(routine, () =>
+            context.StartCoroutine(HandleCoroutine(routine, () =>
             {
                 runningCoroutines.Remove(routine);
             }));
@@ -29,7 +35,7 @@ public class CombinedCoroutines : MonoBehaviour
 
     private IEnumerator HandleCoroutine(IEnumerator routine, Action post)
     {
-        yield return StartCoroutine(routine);
+        yield return context.StartCoroutine(routine);
         post?.Invoke();
     }
 
@@ -39,9 +45,10 @@ public class CombinedCoroutines : MonoBehaviour
         {
             if (coroutine != null)
             {
-                StopCoroutine(coroutine);
+                context.StopCoroutine(coroutine);
             }
         }
+        context.StopAllCoroutines();
         runningCoroutines.Clear();
     }
 }

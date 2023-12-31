@@ -100,8 +100,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void AdvanceFloor()
 	{
 		TurnManager.StopAllCoroutines();
-		TurnManager.CombinedCoroutines.StopAllRunningCoroutines();
-		TurnManager.CombinedCoroutines.StopAllCoroutines();
+		TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
 
 		TurnManager.CurrentTurnPhase = TurnPhase.Player;
 		PlayerCharacter.BaseStats.Floor++;

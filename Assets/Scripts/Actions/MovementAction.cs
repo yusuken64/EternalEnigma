@@ -302,7 +302,7 @@ public class DeathAction : GameAction
 	{
 		target.PlayDeathAnimation();
 		yield return new WaitForSecondsRealtime(0.4f);
-		target.gameObject.SetActive(false);
+		target.VisualParent.gameObject.SetActive(false);
 
 		Game game = Game.Instance;
 		if (droppedItem && path != null)

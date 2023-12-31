@@ -6,8 +6,15 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-	public CombinedCoroutines CombinedCoroutines;
+	public SimultaneousCoroutines SimultaneousCoroutines;
+	public SequentialCoroutines SequentialCoroutines;
 	public TurnPhase CurrentTurnPhase { get; internal set; }
+
+	private void Start()
+	{
+		SimultaneousCoroutines = new SimultaneousCoroutines(this);
+		SequentialCoroutines = new SequentialCoroutines(this);
+	}
 
 	//player is assumed to be the first actor
 	public void ProcessTurn(List<Actor> actors)
@@ -52,8 +59,25 @@ public class TurnManager : MonoBehaviour
 			var simultaneousEffects = GetSimultaneousActions(action, actionReplays);
 			actionReplays.RemoveAll(simultaneousEffects.Contains);
 
-			yield return CombinedCoroutines
-				.RunCoroutines(simultaneousEffects.Select(x => x.Actor.ExecuteActionRoutine(x.Action)).ToList());
+			var effectsGroupedByActors = simultaneousEffects.GroupBy(x => x.Actor);
+
+			List<IEnumerator> simulaneousEffects = effectsGroupedByActors.Select(x => 
+			{
+				if (x.Count() > 1)
+				{
+					return SequentialCoroutines.RunCoroutines(x.Select(y => y.Actor.ExecuteActionRoutine(y.Action)).ToList());
+				}
+				else
+				{
+					return x.Key.ExecuteActionRoutine(x.First().Action);
+				}
+
+			}).ToList();
+			
+			yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
+
+			//yield return CombinedCoroutines
+			//	.RunCoroutines(simultaneousEffects.Select(x => x.Actor.ExecuteActionRoutine(x.Action)).ToList());
 		}
 
 		if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerCharacter))

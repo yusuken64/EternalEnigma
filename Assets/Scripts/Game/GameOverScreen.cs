@@ -1,13 +1,16 @@
+using JuicyChickenGames.Menu;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class GameOverScreen : MonoBehaviour
+public class GameOverScreen : Dialog
 {
 	public TextMeshProUGUI MessageText;
+	public Button OkButton;
 
 	internal void Setup(Player playerCharacter)
 	{
@@ -21,6 +24,12 @@ with {playerCharacter.RealStats.Gold} Treasure";
 		int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 		SceneManager.LoadScene(currentSceneIndex);
 
+		MenuManager.Close(this);
 		Game.Instance.ResetGame();
+	}
+
+	internal override void SetFirstSelect()
+	{
+		OkButton.Select();
 	}
 }

@@ -8,4 +8,13 @@
         }
         return str;
     }
+
+    public static string TrimPrefix(this string str, string prefix)
+    {
+        if (str.StartsWith(prefix))
+        {
+            return str.Substring(prefix.Length);
+        }
+        return str;
+    }
 }

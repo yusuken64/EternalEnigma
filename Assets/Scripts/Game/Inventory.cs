@@ -12,6 +12,8 @@ public class Inventory : MonoBehaviour
 	public EquipableInventoryItem EquipedShield;
 	public EquipableInventoryItem EquipedAccessory;
 
+	public int MaxItems = 10;
+
 	public delegate void EquipmentChangedEventHandler();
 	public event EquipmentChangedEventHandler HandleEquipmentChanged;
 
@@ -57,7 +59,7 @@ public class Inventory : MonoBehaviour
 
 	internal bool CanAdd()
 	{
-		return InventoryItems.Count() < 4;
+		return InventoryItems.Count() < MaxItems;
 	}
 
 	internal bool CanEquip(EquipableInventoryItem equipableInventoryItem)

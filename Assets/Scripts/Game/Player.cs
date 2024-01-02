@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using JuicyChickenGames.Menu;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,6 +39,11 @@ public class Player : Character
 		}
 
 		var game = Game.Instance;
+		if (Game.Instance.InventoryMenu.isActiveAndEnabled)
+		{
+			return;
+		}
+
 		if (game.TurnManager.CurrentTurnPhase == TurnPhase.Player)
 		{
 			DeterminePlayerAction();
@@ -130,47 +136,6 @@ public class Player : Character
 				return;
 			}
 		}
-		else if (Input.GetKeyDown(KeyCode.Q))
-		{
-			SetAction(new DropItemAction());
-			return;
-		}
-		else if (Input.GetKeyDown(KeyCode.Alpha1))
-		{
-			if (Inventory.InventoryItems.Count > 0)
-			{
-				var item = Inventory.InventoryItems[0];
-				SetAction(new UseInventoryItemAction(this, item));
-				return;
-			}
-		}
-		else if (Input.GetKeyDown(KeyCode.Alpha2))
-		{
-			if (Inventory.InventoryItems.Count > 1)
-			{
-				var item = Inventory.InventoryItems[1];
-				SetAction(new UseInventoryItemAction(this, item));
-				return;
-			}
-		}
-		else if (Input.GetKeyDown(KeyCode.Alpha3))
-		{
-			if (Inventory.InventoryItems.Count > 2)
-			{
-				var item = Inventory.InventoryItems[2];
-				SetAction(new UseInventoryItemAction(this, item));
-				return;
-			}
-		}
-		else if (Input.GetKeyDown(KeyCode.Alpha4))
-		{
-			if (Inventory.InventoryItems.Count > 3)
-			{
-				var item = Inventory.InventoryItems[3];
-				SetAction(new UseInventoryItemAction(this, item));
-				return;
-			}
-		}
 		if (Input.GetKeyDown(KeyCode.Z))
 		{
 			//pass turn
@@ -179,7 +144,7 @@ public class Player : Character
 		}
 	}
 
-	private void SetAction(GameAction userAction)
+	internal void SetAction(GameAction userAction)
 	{
 		if (!userAction.IsValid(this))
 		{

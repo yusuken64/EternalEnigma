@@ -23,7 +23,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public TextMeshPro FloatingTextPrefab;
 
+	public InventoryMenu InventoryMenu;
 	public GameOverScreen GameOverScreen;
+	public NewFloorMessage NewFloorMessage;
 
 	internal List<Character> AllCharacters
 	{
@@ -95,6 +97,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter.ActionPicked -= PlayerCharacter_ActionPicked;
 		GameOverScreen.gameObject.SetActive(true);
 		GameOverScreen.Setup(PlayerCharacter);
+
+		MenuManager.Open(GameOverScreen);
 	}
 
 	public void AdvanceFloor()
@@ -106,6 +110,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter.BaseStats.Floor++;
 		PlayerCharacter.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
+
+		NewFloorMessage.ShowNewFloor(PlayerCharacter.BaseStats.Floor);
 	}
 
 	private IEnumerator AdvanceFloorRoutine()
@@ -169,11 +175,7 @@ Treasure: {PlayerCharacter.DisplayedStats.Gold}";
 			ActionText.text = "";
 		}
 
-		var inventoryText = string.Join(Environment.NewLine,
-			PlayerCharacter.Inventory.InventoryItems
-			.Select((x, i) => $"{i + 1}:{x.ItemName}{ (PlayerCharacter.Inventory.IsEquipped(x) ? "(Equipped)" : "")} " +
-			$"{ (x.StackStock.HasValue ? $"x{x.StackStock.Value}" : "") }")
-			.Reverse());
+		var inventoryText = $"Bag {PlayerCharacter.Inventory.InventoryItems.Count}/{PlayerCharacter.Inventory.MaxItems}";
 
 		InventoryText.text = inventoryText;
 	}

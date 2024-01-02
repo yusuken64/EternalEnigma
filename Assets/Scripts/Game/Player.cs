@@ -165,37 +165,45 @@ public class Player : Character
 
 		actions.Add(pickedAction);
 
-		this.BaseStats.HungerAccumulate++;
-		this.BaseStats.HPRegenAcccumlate++;
+		actions.Add(
+			new ModifyStatAction(
+			this,
+			this,
+			(stats, vitals) =>
+			{
+				vitals.HungerAccumulate++;
+				vitals.HPRegenAcccumlate++;
+			},
+			false));
 
-		if (RealStats.HungerAccumulate > RealStats.HungerAccumulateThreshold)
+		if (Vitals.HungerAccumulate > FinalStats.HungerAccumulateThreshold)
 		{
-			this.BaseStats.HungerAccumulate = 0;
 			actions.Add(new ModifyStatAction(
 				this,
 				this,
-				(character) =>
+				(stats, vitals) =>
 				{
-					character.BaseStats.Hunger--;
+					vitals.HungerAccumulate = 0;
+					vitals.Hunger--;
 				},
 				false));
 		}
 
-		if (RealStats.Hunger <= 0)
+		if (Vitals.Hunger <= 0)
 		{
 			actions.Add(new TakeDamageAction(this, this, 1, true));
 		}
 
-		if (RealStats.HPRegenAcccumlate > RealStats.HPRegenAcccumlateThreshold &&
-			RealStats.Hunger > 0)
+		if (Vitals.HPRegenAcccumlate > FinalStats.HPRegenAcccumlateThreshold &&
+			Vitals.Hunger > 0)
 		{
-			this.BaseStats.HPRegenAcccumlate = 0;
 			actions.Add(new ModifyStatAction(
 				this,
 				this,
-				(character) =>
+				(stats, vitals) =>
 				{
-					character.BaseStats.HP++;
+					vitals.HPRegenAcccumlate = 0;
+					vitals.HP++;
 				},
 				false));
 		}
@@ -212,10 +220,9 @@ public class Player : Character
 	public override IEnumerator ExecuteActionRoutine(GameAction action)
 	{
 		if (this == null) { yield break; }
-		//if (RealStats.HP > 0)
-		//{
-			yield return StartCoroutine(action.ExecuteRoutine(this));
-		//}
+
+		yield return StartCoroutine(action.ExecuteRoutine(this));
+		action.UpdateDisplayedStats();
 	}
 
 	public override void StartTurn()

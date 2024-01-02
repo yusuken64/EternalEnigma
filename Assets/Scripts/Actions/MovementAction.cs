@@ -95,7 +95,7 @@ internal class AttackAction : GameAction
 
 		attacker.attacksPerTurnLeft -= 1;
 		bool hit = UnityEngine.Random.value > 0.2f;
-		var baseDamage = attacker.RealStats.Strength * MathF.Pow((15f/16f), target.RealStats.Defense);
+		var baseDamage = attacker.FinalStats.Strength * MathF.Pow((15f/16f), target.FinalStats.Defense);
 		float n = (float)UnityEngine.Random.Range(112, 143);
 		int damage = (int)MathF.Floor(baseDamage * (n / 128f));
 		return new List<GameAction>()
@@ -142,10 +142,13 @@ public class TakeDamageAction : GameAction
 	{
 		if (!miss)
 		{
-			target.BaseStats.HP -= damage;
+			AddMetricsModification(target, (metrics, vitals) =>
+			{
+				vitals.HP -= damage;
+			});
 		}
 
-		if (target.BaseStats.HP <= 0)
+		if (target.Vitals.HP <= 0)
 		{
 			return new List<GameAction>()
 			{
@@ -155,6 +158,7 @@ public class TakeDamageAction : GameAction
 
 		return new();
 	}
+
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
@@ -172,14 +176,12 @@ public class TakeDamageAction : GameAction
 		{
 			target.PlayTakeDamageAnimation();
 			yield return new WaitForSecondsRealtime(0.3f);
-
-			target.DisplayedStats.HP -= damage;
 		}
 	}
 
 	internal override bool IsValid(Character character)
 	{
-		return target.RealStats.HP > 0;
+		return target.Vitals.HP > 0;
 	}
 }
 
@@ -187,10 +189,10 @@ public class ModifyStatAction : GameAction
 {
 	private readonly Character attacker;
 	private readonly Character target;
-	private readonly Action<Character> modifyAction;
+	private readonly Action<Stats, Vitals> modifyAction;
 	private readonly bool doDamageAnimation;
 
-	public ModifyStatAction(Character attacker, Character target, Action<Character> modifyAction, bool doDamageAnimation = true)
+	public ModifyStatAction(Character attacker, Character target, Action<Stats, Vitals> modifyAction, bool doDamageAnimation = true)
 	{
 		this.attacker = attacker;
 		this.target = target;
@@ -200,9 +202,9 @@ public class ModifyStatAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		modifyAction?.Invoke(target);
+		AddMetricsModification(target, modifyAction);
 
-		if (target.BaseStats.HP <= 0)
+		if (target.Vitals.HP <= 0)
 		{
 			return new List<GameAction>()
 			{
@@ -220,13 +222,11 @@ public class ModifyStatAction : GameAction
 			target.PlayTakeDamageAnimation();
 			yield return new WaitForSecondsRealtime(0.3f);
 		}
-
-		target.SyncStats();
 	}
 
 	internal override bool IsValid(Character character)
 	{
-		return target.RealStats.HP > 0;
+		return target.Vitals.HP > 0;
 	}
 
 	internal override bool CanBeCombined(GameAction action)
@@ -255,11 +255,11 @@ public class DeathAction : GameAction
 		Game.Instance.DeadUnits.Add(target);
 
 		//Also remove all queued actions?
-		var gainXP = new AddXPAction(attacker, target.RealStats.EXP);
+		var gainXP = new AddXPAction(attacker, target.FinalStats.EXPOnKill);
 
 		float value = UnityEngine.Random.value;
-		droppedItem = target.RealStats.DropRate > 0 &&
-			value < character.RealStats.DropRate;
+		droppedItem = target.FinalStats.DropRate > 0 &&
+			value < character.FinalStats.DropRate;
 
 		//Debug.Log($"{target.RealStats.DropRate} ? {value}");
 
@@ -333,7 +333,7 @@ internal class AddXPAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		this.character.BaseStats.EXP += eXP;
+		this.character.Vitals.Exp += eXP;
 		List<GameAction> ret = new();
 		if (character is Player player)
 		{
@@ -341,8 +341,8 @@ internal class AddXPAction : GameAction
 			var levelSystem = game.LevelSystem;
 
 			var levelUps = levelSystem.LevelData.Where(x =>
-				x.Level > player.RealStats.Level &&
-				x.Experience <= player.RealStats.EXP);
+				x.Level > player.Vitals.Level &&
+				x.Experience <= player.Vitals.Exp);
 
 			foreach(var levelUp in levelUps)
 			{

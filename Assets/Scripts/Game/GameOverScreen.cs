@@ -15,8 +15,8 @@ public class GameOverScreen : Dialog
 	internal void Setup(Player playerCharacter)
 	{
 		MessageText.text = $@"Player Perished
-On floor {playerCharacter.RealStats.Floor}
-with {playerCharacter.RealStats.Gold} Treasure";
+On floor {playerCharacter.Vitals.Floor}
+with {playerCharacter.Vitals.Gold} Treasure";
 	}
 
 	public void TryAgain_Clicked()

@@ -11,9 +11,9 @@ public class ModifyStatsItemEffectDefinition : ItemEffectDefinition
 	{
 		return new List<GameAction>()
 		{
-			new ModifyStatAction(attacker, target, (x) =>
+			new ModifyStatAction(attacker, target, (stats, vitals) =>
 			{
-				x.BaseStats += StatModification;
+				stats += StatModification;
 			}, DoDamageAnimation)
 		};
 	}

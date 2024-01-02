@@ -20,12 +20,12 @@ internal class LevelUpAction : GameAction
 			new ModifyStatAction(
 				character,
 				character,
-				(x) =>
+				(stats, vitals) =>
 				{
-					x.BaseStats.Level = levelUp.Level;
-					x.BaseStats.Strength += 2;
-					x.BaseStats.HPMax += 5;
-					x.BaseStats.HP += 5;
+					vitals.Level = levelUp.Level;
+					stats.Strength += 2;
+					stats.HPMax += 5;
+					vitals.HP += 5;
 				},
 				false)
 		};

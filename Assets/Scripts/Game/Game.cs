@@ -76,14 +76,18 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	private void InitializeGame()
 	{
-		PlayerCharacter.BaseStats.Level = 1;
-		PlayerCharacter.BaseStats.HPMax = 20;
-		PlayerCharacter.BaseStats.HP = 20;
-		PlayerCharacter.BaseStats.Strength = 5;
-		PlayerCharacter.BaseStats.Hunger = 100;
-		PlayerCharacter.BaseStats.Gold = 0;
-		PlayerCharacter.BaseStats.EXP = 0;
-		PlayerCharacter.SyncStats();
+		PlayerCharacter.BaseStats = new Stats()
+		{
+			HPMax = 20,
+			HungerMax = 100,
+			Strength = 5,
+			HPRegenAcccumlateThreshold = 5,
+			HungerAccumulateThreshold = 15
+		};
+		PlayerCharacter.InitialzeVitalsFromStats();
+		PlayerCharacter.Vitals.Level = 1;
+
+		PlayerCharacter.SyncDisplayedStats();
 		PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Bread"));
 		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Wooden Arrows"));
 		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Excalibur"));
@@ -107,11 +111,12 @@ public class Game : SingletonMonoBehaviour<Game>
 		TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
 
 		TurnManager.CurrentTurnPhase = TurnPhase.Player;
-		PlayerCharacter.BaseStats.Floor++;
+		PlayerCharacter.Vitals.Floor++;
+		PlayerCharacter.SyncDisplayedStats();
 		PlayerCharacter.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
 
-		NewFloorMessage.ShowNewFloor(PlayerCharacter.BaseStats.Floor);
+		NewFloorMessage.ShowNewFloor(PlayerCharacter.Vitals.Floor);
 	}
 
 	private IEnumerator AdvanceFloorRoutine()
@@ -130,8 +135,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		for (int i = 0; i < 10; i++)
 		{
-			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerCharacter.RealStats.Floor);
+			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerCharacter.Vitals.Floor);
 			var enemy = Instantiate(enemyPrefab, this.transform);
+			enemy.InitialzeVitalsFromStats();
 			enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomEnemyPosition()).Value;
 			Enemies.Add(enemy);
 		}
@@ -158,13 +164,13 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void UpdateUI()
 	{
 		if (PlayerCharacter == null) { return; }
-		PlayerCharacter.SyncStats();
+		//PlayerCharacter.SyncDisplayedStats();
 
-		StatsText.text = @$"Floor : {PlayerCharacter.DisplayedStats.Floor}
-Level : {PlayerCharacter.DisplayedStats.Level}
-HP : {PlayerCharacter.DisplayedStats.HP}/{PlayerCharacter.DisplayedStats.HPMax}
-Hunger: {PlayerCharacter.DisplayedStats.Hunger}
-Treasure: {PlayerCharacter.DisplayedStats.Gold}";
+		StatsText.text = @$"Floor : {PlayerCharacter.DisplayedVitals.Floor}
+Level : {PlayerCharacter.DisplayedVitals.Level}
+HP : {PlayerCharacter.DisplayedVitals.HP}/{PlayerCharacter.DisplayedStats.HPMax}
+Hunger: {PlayerCharacter.DisplayedVitals.Hunger}
+Treasure: {PlayerCharacter.DisplayedVitals.Gold}";
 
 		if (PlayerCharacter.currentInteractable != null)
 		{

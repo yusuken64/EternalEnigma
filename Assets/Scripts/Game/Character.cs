@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public abstract class Character : MonoBehaviour, Actor
 {
@@ -11,10 +10,69 @@ public abstract class Character : MonoBehaviour, Actor
 	public GameObject VisualParent;
 	public Facing CurrentFacing;
 
-	public CombatStats BaseStats = new();
-	public ReadOnlyCombatStats RealStats => new ReadOnlyCombatStats(BaseStats + Inventory?.GetEquipmentStatModification());
+	[field: SerializeField]
+	private Stats baseStats = new();
 
-	public CombatStats DisplayedStats = new();
+	public Stats BaseStats
+	{
+		get => baseStats;
+		set
+		{
+			baseStats = value;
+			cachedFinalStats = null;
+		}
+	}
+
+	private Stats cachedFinalStats = null;
+	public Stats FinalStats
+	{
+		get
+		{
+			if (cachedFinalStats == null)
+			{
+				cachedFinalStats = BaseStats + Inventory?.GetEquipmentStatModification();
+			}
+
+			return cachedFinalStats;
+		}
+	}
+
+	public Vitals Vitals;
+
+	public Stats DisplayedStats = new();
+	public Vitals DisplayedVitals = new();
+
+	internal void InitialzeVitalsFromStats()
+	{
+		Vitals.LinkedStats = FinalStats;
+		DisplayedVitals.LinkedStats = DisplayedStats;
+		this.Vitals.HP = this.FinalStats.HPMax;
+		this.Vitals.Hunger = this.FinalStats.HungerMax;
+	}
+
+	private void Awake()
+	{
+		if (Inventory != null)
+		{
+			Inventory.HandleEquipmentChanged += Inventory_HandleEquipmentChanged;
+		}
+	}
+
+
+	private void OnDestroy()
+	{
+		if (Inventory != null)
+		{
+			Inventory.HandleEquipmentChanged -= Inventory_HandleEquipmentChanged;
+		}
+	}
+
+	private void Inventory_HandleEquipmentChanged()
+	{
+		cachedFinalStats = null;
+		Vitals.LinkedStats = FinalStats;
+		SyncDisplayedStats();
+	}
 
 	public Inventory Inventory;
 
@@ -78,15 +136,10 @@ public abstract class Character : MonoBehaviour, Actor
 		VisualParent.transform.eulerAngles = desiredRotation;
 	}
 
-	internal void SyncStats()
+	internal void SyncDisplayedStats()
 	{
-		DisplayedStats.HP = RealStats.HP;
-		DisplayedStats.HPMax = RealStats.HPMax;
-		DisplayedStats.Level = RealStats.Level;
-		DisplayedStats.EXP = RealStats.EXP;
-		DisplayedStats.Floor = RealStats.Floor;
-		DisplayedStats.Hunger = RealStats.Hunger;
-		DisplayedStats.Gold = RealStats.Gold;
+		DisplayedStats.Sync(FinalStats);
+		DisplayedVitals.Sync(Vitals);
 	}
 
 	internal void SetFacingByTargetPosition(Vector3Int newMapPosition)
@@ -140,16 +193,4 @@ public abstract class Character : MonoBehaviour, Actor
 			return Facing.Up; // Change this default return as needed
 		}
 	}
-}
-
-public enum Facing
-{
-	Up,
-	Down,
-	Left,
-	Right,
-	UpLeft,
-	UpRight,
-	DownLeft,
-	DownRight,
 }

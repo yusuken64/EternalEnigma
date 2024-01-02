@@ -27,7 +27,6 @@ public class TurnManager : MonoBehaviour
 		CurrentTurnPhase = TurnPhase.Enemy;
 		List<ActorAction> actionReplays = new ();
 
-		//I want to be able to do all enemy movements at once
 		foreach (var actor in actors)
 		{
 			int actions = actor.ActionsPerTurn;
@@ -75,9 +74,6 @@ public class TurnManager : MonoBehaviour
 			}).ToList();
 			
 			yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
-
-			//yield return CombinedCoroutines
-			//	.RunCoroutines(simultaneousEffects.Select(x => x.Actor.ExecuteActionRoutine(x.Action)).ToList());
 		}
 
 		if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerCharacter))
@@ -141,5 +137,20 @@ public abstract class GameAction
 	virtual internal bool CanBeCombined(GameAction action)
 	{
 		return action == this;
+	}
+
+	//immediately applied to realstats, enques change to displayed stats
+	public void AddMetricsModification(Character target, Action<Stats, Vitals> metricModification)
+	{
+		metricModification?.Invoke(target.BaseStats, target.Vitals);
+		Action applyToDisplayedStats = () => metricModification?.Invoke(target.DisplayedStats, target.DisplayedVitals);
+		MetricsModifications.Add(applyToDisplayedStats);
+	}
+
+	private List<Action> MetricsModifications = new();
+
+	internal void UpdateDisplayedStats()
+	{
+		MetricsModifications.ForEach(x => x.Invoke());
 	}
 }

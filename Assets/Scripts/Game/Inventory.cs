@@ -52,6 +52,7 @@ public class Inventory : MonoBehaviour
 
 		if (InventoryItems.Contains(equipableInventoryItem))
 		{
+			HandleEquipmentChanged?.Invoke();
 			InventoryItems.Remove(equipableInventoryItem);
 			InventoryItems.Insert(0, equipableInventoryItem);
 		}
@@ -71,6 +72,7 @@ public class Inventory : MonoBehaviour
 	internal void UnEquip(EquipableInventoryItem equipableInventoryItem)
 	{
 		UnEquip(equipableInventoryItem.EquipmentSlot);
+		HandleEquipmentChanged?.Invoke();
 	}
 
 	public void UnEquip(EquipmentSlot slot)

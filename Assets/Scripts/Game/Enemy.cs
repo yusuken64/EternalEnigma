@@ -43,7 +43,7 @@ public class Enemy : Character
 		{
 			return null;
 		}
-		if (RealStats.HP <= 0)
+		if (Vitals.HP <= 0)
 		{
 			return null;
 		}
@@ -129,6 +129,7 @@ public class Enemy : Character
 	{
 		if (this == null) { yield break; }
 		yield return StartCoroutine(action.ExecuteRoutine(this));
+		action.UpdateDisplayedStats();
 	}
 
 	internal List<AStar.Node> CalculatePursuitPath()

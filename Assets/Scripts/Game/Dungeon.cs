@@ -169,37 +169,38 @@ public class Dungeon : MonoBehaviour
 		return ret;
 	}
 
-	internal Character GetRangedAttackTarget(Vector3Int origin, Facing direction, int maxRange, out Vector3Int targetPosition)
+	internal Vector3Int GetRangedAttackPosition(
+		Character thrower,
+		Vector3Int origin,
+		Facing direction,
+		int maxRange,
+		Func<Vector3Int, Vector3Int, Character, bool> stopCondition)
 	{
 		var game = Game.Instance;
 		var offset = GetFacingOffset(direction);
 
-		targetPosition = origin;
+		var currentPosition = origin;
 
 		// Iterate within the specified range in the given direction
 		for (int distance = 1; distance <= maxRange; distance++)
 		{
 			// Calculate the target position based on origin, direction, and distance
-			var targetPosition2 = new Vector3Int(
+			var nextPosition = new Vector3Int(
 				origin.x + offset.x * distance,
 				origin.y + offset.y * distance,
 				origin.z + offset.z * distance
 			);
 
-			targetPosition = targetPosition2;
-
-			// Assuming there's a method to retrieve a character at a given position
-			Character target = game.AllCharacters.FirstOrDefault(x => x.TilemapPosition == targetPosition2);
-
-			// Check if the target exists and return it if found
-			if (target != null)
+			if (stopCondition.Invoke(currentPosition, nextPosition, thrower))
 			{
-				return target;
+				return currentPosition;
 			}
+
+			currentPosition = nextPosition;
 		}
 
-		// Return null if no target is found within the specified range and direction
-		return null;
+		//range expired
+		return currentPosition;
 	}
 
 	internal List<Facing> GetValidAttackDirections(Vector3Int tilemapPosition)
@@ -305,4 +306,17 @@ public class Dungeon : MonoBehaviour
 		return tile as InteractableTile;
 	}
 
+	public static bool StopArrow(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower)
+	{
+		Character target = Game.Instance.AllCharacters
+			.Where(x => x != thrower)
+			.FirstOrDefault(x => x.TilemapPosition == currentPosition);
+
+		if (target != null) { return true; }
+
+		bool hitWall = Game.Instance.CurrentDungeon.TileMap_Floor.GetTile(nextPosition) == null;
+		if (hitWall) { return true; }
+
+		return false;
+	}
 }

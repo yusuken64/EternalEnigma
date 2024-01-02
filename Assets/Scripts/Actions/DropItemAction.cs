@@ -6,14 +6,19 @@ using UnityEngine;
 
 internal class DropItemAction : GameAction
 {
+	private Player player;
+	private InventoryItem item;
 	private Vector3Int dropPosition;
+
+	public DropItemAction(Player player, InventoryItem item)
+	{
+		this.player = player;
+		this.item = item;
+	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		Game game = Game.Instance;
-		var player = character as Player;
-
-		var item = player.Inventory.InventoryItems.Last();
 		player.Inventory.InventoryItems.Remove(item);
 		game.CurrentDungeon.SetDroppedItem(dropPosition, item.ItemDefinition, game.DungeonGenerator.DroppedItemTile, item.StackStock);
 
@@ -28,15 +33,13 @@ internal class DropItemAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		if (character is Player player)
+		Game game = Game.Instance;
+
+		if (!player.Inventory.InventoryItems.Contains(item))
 		{
-			if (player.Inventory.Count() == 0)
-			{
-				return false;
-			}
+			return false;
 		}
 
-		Game game = Game.Instance;
 		var itemDropPosition = game.CurrentDungeon.GetDropPosition(character.TilemapPosition);
 		if (itemDropPosition == null)
 		{

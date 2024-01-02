@@ -1420,7 +1420,7 @@ GameObject:
   - component: {fileID: 400868758}
   - component: {fileID: 400868757}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Use
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2143,7 +2143,7 @@ GameObject:
   - component: {fileID: 604693107}
   - component: {fileID: 604693106}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3117,7 +3117,7 @@ GameObject:
   - component: {fileID: 1005980460}
   - component: {fileID: 1005980459}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: Drop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6204,7 +6204,7 @@ GameObject:
   - component: {fileID: 1874940656}
   - component: {fileID: 1874940655}
   m_Layer: 5
-  m_Name: Button (3)
+  m_Name: Cancel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6255,7 +6255,7 @@ MonoBehaviour:
     m_NormalColor: {r: 0.6132076, g: 0.5929602, b: 0.5929602, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.60265934, g: 0.9433962, b: 0.4405482, a: 1}
+    m_SelectedColor: {r: 0.94509804, g: 0.46952638, b: 0.43921566, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -7155,7 +7155,7 @@ GameObject:
   - component: {fileID: 2056428814}
   - component: {fileID: 2056428813}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Throw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

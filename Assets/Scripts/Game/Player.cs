@@ -16,6 +16,8 @@ public class Player : Character
 
 	public Animator HeroAnimator;
 
+	public GameObject ThrownItemProjectilePrefab;
+
 	private void Start()
 	{
 		cameraOffset = new Vector3(1, -7.23999977f, -11.0200005f);
@@ -41,6 +43,7 @@ public class Player : Character
 		var game = Game.Instance;
 		if (Game.Instance.InventoryMenu.isActiveAndEnabled)
 		{
+			holdTime = 0;
 			return;
 		}
 

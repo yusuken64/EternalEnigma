@@ -50,6 +50,9 @@ public class InventoryMenu : Dialog
 
 	internal override void SetFirstSelect()
 	{
-		InventoryMenuItems[0].Select();
+		if (InventoryMenuItems.Count > 0)
+		{
+			InventoryMenuItems[0].Select();
+		}
 	}
 }

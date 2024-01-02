@@ -29,11 +29,17 @@ namespace JuicyChickenGames.Menu
 		}
 		public void Throw_Clicked()
 		{
-			//MenuInputHandler.Instance.CloseAllDialog();
+			Player playerCharacter = Game.Instance.PlayerCharacter;
+			playerCharacter.SetAction(new ThrowItemAction(playerCharacter, _data, playerCharacter.ThrownItemProjectilePrefab));
+
+			MenuManager.Instance.CloseMenu();
 		}
 		public void Drop_Clicked()
 		{
-			//playerCharacter.SetAction(new DropItemAction(playerCharacter, _data));
+			Player playerCharacter = Game.Instance.PlayerCharacter;
+			playerCharacter.SetAction(new DropItemAction(playerCharacter, _data));
+
+			MenuManager.Instance.CloseMenu();
 		}
 		public void Cancel_Clicked()
 		{

@@ -258,11 +258,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da72ceee0f66a9449861064b39dfde4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tilemap: {fileID: 0}
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 2065795567227290904}
   CurrentFacing: 0
-  RealStats:
+  BaseStats:
     hP: 0
     HPMax: 0
     Strength: 0
@@ -292,9 +291,12 @@ MonoBehaviour:
     HungerAccumulateThreshold: 15
     HPRegenAcccumlateThreshold: 3
     DropRate: 0
+  Inventory: {fileID: 8960690655561992051}
+  ActionsPerTurnMax: 1
+  AttacksPerTurnMax: 1
   Camera: {fileID: 0}
   HeroAnimator: {fileID: 5505970729610342937}
-  Inventory: {fileID: 8960690655561992051}
+  ThrownItemProjectilePrefab: {fileID: 1117745424125422547, guid: b96c645e3ba5ede499fc63ebbf7677c1, type: 3}
 --- !u!114 &8960690655561992051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,16 +309,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d4b32aeecc89f94b8159feab8d59ebc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InventoryItems: []
   EquipedWeapon:
     ItemDefinition: {fileID: 0}
-    EquipmentSlot: 0
   EquipedShield:
     ItemDefinition: {fileID: 0}
-    EquipmentSlot: 0
   EquipedAccessory:
     ItemDefinition: {fileID: 0}
-    EquipmentSlot: 0
+  MaxItems: 10
 --- !u!1001 &5565864166031862279
 PrefabInstance:
   m_ObjectHideFlags: 0

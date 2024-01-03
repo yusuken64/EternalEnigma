@@ -6,20 +6,30 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour, Actor
 {
 	public Vector3Int TilemapPosition;
-	
+
 	public GameObject VisualParent;
 	public Facing CurrentFacing;
 
-	[field: SerializeField]
-	private Stats baseStats = new();
+	public StartingStats StartingStats;
+
+	private Stats baseStats;
 
 	public Stats BaseStats
 	{
 		get => baseStats;
 		set
 		{
-			baseStats = value;
-			cachedFinalStats = null;
+			if (baseStats?.GetHashCode() != value.GetHashCode())
+			{
+				if (baseStats != null)
+				{
+					baseStats.OnStatChanged -= BaseStats_OnStatChanged;
+				}
+
+				baseStats = value;
+				baseStats.OnStatChanged += BaseStats_OnStatChanged;
+				cachedFinalStats = null;
+			}
 		}
 	}
 
@@ -30,48 +40,77 @@ public abstract class Character : MonoBehaviour, Actor
 		{
 			if (cachedFinalStats == null)
 			{
-				cachedFinalStats = BaseStats + Inventory?.GetEquipmentStatModification();
+				UpdateCachedStats();
 			}
 
 			return cachedFinalStats;
 		}
 	}
 
-	public Vitals Vitals;
+	internal void UpdateCachedStats()
+	{
+		cachedFinalStats = BaseStats + Inventory?.GetEquipmentStatModification();
+	}
+
+	private Vitals vitals;
+	public Vitals Vitals
+	{
+		get => vitals;
+		set
+		{
+			vitals = value;
+			vitals.LinkedStats = () => this.FinalStats;
+		}
+	}
 
 	public Stats DisplayedStats = new();
-	public Vitals DisplayedVitals = new();
+	private Vitals displayedVitals;
+	public Vitals DisplayedVitals
+	{
+		get => displayedVitals;
+		set
+		{
+			displayedVitals = value;
+			DisplayedVitals.LinkedStats = () => this.DisplayedStats;
+		}
+	}
 
 	internal void InitialzeVitalsFromStats()
 	{
-		Vitals.LinkedStats = FinalStats;
-		DisplayedVitals.LinkedStats = DisplayedStats;
+		BaseStats.FromStartingStats(StartingStats);
+		Vitals = new();
+		DisplayedVitals = new();
 		this.Vitals.HP = this.FinalStats.HPMax;
 		this.Vitals.Hunger = this.FinalStats.HungerMax;
 	}
 
 	private void Awake()
 	{
+		BaseStats = new();
 		if (Inventory != null)
 		{
 			Inventory.HandleEquipmentChanged += Inventory_HandleEquipmentChanged;
 		}
 	}
 
-
 	private void OnDestroy()
 	{
+		BaseStats.OnStatChanged -= BaseStats_OnStatChanged;
 		if (Inventory != null)
 		{
 			Inventory.HandleEquipmentChanged -= Inventory_HandleEquipmentChanged;
 		}
 	}
 
+	private void BaseStats_OnStatChanged()
+	{
+		UpdateCachedStats();
+	}
+
 	private void Inventory_HandleEquipmentChanged()
 	{
-		cachedFinalStats = null;
-		Vitals.LinkedStats = FinalStats;
-		SyncDisplayedStats();
+		UpdateCachedStats();
+		DisplayedStats.Sync(FinalStats);
 	}
 
 	public Inventory Inventory;
@@ -192,5 +231,15 @@ public abstract class Character : MonoBehaviour, Actor
 			// Return a default facing or handle an unknown direction
 			return Facing.Up; // Change this default return as needed
 		}
+	}
+
+	[ContextMenu("Debug Vitals")]
+	public void Debug_Stats()
+	{
+		var realVitals = Vitals.ToDebugString();
+		var displayedVitals = DisplayedVitals.ToDebugString();
+		Debug.Log($@"Debug Vitals
+real: {realVitals}
+disp: {displayedVitals}");
 	}
 }

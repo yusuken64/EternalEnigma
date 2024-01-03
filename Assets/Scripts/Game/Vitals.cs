@@ -12,7 +12,6 @@ public class Vitals
 	[SerializeField] private int gold;
 	[SerializeField] private int hungerAccumulate;
 	[SerializeField] private int hpRegenAcccumlate;
-	private Stats linkedStats;
 
 	public int HP
 	{
@@ -118,14 +117,17 @@ public class Vitals
 		}
 	}
 
-	public Stats LinkedStats 
+	public Func<Stats> LinkedStats;
+
+
+	public Vitals(Vitals vitals)
 	{
-		get => linkedStats;
-		set
-		{
-			linkedStats = value;
-			ClampVitals();
-		}
+		this.LinkedStats = vitals.LinkedStats;
+		Sync(vitals);
+	}
+
+	public Vitals()
+	{
 	}
 
 	internal void Sync(Vitals vitals)
@@ -142,7 +144,52 @@ public class Vitals
 
 	protected virtual void ClampVitals()
 	{
-		HP = Math.Clamp(HP, 0, LinkedStats.HPMax);
-		Hunger = Math.Clamp(Hunger, 0, LinkedStats.HungerMax);
+		Stats stats = LinkedStats();
+		HP = Math.Clamp(HP, 0, stats.HPMax);
+		Hunger = Math.Clamp(Hunger, 0, stats.HungerMax);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked // Overflow is fine, just wrap
+		{
+			int hash = 17;
+			hash = hash * 23 + hp.GetHashCode();
+			hash = hash * 23 + level.GetHashCode();
+			hash = hash * 23 + exp.GetHashCode();
+			hash = hash * 23 + floor.GetHashCode();
+			hash = hash * 23 + hunger.GetHashCode();
+			hash = hash * 23 + gold.GetHashCode();
+			hash = hash * 23 + hungerAccumulate.GetHashCode();
+			hash = hash * 23 + hpRegenAcccumlate.GetHashCode();
+			return hash;
+		}
+	}
+
+	internal string ToDebugString()
+	{
+		return $"hp:{hp} " +
+			$"level:{level} " +
+			$"exp:{exp} " +
+			$"floor:{floor} " +
+			$"hunger:{hunger} " +
+			$"gold:{gold} " +
+			$"hungerAccumulate:{hungerAccumulate} " +
+			$"hpRegenAcccumlate:{hpRegenAcccumlate}";
+	}
+	public static Vitals operator +(Vitals vitals, VitalModification modification)
+	{
+		if (modification == null) { modification = new(); }
+
+		vitals.HP += modification.Hp;
+		vitals.Level += modification.Level;
+		vitals.Exp += modification.Exp;
+		vitals.Floor += modification.Floor;
+		vitals.Hunger += modification.Hunger;
+		vitals.Gold += modification.Gold;
+		vitals.HungerAccumulate += modification.HungerAccumulate;
+		vitals.HPRegenAcccumlate += modification.HpRegenAcccumlate;
+
+		return vitals;
 	}
 }

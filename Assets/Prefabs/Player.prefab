@@ -261,15 +261,15 @@ MonoBehaviour:
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 2065795567227290904}
   CurrentFacing: 0
-  baseStats:
-    HPMax: 0
+  StartingStats:
+    HPMax: 20
     HungerMax: 100
-    Strength: 0
+    Strength: 5
     Defense: 0
     EXPOnKill: 0
-    HungerAccumulateThreshold: 0
-    HPRegenAcccumlateThreshold: 0
-    DropRate: -0.06
+    HungerAccumulateThreshold: 15
+    HPRegenAcccumlateThreshold: 5
+    DropRate: 0
   Vitals:
     hp: 0
     level: 0
@@ -279,15 +279,6 @@ MonoBehaviour:
     gold: 0
     hungerAccumulate: 0
     hpRegenAcccumlate: 0
-  DisplayedStats:
-    HPMax: 0
-    HungerMax: 0
-    Strength: 0
-    Defense: 0
-    EXPOnKill: 0
-    HungerAccumulateThreshold: 0
-    HPRegenAcccumlateThreshold: 0
-    DropRate: 0
   DisplayedVitals:
     hp: 0
     level: 0

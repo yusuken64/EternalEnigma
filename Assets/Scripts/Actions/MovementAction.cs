@@ -333,7 +333,10 @@ internal class AddXPAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		this.character.Vitals.Exp += eXP;
+		this.AddMetricsModification(this.character, ((stats, vitals) =>
+		{
+			vitals.Exp += eXP;
+		}));
 		List<GameAction> ret = new();
 		if (character is Player player)
 		{

@@ -56,14 +56,6 @@ namespace JuicyChickenGames.Menu
 			this._data = data;
 			this._view = view;
 			ItemNameText.text = _data.ItemName;
-
-			Vector3 newPos = Container.transform.position;
-
-			//var rect = Panel.GetComponent<RectTransform>();
-			//newPos.y = Mathf.Clamp(view.transform.position.y, -rect.rect.height / 2f, rect.rect.height / 2f);
-			//rect.anchoredPosition = newPos;
-			//Container.position = newPos;
-			//Container.position = KeepFullyOnScreen(Panel, newPos);
 		}
 
 		internal override void SetFirstSelect()

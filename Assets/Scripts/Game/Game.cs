@@ -76,21 +76,13 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	private void InitializeGame()
 	{
-		PlayerCharacter.BaseStats = new Stats()
-		{
-			HPMax = 20,
-			HungerMax = 100,
-			Strength = 5,
-			HPRegenAcccumlateThreshold = 5,
-			HungerAccumulateThreshold = 15
-		};
 		PlayerCharacter.InitialzeVitalsFromStats();
 		PlayerCharacter.Vitals.Level = 1;
 
 		PlayerCharacter.SyncDisplayedStats();
 		PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Bread"));
 		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Wooden Arrows"));
-		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Excalibur"));
+		PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Excalibur"));
 
 		UpdateUI();
 		AdvanceFloor();
@@ -107,12 +99,12 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void AdvanceFloor()
 	{
-		TurnManager.StopAllCoroutines();
-		TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
+		//TurnManager.StopAllCoroutines();
+		//TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
 
 		TurnManager.CurrentTurnPhase = TurnPhase.Player;
 		PlayerCharacter.Vitals.Floor++;
-		PlayerCharacter.SyncDisplayedStats();
+		PlayerCharacter.DisplayedVitals.Floor++;
 		PlayerCharacter.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
 
@@ -137,6 +129,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		{
 			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerCharacter.Vitals.Floor);
 			var enemy = Instantiate(enemyPrefab, this.transform);
+			enemy.UpdateCachedStats();
 			enemy.InitialzeVitalsFromStats();
 			enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomEnemyPosition()).Value;
 			Enemies.Add(enemy);

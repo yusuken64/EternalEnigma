@@ -22,9 +22,9 @@ internal class LevelUpAction : GameAction
 				character,
 				(stats, vitals) =>
 				{
-					vitals.Level = levelUp.Level;
 					stats.Strength += 2;
 					stats.HPMax += 5;
+					vitals.Level = levelUp.Level;
 					vitals.HP += 5;
 				},
 				false)

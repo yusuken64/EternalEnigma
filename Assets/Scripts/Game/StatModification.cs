@@ -1,14 +1,35 @@
 ﻿using System;
 
 [Serializable]
-public class StatModification : Stats
+public class StatModification : StartingStats
 {
+
 	public StatModification()
 	{
 	}
 
-	public StatModification(Stats other) : base(other)
+	public StatModification(Stats other)
 	{
+		HPMax = other.HPMax;
+		HungerMax = other.HungerMax;
+		Strength = other.Strength;
+		Defense = other.Defense;
+		EXPOnKill = other.EXPOnKill;
+		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
+		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
+		DropRate = other.DropRate;
+	}
+
+	public StatModification(StatModification stats)
+	{
+		HPMax = stats.HPMax;
+		HungerMax = stats.HungerMax;
+		Strength = stats.Strength;
+		Defense = stats.Defense;
+		EXPOnKill = stats.EXPOnKill;
+		HungerAccumulateThreshold = stats.HungerAccumulateThreshold;
+		HPRegenAcccumlateThreshold = stats.HPRegenAcccumlateThreshold;
+		DropRate = stats.DropRate;
 	}
 
 	public static StatModification operator +(StatModification stats, StatModification modification)
@@ -20,6 +41,7 @@ public class StatModification : Stats
 		retStats.HPMax += modification.HPMax;
 		retStats.Strength += modification.Strength;
 		retStats.Defense += modification.Defense;
+		retStats.EXPOnKill += modification.EXPOnKill;
 		retStats.HungerAccumulateThreshold += modification.HungerAccumulateThreshold;
 		retStats.HPRegenAcccumlateThreshold += modification.HPRegenAcccumlateThreshold;
 

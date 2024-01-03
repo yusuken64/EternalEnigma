@@ -86,10 +86,10 @@ public class EnemyManager : MonoBehaviour
 			var enemyPrefab = EnemyPrefabs.FirstOrDefault(x => x.name == monster.ThisName);
 			if (enemyPrefab != null)
 			{
-				enemyPrefab.BaseStats.HPMax = monster.HP;
-				enemyPrefab.BaseStats.Strength = monster.Attack;
-				enemyPrefab.BaseStats.Defense = monster.Defense;
-				enemyPrefab.BaseStats.EXPOnKill = monster.EXP;
+				enemyPrefab.StartingStats.HPMax = monster.HP;
+				enemyPrefab.StartingStats.Strength = monster.Attack;
+				enemyPrefab.StartingStats.Defense = monster.Defense;
+				enemyPrefab.StartingStats.EXPOnKill = monster.EXP;
 				if (ExpressionEvaluator.Evaluate<float>(monster.Drop, out float dropValule))
 				{
 					enemyPrefab.BaseStats.DropRate = dropValule;

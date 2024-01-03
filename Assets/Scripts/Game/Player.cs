@@ -7,7 +7,6 @@ public class Player : Character
 {
 	private float holdTime = 0f;
 	private float repeatTime = 0.1f;
-	private bool advancing;
 	private GameAction pickedAction;
 	public Camera Camera;
 

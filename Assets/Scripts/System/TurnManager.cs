@@ -92,6 +92,30 @@ public class TurnManager : MonoBehaviour
 			actor.StartTurn();
 		}
 		CurrentTurnPhase = TurnPhase.Player;
+
+		CheckStats();
+	}
+
+	private void CheckStats()
+	{
+		var player = Game.Instance.PlayerCharacter;
+		if (player.FinalStats.GetHashCode() != player.DisplayedStats.GetHashCode())
+		{
+			var realStats = player.FinalStats.ToDebugString();
+			var displayedStats = player.DisplayedStats.ToDebugString();
+			Debug.LogError($@"Stats Hash Error
+real: {realStats}
+disp: {displayedStats}");
+		}
+
+		if (player.Vitals.GetHashCode() != player.DisplayedVitals.GetHashCode())
+		{
+			var realVitals = player.Vitals.ToDebugString();
+			var displayedVitals = player.DisplayedVitals.ToDebugString();
+			Debug.LogError($@"Vitals Hash Error
+real: {realVitals}
+disp: {displayedVitals}");
+		}
 	}
 
 	private class ActorAction

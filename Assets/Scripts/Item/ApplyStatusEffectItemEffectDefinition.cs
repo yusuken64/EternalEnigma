@@ -10,7 +10,7 @@ public class ApplyStatusEffectItemEffectDefinition : ItemEffectDefinition
 	{
 		return new List<GameAction>()
 		{
-			new ApplyStatusEffectAction(target, StatusEffectPrefab)
+			new ApplyStatusEffectAction(target, StatusEffectPrefab, attacker)
 		};
 	}
 }

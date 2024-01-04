@@ -5,11 +5,8 @@ using UnityEngine;
 //dissapates over n turns
 public class SleepStatusEffect : StatusEffect
 {
-	public void Apply() { }
-
 	public override void Tick()
 	{
-		Debug.Log("Sleeping !");
 		base.Tick();
 	}
 
@@ -26,5 +23,10 @@ public class SleepStatusEffect : StatusEffect
 	internal override bool PreventsMenu()
 	{
 		return true;
+	}
+
+	internal override string GetEffectName()
+	{
+		return "Sleep";
 	}
 }

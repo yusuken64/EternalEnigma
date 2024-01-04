@@ -18,8 +18,11 @@ internal class SleepTurnAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
-		Game.Instance.DoFloatingText("Sleeping...", Color.white, effectedCharacter.VisualParent.transform.position);
-		yield return new WaitForSecondsRealtime(1f);
+		if (effectedCharacter == Game.Instance.PlayerCharacter)
+		{
+			Game.Instance.DoFloatingText("Sleeping...", Color.white, effectedCharacter.VisualParent.transform.position);
+			yield return new WaitForSecondsRealtime(1f);
+		}
 	}
 
 	internal override bool IsValid(Character character)

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,6 +14,8 @@ public class InventoryMenu : Dialog
 	public InventoryMenuItem InventoryMenuItemPrefab;
 	public ActionDialog ActionDialog;
 	public Canvas canvas;
+
+	public TextMeshProUGUI StatText;
 
 	public List<InventoryMenuItem> InventoryMenuItems { get; private set; }
 
@@ -41,6 +44,10 @@ public class InventoryMenu : Dialog
 			};
 		};
 		InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
+
+		var player = Game.Instance.PlayerCharacter;
+		StatText.text = $@"Strength: {player.DisplayedStats.Strength}
+Defense: {player.DisplayedStats.Defense}";
 	}
 
 	private Vector3 KeepFullyOnScreen(RectTransform rectTransform, Vector3 newPosition)

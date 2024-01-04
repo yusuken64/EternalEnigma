@@ -9,11 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
-  m_Name: SleepPotion
+  m_Script: {fileID: 11500000, guid: b5e42757f0e85ab4f936a887e5efe537, type: 3}
+  m_Name: Potion_FrailtyPotion_ApplyStatusEffectItemEffectDefinition
   m_EditorClassIdentifier: 
-  ItemName: SleepPotion
-  ItemEffectDefinition: {fileID: 11400000, guid: 0f03abec0f2a4924197509ae75f005c4, type: 2}
-  StackStartMin: 1
-  StackStartMax: 1
-  StackMax: 0
+  StatusEffectPrefab: {fileID: 4388170939618183150, guid: 79144f937f0c96c4f917ff78aa1fbb5e, type: 3}

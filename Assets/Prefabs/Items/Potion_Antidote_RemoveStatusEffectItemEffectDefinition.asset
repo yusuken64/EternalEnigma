@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c01adcf8351243348ba8b81286965d6a, type: 3}
+  m_Name: Potion_Antidote_RemoveStatusEffectItemEffectDefinition
+  m_EditorClassIdentifier: 
+  StatusEffectPrefabs:
+  - {fileID: 4388170939618183150, guid: 79144f937f0c96c4f917ff78aa1fbb5e, type: 3}
+  - {fileID: 3600369719091775844, guid: 1a74275dbee93004b91816ce13a87a15, type: 3}

@@ -270,13 +270,18 @@ disp: {displayedVitals}");
 		{
 			T existingStatus = StatusEffects.OfType<T>().FirstOrDefault();
 			existingStatus.ReApply(newStatusPrefab);
+			UpdateCachedStats();
+			DisplayedStats.Sync(FinalStats);
 
 			return null;
 		}
 		else
 		{
 			var newStatus = Instantiate(newStatusPrefab, VisualParent.transform);
+			newStatus.Apply();
 			StatusEffects.Add(newStatus);
+			UpdateCachedStats();
+			DisplayedStats.Sync(FinalStats);
 
 			return newStatus;
 		}
@@ -286,6 +291,8 @@ disp: {displayedVitals}");
 	{
 		T existingStatus = StatusEffects.OfType<T>().FirstOrDefault();
 		StatusEffects.Remove(existingStatus);
+		UpdateCachedStats();
+		DisplayedStats.Sync(FinalStats);
 
 		return existingStatus;
 	}

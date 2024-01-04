@@ -6,6 +6,8 @@ public abstract class ItemDefinition : ScriptableObject
 	public string ItemName;
 	public ItemEffectDefinition ItemEffectDefinition;
 
+	public bool ApplyToThrownTarget;
+
 	public int StackStartMin = 1; //randomize value between stackcstartmin and stackstarmax on pickup
 	public int StackStartMax = 1;
 	public int StackMax;

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
-  m_Name: Potion
+  m_Name: Potion_Antidote
   m_EditorClassIdentifier: 
-  ItemName: Potion
-  ItemEffectDefinition: {fileID: 11400000, guid: 529d4a7a8404ff44a9a69446d994a94e, type: 2}
+  ItemName: Antidote
+  ItemEffectDefinition: {fileID: 11400000, guid: 41595187b37bbdb4590a1eee41dac341, type: 2}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0

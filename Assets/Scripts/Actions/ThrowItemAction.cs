@@ -36,9 +36,16 @@ internal class ThrowItemAction : GameAction
 
 		if (rangedAttackTarget != null)
 		{
-			//TODO get from item
-			int itemThrowDamage = 5;
-			ret.Add(new TakeDamageAction(thrower, rangedAttackTarget, itemThrowDamage, true, false));
+			if (item.ItemDefinition.ApplyToThrownTarget)
+			{
+				ret.AddRange(item.GetGameActions(thrower, rangedAttackTarget, item));
+			}
+			else
+			{
+				//TODO get from item
+				int itemThrowDamage = 5;
+				ret.Add(new TakeDamageAction(thrower, rangedAttackTarget, itemThrowDamage, true, false));
+			}
 		}
 		else
 		{

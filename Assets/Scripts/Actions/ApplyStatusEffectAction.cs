@@ -6,12 +6,14 @@ public class ApplyStatusEffectAction : GameAction
 {
 	private readonly Character target;
 	private readonly StatusEffect statusEffectPrefab;
+	private readonly Character caster;
 	private StatusEffect statusInstance;
 
-	public ApplyStatusEffectAction(Character target, StatusEffect statusEffectPrefab)
+	public ApplyStatusEffectAction(Character target, StatusEffect statusEffectPrefab, Character caster)
 	{
 		this.target = target;
 		this.statusEffectPrefab = statusEffectPrefab;
+		this.caster = caster;
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
@@ -23,6 +25,7 @@ public class ApplyStatusEffectAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
+		Game.Instance.DoFloatingText($"{statusEffectPrefab.GetEffectName()}!", Color.yellow, caster.transform.position);
 		statusInstance?.gameObject.SetActive(true);
 		yield return null;
 	}

@@ -12,7 +12,7 @@ internal class CastSleepPolicy : PolicyBase
 	public override List<GameAction> GetActions()
 	{
 		enemy.SetFacingByTargetPosition(game.PlayerCharacter.TilemapPosition);
-		return new List<GameAction>() { new ApplyStatusEffectAction(game.PlayerCharacter, statusEffectPrefab) };
+		return new List<GameAction>() { new ApplyStatusEffectAction(game.PlayerCharacter, statusEffectPrefab, enemy) };
 	}
 
 	public override bool ShouldRun()

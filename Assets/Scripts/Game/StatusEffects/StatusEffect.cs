@@ -20,15 +20,20 @@ public abstract class StatusEffect : MonoBehaviour
 		return TurnsLeft <= 0;
 	}
 
+	virtual public void Apply() { }
+
 	//status is alreay applied to the target
 	//extend the turns left
-	internal void ReApply<T>(T newStatus) where T : StatusEffect
+	//override can add stack behavior i.e. frailty stacks can increase the debuff strength
+	virtual internal void ReApply<T>(T newStatus) where T : StatusEffect
 	{
 		TurnsLeft += newStatus.TurnsLeft;
 	}
 
 	//return null if status effect does not modify stats
 	abstract internal StatModification GetStatModification();
+
+	abstract internal string GetEffectName();
 
 	abstract internal bool PreventsMenu();
 }

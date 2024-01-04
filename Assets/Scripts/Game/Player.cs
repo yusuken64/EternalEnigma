@@ -1,6 +1,7 @@
 ﻿using JuicyChickenGames.Menu;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : Character
@@ -50,6 +51,11 @@ public class Player : Character
 		{
 			DeterminePlayerAction();
 		}
+	}
+
+	internal bool CanOpenMenu()
+	{
+		return !StatusEffects.Any(x => x.PreventsMenu());
 	}
 
 	private void DeterminePlayerAction()
@@ -160,6 +166,14 @@ public class Player : Character
 
 	public override List<GameAction> DetermineActions()
 	{
+		//this should affect player the same way, to do in characerbase class?
+		var actionOverrides = StatusEffects.Select(x => x.GetActionOverride(this))
+			.Where(x => x != null);
+		if (actionOverrides.Any())
+		{
+			return actionOverrides.ToList();
+		}
+
 		List<GameAction> actions = new();
 
 		actions.Add(pickedAction);

@@ -95,7 +95,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter.SyncDisplayedStats();
 		PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Bread"));
 		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Wooden Arrows"));
-		PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Excalibur"));
+		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Excalibur"));
+		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("SleepPotion"));
 
 		UpdateUI();
 		AdvanceFloor();

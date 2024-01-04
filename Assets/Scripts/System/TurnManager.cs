@@ -27,6 +27,11 @@ public class TurnManager : MonoBehaviour
 		CurrentTurnPhase = TurnPhase.Enemy;
 		List<ActorAction> actionReplays = new ();
 
+		foreach(var actor in actors)
+		{
+			actor.TickStatusEffects();
+		}
+
 		foreach (var actor in actors)
 		{
 			int actions = actor.ActionsPerTurn;
@@ -44,6 +49,18 @@ public class TurnManager : MonoBehaviour
 
 					sideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 				}
+			}
+
+
+			var statusSideEffectActions = actor.GetStatusEffectSideEffects();
+
+			while (statusSideEffectActions.Any())
+			{
+				var sideEffectAction = statusSideEffectActions.First();
+				statusSideEffectActions.Remove(sideEffectAction);
+				actionReplays.Add(new ActorAction(actor, sideEffectAction));
+
+				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 			}
 		}
 
@@ -148,6 +165,9 @@ public interface Actor
 	List<GameAction> ExecuteActionImmediate(GameAction action);
 	IEnumerator ExecuteActionRoutine(GameAction action);
 	void StartTurn();
+	void TickStatusEffects();
+	List<GameAction> GetStatusEffectSideEffects();
+
 	int ActionsPerTurn { get; }
 	int AttacksPerTurn { get; }
 }

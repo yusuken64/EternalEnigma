@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class Character : MonoBehaviour, Actor
@@ -49,7 +50,9 @@ public abstract class Character : MonoBehaviour, Actor
 
 	internal void UpdateCachedStats()
 	{
-		cachedFinalStats = BaseStats + Inventory?.GetEquipmentStatModification();
+		cachedFinalStats = BaseStats + 
+			Inventory?.GetEquipmentStatModification() +
+			StatusEffects.Aggregate(new StatModification(), (accumulate, newa) => accumulate + newa.GetStatModification());
 	}
 
 	private Vitals vitals;
@@ -83,6 +86,8 @@ public abstract class Character : MonoBehaviour, Actor
 		this.Vitals.HP = this.FinalStats.HPMax;
 		this.Vitals.Hunger = this.FinalStats.HungerMax;
 	}
+
+	public List<StatusEffect> StatusEffects = new();
 
 	private void Awake()
 	{
@@ -241,5 +246,47 @@ public abstract class Character : MonoBehaviour, Actor
 		Debug.Log($@"Debug Vitals
 real: {realVitals}
 disp: {displayedVitals}");
+	}
+
+	public void TickStatusEffects()
+	{
+		foreach(var statusEffect in StatusEffects)
+		{
+			statusEffect.Tick();
+		}
+	}
+
+	public List<GameAction> GetStatusEffectSideEffects()
+	{
+		return StatusEffects.Where(x => x.IsExpired())
+			.Select(x => new RemoveStatusEffectAction(this, x))
+			.Cast<GameAction>()
+			.ToList();
+	}
+
+	public T ApplyStatusEffect<T>(T newStatusPrefab) where T : StatusEffect
+	{
+		if (StatusEffects.OfType<T>().Any())
+		{
+			T existingStatus = StatusEffects.OfType<T>().FirstOrDefault();
+			existingStatus.ReApply(newStatusPrefab);
+
+			return null;
+		}
+		else
+		{
+			var newStatus = Instantiate(newStatusPrefab, VisualParent.transform);
+			StatusEffects.Add(newStatus);
+
+			return newStatus;
+		}
+	}
+
+	public T RemoveStatusEffect<T>(T expiredStatus) where T : StatusEffect
+	{
+		T existingStatus = StatusEffects.OfType<T>().FirstOrDefault();
+		StatusEffects.Remove(existingStatus);
+
+		return existingStatus;
 	}
 }

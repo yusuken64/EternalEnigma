@@ -56,7 +56,7 @@ public class AttackPolicy : PolicyBase
 				enemy.CurrentEnemyState == EnemyState.Pursuit);
 	}
 
-	private bool CanAttack(Game game, Player playerCharacter, Enemy enemy)
+	public static bool CanAttack(Game game, Player playerCharacter, Enemy enemy)
 	{
 		if (enemy.attacksPerTurnLeft <= 0)
 		{

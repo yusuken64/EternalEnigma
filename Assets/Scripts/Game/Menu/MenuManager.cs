@@ -28,7 +28,11 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		{
 			if (!Opened)
 			{
-				OpenMenu();
+				bool canOpenMenu = Game.Instance.PlayerCharacter.CanOpenMenu();
+				if (canOpenMenu)
+				{
+					OpenMenu();
+				}
 			}
 			else
 			{

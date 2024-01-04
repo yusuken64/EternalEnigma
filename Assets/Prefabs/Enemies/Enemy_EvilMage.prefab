@@ -1580,6 +1580,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8639548010823113620}
   - component: {fileID: 3119655136135461553}
+  - component: {fileID: 3600919887817220155}
   m_Layer: 8
   m_Name: Enemy_EvilMage
   m_TagString: Untagged
@@ -1627,29 +1628,26 @@ MonoBehaviour:
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
     DropRate: 0
-  Vitals:
-    hp: 0
-    level: 0
-    exp: 0
-    floor: 0
-    hunger: 0
-    gold: 0
-    hungerAccumulate: 0
-    hpRegenAcccumlate: 0
-  DisplayedVitals:
-    hp: 0
-    level: 0
-    exp: 0
-    floor: 0
-    hunger: 0
-    gold: 0
-    hungerAccumulate: 0
-    hpRegenAcccumlate: 0
+  StatusEffects: []
   Inventory: {fileID: 0}
   ActionsPerTurnMax: 1
   AttacksPerTurnMax: 1
   CurrentEnemyState: 0
   Animator: {fileID: 4369890431100196491}
+--- !u!114 &3600919887817220155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5543747752720980080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b3988395365874cbaec79a4e1d853d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Priority: -1
+  statusEffectPrefab: {fileID: 3600369719091775844, guid: 1a74275dbee93004b91816ce13a87a15, type: 3}
 --- !u!1 &5545148707702642396
 GameObject:
   m_ObjectHideFlags: 0

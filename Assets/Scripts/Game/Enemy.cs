@@ -48,6 +48,14 @@ public class Enemy : Character
 			return null;
 		}
 
+		//this should affect player the same way, to do in characerbase class?
+		var actionOverrides = StatusEffects.Select(x => x.GetActionOverride(this))
+			.Where(x => x != null);
+		if (actionOverrides.Any())
+		{
+			return actionOverrides.ToList();
+		}
+
 		var game = Game.Instance;
 		this.actionsPerTurnLeft--;
 		bool canSeePlayer = CanSeePlayer();

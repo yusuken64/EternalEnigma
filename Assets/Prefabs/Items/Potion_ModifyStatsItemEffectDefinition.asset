@@ -14,16 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StatModification:
     HPMax: 0
-    HP: 30
+    HungerMax: 0
     Strength: 0
     Defense: 0
-    EXP: 0
-    Level: 0
-    Floor: 0
-    Hunger: 5
-    Gold: 0
-    HungerAccumulate: 0
-    HPRegenAcccumlate: 0
+    EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
+    DropRate: 0
+  VitalModification:
+    Hp: 20
+    Level: 0
+    Exp: 0
+    Floor: 0
+    Hunger: 0
+    Gold: 0
+    HungerAccumulate: 0
+    HpRegenAcccumlate: 0
   DoDamageAnimation: 0

@@ -41,7 +41,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public List<Character> DeadUnits; //dead units are added to this, destroy at end turn;
 
-	public TextMeshProUGUI StatsText;
+	public StatsDisplay LevelDisplay;
+	public StatsDisplay HpDisplay;
+	public StatsDisplay HungerDisplay;
 	public TextMeshProUGUI ActionText;
 	public TextMeshProUGUI InventoryText;
 
@@ -64,6 +66,17 @@ public class Game : SingletonMonoBehaviour<Game>
 		InitializeGame();
 
 		PlayerCharacter.ActionPicked += PlayerCharacter_ActionPicked;
+
+		//TODO look up next level;
+		LevelDisplay.Setup("Lv",
+			() => PlayerCharacter.DisplayedVitals.Level.ToString(),
+			() => { return LevelSystem.GetPercentageToNextLevel(PlayerCharacter.DisplayedVitals); });
+		HpDisplay.Setup("HP",
+			() => $"{PlayerCharacter.DisplayedVitals.HP}/{PlayerCharacter.DisplayedStats.HPMax}",
+			() => (float)PlayerCharacter.DisplayedVitals.HP/PlayerCharacter.DisplayedStats.HPMax);
+		HungerDisplay.Setup("Full",
+			() => $"{PlayerCharacter.DisplayedVitals.Hunger}/{PlayerCharacter.DisplayedStats.HungerMax}",
+			() => (float)PlayerCharacter.DisplayedVitals.Hunger / PlayerCharacter.DisplayedStats.HungerMax);
 	}
 
 	private void PlayerCharacter_ActionPicked(GameAction gameAction)
@@ -157,13 +170,9 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void UpdateUI()
 	{
 		if (PlayerCharacter == null) { return; }
-		//PlayerCharacter.SyncDisplayedStats();
-
-		StatsText.text = @$"Floor : {PlayerCharacter.DisplayedVitals.Floor}
-Level : {PlayerCharacter.DisplayedVitals.Level}
-HP : {PlayerCharacter.DisplayedVitals.HP}/{PlayerCharacter.DisplayedStats.HPMax}
-Hunger: {PlayerCharacter.DisplayedVitals.Hunger}
-Treasure: {PlayerCharacter.DisplayedVitals.Gold}";
+		LevelDisplay.UpdateUI();
+		HpDisplay.UpdateUI();
+		HungerDisplay.UpdateUI();
 
 		if (PlayerCharacter.currentInteractable != null)
 		{

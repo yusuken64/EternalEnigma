@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Frailty Potion
   ItemEffectDefinition: {fileID: 11400000, guid: adb9b416aa8664848985603083c59b0e, type: 2}
+  ApplyToThrownTarget: 1
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0

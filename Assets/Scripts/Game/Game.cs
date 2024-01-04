@@ -93,10 +93,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter.Vitals.Level = 1;
 
 		PlayerCharacter.SyncDisplayedStats();
-		PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Bread"));
-		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Wooden Arrows"));
-		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("Excalibur"));
-		//PlayerCharacter.Inventory.Add(ItemManager.GetAsInventoryItemByName("SleepPotion"));
+
+		ItemManager.StartingItems.ForEach(x => PlayerCharacter.Inventory.Add(x.AsInventoryItem(null)));
 
 		UpdateUI();
 		AdvanceFloor();

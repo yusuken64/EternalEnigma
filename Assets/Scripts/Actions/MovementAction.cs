@@ -250,18 +250,14 @@ public class DeathAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		//TODO keep a list of all characters
 		Game.Instance.Enemies.Remove(target as Enemy);
 		Game.Instance.DeadUnits.Add(target);
 
-		//Also remove all queued actions?
 		var gainXP = new AddXPAction(attacker, target.FinalStats.EXPOnKill);
 
 		float value = UnityEngine.Random.value;
 		droppedItem = target.FinalStats.DropRate > 0 &&
 			value < character.FinalStats.DropRate;
-
-		//Debug.Log($"{target.RealStats.DropRate} ? {value}");
 
 		//BFS.FindPath
 		Game game = Game.Instance;
@@ -343,12 +339,18 @@ internal class AddXPAction : GameAction
 			var game = Game.Instance;
 			var levelSystem = game.LevelSystem;
 
-			var levelUps = levelSystem.LevelData.Where(x =>
+			IEnumerable<LevelInfo> levelUps = levelSystem.LevelData.Where(x =>
 				x.Level > player.Vitals.Level &&
 				x.Experience <= player.Vitals.Exp);
 
-			foreach(var levelUp in levelUps)
+
+			foreach (var levelUp in levelUps)
 			{
+				this.AddMetricsModification(this.character, ((stats, vitals) =>
+				{
+					vitals.Level ++;
+				}));
+
 				ret.Add(new LevelUpAction(character, levelUp));
 			}
 		}

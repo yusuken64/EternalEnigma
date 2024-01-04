@@ -6,6 +6,7 @@ using UnityEngine;
 public class ItemManager : MonoBehaviour
 {
 	public List<ItemDefinition> ItemDefinitions;
+	public List<ItemDefinition> StartingItems;
 
 	public InventoryItem GetAsInventoryItem(ItemDefinition itemDefinition, int? stock)
 	{

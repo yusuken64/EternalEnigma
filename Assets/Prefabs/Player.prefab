@@ -118,7 +118,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2065795567227290904}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.25, y: 1.22, z: 0}
+  m_LocalPosition: {x: 1.25, y: 1.25, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -270,24 +270,7 @@ MonoBehaviour:
     HungerAccumulateThreshold: 15
     HPRegenAcccumlateThreshold: 5
     DropRate: 0
-  Vitals:
-    hp: 0
-    level: 0
-    exp: 0
-    floor: 0
-    hunger: 0
-    gold: 0
-    hungerAccumulate: 0
-    hpRegenAcccumlate: 0
-  DisplayedVitals:
-    hp: 0
-    level: 0
-    exp: 0
-    floor: 0
-    hunger: 0
-    gold: 0
-    hungerAccumulate: 0
-    hpRegenAcccumlate: 0
+  StatusEffects: []
   Inventory: {fileID: 8960690655561992051}
   ActionsPerTurnMax: 1
   AttacksPerTurnMax: 1

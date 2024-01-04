@@ -24,6 +24,12 @@ internal class ThrowItemAction : GameAction
 		thrower.Inventory.InventoryItems.Remove(item);
 
 		var ret = new List<GameAction>();
+		if (thrower.Inventory.IsEquipped(item))
+		{
+			var unEquipAction = new UnEquipAction(thrower as Player, item as EquipableInventoryItem);
+			ret.Add(unEquipAction);
+		}
+
 		rangedAttackTargetPosition =
 			game.CurrentDungeon.GetRangedAttackPosition(
 				thrower,
@@ -64,7 +70,7 @@ internal class ThrowItemAction : GameAction
 		var projectile = UnityEngine.Object.Instantiate(projectilePrefab, null);
 		projectile.transform.position = character.VisualParent.transform.position;
 		var attackerWorldPosition = game.CurrentDungeon.TileMap_Floor.CellToWorld(character.TilemapPosition);
-		var offset = character.VisualParent.transform.position - attackerWorldPosition;
+		var offset = new Vector3(1.25f, 1.25f, 0);
 		var targetWorldPosition = game.CurrentDungeon.TileMap_Floor.CellToWorld(rangedAttackTargetPosition);
 		projectile.transform.LookAt(targetWorldPosition + offset);
 		yield return projectile.transform.DOMove(targetWorldPosition + offset, 0.5f)

@@ -11,8 +11,7 @@ internal class RangedAttackAction : GameAction
 	private Character target;
 	private int damage;
 	private GameObject projectilePrefab;
-
-	private Vector3Int targetPosition;
+	private Vector3Int rangedAttackTargetPosition;
 
 	public RangedAttackAction(Character attacker, Character target, int damage, GameObject projectilePrefab)
 	{
@@ -26,7 +25,7 @@ internal class RangedAttackAction : GameAction
 	{
 		var game = Game.Instance;
 		var ret = new List<GameAction>();
-		var rangedAttackTargetPosition = 
+		rangedAttackTargetPosition = 
 			game.CurrentDungeon.GetRangedAttackPosition(
 				attacker,
 				attacker.TilemapPosition,
@@ -41,21 +40,22 @@ internal class RangedAttackAction : GameAction
 			ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, damage, true, false));
 		}
 
-		//TODO drop arrow here?
-
 		return ret;
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
+		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
+			.WaitForCompletion();
+
 		var game = Game.Instance;
 		var projectile = UnityEngine.Object.Instantiate(projectilePrefab, null);
 		projectile.transform.position = character.VisualParent.transform.position;
 		var attackerWorldPosition = game.CurrentDungeon.TileMap_Floor.CellToWorld(character.TilemapPosition);
-		var offset = character.VisualParent.transform.position - attackerWorldPosition;
-		var targetWorldPosition = game.CurrentDungeon.TileMap_Floor.CellToWorld(targetPosition);
-		projectile.transform.LookAt(targetWorldPosition + offset);
-		yield return projectile.transform.DOMove(targetWorldPosition + offset, 0.5f)
+		var offset = new Vector3(1.25f, 1.25f, 0);
+		var targetWorldPosition = game.CurrentDungeon.TileMap_Floor.CellToWorld(rangedAttackTargetPosition) + offset;
+		projectile.transform.LookAt(targetWorldPosition);
+		yield return projectile.transform.DOMove(targetWorldPosition, 0.5f)
 			.WaitForCompletion();
 
 		UnityEngine.Object.Destroy(projectile.gameObject);

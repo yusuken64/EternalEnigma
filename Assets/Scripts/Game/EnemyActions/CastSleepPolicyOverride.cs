@@ -4,6 +4,6 @@
 
 	public override PolicyBase GetOverridePolicy(Game game, Enemy enemy)
 	{
-		return new SleepPolicy(game, enemy, Priority, statusEffectPrefab);
+		return new CastSleepPolicy(game, enemy, Priority, statusEffectPrefab);
 	}
 }

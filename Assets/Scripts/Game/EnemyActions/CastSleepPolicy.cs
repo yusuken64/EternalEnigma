@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 
-internal class SleepPolicy : PolicyBase
+internal class CastSleepPolicy : PolicyBase
 {
 	private StatusEffect statusEffectPrefab;
 
-	public SleepPolicy(Game game, Enemy enemy, int priority, StatusEffect statusEffectPrefab) : base(game, enemy, priority)
+	public CastSleepPolicy(Game game, Enemy enemy, int priority, StatusEffect statusEffectPrefab) : base(game, enemy, priority)
 	{
 		this.statusEffectPrefab = statusEffectPrefab;
 	}
 
 	public override List<GameAction> GetActions()
 	{
-		enemy.SetFacingByTargetPosition(game.PlayerCharacter.TilemapPosition); //TODO add this to action?
+		enemy.SetFacingByTargetPosition(game.PlayerCharacter.TilemapPosition);
 		return new List<GameAction>() { new ApplyStatusEffectAction(game.PlayerCharacter, statusEffectPrefab) };
 	}
 

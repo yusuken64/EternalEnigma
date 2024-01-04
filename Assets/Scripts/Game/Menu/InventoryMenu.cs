@@ -12,6 +12,7 @@ public class InventoryMenu : Dialog
 	public Transform MenuItemContainer;
 	public InventoryMenuItem InventoryMenuItemPrefab;
 	public ActionDialog ActionDialog;
+	public Canvas canvas;
 
 	public List<InventoryMenuItem> InventoryMenuItems { get; private set; }
 
@@ -20,18 +21,42 @@ public class InventoryMenu : Dialog
 		Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
 		{
 			view.Setup(data);
-			view.GetComponent<Button>().onClick.AddListener(() =>
+			Button button = view.GetComponent<Button>();
+			button.onClick.AddListener(() =>
 			{
 				ActionDialog.Setup(view, data);
 				ActionDialog.SetNavigation();
 				ActionDialog.gameObject.SetActive(true);
 
 				MenuManager.Open(ActionDialog);
+
+				var newPosition = view.transform.position;
+				newPosition = KeepFullyOnScreen(ActionDialog.Panel.GetComponent<RectTransform>(), newPosition);
+				ActionDialog.Panel.transform.position = newPosition;
 			});
+
+			view.SelectCallBack = () =>
+			{
+				ScrollToSelected(view.gameObject);
+			};
 		};
 		InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
+	}
 
-		SetNavigation();
+	private Vector3 KeepFullyOnScreen(RectTransform rectTransform, Vector3 newPosition)
+	{
+		var canvasRectTransform = canvas.GetComponent<RectTransform>();
+		float halfWidth = rectTransform.sizeDelta.x / 2f;
+		float halfHeight = rectTransform.sizeDelta.y / 2f;
+		var x = Mathf.Clamp(newPosition.x, halfWidth, canvasRectTransform.sizeDelta.x - halfWidth);
+		var y = Mathf.Clamp(newPosition.y, halfHeight, canvasRectTransform.sizeDelta.y - halfHeight);
+
+		return new Vector3(x, y, 0);
+	}
+
+	public void HandleInventoryItemSelected(BaseEventData eventData)
+	{
+		Debug.Log(this.gameObject.name + " was selected");
 	}
 
 	public void SetNavigation()
@@ -54,5 +79,19 @@ public class InventoryMenu : Dialog
 		{
 			InventoryMenuItems[0].Select();
 		}
+	}
+
+	public void ScrollToSelected(GameObject selectedItem)
+	{
+		//Debug.Log($"Scoll Item into view {selectedItem.GetComponent<InventoryMenuItem>().ItemText.text}", selectedItem);
+
+		RectTransform contentRectTransform = scrollView.content.GetComponent<RectTransform>();
+		RectTransform selectedRectTransform = selectedItem.GetComponent<RectTransform>();
+
+		Canvas.ForceUpdateCanvases();
+
+		contentRectTransform.anchoredPosition =
+				(Vector2)scrollView.transform.InverseTransformPoint(contentRectTransform.position)
+				- (Vector2)scrollView.transform.InverseTransformPoint(selectedRectTransform.position);
 	}
 }

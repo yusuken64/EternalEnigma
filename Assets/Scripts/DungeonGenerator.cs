@@ -9,6 +9,7 @@ using UnityEngine.Tilemaps;
 
 public class DungeonGenerator : MonoBehaviour
 {
+	public Transform DungeonContainer;
 	public Dungeon DungeonPrefab;
 
 	public int dungeonWidth = 100;
@@ -48,7 +49,7 @@ public class DungeonGenerator : MonoBehaviour
 	internal Dungeon GenerateDungeon()
 	{
 		TileGameDataLookup = new();
-		var dungeon = Instantiate(DungeonPrefab, Game.Instance.transform);
+		var dungeon = Instantiate(DungeonPrefab, DungeonContainer);
 		dungeon.InitializeGrid(dungeonWidth, dungeonHeight);
 
 		DrawBase(dungeon);
@@ -99,6 +100,7 @@ public class DungeonGenerator : MonoBehaviour
 	public void GenerateAllCommand()
 	{
 		TileGameDataLookup = new Dictionary<Vector3Int, GameTileData>();
+		GenerateDungeon();
 	}
 
 	private void DrawBase(Dungeon dungeon)

@@ -16,7 +16,7 @@ public class Enemy : Character
 
 	private void Start()
 	{
-		var worldPosition = Game.Instance.CurrentDungeon.TileMap_Floor.layoutGrid.CellToWorld(TilemapPosition);
+		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(TilemapPosition);
 		this.transform.position = worldPosition;
 
 		CurrentEnemyState = EnemyState.Pursuit;
@@ -91,19 +91,20 @@ public class Enemy : Character
 
 		//determine if the monster can see player
 		BoundsInt visionBounds;
-		if (game.DungeonGenerator.TileGameDataLookup.ContainsKey(this.TilemapPosition))
-		{
-			var tileGameData = game.DungeonGenerator.TileGameDataLookup[this.TilemapPosition];
-			visionBounds = new BoundsInt()
-			{
-				xMin = tileGameData.node.room.X - 1,
-				xMax = tileGameData.node.room.X + tileGameData.node.room.Width + 1,
-				yMin = tileGameData.node.room.Y - 1,
-				yMax = tileGameData.node.room.Y + tileGameData.node.room.Height + 1
-			};
-		}
-		else
-		{
+		//TODO fix vision
+		//if (game.DungeonGenerator.IsRoom(this.TilemapPosition))
+		//{
+		//	var tileGameData = game.DungeonGenerator.TileGameDataLookup[this.TilemapPosition];
+		//	visionBounds = new BoundsInt()
+		//	{
+		//		xMin = tileGameData.node.room.X - 1,
+		//		xMax = tileGameData.node.room.X + tileGameData.node.room.Width + 1,
+		//		yMin = tileGameData.node.room.Y - 1,
+		//		yMax = tileGameData.node.room.Y + tileGameData.node.room.Height + 1
+		//	};
+		//}
+		//else
+		//{
 			visionBounds = new BoundsInt()
 			{
 				xMin = TilemapPosition.x - 1,
@@ -111,7 +112,7 @@ public class Enemy : Character
 				yMin = TilemapPosition.y - 1,
 				yMax = TilemapPosition.y + 1
 			};
-		}
+		//}
 
 		Vector3Int tilemapPosition = game.PlayerCharacter.TilemapPosition;
 		var canSeePlayer = Contains2D(visionBounds, tilemapPosition);
@@ -146,14 +147,13 @@ public class Enemy : Character
 
 		//TODO refactor cost out of the loop, do it in 2nd pass
 		//move to a different class
-		AStar.Node[,] grid = new AStar.Node[game.DungeonGenerator.dungeonWidth, game.DungeonGenerator.dungeonHeight];
+		AStar.Node[,] grid = new AStar.Node[game.CurrentDungeon.dungeonWidth, game.CurrentDungeon.dungeonHeight];
 
-		for(int i = 0; i < game.DungeonGenerator.dungeonWidth; i++)
+		for(int i = 0; i < game.CurrentDungeon.dungeonWidth; i++)
 		{
-			for (int j = 0; j < game.DungeonGenerator.dungeonHeight; j++)
+			for (int j = 0; j < game.CurrentDungeon.dungeonHeight; j++)
 			{
-				var tile = game.CurrentDungeon.TileMap_Floor.GetTile(new Vector3Int(i, j));
-				var isWalkable = tile != null;
+				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
 
 				var containsFriendly = game.Enemies.Any(x => x.TilemapPosition == new Vector3Int(i, j));
 				var movePenalty = containsFriendly ? 5 : 0;

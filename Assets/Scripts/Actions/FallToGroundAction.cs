@@ -21,7 +21,7 @@ internal class FallToGroundAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
-		Game.Instance.CurrentDungeon.SetDroppedItem(dropPosition, item.ItemDefinition, Game.Instance.DungeonGenerator.DroppedItemTile, item.StackStock);
+		Game.Instance.CurrentDungeon.SetDroppedItem(dropPosition, item.ItemDefinition, item.StackStock);
 		yield return null;
 	}
 

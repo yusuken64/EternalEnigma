@@ -20,7 +20,7 @@ internal class DropItemAction : GameAction
 	{
 		Game game = Game.Instance;
 		player.Inventory.InventoryItems.Remove(item);
-		game.CurrentDungeon.SetDroppedItem(dropPosition, item.ItemDefinition, game.DungeonGenerator.DroppedItemTile, item.StackStock);
+		game.CurrentDungeon.SetDroppedItem(dropPosition, item.ItemDefinition, item.StackStock);
 
 		return new();
 	}
@@ -41,12 +41,8 @@ internal class DropItemAction : GameAction
 		}
 
 		var itemDropPosition = game.CurrentDungeon.GetDropPosition(character.TilemapPosition);
-		if (itemDropPosition == null)
-		{
-			return false;
-		}
 
-		this.dropPosition = itemDropPosition.Value;
+		this.dropPosition = itemDropPosition;
 
 		return true;
 	}

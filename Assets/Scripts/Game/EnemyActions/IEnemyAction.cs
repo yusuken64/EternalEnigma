@@ -119,7 +119,7 @@ public class WanderPolicy : PolicyBase
 	{
 		var offset = Dungeon.GetFacingOffset(enemy.CurrentFacing);
 		Vector3Int newMapPosition = enemy.TilemapPosition + offset;
-		var canMoveForward = game.CurrentDungeon.TileMap_Floor.GetTile(newMapPosition) != null;
+		var canMoveForward = game.CurrentDungeon.CanWalkTo(enemy.TilemapPosition, newMapPosition);
 
 		if (!canMoveForward)
 		{

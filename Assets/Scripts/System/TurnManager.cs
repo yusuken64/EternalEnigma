@@ -9,6 +9,7 @@ public class TurnManager : MonoBehaviour
 	public SimultaneousCoroutines SimultaneousCoroutines;
 	public SequentialCoroutines SequentialCoroutines;
 	public TurnPhase CurrentTurnPhase { get; internal set; }
+	private bool interuptTurn = false;
 
 	private void Start()
 	{
@@ -24,6 +25,7 @@ public class TurnManager : MonoBehaviour
 
 	private IEnumerator ProcessTurnRoutine(List<Actor> actors)
 	{
+		interuptTurn = false;
 		CurrentTurnPhase = TurnPhase.Enemy;
 		List<ActorAction> actionReplays = new ();
 
@@ -51,6 +53,10 @@ public class TurnManager : MonoBehaviour
 				}
 			}
 
+			if (interuptTurn)
+			{
+				break;
+			}
 
 			var statusSideEffectActions = actor.GetStatusEffectSideEffects();
 
@@ -111,6 +117,11 @@ public class TurnManager : MonoBehaviour
 		CurrentTurnPhase = TurnPhase.Player;
 
 		CheckStats();
+	}
+
+	internal void InteruptTurn()
+	{
+		interuptTurn = true;
 	}
 
 	private void CheckStats()

@@ -16,7 +16,7 @@ internal class WarpAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		var game = Game.Instance;
-		warpLoccation = game.CurrentDungeon.GetRandomEnemyPosition();
+		warpLoccation = game.CurrentDungeon.GetRandomOpenEnemyPosition();
 
 		attacker.TilemapPosition = warpLoccation;
 
@@ -25,7 +25,7 @@ internal class WarpAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
-		var worldPosition = Game.Instance.CurrentDungeon.TileMap_Floor.CellToWorld(warpLoccation);
+		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(warpLoccation);
 
 		attacker.PlayWalkAnimation();
 		yield return attacker.transform.DOMove(worldPosition, 0.1f)

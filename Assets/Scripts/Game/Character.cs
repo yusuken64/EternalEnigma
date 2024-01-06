@@ -134,7 +134,7 @@ public abstract class Character : MonoBehaviour, Actor
 	internal void SetPosition(Vector3Int newPosition)
 	{
 		TilemapPosition = newPosition;
-		var position = Game.Instance.CurrentDungeon.TileMap_Floor.CellToWorld(newPosition);
+		var position = Game.Instance.CurrentDungeon.CellToWorld(newPosition);
 		transform.position = position;
 	}
 

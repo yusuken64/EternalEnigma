@@ -1,15 +1,13 @@
 using DG.Tweening;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
 public class Game : SingletonMonoBehaviour<Game>
 {
-	public DungeonGenerator DungeonGenerator;
-	public Dungeon CurrentDungeon;
+	public TileWorldDungeonGenerator DungeonGenerator;
+	public TileWorldDungeon CurrentDungeon;
 
 	public TurnManager TurnManager;
 	public LevelSystem LevelSystem;
@@ -67,7 +65,6 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		PlayerCharacter.ActionPicked += PlayerCharacter_ActionPicked;
 
-		//TODO look up next level;
 		LevelDisplay.Setup("Lv",
 			() => PlayerCharacter.DisplayedVitals.Level.ToString(),
 			() => { return LevelSystem.GetPercentageToNextLevel(PlayerCharacter.DisplayedVitals); });
@@ -111,7 +108,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void AdvanceFloor()
 	{
-		//TurnManager.StopAllCoroutines();
+		TurnManager.InteruptTurn();
 		//TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
 
 		TurnManager.CurrentTurnPhase = TurnPhase.Player;
@@ -120,22 +117,34 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
 
-		NewFloorMessage.ShowNewFloor(PlayerCharacter.Vitals.Floor);
+		NewFloorMessage.HideScreen();
 	}
 
 	private IEnumerator AdvanceFloorRoutine()
 	{
+		Enemies.ForEach(x => DestroyImmediate(x.gameObject));
+		Enemies.Clear();
+
 		yield return null;
 		if (CurrentDungeon != null)
 		{
 			Destroy(CurrentDungeon.gameObject);
+			CurrentDungeon = null;
 		}
-		CurrentDungeon = DungeonGenerator.GenerateDungeon();
-		var startPosition = DungeonGenerator.GetStartPositioon();
+		DungeonGenerator.GenerateDungeon();
+		while(DungeonGenerator.GeneratedDungeon == null)
+		{
+			yield return null;
+		}
+		yield return null;
+		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
+		yield return null;
+
+		var startPosition = CurrentDungeon.GetStartPositioon();
 		PlayerCharacter.SetPosition(startPosition);
 
-		Enemies.ForEach(x => DestroyImmediate(x.gameObject));
-		Enemies.Clear();
+		CurrentDungeon.SetStairs(CurrentDungeon.GetRandomOpenEnemyPosition());
+		Debug.Log("Stairs Created", this);
 
 		for (int i = 0; i < 10; i++)
 		{
@@ -143,22 +152,26 @@ public class Game : SingletonMonoBehaviour<Game>
 			var enemy = Instantiate(enemyPrefab, this.transform);
 			enemy.UpdateCachedStats();
 			enemy.InitialzeVitalsFromStats();
-			enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomEnemyPosition()).Value;
+			enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
 			Enemies.Add(enemy);
-		}
-
-		for(int i = 0; i < 5; i++)
-		{
-			var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomEnemyPosition()).Value;
-			CurrentDungeon.SetTreasure(treasurePosition, DungeonGenerator.TreasureTile);
 		}
 
 		for (int i = 0; i < 5; i++)
 		{
-			var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomEnemyPosition()).Value;
-			var item = ItemManager.GetRandomDrop(null);
-			CurrentDungeon.SetDroppedItem(treasurePosition, item,  DungeonGenerator.DroppedItemTile);
+			var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
+			CurrentDungeon.SetTreasure(treasurePosition);
 		}
+
+		for (int i = 0; i < 5; i++)
+		{
+			var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
+			var item = ItemManager.GetRandomDrop(null);
+			CurrentDungeon.SetDroppedItem(treasurePosition, item);
+		}
+
+
+		yield return new WaitForSecondsRealtime(2.0f);
+		NewFloorMessage.ShowNewFloor(PlayerCharacter.Vitals.Floor);
 	}
 
 	private void Update()

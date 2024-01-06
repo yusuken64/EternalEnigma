@@ -314,7 +314,7 @@ public class Dungeon : MonoBehaviour
 
 		if (target != null) { return true; }
 
-		bool hitWall = Game.Instance.CurrentDungeon.TileMap_Floor.GetTile(nextPosition) == null;
+		bool hitWall = Game.Instance.CurrentDungeon.IsWalkable(nextPosition);
 		if (hitWall) { return true; }
 
 		return false;

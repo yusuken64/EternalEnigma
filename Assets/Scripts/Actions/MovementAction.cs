@@ -31,7 +31,7 @@ internal class MovementAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
-		var worldPosition = Game.Instance.CurrentDungeon.TileMap_Floor.CellToWorld(newMapPosition);
+		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 
 		character.PlayWalkAnimation();
 		yield return character.transform.DOMove(worldPosition, 0.1f / character.ActionsPerTurnMax)
@@ -42,7 +42,7 @@ internal class MovementAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		var tile = Game.Instance.CurrentDungeon.TileMap_Floor.GetTile(newMapPosition);
+		var canWalk = Game.Instance.CurrentDungeon.CanWalkTo(originalPosition, newMapPosition);
 
 		Game game = Game.Instance;
 
@@ -50,7 +50,7 @@ internal class MovementAction : GameAction
 			.Select(x => x.TilemapPosition)
 			.Any(x => x == newMapPosition);
 
-		var canMove = tile != null &&
+		var canMove = canWalk &&
 			!overlapping;
 
 		return canMove;
@@ -114,8 +114,7 @@ internal class AttackAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		var tile = Game.Instance.CurrentDungeon.TileMap_Floor.GetTile(newMapPosition);
-		var canMove = tile != null;
+		var canMove = Game.Instance.CurrentDungeon.IsWalkable(newMapPosition);
 
 		return canMove;
 	}
@@ -238,7 +237,7 @@ public class ModifyStatAction : GameAction
 public class DeathAction : GameAction
 {
 	private Character target;
-	private List<BFS.Node> path;
+	private Vector3Int dropPosition;
 	private bool droppedItem;
 	private readonly Character attacker;
 
@@ -259,34 +258,7 @@ public class DeathAction : GameAction
 		droppedItem = target.FinalStats.DropRate > 0 &&
 			value < character.FinalStats.DropRate;
 
-		//BFS.FindPath
-		Game game = Game.Instance;
-		BFS.Node[,] grid = new BFS.Node[game.DungeonGenerator.dungeonWidth, game.DungeonGenerator.dungeonHeight];
-
-		for (int i = 0; i < game.DungeonGenerator.dungeonWidth; i++)
-		{
-			for (int j = 0; j < game.DungeonGenerator.dungeonHeight; j++)
-			{
-				var tile = game.CurrentDungeon.TileMap_Floor.GetTile(new Vector3Int(i, j));
-				var isWalkable = tile != null;
-
-				if (isWalkable)
-				{
-					grid[i, j] = new BFS.Node(i, j);
-				}
-			}
-		}
-
-		BFS.Node startNode = grid[target.TilemapPosition.x, target.TilemapPosition.y];
-
-		path = BFS.FindPath(grid,
-			startNode,
-			(node) =>
-			{
-				Vector3Int position = new Vector3Int(node.X, node.Y);
-				var tile = game.CurrentDungeon.ObjectTileMap.GetTile(position);
-				return tile == null;
-			});
+		dropPosition = Game.Instance.CurrentDungeon.GetDropPosition(target.TilemapPosition);
 
 		return new()
 		{
@@ -301,12 +273,10 @@ public class DeathAction : GameAction
 		target.VisualParent.gameObject.SetActive(false);
 
 		Game game = Game.Instance;
-		if (droppedItem && path != null)
+		if (droppedItem)
 		{
 			var item = game.ItemManager.GetRandomDrop(target as Enemy);
-			BFS.Node node = path.Last();
-			Vector3Int dropPosition = new Vector3Int(node.X, node.Y);
-			game.CurrentDungeon.SetDroppedItem(dropPosition, item, game.DungeonGenerator.DroppedItemTile);
+			game.CurrentDungeon.SetDroppedItem(dropPosition, item);
 		}
 	}
 
@@ -371,9 +341,9 @@ internal class AddXPAction : GameAction
 
 public class InteractAction : GameAction
 {
-	private InteractableTile currentInteractable;
+	private Interactable currentInteractable;
 
-	public InteractAction(InteractableTile currentInteractable)
+	public InteractAction(Interactable currentInteractable)
 	{
 		this.currentInteractable = currentInteractable;
 	}
@@ -381,7 +351,6 @@ public class InteractAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		currentInteractable.DoInteraction();
-		currentInteractable = null;
 		return new();
 	}
 
@@ -389,6 +358,11 @@ public class InteractAction : GameAction
 	{
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
+
+		if (currentInteractable != null)
+		{
+			Game.Instance.CurrentDungeon.RemoveInteractable(currentInteractable);
+		}
 	}
 
 	internal override bool IsValid(Character character)

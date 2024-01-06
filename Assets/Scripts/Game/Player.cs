@@ -11,7 +11,7 @@ public class Player : Character
 	private GameAction pickedAction;
 	public Camera Camera;
 
-	internal InteractableTile currentInteractable;
+	internal Interactable currentInteractable;
 	private Vector3 cameraOffset;
 
 	public Animator HeroAnimator;
@@ -242,7 +242,7 @@ public class Player : Character
 	{
 		var game = Game.Instance;
 		//check tile for interactable;
-		currentInteractable = game.CurrentDungeon.GetInteractable(TilemapPosition);
+		currentInteractable = game.CurrentDungeon?.GetInteractable(TilemapPosition);
 	}
 
 	internal override void PlayWalkAnimation()

@@ -399,7 +399,7 @@ public class TileWorldDungeon : MonoBehaviour
 		return new Vector3Int(startPos.Coord.x, startPos.Coord.y, 0);
 	}
 
-	static List<CoordValue<T>> Flatten<T>(T[,] arr, Func<T, bool> predicate = null)
+	public static List<CoordValue<T>> Flatten<T>(T[,] arr, Func<T, bool> predicate = null)
 	{
 		int rows = arr.GetLength(0);
 		int cols = arr.GetLength(1);
@@ -477,7 +477,7 @@ public class TileWorldDungeon : MonoBehaviour
 	}
 }
 
-internal class CoordValue<T>
+public class CoordValue<T>
 {
 	public Vector3Int Coord;
 	public T Value;

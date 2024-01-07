@@ -138,6 +138,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		}
 		yield return null;
 		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
+		CurrentDungeon.InitializeCache();
 		yield return null;
 
 		var startPosition = CurrentDungeon.GetStartPositioon();

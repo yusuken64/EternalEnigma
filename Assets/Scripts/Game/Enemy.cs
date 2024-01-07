@@ -90,29 +90,7 @@ public class Enemy : Character
 		var game = Game.Instance;
 
 		//determine if the monster can see player
-		BoundsInt visionBounds;
-		//TODO fix vision
-		//if (game.DungeonGenerator.IsRoom(this.TilemapPosition))
-		//{
-		//	var tileGameData = game.DungeonGenerator.TileGameDataLookup[this.TilemapPosition];
-		//	visionBounds = new BoundsInt()
-		//	{
-		//		xMin = tileGameData.node.room.X - 1,
-		//		xMax = tileGameData.node.room.X + tileGameData.node.room.Width + 1,
-		//		yMin = tileGameData.node.room.Y - 1,
-		//		yMax = tileGameData.node.room.Y + tileGameData.node.room.Height + 1
-		//	};
-		//}
-		//else
-		//{
-			visionBounds = new BoundsInt()
-			{
-				xMin = TilemapPosition.x - 1,
-				xMax = TilemapPosition.x + 1,
-				yMin = TilemapPosition.y - 1,
-				yMax = TilemapPosition.y + 1
-			};
-		//}
+		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(TilemapPosition);
 
 		Vector3Int tilemapPosition = game.PlayerCharacter.TilemapPosition;
 		var canSeePlayer = Contains2D(visionBounds, tilemapPosition);

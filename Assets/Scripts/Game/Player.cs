@@ -10,9 +10,9 @@ public class Player : Character
 	private float repeatTime = 0.1f;
 	private GameAction pickedAction;
 	public Camera Camera;
+	public Vector3 CameraOffset = new Vector3(1, -7.23999977f, -11.0200005f);
 
 	internal Interactable currentInteractable;
-	private Vector3 cameraOffset;
 
 	public Animator HeroAnimator;
 
@@ -20,13 +20,12 @@ public class Player : Character
 
 	private void Start()
 	{
-		cameraOffset = new Vector3(1, -7.23999977f, -11.0200005f);
 		HeroAnimator.Play("");
 	}
 
 	private void LateUpdate()
 	{
-		Camera.transform.position = this.transform.position + cameraOffset;
+		Camera.transform.position = this.transform.position + CameraOffset;
 	}
 
 	private void Update()
@@ -243,6 +242,8 @@ public class Player : Character
 		var game = Game.Instance;
 		//check tile for interactable;
 		currentInteractable = game.CurrentDungeon?.GetInteractable(TilemapPosition);
+
+		//Debug.Log(game.CurrentDungeon?.IsHallway(TilemapPosition));
 	}
 
 	internal override void PlayWalkAnimation()

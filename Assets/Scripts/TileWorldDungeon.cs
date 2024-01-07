@@ -17,6 +17,7 @@ public class TileWorldDungeon : MonoBehaviour
 	internal int dungeonWidth => _tileWorldCreator.twcAsset.mapWidth;
 	internal int dungeonHeight => _tileWorldCreator.twcAsset.mapHeight;
 	private TileWorldCreator _tileWorldCreator;
+	private bool[,] _isHallwayCache;
 
 	private void Awake()
 	{
@@ -32,10 +33,23 @@ public class TileWorldDungeon : MonoBehaviour
 	{
 		this._tileWorldCreator = tileWorldCreator;
 	}
+
+	internal void InitializeCache()
+	{
+		_isHallwayCache = new bool[dungeonWidth, dungeonHeight];
+		for (int i = 0; i < dungeonWidth; i++)
+		{
+			for (int j = 0; j < dungeonHeight; j++)
+			{
+				_isHallwayCache[i, j] = IsHallway(new Vector3Int(i, j, 0));
+			}
+		}
+	}
+
 	internal bool CanWalk(Vector3Int newMapPosition)
 	{
-		if (newMapPosition.x < 0 || newMapPosition.x > dungeonWidth ||
-			newMapPosition.y < 0 || newMapPosition.y > dungeonHeight)
+		if (newMapPosition.x < 0 || newMapPosition.x >= dungeonWidth ||
+			newMapPosition.y < 0 || newMapPosition.y >= dungeonHeight)
 		{
 			return false;
 		}
@@ -94,6 +108,56 @@ public class TileWorldDungeon : MonoBehaviour
 
 		return ret;
 	}
+
+	internal BoundsInt GetVisionBounds(Vector3Int TilemapPosition)
+	{
+		BoundsInt visionBounds;
+		if (_isHallwayCache[TilemapPosition.x, TilemapPosition.y])
+		{
+			visionBounds = new BoundsInt()
+			{
+				xMin = TilemapPosition.x - 1,
+				xMax = TilemapPosition.x + 1,
+				yMin = TilemapPosition.y - 1,
+				yMax = TilemapPosition.y + 1
+			};
+		}
+		else
+		{
+			var direction = new List<Facing>()
+			{
+				Facing.Up,
+				Facing.Down,
+				Facing.Left,
+				Facing.Right,
+				Facing.UpLeft,
+				Facing.UpRight,
+				Facing.DownLeft,
+				Facing.DownRight
+			};
+
+			var walkableDirections = direction.Select(x =>
+			{
+				var target = GetRangedAttackPosition(null, TilemapPosition, x, 20, (x, y, z) =>
+				{
+					return _isHallwayCache[x.x, x.y];
+				});
+
+				return target;
+			});
+
+			visionBounds = new BoundsInt()
+			{
+				xMin = walkableDirections.Min(target => target.x) - 1,
+				xMax = walkableDirections.Max(target => target.x) + 1,
+				yMin = walkableDirections.Min(target => target.y) - 1,
+				yMax = walkableDirections.Max(target => target.y) + 1
+			};
+		}
+
+		return visionBounds;
+	}
+
 	static public Vector3Int GetFacingOffset(Facing facing)
 	{
 		switch (facing)
@@ -213,6 +277,24 @@ public class TileWorldDungeon : MonoBehaviour
 		return openPosition;
 	}
 
+	internal int GetNeighborhoodTiles(Vector3Int tilemapPosition)
+	{
+		int count = 0;
+		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
+		for (int i = -1; i < 2; i++)
+		{
+			for (int j = -1; j < 2; j++)
+			{
+				if (!floorMap[tilemapPosition.x + i, tilemapPosition.y + j])
+				{
+					count++;
+				}
+			}
+		}
+
+		return count;
+	}
+
 	internal void SetTreasure(Vector3Int treasurePosition)
 	{
 		var itemInstance = Instantiate(TreasurePrefab, this.transform);
@@ -300,6 +382,11 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal bool IsWalkable(Vector3Int newMapPosition)
 	{
+		if (newMapPosition.x < 0 || newMapPosition.x >= dungeonWidth ||
+		    newMapPosition.y < 0 || newMapPosition.y >= dungeonHeight) {
+			return false;
+		}
+
 		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
 		return floorMap[newMapPosition.x, newMapPosition.y];
 	}
@@ -335,6 +422,58 @@ public class TileWorldDungeon : MonoBehaviour
 		}
 
 		return ret;
+	}
+
+	//if not hallway it's a room
+	public bool IsHallway(Vector3Int TilemapPosition)
+	{
+		//raycast in al directions
+		var direction = new List<Facing>()
+		{
+			Facing.Up,
+			Facing.Down,
+			Facing.Left,
+			Facing.Right,
+			Facing.UpLeft,
+			Facing.UpRight,
+			Facing.DownLeft,
+			Facing.DownRight
+		};
+
+		var walkableDirections = direction.Select(x =>
+		{
+			var target = GetRangedAttackPosition(null, TilemapPosition, x, 40, StopSight);
+			var chebyshevDistance = Mathf.Max(Mathf.Abs(target.x - TilemapPosition.x), Mathf.Abs(target.y - TilemapPosition.y));
+			var offset = TileWorldDungeon.GetFacingOffset(x);
+			var walkable = CanWalkTo(TilemapPosition, TilemapPosition + offset);
+
+			return new
+			{
+				direction = x,
+				walkable = walkable
+			};
+		});
+
+		var diagonalsWalkable = walkableDirections.Where(x =>
+			x.direction == Facing.UpLeft ||
+			x.direction == Facing.UpRight ||
+			x.direction == Facing.DownLeft ||
+			x.direction == Facing.DownRight)
+			.Any(x => x.walkable);
+
+		//var walkableCount = walkableDirections.Count(x => x.walkable);
+		//var tiles = GetNeighborhoodTiles(TilemapPosition);
+		//Debug.Log($"{tiles} blocked, {9 - tiles} walkable, count{walkableCount}, diag{diagonalsWalkable}");
+
+		return !diagonalsWalkable;
+	}
+
+	public static bool StopSight(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower)
+	{
+		bool hitWall = !Game.Instance.CurrentDungeon.IsWalkable(nextPosition);
+		if (hitWall) { return true; }
+
+		return false;
 	}
 }
 

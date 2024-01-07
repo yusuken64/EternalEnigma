@@ -275,6 +275,7 @@ MonoBehaviour:
   ActionsPerTurnMax: 1
   AttacksPerTurnMax: 1
   Camera: {fileID: 0}
+  CameraOffset: {x: 1, y: -2.77, z: -11.62}
   HeroAnimator: {fileID: 5505970729610342937}
   ThrownItemProjectilePrefab: {fileID: 1117745424125422547, guid: b96c645e3ba5ede499fc63ebbf7677c1, type: 3}
 --- !u!114 &8960690655561992051

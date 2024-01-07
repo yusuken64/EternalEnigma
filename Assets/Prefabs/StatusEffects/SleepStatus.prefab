@@ -4873,4 +4873,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 343827a1b3ee39e4c8b39719747ee584, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TurnsLeft: 5
+  TurnsLeft: 3

@@ -42,6 +42,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	public StatsDisplay LevelDisplay;
 	public StatsDisplay HpDisplay;
 	public StatsDisplay HungerDisplay;
+	public TextMeshProUGUI FloorText;
 	public TextMeshProUGUI ActionText;
 	public TextMeshProUGUI InventoryText;
 
@@ -183,6 +184,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void UpdateUI()
 	{
 		if (PlayerCharacter == null) { return; }
+		FloorText.text = $"{PlayerCharacter.DisplayedVitals.Floor}F";
 		LevelDisplay.UpdateUI();
 		HpDisplay.UpdateUI();
 		HungerDisplay.UpdateUI();
@@ -196,7 +198,9 @@ public class Game : SingletonMonoBehaviour<Game>
 			ActionText.text = "";
 		}
 
-		var inventoryText = $"Bag {PlayerCharacter.Inventory.InventoryItems.Count}/{PlayerCharacter.Inventory.MaxItems}";
+		var inventoryText = 
+			@$"Gold {PlayerCharacter.DisplayedVitals.Gold}g
+Bag {PlayerCharacter.Inventory.InventoryItems.Count}/{PlayerCharacter.Inventory.MaxItems}";
 
 		InventoryText.text = inventoryText;
 	}

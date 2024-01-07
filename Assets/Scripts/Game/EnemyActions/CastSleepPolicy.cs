@@ -18,6 +18,6 @@ internal class CastSleepPolicy : PolicyBase
 	public override bool ShouldRun()
 	{
 		return AttackPolicy.CanAttack(game, game.PlayerCharacter, enemy) &&
-			UnityEngine.Random.value > 0.5f;
+			UnityEngine.Random.value > 0.8f;
 	}
 }

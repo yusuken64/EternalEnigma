@@ -93,15 +93,16 @@ internal class AttackAction : GameAction
 			return new();
 		}
 
+		List<GameAction> ret = new();
+
 		attacker.attacksPerTurnLeft -= 1;
 		bool hit = UnityEngine.Random.value > 0.2f;
 		var baseDamage = attacker.FinalStats.Strength * MathF.Pow((15f/16f), target.FinalStats.Defense);
 		float n = (float)UnityEngine.Random.Range(112, 143);
 		int damage = (int)MathF.Floor(baseDamage * (n / 128f));
-		return new List<GameAction>()
-		{
-			new TakeDamageAction(attacker, target, damage, true, !hit)
-		};
+
+		ret.Add(new TakeDamageAction(attacker, target, damage, true, !hit));
+		return ret;
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character)
@@ -123,7 +124,7 @@ internal class AttackAction : GameAction
 public class TakeDamageAction : GameAction
 {
 	private readonly Character attacker;
-	private readonly Character target;
+	internal readonly Character target;
 	private readonly int damage;
 	private readonly bool doDamageAnimation;
 	private readonly bool miss;

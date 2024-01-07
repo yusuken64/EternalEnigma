@@ -225,8 +225,16 @@ public class Player : Character
 
 	public override List<GameAction> ExecuteActionImmediate(GameAction action)
 	{
-		var primarySideEffects = action.ExecuteImmediate(this);
-		return primarySideEffects;
+		var sideEffects = action.ExecuteImmediate(this);
+		var actionResponses = GetActionResponses(action);
+		var actionResponseEffects = actionResponses.SelectMany(x => x.ExecuteImmediate(this));
+		sideEffects.AddRange(actionResponseEffects);
+
+		return sideEffects;
+	}
+	public override IEnumerable<GameAction> GetResponseTo(GameAction action)
+	{
+		return GetActionResponses(action);
 	}
 
 	public override IEnumerator ExecuteActionRoutine(GameAction action)

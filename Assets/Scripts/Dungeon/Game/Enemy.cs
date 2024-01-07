@@ -109,7 +109,15 @@ public class Enemy : Character
 
 	public override List<GameAction> ExecuteActionImmediate(GameAction action)
 	{
-		return action.ExecuteImmediate(this);
+		var sideEffects = action.ExecuteImmediate(this);
+		sideEffects.AddRange(GetActionResponses(action));
+
+		return sideEffects;
+	}
+
+	public override IEnumerable<GameAction> GetResponseTo(GameAction action)
+	{
+		return GetActionResponses(action);
 	}
 
 	public override IEnumerator ExecuteActionRoutine(GameAction action)

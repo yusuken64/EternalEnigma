@@ -296,4 +296,19 @@ disp: {displayedVitals}");
 
 		return existingStatus;
 	}
+
+	internal List<GameAction> GetActionResponses(GameAction gameAction)
+	{
+		var responseBehaviors = this.GetComponents<ResponseBehavior>();
+		var actionsResponses = responseBehaviors
+			.Select(x => x.GetActionResponse(gameAction))
+			.Where(x => x != null);
+		var ret = actionsResponses
+			.SelectMany(x => x.GetResponseTo(this, gameAction));
+
+		//TODO: check abilities, skills, weapons
+		return ret.ToList();
+	}
+
+	public abstract IEnumerable<GameAction> GetResponseTo(GameAction sideEffectAction);
 }

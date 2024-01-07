@@ -50,6 +50,11 @@ public class TurnManager : MonoBehaviour
 					actionReplays.Add(new ActorAction(actor, sideEffectAction));
 
 					sideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
+
+					foreach (var actor2 in actors)
+					{
+						sideEffectActions.AddRange(actor2.GetResponseTo(sideEffectAction));
+					}
 				}
 			}
 
@@ -175,6 +180,7 @@ public interface Actor
 	List<GameAction> DetermineActions();
 	List<GameAction> ExecuteActionImmediate(GameAction action);
 	IEnumerator ExecuteActionRoutine(GameAction action);
+	IEnumerable<GameAction> GetResponseTo(GameAction sideEffectAction);
 	void StartTurn();
 	void TickStatusEffects();
 	List<GameAction> GetStatusEffectSideEffects();

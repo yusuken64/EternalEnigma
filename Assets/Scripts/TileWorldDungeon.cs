@@ -245,6 +245,7 @@ public class TileWorldDungeon : MonoBehaviour
 				}
 			}
 		}
+
 		BFS.Node startNode = grid[startPosition.x, startPosition.y];
 
 		if (startNode == null)
@@ -277,7 +278,25 @@ public class TileWorldDungeon : MonoBehaviour
 		return openPosition;
 	}
 
-	internal int GetNeighborhoodTiles(Vector3Int tilemapPosition)
+	internal List<Vector3Int> GetWalkableNeighborhoodTiles(Vector3Int tilemapPosition)
+	{
+		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
+		List<Vector3Int> neighborhood = new();
+		for (int i = -1; i < 2; i++)
+		{
+			for (int j = -1; j < 2; j++)
+			{
+				if (floorMap[tilemapPosition.x + i, tilemapPosition.y + j])
+				{
+					neighborhood.Add(new Vector3Int(tilemapPosition.x + i, tilemapPosition.y + j));
+				}
+			}
+		}
+
+		return neighborhood;
+	}
+
+	internal int GetNeighborhoodTilesCount(Vector3Int tilemapPosition)
 	{
 		int count = 0;
 		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);

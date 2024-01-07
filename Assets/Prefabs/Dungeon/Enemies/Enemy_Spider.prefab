@@ -933,6 +933,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8639548010823113620}
   - component: {fileID: 3119655136135461553}
+  - component: {fileID: 856185822813198676}
   m_Layer: 8
   m_Name: Enemy_Spider
   m_TagString: Untagged
@@ -954,7 +955,7 @@ Transform:
   m_Children:
   - {fileID: 5590973851788533376}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3119655136135461553
 MonoBehaviour:
@@ -980,29 +981,25 @@ MonoBehaviour:
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
     DropRate: 0
-  Vitals:
-    hp: 0
-    level: 0
-    exp: 0
-    floor: 0
-    hunger: 0
-    gold: 0
-    hungerAccumulate: 0
-    hpRegenAcccumlate: 0
-  DisplayedVitals:
-    hp: 0
-    level: 0
-    exp: 0
-    floor: 0
-    hunger: 0
-    gold: 0
-    hungerAccumulate: 0
-    hpRegenAcccumlate: 0
+  StatusEffects: []
   Inventory: {fileID: 0}
   ActionsPerTurnMax: 1
   AttacksPerTurnMax: 1
   CurrentEnemyState: 0
   Animator: {fileID: 2600546240259232609}
+--- !u!114 &856185822813198676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5543747752720980080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eed5ff7ba05e58843bd79fb52813c712, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyToSpawnPrefab: {fileID: 3119655136135461553}
 --- !u!1 &5549423039512746645
 GameObject:
   m_ObjectHideFlags: 0

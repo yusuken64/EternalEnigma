@@ -84,6 +84,7 @@ public abstract class Character : MonoBehaviour, Actor
 		Vitals = new();
 		DisplayedVitals = new();
 		this.Vitals.HP = this.FinalStats.HPMax;
+		this.Vitals.SP = this.FinalStats.SPMax;
 		this.Vitals.Hunger = this.FinalStats.HungerMax;
 	}
 

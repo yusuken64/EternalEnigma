@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class Player : Character
 {
+	public List<Skill> Skills;
+
 	private float holdTime = 0f;
 	private float repeatTime = 0.1f;
 	private GameAction pickedAction;
@@ -116,7 +118,6 @@ public class Player : Character
 			Input.GetKeyDown(KeyCode.S) ||
 			Input.GetKeyDown(KeyCode.D)) &&
 			!Input.GetKey(KeyCode.LeftShift))
-
 		{
 			holdTime = 0f;
 			var offset = Dungeon.GetFacingOffset(CurrentFacing);
@@ -133,6 +134,16 @@ public class Player : Character
 			var offset = Dungeon.GetFacingOffset(CurrentFacing);
 			newMapPosition += offset;
 			SetAction(new AttackAction(this, originalPosition, newMapPosition));
+			return;
+		}
+		else if (Input.GetKeyDown(KeyCode.Alpha1))
+		{
+			SetAction(new SkillAction(this, Skills[0]));
+			return;
+		}
+		else if(Input.GetKeyDown(KeyCode.Alpha2))
+		{
+			SetAction(new SkillAction(this, Skills[1]));
 			return;
 		}
 		else if (Input.GetKeyDown(KeyCode.E))
@@ -184,7 +195,16 @@ public class Player : Character
 			(stats, vitals) =>
 			{
 				vitals.HungerAccumulate++;
-				vitals.HPRegenAcccumlate++;
+
+				if (vitals.HP < stats.HPMax)
+				{
+					vitals.HPRegenAcccumlate++;
+				}
+
+				if (vitals.SP < stats.SPMax)
+				{
+					vitals.SPRegenAcccumlate++;
+				}
 			},
 			false));
 
@@ -220,6 +240,19 @@ public class Player : Character
 				false));
 		}
 
+		if (Vitals.SPRegenAcccumlate > FinalStats.SPRegenAcccumlateThreshold &&
+			Vitals.Hunger > 0)
+		{
+			actions.Add(new ModifyStatAction(
+				this,
+				this,
+				(stats, vitals) =>
+				{
+					vitals.SPRegenAcccumlate = 0;
+					vitals.SP++;
+				},
+				false));
+		}
 		return actions;
 	}
 

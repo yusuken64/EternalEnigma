@@ -5,6 +5,7 @@ using UnityEngine;
 public class Stats
 {
 	private int hPMax;
+	private int sPMax;
 	private int hungerMax;
 	private int strength;
 	private int defense;
@@ -12,6 +13,7 @@ public class Stats
 
 	private int hungerAccumulateThreshold;
 	private int hPRegenAcccumlateThreshold;
+	private int sPRegenAcccumlateThreshold;
 	private float dropRate;
 
 	public int HPMax
@@ -23,6 +25,17 @@ public class Stats
 			OnStatChanged?.Invoke();
 		}
 	}
+
+	public int SPMax
+	{
+		get => sPMax;
+		set
+		{
+			sPMax = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
 	public int HungerMax
 	{
 		get => hungerMax;
@@ -78,16 +91,28 @@ public class Stats
 			OnStatChanged?.Invoke();
 		}
 	}
+	
+	public int SPRegenAcccumlateThreshold
+	{
+		get => sPRegenAcccumlateThreshold;
+		set
+		{
+			sPRegenAcccumlateThreshold = value;
+			OnStatChanged?.Invoke();
+		}
+	}
 
 	internal void FromStartingStats(StartingStats startingStats)
 	{
 		HPMax = startingStats.HPMax;
+		SPMax = startingStats.SPMax;
 		HungerMax = startingStats.HungerMax;
 		Strength = startingStats.Strength;
 		Defense = startingStats.Defense;
 		EXPOnKill = startingStats.EXPOnKill;
 		HungerAccumulateThreshold = startingStats.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = startingStats.HPRegenAcccumlateThreshold;
+		SPRegenAcccumlateThreshold = startingStats.SPRegenAcccumlateThreshold;
 		DropRate = startingStats.DropRate;
 	}
 
@@ -111,12 +136,14 @@ public class Stats
 	public Stats(Stats other)
 	{
 		HPMax = other.HPMax;
+		SPMax = other.SPMax;
 		HungerMax = other.HungerMax;
 		Strength = other.Strength;
 		Defense = other.Defense;
 		EXPOnKill = other.EXPOnKill;
 		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
+		SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
 		DropRate = other.DropRate;
 	}
 
@@ -128,6 +155,7 @@ public class Stats
 		Stats retStats = new(stats);
 
 		retStats.HPMax += modification.HPMax;
+		retStats.SPMax += modification.SPMax;
 		retStats.HungerMax += modification.HungerMax;
 		retStats.Strength += modification.Strength;
 		retStats.Defense += modification.Defense;
@@ -141,12 +169,14 @@ public class Stats
 	internal void Sync(Stats other)
 	{
 		HPMax = other.HPMax;
+		SPMax = other.SPMax;
 		HungerMax = other.HungerMax;
 		Strength = other.Strength;
 		Defense = other.Defense;
 		EXPOnKill = other.EXPOnKill;
 		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
+		SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
 		DropRate = other.DropRate;
 	}
 
@@ -156,12 +186,14 @@ public class Stats
 		{
 			int hash = 17;
 			hash = hash * 23 + HPMax.GetHashCode();
+			hash = hash * 23 + SPMax.GetHashCode();
 			hash = hash * 23 + HungerMax.GetHashCode();
 			hash = hash * 23 + Strength.GetHashCode();
 			hash = hash * 23 + Defense.GetHashCode();
 			hash = hash * 23 + EXPOnKill.GetHashCode();
 			hash = hash * 23 + HungerAccumulateThreshold.GetHashCode();
 			hash = hash * 23 + HPRegenAcccumlateThreshold.GetHashCode();
+			hash = hash * 23 + SPRegenAcccumlateThreshold.GetHashCode();
 			hash = hash * 23 + DropRate.GetHashCode();
 			return hash;
 		}
@@ -170,12 +202,14 @@ public class Stats
 	internal string ToDebugString()
 	{
 		return $"HPMax: {HPMax} " +
+			$"SPMax: {SPMax} " +
 			$"HungerMax: {HungerMax} " +
 			$"Strength: {Strength} " +
 			$"Defense: {Defense} " +
 			$"EXPOnKill: {EXPOnKill} " +
 			$"HungerAccumulateThreshold: {HungerAccumulateThreshold} " +
 			$"HPRegenAcccumlateThreshold: {HPRegenAcccumlateThreshold} " +
+			$"SPRegenAcccumlateThreshold: {SPRegenAcccumlateThreshold} " +
 			$"DropRate: {DropRate}";
 	}
 }

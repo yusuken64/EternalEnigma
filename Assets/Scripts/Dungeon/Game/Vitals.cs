@@ -5,6 +5,7 @@ using UnityEngine;
 public class Vitals
 {
 	[SerializeField] private int hp;
+	[SerializeField] private int sp;
 	[SerializeField] private int level;
 	[SerializeField] private int exp;
 	[SerializeField] private int floor;
@@ -12,6 +13,7 @@ public class Vitals
 	[SerializeField] private int gold;
 	[SerializeField] private int hungerAccumulate;
 	[SerializeField] private int hpRegenAcccumlate;
+	[SerializeField] private int spRegenAcccumlate;
 
 	public int HP
 	{
@@ -21,6 +23,20 @@ public class Vitals
 			if (hp != value)
 			{
 				hp = value;
+				ClampVitals();
+			}
+		}
+	}
+
+
+	public int SP
+	{
+		get { return sp; }
+		set
+		{
+			if (sp != value)
+			{
+				sp = value;
 				ClampVitals();
 			}
 		}
@@ -116,6 +132,18 @@ public class Vitals
 			}
 		}
 	}
+	public int SPRegenAcccumlate
+	{
+		get { return spRegenAcccumlate; }
+		set
+		{
+			if (spRegenAcccumlate != value)
+			{
+				spRegenAcccumlate = value;
+				ClampVitals();
+			}
+		}
+	}
 
 	public Func<Stats> LinkedStats;
 
@@ -133,6 +161,7 @@ public class Vitals
 	internal void Sync(Vitals vitals)
 	{
 		HP = vitals.HP;
+		SP = vitals.SP;
 		Level = vitals.Level;
 		Exp = vitals.Exp;
 		Floor = vitals.Floor;
@@ -140,12 +169,14 @@ public class Vitals
 		Gold = vitals.Gold;
 		HungerAccumulate = vitals.HungerAccumulate;
 		HPRegenAcccumlate = vitals.HPRegenAcccumlate;
+		SPRegenAcccumlate = vitals.SPRegenAcccumlate;
 	}
 
 	protected virtual void ClampVitals()
 	{
 		Stats stats = LinkedStats();
 		HP = Math.Clamp(HP, 0, stats.HPMax);
+		SP = Math.Clamp(SP, 0, stats.SPMax);
 		Hunger = Math.Clamp(Hunger, 0, stats.HungerMax);
 	}
 
@@ -155,6 +186,7 @@ public class Vitals
 		{
 			int hash = 17;
 			hash = hash * 23 + hp.GetHashCode();
+			hash = hash * 23 + sp.GetHashCode();
 			hash = hash * 23 + level.GetHashCode();
 			hash = hash * 23 + exp.GetHashCode();
 			hash = hash * 23 + floor.GetHashCode();
@@ -162,6 +194,7 @@ public class Vitals
 			hash = hash * 23 + gold.GetHashCode();
 			hash = hash * 23 + hungerAccumulate.GetHashCode();
 			hash = hash * 23 + hpRegenAcccumlate.GetHashCode();
+			hash = hash * 23 + spRegenAcccumlate.GetHashCode();
 			return hash;
 		}
 	}
@@ -169,19 +202,23 @@ public class Vitals
 	internal string ToDebugString()
 	{
 		return $"hp:{hp} " +
+			$"sp:{sp} " +
 			$"level:{level} " +
 			$"exp:{exp} " +
 			$"floor:{floor} " +
 			$"hunger:{hunger} " +
 			$"gold:{gold} " +
 			$"hungerAccumulate:{hungerAccumulate} " +
-			$"hpRegenAcccumlate:{hpRegenAcccumlate}";
+			$"hpRegenAcccumlate:{hpRegenAcccumlate}" +
+			$"spRegenAcccumlate:{spRegenAcccumlate}";
 	}
+
 	public static Vitals operator +(Vitals vitals, VitalModification modification)
 	{
 		if (modification == null) { modification = new(); }
 
 		vitals.HP += modification.Hp;
+		vitals.SP += modification.Sp;
 		vitals.Level += modification.Level;
 		vitals.Exp += modification.Exp;
 		vitals.Floor += modification.Floor;
@@ -189,6 +226,7 @@ public class Vitals
 		vitals.Gold += modification.Gold;
 		vitals.HungerAccumulate += modification.HungerAccumulate;
 		vitals.HPRegenAcccumlate += modification.HpRegenAcccumlate;
+		vitals.SPRegenAcccumlate += modification.SpRegenAcccumlate;
 
 		return vitals;
 	}

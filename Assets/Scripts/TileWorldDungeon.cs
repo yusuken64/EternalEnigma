@@ -37,6 +37,12 @@ public class TileWorldDungeon : MonoBehaviour
 		this._tileWorldCreator = tileWorldCreator;
 	}
 
+	//This should be getcharacteratposition
+	internal Enemy GetEnemyAtPosition(Vector3Int attackPosition)
+	{
+		return Enemies.FirstOrDefault(x => x.TilemapPosition == attackPosition);
+	}
+
 	internal void InitializeCache()
 	{
 		_isHallwayCache = new bool[dungeonWidth, dungeonHeight];

@@ -1,6 +1,8 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -41,7 +43,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public StatsDisplay LevelDisplay;
 	public StatsDisplay HpDisplay;
+	public StatsDisplay SpDisplay;
 	public StatsDisplay HungerDisplay;
+	public TextMeshProUGUI SkilText;
 	public TextMeshProUGUI FloorText;
 	public TextMeshProUGUI ActionText;
 	public TextMeshProUGUI InventoryText;
@@ -72,6 +76,9 @@ public class Game : SingletonMonoBehaviour<Game>
 		HpDisplay.Setup("HP",
 			() => $"{PlayerCharacter.DisplayedVitals.HP}/{PlayerCharacter.DisplayedStats.HPMax}",
 			() => (float)PlayerCharacter.DisplayedVitals.HP/PlayerCharacter.DisplayedStats.HPMax);
+		SpDisplay.Setup("SP",
+			() => $"{PlayerCharacter.DisplayedVitals.SP}/{PlayerCharacter.DisplayedStats.SPMax}",
+			() => (float)PlayerCharacter.DisplayedVitals.SP/PlayerCharacter.DisplayedStats.SPMax);
 		HungerDisplay.Setup("Full",
 			() => $"{PlayerCharacter.DisplayedVitals.Hunger}/{PlayerCharacter.DisplayedStats.HungerMax}",
 			() => (float)PlayerCharacter.DisplayedVitals.Hunger / PlayerCharacter.DisplayedStats.HungerMax);
@@ -195,9 +202,11 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void UpdateUI()
 	{
 		if (PlayerCharacter == null) { return; }
+		SkilText.text = string.Join(Environment.NewLine, PlayerCharacter.Skills.Select((skill, index) => $"{index + 1}:{skill.SkillName}({skill.SPCost})"));
 		FloorText.text = $"{PlayerCharacter.DisplayedVitals.Floor}F";
 		LevelDisplay.UpdateUI();
 		HpDisplay.UpdateUI();
+		SpDisplay.UpdateUI();
 		HungerDisplay.UpdateUI();
 
 		if (PlayerCharacter.currentInteractable != null)

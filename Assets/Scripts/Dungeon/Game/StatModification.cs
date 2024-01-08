@@ -17,6 +17,7 @@ public class StatModification : StartingStats
 		EXPOnKill = other.EXPOnKill;
 		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
+		SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
 		DropRate = other.DropRate;
 	}
 

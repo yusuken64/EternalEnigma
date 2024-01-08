@@ -4,11 +4,6 @@ public class DamageTrap : Trap
 {
 	public int TrapDamage;
 
-	internal override void DoInteraction()
-	{
-		//Replace interactable DoInteraction with getsideffects
-	}
-
 	internal override string GetInteractionText()
 	{
 		return "Damage Trap";
@@ -23,7 +18,7 @@ public class DamageTrap : Trap
 			var hit = UnityEngine.Random.value > 0.5f;
 			return new List<GameAction>()
 			{
-					new TakeDamageAction(character, character, TrapDamage, true, hit)
+				new TakeDamageAction(character, character, TrapDamage, true, hit)
 			};
 		}
 		return new();

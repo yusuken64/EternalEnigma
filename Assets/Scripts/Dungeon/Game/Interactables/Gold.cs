@@ -1,16 +1,25 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Gold : Interactable
 {
-	internal override void DoInteraction()
+	internal override List<GameAction> GetInteractionSideEffects(Character character)
 	{
-		//give treasure to player
-		int goldAmount = UnityEngine.Random.Range(3, 10);
 		Game game = Game.Instance;
-		Player playerCharacter = game.PlayerCharacter;
-		playerCharacter.Vitals.Gold += goldAmount;
-		playerCharacter.SyncDisplayedStats();
-		game.DoFloatingText($"{goldAmount} Gold", Color.yellow, playerCharacter.transform.position);
+		int goldAmount = UnityEngine.Random.Range(3, 10);
+		game.CurrentDungeon.RemoveInteractable(this);
+		game.DoFloatingText($"{goldAmount} Gold", Color.yellow, character.transform.position);
+		return new List<GameAction>()
+		{
+			new ModifyStatAction(
+				character,
+				character,
+				(stats, vitals) => 
+				{
+					vitals.Gold += goldAmount;
+				},
+				false)
+		};
 	}
 
 	internal override string GetInteractionText()

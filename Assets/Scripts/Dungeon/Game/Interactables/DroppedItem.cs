@@ -1,25 +1,21 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class DroppedItem : Interactable
 {
 	public InventoryItem InventoryItem;
 
-	internal override void DoInteraction()
+	internal override List<GameAction> GetInteractionSideEffects(Character character)
 	{
 		if (!Opened)
 		{
-			Game game = Game.Instance;
-			var canAdd = game.PlayerCharacter.Inventory.CanAdd();
-			if (canAdd)
+			return new()
 			{
-				this.Opened = true;
-				game.PlayerCharacter.Inventory.Add(InventoryItem);
-			}
-			else
-			{
-				game.DoFloatingText("Inventory is full", Color.red, game.PlayerCharacter.transform.position);
-			}
+				new PickUpItemAction(this)
+			};
 		}
+
+		return new();
 	}
 
 	internal override string GetInteractionText()

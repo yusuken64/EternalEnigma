@@ -3,11 +3,6 @@ using System.Linq;
 
 public class BumpTrap : Trap
 {
-	internal override void DoInteraction()
-	{
-		//Replace interactable DoInteraction with getsideffects
-	}
-
 	internal override string GetInteractionText()
 	{
 		return "Bump Trap";

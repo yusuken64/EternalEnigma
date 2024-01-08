@@ -359,19 +359,13 @@ public class InteractAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		currentInteractable.DoInteraction();
-		return new();
+		return currentInteractable.GetInteractionSideEffects(character);
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
-
-		if (currentInteractable != null)
-		{
-			Game.Instance.CurrentDungeon.RemoveInteractable(currentInteractable);
-		}
 	}
 
 	internal override bool IsValid(Character character)

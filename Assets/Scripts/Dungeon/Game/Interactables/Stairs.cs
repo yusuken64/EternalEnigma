@@ -1,8 +1,20 @@
-﻿public class Stairs : Interactable
+﻿using System.Collections.Generic;
+
+public class Stairs : Interactable
 {
-	internal override void DoInteraction()
+	internal override List<GameAction> GetInteractionSideEffects(Character character)
 	{
-		Game.Instance.AdvanceFloor();
+		return new()
+		{
+			new DynamicGameAction((character) =>
+			{
+				Game.Instance.AdvanceFloor();
+				return new();
+			},
+			null,
+			null)
+
+		};
 	}
 
 	internal override string GetInteractionText()

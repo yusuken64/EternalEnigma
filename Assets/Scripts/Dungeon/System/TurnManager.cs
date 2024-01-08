@@ -9,7 +9,7 @@ public class TurnManager : MonoBehaviour
 	public SimultaneousCoroutines SimultaneousCoroutines;
 	public SequentialCoroutines SequentialCoroutines;
 	public TurnPhase CurrentTurnPhase { get; internal set; }
-	private bool interuptTurn = false;
+	private bool interuptTurn = false; //this happens when the stairs are taken
 
 	private void Start()
 	{
@@ -51,10 +51,20 @@ public class TurnManager : MonoBehaviour
 
 					sideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 
+					if (interuptTurn)
+					{
+						break;
+					}
+
 					foreach (var actor2 in actors)
 					{
 						sideEffectActions.AddRange(actor2.GetResponseTo(sideEffectAction));
 					}
+				}
+
+				if (interuptTurn)
+				{
+					break;
 				}
 			}
 

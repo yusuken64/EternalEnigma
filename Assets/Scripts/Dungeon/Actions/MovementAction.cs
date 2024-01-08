@@ -25,6 +25,14 @@ internal class MovementAction : GameAction
 		{
 			newMapPosition = originalPosition;
 		}
+		else
+		{
+			if (character is Player player)
+			{
+				player.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(newMapPosition);
+			}
+		}
+
 		character.TilemapPosition = newMapPosition;
 		return new();
 	}
@@ -165,11 +173,11 @@ public class TakeDamageAction : GameAction
 		Game game = Game.Instance;
 		if (!miss)
 		{
-			game.DoFloatingText(damage.ToString(), Color.red, target.gameObject.transform.position);
+			game.DoFloatingText(damage.ToString(), Color.red, target.VisualParent.gameObject.transform.position);
 		}
 		else
 		{
-			game.DoFloatingText("miss", Color.white, target.gameObject.transform.position);
+			game.DoFloatingText("miss", Color.white, target.VisualParent.gameObject.transform.position);
 		}
 
 		if (doDamageAnimation && !miss)

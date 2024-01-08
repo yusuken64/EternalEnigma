@@ -176,6 +176,12 @@ public class Game : SingletonMonoBehaviour<Game>
 			CurrentDungeon.SetDroppedItem(treasurePosition, item);
 		}
 
+		for (int i = 0; i < 5; i++)
+		{
+			var trapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
+			var item = ItemManager.GetRandomDrop(null);
+			CurrentDungeon.SetTrap(trapPosition);
+		}
 
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerCharacter.Vitals.Floor);

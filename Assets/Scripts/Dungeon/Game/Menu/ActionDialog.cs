@@ -37,7 +37,7 @@ namespace JuicyChickenGames.Menu
 		public void Drop_Clicked()
 		{
 			Player playerCharacter = Game.Instance.PlayerCharacter;
-			playerCharacter.SetAction(new DropItemAction(playerCharacter, _data));
+			playerCharacter.SetAction(new DropItemAction(playerCharacter, _data, playerCharacter.TilemapPosition));
 
 			MenuManager.Instance.CloseMenu();
 		}

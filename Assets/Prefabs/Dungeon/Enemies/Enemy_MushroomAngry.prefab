@@ -469,6 +469,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8639548010823113620}
   - component: {fileID: 3119655136135461553}
+  - component: {fileID: -428808270569946615}
   m_Layer: 8
   m_Name: Enemy_MushroomAngry
   m_TagString: Untagged
@@ -516,29 +517,26 @@ MonoBehaviour:
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
     DropRate: 0
-  Vitals:
-    hp: 0
-    level: 0
-    exp: 0
-    floor: 0
-    hunger: 0
-    gold: 0
-    hungerAccumulate: 0
-    hpRegenAcccumlate: 0
-  DisplayedVitals:
-    hp: 0
-    level: 0
-    exp: 0
-    floor: 0
-    hunger: 0
-    gold: 0
-    hungerAccumulate: 0
-    hpRegenAcccumlate: 0
+  StatusEffects: []
   Inventory: {fileID: 0}
   ActionsPerTurnMax: 1
   AttacksPerTurnMax: 1
   CurrentEnemyState: 0
   Animator: {fileID: 6163062986907309436}
+--- !u!114 &-428808270569946615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5543747752720980080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93b040db9a38504a8581fbecdb0b2e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Priority: -1
+  statusEffectPrefab: {fileID: 4388170939618183150, guid: 79144f937f0c96c4f917ff78aa1fbb5e, type: 3}
 --- !u!1 &5945035702596050396
 GameObject:
   m_ObjectHideFlags: 0

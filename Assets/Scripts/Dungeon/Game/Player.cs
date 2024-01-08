@@ -248,10 +248,18 @@ public class Player : Character
 	public override void StartTurn()
 	{
 		var game = Game.Instance;
-		//check tile for interactable;
-		currentInteractable = game.CurrentDungeon?.GetInteractable(TilemapPosition);
+	}
 
-		//Debug.Log(game.CurrentDungeon?.IsHallway(TilemapPosition));
+	public override List<GameAction> GetTrapSideEffects()
+	{
+		if (currentInteractable is Trap trap)
+		{
+			currentInteractable = null;
+			Game.Instance.DoFloatingText(trap.GetInteractionText(), Color.yellow, this.VisualParent.transform.position);
+			return trap.GetTrapSideEffects(this);
+		}
+
+		return new();
 	}
 
 	internal override void PlayWalkAnimation()

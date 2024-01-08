@@ -73,6 +73,16 @@ public class TurnManager : MonoBehaviour
 
 				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 			}
+
+			var trapSideEffects = actor.GetTrapSideEffects();
+			while (trapSideEffects.Any())
+			{
+				var trapSideEffect = trapSideEffects.First();
+				trapSideEffects.Remove(trapSideEffect);
+				actionReplays.Add(new ActorAction(actor, trapSideEffect));
+
+				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(trapSideEffect));
+			}
 		}
 
 		while (actionReplays.Any())
@@ -184,6 +194,7 @@ public interface Actor
 	void StartTurn();
 	void TickStatusEffects();
 	List<GameAction> GetStatusEffectSideEffects();
+	List<GameAction> GetTrapSideEffects();
 
 	int ActionsPerTurn { get; }
 	int AttacksPerTurn { get; }

@@ -50,3 +50,6 @@ MonoBehaviour:
   TreasurePrefab: {fileID: 3634019738784561393, guid: de87f29fdaf2a2b47b2b721b658210fa, type: 3}
   DroppedItemPrefab: {fileID: 4462956918253192952, guid: 005f88efd05ef3746aada296f45bff21, type: 3}
   StairsPrefab: {fileID: 4387654633609858483, guid: 5ceac4a30c1424843b64d40722512f49, type: 3}
+  TrapPrefabs:
+  - {fileID: 4055933014357306187, guid: 070dd59b085f8da47bad5372c106a83d, type: 3}
+  - {fileID: 3924132815924267574, guid: 3d28e0f73a711c843b1b0b5eb09d7b88, type: 3}

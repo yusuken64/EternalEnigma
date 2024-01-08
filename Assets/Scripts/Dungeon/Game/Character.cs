@@ -311,4 +311,5 @@ disp: {displayedVitals}");
 	}
 
 	public abstract IEnumerable<GameAction> GetResponseTo(GameAction sideEffectAction);
+	public abstract List<GameAction> GetTrapSideEffects();
 }

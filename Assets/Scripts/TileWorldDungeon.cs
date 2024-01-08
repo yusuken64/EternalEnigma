@@ -10,9 +10,12 @@ public class TileWorldDungeon : MonoBehaviour
 
 	public List<Enemy> Enemies;
 	public List<Interactable> Interactables;
+
+	//TODO get these from the item definition
 	public Gold TreasurePrefab;
 	public DroppedItem DroppedItemPrefab;
 	public Stairs StairsPrefab;
+	public List<Trap> TrapPrefabs;
 
 	internal int dungeonWidth => _tileWorldCreator.twcAsset.mapWidth;
 	internal int dungeonHeight => _tileWorldCreator.twcAsset.mapHeight;
@@ -322,13 +325,23 @@ public class TileWorldDungeon : MonoBehaviour
 		Interactables.Add(itemInstance);
 	}
 
-	internal void SetDroppedItem(Vector3Int treasurePosition, ItemDefinition item, int? stackStock = null)
+	internal void SetDroppedItem(Vector3Int position, ItemDefinition item, int? stackStock = null)
 	{
 		var itemInstance = Instantiate(DroppedItemPrefab, this.transform);
-		itemInstance.transform.position = CellToWorld(treasurePosition);
-		itemInstance.Position = treasurePosition;
+		itemInstance.transform.position = CellToWorld(position);
+		itemInstance.Position = position;
 		itemInstance.InventoryItem = item.AsInventoryItem(stackStock);
 		Interactables.Add(itemInstance);
+	}
+
+	internal void SetTrap(Vector3Int position, Trap trap = null)
+	{
+		var trapPrefab = TrapPrefabs.Sample();
+		var trapInstance = Instantiate(trapPrefab, this.transform);
+		trapInstance.transform.position = CellToWorld(position);
+		trapInstance.Position = position;
+		trapInstance.VisualObject.gameObject.SetActive(false);
+		Interactables.Add(trapInstance);
 	}
 
 	internal void SetStairs(Vector3Int stairPosition)

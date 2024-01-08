@@ -216,6 +216,12 @@ public class Enemy : Character
 	{
 		Animator.Play("Die", 0);
 	}
+
+	public override List<GameAction> GetTrapSideEffects()
+	{
+		//TODO adapt this when enemies set off traps
+		return new();
+	}
 	#endregion
 }
 

@@ -9,8 +9,8 @@ public abstract class Interactable : MonoBehaviour
 	abstract internal void DoInteraction();
 	abstract internal string GetInteractionText();
 
-	internal void Setup(Vector3Int treasurePosition)
+	internal void Setup(Vector3Int position)
 	{
-		this.Position = treasurePosition;
+		this.Position = position;
 	}
 }

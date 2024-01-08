@@ -10,17 +10,19 @@ internal class DropItemAction : GameAction
 	private InventoryItem item;
 	private Vector3Int dropPosition;
 
-	public DropItemAction(Player player, InventoryItem item)
+	public DropItemAction(Player player, InventoryItem item, Vector3Int dropPosition)
 	{
 		this.player = player;
 		this.item = item;
+		this.dropPosition = dropPosition;
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		Game game = Game.Instance;
 		player.Inventory.InventoryItems.Remove(item);
-		game.CurrentDungeon.SetDroppedItem(dropPosition, item.ItemDefinition, item.StackStock);
+		var finalDropPosition = game.CurrentDungeon.GetDropPosition(dropPosition);
+		game.CurrentDungeon.SetDroppedItem(finalDropPosition, item.ItemDefinition, item.StackStock);
 
 		return new();
 	}
@@ -39,10 +41,6 @@ internal class DropItemAction : GameAction
 		{
 			return false;
 		}
-
-		var itemDropPosition = game.CurrentDungeon.GetDropPosition(character.TilemapPosition);
-
-		this.dropPosition = itemDropPosition;
 
 		return true;
 	}

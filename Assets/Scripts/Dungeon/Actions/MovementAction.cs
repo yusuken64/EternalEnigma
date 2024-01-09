@@ -8,7 +8,7 @@ using UnityEngine;
 internal class MovementAction : GameAction
 {
 	private Vector3Int originalPosition;
-	private Vector3Int newMapPosition;
+	internal Vector3Int newMapPosition;
 
 	public MovementAction(Character character, Vector3Int originalPosition, Vector3Int newMapPosition)
 	{
@@ -66,7 +66,8 @@ internal class MovementAction : GameAction
 
 	internal override bool CanBeCombined(GameAction action)
 	{
-		return action is MovementAction;
+		return action is MovementAction ||
+			action is SwapAllyPositionAction;
 	}
 }
 
@@ -265,6 +266,7 @@ public class DeathAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		Game.Instance.Allies.Remove(target as Ally);
 		Game.Instance.Enemies.Remove(target as Enemy);
 		Game.Instance.DeadUnits.Add(target);
 

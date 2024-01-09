@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class AloofPolicyOverride : PolicyOverride
 {
-	public override PolicyBase GetOverridePolicy(Game game, Enemy enemy)
+	public override PolicyBase GetOverridePolicy(Game game, Character enemy)
 	{
 		return new AloofPolicy(game, enemy, Priority);
 	}

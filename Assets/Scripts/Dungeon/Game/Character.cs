@@ -7,6 +7,7 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour, Actor
 {
 	public Vector3Int TilemapPosition;
+	public Team Team;
 
 	public GameObject VisualParent;
 	public Facing CurrentFacing;
@@ -131,6 +132,8 @@ public abstract class Character : MonoBehaviour, Actor
 	public int AttacksPerTurnMax = 1;
 	internal int actionsPerTurnLeft;
 	internal int attacksPerTurnLeft;
+	public Vector3Int? PursuitPosition; //only used in ai controlled
+	public Character PursuitTarget; //only used in ai controlled
 
 	internal void SetPosition(Vector3Int newPosition)
 	{
@@ -318,4 +321,38 @@ disp: {displayedVitals}");
 	{
 		return StatusEffects.Any(x => x.Interupts(action));
 	}
+
+	internal List<AStar.Node> CalculatePursuitPath()
+	{
+		var game = Game.Instance;
+
+		//TODO refactor cost out of the loop, do it in 2nd pass
+		//move to a different class
+		AStar.Node[,] grid = new AStar.Node[game.CurrentDungeon.dungeonWidth, game.CurrentDungeon.dungeonHeight];
+
+		for(int i = 0; i < game.CurrentDungeon.dungeonWidth; i++)
+		{
+			for (int j = 0; j < game.CurrentDungeon.dungeonHeight; j++)
+			{
+				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
+
+				var containsFriendly = game.Enemies.Any(x => x.TilemapPosition == new Vector3Int(i, j));
+				var movePenalty = containsFriendly ? 5 : 0;
+				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
+			}
+		}
+		
+		AStar.Node startNode = grid[TilemapPosition.x, TilemapPosition.y];
+		AStar.Node targetNode = grid[PursuitPosition.Value.x, PursuitPosition.Value.y];
+
+		var path = AStar.FindPath(grid, startNode, targetNode);
+		return path;
+	}
+}
+
+public enum Team
+{
+	Player,
+	Enemy,
+	Neutral
 }

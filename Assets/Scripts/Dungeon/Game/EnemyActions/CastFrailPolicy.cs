@@ -4,7 +4,7 @@ internal class CastFrailPolicy : PolicyBase
 {
 	private StatusEffect statusEffectPrefab;
 
-	public CastFrailPolicy(Game game, Enemy enemy, int priority, StatusEffect statusEffectPrefab) : base(game, enemy, priority)
+	public CastFrailPolicy(Game game, Character enemy, int priority, StatusEffect statusEffectPrefab) : base(game, enemy, priority)
 	{
 		this.statusEffectPrefab = statusEffectPrefab;
 	}
@@ -17,8 +17,8 @@ internal class CastFrailPolicy : PolicyBase
 			{
 				GetActionsFunc = () =>
 				{
-					enemy.SetFacingByTargetPosition(game.PlayerCharacter.TilemapPosition);
-					return new List<GameAction>() { new ApplyStatusEffectAction(game.PlayerCharacter, statusEffectPrefab, enemy) };
+					character.SetFacingByTargetPosition(game.PlayerCharacter.TilemapPosition);
+					return new List<GameAction>() { new ApplyStatusEffectAction(game.PlayerCharacter, statusEffectPrefab, character) };
 				}
 			}
 		};
@@ -26,7 +26,7 @@ internal class CastFrailPolicy : PolicyBase
 
 	public override bool ShouldRun()
 	{
-		return AttackPolicy.CanAttack(game, game.PlayerCharacter, enemy) &&
+		return AttackPolicy.CanAttack(game, game.PlayerCharacter, character) &&
 			UnityEngine.Random.value > 0.8f;
 	}
 }

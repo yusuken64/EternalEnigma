@@ -3,17 +3,17 @@ using System.Linq;
 
 public class AloofPolicy : PolicyBase
 {
-	public AloofPolicy(Game game, Enemy enemy, int priority) : base(game, enemy, priority) { }
+	public AloofPolicy(Game game, Character enemy, int priority) : base(game, enemy, priority) { }
 
 	public override List<GameAction> GetActions()
 	{
-		var validWalkDirections = game.CurrentDungeon.GetValidWalkDirections(enemy.TilemapPosition);
+		var validWalkDirections = game.CurrentDungeon.GetValidWalkDirections(character.TilemapPosition);
 
 		if (validWalkDirections.Any())
 		{
-			enemy.CurrentFacing = validWalkDirections[UnityEngine.Random.Range(0, validWalkDirections.Count())];
+			character.CurrentFacing = validWalkDirections[UnityEngine.Random.Range(0, validWalkDirections.Count())];
 		}
-		return new WanderPolicy(game, enemy, priority).GetActions();
+		return new WanderPolicy(game, character, priority).GetActions();
 	}
 
 	public override bool ShouldRun()

@@ -19,7 +19,10 @@ public class Game : SingletonMonoBehaviour<Game>
 	public Player PlayerCharacter;
 	public Player PlayerCharacterPrefab;
 
-	public List<Enemy> Enemies;
+	public List<Ally> Allies;
+	public Ally AllyPrefab;
+
+	public List<Character> Enemies;
 
 	public TextMeshPro FloatingTextPrefab;
 
@@ -33,6 +36,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		{
 			var ret = new List<Character>();
 			ret.Add(PlayerCharacter);
+			ret.AddRange(Allies);
 			ret.AddRange(Enemies);
 
 			return ret;
@@ -65,6 +69,10 @@ public class Game : SingletonMonoBehaviour<Game>
 		}
 		PlayerCharacter = Instantiate(PlayerCharacterPrefab);
 		PlayerCharacter.Camera = Camera.main;
+
+		var ally = Instantiate(AllyPrefab);
+		Allies.Add(ally);
+
 		GameOverScreen.gameObject.SetActive(false);
 		InitializeGame();
 
@@ -88,6 +96,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	{
 		List<Actor> actors = new();
 		actors.Add(PlayerCharacter);
+		actors.AddRange(Allies);
 		actors.AddRange(Enemies);
 		TurnManager.ProcessTurn(actors);
 	}
@@ -100,6 +109,14 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter.SyncDisplayedStats();
 
 		ItemManager.StartingItems.ForEach(x => PlayerCharacter.Inventory.Add(x.AsInventoryItem(null)));
+
+		foreach(var ally in Allies)
+		{
+			ally.InitialzeVitalsFromStats();
+			ally.Vitals.Level = 1;
+
+			ally.SyncDisplayedStats();
+		}
 
 		UpdateUI();
 		AdvanceFloor();
@@ -156,6 +173,15 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		var startPosition = CurrentDungeon.GetStartPositioon();
 		PlayerCharacter.SetPosition(startPosition);
+
+		foreach (var ally in Allies)
+		{
+			//var allyPosition = CurrentDungeon.GetDropPosition(startPosition);
+			if (ally != null)
+			{
+				ally.SetPosition(startPosition);
+			}
+		}
 
 		CurrentDungeon.SetStairs(CurrentDungeon.GetRandomOpenEnemyPosition());
 		Debug.Log("Stairs Created", this);

@@ -2,7 +2,7 @@
 {
 	public StatusEffect statusEffectPrefab;
 
-	public override PolicyBase GetOverridePolicy(Game game, Enemy enemy)
+	public override PolicyBase GetOverridePolicy(Game game, Character enemy)
 	{
 		return new CastSleepPolicy(game, enemy, Priority, statusEffectPrefab);
 	}

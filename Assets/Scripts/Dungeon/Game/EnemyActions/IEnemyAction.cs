@@ -12,13 +12,13 @@ public interface IPolicy
 public abstract class PolicyBase : IPolicy
 {
 	internal readonly Game game;
-	internal readonly Enemy enemy;
+	internal readonly Character character;
 	public readonly int priority;
 
-	public PolicyBase(Game game, Enemy enemy, int priority)
+	public PolicyBase(Game game, Character character, int priority)
 	{
 		this.game = game;
-		this.enemy = enemy;
+		this.character = character;
 		this.priority = priority;
 	}
 
@@ -28,54 +28,70 @@ public abstract class PolicyBase : IPolicy
 
 public class AttackPolicy : PolicyBase
 {
-	public AttackPolicy(Game game, Enemy enemy, int priority) : base(game, enemy, priority) { }
+	public AttackPolicy(Game game, Character enemy, int priority) : base(game, enemy, priority) { }
 
 	public override List<GameAction> GetActions()
 {
-		enemy.SetFacingByTargetPosition(game.PlayerCharacter.TilemapPosition); //TODO add this to action?
-		return new List<GameAction>() { new AttackAction(enemy, enemy.TilemapPosition, game.PlayerCharacter.TilemapPosition) };
+		character.SetFacingByTargetPosition(character.PursuitTarget.TilemapPosition); //TODO add this to action?
+		return new List<GameAction>() { new AttackAction(character, character.TilemapPosition, character.PursuitTarget.TilemapPosition) };
 	}
 
 	public override bool ShouldRun()
 	{
+		if (character.PursuitTarget == null)
+		{
+			return false;
+		}
+
 		//if will attack attack
-		if (WillAttack(enemy) &&
-			CanAttack(game, game.PlayerCharacter, enemy))
+			if (WillAttack(character) &&
+			CanAttack(game, character.PursuitTarget, character))
 		{
 			return true;
 		}
 
 		return false;
 	}
-	private bool WillAttack(Enemy enemy)
+	private bool WillAttack(Character character)
 	{
-		return
-			enemy.attacksPerTurnLeft > 0
-			&&	(enemy.CurrentEnemyState == EnemyState.Idle ||
+		var attacksLeft = character.attacksPerTurnLeft > 0;
+		bool attackStrategy = false;
+
+		if (character is Enemy enemy)
+		{
+			attackStrategy =
+				enemy.CurrentEnemyState == EnemyState.Idle ||
 				enemy.CurrentEnemyState == EnemyState.Wander ||
-				enemy.CurrentEnemyState == EnemyState.Pursuit);
+				enemy.CurrentEnemyState == EnemyState.Pursuit;
+		}
+		else if (character is Ally ally)
+		{
+			attackStrategy = true;
+		}
+
+		return attacksLeft && attackStrategy;	
 	}
 
-	public static bool CanAttack(Game game, Player playerCharacter, Enemy enemy)
+	public static bool CanAttack(Game game, Character targetCharacter, Character character)
 	{
-		if (enemy.attacksPerTurnLeft <= 0)
+		if (character.attacksPerTurnLeft <= 0)
 		{
 			return false;
 		}
 
-		var direction = playerCharacter.TilemapPosition - enemy.TilemapPosition;
-		var attackFacing = enemy.GetFacing(direction);
-		var validAttackDirections = game.CurrentDungeon.GetValidAttackDirections(enemy.TilemapPosition);
+		var direction = targetCharacter.TilemapPosition - character.TilemapPosition;
+		var attackFacing = character.GetFacing(direction);
+		var validAttackDirections = game.CurrentDungeon.GetValidAttackDirections(character.TilemapPosition);
 
 		if (!validAttackDirections.Contains(attackFacing))
 		{
 			return false;
 		}
 
-		var x1 = playerCharacter.TilemapPosition.x;
-		var y1 = playerCharacter.TilemapPosition.y;
-		var x2 = enemy.TilemapPosition.x;
-		var y2 = enemy.TilemapPosition.y;
+		var x1 = targetCharacter.TilemapPosition.x;
+		var y1 = targetCharacter.TilemapPosition.y;
+		var x2 = character.TilemapPosition.x;
+		var y2 = character.TilemapPosition.y;
 		//target is within attack distance
 		var chebyshevDistance = Mathf.Max(Mathf.Abs(x2 - x1), Mathf.Abs(y2 - y1));
 
@@ -87,20 +103,20 @@ public class PursuitPolicy : PolicyBase
 {
 	private List<AStar.Node> path;
 
-	public PursuitPolicy(Game game, Enemy enemy, int priority) : base(game, enemy, priority) { }
+	public PursuitPolicy(Game game, Character enemy, int priority) : base(game, enemy, priority) { }
 
 	public override List<GameAction> GetActions()
 	{
 		var newMapPosition = new Vector3Int(path[0].X, path[0].Y);
-		enemy.SetFacingByTargetPosition(newMapPosition);
-		return new List<GameAction>() { new MovementAction(enemy, enemy.TilemapPosition, newMapPosition) };
+		character.SetFacingByTargetPosition(newMapPosition);
+		return new List<GameAction>() { new MovementAction(character, character.TilemapPosition, newMapPosition) };
 	}
 
 	public override bool ShouldRun()
 	{
-		if(enemy.PursuitPosition == null) { return false; }
+		if(character.PursuitPosition == null) { return false; }
 
-		path = enemy.CalculatePursuitPath();
+		path = character.CalculatePursuitPath();
 
 		if (path != null &&
 			path.Count > 0)
@@ -113,31 +129,36 @@ public class PursuitPolicy : PolicyBase
 }
 public class WanderPolicy : PolicyBase
 {
-	public WanderPolicy(Game game, Enemy enemy, int priority) : base(game, enemy, priority) { }
+	public WanderPolicy(Game game, Character enemy, int priority) : base(game, enemy, priority) { }
 
 	public override List<GameAction> GetActions()
 	{
-		var offset = Dungeon.GetFacingOffset(enemy.CurrentFacing);
-		Vector3Int newMapPosition = enemy.TilemapPosition + offset;
-		var canMoveForward = game.CurrentDungeon.CanWalkTo(enemy.TilemapPosition, newMapPosition);
+		var offset = Dungeon.GetFacingOffset(character.CurrentFacing);
+		Vector3Int newMapPosition = character.TilemapPosition + offset;
+		var canMoveForward = game.CurrentDungeon.CanWalkTo(character.TilemapPosition, newMapPosition);
 
 		if (!canMoveForward)
 		{
-			var validWalkDirections = game.CurrentDungeon.GetValidWalkDirections(enemy.TilemapPosition);
+			var validWalkDirections = game.CurrentDungeon.GetValidWalkDirections(character.TilemapPosition);
 
 			if (validWalkDirections.Any())
 			{
-				enemy.CurrentFacing = validWalkDirections[UnityEngine.Random.Range(0, validWalkDirections.Count())];
-				offset = Dungeon.GetFacingOffset(enemy.CurrentFacing);
-				newMapPosition = enemy.TilemapPosition + offset;
+				character.CurrentFacing = validWalkDirections[UnityEngine.Random.Range(0, validWalkDirections.Count())];
+				offset = Dungeon.GetFacingOffset(character.CurrentFacing);
+				newMapPosition = character.TilemapPosition + offset;
 			}
 		}
-		enemy.SetFacingByTargetPosition(newMapPosition);
-		return new List<GameAction>() { new MovementAction(enemy, enemy.TilemapPosition, newMapPosition) };
+		character.SetFacingByTargetPosition(newMapPosition);
+		return new List<GameAction>() { new MovementAction(character, character.TilemapPosition, newMapPosition) };
 	}
 
 	public override bool ShouldRun()
 	{
-		return enemy.CurrentEnemyState == EnemyState.Wander;
+		if (character is Enemy enemy)
+		{
+			return enemy.CurrentEnemyState == EnemyState.Wander;
+		}
+
+		return true;
 	}
 }

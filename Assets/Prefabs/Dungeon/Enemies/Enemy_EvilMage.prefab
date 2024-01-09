@@ -1617,16 +1617,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TilemapPosition: {x: 0, y: 0, z: 0}
+  Team: 1
   VisualParent: {fileID: 4192354829797734571}
   CurrentFacing: 0
   StartingStats:
     HPMax: 16
+    SPMax: 0
     HungerMax: 0
     Strength: 6
     Defense: 11
     EXPOnKill: 12
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
     DropRate: 0
   StatusEffects: []
   Inventory: {fileID: 0}

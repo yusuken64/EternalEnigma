@@ -169,6 +169,19 @@ public class Player : Character
 
 	internal void SetAction(GameAction userAction)
 	{
+		if (userAction is MovementAction movementAction)
+		{
+			var swapAlly = Game.Instance.AllCharacters
+				.Where(x => x != this)
+				.Where(x => x.Team == Team.Player)
+				.FirstOrDefault(x => x.TilemapPosition == movementAction.newMapPosition);
+
+			if (swapAlly != null)
+			{
+				userAction = new SwapAllyPositionAction(this, swapAlly);
+			}
+		}
+
 		if (!userAction.IsValid(this))
 		{
 			pickedAction = null;
@@ -291,7 +304,6 @@ public class Player : Character
 
 	public override void StartTurn()
 	{
-		var game = Game.Instance;
 	}
 
 	public override List<GameAction> GetTrapSideEffects()

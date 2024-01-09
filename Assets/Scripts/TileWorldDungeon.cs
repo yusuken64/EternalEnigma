@@ -8,7 +8,7 @@ public class TileWorldDungeon : MonoBehaviour
 {
 	public string FloorLayerName;
 
-	public List<Enemy> Enemies;
+	public List<Character> Enemies;
 	public List<Interactable> Interactables;
 
 	//TODO get these from the item definition
@@ -38,7 +38,7 @@ public class TileWorldDungeon : MonoBehaviour
 	}
 
 	//This should be getcharacteratposition
-	internal Enemy GetEnemyAtPosition(Vector3Int attackPosition)
+	internal Character GetEnemyAtPosition(Vector3Int attackPosition)
 	{
 		return Enemies.FirstOrDefault(x => x.TilemapPosition == attackPosition);
 	}
@@ -421,7 +421,7 @@ public class TileWorldDungeon : MonoBehaviour
 	internal bool IsWalkable(Vector3Int newMapPosition)
 	{
 		if (newMapPosition.x < 0 || newMapPosition.x >= dungeonWidth ||
-		    newMapPosition.y < 0 || newMapPosition.y >= dungeonHeight) {
+			newMapPosition.y < 0 || newMapPosition.y >= dungeonHeight) {
 			return false;
 		}
 
@@ -481,7 +481,7 @@ public class TileWorldDungeon : MonoBehaviour
 		var walkableDirections = direction.Select(x =>
 		{
 			var target = GetRangedAttackPosition(null, TilemapPosition, x, 40, StopSight);
-			var chebyshevDistance = Mathf.Max(Mathf.Abs(target.x - TilemapPosition.x), Mathf.Abs(target.y - TilemapPosition.y));
+			var chebyshevDistance = ChevDistance(target, TilemapPosition);
 			var offset = TileWorldDungeon.GetFacingOffset(x);
 			var walkable = CanWalkTo(TilemapPosition, TilemapPosition + offset);
 
@@ -504,6 +504,11 @@ public class TileWorldDungeon : MonoBehaviour
 		//Debug.Log($"{tiles} blocked, {9 - tiles} walkable, count{walkableCount}, diag{diagonalsWalkable}");
 
 		return !diagonalsWalkable;
+	}
+
+	public static int ChevDistance(Vector3Int a, Vector3Int b)
+	{
+		return Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
 	}
 
 	public static bool StopSight(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower)

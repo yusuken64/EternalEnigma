@@ -19,7 +19,7 @@ public class ItemManager : MonoBehaviour
 		return itemDefinition.AsInventoryItem(stock);
 	}
 
-	internal ItemDefinition GetRandomDrop(Enemy enemy)
+	internal ItemDefinition GetRandomDrop(Character enemy)
 	{
 		return ItemDefinitions[UnityEngine.Random.Range(0, ItemDefinitions.Count())];
 	}

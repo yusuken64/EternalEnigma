@@ -8,7 +8,6 @@ public class Enemy : Character
 {
 	public EnemyState CurrentEnemyState;
 	public Animator Animator;
-	public Vector3Int? PursuitPosition;
 
 	public string Description { get; internal set; }
 
@@ -58,11 +57,11 @@ public class Enemy : Character
 
 		var game = Game.Instance;
 		this.actionsPerTurnLeft--;
-		bool canSeePlayer = CanSeePlayer();
+		PursuitTarget = GetTarget();
 
-		if (canSeePlayer)
+		if (PursuitTarget != null)
 		{
-			PursuitPosition = game.PlayerCharacter.TilemapPosition;
+			PursuitPosition = PursuitTarget.TilemapPosition;
 		}
 
 		if (PursuitPosition == this.TilemapPosition)
@@ -70,7 +69,7 @@ public class Enemy : Character
 			PursuitPosition = null;
 		}
 
-		if (!canSeePlayer ||
+		if (!PursuitTarget ||
 			PursuitPosition == this.TilemapPosition)
 		{
 			CurrentEnemyState = EnemyState.Wander;
@@ -85,17 +84,23 @@ public class Enemy : Character
 		return new();
 	}
 
-	private bool CanSeePlayer()
+	private Character GetTarget()
 	{
 		var game = Game.Instance;
 
-		//determine if the monster can see player
+		//determine if the monster can see any character player team
 		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(TilemapPosition);
 
-		Vector3Int tilemapPosition = game.PlayerCharacter.TilemapPosition;
-		var canSeePlayer = Contains2D(visionBounds, tilemapPosition);
+		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team == Team.Player);
+		var ordered = playerTeamCharacters
+			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
+			.ThenBy(x => x.TilemapPosition == PursuitPosition).ToList();
 
-		return canSeePlayer;
+		//TODO: prioritise this somehow?
+		return playerTeamCharacters
+			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
+			.ThenBy(x => x.TilemapPosition == PursuitPosition)
+			.FirstOrDefault(x => Contains2D(visionBounds, x.TilemapPosition));
 	}
 
 	//BoundsInt.Contain doesn't work?
@@ -130,33 +135,6 @@ public class Enemy : Character
 		if (this == null) { yield break; }
 		yield return StartCoroutine(action.ExecuteRoutine(this));
 		action.UpdateDisplayedStats();
-	}
-
-	internal List<AStar.Node> CalculatePursuitPath()
-	{
-		var game = Game.Instance;
-
-		//TODO refactor cost out of the loop, do it in 2nd pass
-		//move to a different class
-		AStar.Node[,] grid = new AStar.Node[game.CurrentDungeon.dungeonWidth, game.CurrentDungeon.dungeonHeight];
-
-		for(int i = 0; i < game.CurrentDungeon.dungeonWidth; i++)
-		{
-			for (int j = 0; j < game.CurrentDungeon.dungeonHeight; j++)
-			{
-				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
-
-				var containsFriendly = game.Enemies.Any(x => x.TilemapPosition == new Vector3Int(i, j));
-				var movePenalty = containsFriendly ? 5 : 0;
-				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
-			}
-		}
-		
-		AStar.Node startNode = grid[TilemapPosition.x, TilemapPosition.y];
-		AStar.Node targetNode = grid[PursuitPosition.Value.x, PursuitPosition.Value.y];
-
-		var path = AStar.FindPath(grid, startNode, targetNode);
-		return path;
 	}
 
 	public override void StartTurn()

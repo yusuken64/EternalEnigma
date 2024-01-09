@@ -95,6 +95,7 @@ public class EnemyManager : MonoBehaviour
 					enemyPrefab.BaseStats.DropRate = dropValule;
 				};
 				enemyPrefab.Description = monster.Behavior + monster.SpecialAbilities + monster.AdditionalInfo;
+				enemyPrefab.Team = Team.Enemy;
 
 				var selectedObject = enemyPrefab.gameObject;
 				PrefabUtility.SaveAsPrefabAsset(selectedObject, PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(selectedObject), out bool success);

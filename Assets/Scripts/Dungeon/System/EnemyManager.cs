@@ -90,6 +90,8 @@ public class EnemyManager : MonoBehaviour
 				enemyPrefab.StartingStats.Strength = monster.Attack;
 				enemyPrefab.StartingStats.Defense = monster.Defense;
 				enemyPrefab.StartingStats.EXPOnKill = monster.EXP;
+				if (enemyPrefab.StartingStats.ActionsPerTurnMax == 0)  enemyPrefab.StartingStats.ActionsPerTurnMax = 1;
+				if (enemyPrefab.StartingStats.AttacksPerTurnMax == 0) enemyPrefab.StartingStats.AttacksPerTurnMax = 1;
 				if (ExpressionEvaluator.Evaluate<float>(monster.Drop, out float dropValule))
 				{
 					enemyPrefab.BaseStats.DropRate = dropValule;

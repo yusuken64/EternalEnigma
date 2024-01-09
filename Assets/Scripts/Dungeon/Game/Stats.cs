@@ -15,6 +15,8 @@ public class Stats
 	private int hPRegenAcccumlateThreshold;
 	private int sPRegenAcccumlateThreshold;
 	private float dropRate;
+	private int actionsPerTurnMax;
+	private int attacksPerTurnMax;
 
 	public int HPMax
 	{
@@ -102,6 +104,26 @@ public class Stats
 		}
 	}
 
+	public int ActionsPerTurnMax
+	{
+		get => actionsPerTurnMax;
+		set
+		{
+			actionsPerTurnMax = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
+	public int AttacksPerTurnMax
+	{
+		get => attacksPerTurnMax;
+		set
+		{
+			attacksPerTurnMax = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
 	internal void FromStartingStats(StartingStats startingStats)
 	{
 		HPMax = startingStats.HPMax;
@@ -114,6 +136,8 @@ public class Stats
 		HPRegenAcccumlateThreshold = startingStats.HPRegenAcccumlateThreshold;
 		SPRegenAcccumlateThreshold = startingStats.SPRegenAcccumlateThreshold;
 		DropRate = startingStats.DropRate;
+		ActionsPerTurnMax = startingStats.ActionsPerTurnMax;
+		AttacksPerTurnMax = startingStats.AttacksPerTurnMax;
 	}
 
 	public float DropRate
@@ -145,6 +169,8 @@ public class Stats
 		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
 		SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
 		DropRate = other.DropRate;
+		ActionsPerTurnMax = other.ActionsPerTurnMax;
+		AttacksPerTurnMax = other.AttacksPerTurnMax;
 	}
 
 	public static Stats operator +(Stats stats, StatModification modification)
@@ -162,6 +188,8 @@ public class Stats
 		retStats.EXPOnKill += modification.EXPOnKill;
 		retStats.HungerAccumulateThreshold += modification.HungerAccumulateThreshold;
 		retStats.HPRegenAcccumlateThreshold += modification.HPRegenAcccumlateThreshold;
+		retStats.ActionsPerTurnMax += modification.ActionsPerTurnMax;
+		retStats.AttacksPerTurnMax += modification.AttacksPerTurnMax;
 
 		return retStats;
 	}
@@ -178,6 +206,8 @@ public class Stats
 		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
 		SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
 		DropRate = other.DropRate;
+		ActionsPerTurnMax = other.ActionsPerTurnMax;
+		AttacksPerTurnMax = other.AttacksPerTurnMax;
 	}
 
 	public override int GetHashCode()
@@ -195,6 +225,8 @@ public class Stats
 			hash = hash * 23 + HPRegenAcccumlateThreshold.GetHashCode();
 			hash = hash * 23 + SPRegenAcccumlateThreshold.GetHashCode();
 			hash = hash * 23 + DropRate.GetHashCode();
+			hash = hash * 23 + ActionsPerTurnMax.GetHashCode();
+			hash = hash * 23 + AttacksPerTurnMax.GetHashCode();
 			return hash;
 		}
 	}
@@ -210,6 +242,8 @@ public class Stats
 			$"HungerAccumulateThreshold: {HungerAccumulateThreshold} " +
 			$"HPRegenAcccumlateThreshold: {HPRegenAcccumlateThreshold} " +
 			$"SPRegenAcccumlateThreshold: {SPRegenAcccumlateThreshold} " +
-			$"DropRate: {DropRate}";
+			$"DropRate: {DropRate}" +
+			$"ActionsPerTurnMax: {ActionsPerTurnMax}" +
+			$"AttacksPerTurnMax: {AttacksPerTurnMax}";
 	}
 }

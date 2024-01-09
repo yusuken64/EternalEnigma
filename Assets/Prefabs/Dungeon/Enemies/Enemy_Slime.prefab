@@ -360,7 +360,7 @@ MonoBehaviour:
   VisualParent: {fileID: 4192354829797734571}
   CurrentFacing: 0
   StartingStats:
-    HPMax: 5
+    HPMax: 50
     SPMax: 0
     HungerMax: 0
     Strength: 2
@@ -370,10 +370,11 @@ MonoBehaviour:
     HPRegenAcccumlateThreshold: 0
     SPRegenAcccumlateThreshold: 0
     DropRate: 0
+    ActionsPerTurnMax: 1
+    AttacksPerTurnMax: 1
   StatusEffects: []
   Inventory: {fileID: 0}
-  ActionsPerTurnMax: 1
-  AttacksPerTurnMax: 1
+  PursuitTarget: {fileID: 0}
   CurrentEnemyState: 0
   Animator: {fileID: 3681299977725512890}
 --- !u!1 &6101004939991340086

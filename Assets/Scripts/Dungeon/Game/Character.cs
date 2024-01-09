@@ -126,12 +126,8 @@ public abstract class Character : MonoBehaviour, Actor
 	public abstract List<GameAction> ExecuteActionImmediate(GameAction action);
 	public abstract IEnumerator ExecuteActionRoutine(GameAction action);
 	public abstract void StartTurn();
-	int Actor.ActionsPerTurn { get => ActionsPerTurnMax; }
-	int Actor.AttacksPerTurn { get => AttacksPerTurnMax; }
-	public int ActionsPerTurnMax = 1;
-	public int AttacksPerTurnMax = 1;
-	internal int actionsPerTurnLeft;
-	internal int attacksPerTurnLeft;
+	int Actor.ActionsPerTurn { get => FinalStats.ActionsPerTurnMax; }
+	int Actor.AttacksPerTurn { get => FinalStats.AttacksPerTurnMax; }
 	public Vector3Int? PursuitPosition; //only used in ai controlled
 	public Character PursuitTarget; //only used in ai controlled
 

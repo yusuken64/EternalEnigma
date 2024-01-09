@@ -262,6 +262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TilemapPosition: {x: 0, y: 0, z: 0}
+  Team: 0
   VisualParent: {fileID: 2065795567227290904}
   CurrentFacing: 0
   StartingStats:
@@ -275,10 +276,11 @@ MonoBehaviour:
     HPRegenAcccumlateThreshold: 5
     SPRegenAcccumlateThreshold: 500
     DropRate: 0
+    ActionsPerTurnMax: 1
+    AttacksPerTurnMax: 1
   StatusEffects: []
   Inventory: {fileID: 8960690655561992051}
-  ActionsPerTurnMax: 1
-  AttacksPerTurnMax: 1
+  PursuitTarget: {fileID: 0}
   Skills:
   - {fileID: -5335204912119326263}
   - {fileID: -6872718615887098592}

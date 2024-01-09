@@ -42,7 +42,7 @@ internal class MovementAction : GameAction
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 
 		character.PlayWalkAnimation();
-		yield return character.transform.DOMove(worldPosition, 0.1f / character.ActionsPerTurnMax)
+		yield return character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax)
 			.WaitForCompletion();
 
 		character.PlayIdleAnimation();
@@ -104,7 +104,11 @@ internal class AttackAction : GameAction
 
 		List<GameAction> ret = new();
 
-		attacker.attacksPerTurnLeft -= 1;
+		AddMetricsModification(attacker, (stats, vitals) =>
+		{
+			attacker.Vitals.AttacksPerTurnLeft -= 1;
+		});
+
 		bool hit;
 		int damage;
 		GetAttackDamage(attacker, target, out hit, out damage);

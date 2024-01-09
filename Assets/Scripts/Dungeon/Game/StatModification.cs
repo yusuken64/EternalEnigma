@@ -18,7 +18,9 @@ public class StatModification : StartingStats
 		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
 		SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
-		DropRate = other.DropRate;
+		DropRate = other.DropRate; 
+		ActionsPerTurnMax = other.ActionsPerTurnMax;
+		AttacksPerTurnMax = other.AttacksPerTurnMax;
 	}
 
 	public StatModification(StatModification stats)
@@ -31,6 +33,8 @@ public class StatModification : StartingStats
 		HungerAccumulateThreshold = stats.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = stats.HPRegenAcccumlateThreshold;
 		DropRate = stats.DropRate;
+		ActionsPerTurnMax = stats.ActionsPerTurnMax;
+		AttacksPerTurnMax = stats.AttacksPerTurnMax;
 	}
 
 	public static StatModification operator +(StatModification stats, StatModification modification)
@@ -45,6 +49,8 @@ public class StatModification : StartingStats
 		retStats.EXPOnKill += modification.EXPOnKill;
 		retStats.HungerAccumulateThreshold += modification.HungerAccumulateThreshold;
 		retStats.HPRegenAcccumlateThreshold += modification.HPRegenAcccumlateThreshold;
+		retStats.ActionsPerTurnMax += modification.ActionsPerTurnMax;
+		retStats.AttacksPerTurnMax += modification.AttacksPerTurnMax;
 
 		return retStats;
 	}

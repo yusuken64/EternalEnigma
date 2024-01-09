@@ -32,7 +32,7 @@ internal class SwapAllyPositionAction : GameAction
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 
 		character.PlayWalkAnimation();
-		yield return character.transform.DOMove(worldPosition, 0.1f / character.ActionsPerTurnMax)
+		yield return character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax)
 			.WaitForCompletion();
 
 		character.PlayIdleAnimation();

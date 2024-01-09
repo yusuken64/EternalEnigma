@@ -14,6 +14,8 @@ public class Vitals
 	[SerializeField] private int hungerAccumulate;
 	[SerializeField] private int hpRegenAcccumlate;
 	[SerializeField] private int spRegenAcccumlate;
+	[SerializeField] private int actionsPerTurnLeft;
+	[SerializeField] private int attacksPerTurnLeft;
 
 	public int HP
 	{
@@ -145,6 +147,32 @@ public class Vitals
 		}
 	}
 
+	public int ActionsPerTurnLeft
+	{
+		get { return actionsPerTurnLeft; }
+		set
+		{
+			if (actionsPerTurnLeft != value)
+			{
+				actionsPerTurnLeft = value;
+				ClampVitals();
+			}
+		}
+	}
+
+	public int AttacksPerTurnLeft
+	{
+		get { return attacksPerTurnLeft; }
+		set
+		{
+			if (attacksPerTurnLeft != value)
+			{
+				attacksPerTurnLeft = value;
+				ClampVitals();
+			}
+		}
+	}
+
 	public Func<Stats> LinkedStats;
 
 
@@ -170,6 +198,8 @@ public class Vitals
 		HungerAccumulate = vitals.HungerAccumulate;
 		HPRegenAcccumlate = vitals.HPRegenAcccumlate;
 		SPRegenAcccumlate = vitals.SPRegenAcccumlate;
+		ActionsPerTurnLeft = vitals.ActionsPerTurnLeft;
+		AttacksPerTurnLeft = vitals.AttacksPerTurnLeft;
 	}
 
 	protected virtual void ClampVitals()
@@ -195,6 +225,8 @@ public class Vitals
 			hash = hash * 23 + hungerAccumulate.GetHashCode();
 			hash = hash * 23 + hpRegenAcccumlate.GetHashCode();
 			hash = hash * 23 + spRegenAcccumlate.GetHashCode();
+			hash = hash * 23 + actionsPerTurnLeft.GetHashCode();
+			hash = hash * 23 + attacksPerTurnLeft.GetHashCode();
 			return hash;
 		}
 	}
@@ -210,7 +242,9 @@ public class Vitals
 			$"gold:{gold} " +
 			$"hungerAccumulate:{hungerAccumulate} " +
 			$"hpRegenAcccumlate:{hpRegenAcccumlate}" +
-			$"spRegenAcccumlate:{spRegenAcccumlate}";
+			$"spRegenAcccumlate:{spRegenAcccumlate}" +
+			$"actionsPerTurnLeft:{actionsPerTurnLeft}" +
+			$"attacksPerTurnLeft:{attacksPerTurnLeft}";
 	}
 
 	public static Vitals operator +(Vitals vitals, VitalModification modification)
@@ -227,6 +261,8 @@ public class Vitals
 		vitals.HungerAccumulate += modification.HungerAccumulate;
 		vitals.HPRegenAcccumlate += modification.HpRegenAcccumlate;
 		vitals.SPRegenAcccumlate += modification.SpRegenAcccumlate;
+		vitals.ActionsPerTurnLeft += modification.ActionsPerTurnLeft;
+		vitals.AttacksPerTurnLeft += modification.AttacksPerTurnLeft;
 
 		return vitals;
 	}

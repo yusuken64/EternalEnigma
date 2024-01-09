@@ -54,7 +54,7 @@ public class AttackPolicy : PolicyBase
 	}
 	private bool WillAttack(Character character)
 	{
-		var attacksLeft = character.attacksPerTurnLeft > 0;
+		var attacksLeft = character.Vitals.AttacksPerTurnLeft > 0;
 		bool attackStrategy = false;
 
 		if (character is Enemy enemy)
@@ -74,7 +74,7 @@ public class AttackPolicy : PolicyBase
 
 	public static bool CanAttack(Game game, Character targetCharacter, Character character)
 	{
-		if (character.attacksPerTurnLeft <= 0)
+		if (character.Vitals.AttacksPerTurnLeft <= 0)
 		{
 			return false;
 		}

@@ -13,4 +13,6 @@ public class StartingStats
 	public int HPRegenAcccumlateThreshold;
 	public int SPRegenAcccumlateThreshold;
 	public float DropRate;
+	public int ActionsPerTurnMax;
+	public int AttacksPerTurnMax;
 }

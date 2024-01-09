@@ -984,10 +984,11 @@ MonoBehaviour:
     HPRegenAcccumlateThreshold: 0
     SPRegenAcccumlateThreshold: 0
     DropRate: 0
+    ActionsPerTurnMax: 1
+    AttacksPerTurnMax: 1
   StatusEffects: []
   Inventory: {fileID: 0}
-  ActionsPerTurnMax: 1
-  AttacksPerTurnMax: 1
+  PursuitTarget: {fileID: 0}
   CurrentEnemyState: 0
   Animator: {fileID: 2600546240259232609}
 --- !u!114 &856185822813198676

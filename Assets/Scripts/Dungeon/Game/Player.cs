@@ -304,6 +304,10 @@ public class Player : Character
 
 	public override void StartTurn()
 	{
+		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
+		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
+
+		SyncDisplayedStats();
 	}
 
 	public override List<GameAction> GetTrapSideEffects()

@@ -124,6 +124,10 @@ public class Ally : Character
 
 	public override void StartTurn()
 	{
+		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
+		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
+
+		SyncDisplayedStats();
 		_forcedAction = null;
 	}
 

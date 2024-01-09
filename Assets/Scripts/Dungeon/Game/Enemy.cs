@@ -56,7 +56,8 @@ public class Enemy : Character
 		}
 
 		var game = Game.Instance;
-		this.actionsPerTurnLeft--;
+		this.Vitals.ActionsPerTurnLeft--;
+		this.DisplayedVitals.ActionsPerTurnLeft--;
 		PursuitTarget = GetTarget();
 
 		if (PursuitTarget != null)
@@ -139,8 +140,10 @@ public class Enemy : Character
 
 	public override void StartTurn()
 	{
-		actionsPerTurnLeft = ActionsPerTurnMax;
-		attacksPerTurnLeft = AttacksPerTurnMax;
+		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
+		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
+
+		SyncDisplayedStats();
 	}
 
 	#region Animation

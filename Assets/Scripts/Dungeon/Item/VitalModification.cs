@@ -13,4 +13,6 @@ public class VitalModification
 	public int HungerAccumulate;
 	public int HpRegenAcccumlate;
 	public int SpRegenAcccumlate;
+	public int ActionsPerTurnLeft;
+	public int AttacksPerTurnLeft;
 }

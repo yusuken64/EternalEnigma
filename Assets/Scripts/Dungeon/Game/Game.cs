@@ -70,8 +70,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter = Instantiate(PlayerCharacterPrefab);
 		PlayerCharacter.Camera = Camera.main;
 
-		var ally = Instantiate(AllyPrefab);
-		Allies.Add(ally);
+		//var ally = Instantiate(AllyPrefab);
+		//Allies.Add(ally);
 
 		GameOverScreen.gameObject.SetActive(false);
 		InitializeGame();
@@ -186,7 +186,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		CurrentDungeon.SetStairs(CurrentDungeon.GetRandomOpenEnemyPosition());
 		Debug.Log("Stairs Created", this);
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerCharacter.Vitals.Floor);
 			var enemy = Instantiate(enemyPrefab, this.transform);

@@ -60,10 +60,11 @@ MonoBehaviour:
     HPRegenAcccumlateThreshold: 5
     SPRegenAcccumlateThreshold: 500
     DropRate: 0
+    ActionsPerTurnMax: 1
+    AttacksPerTurnMax: 1
   StatusEffects: []
   Inventory: {fileID: 0}
-  ActionsPerTurnMax: 1
-  AttacksPerTurnMax: 1
+  PursuitTarget: {fileID: 0}
   HeroAnimator: {fileID: 3890444182482089279}
   AllyStrategy: 0
 --- !u!1 &878550475739156372

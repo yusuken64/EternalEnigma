@@ -225,6 +225,7 @@ GameObject:
   - component: {fileID: 8960690655561992051}
   - component: {fileID: -5335204912119326263}
   - component: {fileID: -6872718615887098592}
+  - component: {fileID: 6960965171913672784}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -281,6 +282,7 @@ MonoBehaviour:
   Skills:
   - {fileID: -5335204912119326263}
   - {fileID: -6872718615887098592}
+  - {fileID: 6960965171913672784}
   Camera: {fileID: 0}
   CameraOffset: {x: 1, y: -2.77, z: -11.62}
   HeroAnimator: {fileID: 5505970729610342937}
@@ -330,6 +332,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StrengthStatusEffect: {fileID: -6332391657329485210, guid: 37c179b2e0581a248ad717b2b006533e, type: 3}
+--- !u!114 &6960965171913672784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4828791753711949877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8820820ca76c4b345b475b64ebc35dc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SilenceStatusEffect: {fileID: 8062541482072348122, guid: 2c2ea9c4ec1c95b40a2c4df619ddb91b, type: 3}
 --- !u!1001 &5565864166031862279
 PrefabInstance:
   m_ObjectHideFlags: 0

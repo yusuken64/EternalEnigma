@@ -313,4 +313,9 @@ disp: {displayedVitals}");
 
 	public abstract IEnumerable<GameAction> GetResponseTo(GameAction sideEffectAction);
 	public abstract List<GameAction> GetTrapSideEffects();
+
+	public bool GetActionInterupt(GameAction action)
+	{
+		return StatusEffects.Any(x => x.Interupts(action));
+	}
 }

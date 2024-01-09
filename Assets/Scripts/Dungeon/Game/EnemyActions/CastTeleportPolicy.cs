@@ -8,9 +8,18 @@ internal class CastTeleportPolicy : PolicyBase
 
 	public override List<GameAction> GetActions()
 	{
-		return new()
+		return new List<GameAction>()
 		{
-			new WarpAction(game.PlayerCharacter)
+			new CastSpellAction()
+			{
+				GetActionsFunc = () =>
+				{
+					return new()
+					{
+						new WarpAction(game.PlayerCharacter)
+					};
+				}
+			}
 		};
 	}
 

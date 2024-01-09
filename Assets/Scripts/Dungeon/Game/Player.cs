@@ -146,6 +146,11 @@ public class Player : Character
 			SetAction(new SkillAction(this, Skills[1]));
 			return;
 		}
+		else if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
+			SetAction(new SkillAction(this, Skills[2]));
+			return;
+		}
 		else if (Input.GetKeyDown(KeyCode.E))
 		{
 			if (currentInteractable != null)
@@ -258,6 +263,11 @@ public class Player : Character
 
 	public override List<GameAction> ExecuteActionImmediate(GameAction action)
 	{
+		if (GetActionInterupt(action))
+		{
+			return new();
+		}
+
 		var sideEffects = action.ExecuteImmediate(this);
 		var actionResponses = GetActionResponses(action);
 		var actionResponseEffects = actionResponses.SelectMany(x => x.ExecuteImmediate(this));
@@ -265,6 +275,7 @@ public class Player : Character
 
 		return sideEffects;
 	}
+
 	public override IEnumerable<GameAction> GetResponseTo(GameAction action)
 	{
 		return GetActionResponses(action);

@@ -41,15 +41,15 @@ public class TurnManager : MonoBehaviour
 			{
 				var primaryAction = actor?.DetermineActions();
 				if (primaryAction == null) { continue; }
-				List<GameAction> sideEffectActions = primaryAction;
+				List<GameAction> gameActions = primaryAction;
 
-				while (sideEffectActions.Any())
+				while (gameActions.Any())
 				{
-					var sideEffectAction = sideEffectActions.First();
-					sideEffectActions.Remove(sideEffectAction);
+					var sideEffectAction = gameActions.First();
+					gameActions.Remove(sideEffectAction);
+					
+					gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 					actionReplays.Add(new ActorAction(actor, sideEffectAction));
-
-					sideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 
 					if (interuptTurn)
 					{
@@ -58,7 +58,7 @@ public class TurnManager : MonoBehaviour
 
 					foreach (var actor2 in actors)
 					{
-						sideEffectActions.AddRange(actor2.GetResponseTo(sideEffectAction));
+						gameActions.AddRange(actor2.GetResponseTo(sideEffectAction));
 					}
 				}
 

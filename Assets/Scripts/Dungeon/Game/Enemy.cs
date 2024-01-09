@@ -109,6 +109,11 @@ public class Enemy : Character
 
 	public override List<GameAction> ExecuteActionImmediate(GameAction action)
 	{
+		if (GetActionInterupt(action))
+		{
+			return new();
+		}
+
 		var sideEffects = action.ExecuteImmediate(this);
 		sideEffects.AddRange(GetActionResponses(action));
 

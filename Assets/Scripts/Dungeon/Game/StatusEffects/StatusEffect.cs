@@ -36,4 +36,7 @@ public abstract class StatusEffect : MonoBehaviour
 	abstract internal string GetEffectName();
 
 	abstract internal bool PreventsMenu();
+
+	//return true if this status effect prevents this action
+	internal virtual bool Interupts(GameAction action) { return false; }
 }

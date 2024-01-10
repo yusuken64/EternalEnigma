@@ -1,4 +1,5 @@
 using DG.Tweening;
+using JuicyChickenGames.Menu;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	public TextMeshPro FloatingTextPrefab;
 
 	public InventoryMenu InventoryMenu;
+	public AllyActionDialog AllyMenu;
 	public GameOverScreen GameOverScreen;
 	public NewFloorMessage NewFloorMessage;
 
@@ -64,19 +66,16 @@ public class Game : SingletonMonoBehaviour<Game>
 	{
 		if (PlayerCharacter != null)
 		{
-			PlayerCharacter.ActionPicked -= PlayerCharacter_ActionPicked;
 			Destroy(PlayerCharacter.gameObject);
 		}
 		PlayerCharacter = Instantiate(PlayerCharacterPrefab);
 		PlayerCharacter.Camera = Camera.main;
 
-		//var ally = Instantiate(AllyPrefab);
-		//Allies.Add(ally);
+		var ally = Instantiate(AllyPrefab);
+		Allies.Add(ally);
 
 		GameOverScreen.gameObject.SetActive(false);
 		InitializeGame();
-
-		PlayerCharacter.ActionPicked += PlayerCharacter_ActionPicked;
 
 		LevelDisplay.Setup("Lv",
 			() => PlayerCharacter.DisplayedVitals.Level.ToString(),
@@ -90,15 +89,6 @@ public class Game : SingletonMonoBehaviour<Game>
 		HungerDisplay.Setup("Full",
 			() => $"{PlayerCharacter.DisplayedVitals.Hunger}/{PlayerCharacter.DisplayedStats.HungerMax}",
 			() => (float)PlayerCharacter.DisplayedVitals.Hunger / PlayerCharacter.DisplayedStats.HungerMax);
-	}
-
-	private void PlayerCharacter_ActionPicked(GameAction gameAction)
-	{
-		List<Actor> actors = new();
-		actors.Add(PlayerCharacter);
-		actors.AddRange(Allies);
-		actors.AddRange(Enemies);
-		TurnManager.ProcessTurn(actors);
 	}
 
 	private void InitializeGame()
@@ -124,7 +114,6 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	internal void ShowGameOver()
 	{
-		PlayerCharacter.ActionPicked -= PlayerCharacter_ActionPicked;
 		GameOverScreen.gameObject.SetActive(true);
 		GameOverScreen.Setup(PlayerCharacter);
 
@@ -136,7 +125,6 @@ public class Game : SingletonMonoBehaviour<Game>
 		TurnManager.InteruptTurn();
 		//TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
 
-		TurnManager.CurrentTurnPhase = TurnPhase.Player;
 		PlayerCharacter.Vitals.Floor++;
 		PlayerCharacter.DisplayedVitals.Floor++;
 		PlayerCharacter.currentInteractable = null;
@@ -186,7 +174,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		CurrentDungeon.SetStairs(CurrentDungeon.GetRandomOpenEnemyPosition());
 		Debug.Log("Stairs Created", this);
 
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerCharacter.Vitals.Floor);
 			var enemy = Instantiate(enemyPrefab, this.transform);
@@ -218,6 +206,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerCharacter.Vitals.Floor);
+
+		TurnManager.ProcessTurn();
 	}
 
 	private void Update()

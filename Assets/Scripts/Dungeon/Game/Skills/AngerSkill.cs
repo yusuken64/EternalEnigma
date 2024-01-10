@@ -9,18 +9,18 @@ public class AngerSkill : Skill
 	public override string SkillName => "Anger";
 	public StatusEffect StrengthStatusEffect;
 
-	internal override List<GameAction> GetEffects(Player player)
+	internal override List<GameAction> GetEffects(Character caster)
 	{
 		return new()
 		{
-			new ApplyStatusEffectAction(player, StrengthStatusEffect, player)
+			new ApplyStatusEffectAction(caster, StrengthStatusEffect, caster)
 		};
 	}
 
-	internal override IEnumerator ExecuteRoutine(Player player)
+	internal override IEnumerator ExecuteRoutine(Character caster)
 	{
-		player.VisualParent.transform.DOPunchScale(Vector3.one * 3, 1f, 50);
+		caster.VisualParent.transform.DOPunchScale(Vector3.one * 3, 1f, 50);
 		yield return new WaitForSecondsRealtime(1f);
-		player.PlayIdleAnimation();
+		caster.PlayIdleAnimation();
 	}
 }

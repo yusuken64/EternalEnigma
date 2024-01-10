@@ -360,7 +360,7 @@ MonoBehaviour:
   VisualParent: {fileID: 4192354829797734571}
   CurrentFacing: 0
   StartingStats:
-    HPMax: 50
+    HPMax: 5
     SPMax: 0
     HungerMax: 0
     Strength: 2

@@ -8,11 +8,11 @@ public abstract class Skill : MonoBehaviour
 	public abstract int SPCost { get; }
 	public abstract string SkillName { get; }
 
-	internal abstract List<GameAction> GetEffects(Player player);
-	internal abstract IEnumerator ExecuteRoutine(Player player);
+	internal abstract List<GameAction> GetEffects(Character caster);
+	internal abstract IEnumerator ExecuteRoutine(Character caster);
 
-	internal virtual bool IsValid(Player player)
+	internal virtual bool IsValid(Character caster)
 	{
-		return player.Vitals.SP >= SPCost;
+		return caster.Vitals.SP >= SPCost;
 	}
 }

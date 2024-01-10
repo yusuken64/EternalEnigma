@@ -11,10 +11,10 @@ public class WideAttackSkill : Skill
 	public GameObject ParticlePrefab;
 	private IEnumerable<Vector3Int> _attackTiles;
 
-	internal override List<GameAction> GetEffects(Player player)
+	internal override List<GameAction> GetEffects(Character caster)
 	{
-		var offset = Dungeon.GetFacingOffset(player.CurrentFacing);
-		Vector3Int tilemapPosition = player.TilemapPosition;
+		var offset = Dungeon.GetFacingOffset(caster.CurrentFacing);
+		Vector3Int tilemapPosition = caster.TilemapPosition;
 		var attackPosition = tilemapPosition + offset;
 		var neighborHoodTiles = Game.Instance.CurrentDungeon.GetWalkableNeighborhoodTiles(attackPosition);
 		_attackTiles = neighborHoodTiles.Where(x =>
@@ -31,8 +31,8 @@ public class WideAttackSkill : Skill
 			.Where(x => x != null)
 			.Select(enemy =>
 			{
-				AttackAction.GetAttackDamage(player, enemy, out bool hit, out int damage);
-				return new TakeDamageAction(player, enemy, damage, true, !hit);
+				AttackAction.GetAttackDamage(caster, enemy, out bool hit, out int damage);
+				return new TakeDamageAction(caster, enemy, damage, true, !hit);
 			});
 
 		return takeDamageActions
@@ -40,12 +40,12 @@ public class WideAttackSkill : Skill
 			.ToList();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Player player)
+	internal override IEnumerator ExecuteRoutine(Character caster)
 	{
-		var original = player.VisualParent.transform.rotation;
-		player.VisualParent.transform.DORotate(new Vector3(0, 0, 360), 0.4f, RotateMode.FastBeyond360)
+		var original = caster.VisualParent.transform.rotation;
+		caster.VisualParent.transform.DORotate(new Vector3(0, 0, 360), 0.4f, RotateMode.FastBeyond360)
 			.SetRelative();
-		player.PlayAttackAnimation();
+		caster.PlayAttackAnimation();
 		yield return new WaitForSecondsRealtime(0.5f);
 		foreach (var attackTile in _attackTiles)
 		{
@@ -55,7 +55,7 @@ public class WideAttackSkill : Skill
 			yield return new WaitForSecondsRealtime(0.1f);
 		}
 		yield return new WaitForSecondsRealtime(0.3f);
-		player.PlayIdleAnimation();
-		player.VisualParent.transform.rotation = original;
+		caster.PlayIdleAnimation();
+		caster.VisualParent.transform.rotation = original;
 	}
 }

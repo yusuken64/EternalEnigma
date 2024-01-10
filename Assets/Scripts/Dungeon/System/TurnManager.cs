@@ -8,7 +8,6 @@ public class TurnManager : MonoBehaviour
 {
 	public SimultaneousCoroutines SimultaneousCoroutines;
 	public SequentialCoroutines SequentialCoroutines;
-	public TurnPhase CurrentTurnPhase { get; internal set; }
 	private bool interuptTurn = false; //this happens when the stairs are taken
 
 	private void Start()
@@ -18,47 +17,65 @@ public class TurnManager : MonoBehaviour
 	}
 
 	//player is assumed to be the first actor
-	public void ProcessTurn(List<Actor> actors)
-	{
-		StartCoroutine(ProcessTurnRoutine(actors));
-	}
-
-	private IEnumerator ProcessTurnRoutine(List<Actor> actors)
+	public void ProcessTurn()
 	{
 		interuptTurn = false;
-		CurrentTurnPhase = TurnPhase.Enemy;
-		List<ActorAction> actionReplays = new ();
+		StartCoroutine(ProcessTurnRoutine());
+	}
 
-		foreach(var actor in actors)
+	private IEnumerator ProcessTurnRoutine()
+	{
+		while (!interuptTurn)
 		{
-			actor.TickStatusEffects();
-		}
+			List<Actor> actors = new();
+			actors.Add(Game.Instance.PlayerCharacter);
+			actors.AddRange(Game.Instance.Allies);
+			actors.AddRange(Game.Instance.Enemies);
 
-		foreach (var actor in actors)
-		{
-			int actions = actor.ActionsPerTurn;
-			for (int i = 0; i < actions; i++)
+			interuptTurn = false;
+			List<ActorAction> actionReplays = new();
+
+			foreach (var actor in actors)
 			{
-				var primaryAction = actor?.DetermineActions();
-				if (primaryAction == null) { continue; }
-				List<GameAction> gameActions = primaryAction;
+				actor.TickStatusEffects();
+			}
 
-				while (gameActions.Any())
+			foreach (var actor in actors)
+			{
+				while (actor.ActionsLeft > 0)
 				{
-					var sideEffectAction = gameActions.First();
-					gameActions.Remove(sideEffectAction);
-					
-					gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
-					actionReplays.Add(new ActorAction(actor, sideEffectAction));
+					while (actor.IsBusy)
+					{
+						yield return null;
+					}
+					actor?.DetermineAction();
+					var primaryAction = actor?.GetDeterminedAction();
+					if (primaryAction == null) { continue; }
+					List<GameAction> gameActions = primaryAction;
+
+					while (gameActions.Any())
+					{
+						var sideEffectAction = gameActions.First();
+						gameActions.Remove(sideEffectAction);
+						if (sideEffectAction == null) { continue; }
+
+						gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
+						actionReplays.Add(new ActorAction(actor, sideEffectAction));
+
+						if (interuptTurn)
+						{
+							break;
+						}
+
+						foreach (var actor2 in actors)
+						{
+							gameActions.AddRange(actor2.GetResponseTo(sideEffectAction));
+						}
+					}
 
 					if (interuptTurn)
 					{
 						break;
-					}
-
-					foreach (var actor2 in actors)
-					{
-						gameActions.AddRange(actor2.GetResponseTo(sideEffectAction));
 					}
 				}
 
@@ -66,82 +83,76 @@ public class TurnManager : MonoBehaviour
 				{
 					break;
 				}
-			}
 
-			if (interuptTurn)
-			{
-				break;
-			}
+				var statusSideEffectActions = actor.GetStatusEffectSideEffects();
 
-			var statusSideEffectActions = actor.GetStatusEffectSideEffects();
-
-			while (statusSideEffectActions.Any())
-			{
-				var sideEffectAction = statusSideEffectActions.First();
-				statusSideEffectActions.Remove(sideEffectAction);
-				actionReplays.Add(new ActorAction(actor, sideEffectAction));
-
-				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
-			}
-
-			var trapSideEffects = actor.GetTrapSideEffects();
-			while (trapSideEffects.Any())
-			{
-				var trapSideEffect = trapSideEffects.First();
-				trapSideEffects.Remove(trapSideEffect);
-				actionReplays.Add(new ActorAction(actor, trapSideEffect));
-
-				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(trapSideEffect));
-			}
-		}
-
-		while (actionReplays.Any())
-		{
-			var action = actionReplays[0];
-			if (action.Actor == null)
-			{
-				actionReplays.Remove(action);
-				continue;
-			}
-			var simultaneousEffects = GetSimultaneousActions(action, actionReplays);
-			actionReplays.RemoveAll(simultaneousEffects.Contains);
-
-			var effectsGroupedByActors = simultaneousEffects.GroupBy(x => x.Actor);
-
-			List<IEnumerator> simulaneousEffects = effectsGroupedByActors.Select(x => 
-			{
-				if (x.Count() > 1)
+				while (statusSideEffectActions.Any())
 				{
-					return SequentialCoroutines.RunCoroutines(x.Select(y => y.Actor.ExecuteActionRoutine(y.Action)).ToList());
-				}
-				else
-				{
-					return x.Key.ExecuteActionRoutine(x.First().Action);
+					var sideEffectAction = statusSideEffectActions.First();
+					statusSideEffectActions.Remove(sideEffectAction);
+					actionReplays.Add(new ActorAction(actor, sideEffectAction));
+
+					statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 				}
 
-			}).ToList();
-			
-			yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
-		}
+				var trapSideEffects = actor.GetTrapSideEffects();
+				while (trapSideEffects.Any())
+				{
+					var trapSideEffect = trapSideEffects.First();
+					trapSideEffects.Remove(trapSideEffect);
+					actionReplays.Add(new ActorAction(actor, trapSideEffect));
 
-		if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerCharacter))
-		{
-			Game.Instance.ShowGameOver();
-		}
+					statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(trapSideEffect));
+				}
+			}
 
-		foreach(var deadUnit in Game.Instance.DeadUnits)
-		{
-			Destroy(deadUnit.gameObject);
-		}
-		Game.Instance.DeadUnits.Clear();
+			while (actionReplays.Any())
+			{
+				var action = actionReplays[0];
+				if (action.Actor == null)
+				{
+					actionReplays.Remove(action);
+					continue;
+				}
+				var simultaneousEffects = GetSimultaneousActions(action, actionReplays);
+				actionReplays.RemoveAll(simultaneousEffects.Contains);
 
-		foreach (var actor in actors)
-		{
-			actor.StartTurn();
-		}
-		CurrentTurnPhase = TurnPhase.Player;
+				var effectsGroupedByActors = simultaneousEffects.GroupBy(x => x.Actor);
 
-		CheckStats();
+				List<IEnumerator> simulaneousEffects = effectsGroupedByActors.Select(x =>
+				{
+					if (x.Count() > 1)
+					{
+						return SequentialCoroutines.RunCoroutines(x.Select(y => y.Actor.ExecuteActionRoutine(y.Action)).ToList());
+					}
+					else
+					{
+						return x.Key.ExecuteActionRoutine(x.First().Action);
+					}
+
+				}).ToList();
+
+				yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
+			}
+
+			if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerCharacter))
+			{
+				Game.Instance.ShowGameOver();
+			}
+
+			foreach (var deadUnit in Game.Instance.DeadUnits)
+			{
+				Destroy(deadUnit.gameObject);
+			}
+			Game.Instance.DeadUnits.Clear();
+
+			foreach (var actor in actors)
+			{
+				actor.StartTurn();
+			}
+
+			CheckStats();
+		}
 	}
 
 	internal void InteruptTurn()
@@ -197,7 +208,9 @@ public enum TurnPhase
 
 public interface Actor
 {
-	List<GameAction> DetermineActions();
+	bool IsBusy { get; }
+	List<GameAction> GetDeterminedAction();
+	void DetermineAction();
 	List<GameAction> ExecuteActionImmediate(GameAction action);
 	IEnumerator ExecuteActionRoutine(GameAction action);
 	IEnumerable<GameAction> GetResponseTo(GameAction sideEffectAction);
@@ -206,8 +219,7 @@ public interface Actor
 	List<GameAction> GetStatusEffectSideEffects();
 	List<GameAction> GetTrapSideEffects();
 
-	int ActionsPerTurn { get; }
-	int AttacksPerTurn { get; }
+	int ActionsLeft { get; }
 }
 
 public abstract class GameAction

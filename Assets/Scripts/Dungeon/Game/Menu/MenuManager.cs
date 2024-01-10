@@ -11,6 +11,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public EventSystem EventSystem;
 	public InventoryMenu InventoryMenu;
 	public ActionDialog ActionDialog;
+	public AllyActionDialog AllyActionDialog;
 	public bool Opened;
 
 	public Stack<Dialog> DialogStack = new();
@@ -53,6 +54,8 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	{
 		InventoryMenu.gameObject.SetActive(false);
 		ActionDialog.gameObject.SetActive(false);
+		AllyActionDialog.gameObject.SetActive(false);
+		AllyActionDialog.DynamicActionDialog.gameObject.SetActive(false);
 		DialogStack.Clear();
 
 		Opened = false;
@@ -70,7 +73,17 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		Opened = true;
 	}
 
-	private Action LateAction;
+	public void OpenAllyMenu(Ally ally)
+	{
+		this.gameObject.SetActive(true);
+		MenuManager.Open(AllyActionDialog);
+		AllyActionDialog.Setup(ally);
+		AllyActionDialog.SetNavigation();
+
+		Opened = true;
+	}
+
+	public Action LateAction;
 
 	private void LateUpdate()
 	{

@@ -1,5 +1,4 @@
-﻿using JuicyChickenGames.Menu;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -19,7 +18,12 @@ public class Player : Character
 	public Animator HeroAnimator;
 
 	public GameObject ThrownItemProjectilePrefab;
+	private bool isBusy;
+	private float menuCooldown;
 
+	public List<GameAction> DeterminedActions { get; private set; }
+
+	public override bool IsBusy => isBusy;
 	private void Start()
 	{
 		HeroAnimator.Play("");
@@ -32,6 +36,9 @@ public class Player : Character
 
 	private void Update()
 	{
+		menuCooldown += Time.deltaTime;
+		//Debug.Log($"Player is busy {IsBusy}");
+
 		//TODO handle diagonal input
 		if (Input.GetKey(KeyCode.W) ||
 			Input.GetKey(KeyCode.A) ||
@@ -42,13 +49,15 @@ public class Player : Character
 		}
 
 		var game = Game.Instance;
-		if (Game.Instance.InventoryMenu.isActiveAndEnabled)
+		if (Game.Instance.InventoryMenu.isActiveAndEnabled ||
+			Game.Instance.AllyMenu.isActiveAndEnabled)
 		{
+			menuCooldown = 0;
 			holdTime = 0;
 			return;
 		}
 
-		if (game.TurnManager.CurrentTurnPhase == TurnPhase.Player)
+		if (IsBusy && menuCooldown > 0.2f)
 		{
 			DeterminePlayerAction();
 		}
@@ -141,7 +150,7 @@ public class Player : Character
 			SetAction(new SkillAction(this, Skills[0]));
 			return;
 		}
-		else if(Input.GetKeyDown(KeyCode.Alpha2))
+		else if (Input.GetKeyDown(KeyCode.Alpha2))
 		{
 			SetAction(new SkillAction(this, Skills[1]));
 			return;
@@ -182,6 +191,26 @@ public class Player : Character
 			}
 		}
 
+		if(userAction is AttackAction attackAction)
+		{
+			var attackedAlly = Game.Instance.AllCharacters
+				.Where(x => x != this)
+				.Where(x => x.Team == Team.Player)
+				.FirstOrDefault(x => x.TilemapPosition == attackAction.attackPosition)
+				as Ally;
+
+			if (attackedAlly != null)
+			{
+				//open ally menu instead
+				var menuManager = FindObjectOfType<MenuManager>(true);
+				menuManager.OpenAllyMenu(attackedAlly);
+
+				holdTime = 0;
+				pickedAction = null;
+				return;
+			}
+		}
+
 		if (!userAction.IsValid(this))
 		{
 			pickedAction = null;
@@ -189,24 +218,32 @@ public class Player : Character
 		}
 
 		pickedAction = userAction;
-		ActionPicked?.Invoke(userAction);
+		isBusy = false;
 	}
 
-	public override List<GameAction> DetermineActions()
+	public override List<GameAction> GetDeterminedAction()
+	{
+		//isBusy = true;
+		this.Vitals.ActionsPerTurnLeft--;
+		this.DisplayedVitals.ActionsPerTurnLeft--;
+		return this.DeterminedActions;
+	}
+	public override void DetermineAction()
 	{
 		//this should affect player the same way, to do in characerbase class?
 		var actionOverrides = StatusEffects.Select(x => x.GetActionOverride(this))
 			.Where(x => x != null);
 		if (actionOverrides.Any())
 		{
-			return actionOverrides.ToList();
+			this.DeterminedActions = actionOverrides.ToList();
+			return;
 		}
 
-		List<GameAction> actions = new();
+		DeterminedActions = new();
 
-		actions.Add(pickedAction);
+		DeterminedActions.Add(pickedAction);
 
-		actions.Add(
+		DeterminedActions.Add(
 			new ModifyStatAction(
 			this,
 			this,
@@ -228,7 +265,7 @@ public class Player : Character
 
 		if (Vitals.HungerAccumulate > FinalStats.HungerAccumulateThreshold)
 		{
-			actions.Add(new ModifyStatAction(
+			DeterminedActions.Add(new ModifyStatAction(
 				this,
 				this,
 				(stats, vitals) =>
@@ -241,13 +278,13 @@ public class Player : Character
 
 		if (Vitals.Hunger <= 0)
 		{
-			actions.Add(new TakeDamageAction(this, this, 1, true));
+			DeterminedActions.Add(new TakeDamageAction(this, this, 1, true));
 		}
 
 		if (Vitals.HPRegenAcccumlate > FinalStats.HPRegenAcccumlateThreshold &&
 			Vitals.Hunger > 0)
 		{
-			actions.Add(new ModifyStatAction(
+			DeterminedActions.Add(new ModifyStatAction(
 				this,
 				this,
 				(stats, vitals) =>
@@ -261,7 +298,7 @@ public class Player : Character
 		if (Vitals.SPRegenAcccumlate > FinalStats.SPRegenAcccumlateThreshold &&
 			Vitals.Hunger > 0)
 		{
-			actions.Add(new ModifyStatAction(
+			DeterminedActions.Add(new ModifyStatAction(
 				this,
 				this,
 				(stats, vitals) =>
@@ -271,7 +308,6 @@ public class Player : Character
 				},
 				false));
 		}
-		return actions;
 	}
 
 	public override List<GameAction> ExecuteActionImmediate(GameAction action)
@@ -304,6 +340,7 @@ public class Player : Character
 
 	public override void StartTurn()
 	{
+		isBusy = true;
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
 
@@ -351,7 +388,4 @@ public class Player : Character
 	{
 		HeroAnimator.Play("Die_SwordShield", 0);
 	}
-
-	public delegate void ActionHandler(GameAction gameAction);
-	public event ActionHandler ActionPicked;
 }

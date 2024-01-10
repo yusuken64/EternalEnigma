@@ -67,7 +67,8 @@ internal class MovementAction : GameAction
 	internal override bool CanBeCombined(GameAction action)
 	{
 		return action is MovementAction ||
-			action is SwapAllyPositionAction;
+			action is SwapAllyPositionAction ||
+			action is WaitAction;
 	}
 }
 
@@ -75,15 +76,15 @@ internal class AttackAction : GameAction
 {
 	private readonly Character attacker;
 	private Vector3Int originalPosition;
-	private Vector3Int newMapPosition;
+	internal Vector3Int attackPosition;
 
 	public AttackAction(Character attacker,
 		Vector3Int originalPosition,
-		Vector3Int newMapPosition)
+		Vector3Int attackPosition)
 	{
 		this.attacker = attacker;
 		this.originalPosition = originalPosition;
-		this.newMapPosition = newMapPosition;
+		this.attackPosition = attackPosition;
 	}
 
 	//http://000.la.coocan.jp/torneco/damage.html#attack
@@ -95,7 +96,7 @@ internal class AttackAction : GameAction
 	/// <returns></returns>
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == newMapPosition);
+		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == attackPosition);
 
 		if (target == null)
 		{
@@ -135,7 +136,7 @@ internal class AttackAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		var canMove = Game.Instance.CurrentDungeon.IsWalkable(newMapPosition);
+		var canMove = Game.Instance.CurrentDungeon.IsWalkable(attackPosition);
 
 		return canMove;
 	}
@@ -396,12 +397,19 @@ public class WaitAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
-		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
+		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.1f)
 			.WaitForCompletion();
 	}
 
 	internal override bool IsValid(Character character)
 	{
 		return true;
+	}
+
+	internal override bool CanBeCombined(GameAction action)
+	{
+		return action is MovementAction ||
+			action is SwapAllyPositionAction ||
+			action is WaitAction;
 	}
 }

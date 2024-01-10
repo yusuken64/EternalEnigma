@@ -12,6 +12,8 @@ public class Enemy : Character
 	public string Description { get; internal set; }
 
 	public List<PolicyBase> Policies;
+	public override bool IsBusy => false;
+	private List<GameAction> determinedActions;
 
 	private void Start()
 	{
@@ -36,15 +38,17 @@ public class Enemy : Character
 		Policies = Policies.OrderBy(x => x.priority).ToList();
 	}
 
-	public override List<GameAction> DetermineActions()
+	public override void DetermineAction()
 	{
 		if (this?.gameObject == null)
 		{
-			return null;
+			determinedActions = new();
+			return;
 		}
 		if (Vitals.HP <= 0)
 		{
-			return null;
+			determinedActions = new();
+			return;
 		}
 
 		//this should affect player the same way, to do in characerbase class?
@@ -52,12 +56,11 @@ public class Enemy : Character
 			.Where(x => x != null);
 		if (actionOverrides.Any())
 		{
-			return actionOverrides.ToList();
+			determinedActions = actionOverrides.ToList();
+			return;
 		}
 
 		var game = Game.Instance;
-		this.Vitals.ActionsPerTurnLeft--;
-		this.DisplayedVitals.ActionsPerTurnLeft--;
 		PursuitTarget = GetTarget();
 
 		if (PursuitTarget != null)
@@ -79,10 +82,15 @@ public class Enemy : Character
 		var action = Policies.FirstOrDefault(x => x.ShouldRun());
 		if (action != null)
 		{
-			return action.GetActions();
+			determinedActions = action.GetActions();
 		}
+	}
 
-		return new();
+	public override List<GameAction> GetDeterminedAction()
+	{
+		this.Vitals.ActionsPerTurnLeft--;
+		this.DisplayedVitals.ActionsPerTurnLeft--;
+		return determinedActions;
 	}
 
 	private Character GetTarget()
@@ -93,9 +101,6 @@ public class Enemy : Character
 		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(TilemapPosition);
 
 		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team == Team.Player);
-		var ordered = playerTeamCharacters
-			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
-			.ThenBy(x => x.TilemapPosition == PursuitPosition).ToList();
 
 		//TODO: prioritise this somehow?
 		return playerTeamCharacters
@@ -105,7 +110,7 @@ public class Enemy : Character
 	}
 
 	//BoundsInt.Contain doesn't work?
-	private bool Contains2D(BoundsInt visionBounds, Vector3Int tilemapPosition)
+	public static bool Contains2D(BoundsInt visionBounds, Vector3Int tilemapPosition)
 	{
 		return visionBounds.xMin <= tilemapPosition.x &&
 			visionBounds.xMax >= tilemapPosition.x &&
@@ -140,6 +145,7 @@ public class Enemy : Character
 
 	public override void StartTurn()
 	{
+		determinedActions = null;
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
 

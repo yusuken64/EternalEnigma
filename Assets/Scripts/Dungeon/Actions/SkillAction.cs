@@ -4,34 +4,34 @@ using System.Linq;
 
 internal class SkillAction : GameAction
 {
-	private Player player;
+	private Character caster;
 	private Skill skill;
 
-	public SkillAction(Player player, Skill skill)
+	public SkillAction(Character caster, Skill skill)
 	{
-		this.player = player;
+		this.caster = caster;
 		this.skill = skill;
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		AddMetricsModification(
-			player,
+			caster,
 			(stats, vitals) =>
 			{
 				vitals.SP -= skill.SPCost;
 			});
 
-		return skill.GetEffects(player);
+		return skill.GetEffects(caster);
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
-		return skill.ExecuteRoutine(player);
+		return skill.ExecuteRoutine(caster);
 	}
 
 	internal override bool IsValid(Character character)
 	{
-		return skill.IsValid(player);
+		return skill.IsValid(caster);
 	}
 }

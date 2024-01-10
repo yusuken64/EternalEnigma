@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,18 +6,23 @@ using UnityEngine;
 
 public class Ally : Character
 {
+	public List<Skill> Skills;
+
 	public Animator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;
 	private GameAction _forcedAction;
 
 	private AllyAttackPolicy AllyAttackPolicy;
-	private PursuitPolicy PursuitPolicy;
-
+	private AllyPursuitPolicy PursuitPolicy;
+	private WanderPolicy WanderPolicy;
+	public override bool IsBusy => false;
+	private List<GameAction> determinedActions;
 	private void Start()
 	{
 		AllyAttackPolicy = new AllyAttackPolicy(Game.Instance, this, 1);
-		PursuitPolicy = new PursuitPolicy(Game.Instance, this, 2);
+		PursuitPolicy = new AllyPursuitPolicy(Game.Instance, this, 2);
+		WanderPolicy = new WanderPolicy(Game.Instance, this, 3);
 	}
 
 	public void SetAction(GameAction forcedAction)
@@ -24,11 +30,12 @@ public class Ally : Character
 		_forcedAction = forcedAction;
 	}
 
-	public override List<GameAction> DetermineActions()
+	public override void DetermineAction()
 	{
 		if (Vitals.HP <= 0)
 		{
-			return null;
+			determinedActions = new();
+			return;
 		}
 		
 		//this should affect player the same way, to do in characerbase class?
@@ -36,45 +43,78 @@ public class Ally : Character
 			.Where(x => x != null);
 		if (actionOverrides.Any())
 		{
-			return actionOverrides.ToList();
+			determinedActions = actionOverrides.ToList();
+			return;
 		}
 
 		if (_forcedAction != null)
 		{
 			//do action
-			return new List<GameAction>()
+			determinedActions = new List<GameAction>()
 			{
 				_forcedAction
 			};
+			return;
 		}
 
 		if (AllyAttackPolicy.ShouldRun())
 		{
-			return AllyAttackPolicy.GetActions();
+			determinedActions =  AllyAttackPolicy.GetActions();
+			return;
 		}
 
-		PursuitPosition = Game.Instance.PlayerCharacter.TilemapPosition;
+		PursuitTarget = GetTarget();
+		if (PursuitTarget != null)
+		{
+			PursuitPosition = PursuitTarget.TilemapPosition;
+		}
 		if (PursuitPolicy.ShouldRun())
 		{
-			return PursuitPolicy.GetActions();
+			determinedActions = PursuitPolicy.GetActions();
+			return;
 		}
-
-		switch (AllyStrategy)
+		if (WanderPolicy.ShouldRun())
 		{
-			case AllyStrategy.Passive:
-				//follow player
-				PursuitPosition = Game.Instance.PlayerCharacter.TilemapPosition;
-				break;
-			case AllyStrategy.Aggresive:
-				//if can see enemy, walk toward them
-				//else follow player
-				break;
+			determinedActions = WanderPolicy.GetActions();
+			return;
 		}
 
-		return new List<GameAction>()
+		determinedActions = new List<GameAction>()
 		{
 			new WaitAction()
 		};
+	}
+
+	private Character GetTarget()
+	{
+		var game = Game.Instance;
+
+		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(TilemapPosition);
+
+		List<Character> pursuitTargets = new List<Character>();
+		
+		if (AllyStrategy == AllyStrategy.Follow)
+		{
+			pursuitTargets.Add(game.PlayerCharacter);
+		}
+		else if (AllyStrategy == AllyStrategy.Aggresive)
+		{
+			pursuitTargets.Add(game.PlayerCharacter);
+			pursuitTargets.AddRange(game.Enemies);
+		}
+
+		return pursuitTargets
+			.OrderBy(x => x == game.PlayerCharacter)
+			.ThenBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
+			.ThenBy(x => x.TilemapPosition == PursuitPosition)
+			.FirstOrDefault(x => Enemy.Contains2D(visionBounds, x.TilemapPosition));
+	}
+
+	public override List<GameAction> GetDeterminedAction()
+	{
+		this.Vitals.ActionsPerTurnLeft--;
+		this.DisplayedVitals.ActionsPerTurnLeft--;
+		return determinedActions;
 	}
 
 	public override List<GameAction> ExecuteActionImmediate(GameAction action)
@@ -107,6 +147,14 @@ public class Ally : Character
 		{
 			return new List<GameAction>();
 		}
+		if (action is MovementAction movementAction)
+		{
+			var target = GetTarget();
+			if (target != null)
+			{
+				PursuitPosition = target.TilemapPosition;
+			}
+		}
 		return GetActionResponses(action);
 	}
 
@@ -124,6 +172,7 @@ public class Ally : Character
 
 	public override void StartTurn()
 	{
+		determinedActions = null;
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
 
@@ -190,8 +239,47 @@ internal class AllyAttackPolicy : PolicyBase
 	}
 }
 
+public class AllyPursuitPolicy : PolicyBase
+{
+	private readonly Ally ally;
+	private List<AStar.Node> path;
+
+	public AllyPursuitPolicy(Game game, Ally ally, int priority) : base(game, ally as Character, priority)
+	{
+		this.ally = ally;
+	}
+
+	public override List<GameAction> GetActions()
+	{
+		var newMapPosition = new Vector3Int(path[0].X, path[0].Y);
+		character.SetFacingByTargetPosition(newMapPosition);
+		return new List<GameAction>() { new MovementAction(character, character.TilemapPosition, newMapPosition) };
+	}
+
+	public override bool ShouldRun()
+	{
+		if (ally.AllyStrategy == AllyStrategy.HoldPosition)
+		{
+			return false;
+		}
+
+		if (character.PursuitPosition == null) { return false; }
+
+		path = character.CalculatePursuitPath();
+
+		if (path != null &&
+			path.Count > 0)
+		{
+			return true;
+		}
+
+		return false;
+	}
+}
+
 public enum AllyStrategy
 {
-	Passive,
-	Aggresive
+	Follow,
+	Aggresive,
+	HoldPosition
 }

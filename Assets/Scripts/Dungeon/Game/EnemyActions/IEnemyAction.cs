@@ -158,6 +158,10 @@ public class WanderPolicy : PolicyBase
 		{
 			return enemy.CurrentEnemyState == EnemyState.Wander;
 		}
+		if (character is Ally ally)
+		{
+			return ally.AllyStrategy != AllyStrategy.HoldPosition;
+		}
 
 		return true;
 	}

@@ -44,7 +44,7 @@ public class AttackPolicy : PolicyBase
 		}
 
 		//if will attack attack
-			if (WillAttack(character) &&
+		if (WillAttack(character) &&
 			CanAttack(game, character.PursuitTarget, character))
 		{
 			return true;
@@ -88,14 +88,19 @@ public class AttackPolicy : PolicyBase
 			return false;
 		}
 
-		var x1 = targetCharacter.TilemapPosition.x;
-		var y1 = targetCharacter.TilemapPosition.y;
-		var x2 = character.TilemapPosition.x;
-		var y2 = character.TilemapPosition.y;
-		//target is within attack distance
-		var chebyshevDistance = Mathf.Max(Mathf.Abs(x2 - x1), Mathf.Abs(y2 - y1));
+		var attackBounds = character.GetAttackBounds();
+		var targetBounds = targetCharacter.ToBounds();
 
-		return chebyshevDistance <= 1;
+		return attackBounds.Overlaps2D(targetBounds);
+
+		//var x1 = targetCharacter.TilemapPosition.x;
+		//var y1 = targetCharacter.TilemapPosition.y;
+		//var x2 = character.TilemapPosition.x;
+		//var y2 = character.TilemapPosition.y;
+		////target is within attack distance
+		//var chebyshevDistance = Mathf.Max(Mathf.Abs(x2 - x1), Mathf.Abs(y2 - y1));
+
+		//return chebyshevDistance <= 1;
 	}
 }
 

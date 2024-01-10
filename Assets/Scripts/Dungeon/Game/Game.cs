@@ -32,6 +32,8 @@ public class Game : SingletonMonoBehaviour<Game>
 	public GameOverScreen GameOverScreen;
 	public NewFloorMessage NewFloorMessage;
 
+	public List<StatusEffect> StatusEffectPrefabs;
+
 	internal List<Character> AllCharacters
 	{
 		get

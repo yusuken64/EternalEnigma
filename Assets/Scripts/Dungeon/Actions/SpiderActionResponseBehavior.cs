@@ -1,8 +1,10 @@
-﻿public class SpiderActionResponseBehavior : ResponseBehavior
+﻿using UnityEngine;
+
+public class SpiderActionResponseBehavior : MonoBehaviour, IResponseBehavior
 {
 	public Enemy EnemyToSpawnPrefab;
 
-	public override GameActionResponse GetActionResponse(GameAction gameAction)
+	public GameActionResponse GetActionResponse(GameAction gameAction)
 	{
 		return new SpiderActionResponse(EnemyToSpawnPrefab);
 	}

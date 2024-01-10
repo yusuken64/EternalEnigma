@@ -98,7 +98,7 @@ public class Enemy : Character
 		var game = Game.Instance;
 
 		//determine if the monster can see any character player team
-		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(TilemapPosition);
+		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(this, TilemapPosition);
 
 		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team == Team.Player);
 

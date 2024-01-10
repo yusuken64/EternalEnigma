@@ -24,7 +24,7 @@ public class WideAttackSkill : Skill
 		});
 
 		var what = _attackTiles.ToList();
-		var enemies = _attackTiles.Select(tile => Game.Instance.CurrentDungeon.GetEnemyAtPosition(tile)).ToList();
+		var enemies = _attackTiles.Select(tile => Game.Instance.CurrentDungeon.GetCharacterAtPosition(tile)).ToList();
 
 		var takeDamageActions = _attackTiles
 			.Select(tile => Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == tile))

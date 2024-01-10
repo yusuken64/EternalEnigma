@@ -10,16 +10,21 @@ internal class MovementAction : GameAction
 	private Vector3Int originalPosition;
 	internal Vector3Int newMapPosition;
 
+	public Character Character { get; }
+
 	public MovementAction(Character character, Vector3Int originalPosition, Vector3Int newMapPosition)
 	{
+		Character = character;
 		this.originalPosition = originalPosition;
 		this.newMapPosition = newMapPosition;
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		var overlapTarget = Game.Instance
-			.AllCharacters.Any(x => x.TilemapPosition == newMapPosition);
+		bool excludeAllies = character is Player;
+
+		var overlapTarget = Game.Instance.CurrentDungeon
+			.OverlapsAnyOtherCharacter(character, Character.ToBounds(character.FootPrint, newMapPosition), excludeAllies) != null;
 
 		if (overlapTarget)
 		{
@@ -52,14 +57,12 @@ internal class MovementAction : GameAction
 	{
 		var canWalk = Game.Instance.CurrentDungeon.CanWalkTo(originalPosition, newMapPosition);
 
-		Game game = Game.Instance;
-
-		var overlapping = game.AllCharacters
-			.Select(x => x.TilemapPosition)
-			.Any(x => x == newMapPosition);
+		bool excludeAllies = character is Player;
+		var overlapTarget = Game.Instance.CurrentDungeon
+			.OverlapsAnyOtherCharacter(character, Character.ToBounds(character.FootPrint, newMapPosition), excludeAllies) != null;
 
 		var canMove = canWalk &&
-			!overlapping;
+			!overlapTarget;
 
 		return canMove;
 	}
@@ -96,7 +99,7 @@ internal class AttackAction : GameAction
 	/// <returns></returns>
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == attackPosition);
+		var target = Game.Instance.CurrentDungeon.OverlapsAnyOtherCharacter(attacker, Character.ToBounds(attackPosition));
 
 		if (target == null)
 		{
@@ -258,7 +261,7 @@ public class ModifyStatAction : GameAction
 
 public class DeathAction : GameAction
 {
-	private Character target;
+	internal Character target;
 	private Vector3Int dropPosition;
 	private bool droppedItem;
 	private readonly Character attacker;

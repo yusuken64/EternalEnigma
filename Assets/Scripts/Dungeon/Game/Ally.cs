@@ -89,7 +89,7 @@ public class Ally : Character
 	{
 		var game = Game.Instance;
 
-		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(TilemapPosition);
+		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(this, TilemapPosition);
 
 		List<Character> pursuitTargets = new List<Character>();
 		
@@ -229,10 +229,11 @@ internal class AllyAttackPolicy : PolicyBase
 
 	public override bool ShouldRun()
 	{
-		var neighborhoodTiles = Game.Instance.CurrentDungeon.GetWalkableNeighborhoodTiles(_ally.TilemapPosition);
-		target = neighborhoodTiles.Select(x => Game.Instance.AllCharacters.FirstOrDefault(y => y.TilemapPosition == x))
+		var attackBounds =_ally.GetAttackBounds();
+		target = Game.Instance.AllCharacters
 			.Where(x => x != null)
 			.Where(x => x.Team != _ally.Team)
+			.Where(x => attackBounds.Overlaps2D(x.ToBounds()))
 			.FirstOrDefault();
 
 		return target != null;

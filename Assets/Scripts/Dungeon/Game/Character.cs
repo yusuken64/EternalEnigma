@@ -13,6 +13,7 @@ public abstract class Character : MonoBehaviour, Actor
 	public Facing CurrentFacing;
 
 	public StartingStats StartingStats;
+	public FootPrint FootPrint;
 
 	private Stats baseStats;
 
@@ -36,6 +37,7 @@ public abstract class Character : MonoBehaviour, Actor
 	}
 
 	private Stats cachedFinalStats = null;
+
 	public Stats FinalStats
 	{
 		get
@@ -240,6 +242,76 @@ public abstract class Character : MonoBehaviour, Actor
 		}
 	}
 
+	internal BoundsInt GetAttackBounds()
+	{
+		switch (FootPrint)
+		{
+			case FootPrint.Size1x1:
+				return ToBounds(this.TilemapPosition, new Vector3Int(3, 3));
+				break;
+			case FootPrint.Size3x3:
+				return ToBounds(this.TilemapPosition, new Vector3Int(5, 5));
+				break;
+		}
+		return ToBounds(this.TilemapPosition, new Vector3Int(3, 3));
+	}
+
+	//TODO cache this every time the character moves
+	internal BoundsInt ToBounds()
+	{
+		var position = this.TilemapPosition;
+		return ToBounds(this.FootPrint, position);
+	}
+
+	public static BoundsInt ToBounds(Vector3Int position)
+	{
+		return ToBounds(FootPrint.Size1x1, position);
+	}
+
+	public static BoundsInt ToBounds(FootPrint footPrint, Vector3Int position)
+	{
+		switch (footPrint)
+		{
+			case FootPrint.Size1x1:
+				// Assuming Size1x1 footprint is a single tile
+				//return new BoundsInt(position, new Vector3Int(1, 1, 1));
+				return ToBounds(position, new Vector3Int(1, 1, 1));
+
+			case FootPrint.Size3x3:
+				// Assuming Size3x3 footprint is a 3x3 grid of tiles
+				// Calculate the bounds for a 3x3 area
+				//Vector3Int size3x3 = new Vector3Int(3, 3, 1);
+				//Vector3Int min = position - new Vector3Int(1, 1, 0); // Adjust based on the center tile
+				//return new BoundsInt(min, size3x3);
+				return ToBounds(position, new Vector3Int(3, 3, 1));
+		}
+
+		return new BoundsInt(position, new Vector3Int(1, 1, 1));
+	}
+
+	public static BoundsInt ToBounds(Vector3Int position, Vector3Int size)
+	{
+		// Adjust position based on the center of the bounds
+		Vector3Int min = position - size / 2;
+
+		// Make sure the size is odd
+		size.x = size.x % 2 == 0 ? size.x + 1 : size.x;
+		size.y = size.y % 2 == 0 ? size.y + 1 : size.y;
+		size.z = size.z % 2 == 0 ? size.z + 1 : size.z;
+
+		return new BoundsInt(min, size);
+	}
+
+	internal bool OverlapsWith(Character character)
+	{
+		return OverlapsWith(character.ToBounds());
+	}
+
+	internal bool OverlapsWith(BoundsInt bounds)
+	{
+		return this.ToBounds().Overlaps2D(bounds);
+	}
+
 	[ContextMenu("Debug Vitals")]
 	public void Debug_Stats()
 	{
@@ -301,10 +373,11 @@ disp: {displayedVitals}");
 
 	internal List<GameAction> GetActionResponses(GameAction gameAction)
 	{
-		var responseBehaviors = this.GetComponents<ResponseBehavior>();
+		var responseBehaviors = this.GetComponents<IResponseBehavior>();
 		var actionsResponses = responseBehaviors
 			.Select(x => x.GetActionResponse(gameAction))
-			.Where(x => x != null);
+			.Where(x => x != null).ToList();
+		actionsResponses.Add(new BigUnitStuckInHallway(Game.Instance.StatusEffectPrefabs.FirstOrDefault(x => x.GetEffectName() == "Stuck")));
 		var ret = actionsResponses
 			.SelectMany(x => x.GetResponseTo(this, gameAction));
 
@@ -353,4 +426,10 @@ public enum Team
 	Player,
 	Enemy,
 	Neutral
+}
+
+public enum FootPrint
+{
+	Size1x1,
+	Size3x3
 }

@@ -8,7 +8,6 @@ public class TileWorldDungeon : MonoBehaviour
 {
 	public string FloorLayerName;
 
-	public List<Character> Enemies;
 	public List<Interactable> Interactables;
 
 	//TODO get these from the item definition
@@ -38,9 +37,16 @@ public class TileWorldDungeon : MonoBehaviour
 	}
 
 	//This should be getcharacteratposition
-	internal Character GetEnemyAtPosition(Vector3Int attackPosition)
+	internal Character GetCharacterAtPosition(Vector3Int attackPosition)
 	{
-		return Enemies.FirstOrDefault(x => x.TilemapPosition == attackPosition);
+		return Game.Instance.AllCharacters
+			.Select(x => new
+			{
+				character = x,
+				bounds = x.ToBounds()
+			})
+			.FirstOrDefault(x => x.bounds.Contains(attackPosition))
+			?.character;
 	}
 
 	internal void InitializeCache()
@@ -118,18 +124,19 @@ public class TileWorldDungeon : MonoBehaviour
 		return ret;
 	}
 
-	internal BoundsInt GetVisionBounds(Vector3Int TilemapPosition)
+	internal BoundsInt GetVisionBounds(Character character, Vector3Int TilemapPosition)
 	{
 		BoundsInt visionBounds;
 		if (_isHallwayCache[TilemapPosition.x, TilemapPosition.y])
 		{
-			visionBounds = new BoundsInt()
-			{
-				xMin = TilemapPosition.x - 1,
-				xMax = TilemapPosition.x + 1,
-				yMin = TilemapPosition.y - 1,
-				yMax = TilemapPosition.y + 1
-			};
+			visionBounds = character.GetAttackBounds();
+			//visionBounds = new BoundsInt()
+			//{
+			//	xMin = TilemapPosition.x - 1,
+			//	xMax = TilemapPosition.x + 1,
+			//	yMin = TilemapPosition.y - 1,
+			//	yMax = TilemapPosition.y + 1
+			//};
 		}
 		else
 		{
@@ -280,7 +287,11 @@ public class TileWorldDungeon : MonoBehaviour
 		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
 		var flatMap = Flatten(floorMap, (x) => x);
 
-		var openPosition = flatMap.Where(x => !Interactables.Any(y => y.Position == x.Coord))
+		var allCharacterBounds = Game.Instance.AllCharacters.Select(x => x.ToBounds());
+
+		var openPosition = flatMap
+			.Where(x => !Interactables.Any(y => y.Position == x.Coord))
+			.Where(x => !allCharacterBounds.Any(y => y.Overlaps2D(x.Coord)))
 			.Sample()
 			.Coord;
 
@@ -517,6 +528,26 @@ public class TileWorldDungeon : MonoBehaviour
 		if (hitWall) { return true; }
 
 		return false;
+	}
+
+	internal Character OverlapsAnyOtherCharacter(Character character, bool excludeAllies = false)
+	{
+		return OverlapsAnyOtherCharacter(character, character.ToBounds(), excludeAllies);
+	}
+
+	internal Character OverlapsAnyOtherCharacter(Character character, BoundsInt boundsInt, bool excludeAllies = false)
+	{
+		var others = Game.Instance.AllCharacters.AsEnumerable()
+			.Where(x => x != character);
+
+		if (excludeAllies)
+		{
+			others = others
+				.Where(x => x.Team != character.Team);
+		}
+
+		return others
+			.FirstOrDefault(x => x.OverlapsWith(boundsInt));
 	}
 }
 

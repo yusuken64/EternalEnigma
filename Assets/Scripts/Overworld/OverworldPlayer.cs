@@ -165,6 +165,17 @@ public class OverworldPlayer : MonoBehaviour
 			SceneManager.LoadScene("DungeonScene");
 			yield break;
 		}
+		if (this.TilemapPosition == Overworld.StatuePosition)
+		{
+			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			OverworldMenuManager.Open(overworldMenu.StatueDialog);
+			overworldMenu.StatueDialog.Show(); //this should be done to all dialogs in Open()
+			overworldMenu.StatueDialog.CloseAction = () =>
+			{
+				_busy = false;
+			};
+			yield break;
+		}
 		_busy = false;
 		holdTime = 0f;
 		yield return null;

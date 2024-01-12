@@ -364,6 +364,7 @@ namespace TWC.Actions
 		{
 
             tileMap = _twc.GetGeneratedBlueprintMap(assignedGenerationLayerGuid.ToString() + "_UNSUBD");
+
    //         if (!useSubdividedMap)
 			//{	
 			//	tileMap = _twc.GetGeneratedBlueprintMap(assignedGenerationLayerGuid.ToString() + "_UNSUBD");

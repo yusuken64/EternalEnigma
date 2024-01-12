@@ -302,7 +302,32 @@ namespace TWC
 			
 			return null;
 		}
-		
+		public List<(WorldMap, bool[,])> GetMapOutputFromBlueprintLayers()
+		{
+			var bluePrintLayers = new List<(WorldMap, bool[,])> ();
+			
+			for (int i = 0; i < twcAsset.mapBlueprintLayers.Count; i++)
+			{
+				TileWorldCreatorAsset.BlueprintLayerData blueprintLayerData = twcAsset.mapBlueprintLayers[i];
+				WorldMap map = generatedBlueprintMaps[blueprintLayerData.guid.ToString()];
+				bluePrintLayers.Add((map, blueprintLayerData.map));
+			}
+
+			return bluePrintLayers;
+		}
+
+		public void SetMapOutputFromBlueprintLayers(List<(WorldMap, bool[,])> layerMaps)
+		{
+			for (int i = 0; i < twcAsset.mapBlueprintLayers.Count; i++)
+			{
+				var map = layerMaps[i];
+				twcAsset.mapBlueprintLayers[i].map = map.Item2;
+
+				string guid = twcAsset.mapBlueprintLayers[i].guid.ToString();
+				generatedBlueprintMaps[guid] = map.Item1;
+			}
+		}
+
 		/// <summary>
 		/// Return the generated map from a layer
 		/// </summary>

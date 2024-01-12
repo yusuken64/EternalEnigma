@@ -248,10 +248,8 @@ public abstract class Character : MonoBehaviour, Actor
 		{
 			case FootPrint.Size1x1:
 				return ToBounds(this.TilemapPosition, new Vector3Int(3, 3));
-				break;
 			case FootPrint.Size3x3:
 				return ToBounds(this.TilemapPosition, new Vector3Int(5, 5));
-				break;
 		}
 		return ToBounds(this.TilemapPosition, new Vector3Int(3, 3));
 	}

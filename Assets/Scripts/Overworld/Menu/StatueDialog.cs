@@ -1,7 +1,4 @@
 using JuicyChickenGames.Menu;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,8 +8,6 @@ public class StatueDialog : Dialog
     public NumberInput NumberInput;
 	public Button OkButton;
 	public Button CancelButton;
-
-	public Action CloseAction { get; internal set; }
 
 	internal override void SetFirstSelect()
 	{
@@ -35,7 +30,14 @@ public class StatueDialog : Dialog
 
 	public void Ok_Clicked()
 	{
-		Debug.Log($"Donated {NumberInput.GetNumber()}");
+		int inputAmount = NumberInput.GetNumber();
+		Debug.Log($"Donated {inputAmount}");
+
+		var overworldPlayer = FindObjectOfType<OverworldPlayer>();
+
+		var amount = Mathf.Min(overworldPlayer.Gold, inputAmount);
+		overworldPlayer.Gold -= amount;
+
 		OverworldMenuManager.Close(this);
 		CloseAction?.Invoke();
 	}

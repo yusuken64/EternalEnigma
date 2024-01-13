@@ -11,6 +11,8 @@ namespace JuicyChickenGames.Menu
 		public ScrollRect scrollView;
 		private Selectable savedSelectable;
 
+		public Action CloseAction { get; internal set; }
+
 		internal void Submit()
 		{
 			EventSystem.current.currentSelectedGameObject.GetComponent<Button>()?.onClick.Invoke();
@@ -19,12 +21,33 @@ namespace JuicyChickenGames.Menu
 		internal abstract void SetFirstSelect();
 		internal void RestoreSelect()
 		{
-			savedSelectable.Select();
+			if (savedSelectable != null)
+			{
+				savedSelectable.Select();
+			}
+			else
+			{
+				SetFirstSelect();
+			}
 		}
 
 		internal void SaveSelection()
 		{
 			savedSelectable = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
+		}
+
+		public void ScrollToSelected(GameObject selectedItem)
+		{
+			//Debug.Log($"Scoll Item into view {selectedItem.GetComponent<InventoryMenuItem>().ItemText.text}", selectedItem);
+
+			RectTransform contentRectTransform = scrollView.content.GetComponent<RectTransform>();
+			RectTransform selectedRectTransform = selectedItem.GetComponent<RectTransform>();
+
+			Canvas.ForceUpdateCanvases();
+
+			contentRectTransform.anchoredPosition =
+					(Vector2)scrollView.transform.InverseTransformPoint(contentRectTransform.position)
+					- (Vector2)scrollView.transform.InverseTransformPoint(selectedRectTransform.position);
 		}
 
 		////TODO move logic to somewhere else

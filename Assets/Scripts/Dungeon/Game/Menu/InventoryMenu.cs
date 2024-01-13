@@ -87,18 +87,4 @@ Defense: {player.DisplayedStats.Defense}";
 			InventoryMenuItems[0].Select();
 		}
 	}
-
-	public void ScrollToSelected(GameObject selectedItem)
-	{
-		//Debug.Log($"Scoll Item into view {selectedItem.GetComponent<InventoryMenuItem>().ItemText.text}", selectedItem);
-
-		RectTransform contentRectTransform = scrollView.content.GetComponent<RectTransform>();
-		RectTransform selectedRectTransform = selectedItem.GetComponent<RectTransform>();
-
-		Canvas.ForceUpdateCanvases();
-
-		contentRectTransform.anchoredPosition =
-				(Vector2)scrollView.transform.InverseTransformPoint(contentRectTransform.position)
-				- (Vector2)scrollView.transform.InverseTransformPoint(selectedRectTransform.position);
-	}
 }

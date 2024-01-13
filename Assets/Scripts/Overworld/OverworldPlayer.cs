@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,10 +22,17 @@ public class OverworldPlayer : MonoBehaviour
 	private bool _busy;
 	public WalkableMap WalkableMap;
 
+	public int Gold;
+	public List<string> Inventory;
+
+	public TextMeshProUGUI UIText;
+
 	// Start is called before the first frame update
 	void Start()
     {
-        HeroAnimator.Play("");
+		Gold = 1000;
+
+		HeroAnimator.Play("");
 
 		var startPosition = WalkableMap.RandomStartPlayerPosition().Coord;
 		var worldPosition = WalkableMap.CellToWorld(startPosition);
@@ -31,7 +40,17 @@ public class OverworldPlayer : MonoBehaviour
 		this.TilemapPosition = startPosition;
 	}
 
-    private void LateUpdate()
+	internal void PlayIdleAnimation()
+	{
+		HeroAnimator.Play("Idle_SwordShield", 0);
+	}
+
+	internal void PlayWalkAnimation()
+	{
+		HeroAnimator.Play("Walk_SwordShield", 0);
+	}
+
+	private void LateUpdate()
     {
         Camera.transform.position = this.transform.position + CameraOffset;
     }
@@ -51,8 +70,16 @@ public class OverworldPlayer : MonoBehaviour
 		{
 			DeterminePlayerAction();
 		}
+
+		UpdateUI();
 	}
 
+	private void UpdateUI()
+	{
+		var inventoryString = string.Join(Environment.NewLine, Inventory);
+		UIText.text = $@"{Gold}g
+{inventoryString}";
+	}
 
 	private void DeterminePlayerAction()
 	{
@@ -171,6 +198,17 @@ public class OverworldPlayer : MonoBehaviour
 			OverworldMenuManager.Open(overworldMenu.StatueDialog);
 			overworldMenu.StatueDialog.Show(); //this should be done to all dialogs in Open()
 			overworldMenu.StatueDialog.CloseAction = () =>
+			{
+				_busy = false;
+			};
+			yield break;
+		}
+		if (this.TilemapPosition == Overworld.ShopPosition)
+		{
+			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			OverworldMenuManager.Open(overworldMenu.ShopDialog);
+			overworldMenu.ShopDialog.Show(); //this should be done to all dialogs in Open()
+			overworldMenu.ShopDialog.CloseAction = () =>
 			{
 				_busy = false;
 			};

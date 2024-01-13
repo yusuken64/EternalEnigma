@@ -27,11 +27,11 @@ internal class OverworldMovement : OverworldAction
 	{
 		var worldPosition = overworldPlayer.WalkableMap.CellToWorld(newMapPosition);
 
-		//overworldPlayer.PlayWalkAnimation();
+		overworldPlayer.PlayWalkAnimation();
 		yield return overworldPlayer.transform.DOMove(worldPosition, 0.2f)
 			.WaitForCompletion();
 
-		//character.PlayIdleAnimation();
+		overworldPlayer.PlayIdleAnimation();
 	}
 }
 

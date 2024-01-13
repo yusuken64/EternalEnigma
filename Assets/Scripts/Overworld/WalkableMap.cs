@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using TWC;
 using UnityEngine;
 
@@ -20,6 +22,12 @@ public class WalkableMap : MonoBehaviour
 		var floorMap = TileWorldCreator.GetMapOutputFromBlueprintLayer("DungeonPosition");
 		var startPos = TileWorldDungeon.Flatten(floorMap, (x) => x).Sample();
 		return startPos;
+	}
+
+	internal List<CoordValue<bool>> RandomEntrancePositions(int sampleCount)
+	{
+		var floorMap = TileWorldCreator.GetMapOutputFromBlueprintLayer("DungeonPosition");
+		return TileWorldDungeon.Flatten(floorMap, (x) => x).Sample(sampleCount).ToList();
 	}
 
 	internal CoordValue<bool> RandomStartPlayerPosition()

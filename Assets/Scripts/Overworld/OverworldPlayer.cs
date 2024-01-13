@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class OverworldPlayer : MonoBehaviour
+public class OverworldPlayer : OverworldCharacter
 {
 	public Overworld Overworld;
 	private float holdTime = 0f;
@@ -13,12 +14,6 @@ public class OverworldPlayer : MonoBehaviour
 	public Camera Camera;
 	public Vector3 CameraOffset = new Vector3(1, -7.23999977f, -11.0200005f);
 
-    public Animator HeroAnimator;
-
-	public Vector3Int TilemapPosition;
-
-	public GameObject VisualParent;
-	public Facing CurrentFacing;
 	private bool _busy;
 	public WalkableMap WalkableMap;
 
@@ -26,6 +21,9 @@ public class OverworldPlayer : MonoBehaviour
 	public List<string> Inventory;
 
 	public TextMeshProUGUI UIText;
+
+	public List<OverworldAlly> RecruitedAllies;
+	public List<Vector3Int> WalkPositionHistory;
 
 	// Start is called before the first frame update
 	void Start()
@@ -38,6 +36,28 @@ public class OverworldPlayer : MonoBehaviour
 		var worldPosition = WalkableMap.CellToWorld(startPosition);
 		this.transform.position = worldPosition;
 		this.TilemapPosition = startPosition;
+	}
+
+	internal void RecordWalkPosition()
+	{
+		WalkPositionHistory.Add(TilemapPosition);
+		if (WalkPositionHistory.Count > 5)
+		{
+			WalkPositionHistory.RemoveAt(0);
+		}
+	}
+
+	public Vector3Int GetNthFromLastPosition(int n)
+	{
+		if (WalkPositionHistory == null || n < 0 || n > WalkPositionHistory.Count)
+		{
+			n = 0;
+		}
+
+		// Calculate the index of the nth from the last position
+		int index = WalkPositionHistory.Count - n - 2;
+
+		return WalkPositionHistory[index];
 	}
 
 	internal void PlayIdleAnimation()
@@ -192,7 +212,7 @@ public class OverworldPlayer : MonoBehaviour
 			SceneManager.LoadScene("DungeonScene");
 			yield break;
 		}
-		if (this.TilemapPosition == Overworld.StatuePosition)
+		else if(this.TilemapPosition == Overworld.StatuePosition)
 		{
 			var overworldMenu = FindObjectOfType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.StatueDialog);
@@ -203,7 +223,7 @@ public class OverworldPlayer : MonoBehaviour
 			};
 			yield break;
 		}
-		if (this.TilemapPosition == Overworld.ShopPosition)
+		else if(this.TilemapPosition == Overworld.ShopPosition)
 		{
 			var overworldMenu = FindObjectOfType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.ShopDialog);
@@ -214,43 +234,20 @@ public class OverworldPlayer : MonoBehaviour
 			};
 			yield break;
 		}
+		else if (Overworld.OverworldAllies.Any(x => x.TilemapPosition == this.TilemapPosition))
+		{
+			var ally = Overworld.OverworldAllies.First(x => x.TilemapPosition == this.TilemapPosition);
+			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
+			overworldMenu.AllyRecruitDialog.Show(ally); //this should be done to all dialogs in Open()
+			overworldMenu.AllyRecruitDialog.CloseAction = () =>
+			{
+				_busy = false;
+			};
+			yield break;
+		}
 		_busy = false;
 		holdTime = 0f;
 		yield return null;
-	}
-
-	internal void SetFacing(Facing facing)
-	{
-		CurrentFacing = facing;
-		var multiplier = 0;
-		switch (facing)
-		{
-			case Facing.Up:
-				multiplier = 0;
-				break;
-			case Facing.Down:
-				multiplier = 4;
-				break;
-			case Facing.Left:
-				multiplier = 6;
-				break;
-			case Facing.Right:
-				multiplier = 2;
-				break;
-			case Facing.UpLeft:
-				multiplier = 7;
-				break;
-			case Facing.UpRight:
-				multiplier = 1;
-				break;
-			case Facing.DownLeft:
-				multiplier = 5;
-				break;
-			case Facing.DownRight:
-				multiplier = 3;
-				break;
-		}
-		Vector3 desiredRotation = new Vector3(0, 0, -45 * multiplier);
-		VisualParent.transform.eulerAngles = desiredRotation;
 	}
 }

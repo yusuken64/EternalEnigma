@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TWC;
 using TWC.OdinSerializer;
 using UnityEngine;
@@ -16,11 +17,37 @@ public class Overworld : MonoBehaviour
     public Vector3Int StatuePosition;
     public OverworldData OverworldData;
 
+    public OverworldAllyManager OverworldAllyManager;
+    public List<OverworldAlly> OverworldAllies;//instanciated
+
     // Start is called before the first frame update
     void Start()
     {
         LoadMap();
         GenerateInteractableBuildings();
+        GenerateAllies();
+    }
+
+    public void GenerateAllies()
+    {
+        var usedPositions = new List<Vector3Int>()
+        {
+            EntrancePosition,
+            ShopPosition,
+            StatuePosition
+        };
+
+        var positions = WalkableMap.RandomEntrancePositions(13);
+        foreach (var position in positions.Where(x => !usedPositions.Contains(x.Coord)))
+        {
+            var ally = OverworldAllyManager.GenerateRandomAlly();
+
+            var worldPosition = WalkableMap.CellToWorld(position.Coord);
+            ally.TilemapPosition = position.Coord;
+            ally.transform.position = worldPosition;
+            ally.SetFacing(Facing.Down);
+            OverworldAllies.Add(ally);
+        }
     }
 
     [ContextMenu("Generate Entrance")]

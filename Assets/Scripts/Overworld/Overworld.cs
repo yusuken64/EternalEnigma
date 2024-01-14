@@ -17,15 +17,35 @@ public class Overworld : MonoBehaviour
     public Vector3Int StatuePosition;
     public OverworldData OverworldData;
 
+    public OverworldPlayer OverworldPlayer;
     public OverworldAllyManager OverworldAllyManager;
     public List<OverworldAlly> OverworldAllies;//instanciated
 
     // Start is called before the first frame update
     void Start()
     {
+        LoadSaveData();
         LoadMap();
         GenerateInteractableBuildings();
         GenerateAllies();
+    }
+
+    private void LoadSaveData()
+    {
+        var statueDialog = FindObjectOfType<StatueDialog>(true);
+
+        OverworldPlayer.Gold = Common.Instance.GameSaveData.OverworldSaveData.Gold;
+        statueDialog.DonatedAmount = Common.Instance.GameSaveData.OverworldSaveData.DonationTotal;
+    }
+
+    private void WriteSaveData()
+    {
+        var statueDialog = FindObjectOfType<StatueDialog>(true);
+
+        Common.Instance.GameSaveData.OverworldSaveData.Gold = OverworldPlayer.Gold;
+        Common.Instance.GameSaveData.OverworldSaveData.DonationTotal = statueDialog.DonatedAmount;
+        Common.Instance.GameSaveData.OverworldSaveData.Inventory = OverworldPlayer.Inventory.ToList();
+        Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies = OverworldPlayer.RecruitedAllies.Select(x => x.Name).ToList();
     }
 
     public void GenerateAllies()
@@ -37,11 +57,12 @@ public class Overworld : MonoBehaviour
             StatuePosition
         };
 
-        var positions = WalkableMap.RandomEntrancePositions(13);
-        foreach (var position in positions.Where(x => !usedPositions.Contains(x.Coord)))
+        var positions = WalkableMap.RandomEntrancePositions(13).Where(x => !usedPositions.Contains(x.Coord)).ToList();
+        var allies = OverworldAllyManager.GenerateRandomAlly(positions.Count());
+        for (int i = 0; i < positions.Count; i++)
         {
-            var ally = OverworldAllyManager.GenerateRandomAlly();
-
+            CoordValue<bool> position = positions[i];
+            var ally = allies[i];
             var worldPosition = WalkableMap.CellToWorld(position.Coord);
             ally.TilemapPosition = position.Coord;
             ally.transform.position = worldPosition;

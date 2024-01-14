@@ -14,7 +14,6 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public TurnManager TurnManager;
 	public LevelSystem LevelSystem;
-	public ItemManager ItemManager;
 	public EnemyManager EnemyManager;
 
 	public Player PlayerCharacter;
@@ -73,8 +72,11 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerCharacter = Instantiate(PlayerCharacterPrefab);
 		PlayerCharacter.Camera = Camera.main;
 
-		var ally = Instantiate(AllyPrefab);
-		Allies.Add(ally);
+		foreach (var overworldAlly in Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies)
+		{
+			var ally = Instantiate(AllyPrefab);
+			Allies.Add(ally);
+		}
 
 		GameOverScreen.gameObject.SetActive(false);
 		InitializeGame();
@@ -100,7 +102,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		PlayerCharacter.SyncDisplayedStats();
 
-		ItemManager.StartingItems.ForEach(x => PlayerCharacter.Inventory.Add(x.AsInventoryItem(null)));
+		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
+		Common.Instance.ItemManager.StartingItems.ForEach(x => PlayerCharacter.Inventory.Add(x.AsInventoryItem(null)));
+		items.ToList().ForEach(x => PlayerCharacter.Inventory.Add(x));
 
 		foreach(var ally in Allies)
 		{
@@ -195,14 +199,14 @@ public class Game : SingletonMonoBehaviour<Game>
 		for (int i = 0; i < 5; i++)
 		{
 			var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-			var item = ItemManager.GetRandomDrop(null);
+			var item = Common.Instance.ItemManager.GetRandomDrop(null);
 			CurrentDungeon.SetDroppedItem(treasurePosition, item);
 		}
 
 		for (int i = 0; i < 5; i++)
 		{
 			var trapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-			var item = ItemManager.GetRandomDrop(null);
+			var item = Common.Instance.ItemManager.GetRandomDrop(null);
 			CurrentDungeon.SetTrap(trapPosition);
 		}
 

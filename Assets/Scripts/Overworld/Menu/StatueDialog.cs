@@ -1,13 +1,17 @@
 using JuicyChickenGames.Menu;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class StatueDialog : Dialog
 {
+    public TextMeshProUGUI DonatedAmountText;
     public NumberInput NumberInput;
 	public Button OkButton;
 	public Button CancelButton;
+
+	public int DonatedAmount;
 
 	internal override void SetFirstSelect()
 	{
@@ -16,7 +20,7 @@ public class StatueDialog : Dialog
 
 	internal void Show()
 	{
-		NumberInput.Setup(8);
+		NumberInput.Setup(places: 8);
 	}
 
 	private void Update()
@@ -26,6 +30,8 @@ public class StatueDialog : Dialog
 			NumberInput.ClearSelection();
 			EventSystem.current.SetSelectedGameObject(OkButton.gameObject);
 		}
+
+		DonatedAmountText.text = $"Donated {DonatedAmount}";
 	}
 
 	public void Ok_Clicked()
@@ -37,6 +43,7 @@ public class StatueDialog : Dialog
 
 		var amount = Mathf.Min(overworldPlayer.Gold, inputAmount);
 		overworldPlayer.Gold -= amount;
+		DonatedAmount += amount;
 
 		OverworldMenuManager.Close(this);
 		CloseAction?.Invoke();

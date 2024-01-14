@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,10 +13,17 @@ public class OverworldAllyManager : MonoBehaviour
 	{
 		var newAlly = Instantiate(OverworldAllies.Sample(), this.transform);
 		return newAlly;
-	}
+    }
+
+    internal List<OverworldAlly> GenerateRandomAlly(int count)
+    {
+        var sample = OverworldAllies.Sample(count);
+        return sample.Select(x => Instantiate(x, this.transform))
+            .ToList();
+    }
 
 #if UNITY_EDITOR
-	[ContextMenu("Assign Data")]
+    [ContextMenu("Assign Data")]
 	public void AssignData()
 	{
         AllyData[] allyDatas = new AllyData[]

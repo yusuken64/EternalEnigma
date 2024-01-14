@@ -301,7 +301,7 @@ public class DeathAction : GameAction
 		Game game = Game.Instance;
 		if (droppedItem)
 		{
-			var item = game.ItemManager.GetRandomDrop(target as Enemy);
+			var item = Common.Instance.ItemManager.GetRandomDrop(target as Enemy);
 			game.CurrentDungeon.SetDroppedItem(dropPosition, item);
 		}
 	}

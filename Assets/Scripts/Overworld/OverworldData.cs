@@ -8,5 +8,4 @@ public class OverworldData : MonoBehaviour
 	public Vector3Int ShopPosition;
 	public Vector3Int StatuePosition;
     public byte[] WorldBytes;
-
 }

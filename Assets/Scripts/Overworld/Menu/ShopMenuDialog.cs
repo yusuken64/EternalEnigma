@@ -13,15 +13,8 @@ public class ShopMenuDialog : Dialog
 	//in the item defintion?
 	public void GenerateShop()
 	{
-		ShopItemDatas = new List<ShopItemData>()
-		{
-			new ShopItemData("Potion", 100),
-			new ShopItemData("Bread", 200),
-			new ShopItemData("Wooden Club", 50),
-			new ShopItemData("Gift", 3100),
-			new ShopItemData("Bits", 200),
-			new ShopItemData("Offering", 300),
-		};
+		var itemDefinitions = Common.Instance.ItemManager.ItemDefinitions.Sample(6);
+		ShopItemDatas = itemDefinitions.Select(x => new ShopItemData(x.ItemName, UnityEngine.Random.Range(100, 300))).ToList();
 	}
 
 	private void Awake()

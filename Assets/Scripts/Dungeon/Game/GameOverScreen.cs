@@ -17,15 +17,13 @@ public class GameOverScreen : Dialog
 		MessageText.text = $@"Player Perished
 On floor {playerCharacter.Vitals.Floor}
 with {playerCharacter.Vitals.Gold} Treasure";
+
+		//todo turn inventory items into gold;
+		Common.Instance.GameSaveData.OverworldSaveData.Gold += playerCharacter.Vitals.Gold;
 	}
 
 	public void TryAgain_Clicked()
 	{
-		//int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-		//SceneManager.LoadScene(currentSceneIndex);
-
-		//MenuManager.Close(this);
-		//Game.Instance.ResetGame();
 		SceneManager.LoadScene("OverworldScene");
 	}
 

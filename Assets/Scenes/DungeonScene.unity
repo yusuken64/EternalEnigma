@@ -8696,7 +8696,6 @@ GameObject:
   - component: {fileID: 1932732650}
   - component: {fileID: 1932732652}
   - component: {fileID: 1932732654}
-  - component: {fileID: 1932732655}
   - component: {fileID: 1932732656}
   m_Layer: 0
   m_Name: Game
@@ -8721,7 +8720,7 @@ MonoBehaviour:
   CurrentDungeon: {fileID: 4482407506725392008}
   TurnManager: {fileID: 1932732652}
   LevelSystem: {fileID: 1932732654}
-  ItemManager: {fileID: 1932732655}
+  ItemManager: {fileID: 0}
   EnemyManager: {fileID: 1932732656}
   PlayerCharacter: {fileID: 0}
   PlayerCharacterPrefab: {fileID: 8214162097792368139, guid: 2106327e38900374382d7c5bb83a8cef, type: 3}
@@ -8818,40 +8817,6 @@ MonoBehaviour:
   - Level: 10
     Experience: 700
     BaseAttack: 0
---- !u!114 &1932732655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1932732649}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5703602cb2e3de64facb80b436cb2ee3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ItemDefinitions:
-  - {fileID: 11400000, guid: 116376209b212d04fa1596427673ff74, type: 2}
-  - {fileID: 11400000, guid: a33470c7c9dc09a4ab5304d36443971c, type: 2}
-  - {fileID: 11400000, guid: 418086085d8bfb4499a428508f9be8c6, type: 2}
-  - {fileID: 11400000, guid: 007a08a601e606243a49223708727b7c, type: 2}
-  - {fileID: 11400000, guid: 1cb8263decec17a4b863ab136f9243e6, type: 2}
-  - {fileID: 11400000, guid: 7d1ee191e61e93f40a74628ce2674c64, type: 2}
-  - {fileID: 11400000, guid: c609d13aca789c243a00f529bd3b522c, type: 2}
-  - {fileID: 11400000, guid: 1e0ee70e8cb2672499d15c777e1cb8a1, type: 2}
-  - {fileID: 11400000, guid: 6780480e9a79c1045a5772c016c5ad9e, type: 2}
-  - {fileID: 11400000, guid: 069c3477b2874b34e99703ddcab51e22, type: 2}
-  - {fileID: 11400000, guid: 8e29194e73206ea47858ae241d7a2574, type: 2}
-  - {fileID: 11400000, guid: b3183bf431ad6c6408fa9b169ead933b, type: 2}
-  - {fileID: 11400000, guid: 9be7ba311c0be934db0576bf6a87846c, type: 2}
-  - {fileID: 11400000, guid: d81a5fbcefc6b5241a379fb4393432f1, type: 2}
-  - {fileID: 11400000, guid: 700d604e733ad5b40ab647fa891275f3, type: 2}
-  - {fileID: 11400000, guid: 16b1908d966f66e43a043410b7bdb159, type: 2}
-  - {fileID: 11400000, guid: 34d0c14480277cf4eab594c82580c3cf, type: 2}
-  - {fileID: 11400000, guid: 6d3c40d077008c94eacef36ca5382e91, type: 2}
-  - {fileID: 11400000, guid: d2bfdb24534539449bca978836f5ec5a, type: 2}
-  StartingItems:
-  - {fileID: 11400000, guid: 116376209b212d04fa1596427673ff74, type: 2}
 --- !u!114 &1932732656
 MonoBehaviour:
   m_ObjectHideFlags: 0

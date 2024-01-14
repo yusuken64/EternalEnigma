@@ -27,9 +27,7 @@ public class OverworldPlayer : OverworldCharacter
 
 	// Start is called before the first frame update
 	void Start()
-    {
-		Gold = 1000;
-
+	{
 		HeroAnimator.Play("");
 
 		var startPosition = WalkableMap.RandomStartPlayerPosition().Coord;

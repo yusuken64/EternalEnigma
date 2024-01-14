@@ -281,7 +281,7 @@ public class Dungeon : MonoBehaviour
 		{
 			//give treasure to player
 			Game game = Game.Instance;
-			game.PlayerCharacter.Inventory.Add(game.ItemManager.GetAsInventoryItem(item, stock));
+			game.PlayerCharacter.Inventory.Add(Common.Instance.ItemManager.GetAsInventoryItem(item, stock));
 
 			ObjectTileMap.SetTile(treasurePosition, null);
 		};

@@ -26,4 +26,16 @@ public static class EnumExtensions
         Enum.TryParse(typeof(T2), stringValue, out object result);
         return (T2)result;
     }
+
+    public static List<T> GetEnumValues<T>() where T : Enum
+    {
+        // Use Enum.GetValues to retrieve all values of the enum
+        Array enumValues = Enum.GetValues(typeof(T));
+
+        // Convert the array to a List
+        List<T> valuesList = new List<T>(enumValues.Length);
+        valuesList.AddRange((T[])enumValues);
+
+        return valuesList;
+    }
 }

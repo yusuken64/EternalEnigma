@@ -116,7 +116,7 @@ public abstract class Character : MonoBehaviour, Actor
 		UpdateCachedStats();
 	}
 
-	private void Inventory_HandleEquipmentChanged()
+	public virtual void Inventory_HandleEquipmentChanged()
 	{
 		UpdateCachedStats();
 		DisplayedStats.Sync(FinalStats);

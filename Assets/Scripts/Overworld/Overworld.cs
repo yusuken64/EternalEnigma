@@ -38,7 +38,7 @@ public class Overworld : MonoBehaviour
         statueDialog.DonatedAmount = Common.Instance.GameSaveData.OverworldSaveData.DonationTotal;
     }
 
-    private void WriteSaveData()
+    internal void WriteSaveData()
     {
         var statueDialog = FindObjectOfType<StatueDialog>(true);
 

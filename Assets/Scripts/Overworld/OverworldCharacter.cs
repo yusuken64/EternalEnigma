@@ -2,7 +2,7 @@
 
 public abstract class OverworldCharacter : MonoBehaviour
 {
-	public Animator HeroAnimator;
+	public HeroAnimator HeroAnimator;
 	public Vector3Int TilemapPosition;
 
 	public GameObject VisualParent;
@@ -42,5 +42,4 @@ public abstract class OverworldCharacter : MonoBehaviour
 		Vector3 desiredRotation = new Vector3(0, 0, -45 * multiplier);
 		VisualParent.transform.eulerAngles = desiredRotation;
 	}
-
 }

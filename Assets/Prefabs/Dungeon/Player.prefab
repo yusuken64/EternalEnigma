@@ -122,7 +122,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5562912608601705635}
+  - {fileID: 9006033413685647249}
   - {fileID: 2377136231750892353}
   - {fileID: 7334433300628321261}
   m_Father: {fileID: 1802630979737130071}
@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: -5335204912119326263}
   - component: {fileID: -6872718615887098592}
   - component: {fileID: 6960965171913672784}
+  - component: {fileID: 1679691693414024542}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -278,6 +279,7 @@ MonoBehaviour:
     DropRate: 0
     ActionsPerTurnMax: 1
     AttacksPerTurnMax: 1
+  FootPrint: 0
   StatusEffects: []
   Inventory: {fileID: 8960690655561992051}
   PursuitTarget: {fileID: 0}
@@ -287,7 +289,7 @@ MonoBehaviour:
   - {fileID: 6960965171913672784}
   Camera: {fileID: 0}
   CameraOffset: {x: 1, y: -2.77, z: -11.62}
-  HeroAnimator: {fileID: 5505970729610342937}
+  HeroAnimator: {fileID: 1679691693414024542}
   ThrownItemProjectilePrefab: {fileID: 1117745424125422547, guid: b96c645e3ba5ede499fc63ebbf7677c1, type: 3}
 --- !u!114 &8960690655561992051
 MonoBehaviour:
@@ -347,7 +349,716 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SilenceStatusEffect: {fileID: 8062541482072348122, guid: 2c2ea9c4ec1c95b40a2c4df619ddb91b, type: 3}
---- !u!1001 &5565864166031862279
+--- !u!114 &1679691693414024542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4828791753711949877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf5dd189d98893e40b261ab8e7da8be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animator: {fileID: 8894999388933273864}
+  StanceAnimations:
+  - StanceName: NoWeapon
+    Stance: 0
+    AnimatorController: {fileID: 9100000, guid: d19f3e4956e34d258b80fce2efa0e6ac, type: 2}
+    NamedAnimations:
+    - AnimationName: Idle
+      AnimationAction: 0
+      Animations:
+      - {fileID: 1827226128182048838, guid: 1bafb601ddcb4addba45960480a5aeb2, type: 3}
+      - {fileID: 1827226128182048838, guid: 1bafb601ddcb4addba45960480a5aeb2, type: 3}
+      - {fileID: 1827226128182048838, guid: cb23c5f21cab46e3affd1ea0e5d56aec, type: 3}
+      - {fileID: 1827226128182048838, guid: 1bafb601ddcb4addba45960480a5aeb2, type: 3}
+    - AnimationName: Attack
+      AnimationAction: 1
+      Animations:
+      - {fileID: 1827226128182048838, guid: 956844cbe567481ebf9f8076a83cbfcb, type: 3}
+      - {fileID: 1827226128182048838, guid: 0320bfd69dd14e9a9918753ca3d4dcb3, type: 3}
+      - {fileID: 1827226128182048838, guid: 934d6a12b72a4c18ab71f3cb7ee14b80, type: 3}
+      - {fileID: 1827226128182048838, guid: b8812deee1b74f1cb73785e26b65ee8d, type: 3}
+      - {fileID: 1827226128182048838, guid: 6863af944db94e29b959db56ac01e3c2, type: 3}
+    - AnimationName: Combo
+      AnimationAction: 2
+      Animations:
+      - {fileID: 1827226128182048838, guid: 091a31c24f42456894679f66d409f25c, type: 3}
+      - {fileID: 1827226128182048838, guid: 687a5a03c5504c60aff289e1d0ae5c26, type: 3}
+      - {fileID: 1827226128182048838, guid: cf180f6b1e824be4ab86b33ca88e8654, type: 3}
+      - {fileID: 1827226128182048838, guid: 3bba9b4a7e4646479de50077221dfcc5, type: 3}
+      - {fileID: 1827226128182048838, guid: 251ada004dd84b3485c68e72b8eac8b6, type: 3}
+    - AnimationName: MoveFWD
+      AnimationAction: 3
+      Animations:
+      - {fileID: 1827226128182048838, guid: b7c0dd97afea4830a59076bd2470309c, type: 3}
+      - {fileID: 1827226128182048838, guid: 44f0ffcfa8b844429595f55a6fb7615a, type: 3}
+    - AnimationName: Dash
+      AnimationAction: 4
+      Animations:
+      - {fileID: 1827226128182048838, guid: 1bfd0bd7f80543d88e888813e8f0a996, type: 3}
+      - {fileID: 1827226128182048838, guid: c3fe7b3d6148430b9bbeca55dcc97653, type: 3}
+      - {fileID: 1827226128182048838, guid: 829161449dbc4da9bf3f191b8496e705, type: 3}
+      - {fileID: 1827226128182048838, guid: c8db4c0e273740fcbeb2ee3c454ec2d5, type: 3}
+    - AnimationName: Jump
+      AnimationAction: 5
+      Animations:
+      - {fileID: 1827226128182048838, guid: cd056fef55de400a880464b3c71e476b, type: 3}
+      - {fileID: 1827226128182048838, guid: 90de966e124246a6951123328520bf9c, type: 3}
+    - AnimationName: Dance
+      AnimationAction: 6
+      Animations:
+      - {fileID: 1827226128182048838, guid: fac48080dd0347ba8954669546d12fe6, type: 3}
+    - AnimationName: LevelUp
+      AnimationAction: 7
+      Animations:
+      - {fileID: 1827226128182048838, guid: f473b152c6b44522a0b3f67841762cd7, type: 3}
+    - AnimationName: Victory
+      AnimationAction: 8
+      Animations:
+      - {fileID: 1827226128182048838, guid: b4938c49e59e47e9b528369e72d35865, type: 3}
+    - AnimationName: Defend
+      AnimationAction: 9
+      Animations:
+      - {fileID: 1827226128182048838, guid: 3daa858966374385be8e13e1cb4f218d, type: 3}
+      - {fileID: 1827226128182048838, guid: 43ca45e368b643f58044ea6716450301, type: 3}
+    - AnimationName: GetHit
+      AnimationAction: 10
+      Animations:
+      - {fileID: 1827226128182048838, guid: c0e431edef6e4bfbb0dcf2493852ae7f, type: 3}
+      - {fileID: 1827226128182048838, guid: ce52bd3c3cbb461b86572e06042b19ea, type: 3}
+    - AnimationName: Die
+      AnimationAction: 11
+      Animations:
+      - {fileID: 1827226128182048838, guid: cfaabfb1cacb404d929d26a65fb6b39b, type: 3}
+      - {fileID: 1827226128182048838, guid: 74880a48514a4e568f76b534d5d6fd83, type: 3}
+      - {fileID: 1827226128182048838, guid: 79a165862b184052b3c7d1e742eebec7, type: 3}
+    - AnimationName: Dizzy
+      AnimationAction: 12
+      Animations:
+      - {fileID: 1827226128182048838, guid: 13258af6c60c4eb889492ad6ee0a1f13, type: 3}
+  - StanceName: SingleSword
+    Stance: 1
+    AnimatorController: {fileID: 9100000, guid: 60c1598b6e33483e9637b7c471af3633, type: 2}
+    NamedAnimations:
+    - AnimationName: Idle
+      AnimationAction: 0
+      Animations:
+      - {fileID: 1827226128182048838, guid: 45b5dff191024707bfc9b322461ae1d9, type: 3}
+      - {fileID: 1827226128182048838, guid: 7c26a442c7b34c8ea78b6b741e9a1467, type: 3}
+      - {fileID: 1827226128182048838, guid: f090967491af4ae0bfd0efe9afa579df, type: 3}
+      - {fileID: 1827226128182048838, guid: 7c26a442c7b34c8ea78b6b741e9a1467, type: 3}
+    - AnimationName: Attack
+      AnimationAction: 1
+      Animations:
+      - {fileID: 1827226128182048838, guid: ab1548275f824fa09e88360332ab9080, type: 3}
+      - {fileID: 1827226128182048838, guid: 2bbadeb0f7a143b9b670d5fb32508934, type: 3}
+      - {fileID: 1827226128182048838, guid: 4be42ccaf6a34e22b44bf3cf34c635f2, type: 3}
+      - {fileID: 1827226128182048838, guid: 100102ef4cae44ccbf3227eefc66095f, type: 3}
+    - AnimationName: Combo
+      AnimationAction: 2
+      Animations:
+      - {fileID: 1827226128182048838, guid: ffa41db23bee498eb7333212be7e7a93, type: 3}
+      - {fileID: 1827226128182048838, guid: fa11520c252f4a66977c2629b1ee4617, type: 3}
+      - {fileID: 1827226128182048838, guid: 6ac3529288b34762ac3e67c0084c2cff, type: 3}
+      - {fileID: 1827226128182048838, guid: 8dd2841845df4832b00d7a4fd6d1fafb, type: 3}
+      - {fileID: 1827226128182048838, guid: 0851a800b0234f238e44f13e469e203d, type: 3}
+    - AnimationName: MoveFWD
+      AnimationAction: 3
+      Animations:
+      - {fileID: 1827226128182048838, guid: f22fa011ff6742c5858477b41e1f8735, type: 3}
+      - {fileID: 1827226128182048838, guid: 062e23ace8d049a294e75b1a1ce1c580, type: 3}
+    - AnimationName: Dash
+      AnimationAction: 4
+      Animations:
+      - {fileID: 1827226128182048838, guid: 446a4eb0daea48e3910a9664217b82d0, type: 3}
+      - {fileID: 1827226128182048838, guid: 9879d1e71df74488973ac9e180421ee8, type: 3}
+      - {fileID: 1827226128182048838, guid: afc149c8d34849c89e05c91ae89c4c79, type: 3}
+      - {fileID: 1827226128182048838, guid: b631c88771a345e1b29334d214b1b890, type: 3}
+    - AnimationName: Jump
+      AnimationAction: 5
+      Animations:
+      - {fileID: 1827226128182048838, guid: a3dbff2b6f134f01b016a5d4c1c1189c, type: 3}
+      - {fileID: 1827226128182048838, guid: 931e467a329e4d22a114ea376eb6927d, type: 3}
+    - AnimationName: Dance
+      AnimationAction: 6
+      Animations:
+      - {fileID: 1827226128182048838, guid: d5e49607ffdf4fdd966123c25b181484, type: 3}
+    - AnimationName: LevelUp
+      AnimationAction: 7
+      Animations:
+      - {fileID: 1827226128182048838, guid: a5ca82a0225e403b99fbca4fca47d73f, type: 3}
+    - AnimationName: Victory
+      AnimationAction: 8
+      Animations:
+      - {fileID: 1827226128182048838, guid: aa1fc06580fc453aab294b2a10c11536, type: 3}
+    - AnimationName: Defend
+      AnimationAction: 9
+      Animations:
+      - {fileID: 1827226128182048838, guid: bf36c7436b514fa8904721ccbf1bbe33, type: 3}
+      - {fileID: 1827226128182048838, guid: 6c120b3b6817447faea6e2bf574b27fd, type: 3}
+    - AnimationName: GetHit
+      AnimationAction: 10
+      Animations:
+      - {fileID: 1827226128182048838, guid: 1a7429869594458db3e1e2b09eb8f8fc, type: 3}
+      - {fileID: 1827226128182048838, guid: 3d04793c65e147cfb6c3bacdc4d75163, type: 3}
+    - AnimationName: Die
+      AnimationAction: 11
+      Animations:
+      - {fileID: 1827226128182048838, guid: 5206da5d8b5941c2a702e97c6835e11f, type: 3}
+      - {fileID: 1827226128182048838, guid: e4b00b43f4b945e99749bc6badf38dd0, type: 3}
+      - {fileID: 1827226128182048838, guid: eb09d9206e3f4263a1a98329d696aece, type: 3}
+    - AnimationName: Dizzy
+      AnimationAction: 12
+      Animations:
+      - {fileID: 1827226128182048838, guid: a55d88403c3a42babd725593586753e2, type: 3}
+  - StanceName: SwordAndShield
+    Stance: 2
+    AnimatorController: {fileID: 9100000, guid: 460f8a3bb5d64cdb84825bb816d5cc0e, type: 2}
+    NamedAnimations:
+    - AnimationName: Idle
+      AnimationAction: 0
+      Animations:
+      - {fileID: 1827226128182048838, guid: d9b155d656a64f02adc39213c8d11c86, type: 3}
+      - {fileID: 1827226128182048838, guid: d9b155d656a64f02adc39213c8d11c86, type: 3}
+      - {fileID: 1827226128182048838, guid: 02f821ae69a045f9b39d9d6a4ecaf0e5, type: 3}
+      - {fileID: 1827226128182048838, guid: d9b155d656a64f02adc39213c8d11c86, type: 3}
+    - AnimationName: Attack
+      AnimationAction: 1
+      Animations:
+      - {fileID: 1827226128182048838, guid: 2a2d488e2125476a8f4c190e378ec37a, type: 3}
+      - {fileID: 1827226128182048838, guid: a9272753688d44138ec61fce4260fc82, type: 3}
+      - {fileID: 1827226128182048838, guid: 72d5f374564746fda5748a305aecbe2e, type: 3}
+      - {fileID: 1827226128182048838, guid: a3e71288d17e42e8a2243b051fa6c327, type: 3}
+    - AnimationName: Combo
+      AnimationAction: 2
+      Animations:
+      - {fileID: 1827226128182048838, guid: a24fdbe373084a3194ca8afa42984d00, type: 3}
+      - {fileID: 1827226128182048838, guid: c6bbff400b034af2b8bd2271427289a5, type: 3}
+      - {fileID: 1827226128182048838, guid: 11f401785fcb472895b785825506387d, type: 3}
+      - {fileID: 1827226128182048838, guid: 6ba3f7531df848deb0fe4d927cb33749, type: 3}
+      - {fileID: 1827226128182048838, guid: 6b83af82738f4771a647140e249e9970, type: 3}
+    - AnimationName: MoveFWD
+      AnimationAction: 3
+      Animations:
+      - {fileID: 1827226128182048838, guid: 052864143c314347ab332cf709a63e5b, type: 3}
+      - {fileID: 1827226128182048838, guid: eca3d5d9ab90428182539ea63d399989, type: 3}
+    - AnimationName: Dash
+      AnimationAction: 4
+      Animations:
+      - {fileID: 1827226128182048838, guid: 79070c3e88154f61b7d081e22beff733, type: 3}
+      - {fileID: 1827226128182048838, guid: 217306bb6d9b4895a348ee9cc7c4c48c, type: 3}
+      - {fileID: 1827226128182048838, guid: 19465bf3196146989382132f5688aea0, type: 3}
+      - {fileID: 1827226128182048838, guid: 05492c843112427598ac0dbc7e2eb205, type: 3}
+    - AnimationName: Jump
+      AnimationAction: 5
+      Animations:
+      - {fileID: 1827226128182048838, guid: 94a9c7d1534b416c8b1934e00680a8c4, type: 3}
+      - {fileID: 1827226128182048838, guid: f0e967358e4845cab3cbf1563f4b8676, type: 3}
+    - AnimationName: Dance
+      AnimationAction: 6
+      Animations:
+      - {fileID: 1827226128182048838, guid: 45f7b944cc84454dbc51f84508ed0836, type: 3}
+    - AnimationName: LevelUp
+      AnimationAction: 7
+      Animations:
+      - {fileID: 1827226128182048838, guid: 705b2d220e2a43a0a5bf669d94229b32, type: 3}
+    - AnimationName: Victory
+      AnimationAction: 8
+      Animations:
+      - {fileID: 1827226128182048838, guid: 4d9435742b5d4e758e8349774d91f566, type: 3}
+    - AnimationName: Defend
+      AnimationAction: 9
+      Animations:
+      - {fileID: 1827226128182048838, guid: 94261d59cd8c44b998f5b7c94134f717, type: 3}
+      - {fileID: 1827226128182048838, guid: d4cf0a0a5ae84b34a06b4bd2d6632c1e, type: 3}
+    - AnimationName: GetHit
+      AnimationAction: 10
+      Animations:
+      - {fileID: 1827226128182048838, guid: 453d1527bcc94456b24af81ea8be62a8, type: 3}
+      - {fileID: 1827226128182048838, guid: c7c1b989000b4f3e83350cbd1d362404, type: 3}
+    - AnimationName: Die
+      AnimationAction: 11
+      Animations:
+      - {fileID: 1827226128182048838, guid: 756ddf9c459e4a6b9c95d886fe4a888e, type: 3}
+      - {fileID: 1827226128182048838, guid: 6ce35619c8de4874862673cb5e7c1404, type: 3}
+      - {fileID: 1827226128182048838, guid: e4f488d49560434ba0df0432cafcd7fb, type: 3}
+    - AnimationName: Dizzy
+      AnimationAction: 12
+      Animations:
+      - {fileID: 1827226128182048838, guid: b393be36f8ca43579b5d815bc9107be6, type: 3}
+  - StanceName: Spear
+    Stance: 3
+    AnimatorController: {fileID: 9100000, guid: 31f200a8502146c1903e2e9f490c79b4, type: 2}
+    NamedAnimations:
+    - AnimationName: Idle
+      AnimationAction: 0
+      Animations:
+      - {fileID: 1827226128182048838, guid: c15f65c28edd49cf946d10fa9a3449d6, type: 3}
+      - {fileID: 1827226128182048838, guid: c15f65c28edd49cf946d10fa9a3449d6, type: 3}
+      - {fileID: 1827226128182048838, guid: 1046c7e6e73a4b2484e80eed33505885, type: 3}
+      - {fileID: 1827226128182048838, guid: c15f65c28edd49cf946d10fa9a3449d6, type: 3}
+    - AnimationName: Attack
+      AnimationAction: 1
+      Animations:
+      - {fileID: 1827226128182048838, guid: 32656332538540f0898ee79326dea092, type: 3}
+      - {fileID: 1827226128182048838, guid: 627687df9b3b4162b742484906d8abb4, type: 3}
+      - {fileID: 1827226128182048838, guid: 24e41c178a634cf192274aaada3da06a, type: 3}
+      - {fileID: 1827226128182048838, guid: 0130d4fa7e314d0ca92f67c5d6a2d508, type: 3}
+    - AnimationName: Combo
+      AnimationAction: 2
+      Animations:
+      - {fileID: 1827226128182048838, guid: 0efdec3e8b3c4e0697a21c4d0d795660, type: 3}
+      - {fileID: 1827226128182048838, guid: 3bcccc89d99c4f2b9fa034231e98af48, type: 3}
+      - {fileID: 1827226128182048838, guid: 1be82c170881476ab8954052d9737a32, type: 3}
+      - {fileID: 1827226128182048838, guid: 979ed4e517df44f6a3f513531277eb41, type: 3}
+      - {fileID: 1827226128182048838, guid: a0cf16bbd90c4b7ba45b549ced2babce, type: 3}
+    - AnimationName: MoveFWD
+      AnimationAction: 3
+      Animations:
+      - {fileID: 1827226128182048838, guid: 5ee71d775ee844478c49e648176e551d, type: 3}
+      - {fileID: 1827226128182048838, guid: b5a1d3ff73d8438e80b7fb455b308087, type: 3}
+    - AnimationName: Dash
+      AnimationAction: 4
+      Animations:
+      - {fileID: 1827226128182048838, guid: 02e41ae4d75e4e098bd23766cac4faa5, type: 3}
+      - {fileID: 1827226128182048838, guid: 6c4ee09a72fa418bbb66b5669671a183, type: 3}
+      - {fileID: 1827226128182048838, guid: 54d539fd85ee48e694c81e7b874b1c89, type: 3}
+      - {fileID: 1827226128182048838, guid: a0c5bd2ff00b44faa72b17b93e22aa08, type: 3}
+    - AnimationName: Jump
+      AnimationAction: 5
+      Animations:
+      - {fileID: 1827226128182048838, guid: 1f9560c7e1594adb9bacf590064a51b5, type: 3}
+      - {fileID: 1827226128182048838, guid: a5bd020654394a30900a2b6407424f0f, type: 3}
+    - AnimationName: Dance
+      AnimationAction: 6
+      Animations:
+      - {fileID: 1827226128182048838, guid: 936bf688f0b34ed490ec53643e2c22ea, type: 3}
+    - AnimationName: LevelUp
+      AnimationAction: 7
+      Animations:
+      - {fileID: 1827226128182048838, guid: b7a2866d131e4d4987611b15ce74eb39, type: 3}
+    - AnimationName: Victory
+      AnimationAction: 8
+      Animations:
+      - {fileID: 1827226128182048838, guid: a877c71c0e1f45229cf87e3c73d5423e, type: 3}
+    - AnimationName: Defend
+      AnimationAction: 9
+      Animations:
+      - {fileID: 1827226128182048838, guid: a0f622822d0d49e9be541ad45fb070cd, type: 3}
+      - {fileID: 1827226128182048838, guid: 9f6a826c7d3047a7b2a026146f255799, type: 3}
+    - AnimationName: GetHit
+      AnimationAction: 10
+      Animations:
+      - {fileID: 1827226128182048838, guid: bd1023c0632346b8ba6236af65576290, type: 3}
+      - {fileID: 1827226128182048838, guid: 41235b5671a5414bb7fb1a44d41c0e1c, type: 3}
+    - AnimationName: Die
+      AnimationAction: 11
+      Animations:
+      - {fileID: 1827226128182048838, guid: 763af1dfc97544bab231b8a2b6844b9e, type: 3}
+      - {fileID: 1827226128182048838, guid: 900e0711afbf4ebd99d0b1bd63cf7198, type: 3}
+      - {fileID: 1827226128182048838, guid: b564eed1ae114b02900301ab2957adec, type: 3}
+    - AnimationName: Dizzy
+      AnimationAction: 12
+      Animations:
+      - {fileID: 1827226128182048838, guid: 94b9c8db09c44b44a9c38f171ce0595b, type: 3}
+  - StanceName: DoubleSwordStance
+    Stance: 4
+    AnimatorController: {fileID: 9100000, guid: 0115ead1a74c4fb1ac5ea9f489447a03, type: 2}
+    NamedAnimations:
+    - AnimationName: Idle
+      AnimationAction: 0
+      Animations:
+      - {fileID: 1827226128182048838, guid: 45b5dff191024707bfc9b322461ae1d9, type: 3}
+      - {fileID: 1827226128182048838, guid: 45b5dff191024707bfc9b322461ae1d9, type: 3}
+      - {fileID: 1827226128182048838, guid: 21ad13564c094ca68b84a30fb231fe8c, type: 3}
+      - {fileID: 1827226128182048838, guid: 45b5dff191024707bfc9b322461ae1d9, type: 3}
+    - AnimationName: Attack
+      AnimationAction: 1
+      Animations:
+      - {fileID: 1827226128182048838, guid: 472ec4b39424495b8ffb12b4a5d495f3, type: 3}
+      - {fileID: 1827226128182048838, guid: 26edac8344b14310826bbcad8c0e3e32, type: 3}
+      - {fileID: 1827226128182048838, guid: e738f3174edf4091bb9eb4bcecf54876, type: 3}
+      - {fileID: 1827226128182048838, guid: 09b94ae8b3f647cd96f82fa891ef787e, type: 3}
+    - AnimationName: Combo
+      AnimationAction: 2
+      Animations:
+      - {fileID: 1827226128182048838, guid: d4159ffe49044a608e94b6accb2cf02b, type: 3}
+      - {fileID: 1827226128182048838, guid: f15d887be8fd4688af88b92fdf07b700, type: 3}
+      - {fileID: 1827226128182048838, guid: 208a0ce7c75a41c08902f9a16c3b242b, type: 3}
+      - {fileID: 1827226128182048838, guid: 039a3fa24e8a46a49c66e389d34cf1ac, type: 3}
+      - {fileID: 1827226128182048838, guid: 5a6f2ce53b8b48dd81290158691e97e5, type: 3}
+    - AnimationName: MoveFWD
+      AnimationAction: 3
+      Animations:
+      - {fileID: 1827226128182048838, guid: 2766c92b249c4b3ca6d20baa110ed60e, type: 3}
+      - {fileID: 1827226128182048838, guid: 703c4fc7b97b4307853828d742c107d6, type: 3}
+    - AnimationName: Dash
+      AnimationAction: 4
+      Animations:
+      - {fileID: 1827226128182048838, guid: 8f5290fe8db3440e9ecbb173deda6a41, type: 3}
+      - {fileID: 1827226128182048838, guid: caf68c210bd746ada5a516c3dee30a7e, type: 3}
+      - {fileID: 1827226128182048838, guid: 22b61b841eb84984bd64f04e14dda51e, type: 3}
+      - {fileID: 1827226128182048838, guid: 7b4f7bc07431483fa03a41dece8ada02, type: 3}
+    - AnimationName: Jump
+      AnimationAction: 5
+      Animations:
+      - {fileID: 1827226128182048838, guid: d91803673999430ab0535eff076f5cb1, type: 3}
+      - {fileID: 1827226128182048838, guid: af45d6dc49ad4176ad23a1839b71e3bc, type: 3}
+    - AnimationName: Dance
+      AnimationAction: 6
+      Animations:
+      - {fileID: 1827226128182048838, guid: f31207fb03654c658a5c7117731aa6d7, type: 3}
+    - AnimationName: LevelUp
+      AnimationAction: 7
+      Animations:
+      - {fileID: 1827226128182048838, guid: 6239d29debbf495d95e479fb44a02000, type: 3}
+    - AnimationName: Victory
+      AnimationAction: 8
+      Animations:
+      - {fileID: 1827226128182048838, guid: e3f7b2b3e583453d89d5d0a6ad3cd25f, type: 3}
+    - AnimationName: Defend
+      AnimationAction: 9
+      Animations:
+      - {fileID: 1827226128182048838, guid: 2dd48737b3764b2493280b7c0ba673e0, type: 3}
+      - {fileID: 1827226128182048838, guid: 0330738d6b1e45b7a85140eb6d1b6387, type: 3}
+    - AnimationName: GetHit
+      AnimationAction: 10
+      Animations:
+      - {fileID: 1827226128182048838, guid: d261ac5547044759b27739f6883908ec, type: 3}
+      - {fileID: 1827226128182048838, guid: fa17bb1904a54ceab07c4fdad71d22fc, type: 3}
+    - AnimationName: Die
+      AnimationAction: 11
+      Animations:
+      - {fileID: 1827226128182048838, guid: 3a8397592f6742088616ccb6c952f774, type: 3}
+      - {fileID: 1827226128182048838, guid: 06185c0abdca4fe78d4a32ea2ea8b834, type: 3}
+      - {fileID: 1827226128182048838, guid: a75a1b45bc6148039575078a8b230097, type: 3}
+    - AnimationName: Dizzy
+      AnimationAction: 12
+      Animations:
+      - {fileID: 1827226128182048838, guid: 6073ad2d7a1740c1ba566a2226727f07, type: 3}
+  - StanceName: BowAndArrowStance
+    Stance: 5
+    AnimatorController: {fileID: 9100000, guid: 72782fb16fb047dbb82a01f6680fd5f8, type: 2}
+    NamedAnimations:
+    - AnimationName: Idle
+      AnimationAction: 0
+      Animations:
+      - {fileID: 1827226128182048838, guid: 53ed3e93487a4d8aba967ddc43693a39, type: 3}
+      - {fileID: 1827226128182048838, guid: 53ed3e93487a4d8aba967ddc43693a39, type: 3}
+      - {fileID: 1827226128182048838, guid: 44cfd85782d046a2b3eef4269f648bab, type: 3}
+      - {fileID: 1827226128182048838, guid: 53ed3e93487a4d8aba967ddc43693a39, type: 3}
+    - AnimationName: Attack
+      AnimationAction: 1
+      Animations:
+      - {fileID: 1827226128182048838, guid: 9b37426766af430888bca542f46092c0, type: 3}
+      - {fileID: 1827226128182048838, guid: dd4aa52ee5cc4028aa3372d4b6acbda8, type: 3}
+      - {fileID: 1827226128182048838, guid: 108122d6860347818346823ef9ce48ee, type: 3}
+      - {fileID: 1827226128182048838, guid: 1875e383da324d33832d117dfb5c5f6d, type: 3}
+    - AnimationName: Combo
+      AnimationAction: 2
+      Animations:
+      - {fileID: 1827226128182048838, guid: f3fa7009f2dc4fada73bd7a9b474a929, type: 3}
+      - {fileID: 1827226128182048838, guid: 487e77133f2e4625b5d2642e0804746a, type: 3}
+      - {fileID: 1827226128182048838, guid: 05a4a25053674406a9987a0cef5c9ef2, type: 3}
+      - {fileID: 1827226128182048838, guid: f0449122c02940fcb07e50549e206a34, type: 3}
+      - {fileID: 1827226128182048838, guid: f693d69e1835495f8e261d1da12e88ad, type: 3}
+    - AnimationName: MoveFWD
+      AnimationAction: 3
+      Animations:
+      - {fileID: 1827226128182048838, guid: da63b8b2745b45319065edb5beea9af0, type: 3}
+      - {fileID: 1827226128182048838, guid: 223f866e0cc1419cbe863ed914c10e87, type: 3}
+    - AnimationName: Dash
+      AnimationAction: 4
+      Animations:
+      - {fileID: 1827226128182048838, guid: 231a69b2fa0642efaf655b2afd84699f, type: 3}
+      - {fileID: 1827226128182048838, guid: 8c658d39b7044a15bdd57d08426e352a, type: 3}
+      - {fileID: 1827226128182048838, guid: c717298aa7174b95a4ff2efe54c38ea4, type: 3}
+      - {fileID: 1827226128182048838, guid: 38426a30a17842408fc6199017bd2aa1, type: 3}
+    - AnimationName: Jump
+      AnimationAction: 5
+      Animations:
+      - {fileID: 1827226128182048838, guid: 2b13843415cb451ea32cdb641298fc02, type: 3}
+      - {fileID: 1827226128182048838, guid: 1e567e24dbde437b8438ea57fc530461, type: 3}
+    - AnimationName: Dance
+      AnimationAction: 6
+      Animations:
+      - {fileID: 1827226128182048838, guid: 15a78e1a81164872aab13ee3533fa11c, type: 3}
+    - AnimationName: LevelUp
+      AnimationAction: 7
+      Animations:
+      - {fileID: 1827226128182048838, guid: e9dce92dc83f4fa6b09abc41f72d2ff8, type: 3}
+    - AnimationName: Victory
+      AnimationAction: 8
+      Animations:
+      - {fileID: 1827226128182048838, guid: a761cde3c4744befb6ce6af7c6bb586c, type: 3}
+    - AnimationName: Defend
+      AnimationAction: 9
+      Animations:
+      - {fileID: 1827226128182048838, guid: fa5c3a31da224e629f7e37a3c284fadd, type: 3}
+      - {fileID: 1827226128182048838, guid: 475b373bbe804be087e0da2dd2fa2c07, type: 3}
+    - AnimationName: GetHit
+      AnimationAction: 10
+      Animations:
+      - {fileID: 1827226128182048838, guid: 7d87052186b6446780ee08cbb930c5a6, type: 3}
+      - {fileID: 1827226128182048838, guid: 3adfba0392184182b8ad1a1b16a0b5e8, type: 3}
+    - AnimationName: Die
+      AnimationAction: 11
+      Animations:
+      - {fileID: 1827226128182048838, guid: 3ee1ea431dc04a279f16005f1394c922, type: 3}
+      - {fileID: 1827226128182048838, guid: 13030b065a6e46a3a4231684580110ab, type: 3}
+      - {fileID: 1827226128182048838, guid: d436de99efa44241a612bd0b0ba1b101, type: 3}
+    - AnimationName: Dizzy
+      AnimationAction: 12
+      Animations:
+      - {fileID: 1827226128182048838, guid: 8e488496a27241c6abcec003a6c1e619, type: 3}
+  - StanceName: TwoHandSword
+    Stance: 6
+    AnimatorController: {fileID: 9100000, guid: 02e5eecee0504ce987c3aa6f7cd04eec, type: 2}
+    NamedAnimations:
+    - AnimationName: Idle
+      AnimationAction: 0
+      Animations:
+      - {fileID: 1827226128182048838, guid: 25b70948d609494db0e8f43e4f2080ae, type: 3}
+      - {fileID: 1827226128182048838, guid: 25b70948d609494db0e8f43e4f2080ae, type: 3}
+      - {fileID: 1827226128182048838, guid: 11182471c91f41beb36c1fb7a83be4e7, type: 3}
+      - {fileID: 1827226128182048838, guid: 25b70948d609494db0e8f43e4f2080ae, type: 3}
+    - AnimationName: Attack
+      AnimationAction: 1
+      Animations:
+      - {fileID: 1827226128182048838, guid: f1d1d999c3b44f14a19bbb0681a197ed, type: 3}
+      - {fileID: 1827226128182048838, guid: 9253103313034a6cbeed6f62635058ce, type: 3}
+      - {fileID: 1827226128182048838, guid: d2d7f5e41cd049d197cd86cbaa943378, type: 3}
+      - {fileID: 1827226128182048838, guid: 6a5ce8b63e87425099efea956cb430ba, type: 3}
+    - AnimationName: Combo
+      AnimationAction: 2
+      Animations:
+      - {fileID: 1827226128182048838, guid: 3bdda3b4dc724e4297b36d64314ef484, type: 3}
+      - {fileID: 1827226128182048838, guid: b478e449977e4fe4913152a0d50c4e41, type: 3}
+      - {fileID: 1827226128182048838, guid: cd02c28d4a2945bea9d8c551568e07dc, type: 3}
+      - {fileID: 1827226128182048838, guid: 0a8698024ec84be3934aab1ff099a30a, type: 3}
+      - {fileID: 1827226128182048838, guid: b8d6eccbfb184b44b580a7bc676f0325, type: 3}
+    - AnimationName: MoveFWD
+      AnimationAction: 3
+      Animations:
+      - {fileID: 1827226128182048838, guid: 7b40f161e4684ed3836df18606e0567c, type: 3}
+      - {fileID: 1827226128182048838, guid: 64c8e4af99ba4f809fedf00ad9b2b019, type: 3}
+    - AnimationName: Dash
+      AnimationAction: 4
+      Animations:
+      - {fileID: 1827226128182048838, guid: 4378d7a188f74bf5983dd9260d572f01, type: 3}
+      - {fileID: 1827226128182048838, guid: 89def4176e1b484cbf39ecdfc6748c48, type: 3}
+      - {fileID: 1827226128182048838, guid: 2b73282f2d2f4788aa5606f4549f0b4b, type: 3}
+      - {fileID: 1827226128182048838, guid: 883b3a600f5b4c79887177bb3a1376d4, type: 3}
+    - AnimationName: Jump
+      AnimationAction: 5
+      Animations:
+      - {fileID: 1827226128182048838, guid: 9f6bb6454eac4824bf579601ecbf8a41, type: 3}
+      - {fileID: 1827226128182048838, guid: 9a6e3656a80348b889f1e53b2cb9a7ac, type: 3}
+    - AnimationName: Dance
+      AnimationAction: 6
+      Animations:
+      - {fileID: 1827226128182048838, guid: cd9c4f8f472845a9b4004497c0aa708d, type: 3}
+    - AnimationName: LevelUp
+      AnimationAction: 7
+      Animations:
+      - {fileID: 1827226128182048838, guid: 97fdacb96bb5496985dbc066999ff1d1, type: 3}
+    - AnimationName: Victory
+      AnimationAction: 8
+      Animations:
+      - {fileID: 1827226128182048838, guid: c4342a34f1954e5bbd311282f245d055, type: 3}
+    - AnimationName: Defend
+      AnimationAction: 9
+      Animations:
+      - {fileID: 1827226128182048838, guid: a3a1841400984a2fb85fea51cf6c20a4, type: 3}
+      - {fileID: 1827226128182048838, guid: 7cacd7cb550a46d6a791b8607a68d0a7, type: 3}
+    - AnimationName: GetHit
+      AnimationAction: 10
+      Animations:
+      - {fileID: 1827226128182048838, guid: c0e3c88918e84f748098f4fe499aab42, type: 3}
+      - {fileID: 1827226128182048838, guid: 5539fb71ea7b4f6d886b795e199496f6, type: 3}
+    - AnimationName: Die
+      AnimationAction: 11
+      Animations:
+      - {fileID: 1827226128182048838, guid: 8a905c10261843b0a05f9366d4313a03, type: 3}
+      - {fileID: 1827226128182048838, guid: 128203ec348c41309767dc272cb41260, type: 3}
+      - {fileID: 1827226128182048838, guid: bff5dc4deb554964babd615abcb9b4de, type: 3}
+    - AnimationName: Dizzy
+      AnimationAction: 12
+      Animations:
+      - {fileID: 1827226128182048838, guid: 82e44c6a5a274baf8b916219d2d5a967, type: 3}
+  - StanceName: MagicWand
+    Stance: 7
+    AnimatorController: {fileID: 9100000, guid: e8892ed92f9a4079a3a789e7863095e6, type: 2}
+    NamedAnimations:
+    - AnimationName: Idle
+      AnimationAction: 0
+      Animations:
+      - {fileID: 1827226128182048838, guid: 194df4c7cc8346e4b4534e4a280a9449, type: 3}
+      - {fileID: 1827226128182048838, guid: 194df4c7cc8346e4b4534e4a280a9449, type: 3}
+      - {fileID: 1827226128182048838, guid: 04f3bd7b0e26407e8b0a909e843645c8, type: 3}
+      - {fileID: 1827226128182048838, guid: 194df4c7cc8346e4b4534e4a280a9449, type: 3}
+    - AnimationName: Attack
+      AnimationAction: 1
+      Animations:
+      - {fileID: 1827226128182048838, guid: 63445bd85bbc45f4bd5b960da7a0d271, type: 3}
+      - {fileID: 1827226128182048838, guid: 7229119cf0b24e88a7bf5cea143adc84, type: 3}
+      - {fileID: 1827226128182048838, guid: de44b1f09e7f4f93aa7a4a9306ed2441, type: 3}
+      - {fileID: 1827226128182048838, guid: d1bc4a5c4d5e4f138779dee61b3ae81e, type: 3}
+      - {fileID: 1827226128182048838, guid: 7ef0e54f634744baa99071ee64b2510d, type: 3}
+    - AnimationName: Combo
+      AnimationAction: 2
+      Animations:
+      - {fileID: 1827226128182048838, guid: a71ffd8c3db2452b8797564a8ee06195, type: 3}
+      - {fileID: 1827226128182048838, guid: 594994fd3ad741c3912deba16a439bf4, type: 3}
+      - {fileID: 1827226128182048838, guid: ef4920827d724e0aa3e8323f76e4aa07, type: 3}
+      - {fileID: 1827226128182048838, guid: b2cdc17725514af7bc999a05b3488fd4, type: 3}
+      - {fileID: 1827226128182048838, guid: cd738146c5ea450c857a6457bb4aad69, type: 3}
+    - AnimationName: MoveFWD
+      AnimationAction: 3
+      Animations:
+      - {fileID: 1827226128182048838, guid: d699618e59e4499bae53e02cad388b28, type: 3}
+      - {fileID: 1827226128182048838, guid: f023472a54734216987b2e6a5bbf473d, type: 3}
+    - AnimationName: Dash
+      AnimationAction: 4
+      Animations:
+      - {fileID: 1827226128182048838, guid: 8586cf35f5d7484d92e263e88045d66a, type: 3}
+      - {fileID: 1827226128182048838, guid: 33d29d9c265c40d28e440d673352e2b3, type: 3}
+      - {fileID: 1827226128182048838, guid: 614ac177ef2d46ecade521aa3314ed73, type: 3}
+      - {fileID: 1827226128182048838, guid: 93a8f0fcfe9243449805ed2ea3e93cc9, type: 3}
+    - AnimationName: Jump
+      AnimationAction: 5
+      Animations:
+      - {fileID: 1827226128182048838, guid: fbeff0b6c5354989aa17cb035028be45, type: 3}
+      - {fileID: 1827226128182048838, guid: 441511b08ff642f393c8eb39d7fed73a, type: 3}
+    - AnimationName: Dance
+      AnimationAction: 6
+      Animations:
+      - {fileID: 1827226128182048838, guid: 00eb3d1ea20047cf89071a87b33bc1f4, type: 3}
+    - AnimationName: LevelUp
+      AnimationAction: 7
+      Animations:
+      - {fileID: 1827226128182048838, guid: 7ac44ba6084d4d948b6ae058a4cfa8ac, type: 3}
+    - AnimationName: Victory
+      AnimationAction: 8
+      Animations:
+      - {fileID: 1827226128182048838, guid: 3f784abb95a6463f99e73bfb57a12c98, type: 3}
+    - AnimationName: Defend
+      AnimationAction: 9
+      Animations:
+      - {fileID: 1827226128182048838, guid: 0353bef0880549c894975fd4f36e3b8f, type: 3}
+      - {fileID: 1827226128182048838, guid: f4c7169743b54c12b2396a42c1ddf737, type: 3}
+    - AnimationName: GetHit
+      AnimationAction: 10
+      Animations:
+      - {fileID: 1827226128182048838, guid: d501449219954629947426607666d0f4, type: 3}
+      - {fileID: 1827226128182048838, guid: 546d5b7519cd441f9b24494edf4fc2c7, type: 3}
+    - AnimationName: Die
+      AnimationAction: 11
+      Animations:
+      - {fileID: 1827226128182048838, guid: d5f8ca858e184045a77d001b6f01800b, type: 3}
+      - {fileID: 1827226128182048838, guid: 5edb52b622b746dc992b1e91a8c9db70, type: 3}
+      - {fileID: 1827226128182048838, guid: e421ef685c48439195d34d4e26cf530e, type: 3}
+    - AnimationName: Dizzy
+      AnimationAction: 12
+      Animations:
+      - {fileID: 1827226128182048838, guid: f393b37a82f74243a8e61ff1a0c248e9, type: 3}
+  RightHandObjects:
+  - {fileID: 8448492748455748015}
+  - {fileID: 2856075765154319123}
+  - {fileID: 3448496578472577480}
+  - {fileID: 2223437478139027787}
+  - {fileID: 3911661203983466238}
+  - {fileID: 275565842707322640}
+  - {fileID: 7035724053973853226}
+  - {fileID: 2797759314411448501}
+  - {fileID: 319105104236175340}
+  - {fileID: 5045005315668788759}
+  - {fileID: 3411939813161874091}
+  - {fileID: 5573238990370812098}
+  - {fileID: 7305072420539166844}
+  - {fileID: 8132889192692099082}
+  - {fileID: 6308515648303166274}
+  - {fileID: 4090761593976433244}
+  - {fileID: 6623244170579458976}
+  - {fileID: 3126810712178179790}
+  - {fileID: 1880067734422097609}
+  - {fileID: 7191534853490564523}
+  - {fileID: 7845698831873180008}
+  - {fileID: 2364726552221427939}
+  - {fileID: 8799151017235310728}
+  - {fileID: 1764863236230730544}
+  - {fileID: 2839411486724827878}
+  - {fileID: 3839075927219813353}
+  - {fileID: 1857139240301361776}
+  - {fileID: 3131436131673104363}
+  - {fileID: 5807697297582402929}
+  - {fileID: 7356815759544323686}
+  - {fileID: 6169666629743906030}
+  - {fileID: 822826904801317667}
+  - {fileID: 1069828390978920543}
+  - {fileID: 7782323592180234517}
+  - {fileID: 600955084528683117}
+  - {fileID: 481645390694738213}
+  LeftHandObjects:
+  - {fileID: 1515463289109497047}
+  - {fileID: 8073473579847575579}
+  - {fileID: 6213561296223264572}
+  - {fileID: 4173042952414000807}
+  - {fileID: 3911661203363593928}
+  - {fileID: 275565843078906343}
+  - {fileID: 7035724055212762105}
+  - {fileID: 2797759312563437976}
+  - {fileID: 319105104461174110}
+  - {fileID: 5045005315886171523}
+  - {fileID: 3411939812625756111}
+  - {fileID: 5573238990212891304}
+  - {fileID: 7305072420582285147}
+  - {fileID: 8132889193429732211}
+  - {fileID: 6308515647121076439}
+  - {fileID: 4090761592015158019}
+  - {fileID: 6623244170385465497}
+  - {fileID: 2311274461325387486}
+  - {fileID: 3471746189618642428}
+  - {fileID: 7568977310031378880}
+  - {fileID: 3218208913514852123}
+  - {fileID: 658859674705259803}
+  - {fileID: 2330622275743693763}
+  - {fileID: 8506540241128422035}
+  - {fileID: 8355926187836549557}
+  - {fileID: 5910982792226544171}
+  - {fileID: 1931116974189189909}
+  - {fileID: 7386566396669372364}
+  - {fileID: 5430161620142511064}
+  - {fileID: 8803828112629575058}
+  - {fileID: 2174968755575900963}
+  - {fileID: 996634916494534437}
+  - {fileID: 2367653392446854023}
+  - {fileID: 9126168891723629092}
+  - {fileID: 2734609586341832513}
+  - {fileID: 4909758911361204893}
+  - {fileID: 1641281773232212145}
+  CurrentStance: 0
+  StanceAnimators:
+  - Stance: 0
+    AnimatorController: {fileID: 9100000, guid: d19f3e4956e34d258b80fce2efa0e6ac, type: 2}
+  - Stance: 1
+    AnimatorController: {fileID: 9100000, guid: 60c1598b6e33483e9637b7c471af3633, type: 2}
+  - Stance: 2
+    AnimatorController: {fileID: 9100000, guid: 460f8a3bb5d64cdb84825bb816d5cc0e, type: 2}
+  - Stance: 3
+    AnimatorController: {fileID: 9100000, guid: 31f200a8502146c1903e2e9f490c79b4, type: 2}
+  - Stance: 4
+    AnimatorController: {fileID: 9100000, guid: 0115ead1a74c4fb1ac5ea9f489447a03, type: 2}
+  - Stance: 5
+    AnimatorController: {fileID: 9100000, guid: 72782fb16fb047dbb82a01f6680fd5f8, type: 2}
+  - Stance: 6
+    AnimatorController: {fileID: 9100000, guid: 02e5eecee0504ce987c3aa6f7cd04eec, type: 2}
+  - Stance: 7
+    AnimatorController: {fileID: 9100000, guid: e8892ed92f9a4079a3a789e7863095e6, type: 2}
+--- !u!1001 &1781893560453575516
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -355,66 +1066,447 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 101202292038741189}
     m_Modifications:
-    - target: {fileID: 1556040939566342, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
-      propertyPath: m_Name
-      value: RPGHeroHP
+    - target: {fileID: 1544256305207465081, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 2401314376971798011, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6825763076235687243, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7191100790416280148, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_RootOrder
       value: -1
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.7071068
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0.7071068
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -90
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
+    - target: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8001354749718593143, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+      propertyPath: m_Name
+      value: MC01
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
---- !u!95 &5505970729610342937 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 95922273507661854, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
-  m_PrefabInstance: {fileID: 5565864166031862279}
+  m_SourcePrefab: {fileID: 100100000, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+--- !u!1 &275565842707322640 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1975267606078760012, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &5562912608601705635 stripped
+--- !u!1 &275565843078906343 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1975267605708485307, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &319105104236175340 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2078198636988525744, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &319105104461174110 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2078198636931982850, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &481645390694738213 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2167827013169339001, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &600955084528683117 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1219784695288970033, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &658859674705259803 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1269508918959595079, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &822826904801317667 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1428145161891029119, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &996634916494534437 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1544256305207465081, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1069828390978920543 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1612928033760023299, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1515463289109497047 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 987008591185606539, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1641281773232212145 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1044148825955007469, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1764863236230730544 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 55313148014092396, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1857139240301361776 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 107924265554004268, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1880067734422097609 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 193049383330332053, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1931116974189189909 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 177393455962662985, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2174968755575900963 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 474430814147901567, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2223437478139027787 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 459844743877120535, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2311274461325387486 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4083011282307863938, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2330622275743693763 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4098986340710123679, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2364726552221427939 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4065550370774162367, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2367653392446854023 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4062553592373911771, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2734609586341832513 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4416278813624521757, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2797759312563437976 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4497175752462480068, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2797759314411448501 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4497175753987513321, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2839411486724827878 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4601855785713113530, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2856075765154319123 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4546488303805020239, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3126810712178179790 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3737467648177343890, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3131436131673104363 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3733367897248427191, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3218208913514852123 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3752572936425856071, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3411939812625756111 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4027110793890110611, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3411939813161874091 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4027110794425696759, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3448496578472577480 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3990483520666876564, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3471746189618642428 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2924120402591272608, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3839075927219813353 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3313996180166576309, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3911661203363593928 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3383203751825100180, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3911661203983466238 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3383203753253948834, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4090761592015158019 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2341805002759850079, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4090761593976433244 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2341805004184262912, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4173042952414000807 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2401314376971798011, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4909758911361204893 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6672216400462508481, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5045005315668788759 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6825763076235687243, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5045005315886171523 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6825763076189353695, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5430161620142511064 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6044184715629027460, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5573238990212891304 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6188668910479028724, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5573238990370812098 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6188668910436123550, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5807697297582402929 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5198169005696818733, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5910982792226544171 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5382515450187360631, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6169666629743906030 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5558992097254817714, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6213561296223264572 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5656960744997317728, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6308515647121076439 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5707986307825861515, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6308515648303166274 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5707986309885083678, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6623244170385465497 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4850644786901980101, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6623244170579458976 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4850644786559092988, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7035724053973853226 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8726119005199030134, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7035724055212762105 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8726119005972369573, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7191534853490564523 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8896852372303736567, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7305072420539166844 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9068660206796882720, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7305072420582285147 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9068660206768712711, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7356815759544323686 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9124897800117992762, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7386566396669372364 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9095254468575138960, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7568977310031378880 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8192300620582832796, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7782323592180234517 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8411264861097380425, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7845698831873180008 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8384307519746191924, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8073473579847575579 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7543586217660832583, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8132889192692099082 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7523084374181583702, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8132889193429732211 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7523084374571104303, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8355926187836549557 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7731757349341600489, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8448492748455748015 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7891887250228581107, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8506540241128422035 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7978060249605229007, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8799151017235310728 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7108461396823104468, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8803828112629575058 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7104417170343730894, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &8894999388933273864 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7191100790416280148, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &9006033413685647249 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 4086279202973348, guid: c20397bf1592dc040b827e8716b0bd41, type: 3}
-  m_PrefabInstance: {fileID: 5565864166031862279}
+  m_CorrespondingSourceObject: {fileID: 7224149203388998861, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &9126168891723629092 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7357796030857638264, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  m_PrefabInstance: {fileID: 1781893560453575516}
   m_PrefabAsset: {fileID: 0}

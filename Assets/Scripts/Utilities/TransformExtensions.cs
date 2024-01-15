@@ -234,4 +234,29 @@ public static class TransformExtensions
 
 		return result;
 	}
+
+	public static Transform FindChildRecursively(this Transform parent, string childName)
+	{
+		Transform result = null;
+
+		foreach (Transform child in parent)
+		{
+			if (child.name == childName)
+			{
+				// Child object found
+				result = child;
+				break;
+			}
+			else
+			{
+				// Continue searching recursively
+				result = FindChildRecursively(child, childName);
+
+				if (result != null)
+					break;
+			}
+		}
+
+		return result;
+	}
 }

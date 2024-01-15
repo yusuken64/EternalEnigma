@@ -28,8 +28,6 @@ public class OverworldPlayer : OverworldCharacter
 	// Start is called before the first frame update
 	void Start()
 	{
-		HeroAnimator.Play("");
-
 		var startPosition = WalkableMap.RandomStartPlayerPosition().Coord;
 		var worldPosition = WalkableMap.CellToWorld(startPosition);
 		this.transform.position = worldPosition;
@@ -56,16 +54,6 @@ public class OverworldPlayer : OverworldCharacter
 		int index = WalkPositionHistory.Count - n - 2;
 
 		return WalkPositionHistory[index];
-	}
-
-	internal void PlayIdleAnimation()
-	{
-		HeroAnimator.Play("Idle_SwordShield", 0);
-	}
-
-	internal void PlayWalkAnimation()
-	{
-		HeroAnimator.Play("Walk_SwordShield", 0);
 	}
 
 	private void LateUpdate()
@@ -207,6 +195,7 @@ public class OverworldPlayer : OverworldCharacter
 
 		if (this.TilemapPosition == Overworld.EntrancePosition)
 		{
+			Overworld.WriteSaveData();
 			SceneManager.LoadScene("DungeonScene");
 			yield break;
 		}

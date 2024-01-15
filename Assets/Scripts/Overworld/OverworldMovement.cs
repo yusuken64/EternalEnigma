@@ -37,12 +37,12 @@ internal class OverworldMovement : OverworldAction
 			ally.transform.DOMove(overworldPlayer.WalkableMap.CellToWorld(ally.TilemapPosition), 0.2f);
 		}
 
-		overworldPlayer.PlayWalkAnimation();
+		overworldPlayer.HeroAnimator.PlayWalkAnimation();
 		var worldPosition = overworldPlayer.WalkableMap.CellToWorld(newMapPosition);
 		yield return overworldPlayer.transform.DOMove(worldPosition, 0.2f)
 			.WaitForCompletion();
 
-		overworldPlayer.PlayIdleAnimation();
+		overworldPlayer.HeroAnimator.PlayIdleAnimation();
 	}
 	public Facing GetFacing(Vector3Int direction)
 	{

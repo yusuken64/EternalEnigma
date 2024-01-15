@@ -99,8 +99,8 @@ public class Game : SingletonMonoBehaviour<Game>
 	{
 		PlayerCharacter.InitialzeVitalsFromStats();
 		PlayerCharacter.Vitals.Level = 1;
-
 		PlayerCharacter.SyncDisplayedStats();
+		PlayerCharacter.HeroAnimator.SetWeapon(Stance.NoWeapon, null, null);
 
 		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
 		Common.Instance.ItemManager.StartingItems.ForEach(x => PlayerCharacter.Inventory.Add(x.AsInventoryItem(null)));

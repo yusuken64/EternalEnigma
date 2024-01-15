@@ -68,10 +68,9 @@ public class Player : Character
 	{
 		base.Inventory_HandleEquipmentChanged();
 
-		//Inventory.EquipedWeapon;
-		//Inventory.EquipedShield;
-		//TODO get based on equipped items
-		HeroAnimator.SetWeapon(Stance.NoWeapon, null, null);
+		HeroAnimator.SetWeapon(
+			Inventory.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
+			Inventory.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
 	}
 
 	internal bool CanOpenMenu()

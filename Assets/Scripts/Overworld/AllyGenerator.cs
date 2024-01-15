@@ -11,6 +11,9 @@ public class AllyGenerator : MonoBehaviour
 
     public GameObject AllyPrefab;
     public string allyAssetFolderPath = "Assets/Prefabs/Overworld/Allies";
+    public string weaponAssetFolderPath = "Assets/Prefabs/Dungeon/Items/Weapons";
+
+    public ItemEffectDefinition EquipItemDefinition;
 
     [ContextMenu("Generate Ally Prefabs and Definitions")]
     public void GenerateEnemies()
@@ -104,6 +107,88 @@ public class AllyGenerator : MonoBehaviour
 
         Debug.Log("All transitions removed from the Animator Controller.");
     }
+
+    [ContextMenu("Generate Weapon Definitions")]
+    public void GenerateWeaponDefinitions()
+    {
+        var rightHandObjects = new List<GameObject>();
+        var leftHandObjects = new List<GameObject>();
+
+        var rightHand = AllyModelPrefabs[0].transform.FindChildRecursively("weapon_r");
+        foreach (Transform child in rightHand)
+		{
+			rightHandObjects.Add(child.gameObject);
+			Debug.Log(child.name, child);
+
+			var path = $"{weaponAssetFolderPath}/RightHand_{child.gameObject.name}.asset";
+			var weapon = AssetUtilities.EnsureAssetExists<EquipmentItemDefinition>(path);
+			weapon.ItemName = child.name;
+			weapon.WeaponModelName = child.name;
+			weapon.WeaponType = GetWeaponType(child.name, true);
+            if (weapon.WeaponType == WeaponType.TwoHandSword)
+            {
+                weapon.EquipmentSlot = EquipmentSlot.TwoHand;
+            }
+			else
+			{
+                weapon.EquipmentSlot = EquipmentSlot.MainHand;
+			}
+            weapon.ItemEffectDefinition = EquipItemDefinition;
+        }
+		var leftHand = AllyModelPrefabs[0].transform.FindChildRecursively("weapon_l");
+        foreach (Transform child in leftHand)
+        {
+            leftHandObjects.Add(child.gameObject);
+            Debug.Log(child.name, child);
+
+            var path = $"{weaponAssetFolderPath}/LeftHand_{child.gameObject.name}.asset";
+            var weapon = AssetUtilities.EnsureAssetExists<EquipmentItemDefinition>(path);
+            weapon.ItemName = child.name;
+            weapon.WeaponModelName = child.name;
+            weapon.WeaponType = GetWeaponType(child.name, false);
+            weapon.EquipmentSlot = EquipmentSlot.OffHand;
+            weapon.ItemEffectDefinition = EquipItemDefinition;
+        }
+
+        EditorUtility.SetDirty(this.gameObject);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
+	private static WeaponType GetWeaponType(string name, bool mainhand)
+	{
+        if (mainhand)
+		{
+            if (name.Contains("OHS", System.StringComparison.InvariantCultureIgnoreCase))
+			{
+                return WeaponType.SingleSword;
+            }
+            if (name.Contains("Spear", System.StringComparison.InvariantCultureIgnoreCase))
+            {
+                return WeaponType.Spear;
+            }
+            if (name.Contains("THS", System.StringComparison.InvariantCultureIgnoreCase))
+            {
+                return WeaponType.TwoHandSword;
+            }
+            if (name.Contains("Wand", System.StringComparison.InvariantCultureIgnoreCase))
+            {
+                return WeaponType.MagicWand;
+            }
+        }
+		else
+        {
+            if (name.Contains("OHS", System.StringComparison.InvariantCultureIgnoreCase))
+            {
+                return WeaponType.OffhandSword;
+            }
+            if (name.Contains("Shield", System.StringComparison.InvariantCultureIgnoreCase))
+            {
+                return WeaponType.OffhandShield;
+            }
+        }
+		return WeaponType.SingleSword;
+	}
 }
 
 #endif

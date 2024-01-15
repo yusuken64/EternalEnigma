@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a615cddea2edfde4b856265aa092fb06, type: 3}
+  m_Name: RightHand_THS07_Sword
+  m_EditorClassIdentifier: 
+  ItemName: THS07_Sword
+  ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
+  ApplyToThrownTarget: 0
+  StackStartMin: 1
+  StackStartMax: 1
+  StackMax: 0
+  EquipmentSlot: 1
+  StatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 12
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  WeaponModelName: THS07_Sword
+  WeaponType: 4

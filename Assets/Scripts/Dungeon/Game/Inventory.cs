@@ -19,8 +19,8 @@ public class Inventory : MonoBehaviour
 
 	internal void Remove(InventoryItem item)
 	{
-		if (item == EquipedWeapon) { UnEquip(EquipmentSlot.Weapon); }
-		if (item == EquipedShield) { UnEquip(EquipmentSlot.Shield); }
+		if (item == EquipedWeapon) { UnEquip(EquipmentSlot.MainHand); }
+		if (item == EquipedShield) { UnEquip(EquipmentSlot.OffHand); }
 		if (item == EquipedAccessory) { UnEquip(EquipmentSlot.Accessory); }
 		InventoryItems.Remove(item);
 	}
@@ -39,11 +39,22 @@ public class Inventory : MonoBehaviour
 	{
 		switch (equipableInventoryItem.EquipmentSlot)
 		{
-			case EquipmentSlot.Weapon:
+			case EquipmentSlot.TwoHand:
+				EquipedWeapon = equipableInventoryItem;
+				EquipedShield = null;
+				break;
+			case EquipmentSlot.MainHand:
 				EquipedWeapon = equipableInventoryItem;
 				break;
-			case EquipmentSlot.Shield:
+			case EquipmentSlot.OffHand:
 				EquipedShield = equipableInventoryItem;
+				if (EquipedWeapon?.ItemDefinition is EquipmentItemDefinition equipment)
+				{
+					if (equipment.WeaponType == WeaponType.TwoHandSword)
+					{
+						EquipedWeapon = null;
+					}
+				}
 				break;
 			case EquipmentSlot.Accessory:
 				EquipedAccessory = equipableInventoryItem;
@@ -52,9 +63,9 @@ public class Inventory : MonoBehaviour
 
 		if (InventoryItems.Contains(equipableInventoryItem))
 		{
-			HandleEquipmentChanged?.Invoke();
 			InventoryItems.Remove(equipableInventoryItem);
 			InventoryItems.Insert(0, equipableInventoryItem);
+			HandleEquipmentChanged?.Invoke();
 		}
 	}
 
@@ -79,10 +90,10 @@ public class Inventory : MonoBehaviour
 	{
 		switch (slot)
 		{
-			case EquipmentSlot.Weapon:
+			case EquipmentSlot.MainHand:
 				EquipedWeapon = null;
 				break;
-			case EquipmentSlot.Shield:
+			case EquipmentSlot.OffHand:
 				EquipedWeapon = null;
 				break;
 			case EquipmentSlot.Accessory:

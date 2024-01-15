@@ -24,7 +24,8 @@ public class EquipableInventoryItem : InventoryItem
 
 public enum EquipmentSlot
 {
-	Weapon,
-	Shield,
+	MainHand,
+	TwoHand,
+	OffHand,
 	Accessory
 }

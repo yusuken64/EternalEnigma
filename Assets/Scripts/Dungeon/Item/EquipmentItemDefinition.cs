@@ -5,6 +5,8 @@ public class EquipmentItemDefinition : ItemDefinition
 {
 	public EquipmentSlot EquipmentSlot;
 	public StatModification StatModification;
+	public string WeaponModelName;
+	public WeaponType WeaponType;
 
 	internal override InventoryItem AsInventoryItem(int? stock)
 	{
@@ -15,4 +17,15 @@ public class EquipmentItemDefinition : ItemDefinition
 	{
 		return StatModification;
 	}
+}
+
+public enum WeaponType
+{
+	SingleSword,
+	Spear,
+	BowAndArrow,
+	TwoHandSword,
+	MagicWand,
+	OffhandSword,
+	OffhandShield,
 }

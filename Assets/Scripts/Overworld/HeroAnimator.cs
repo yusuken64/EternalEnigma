@@ -52,12 +52,46 @@ public class HeroAnimator : MonoBehaviour
 		Animator.Play(animationClip.name, 0);
 	}
 
-	public void SetWeapon(Stance stance, string rightHand, string leftHand)
+	internal void SetWeapon(EquipmentItemDefinition mainHandItemDefinition, EquipmentItemDefinition offHandItemDefinition)
 	{
-		CurrentStance = stance;
-		RightHandObjects.ForEach(x => x.gameObject.SetActive(x.name == rightHand));
-		LeftHandObjects.ForEach(x => x.gameObject.SetActive(x.name == leftHand));
+		if (offHandItemDefinition?.WeaponType == WeaponType.OffhandShield)
+		{
+			CurrentStance = Stance.SwordAndShield;
+		}
+		else if (offHandItemDefinition?.WeaponType == WeaponType.OffhandSword)
+		{
+			CurrentStance = Stance.DoubleSwordStance;
+		}
+		else if (mainHandItemDefinition == null)
+		{
+			CurrentStance = Stance.NoWeapon;
+		}
+		else if (mainHandItemDefinition.WeaponType == WeaponType.TwoHandSword)
+		{
+			CurrentStance = Stance.TwoHandSword;
+		}
+		else if (mainHandItemDefinition.WeaponType == WeaponType.BowAndArrow)
+		{
+			CurrentStance = Stance.BowAndArrowStance;
+		}
+		else if (mainHandItemDefinition.WeaponType == WeaponType.Spear)
+		{
+			CurrentStance = Stance.Spear;
+		}
+		else if (mainHandItemDefinition.WeaponType == WeaponType.MagicWand)
+		{
+			CurrentStance = Stance.MagicWand;
+		}
+		//else if (mainHandItemDefinition.WeaponType == WeaponType.SingleSword)
+		else
+		{
+			CurrentStance = Stance.SingleSword;
+		}
+
+		RightHandObjects.ForEach(x => x.gameObject.SetActive(x.name == mainHandItemDefinition?.WeaponModelName));
+		LeftHandObjects.ForEach(x => x.gameObject.SetActive(x.name == offHandItemDefinition?.WeaponModelName));
 	}
+
 
 #if UNITY_EDITOR
 	[ContextMenu("Find weapon Objects")]
@@ -79,7 +113,7 @@ public class HeroAnimator : MonoBehaviour
 			Debug.Log(child.name, child);
 		}
 
-		SetWeapon(Stance.NoWeapon, string.Empty, string.Empty);
+		SetWeapon(null, null);
 
 		EditorUtility.SetDirty(this.gameObject);
 		AssetDatabase.SaveAssets();

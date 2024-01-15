@@ -8,7 +8,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	public GameSaveData GameSaveData = new();
 
 	public ItemManager ItemManager;
-
+	public GameObject SceneTransferObjects;
 	protected override void Initialize()
 	{
 	}

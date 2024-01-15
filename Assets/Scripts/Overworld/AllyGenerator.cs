@@ -27,6 +27,8 @@ public class AllyGenerator : MonoBehaviour
                 var newPrefab = PrefabUtility.SaveAsPrefabAsset(copiedPrefab, newPath);
                 var newChildInstance = Instantiate<GameObject>(enemyModelPrefab);
 
+                newPrefab.GetComponent<OverworldAlly>().AnimatedModel = newChildInstance;
+
                 ReplaceChildGameObject(newPrefab, "GameObject/RPGHeroHP", newChildInstance);
 
                 Debug.Log("Prefab copied to: " + newPath);
@@ -64,7 +66,6 @@ public class AllyGenerator : MonoBehaviour
 
             Animator animator = newChild.GetComponent<Animator>();
             RemoveAllTransitions(animator.runtimeAnimatorController as AnimatorController);
-            //(prefabInstance.GetComponent<Enemy>()).Animator = animator;
 
             Undo.DestroyObjectImmediate(oldChild);
             PrefabUtility.ApplyPrefabInstance(prefabInstance, InteractionMode.UserAction);

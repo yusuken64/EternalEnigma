@@ -75,6 +75,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		foreach (var overworldAlly in Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies)
 		{
 			var ally = Instantiate(AllyPrefab);
+			ally.InitialzeModel(overworldAlly);
 			Allies.Add(ally);
 		}
 

@@ -13,5 +13,5 @@ public class OverworldSaveData
 	public int Gold = 1000;
 	public int DonationTotal;
 	public List<string> Inventory = new();
-	public List<string> RecruitedAllies = new();
+	public List<OverworldAlly> RecruitedAllies = new();
 }

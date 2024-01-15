@@ -38,6 +38,7 @@ public class Overworld : MonoBehaviour
         statueDialog.DonatedAmount = Common.Instance.GameSaveData.OverworldSaveData.DonationTotal;
     }
 
+    [ContextMenu("Write Data")]
     internal void WriteSaveData()
     {
         var statueDialog = FindObjectOfType<StatueDialog>(true);
@@ -45,7 +46,9 @@ public class Overworld : MonoBehaviour
         Common.Instance.GameSaveData.OverworldSaveData.Gold = OverworldPlayer.Gold;
         Common.Instance.GameSaveData.OverworldSaveData.DonationTotal = statueDialog.DonatedAmount;
         Common.Instance.GameSaveData.OverworldSaveData.Inventory = OverworldPlayer.Inventory.ToList();
-        Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies = OverworldPlayer.RecruitedAllies.Select(x => x.Name).ToList();
+        Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies = OverworldPlayer.RecruitedAllies.ToList();
+
+        Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
     }
 
     public void GenerateAllies()

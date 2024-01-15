@@ -64,6 +64,10 @@ public class OverworldAllyManager : MonoBehaviour
             var data = allyDatas[i];
             ally.Name = data.Name;
             ally.Description = data.Backstory;
+            var heroAnimator  = ally.GetComponent<HeroAnimator>();
+            heroAnimator.Animator = ally.AnimatedModel.GetComponent<Animator>();
+            heroAnimator.FindWeaponObjects();
+            heroAnimator.SetAnimations();
         }
 
 		OverworldAllies.ForEach(x =>

@@ -6,4 +6,6 @@ public class OverworldAlly : OverworldCharacter
 {
 	public string Name;
 	public string Description;
+
+	public GameObject AnimatedModel;
 }

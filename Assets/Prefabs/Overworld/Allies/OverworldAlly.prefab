@@ -74,6 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9147941034649787791}
   - component: {fileID: -4841543160321478234}
+  - component: {fileID: 3056893096522460405}
   m_Layer: 8
   m_Name: OverworldAlly
   m_TagString: Untagged
@@ -113,6 +114,43 @@ MonoBehaviour:
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 6007775086357394207}
   CurrentFacing: 0
+  Name: 
+  Description: 
+  AnimatedModel: {fileID: 0}
+--- !u!114 &3056893096522460405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098456013190295396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf5dd189d98893e40b261ab8e7da8be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animator: {fileID: 5567867990702910958}
+  StanceAnimations: []
+  RightHandObjects: []
+  LeftHandObjects: []
+  CurrentStance: 0
+  StanceAnimators:
+  - Stance: 0
+    AnimatorController: {fileID: 9100000, guid: d19f3e4956e34d258b80fce2efa0e6ac, type: 2}
+  - Stance: 1
+    AnimatorController: {fileID: 9100000, guid: 60c1598b6e33483e9637b7c471af3633, type: 2}
+  - Stance: 2
+    AnimatorController: {fileID: 9100000, guid: 460f8a3bb5d64cdb84825bb816d5cc0e, type: 2}
+  - Stance: 3
+    AnimatorController: {fileID: 9100000, guid: 31f200a8502146c1903e2e9f490c79b4, type: 2}
+  - Stance: 4
+    AnimatorController: {fileID: 9100000, guid: 0115ead1a74c4fb1ac5ea9f489447a03, type: 2}
+  - Stance: 5
+    AnimatorController: {fileID: 9100000, guid: 72782fb16fb047dbb82a01f6680fd5f8, type: 2}
+  - Stance: 6
+    AnimatorController: {fileID: 9100000, guid: 02e5eecee0504ce987c3aa6f7cd04eec, type: 2}
+  - Stance: 7
+    AnimatorController: {fileID: 9100000, guid: e8892ed92f9a4079a3a789e7863095e6, type: 2}
 --- !u!1 &1185459154118688400
 GameObject:
   m_ObjectHideFlags: 0

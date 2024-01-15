@@ -8,7 +8,7 @@ public class Ally : Character
 {
 	public List<Skill> Skills;
 
-	public Animator HeroAnimator;
+	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;
 	private GameAction _forcedAction;
@@ -182,32 +182,56 @@ public class Ally : Character
 
 	internal override void PlayWalkAnimation()
 	{
-		HeroAnimator.Play("Walk_SwordShield", 0);
-		HeroAnimator.speed = 5f;
+		HeroAnimator.PlayWalkAnimation();
 	}
 
 	internal override void PlayIdleAnimation()
 	{
-		HeroAnimator.Play("Idle_SwordShield", 0);
+		HeroAnimator.PlayIdleAnimation();
 	}
 
 	internal override void PlayAttackAnimation()
 	{
-		var attack1 = "NormalAttack01_SwordShield";
-		var attack2 = "NormalAttack02_SwordShield";
-
-		var attack = UnityEngine.Random.value > 0.5f ? attack1 : attack2;
-		HeroAnimator.Play(attack, 0, 0f);
+		HeroAnimator.PlayAttackAnimation();
 	}
 
 	internal override void PlayTakeDamageAnimation()
 	{
-		HeroAnimator.Play("GetHit_SwordShield", 0);
+		HeroAnimator.PlayTakeDamageAnimation();
 	}
 
 	internal override void PlayDeathAnimation()
 	{
-		HeroAnimator.Play("Die_SwordShield", 0);
+		HeroAnimator.PlayDeathAnimation();
+	}
+
+	internal void InitialzeModel(OverworldAlly overworldAlly)
+	{
+		var heroAnimator = overworldAlly.GetComponent<HeroAnimator>();
+		var newHeroAnimator = this.gameObject.AddComponent<HeroAnimator>();
+		heroAnimator.CopyFieldsTo(newHeroAnimator);
+		this.HeroAnimator = newHeroAnimator;
+		this.HeroAnimator.Animator.applyRootMotion = false;
+
+		ReplaceChildGameObject(this.gameObject, "GameObject/RPGHeroHP", overworldAlly.AnimatedModel);
+	}
+
+	private void ReplaceChildGameObject(GameObject gameObject, string childPath, GameObject animatedModel)
+	{
+		Transform targetTransform = gameObject.transform.Find(childPath);
+		ReplaceModel(targetTransform.gameObject, animatedModel);
+
+		Destroy(targetTransform.gameObject);
+	}
+
+	public void ReplaceModel(GameObject oldChild, GameObject newChild)
+	{
+		// Replace the old child with the new GameObject
+		newChild.transform.parent = oldChild.transform.parent;
+		newChild.transform.localPosition = oldChild.transform.localPosition;
+		newChild.transform.localRotation = oldChild.transform.localRotation;
+		newChild.transform.localScale = oldChild.transform.localScale;
+		newChild.transform.SetAsFirstSibling();
 	}
 }
 

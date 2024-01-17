@@ -20,7 +20,7 @@ internal class DropItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		Game game = Game.Instance;
-		player.Inventory.InventoryItems.Remove(item);
+		player.Inventory.Remove(item);
 		var finalDropPosition = game.CurrentDungeon.GetDropPosition(dropPosition);
 		game.CurrentDungeon.SetDroppedItem(finalDropPosition, item.ItemDefinition, item.StackStock);
 

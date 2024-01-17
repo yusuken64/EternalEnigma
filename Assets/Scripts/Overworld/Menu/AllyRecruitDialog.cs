@@ -10,6 +10,7 @@ public class AllyRecruitDialog : Dialog
 
 	public Button CancelButton;
 	public Button RecruitButton;
+	public TextMeshProUGUI RecruitButtonText;
 
 	private OverworldAlly _ally;
 
@@ -24,6 +25,8 @@ public class AllyRecruitDialog : Dialog
 
 		NameText.text = ally.Name;
 		DescriptionText.text = ally.Description;
+
+		RecruitButtonText.text = "Recruit (300g)";
 	}
 
 	public void Recruit_Clicked()

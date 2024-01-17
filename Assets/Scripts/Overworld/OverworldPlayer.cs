@@ -178,6 +178,18 @@ public class OverworldPlayer : OverworldCharacter
 			//SetAction(new WaitAction());
 			//return;
 		}
+		if (Input.GetKeyDown(KeyCode.Tab))
+		{
+			_busy = true;
+			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			OverworldMenuManager.Open(overworldMenu.OverworldHelpDialog);
+			overworldMenu.OverworldHelpDialog.Show(); //this should be done to all dialogs in Open()
+			overworldMenu.OverworldHelpDialog.CloseAction = () =>
+			{
+				_busy = false;
+			};
+			return;
+		}
 	}
 
 	private void SetAction(OverworldAction overworldAction)

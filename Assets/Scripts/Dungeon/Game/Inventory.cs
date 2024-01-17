@@ -23,6 +23,7 @@ public class Inventory : MonoBehaviour
 		if (item == EquipedShield) { UnEquip(EquipmentSlot.OffHand); }
 		if (item == EquipedAccessory) { UnEquip(EquipmentSlot.Accessory); }
 		InventoryItems.Remove(item);
+		HandleEquipmentChanged?.Invoke();
 	}
 
 	internal void Add(InventoryItem inventoryItem)
@@ -86,7 +87,7 @@ public class Inventory : MonoBehaviour
 		HandleEquipmentChanged?.Invoke();
 	}
 
-	public void UnEquip(EquipmentSlot slot)
+	private void UnEquip(EquipmentSlot slot)
 	{
 		switch (slot)
 		{

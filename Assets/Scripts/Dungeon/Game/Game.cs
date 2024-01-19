@@ -99,6 +99,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	private void InitializeGame()
 	{
 		PlayerCharacter.InitialzeVitalsFromStats();
+		PlayerCharacter.InitialzeSkillsFromSave();
 		PlayerCharacter.Vitals.Level = 1;
 		PlayerCharacter.SyncDisplayedStats();
 		PlayerCharacter.HeroAnimator.SetWeapon(null, null);

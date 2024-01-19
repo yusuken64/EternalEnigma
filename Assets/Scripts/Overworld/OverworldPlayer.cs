@@ -233,6 +233,17 @@ public class OverworldPlayer : OverworldCharacter
 			};
 			yield break;
 		}
+		else if (this.TilemapPosition == Overworld.BallistaPosition)
+		{
+			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			OverworldMenuManager.Open(overworldMenu.BallistaDialog);
+			overworldMenu.BallistaDialog.Show(); //this should be done to all dialogs in Open()
+			overworldMenu.BallistaDialog.CloseAction = () =>
+			{
+				_busy = false;
+			};
+			yield break;
+		}
 		else if (Overworld.OverworldAllies.Any(x => x.TilemapPosition == this.TilemapPosition))
 		{
 			var ally = Overworld.OverworldAllies.First(x => x.TilemapPosition == this.TilemapPosition);

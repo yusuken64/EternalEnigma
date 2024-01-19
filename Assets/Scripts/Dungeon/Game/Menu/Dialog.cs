@@ -15,7 +15,7 @@ namespace JuicyChickenGames.Menu
 
 		internal void Submit()
 		{
-			EventSystem.current.currentSelectedGameObject.GetComponent<Button>()?.onClick.Invoke();
+			EventSystem.current.currentSelectedGameObject?.GetComponent<Button>()?.onClick?.Invoke();
 		}
 
 		internal abstract void SetFirstSelect();

@@ -155,11 +155,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameSaveData:
     OverworldSaveData:
-      Gold: 1000
+      Gold: 100
       DonationTotal: 0
       Inventory: []
       RecruitedAllies: []
+      ActiveSkillNames: []
+      ActiveSkillMax: 1
   ItemManager: {fileID: 24939714}
+  SkillManager: {fileID: 1524591521}
   SceneTransferObjects: {fileID: 579481371}
 --- !u!4 &24939713
 Transform:
@@ -174,6 +177,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 579481372}
+  - {fileID: 1524591525}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -253,6 +257,54 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 579481371}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 24939713}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1524591520
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1524591525}
+  - component: {fileID: 1524591521}
+  m_Layer: 0
+  m_Name: SkillManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1524591521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524591520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df54627169f7ea54ebcc95186a2da555, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SkillPrefabs:
+  - {fileID: 2225172241553809331, guid: 7e4fb546792a83341983970683b200b8, type: 3}
+  - {fileID: 6547678327747454574, guid: 826a05df7d1a9074ca88734d1ed43eea, type: 3}
+  - {fileID: 7891317521006608345, guid: 9f3ed3c0874871a49869e18b6ff486b4, type: 3}
+--- !u!4 &1524591525
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524591520}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

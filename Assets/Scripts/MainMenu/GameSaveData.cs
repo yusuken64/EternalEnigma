@@ -10,8 +10,10 @@ public class GameSaveData
 [Serializable]
 public class OverworldSaveData
 {
-	public int Gold = 1000;
+	public int Gold = 100;
 	public int DonationTotal;
 	public List<string> Inventory = new();
 	public List<OverworldAlly> RecruitedAllies = new();
+	public List<string> ActiveSkillNames;
+	public int ActiveSkillMax = 1;
 }

@@ -223,9 +223,6 @@ GameObject:
   - component: {fileID: 1802630979737130071}
   - component: {fileID: 8214162097792368139}
   - component: {fileID: 8960690655561992051}
-  - component: {fileID: -5335204912119326263}
-  - component: {fileID: -6872718615887098592}
-  - component: {fileID: 6960965171913672784}
   - component: {fileID: 1679691693414024542}
   m_Layer: 8
   m_Name: Player
@@ -283,10 +280,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 8960690655561992051}
   PursuitTarget: {fileID: 0}
-  Skills:
-  - {fileID: -5335204912119326263}
-  - {fileID: -6872718615887098592}
-  - {fileID: 6960965171913672784}
+  Skills: []
   Camera: {fileID: 0}
   CameraOffset: {x: 1, y: -2.77, z: -11.62}
   HeroAnimator: {fileID: 1679691693414024542}
@@ -310,45 +304,6 @@ MonoBehaviour:
   EquipedAccessory:
     ItemDefinition: {fileID: 0}
   MaxItems: 10
---- !u!114 &-5335204912119326263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4828791753711949877}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b0760bba944a0140b7bffc601de6056, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ParticlePrefab: {fileID: 7873731064791489527, guid: 81c02b133175879409c54d4913fca6d4, type: 3}
---- !u!114 &-6872718615887098592
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4828791753711949877}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3638fd7630131e742b042ede6a36d4ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  StrengthStatusEffect: {fileID: -6332391657329485210, guid: 37c179b2e0581a248ad717b2b006533e, type: 3}
---- !u!114 &6960965171913672784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4828791753711949877}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8820820ca76c4b345b475b64ebc35dc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SilenceStatusEffect: {fileID: 8062541482072348122, guid: 2c2ea9c4ec1c95b40a2c4df619ddb91b, type: 3}
 --- !u!114 &1679691693414024542
 MonoBehaviour:
   m_ObjectHideFlags: 0

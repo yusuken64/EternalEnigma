@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -155,17 +156,20 @@ public class Player : Character
 			SetAction(new AttackAction(this, originalPosition, newMapPosition));
 			return;
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha1))
+		else if (Input.GetKeyDown(KeyCode.Alpha1) &&
+			Skills.Count > 0)
 		{
 			SetAction(new SkillAction(this, Skills[0]));
 			return;
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha2))
+		else if (Input.GetKeyDown(KeyCode.Alpha2) &&
+			Skills.Count > 1)
 		{
 			SetAction(new SkillAction(this, Skills[1]));
 			return;
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha3))
+		else if (Input.GetKeyDown(KeyCode.Alpha3) &&
+			Skills.Count > 2)
 		{
 			SetAction(new SkillAction(this, Skills[2]));
 			return;
@@ -183,6 +187,19 @@ public class Player : Character
 			//pass turn
 			SetAction(new WaitAction());
 			return;
+		}
+	}
+
+	internal void InitialzeSkillsFromSave()
+	{
+		var activeSkills = Common.Instance.GameSaveData.OverworldSaveData.ActiveSkillNames;
+		foreach (var skillName in activeSkills)
+		{
+			Skill skill = Common.Instance.SkillManager.GetSkillByName(skillName);
+			Skill newSkill = Instantiate(skill, this.transform);
+
+			Skill item = newSkill;
+			this.Skills.Add(item);
 		}
 	}
 

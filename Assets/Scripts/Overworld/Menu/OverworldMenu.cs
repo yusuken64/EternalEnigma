@@ -8,6 +8,7 @@ public class OverworldMenu : MonoBehaviour
 	public ShopMenuDialog ShopDialog;
 	public AllyRecruitDialog AllyRecruitDialog;
 	public OverworldHelpDialog OverworldHelpDialog;
+	public BallistaDialog BallistaDialog;
 
 	private void Start()
 	{
@@ -15,5 +16,6 @@ public class OverworldMenu : MonoBehaviour
 		ShopDialog.gameObject.SetActive(false);
 		AllyRecruitDialog.gameObject.SetActive(false);
 		OverworldHelpDialog.gameObject.SetActive(false);
+		BallistaDialog.gameObject.SetActive(false);
 	}
 }

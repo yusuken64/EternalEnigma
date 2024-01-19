@@ -12,9 +12,11 @@ public class Overworld : MonoBehaviour
     public GameObject EntrancePrefab;
     public GameObject ShopPrefab;
     public GameObject StatuePrefab;
+    public GameObject BallistaPrefab;
     public Vector3Int EntrancePosition;
     public Vector3Int ShopPosition;
     public Vector3Int StatuePosition;
+    public Vector3Int BallistaPosition;
     public OverworldData OverworldData;
 
     public OverworldPlayer OverworldPlayer;
@@ -43,12 +45,15 @@ public class Overworld : MonoBehaviour
     {
         var statueDialog = FindObjectOfType<StatueDialog>(true);
 
-        Common.Instance.GameSaveData.OverworldSaveData.Gold = OverworldPlayer.Gold;
-        Common.Instance.GameSaveData.OverworldSaveData.DonationTotal = statueDialog.DonatedAmount;
-        Common.Instance.GameSaveData.OverworldSaveData.Inventory = OverworldPlayer.Inventory.ToList();
-        Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies = OverworldPlayer.RecruitedAllies.ToList();
+		OverworldSaveData overworldSaveData = Common.Instance.GameSaveData.OverworldSaveData;
+		overworldSaveData.Gold = OverworldPlayer.Gold;
+		overworldSaveData.DonationTotal = statueDialog.DonatedAmount;
+		overworldSaveData.Inventory = OverworldPlayer.Inventory.ToList();
+		overworldSaveData.RecruitedAllies = OverworldPlayer.RecruitedAllies.ToList();
+		overworldSaveData.RecruitedAllies.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
 
-        Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
+        var ballistaDialog = FindObjectOfType<BallistaDialog>(true);
+        overworldSaveData.ActiveSkillNames = ballistaDialog.GetActiveSkillsSave();
     }
 
     public void GenerateAllies()
@@ -57,7 +62,8 @@ public class Overworld : MonoBehaviour
         {
             EntrancePosition,
             ShopPosition,
-            StatuePosition
+            StatuePosition,
+            BallistaPosition,
         };
 
         var positions = WalkableMap.RandomEntrancePositions(13).Where(x => !usedPositions.Contains(x.Coord)).ToList();
@@ -80,6 +86,7 @@ public class Overworld : MonoBehaviour
 		GenerateBuilding(EntrancePosition, EntrancePrefab);
 		GenerateBuilding(ShopPosition, ShopPrefab);
 		GenerateBuilding(StatuePosition, StatuePrefab);
+		GenerateBuilding(BallistaPosition, BallistaPrefab);
 	}
 
     private void GenerateBuilding(Vector3Int mapPosition, GameObject prefab)
@@ -146,9 +153,10 @@ public class Overworld : MonoBehaviour
     [ContextMenu("SetEntrance")]
     public void SetEntrance()
 	{
-        EntrancePosition = WalkableMap.RandomEntrancePosition().Coord;
-        ShopPosition = WalkableMap.RandomEntrancePosition().Coord;
-        StatuePosition = WalkableMap.RandomEntrancePosition().Coord;
+        //EntrancePosition = WalkableMap.RandomEntrancePosition().Coord;
+        //ShopPosition = WalkableMap.RandomEntrancePosition().Coord;
+        //StatuePosition = WalkableMap.RandomEntrancePosition().Coord;
+        BallistaPosition = WalkableMap.RandomEntrancePosition().Coord;
     }
 #endif
 }

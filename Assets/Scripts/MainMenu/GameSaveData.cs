@@ -14,6 +14,6 @@ public class OverworldSaveData
 	public int DonationTotal;
 	public List<string> Inventory = new();
 	public List<OverworldAlly> RecruitedAllies = new();
-	public List<string> ActiveSkillNames;
+	public List<string> ActiveSkillNames = new();
 	public int ActiveSkillMax = 1;
 }

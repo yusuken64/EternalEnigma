@@ -12,6 +12,9 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	public GameObject SceneTransferObjects;
 	protected override void Initialize()
 	{
+#if !UNITY_EDITOR
+		SceneManager.LoadScene(1);
+#endif
 	}
 }
 

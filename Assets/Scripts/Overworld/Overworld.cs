@@ -126,7 +126,6 @@ public class Overworld : MonoBehaviour
         GenerateInteractableBuildings();
     }
 
-#if UNITY_EDITOR
     [ContextMenu("SaveMap")]
     public void SaveMap()
 	{
@@ -158,5 +157,4 @@ public class Overworld : MonoBehaviour
         //StatuePosition = WalkableMap.RandomEntrancePosition().Coord;
         BallistaPosition = WalkableMap.RandomEntrancePosition().Coord;
     }
-#endif
 }

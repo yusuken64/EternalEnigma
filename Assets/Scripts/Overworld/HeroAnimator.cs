@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class HeroAnimator : MonoBehaviour
@@ -164,7 +163,7 @@ public class HeroAnimator : MonoBehaviour
 public class StanceAnimators
 {
 	public Stance Stance;
-	public AnimatorController AnimatorController;
+	public RuntimeAnimatorController AnimatorController;
 }
 
 [Serializable]
@@ -172,7 +171,7 @@ public class StanceAnimation
 {
 	public string StanceName;
 	public Stance Stance;
-	public AnimatorController AnimatorController;
+	public RuntimeAnimatorController AnimatorController;
 	public List<NamedAnimation> NamedAnimations;
 }
 

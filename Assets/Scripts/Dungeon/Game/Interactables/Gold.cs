@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Gold : Interactable
 {
+	public DroppedItemVisual DroppedItemVisual;
 	internal override List<GameAction> GetInteractionSideEffects(Character character)
 	{
 		Game game = Game.Instance;

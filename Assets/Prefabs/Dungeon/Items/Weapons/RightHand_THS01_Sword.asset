@@ -18,6 +18,7 @@ MonoBehaviour:
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
+  DroppedItemVisual: 9
   EquipmentSlot: 1
   StatModification:
     HPMax: 0

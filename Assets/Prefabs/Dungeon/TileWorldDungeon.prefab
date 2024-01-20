@@ -45,10 +45,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FloorLayerName: Floor
-  Enemies: []
   Interactables: []
-  TreasurePrefab: {fileID: 3634019738784561393, guid: de87f29fdaf2a2b47b2b721b658210fa, type: 3}
-  DroppedItemPrefab: {fileID: 4462956918253192952, guid: 005f88efd05ef3746aada296f45bff21, type: 3}
+  GoldPrefab: {fileID: 4981221279495866402, guid: 8d5ca0eb592f2674599441d25424b36d, type: 3}
+  DroppedItemPrefabs:
+  - {fileID: 3072958668012535203, guid: 3aaf72c49b38b664b80aa6dfe95fbf0d, type: 3}
+  - {fileID: 246627902806938738, guid: acc899337b301ad4d991ba4d195fa9f3, type: 3}
+  - {fileID: 4338785212620156976, guid: 0cbb4616ef679184889a11609a683a87, type: 3}
+  - {fileID: 5683384242627667922, guid: 8e78221187f0c6649a9e640f20e0145e, type: 3}
+  - {fileID: 3210174366480373663, guid: 4a089f16d0f39d746a04a5ccf78d69d4, type: 3}
+  - {fileID: 3915618767974954722, guid: e16aa31a873fb3f40bca6d92e9749be6, type: 3}
+  - {fileID: 4079404725470256766, guid: e444648bcedccef418f3cf53897dbdc8, type: 3}
+  - {fileID: 1560506624729536217, guid: 73156ff30792efe498f82a96eb5eb8e4, type: 3}
+  - {fileID: 8886964534444341411, guid: c3a033d59c0654747be38cc484f2604d, type: 3}
+  - {fileID: 3915618767974954722, guid: ddb63206242adb24a9e63066392991e1, type: 3}
   StairsPrefab: {fileID: 4387654633609858483, guid: 5ceac4a30c1424843b64d40722512f49, type: 3}
   TrapPrefabs:
   - {fileID: 4055933014357306187, guid: 070dd59b085f8da47bad5372c106a83d, type: 3}

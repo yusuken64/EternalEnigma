@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class DroppedItem : Interactable
 {
+	public DroppedItemVisual DroppedItemVisual;
 	public InventoryItem InventoryItem;
 
 	internal override List<GameAction> GetInteractionSideEffects(Character character)

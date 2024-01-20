@@ -12,6 +12,8 @@ public abstract class ItemDefinition : ScriptableObject
 	public int StackStartMax = 1;
 	public int StackMax;
 
+	public DroppedItemVisual DroppedItemVisual;
+
 	abstract internal InventoryItem AsInventoryItem(int? stock);
 
 	internal int? InitializeStack(int? stock)
@@ -24,5 +26,4 @@ public abstract class ItemDefinition : ScriptableObject
 
 		return stock;
 	}
-
 }

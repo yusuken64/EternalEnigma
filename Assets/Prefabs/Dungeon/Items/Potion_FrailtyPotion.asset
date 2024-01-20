@@ -18,3 +18,4 @@ MonoBehaviour:
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
+  DroppedItemVisual: 4

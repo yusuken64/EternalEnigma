@@ -11,7 +11,8 @@ public class WalkableMap : MonoBehaviour
 
 	internal Vector3 CellToWorld(Vector3Int newMapPosition)
 	{
-		float cellSize = TileWorldCreator.twcAsset.cellSize;
+		//float cellSize = TileWorldCreator.twcAsset.cellSize;
+		float cellSize = 2;
 		return new Vector3(newMapPosition.x * cellSize,
 			newMapPosition.y * cellSize,
 			newMapPosition.z * cellSize);

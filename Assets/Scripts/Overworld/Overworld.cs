@@ -19,6 +19,8 @@ public class Overworld : MonoBehaviour
     public Vector3Int BallistaPosition;
     public OverworldData OverworldData;
 
+    public List<Vector3Int> AllyPositions;
+
     public OverworldPlayer OverworldPlayer;
     public OverworldAllyManager OverworldAllyManager;
     public List<OverworldAlly> OverworldAllies;//instanciated
@@ -64,6 +66,8 @@ public class Overworld : MonoBehaviour
 
         var ballistaDialog = FindObjectOfType<BallistaDialog>(true);
         overworldSaveData.ActiveSkillNames = ballistaDialog.GetActiveSkillsSave();
+
+        AllyPositions = OverworldAllies.Select(x => x.TilemapPosition).ToList();
     }
 
     public void GenerateAllies()
@@ -76,14 +80,13 @@ public class Overworld : MonoBehaviour
             BallistaPosition,
         };
 
-        var positions = WalkableMap.RandomEntrancePositions(13).Where(x => !usedPositions.Contains(x.Coord)).ToList();
-        var allies = OverworldAllyManager.GenerateRandomAlly(positions.Count());
-        for (int i = 0; i < positions.Count; i++)
+        //var positions = WalkableMap.RandomEntrancePositions(13).Where(x => !usedPositions.Contains(x.Coord)).ToList();
+        var allies = OverworldAllyManager.GenerateRandomAlly(AllyPositions.Count());
+        for (int i = 0; i < AllyPositions.Count; i++)
         {
-            CoordValue<bool> position = positions[i];
             var ally = allies[i];
-            var worldPosition = WalkableMap.CellToWorld(position.Coord);
-            ally.TilemapPosition = position.Coord;
+            var worldPosition = WalkableMap.CellToWorld(AllyPositions[i]);
+            ally.TilemapPosition = AllyPositions[i];
             ally.transform.position = worldPosition;
             ally.SetFacing(Facing.Down);
             OverworldAllies.Add(ally);

@@ -26,10 +26,18 @@ public class Overworld : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("Load Save Data");
         LoadSaveData();
+
         //LoadMap();
+        Debug.Log("Generate Buildings");
         GenerateInteractableBuildings();
+
+        Debug.Log("Generate Allies");
         GenerateAllies();
+
+        Debug.Log("Initialize Player");
+        OverworldPlayer.Initialize();
     }
 
     private void LoadSaveData()
@@ -40,8 +48,6 @@ public class Overworld : MonoBehaviour
 
         OverworldPlayer.Gold = Common.Instance.GameSaveData.OverworldSaveData.Gold;
         statueDialog.DonatedAmount = Common.Instance.GameSaveData.OverworldSaveData.DonationTotal;
-
-        OverworldPlayer.Initialize();
     }
 
     [ContextMenu("Write Data")]
@@ -135,9 +141,9 @@ public class Overworld : MonoBehaviour
 	{
         List<(WorldMap, bool[,])> mapLayers = WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayers();
         //var serializedWorldMap = new SerializableWorldMapLayer(mapLayers);
-        var bytes = TWC.OdinSerializer.SerializationUtility.SerializeValue(mapLayers, DataFormat.Binary);
+        //var bytes = TWC.OdinSerializer.SerializationUtility.SerializeValue(mapLayers, DataFormat.Binary);
 
-        OverworldData.WorldBytes = bytes;
+        //OverworldData.WorldBytes = bytes;
         OverworldData.EntrancePosition = EntrancePosition;
         OverworldData.ShopPosition = ShopPosition;
         OverworldData.StatuePosition = StatuePosition;
@@ -146,10 +152,10 @@ public class Overworld : MonoBehaviour
     [ContextMenu("LoadMap")]
     public void LoadMap()
     {
-        var bytes = OverworldData.WorldBytes;
-        List<(WorldMap, bool[,])> mapLayer = TWC.OdinSerializer.SerializationUtility.DeserializeValue<List<(WorldMap, bool[,])>>(bytes, DataFormat.Binary);
+        //var bytes = OverworldData.WorldBytes;
+        //List<(WorldMap, bool[,])> mapLayer = TWC.OdinSerializer.SerializationUtility.DeserializeValue<List<(WorldMap, bool[,])>>(bytes, DataFormat.Binary);
 
-        WalkableMap.TileWorldCreator.SetMapOutputFromBlueprintLayers(mapLayer);
+        //WalkableMap.TileWorldCreator.SetMapOutputFromBlueprintLayers(mapLayer);
         WalkableMap.TileWorldCreator.ExecuteAllBuildLayers(true);
         EntrancePosition = OverworldData.EntrancePosition;
     }

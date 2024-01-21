@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7794996228034142125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4406870047367338100}
+  - component: {fileID: 6414756442090608085}
+  m_Layer: 0
+  m_Name: AllyGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4406870047367338100
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7794996228034142125}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6414756442090608085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7794996228034142125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf5d17f4d1e22e4bb4aa8a1c5191dbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AllyModelPrefabs:
+  - {fileID: 8001354749718593143, guid: b5b4314ecab5493dbb1a3a21af7dd612, type: 3}
+  - {fileID: 8606755148461151098, guid: 9e89634fe9474125ab42aefdc22a787d, type: 3}
+  - {fileID: 4651870295556474333, guid: bc1415412ef8430792e9f2e06914506c, type: 3}
+  - {fileID: 8619966498458803347, guid: ca65a120bd454904b922899134c5ed8a, type: 3}
+  - {fileID: 5518637317423598737, guid: 8f5c976af841428790eb33a488062910, type: 3}
+  - {fileID: 9162616272119168361, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+  - {fileID: 3247294876424170745, guid: 28dafb815f5049268b8efcac86c0e3e5, type: 3}
+  - {fileID: 8763750450409419696, guid: 139b01aead7449969062f8584f7fda3e, type: 3}
+  - {fileID: 6663045628996535813, guid: 9b13861a7c894ae9913e1676c6f1557f, type: 3}
+  - {fileID: 9209080811384397480, guid: a6dbd6ec3eb742aeb38e570384b30606, type: 3}
+  - {fileID: 5689700144625623747, guid: e501a05bda56467c85cbef9ed244329d, type: 3}
+  - {fileID: 7267286431732519511, guid: a462752fc42c4bb497d2b985c6988f13, type: 3}
+  - {fileID: 8991569522946947578, guid: 7595a9dd622b4bbdb589f487b0c00ce6, type: 3}
+  - {fileID: 59360354102331270, guid: e4eb30e0ea80420b9a6c120764d5207a, type: 3}
+  - {fileID: 5453103396353242823, guid: dc8a164c31354e3fab0a7f0f4d107a80, type: 3}
+  - {fileID: 8283478114724805546, guid: 979360a1f8a341669c10a988021e701c, type: 3}
+  - {fileID: 2674548244508260222, guid: e069bd3825624ef1a860f281c8dd11c1, type: 3}
+  - {fileID: 3521448453293620946, guid: e27c6ff7e83d4c35bf7911ed790184da, type: 3}
+  - {fileID: 6530795506631069588, guid: 4305d57a14554db6a18756e9885e1f25, type: 3}
+  - {fileID: 4496651447492590141, guid: de3780ee8a0849f591ebd6968a647b55, type: 3}
+  - {fileID: 6273647886590888531, guid: 4b03e97acd7646168b7c456c376708e5, type: 3}
+  - {fileID: 3324446406351297882, guid: 2ca31e26e7e34d16831e73748e5d5f2d, type: 3}
+  - {fileID: 5705135343567366861, guid: 52c7bb8b5f5643e480c8c9e248b6a390, type: 3}
+  - {fileID: 792370378026291511, guid: bb9f04fde56345fcb729dee03ce0b3c8, type: 3}
+  AllyPrefab: {fileID: 1098456013190295396, guid: 50c3d3db8c4bf3e43b32da64d7fab7d5, type: 3}
+  allyAssetFolderPath: Assets/Prefabs/Overworld/Allies
+  weaponAssetFolderPath: Assets/Prefabs/Dungeon/Items/Weapons
+  EquipItemDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}

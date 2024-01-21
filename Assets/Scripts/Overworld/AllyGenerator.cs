@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,6 +6,7 @@ using UnityEngine;
 
 public class AllyGenerator : MonoBehaviour
 {
+#if UNITY_EDITOR
     public List<GameObject> AllyModelPrefabs;
 
     public GameObject AllyPrefab;
@@ -188,7 +188,6 @@ public class AllyGenerator : MonoBehaviour
             }
         }
 		return WeaponType.SingleSword;
-	}
-}
-
+    }
 #endif
+}

@@ -27,7 +27,7 @@ public class Overworld : MonoBehaviour
     void Start()
     {
         LoadSaveData();
-        LoadMap();
+        //LoadMap();
         GenerateInteractableBuildings();
         GenerateAllies();
     }
@@ -134,6 +134,7 @@ public class Overworld : MonoBehaviour
     public void SaveMap()
 	{
         List<(WorldMap, bool[,])> mapLayers = WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayers();
+        //var serializedWorldMap = new SerializableWorldMapLayer(mapLayers);
         var bytes = TWC.OdinSerializer.SerializationUtility.SerializeValue(mapLayers, DataFormat.Binary);
 
         OverworldData.WorldBytes = bytes;

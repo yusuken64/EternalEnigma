@@ -40,6 +40,8 @@ public class Overworld : MonoBehaviour
 
         OverworldPlayer.Gold = Common.Instance.GameSaveData.OverworldSaveData.Gold;
         statueDialog.DonatedAmount = Common.Instance.GameSaveData.OverworldSaveData.DonationTotal;
+
+        OverworldPlayer.Initialize();
     }
 
     [ContextMenu("Write Data")]

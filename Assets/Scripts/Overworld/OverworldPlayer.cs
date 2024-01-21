@@ -24,14 +24,16 @@ public class OverworldPlayer : OverworldCharacter
 
 	public List<OverworldAlly> RecruitedAllies;
 	public List<Vector3Int> WalkPositionHistory;
+	private bool initialied = false;
 
 	// Start is called before the first frame update
-	void Start()
+	public void Initialize()
 	{
 		var startPosition = WalkableMap.RandomStartPlayerPosition().Coord;
 		var worldPosition = WalkableMap.CellToWorld(startPosition);
 		this.transform.position = worldPosition;
 		this.TilemapPosition = startPosition;
+		initialied = true;
 	}
 
 	internal void RecordWalkPosition()
@@ -64,6 +66,7 @@ public class OverworldPlayer : OverworldCharacter
     // Update is called once per frame
     void Update()
 	{
+		if (!initialied) { return; }
 		if (Input.GetKey(KeyCode.W) ||
 			Input.GetKey(KeyCode.A) ||
 			Input.GetKey(KeyCode.S) ||

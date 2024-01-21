@@ -40,6 +40,8 @@ public class Overworld : MonoBehaviour
 
         Debug.Log("Initialize Player");
         OverworldPlayer.Initialize();
+
+        Debug.Log("Overworld done");
     }
 
     private void LoadSaveData()

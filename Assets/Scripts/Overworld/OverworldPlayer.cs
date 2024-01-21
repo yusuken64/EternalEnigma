@@ -29,7 +29,8 @@ public class OverworldPlayer : OverworldCharacter
 	// Start is called before the first frame update
 	public void Initialize()
 	{
-		var startPosition = WalkableMap.RandomStartPlayerPosition().Coord;
+		//var startPosition = WalkableMap.RandomStartPlayerPosition().Coord;
+		var startPosition = new Vector3Int(10, 4, 0);
 		var worldPosition = WalkableMap.CellToWorld(startPosition);
 		this.transform.position = worldPosition;
 		this.TilemapPosition = startPosition;

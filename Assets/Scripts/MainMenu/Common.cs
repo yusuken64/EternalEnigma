@@ -27,7 +27,10 @@ public class LoadingSceneIntegration
 	static void InitLoadingScene()
 	{
 		int sceneIndex = SceneManager.GetActiveScene().buildIndex;
-		if (sceneIndex == 0) return;
+		if (sceneIndex == 0)
+		{
+			otherScene = 1;
+		};
 
 		otherScene = sceneIndex;
 		//make sure your _preload scene is the first in scene build list

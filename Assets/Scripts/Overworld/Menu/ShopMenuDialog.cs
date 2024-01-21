@@ -17,13 +17,9 @@ public class ShopMenuDialog : Dialog
 		ShopItemDatas = itemDefinitions.Select(x => new ShopItemData(x.ItemName, UnityEngine.Random.Range(100, 300))).ToList();
 	}
 
-	private void Awake()
-	{
-		GenerateShop();
-	}
-
 	internal void Show()
 	{
+		BuyConfirmationDialog.gameObject.SetActive(false);
 		this.gameObject.SetActive(true);
 		Setup();
 	}
@@ -78,6 +74,7 @@ public class ShopMenuDialog : Dialog
 
 	internal override void SetFirstSelect()
 	{
+		if (ShopItems.IsNullOrEmpty()) { return; }
 		ShopItems[0].Select();
 		ScrollToSelected(ShopItems[0].gameObject);
 	}

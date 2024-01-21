@@ -35,6 +35,8 @@ public class Overworld : MonoBehaviour
     private void LoadSaveData()
     {
         var statueDialog = FindObjectOfType<StatueDialog>(true);
+        var shopMenuDialog = FindObjectOfType<ShopMenuDialog>(true);
+        shopMenuDialog.GenerateShop();
 
         OverworldPlayer.Gold = Common.Instance.GameSaveData.OverworldSaveData.Gold;
         statueDialog.DonatedAmount = Common.Instance.GameSaveData.OverworldSaveData.DonationTotal;

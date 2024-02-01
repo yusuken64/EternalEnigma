@@ -309,7 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.23834105, g: 0.25932622, b: 0.49056602, a: 1}
+  m_Color: {r: 0.061247595, g: 0.010768958, b: 0.20754719, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -842,6 +842,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1656518433}
   - component: {fileID: 1656518432}
+  - component: {fileID: 1656518434}
   m_Layer: 0
   m_Name: MainMenu
   m_TagString: Untagged
@@ -876,6 +877,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1656518434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656518431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39847c1b36905644dafc1ab79c2db260, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MainMenuMusic: {fileID: 8300000, guid: 0a2e6afd58359474ab4e28509c74aaf2, type: 3}
 --- !u!1 &1823393147
 GameObject:
   m_ObjectHideFlags: 0

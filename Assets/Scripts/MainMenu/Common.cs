@@ -7,6 +7,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 {
 	public GameSaveData GameSaveData = new();
 
+	public AudioManager AudioManager;
 	public ItemManager ItemManager;
 	public SkillManager SkillManager;
 	public GameObject SceneTransferObjects;

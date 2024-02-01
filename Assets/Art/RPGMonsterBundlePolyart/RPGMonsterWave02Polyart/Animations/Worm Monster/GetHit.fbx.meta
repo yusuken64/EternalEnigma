@@ -1,86 +1,236 @@
 fileFormatVersion: 2
 guid: 4f9d85d20b1f4a908f3b40f5367c1a75
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: Body
-    100002: Eye01
-    100004: Eye02
-    100006: Eye03
-    100008: Eye04
-    100010: Eye05
-    100012: Eye06
-    100014: Eye07
-    100016: //RootNode
-    100018: Head
-    100020: LowerJaw01
-    100022: LowerJaw02
-    100024: LowerJaw03
-    100026: SideFin01_L
-    100028: SideFin01_R
-    100030: SideFin02_L
-    100032: SideFin02_R
-    100034: Spine01
-    100036: Spine02
-    100038: Spine03
-    100040: Spine04
-    100042: UpperFinA01
-    100044: UpperFinA02
-    100046: UpperFinB01
-    100048: UpperFinB02
-    100050: UpperFinC01
-    100052: UpperFinC02
-    100054: UpperFinD01
-    100056: UpperFinD02
-    100058: UpperFinE01
-    100060: UpperFinE02
-    100062: UpperJaw01
-    100064: UpperJaw02
-    100066: UpperJaw03
-    100068: WormMonsterMesh
-    400000: Body
-    400002: Eye01
-    400004: Eye02
-    400006: Eye03
-    400008: Eye04
-    400010: Eye05
-    400012: Eye06
-    400014: Eye07
-    400016: //RootNode
-    400018: Head
-    400020: LowerJaw01
-    400022: LowerJaw02
-    400024: LowerJaw03
-    400026: SideFin01_L
-    400028: SideFin01_R
-    400030: SideFin02_L
-    400032: SideFin02_R
-    400034: Spine01
-    400036: Spine02
-    400038: Spine03
-    400040: Spine04
-    400042: UpperFinA01
-    400044: UpperFinA02
-    400046: UpperFinB01
-    400048: UpperFinB02
-    400050: UpperFinC01
-    400052: UpperFinC02
-    400054: UpperFinD01
-    400056: UpperFinD02
-    400058: UpperFinE01
-    400060: UpperFinE02
-    400062: UpperJaw01
-    400064: UpperJaw02
-    400066: UpperJaw03
-    400068: WormMonsterMesh
-    2100000: lambert1
-    4300000: WormMonsterMesh
-    7400000: GetHit
-    9500000: //RootNode
-    13700000: WormMonsterMesh
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Body
+  - first:
+      1: 100002
+    second: Eye01
+  - first:
+      1: 100004
+    second: Eye02
+  - first:
+      1: 100006
+    second: Eye03
+  - first:
+      1: 100008
+    second: Eye04
+  - first:
+      1: 100010
+    second: Eye05
+  - first:
+      1: 100012
+    second: Eye06
+  - first:
+      1: 100014
+    second: Eye07
+  - first:
+      1: 100016
+    second: //RootNode
+  - first:
+      1: 100018
+    second: Head
+  - first:
+      1: 100020
+    second: LowerJaw01
+  - first:
+      1: 100022
+    second: LowerJaw02
+  - first:
+      1: 100024
+    second: LowerJaw03
+  - first:
+      1: 100026
+    second: SideFin01_L
+  - first:
+      1: 100028
+    second: SideFin01_R
+  - first:
+      1: 100030
+    second: SideFin02_L
+  - first:
+      1: 100032
+    second: SideFin02_R
+  - first:
+      1: 100034
+    second: Spine01
+  - first:
+      1: 100036
+    second: Spine02
+  - first:
+      1: 100038
+    second: Spine03
+  - first:
+      1: 100040
+    second: Spine04
+  - first:
+      1: 100042
+    second: UpperFinA01
+  - first:
+      1: 100044
+    second: UpperFinA02
+  - first:
+      1: 100046
+    second: UpperFinB01
+  - first:
+      1: 100048
+    second: UpperFinB02
+  - first:
+      1: 100050
+    second: UpperFinC01
+  - first:
+      1: 100052
+    second: UpperFinC02
+  - first:
+      1: 100054
+    second: UpperFinD01
+  - first:
+      1: 100056
+    second: UpperFinD02
+  - first:
+      1: 100058
+    second: UpperFinE01
+  - first:
+      1: 100060
+    second: UpperFinE02
+  - first:
+      1: 100062
+    second: UpperJaw01
+  - first:
+      1: 100064
+    second: UpperJaw02
+  - first:
+      1: 100066
+    second: UpperJaw03
+  - first:
+      1: 100068
+    second: WormMonsterMesh
+  - first:
+      4: 400000
+    second: Body
+  - first:
+      4: 400002
+    second: Eye01
+  - first:
+      4: 400004
+    second: Eye02
+  - first:
+      4: 400006
+    second: Eye03
+  - first:
+      4: 400008
+    second: Eye04
+  - first:
+      4: 400010
+    second: Eye05
+  - first:
+      4: 400012
+    second: Eye06
+  - first:
+      4: 400014
+    second: Eye07
+  - first:
+      4: 400016
+    second: //RootNode
+  - first:
+      4: 400018
+    second: Head
+  - first:
+      4: 400020
+    second: LowerJaw01
+  - first:
+      4: 400022
+    second: LowerJaw02
+  - first:
+      4: 400024
+    second: LowerJaw03
+  - first:
+      4: 400026
+    second: SideFin01_L
+  - first:
+      4: 400028
+    second: SideFin01_R
+  - first:
+      4: 400030
+    second: SideFin02_L
+  - first:
+      4: 400032
+    second: SideFin02_R
+  - first:
+      4: 400034
+    second: Spine01
+  - first:
+      4: 400036
+    second: Spine02
+  - first:
+      4: 400038
+    second: Spine03
+  - first:
+      4: 400040
+    second: Spine04
+  - first:
+      4: 400042
+    second: UpperFinA01
+  - first:
+      4: 400044
+    second: UpperFinA02
+  - first:
+      4: 400046
+    second: UpperFinB01
+  - first:
+      4: 400048
+    second: UpperFinB02
+  - first:
+      4: 400050
+    second: UpperFinC01
+  - first:
+      4: 400052
+    second: UpperFinC02
+  - first:
+      4: 400054
+    second: UpperFinD01
+  - first:
+      4: 400056
+    second: UpperFinD02
+  - first:
+      4: 400058
+    second: UpperFinE01
+  - first:
+      4: 400060
+    second: UpperFinE02
+  - first:
+      4: 400062
+    second: UpperJaw01
+  - first:
+      4: 400064
+    second: UpperJaw02
+  - first:
+      4: 400066
+    second: UpperJaw03
+  - first:
+      4: 400068
+    second: WormMonsterMesh
+  - first:
+      21: 2100000
+    second: lambert1
+  - first:
+      43: 4300000
+    second: WormMonsterMesh
+  - first:
+      74: 7400000
+    second: GetHit
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: WormMonsterMesh
   externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -89,6 +239,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -109,6 +260,7 @@ ModelImporter:
     - serializedVersion: 16
       name: GetHit
       takeName: Take 001
+      internalID: 0
       firstFrame: 0
       lastFrame: 22
       wrapMode: 0
@@ -117,7 +269,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -141,25 +293,36 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.01
-    hasPreviousCalculatedGlobalScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -168,10 +331,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -181,13 +344,19 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

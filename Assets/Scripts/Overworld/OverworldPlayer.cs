@@ -198,6 +198,7 @@ public class OverworldPlayer : OverworldCharacter
 
 	private void SetAction(OverworldAction overworldAction)
 	{
+		if (overworldAction == null) { return; }
 		//There is no overworld turns?
 		//just immediately execute
 		overworldAction.ExecuteImmediate();
@@ -208,6 +209,12 @@ public class OverworldPlayer : OverworldCharacter
 	{
 		_busy = true;
 		yield return StartCoroutine(overworldAction.ExecuteRoutine());
+
+		OverworldAction reverse = null;
+		if (overworldAction is OverworldMovement overworldMovement)
+		{
+			reverse = overworldMovement.GetReverse();
+		}
 
 		if (this.TilemapPosition == Overworld.EntrancePosition)
 		{
@@ -222,7 +229,7 @@ public class OverworldPlayer : OverworldCharacter
 			overworldMenu.StatueDialog.Show(); //this should be done to all dialogs in Open()
 			overworldMenu.StatueDialog.CloseAction = () =>
 			{
-				_busy = false;
+				SetAction(reverse);
 			};
 			yield break;
 		}
@@ -233,7 +240,7 @@ public class OverworldPlayer : OverworldCharacter
 			overworldMenu.ShopDialog.Show(); //this should be done to all dialogs in Open()
 			overworldMenu.ShopDialog.CloseAction = () =>
 			{
-				_busy = false;
+				SetAction(reverse);
 			};
 			yield break;
 		}
@@ -244,7 +251,7 @@ public class OverworldPlayer : OverworldCharacter
 			overworldMenu.BallistaDialog.Show(); //this should be done to all dialogs in Open()
 			overworldMenu.BallistaDialog.CloseAction = () =>
 			{
-				_busy = false;
+				SetAction(reverse);
 			};
 			yield break;
 		}
@@ -256,7 +263,7 @@ public class OverworldPlayer : OverworldCharacter
 			overworldMenu.AllyRecruitDialog.Show(ally); //this should be done to all dialogs in Open()
 			overworldMenu.AllyRecruitDialog.CloseAction = () =>
 			{
-				_busy = false;
+				SetAction(reverse);
 			};
 			yield break;
 		}

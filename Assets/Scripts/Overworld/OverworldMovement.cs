@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -87,6 +88,11 @@ internal class OverworldMovement : OverworldAction
 			// Return a default facing or handle an unknown direction
 			return Facing.Up; // Change this default return as needed
 		}
+	}
+
+	internal OverworldMovement GetReverse()
+	{
+		return new OverworldMovement(this.overworldPlayer, newMapPosition, originalPosition);
 	}
 }
 

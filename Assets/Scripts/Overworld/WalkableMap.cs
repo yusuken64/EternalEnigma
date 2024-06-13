@@ -47,15 +47,15 @@ public class WalkableMap : MonoBehaviour
 
 	internal bool CanWalkTo(Vector3Int from, Vector3Int to)
 	{
-		return true;
+		//return true;
 
-		//var walkableMap = TileWorldCreator.GetMapOutputFromBlueprintLayer(WalkableLayerName);
-		//if (to.x < 0 || to.x >= walkableMap.GetLength(0)||
-		//	to.y < 0 || to.y >= walkableMap.GetLength(1))
-		//{
-		//	return false;
-		//}
+		var walkableMap = TileWorldCreator.GetMapOutputFromBlueprintLayer(WalkableLayerName);
+		if (to.x < 0 || to.x >= walkableMap.GetLength(0)||
+			to.y < 0 || to.y >= walkableMap.GetLength(1))
+		{
+			return false;
+		}
 
-		//return walkableMap[to.x, to.y];
+		return walkableMap[to.x, to.y];
 	}
 }

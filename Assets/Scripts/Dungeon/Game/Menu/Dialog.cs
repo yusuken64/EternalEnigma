@@ -33,7 +33,7 @@ namespace JuicyChickenGames.Menu
 
 		internal void SaveSelection()
 		{
-			savedSelectable = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
+			savedSelectable = EventSystem.current.currentSelectedGameObject?.GetComponent<Selectable>();
 		}
 
 		public void ScrollToSelected(GameObject selectedItem)

@@ -25,7 +25,13 @@ public class Player : Character
 	public List<GameAction> DeterminedActions { get; private set; }
 
 	public override bool IsBusy => isBusy;
-	
+
+	public bool ControllerHeld { get; internal set; }
+	public bool ControllerAttackThisFrame { get; internal set; }
+	public bool ControllerUseThisFrame { get; internal set; }
+	public bool ControllerHoldPosition { get; internal set; }
+	public bool ControllerMenuThisFrame { get; internal set; }
+
 	private void Start()
 	{
 		HeroAnimator.PlayIdleAnimation();
@@ -45,7 +51,8 @@ public class Player : Character
 		if (Input.GetKey(KeyCode.W) ||
 			Input.GetKey(KeyCode.A) ||
 			Input.GetKey(KeyCode.S) ||
-			Input.GetKey(KeyCode.D))
+			Input.GetKey(KeyCode.D) ||
+			ControllerHeld)
 		{
 			holdTime += Time.deltaTime;
 		}
@@ -118,7 +125,8 @@ public class Player : Character
 		}
 
 		var game = Game.Instance;
-		if (!Input.GetKey(KeyCode.LeftShift))
+		if (!Input.GetKey(KeyCode.LeftShift) &&
+			!ControllerHoldPosition)
 		{
 			if (holdTime > repeatTime)
 			{
@@ -136,8 +144,10 @@ public class Player : Character
 		if ((Input.GetKeyDown(KeyCode.W) ||
 			Input.GetKeyDown(KeyCode.A) ||
 			Input.GetKeyDown(KeyCode.S) ||
-			Input.GetKeyDown(KeyCode.D)) &&
-			!Input.GetKey(KeyCode.LeftShift))
+			Input.GetKeyDown(KeyCode.D) ||
+			ControllerHeld) &&
+			(!Input.GetKey(KeyCode.LeftShift) &&
+			!ControllerHoldPosition))
 		{
 			holdTime = 0f;
 			var offset = Dungeon.GetFacingOffset(CurrentFacing);
@@ -149,8 +159,11 @@ public class Player : Character
 			}
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space) ||
+			ControllerAttackThisFrame)
 		{
+			ControllerAttackThisFrame = false;
+
 			var offset = Dungeon.GetFacingOffset(CurrentFacing);
 			newMapPosition += offset;
 			SetAction(new AttackAction(this, originalPosition, newMapPosition));
@@ -174,8 +187,10 @@ public class Player : Character
 			SetAction(new SkillAction(this, Skills[2]));
 			return;
 		}
-		else if (Input.GetKeyDown(KeyCode.E))
+		else if (Input.GetKeyDown(KeyCode.E) ||
+			ControllerUseThisFrame)
 		{
+			ControllerUseThisFrame = false;
 			if (currentInteractable != null)
 			{
 				SetAction(new InteractAction(currentInteractable));

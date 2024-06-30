@@ -80,7 +80,7 @@ public class AttackPolicy : PolicyBase
 		}
 
 		var direction = targetCharacter.TilemapPosition - character.TilemapPosition;
-		var attackFacing = character.GetFacing(direction);
+		var attackFacing = Character.GetFacing(direction);
 		var validAttackDirections = game.CurrentDungeon.GetValidAttackDirections(character.TilemapPosition);
 
 		if (!validAttackDirections.Contains(attackFacing))

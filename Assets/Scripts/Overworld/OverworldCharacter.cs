@@ -8,7 +8,7 @@ public abstract class OverworldCharacter : MonoBehaviour
 	public GameObject VisualParent;
 	public Facing CurrentFacing;
 
-	internal void SetFacing(Facing facing)
+	public void SetFacing(Facing facing)
 	{
 		CurrentFacing = facing;
 		var multiplier = 0;

@@ -25,7 +25,8 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	private void Update()
 	{
-		if (MenuInputHandler.Instance.MenuOpenClosedInput)
+		if (MenuInputHandler.Instance.MenuOpenClosedInput ||
+			PlayerController.MenuOpenClosedInput)
 		{
 			if (!Opened)
 			{

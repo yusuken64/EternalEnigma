@@ -26,6 +26,8 @@ public class OverworldPlayer : OverworldCharacter
 	public List<Vector3Int> WalkPositionHistory;
 	private bool initialied = false;
 
+	public bool ControllerHeld { get; internal set; }
+
 	// Start is called before the first frame update
 	public void Initialize()
 	{
@@ -71,7 +73,8 @@ public class OverworldPlayer : OverworldCharacter
 		if (Input.GetKey(KeyCode.W) ||
 			Input.GetKey(KeyCode.A) ||
 			Input.GetKey(KeyCode.S) ||
-			Input.GetKey(KeyCode.D))
+			Input.GetKey(KeyCode.D) ||
+			ControllerHeld)
 		{
 			holdTime += Time.deltaTime;
 		}

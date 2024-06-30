@@ -197,7 +197,7 @@ public abstract class Character : MonoBehaviour, Actor
 		SetFacing(facing);
 	}
 
-	public Facing GetFacing(Vector3Int direction)
+	public static Facing GetFacing(Vector3Int direction)
 	{
 		direction = new Vector3Int(Mathf.Clamp(direction.x, -1, 1),
 							  Mathf.Clamp(direction.y, -1, 1),

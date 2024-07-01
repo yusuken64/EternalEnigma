@@ -20,6 +20,7 @@ internal class EquipAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
+		AudioManager.Instance.SoundEffects.Equip.PlayAsSound();
 		yield return null;
 	}
 

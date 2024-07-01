@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 
 public class NumberInput : MonoBehaviour
@@ -17,6 +18,22 @@ public class NumberInput : MonoBehaviour
 	private int places;
 	private Action lateAction;
 	private SelectableDigit _selectedDigit;
+	private DungeonControls controls;
+
+	private void OnEnable()
+	{
+		controls = new DungeonControls();
+		controls.UI.Submit.performed += Submit_performed;
+		controls.UI.Cancel.performed += Cancel_performed;
+		controls.UI.Enable();
+	}
+
+	private void OnDisable()
+	{
+		controls.UI.Submit.performed -= Submit_performed;
+		controls.UI.Cancel.performed -= Cancel_performed;
+		controls.UI.Disable();
+	}
 
 	public void Setup(int places)
 	{
@@ -79,6 +96,23 @@ public class NumberInput : MonoBehaviour
 			selectableDigit.navigation = navigation;
 		}
 	}
+
+	private void Cancel_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+	{
+		if (obj.performed)
+		{
+			_selectedDigit?.Down_Pressed();
+		}
+	}
+
+	private void Submit_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+	{
+		if (obj.performed)
+		{
+			_selectedDigit?.Up_Pressed();
+		}
+	}
+
 
 	private void Update()
 	{

@@ -70,6 +70,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		var items = Game.Instance.PlayerCharacter.Inventory.InventoryItems;
 		InventoryMenu.Setup(items);
 		InventoryMenu.SetNavigation();
+		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;
 	}
@@ -80,6 +81,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		MenuManager.Open(AllyActionDialog);
 		AllyActionDialog.Setup(ally);
 		AllyActionDialog.SetNavigation();
+		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;
 	}
@@ -110,6 +112,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	internal static void Close(Dialog dialog)
 	{
+		AudioManager.Instance.SoundEffects.Unpause.PlayAsSound();
 		dialog.gameObject.SetActive(false);
 		MenuManager.Instance.DialogStack.Pop();
 

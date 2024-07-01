@@ -25,6 +25,8 @@ public class ApplyStatusEffectAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
+		//TODO get sound from status
+		AudioManager.Instance.SoundEffects.Sleep.PlayAsSound();
 		Game.Instance.DoFloatingText($"{statusEffectPrefab.GetEffectName()}!", Color.yellow, caster.transform.position);
 		statusInstance?.gameObject.SetActive(true);
 		yield return null;

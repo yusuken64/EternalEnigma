@@ -29,6 +29,8 @@ internal class UseInventoryItemAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
+		//TODO get sound from item
+		AudioManager.Instance.SoundEffects.UseItem.PlayAsSound();
 		Game.Instance.DoFloatingText(item.ItemName, Color.white, player.transform.position);
 		yield return new WaitForSecondsRealtime(1f);
 	}

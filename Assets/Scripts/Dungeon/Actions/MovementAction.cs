@@ -131,6 +131,8 @@ internal class AttackAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
+		//TODO play sound based on implementation
+		AudioManager.Instance.SoundEffects.Slash.PlayAsSound();
 		character.PlayAttackAnimation();
 
 		yield return new WaitForSecondsRealtime(0.5f);
@@ -189,10 +191,12 @@ public class TakeDamageAction : GameAction
 		Game game = Game.Instance;
 		if (!miss)
 		{
+			AudioManager.Instance.SoundEffects.Impact_flesh.PlayAsSound();
 			game.DoFloatingText(damage.ToString(), Color.red, target.VisualParent.gameObject.transform.position);
 		}
 		else
 		{
+			AudioManager.Instance.SoundEffects.Miss_Evade.PlayAsSound();
 			game.DoFloatingText("miss", Color.white, target.VisualParent.gameObject.transform.position);
 		}
 
@@ -294,6 +298,7 @@ public class DeathAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
+		AudioManager.Instance.SoundEffects.Enemy_death.PlayAsSound();
 		target.PlayDeathAnimation();
 		yield return new WaitForSecondsRealtime(0.4f);
 		target.VisualParent.gameObject.SetActive(false);

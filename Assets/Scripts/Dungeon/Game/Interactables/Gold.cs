@@ -9,6 +9,7 @@ public class Gold : Interactable
 		Game game = Game.Instance;
 		int goldAmount = UnityEngine.Random.Range(3, 10);
 		game.CurrentDungeon.RemoveInteractable(this);
+		AudioManager.Instance.SoundEffects.BuySell.PlayAsSound();
 		game.DoFloatingText($"{goldAmount} Gold", Color.yellow, character.transform.position);
 		return new List<GameAction>()
 		{

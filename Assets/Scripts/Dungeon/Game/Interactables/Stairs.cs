@@ -8,6 +8,7 @@ public class Stairs : Interactable
 		{
 			new DynamicGameAction((character) =>
 			{
+				AudioManager.Instance.SoundEffects.Flee.PlayAsSound();
 				Game.Instance.AdvanceFloor();
 				return new();
 			},

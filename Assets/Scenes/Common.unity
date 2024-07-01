@@ -1113,6 +1113,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1157871211}
   - component: {fileID: 1157871210}
+  - component: {fileID: 1157871212}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -1146,6 +1147,7 @@ MonoBehaviour:
   - {fileID: 2048516221}
   - {fileID: 594465673}
   - {fileID: 2086462264}
+  SoundEffects: {fileID: 1157871212}
 --- !u!4 &1157871211
 Transform:
   m_ObjectHideFlags: 0
@@ -1163,6 +1165,40 @@ Transform:
   m_Father: {fileID: 24939713}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1157871212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157871209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f544c151be8d77642b8875db725d0dc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Claw: {fileID: 8300000, guid: 56703418e3aed4c47a5f6622816b8e41, type: 3}
+  Bite: {fileID: 8300000, guid: fd25a15f9797641458336cccfb445343, type: 3}
+  Impact_flesh: {fileID: 8300000, guid: 7c47b20bb9874304a809dc5580d403ba, type: 3}
+  Slash: {fileID: 8300000, guid: 88b1cbe3caa3fee4b8b103b5edd7aba9, type: 3}
+  Miss_Evade: {fileID: 8300000, guid: f11db4559b3ffff45b62e9327fc5535d, type: 3}
+  Block: {fileID: 8300000, guid: b7b5a6156961bac44a67504d42ce6fcf, type: 3}
+  Flee: {fileID: 8300000, guid: c458b6714dab015479d507b21fd2cead, type: 3}
+  Encounter: {fileID: 8300000, guid: 21c4a490b24ba2045bc815f7626a40ef, type: 3}
+  Enemy_death: {fileID: 8300000, guid: 566d2ea6240b489479a6e9fd608c2621, type: 3}
+  flesh: {fileID: 8300000, guid: 2b21ef916f6943c439b71a7c74568878, type: 3}
+  Hover: {fileID: 8300000, guid: 35cf7766e9e2aa542811e896fde57989, type: 3}
+  Confirm: {fileID: 8300000, guid: c5cb2ac29e89dbf43a9b644caaad45e6, type: 3}
+  Decline: {fileID: 8300000, guid: 7cc057bed53baf34799f52aab3c84800, type: 3}
+  Denied: {fileID: 8300000, guid: 1ed8fb76fc64e4e46847348138782234, type: 3}
+  UseItem: {fileID: 8300000, guid: ba39bf8baf6d13046889b2d64822381a, type: 3}
+  Equip: {fileID: 8300000, guid: 490bfbc72255342408984f60044487de, type: 3}
+  Unequip: {fileID: 8300000, guid: 78ad99fd0a0a5144280b07bbdba84815, type: 3}
+  BuySell: {fileID: 8300000, guid: abdbbfd33a46f4549987385f85c536b5, type: 3}
+  Pause: {fileID: 8300000, guid: b83bf8726a7fac349a54389f0c57cda6, type: 3}
+  Unpause: {fileID: 8300000, guid: e58d8bd078f188a4ba314e933b98528b, type: 3}
+  Sleep: {fileID: 8300000, guid: aa967a280457c054bb646d57611f5bd0, type: 3}
+  LevelUp: {fileID: 8300000, guid: 6cf9c85b5a3b88c468b21b9d21250adf, type: 3}
 --- !u!1 &1355591530
 GameObject:
   m_ObjectHideFlags: 0

@@ -185,6 +185,10 @@ public class OverworldPlayer : OverworldCharacter
 			//SetAction(new WaitAction());
 			//return;
 		}
+		if (Input.GetKeyDown(KeyCode.P))
+		{
+			Gold += 100;
+		}
 		if (Input.GetKeyDown(KeyCode.Tab))
 		{
 			_busy = true;

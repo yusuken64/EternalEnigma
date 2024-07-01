@@ -29,6 +29,7 @@ internal class DropItemAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character)
 	{
+		AudioManager.Instance.SoundEffects.Unequip.PlayAsSound();
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
 	}

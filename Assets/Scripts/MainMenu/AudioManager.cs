@@ -5,13 +5,15 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : SingletonMonoBehaviour<AudioManager>
 {
 	public AudioMixerGroup MusicAudioMixerGroup;
 	public AudioMixerGroup EffectAudioMixerGroup;
 
 	public AudioSource MusicAudioSource;
 	public List<AudioSource> EffectAudioSources;
+
+	public SoundEffects SoundEffects;
 
 	internal void PlayMusic(AudioClip musicClip)
 	{

@@ -17,6 +17,8 @@ namespace JuicyChickenGames.Menu
 		public DynamicActionDialog DynamicActionDialog;
 		private Ally _ally;
 
+		public FaceCamDisplay FaceCamDisplay;
+
 		public void Strategy_Clicked()
 		{
 			MenuManager.Open(DynamicActionDialog);
@@ -31,6 +33,7 @@ namespace JuicyChickenGames.Menu
 					{
 						Game.Instance.DoFloatingText("Follow", Color.white, _ally.VisualParent.transform.position);
 						_ally.AllyStrategy = AllyStrategy.Follow;
+						FaceCamDisplay.Unfollow(_ally.VisualParent);
 						MenuManager.Close(DynamicActionDialog);
 						MenuManager.Close(this);
 					}
@@ -53,6 +56,7 @@ namespace JuicyChickenGames.Menu
 					{
 						Game.Instance.DoFloatingText("Aggresive", Color.white, _ally.VisualParent.transform.position);
 						_ally.AllyStrategy = AllyStrategy.Aggresive;
+						FaceCamDisplay.Unfollow(_ally.VisualParent);
 						MenuManager.Close(DynamicActionDialog);
 						MenuManager.Close(this);
 					}
@@ -65,6 +69,7 @@ namespace JuicyChickenGames.Menu
 					{
 						Game.Instance.DoFloatingText("Hold Position", Color.white, _ally.VisualParent.transform.position);
 						_ally.AllyStrategy = AllyStrategy.HoldPosition;
+						FaceCamDisplay.Unfollow(_ally.VisualParent);
 						MenuManager.Close(DynamicActionDialog);
 						MenuManager.Close(this);
 					}
@@ -106,17 +111,25 @@ namespace JuicyChickenGames.Menu
 		public void Talk_Clicked()
 		{
 			Game.Instance.DoFloatingText($"{_ally.Vitals.HP}HP, {_ally.Vitals.SP}SP", Color.white, _ally.VisualParent.transform.position);
+			FaceCamDisplay.Unfollow(_ally.VisualParent);
 			MenuManager.Close(this);
 		}
 
 		public void Cancel_Clicked()
 		{
+			FaceCamDisplay.Unfollow(_ally.VisualParent);
 			MenuManager.Close(this);
 		}
 
 		internal void Setup(Ally ally)
 		{
 			this._ally = ally;
+			FaceCamDisplay.SetFollow(_ally.VisualParent);
+		}
+
+		internal void Close()
+		{
+			FaceCamDisplay.Unfollow(_ally.VisualParent);
 		}
 
 		internal override void SetFirstSelect()

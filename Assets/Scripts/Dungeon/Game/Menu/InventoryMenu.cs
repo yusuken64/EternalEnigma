@@ -18,9 +18,11 @@ public class InventoryMenu : Dialog
 	public TextMeshProUGUI StatText;
 
 	public List<InventoryMenuItem> InventoryMenuItems { get; private set; }
+	public FaceCamDisplay FaceCamDisplay;
 
 	public void Setup(List<InventoryItem> Items)
 	{
+		FaceCamDisplay.SetFollow(FindObjectOfType<Player>().VisualParent);
 		Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
 		{
 			view.Setup(data);
@@ -48,6 +50,11 @@ public class InventoryMenu : Dialog
 		var player = Game.Instance.PlayerCharacter;
 		StatText.text = $@"Strength: {player.DisplayedStats.Strength}
 Defense: {player.DisplayedStats.Defense}";
+	}
+
+	internal void Close()
+	{
+		FaceCamDisplay.Unfollow(FindObjectOfType<Player>().VisualParent);
 	}
 
 	private Vector3 KeepFullyOnScreen(RectTransform rectTransform, Vector3 newPosition)

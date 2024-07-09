@@ -12,6 +12,8 @@ public class AllyRecruitDialog : Dialog
 	public Button RecruitButton;
 	public TextMeshProUGUI RecruitButtonText;
 
+	public FaceCamDisplay FaceCamDisplay;
+
 	private OverworldAlly _ally;
 
 	internal override void SetFirstSelect()
@@ -22,6 +24,8 @@ public class AllyRecruitDialog : Dialog
 	internal void Show(OverworldAlly ally)
 	{
 		this._ally = ally;
+
+		FaceCamDisplay.SetFollow(ally.VisualParent);
 
 		NameText.text = ally.Name;
 		DescriptionText.text = ally.Description;
@@ -43,12 +47,14 @@ public class AllyRecruitDialog : Dialog
 			player.RecruitedAllies.Add(_ally);
 		}
 
+		FaceCamDisplay.Unfollow(_ally.VisualParent);
 		OverworldMenuManager.Close(this);
 		CloseAction?.Invoke();
 	}
 
 	public void Cancel_Clicked()
 	{
+		FaceCamDisplay.Unfollow(_ally.VisualParent);
 		OverworldMenuManager.Close(this);
 		CloseAction?.Invoke();
 	}

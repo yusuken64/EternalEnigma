@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class Ally : Character
 {
-	public List<Skill> Skills;
-
 	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;

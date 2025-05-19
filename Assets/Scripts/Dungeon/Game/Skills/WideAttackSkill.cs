@@ -11,8 +11,8 @@ public class WideAttackSkill : Skill
 	public GameObject ParticlePrefab;
 	private IEnumerable<Vector3Int> _attackTiles;
 
-	internal override List<GameAction> GetEffects(Character caster)
-	{
+	internal override List<GameAction> GetEffects(Character caster, Vector3Int target)
+    {
 		var offset = Dungeon.GetFacingOffset(caster.CurrentFacing);
 		Vector3Int tilemapPosition = caster.TilemapPosition;
 		var attackPosition = tilemapPosition + offset;
@@ -23,7 +23,6 @@ public class WideAttackSkill : Skill
 			return chebyshevDistance <= 1 && chebyshevDistance > 0;
 		});
 
-		var what = _attackTiles.ToList();
 		var enemies = _attackTiles.Select(tile => Game.Instance.CurrentDungeon.GetCharacterAtPosition(tile)).ToList();
 
 		var takeDamageActions = _attackTiles

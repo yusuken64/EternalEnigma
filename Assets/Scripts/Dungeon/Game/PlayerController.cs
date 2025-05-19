@@ -61,6 +61,13 @@ public class PlayerController : MonoBehaviour
 
 	private void Move_performed(InputAction.CallbackContext obj)
 	{
+		if (Game.Instance.InventoryMenu.isActiveAndEnabled ||
+			Game.Instance.AllyMenu.isActiveAndEnabled ||
+			Game.Instance.SkillDialog.isActiveAndEnabled)
+		{
+			return;
+		}
+
 		var direction = obj.ReadValue<Vector2>();
 		var directionInt = new Vector3Int(Mathf.RoundToInt(direction.x), Mathf.RoundToInt(direction.y));
 		var facing = Character.GetFacing(directionInt);
@@ -77,7 +84,6 @@ public class PlayerController : MonoBehaviour
 	{
 		Player.ControllerHoldPosition = true;
 	}
-
 
 	private void OnEnable()
 	{

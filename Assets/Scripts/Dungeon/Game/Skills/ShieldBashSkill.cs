@@ -10,15 +10,15 @@ public class ShieldBashSkill : Skill
 	public override string SkillName => "Shield Bash";
 	public StatusEffect SilenceStatusEffect;
 
-	internal override List<GameAction> GetEffects(Character caster)
-	{
+	internal override List<GameAction> GetEffects(Character caster, Vector3Int target)
+    {
 		var offset = Dungeon.GetFacingOffset(caster.CurrentFacing);
 		var newMapPosition = caster.TilemapPosition + offset;
-		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == newMapPosition);
+		var target2 = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == newMapPosition);
 
 		return new()
 		{
-			new ApplyStatusEffectAction(target, SilenceStatusEffect, caster)
+			new ApplyStatusEffectAction(target2, SilenceStatusEffect, caster)
 		};
 	}
 

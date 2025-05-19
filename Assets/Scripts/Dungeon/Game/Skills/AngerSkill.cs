@@ -9,8 +9,8 @@ public class AngerSkill : Skill
 	public override string SkillName => "Anger";
 	public StatusEffect StrengthStatusEffect;
 
-	internal override List<GameAction> GetEffects(Character caster)
-	{
+	internal override List<GameAction> GetEffects(Character caster, Vector3Int target)
+    {
 		return new()
 		{
 			new ApplyStatusEffectAction(caster, StrengthStatusEffect, caster)

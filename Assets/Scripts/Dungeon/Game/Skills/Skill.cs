@@ -8,7 +8,7 @@ public abstract class Skill : MonoBehaviour
 	public abstract int SPCost { get; }
 	public abstract string SkillName { get; }
 
-	internal abstract List<GameAction> GetEffects(Character caster);
+	internal abstract List<GameAction> GetEffects(Character caster, Vector3Int target);
 	internal abstract IEnumerator ExecuteRoutine(Character caster);
 
 	internal virtual bool IsValid(Character caster)

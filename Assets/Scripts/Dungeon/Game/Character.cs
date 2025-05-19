@@ -134,6 +134,7 @@ public abstract class Character : MonoBehaviour, Actor
 
 	public Vector3Int? PursuitPosition; //only used in ai controlled
 	public Character PursuitTarget; //only used in ai controlled
+	public List<Skill> Skills;
 
 	internal void SetPosition(Vector3Int newPosition)
 	{

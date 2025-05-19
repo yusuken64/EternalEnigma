@@ -13,9 +13,11 @@ namespace JuicyChickenGames.Menu
 		public bool IsBusy => dialogStack.Count > 0;
 
 		public bool MenuOpenClosedInput;
+		public bool OpenSkillMenuInput;
 		public PlayerInput PlayerInput;
 		public InputAction MenuOpenCloseAction;
 		public InputAction SubmitAction;
+		public InputAction OpenSkillMenuAction;
 
 		protected override void Initialize()
 		{
@@ -23,11 +25,13 @@ namespace JuicyChickenGames.Menu
 
 			MenuOpenCloseAction = PlayerInput.actions["OpenMenu"];
 			SubmitAction = PlayerInput.actions["Submit"];
+			OpenSkillMenuAction = PlayerInput.actions["OpenSkillMenu"];
 		}
 
 		private void Update()
 		{
 			MenuOpenClosedInput = MenuOpenCloseAction.WasPressedThisFrame();
+			OpenSkillMenuInput = OpenSkillMenuAction.WasPressedThisFrame();
 		}
 	}
 }

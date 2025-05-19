@@ -449,6 +449,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "OpenSkillMenu",
+                    "type": "Button",
+                    "id": "659f3a43-660f-4998-8795-466475840a1c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -801,6 +810,17 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "OpenMenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1d767e8-f622-4a1c-9986-a4fafc33b8d4",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenSkillMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

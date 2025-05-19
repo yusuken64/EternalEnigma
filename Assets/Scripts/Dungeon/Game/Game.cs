@@ -28,6 +28,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public InventoryMenu InventoryMenu;
 	public AllyActionDialog AllyMenu;
+	public SkillDialog SkillDialog;
 	public GameOverScreen GameOverScreen;
 	public NewFloorMessage NewFloorMessage;
 

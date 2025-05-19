@@ -12,16 +12,20 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public InventoryMenu InventoryMenu;
 	public ActionDialog ActionDialog;
 	public AllyActionDialog AllyActionDialog;
+	public SkillDialog SkillDialog;
 	public bool Opened;
 	public Dialog CurrentDialog;
 
 	public Stack<Dialog> DialogStack = new();
+
+	public GameObject TargetArrow;
 
 	protected override void Initialize()
 	{
 		base.Initialize();
 		InventoryMenu.gameObject.SetActive(false);
 		ActionDialog.gameObject.SetActive(false);
+		SkillDialog.gameObject.SetActive(false);
 	}
 
 	private void Update()
@@ -42,12 +46,35 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 				CloseMenu();
 			}
 		}
+		else if (MenuInputHandler.Instance.OpenSkillMenuInput)
+		{
+			if (!Opened)
+			{
+				bool canOpenMenu = Game.Instance.PlayerCharacter.CanOpenMenu();
+				if (canOpenMenu)
+				{
+					OpenSkillsMenu(Game.Instance.PlayerCharacter);
+				}
+			}
+			else
+			{
+				CloseMenu();
+			}
+		}
 
 		if (MenuInputHandler.Instance.SubmitAction.WasPerformedThisFrame())
 		{
-			if (DialogStack.Count > 0)
+			if (Game.Instance.PlayerCharacter.CurrentCameraMode == CameraMode.FollowPlayer)
 			{
-				DialogStack.Peek().Submit();
+				if (DialogStack.Count > 0)
+				{
+					DialogStack.Peek().Submit();
+				}
+			}
+			else
+			{
+				Game.Instance.PlayerCharacter.ConfirmTarget();
+				CloseMenu();
 			}
 		}
 	}
@@ -58,6 +85,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		CurrentDialog = null;
 		InventoryMenu.gameObject.SetActive(false);
 		ActionDialog.gameObject.SetActive(false);
+		SkillDialog.gameObject.SetActive(false);
 		AllyActionDialog.gameObject.SetActive(false);
 		AllyActionDialog.DynamicActionDialog.gameObject.SetActive(false);
 		DialogStack.Clear();
@@ -93,6 +121,22 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			AllyActionDialog.Close();
 		};
 		AllyActionDialog.SetNavigation();
+		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
+
+		Opened = true;
+	}
+
+	public void OpenSkillsMenu(Character character)
+	{
+		this.gameObject.SetActive(true);
+		MenuManager.Open(SkillDialog);
+		SkillDialog.Setup(character);
+		CurrentDialog = InventoryMenu;
+		SkillDialog.CloseAction = () =>
+		{
+			SkillDialog.Close();
+		};
+		SkillDialog.SetNavigation();
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;

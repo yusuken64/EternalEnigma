@@ -6,9 +6,7 @@ using UnityEngine;
 
 public class Player : Character
 {
-	public List<Skill> Skills;
-
-	private float holdTime = 0f;
+    private float holdTime = 0f;
 	private float repeatTime = 0.1f;
 	private GameAction pickedAction;
 	public Camera Camera;
@@ -30,19 +28,35 @@ public class Player : Character
 	public bool ControllerAttackThisFrame { get; internal set; }
 	public bool ControllerUseThisFrame { get; internal set; }
 	public bool ControllerHoldPosition { get; internal set; }
-	public bool ControllerMenuThisFrame { get; internal set; }
 
-	private void Start()
+    public bool ControllerMenuThisFrame { get; internal set; }
+
+	public CameraMode CurrentCameraMode;
+	public Character FollowTarget;
+	public List<Character> Targetables;
+	public Skill TargetingSkill;
+
+    public Action<Player, Skill, Vector3Int> TargetSelected { get; private set; }
+
+    private void Start()
 	{
 		HeroAnimator.PlayIdleAnimation();
 	}
 
 	private void LateUpdate()
 	{
-		Camera.transform.position = this.transform.position + CameraOffset;
+		if (CurrentCameraMode == CameraMode.FollowPlayer)
+		{
+			Camera.transform.position = this.transform.position + CameraOffset;
+		}
+		else if (CurrentCameraMode == CameraMode.TargetSelect &&
+			FollowTarget != null)
+		{
+			Camera.transform.position = FollowTarget.transform.position + CameraOffset;
+		}
 	}
 
-	private void Update()
+    private void Update()
 	{
 		menuCooldown += Time.deltaTime;
 		//Debug.Log($"Player is busy {IsBusy}");
@@ -57,9 +71,31 @@ public class Player : Character
 			holdTime += Time.deltaTime;
 		}
 
+		if (CurrentCameraMode == CameraMode.TargetSelect)
+		{
+			if (Input.GetKeyDown(KeyCode.W))
+			{
+				SelectTargetable(Facing.Up);
+			}
+			else if (Input.GetKeyDown(KeyCode.A))
+			{
+				SelectTargetable(Facing.Left);
+			}
+			else if (Input.GetKeyDown(KeyCode.S))
+			{
+				SelectTargetable(Facing.Down);
+			}
+			else if (Input.GetKeyDown(KeyCode.D))
+			{
+				SelectTargetable(Facing.Right);
+			}
+			return;
+		}
+
 		var game = Game.Instance;
 		if (Game.Instance.InventoryMenu.isActiveAndEnabled ||
-			Game.Instance.AllyMenu.isActiveAndEnabled)
+			Game.Instance.AllyMenu.isActiveAndEnabled ||
+			Game.Instance.SkillDialog.isActiveAndEnabled)
 		{
 			menuCooldown = 0;
 			holdTime = 0;
@@ -72,7 +108,7 @@ public class Player : Character
 		}
 	}
 
-	public override void Inventory_HandleEquipmentChanged()
+    public override void Inventory_HandleEquipmentChanged()
 	{
 		base.Inventory_HandleEquipmentChanged();
 
@@ -169,24 +205,6 @@ public class Player : Character
 			SetAction(new AttackAction(this, originalPosition, newMapPosition));
 			return;
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha1) &&
-			Skills.Count > 0)
-		{
-			SetAction(new SkillAction(this, Skills[0]));
-			return;
-		}
-		else if (Input.GetKeyDown(KeyCode.Alpha2) &&
-			Skills.Count > 1)
-		{
-			SetAction(new SkillAction(this, Skills[1]));
-			return;
-		}
-		else if (Input.GetKeyDown(KeyCode.Alpha3) &&
-			Skills.Count > 2)
-		{
-			SetAction(new SkillAction(this, Skills[2]));
-			return;
-		}
 		else if (Input.GetKeyDown(KeyCode.E) ||
 			ControllerUseThisFrame)
 		{
@@ -208,6 +226,8 @@ public class Player : Character
 	internal void InitialzeSkillsFromSave()
 	{
 		var activeSkills = Common.Instance.GameSaveData.OverworldSaveData.ActiveSkillNames;
+		activeSkills.Add("Damage");
+		activeSkills.Add("Damage");
 		foreach (var skillName in activeSkills)
 		{
 			Skill skill = Common.Instance.SkillManager.GetSkillByName(skillName);
@@ -425,4 +445,98 @@ public class Player : Character
 	{
 		HeroAnimator.PlayDeathAnimation();
 	}
+
+	internal void InvokeTargetSelection(Skill skill, List<Character> possibleTargets, Action<Player, Skill, Vector3Int> targetSelected)
+	{
+		CurrentCameraMode = CameraMode.TargetSelect;
+		Targetables = possibleTargets;
+		TargetSelected = targetSelected;
+		TargetingSkill = skill;
+
+		FollowTarget = possibleTargets.First();
+		MenuManager.Instance.TargetArrow.transform.position = FollowTarget.transform.position;
+	}
+	internal void ConfirmTarget()
+	{
+		CurrentCameraMode = CameraMode.FollowPlayer;
+		TargetSelected?.Invoke(this, TargetingSkill, FollowTarget.TilemapPosition);
+		Targetables = null;
+		FollowTarget = null;
+		TargetingSkill = null;
+		TargetSelected = null;
+	}
+
+
+	private void SelectTargetable(Facing facing)
+	{
+		var dir = Dungeon.GetFacingOffset(facing);
+		var next = GetNextSelectableWithWrap(FollowTarget, Targetables, dir);
+
+		if (next == null) { return; }
+		FollowTarget = next;
+		MenuManager.Instance.TargetArrow.transform.position = FollowTarget.transform.position;
+	}
+
+	Character GetNextSelectableWithWrap(Character current, List<Character> allEntities, Vector3Int dir)
+	{
+		Character best = null;
+		float bestDist = float.MaxValue;
+
+		// 1. Try finding normally in the desired direction
+		best = FindInDirection(current, allEntities, dir);
+		if (best != null) return best;
+
+		return best;
+	}
+
+	Character FindInDirection(Character from, List<Character> entities, Vector3Int dir)
+	{
+		Character best = null;
+		float bestDist = float.MaxValue;
+
+		Vector2 direction = new Vector2(dir.x, dir.y).normalized;
+		float directionThreshold = 0.7f; // ~45 degree cone
+
+		foreach (var entity in entities)
+		{
+			if (entity == from) continue;
+
+			int dx = entity.TilemapPosition.x - from.TilemapPosition.x;
+			int dy = entity.TilemapPosition.y - from.TilemapPosition.y;
+
+			Vector2 toTarget = new Vector2(dx, dy);
+
+			// Skip if target is on or behind "from" in the given direction
+			if (Vector2.Dot(toTarget, direction) <= 0) continue;
+
+			Vector2 toTargetNormalized = toTarget.normalized;
+			float dot = Vector2.Dot(toTargetNormalized, direction);
+
+			// Use Manhattan distance as before
+			float dist = Mathf.Abs(dx) + Mathf.Abs(dy);
+
+			Debug.Log($"{entity} ({entity.TilemapPosition.x},{entity.TilemapPosition.y}) {dot} {dist}", entity);
+
+			// Check if target lies within the direction cone
+			if (dot < directionThreshold)
+			{
+				continue;
+			}
+
+
+			if (dist < bestDist)
+			{
+				bestDist = dist;
+				best = entity;
+			}
+		}
+
+		return best;
+	}
+}
+
+public enum CameraMode
+{
+	FollowPlayer,
+	TargetSelect
 }

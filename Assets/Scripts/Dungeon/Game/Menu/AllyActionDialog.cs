@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace JuicyChickenGames.Menu
 {
-	public class AllyActionDialog : Dialog
+    public class AllyActionDialog : Dialog
 	{
 		public TextMeshProUGUI ItemNameText;
 		public List<Button> Buttons;
@@ -96,7 +96,7 @@ namespace JuicyChickenGames.Menu
 						ActionName = $"{skill.SkillName}({skill.SPCost})",
 						ClickAction = () =>
 						{
-							_ally.SetAction(new SkillAction(_ally, skill));
+							//_ally.SetAction(new SkillAction(_ally, skill));
 						}
 					};
 				}).ToList();

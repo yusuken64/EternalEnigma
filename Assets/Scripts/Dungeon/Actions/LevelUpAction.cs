@@ -31,8 +31,8 @@ internal class LevelUpAction : GameAction
 		};
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		AudioManager.Instance.SoundEffects.LevelUp.PlayAsSound();
 		Game.Instance.DoFloatingText("Level Up", Color.yellow, character.transform.position);
 		yield return new WaitForSecondsRealtime(1.0f);

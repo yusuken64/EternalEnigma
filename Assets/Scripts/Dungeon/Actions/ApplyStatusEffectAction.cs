@@ -23,8 +23,10 @@ public class ApplyStatusEffectAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation) { yield break; }
+
 		//TODO get sound from status
 		AudioManager.Instance.SoundEffects.Sleep.PlayAsSound();
 		Game.Instance.DoFloatingText($"{statusEffectPrefab.GetEffectName()}!", Color.yellow, caster.transform.position);

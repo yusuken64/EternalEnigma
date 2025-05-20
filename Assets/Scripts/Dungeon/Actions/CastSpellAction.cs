@@ -11,8 +11,8 @@ internal class CastSpellAction : GameAction
 		return GetActionsFunc?.Invoke();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		yield return true;
 	}
 

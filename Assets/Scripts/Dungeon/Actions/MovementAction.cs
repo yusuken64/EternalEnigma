@@ -42,9 +42,15 @@ internal class MovementAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
+		if (skipAnimation)
+		{
+			character.PlayIdleAnimation();
+			character.transform.position = worldPosition;
+			yield break;
+		}
 
 		character.PlayWalkAnimation();
 		yield return character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax)
@@ -129,8 +135,13 @@ internal class AttackAction : GameAction
 		damage = (int)MathF.Floor(baseDamage * (n / 128f));
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation)
+		{
+			character.PlayIdleAnimation();
+			yield break;
+		}
 		//TODO play sound based on implementation
 		AudioManager.Instance.SoundEffects.Slash.PlayAsSound();
 		character.PlayAttackAnimation();
@@ -186,8 +197,9 @@ public class TakeDamageAction : GameAction
 	}
 
 
-	internal override IEnumerator ExecuteRoutine(Character character)
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation) { yield break; }
 		Game game = Game.Instance;
 		if (!miss)
 		{
@@ -243,8 +255,8 @@ public class ModifyStatAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		if (doDamageAnimation)
 		{
 			target.PlayTakeDamageAnimation();
@@ -296,8 +308,8 @@ public class DeathAction : GameAction
 		};
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		AudioManager.Instance.SoundEffects.Enemy_death.PlayAsSound();
 		target.PlayDeathAnimation();
 		yield return new WaitForSecondsRealtime(0.4f);
@@ -359,8 +371,8 @@ internal class AddXPAction : GameAction
 		return ret;
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		yield return null;
 	}
 
@@ -384,8 +396,8 @@ public class InteractAction : GameAction
 		return currentInteractable.GetInteractionSideEffects(character);
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
 	}
@@ -403,8 +415,8 @@ public class WaitAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.1f)
 			.WaitForCompletion();
 	}

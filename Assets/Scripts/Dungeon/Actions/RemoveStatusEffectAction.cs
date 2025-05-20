@@ -19,8 +19,8 @@ public class RemoveStatusEffectAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		if (removedInstance != null)
 		{
 			UnityEngine.Object.Destroy(removedInstance.gameObject);

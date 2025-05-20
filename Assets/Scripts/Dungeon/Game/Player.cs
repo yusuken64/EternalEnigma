@@ -226,8 +226,6 @@ public class Player : Character
 	internal void InitialzeSkillsFromSave()
 	{
 		var activeSkills = Common.Instance.GameSaveData.OverworldSaveData.ActiveSkillNames;
-		activeSkills.Add("Damage");
-		activeSkills.Add("Damage");
 		foreach (var skillName in activeSkills)
 		{
 			Skill skill = Common.Instance.SkillManager.GetSkillByName(skillName);

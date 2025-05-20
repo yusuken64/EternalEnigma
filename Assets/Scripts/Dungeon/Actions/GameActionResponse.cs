@@ -11,8 +11,8 @@ public abstract class GameActionResponse : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		yield return null;
 	}
 

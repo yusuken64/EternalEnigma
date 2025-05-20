@@ -16,8 +16,9 @@ internal class SleepTurnAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation) { yield break; }
 		if (effectedCharacter == Game.Instance.PlayerCharacter)
 		{
 			Game.Instance.DoFloatingText("Sleeping...", Color.white, effectedCharacter.VisualParent.transform.position);

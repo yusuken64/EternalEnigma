@@ -27,8 +27,8 @@ internal class SwapAllyPositionAction : GameAction
 	}
 
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 
 		character.PlayWalkAnimation();

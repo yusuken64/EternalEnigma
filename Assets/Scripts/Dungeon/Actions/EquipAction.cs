@@ -18,8 +18,9 @@ internal class EquipAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation) { yield break; }
 		AudioManager.Instance.SoundEffects.Equip.PlayAsSound();
 		yield return null;
 	}

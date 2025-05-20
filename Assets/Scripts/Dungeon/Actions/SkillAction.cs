@@ -28,8 +28,8 @@ internal class SkillAction : GameAction
 		return skill.GetEffects(caster, target);
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		return skill.ExecuteRoutine(caster);
 	}
 

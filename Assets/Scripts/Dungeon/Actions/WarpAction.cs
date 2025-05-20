@@ -23,8 +23,8 @@ internal class WarpAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character)
-	{
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(warpLoccation);
 
 		attacker.PlayWalkAnimation();

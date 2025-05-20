@@ -225,7 +225,7 @@ public interface Actor
 public abstract class GameAction
 {
 	abstract internal bool IsValid(Character character);
-	abstract internal IEnumerator ExecuteRoutine(Character character);
+	abstract internal IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false);
 	abstract internal List<GameAction> ExecuteImmediate(Character character);
 
 	virtual internal bool CanBeCombined(GameAction action)

@@ -139,7 +139,10 @@ public class Enemy : Character
 	public override IEnumerator ExecuteActionRoutine(GameAction action)
 	{
 		if (this == null) { yield break; }
-		yield return StartCoroutine(action.ExecuteRoutine(this));
+		var playerPosition = Game.Instance.PlayerCharacter.TilemapPosition;
+		var tooFar = Vector3Int.Distance(playerPosition, this.TilemapPosition) > 15;
+		yield return StartCoroutine(action.ExecuteRoutine(this, tooFar));
+
 		action.UpdateDisplayedStats();
 	}
 
@@ -185,6 +188,7 @@ public class Enemy : Character
 		if (HasAnimation(Animator, "IdleNormal"))
 		{
 			Animator.Play("IdleNormal", 0);
+			Animator.Update(0f);
 		}
 		else
 		{
@@ -198,15 +202,18 @@ public class Enemy : Character
 			.Where(x => x.name.Contains("Attack"))
 			.OrderBy(x => Guid.NewGuid())
 			.First();
-		Animator.Play(clip.name);
+		Animator.Play(clip.name, 0, 0f);
+		Animator.Update(0f);
 	}
 	internal override void PlayTakeDamageAnimation()
 	{
-		Animator.Play("GetHit", 0);
+		Animator.Play("GetHit", 0, 0f);
+		Animator.Update(0f);
 	}
 	internal override void PlayDeathAnimation()
 	{
-		Animator.Play("Die", 0);
+		Animator.Play("Die", 0, 0f);
+		Animator.Update(0f);
 	}
 
 	public override List<GameAction> GetTrapSideEffects()

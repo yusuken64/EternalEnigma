@@ -10,8 +10,8 @@ jobs:
       fail-fast: false
       matrix:
         targetPlatform:
-          #- StandaloneWindows64 # Build a Windows 64-bit standalone.
           - WebGL # WebGL.
+          - StandaloneWindows64
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,7 +31,7 @@ jobs:
           targetPlatform: ${{ matrix.targetPlatform }}
           projectPath: .
           buildsPath: ./build
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
@@ -42,10 +42,10 @@ jobs:
         run: echo "itchio_channel=${{ matrix.targetPlatform }}" >> $GITHUB_ENV
       - name: Set itch.io project
         run: echo "itchio_project=juicychicken/eternal-enigma-avarices-abyss" >> $GITHUB_ENV 
-      - name: Upload ${{ matrix.preset }} to itch.io project
+      - name: Upload ${{ matrix.targetPlatform  }} to itch.io project
         uses: robpc/itchio-upload-action@v1
         with:
-          path: build/${{ matrix.preset }}
+          path: build/${{ matrix.targetPlatform  }}
           project: ${{ env.itchio_project }}
           channel: ${{ env.itchio_channel }}
           version: ${{ env.version }}

@@ -166,6 +166,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
 		CurrentDungeon.InitializeCache();
+		FindFirstObjectByType<FogOverlay>().Initialize(CurrentDungeon);
 		FindFirstObjectByType<Minimap>().Initialize(CurrentDungeon);
 
 		yield return null;

@@ -23,6 +23,8 @@ public class Minimap : MonoBehaviour
     private TileWorldDungeon _currentDungeon;
     private MinimapMode currentMode;
 
+    public FogOverlay FogOverlay;
+
     internal void Initialize(TileWorldDungeon currentDungeon)
     {
         if (minimapTexture != null)
@@ -142,6 +144,8 @@ public class Minimap : MonoBehaviour
         }
 
         minimapTexture.Apply();
+
+        FogOverlay.UpdateFog(dungeonMap, Game.Instance.PlayerCharacter.transform.position);
     }
 
     public void Update()

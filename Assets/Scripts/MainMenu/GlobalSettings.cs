@@ -18,4 +18,9 @@ public class GlobalSettings : MonoBehaviour
 			SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
 		}
 	}
+
+	public void Exit_Clicked()
+	{
+		SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
+	}
 }

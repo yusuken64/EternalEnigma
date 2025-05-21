@@ -28,7 +28,6 @@ public class OverworldPlayer : OverworldCharacter
 
 	public bool ControllerHeld { get; internal set; }
 
-	// Start is called before the first frame update
 	public void Initialize()
 	{
 		//var startPosition = WalkableMap.RandomStartPlayerPosition().Coord;
@@ -132,20 +131,32 @@ public class OverworldPlayer : OverworldCharacter
 			SetFacing(Facing.Right);
 		}
 
-		if (!Input.GetKey(KeyCode.LeftShift))
+		//if (!Input.GetKey(KeyCode.LeftShift))
+		//{
+		//	//if (holdTime > repeatTime)
+		//	//{
+		//	holdTime = 0f;
+		//	var offset = TileWorldDungeon.GetFacingOffset(CurrentFacing);
+		//	if (WalkableMap.CanWalkTo(newMapPosition, newMapPosition + offset))
+		//	{
+		//		newMapPosition += offset;
+		//		SetAction(new OverworldMovement(this, originalPosition, newMapPosition));
+		//		return;
+		//	}
+		//	//}
+		//}
+
+		if (Input.GetKeyDown(KeyCode.W) ||
+			Input.GetKeyDown(KeyCode.A) ||
+			Input.GetKeyDown(KeyCode.S) ||
+			Input.GetKeyDown(KeyCode.D))
 		{
-			if (holdTime > repeatTime)
+			var offset = TileWorldDungeon.GetFacingOffset(CurrentFacing);
+			if (WalkableMap.CanWalkTo(TilemapPosition, TilemapPosition + offset))
 			{
-				holdTime = 0f;
-				var offset = TileWorldDungeon.GetFacingOffset(CurrentFacing);
-				if (WalkableMap.CanWalkTo(newMapPosition, newMapPosition + offset))
-				{
-					newMapPosition += offset;
-					SetAction(new OverworldMovement(this, originalPosition, newMapPosition));
-					return;
-				}
+				SetAction(new OverworldMovement(this, TilemapPosition, TilemapPosition + offset));
 			}
-		}
+        }
 
 		if ((Input.GetKeyDown(KeyCode.W) ||
 			Input.GetKeyDown(KeyCode.A) ||
@@ -164,31 +175,6 @@ public class OverworldPlayer : OverworldCharacter
 			}
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			//var offset = Dungeon.GetFacingOffset(CurrentFacing);
-			//newMapPosition += offset;
-			//SetAction(new AttackAction(this, originalPosition, newMapPosition));
-			//return;
-		}
-		else if (Input.GetKeyDown(KeyCode.E))
-		{
-			//if (currentInteractable != null)
-			//{
-			//	SetAction(new InteractAction(currentInteractable));
-			//	return;
-			//}
-		}
-		if (Input.GetKeyDown(KeyCode.Z))
-		{
-			////pass turn
-			//SetAction(new WaitAction());
-			//return;
-		}
-		if (Input.GetKeyDown(KeyCode.P))
-		{
-			Gold += 100;
-		}
 		if (Input.GetKeyDown(KeyCode.Tab))
 		{
 			_busy = true;

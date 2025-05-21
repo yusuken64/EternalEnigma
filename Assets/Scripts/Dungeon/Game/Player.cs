@@ -405,6 +405,15 @@ public class Player : Character
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
 
 		SyncDisplayedStats();
+
+		//update minimap
+		if (Game.Instance.CurrentDungeon != null)
+		{
+			var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(this, this.TilemapPosition);
+			Minimap minimap = FindFirstObjectByType<Minimap>();
+			minimap.UpdateVision(visibleTiles);
+			minimap.UpdateMinimap(visibleTiles);
+        }
 	}
 
 	public override List<GameAction> GetTrapSideEffects()

@@ -248,11 +248,11 @@ public abstract class Character : MonoBehaviour, Actor
 		switch (FootPrint)
 		{
 			case FootPrint.Size1x1:
-				return ToBounds(this.TilemapPosition, new Vector3Int(3, 3));
+				return ToBounds(this.TilemapPosition, new Vector3Int(3, 3, 1));
 			case FootPrint.Size3x3:
-				return ToBounds(this.TilemapPosition, new Vector3Int(5, 5));
+				return ToBounds(this.TilemapPosition, new Vector3Int(5, 5, 1));
 		}
-		return ToBounds(this.TilemapPosition, new Vector3Int(3, 3));
+		return ToBounds(this.TilemapPosition, new Vector3Int(3, 3, 1));
 	}
 
 	//TODO cache this every time the character moves

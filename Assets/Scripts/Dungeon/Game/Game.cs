@@ -166,6 +166,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
 		CurrentDungeon.InitializeCache();
+		FindFirstObjectByType<Minimap>().Initialize(CurrentDungeon);
+
 		yield return null;
 
 		var startPosition = CurrentDungeon.GetStartPositioon();

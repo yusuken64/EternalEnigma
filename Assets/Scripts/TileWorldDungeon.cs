@@ -153,7 +153,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 			var walkableDirections = direction.Select(x =>
 			{
-				var target = GetRangedAttackPosition(null, TilemapPosition, x, 20, (x, y, z) =>
+				var target = GetRangedAttackPosition(null, TilemapPosition, x, 8, (x, y, z) =>
 				{
 					return _isHallwayCache[x.x, x.y];
 				});
@@ -166,7 +166,9 @@ public class TileWorldDungeon : MonoBehaviour
 				xMin = walkableDirections.Min(target => target.x) - 1,
 				xMax = walkableDirections.Max(target => target.x) + 1,
 				yMin = walkableDirections.Min(target => target.y) - 1,
-				yMax = walkableDirections.Max(target => target.y) + 1
+				yMax = walkableDirections.Max(target => target.y) + 1,
+				zMin = 0,
+				zMax = 1
 			};
 		}
 

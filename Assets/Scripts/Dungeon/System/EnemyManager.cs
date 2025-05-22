@@ -12,6 +12,7 @@ public class EnemyManager : MonoBehaviour
 
 	internal Enemy GetEnemyPrefab(int floor)
 	{
+		floor = Mathf.Clamp(floor, 1, 27);
 		var spawnDefinition = SpawnDefinitions.Where(
 			x => x.FloorMin <= floor &&
 				 x.FloorMax >= floor)

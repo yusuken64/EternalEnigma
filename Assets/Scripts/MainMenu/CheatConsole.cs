@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CheatConsole : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class CheatConsole : MonoBehaviour
         commandMap = new Dictionary<string, CommandHandler>(StringComparer.OrdinalIgnoreCase)
         {
             { "gold", HandleGold },
+            { "level", HandleLevel },
             //{ "heal", HandleHeal },
             //{ "spawn", HandleSpawn }
         };
@@ -94,5 +96,19 @@ public class CheatConsole : MonoBehaviour
         {
             ConsoleLog.text += Environment.NewLine + "No player found.";
         }
+    }
+
+    private void HandleLevel(string[] args)
+    {
+        int startingFloor = 0; // default to floor 0
+
+        if (args.Length >= 1 && !int.TryParse(args[0], out startingFloor))
+        {
+            Debug.LogWarning($"Invalid floor argument '{args[0]}', defaulting to floor 0.");
+            startingFloor = 0;
+        }
+
+        Common.Instance.GameSaveData.StartingFloor = startingFloor;
+        SceneManager.LoadScene("DungeonScene");
     }
 }

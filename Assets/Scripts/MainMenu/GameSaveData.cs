@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class GameSaveData
 {
 	public OverworldSaveData OverworldSaveData = new();
+	public int StartingFloor;
 }
 
 [Serializable]

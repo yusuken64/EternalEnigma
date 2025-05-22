@@ -65,7 +65,7 @@ public abstract class Character : MonoBehaviour, Actor
 		set
 		{
 			vitals = value;
-			vitals.LinkedStats = () => this.FinalStats;
+			vitals.LinkedStats = () => FinalStats;
 		}
 	}
 
@@ -77,7 +77,7 @@ public abstract class Character : MonoBehaviour, Actor
 		set
 		{
 			displayedVitals = value;
-			DisplayedVitals.LinkedStats = () => this.DisplayedStats;
+			DisplayedVitals.LinkedStats = () => DisplayedStats;
 		}
 	}
 
@@ -86,9 +86,10 @@ public abstract class Character : MonoBehaviour, Actor
 		BaseStats.FromStartingStats(StartingStats);
 		Vitals = new();
 		DisplayedVitals = new();
-		this.Vitals.HP = this.FinalStats.HPMax;
-		this.Vitals.SP = this.FinalStats.SPMax;
-		this.Vitals.Hunger = this.FinalStats.HungerMax;
+		Vitals.HP = FinalStats.HPMax;
+		Vitals.SP = FinalStats.SPMax;
+		Vitals.Hunger = FinalStats.HungerMax;
+		Vitals.Level = 1;
 	}
 
 	public List<StatusEffect> StatusEffects = new();
@@ -193,7 +194,7 @@ public abstract class Character : MonoBehaviour, Actor
 
 	internal void SetFacingByTargetPosition(Vector3Int newMapPosition)
 	{
-		var direction = newMapPosition - this.TilemapPosition;
+		var direction = newMapPosition - TilemapPosition;
 		var facing = GetFacing(direction);
 		SetFacing(facing);
 	}
@@ -248,18 +249,18 @@ public abstract class Character : MonoBehaviour, Actor
 		switch (FootPrint)
 		{
 			case FootPrint.Size1x1:
-				return ToBounds(this.TilemapPosition, new Vector3Int(3, 3, 1));
+				return ToBounds(TilemapPosition, new Vector3Int(3, 3, 1));
 			case FootPrint.Size3x3:
-				return ToBounds(this.TilemapPosition, new Vector3Int(5, 5, 1));
+				return ToBounds(TilemapPosition, new Vector3Int(5, 5, 1));
 		}
-		return ToBounds(this.TilemapPosition, new Vector3Int(3, 3, 1));
+		return ToBounds(TilemapPosition, new Vector3Int(3, 3, 1));
 	}
 
 	//TODO cache this every time the character moves
 	internal BoundsInt ToBounds()
 	{
-		var position = this.TilemapPosition;
-		return ToBounds(this.FootPrint, position);
+		var position = TilemapPosition;
+		return ToBounds(FootPrint, position);
 	}
 
 	public static BoundsInt ToBounds(Vector3Int position)
@@ -308,7 +309,7 @@ public abstract class Character : MonoBehaviour, Actor
 
 	internal bool OverlapsWith(BoundsInt bounds)
 	{
-		return this.ToBounds().Overlaps2D(bounds);
+		return ToBounds().Overlaps2D(bounds);
 	}
 
 	[ContextMenu("Debug Vitals")]
@@ -372,7 +373,7 @@ disp: {displayedVitals}");
 
 	internal List<GameAction> GetActionResponses(GameAction gameAction)
 	{
-		var responseBehaviors = this.GetComponents<IResponseBehavior>();
+		var responseBehaviors = GetComponents<IResponseBehavior>();
 		var actionsResponses = responseBehaviors
 			.Select(x => x.GetActionResponse(gameAction))
 			.Where(x => x != null).ToList();

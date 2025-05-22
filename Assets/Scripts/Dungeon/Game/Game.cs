@@ -78,6 +78,8 @@ public class Game : SingletonMonoBehaviour<Game>
 			var ally = Instantiate(AllyPrefab);
 			ally.InitialzeModel(overworldAlly);
 			Allies.Add(ally);
+
+			Destroy(overworldAlly);
 		}
 
 		GameOverScreen.gameObject.SetActive(false);
@@ -101,7 +103,9 @@ public class Game : SingletonMonoBehaviour<Game>
 	{
 		PlayerCharacter.InitialzeVitalsFromStats();
 		PlayerCharacter.InitialzeSkillsFromSave();
-		PlayerCharacter.Vitals.Level = 1;
+		var floor = Common.Instance.GameSaveData.StartingFloor;
+		PlayerCharacter.Vitals.Floor = floor;
+		Common.Instance.GameSaveData.StartingFloor = 0;
 		PlayerCharacter.SyncDisplayedStats();
 		PlayerCharacter.HeroAnimator.SetWeapon(null, null);
 

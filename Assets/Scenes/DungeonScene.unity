@@ -3918,6 +3918,7 @@ MonoBehaviour:
   Container: {fileID: 604693105}
   Canvas: {fileID: 864024427}
   Panel: {fileID: 604693104}
+  UseItemText: {fileID: 482355811}
 --- !u!1 &867111054
 GameObject:
   m_ObjectHideFlags: 0

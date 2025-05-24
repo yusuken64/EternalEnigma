@@ -22,14 +22,15 @@ public class InventoryMenu : Dialog
 
 	public void Setup(List<InventoryItem> Items)
 	{
-		FaceCamDisplay.SetFollow(FindObjectOfType<Player>().VisualParent);
+		var player = Game.Instance.PlayerCharacter;
+		FaceCamDisplay.SetFollow(player.VisualParent);
 		Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
 		{
 			view.Setup(data);
 			Button button = view.GetComponent<Button>();
 			button.onClick.AddListener(() =>
 			{
-				ActionDialog.Setup(view, data);
+				ActionDialog.Setup(view, data, player);
 				ActionDialog.SetNavigation();
 				ActionDialog.gameObject.SetActive(true);
 
@@ -47,7 +48,6 @@ public class InventoryMenu : Dialog
 		};
 		InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
 
-		var player = Game.Instance.PlayerCharacter;
 		StatText.text = $@"Strength: {player.DisplayedStats.Strength}
 Defense: {player.DisplayedStats.Defense}";
 	}

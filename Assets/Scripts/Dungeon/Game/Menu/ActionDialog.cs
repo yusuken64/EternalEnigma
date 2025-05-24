@@ -17,6 +17,8 @@ namespace JuicyChickenGames.Menu
 		public Canvas Canvas;
 		public GameObject Panel;
 
+		public TextMeshProUGUI UseItemText;
+
 		private InventoryItem _data;
 		private InventoryMenuItem _view;
 
@@ -46,22 +48,34 @@ namespace JuicyChickenGames.Menu
 			MenuManager.Close(this);
 		}
 
-		public void Button_Clicked()
-		{
-			//MenuInputHandler.Instance.CloseAllDialog();
-		}
-
-		internal void Setup(InventoryMenuItem view, InventoryItem data)
+		internal void Setup(InventoryMenuItem view, InventoryItem data, Player player)
 		{
 			this._data = data;
 			this._view = view;
 			ItemNameText.text = _data.ItemName;
+
+			if (data is EquipableInventoryItem equipableInventoryItem)
+			{
+				if (player.Inventory.IsEquipped(equipableInventoryItem))
+				{
+					UseItemText.text = "Unequip";
+				}
+				else
+				{
+					UseItemText.text = "Equip";
+				}
+			}
+			else
+			{
+				UseItemText.text = "Use";
+			}
 		}
 
 		internal override void SetFirstSelect()
 		{
 			Buttons[0].Select();
 		}
+
 		public void SetNavigation()
 		{
 			for (int i = 0; i < Buttons.Count; i++)

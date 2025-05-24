@@ -35,11 +35,13 @@ public class Player : Character
 	public Character FollowTarget;
 	public List<Character> Targetables;
 	public Skill TargetingSkill;
+    private CheatConsole _cheatConsole;
 
     public Action<Player, Skill, Vector3Int> TargetSelected { get; private set; }
 
     private void Start()
 	{
+		_cheatConsole = FindFirstObjectByType<CheatConsole>();
 		HeroAnimator.PlayIdleAnimation();
 	}
 
@@ -58,6 +60,8 @@ public class Player : Character
 
     private void Update()
 	{
+		if (_cheatConsole.ScreenObject.activeSelf) { return; }
+
 		menuCooldown += Time.deltaTime;
 		//Debug.Log($"Player is busy {IsBusy}");
 

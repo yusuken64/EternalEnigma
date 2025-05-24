@@ -25,4 +25,15 @@ public class MainMenu : MonoBehaviour
 	{
 		return new GameSaveData();
 	}
+
+	public void Options_Clicked()
+	{
+        GlobalSettings globalSettings = FindFirstObjectByType<GlobalSettings>();
+		globalSettings.ShowDialog();
+	}
+
+	public void Exit_Clicked()
+	{
+		Application.Quit();
+	}
 }

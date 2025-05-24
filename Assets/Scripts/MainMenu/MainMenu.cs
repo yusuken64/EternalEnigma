@@ -18,7 +18,10 @@ public class MainMenu : MonoBehaviour
 	public void StartGame_Clicked()
 	{
 		Common.Instance.GameSaveData = NewSaveData();
-		SceneManager.LoadScene("OverworldScene");
+		Common.Instance.ScreenTransition.DoTransition(() =>
+		{
+			SceneManager.LoadScene("OverworldScene");
+		});
 	}
 
 	private GameSaveData NewSaveData()

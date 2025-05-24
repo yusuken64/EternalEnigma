@@ -22,7 +22,7 @@ public class NewFloorMessage : MonoBehaviour
 
 	internal void HideScreen()
 	{
-		BackgroundColor.CrossFadeAlpha(1, 0.1f, true);
+		BackgroundColor.CrossFadeAlpha(1, 1.0f, true);
 		this.gameObject.SetActive(true);
 		BackgroundColor.color = Color.black;
 	}

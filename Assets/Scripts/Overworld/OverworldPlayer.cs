@@ -212,7 +212,10 @@ public class OverworldPlayer : OverworldCharacter
 		if (this.TilemapPosition == Overworld.EntrancePosition)
 		{
 			Overworld.WriteSaveData();
-			SceneManager.LoadScene("DungeonScene");
+			Common.Instance.ScreenTransition.DoTransition(() =>
+			{
+				SceneManager.LoadScene("DungeonScene");
+			});
 			yield break;
 		}
 		else if(this.TilemapPosition == Overworld.StatuePosition)

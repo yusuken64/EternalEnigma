@@ -46,8 +46,6 @@ public class Minimap : MonoBehaviour
             }
         }
 
-        UpdateMinimap(new BoundsInt());
-
         currentMode = MinimapMode.Overlay;
         UpdateMinimapMode();
     }

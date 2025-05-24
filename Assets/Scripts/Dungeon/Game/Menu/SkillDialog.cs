@@ -56,6 +56,7 @@ namespace JuicyChickenGames.Menu
 
         internal override void SetFirstSelect()
         {
+            if(!Buttons.Any()) { return; }
             Buttons[0].Button.Select();
         }
 

@@ -11,6 +11,8 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	public ItemManager ItemManager;
 	public SkillManager SkillManager;
 	public GameObject SceneTransferObjects;
+	public ScreenTransition ScreenTransition;
+
 	protected override void Initialize()
 	{
 #if !UNITY_EDITOR

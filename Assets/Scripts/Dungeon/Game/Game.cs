@@ -177,6 +177,10 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		var startPosition = CurrentDungeon.GetStartPositioon();
 		PlayerCharacter.SetPosition(startPosition);
+		var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(PlayerCharacter, PlayerCharacter.TilemapPosition);
+		Minimap minimap = FindFirstObjectByType<Minimap>();
+		minimap.UpdateVision(visibleTiles);
+		minimap.UpdateMinimap(visibleTiles);
 
 		foreach (var ally in Allies)
 		{

@@ -24,12 +24,18 @@ with {playerCharacter.Vitals.Gold} Treasure";
 
 	public void TryAgain_Clicked()
 	{
-		SceneManager.LoadScene("OverworldScene");
+		Common.Instance.ScreenTransition.DoTransition(() =>
+		{
+			SceneManager.LoadScene("OverworldScene");
+		});
 	}
 
 	public void Quit_Clicked()
 	{
-		SceneManager.LoadScene("MainMenu");
+		Common.Instance.ScreenTransition.DoTransition(() =>
+		{
+			SceneManager.LoadScene("MainMenu");
+		});
 	}
 
 	internal override void SetFirstSelect()

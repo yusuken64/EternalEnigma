@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 internal class EquipAction : GameAction
 {
-	private Player player;
+	private Character character;
 	private readonly EquipableInventoryItem equipableInventoryItem;
 
-	public EquipAction(Player player, EquipableInventoryItem equipableInventoryItem)
+	public EquipAction(Character character, EquipableInventoryItem equipableInventoryItem)
 	{
-		this.player = player;
+		this.character = character;
 		this.equipableInventoryItem = equipableInventoryItem;
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		player.Inventory.Equip(equipableInventoryItem);
+		character.Equipment.Equip(equipableInventoryItem);
 		return new();
 	}
 
@@ -27,11 +27,6 @@ internal class EquipAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		if (character is Player player)
-		{
-			return player.Inventory.CanEquip(equipableInventoryItem);
-		}
-
-		return false;
+		return character.Equipment.CanEquip(equipableInventoryItem);
 	}
 }

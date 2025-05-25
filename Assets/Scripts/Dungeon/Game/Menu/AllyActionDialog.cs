@@ -84,6 +84,12 @@ namespace JuicyChickenGames.Menu
 			};
 		}
 
+		public void Inventory_Clicked()
+		{
+			MenuManager.Close(this);
+			MenuManager.Instance.OpenInventoryAs(_ally);
+		}
+
 		public void Skill_Clicked()
 		{
 			MenuManager.Open(DynamicActionDialog);

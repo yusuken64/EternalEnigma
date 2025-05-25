@@ -180,27 +180,27 @@ public class Ally : Character
 
 	internal override void PlayWalkAnimation()
 	{
-		HeroAnimator.PlayWalkAnimation();
+		HeroAnimator?.PlayWalkAnimation();
 	}
 
 	internal override void PlayIdleAnimation()
 	{
-		HeroAnimator.PlayIdleAnimation();
+		HeroAnimator?.PlayIdleAnimation();
 	}
 
 	internal override void PlayAttackAnimation()
 	{
-		HeroAnimator.PlayAttackAnimation();
+		HeroAnimator?.PlayAttackAnimation();
 	}
 
 	internal override void PlayTakeDamageAnimation()
 	{
-		HeroAnimator.PlayTakeDamageAnimation();
+		HeroAnimator?.PlayTakeDamageAnimation();
 	}
 
 	internal override void PlayDeathAnimation()
 	{
-		HeroAnimator.PlayDeathAnimation();
+		HeroAnimator?.PlayDeathAnimation();
 	}
 
 	internal void InitialzeModel(OverworldAlly overworldAlly)
@@ -231,6 +231,35 @@ public class Ally : Character
 		newChild.transform.localScale = oldChild.transform.localScale;
 		newChild.transform.SetAsFirstSibling();
 	}
+
+	public override void Inventory_HandleInventoryChanged()
+	{
+		base.Inventory_HandleInventoryChanged();
+
+		HeroAnimator.SetWeapon(
+			Equipment.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
+			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
+	}
+
+	public override void Equipment_HandleEquipmentChanged(EquipChangeType equipChangeType, EquipableInventoryItem item)
+	{
+		base.Equipment_HandleEquipmentChanged(equipChangeType, item);
+
+		switch (equipChangeType)
+		{
+			case EquipChangeType.Equip:
+				Game.Instance.PlayerCharacter.Inventory.InventoryItems.Remove(item);
+				break;
+			case EquipChangeType.UnEquip:
+				Game.Instance.PlayerCharacter.Inventory.InventoryItems.Add(item);
+				break;
+		}
+
+		HeroAnimator?.SetWeapon(
+			Equipment.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
+			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
+	}
+
 }
 
 internal class AllyAttackPolicy : PolicyBase

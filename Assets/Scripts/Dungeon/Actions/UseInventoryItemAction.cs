@@ -7,7 +7,7 @@ internal class UseInventoryItemAction : GameAction
 	private Player player;
 	private InventoryItem item;
 
-	public UseInventoryItemAction(Player player, InventoryItem item)
+	public UseInventoryItemAction(Player player, Character character, InventoryItem item)
 	{
 		this.player = player;
 		this.item = item;
@@ -24,14 +24,14 @@ internal class UseInventoryItemAction : GameAction
 		{
 			player.Inventory.Remove(item);
 		}
-		return item.GetGameActions(player, player, item);
+		return item.GetGameActions(character, character, item);
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
     {
 		//TODO get sound from item
 		AudioManager.Instance.SoundEffects.UseItem.PlayAsSound();
-		Game.Instance.DoFloatingText(item.ItemName, Color.white, player.transform.position);
+		Game.Instance.DoFloatingText(item.ItemName, Color.white, character.transform.position);
 		yield return new WaitForSecondsRealtime(1f);
 	}
 

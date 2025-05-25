@@ -96,9 +96,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	private void OpenMenu()
 	{
 		MenuManager.Open(InventoryMenu);
-		//TODO refactor to InventoryMenu.OpenMenu
+		var equippedItems = Game.Instance.PlayerCharacter.Equipment.GetEquippedItems();
 		var items = Game.Instance.PlayerCharacter.Inventory.InventoryItems;
-		InventoryMenu.Setup(items);
+		var allItems = equippedItems.Concat(items)
+			.Where(x => x != null)
+			.ToList();
+
+		InventoryMenu.Setup(allItems, Game.Instance.PlayerCharacter);
 		InventoryMenu.SetNavigation();
 		CurrentDialog = InventoryMenu;
 		InventoryMenu.CloseAction = () =>
@@ -108,6 +112,27 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;
+	}
+
+	public void OpenInventoryAs(Ally ally)
+    {
+        MenuManager.Open(InventoryMenu);
+		var equippedItems = ally.Equipment.GetEquippedItems();
+		var items = Game.Instance.PlayerCharacter.Inventory.InventoryItems;
+		var allItems = equippedItems.Concat(items)
+			.Where(x => x != null)
+			.ToList();
+
+        InventoryMenu.Setup(allItems, ally);
+        InventoryMenu.SetNavigation();
+        CurrentDialog = InventoryMenu;
+        InventoryMenu.CloseAction = () =>
+        {
+            InventoryMenu.Close();
+        };
+        AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
+
+        Opened = true;
 	}
 
 	public void OpenAllyMenu(Ally ally)

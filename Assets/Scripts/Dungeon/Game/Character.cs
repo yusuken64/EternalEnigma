@@ -53,8 +53,8 @@ public abstract class Character : MonoBehaviour, Actor
 
 	internal void UpdateCachedStats()
 	{
-		cachedFinalStats = BaseStats + 
-			Inventory?.GetEquipmentStatModification() +
+		cachedFinalStats = BaseStats +
+			Equipment?.GetEquipmentStatModification() +
 			StatusEffects.Aggregate(new StatModification(), (accumulate, newa) => accumulate + newa.GetStatModification());
 	}
 
@@ -99,8 +99,12 @@ public abstract class Character : MonoBehaviour, Actor
 		BaseStats = new();
 		if (Inventory != null)
 		{
-			Inventory.HandleEquipmentChanged += Inventory_HandleEquipmentChanged;
+			Inventory.HandleInventoryChanged += Inventory_HandleInventoryChanged;
 		}
+		if (Equipment != null)
+        {
+			Equipment.HandleEquipmentChanged += Equipment_HandleEquipmentChanged;
+        }
 	}
 
 	private void OnDestroy()
@@ -108,7 +112,11 @@ public abstract class Character : MonoBehaviour, Actor
 		BaseStats.OnStatChanged -= BaseStats_OnStatChanged;
 		if (Inventory != null)
 		{
-			Inventory.HandleEquipmentChanged -= Inventory_HandleEquipmentChanged;
+			Inventory.HandleInventoryChanged -= Inventory_HandleInventoryChanged;
+		}
+		if (Equipment != null)
+		{
+			Equipment.HandleEquipmentChanged -= Equipment_HandleEquipmentChanged;
 		}
 	}
 
@@ -117,13 +125,20 @@ public abstract class Character : MonoBehaviour, Actor
 		UpdateCachedStats();
 	}
 
-	public virtual void Inventory_HandleEquipmentChanged()
+	public virtual void Inventory_HandleInventoryChanged()
 	{
 		UpdateCachedStats();
 		DisplayedStats.Sync(FinalStats);
 	}
 
-	public Inventory Inventory;
+	public virtual void Equipment_HandleEquipmentChanged(EquipChangeType equipChangeType, EquipableInventoryItem item)
+	{
+        UpdateCachedStats();
+		DisplayedStats.Sync(FinalStats);
+    }
+
+    public Inventory Inventory;
+	public Equipment Equipment;
 
 	public abstract bool IsBusy { get; }
 	public abstract List<GameAction> GetDeterminedAction();

@@ -112,16 +112,35 @@ public class Player : Character
 		}
 	}
 
-    public override void Inventory_HandleEquipmentChanged()
+    public override void Inventory_HandleInventoryChanged()
 	{
-		base.Inventory_HandleEquipmentChanged();
+		base.Inventory_HandleInventoryChanged();
 
 		HeroAnimator.SetWeapon(
-			Inventory.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
-			Inventory.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
+			Equipment.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
+			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
 	}
 
-	internal bool CanOpenMenu()
+    public override void Equipment_HandleEquipmentChanged(EquipChangeType equipChangeType, EquipableInventoryItem item)
+    {
+        base.Equipment_HandleEquipmentChanged(equipChangeType, item);
+
+		switch (equipChangeType)
+		{
+			case EquipChangeType.Equip:
+				Inventory.InventoryItems.Remove(item);
+				break;
+			case EquipChangeType.UnEquip:
+				Inventory.InventoryItems.Add(item);
+				break;
+		}
+
+		HeroAnimator.SetWeapon(
+			Equipment.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
+			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
+	}
+
+    internal bool CanOpenMenu()
 	{
 		return !StatusEffects.Any(x => x.PreventsMenu());
 	}

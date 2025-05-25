@@ -21,14 +21,22 @@ namespace JuicyChickenGames.Menu
 
 		private InventoryItem _data;
 		private InventoryMenuItem _view;
+        private Character _character;
 
 		public void Use_Clicked()
 		{
-			Player playerCharacter = Game.Instance.PlayerCharacter;
-			playerCharacter.SetAction(new UseInventoryItemAction(playerCharacter, _data));
+			if (_character is Player playerCharacter)
+			{
+				playerCharacter.SetAction(new UseInventoryItemAction(playerCharacter, playerCharacter, _data));
+			}
+			else if (_character is Ally ally)
+			{
+				ally.SetAction(new UseInventoryItemAction(Game.Instance.PlayerCharacter, ally, _data));
+			}
 
 			MenuManager.Instance.CloseMenu();
 		}
+
 		public void Throw_Clicked()
 		{
 			Player playerCharacter = Game.Instance.PlayerCharacter;
@@ -36,6 +44,7 @@ namespace JuicyChickenGames.Menu
 
 			MenuManager.Instance.CloseMenu();
 		}
+
 		public void Drop_Clicked()
 		{
 			Player playerCharacter = Game.Instance.PlayerCharacter;
@@ -48,15 +57,16 @@ namespace JuicyChickenGames.Menu
 			MenuManager.Close(this);
 		}
 
-		internal void Setup(InventoryMenuItem view, InventoryItem data, Player player)
+		internal void Setup(InventoryMenuItem view, InventoryItem data, Character character)
 		{
 			this._data = data;
 			this._view = view;
+			this._character = character;
 			ItemNameText.text = _data.ItemName;
 
 			if (data is EquipableInventoryItem equipableInventoryItem)
 			{
-				if (player.Inventory.IsEquipped(equipableInventoryItem))
+				if (character.Equipment.IsEquipped(equipableInventoryItem))
 				{
 					UseItemText.text = "Unequip";
 				}

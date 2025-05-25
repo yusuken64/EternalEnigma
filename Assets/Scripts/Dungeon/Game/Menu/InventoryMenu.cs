@@ -20,17 +20,17 @@ public class InventoryMenu : Dialog
 	public List<InventoryMenuItem> InventoryMenuItems { get; private set; }
 	public FaceCamDisplay FaceCamDisplay;
 
-	public void Setup(List<InventoryItem> Items)
+	public void Setup(List<InventoryItem> Items, Character character)
 	{
-		var player = Game.Instance.PlayerCharacter;
-		FaceCamDisplay.SetFollow(player.VisualParent);
+		//var player = Game.Instance.PlayerCharacter;
+		FaceCamDisplay.SetFollow(character.VisualParent);
 		Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
 		{
 			view.Setup(data);
 			Button button = view.GetComponent<Button>();
 			button.onClick.AddListener(() =>
 			{
-				ActionDialog.Setup(view, data, player);
+				ActionDialog.Setup(view, data, character);
 				ActionDialog.SetNavigation();
 				ActionDialog.gameObject.SetActive(true);
 
@@ -48,8 +48,8 @@ public class InventoryMenu : Dialog
 		};
 		InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
 
-		StatText.text = $@"Strength: {player.DisplayedStats.Strength}
-Defense: {player.DisplayedStats.Defense}";
+		StatText.text = $@"Strength: {character.DisplayedStats.Strength}
+Defense: {character.DisplayedStats.Defense}";
 	}
 
 	internal void Close()

@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1157968007784884389}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 101202292038741189}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!108 &2837134670473224061
 Light:
@@ -40,9 +40,8 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1157968007784884389}
   m_Enabled: 1
-  serializedVersion: 10
+  serializedVersion: 11
   m_Type: 2
-  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -92,8 +91,12 @@ Light:
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!1 &2065795567227290904
 GameObject:
   m_ObjectHideFlags: 0
@@ -117,6 +120,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2065795567227290904}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.25, y: 1.25, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
@@ -126,7 +130,6 @@ Transform:
   - {fileID: 2377136231750892353}
   - {fileID: 7334433300628321261}
   m_Father: {fileID: 1802630979737130071}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3696403136943278346
 GameObject:
@@ -152,13 +155,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3696403136943278346}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 101202292038741189}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &84927341375394144
 SpriteRenderer:
@@ -177,6 +180,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -223,6 +229,7 @@ GameObject:
   - component: {fileID: 1802630979737130071}
   - component: {fileID: 8214162097792368139}
   - component: {fileID: 8960690655561992051}
+  - component: {fileID: 3398706596643716827}
   - component: {fileID: 1679691693414024542}
   - component: {fileID: 2028653745574830106}
   m_Layer: 8
@@ -239,6 +246,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4828791753711949877}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -70.929054, y: -96.10565, z: -0.16202568}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -246,7 +254,6 @@ Transform:
   m_Children:
   - {fileID: 101202292038741189}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8214162097792368139
 MonoBehaviour:
@@ -280,12 +287,17 @@ MonoBehaviour:
   FootPrint: 0
   StatusEffects: []
   Inventory: {fileID: 8960690655561992051}
+  Equipment: {fileID: 3398706596643716827}
   PursuitTarget: {fileID: 0}
   Skills: []
   Camera: {fileID: 0}
   CameraOffset: {x: 1, y: -2.77, z: -11.62}
   HeroAnimator: {fileID: 1679691693414024542}
   ThrownItemProjectilePrefab: {fileID: 1117745424125422547, guid: b96c645e3ba5ede499fc63ebbf7677c1, type: 3}
+  CurrentCameraMode: 0
+  FollowTarget: {fileID: 0}
+  Targetables: []
+  TargetingSkill: {fileID: 0}
 --- !u!114 &8960690655561992051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,13 +310,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d4b32aeecc89f94b8159feab8d59ebc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaxItems: 10
+--- !u!114 &3398706596643716827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4828791753711949877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa4135f76ef33f47812dc41a988e156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   EquipedWeapon:
     ItemDefinition: {fileID: 0}
   EquipedShield:
     ItemDefinition: {fileID: 0}
   EquipedAccessory:
     ItemDefinition: {fileID: 0}
-  MaxItems: 10
 --- !u!114 &1679691693414024542
 MonoBehaviour:
   m_ObjectHideFlags: 0

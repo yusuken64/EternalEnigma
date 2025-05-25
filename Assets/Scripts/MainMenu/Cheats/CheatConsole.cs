@@ -25,6 +25,7 @@ public class CheatConsole : MonoBehaviour
         RegisterCommand(new ItemCommand());
         RegisterCommand(new ItemsCommand());
         RegisterCommand(new VitalsCommand());
+        RegisterCommand(new AllyCommand());
     }
 
     private void RegisterCommand(IConsoleCommand command)

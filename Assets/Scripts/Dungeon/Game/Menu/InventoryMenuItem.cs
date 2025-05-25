@@ -21,7 +21,7 @@ public class InventoryMenuItem : Button
 
 	private void UpdateUI()
 	{
-		var equipped = Game.Instance.PlayerCharacter.Inventory.IsEquipped(_data);
+		var equipped = Game.Instance.PlayerCharacter.Equipment.IsEquipped(_data);
 
 		var inventoryText = $"{_data.ItemName} " +
 			$"{ (_data.StackStock.HasValue ? $"x{_data.StackStock.Value}" : "") }" +

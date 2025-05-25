@@ -4,28 +4,25 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EquipEffectDefinition", menuName = "Game/ItemEffect/EquipEffectDefinition")]
 public class EquipEffectDefinition : ItemEffectDefinition
 {
-	public override List<GameAction> GetGameActions(Character attacker, Character target, InventoryItem item)
+	public override List<GameAction> GetGameActions(Character character, Character target, InventoryItem item)
 	{
 		var equipableItem = item as EquipableInventoryItem;
-		if (attacker is Player player)
+		if (character.Equipment.IsEquipped(equipableItem))
 		{
-			if (player.Inventory.IsEquipped(equipableItem))
-			{
-				//unequip
-				return new List<GameAction>()
+			//unequip
+			return new List<GameAction>()
 				{
-					new UnEquipAction(player, item as EquipableInventoryItem)
+					new UnEquipAction(character, item as EquipableInventoryItem)
 				};
-			}
-			else
+		}
+		else
+		{
+			if (character.Equipment.CanEquip(equipableItem))
 			{
-				if (player.Inventory.CanEquip(equipableItem))
-				{
-					return new List<GameAction>()
+				return new List<GameAction>()
 					{
-						new EquipAction(player, item as EquipableInventoryItem)
+						new EquipAction(character, item as EquipableInventoryItem)
 					};
-				}
 			}
 		}
 

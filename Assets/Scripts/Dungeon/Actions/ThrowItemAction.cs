@@ -24,7 +24,7 @@ internal class ThrowItemAction : GameAction
 		thrower.Inventory.InventoryItems.Remove(item);
 
 		var ret = new List<GameAction>();
-		if (thrower.Inventory.IsEquipped(item))
+		if (thrower.Equipment.IsEquipped(item))
 		{
 			var unEquipAction = new UnEquipAction(thrower as Player, item as EquipableInventoryItem);
 			ret.Add(unEquipAction);

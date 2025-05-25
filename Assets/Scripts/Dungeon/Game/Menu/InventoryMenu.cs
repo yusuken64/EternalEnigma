@@ -26,7 +26,7 @@ public class InventoryMenu : Dialog
 		FaceCamDisplay.SetFollow(character.VisualParent);
 		Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
 		{
-			view.Setup(data);
+			view.Setup(data, character);
 			Button button = view.GetComponent<Button>();
 			button.onClick.AddListener(() =>
 			{

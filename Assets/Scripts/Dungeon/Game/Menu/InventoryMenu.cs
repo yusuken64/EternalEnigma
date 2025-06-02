@@ -46,18 +46,30 @@ public class InventoryMenu : Dialog
             view.SelectCallBack = () =>
             {
                 ScrollToSelected(view.gameObject);
-                UpdatedItemPreview(data);
+                UpdatedItemPreview(data, character);
             };
         };
         InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
-
-        StatText.text = $@"Strength: {character.DisplayedStats.Strength}
-Defense: {character.DisplayedStats.Defense}";
     }
 
-    private void UpdatedItemPreview(InventoryItem data)
+    private void UpdatedItemPreview(InventoryItem data, Character character)
     {
         InventoryItemPreview.Setup(data);
+
+        if (data is EquipableInventoryItem equipmentItemDefinition)
+        {
+            var statModification = equipmentItemDefinition.GetEquipmentStatModification();
+            int newStrength = character.BaseStats.Strength + statModification.Strength;
+            int newDefense = character.BaseStats.Defense + statModification.Defense;
+
+            StatText.text = $@"Strength: {character.DisplayedStats.Strength} >> {newStrength}
+Defense: {character.DisplayedStats.Defense} >> {newDefense}";
+        }
+        else
+        {
+            StatText.text = $@"Strength: {character.DisplayedStats.Strength}
+Defense: {character.DisplayedStats.Defense}";
+        }
     }
 
     internal void Close()

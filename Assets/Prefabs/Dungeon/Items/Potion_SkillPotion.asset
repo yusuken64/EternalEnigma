@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Potion_SkillPotion
   m_EditorClassIdentifier: 
   ItemName: Potion
+  Description: Recover some Sp
   ItemEffectDefinition: {fileID: 11400000, guid: 18c102e63806d834885e1b0e0708d13f, type: 2}
   ApplyToThrownTarget: 1
   StackStartMin: 1

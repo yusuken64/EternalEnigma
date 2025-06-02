@@ -4,6 +4,7 @@ using UnityEngine;
 public abstract class ItemDefinition : ScriptableObject
 {
 	public string ItemName;
+	public string Description;
 	public ItemEffectDefinition ItemEffectDefinition;
 
 	public bool ApplyToThrownTarget;

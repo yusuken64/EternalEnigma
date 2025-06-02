@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Potion_HealPotion
   m_EditorClassIdentifier: 
   ItemName: Potion
+  Description: Recover some Hp
   ItemEffectDefinition: {fileID: 11400000, guid: 529d4a7a8404ff44a9a69446d994a94e, type: 2}
   ApplyToThrownTarget: 1
   StackStartMin: 1

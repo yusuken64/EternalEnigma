@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Potion_SleepPotion
   m_EditorClassIdentifier: 
   ItemName: SleepPotion
+  Description: Become sleepy
   ItemEffectDefinition: {fileID: 11400000, guid: 0f03abec0f2a4924197509ae75f005c4, type: 2}
   ApplyToThrownTarget: 1
   StackStartMin: 1

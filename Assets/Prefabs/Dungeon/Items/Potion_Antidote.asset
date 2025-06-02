@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Potion_Antidote
   m_EditorClassIdentifier: 
   ItemName: Antidote
+  Description: Cures harmful statuses
   ItemEffectDefinition: {fileID: 11400000, guid: 41595187b37bbdb4590a1eee41dac341, type: 2}
   ApplyToThrownTarget: 1
   StackStartMin: 1

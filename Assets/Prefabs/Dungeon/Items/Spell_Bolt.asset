@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Spell_Bolt
   m_EditorClassIdentifier: 
   ItemName: Spell_Bolt
+  Description: Launch a bolt of lightning
   ItemEffectDefinition: {fileID: 11400000, guid: a648e6dd3b6a46c4c8b8f525cfd458a2, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1

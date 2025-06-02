@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Bread
   m_EditorClassIdentifier: 
   ItemName: Bread
+  Description: Eat to recover fullness
   ItemEffectDefinition: {fileID: 11400000, guid: f795fb4626570624bb02c71d0757e4e2, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1

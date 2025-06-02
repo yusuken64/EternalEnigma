@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Spell_Warp
   m_EditorClassIdentifier: 
   ItemName: Spell_Warp
+  Description: Warp to another location
   ItemEffectDefinition: {fileID: 11400000, guid: f90873ade55c2a845b858a5bf53d2fd2, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1

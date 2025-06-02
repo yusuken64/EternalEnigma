@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Potion_FrailtyPotion
   m_EditorClassIdentifier: 
   ItemName: Frailty Potion
+  Description: Lose Strength
   ItemEffectDefinition: {fileID: 11400000, guid: adb9b416aa8664848985603083c59b0e, type: 2}
   ApplyToThrownTarget: 1
   StackStartMin: 1

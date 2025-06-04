@@ -4141,6 +4141,51 @@ MonoBehaviour:
   ActionButtonPrefab: {fileID: 1163746911629854005, guid: cff6865f362429e478ba37d3a5f6b2b2, type: 3}
   Buttons: []
   SelectTargetPrompt: {fileID: 1472987142}
+--- !u!1 &814136640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 814136641}
+  - component: {fileID: 814136642}
+  m_Layer: 0
+  m_Name: PlayerInputHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &814136641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 814136640}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1932732651}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &814136642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 814136640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83af0dd2a680746499fcbed35efe904e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerInput: {fileID: 1617515334}
 --- !u!1 &864024424
 GameObject:
   m_ObjectHideFlags: 0
@@ -8626,6 +8671,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MenuOpenClosedInput: 0
   OpenSkillMenuInput: 0
+  CancelMenuInput: 0
   PlayerInput: {fileID: 1617515334}
   MenuOpenCloseAction:
     m_Name: Menu Open Close
@@ -8641,6 +8687,15 @@ MonoBehaviour:
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: 1dc27ec3-d1e6-437f-b1d9-bba6a354de26
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  CancelAction:
+    m_Name: Cancel
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c97bdf1c-8aca-47f4-a241-b1a3262afd7f
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
@@ -8679,9 +8734,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
+  m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: UI
+  m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!1 &1635104948
@@ -10529,6 +10584,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1617515332}
+  - {fileID: 814136641}
   - {fileID: 1098189709}
   - {fileID: 31641863}
   - {fileID: 1422610647}

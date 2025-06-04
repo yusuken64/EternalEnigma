@@ -140,7 +140,7 @@ public abstract class Character : MonoBehaviour, Actor
     public Inventory Inventory;
 	public Equipment Equipment;
 
-	public abstract bool IsBusy { get; }
+	public abstract bool IsWaitingForPlayerInput { get; }
 	public abstract List<GameAction> GetDeterminedAction();
 	public abstract	void DetermineAction();
 	public abstract List<GameAction> ExecuteActionImmediate(GameAction action);

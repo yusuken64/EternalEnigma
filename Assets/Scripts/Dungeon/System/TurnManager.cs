@@ -44,7 +44,7 @@ public class TurnManager : MonoBehaviour
 			{
 				while (actor.ActionsLeft > 0)
 				{
-					while (actor.IsBusy)
+					while (actor.IsWaitingForPlayerInput)
 					{
 						yield return null;
 					}
@@ -208,7 +208,7 @@ public enum TurnPhase
 
 public interface Actor
 {
-	bool IsBusy { get; }
+	bool IsWaitingForPlayerInput { get; }
 	List<GameAction> GetDeterminedAction();
 	void DetermineAction();
 	List<GameAction> ExecuteActionImmediate(GameAction action);

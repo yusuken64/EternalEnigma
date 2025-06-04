@@ -30,8 +30,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	private void Update()
 	{
-		if (MenuInputHandler.Instance.MenuOpenClosedInput ||
-			PlayerController.MenuOpenClosedInput)
+		if (MenuInputHandler.Instance.MenuOpenClosedInput)
 		{
 			if (!Opened)
 			{
@@ -77,6 +76,12 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 				CloseMenu();
 			}
 		}
+
+		if (MenuInputHandler.Instance.CancelMenuInput && DialogStack.Count > 0)
+        {
+			var top = DialogStack.Peek();
+			Close(top);
+        }
 	}
 
 	internal void CloseMenu()
@@ -91,10 +96,12 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		DialogStack.Clear();
 
 		Opened = false;
+		MenuInputHandler.Instance.CloseMenu();
 	}
 
 	private void OpenMenu()
 	{
+		MenuInputHandler.Instance.OpenMenu();
 		MenuManager.Open(InventoryMenu);
 		var equippedItems = Game.Instance.PlayerCharacter.Equipment.GetEquippedItems();
 		var items = Game.Instance.PlayerCharacter.Inventory.InventoryItems;
@@ -199,6 +206,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 		if (MenuManager.Instance.DialogStack.Count <= 0)
 		{
+			MenuManager.Instance.CloseMenu();
 			return;
 		}
 

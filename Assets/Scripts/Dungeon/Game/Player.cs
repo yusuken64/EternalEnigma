@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JuicyChickenGames.Menu;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,19 +18,12 @@ public class Player : Character
 	public HeroAnimator HeroAnimator;
 
 	public GameObject ThrownItemProjectilePrefab;
-	private bool isBusy;
+	private bool isWaitingForPlayerInput;
 	private float menuCooldown;
 
 	public List<GameAction> DeterminedActions { get; private set; }
 
-	public override bool IsBusy => isBusy;
-
-	public bool ControllerHeld { get; internal set; }
-	public bool ControllerAttackThisFrame { get; internal set; }
-	public bool ControllerUseThisFrame { get; internal set; }
-	public bool ControllerHoldPosition { get; internal set; }
-
-    public bool ControllerMenuThisFrame { get; internal set; }
+	public override bool IsWaitingForPlayerInput => isWaitingForPlayerInput;
 
 	public CameraMode CurrentCameraMode;
 	public Character FollowTarget;
@@ -63,40 +57,34 @@ public class Player : Character
 		if (_cheatConsole.ScreenObject.activeSelf) { return; }
 
 		menuCooldown += Time.deltaTime;
-		//Debug.Log($"Player is busy {IsBusy}");
 
-		//TODO handle diagonal input
-		if (Input.GetKey(KeyCode.W) ||
-			Input.GetKey(KeyCode.A) ||
-			Input.GetKey(KeyCode.S) ||
-			Input.GetKey(KeyCode.D) ||
-			ControllerHeld)
+		if (PlayerInputHandler.Instance.isMoving)
 		{
 			holdTime += Time.deltaTime;
 		}
 
 		if (CurrentCameraMode == CameraMode.TargetSelect)
 		{
-			if (Input.GetKeyDown(KeyCode.W))
+			if (PlayerInputHandler.Instance.isMoving)
 			{
-				SelectTargetable(Facing.Up);
-			}
-			else if (Input.GetKeyDown(KeyCode.A))
-			{
-				SelectTargetable(Facing.Left);
-			}
-			else if (Input.GetKeyDown(KeyCode.S))
-			{
-				SelectTargetable(Facing.Down);
-			}
-			else if (Input.GetKeyDown(KeyCode.D))
-			{
-				SelectTargetable(Facing.Right);
+				if (Mathf.Abs(PlayerInputHandler.Instance.moveInput.x) > Mathf.Abs(PlayerInputHandler.Instance.moveInput.y))
+				{
+					if (PlayerInputHandler.Instance.moveInput.x > 0.5f)
+						SelectTargetable(Facing.Right);
+					else if (PlayerInputHandler.Instance.moveInput.x < -0.5f)
+						SelectTargetable(Facing.Left);
+				}
+				else
+				{
+					if (PlayerInputHandler.Instance.moveInput.y > 0.5f)
+						SelectTargetable(Facing.Up);
+					else if (PlayerInputHandler.Instance.moveInput.y < -0.5f)
+						SelectTargetable(Facing.Down);
+				}
 			}
 			return;
 		}
 
-		var game = Game.Instance;
 		if (Game.Instance.InventoryMenu.isActiveAndEnabled ||
 			Game.Instance.AllyMenu.isActiveAndEnabled ||
 			Game.Instance.SkillDialog.isActiveAndEnabled)
@@ -106,7 +94,7 @@ public class Player : Character
 			return;
 		}
 
-		if (IsBusy && menuCooldown > 0.2f)
+		if (IsWaitingForPlayerInput && menuCooldown > 0.2f)
 		{
 			DeterminePlayerAction();
 		}
@@ -150,42 +138,32 @@ public class Player : Character
 		var originalPosition = new Vector3Int(TilemapPosition.x, TilemapPosition.y);
 		var newMapPosition = new Vector3Int(TilemapPosition.x, TilemapPosition.y);
 
-		if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
+		Vector2 move = PlayerInputHandler.Instance.moveInput;
+
+		if (move.sqrMagnitude >= 0.01f)
 		{
-			SetFacing(Facing.UpLeft);
-		}
-		else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
-		{
-			SetFacing(Facing.UpRight);
-		}
-		else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
-		{
-			SetFacing(Facing.DownLeft);
-		}
-		else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
-		{
-			SetFacing(Facing.DownRight);
-		}
-		else if (Input.GetKey(KeyCode.W))
-		{
-			SetFacing(Facing.Up);
-		}
-		else if (Input.GetKey(KeyCode.A))
-		{
-			SetFacing(Facing.Left);
-		}
-		else if (Input.GetKey(KeyCode.S))
-		{
-			SetFacing(Facing.Down);
-		}
-		else if (Input.GetKey(KeyCode.D))
-		{
-			SetFacing(Facing.Right);
+			// Normalize the input so diagonal directions are consistent
+			move.Normalize();
+
+			if (move.x < -0.5f && move.y > 0.5f)
+				SetFacing(Facing.UpLeft);
+			else if (move.x > 0.5f && move.y > 0.5f)
+				SetFacing(Facing.UpRight);
+			else if (move.x < -0.5f && move.y < -0.5f)
+				SetFacing(Facing.DownLeft);
+			else if (move.x > 0.5f && move.y < -0.5f)
+				SetFacing(Facing.DownRight);
+			else if (move.y > 0.5f)
+				SetFacing(Facing.Up);
+			else if (move.x < -0.5f)
+				SetFacing(Facing.Left);
+			else if (move.y < -0.5f)
+				SetFacing(Facing.Down);
+			else if (move.x > 0.5f)
+				SetFacing(Facing.Right);
 		}
 
-		var game = Game.Instance;
-		if (!Input.GetKey(KeyCode.LeftShift) &&
-			!ControllerHoldPosition)
+		if (!PlayerInputHandler.Instance.holdPosition)
 		{
 			if (holdTime > repeatTime)
 			{
@@ -200,38 +178,15 @@ public class Player : Character
 			}
 		}
 
-		if ((Input.GetKeyDown(KeyCode.W) ||
-			Input.GetKeyDown(KeyCode.A) ||
-			Input.GetKeyDown(KeyCode.S) ||
-			Input.GetKeyDown(KeyCode.D) ||
-			ControllerHeld) &&
-			(!Input.GetKey(KeyCode.LeftShift) &&
-			!ControllerHoldPosition))
+		if (PlayerInputHandler.Instance.attackPressed)
 		{
-			holdTime = 0f;
-			var offset = Dungeon.GetFacingOffset(CurrentFacing);
-			if (Game.Instance.CurrentDungeon.CanWalkTo(newMapPosition, newMapPosition + offset))
-			{
-				newMapPosition += offset;
-				SetAction(new MovementAction(this, originalPosition, newMapPosition));
-				return;
-			}
-		}
-
-		if (Input.GetKeyDown(KeyCode.Space) ||
-			ControllerAttackThisFrame)
-		{
-			ControllerAttackThisFrame = false;
-
 			var offset = Dungeon.GetFacingOffset(CurrentFacing);
 			newMapPosition += offset;
 			SetAction(new AttackAction(this, originalPosition, newMapPosition));
 			return;
 		}
-		else if (Input.GetKeyDown(KeyCode.E) ||
-			ControllerUseThisFrame)
+		else if (PlayerInputHandler.Instance.interactPressed)
 		{
-			ControllerUseThisFrame = false;
 			if (currentInteractable != null)
 			{
 				SetAction(new InteractAction(currentInteractable));
@@ -301,7 +256,7 @@ public class Player : Character
 		}
 
 		pickedAction = userAction;
-		isBusy = false;
+		isWaitingForPlayerInput = false;
 	}
 
 	public override List<GameAction> GetDeterminedAction()
@@ -423,7 +378,7 @@ public class Player : Character
 
 	public override void StartTurn()
 	{
-		isBusy = true;
+		isWaitingForPlayerInput = true;
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
 

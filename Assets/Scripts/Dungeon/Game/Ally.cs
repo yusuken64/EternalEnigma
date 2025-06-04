@@ -14,7 +14,7 @@ public class Ally : Character
 	private AllyAttackPolicy AllyAttackPolicy;
 	private AllyPursuitPolicy PursuitPolicy;
 	private WanderPolicy WanderPolicy;
-	public override bool IsBusy => false;
+	public override bool IsWaitingForPlayerInput => false;
 	private List<GameAction> determinedActions;
 	private void Start()
 	{

@@ -37,7 +37,8 @@ public class TreasureTile : InteractableTile
 
 	internal override string GetInteractionText()
 	{
-		return !Opened ? "Open Chest" : "";
+		//return !Opened ? "Open Chest" : "";
+		return "";
 	}
 
 	internal override void DoInteraction()

@@ -140,7 +140,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""name"": ""HoldPosition"",
                     ""type"": ""Button"",
                     ""id"": ""6b3fc6c1-846c-4684-9402-0a1da6039879"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -433,8 +433,19 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""057f47c6-2fc2-4c7c-8306-5192169e60fe"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""id"": ""7bed7b0f-e7b9-46c4-8044-d01a08de04b7"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""HoldPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68b34748-a04a-48bd-b9df-4e9a290bc8bd"",
+                    ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

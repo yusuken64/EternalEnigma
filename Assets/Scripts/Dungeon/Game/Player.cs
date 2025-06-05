@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Player : Character
 {
-    private float holdTime = 0f;
+	private float holdTime = 0f;
 	private float repeatTime = 0.1f;
 	private GameAction pickedAction;
 	public Camera Camera;
@@ -29,11 +29,11 @@ public class Player : Character
 	public Character FollowTarget;
 	public List<Character> Targetables;
 	public Skill TargetingSkill;
-    private CheatConsole _cheatConsole;
+	private CheatConsole _cheatConsole;
 
-    public Action<Player, Skill, Vector3Int> TargetSelected { get; private set; }
+	public Action<Player, Skill, Vector3Int> TargetSelected { get; private set; }
 
-    private void Start()
+	private void Start()
 	{
 		_cheatConsole = FindFirstObjectByType<CheatConsole>();
 		HeroAnimator.PlayIdleAnimation();
@@ -52,7 +52,7 @@ public class Player : Character
 		}
 	}
 
-    private void Update()
+	private void Update()
 	{
 		if (_cheatConsole.ScreenObject.activeSelf) { return; }
 
@@ -100,7 +100,7 @@ public class Player : Character
 		}
 	}
 
-    public override void Inventory_HandleInventoryChanged()
+	public override void Inventory_HandleInventoryChanged()
 	{
 		base.Inventory_HandleInventoryChanged();
 
@@ -109,9 +109,9 @@ public class Player : Character
 			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
 	}
 
-    public override void Equipment_HandleEquipmentChanged(EquipChangeType equipChangeType, EquipableInventoryItem item)
-    {
-        base.Equipment_HandleEquipmentChanged(equipChangeType, item);
+	public override void Equipment_HandleEquipmentChanged(EquipChangeType equipChangeType, EquipableInventoryItem item)
+	{
+		base.Equipment_HandleEquipmentChanged(equipChangeType, item);
 
 		switch (equipChangeType)
 		{
@@ -128,7 +128,7 @@ public class Player : Character
 			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
 	}
 
-    internal bool CanOpenMenu()
+	internal bool CanOpenMenu()
 	{
 		return !StatusEffects.Any(x => x.PreventsMenu());
 	}
@@ -229,7 +229,7 @@ public class Player : Character
 			}
 		}
 
-		if(userAction is AttackAction attackAction)
+		if (userAction is AttackAction attackAction)
 		{
 			var attackedAlly = Game.Instance.AllCharacters
 				.Where(x => x != this)
@@ -391,7 +391,7 @@ public class Player : Character
 			Minimap minimap = FindFirstObjectByType<Minimap>();
 			minimap.UpdateVision(visibleTiles);
 			minimap.UpdateMinimap(visibleTiles);
-        }
+		}
 	}
 
 	public override List<GameAction> GetTrapSideEffects()
@@ -401,6 +401,19 @@ public class Player : Character
 			currentInteractable = null;
 			Game.Instance.DoFloatingText(trap.GetInteractionText(), Color.yellow, this.VisualParent.transform.position);
 			return trap.GetTrapSideEffects(this);
+		}
+
+		return new();
+	}
+
+	public override List<GameAction> GetInteractableSideEffects()
+	{
+		if (currentInteractable is not Trap and not null)
+		{
+			Game.Instance.DoFloatingText(currentInteractable.GetInteractionText(), Color.yellow, this.VisualParent.transform.position);
+			var effects =  currentInteractable.GetInteractionSideEffects(this);
+			currentInteractable = null;
+			return effects;
 		}
 
 		return new();

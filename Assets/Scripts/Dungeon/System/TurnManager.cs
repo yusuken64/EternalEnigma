@@ -38,7 +38,22 @@ public class TurnManager : MonoBehaviour
 			foreach (var actor in actors)
 			{
 				actor.TickStatusEffects();
+				if (actor is Player player)
+				{
+					player.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(player.TilemapPosition);
+
+					var interactableSideEffects = actor.GetInteractableSideEffects();
+					while (interactableSideEffects.Any())
+					{
+						var trapSideEffect = interactableSideEffects.First();
+						interactableSideEffects.Remove(trapSideEffect);
+						actionReplays.Add(new ActorAction(actor, trapSideEffect));
+						actor.ExecuteActionImmediate(trapSideEffect);
+					}
+				}
 			}
+
+			if (interuptTurn) { continue; }
 
 			foreach (var actor in actors)
 			{
@@ -218,8 +233,9 @@ public interface Actor
 	void TickStatusEffects();
 	List<GameAction> GetStatusEffectSideEffects();
 	List<GameAction> GetTrapSideEffects();
+	List<GameAction> GetInteractableSideEffects();
 
-	int ActionsLeft { get; }
+    int ActionsLeft { get; }
 }
 
 public abstract class GameAction

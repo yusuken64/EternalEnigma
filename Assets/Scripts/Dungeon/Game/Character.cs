@@ -402,6 +402,7 @@ disp: {displayedVitals}");
 
 	public abstract IEnumerable<GameAction> GetResponseTo(GameAction sideEffectAction);
 	public abstract List<GameAction> GetTrapSideEffects();
+	public abstract List<GameAction> GetInteractableSideEffects();
 
 	public bool GetActionInterupt(GameAction action)
 	{

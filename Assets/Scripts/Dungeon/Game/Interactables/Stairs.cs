@@ -14,7 +14,6 @@ public class Stairs : Interactable
 			},
 			null,
 			null)
-
 		};
 	}
 

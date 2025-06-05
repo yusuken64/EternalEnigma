@@ -30,13 +30,6 @@ internal class MovementAction : GameAction
 		{
 			newMapPosition = originalPosition;
 		}
-		else
-		{
-			if (character is Player player)
-			{
-				player.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(newMapPosition);
-			}
-		}
 
 		character.TilemapPosition = newMapPosition;
 		return new();

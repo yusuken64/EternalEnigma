@@ -168,6 +168,11 @@ public class Ally : Character
 		return new();
 	}
 
+	public override List<GameAction> GetInteractableSideEffects()
+	{
+		return new();
+	}
+
 	public override void StartTurn()
 	{
 		determinedActions = null;
@@ -259,7 +264,6 @@ public class Ally : Character
 			Equipment.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
 			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
 	}
-
 }
 
 internal class AllyAttackPolicy : PolicyBase

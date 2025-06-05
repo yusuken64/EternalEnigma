@@ -26,6 +26,7 @@ public class Gold : Interactable
 
 	internal override string GetInteractionText()
 	{
-		return !Opened ? "Open Chest" : "";
+		return "";
+		//return !Opened ? "Open Chest" : "";
 	}
 }

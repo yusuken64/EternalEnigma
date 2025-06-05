@@ -221,6 +221,10 @@ public class Enemy : Character
 		//TODO adapt this when enemies set off traps
 		return new();
 	}
+	public override List<GameAction> GetInteractableSideEffects()
+	{
+		return new();
+	}
 	#endregion
 }
 

@@ -1,3 +1,4 @@
+using JuicyChickenGames.Menu;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -148,7 +149,7 @@ public class Minimap : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        if (PlayerInputHandler.Instance.mapPressed)
         {
             currentMode = (MinimapMode)(((int)currentMode + 1) % System.Enum.GetValues(typeof(MinimapMode)).Length);
             UpdateMinimapMode();

@@ -1,3 +1,4 @@
+using JuicyChickenGames.Menu;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -69,11 +70,7 @@ public class OverworldPlayer : OverworldCharacter
     void Update()
 	{
 		if (!initialied) { return; }
-		if (Input.GetKey(KeyCode.W) ||
-			Input.GetKey(KeyCode.A) ||
-			Input.GetKey(KeyCode.S) ||
-			Input.GetKey(KeyCode.D) ||
-			ControllerHeld)
+		if (ControllerHeld)
 		{
 			holdTime += Time.deltaTime;
 		}
@@ -95,82 +92,65 @@ public class OverworldPlayer : OverworldCharacter
 
 	private void DeterminePlayerAction()
 	{
-		var originalPosition = new Vector3Int(TilemapPosition.x, TilemapPosition.y);
-		var newMapPosition = new Vector3Int(TilemapPosition.x, TilemapPosition.y);
+		var inputHandler = PlayerInputHandler.Instance;
 
-		if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
-		{
-			SetFacing(Facing.UpLeft);
-		}
-		else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
-		{
-			SetFacing(Facing.UpRight);
-		}
-		else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
-		{
-			SetFacing(Facing.DownLeft);
-		}
-		else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
-		{
-			SetFacing(Facing.DownRight);
-		}
-		else if (Input.GetKey(KeyCode.W))
-		{
-			SetFacing(Facing.Up);
-		}
-		else if (Input.GetKey(KeyCode.A))
-		{
-			SetFacing(Facing.Left);
-		}
-		else if (Input.GetKey(KeyCode.S))
-		{
-			SetFacing(Facing.Down);
-		}
-		else if (Input.GetKey(KeyCode.D))
-		{
-			SetFacing(Facing.Right);
-		}
+		if (inputHandler == null || _busy)
+			return;
 
-		//if (!Input.GetKey(KeyCode.LeftShift))
-		//{
-		//	//if (holdTime > repeatTime)
-		//	//{
-		//	holdTime = 0f;
-		//	var offset = TileWorldDungeon.GetFacingOffset(CurrentFacing);
-		//	if (WalkableMap.CanWalkTo(newMapPosition, newMapPosition + offset))
-		//	{
-		//		newMapPosition += offset;
-		//		SetAction(new OverworldMovement(this, originalPosition, newMapPosition));
-		//		return;
-		//	}
-		//	//}
-		//}
+		var moveInput = inputHandler.moveInput;
 
-		if (Input.GetKeyDown(KeyCode.W) ||
-			Input.GetKeyDown(KeyCode.A) ||
-			Input.GetKeyDown(KeyCode.S) ||
-			Input.GetKeyDown(KeyCode.D))
+		Facing? newFacing = null;
+
+        bool moving = moveInput.magnitude > 0.1f;
+        if (moving)
 		{
-			var offset = TileWorldDungeon.GetFacingOffset(CurrentFacing);
-			if (WalkableMap.CanWalkTo(TilemapPosition, TilemapPosition + offset))
+			// Normalize to handle diagonal directions nicely
+			var normInput = moveInput.normalized;
+
+			// Determine primary direction by thresholds for diagonals
+			if (normInput.y > 0.5f)
 			{
-				SetAction(new OverworldMovement(this, TilemapPosition, TilemapPosition + offset));
+				if (normInput.x < -0.5f)
+					newFacing = Facing.UpLeft;
+				else if (normInput.x > 0.5f)
+					newFacing = Facing.UpRight;
+				else
+					newFacing = Facing.Up;
 			}
-        }
-
-		if ((Input.GetKeyDown(KeyCode.W) ||
-			Input.GetKeyDown(KeyCode.A) ||
-			Input.GetKeyDown(KeyCode.S) ||
-			Input.GetKeyDown(KeyCode.D)) &&
-			!Input.GetKey(KeyCode.LeftShift))
-
-		{
-			holdTime = 0f;
-			var offset = Dungeon.GetFacingOffset(CurrentFacing);
-			if (WalkableMap.CanWalkTo(newMapPosition, newMapPosition + offset))
+			else if (normInput.y < -0.5f)
 			{
-				newMapPosition += offset;
+				if (normInput.x < -0.5f)
+					newFacing = Facing.DownLeft;
+				else if (normInput.x > 0.5f)
+					newFacing = Facing.DownRight;
+				else
+					newFacing = Facing.Down;
+			}
+			else
+			{
+				// Y near zero, horizontal only
+				if (normInput.x < 0)
+					newFacing = Facing.Left;
+				else
+					newFacing = Facing.Right;
+			}
+		}
+
+		if (newFacing.HasValue)
+		{
+			SetFacing(newFacing.Value);
+		}
+
+		if (moving)
+		{
+			var offset = Dungeon.GetFacingOffset(CurrentFacing);
+			var originalPosition = TilemapPosition;
+			var newMapPosition = TilemapPosition + offset;
+
+			if (WalkableMap.CanWalkTo(originalPosition, newMapPosition))
+			{
 				SetAction(new OverworldMovement(this, originalPosition, newMapPosition));
+				holdTime = 0f;
 				return;
 			}
 		}

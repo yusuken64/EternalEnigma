@@ -16,7 +16,7 @@ internal class CastTeleportPolicy : PolicyBase
 				{
 					return new()
 					{
-						new WarpAction(game.PlayerCharacter)
+						new WarpAction(character.PursuitTarget)
 					};
 				}
 			}
@@ -25,7 +25,7 @@ internal class CastTeleportPolicy : PolicyBase
 
 	public override bool ShouldRun()
 	{
-		return AttackPolicy.CanAttack(game, game.PlayerCharacter, character) &&
+		return AttackPolicy.CanAttack(game, character.PursuitTarget, character) &&
 			UnityEngine.Random.value > 0.5f;
 	}
 }

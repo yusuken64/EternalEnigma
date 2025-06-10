@@ -23,12 +23,7 @@ public class Ally : Character
 		WanderPolicy = new WanderPolicy(Game.Instance, this, 3);
 	}
 
-	public void SetAction(GameAction forcedAction)
-	{
-		_forcedAction = forcedAction;
-	}
-
-	public override void DetermineAction()
+    public override void DetermineAction()
 	{
 		if (Vitals.HP <= 0)
 		{
@@ -93,11 +88,11 @@ public class Ally : Character
 		
 		if (AllyStrategy == AllyStrategy.Follow)
 		{
-			pursuitTargets.Add(game.PlayerCharacter);
+			pursuitTargets.Add(game.PlayerCharacter.ControlledAlly);
 		}
 		else if (AllyStrategy == AllyStrategy.Aggresive)
 		{
-			pursuitTargets.Add(game.PlayerCharacter);
+			pursuitTargets.Add(game.PlayerCharacter.ControlledAlly);
 			pursuitTargets.AddRange(game.Enemies);
 		}
 

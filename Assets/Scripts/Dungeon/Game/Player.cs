@@ -65,24 +65,24 @@ public class Player : Character
 
 		if (CurrentCameraMode == CameraMode.TargetSelect)
 		{
-			if (PlayerInputHandler.Instance.isMoving)
-			{
-				if (Mathf.Abs(PlayerInputHandler.Instance.moveInput.x) > Mathf.Abs(PlayerInputHandler.Instance.moveInput.y))
-				{
-					if (PlayerInputHandler.Instance.moveInput.x > 0.5f)
-						SelectTargetable(Facing.Right);
-					else if (PlayerInputHandler.Instance.moveInput.x < -0.5f)
-						SelectTargetable(Facing.Left);
-				}
-				else
-				{
-					if (PlayerInputHandler.Instance.moveInput.y > 0.5f)
-						SelectTargetable(Facing.Up);
-					else if (PlayerInputHandler.Instance.moveInput.y < -0.5f)
-						SelectTargetable(Facing.Down);
-				}
-			}
-			return;
+			//if (PlayerInputHandler.Instance.isMoving)
+			//{
+			//	if (Mathf.Abs(PlayerInputHandler.Instance.moveInput.x) > Mathf.Abs(PlayerInputHandler.Instance.moveInput.y))
+			//	{
+			//		if (PlayerInputHandler.Instance.moveInput.x > 0.5f)
+			//			SelectTargetable(Facing.Right);
+			//		else if (PlayerInputHandler.Instance.moveInput.x < -0.5f)
+			//			SelectTargetable(Facing.Left);
+			//	}
+			//	else
+			//	{
+			//		if (PlayerInputHandler.Instance.moveInput.y > 0.5f)
+			//			SelectTargetable(Facing.Up);
+			//		else if (PlayerInputHandler.Instance.moveInput.y < -0.5f)
+			//			SelectTargetable(Facing.Down);
+			//	}
+			//}
+			//return;
 		}
 
 		if (Game.Instance.InventoryMenu.isActiveAndEnabled ||
@@ -268,7 +268,6 @@ public class Player : Character
 	}
 	public override void DetermineAction()
 	{
-		//this should affect player the same way, to do in characerbase class?
 		var actionOverrides = StatusEffects.Select(x => x.GetActionOverride(this))
 			.Where(x => x != null);
 		if (actionOverrides.Any())
@@ -444,36 +443,6 @@ public class Player : Character
 		HeroAnimator.PlayDeathAnimation();
 	}
 
-	internal void InvokeTargetSelection(Skill skill, List<Character> possibleTargets, Action<Player, Skill, Vector3Int> targetSelected)
-	{
-		CurrentCameraMode = CameraMode.TargetSelect;
-		Targetables = possibleTargets;
-		TargetSelected = targetSelected;
-		TargetingSkill = skill;
-
-		FollowTarget = possibleTargets.First();
-		MenuManager.Instance.TargetArrow.transform.position = FollowTarget.transform.position;
-	}
-	internal void ConfirmTarget()
-	{
-		CurrentCameraMode = CameraMode.FollowPlayer;
-		TargetSelected?.Invoke(this, TargetingSkill, FollowTarget.TilemapPosition);
-		Targetables = null;
-		FollowTarget = null;
-		TargetingSkill = null;
-		TargetSelected = null;
-	}
-
-
-	private void SelectTargetable(Facing facing)
-	{
-		var dir = Dungeon.GetFacingOffset(facing);
-		var next = GetNextSelectableWithWrap(FollowTarget, Targetables, dir);
-
-		if (next == null) { return; }
-		FollowTarget = next;
-		MenuManager.Instance.TargetArrow.transform.position = FollowTarget.transform.position;
-	}
 
 	Character GetNextSelectableWithWrap(Character current, List<Character> allEntities, Vector3Int dir)
 	{

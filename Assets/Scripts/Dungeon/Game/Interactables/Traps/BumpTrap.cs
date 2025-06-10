@@ -17,7 +17,7 @@ public class BumpTrap : Trap
 			if (character is Player player)
 			{
 				var inventoryItems = player.Inventory.InventoryItems.Take(3);
-				return inventoryItems.Select(x => new DropItemAction(player, x, player.TilemapPosition))
+				return inventoryItems.Select(x => new DropItemAction(player.Inventory, x, player.TilemapPosition))
 					.Cast<GameAction>()
 					.ToList();
 			}

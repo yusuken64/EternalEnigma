@@ -13,7 +13,6 @@ public class Enemy : Character
 
 	public List<PolicyBase> Policies;
 	public override bool IsWaitingForPlayerInput => false;
-	private List<GameAction> determinedActions;
 
 	private void Start()
 	{
@@ -61,7 +60,7 @@ public class Enemy : Character
 		}
 
 		var game = Game.Instance;
-		PursuitTarget = GetTarget();
+		PursuitTarget = GetPursuitTarget();
 
 		if (PursuitTarget != null)
 		{
@@ -93,32 +92,7 @@ public class Enemy : Character
 		return determinedActions;
 	}
 
-	private Character GetTarget()
-	{
-		var game = Game.Instance;
-
-		//determine if the monster can see any character player team
-		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(this, TilemapPosition);
-
-		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team == Team.Player);
-
-		//TODO: prioritise this somehow?
-		return playerTeamCharacters
-			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
-			.ThenBy(x => x.TilemapPosition == PursuitPosition)
-			.FirstOrDefault(x => Contains2D(visionBounds, x.TilemapPosition));
-	}
-
-	//BoundsInt.Contain doesn't work?
-	public static bool Contains2D(BoundsInt visionBounds, Vector3Int tilemapPosition)
-	{
-		return visionBounds.xMin <= tilemapPosition.x &&
-			visionBounds.xMax >= tilemapPosition.x &&
-			visionBounds.yMin <= tilemapPosition.y &&
-			visionBounds.yMax >= tilemapPosition.y;
-	}
-
-	public override List<GameAction> ExecuteActionImmediate(GameAction action)
+    public override List<GameAction> ExecuteActionImmediate(GameAction action)
 	{
 		if (GetActionInterupt(action))
 		{

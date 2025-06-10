@@ -8624,6 +8624,71 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1606234905}
   m_CullTransparentMesh: 1
+--- !u!1 &1609639452
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1609639453}
+  - component: {fileID: 1609639454}
+  - component: {fileID: 1609639455}
+  m_Layer: 0
+  m_Name: ActiveAllyController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1609639453
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609639452}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1932732651}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1609639454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609639452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d625e227e391aa74e86f62c410587dc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 0}
+  CameraOffset: {x: 1, y: -7.24, z: -11.02}
+  CurrentCameraMode: 0
+  FollowTarget: {fileID: 0}
+  Targetables: []
+  Inventory: {fileID: 0}
+  TargetingSkill: {fileID: 0}
+--- !u!114 &1609639455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609639452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4b32aeecc89f94b8159feab8d59ebc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxItems: 10
 --- !u!1 &1617515331
 GameObject:
   m_ObjectHideFlags: 0
@@ -10549,7 +10614,10 @@ MonoBehaviour:
   LevelSystem: {fileID: 1932732654}
   EnemyManager: {fileID: 1932732656}
   PlayerCharacter: {fileID: 0}
-  PlayerCharacterPrefab: {fileID: 8214162097792368139, guid: 2106327e38900374382d7c5bb83a8cef, type: 3}
+  DebugAllies:
+  - {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  - {fileID: 785305266141966241, guid: 72cc990e9ae0c9849a631719a2431227, type: 3}
+  ThrownItemProjectilePrefab: {fileID: 0}
   Allies: []
   AllyPrefab: {fileID: 2307167615619215408, guid: 0c1f330f26c84f74f935cdbcb514ba0e, type: 3}
   Enemies: []
@@ -10568,7 +10636,6 @@ MonoBehaviour:
   HungerDisplay: {fileID: 1946156899}
   SkilText: {fileID: 1209047416}
   FloorText: {fileID: 122596706}
-  ActionText: {fileID: 179733526}
   InventoryText: {fileID: 68446668}
 --- !u!4 &1932732651
 Transform:
@@ -10588,6 +10655,7 @@ Transform:
   - {fileID: 1098189709}
   - {fileID: 31641863}
   - {fileID: 1422610647}
+  - {fileID: 1609639453}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1932732652

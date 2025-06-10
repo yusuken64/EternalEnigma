@@ -29,7 +29,7 @@ namespace JuicyChickenGames.Menu
                     ClickAction = () =>
                     {
                         //Select Skill Target;
-                        var player = FindFirstObjectByType<Player>();
+                        var player = FindFirstObjectByType<PlayerController>();
                         SelectTargetPrompt.SetActive(true);
                         var possibleTargets = Game.Instance.AllCharacters; //TODO filter by skill
                         player.InvokeTargetSelection(skill, possibleTargets, TargetSelected);
@@ -46,7 +46,7 @@ namespace JuicyChickenGames.Menu
             Buttons = ButtonContainer.RePopulateObjects(ActionButtonPrefab, dynamicActionInfos, setupAction);
         }
 
-        private void TargetSelected(Player caster, Skill skill, Vector3Int target)
+        private void TargetSelected(Ally caster, Skill skill, Vector3Int target)
         {
             caster.SetAction(new SkillAction(caster, skill, target));
             _eventSystem.enabled = true;

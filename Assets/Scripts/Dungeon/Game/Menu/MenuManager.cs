@@ -52,7 +52,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 				bool canOpenMenu = Game.Instance.PlayerCharacter.CanOpenMenu();
 				if (canOpenMenu)
 				{
-					OpenSkillsMenu(Game.Instance.PlayerCharacter);
+					OpenSkillsMenu(Game.Instance.PlayerCharacter.ControlledAlly);
 				}
 			}
 			else
@@ -103,13 +103,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	{
 		MenuInputHandler.Instance.OpenMenu();
 		MenuManager.Open(InventoryMenu);
-		var equippedItems = Game.Instance.PlayerCharacter.Equipment.GetEquippedItems();
+		var equippedItems = Game.Instance.PlayerCharacter.ControlledAlly.Equipment.GetEquippedItems();
 		var items = Game.Instance.PlayerCharacter.Inventory.InventoryItems;
 		var allItems = equippedItems.Concat(items)
 			.Where(x => x != null)
 			.ToList();
 
-		InventoryMenu.Setup(allItems, Game.Instance.PlayerCharacter);
+		InventoryMenu.Setup(allItems, Game.Instance.PlayerCharacter.ControlledAlly);
 		InventoryMenu.SetNavigation();
 		CurrentDialog = InventoryMenu;
 		InventoryMenu.CloseAction = () =>

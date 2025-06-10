@@ -12,14 +12,14 @@ public class GameOverScreen : Dialog
 	public TextMeshProUGUI MessageText;
 	public Button OkButton;
 
-	internal void Setup(Player playerCharacter)
+	internal void Setup(Character character)
 	{
 		MessageText.text = $@"Player Perished
-On floor {playerCharacter.Vitals.Floor}
-with {playerCharacter.Vitals.Gold} Treasure";
+On floor {character.Vitals.Floor}
+with {character.Vitals.Gold} Treasure";
 
 		//todo turn inventory items into gold;
-		Common.Instance.GameSaveData.OverworldSaveData.Gold += playerCharacter.Vitals.Gold;
+		Common.Instance.GameSaveData.OverworldSaveData.Gold += character.Vitals.Gold;
 	}
 
 	public void TryAgain_Clicked()

@@ -16,8 +16,10 @@ public class Game : SingletonMonoBehaviour<Game>
 	public LevelSystem LevelSystem;
 	public EnemyManager EnemyManager;
 
-	public Player PlayerCharacter;
-	public Player PlayerCharacterPrefab;
+	public PlayerController PlayerCharacter;
+	//public Player PlayerCharacterPrefab;
+	public List<OverworldAlly> DebugAllies;
+	public GameObject ThrownItemProjectilePrefab;
 
 	public List<Ally> Allies;
 	public Ally AllyPrefab;
@@ -39,14 +41,13 @@ public class Game : SingletonMonoBehaviour<Game>
 		get
 		{
 			var ret = new List<Character>();
-			ret.Add(PlayerCharacter);
 			ret.AddRange(Allies);
 			ret.AddRange(Enemies);
 
 			return ret;
 		}
 	}
-
+	
 	public List<Character> DeadUnits; //dead units are added to this, destroy at end turn;
 
 	public StatsDisplay LevelDisplay;
@@ -55,7 +56,6 @@ public class Game : SingletonMonoBehaviour<Game>
 	public StatsDisplay HungerDisplay;
 	public TextMeshProUGUI SkilText;
 	public TextMeshProUGUI FloorText;
-	public TextMeshProUGUI ActionText;
 	public TextMeshProUGUI InventoryText;
 
 	// Start is called before the first frame update
@@ -70,8 +70,19 @@ public class Game : SingletonMonoBehaviour<Game>
 		{
 			Destroy(PlayerCharacter.gameObject);
 		}
-		PlayerCharacter = Instantiate(PlayerCharacterPrefab);
+		//PlayerCharacter = Instantiate(PlayerCharacterPrefab);
 		PlayerCharacter.Camera = Camera.main;
+
+#if UNITY_EDITOR
+		foreach (var overworldAlly in DebugAllies)
+		{
+			var ally = Instantiate(AllyPrefab);
+			ally.InitialzeModel(overworldAlly);
+			Allies.Add(ally);
+
+			Destroy(overworldAlly);
+		}
+#endif
 
 		foreach (var overworldAlly in Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies)
 		{
@@ -101,13 +112,13 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	private void InitializeGame()
 	{
-		PlayerCharacter.InitialzeVitalsFromStats();
-		PlayerCharacter.InitialzeSkillsFromSave();
+		//PlayerCharacter.InitialzeVitalsFromStats();
+		//PlayerCharacter.InitialzeSkillsFromSave();
 		var floor = Common.Instance.GameSaveData.StartingFloor;
 		PlayerCharacter.Vitals.Floor = floor;
 		Common.Instance.GameSaveData.StartingFloor = 0;
-		PlayerCharacter.SyncDisplayedStats();
-		PlayerCharacter.HeroAnimator.SetWeapon(null, null);
+		//PlayerCharacter.SyncDisplayedStats();
+		//PlayerCharacter.HeroAnimator.SetWeapon(null, null);
 
 		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
 		Common.Instance.ItemManager.StartingItems.ForEach(x => PlayerCharacter.Inventory.Add(x.AsInventoryItem(null)));
@@ -128,7 +139,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	internal void ShowGameOver()
 	{
 		GameOverScreen.gameObject.SetActive(true);
-		GameOverScreen.Setup(PlayerCharacter);
+		GameOverScreen.Setup(PlayerCharacter.ControlledAlly);
 
 		MenuManager.Open(GameOverScreen);
 	}
@@ -140,7 +151,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		PlayerCharacter.Vitals.Floor++;
 		PlayerCharacter.DisplayedVitals.Floor++;
-		PlayerCharacter.currentInteractable = null;
+		PlayerCharacter.ControlledAlly.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
 
 		NewFloorMessage.HideScreen();
@@ -176,8 +187,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		yield return null;
 
 		var startPosition = CurrentDungeon.GetStartPositioon();
-		PlayerCharacter.SetPosition(startPosition);
-		var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(PlayerCharacter, PlayerCharacter.TilemapPosition);
+		PlayerCharacter.ControlledAlly.SetPosition(startPosition);
+		var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(PlayerCharacter.ControlledAlly, PlayerCharacter.TilemapPosition);
 		Minimap minimap = FindFirstObjectByType<Minimap>();
 		minimap.UpdateVision(visibleTiles);
 		minimap.UpdateMinimap(visibleTiles);
@@ -238,21 +249,12 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void UpdateUI()
 	{
 		if (PlayerCharacter == null) { return; }
-		SkilText.text = string.Join(Environment.NewLine, PlayerCharacter.Skills.Select((skill, index) => $"{index + 1}:{skill.SkillName}({skill.SPCost})"));
+		//SkilText.text = string.Join(Environment.NewLine, PlayerCharacter.Skills.Select((skill, index) => $"{index + 1}:{skill.SkillName}({skill.SPCost})"));
 		FloorText.text = $"{PlayerCharacter.DisplayedVitals.Floor}F";
 		LevelDisplay.UpdateUI();
 		HpDisplay.UpdateUI();
 		SpDisplay.UpdateUI();
 		HungerDisplay.UpdateUI();
-
-		if (PlayerCharacter.currentInteractable != null)
-		{
-			ActionText.text = PlayerCharacter.currentInteractable.GetInteractionText();
-		}
-		else
-		{
-			ActionText.text = "";
-		}
 
 		var inventoryText = 
 			@$"Gold {PlayerCharacter.DisplayedVitals.Gold}g

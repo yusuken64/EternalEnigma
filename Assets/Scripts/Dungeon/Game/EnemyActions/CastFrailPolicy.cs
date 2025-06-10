@@ -18,7 +18,7 @@ internal class CastFrailPolicy : PolicyBase
 				GetActionsFunc = () =>
 				{
 					character.SetFacingByTargetPosition(game.PlayerCharacter.TilemapPosition);
-					return new List<GameAction>() { new ApplyStatusEffectAction(game.PlayerCharacter, statusEffectPrefab, character) };
+					return new List<GameAction>() { new ApplyStatusEffectAction(game.PlayerCharacter.ControlledAlly, statusEffectPrefab, character) };
 				}
 			}
 		};
@@ -26,7 +26,7 @@ internal class CastFrailPolicy : PolicyBase
 
 	public override bool ShouldRun()
 	{
-		return AttackPolicy.CanAttack(game, game.PlayerCharacter, character) &&
+		return AttackPolicy.CanAttack(game, game.PlayerCharacter.ControlledAlly, character) &&
 			UnityEngine.Random.value > 0.8f;
 	}
 }

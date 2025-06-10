@@ -28,7 +28,6 @@ public class TurnManager : MonoBehaviour
 		while (!interuptTurn)
 		{
 			List<Actor> actors = new();
-			actors.Add(Game.Instance.PlayerCharacter);
 			actors.AddRange(Game.Instance.Allies);
 			actors.AddRange(Game.Instance.Enemies);
 
@@ -150,7 +149,7 @@ public class TurnManager : MonoBehaviour
 				yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
 			}
 
-			if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerCharacter))
+			if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerCharacter.ControlledAlly))
 			{
 				Game.Instance.ShowGameOver();
 			}

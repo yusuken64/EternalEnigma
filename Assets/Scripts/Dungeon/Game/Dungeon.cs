@@ -103,10 +103,10 @@ public class Dungeon : MonoBehaviour
 			//give treasure to player
 			int goldAmount = UnityEngine.Random.Range(3, 10);
 			Game game = Game.Instance;
-			Player playerCharacter = game.PlayerCharacter;
-			playerCharacter.Vitals.Gold += goldAmount;
-			playerCharacter.SyncDisplayedStats();
-			game.DoFloatingText($"{goldAmount} Gold", Color.yellow, playerCharacter.transform.position);
+			Character character = game.PlayerCharacter.ControlledAlly;
+			character.Vitals.Gold += goldAmount;
+			character.SyncDisplayedStats();
+			game.DoFloatingText($"{goldAmount} Gold", Color.yellow, character.transform.position);
 		};
 		ObjectTileMap.SetTile(treasurePosition, newTreasureTile);
 		//ObjectTileMap.SetTile(treasurePosition, TreasureTile);

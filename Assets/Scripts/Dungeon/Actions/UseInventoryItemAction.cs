@@ -4,12 +4,12 @@ using UnityEngine;
 
 internal class UseInventoryItemAction : GameAction
 {
-	private Player player;
+	private Inventory inventory;
 	private InventoryItem item;
 
-	public UseInventoryItemAction(Player player, Character character, InventoryItem item)
+	public UseInventoryItemAction(Inventory inventory, Character character, InventoryItem item)
 	{
-		this.player = player;
+		this.inventory = inventory;
 		this.item = item;
 	}
 
@@ -22,7 +22,7 @@ internal class UseInventoryItemAction : GameAction
 
 		if (item.ShouldRemoveAfterUse())
 		{
-			player.Inventory.Remove(item);
+			inventory.Remove(item);
 		}
 		return item.GetGameActions(character, character, item);
 	}

@@ -151,6 +151,7 @@ public abstract class Character : MonoBehaviour, Actor
 	public Vector3Int? PursuitPosition; //only used in ai controlled
 	public Character PursuitTarget; //only used in ai controlled
 	public List<Skill> Skills;
+	public List<GameAction> determinedActions;
 
 	internal void SetPosition(Vector3Int newPosition)
 	{
@@ -434,6 +435,34 @@ disp: {displayedVitals}");
 
 		var path = AStar.FindPath(grid, startNode, targetNode);
 		return path;
+	}
+
+	internal Character GetPursuitTarget()
+	{
+		var game = Game.Instance;
+
+		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(this, TilemapPosition);
+
+		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team == Team.Player);
+
+		return playerTeamCharacters
+			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
+			.ThenBy(x => x.TilemapPosition == PursuitPosition)
+			.FirstOrDefault(x => Contains2D(visionBounds, x.TilemapPosition));
+	}
+
+	//BoundsInt.Contain doesn't work?
+	public static bool Contains2D(BoundsInt visionBounds, Vector3Int tilemapPosition)
+	{
+		return visionBounds.xMin <= tilemapPosition.x &&
+			visionBounds.xMax >= tilemapPosition.x &&
+			visionBounds.yMin <= tilemapPosition.y &&
+			visionBounds.yMax >= tilemapPosition.y;
+	}
+
+	public void SetAction(GameAction forcedAction)
+	{
+		this.determinedActions.Add(forcedAction);
 	}
 }
 

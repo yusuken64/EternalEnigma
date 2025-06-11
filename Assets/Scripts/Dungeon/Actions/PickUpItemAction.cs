@@ -15,11 +15,11 @@ internal class PickUpItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		Game game = Game.Instance;
-		canAdd = game.PlayerCharacter.Inventory.CanAdd();
+		canAdd = game.PlayerController.Inventory.CanAdd();
 		if (canAdd)
 		{
 			droppedItem.Opened = true;
-			game.PlayerCharacter.Inventory.Add(droppedItem.InventoryItem);
+			game.PlayerController.Inventory.Add(droppedItem.InventoryItem);
 			game.CurrentDungeon.RemoveInteractable(droppedItem); //this should be removeimmediate, and remove routine
 		}
 
@@ -30,7 +30,7 @@ internal class PickUpItemAction : GameAction
     {
 		if (!canAdd)
 		{
-			Game.Instance.DoFloatingText("Inventory is full", Color.red, Game.Instance.PlayerCharacter.transform.position);
+			Game.Instance.DoFloatingText("Inventory is full", Color.red, Game.Instance.PlayerController.transform.position);
 		}
 		yield return null;
 	}

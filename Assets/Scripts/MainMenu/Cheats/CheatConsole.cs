@@ -91,8 +91,8 @@ public class CheatConsole : MonoBehaviour
     {
         return FindFirstObjectByType<OverworldPlayer>();
     }
-    internal Player FindPlayer()
+    internal Ally FindPlayer()
     {
-        return FindFirstObjectByType<Player>();
+        return FindFirstObjectByType<PlayerController>().ControlledAlly;
     }
 }

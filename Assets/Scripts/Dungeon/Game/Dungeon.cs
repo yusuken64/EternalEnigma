@@ -103,7 +103,7 @@ public class Dungeon : MonoBehaviour
 			//give treasure to player
 			int goldAmount = UnityEngine.Random.Range(3, 10);
 			Game game = Game.Instance;
-			Character character = game.PlayerCharacter.ControlledAlly;
+			Character character = game.PlayerController.ControlledAlly;
 			character.Vitals.Gold += goldAmount;
 			character.SyncDisplayedStats();
 			game.DoFloatingText($"{goldAmount} Gold", Color.yellow, character.transform.position);
@@ -281,7 +281,7 @@ public class Dungeon : MonoBehaviour
 		{
 			//give treasure to player
 			Game game = Game.Instance;
-			game.PlayerCharacter.Inventory.Add(Common.Instance.ItemManager.GetAsInventoryItem(item, stock));
+			game.PlayerController.Inventory.Add(Common.Instance.ItemManager.GetAsInventoryItem(item, stock));
 
 			ObjectTileMap.SetTile(treasurePosition, null);
 		};

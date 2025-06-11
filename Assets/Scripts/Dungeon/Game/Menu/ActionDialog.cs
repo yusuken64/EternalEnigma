@@ -25,13 +25,9 @@ namespace JuicyChickenGames.Menu
 
 		public void Use_Clicked()
 		{
-			if (_character is Player playerCharacter)
+			if (_character is Ally ally)
 			{
-				playerCharacter.SetAction(new UseInventoryItemAction(Game.Instance.PlayerCharacter.Inventory, playerCharacter, _data));
-			}
-			else if (_character is Ally ally)
-			{
-				ally.SetAction(new UseInventoryItemAction(Game.Instance.PlayerCharacter.Inventory, ally, _data));
+				ally.SetAction(new UseInventoryItemAction(Game.Instance.PlayerController.Inventory, ally, _data));
 			}
 
 			MenuManager.Instance.CloseMenu();
@@ -45,7 +41,7 @@ namespace JuicyChickenGames.Menu
 
 		public void Drop_Clicked()
 		{
-			_character.SetAction(new DropItemAction(Game.Instance.PlayerCharacter.Inventory, _data, _character.TilemapPosition));
+			_character.SetAction(new DropItemAction(Game.Instance.PlayerController.Inventory, _data, _character.TilemapPosition));
 			MenuManager.Instance.CloseMenu();
 		}
 		public void Cancel_Clicked()

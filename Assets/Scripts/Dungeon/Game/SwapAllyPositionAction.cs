@@ -5,24 +5,24 @@ using UnityEngine;
 
 internal class SwapAllyPositionAction : GameAction
 {
-	private Player player;
+	private Ally ally;
 	private Ally swapAlly;
 
 	private Vector3Int originalPosition;
 	private Vector3Int newMapPosition;
 
-	public SwapAllyPositionAction(Player player, Character swapAlly)
+	public SwapAllyPositionAction(Ally ally, Character swapAlly)
 	{
-		this.player = player;
+		this.ally = ally;
 		this.swapAlly = swapAlly as Ally;
-		originalPosition = player.TilemapPosition;
+		originalPosition = ally.TilemapPosition;
 		newMapPosition = swapAlly.TilemapPosition;
 		this.swapAlly.SetAction(new MovementAction(swapAlly, newMapPosition, originalPosition));
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		player.TilemapPosition = newMapPosition;
+		ally.TilemapPosition = newMapPosition;
 		return new();
 	}
 

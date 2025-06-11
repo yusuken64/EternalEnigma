@@ -21,10 +21,12 @@ public class InventoryMenu : Dialog
     public List<InventoryMenuItem> InventoryMenuItems { get; private set; }
     public FaceCamDisplay FaceCamDisplay;
 
+    private Character followingChar;
+
     public void Setup(List<InventoryItem> Items, Character character)
     {
-        //var player = Game.Instance.PlayerCharacter;
-        FaceCamDisplay.SetFollow(character.VisualParent);
+        followingChar = character;
+        FaceCamDisplay.SetFollow(followingChar.VisualParent);
         Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
         {
             view.Setup(data, character);
@@ -74,7 +76,7 @@ Defense: {character.DisplayedStats.Defense}";
 
     internal void Close()
     {
-        FaceCamDisplay.Unfollow(FindObjectOfType<Player>().VisualParent);
+        FaceCamDisplay.Unfollow(followingChar.VisualParent);
     }
 
     private Vector3 KeepFullyOnScreen(RectTransform rectTransform, Vector3 newPosition)

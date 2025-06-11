@@ -45,7 +45,7 @@ public class DroppedItemTile : InteractableTile
 		if (!Opened)
 		{
 			Game game = Game.Instance;
-			var canAdd = game.PlayerCharacter.Inventory.CanAdd();
+			var canAdd = game.PlayerController.Inventory.CanAdd();
 			if (canAdd)
 			{
 				this.Opened = true;
@@ -54,7 +54,7 @@ public class DroppedItemTile : InteractableTile
 			}
 			else
 			{
-				game.DoFloatingText("Inventory is full", Color.red, game.PlayerCharacter.transform.position);
+				game.DoFloatingText("Inventory is full", Color.red, game.PlayerController.transform.position);
 			}
 		}
 	}

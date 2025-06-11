@@ -37,9 +37,10 @@ public class TurnManager : MonoBehaviour
 			foreach (var actor in actors)
 			{
 				actor.TickStatusEffects();
-				if (actor is Player player)
+
+				if (actor is Ally ally)
 				{
-					player.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(player.TilemapPosition);
+					ally.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(ally.TilemapPosition);
 
 					var interactableSideEffects = actor.GetInteractableSideEffects();
 					while (interactableSideEffects.Any())
@@ -149,7 +150,7 @@ public class TurnManager : MonoBehaviour
 				yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
 			}
 
-			if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerCharacter.ControlledAlly))
+			if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerController.ControlledAlly))
 			{
 				Game.Instance.ShowGameOver();
 			}
@@ -160,6 +161,7 @@ public class TurnManager : MonoBehaviour
 			}
 			Game.Instance.DeadUnits.Clear();
 
+			Game.Instance.PlayerController.StartTurn();
 			foreach (var actor in actors)
 			{
 				actor.StartTurn();
@@ -176,7 +178,7 @@ public class TurnManager : MonoBehaviour
 
 	private void CheckStats()
 	{
-		var player = Game.Instance.PlayerCharacter;
+		var player = Game.Instance.PlayerController;
 		if (player.FinalStats.GetHashCode() != player.DisplayedStats.GetHashCode())
 		{
 			var realStats = player.FinalStats.ToDebugString();

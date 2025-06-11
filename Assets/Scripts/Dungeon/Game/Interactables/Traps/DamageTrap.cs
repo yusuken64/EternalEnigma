@@ -13,14 +13,10 @@ public class DamageTrap : Trap
 	{
 		VisualObject.gameObject.SetActive(true);
 
-		if (character is Player player)
-		{
-			var hit = UnityEngine.Random.value > 0.5f;
-			return new List<GameAction>()
+		var hit = UnityEngine.Random.value > 0.5f;
+		return new List<GameAction>()
 			{
 				new TakeDamageAction(character, character, TrapDamage, true, hit)
 			};
-		}
-		return new();
 	}
 }

@@ -88,16 +88,16 @@ public class Ally : Character
 		
 		if (AllyStrategy == AllyStrategy.Follow)
 		{
-			pursuitTargets.Add(game.PlayerCharacter.ControlledAlly);
+			pursuitTargets.Add(game.PlayerController.ControlledAlly);
 		}
 		else if (AllyStrategy == AllyStrategy.Aggresive)
 		{
-			pursuitTargets.Add(game.PlayerCharacter.ControlledAlly);
+			pursuitTargets.Add(game.PlayerController.ControlledAlly);
 			pursuitTargets.AddRange(game.Enemies);
 		}
 
 		return pursuitTargets
-			.OrderBy(x => x == game.PlayerCharacter)
+			.OrderBy(x => x == game.PlayerController)
 			.ThenBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
 			.ThenBy(x => x.TilemapPosition == PursuitPosition)
 			.FirstOrDefault(x => Enemy.Contains2D(visionBounds, x.TilemapPosition));
@@ -248,10 +248,10 @@ public class Ally : Character
 		switch (equipChangeType)
 		{
 			case EquipChangeType.Equip:
-				Game.Instance.PlayerCharacter.Inventory.InventoryItems.Remove(item);
+				Game.Instance.PlayerController.Inventory.InventoryItems.Remove(item);
 				break;
 			case EquipChangeType.UnEquip:
-				Game.Instance.PlayerCharacter.Inventory.InventoryItems.Add(item);
+				Game.Instance.PlayerController.Inventory.InventoryItems.Add(item);
 				break;
 		}
 

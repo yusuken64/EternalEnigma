@@ -8,22 +8,21 @@ public class PlayerController : MonoBehaviour
 {
 	private float holdTime = 0f;
 	private float repeatTime = 0.1f;
-	private GameAction pickedAction;
 	public Camera Camera;
 	public Vector3 CameraOffset = new Vector3(1, -7.23999977f, -11.0200005f);
 	private CheatConsole _cheatConsole;
 	private float menuCooldown;
 	public Ally ControlledAlly { get; private set; }
-    public bool IsWaitingForPlayerInput { get; private set; }
+	public bool IsWaitingForPlayerInput { get; private set; }
 
-    public CameraMode CurrentCameraMode;
+	public CameraMode CurrentCameraMode;
 	public Character FollowTarget;
 	public List<Character> Targetables;
 
 	public Inventory Inventory;
 	public Vector3Int TilemapPosition => ControlledAlly.TilemapPosition;
 
-    public Stats FinalStats => ControlledAlly.FinalStats;
+	public Stats FinalStats => ControlledAlly.FinalStats;
 	public Stats DisplayedStats => ControlledAlly.DisplayedStats;
 	public Vitals Vitals => ControlledAlly.Vitals;
 	public Vitals DisplayedVitals => ControlledAlly.DisplayedVitals;
@@ -33,11 +32,7 @@ public class PlayerController : MonoBehaviour
 	private void Start()
 	{
 		_cheatConsole = FindFirstObjectByType<CheatConsole>();
-		if (Game.Instance.Allies.Count > 0)
-        {
-            TakeControl(Game.Instance.Allies[0]);
-        }
-    }
+	}
 
 	private void Update()
 	{
@@ -87,7 +82,20 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	private void DeterminePlayerAction()
+	private void LateUpdate()
+	{
+		if (CurrentCameraMode == CameraMode.FollowPlayer)
+		{
+			Camera.transform.position = ControlledAlly.transform.position + CameraOffset;
+		}
+		else if (CurrentCameraMode == CameraMode.TargetSelect &&
+			FollowTarget != null)
+		{
+			Camera.transform.position = FollowTarget.transform.position + CameraOffset;
+		}
+	}
+
+    private void DeterminePlayerAction()
 	{
 		var originalPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
 		var newMapPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
@@ -149,13 +157,31 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	public void TakeControl(Ally newAlly)
+    public void StartTurn()
     {
-        if (newAlly != null)
+        //isWaitingForPlayerInput = true;
+        Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
+        Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
+
+        //SyncDisplayedStats();
+
+        //update minimap
+        if (Game.Instance.CurrentDungeon != null)
         {
-            ControlledAlly = newAlly;
+            var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(ControlledAlly, this.TilemapPosition);
+            Minimap minimap = FindFirstObjectByType<Minimap>();
+            minimap.UpdateVision(visibleTiles);
+            minimap.UpdateMinimap(visibleTiles);
         }
     }
+
+    public void TakeControl(Ally newAlly)
+	{
+		if (newAlly != null)
+		{
+			ControlledAlly = newAlly;
+		}
+	}
 
 	Character GetNextSelectableWithWrap(Character current, List<Character> allEntities, Vector3Int dir)
 	{
@@ -239,6 +265,7 @@ public class PlayerController : MonoBehaviour
 		FollowTarget = possibleTargets.First();
 		MenuManager.Instance.TargetArrow.transform.position = FollowTarget.transform.position;
 	}
+
 	internal void ConfirmTarget()
 	{
 		CurrentCameraMode = CameraMode.FollowPlayer;

@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "WarpItemEffectDefinition", menuName = "Game/ItemEffect/WarpItemEffectDefinition")]
 public class WarpItemEffectDefinition : ItemEffectDefinition
 {
-	public override List<GameAction> GetGameActions(Character attacker, Character target, InventoryItem item)
+	public override List<GameAction> GetGameActions(Character attacker, Character target, Inventory inventory, InventoryItem item)
 	{
 		return new List<GameAction>()
 		{

@@ -1,5 +1,4 @@
 using JuicyChickenGames.Menu;
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +28,7 @@ public class Minimap : MonoBehaviour
     internal void Initialize(TileWorldDungeon currentDungeon)
     {
         if (minimapTexture != null)
-            UnityEngine.Object.Destroy(minimapTexture);
+            Destroy(minimapTexture);
 
         _currentDungeon = currentDungeon;
         minimapTexture = new Texture2D(_currentDungeon.dungeonWidth, _currentDungeon.dungeonHeight);
@@ -100,18 +99,23 @@ public class Minimap : MonoBehaviour
         }
 
         // Draw player
-        var playerPos = Game.Instance.PlayerCharacter.TilemapPosition;
+        var playerPos = Game.Instance.PlayerController.TilemapPosition;
         minimapTexture.SetPixel(playerPos.x, playerPos.y, PlayerColor);
+        var playerController = FindFirstObjectByType<PlayerController>();
 
         foreach(var character in Game.Instance.AllCharacters)
         {
             switch (character)
             {
-                case Player player:
-                    minimapTexture.SetPixel(player.TilemapPosition.x, player.TilemapPosition.y, PlayerColor);
-                    break;
                 case Ally ally:
-                    minimapTexture.SetPixel(ally.TilemapPosition.x, ally.TilemapPosition.y, AllyColor);
+                    if (playerController.ControlledAlly == ally)
+                    {
+                        minimapTexture.SetPixel(ally.TilemapPosition.x, ally.TilemapPosition.y, PlayerColor);
+                    }
+                    else
+                    {
+                        minimapTexture.SetPixel(ally.TilemapPosition.x, ally.TilemapPosition.y, AllyColor);
+                    }
                     break;
                 case Enemy enemy:
                     if (visionBounds.Contains(new Vector3Int(enemy.TilemapPosition.x, enemy.TilemapPosition.y, 0)))
@@ -144,7 +148,7 @@ public class Minimap : MonoBehaviour
 
         minimapTexture.Apply();
 
-        FogOverlay.UpdateFog(dungeonMap, Game.Instance.PlayerCharacter.transform.position);
+        FogOverlay.UpdateFog(dungeonMap, Game.Instance.PlayerController.transform.position);
     }
 
     public void Update()

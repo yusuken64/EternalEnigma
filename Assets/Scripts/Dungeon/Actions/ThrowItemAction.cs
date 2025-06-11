@@ -26,7 +26,7 @@ internal class ThrowItemAction : GameAction
 		var ret = new List<GameAction>();
 		if (thrower.Equipment.IsEquipped(item))
 		{
-			var unEquipAction = new UnEquipAction(thrower as Player, item as EquipableInventoryItem);
+			var unEquipAction = new UnEquipAction(thrower, item as EquipableInventoryItem);
 			ret.Add(unEquipAction);
 		}
 
@@ -44,7 +44,7 @@ internal class ThrowItemAction : GameAction
 		{
 			if (item.ItemDefinition.ApplyToThrownTarget)
 			{
-				ret.AddRange(item.GetGameActions(thrower, rangedAttackTarget, item));
+				ret.AddRange(item.GetGameActions(thrower, rangedAttackTarget, thrower.Inventory, item));
 			}
 			else
 			{

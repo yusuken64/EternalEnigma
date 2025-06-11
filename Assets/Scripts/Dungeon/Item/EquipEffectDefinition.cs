@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EquipEffectDefinition", menuName = "Game/ItemEffect/EquipEffectDefinition")]
 public class EquipEffectDefinition : ItemEffectDefinition
 {
-	public override List<GameAction> GetGameActions(Character character, Character target, InventoryItem item)
+	public override List<GameAction> GetGameActions(Character character, Character target, Inventory inventory, InventoryItem item)
 	{
 		var equipableItem = item as EquipableInventoryItem;
 		if (character.Equipment.IsEquipped(equipableItem))

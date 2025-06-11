@@ -113,7 +113,7 @@ public class Enemy : Character
 	public override IEnumerator ExecuteActionRoutine(GameAction action)
 	{
 		if (this == null) { yield break; }
-		var playerPosition = Game.Instance.PlayerCharacter.TilemapPosition;
+		var playerPosition = Game.Instance.PlayerController.TilemapPosition;
 		var tooFar = Vector3Int.Distance(playerPosition, this.TilemapPosition) > 15;
 		yield return StartCoroutine(action.ExecuteRoutine(this, tooFar));
 

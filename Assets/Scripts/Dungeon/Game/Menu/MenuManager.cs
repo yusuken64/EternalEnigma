@@ -34,7 +34,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		{
 			if (!Opened)
 			{
-				bool canOpenMenu = Game.Instance.PlayerCharacter.CanOpenMenu();
+				bool canOpenMenu = Game.Instance.PlayerController.CanOpenMenu();
 				if (canOpenMenu)
 				{
 					OpenMenu();
@@ -49,10 +49,10 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		{
 			if (!Opened)
 			{
-				bool canOpenMenu = Game.Instance.PlayerCharacter.CanOpenMenu();
+				bool canOpenMenu = Game.Instance.PlayerController.CanOpenMenu();
 				if (canOpenMenu)
 				{
-					OpenSkillsMenu(Game.Instance.PlayerCharacter.ControlledAlly);
+					OpenSkillsMenu(Game.Instance.PlayerController.ControlledAlly);
 				}
 			}
 			else
@@ -63,7 +63,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 		if (MenuInputHandler.Instance.SubmitAction.WasPerformedThisFrame())
 		{
-			if (Game.Instance.PlayerCharacter.CurrentCameraMode == CameraMode.FollowPlayer)
+			if (Game.Instance.PlayerController.CurrentCameraMode == CameraMode.FollowPlayer)
 			{
 				if (DialogStack.Count > 0)
 				{
@@ -72,7 +72,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			}
 			else
 			{
-				Game.Instance.PlayerCharacter.ConfirmTarget();
+				Game.Instance.PlayerController.ConfirmTarget();
 				CloseMenu();
 			}
 		}
@@ -103,13 +103,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	{
 		MenuInputHandler.Instance.OpenMenu();
 		MenuManager.Open(InventoryMenu);
-		var equippedItems = Game.Instance.PlayerCharacter.ControlledAlly.Equipment.GetEquippedItems();
-		var items = Game.Instance.PlayerCharacter.Inventory.InventoryItems;
+		var equippedItems = Game.Instance.PlayerController.ControlledAlly.Equipment.GetEquippedItems();
+		var items = Game.Instance.PlayerController.Inventory.InventoryItems;
 		var allItems = equippedItems.Concat(items)
 			.Where(x => x != null)
 			.ToList();
 
-		InventoryMenu.Setup(allItems, Game.Instance.PlayerCharacter.ControlledAlly);
+		InventoryMenu.Setup(allItems, Game.Instance.PlayerController.ControlledAlly);
 		InventoryMenu.SetNavigation();
 		CurrentDialog = InventoryMenu;
 		InventoryMenu.CloseAction = () =>
@@ -125,7 +125,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
     {
         MenuManager.Open(InventoryMenu);
 		var equippedItems = ally.Equipment.GetEquippedItems();
-		var items = Game.Instance.PlayerCharacter.Inventory.InventoryItems;
+		var items = Game.Instance.PlayerController.Inventory.InventoryItems;
 		var allItems = equippedItems.Concat(items)
 			.Where(x => x != null)
 			.ToList();

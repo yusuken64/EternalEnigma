@@ -24,7 +24,7 @@ internal class UseInventoryItemAction : GameAction
 		{
 			inventory.Remove(item);
 		}
-		return item.GetGameActions(character, character, item);
+		return item.GetGameActions(character, character, inventory, item);
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)

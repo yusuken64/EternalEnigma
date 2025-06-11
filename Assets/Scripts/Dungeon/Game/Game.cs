@@ -16,7 +16,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	public LevelSystem LevelSystem;
 	public EnemyManager EnemyManager;
 
-	public PlayerController PlayerCharacter;
+	public PlayerController PlayerController;
 	//public Player PlayerCharacterPrefab;
 	public List<OverworldAlly> DebugAllies;
 	public GameObject ThrownItemProjectilePrefab;
@@ -66,12 +66,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	internal void ResetGame()
 	{
-		if (PlayerCharacter != null)
-		{
-			Destroy(PlayerCharacter.gameObject);
-		}
-		//PlayerCharacter = Instantiate(PlayerCharacterPrefab);
-		PlayerCharacter.Camera = Camera.main;
+		PlayerController.Camera = Camera.main;
 
 #if UNITY_EDITOR
 		foreach (var overworldAlly in DebugAllies)
@@ -97,40 +92,42 @@ public class Game : SingletonMonoBehaviour<Game>
 		InitializeGame();
 
 		LevelDisplay.Setup("Lv",
-			() => PlayerCharacter.DisplayedVitals.Level.ToString(),
-			() => { return LevelSystem.GetPercentageToNextLevel(PlayerCharacter.DisplayedVitals); });
+			() => PlayerController.DisplayedVitals.Level.ToString(),
+			() => { return LevelSystem.GetPercentageToNextLevel(PlayerController.DisplayedVitals); });
 		HpDisplay.Setup("HP",
-			() => $"{PlayerCharacter.DisplayedVitals.HP}/{PlayerCharacter.DisplayedStats.HPMax}",
-			() => (float)PlayerCharacter.DisplayedVitals.HP/PlayerCharacter.DisplayedStats.HPMax);
+			() => $"{PlayerController.DisplayedVitals.HP}/{PlayerController.DisplayedStats.HPMax}",
+			() => (float)PlayerController.DisplayedVitals.HP/PlayerController.DisplayedStats.HPMax);
 		SpDisplay.Setup("SP",
-			() => $"{PlayerCharacter.DisplayedVitals.SP}/{PlayerCharacter.DisplayedStats.SPMax}",
-			() => (float)PlayerCharacter.DisplayedVitals.SP/PlayerCharacter.DisplayedStats.SPMax);
+			() => $"{PlayerController.DisplayedVitals.SP}/{PlayerController.DisplayedStats.SPMax}",
+			() => (float)PlayerController.DisplayedVitals.SP/PlayerController.DisplayedStats.SPMax);
 		HungerDisplay.Setup("Full",
-			() => $"{PlayerCharacter.DisplayedVitals.Hunger}/{PlayerCharacter.DisplayedStats.HungerMax}",
-			() => (float)PlayerCharacter.DisplayedVitals.Hunger / PlayerCharacter.DisplayedStats.HungerMax);
+			() => $"{PlayerController.DisplayedVitals.Hunger}/{PlayerController.DisplayedStats.HungerMax}",
+			() => (float)PlayerController.DisplayedVitals.Hunger / PlayerController.DisplayedStats.HungerMax);
 	}
 
 	private void InitializeGame()
 	{
-		//PlayerCharacter.InitialzeVitalsFromStats();
-		//PlayerCharacter.InitialzeSkillsFromSave();
-		var floor = Common.Instance.GameSaveData.StartingFloor;
-		PlayerCharacter.Vitals.Floor = floor;
-		Common.Instance.GameSaveData.StartingFloor = 0;
-		//PlayerCharacter.SyncDisplayedStats();
-		//PlayerCharacter.HeroAnimator.SetWeapon(null, null);
-
-		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
-		Common.Instance.ItemManager.StartingItems.ForEach(x => PlayerCharacter.Inventory.Add(x.AsInventoryItem(null)));
-		items.ToList().ForEach(x => PlayerCharacter.Inventory.Add(x));
-
-		foreach(var ally in Allies)
+		foreach (var ally in Allies)
 		{
 			ally.InitialzeVitalsFromStats();
 			ally.Vitals.Level = 1;
 
 			ally.SyncDisplayedStats();
 		}
+
+		PlayerController.TakeControl(Allies[0]);
+
+		//PlayerCharacter.InitialzeVitalsFromStats();
+		//PlayerCharacter.InitialzeSkillsFromSave();
+		var floor = Common.Instance.GameSaveData.StartingFloor;
+		PlayerController.Vitals.Floor = floor;
+		Common.Instance.GameSaveData.StartingFloor = 0;
+		//PlayerCharacter.SyncDisplayedStats();
+		//PlayerCharacter.HeroAnimator.SetWeapon(null, null);
+
+		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
+		Common.Instance.ItemManager.StartingItems.ForEach(x => PlayerController.Inventory.Add(x.AsInventoryItem(null)));
+		items.ToList().ForEach(x => PlayerController.Inventory.Add(x));
 
 		UpdateUI();
 		AdvanceFloor();
@@ -139,7 +136,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	internal void ShowGameOver()
 	{
 		GameOverScreen.gameObject.SetActive(true);
-		GameOverScreen.Setup(PlayerCharacter.ControlledAlly);
+		GameOverScreen.Setup(PlayerController.ControlledAlly);
 
 		MenuManager.Open(GameOverScreen);
 	}
@@ -149,9 +146,9 @@ public class Game : SingletonMonoBehaviour<Game>
 		TurnManager.InteruptTurn();
 		//TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
 
-		PlayerCharacter.Vitals.Floor++;
-		PlayerCharacter.DisplayedVitals.Floor++;
-		PlayerCharacter.ControlledAlly.currentInteractable = null;
+		PlayerController.Vitals.Floor++;
+		PlayerController.DisplayedVitals.Floor++;
+		PlayerController.ControlledAlly.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
 
 		NewFloorMessage.HideScreen();
@@ -187,8 +184,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		yield return null;
 
 		var startPosition = CurrentDungeon.GetStartPositioon();
-		PlayerCharacter.ControlledAlly.SetPosition(startPosition);
-		var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(PlayerCharacter.ControlledAlly, PlayerCharacter.TilemapPosition);
+		PlayerController.ControlledAlly.SetPosition(startPosition);
+		var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(PlayerController.ControlledAlly, PlayerController.TilemapPosition);
 		Minimap minimap = FindFirstObjectByType<Minimap>();
 		minimap.UpdateVision(visibleTiles);
 		minimap.UpdateMinimap(visibleTiles);
@@ -207,7 +204,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		for (int i = 0; i < 10; i++)
 		{
-			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerCharacter.Vitals.Floor);
+			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerController.Vitals.Floor);
 			var enemy = Instantiate(enemyPrefab, this.transform);
 			enemy.UpdateCachedStats();
 			enemy.InitialzeVitalsFromStats();
@@ -236,7 +233,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		}
 
 		yield return new WaitForSecondsRealtime(2.0f);
-		NewFloorMessage.ShowNewFloor(PlayerCharacter.Vitals.Floor);
+		NewFloorMessage.ShowNewFloor(PlayerController.Vitals.Floor);
 
 		TurnManager.ProcessTurn();
 	}
@@ -248,17 +245,17 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void UpdateUI()
 	{
-		if (PlayerCharacter == null) { return; }
+		if (PlayerController == null) { return; }
 		//SkilText.text = string.Join(Environment.NewLine, PlayerCharacter.Skills.Select((skill, index) => $"{index + 1}:{skill.SkillName}({skill.SPCost})"));
-		FloorText.text = $"{PlayerCharacter.DisplayedVitals.Floor}F";
+		FloorText.text = $"{PlayerController.DisplayedVitals.Floor}F";
 		LevelDisplay.UpdateUI();
 		HpDisplay.UpdateUI();
 		SpDisplay.UpdateUI();
 		HungerDisplay.UpdateUI();
 
 		var inventoryText = 
-			@$"Gold {PlayerCharacter.DisplayedVitals.Gold}g
-Bag {PlayerCharacter.Inventory.InventoryItems.Count}/{PlayerCharacter.Inventory.MaxItems}";
+			@$"Gold {PlayerController.DisplayedVitals.Gold}g
+Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventory.MaxItems}";
 
 		InventoryText.text = inventoryText;
 	}

@@ -13,6 +13,6 @@
         ally.SyncDisplayedStats();
         //ally.InitialzeModel(overworldAlly);
         Game.Instance.Allies.Add(ally);
-        ally.SetPosition(Game.Instance.PlayerCharacter.TilemapPosition);
+        ally.SetPosition(Game.Instance.PlayerController.TilemapPosition);
     }
 }

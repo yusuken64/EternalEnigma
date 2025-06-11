@@ -17,7 +17,7 @@ internal class CastSleepPolicy : PolicyBase
 			{
 				GetActionsFunc = () =>
 				{
-					character.SetFacingByTargetPosition(game.PlayerCharacter.TilemapPosition);
+					character.SetFacingByTargetPosition(game.PlayerController.TilemapPosition);
 					return new List<GameAction>() { new ApplyStatusEffectAction(character.PursuitTarget, statusEffectPrefab, character) };
 				}
 			}

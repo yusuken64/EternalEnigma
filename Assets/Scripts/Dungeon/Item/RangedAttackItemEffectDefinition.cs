@@ -7,7 +7,7 @@ public class RangedAttackItemEffectDefinition : ItemEffectDefinition
 	public int Damage;
 	public GameObject ProjectilePrefab;
 
-	public override List<GameAction> GetGameActions(Character attacker, Character target, InventoryItem item)
+	public override List<GameAction> GetGameActions(Character attacker, Character target, Inventory inventory, InventoryItem item)
 	{
 		return new List<GameAction>()
 		{

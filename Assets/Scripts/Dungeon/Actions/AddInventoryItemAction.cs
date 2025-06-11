@@ -4,22 +4,18 @@ using System.Linq;
 
 internal class AddInventoryItemAction : GameAction
 {
-	private readonly Character attacker;
+	private readonly Inventory inventory;
 	private ItemDefinition itemDefinition;
 
-	public AddInventoryItemAction(Character attacker, ItemDefinition itemDefinition)
+	public AddInventoryItemAction(Inventory inventory, ItemDefinition itemDefinition)
 	{
-		this.attacker = attacker;
+		this.inventory = inventory;
 		this.itemDefinition = itemDefinition;
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		if (attacker is Player player)
-		{
-			player.Inventory.Add(itemDefinition.AsInventoryItem(null));
-		}
-
+		inventory.Add(itemDefinition.AsInventoryItem(null));
 		return new();
 	}
 
@@ -30,11 +26,6 @@ internal class AddInventoryItemAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		if (attacker is Player player)
-		{
-			return player.Inventory.Count() < 4;
-		}
-
-		return false;
+		return inventory.Count() < 4;
 	}
 }

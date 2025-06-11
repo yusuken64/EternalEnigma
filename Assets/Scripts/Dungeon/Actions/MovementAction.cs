@@ -21,7 +21,7 @@ internal class MovementAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		bool excludeAllies = character is Player;
+		bool excludeAllies = true;
 
 		var overlapTarget = Game.Instance.CurrentDungeon
 			.OverlapsAnyOtherCharacter(character, Character.ToBounds(character.FootPrint, newMapPosition), excludeAllies) != null;
@@ -56,7 +56,7 @@ internal class MovementAction : GameAction
 	{
 		var canWalk = Game.Instance.CurrentDungeon.CanWalkTo(originalPosition, newMapPosition);
 
-		bool excludeAllies = character is Player;
+		bool excludeAllies = true;
 		var overlapTarget = Game.Instance.CurrentDungeon
 			.OverlapsAnyOtherCharacter(character, Character.ToBounds(character.FootPrint, newMapPosition), excludeAllies) != null;
 
@@ -340,25 +340,23 @@ internal class AddXPAction : GameAction
 			vitals.Exp += eXP;
 		}));
 		List<GameAction> ret = new();
-		if (character is Player player)
+
+		var game = Game.Instance;
+		var levelSystem = game.LevelSystem;
+
+		IEnumerable<LevelInfo> levelUps = levelSystem.LevelData.Where(x =>
+			x.Level > character.Vitals.Level &&
+			x.Experience <= character.Vitals.Exp);
+
+
+		foreach (var levelUp in levelUps)
 		{
-			var game = Game.Instance;
-			var levelSystem = game.LevelSystem;
-
-			IEnumerable<LevelInfo> levelUps = levelSystem.LevelData.Where(x =>
-				x.Level > player.Vitals.Level &&
-				x.Experience <= player.Vitals.Exp);
-
-
-			foreach (var levelUp in levelUps)
+			this.AddMetricsModification(this.character, ((stats, vitals) =>
 			{
-				this.AddMetricsModification(this.character, ((stats, vitals) =>
-				{
-					vitals.Level ++;
-				}));
+				vitals.Level++;
+			}));
 
-				ret.Add(new LevelUpAction(character, levelUp));
-			}
+			ret.Add(new LevelUpAction(character, levelUp));
 		}
 
 		return ret;

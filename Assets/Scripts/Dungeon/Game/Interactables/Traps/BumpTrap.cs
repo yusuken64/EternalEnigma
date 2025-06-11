@@ -14,10 +14,11 @@ public class BumpTrap : Trap
 
 		if (UnityEngine.Random.value > 0.5f)
 		{
-			if (character is Player player)
+			var playerController = FindFirstObjectByType<PlayerController>();
+			if (character == playerController.ControlledAlly)
 			{
-				var inventoryItems = player.Inventory.InventoryItems.Take(3);
-				return inventoryItems.Select(x => new DropItemAction(player.Inventory, x, player.TilemapPosition))
+				var inventoryItems = playerController.Inventory.InventoryItems.Take(3);
+				return inventoryItems.Select(x => new DropItemAction(playerController.Inventory, x, character.TilemapPosition))
 					.Cast<GameAction>()
 					.ToList();
 			}

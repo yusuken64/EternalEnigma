@@ -6,11 +6,11 @@ public class AddInventoryItemEffectDefinition : ItemEffectDefinition
 {
 	public ItemDefinition ItemDefinition;
 
-	public override List<GameAction> GetGameActions(Character attacker, Character target, InventoryItem item)
+	public override List<GameAction> GetGameActions(Character attacker, Character target, Inventory inventory, InventoryItem item)
 	{
 		return new List<GameAction>()
 		{
-			new AddInventoryItemAction(attacker, ItemDefinition)
+			new AddInventoryItemAction(inventory, ItemDefinition)
 		};
 	}
 }

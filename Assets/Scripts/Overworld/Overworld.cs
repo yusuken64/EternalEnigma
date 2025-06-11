@@ -46,8 +46,8 @@ public class Overworld : MonoBehaviour
 
     private void LoadSaveData()
     {
-        var statueDialog = FindObjectOfType<StatueDialog>(true);
-        var shopMenuDialog = FindObjectOfType<ShopMenuDialog>(true);
+        var statueDialog = FindFirstObjectByType<StatueDialog>(FindObjectsInactive.Include);
+        var shopMenuDialog = FindFirstObjectByType<ShopMenuDialog>(FindObjectsInactive.Include);
         shopMenuDialog.GenerateShop();
 
         OverworldPlayer.Gold = Common.Instance.GameSaveData.OverworldSaveData.Gold;
@@ -57,7 +57,7 @@ public class Overworld : MonoBehaviour
     [ContextMenu("Write Data")]
     internal void WriteSaveData()
     {
-        var statueDialog = FindObjectOfType<StatueDialog>(true);
+        var statueDialog = FindFirstObjectByType<StatueDialog>(FindObjectsInactive.Include);
 
 		OverworldSaveData overworldSaveData = Common.Instance.GameSaveData.OverworldSaveData;
 		overworldSaveData.Gold = OverworldPlayer.Gold;
@@ -66,7 +66,7 @@ public class Overworld : MonoBehaviour
 		overworldSaveData.RecruitedAllies = OverworldPlayer.RecruitedAllies.ToList();
 		overworldSaveData.RecruitedAllies.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
 
-        var ballistaDialog = FindObjectOfType<BallistaDialog>(true);
+        var ballistaDialog = FindFirstObjectByType<BallistaDialog>(FindObjectsInactive.Include);
         overworldSaveData.ActiveSkillNames = ballistaDialog.GetActiveSkillsSave();
 
         AllyPositions = OverworldAllies.Select(x => x.TilemapPosition).ToList();

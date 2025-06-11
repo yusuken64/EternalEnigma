@@ -501,9 +501,3 @@
 //		return best;
 //	}
 //}
-
-public enum CameraMode
-{
-    FollowPlayer,
-    TargetSelect
-}

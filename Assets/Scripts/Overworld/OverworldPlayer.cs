@@ -158,7 +158,7 @@ public class OverworldPlayer : OverworldCharacter
 		if (Input.GetKeyDown(KeyCode.Tab))
 		{
 			_busy = true;
-			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.OverworldHelpDialog);
 			overworldMenu.OverworldHelpDialog.Show(); //this should be done to all dialogs in Open()
 			overworldMenu.OverworldHelpDialog.CloseAction = () =>
@@ -200,7 +200,7 @@ public class OverworldPlayer : OverworldCharacter
 		}
 		else if(this.TilemapPosition == Overworld.StatuePosition)
 		{
-			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.StatueDialog);
 			overworldMenu.StatueDialog.Show(); //this should be done to all dialogs in Open()
 			overworldMenu.StatueDialog.CloseAction = () =>
@@ -211,7 +211,7 @@ public class OverworldPlayer : OverworldCharacter
 		}
 		else if(this.TilemapPosition == Overworld.ShopPosition)
 		{
-			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.ShopDialog);
 			overworldMenu.ShopDialog.Show(); //this should be done to all dialogs in Open()
 			overworldMenu.ShopDialog.CloseAction = () =>
@@ -222,7 +222,7 @@ public class OverworldPlayer : OverworldCharacter
 		}
 		else if (this.TilemapPosition == Overworld.BallistaPosition)
 		{
-			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.BallistaDialog);
 			overworldMenu.BallistaDialog.Show(); //this should be done to all dialogs in Open()
 			overworldMenu.BallistaDialog.CloseAction = () =>
@@ -234,7 +234,7 @@ public class OverworldPlayer : OverworldCharacter
 		else if (Overworld.OverworldAllies.Any(x => x.TilemapPosition == this.TilemapPosition))
 		{
 			var ally = Overworld.OverworldAllies.First(x => x.TilemapPosition == this.TilemapPosition);
-			var overworldMenu = FindObjectOfType<OverworldMenu>();
+			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
 			overworldMenu.AllyRecruitDialog.Show(ally); //this should be done to all dialogs in Open()
 			overworldMenu.AllyRecruitDialog.CloseAction = () =>

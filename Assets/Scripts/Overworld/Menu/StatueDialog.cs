@@ -39,7 +39,7 @@ public class StatueDialog : Dialog
 		int inputAmount = NumberInput.GetNumber();
 		Debug.Log($"Donated {inputAmount}");
 
-		var overworldPlayer = FindObjectOfType<OverworldPlayer>();
+		var overworldPlayer = FindFirstObjectByType<OverworldPlayer>();
 
 		var amount = Mathf.Min(overworldPlayer.Gold, inputAmount);
 		overworldPlayer.Gold -= amount;

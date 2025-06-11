@@ -66,7 +66,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	internal void ResetGame()
 	{
-		PlayerController.Camera = Camera.main;
+		PlayerController.CameraController.Camera = Camera.main;
 
 #if UNITY_EDITOR
 		foreach (var overworldAlly in DebugAllies)

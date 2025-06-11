@@ -16,7 +16,7 @@ public class FaceCamDisplay : MonoBehaviour
             Unfollow(currentFollowedObject);
         }
 
-        var faceCam = FindObjectOfType<FaceCam>();
+        var faceCam = FindFirstObjectByType<FaceCam>();
         if (faceCam != null)
         {
             faceCam.SetFollow(followObject);
@@ -37,7 +37,7 @@ public class FaceCamDisplay : MonoBehaviour
             SetLayerRecursively(followObject, originalLayer);
             currentFollowedObject = null;
             
-            var faceCam = FindObjectOfType<FaceCam>();
+            var faceCam = FindFirstObjectByType<FaceCam>();
             if (faceCam != null)
             {
                 faceCam.Unfollow();

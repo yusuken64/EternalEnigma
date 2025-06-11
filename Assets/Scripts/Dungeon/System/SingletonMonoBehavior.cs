@@ -10,7 +10,7 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : Single
         {
             if (instance == null)
             {
-                instance = FindObjectOfType<T>();
+                instance = FindFirstObjectByType<T>();
 
                 if (instance == null)
                 {

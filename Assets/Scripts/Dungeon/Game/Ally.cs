@@ -15,7 +15,6 @@ public class Ally : Character
 	private AllyPursuitPolicy PursuitPolicy;
 	private WanderPolicy WanderPolicy;
 	public override bool IsWaitingForPlayerInput => false;
-	private List<GameAction> determinedActions;
 	private void Start()
 	{
 		AllyAttackPolicy = new AllyAttackPolicy(Game.Instance, this, 1);

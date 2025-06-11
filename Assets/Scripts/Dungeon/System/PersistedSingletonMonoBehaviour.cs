@@ -10,7 +10,7 @@ public abstract class PersistedSingletonMonoBehaviour<T> : MonoBehaviour where T
         {
             if (instance == null)
             {
-                instance = FindObjectOfType<T>();
+                instance = FindFirstObjectByType<T>();
 
                 if (instance == null)
                 {

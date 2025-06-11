@@ -6,28 +6,33 @@ using System;
 
 public class PlayerController : MonoBehaviour
 {
+	// === Input Timing ===
 	private float holdTime = 0f;
+	private float menuCooldown = 0f;
 	private float repeatTime = 0.1f;
-	public Camera Camera;
-	public Vector3 CameraOffset = new Vector3(1, -7.23999977f, -11.0200005f);
+
+	// === Dependencies ===
 	private CheatConsole _cheatConsole;
-	private float menuCooldown;
-	public Ally ControlledAlly { get; private set; }
-	public bool IsWaitingForPlayerInput { get; private set; }
-
-	public CameraMode CurrentCameraMode;
-	public Character FollowTarget;
-	public List<Character> Targetables;
-
+	public CameraController CameraController;
 	public Inventory Inventory;
-	public Vector3Int TilemapPosition => ControlledAlly.TilemapPosition;
 
+	// === Controlled Character ===
+	public Ally ControlledAlly { get; private set; }
+	public Vector3Int TilemapPosition => ControlledAlly.TilemapPosition;
 	public Stats FinalStats => ControlledAlly.FinalStats;
 	public Stats DisplayedStats => ControlledAlly.DisplayedStats;
 	public Vitals Vitals => ControlledAlly.Vitals;
 	public Vitals DisplayedVitals => ControlledAlly.DisplayedVitals;
-	public Action<Ally, Skill, Vector3Int> TargetSelected { get; private set; }
-	public Skill TargetingSkill;
+	public bool IsWaitingForPlayerInput { get; private set; }
+
+	// === Targeting State ===
+	private Skill TargetingSkill;
+	private Action<Ally, Skill, Vector3Int> TargetSelected;
+	public List<Character> Targetables { get; private set; }
+	public Character CameraTarget { get; private set; }
+
+	// === Control Mode ===
+	public PlayerControlMode CurrentControlMode { get; set; }
 
 	private void Start()
 	{
@@ -36,66 +41,82 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-		if (_cheatConsole.ScreenObject.activeSelf) { return; }
+		if (ShouldBlockInput()) return;
 
+		UpdateTimers();
+
+		switch (CurrentControlMode)
+		{
+			case PlayerControlMode.FollowAlly:
+				HandleMovementInput();
+				break;
+			case PlayerControlMode.TargetSelecting:
+				HandleTargetInput();
+				break;
+			case PlayerControlMode.MenuOpen:
+				// Do nothing
+				break;
+		}
+	}
+
+    private bool ShouldBlockInput()
+	{
+		if (_cheatConsole.ScreenObject.activeSelf)
+			return true;
+
+		if (Game.Instance.InventoryMenu.isActiveAndEnabled ||
+		   Game.Instance.AllyMenu.isActiveAndEnabled ||
+		   Game.Instance.SkillDialog.isActiveAndEnabled)
+		{
+			menuCooldown = 0f;
+			holdTime = 0f;
+			return true;
+		}
+
+		return false;
+	}
+
+	private void UpdateTimers()
+	{
 		menuCooldown += Time.deltaTime;
 
 		if (PlayerInputHandler.Instance.isMoving)
-		{
 			holdTime += Time.deltaTime;
-		}
+	}
 
-		if (CurrentCameraMode == CameraMode.TargetSelect)
+	private void LateUpdate()
+	{
+		if (CameraTarget != null)
 		{
-			if (PlayerInputHandler.Instance.isMoving)
-			{
-				if (Mathf.Abs(PlayerInputHandler.Instance.moveInput.x) > Mathf.Abs(PlayerInputHandler.Instance.moveInput.y))
-				{
-					if (PlayerInputHandler.Instance.moveInput.x > 0.5f)
-						SelectTargetable(Facing.Right);
-					else if (PlayerInputHandler.Instance.moveInput.x < -0.5f)
-						SelectTargetable(Facing.Left);
-				}
-				else
-				{
-					if (PlayerInputHandler.Instance.moveInput.y > 0.5f)
-						SelectTargetable(Facing.Up);
-					else if (PlayerInputHandler.Instance.moveInput.y < -0.5f)
-						SelectTargetable(Facing.Down);
-				}
-			}
-			return;
+			CameraController.SetFollowTarget(CameraTarget.transform);
 		}
+	}
 
-		if (Game.Instance.InventoryMenu.isActiveAndEnabled ||
-			Game.Instance.AllyMenu.isActiveAndEnabled ||
-			Game.Instance.SkillDialog.isActiveAndEnabled)
-		{
-			menuCooldown = 0;
-			holdTime = 0;
+	private void HandleTargetInput()
+	{
+		Vector2 move = PlayerInputHandler.Instance.moveInput;
+		if (!PlayerInputHandler.Instance.isMoving || move.magnitude < 0.5f)
 			return;
-		}
 
+		Facing facing = Facing.Down;
+
+		if (Mathf.Abs(move.x) > Mathf.Abs(move.y))
+			facing = move.x > 0 ? Facing.Right : Facing.Left;
+		else
+			facing = move.y > 0 ? Facing.Up : Facing.Down;
+
+		SelectTargetable(facing);
+	}
+
+	private void HandleMovementInput()
+	{
 		if (IsWaitingForPlayerInput && menuCooldown > 0.2f)
 		{
 			DeterminePlayerAction();
 		}
 	}
 
-	private void LateUpdate()
-	{
-		if (CurrentCameraMode == CameraMode.FollowPlayer)
-		{
-			Camera.transform.position = ControlledAlly.transform.position + CameraOffset;
-		}
-		else if (CurrentCameraMode == CameraMode.TargetSelect &&
-			FollowTarget != null)
-		{
-			Camera.transform.position = FollowTarget.transform.position + CameraOffset;
-		}
-	}
-
-    private void DeterminePlayerAction()
+	private void DeterminePlayerAction()
 	{
 		var originalPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
 		var newMapPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
@@ -185,13 +206,7 @@ public class PlayerController : MonoBehaviour
 
 	Character GetNextSelectableWithWrap(Character current, List<Character> allEntities, Vector3Int dir)
 	{
-		Character best = null;
-		float bestDist = float.MaxValue;
-
-		// 1. Try finding normally in the desired direction
-		best = FindInDirection(current, allEntities, dir);
-		if (best != null) return best;
-
+		Character best = FindInDirection(current, allEntities, dir);
 		return best;
 	}
 
@@ -248,31 +263,36 @@ public class PlayerController : MonoBehaviour
 	private void SelectTargetable(Facing facing)
 	{
 		var dir = Dungeon.GetFacingOffset(facing);
-		var next = GetNextSelectableWithWrap(FollowTarget, Targetables, dir);
+		var next = GetNextSelectableWithWrap(CameraTarget, Targetables, dir);
 
 		if (next == null) { return; }
-		FollowTarget = next;
-		MenuManager.Instance.TargetArrow.transform.position = FollowTarget.transform.position;
+		CameraTarget = next;
+		MenuManager.Instance.TargetArrow.transform.position = CameraTarget.transform.position;
 	}
 
 	internal void InvokeTargetSelection(Skill skill, List<Character> possibleTargets, Action<Ally, Skill, Vector3Int> targetSelected)
 	{
-		CurrentCameraMode = CameraMode.TargetSelect;
 		Targetables = possibleTargets;
 		TargetSelected = targetSelected;
 		TargetingSkill = skill;
 
-		FollowTarget = possibleTargets.First();
-		MenuManager.Instance.TargetArrow.transform.position = FollowTarget.transform.position;
+		CameraTarget = possibleTargets.First();
+		MenuManager.Instance.TargetArrow.transform.position = CameraTarget.transform.position;
 	}
 
 	internal void ConfirmTarget()
 	{
-		CurrentCameraMode = CameraMode.FollowPlayer;
-		TargetSelected?.Invoke(ControlledAlly, TargetingSkill, FollowTarget.TilemapPosition);
+		TargetSelected?.Invoke(ControlledAlly, TargetingSkill, CameraTarget.TilemapPosition);
 		Targetables = null;
-		FollowTarget = null;
+		CameraTarget = null;
 		TargetingSkill = null;
 		TargetSelected = null;
 	}
+}
+
+public enum PlayerControlMode
+{
+    FollowAlly,
+    TargetSelecting,
+    MenuOpen
 }

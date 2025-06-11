@@ -63,7 +63,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 		if (MenuInputHandler.Instance.SubmitAction.WasPerformedThisFrame())
 		{
-			if (Game.Instance.PlayerController.CurrentCameraMode == CameraMode.FollowPlayer)
+			if (Game.Instance.PlayerController.CurrentControlMode == PlayerControlMode.FollowAlly)
 			{
 				if (DialogStack.Count > 0)
 				{

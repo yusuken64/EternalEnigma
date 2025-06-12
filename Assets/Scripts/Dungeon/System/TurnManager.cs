@@ -34,33 +34,17 @@ public class TurnManager : MonoBehaviour
 
 		foreach (var actor in actors)
 		{
-			actor.TickStatusEffects();
-
-			if (actor is Ally ally)
-			{
-				ally.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(ally.TilemapPosition);
-
-				var interactableSideEffects = actor.GetInteractableSideEffects();
-				while (interactableSideEffects.Any())
-				{
-					var trapSideEffect = interactableSideEffects.First();
-					interactableSideEffects.Remove(trapSideEffect);
-					actionReplays.Add(new ActorAction(actor, trapSideEffect));
-					actor.ExecuteActionImmediate(trapSideEffect);
-				}
-			}
-		}
-
-		if (interuptTurn) { yield break; }
-
-		foreach (var actor in actors)
-		{
 			do
 			{
 				actor?.DetermineAction();
 				var primaryAction = actor?.GetDeterminedAction();
 				if (primaryAction == null) { continue; }
 				List<GameAction> gameActions = primaryAction;
+
+				if (actor is Ally ally)
+				{
+					gameActions.AddRange(Game.Instance.PlayerController.MoveSideEffects(ally));
+				}
 
 				while (gameActions.Any())
 				{
@@ -88,7 +72,7 @@ public class TurnManager : MonoBehaviour
 				}
 			} while (actor.ActionsLeft > 0);
 
-				if (interuptTurn)
+			if (interuptTurn)
 			{
 				break;
 			}
@@ -114,6 +98,29 @@ public class TurnManager : MonoBehaviour
 				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(trapSideEffect));
 			}
 		}
+
+		if (interuptTurn) { yield break; }
+
+		foreach (var actor in actors)
+		{
+			actor.TickStatusEffects();
+
+			if (actor is Ally ally)
+			{
+				ally.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(ally.TilemapPosition);
+
+				var interactableSideEffects = actor.GetInteractableSideEffects();
+				while (interactableSideEffects.Any())
+				{
+					var trapSideEffect = interactableSideEffects.First();
+					interactableSideEffects.Remove(trapSideEffect);
+					actionReplays.Add(new ActorAction(actor, trapSideEffect));
+					actor.ExecuteActionImmediate(trapSideEffect);
+				}
+			}
+		}
+
+		if (interuptTurn) { yield break; }
 
 		while (actionReplays.Any())
 		{

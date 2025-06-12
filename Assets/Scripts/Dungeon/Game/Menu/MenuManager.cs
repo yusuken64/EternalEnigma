@@ -15,6 +15,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public SkillDialog SkillDialog;
 	public bool Opened;
 	public Dialog CurrentDialog;
+	public StairConfirm StairDialog;
 
 	public Stack<Dialog> DialogStack = new();
 
@@ -92,6 +93,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		ActionDialog.gameObject.SetActive(false);
 		SkillDialog.gameObject.SetActive(false);
 		AllyActionDialog.gameObject.SetActive(false);
+		StairDialog.gameObject.SetActive(false);
 		AllyActionDialog.DynamicActionDialog.gameObject.SetActive(false);
 		DialogStack.Clear();
 
@@ -160,6 +162,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	public void OpenSkillsMenu(Character character)
 	{
+		MenuInputHandler.Instance.OpenMenu();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(SkillDialog);
 		SkillDialog.Setup(character);
@@ -169,6 +172,18 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			SkillDialog.Close();
 		};
 		SkillDialog.SetNavigation();
+		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
+
+		Opened = true;
+	}
+
+	internal void ShowYesNoDialog(Action yesAction, Action noAction)
+	{
+		MenuInputHandler.Instance.OpenMenu();
+		this.gameObject.SetActive(true);
+		MenuManager.Open(StairDialog);
+		StairDialog.Setup(yesAction, noAction);
+		CurrentDialog = StairDialog;
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;

@@ -234,6 +234,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Vitals.Floor);
+		Game.Instance.PlayerController.StartTurn();
 	}
 
 	private void Update()

@@ -174,7 +174,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        Debug.Log($"swapAllyPressed {PlayerInputHandler.Instance.swapAllyPressed}");
         if (PlayerInputHandler.Instance.attackPressed)
         {
             var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
@@ -198,6 +197,83 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public List<GameAction> MoveSideEffects(Character character)
+    {
+        bool hungerTick = character == ControlledAlly;
+
+        List<GameAction> turnSideEffects = new();
+
+        turnSideEffects.Add(
+            new ModifyStatAction(
+            character,
+            character,
+            (stats, vitals) =>
+            {
+                if (hungerTick)
+                {
+                    vitals.HungerAccumulate++;
+                }
+
+                if (vitals.HP < stats.HPMax)
+                {
+                    vitals.HPRegenAcccumlate++;
+                }
+
+                if (vitals.SP < stats.SPMax)
+                {
+                    vitals.SPRegenAcccumlate++;
+                }
+            },
+            false));
+
+        if (character.Vitals.HungerAccumulate > character.FinalStats.HungerAccumulateThreshold)
+        {
+            turnSideEffects.Add(new ModifyStatAction(
+                character,
+                character,
+                (stats, vitals) =>
+                {
+                    vitals.HungerAccumulate = 0;
+                    vitals.Hunger--;
+                },
+                false));
+        }
+
+        if (character.Vitals.Hunger <= 0)
+        {
+            turnSideEffects.Add(new TakeDamageAction(character, character, 1, true));
+        }
+
+        if (character.Vitals.HPRegenAcccumlate > character.FinalStats.HPRegenAcccumlateThreshold &&
+            character.Vitals.Hunger > 0)
+        {
+            turnSideEffects.Add(new ModifyStatAction(
+                character,
+                character,
+                (stats, vitals) =>
+                {
+                    vitals.HPRegenAcccumlate = 0;
+                    vitals.HP++;
+                },
+                false));
+        }
+
+        if (character.Vitals.SPRegenAcccumlate > character.FinalStats.SPRegenAcccumlateThreshold &&
+            character.Vitals.Hunger > 0)
+        {
+            turnSideEffects.Add(new ModifyStatAction(
+                character,
+                character,
+                (stats, vitals) =>
+                {
+                    vitals.SPRegenAcccumlate = 0;
+                    vitals.SP++;
+                },
+                false));
+        }
+        return turnSideEffects;
+    }
+
     public void StartTurn()
     {
         ControlledAlly.IsWaitingForPlayerInput = true;
@@ -213,6 +289,14 @@ public class PlayerController : MonoBehaviour
             Minimap minimap = FindFirstObjectByType<Minimap>();
             minimap.UpdateVision(visibleTiles);
             minimap.UpdateMinimap(visibleTiles);
+        }
+
+        if (ControlledAlly.currentInteractable is Stairs stairs)
+        {
+            var target = stairs;
+            MenuManager.Instance.ShowYesNoDialog(
+                () => ControlledAlly.SetAction(new InteractAction(target)),
+                () => { });
         }
     }
 
@@ -255,7 +339,6 @@ public class PlayerController : MonoBehaviour
         var nextAlly = allies[nextIndex];
         TakeControl(nextAlly);
     }
-
 
     Character GetNextSelectableWithWrap(Character current, List<Character> allEntities, Vector3Int dir)
     {

@@ -163,8 +163,19 @@ public class Ally : Character
 
 	public override List<GameAction> GetInteractableSideEffects()
 	{
-		return new();
-	}
+        if (currentInteractable is not Trap and not null)
+        {
+			if (currentInteractable is not Stairs)
+			{
+				//Game.Instance.DoFloatingText(currentInteractable.GetInteractionText(), Color.yellow, this.VisualParent.transform.position);
+				var effects = currentInteractable.GetInteractionSideEffects(this);
+				currentInteractable = null;
+				return effects;
+			}
+        }
+
+        return new();
+    }
 
 	public override void StartTurn()
 	{

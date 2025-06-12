@@ -16,7 +16,6 @@ public class TurnManager : MonoBehaviour
 		SequentialCoroutines = new SequentialCoroutines(this);
 	}
 
-	//player is assumed to be the first actor
 	public void ProcessTurn()
 	{
 		interuptTurn = false;
@@ -25,72 +24,61 @@ public class TurnManager : MonoBehaviour
 
 	private IEnumerator ProcessTurnRoutine()
 	{
-		while (!interuptTurn)
+		var controlledAlly = Game.Instance.PlayerController.ControlledAlly;
+		var actors = new List<Actor> { controlledAlly };
+		actors.AddRange(Game.Instance.Allies.Where(a => a != controlledAlly));
+		actors.AddRange(Game.Instance.Enemies);
+
+		interuptTurn = false;
+		List<ActorAction> actionReplays = new();
+
+		foreach (var actor in actors)
 		{
-			List<Actor> actors = new();
-			actors.AddRange(Game.Instance.Allies);
-			actors.AddRange(Game.Instance.Enemies);
+			actor.TickStatusEffects();
 
-			interuptTurn = false;
-			List<ActorAction> actionReplays = new();
-
-			foreach (var actor in actors)
+			if (actor is Ally ally)
 			{
-				actor.TickStatusEffects();
+				ally.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(ally.TilemapPosition);
 
-				if (actor is Ally ally)
+				var interactableSideEffects = actor.GetInteractableSideEffects();
+				while (interactableSideEffects.Any())
 				{
-					ally.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(ally.TilemapPosition);
-
-					var interactableSideEffects = actor.GetInteractableSideEffects();
-					while (interactableSideEffects.Any())
-					{
-						var trapSideEffect = interactableSideEffects.First();
-						interactableSideEffects.Remove(trapSideEffect);
-						actionReplays.Add(new ActorAction(actor, trapSideEffect));
-						actor.ExecuteActionImmediate(trapSideEffect);
-					}
+					var trapSideEffect = interactableSideEffects.First();
+					interactableSideEffects.Remove(trapSideEffect);
+					actionReplays.Add(new ActorAction(actor, trapSideEffect));
+					actor.ExecuteActionImmediate(trapSideEffect);
 				}
 			}
+		}
 
-			if (interuptTurn) { continue; }
+		if (interuptTurn) { yield break; }
 
-			foreach (var actor in actors)
+		foreach (var actor in actors)
+		{
+			do
 			{
-				while (actor.ActionsLeft > 0)
+				actor?.DetermineAction();
+				var primaryAction = actor?.GetDeterminedAction();
+				if (primaryAction == null) { continue; }
+				List<GameAction> gameActions = primaryAction;
+
+				while (gameActions.Any())
 				{
-					while (actor.IsWaitingForPlayerInput)
-					{
-						yield return null;
-					}
-					actor?.DetermineAction();
-					var primaryAction = actor?.GetDeterminedAction();
-					if (primaryAction == null) { continue; }
-					List<GameAction> gameActions = primaryAction;
+					var sideEffectAction = gameActions.First();
+					gameActions.Remove(sideEffectAction);
+					if (sideEffectAction == null) { continue; }
 
-					while (gameActions.Any())
-					{
-						var sideEffectAction = gameActions.First();
-						gameActions.Remove(sideEffectAction);
-						if (sideEffectAction == null) { continue; }
-
-						gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
-						actionReplays.Add(new ActorAction(actor, sideEffectAction));
-
-						if (interuptTurn)
-						{
-							break;
-						}
-
-						foreach (var actor2 in actors)
-						{
-							gameActions.AddRange(actor2.GetResponseTo(sideEffectAction));
-						}
-					}
+					gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
+					actionReplays.Add(new ActorAction(actor, sideEffectAction));
 
 					if (interuptTurn)
 					{
 						break;
+					}
+
+					foreach (var actor2 in actors)
+					{
+						gameActions.AddRange(actor2.GetResponseTo(sideEffectAction));
 					}
 				}
 
@@ -98,77 +86,82 @@ public class TurnManager : MonoBehaviour
 				{
 					break;
 				}
+			} while (actor.ActionsLeft > 0);
 
-				var statusSideEffectActions = actor.GetStatusEffectSideEffects();
-
-				while (statusSideEffectActions.Any())
-				{
-					var sideEffectAction = statusSideEffectActions.First();
-					statusSideEffectActions.Remove(sideEffectAction);
-					actionReplays.Add(new ActorAction(actor, sideEffectAction));
-
-					statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
-				}
-
-				var trapSideEffects = actor.GetTrapSideEffects();
-				while (trapSideEffects.Any())
-				{
-					var trapSideEffect = trapSideEffects.First();
-					trapSideEffects.Remove(trapSideEffect);
-					actionReplays.Add(new ActorAction(actor, trapSideEffect));
-
-					statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(trapSideEffect));
-				}
-			}
-
-			while (actionReplays.Any())
+				if (interuptTurn)
 			{
-				var action = actionReplays[0];
-				if (action.Actor == null)
-				{
-					actionReplays.Remove(action);
-					continue;
-				}
-				var simultaneousEffects = GetSimultaneousActions(action, actionReplays);
-				actionReplays.RemoveAll(simultaneousEffects.Contains);
-
-				var effectsGroupedByActors = simultaneousEffects.GroupBy(x => x.Actor);
-
-				List<IEnumerator> simulaneousEffects = effectsGroupedByActors.Select(x =>
-				{
-					if (x.Count() > 1)
-					{
-						return SequentialCoroutines.RunCoroutines(x.Select(y => y.Actor.ExecuteActionRoutine(y.Action)).ToList());
-					}
-					else
-					{
-						return x.Key.ExecuteActionRoutine(x.First().Action);
-					}
-
-				}).ToList();
-
-				yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
+				break;
 			}
 
-			if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerController.ControlledAlly))
+			var statusSideEffectActions = actor.GetStatusEffectSideEffects();
+
+			while (statusSideEffectActions.Any())
 			{
-				Game.Instance.ShowGameOver();
+				var sideEffectAction = statusSideEffectActions.First();
+				statusSideEffectActions.Remove(sideEffectAction);
+				actionReplays.Add(new ActorAction(actor, sideEffectAction));
+
+				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 			}
 
-			foreach (var deadUnit in Game.Instance.DeadUnits)
+			var trapSideEffects = actor.GetTrapSideEffects();
+			while (trapSideEffects.Any())
 			{
-				Destroy(deadUnit.gameObject);
-			}
-			Game.Instance.DeadUnits.Clear();
+				var trapSideEffect = trapSideEffects.First();
+				trapSideEffects.Remove(trapSideEffect);
+				actionReplays.Add(new ActorAction(actor, trapSideEffect));
 
-			Game.Instance.PlayerController.StartTurn();
-			foreach (var actor in actors)
-			{
-				actor.StartTurn();
+				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(trapSideEffect));
 			}
-
-			CheckStats();
 		}
+
+		while (actionReplays.Any())
+		{
+			var action = actionReplays[0];
+			if (action.Actor == null)
+			{
+				actionReplays.Remove(action);
+				continue;
+			}
+			var simultaneousEffects = GetSimultaneousActions(action, actionReplays);
+			actionReplays.RemoveAll(simultaneousEffects.Contains);
+
+			var effectsGroupedByActors = simultaneousEffects.GroupBy(x => x.Actor);
+
+			List<IEnumerator> simulaneousEffects = effectsGroupedByActors.Select(x =>
+			{
+				if (x.Count() > 1)
+				{
+					return SequentialCoroutines.RunCoroutines(x.Select(y => y.Actor.ExecuteActionRoutine(y.Action)).ToList());
+				}
+				else
+				{
+					return x.Key.ExecuteActionRoutine(x.First().Action);
+				}
+
+			}).ToList();
+
+			yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
+		}
+
+		if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerController.ControlledAlly))
+		{
+			Game.Instance.ShowGameOver();
+		}
+
+		foreach (var deadUnit in Game.Instance.DeadUnits)
+		{
+			Destroy(deadUnit.gameObject);
+		}
+		Game.Instance.DeadUnits.Clear();
+
+		Game.Instance.PlayerController.StartTurn();
+		foreach (var actor in actors)
+		{
+			actor.StartTurn();
+		}
+
+		CheckStats();
 	}
 
 	internal void InteruptTurn()

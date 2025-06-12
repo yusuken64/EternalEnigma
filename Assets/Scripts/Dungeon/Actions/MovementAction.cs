@@ -21,7 +21,7 @@ internal class MovementAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		bool excludeAllies = true;
+		bool excludeAllies = false;
 
 		var overlapTarget = Game.Instance.CurrentDungeon
 			.OverlapsAnyOtherCharacter(character, Character.ToBounds(character.FootPrint, newMapPosition), excludeAllies) != null;

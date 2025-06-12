@@ -14,6 +14,7 @@
         public bool waitPressed { get; private set; }
         public bool menuPressed { get; private set; }
         public bool mapPressed { get; private set; }
+        public bool swapAllyPressed { get; private set; }
         public bool holdPosition { get; private set; }
 
         private InputAction moveAction;
@@ -23,6 +24,7 @@
         private InputAction holdPositionAction;
         private InputAction menuAction;
         private InputAction mapAction;
+        private InputAction swapAllyAction;
 
         protected override void Initialize()
         {
@@ -34,6 +36,7 @@
             holdPositionAction = PlayerInput.actions["HoldPosition"];
             menuAction = PlayerInput.actions["Menu"];
             mapAction = PlayerInput.actions["Map"];
+            swapAllyAction = PlayerInput.actions["SwapAlly"];
 
             PlayerInput.SwitchCurrentActionMap("Player");
         }
@@ -49,6 +52,7 @@
             mapPressed = mapAction.WasPressedThisFrame();
             //waitPressed = waitAction.WasPressedThisFrame();
             holdPosition = holdPositionAction.IsPressed();
+            swapAllyPressed = swapAllyAction.WasPressedThisFrame();
 
             if (PlayerInput.currentActionMap.name == "Player")
             {

@@ -162,6 +162,15 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwapAlly"",
+                    ""type"": ""Button"",
+                    ""id"": ""116e52cb-bbee-466b-9ee8-486ab1161334"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -503,6 +512,28 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9da552e8-8c34-4ac7-bf8f-f6686eabdaf7"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""SwapAlly"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c58e144b-d76d-484f-9fdf-9ffce53ee206"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SwapAlly"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1072,6 +1103,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         m_Player_HoldPosition = m_Player.FindAction("HoldPosition", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
         m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
+        m_Player_SwapAlly = m_Player.FindAction("SwapAlly", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1175,6 +1207,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_HoldPosition;
     private readonly InputAction m_Player_Menu;
     private readonly InputAction m_Player_Map;
+    private readonly InputAction m_Player_SwapAlly;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1218,6 +1251,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Map".
         /// </summary>
         public InputAction @Map => m_Wrapper.m_Player_Map;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SwapAlly".
+        /// </summary>
+        public InputAction @SwapAlly => m_Wrapper.m_Player_SwapAlly;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1268,6 +1305,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @Map.started += instance.OnMap;
             @Map.performed += instance.OnMap;
             @Map.canceled += instance.OnMap;
+            @SwapAlly.started += instance.OnSwapAlly;
+            @SwapAlly.performed += instance.OnSwapAlly;
+            @SwapAlly.canceled += instance.OnSwapAlly;
         }
 
         /// <summary>
@@ -1303,6 +1343,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @Map.started -= instance.OnMap;
             @Map.performed -= instance.OnMap;
             @Map.canceled -= instance.OnMap;
+            @SwapAlly.started -= instance.OnSwapAlly;
+            @SwapAlly.performed -= instance.OnSwapAlly;
+            @SwapAlly.canceled -= instance.OnSwapAlly;
         }
 
         /// <summary>
@@ -1681,6 +1724,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMap(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SwapAlly" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSwapAlly(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

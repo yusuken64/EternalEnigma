@@ -9,12 +9,10 @@ public class Ally : Character
 	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;
-	private GameAction _forcedAction;
-
-	private AllyAttackPolicy AllyAttackPolicy;
+    private AllyAttackPolicy AllyAttackPolicy;
 	private AllyPursuitPolicy PursuitPolicy;
 	private WanderPolicy WanderPolicy;
-	public override bool IsWaitingForPlayerInput => false;
+	public override bool IsWaitingForPlayerInput { get; set; }
 	private void Start()
 	{
 		AllyAttackPolicy = new AllyAttackPolicy(Game.Instance, this, 1);
@@ -30,7 +28,6 @@ public class Ally : Character
 			return;
 		}
 		
-		//this should affect player the same way, to do in characerbase class?
 		var actionOverrides = StatusEffects.Select(x => x.GetActionOverride(this))
 			.Where(x => x != null);
 		if (actionOverrides.Any())
@@ -39,6 +36,7 @@ public class Ally : Character
 			return;
 		}
 
+		//set by player input
 		if (_forcedAction != null)
 		{
 			//do action
@@ -46,6 +44,7 @@ public class Ally : Character
 			{
 				_forcedAction
 			};
+			_forcedAction = null;
 			return;
 		}
 
@@ -169,7 +168,7 @@ public class Ally : Character
 
 	public override void StartTurn()
 	{
-		determinedActions = null;
+		determinedActions.Clear();
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
 

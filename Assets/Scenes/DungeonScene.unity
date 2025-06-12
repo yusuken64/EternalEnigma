@@ -8766,7 +8766,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 519420031}
-  CameraOffset: {x: 1, y: -7.24, z: -11.02}
+  CameraOffset: {x: 1, y: -1.07, z: -11.02}
   _followTarget: {fileID: 0}
 --- !u!1 &1617515331
 GameObject:

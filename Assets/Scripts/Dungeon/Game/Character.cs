@@ -140,7 +140,7 @@ public abstract class Character : MonoBehaviour, Actor
     public Inventory Inventory;
 	public Equipment Equipment;
 
-	public abstract bool IsWaitingForPlayerInput { get; }
+	public abstract bool IsWaitingForPlayerInput { get; set; }
 	public abstract List<GameAction> GetDeterminedAction();
 	public abstract	void DetermineAction();
 	public abstract List<GameAction> ExecuteActionImmediate(GameAction action);
@@ -151,7 +151,8 @@ public abstract class Character : MonoBehaviour, Actor
 	public Vector3Int? PursuitPosition; //only used in ai controlled
 	public Character PursuitTarget; //only used in ai controlled
 	public List<Skill> Skills;
-	public List<GameAction> determinedActions;
+	public List<GameAction> determinedActions = new();
+	internal GameAction _forcedAction;
 
 	internal void SetPosition(Vector3Int newPosition)
 	{
@@ -462,7 +463,12 @@ disp: {displayedVitals}");
 
 	public void SetAction(GameAction forcedAction)
 	{
-		this.determinedActions.Add(forcedAction);
+		_forcedAction = forcedAction;
+		if (Game.Instance.PlayerController.ControlledAlly == this)
+		{
+			Game.Instance.TurnManager.ProcessTurn();
+			IsWaitingForPlayerInput = false;
+		}
 	}
 }
 

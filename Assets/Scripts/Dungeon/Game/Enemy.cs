@@ -11,10 +11,10 @@ public class Enemy : Character
 
 	public string Description { get; internal set; }
 
-	public List<PolicyBase> Policies;
-	public override bool IsWaitingForPlayerInput => false;
+    public List<PolicyBase> Policies;
+    public override bool IsWaitingForPlayerInput { get; set; }
 
-	private void Start()
+    private void Start()
 	{
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(TilemapPosition);
 		this.transform.position = worldPosition;

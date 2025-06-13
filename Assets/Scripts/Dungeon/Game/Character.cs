@@ -97,10 +97,6 @@ public abstract class Character : MonoBehaviour, Actor
 	private void Awake()
 	{
 		BaseStats = new();
-		if (Inventory != null)
-		{
-			Inventory.HandleInventoryChanged += Inventory_HandleInventoryChanged;
-		}
 		if (Equipment != null)
         {
 			Equipment.HandleEquipmentChanged += Equipment_HandleEquipmentChanged;
@@ -110,10 +106,6 @@ public abstract class Character : MonoBehaviour, Actor
 	private void OnDestroy()
 	{
 		BaseStats.OnStatChanged -= BaseStats_OnStatChanged;
-		if (Inventory != null)
-		{
-			Inventory.HandleInventoryChanged -= Inventory_HandleInventoryChanged;
-		}
 		if (Equipment != null)
 		{
 			Equipment.HandleEquipmentChanged -= Equipment_HandleEquipmentChanged;
@@ -137,7 +129,6 @@ public abstract class Character : MonoBehaviour, Actor
 		DisplayedStats.Sync(FinalStats);
     }
 
-    public Inventory Inventory;
 	public Equipment Equipment;
 
 	public abstract bool IsWaitingForPlayerInput { get; set; }

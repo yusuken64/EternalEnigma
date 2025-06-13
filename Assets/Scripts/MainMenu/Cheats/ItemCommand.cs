@@ -33,7 +33,7 @@ public class ItemCommand : IConsoleCommand
         }
 
         var newItem = Common.Instance.ItemManager.GetAsInventoryItem(itemDef, 1);
-        player.Inventory.Add(newItem);
+        Game.Instance.PlayerController.Inventory.Add(newItem);
 
         console.Log($"Added '{itemName}' to inventory.");
     }

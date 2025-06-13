@@ -57,7 +57,7 @@ public class TurnManager : MonoBehaviour
 
 					if (interuptTurn)
 					{
-						break;
+						yield break;
 					}
 
 					foreach (var actor2 in actors)
@@ -68,13 +68,13 @@ public class TurnManager : MonoBehaviour
 
 				if (interuptTurn)
 				{
-					break;
+					yield break;
 				}
 			} while (actor.ActionsLeft > 0);
 
 			if (interuptTurn)
 			{
-				break;
+				yield break;
 			}
 
 			var statusSideEffectActions = actor.GetStatusEffectSideEffects();

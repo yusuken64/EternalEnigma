@@ -6,14 +6,16 @@ using UnityEngine;
 
 internal class ThrowItemAction : GameAction
 {
-	private Character thrower;
+    private readonly Inventory inventory;
+    private Character thrower;
 	private InventoryItem item;
 	private GameObject projectilePrefab;
 	private Vector3Int rangedAttackTargetPosition;
 
-	public ThrowItemAction(Character thrower, InventoryItem item, GameObject projectilePrefab)
+	public ThrowItemAction(Inventory inventory, Character thrower, InventoryItem item, GameObject projectilePrefab)
 	{
-		this.thrower = thrower;
+        this.inventory = inventory;
+        this.thrower = thrower;
 		this.item = item;
 		this.projectilePrefab = projectilePrefab;
 	}
@@ -21,7 +23,7 @@ internal class ThrowItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		var game = Game.Instance;
-		thrower.Inventory.InventoryItems.Remove(item);
+		inventory.InventoryItems.Remove(item);
 
 		var ret = new List<GameAction>();
 		if (thrower.Equipment.IsEquipped(item))
@@ -44,7 +46,7 @@ internal class ThrowItemAction : GameAction
 		{
 			if (item.ItemDefinition.ApplyToThrownTarget)
 			{
-				ret.AddRange(item.GetGameActions(thrower, rangedAttackTarget, thrower.Inventory, item));
+				ret.AddRange(item.GetGameActions(thrower, rangedAttackTarget, inventory, item));
 			}
 			else
 			{
@@ -85,7 +87,7 @@ internal class ThrowItemAction : GameAction
 	{
 		Game game = Game.Instance;
 
-		if (!thrower.Inventory.InventoryItems.Contains(item))
+		if (!inventory.InventoryItems.Contains(item))
 		{
 			return false;
 		}

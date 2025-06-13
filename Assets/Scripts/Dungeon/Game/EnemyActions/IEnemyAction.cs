@@ -79,6 +79,12 @@ public class AttackPolicy : PolicyBase
 			return false;
 		}
 
+		if (targetCharacter == null ||
+			character == null)
+		{
+			return false;
+		}
+
 		var direction = targetCharacter.TilemapPosition - character.TilemapPosition;
 		var attackFacing = Character.GetFacing(direction);
 		var validAttackDirections = game.CurrentDungeon.GetValidAttackDirections(character.TilemapPosition);

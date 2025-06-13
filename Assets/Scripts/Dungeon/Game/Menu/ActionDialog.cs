@@ -35,7 +35,7 @@ namespace JuicyChickenGames.Menu
 
 		public void Throw_Clicked()
 		{
-			_character.SetAction(new ThrowItemAction(_character, _data, Game.Instance.ThrownItemProjectilePrefab));
+			_character.SetAction(new ThrowItemAction(Game.Instance.PlayerController.Inventory, _character, _data, Game.Instance.ThrownItemProjectilePrefab));
 			MenuManager.Instance.CloseMenu();
 		}
 

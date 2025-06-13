@@ -81,7 +81,13 @@ public class PlayerController : MonoBehaviour
         menuCooldown += Time.deltaTime;
 
         if (PlayerInputHandler.Instance.isMoving)
+        {
             holdTime += Time.deltaTime;
+        }
+        else
+        {
+            holdTime = 0;
+        }
     }
 
     private void LateUpdate()

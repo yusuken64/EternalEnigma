@@ -50,12 +50,18 @@ internal class RangedAttackAction : GameAction
 
 		var game = Game.Instance;
 		var projectile = UnityEngine.Object.Instantiate(projectilePrefab, null);
-		projectile.transform.position = character.VisualParent.transform.position;
+        Vector3 startPosition = character.VisualParent.transform.position;
+        projectile.transform.position = startPosition;
 		var attackerWorldPosition = game.CurrentDungeon.CellToWorld(character.TilemapPosition);
 		var offset = new Vector3(1.25f, 1.25f, 0);
 		var targetWorldPosition = game.CurrentDungeon.CellToWorld(rangedAttackTargetPosition) + offset;
 		projectile.transform.LookAt(targetWorldPosition);
-		yield return projectile.transform.DOMove(targetWorldPosition, 0.5f)
+
+		float distance = Vector3.Distance(startPosition, targetWorldPosition);
+        float projectileSpeed = 20f;
+        float duration = distance / projectileSpeed;
+		yield return projectile.transform.DOMove(targetWorldPosition, duration)
+			.SetEase(Ease.Linear)
 			.WaitForCompletion();
 
 		UnityEngine.Object.Destroy(projectile.gameObject);

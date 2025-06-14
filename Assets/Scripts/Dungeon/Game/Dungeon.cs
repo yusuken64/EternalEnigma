@@ -306,10 +306,16 @@ public class Dungeon : MonoBehaviour
 		return tile as InteractableTile;
 	}
 
-	public static bool StopArrow(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower)
+	public static bool StopArrow(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower, bool hitFriendly = false)
 	{
 		Character target = Game.Instance.AllCharacters
 			.Where(x => x != thrower)
+			.Where(x =>
+			{
+				if (!hitFriendly && x.Team == thrower.Team)
+					return false;
+				return true;
+			})
 			.FirstOrDefault(x => x.TilemapPosition == currentPosition);
 
 		if (target != null) { return true; }

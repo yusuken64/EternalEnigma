@@ -8,6 +8,9 @@ public class EquipmentItemDefinition : ItemDefinition
 	public string WeaponModelName;
 	public WeaponType WeaponType;
 
+	public bool IsRangedAttack;
+	public GameObject ProjectilePrefab;
+
 	internal override InventoryItem AsInventoryItem(int? stock)
 	{
 		return new EquipableInventoryItem(this, stock);

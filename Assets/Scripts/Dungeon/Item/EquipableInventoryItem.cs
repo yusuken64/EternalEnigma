@@ -3,17 +3,17 @@
 [Serializable]
 public class EquipableInventoryItem : InventoryItem
 {
-	private readonly EquipmentItemDefinition equipmentItemDefinition;
-	public EquipmentSlot EquipmentSlot => equipmentItemDefinition.EquipmentSlot;
+	public readonly EquipmentItemDefinition EquipmentItemDefinition;
+	public EquipmentSlot EquipmentSlot => EquipmentItemDefinition.EquipmentSlot;
 	public EquipableInventoryItem(EquipmentItemDefinition equipmentItemDefinition, int? stock = null) : base(equipmentItemDefinition, stock)
 	{
-		this.equipmentItemDefinition = equipmentItemDefinition;
+		this.EquipmentItemDefinition = equipmentItemDefinition;
 	}
 
 	public StatModification GetEquipmentStatModification()
 	{
-		if (equipmentItemDefinition == null) { return new(); }
-		return equipmentItemDefinition.GetEquipmentStatModification();
+		if (EquipmentItemDefinition == null) { return new(); }
+		return EquipmentItemDefinition.GetEquipmentStatModification();
 	}
 
 	internal override bool ShouldRemoveAfterUse()

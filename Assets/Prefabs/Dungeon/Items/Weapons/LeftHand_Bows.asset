@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: LeftHand_Bows
   m_EditorClassIdentifier: 
   ItemName: Bows
+  Description: 
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
+  DroppedItemVisual: 0
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
@@ -33,4 +35,6 @@ MonoBehaviour:
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
   WeaponModelName: Bows
-  WeaponType: 0
+  WeaponType: 2
+  IsRangedAttack: 1
+  ProjectilePrefab: {fileID: 3585417814338942464, guid: 787905dcbb295f84b887006417851bf4, type: 3}

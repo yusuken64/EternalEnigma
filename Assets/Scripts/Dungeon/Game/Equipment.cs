@@ -5,25 +5,25 @@ using UnityEngine;
 
 public class Equipment : MonoBehaviour
 {
-	public EquipableInventoryItem EquipedWeapon;
-	public EquipableInventoryItem EquipedShield;
-	public EquipableInventoryItem EquipedAccessory;
+	public EquipableInventoryItem EquippedWeapon;
+	public EquipableInventoryItem EquippedShield;
+	public EquipableInventoryItem EquippedAccessory;
 
 	public delegate void EquipmentChangedEventHandler(EquipChangeType equipChangeType, EquipableInventoryItem item);
 	public event EquipmentChangedEventHandler HandleEquipmentChanged;
 
 	internal IEnumerable<EquipableInventoryItem> GetEquippedItems()
 	{
-		if (EquipedWeapon?.ItemDefinition != null) yield return EquipedWeapon;
-		if (EquipedShield?.ItemDefinition != null) yield return EquipedShield;
-		if (EquipedAccessory?.ItemDefinition != null) yield return EquipedAccessory;
+		if (EquippedWeapon?.ItemDefinition != null) yield return EquippedWeapon;
+		if (EquippedShield?.ItemDefinition != null) yield return EquippedShield;
+		if (EquippedAccessory?.ItemDefinition != null) yield return EquippedAccessory;
 	}
 
 	public StatModification GetEquipmentStatModification()
 	{
-		return EquipedWeapon?.GetEquipmentStatModification() +
-			EquipedShield?.GetEquipmentStatModification() +
-			EquipedAccessory?.GetEquipmentStatModification();
+		return EquippedWeapon?.GetEquipmentStatModification() +
+			EquippedShield?.GetEquipmentStatModification() +
+			EquippedAccessory?.GetEquipmentStatModification();
 	}
 
 	public void Equip(EquipableInventoryItem equipableInventoryItem)
@@ -33,24 +33,24 @@ public class Equipment : MonoBehaviour
 		switch (equipableInventoryItem.EquipmentSlot)
 		{
 			case EquipmentSlot.TwoHand:
-				EquipedWeapon = equipableInventoryItem;
-				EquipedShield = null;
+				EquippedWeapon = equipableInventoryItem;
+				EquippedShield = null;
 				break;
 			case EquipmentSlot.MainHand:
-				EquipedWeapon = equipableInventoryItem;
+				EquippedWeapon = equipableInventoryItem;
 				break;
 			case EquipmentSlot.OffHand:
-				EquipedShield = equipableInventoryItem;
-				if (EquipedWeapon?.ItemDefinition is EquipmentItemDefinition equipment)
+				EquippedShield = equipableInventoryItem;
+				if (EquippedWeapon?.ItemDefinition is EquipmentItemDefinition equipment)
 				{
 					if (equipment.WeaponType == WeaponType.TwoHandSword)
 					{
-						EquipedWeapon = null;
+						EquippedWeapon = null;
 					}
 				}
 				break;
 			case EquipmentSlot.Accessory:
-				EquipedAccessory = equipableInventoryItem;
+				EquippedAccessory = equipableInventoryItem;
 				break;
 		}
 
@@ -74,18 +74,18 @@ public class Equipment : MonoBehaviour
 		switch (slot)
 		{
 			case EquipmentSlot.MainHand:
-				unequippedItem = EquipedWeapon;
-				EquipedWeapon = null;
+				unequippedItem = EquippedWeapon;
+				EquippedWeapon = null;
 				break;
 
 			case EquipmentSlot.OffHand:
-				unequippedItem = EquipedShield;
-				EquipedShield = null;
+				unequippedItem = EquippedShield;
+				EquippedShield = null;
 				break;
 
 			case EquipmentSlot.Accessory:
-				unequippedItem = EquipedAccessory;
-				EquipedAccessory = null;
+				unequippedItem = EquippedAccessory;
+				EquippedAccessory = null;
 				break;
 		}
 
@@ -100,9 +100,36 @@ public class Equipment : MonoBehaviour
 		if (x == null) { return false; }
 
 		return
-			EquipedWeapon == x ||
-			EquipedShield == x ||
-			EquipedAccessory == x;
+			EquippedWeapon == x ||
+			EquippedShield == x ||
+			EquippedAccessory == x;
+	}
+
+	internal bool IsRangedAttack(out GameObject projectilePrefab)
+	{
+		if (EquippedWeapon?.EquipmentItemDefinition?.IsRangedAttack == true &&
+			EquippedWeapon.EquipmentItemDefinition.ProjectilePrefab != null)
+		{
+			projectilePrefab = EquippedWeapon.EquipmentItemDefinition.ProjectilePrefab;
+			return true;
+		}
+
+		if (EquippedShield?.EquipmentItemDefinition?.IsRangedAttack == true &&
+			EquippedShield.EquipmentItemDefinition.ProjectilePrefab != null)
+		{
+			projectilePrefab = EquippedShield.EquipmentItemDefinition.ProjectilePrefab;
+			return true;
+		}
+
+		if (EquippedAccessory?.EquipmentItemDefinition?.IsRangedAttack == true &&
+			EquippedAccessory.EquipmentItemDefinition.ProjectilePrefab != null)
+		{
+			projectilePrefab = EquippedAccessory.EquipmentItemDefinition.ProjectilePrefab;
+			return true;
+		}
+
+		projectilePrefab = null;
+		return false;
 	}
 }
 

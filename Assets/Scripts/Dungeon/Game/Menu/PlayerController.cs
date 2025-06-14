@@ -183,8 +183,31 @@ public class PlayerController : MonoBehaviour
         if (PlayerInputHandler.Instance.attackPressed)
         {
             var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
-            newMapPosition += offset;
-            ControlledAlly.SetAction(new AttackAction(ControlledAlly, originalPosition, newMapPosition));
+            if (ControlledAlly.IsRangedAttack(out GameObject projectilePrefab))
+            {
+                //ControlledAlly.Equipment.EquipedWeapon;
+                var rangedAttackTargetPosition =
+                    Game.Instance.CurrentDungeon.GetRangedAttackPosition(
+                        ControlledAlly,
+                        ControlledAlly.TilemapPosition,
+                        ControlledAlly.CurrentFacing,
+                        10,
+                        Dungeon.StopArrow);
+
+                Character rangedAttackTarget = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == rangedAttackTargetPosition);
+
+                ControlledAlly.SetAction(
+                    new RangedAttackAction(
+                        ControlledAlly,
+                        rangedAttackTarget,
+                        ControlledAlly.FinalStats.Strength,
+                        projectilePrefab));
+            }
+            else
+            {
+                newMapPosition += offset;
+                ControlledAlly.SetAction(new AttackAction(ControlledAlly, originalPosition, newMapPosition));
+            }
             return;
         }
         

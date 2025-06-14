@@ -428,6 +428,70 @@ disp: {displayedVitals}");
 		var path = AStar.FindPath(grid, startNode, targetNode);
 		return path;
 	}
+	
+	//internal List<AStar.Node> CalculateRangedAttackPath()
+	//{
+	//	var game = Game.Instance;
+
+	//	int width = game.CurrentDungeon.dungeonWidth;
+	//	int height = game.CurrentDungeon.dungeonHeight;
+	//	var grid = new AStar.Node[width, height];
+
+	//	var enemyPositions = new HashSet<Vector3Int>(game.Enemies.Select(e => e.TilemapPosition));
+
+	//	// Create nodes
+	//	for (int i = 0; i < width; i++)
+	//	{
+	//		for (int j = 0; j < height; j++)
+	//		{
+	//			var pos = new Vector3Int(i, j);
+	//			bool isWalkable = game.CurrentDungeon.IsWalkable(pos);
+	//			grid[i, j] = new AStar.Node(i, j, isWalkable, 0);
+	//		}
+	//	}
+
+	//	// Step 1: Find candidate tiles
+	//	List<Vector3Int> attackTiles = new();
+	//	foreach (var enemy in game.Enemies)
+	//	{
+	//		var tiles = GetStraightLineAttackTiles(enemy.TilemapPosition, 2, 4); // assumes range 2-4
+	//		foreach (var tile in tiles)
+	//		{
+	//			if (game.CurrentDungeon.IsWalkable(tile) && HasLineOfSight(tile, enemy.TilemapPosition))
+	//			{
+	//				attackTiles.Add(tile);
+	//			}
+	//		}
+	//	}
+
+	//	// Step 2: Score tiles
+	//	Vector3Int? bestTile = null;
+	//	float bestScore = float.MinValue;
+
+	//	foreach (var tile in attackTiles.Distinct())
+	//	{
+	//		float moveCost = AStar.EstimateCost(TilemapPosition, tile);
+	//		float safetyScore = CalculateSafetyScore(tile, game.Enemies);
+	//		int enemiesVisible = CountEnemiesAttackableFrom(tile);
+
+	//		float score = enemiesVisible * 10f + safetyScore * 2f - moveCost;
+
+	//		if (score > bestScore)
+	//		{
+	//			bestScore = score;
+	//			bestTile = tile;
+	//		}
+	//	}
+
+	//	if (bestTile == null)
+	//		return new List<AStar.Node>(); // fallback
+
+	//	var startNode = grid[TilemapPosition.x, TilemapPosition.y];
+	//	var targetNode = grid[bestTile.Value.x, bestTile.Value.y];
+
+	//	var path = AStar.FindPath(grid, startNode, targetNode);
+	//	return path;
+	//}
 
 	internal Character GetPursuitTarget()
 	{

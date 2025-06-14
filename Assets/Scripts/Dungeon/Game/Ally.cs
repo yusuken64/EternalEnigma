@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -241,13 +242,13 @@ public class Ally : Character
 		newChild.transform.SetAsFirstSibling();
 	}
 
-	public override void Inventory_HandleInventoryChanged()
+    public override void Inventory_HandleInventoryChanged()
 	{
 		base.Inventory_HandleInventoryChanged();
 
 		HeroAnimator.SetWeapon(
-			Equipment.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
-			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
+			Equipment.EquippedWeapon?.ItemDefinition as EquipmentItemDefinition,
+			Equipment.EquippedShield?.ItemDefinition as EquipmentItemDefinition);
 	}
 
 	public override void Equipment_HandleEquipmentChanged(EquipChangeType equipChangeType, EquipableInventoryItem item)
@@ -265,8 +266,13 @@ public class Ally : Character
 		}
 
 		HeroAnimator?.SetWeapon(
-			Equipment.EquipedWeapon?.ItemDefinition as EquipmentItemDefinition,
-			Equipment.EquipedShield?.ItemDefinition as EquipmentItemDefinition);
+			Equipment.EquippedWeapon?.ItemDefinition as EquipmentItemDefinition,
+			Equipment.EquippedShield?.ItemDefinition as EquipmentItemDefinition);
+	}
+
+	internal bool IsRangedAttack(out GameObject projectilePrefab)
+	{
+		return Equipment.IsRangedAttack(out projectilePrefab);
 	}
 }
 

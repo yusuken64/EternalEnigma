@@ -153,7 +153,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 			var walkableDirections = direction.Select(x =>
 			{
-				var target = GetRangedAttackPosition(null, TilemapPosition, x, 8, (x, y, z) =>
+				var target = GetRangedAttackPosition(null, TilemapPosition, x, 8, (x, y, z, a) =>
 				{
 					return _isHallwayCache[x.x, x.y];
 				});
@@ -392,7 +392,7 @@ public class TileWorldDungeon : MonoBehaviour
 		Vector3Int origin,
 		Facing direction,
 		int maxRange,
-		Func<Vector3Int, Vector3Int, Character, bool> stopCondition)
+		Func<Vector3Int, Vector3Int, Character, bool, bool> stopCondition)
 	{
 		var game = Game.Instance;
 		var offset = GetFacingOffset(direction);
@@ -409,7 +409,7 @@ public class TileWorldDungeon : MonoBehaviour
 				origin.z + offset.z * distance
 			);
 
-			if (stopCondition.Invoke(currentPosition, nextPosition, thrower))
+			if (stopCondition.Invoke(currentPosition, nextPosition, thrower, false))
 			{
 				return currentPosition;
 			}
@@ -524,7 +524,7 @@ public class TileWorldDungeon : MonoBehaviour
 		return Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
 	}
 
-	public static bool StopSight(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower)
+	public static bool StopSight(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower, bool hitFriendly)
 	{
 		bool hitWall = !Game.Instance.CurrentDungeon.IsWalkable(nextPosition);
 		if (hitWall) { return true; }

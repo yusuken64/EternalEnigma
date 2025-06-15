@@ -524,6 +524,12 @@ public class TileWorldDungeon : MonoBehaviour
 		return Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
 	}
 
+	public static int ManhattanDistance(Vector3Int a, Vector3Int b)
+	{
+		return Mathf.Abs(a.x - b.x)
+			 + Mathf.Abs(a.y - b.y);
+	}
+
 	public static bool StopSight(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower, bool hitFriendly)
 	{
 		bool hitWall = !Game.Instance.CurrentDungeon.IsWalkable(nextPosition);

@@ -98,9 +98,9 @@ public abstract class Character : MonoBehaviour, Actor
 	{
 		BaseStats = new();
 		if (Equipment != null)
-        {
+		{
 			Equipment.HandleEquipmentChanged += Equipment_HandleEquipmentChanged;
-        }
+		}
 	}
 
 	private void OnDestroy()
@@ -125,15 +125,15 @@ public abstract class Character : MonoBehaviour, Actor
 
 	public virtual void Equipment_HandleEquipmentChanged(EquipChangeType equipChangeType, EquipableInventoryItem item)
 	{
-        UpdateCachedStats();
+		UpdateCachedStats();
 		DisplayedStats.Sync(FinalStats);
-    }
+	}
 
 	public Equipment Equipment;
 
 	public abstract bool IsWaitingForPlayerInput { get; set; }
 	public abstract List<GameAction> GetDeterminedAction();
-	public abstract	void DetermineAction();
+	public abstract void DetermineAction();
 	public abstract List<GameAction> ExecuteActionImmediate(GameAction action);
 	public abstract IEnumerator ExecuteActionRoutine(GameAction action);
 	public abstract void StartTurn();
@@ -332,7 +332,7 @@ disp: {displayedVitals}");
 
 	public void TickStatusEffects()
 	{
-		foreach(var statusEffect in StatusEffects)
+		foreach (var statusEffect in StatusEffects)
 		{
 			statusEffect.Tick();
 		}
@@ -410,7 +410,7 @@ disp: {displayedVitals}");
 		//move to a different class
 		AStar.Node[,] grid = new AStar.Node[game.CurrentDungeon.dungeonWidth, game.CurrentDungeon.dungeonHeight];
 
-		for(int i = 0; i < game.CurrentDungeon.dungeonWidth; i++)
+		for (int i = 0; i < game.CurrentDungeon.dungeonWidth; i++)
 		{
 			for (int j = 0; j < game.CurrentDungeon.dungeonHeight; j++)
 			{
@@ -421,77 +421,45 @@ disp: {displayedVitals}");
 				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
 			}
 		}
-		
+
 		AStar.Node startNode = grid[TilemapPosition.x, TilemapPosition.y];
 		AStar.Node targetNode = grid[PursuitPosition.Value.x, PursuitPosition.Value.y];
 
 		var path = AStar.FindPath(grid, startNode, targetNode);
 		return path;
 	}
-	
-	//internal List<AStar.Node> CalculateRangedAttackPath()
-	//{
-	//	var game = Game.Instance;
 
-	//	int width = game.CurrentDungeon.dungeonWidth;
-	//	int height = game.CurrentDungeon.dungeonHeight;
-	//	var grid = new AStar.Node[width, height];
+	internal List<AStar.Node> CalculateRangedAttackPath(Vector3Int targetPosition, AStar.Node[,] grid)
+	{
+		AStar.Node startNode = grid[TilemapPosition.x, TilemapPosition.y];
+		AStar.Node targetNode = grid[targetPosition.x, targetPosition.y];
 
-	//	var enemyPositions = new HashSet<Vector3Int>(game.Enemies.Select(e => e.TilemapPosition));
+		var path = AStar.FindPath(grid, startNode, targetNode);
+		return path;
+	}
 
-	//	// Create nodes
-	//	for (int i = 0; i < width; i++)
-	//	{
-	//		for (int j = 0; j < height; j++)
-	//		{
-	//			var pos = new Vector3Int(i, j);
-	//			bool isWalkable = game.CurrentDungeon.IsWalkable(pos);
-	//			grid[i, j] = new AStar.Node(i, j, isWalkable, 0);
-	//		}
-	//	}
+	internal static AStar.Node[,] GetAStarGrid()
+	{
+		var game = Game.Instance;
 
-	//	// Step 1: Find candidate tiles
-	//	List<Vector3Int> attackTiles = new();
-	//	foreach (var enemy in game.Enemies)
-	//	{
-	//		var tiles = GetStraightLineAttackTiles(enemy.TilemapPosition, 2, 4); // assumes range 2-4
-	//		foreach (var tile in tiles)
-	//		{
-	//			if (game.CurrentDungeon.IsWalkable(tile) && HasLineOfSight(tile, enemy.TilemapPosition))
-	//			{
-	//				attackTiles.Add(tile);
-	//			}
-	//		}
-	//	}
+		//TODO refactor cost out of the loop, do it in 2nd pass
+		//move to a different class
+		AStar.Node[,] grid = new AStar.Node[game.CurrentDungeon.dungeonWidth, game.CurrentDungeon.dungeonHeight];
 
-	//	// Step 2: Score tiles
-	//	Vector3Int? bestTile = null;
-	//	float bestScore = float.MinValue;
+		for (int i = 0; i < game.CurrentDungeon.dungeonWidth; i++)
+		{
+			for (int j = 0; j < game.CurrentDungeon.dungeonHeight; j++)
+			{
+				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
 
-	//	foreach (var tile in attackTiles.Distinct())
-	//	{
-	//		float moveCost = AStar.EstimateCost(TilemapPosition, tile);
-	//		float safetyScore = CalculateSafetyScore(tile, game.Enemies);
-	//		int enemiesVisible = CountEnemiesAttackableFrom(tile);
+				var containsCharacter = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
+				var movePenalty = containsCharacter ? 5 : 0;
+				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
+			}
+		}
 
-	//		float score = enemiesVisible * 10f + safetyScore * 2f - moveCost;
-
-	//		if (score > bestScore)
-	//		{
-	//			bestScore = score;
-	//			bestTile = tile;
-	//		}
-	//	}
-
-	//	if (bestTile == null)
-	//		return new List<AStar.Node>(); // fallback
-
-	//	var startNode = grid[TilemapPosition.x, TilemapPosition.y];
-	//	var targetNode = grid[bestTile.Value.x, bestTile.Value.y];
-
-	//	var path = AStar.FindPath(grid, startNode, targetNode);
-	//	return path;
-	//}
+		return grid;
+	}
 
 	internal Character GetPursuitTarget()
 	{

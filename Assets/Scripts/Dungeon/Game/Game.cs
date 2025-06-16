@@ -1,6 +1,5 @@
 using DG.Tweening;
 using JuicyChickenGames.Menu;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +16,6 @@ public class Game : SingletonMonoBehaviour<Game>
 	public EnemyManager EnemyManager;
 
 	public PlayerController PlayerController;
-	//public Player PlayerCharacterPrefab;
-	public List<OverworldAlly> DebugAllies;
 	public GameObject ThrownItemProjectilePrefab;
 
 	public List<Ally> Allies;
@@ -67,17 +64,6 @@ public class Game : SingletonMonoBehaviour<Game>
 	internal void ResetGame()
 	{
 		PlayerController.CameraController.Camera = Camera.main;
-
-#if UNITY_EDITOR
-		foreach (var overworldAlly in DebugAllies)
-		{
-			var ally = Instantiate(AllyPrefab);
-			ally.InitialzeModel(overworldAlly);
-			Allies.Add(ally);
-
-			Destroy(overworldAlly);
-		}
-#endif
 
 		foreach (var overworldAlly in Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies)
 		{

@@ -39,4 +39,12 @@ public class MainMenu : MonoBehaviour
 	{
 		Application.Quit();
 	}
+
+	public List<OverworldAlly> DebugAllies;
+	public void TestDungeon_Clicked()
+	{
+		Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies = DebugAllies;
+		Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
+		SceneManager.LoadScene("DungeonScene");
+	}
 }

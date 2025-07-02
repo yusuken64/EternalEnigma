@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: Potion_SkillPotion
   m_EditorClassIdentifier: 
-  ItemName: Potion
+  ItemName: SP Potion
   Description: Recover some Sp
   ItemEffectDefinition: {fileID: 11400000, guid: 18c102e63806d834885e1b0e0708d13f, type: 2}
   ApplyToThrownTarget: 1

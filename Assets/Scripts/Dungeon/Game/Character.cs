@@ -416,7 +416,7 @@ disp: {displayedVitals}");
 			{
 				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
 
-				var containsFriendly = game.Enemies.Any(x => x.TilemapPosition == new Vector3Int(i, j));
+				var containsFriendly = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
 				var movePenalty = containsFriendly ? 5 : 0;
 				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
 			}

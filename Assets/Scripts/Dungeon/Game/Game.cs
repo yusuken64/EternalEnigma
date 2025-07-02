@@ -69,6 +69,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		{
 			var ally = Instantiate(AllyPrefab);
 			ally.InitialzeModel(overworldAlly);
+			ally.AllyStrategy = AllyStrategy.Aggresive;
 			Allies.Add(ally);
 
 			Destroy(overworldAlly);

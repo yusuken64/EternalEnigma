@@ -100,13 +100,31 @@ public class Ally : Character
 		{
 			pursuitTargets.Add(game.PlayerController.ControlledAlly);
 			pursuitTargets.AddRange(game.Enemies);
+
+			var aggressiveTarget = pursuitTargets
+				.OrderBy(x => x == !game.PlayerController)
+				.ThenBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
+				.ThenBy(x => x.TilemapPosition == PursuitPosition)
+				.FirstOrDefault(x => Enemy.Contains2D(visionBounds, x.TilemapPosition));
+
+			if (aggressiveTarget != null) { return aggressiveTarget; }
 		}
 
-		return pursuitTargets
+		var target = pursuitTargets
 			.OrderBy(x => x == game.PlayerController)
 			.ThenBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
 			.ThenBy(x => x.TilemapPosition == PursuitPosition)
 			.FirstOrDefault(x => Enemy.Contains2D(visionBounds, x.TilemapPosition));
+
+		if (target != null) { return target; }
+
+		if (TileWorldDungeon.ChevDistance(game.PlayerController.ControlledAlly.TilemapPosition,
+			TilemapPosition) < 5)
+		{
+			return game.PlayerController.ControlledAlly;
+		}
+
+		return null;
 	}
 
 	public override List<GameAction> GetDeterminedAction()

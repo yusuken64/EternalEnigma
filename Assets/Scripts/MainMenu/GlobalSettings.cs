@@ -2,6 +2,7 @@ using JuicyChickenGames.Menu;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GlobalSettings : MonoBehaviour
 {
@@ -21,7 +22,8 @@ public class GlobalSettings : MonoBehaviour
 
     private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Escape))
+		if (Input.GetKeyDown(KeyCode.Escape) ||
+			MenuInputHandler.Instance?.OptionInput == true)
 		{
 			SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
 			if (SettingsCanvas.activeSelf)
@@ -39,5 +41,12 @@ public class GlobalSettings : MonoBehaviour
 	{
 		SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
 		FindFirstObjectByType<NavigationHandler>().PopDialog(this);
+	}
+
+	public void MainMenu_Clicked()
+	{
+		SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
+		FindFirstObjectByType<NavigationHandler>().PopDialog(this);
+		SceneManager.LoadScene("MainMenu");
 	}
 }

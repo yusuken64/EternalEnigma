@@ -171,6 +171,15 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Options"",
+                    ""type"": ""Button"",
+                    ""id"": ""169aa76e-0bc0-4acf-9d62-e54a4273c4fe"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -536,6 +545,17 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""action"": ""SwapAlly"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6ee921c2-7d22-4f96-8e5a-33ee2c46f9a0"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Options"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -646,6 +666,15 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""name"": ""OpenSkillMenu"",
                     ""type"": ""Button"",
                     ""id"": ""659f3a43-660f-4998-8795-466475840a1c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Options"",
+                    ""type"": ""Button"",
+                    ""id"": ""070b38c6-b352-4540-aa43-cd3dae5539ef"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1026,6 +1055,28 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""action"": ""OpenSkillMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fea532a4-4c1b-466a-9898-ef3d9df37a23"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Options"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6e990786-5501-4c34-be14-d7e53c12f9a8"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Options"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1104,6 +1155,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
         m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
         m_Player_SwapAlly = m_Player.FindAction("SwapAlly", throwIfNotFound: true);
+        m_Player_Options = m_Player.FindAction("Options", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1118,6 +1170,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
         m_UI_OpenMenu = m_UI.FindAction("OpenMenu", throwIfNotFound: true);
         m_UI_OpenSkillMenu = m_UI.FindAction("OpenSkillMenu", throwIfNotFound: true);
+        m_UI_Options = m_UI.FindAction("Options", throwIfNotFound: true);
     }
 
     ~@DungeonControls()
@@ -1208,6 +1261,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Menu;
     private readonly InputAction m_Player_Map;
     private readonly InputAction m_Player_SwapAlly;
+    private readonly InputAction m_Player_Options;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1255,6 +1309,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/SwapAlly".
         /// </summary>
         public InputAction @SwapAlly => m_Wrapper.m_Player_SwapAlly;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Options".
+        /// </summary>
+        public InputAction @Options => m_Wrapper.m_Player_Options;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1308,6 +1366,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @SwapAlly.started += instance.OnSwapAlly;
             @SwapAlly.performed += instance.OnSwapAlly;
             @SwapAlly.canceled += instance.OnSwapAlly;
+            @Options.started += instance.OnOptions;
+            @Options.performed += instance.OnOptions;
+            @Options.canceled += instance.OnOptions;
         }
 
         /// <summary>
@@ -1346,6 +1407,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @SwapAlly.started -= instance.OnSwapAlly;
             @SwapAlly.performed -= instance.OnSwapAlly;
             @SwapAlly.canceled -= instance.OnSwapAlly;
+            @Options.started -= instance.OnOptions;
+            @Options.performed -= instance.OnOptions;
+            @Options.canceled -= instance.OnOptions;
         }
 
         /// <summary>
@@ -1395,6 +1459,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_TrackedDeviceOrientation;
     private readonly InputAction m_UI_OpenMenu;
     private readonly InputAction m_UI_OpenSkillMenu;
+    private readonly InputAction m_UI_Options;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -1454,6 +1519,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/OpenSkillMenu".
         /// </summary>
         public InputAction @OpenSkillMenu => m_Wrapper.m_UI_OpenSkillMenu;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/Options".
+        /// </summary>
+        public InputAction @Options => m_Wrapper.m_UI_Options;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1516,6 +1585,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @OpenSkillMenu.started += instance.OnOpenSkillMenu;
             @OpenSkillMenu.performed += instance.OnOpenSkillMenu;
             @OpenSkillMenu.canceled += instance.OnOpenSkillMenu;
+            @Options.started += instance.OnOptions;
+            @Options.performed += instance.OnOptions;
+            @Options.canceled += instance.OnOptions;
         }
 
         /// <summary>
@@ -1563,6 +1635,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @OpenSkillMenu.started -= instance.OnOpenSkillMenu;
             @OpenSkillMenu.performed -= instance.OnOpenSkillMenu;
             @OpenSkillMenu.canceled -= instance.OnOpenSkillMenu;
+            @Options.started -= instance.OnOptions;
+            @Options.performed -= instance.OnOptions;
+            @Options.canceled -= instance.OnOptions;
         }
 
         /// <summary>
@@ -1731,6 +1806,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSwapAlly(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Options" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOptions(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -1823,5 +1905,12 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOpenSkillMenu(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Options" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOptions(InputAction.CallbackContext context);
     }
 }

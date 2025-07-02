@@ -15,11 +15,13 @@ namespace JuicyChickenGames.Menu
 		public bool MenuOpenClosedInput;
 		public bool OpenSkillMenuInput;
 		public bool CancelMenuInput;
+		public bool OptionInput;
 		public PlayerInput PlayerInput;
 		public InputAction MenuOpenCloseAction;
 		public InputAction SubmitAction;
 		public InputAction CancelAction;
 		public InputAction OpenSkillMenuAction;
+		public InputAction OpenOptions;
 
 		protected override void Initialize()
 		{
@@ -29,6 +31,7 @@ namespace JuicyChickenGames.Menu
 			SubmitAction = PlayerInput.actions["Submit"];
 			CancelAction = PlayerInput.actions["Cancel"];
 			OpenSkillMenuAction = PlayerInput.actions["OpenSkillMenu"];
+			OpenOptions = PlayerInput.actions["Options"];
 		}
 
 		private void Update()
@@ -36,6 +39,7 @@ namespace JuicyChickenGames.Menu
 			MenuOpenClosedInput = MenuOpenCloseAction.WasPressedThisFrame();
 			OpenSkillMenuInput = OpenSkillMenuAction.WasPressedThisFrame();
 			CancelMenuInput = CancelAction.WasPressedThisFrame();
+			OptionInput = OpenOptions.WasPressedThisFrame();
 		}
 
         internal void CloseMenu()

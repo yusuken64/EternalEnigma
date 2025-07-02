@@ -112,6 +112,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		//PlayerCharacter.SyncDisplayedStats();
 		//PlayerCharacter.HeroAnimator.SetWeapon(null, null);
 
+		PlayerController.Inventory.Clear();
 		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
 		Common.Instance.ItemManager.StartingItems.ForEach(x => PlayerController.Inventory.Add(x.AsInventoryItem(null)));
 		items.ToList().ForEach(x => PlayerController.Inventory.Add(x));

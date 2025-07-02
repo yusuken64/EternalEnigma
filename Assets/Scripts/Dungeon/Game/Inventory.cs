@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -30,5 +31,10 @@ public class Inventory : MonoBehaviour
 	internal bool CanAdd()
 	{
 		return InventoryItems.Count() < MaxItems;
+	}
+
+	internal void Clear()
+	{
+		InventoryItems.Clear();
 	}
 }

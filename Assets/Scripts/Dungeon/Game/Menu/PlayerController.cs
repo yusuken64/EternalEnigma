@@ -274,7 +274,8 @@ public class PlayerController : MonoBehaviour
                 false));
         }
 
-        if (character.Vitals.Hunger <= 0)
+        if (character.Vitals.Hunger <= 0 &&
+            hungerTick)
         {
             turnSideEffects.Add(new TakeDamageAction(character, character, 1, true));
         }

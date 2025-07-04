@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class Fart : MonoBehaviour
 {
 	public float CountDownTime;
-	public Button OKButton;
 	public TextMeshProUGUI ButtonText;
 
 	public AudioClip Short;
@@ -14,11 +13,6 @@ public class Fart : MonoBehaviour
 	public AudioClip Long;
 
 	public int countdownStep = 4;
-
-	private void Start()
-	{
-		OKButton.interactable = false;
-	}
 
 	void Update()
 	{
@@ -44,18 +38,13 @@ public class Fart : MonoBehaviour
 				countdownStep = -1; // prevent re-trigger
 			}
 
-			ButtonText.text = "Start";
-			OKButton.interactable = true;
+			ButtonText.text = $"Starting";
+			Common.Instance.AudioManager.PlaySoundEffect(Long);
+			SceneManager.LoadScene("MainMenu");
 		}
 		else
 		{
-			ButtonText.text = $"Wait ({CountDownTime.ToString("F2")})";
+			ButtonText.text = $"Please wait... ({CountDownTime.ToString("F2")})";
 		}
-	}
-
-	public void Button_Clicked()
-	{
-		Common.Instance.AudioManager.PlaySoundEffect(Long);
-		SceneManager.LoadScene("MainMenu");
 	}
 }

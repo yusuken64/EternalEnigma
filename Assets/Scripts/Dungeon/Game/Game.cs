@@ -134,8 +134,12 @@ public class Game : SingletonMonoBehaviour<Game>
 		TurnManager.InteruptTurn();
 		//TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
 
-		PlayerController.Vitals.Floor++;
-		PlayerController.DisplayedVitals.Floor++;
+		//TODO move floor to a value shared by party
+		foreach(var unit in Allies)
+		{
+			unit.Vitals.Floor++;
+			unit.DisplayedVitals.Floor++;
+		}
 		PlayerController.ControlledAlly.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
 

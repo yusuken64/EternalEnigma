@@ -153,7 +153,18 @@ public class TurnManager : MonoBehaviour
 
 		if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerController.ControlledAlly))
 		{
-			Game.Instance.ShowGameOver();
+			var allies = Game.Instance.Allies
+				.Where(x => x.Vitals.HP > 0)
+				.ToList();
+
+			if (allies.Count == 0)
+			{
+				Game.Instance.ShowGameOver();
+			}
+			else
+			{
+				FindFirstObjectByType<PlayerController>().TakeControlNextAlly();
+			}
 		}
 
 		foreach (var deadUnit in Game.Instance.DeadUnits)

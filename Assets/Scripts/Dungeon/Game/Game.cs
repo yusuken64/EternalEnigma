@@ -184,6 +184,7 @@ public class Game : SingletonMonoBehaviour<Game>
 			if (ally != null)
 			{
 				ally.SetPosition(startPosition);
+				ally.currentInteractable = null;
 			}
 		}
 

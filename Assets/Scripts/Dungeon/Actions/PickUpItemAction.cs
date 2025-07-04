@@ -19,6 +19,7 @@ internal class PickUpItemAction : GameAction
 		if (canAdd)
 		{
 			droppedItem.Opened = true;
+			AudioManager.Instance.SoundEffects.Unequip.PlayAsSound();
 			game.PlayerController.Inventory.Add(droppedItem.InventoryItem);
 			game.CurrentDungeon.RemoveInteractable(droppedItem); //this should be removeimmediate, and remove routine
 		}

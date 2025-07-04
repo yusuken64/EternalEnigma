@@ -351,7 +351,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void TakeControlNextAlly()
+    public void TakeControlNextAlly()
     {
         var allies = Game.Instance.Allies
             .Where(x => x.Vitals.HP > 0)

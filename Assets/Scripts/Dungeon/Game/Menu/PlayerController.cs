@@ -169,7 +169,8 @@ public class PlayerController : MonoBehaviour
                         ControlledAlly.SetAction(new MovementAction(ControlledAlly, originalPosition, newMapPosition));
                         return;
                     }
-                    else if (destinationChar.Team == ControlledAlly.Team)
+                    else if (destinationChar.Team == ControlledAlly.Team &&
+                        destinationChar.CanMove())
                     {
                         ControlledAlly.SetAction(new SwapAllyPositionAction(ControlledAlly, destinationChar));
                         return;

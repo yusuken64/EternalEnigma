@@ -104,13 +104,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		PlayerController.TakeControl(Allies[0]);
 
-		//PlayerCharacter.InitialzeVitalsFromStats();
-		//PlayerCharacter.InitialzeSkillsFromSave();
 		var floor = Common.Instance.GameSaveData.StartingFloor;
 		PlayerController.Vitals.Floor = floor;
 		Common.Instance.GameSaveData.StartingFloor = 0;
-		//PlayerCharacter.SyncDisplayedStats();
-		//PlayerCharacter.HeroAnimator.SetWeapon(null, null);
 
 		PlayerController.Inventory.Clear();
 		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
@@ -184,10 +180,15 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		foreach (var ally in Allies)
 		{
-			//var allyPosition = CurrentDungeon.GetDropPosition(startPosition);
 			if (ally != null)
 			{
-				ally.SetPosition(startPosition);
+				var dropPosition = CurrentDungeon.GetPositionWith(startPosition, 
+					node =>
+					{
+						var first = AllCharacters.FirstOrDefault(x => x.TilemapPosition == new Vector3Int(node.X, node.Y));
+						return first == null;
+					});
+				ally.SetPosition(dropPosition);
 				ally.currentInteractable = null;
 			}
 		}

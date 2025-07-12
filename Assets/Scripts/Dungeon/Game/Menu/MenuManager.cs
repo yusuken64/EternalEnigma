@@ -146,6 +146,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	public void OpenAllyMenu(Ally ally)
 	{
+		MenuInputHandler.Instance.OpenMenu();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(AllyActionDialog);
 		AllyActionDialog.Setup(ally);

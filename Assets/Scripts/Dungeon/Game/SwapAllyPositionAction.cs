@@ -17,25 +17,31 @@ internal class SwapAllyPositionAction : GameAction
 		this.swapAlly = swapAlly as Ally;
 		originalPosition = ally.TilemapPosition;
 		newMapPosition = swapAlly.TilemapPosition;
-		this.swapAlly.SetAction(new MovementAction(swapAlly, newMapPosition, originalPosition));
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		ally.TilemapPosition = newMapPosition;
+		swapAlly.TilemapPosition = originalPosition;
 		return new();
 	}
-
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
     {
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
+		var worldPosition2 = Game.Instance.CurrentDungeon.CellToWorld(originalPosition);
 
 		character.PlayWalkAnimation();
-		yield return character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax)
-			.WaitForCompletion();
+		swapAlly.PlayWalkAnimation();
+
+		Sequence moveSequence = DOTween.Sequence();
+		moveSequence.Join(character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax));
+		moveSequence.Join(swapAlly.transform.DOMove(worldPosition2, 0.1f / character.FinalStats.ActionsPerTurnMax));
+
+		yield return moveSequence.WaitForCompletion();
 
 		character.PlayIdleAnimation();
+		swapAlly.PlayIdleAnimation();
 	}
 
 	internal override bool IsValid(Character character)

@@ -283,6 +283,42 @@ public class TileWorldDungeon : MonoBehaviour
 		return new Vector3Int(node.X, node.Y);
 	}
 
+	public Vector3Int GetPositionWith(Vector3Int startPosition, Func<BFS.Node, bool> isTargetNode)
+	{
+		BFS.Node[,] grid = new BFS.Node[dungeonWidth, dungeonHeight];
+
+		for (int i = 0; i < dungeonWidth; i++)
+		{
+			for (int j = 0; j < dungeonHeight; j++)
+			{
+				var isWalkable = CanWalk(new Vector3Int(i, j));
+
+				if (isWalkable)
+				{
+					grid[i, j] = new BFS.Node(i, j);
+				}
+			}
+		}
+
+		BFS.Node startNode = grid[startPosition.x, startPosition.y];
+
+		if (startNode == null)
+		{
+			//this is error
+			return new Vector3Int(startPosition.x, startPosition.y);
+		}
+
+		var path = BFS.FindPath(grid,
+			startNode,
+			(node) =>
+			{
+				return isTargetNode(node);
+			});
+
+		BFS.Node node = path.Last();
+		return new Vector3Int(node.X, node.Y);
+	}
+
 	internal Vector3Int GetRandomOpenEnemyPosition()
 	{
 		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);

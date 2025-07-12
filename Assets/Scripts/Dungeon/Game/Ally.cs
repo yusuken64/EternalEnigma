@@ -91,37 +91,27 @@ public class Ally : Character
 		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(this, TilemapPosition);
 
 		List<Character> pursuitTargets = new List<Character>();
-		
-		if (AllyStrategy == AllyStrategy.Follow)
+
+		if (AllyStrategy == AllyStrategy.Aggresive)
 		{
-			pursuitTargets.Add(game.PlayerController.ControlledAlly);
-		}
-		else if (AllyStrategy == AllyStrategy.Aggresive)
-		{
-			pursuitTargets.Add(game.PlayerController.ControlledAlly);
 			pursuitTargets.AddRange(game.Enemies);
 
 			var aggressiveTarget = pursuitTargets
-				.OrderBy(x => x == !game.PlayerController)
-				.ThenBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
+				.Where(x => Enemy.Contains2D(visionBounds, x.TilemapPosition))
+				.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
 				.ThenBy(x => x.TilemapPosition == PursuitPosition)
-				.FirstOrDefault(x => Enemy.Contains2D(visionBounds, x.TilemapPosition));
+				.FirstOrDefault();
 
 			if (aggressiveTarget != null) { return aggressiveTarget; }
 		}
-
-		var target = pursuitTargets
-			.OrderBy(x => x == game.PlayerController)
-			.ThenBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
-			.ThenBy(x => x.TilemapPosition == PursuitPosition)
-			.FirstOrDefault(x => Enemy.Contains2D(visionBounds, x.TilemapPosition));
-
-		if (target != null) { return target; }
-
-		if (TileWorldDungeon.ChevDistance(game.PlayerController.ControlledAlly.TilemapPosition,
-			TilemapPosition) < 5)
+		
+		if (AllyStrategy != AllyStrategy.HoldPosition)
 		{
-			return game.PlayerController.ControlledAlly;
+			if (TileWorldDungeon.ChevDistance(game.PlayerController.ControlledAlly.TilemapPosition,
+				TilemapPosition) < 5)
+			{
+				return game.PlayerController.ControlledAlly;
+			}
 		}
 
 		return null;

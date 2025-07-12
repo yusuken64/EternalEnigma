@@ -252,6 +252,13 @@ public abstract class Character : MonoBehaviour, Actor
 		}
 	}
 
+	internal bool CanMove()
+	{
+		var actionOverrides = StatusEffects.Select(x => x.GetActionOverride(this))
+			.Where(x => x != null);
+		return !actionOverrides.Any();
+	}
+
 	internal BoundsInt GetAttackBounds()
 	{
 		switch (FootPrint)
@@ -416,8 +423,12 @@ disp: {displayedVitals}");
 			{
 				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
 
-				var containsFriendly = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
-				var movePenalty = containsFriendly ? 5 : 0;
+				var containsCharacter = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
+				var containsTrap = game.CurrentDungeon.Interactables
+					.OfType<Trap>()
+					.Where(x => x.VisualObject.activeInHierarchy)
+					.Any(x => x.Position == new Vector3Int(i, j));
+				var movePenalty = containsCharacter || containsTrap ? 5 : 0;
 				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
 			}
 		}

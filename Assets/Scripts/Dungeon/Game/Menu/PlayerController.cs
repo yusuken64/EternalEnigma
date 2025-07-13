@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private CheatConsole _cheatConsole;
     public CameraController CameraController;
     public Inventory Inventory;
+    public TargetIndicator TargetIndicator;
 
     // === Controlled Character ===
     public Ally ControlledAlly { get; private set; }
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        TargetIndicator.gameObject.SetActive(false);
         _cheatConsole = FindFirstObjectByType<CheatConsole>();
     }
 
@@ -449,6 +451,7 @@ public class PlayerController : MonoBehaviour
         TargetSelected = targetSelected;
         TargetingSkill = skill;
 
+        CurrentControlMode = PlayerControlMode.TargetSelecting;
         CameraTarget = possibleTargets.First();
         MenuManager.Instance.TargetArrow.transform.position = CameraTarget.transform.position;
     }
@@ -460,6 +463,7 @@ public class PlayerController : MonoBehaviour
         CameraTarget = null;
         TargetingSkill = null;
         TargetSelected = null;
+        CurrentControlMode = PlayerControlMode.FollowAlly;
     }
 }
 

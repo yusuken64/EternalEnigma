@@ -167,7 +167,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		this.gameObject.SetActive(true);
 		MenuManager.Open(SkillDialog);
 		SkillDialog.Setup(character);
-		CurrentDialog = InventoryMenu;
+		CurrentDialog = SkillDialog;
 		SkillDialog.CloseAction = () =>
 		{
 			SkillDialog.Close();

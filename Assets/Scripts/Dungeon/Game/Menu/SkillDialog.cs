@@ -20,7 +20,6 @@ namespace JuicyChickenGames.Menu
         public void Setup(Character character)
         {
             SelectTargetPrompt.SetActive(false);
-            MenuManager.Open(this);
             var dynamicActionInfos = character.Skills.Select((skill, index) =>
             {
                 return new DynamicActionInfo()
@@ -38,6 +37,15 @@ namespace JuicyChickenGames.Menu
                     }
                 };
             }).ToList();
+
+            dynamicActionInfos.Add(new DynamicActionInfo()
+            {
+                ActionName = "Cancel",
+                ClickAction = () => {
+                    Close();
+                },
+                Data = null
+            });
 
             Action<DynamicActionButton, DynamicActionInfo> setupAction = (view, data) =>
             {
@@ -62,6 +70,7 @@ namespace JuicyChickenGames.Menu
 
         internal void Close()
         {
+            MenuInputHandler.Instance.CloseMenu();
         }
 
         public void SetNavigation()

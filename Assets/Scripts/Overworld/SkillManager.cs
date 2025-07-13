@@ -12,4 +12,8 @@ public class SkillManager : MonoBehaviour
 	{
 		return SkillPrefabs.FirstOrDefault(x => x.SkillName == skillName);
 	}
+	internal Skill GetSkillInstanceByName(string skillName)
+	{
+		return Instantiate(GetSkillByName(skillName));
+	}
 }

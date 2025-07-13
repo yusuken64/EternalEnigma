@@ -69,6 +69,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Skills",
+                    "type": "Button",
+                    "id": "ad467127-ed33-4519-bb50-579d783643ba",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Map",
                     "type": "Button",
                     "id": "e0d64551-1b62-4025-88e2-8228b43ece98",
@@ -468,6 +477,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Options",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f15c8b45-ca71-460b-a9f9-6d6932bc9b7b",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skills",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "97c2f7e0-a161-4671-a582-4e2fbb3ad06e",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skills",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

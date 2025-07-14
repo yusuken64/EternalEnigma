@@ -38,6 +38,24 @@ public abstract class Character : MonoBehaviour, Actor
 
 	private Stats cachedFinalStats = null;
 
+	internal bool CanCast(Skill skill, out string reason)
+	{
+		if (Vitals.SP < skill.SPCost)
+		{
+			reason = "Not enough SP";
+			return false;
+		}
+
+		if (!skill.GetTargets(this).Any())
+		{
+			reason = "No valid targets";
+			return false;
+		}
+
+		reason = "";
+		return true;
+	}
+
 	public Stats FinalStats
 	{
 		get

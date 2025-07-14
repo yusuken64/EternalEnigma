@@ -7,19 +7,15 @@ using UnityEngine.UI;
 
 namespace JuicyChickenGames.Menu
 {
-    public class SkillDialog : Dialog
+	public class SkillDialog : Dialog
     {
         public Transform ButtonContainer;
         public DynamicActionButton ActionButtonPrefab;
 
         public List<DynamicActionButton> Buttons;
 
-        public GameObject SelectTargetPrompt;
-        private EventSystem _eventSystem;
-
         public void Setup(Character character)
         {
-            SelectTargetPrompt.SetActive(false);
             var dynamicActionInfos = character.Skills.Select((skill, index) =>
             {
                 return new DynamicActionInfo()
@@ -27,39 +23,33 @@ namespace JuicyChickenGames.Menu
                     ActionName = $"{skill.SkillName}({skill.SPCost})",
                     ClickAction = () =>
                     {
-                        //Select Skill Target;
-                        var player = FindFirstObjectByType<PlayerController>();
-                        SelectTargetPrompt.SetActive(true);
-                        var possibleTargets = Game.Instance.AllCharacters; //TODO filter by skill
-                        player.InvokeTargetSelection(skill, possibleTargets, TargetSelected);
-                        _eventSystem = EventSystem.current;
-                        _eventSystem.enabled = false;
+                        if (character.CanCast(skill, out string reason))
+                        {
+                            MenuManager.Open(MenuManager.Instance.TargetDialog);
+                            MenuManager.Instance.OpenTargetingMenu(character, skill);
+                        }
+						else
+						{
+                            //TODO warn based on reason
+						}
                     }
                 };
             }).ToList();
 
-            dynamicActionInfos.Add(new DynamicActionInfo()
-            {
-                ActionName = "Cancel",
-                ClickAction = () => {
-                    Close();
-                },
-                Data = null
-            });
+            //dynamicActionInfos.Add(new DynamicActionInfo()
+            //{
+            //    ActionName = "Cancel",
+            //    ClickAction = () => {
+            //        Close();
+            //    },
+            //    Data = null
+            //});
 
             Action<DynamicActionButton, DynamicActionInfo> setupAction = (view, data) =>
             {
                 view.Setup(data);
             };
             Buttons = ButtonContainer.RePopulateObjects(ActionButtonPrefab, dynamicActionInfos, setupAction);
-        }
-
-        private void TargetSelected(Ally caster, Skill skill, Vector3Int target)
-        {
-            caster.SetAction(new SkillAction(caster, skill, target));
-            _eventSystem.enabled = true;
-            SelectTargetPrompt.SetActive(false);
-            CloseAction?.Invoke();
         }
 
         internal override void SetFirstSelect()
@@ -70,7 +60,7 @@ namespace JuicyChickenGames.Menu
 
         internal void Close()
         {
-            MenuInputHandler.Instance.CloseMenu();
+            MenuManager.Instance.TargetDialog.CancelTargetSelection();
         }
 
         public void SetNavigation()

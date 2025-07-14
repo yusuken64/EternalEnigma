@@ -25,13 +25,6 @@ public class PlayerController : MonoBehaviour
     public Vitals Vitals => ControlledAlly.Vitals;
     public Vitals DisplayedVitals => ControlledAlly.DisplayedVitals;
 
-    // === Targeting State ===
-    private Skill TargetingSkill;
-    private Action<Ally, Skill, Vector3Int> TargetSelected;
-
-    public List<Character> Targetables { get; private set; }
-    public Character CameraTarget { get; private set; }
-
     // === Control Mode ===
     public PlayerControlMode CurrentControlMode { get; set; }
 
@@ -52,12 +45,12 @@ public class PlayerController : MonoBehaviour
             case PlayerControlMode.FollowAlly:
                 HandleMovementInput();
                 break;
-            case PlayerControlMode.TargetSelecting:
-                HandleTargetInput();
-                break;
-            case PlayerControlMode.MenuOpen:
-                // Do nothing
-                break;
+            //case PlayerControlMode.TargetSelecting:
+                //if (menuCooldown > 0.2f)
+                //{
+                //    HandleTargetInput();
+                //}
+                //break;
         }
     }
 
@@ -65,15 +58,6 @@ public class PlayerController : MonoBehaviour
     {
         if (_cheatConsole.ScreenObject.activeSelf)
             return true;
-
-        if (Game.Instance.InventoryMenu.isActiveAndEnabled ||
-           Game.Instance.AllyMenu.isActiveAndEnabled ||
-           Game.Instance.SkillDialog.isActiveAndEnabled)
-        {
-            menuCooldown = 0f;
-            holdTime = 0f;
-            return true;
-        }
 
         return false;
     }
@@ -94,26 +78,12 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (CameraTarget != null)
+        switch (CurrentControlMode)
         {
-            CameraController.SetFollowTarget(CameraTarget.transform);
+            case PlayerControlMode.FollowAlly:
+                CameraController.SetFollowTarget(ControlledAlly.transform);
+                break;
         }
-    }
-
-    private void HandleTargetInput()
-    {
-        Vector2 move = PlayerInputHandler.Instance.moveInput;
-        if (!PlayerInputHandler.Instance.isMoving || move.magnitude < 0.5f)
-            return;
-
-        Facing facing = Facing.Down;
-
-        if (Mathf.Abs(move.x) > Mathf.Abs(move.y))
-            facing = move.x > 0 ? Facing.Right : Facing.Left;
-        else
-            facing = move.y > 0 ? Facing.Up : Facing.Down;
-
-        SelectTargetable(facing);
     }
 
     private void HandleMovementInput()
@@ -156,6 +126,7 @@ public class PlayerController : MonoBehaviour
 
         if (!PlayerInputHandler.Instance.holdPosition)
         {
+            TargetIndicator.gameObject.SetActive(false);
             if (holdTime > repeatTime)
             {
                 holdTime = 0f;
@@ -181,6 +152,13 @@ public class PlayerController : MonoBehaviour
                     //else you can't move
                 }
             }
+        }
+		else
+        {
+            TargetIndicator.gameObject.SetActive(true);
+            var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
+            newMapPosition += offset;
+            TargetIndicator.SetTargetingPosition(newMapPosition);
         }
 
         if (PlayerInputHandler.Instance.attackPressed)
@@ -379,91 +357,9 @@ public class PlayerController : MonoBehaviour
         TakeControl(nextAlly);
     }
 
-    Character GetNextSelectableWithWrap(Character current, List<Character> allEntities, Vector3Int dir)
-    {
-        Character best = FindInDirection(current, allEntities, dir);
-        return best;
-    }
-
-    Character FindInDirection(Character from, List<Character> entities, Vector3Int dir)
-    {
-        Character best = null;
-        float bestDist = float.MaxValue;
-
-        Vector2 direction = new Vector2(dir.x, dir.y).normalized;
-        float directionThreshold = 0.7f; // ~45 degree cone
-
-        foreach (var entity in entities)
-        {
-            if (entity == from) continue;
-
-            int dx = entity.TilemapPosition.x - from.TilemapPosition.x;
-            int dy = entity.TilemapPosition.y - from.TilemapPosition.y;
-
-            Vector2 toTarget = new Vector2(dx, dy);
-
-            // Skip if target is on or behind "from" in the given direction
-            if (Vector2.Dot(toTarget, direction) <= 0) continue;
-
-            Vector2 toTargetNormalized = toTarget.normalized;
-            float dot = Vector2.Dot(toTargetNormalized, direction);
-
-            // Use Manhattan distance as before
-            float dist = Mathf.Abs(dx) + Mathf.Abs(dy);
-
-            Debug.Log($"{entity} ({entity.TilemapPosition.x},{entity.TilemapPosition.y}) {dot} {dist}", entity);
-
-            // Check if target lies within the direction cone
-            if (dot < directionThreshold)
-            {
-                continue;
-            }
-
-
-            if (dist < bestDist)
-            {
-                bestDist = dist;
-                best = entity;
-            }
-        }
-
-        return best;
-    }
-
     internal bool CanOpenMenu()
     {
         return !ControlledAlly.StatusEffects.Any(x => x.PreventsMenu());
-    }
-
-    private void SelectTargetable(Facing facing)
-    {
-        var dir = Dungeon.GetFacingOffset(facing);
-        var next = GetNextSelectableWithWrap(CameraTarget, Targetables, dir);
-
-        if (next == null) { return; }
-        CameraTarget = next;
-        MenuManager.Instance.TargetArrow.transform.position = CameraTarget.transform.position;
-    }
-
-    internal void InvokeTargetSelection(Skill skill, List<Character> possibleTargets, Action<Ally, Skill, Vector3Int> targetSelected)
-    {
-        Targetables = possibleTargets;
-        TargetSelected = targetSelected;
-        TargetingSkill = skill;
-
-        CurrentControlMode = PlayerControlMode.TargetSelecting;
-        CameraTarget = possibleTargets.First();
-        MenuManager.Instance.TargetArrow.transform.position = CameraTarget.transform.position;
-    }
-
-    internal void ConfirmTarget()
-    {
-        TargetSelected?.Invoke(ControlledAlly, TargetingSkill, CameraTarget.TilemapPosition);
-        Targetables = null;
-        CameraTarget = null;
-        TargetingSkill = null;
-        TargetSelected = null;
-        CurrentControlMode = PlayerControlMode.FollowAlly;
     }
 }
 
@@ -471,5 +367,4 @@ public enum PlayerControlMode
 {
     FollowAlly,
     TargetSelecting,
-    MenuOpen
 }

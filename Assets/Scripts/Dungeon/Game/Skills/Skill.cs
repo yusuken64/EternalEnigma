@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class Skill : MonoBehaviour
@@ -13,6 +14,8 @@ public abstract class Skill : MonoBehaviour
 
 	internal virtual bool IsValid(Character caster)
 	{
-		return caster.Vitals.SP >= SPCost;
+		return caster.Vitals.SP >= SPCost && GetTargets(caster).Any();
 	}
+
+	internal abstract List<Vector3Int> GetTargets(Character caster);
 }

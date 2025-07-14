@@ -28,4 +28,13 @@ public class ShieldBashSkill : Skill
 		yield return new WaitForSecondsRealtime(1f);
 		caster.PlayIdleAnimation();
 	}
+
+	internal override List<Vector3Int> GetTargets(Character caster)
+	{
+		var attackBounds = caster.GetAttackBounds();
+		return Game.Instance.AllCharacters
+			.Where(x => x.Team != caster.Team)
+			.Where(x => attackBounds.Contains(x.TilemapPosition))
+			.Select(x => x.TilemapPosition).ToList();
+	}
 }

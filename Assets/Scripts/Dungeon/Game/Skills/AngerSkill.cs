@@ -23,4 +23,12 @@ public class AngerSkill : Skill
 		yield return new WaitForSecondsRealtime(1f);
 		caster.PlayIdleAnimation();
 	}
+
+	internal override List<Vector3Int> GetTargets(Character caster)
+	{
+		return new List<Vector3Int>()
+		{
+			caster.TilemapPosition
+		};
+	}
 }

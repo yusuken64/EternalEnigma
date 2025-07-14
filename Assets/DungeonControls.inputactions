@@ -1003,6 +1003,17 @@
                 },
                 {
                     "name": "",
+                    "id": "86c424ff-586b-4f97-b908-b9c7afe2f149",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenSkillMenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "fea532a4-4c1b-466a-9898-ef3d9df37a23",
                     "path": "<Gamepad>/start",
                     "interactions": "",

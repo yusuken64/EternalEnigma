@@ -72,7 +72,7 @@ public class NavigationHandler : MonoBehaviour
 
     private void ReestablishUIFocus()
     {
-        if (currentEventSystem.currentSelectedGameObject == null)
+        if (currentEventSystem?.currentSelectedGameObject == null)
         {
             if (lastSelected != null && lastSelected.activeInHierarchy)
             {
@@ -83,7 +83,7 @@ public class NavigationHandler : MonoBehaviour
                 currentEventSystem.SetSelectedGameObject(defaultSelectable);
                 lastSelected = defaultSelectable;
             }
-            else if (currentEventSystem.firstSelectedGameObject != null)
+            else if (currentEventSystem?.firstSelectedGameObject != null)
             {
                 currentEventSystem.SetSelectedGameObject(currentEventSystem.firstSelectedGameObject);
                 lastSelected = currentEventSystem.firstSelectedGameObject;

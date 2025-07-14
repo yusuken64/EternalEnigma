@@ -57,4 +57,14 @@ public class WideAttackSkill : Skill
 		caster.PlayIdleAnimation();
 		caster.VisualParent.transform.rotation = original;
 	}
+
+	internal override List<Vector3Int> GetTargets(Character caster)
+	{
+		List<Vector3Int> positions = new List<Vector3Int>();
+		foreach (Vector3Int pos in caster.GetAttackBounds().allPositionsWithin)
+		{
+			positions.Add(pos);
+		}
+		return positions;
+	}
 }

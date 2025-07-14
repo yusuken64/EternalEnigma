@@ -19,13 +19,13 @@ public class StairConfirm : Dialog
     public void YesClicked()
     {
         _yesAction?.Invoke();
-        MenuManager.Instance.CloseMenu();
+        MenuManager.Instance.CloseAllMenus();
     }
 
     public void NoClicked()
     {
         _noAction?.Invoke();
-        MenuManager.Instance.CloseMenu();
+        MenuManager.Instance.CloseAllMenus();
     }
 
     internal override void SetFirstSelect()

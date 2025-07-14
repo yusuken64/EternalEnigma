@@ -56,4 +56,13 @@ public class DamageSkill : Skill
 			.Cast<GameAction>()
 			.ToList();
 	}
+
+	internal override List<Vector3Int> GetTargets(Character caster)
+	{
+		BoundsInt visionBounds = Game.Instance.CurrentDungeon.GetVisionBounds(caster, caster.TilemapPosition);
+		return Game.Instance.AllCharacters
+			.Where(x => x.Team != caster.Team)
+			.Where(x => visionBounds.Contains(x.TilemapPosition))
+			.Select(x => x.TilemapPosition).ToList();
+	}
 }

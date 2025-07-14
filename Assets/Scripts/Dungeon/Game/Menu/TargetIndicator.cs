@@ -1,16 +1,12 @@
+using System;
 using UnityEngine;
 
 public class TargetIndicator : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public GameObject SquareIndicator;
+	internal void SetTargetingPosition(Vector3Int newMapPosition)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
+        this.transform.position = worldPosition;
     }
 }

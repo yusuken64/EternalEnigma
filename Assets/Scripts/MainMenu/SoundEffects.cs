@@ -8,6 +8,7 @@ public class SoundEffects : MonoBehaviour
 	public AudioClip Claw;
 	public AudioClip Bite;
 	public AudioClip Impact_flesh;
+	public AudioClip Impact_heal;
 	public AudioClip Slash;
 	public AudioClip Miss_Evade;
 	public AudioClip Block;

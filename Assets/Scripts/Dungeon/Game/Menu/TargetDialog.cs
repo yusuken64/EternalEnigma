@@ -9,6 +9,7 @@ namespace JuicyChickenGames.Menu
 	public class TargetDialog : Dialog
 	{
 		public GameObject SelectTargetPrompt;
+		public GameObject TargetIndicator;
 		private Character casterCharacter;
 		private Skill targetingSkill;
 		private EventSystem _eventSystem;
@@ -28,6 +29,11 @@ namespace JuicyChickenGames.Menu
 				cameraTarget = value;
 				UpdateCameraFollow();
 			}
+		}
+
+		private void Start()
+		{
+			TargetIndicator.gameObject.SetActive(false);
 		}
 
 		internal void Setup(Character character, Skill skill)
@@ -69,6 +75,8 @@ namespace JuicyChickenGames.Menu
 		{
 			if (CameraTarget != null)
 			{
+				TargetIndicator.gameObject.SetActive(true);
+				TargetIndicator.transform.position = CameraTarget.transform.position;
 				Game.Instance.PlayerController.CameraController.SetFollowTarget(CameraTarget.transform);
 			}
 		}
@@ -80,6 +88,7 @@ namespace JuicyChickenGames.Menu
 
 		internal void Close()
 		{
+			TargetIndicator.gameObject.SetActive(false);
 			_eventSystem.enabled = true;
 			Game.Instance.PlayerController.CurrentControlMode = PlayerControlMode.FollowAlly;
 		}

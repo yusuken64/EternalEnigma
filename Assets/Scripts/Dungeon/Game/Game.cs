@@ -107,6 +107,7 @@ public class Game : SingletonMonoBehaviour<Game>
 			ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName("Anger"));
 			ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName("Damage"));
 			ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName("Shield Bash"));
+			ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName("Healing"));
 			ally.SyncDisplayedStats();
 		}
 

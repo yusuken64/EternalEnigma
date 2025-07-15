@@ -78,6 +78,7 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (ControlledAlly == null) { return; }
         switch (CurrentControlMode)
         {
             case PlayerControlMode.FollowAlly:

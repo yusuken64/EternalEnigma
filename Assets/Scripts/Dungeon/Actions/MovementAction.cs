@@ -218,6 +218,73 @@ public class TakeDamageAction : GameAction
 	}
 }
 
+public class TakeHealAction : GameAction
+{
+	private readonly Character attacker;
+	internal readonly Character target;
+	private readonly int healing;
+	private readonly bool doHealAnimation;
+	private readonly bool miss;
+
+	public TakeHealAction(Character attacker, Character target, int healing, bool doHealAnimation = true, bool miss = false)
+	{
+		this.attacker = attacker;
+		this.target = target;
+		this.healing = healing;
+		this.doHealAnimation = doHealAnimation;
+		this.miss = miss;
+	}
+
+	internal override List<GameAction> ExecuteImmediate(Character character)
+	{
+		if (!miss)
+		{
+			AddMetricsModification(target, (metrics, vitals) =>
+			{
+				vitals.HP += healing;
+			});
+		}
+
+		if (target.Vitals.HP <= 0)
+		{
+			return new List<GameAction>()
+			{
+				new DeathAction(target, attacker)
+			};
+		}
+
+		return new();
+	}
+
+
+	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+	{
+		if (skipAnimation) { yield break; }
+		Game game = Game.Instance;
+		if (!miss)
+		{
+			AudioManager.Instance.SoundEffects.Impact_heal.PlayAsSound();
+			game.DoFloatingText(healing.ToString(), Color.green, target.VisualParent.gameObject.transform.position);
+		}
+		else
+		{
+			AudioManager.Instance.SoundEffects.Miss_Evade.PlayAsSound();
+			game.DoFloatingText("miss", Color.white, target.VisualParent.gameObject.transform.position);
+		}
+
+		if (doHealAnimation && !miss)
+		{
+			target.PlayTakeDamageAnimation();
+			yield return new WaitForSecondsRealtime(0.3f);
+		}
+	}
+
+	internal override bool IsValid(Character character)
+	{
+		return target.Vitals.HP > 0;
+	}
+}
+
 public class ModifyStatAction : GameAction
 {
 	private readonly Character attacker;

@@ -25,7 +25,7 @@ namespace JuicyChickenGames.Menu
                     {
                         if (character.CanCast(skill, out string reason))
                         {
-                            MenuManager.Open(MenuManager.Instance.TargetDialog);
+                            //MenuManager.Open(MenuManager.Instance.TargetDialog);
                             MenuManager.Instance.OpenTargetingMenu(character, skill);
                         }
 						else

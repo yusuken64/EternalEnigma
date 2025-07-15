@@ -2644,6 +2644,7 @@ MonoBehaviour:
   Claw: {fileID: 8300000, guid: 56703418e3aed4c47a5f6622816b8e41, type: 3}
   Bite: {fileID: 8300000, guid: fd25a15f9797641458336cccfb445343, type: 3}
   Impact_flesh: {fileID: 8300000, guid: 7c47b20bb9874304a809dc5580d403ba, type: 3}
+  Impact_heal: {fileID: 8300000, guid: cfce0cea076109f478783201b2a9f57f, type: 3}
   Slash: {fileID: 8300000, guid: 88b1cbe3caa3fee4b8b103b5edd7aba9, type: 3}
   Miss_Evade: {fileID: 8300000, guid: f11db4559b3ffff45b62e9327fc5535d, type: 3}
   Block: {fileID: 8300000, guid: b7b5a6156961bac44a67504d42ce6fcf, type: 3}
@@ -3576,6 +3577,7 @@ MonoBehaviour:
   - {fileID: 6547678327747454574, guid: 826a05df7d1a9074ca88734d1ed43eea, type: 3}
   - {fileID: 7891317521006608345, guid: 9f3ed3c0874871a49869e18b6ff486b4, type: 3}
   - {fileID: 8792513038711457881, guid: 2d867657d6e9cf64d874c306e61621f6, type: 3}
+  - {fileID: 4718403125556629247, guid: 0e364e321c758d846bc844763a9a04bc, type: 3}
 --- !u!4 &1524591525
 Transform:
   m_ObjectHideFlags: 0

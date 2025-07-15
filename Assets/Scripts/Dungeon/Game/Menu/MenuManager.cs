@@ -213,8 +213,8 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		TargetDialog.CloseAction = () =>
 		{
 			TargetDialog.Close();
-			CurrentDialog = null;
-			CloseAllMenus();
+			//CurrentDialog = null;
+			//CloseAllMenus();
 		};
 		TargetDialog.SetNavigation();
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
@@ -268,6 +268,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	{
 		AudioManager.Instance.SoundEffects.Unpause.PlayAsSound();
 		dialog.gameObject.SetActive(false);
+		dialog.CloseAction?.Invoke();
 		MenuManager.Instance.DialogStack.Pop();
 
 		if (MenuManager.Instance.DialogStack.Count <= 0)

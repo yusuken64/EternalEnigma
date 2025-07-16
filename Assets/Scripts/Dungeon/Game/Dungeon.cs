@@ -95,23 +95,6 @@ public class Dungeon : MonoBehaviour
 		return tile != null;
 	}
 
-	internal void SetTreasure(Vector3Int treasurePosition, TreasureTile treasureTile)
-	{
-		var newTreasureTile = treasureTile.CloneTile();
-		newTreasureTile.OpenedAction = () =>
-		{
-			//give treasure to player
-			int goldAmount = UnityEngine.Random.Range(3, 10);
-			Game game = Game.Instance;
-			Character character = game.PlayerController.ControlledAlly;
-			character.Vitals.Gold += goldAmount;
-			character.SyncDisplayedStats();
-			game.DoFloatingText($"{goldAmount} Gold", Color.yellow, character.transform.position);
-		};
-		ObjectTileMap.SetTile(treasurePosition, newTreasureTile);
-		//ObjectTileMap.SetTile(treasurePosition, TreasureTile);
-	}
-
 	internal bool CanWalkTo(Vector3Int origin, Vector3Int destination)
 	{
 		var validWalkDirections = GetValidWalkDirections(origin);

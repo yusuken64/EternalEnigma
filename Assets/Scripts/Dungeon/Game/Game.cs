@@ -114,7 +114,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerController.TakeControl(Allies[0]);
 
 		var floor = Common.Instance.GameSaveData.StartingFloor;
-		PlayerController.Vitals.Floor = floor;
+		PlayerController.Floor = floor;
 		Common.Instance.GameSaveData.StartingFloor = 0;
 
 		PlayerController.Inventory.Clear();
@@ -129,7 +129,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	internal void ShowGameOver()
 	{
 		GameOverScreen.gameObject.SetActive(true);
-		GameOverScreen.Setup(PlayerController.ControlledAlly);
+		GameOverScreen.Setup(PlayerController);
 
 		MenuManager.Open(GameOverScreen);
 	}
@@ -137,14 +137,8 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void AdvanceFloor()
 	{
 		TurnManager.InteruptTurn();
-		//TurnManager.SimultaneousCoroutines?.StopAllRunningCoroutines();
-
-		//TODO move floor to a value shared by party
-		foreach(var unit in Allies)
-		{
-			unit.Vitals.Floor++;
-			unit.DisplayedVitals.Floor++;
-		}
+		
+		PlayerController.Floor++;
 		PlayerController.ControlledAlly.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
 
@@ -207,7 +201,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		for (int i = 0; i < 10; i++)
 		{
-			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerController.Vitals.Floor);
+			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerController.Floor);
 			var enemy = Instantiate(enemyPrefab, this.transform);
 			enemy.UpdateCachedStats();
 			enemy.InitialzeVitalsFromStats();
@@ -236,7 +230,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		}
 
 		yield return new WaitForSecondsRealtime(2.0f);
-		NewFloorMessage.ShowNewFloor(PlayerController.Vitals.Floor);
+		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 		Game.Instance.PlayerController.StartTurn();
 	}
 
@@ -248,14 +242,14 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void UpdateUI()
 	{
 		if (PlayerController == null) { return; }
-		FloorText.text = $"{PlayerController.DisplayedVitals.Floor}F";
+		FloorText.text = $"{PlayerController.Floor}F";
 		LevelDisplay.UpdateUI();
 		HpDisplay.UpdateUI();
 		SpDisplay.UpdateUI();
 		HungerDisplay.UpdateUI();
 
 		var inventoryText = 
-			@$"Gold {PlayerController.DisplayedVitals.Gold}g
+			@$"Gold {PlayerController.Gold}g
 Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventory.MaxItems}";
 
 		InventoryText.text = inventoryText;

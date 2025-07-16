@@ -8,9 +8,7 @@ public class Vitals
 	[SerializeField] private int sp;
 	[SerializeField] private int level;
 	[SerializeField] private int exp;
-	[SerializeField] private int floor;
 	[SerializeField] private int hunger;
-	[SerializeField] private int gold;
 	[SerializeField] private int hungerAccumulate;
 	[SerializeField] private int hpRegenAcccumlate;
 	[SerializeField] private int spRegenAcccumlate;
@@ -70,19 +68,6 @@ public class Vitals
 		}
 	}
 
-	public int Floor
-	{
-		get { return floor; }
-		set
-		{
-			if (floor != value)
-			{
-				floor = value;
-				ClampVitals();
-			}
-		}
-	}
-
 	public int Hunger
 	{
 		get { return hunger; }
@@ -91,19 +76,6 @@ public class Vitals
 			if (hunger != value)
 			{
 				hunger = value;
-				ClampVitals();
-			}
-		}
-	}
-
-	public int Gold
-	{
-		get { return gold; }
-		set
-		{
-			if (gold != value)
-			{
-				gold = value;
 				ClampVitals();
 			}
 		}
@@ -192,9 +164,7 @@ public class Vitals
 		SP = vitals.SP;
 		Level = vitals.Level;
 		Exp = vitals.Exp;
-		Floor = vitals.Floor;
 		Hunger = vitals.Hunger;
-		Gold = vitals.Gold;
 		HungerAccumulate = vitals.HungerAccumulate;
 		HPRegenAcccumlate = vitals.HPRegenAcccumlate;
 		SPRegenAcccumlate = vitals.SPRegenAcccumlate;
@@ -219,9 +189,7 @@ public class Vitals
 			hash = hash * 23 + sp.GetHashCode();
 			hash = hash * 23 + level.GetHashCode();
 			hash = hash * 23 + exp.GetHashCode();
-			hash = hash * 23 + floor.GetHashCode();
 			hash = hash * 23 + hunger.GetHashCode();
-			hash = hash * 23 + gold.GetHashCode();
 			hash = hash * 23 + hungerAccumulate.GetHashCode();
 			hash = hash * 23 + hpRegenAcccumlate.GetHashCode();
 			hash = hash * 23 + spRegenAcccumlate.GetHashCode();
@@ -237,9 +205,7 @@ public class Vitals
 			$"sp:{sp} " +
 			$"level:{level} " +
 			$"exp:{exp} " +
-			$"floor:{floor} " +
 			$"hunger:{hunger} " +
-			$"gold:{gold} " +
 			$"hungerAccumulate:{hungerAccumulate} " +
 			$"hpRegenAcccumlate:{hpRegenAcccumlate}" +
 			$"spRegenAcccumlate:{spRegenAcccumlate}" +
@@ -255,9 +221,7 @@ public class Vitals
 		vitals.SP += modification.Sp;
 		vitals.Level += modification.Level;
 		vitals.Exp += modification.Exp;
-		vitals.Floor += modification.Floor;
 		vitals.Hunger += modification.Hunger;
-		vitals.Gold += modification.Gold;
 		vitals.HungerAccumulate += modification.HungerAccumulate;
 		vitals.HPRegenAcccumlate += modification.HpRegenAcccumlate;
 		vitals.SPRegenAcccumlate += modification.SpRegenAcccumlate;

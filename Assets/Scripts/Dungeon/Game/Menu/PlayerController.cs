@@ -25,6 +25,10 @@ public class PlayerController : MonoBehaviour
     public Vitals Vitals => ControlledAlly.Vitals;
     public Vitals DisplayedVitals => ControlledAlly.DisplayedVitals;
 
+    // === team stuff ====
+    public int Floor;
+    public int Gold;
+
     // === Control Mode ===
     public PlayerControlMode CurrentControlMode { get; set; }
 
@@ -45,12 +49,6 @@ public class PlayerController : MonoBehaviour
             case PlayerControlMode.FollowAlly:
                 HandleMovementInput();
                 break;
-            //case PlayerControlMode.TargetSelecting:
-                //if (menuCooldown > 0.2f)
-                //{
-                //    HandleTargetInput();
-                //}
-                //break;
         }
     }
 

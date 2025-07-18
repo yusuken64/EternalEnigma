@@ -169,7 +169,7 @@ public class OverworldPlayer : OverworldCharacter
 		}
 	}
 
-	private void SetAction(OverworldAction overworldAction)
+	internal void SetAction(OverworldAction overworldAction)
 	{
 		if (overworldAction == null) { return; }
 		//There is no overworld turns?
@@ -189,47 +189,10 @@ public class OverworldPlayer : OverworldCharacter
 			reverse = overworldMovement.GetReverse();
 		}
 
-		if (this.TilemapPosition == Overworld.EntrancePosition)
+		var overlappingBuilding = Overworld.OverworldBuildings.FirstOrDefault(x => x.TilemapPosition == this.TilemapPosition);
+		if (overlappingBuilding != null)
 		{
-			Overworld.WriteSaveData();
-			Common.Instance.ScreenTransition.DoTransition(() =>
-			{
-				SceneManager.LoadScene("DungeonScene");
-			});
-			yield break;
-		}
-		else if(this.TilemapPosition == Overworld.StatuePosition)
-		{
-			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
-			OverworldMenuManager.Open(overworldMenu.StatueDialog);
-			overworldMenu.StatueDialog.Show(); //this should be done to all dialogs in Open()
-			overworldMenu.StatueDialog.CloseAction = () =>
-			{
-				SetAction(reverse);
-			};
-			yield break;
-		}
-		else if(this.TilemapPosition == Overworld.ShopPosition)
-		{
-			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
-			OverworldMenuManager.Open(overworldMenu.ShopDialog);
-			overworldMenu.ShopDialog.Show(); //this should be done to all dialogs in Open()
-			overworldMenu.ShopDialog.CloseAction = () =>
-			{
-				SetAction(reverse);
-			};
-			yield break;
-		}
-		else if (this.TilemapPosition == Overworld.BallistaPosition)
-		{
-			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
-			OverworldMenuManager.Open(overworldMenu.BallistaDialog);
-			overworldMenu.BallistaDialog.Show(); //this should be done to all dialogs in Open()
-			overworldMenu.BallistaDialog.CloseAction = () =>
-			{
-				SetAction(reverse);
-			};
-			yield break;
+			overlappingBuilding.Interact(this, reverse);
 		}
 		else if (Overworld.OverworldAllies.Any(x => x.TilemapPosition == this.TilemapPosition))
 		{

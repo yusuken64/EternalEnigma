@@ -96,7 +96,7 @@ internal class OverworldMovement : OverworldAction
 	}
 }
 
-internal abstract class OverworldAction
+public abstract class OverworldAction
 {
 	internal abstract List<OverworldAction> ExecuteImmediate();
 	internal abstract IEnumerator ExecuteRoutine();

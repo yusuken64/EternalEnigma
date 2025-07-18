@@ -11,6 +11,7 @@ public class GameSaveData
 [Serializable]
 public class OverworldSaveData
 {
+	public int OverworldSeed = 0; //0 means uninitialzed;
 	public int Gold = 100;
 	public int DonationTotal;
 	public List<string> Inventory = new();

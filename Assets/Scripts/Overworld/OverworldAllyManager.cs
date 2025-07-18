@@ -17,9 +17,16 @@ public class OverworldAllyManager : MonoBehaviour
 
     internal List<OverworldAlly> GenerateRandomAlly(int count)
     {
+        var result = new List<OverworldAlly>();
         var sample = OverworldAllies.Sample(count);
-        return sample.Select(x => Instantiate(x, this.transform))
-            .ToList();
+
+        foreach (var prefab in sample)
+        {
+            var ally = Instantiate(prefab, this.transform);
+            result.Add(ally);
+        }
+
+        return result;
     }
 
 #if UNITY_EDITOR

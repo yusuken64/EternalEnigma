@@ -4,10 +4,12 @@ public class EntranceOverworldBuilding : OverworldBuilding
 {
 	public override void Interact(OverworldPlayer overworldPlayer, OverworldAction reverse)
 	{
-		FindFirstObjectByType<Overworld>().WriteSaveData();
-		Common.Instance.ScreenTransition.DoTransition(() =>
+		var overworldMenu = FindFirstObjectByType<OverworldMenu>();
+		OverworldMenuManager.Open(overworldMenu.EntranceDialog);
+		overworldMenu.EntranceDialog.Show();
+		overworldMenu.EntranceDialog.CloseAction = () =>
 		{
-			SceneManager.LoadScene("DungeonScene");
-		});
+			overworldPlayer.SetAction(reverse);
+		};
 	}
 }

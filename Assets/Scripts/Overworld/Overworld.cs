@@ -29,18 +29,6 @@ public class Overworld : MonoBehaviour
 		int seed = Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed;
 		WalkableMap.TileWorldCreator.SetCustomRandomSeed(seed);
         WalkableMap.TileWorldCreator.ExecuteAllBlueprintLayers();
-
-        //LoadMap();
-        Debug.Log("Generate Buildings");
-        GenerateInteractableBuildings();
-
-        Debug.Log("Generate Allies");
-        GenerateAllies();
-
-        Debug.Log("Initialize Player");
-        OverworldPlayer.Initialize();
-
-        Debug.Log("Overworld done");
     }
 
     private void LoadSaveData()
@@ -78,7 +66,6 @@ public class Overworld : MonoBehaviour
 	{
         var allyPositions = GetPositions("Allies");
 
-		//var positions = WalkableMap.RandomEntrancePositions(13).Where(x => !usedPositions.Contains(x.Coord)).ToList();
 		var allies = OverworldAllyManager.GenerateRandomAlly(allyPositions.Count());
 		for (int i = 0; i < allyPositions.Count; i++)
 		{
@@ -153,6 +140,15 @@ public class Overworld : MonoBehaviour
 
     private void buildLayersComplete(TileWorldCreator _twc)
     {
+        Debug.Log("Generate Buildings");
         GenerateInteractableBuildings();
+
+        Debug.Log("Generate Allies");
+        GenerateAllies();
+
+        Debug.Log("Initialize Player");
+        OverworldPlayer.Initialize();
+
+        Debug.Log("Overworld done");
     }
 }

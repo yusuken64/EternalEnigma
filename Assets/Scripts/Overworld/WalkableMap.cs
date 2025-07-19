@@ -9,6 +9,39 @@ public class WalkableMap : MonoBehaviour
 	public TileWorldCreator TileWorldCreator;
 	public string WalkableLayerName;
 
+	private bool[,] _walkableMap;
+
+	private void Awake()
+	{
+		TileWorldCreator.OnBlueprintLayersComplete += blueprintLayersComplete;
+	}
+
+	private void OnDestroy()
+	{
+		TileWorldCreator.OnBlueprintLayersComplete -= blueprintLayersComplete;
+	}
+
+	private void blueprintLayersComplete(TileWorldCreator _twc)
+	{
+		int width = _twc.twcAsset.mapWidth;
+		int height = _twc.twcAsset.mapHeight;
+		_walkableMap = new bool[width, height];
+
+		bool[,] houseMap = _twc.GetMapOutputFromBlueprintLayer("Houses");
+		bool[,] treeMap = _twc.GetMapOutputFromBlueprintLayer("Trees");
+		
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				bool hasHouse = houseMap != null && houseMap[x, y];
+				bool hasTree = treeMap != null && treeMap[x, y];
+
+				_walkableMap[x, y] = !(hasHouse || hasTree);
+			}
+		}
+	}
+
 	internal Vector3 CellToWorld(Vector3Int newMapPosition)
 	{
 		//float cellSize = TileWorldCreator.twcAsset.cellSize;
@@ -47,15 +80,14 @@ public class WalkableMap : MonoBehaviour
 
 	internal bool CanWalkTo(Vector3Int from, Vector3Int to)
 	{
-		return true;
+		int width = _walkableMap.GetLength(0);
+		int height = _walkableMap.GetLength(1);
 
-		//var walkableMap = TileWorldCreator.GetMapOutputFromBlueprintLayer(WalkableLayerName);
-		//if (to.x < 0 || to.x >= walkableMap.GetLength(0)||
-		//	to.y < 0 || to.y >= walkableMap.GetLength(1))
-		//{
-		//	return false;
-		//}
+		if (to.x < 0 || to.y < 0 || to.x >= width || to.y >= height)
+		{
+			return false;
+		}
 
-		//return walkableMap[to.x, to.y];
+		return _walkableMap[to.x, to.y];
 	}
 }

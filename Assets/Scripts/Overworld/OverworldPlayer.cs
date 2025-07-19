@@ -75,6 +75,10 @@ public class OverworldPlayer : OverworldCharacter
 			holdTime += Time.deltaTime;
 		}
 
+		if (OverworldMenuManager.Instance.DialogStack.Count > 0)
+		{
+			return;
+		}
 		if (!_busy)
 		{
 			DeterminePlayerAction();
@@ -155,18 +159,18 @@ public class OverworldPlayer : OverworldCharacter
 			}
 		}
 
-		if (Input.GetKeyDown(KeyCode.Tab))
-		{
-			_busy = true;
-			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
-			OverworldMenuManager.Open(overworldMenu.OverworldHelpDialog);
-			overworldMenu.OverworldHelpDialog.Show(); //this should be done to all dialogs in Open()
-			overworldMenu.OverworldHelpDialog.CloseAction = () =>
-			{
-				_busy = false;
-			};
-			return;
-		}
+		//if (Input.GetKeyDown(KeyCode.Tab))
+		//{
+		//	_busy = true;
+		//	var overworldMenu = FindFirstObjectByType<OverworldMenu>();
+		//	OverworldMenuManager.Open(overworldMenu.OverworldHelpDialog);
+		//	overworldMenu.OverworldHelpDialog.Show(); //this should be done to all dialogs in Open()
+		//	overworldMenu.OverworldHelpDialog.CloseAction = () =>
+		//	{
+		//		_busy = false;
+		//	};
+		//	return;
+		//}
 	}
 
 	internal void SetAction(OverworldAction overworldAction)
@@ -204,7 +208,6 @@ public class OverworldPlayer : OverworldCharacter
 			{
 				SetAction(reverse);
 			};
-			yield break;
 		}
 		_busy = false;
 		holdTime = 0f;

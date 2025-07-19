@@ -9,6 +9,7 @@ public class OverworldMenu : MonoBehaviour
 	public AllyRecruitDialog AllyRecruitDialog;
 	public OverworldHelpDialog OverworldHelpDialog;
 	public BallistaDialog BallistaDialog;
+	public EntranceDialog EntranceDialog;
 
 	private void Start()
 	{

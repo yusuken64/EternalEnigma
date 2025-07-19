@@ -7,8 +7,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class OverworldPlayer : OverworldCharacter
+public class OverworldPlayer : MonoBehaviour
 {
+	public OverworldAlly ControllingOverworldAlly;
 	public Overworld Overworld;
 	private float holdTime = 0f;
 	private float repeatTime = 0.1f;
@@ -35,13 +36,17 @@ public class OverworldPlayer : OverworldCharacter
 		var startPosition = new Vector3Int(10, 4, 0);
 		var worldPosition = WalkableMap.CellToWorld(startPosition);
 		this.transform.position = worldPosition;
-		this.TilemapPosition = startPosition;
+		ControllingOverworldAlly.TilemapPosition = startPosition;
 		initialied = true;
+
+		RecruitedAllies.Add(ControllingOverworldAlly);
+		ControllingOverworldAlly.HeroAnimator = ControllingOverworldAlly.GetComponent<HeroAnimator>();
+		ControllingOverworldAlly.HeroAnimator.Animator.applyRootMotion = false;
 	}
 
 	internal void RecordWalkPosition()
 	{
-		WalkPositionHistory.Add(TilemapPosition);
+		WalkPositionHistory.Add(ControllingOverworldAlly.TilemapPosition);
 		if (WalkPositionHistory.Count > 5)
 		{
 			WalkPositionHistory.RemoveAt(0);
@@ -56,14 +61,14 @@ public class OverworldPlayer : OverworldCharacter
 		}
 
 		// Calculate the index of the nth from the last position
-		int index = WalkPositionHistory.Count - n - 2;
+		int index = WalkPositionHistory.Count - n - 1;
 
 		return WalkPositionHistory[index];
 	}
 
 	private void LateUpdate()
     {
-        Camera.transform.position = this.transform.position + CameraOffset;
+        Camera.transform.position = ControllingOverworldAlly.transform.position + CameraOffset;
     }
 
     // Update is called once per frame
@@ -142,14 +147,14 @@ public class OverworldPlayer : OverworldCharacter
 
 		if (newFacing.HasValue)
 		{
-			SetFacing(newFacing.Value);
+			ControllingOverworldAlly.SetFacing(newFacing.Value);
 		}
 
 		if (moving)
 		{
-			var offset = Dungeon.GetFacingOffset(CurrentFacing);
-			var originalPosition = TilemapPosition;
-			var newMapPosition = TilemapPosition + offset;
+			var offset = Dungeon.GetFacingOffset(ControllingOverworldAlly.CurrentFacing);
+			var originalPosition = ControllingOverworldAlly.TilemapPosition;
+			var newMapPosition = ControllingOverworldAlly.TilemapPosition + offset;
 
 			if (WalkableMap.CanWalkTo(originalPosition, newMapPosition))
 			{
@@ -193,14 +198,14 @@ public class OverworldPlayer : OverworldCharacter
 			reverse = overworldMovement.GetReverse();
 		}
 
-		var overlappingBuilding = Overworld.OverworldBuildings.FirstOrDefault(x => x.TilemapPosition == this.TilemapPosition);
+		var overlappingBuilding = Overworld.OverworldBuildings.FirstOrDefault(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition);
 		if (overlappingBuilding != null)
 		{
 			overlappingBuilding.Interact(this, reverse);
 		}
-		else if (Overworld.OverworldAllies.Any(x => x.TilemapPosition == this.TilemapPosition))
+		else if (Overworld.OverworldAllies.Any(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition))
 		{
-			var ally = Overworld.OverworldAllies.First(x => x.TilemapPosition == this.TilemapPosition);
+			var ally = Overworld.OverworldAllies.First(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition);
 			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
 			overworldMenu.AllyRecruitDialog.Show(ally); //this should be done to all dialogs in Open()

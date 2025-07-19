@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 internal class OverworldMovement : OverworldAction
@@ -19,7 +20,7 @@ internal class OverworldMovement : OverworldAction
 
 	internal override List<OverworldAction> ExecuteImmediate()
 	{
-		overworldPlayer.TilemapPosition = newMapPosition;
+		overworldPlayer.ControllingOverworldAlly.TilemapPosition = newMapPosition;
 		overworldPlayer.RecordWalkPosition();
 		for (int i = 0; i < overworldPlayer.RecruitedAllies.Count; i++)
 		{
@@ -31,19 +32,19 @@ internal class OverworldMovement : OverworldAction
 
 	internal override IEnumerator ExecuteRoutine()
 	{
-		foreach(var ally in overworldPlayer.RecruitedAllies)
+		foreach(var ally in overworldPlayer.RecruitedAllies.Skip(1))
 		{
 			var offset = newMapPosition - ally.TilemapPosition;
 			ally.SetFacing(GetFacing(offset));
 			ally.transform.DOMove(overworldPlayer.WalkableMap.CellToWorld(ally.TilemapPosition), 0.2f);
 		}
 
-		overworldPlayer.HeroAnimator.PlayWalkAnimation();
+		overworldPlayer.ControllingOverworldAlly.HeroAnimator.PlayWalkAnimation();
 		var worldPosition = overworldPlayer.WalkableMap.CellToWorld(newMapPosition);
 		yield return overworldPlayer.transform.DOMove(worldPosition, 0.2f)
 			.WaitForCompletion();
 
-		overworldPlayer.HeroAnimator.PlayIdleAnimation();
+		overworldPlayer.ControllingOverworldAlly.HeroAnimator.PlayIdleAnimation();
 	}
 	public Facing GetFacing(Vector3Int direction)
 	{

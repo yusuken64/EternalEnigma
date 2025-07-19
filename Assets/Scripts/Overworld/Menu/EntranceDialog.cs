@@ -13,6 +13,7 @@ public class EntranceDialog : Dialog
 
 	public void Ok_Clicked()
 	{
+
 		FindFirstObjectByType<Overworld>().WriteSaveData();
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{

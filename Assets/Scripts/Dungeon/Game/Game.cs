@@ -89,8 +89,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	private void InitializeGame()
 	{
-		foreach (var overworldAlly in Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies)
+		foreach (Transform overworldAllyTransform in Common.Instance.OverworldAllyParent)
 		{
+			var overworldAlly = overworldAllyTransform.GetComponent<OverworldAlly>();
 			var ally = Instantiate(AllyPrefab);
 			ally.InitialzeModel(overworldAlly);
 			ally.AllyStrategy = AllyStrategy.Aggresive;

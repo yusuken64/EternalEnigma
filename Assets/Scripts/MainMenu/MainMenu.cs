@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -18,6 +19,7 @@ public class MainMenu : MonoBehaviour
 	public void StartGame_Clicked()
 	{
 		Common.Instance.GameSaveData = NewSaveData();
+		Common.Instance.GameSaveData.OverworldSaveData.RecruitedAlliesData = DebugAllies.Take(2).ToList();
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
 			SceneManager.LoadScene("OverworldScene");
@@ -40,11 +42,10 @@ public class MainMenu : MonoBehaviour
 		Application.Quit();
 	}
 
-	public List<OverworldAlly> DebugAllies;
+	public List<OverworldAllyData> DebugAllies;
 	public void TestDungeon_Clicked()
 	{
-		Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies = DebugAllies;
-		Common.Instance.GameSaveData.OverworldSaveData.RecruitedAllies.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
+		Common.Instance.GameSaveData.OverworldSaveData.RecruitedAlliesData = DebugAllies;
 		
 		SceneManager.LoadScene("DungeonScene");
 	}

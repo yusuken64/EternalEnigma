@@ -23,9 +23,6 @@ public class Overworld : MonoBehaviour
         Debug.Log("Load Save Data");
         LoadSaveData();
 
-		//if savedata contains overworldsavedata, restore tileworldseed
-		//otherwise generatetileworldseed;
-
 		int seed = Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed;
 		WalkableMap.TileWorldCreator.SetCustomRandomSeed(seed);
         WalkableMap.TileWorldCreator.ExecuteAllBlueprintLayers();
@@ -44,6 +41,8 @@ public class Overworld : MonoBehaviour
 		{
             Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed = UnityEngine.Random.Range(1, int.MaxValue);
         }
+
+        Debug.Log($"Overworld seed {Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed}");
     }
 
     [ContextMenu("Write Data")]
@@ -55,8 +54,8 @@ public class Overworld : MonoBehaviour
 		overworldSaveData.Gold = OverworldPlayer.Gold;
 		overworldSaveData.DonationTotal = statueDialog.DonatedAmount;
 		overworldSaveData.Inventory = OverworldPlayer.Inventory.ToList();
-		overworldSaveData.RecruitedAllies = OverworldPlayer.RecruitedAllies.ToList();
-		overworldSaveData.RecruitedAllies.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
+		//overworldSaveData.RecruitedAlliesData = OverworldPlayer.RecruitedAllies.ToList();
+		//overworldSaveData.RecruitedAlliesData.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
 
         var ballistaDialog = FindFirstObjectByType<BallistaDialog>(FindObjectsInactive.Include);
         overworldSaveData.ActiveSkillNames = ballistaDialog.GetActiveSkillsSave();
@@ -64,10 +63,30 @@ public class Overworld : MonoBehaviour
 
     public void GenerateAllies()
 	{
-        var allyPositions = GetPositions("Allies");
+        Common.Instance.InstantiatedOverworldAllies.Clear();
+        foreach(Transform child in Common.Instance.OverworldAllyParent)
+		{
+            Destroy(child.gameObject);
+		}
 
-		var allies = OverworldAllyManager.GenerateRandomAlly(allyPositions.Count());
-		for (int i = 0; i < allyPositions.Count; i++)
+        //restore allies
+        var startPosition = new Vector3Int(10, 4, 0);
+        var previousAllies = Common.Instance.GameSaveData.OverworldSaveData.RecruitedAlliesData;
+        foreach(var allyData in previousAllies)
+		{
+            var prefab = OverworldAllyManager.GetAllyByName(allyData.AllyName);
+            OverworldAllyManager.OverworldAllies.Remove(prefab);
+            var allyInstance = Instantiate(prefab, this.transform);
+            AllyRecruitDialog.Recruit(this, allyInstance);
+            allyInstance.TilemapPosition = startPosition;
+            allyInstance.transform.position = WalkableMap.CellToWorld(allyInstance.TilemapPosition);
+        }
+
+        var allyPositions = GetPositions("Allies");//TODO add count as param
+
+		int count = allyPositions.Count() - previousAllies.Count();
+		var allies = OverworldAllyManager.GenerateRandomAlly(count);
+		for (int i = 0; i < allies.Count; i++)
 		{
 			var ally = allies[i];
 			var worldPosition = WalkableMap.CellToWorld(allyPositions[i]);

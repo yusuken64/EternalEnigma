@@ -22,7 +22,7 @@ internal class OverworldMovement : OverworldAction
 	{
 		overworldPlayer.ControllingOverworldAlly.TilemapPosition = newMapPosition;
 		overworldPlayer.RecordWalkPosition();
-		for (int i = 0; i < overworldPlayer.RecruitedAllies.Count; i++)
+		for (int i = 1; i < overworldPlayer.RecruitedAllies.Count; i++)
 		{
 			OverworldAlly ally = overworldPlayer.RecruitedAllies[i];
 			ally.TilemapPosition = overworldPlayer.GetNthFromLastPosition(i);
@@ -41,7 +41,7 @@ internal class OverworldMovement : OverworldAction
 
 		overworldPlayer.ControllingOverworldAlly.HeroAnimator.PlayWalkAnimation();
 		var worldPosition = overworldPlayer.WalkableMap.CellToWorld(newMapPosition);
-		yield return overworldPlayer.transform.DOMove(worldPosition, 0.2f)
+		yield return overworldPlayer.ControllingOverworldAlly.transform.DOMove(worldPosition, 0.2f)
 			.WaitForCompletion();
 
 		overworldPlayer.ControllingOverworldAlly.HeroAnimator.PlayIdleAnimation();

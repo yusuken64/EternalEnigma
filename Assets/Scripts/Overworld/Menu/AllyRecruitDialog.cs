@@ -36,20 +36,28 @@ public class AllyRecruitDialog : Dialog
 	public void Recruit_Clicked()
 	{
 		var player = FindAnyObjectByType<OverworldPlayer>();
-		List<OverworldAlly> overworldAllies = player.Overworld.OverworldAllies;
+		var overworld = FindAnyObjectByType<Overworld>();
+		List<OverworldAlly> overworldAllies = overworld.OverworldAllies;
 		var allyCost = 300;
 
 		if (player.Gold >= allyCost &&
 			overworldAllies.Contains(_ally))
 		{
-			player.Overworld.OverworldAllies.Remove(_ally);
 			player.Gold -= allyCost;
-			player.RecruitedAllies.Add(_ally);
+			Recruit(overworld, _ally);
 		}
 
 		FaceCamDisplay.Unfollow(_ally.VisualParent);
 		OverworldMenuManager.Close(this);
 		CloseAction?.Invoke();
+	}
+
+	public static void Recruit(Overworld overworld, OverworldAlly ally)
+	{
+		overworld.OverworldAllies.Remove(ally);
+		overworld.OverworldPlayer.RecruitedAllies.Add(ally);
+		Common.Instance.InstantiatedOverworldAllies.Add(ally);
+		ally.transform.SetParent(Common.Instance.OverworldAllyParent);
 	}
 
 	public void Cancel_Clicked()

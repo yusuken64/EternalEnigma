@@ -13,6 +13,9 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	public GameObject SceneTransferObjects;
 	public ScreenTransition ScreenTransition;
 
+	public List<OverworldAlly> InstantiatedOverworldAllies = new();
+	public Transform OverworldAllyParent;
+
 	protected override void Initialize()
 	{
 #if !UNITY_EDITOR

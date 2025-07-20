@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &50955287
 RectTransform:
   m_ObjectHideFlags: 0
@@ -664,17 +664,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &642069976 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
-  m_PrefabInstance: {fileID: 56962580}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 171d63fcdded82c4e86986807264f060, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &647870749
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,16 +723,13 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Demo Notes:
 
-    Play until you die, try to get to dungeon lv30.
+    Testing overworld => dungeon => overworld loop
 
 
     Looking
     For:
 
-    Major issues, should I continue making this game. Features?
-
-    Also
-    looking for game designers, artists'
+    game designers, artists'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1114,7 +1100,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1202014873
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1762,9 +1748,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugAllies:
-  - {fileID: 642069976}
-  - {fileID: 1815029352}
-  - {fileID: 2129003522}
+  - AllyName: Rowan
+  - AllyName: Alex
+  - AllyName: Reese
 --- !u!4 &1656518433
 Transform:
   m_ObjectHideFlags: 0
@@ -1806,17 +1792,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultSelectable: {fileID: 50955286}
---- !u!114 &1815029352 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 785305266141966241, guid: 72cc990e9ae0c9849a631719a2431227, type: 3}
-  m_PrefabInstance: {fileID: 2085452280}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 171d63fcdded82c4e86986807264f060, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1815029353 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9147941034649787791, guid: 72cc990e9ae0c9849a631719a2431227, type: 3}
@@ -1852,7 +1827,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 1202014872}
+  m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &1823393150
@@ -2243,17 +2218,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72cc990e9ae0c9849a631719a2431227, type: 3}
---- !u!114 &2129003522 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8632222719332666010, guid: adf833241425af5438a45f42a0b50d0d, type: 3}
-  m_PrefabInstance: {fileID: 319534847}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 171d63fcdded82c4e86986807264f060, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2129003523 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9147941034649787791, guid: adf833241425af5438a45f42a0b50d0d, type: 3}

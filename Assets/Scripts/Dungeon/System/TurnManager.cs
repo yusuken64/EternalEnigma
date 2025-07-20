@@ -52,6 +52,7 @@ public class TurnManager : MonoBehaviour
 					gameActions.Remove(sideEffectAction);
 					if (sideEffectAction == null) { continue; }
 
+					if (actor == null) { continue; }
 					gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 					actionReplays.Add(new ActorAction(actor, sideEffectAction));
 

@@ -7711,11 +7711,6 @@ MonoBehaviour:
       Entry: 2
       Data: 88e7114a765e474b820355e2773a923f
   clusterID: 0
---- !u!1 &473870811 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5344954420696640556, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
-  m_PrefabInstance: {fileID: 2681777398217613811}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &480398963
 GameObject:
   m_ObjectHideFlags: 0
@@ -29768,7 +29763,7 @@ PrefabInstance:
     - target: {fileID: 2091171858950132569, guid: 8f749a7b960fc52489f1ee618b6b85fd, type: 3}
       propertyPath: ObjectToFollow
       value: 
-      objectReference: {fileID: 473870811}
+      objectReference: {fileID: 0}
     - target: {fileID: 3943285781392480246, guid: 8f749a7b960fc52489f1ee618b6b85fd, type: 3}
       propertyPath: m_Name
       value: FaceCam
@@ -31367,7 +31362,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8057130328413436721, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}

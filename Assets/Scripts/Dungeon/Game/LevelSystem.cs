@@ -9,8 +9,8 @@ public class LevelSystem : MonoBehaviour
 
 	internal float GetPercentageToNextLevel(Vitals displayedVitals)
 	{
-		var current = LevelData.First(x => x.Level == displayedVitals.Level);
-		var next = LevelData.First(x => x.Level == displayedVitals.Level + 1);
+		var current = LevelData.FirstOrDefault(x => x.Level == displayedVitals.Level);
+		var next = LevelData.FirstOrDefault(x => x.Level == displayedVitals.Level + 1);
 
 		if (current == null ||
 			next == null)

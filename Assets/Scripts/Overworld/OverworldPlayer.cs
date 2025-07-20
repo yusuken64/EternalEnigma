@@ -10,7 +10,6 @@ using UnityEngine.SceneManagement;
 public class OverworldPlayer : MonoBehaviour
 {
 	public OverworldAlly ControllingOverworldAlly;
-	public Overworld Overworld;
 	private float holdTime = 0f;
 	private float repeatTime = 0.1f;
 	public Camera Camera;
@@ -32,14 +31,10 @@ public class OverworldPlayer : MonoBehaviour
 
 	public void Initialize()
 	{
-		//var startPosition = WalkableMap.RandomStartPlayerPosition().Coord;
-		var startPosition = new Vector3Int(10, 4, 0);
-		var worldPosition = WalkableMap.CellToWorld(startPosition);
-		this.transform.position = worldPosition;
-		ControllingOverworldAlly.TilemapPosition = startPosition;
 		initialied = true;
 
-		RecruitedAllies.Add(ControllingOverworldAlly);
+		var overworld = FindObjectOfType<Overworld>();
+		ControllingOverworldAlly = overworld.OverworldPlayer.RecruitedAllies[0];
 		ControllingOverworldAlly.HeroAnimator = ControllingOverworldAlly.GetComponent<HeroAnimator>();
 		ControllingOverworldAlly.HeroAnimator.Animator.applyRootMotion = false;
 	}
@@ -68,6 +63,7 @@ public class OverworldPlayer : MonoBehaviour
 
 	private void LateUpdate()
     {
+		if (ControllingOverworldAlly == null) { return; }
         Camera.transform.position = ControllingOverworldAlly.transform.position + CameraOffset;
     }
 
@@ -198,14 +194,15 @@ public class OverworldPlayer : MonoBehaviour
 			reverse = overworldMovement.GetReverse();
 		}
 
-		var overlappingBuilding = Overworld.OverworldBuildings.FirstOrDefault(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition);
+		var overworld = FindObjectOfType<Overworld>();
+		var overlappingBuilding = overworld.OverworldBuildings.FirstOrDefault(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition);
 		if (overlappingBuilding != null)
 		{
 			overlappingBuilding.Interact(this, reverse);
 		}
-		else if (Overworld.OverworldAllies.Any(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition))
+		else if (overworld.OverworldAllies.Any(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition))
 		{
-			var ally = Overworld.OverworldAllies.First(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition);
+			var ally = overworld.OverworldAllies.First(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition);
 			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
 			overworldMenu.AllyRecruitDialog.Show(ally); //this should be done to all dialogs in Open()

@@ -8,18 +8,33 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+	public GameObject ContinueButton;
+
 	private void Start()
 	{
 		if (Common.Instance.GameSaveData != null)
 		{
-			//show continue;
+			ContinueButton.gameObject.SetActive(true);
+		}
+		else
+		{
+			ContinueButton.gameObject.SetActive(false);
 		}
 	}
+
+	public void Continue_Clicked()
+	{
+		Common.Instance.ScreenTransition.DoTransition(() =>
+		{
+			SceneManager.LoadScene("OverworldScene");
+		});
+	}
+
 
 	public void StartGame_Clicked()
 	{
 		Common.Instance.GameSaveData = NewSaveData();
-		Common.Instance.GameSaveData.OverworldSaveData.RecruitedAlliesData = DebugAllies.Take(2).ToList();
+		SaveSystem.SaveData(Common.Instance.GameSaveData);
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
 			SceneManager.LoadScene("OverworldScene");
@@ -28,7 +43,17 @@ public class MainMenu : MonoBehaviour
 
 	private GameSaveData NewSaveData()
 	{
-		return new GameSaveData();
+		var gameSaveData = new GameSaveData();
+		gameSaveData.OverworldSaveData.RecruitedAlliesData = new()
+		{
+			new OverworldAllyData()
+			{
+				AllyName = "Rowan"
+			}
+		};
+		gameSaveData.OverworldSaveData.OverworldSeed = UnityEngine.Random.Range(1, int.MaxValue);
+
+		return gameSaveData;
 	}
 
 	public void Options_Clicked()

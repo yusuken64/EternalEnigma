@@ -14,8 +14,6 @@ namespace TWC.Actions
 	[ActionNameAttribute(Name = "Pick")]
 	public class Pick : TWCBlueprintAction, ITWCAction
 	{
-		public int selectedLayerIndex;
-		public Guid guidCopyLayer;
 		public int PickCount;
 
 		private TWCGUILayout guiLayout;
@@ -29,9 +27,7 @@ namespace TWC.Actions
 		public ITWCAction Clone()
 		{
 			var _r = new Pick();
-
-			_r.selectedLayerIndex = this.selectedLayerIndex;
-			_r.guidCopyLayer = this.guidCopyLayer;
+			_r.PickCount = PickCount;
 
 			return _r;
 		}
@@ -39,24 +35,17 @@ namespace TWC.Actions
 		public bool[,] Execute(bool[,] map, TileWorldCreator _twc)
 		{
 			UnityEngine.Random.InitState(_twc.twcAsset.randomSeed);
-			var _fromMap = _twc.GetMapOutputFromBlueprintLayer(guidCopyLayer);
-
-			if (_fromMap == null)
-			{
-				Debug.LogWarning("TileWorldCreator: Add modifier - Layer not assigned");
-				return map;
-			}
 
 			// Step 1: Collect all true positions from _fromMap
 			List<Vector2Int> truePositions = new List<Vector2Int>();
-			int width = _fromMap.GetLength(0);
-			int height = _fromMap.GetLength(1);
+			int width = map.GetLength(0);
+			int height = map.GetLength(1);
 
 			for (int x = 0; x < width; x++)
 			{
 				for (int y = 0; y < height; y++)
 				{
-					if (_fromMap[x, y])
+					if (map[x, y])
 					{
 						truePositions.Add(new Vector2Int(x, y));
 					}
@@ -89,35 +78,6 @@ namespace TWC.Actions
 		{
 			using (guiLayout = new TWCGUILayout(_rect))
 			{
-				var _names = EditorUtilities.GetAllGenerationLayerNames(_asset);
-				var _layerName = "";
-				var _layerData = _asset.GetBlueprintLayerData(guidCopyLayer);
-				if (_layerData != null)
-				{
-					_layerName = _layerData.layerName;
-				}
-
-				guiLayout.Add();
-				if (EditorGUI.DropdownButton(guiLayout.rect, new GUIContent(_layerName), FocusType.Keyboard))
-				{
-					GenericMenu menu = new GenericMenu();
-
-					for (int n = 0; n < _names.Length; n++)
-					{
-						var _data = new GenericMenuData();
-						_data.selectedIndex = n;
-
-						if (_twc != null)
-						{
-							_data.twc = _twc;
-						}
-
-						menu.AddItem(new GUIContent(_names[n]), false, AssignLayer, _data);
-					}
-
-					menu.ShowAsContext();
-				}
-
 				// --- New: Integer field for PickCount ---
 				guiLayout.Add();
 				PickCount = EditorGUI.IntField(guiLayout.rect, new GUIContent("Pick Count"), PickCount);
@@ -137,13 +97,6 @@ namespace TWC.Actions
 			{
 				return 18;
 			}
-		}
-
-
-		void AssignLayer(object _data)
-		{
-			var _d = _data as GenericMenuData;
-			guidCopyLayer = _d.twc.twcAsset.mapBlueprintLayers[_d.selectedIndex].guid;
 		}
 	}
 }

@@ -37,11 +37,6 @@ public class Overworld : MonoBehaviour
         OverworldPlayer.Gold = Common.Instance.GameSaveData.OverworldSaveData.Gold;
         statueDialog.DonatedAmount = Common.Instance.GameSaveData.OverworldSaveData.DonationTotal;
 
-        if (Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed == 0)
-		{
-            Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed = UnityEngine.Random.Range(1, int.MaxValue);
-        }
-
         Debug.Log($"Overworld seed {Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed}");
     }
 

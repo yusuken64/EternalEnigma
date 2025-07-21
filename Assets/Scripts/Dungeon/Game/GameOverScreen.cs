@@ -18,8 +18,8 @@ public class GameOverScreen : Dialog
 On floor {playerController.Floor}
 with {playerController.Gold} Treasure";
 
-		//todo turn inventory items into gold;
 		Common.Instance.GameSaveData.OverworldSaveData.Gold += playerController.Gold;
+		SaveSystem.SaveData(Common.Instance.GameSaveData);
 	}
 
 	public void TryAgain_Clicked()

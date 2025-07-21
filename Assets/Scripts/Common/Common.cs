@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class Common : PersistedSingletonMonoBehaviour<Common>
 {
-	public GameSaveData GameSaveData = new();
+	public GameSaveData GameSaveData;
 
 	public AudioManager AudioManager;
 	public ItemManager ItemManager;
@@ -18,9 +19,15 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 
 	protected override void Initialize()
 	{
+		LoadData();
 #if !UNITY_EDITOR
 		SceneManager.LoadScene(1);
 #endif
+	}
+
+	private void LoadData()
+	{
+		GameSaveData = SaveSystem.LoadData();
 	}
 }
 

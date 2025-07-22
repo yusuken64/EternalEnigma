@@ -4,15 +4,6 @@ using UnityEngine;
 
 internal class LevelUpAction : GameAction
 {
-	private readonly Character character;
-	private LevelInfo levelUp;
-
-	public LevelUpAction(Character character, LevelInfo levelUp)
-	{
-		this.character = character;
-		this.levelUp = levelUp;
-	}
-
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		return new()

@@ -6,7 +6,23 @@ using UnityEngine;
 
 public abstract class Character : MonoBehaviour, Actor
 {
-	public Vector3Int TilemapPosition;
+	[SerializeField]
+	private Vector3Int tilemapPosition;
+
+	public Vector3Int TilemapPosition
+	{
+		get => tilemapPosition;
+		set
+		{
+			if (tilemapPosition != value)
+			{
+				tilemapPosition = value;
+				MovedThisTurn = true;
+			}
+		}
+	}
+
+	public bool MovedThisTurn { get; internal set; }
 	public Team Team;
 
 	public GameObject VisualParent;

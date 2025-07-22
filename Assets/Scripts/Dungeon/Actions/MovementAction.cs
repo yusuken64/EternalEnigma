@@ -411,10 +411,10 @@ internal class AddXPAction : GameAction
 		var game = Game.Instance;
 		var levelSystem = game.LevelSystem;
 
-		IEnumerable<LevelInfo> levelUps = levelSystem.LevelData.Where(x =>
-			x.Level > character.Vitals.Level &&
-			x.Experience <= character.Vitals.Exp);
+		int currentLevel = character.Vitals.Level;
+		int currentExp = character.Vitals.Exp;
 
+		var levelUps = levelSystem.GetLevelUps(currentLevel, currentExp);
 
 		foreach (var levelUp in levelUps)
 		{
@@ -423,7 +423,7 @@ internal class AddXPAction : GameAction
 				vitals.Level++;
 			}));
 
-			ret.Add(new LevelUpAction(character, levelUp));
+			ret.Add(new LevelUpAction());
 		}
 
 		return ret;

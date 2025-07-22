@@ -122,6 +122,7 @@ public class Enemy : Character
 
 	public override void StartTurn()
 	{
+		MovedThisTurn = false;
 		determinedActions = null;
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;

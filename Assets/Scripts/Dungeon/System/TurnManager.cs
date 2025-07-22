@@ -104,9 +104,8 @@ public class TurnManager : MonoBehaviour
 
 		foreach (var actor in actors)
 		{
-			actor.TickStatusEffects();
-
-			if (actor is Ally ally)
+			if (actor is Ally ally &&
+				ally.MovedThisTurn)
 			{
 				ally.currentInteractable = Game.Instance.CurrentDungeon?.GetInteractable(ally.TilemapPosition);
 
@@ -119,6 +118,13 @@ public class TurnManager : MonoBehaviour
 					actor.ExecuteActionImmediate(trapSideEffect);
 				}
 			}
+		}
+
+		if (interuptTurn) { yield break; }
+
+		foreach (var actor in actors)
+		{
+			actor.TickStatusEffects();
 		}
 
 		if (interuptTurn) { yield break; }

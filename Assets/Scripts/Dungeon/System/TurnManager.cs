@@ -77,27 +77,6 @@ public class TurnManager : MonoBehaviour
 			{
 				yield break;
 			}
-
-			var statusSideEffectActions = actor.GetStatusEffectSideEffects();
-
-			while (statusSideEffectActions.Any())
-			{
-				var sideEffectAction = statusSideEffectActions.First();
-				statusSideEffectActions.Remove(sideEffectAction);
-				actionReplays.Add(new ActorAction(actor, sideEffectAction));
-
-				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
-			}
-
-			var trapSideEffects = actor.GetTrapSideEffects();
-			while (trapSideEffects.Any())
-			{
-				var trapSideEffect = trapSideEffects.First();
-				trapSideEffects.Remove(trapSideEffect);
-				actionReplays.Add(new ActorAction(actor, trapSideEffect));
-
-				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(trapSideEffect));
-			}
 		}
 
 		if (interuptTurn) { yield break; }
@@ -117,6 +96,26 @@ public class TurnManager : MonoBehaviour
 					actionReplays.Add(new ActorAction(actor, trapSideEffect));
 					actor.ExecuteActionImmediate(trapSideEffect);
 				}
+			}
+
+			var statusSideEffectActions = actor.GetStatusEffectSideEffects();
+			var trapSideEffects = actor.GetTrapSideEffects();
+			while (trapSideEffects.Any())
+			{
+				var trapSideEffect = trapSideEffects.First();
+				trapSideEffects.Remove(trapSideEffect);
+				actionReplays.Add(new ActorAction(actor, trapSideEffect));
+
+				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(trapSideEffect));
+			}
+
+			while (statusSideEffectActions.Any())
+			{
+				var sideEffectAction = statusSideEffectActions.First();
+				statusSideEffectActions.Remove(sideEffectAction);
+				actionReplays.Add(new ActorAction(actor, sideEffectAction));
+
+				statusSideEffectActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
 			}
 		}
 

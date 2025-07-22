@@ -307,7 +307,8 @@ public class PlayerController : MonoBehaviour
             minimap.UpdateMinimap(visibleTiles);
         }
 
-        if (ControlledAlly.currentInteractable is Stairs stairs)
+        if (ControlledAlly.currentInteractable is Stairs stairs &&
+            ControlledAlly.MovedThisTurn)
         {
             var target = stairs;
             MenuManager.Instance.ShowYesNoDialog(

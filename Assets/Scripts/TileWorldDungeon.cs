@@ -379,7 +379,7 @@ public class TileWorldDungeon : MonoBehaviour
 		Interactables.Add(itemInstance);
 	}
 
-	internal void SetDroppedItem(Vector3Int position, ItemDefinition item, int? stackStock = null)
+	internal DroppedItem SetDroppedItem(Vector3Int position, ItemDefinition item, int? stackStock = null)
 	{
 		var droppedItemPrefab = DroppedItemPrefabs.First(x => x.DroppedItemVisual == item.DroppedItemVisual);
 		var itemInstance = Instantiate(droppedItemPrefab, this.transform);
@@ -387,6 +387,7 @@ public class TileWorldDungeon : MonoBehaviour
 		itemInstance.Position = position;
 		itemInstance.InventoryItem = item.AsInventoryItem(stackStock);
 		Interactables.Add(itemInstance);
+		return itemInstance;
 	}
 
 	internal void SetTrap(Vector3Int position, Trap trap = null)

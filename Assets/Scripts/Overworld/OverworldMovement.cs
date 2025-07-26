@@ -20,32 +20,64 @@ internal class OverworldMovement : OverworldAction
 
 	internal override List<OverworldAction> ExecuteImmediate()
 	{
+		// Move the currently controlled ally
 		overworldPlayer.ControllingOverworldAlly.TilemapPosition = newMapPosition;
 		overworldPlayer.RecordWalkPosition();
-		for (int i = 1; i < overworldPlayer.RecruitedAllies.Count; i++)
+
+		int trailIndex = 1;
+		foreach (var ally in overworldPlayer.RecruitedAllies)
 		{
-			OverworldAlly ally = overworldPlayer.RecruitedAllies[i];
-			ally.TilemapPosition = overworldPlayer.GetNthFromLastPosition(i);
+			if (ally == overworldPlayer.ControllingOverworldAlly)
+				continue;
+
+			// Move following ally to previous position of their leader
+			ally.TilemapPosition = overworldPlayer.GetNthFromLastPosition(trailIndex);
+			trailIndex++;
 		}
+
 		return new();
 	}
 
 	internal override IEnumerator ExecuteRoutine()
 	{
-		foreach(var ally in overworldPlayer.RecruitedAllies.Skip(1))
+		// Reorder list so the controlling ally is first
+		List<OverworldAlly> orderedAllies = new();
+		orderedAllies.Add(overworldPlayer.ControllingOverworldAlly);
+		orderedAllies.AddRange(overworldPlayer.RecruitedAllies.Where(a => a != overworldPlayer.ControllingOverworldAlly));
+
+		List<Tweener> tweens = new();
+
+		for (int i = 0; i < orderedAllies.Count; i++)
 		{
-			var offset = newMapPosition - ally.TilemapPosition;
-			ally.SetFacing(GetFacing(offset));
-			ally.transform.DOMove(overworldPlayer.WalkableMap.CellToWorld(ally.TilemapPosition), 0.2f);
+			var ally = orderedAllies[i];
+			var targetTile = overworldPlayer.GetNthFromLastPosition(i);
+			Vector3 targetWorld = overworldPlayer.WalkableMap.CellToWorld(targetTile);
+
+			// Calculate facing based on current world position (not TilemapPosition)
+			Vector3 offsetWorld = targetWorld - ally.transform.position;
+			var direction = new Vector3Int((int)Mathf.Clamp(offsetWorld.x, -1, 1),
+					  (int)Mathf.Clamp(offsetWorld.y, -1, 1),
+					  (int)offsetWorld.z);
+			ally.SetFacing(GetFacing(direction));
+
+			ally.HeroAnimator.PlayWalkAnimation();
+			var tween = ally.transform.DOMove(targetWorld, 0.2f);
+			tweens.Add(tween);
 		}
 
-		overworldPlayer.ControllingOverworldAlly.HeroAnimator.PlayWalkAnimation();
-		var worldPosition = overworldPlayer.WalkableMap.CellToWorld(newMapPosition);
-		yield return overworldPlayer.ControllingOverworldAlly.transform.DOMove(worldPosition, 0.2f)
-			.WaitForCompletion();
+		// Wait for all tweens to complete in parallel
+		foreach (var tween in tweens)
+		{
+			yield return tween.WaitForCompletion();
+		}
 
-		overworldPlayer.ControllingOverworldAlly.HeroAnimator.PlayIdleAnimation();
+		// Play idle for everyone
+		foreach (var ally in orderedAllies)
+		{
+			ally.HeroAnimator.PlayIdleAnimation();
+		}
 	}
+
 	public Facing GetFacing(Vector3Int direction)
 	{
 		direction = new Vector3Int(Mathf.Clamp(direction.x, -1, 1),

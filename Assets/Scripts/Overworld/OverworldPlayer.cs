@@ -26,17 +26,14 @@ public class OverworldPlayer : MonoBehaviour
 	public List<OverworldAlly> RecruitedAllies;
 	public List<Vector3Int> WalkPositionHistory;
 	private bool initialied = false;
+	private int allyIndex;
 
 	public bool ControllerHeld { get; internal set; }
 
 	public void Initialize()
 	{
 		initialied = true;
-
-		var overworld = FindObjectOfType<Overworld>();
-		ControllingOverworldAlly = overworld.OverworldPlayer.RecruitedAllies[0];
-		ControllingOverworldAlly.HeroAnimator = ControllingOverworldAlly.GetComponent<HeroAnimator>();
-		ControllingOverworldAlly.HeroAnimator.Animator.applyRootMotion = false;
+		CycleAlly();
 	}
 
 	internal void RecordWalkPosition()
@@ -50,15 +47,15 @@ public class OverworldPlayer : MonoBehaviour
 
 	public Vector3Int GetNthFromLastPosition(int n)
 	{
-		if (WalkPositionHistory == null || n < 0 || n > WalkPositionHistory.Count)
-		{
-			n = 0;
-		}
+		if (WalkPositionHistory == null || WalkPositionHistory.Count == 0)
+			return Vector3Int.zero;
 
-		// Calculate the index of the nth from the last position
+		// Clamp to valid range
+		n = Mathf.Clamp(n, 0, WalkPositionHistory.Count - 1);
+
 		int index = WalkPositionHistory.Count - n - 1;
 
-		return WalkPositionHistory[index];
+		return WalkPositionHistory[Mathf.Clamp(index, 0, WalkPositionHistory.Count - 1)];
 	}
 
 	private void LateUpdate()
@@ -160,6 +157,10 @@ public class OverworldPlayer : MonoBehaviour
 			}
 		}
 
+		if (inputHandler.swapAllyPressed)
+		{
+			CycleAlly();
+		}
 		//if (Input.GetKeyDown(KeyCode.Tab))
 		//{
 		//	_busy = true;
@@ -172,6 +173,17 @@ public class OverworldPlayer : MonoBehaviour
 		//	};
 		//	return;
 		//}
+	}
+
+	private void CycleAlly()
+	{
+		if (RecruitedAllies == null || RecruitedAllies.Count == 0)
+		{
+			return;
+		}
+
+		allyIndex = (allyIndex + 1) % RecruitedAllies.Count;
+		ControllingOverworldAlly = RecruitedAllies[allyIndex];
 	}
 
 	internal void SetAction(OverworldAction overworldAction)

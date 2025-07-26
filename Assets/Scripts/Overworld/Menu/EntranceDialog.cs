@@ -1,5 +1,6 @@
 ﻿using JuicyChickenGames.Menu;
 using System;
+using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -13,9 +14,15 @@ public class EntranceDialog : Dialog
 
 	public void Ok_Clicked()
 	{
-		FindFirstObjectByType<Overworld>().WriteSaveData();
+		var overworld = FindFirstObjectByType<Overworld>();
+		overworld.WriteSaveData();
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
+			Common.Instance.GameSaveData.OverworldSaveData.RecruitedAlliesData =
+			overworld.OverworldPlayer.RecruitedAllies.Select(x => new OverworldAllyData()
+			{
+				AllyName = x.Name
+			}).ToList();
 			SaveSystem.SaveData(Common.Instance.GameSaveData);
 			SceneManager.LoadScene("DungeonScene");
 		});

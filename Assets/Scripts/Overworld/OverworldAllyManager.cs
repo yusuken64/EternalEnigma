@@ -9,6 +9,15 @@ public class OverworldAllyManager : MonoBehaviour
 {
 	public List<OverworldAlly> OverworldAllies;
 
+	private void Start()
+	{
+	    foreach (var ally in OverworldAllies)
+		{
+            ally.HeroAnimator = ally.GetComponent<HeroAnimator>();
+            ally.HeroAnimator.Animator.applyRootMotion = false;
+        }
+	}
+
 	internal OverworldAlly GenerateRandomAlly()
 	{
 		var newAlly = Instantiate(OverworldAllies.Sample(), this.transform);

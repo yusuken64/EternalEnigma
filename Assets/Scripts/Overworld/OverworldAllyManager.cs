@@ -92,13 +92,13 @@ public class OverworldAllyManager : MonoBehaviour
 			AssetDatabase.SaveAssets();
 		});
 		AssetDatabase.Refresh();
-	}
+    }
+#endif
 
-	internal OverworldAlly GetAllyByName(string name)
+    internal OverworldAlly GetAllyByName(string name)
 	{
         return OverworldAllies.FirstOrDefault(x => x.Name == name);
 	}
-#endif
 }
 
 internal class AllyData

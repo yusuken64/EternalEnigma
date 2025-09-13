@@ -6,6 +6,8 @@ internal class CastSpellAction : GameAction
 {
 	public Func<List<GameAction>> GetActionsFunc { get; internal set; }
 
+	public CastSpellAction() {}
+
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		return GetActionsFunc?.Invoke();

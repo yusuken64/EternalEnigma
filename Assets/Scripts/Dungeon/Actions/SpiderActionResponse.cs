@@ -7,6 +7,10 @@ public class SpiderActionResponse : GameActionResponse
 {
 	private Enemy enemyToSpawnPrefab;
 
+	public SpiderActionResponse()
+	{
+
+	}
 	public SpiderActionResponse(Enemy enemyToSpawnPrefab)
 	{
 		this.enemyToSpawnPrefab = enemyToSpawnPrefab;

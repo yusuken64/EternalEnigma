@@ -8,6 +8,10 @@ internal class WarpAction : GameAction
 	private Character attacker;
 	private Vector3Int warpLoccation;
 
+	public WarpAction()
+	{
+
+	}
 	public WarpAction(Character attacker)
 	{
 		this.attacker = attacker;

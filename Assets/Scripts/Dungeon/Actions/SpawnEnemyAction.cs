@@ -11,6 +11,10 @@ internal class SpawnEnemyAction : GameAction
 
 	private Enemy _spawnedEnemy;
 
+	public SpawnEnemyAction()
+	{
+
+	}
 	//spawned enemy will lerp from spawnsourcecworldlocation to the spawnedtile
 	public SpawnEnemyAction(Enemy enemyPrefab, Vector3Int spawnTilePosition, Vector3 spawnSourceWorldLocation)
 	{

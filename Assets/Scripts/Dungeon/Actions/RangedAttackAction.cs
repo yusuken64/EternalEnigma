@@ -13,6 +13,10 @@ internal class RangedAttackAction : GameAction
 	private GameObject projectilePrefab;
 	private Vector3Int rangedAttackTargetPosition;
 
+	public RangedAttackAction()
+	{
+
+	}
 	public RangedAttackAction(Character attacker, Character target, int damage, GameObject projectilePrefab)
 	{
 		this.attacker = attacker;

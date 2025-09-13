@@ -10,6 +10,8 @@ internal class DropItemAction : GameAction
 	private InventoryItem item;
 	private Vector3Int dropPosition;
 
+	public DropItemAction()	{}
+
 	public DropItemAction(Inventory inventory, InventoryItem item, Vector3Int dropPosition)
 	{
 		this.inventory = inventory;

@@ -6,6 +6,7 @@ public class BigSlimeDieResponse : GameActionResponse
 	private Enemy enemyToSpawnPrefab;
 	private readonly int slimesToSpawn;
 
+	public BigSlimeDieResponse() { }
 	public BigSlimeDieResponse(Enemy enemyToSpawnPrefab, int slimesToSpawn)
 	{
 		this.enemyToSpawnPrefab = enemyToSpawnPrefab;

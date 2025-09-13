@@ -12,6 +12,10 @@ internal class ThrowItemAction : GameAction
 	private GameObject projectilePrefab;
 	private Vector3Int rangedAttackTargetPosition;
 
+	public ThrowItemAction()
+	{
+
+	}
 	public ThrowItemAction(Inventory inventory, Character thrower, InventoryItem item, GameObject projectilePrefab)
 	{
         this.inventory = inventory;

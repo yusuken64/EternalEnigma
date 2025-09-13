@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ApplyStatusEffectAction : GameAction
@@ -9,11 +10,20 @@ public class ApplyStatusEffectAction : GameAction
 	private readonly Character caster;
 	private StatusEffect statusInstance;
 
+	public StatusEffect StatusEffect;
+
+	public ApplyStatusEffectAction() { }
 	public ApplyStatusEffectAction(Character target, StatusEffect statusEffectPrefab, Character caster)
 	{
 		this.target = target;
 		this.statusEffectPrefab = statusEffectPrefab;
 		this.caster = caster;
+	}
+
+	internal override GameAction AsTargetedSkill(Character caster, Vector3Int targetPosition)
+	{
+		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == targetPosition);
+		return new ApplyStatusEffectAction(target, StatusEffect, caster);
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)

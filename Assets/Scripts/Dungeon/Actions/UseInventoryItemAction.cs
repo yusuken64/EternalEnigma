@@ -7,6 +7,10 @@ internal class UseInventoryItemAction : GameAction
 	private Inventory inventory;
 	private InventoryItem item;
 
+	public UseInventoryItemAction()
+	{
+
+	}
 	public UseInventoryItemAction(Inventory inventory, Character character, InventoryItem item)
 	{
 		this.inventory = inventory;

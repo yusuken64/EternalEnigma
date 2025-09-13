@@ -4,6 +4,7 @@ public class BigUnitStuckInHallway : GameActionResponse
 {
 	private StatusEffect stuckEffectPrefab;
 
+	public BigUnitStuckInHallway() { }
 	public BigUnitStuckInHallway(StatusEffect stuckEffectPrefab)
 	{
 		this.stuckEffectPrefab = stuckEffectPrefab;

@@ -10,6 +10,10 @@ internal class ExplosionAction : GameAction
 	private int damage;
 	private GameObject explosionParticleEffectPrefab;
 
+	public ExplosionAction()
+	{
+
+	}
 	public ExplosionAction(Character attacker, Character target, int damage, GameObject explosionParticleEffectPrefab)
 	{
 		this.attacker = attacker;

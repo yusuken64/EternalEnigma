@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: ShieldBash
+  m_EditorClassIdentifier: 
+  SkillName: ShieldBash
+  SPCost: 1
+  TargetSelector:
+    Team: 1
+    Area: 2
+  ActionEffects:
+  - rid: 3678569255368130637
+  SkillAnimation:
+    Steps: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569255368130637
+      type: {class: ApplyStatusEffectAction, ns: , asm: Assembly-CSharp}
+      data:
+        StatusEffect: {fileID: 8062541482072348122, guid: 2c2ea9c4ec1c95b40a2c4df619ddb91b, type: 3}

@@ -6,6 +6,7 @@ internal class EquipAction : GameAction
 	private Character character;
 	private readonly EquipableInventoryItem equipableInventoryItem;
 
+	public EquipAction() {}
 	public EquipAction(Character character, EquipableInventoryItem equipableInventoryItem)
 	{
 		this.character = character;

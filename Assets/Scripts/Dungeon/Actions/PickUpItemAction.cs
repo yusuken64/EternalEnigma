@@ -7,6 +7,10 @@ internal class PickUpItemAction : GameAction
 	private DroppedItem droppedItem;
 	private bool canAdd;
 
+	public PickUpItemAction()
+	{
+
+	}
 	public PickUpItemAction(DroppedItem droppedItem)
 	{
 		this.droppedItem = droppedItem;

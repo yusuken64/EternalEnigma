@@ -4,6 +4,7 @@ using UnityEngine;
 
 internal class LevelUpAction : GameAction
 {
+	public LevelUpAction() { }
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		return new()

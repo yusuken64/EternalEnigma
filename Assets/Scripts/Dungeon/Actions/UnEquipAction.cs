@@ -6,6 +6,10 @@ internal class UnEquipAction : GameAction
 	private Character character;
 	private readonly EquipableInventoryItem equipableInventoryItem;
 
+	public UnEquipAction()
+	{
+
+	}
 	public UnEquipAction(Character character, EquipableInventoryItem equipableInventoryItem)
 	{
 		this.character = character;

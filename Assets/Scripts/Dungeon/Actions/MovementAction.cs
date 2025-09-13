@@ -11,7 +11,7 @@ internal class MovementAction : GameAction
 	internal Vector3Int newMapPosition;
 
 	public Character Character { get; }
-
+	public MovementAction() { }
 	public MovementAction(Character character, Vector3Int originalPosition, Vector3Int newMapPosition)
 	{
 		Character = character;
@@ -79,6 +79,8 @@ internal class AttackAction : GameAction
 	private readonly Character attacker;
 	private Vector3Int originalPosition;
 	internal Vector3Int attackPosition;
+
+	public AttackAction() {}
 
 	public AttackAction(Character attacker,
 		Vector3Int originalPosition,
@@ -155,9 +157,12 @@ public class TakeDamageAction : GameAction
 {
 	private readonly Character attacker;
 	internal readonly Character target;
-	private readonly int damage;
-	private readonly bool doDamageAnimation;
+	public int damage;
+	[SerializeField]
+	public bool doDamageAnimation;
 	private readonly bool miss;
+
+	public TakeDamageAction() {}
 
 	public TakeDamageAction(Character attacker, Character target, int damage, bool doDamageAnimation = true, bool miss = false)
 	{
@@ -166,6 +171,12 @@ public class TakeDamageAction : GameAction
 		this.damage = damage;
 		this.doDamageAnimation = doDamageAnimation;
 		this.miss = miss;
+	}
+
+	internal override GameAction AsTargetedSkill(Character caster, Vector3Int targetPosition)
+	{
+		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == targetPosition);
+		return new TakeDamageAction(caster, target, damage, doDamageAnimation, miss);
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
@@ -222,10 +233,11 @@ public class TakeHealAction : GameAction
 {
 	private readonly Character attacker;
 	internal readonly Character target;
-	private readonly int healing;
-	private readonly bool doHealAnimation;
+	public int healing;
+	public bool doHealAnimation;
 	private readonly bool miss;
 
+	public TakeHealAction() {}
 	public TakeHealAction(Character attacker, Character target, int healing, bool doHealAnimation = true, bool miss = false)
 	{
 		this.attacker = attacker;
@@ -233,6 +245,12 @@ public class TakeHealAction : GameAction
 		this.healing = healing;
 		this.doHealAnimation = doHealAnimation;
 		this.miss = miss;
+	}
+
+	internal override GameAction AsTargetedSkill(Character caster, Vector3Int targetPosition)
+	{
+		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == targetPosition);
+		return new TakeHealAction(caster, target, healing, doHealAnimation, miss);
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
@@ -292,6 +310,8 @@ public class ModifyStatAction : GameAction
 	private readonly Action<Stats, Vitals> modifyAction;
 	private readonly bool doDamageAnimation;
 
+	public ModifyStatAction() {}
+
 	public ModifyStatAction(Character attacker, Character target, Action<Stats, Vitals> modifyAction, bool doDamageAnimation = true)
 	{
 		this.attacker = attacker;
@@ -342,6 +362,7 @@ public class DeathAction : GameAction
 	private bool droppedItem;
 	private readonly Character attacker;
 
+	public DeathAction() {}
 	public DeathAction(Character target, Character attacker)
 	{
 		this.target = target;
@@ -394,6 +415,7 @@ internal class AddXPAction : GameAction
 	private Character character;
 	private int eXP;
 
+	public AddXPAction() {}
 	public AddXPAction(Character character, int eXP)
 	{
 		this.character = character;
@@ -444,6 +466,8 @@ public class InteractAction : GameAction
 {
 	private Interactable currentInteractable;
 
+	public InteractAction()	{}
+
 	public InteractAction(Interactable currentInteractable)
 	{
 		this.currentInteractable = currentInteractable;
@@ -468,6 +492,7 @@ public class InteractAction : GameAction
 
 public class WaitAction : GameAction
 {
+	public WaitAction() {}
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		return new();

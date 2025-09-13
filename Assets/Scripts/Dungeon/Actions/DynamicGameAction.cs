@@ -8,6 +8,8 @@ internal class DynamicGameAction : GameAction
 	private Func<IEnumerator> executeRoutineFunc;
 	private Func<bool> isValidFunc;
 
+	public DynamicGameAction() {}
+
 	public DynamicGameAction(
 		Func<Character, List<GameAction>> executionImmediateFunc, 
 		Func<IEnumerator> executeRoutineFunc,

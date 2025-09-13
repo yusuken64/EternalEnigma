@@ -9,6 +9,10 @@ internal class SkillAction : GameAction
 	private Skill skill;
 	private Vector3Int target;
 
+	public SkillAction()
+	{
+
+	}
 	public SkillAction(Character caster, Skill skill, Vector3Int target)
 	{
 		this.caster = caster;

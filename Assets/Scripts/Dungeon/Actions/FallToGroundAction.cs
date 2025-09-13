@@ -11,12 +11,12 @@ internal class FallToGroundAction : GameAction
 	private Vector3Int finalDropPositon;
 	private DroppedItem droppedItemInstance;
 
+	public FallToGroundAction()	{}
 	public FallToGroundAction(Vector3Int dropPosition, InventoryItem item)
 	{
 		this.dropPosition = dropPosition;
 		this.item = item;
 	}
-
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{

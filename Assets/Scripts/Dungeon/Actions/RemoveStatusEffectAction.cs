@@ -7,6 +7,10 @@ public class RemoveStatusEffectAction : GameAction
 	private readonly StatusEffect statusEffectPrefab;
 	private StatusEffect removedInstance;
 
+	public RemoveStatusEffectAction()
+	{
+
+	}
 	public RemoveStatusEffectAction(Character target, StatusEffect statusEffectPrefab)
 	{
 		this.target = target;

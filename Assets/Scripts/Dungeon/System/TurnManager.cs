@@ -256,8 +256,10 @@ public interface Actor
     int ActionsLeft { get; }
 }
 
+[System.Serializable]
 public abstract class GameAction
 {
+	protected GameAction() { }
 	abstract internal bool IsValid(Character character);
 	abstract internal IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false);
 	abstract internal List<GameAction> ExecuteImmediate(Character character);
@@ -281,4 +283,7 @@ public abstract class GameAction
 	{
 		MetricsModifications.ForEach(x => x.Invoke());
 	}
+
+	//this is a temp fix
+	internal virtual GameAction AsTargetedSkill(Character caster, Vector3Int target) { return this; }
 }

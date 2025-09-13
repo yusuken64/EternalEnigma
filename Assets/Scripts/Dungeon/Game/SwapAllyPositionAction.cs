@@ -10,7 +10,10 @@ internal class SwapAllyPositionAction : GameAction
 
 	private Vector3Int originalPosition;
 	private Vector3Int newMapPosition;
+	public SwapAllyPositionAction()
+	{
 
+	}
 	public SwapAllyPositionAction(Ally ally, Character swapAlly)
 	{
 		this.ally = ally;

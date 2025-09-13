@@ -6,6 +6,10 @@ internal class SleepTurnAction : GameAction
 {
 	private Character effectedCharacter;
 
+	public SleepTurnAction()
+	{
+
+	}
 	public SleepTurnAction(Character character)
 	{
 		this.effectedCharacter = character;

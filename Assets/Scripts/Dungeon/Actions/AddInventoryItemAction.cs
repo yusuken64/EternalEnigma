@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
+[System.Serializable]
 internal class AddInventoryItemAction : GameAction
 {
 	private readonly Inventory inventory;
 	private ItemDefinition itemDefinition;
+
+	public AddInventoryItemAction() {}
 
 	public AddInventoryItemAction(Inventory inventory, ItemDefinition itemDefinition)
 	{

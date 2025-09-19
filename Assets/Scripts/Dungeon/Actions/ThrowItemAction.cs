@@ -68,7 +68,7 @@ internal class ThrowItemAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
 

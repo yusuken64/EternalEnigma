@@ -22,15 +22,15 @@ public class Skill : ScriptableObject
 		if (ActionEffects == null) ActionEffects = new();
 	}
 
-	internal List<GameAction> GetEffects(Character caster, Vector3Int target)
+	internal List<GameAction> GetEffects(Character caster, Character target)
 	{
 		return 
 			ActionEffects.Select(x => x.AsTargetedSkill(caster, target))
 			.ToList();
 	}
-	internal IEnumerator ExecuteRoutine(Character caster)
+	internal IEnumerator ExecuteRoutine(Character caster, Character target)
 	{
-		yield return SkillAnimation.ExecuteRoutine(caster);
+		yield return SkillAnimation.ExecuteRoutine(caster, target);
 	}
 
 	internal bool IsValid(Character caster)

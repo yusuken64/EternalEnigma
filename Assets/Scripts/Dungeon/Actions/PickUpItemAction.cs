@@ -32,7 +32,7 @@ internal class PickUpItemAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		if (!canAdd)
 		{
 			Game.Instance.DoFloatingText("Inventory is full", Color.red, Game.Instance.PlayerController.transform.position);

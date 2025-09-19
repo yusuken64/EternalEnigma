@@ -285,5 +285,5 @@ public abstract class GameAction
 	}
 
 	//this is a temp fix
-	internal virtual GameAction AsTargetedSkill(Character caster, Vector3Int target) { return this; }
+	internal virtual GameAction AsTargetedSkill(Character caster, Character target) { return this; }
 }

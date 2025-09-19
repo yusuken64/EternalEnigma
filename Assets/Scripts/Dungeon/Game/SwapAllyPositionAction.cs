@@ -30,7 +30,7 @@ internal class SwapAllyPositionAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 		var worldPosition2 = Game.Instance.CurrentDungeon.CellToWorld(originalPosition);
 

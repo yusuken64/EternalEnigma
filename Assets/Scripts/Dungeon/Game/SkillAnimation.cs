@@ -6,68 +6,96 @@ using UnityEngine;
 [System.Serializable]
 public class SkillAnimation
 {
+    [SerializeReference]
     public List<ActionStep> Steps = new();
 
-    internal IEnumerator ExecuteRoutine(Character caster)
+    internal IEnumerator ExecuteRoutine(Character caster, Character target)
     {
-        var originalRotation = caster.VisualParent.transform.rotation;
-
         foreach (var step in Steps)
         {
-            switch (step.StepType)
+            if (step != null)
             {
-                case ActionStepType.Rotate:
-                    caster.VisualParent.transform
-                        .DORotate(step.Vector, step.Duration, RotateMode.FastBeyond360)
-                        .SetRelative(step.Relative);
-                    break;
-
-                case ActionStepType.PunchScale:
-                    caster.VisualParent.transform
-                        .DOPunchScale(step.Vector, step.Duration, 50);
-                    break;
-
-                case ActionStepType.PlayAnimation:
-                    //caster.PlayAnimation(step.AnimationName);
-                    break;
-
-                case ActionStepType.SpawnParticles:
-                    var particle = GameObject.Instantiate(step.ParticlePrefab, caster.transform);
-                    particle.transform.position = Game.Instance.CurrentDungeon.CellToWorld(caster.TilemapPosition);
-                    GameObject.Destroy(particle, step.Duration);
-                    break;
-
-                case ActionStepType.Wait:
-                    yield return new WaitForSecondsRealtime(step.Duration);
-                    break;
-
-                case ActionStepType.ResetRotation:
-                    caster.VisualParent.transform.rotation = originalRotation;
-                    break;
+                // Run each step in sequence
+                yield return step.Execute(caster, target);
             }
         }
     }
 }
 
 [System.Serializable]
-public class ActionStep
+public abstract class ActionStep
 {
-    public ActionStepType StepType;
-
-    // common / optional parameters
-    public Vector3 Vector;        // e.g. rotation amount, punch scale
-    public float Duration;        // how long to animate/wait
-    public string AnimationName;  // "Attack", "Idle"
-    public GameObject ParticlePrefab;
-    public bool Relative;         // rotate relative?
+    public abstract IEnumerator Execute(Character caster, Character target);
 }
 
-public enum ActionStepType
+public class ParticleActionStep : ActionStep
 {
-    Rotate,
-    PunchScale,
-    PlayAnimation,
-    SpawnParticles,
-    Wait,
-    ResetRotation
+    public GameObject MuzzlePrefab;
+    public GameObject ProjectilePrefab;
+    public GameObject ImpactPrefab;
+
+    public float delay;
+    public float duration;
+
+	public override IEnumerator Execute(Character caster, Character target)
+	{
+        var originPos = caster.transform.position;
+        var targetPos = target.transform.position;
+
+        if (MuzzlePrefab != null)
+        {
+            var muzzle = Object.Instantiate(MuzzlePrefab, originPos, Quaternion.identity);
+            Object.Destroy(muzzle, delay);
+        }
+
+        if (ProjectilePrefab != null)
+        {
+            var proj = Object.Instantiate(ProjectilePrefab, originPos, Quaternion.identity);
+
+            // Tween to target
+            yield return proj.transform.DOMove(targetPos, duration)
+                .SetEase(Ease.Linear)
+                .WaitForCompletion();
+
+            Object.Destroy(proj);
+        }
+
+        if (ImpactPrefab != null)
+        {
+            var impact = Object.Instantiate(ImpactPrefab, targetPos, Quaternion.identity);
+            Object.Destroy(impact, delay);
+        }
+    }
+}
+
+public class WaitActionStep : ActionStep
+{
+    [Min(0f)]
+    public float delaySeconds;
+	public override IEnumerator Execute(Character caster, Character target)
+	{
+        yield return new WaitForSeconds(delaySeconds);
+	}
+}
+
+public class PlayAnimationStep : ActionStep
+{
+    public string AnimationName;
+    public override IEnumerator Execute(Character caster, Character target)
+    {
+        caster.PlayAttackAnimation(); //placeholder for now
+        yield return null;
+
+        //if (string.IsNullOrEmpty(AnimationName))
+        //yield break;
+
+        //caster.PlayAnimation(AnimationName);
+
+        //if (WaitForCompletion)
+        //{
+        //    // naive approach: wait until current state's length
+        //    var stateInfo = caster.Animator.GetCurrentAnimatorStateInfo(0);
+        //    yield return new WaitForSeconds(stateInfo.length);
+        //}
+    }
 }

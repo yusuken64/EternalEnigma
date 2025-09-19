@@ -17,7 +17,7 @@ namespace JuicyChickenGames.Menu
 
 		// === Targeting State ===
 		private Skill TargetingSkill;
-		private Action<Ally, Skill, Vector3Int> TargetSelectedAction;
+		private Action<Ally, Skill, Character> TargetSelectedAction;
 		private Character cameraTarget;
 
 		public List<Character> Targetables { get; private set; }
@@ -63,8 +63,9 @@ namespace JuicyChickenGames.Menu
 			}
 		}
 
-		private void TargetSelected(Ally caster, Skill skill, Vector3Int target)
+		private void TargetSelected(Ally caster, Skill skill, Character target)
 		{
+			//caster.PursuitTarget = target;
 			caster.SetAction(new SkillAction(caster, skill, target));
 			SelectTargetPrompt.SetActive(false);
 			CloseAction?.Invoke();
@@ -107,7 +108,7 @@ namespace JuicyChickenGames.Menu
 			MenuManager.Instance.TargetArrow.transform.position = CameraTarget.transform.position;
 		}
 
-		internal void InvokeTargetSelection(Skill skill, List<Character> possibleTargets, Action<Ally, Skill, Vector3Int> targetSelected)
+		internal void InvokeTargetSelection(Skill skill, List<Character> possibleTargets, Action<Ally, Skill, Character> targetSelected)
 		{
 			Targetables = possibleTargets;
 			TargetSelectedAction = targetSelected;
@@ -130,7 +131,7 @@ namespace JuicyChickenGames.Menu
 
 		internal void ConfirmTarget()
 		{
-			TargetSelectedAction?.Invoke(Game.Instance.PlayerController.ControlledAlly, TargetingSkill, CameraTarget.TilemapPosition);
+			TargetSelectedAction?.Invoke(Game.Instance.PlayerController.ControlledAlly, TargetingSkill, CameraTarget);
 			Targetables = null;
 			CameraTarget = null;
 			TargetingSkill = null;

@@ -20,9 +20,8 @@ public class ApplyStatusEffectAction : GameAction
 		this.caster = caster;
 	}
 
-	internal override GameAction AsTargetedSkill(Character caster, Vector3Int targetPosition)
+	internal override GameAction AsTargetedSkill(Character caster, Character target)
 	{
-		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == targetPosition);
 		return new ApplyStatusEffectAction(target, StatusEffect, caster);
 	}
 

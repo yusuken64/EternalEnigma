@@ -39,7 +39,7 @@ internal class ExplosionAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		var explosion = UnityEngine.Object.Instantiate(explosionParticleEffectPrefab);
 		explosion.transform.position = attacker.transform.position;
 		UnityEngine.Object.Destroy(explosion.gameObject, 5f);

@@ -19,6 +19,9 @@ MonoBehaviour:
     Area: 1
   ActionEffects:
   - rid: 3678569255368130626
+  SkillAnimation:
+    Steps:
+    - rid: 3678569417729900614
   references:
     version: 2
     RefIds:
@@ -27,3 +30,11 @@ MonoBehaviour:
       data:
         damage: 5
         doDamageAnimation: 0
+    - rid: 3678569417729900614
+      type: {class: ParticleActionStep, ns: , asm: Assembly-CSharp}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 81c02b133175879409c54d4913fca6d4, type: 3}
+        delay: 1
+        duration: 0

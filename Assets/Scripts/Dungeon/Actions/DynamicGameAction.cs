@@ -27,7 +27,7 @@ internal class DynamicGameAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		yield return executeRoutineFunc?.Invoke();
 	}
 

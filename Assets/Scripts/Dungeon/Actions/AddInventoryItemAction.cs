@@ -23,7 +23,7 @@ internal class AddInventoryItemAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		yield return null;
 	}
 

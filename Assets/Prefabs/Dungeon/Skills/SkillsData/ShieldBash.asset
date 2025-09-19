@@ -20,7 +20,8 @@ MonoBehaviour:
   ActionEffects:
   - rid: 3678569255368130637
   SkillAnimation:
-    Steps: []
+    Steps:
+    - rid: 3678569417729900615
   references:
     version: 2
     RefIds:
@@ -28,3 +29,11 @@ MonoBehaviour:
       type: {class: ApplyStatusEffectAction, ns: , asm: Assembly-CSharp}
       data:
         StatusEffect: {fileID: 8062541482072348122, guid: 2c2ea9c4ec1c95b40a2c4df619ddb91b, type: 3}
+    - rid: 3678569417729900615
+      type: {class: ParticleActionStep, ns: , asm: Assembly-CSharp}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 81c02b133175879409c54d4913fca6d4, type: 3}
+        delay: 1
+        duration: 0

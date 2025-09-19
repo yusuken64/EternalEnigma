@@ -173,9 +173,8 @@ public class TakeDamageAction : GameAction
 		this.miss = miss;
 	}
 
-	internal override GameAction AsTargetedSkill(Character caster, Vector3Int targetPosition)
+	internal override GameAction AsTargetedSkill(Character caster, Character target)
 	{
-		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == targetPosition);
 		return new TakeDamageAction(caster, target, damage, doDamageAnimation, miss);
 	}
 
@@ -247,9 +246,8 @@ public class TakeHealAction : GameAction
 		this.miss = miss;
 	}
 
-	internal override GameAction AsTargetedSkill(Character caster, Vector3Int targetPosition)
+	internal override GameAction AsTargetedSkill(Character caster, Character target)
 	{
-		var target = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == targetPosition);
 		return new TakeHealAction(caster, target, healing, doHealAnimation, miss);
 	}
 
@@ -336,7 +334,7 @@ public class ModifyStatAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		if (doDamageAnimation)
 		{
 			target.PlayTakeDamageAnimation();
@@ -390,7 +388,7 @@ public class DeathAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		AudioManager.Instance.SoundEffects.Enemy_death.PlayAsSound();
 		target.PlayDeathAnimation();
 		yield return new WaitForSecondsRealtime(0.4f);
@@ -452,7 +450,7 @@ internal class AddXPAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		yield return null;
 	}
 
@@ -479,7 +477,7 @@ public class InteractAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
 	}
@@ -499,7 +497,7 @@ public class WaitAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.1f)
 			.WaitForCompletion();
 	}

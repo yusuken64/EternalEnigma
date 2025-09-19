@@ -38,7 +38,7 @@ internal class SpawnEnemyAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		_spawnedEnemy.VisualParent.gameObject.SetActive(true);
 		_spawnedEnemy.VisualParent.transform.DOScale(Vector3.one * 2, 0.1f);
 		var endValue = Game.Instance.CurrentDungeon.CellToWorld(spawnTilePosition) + new Vector3(1.25f, 1.25f, 0);

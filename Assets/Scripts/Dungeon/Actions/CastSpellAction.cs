@@ -14,7 +14,7 @@ internal class CastSpellAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
+	{
 		yield return true;
 	}
 

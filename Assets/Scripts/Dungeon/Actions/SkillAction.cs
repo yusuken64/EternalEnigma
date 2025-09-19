@@ -7,13 +7,13 @@ internal class SkillAction : GameAction
 {
 	private Character caster;
 	private Skill skill;
-	private Vector3Int target;
+	private Character target;
 
 	public SkillAction()
 	{
 
 	}
-	public SkillAction(Character caster, Skill skill, Vector3Int target)
+	public SkillAction(Character caster, Skill skill, Character target)
 	{
 		this.caster = caster;
 		this.skill = skill;
@@ -33,8 +33,8 @@ internal class SkillAction : GameAction
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-    {
-		return skill.ExecuteRoutine(caster);
+	{
+		return skill.ExecuteRoutine(caster, target);
 	}
 
 	internal override bool IsValid(Character character)

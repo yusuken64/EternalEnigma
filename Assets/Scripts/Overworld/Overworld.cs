@@ -23,7 +23,9 @@ public class Overworld : MonoBehaviour
         Debug.Log("Load Save Data");
         LoadSaveData();
 
-		int seed = Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed;
+        Debug.Log("WalkableMap type: " + (WalkableMap == null ? "NULL" : WalkableMap.GetType().FullName));
+        Debug.Log("TileWorldCreator type: " + (WalkableMap.TileWorldCreator == null ? "NULL" : WalkableMap.TileWorldCreator.GetType().FullName));
+        int seed = Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed;
 		WalkableMap.TileWorldCreator.SetCustomRandomSeed(seed);
         WalkableMap.TileWorldCreator.ExecuteAllBlueprintLayers();
     }

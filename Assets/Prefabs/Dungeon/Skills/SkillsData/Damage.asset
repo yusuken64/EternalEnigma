@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Damage
   m_EditorClassIdentifier: 
   SkillName: Damage
+  LearnCost: 50
   SPCost: 1
   TargetSelector:
     Team: 1

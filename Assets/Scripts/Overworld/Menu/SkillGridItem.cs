@@ -29,16 +29,35 @@ public class SkillGridItem : MonoBehaviour
 		clickCooldownSeconds = 0.4f;
 		if (!_data.Active)
 		{
-			//TODO prompt are you sure;
-			_data.Active = !_data.Active;
-			UpdateUI();
-			SkillToggledCallback?.Invoke();
+			if (CanAfford())
+			{
+				//TODO prompt are you sure;
+				_data.Active = !_data.Active;
+				var overWorld = FindFirstObjectByType<Overworld>();
+				overWorld.OverworldPlayer.Gold -= _data.Skill.LearnCost;
+				UpdateUI();
+				SkillToggledCallback?.Invoke();
+			}
+			else
+			{
+				var messageDialog = Common.Instance.MessageDialog;
+				messageDialog.PromptText.text = "Not enough gold to buy skill";
+				messageDialog.gameObject.SetActive(true);
+
+				OverworldMenuManager.Open(messageDialog);
+			}
 		}
+	}
+
+	private bool CanAfford()
+	{
+		var overWorld = FindFirstObjectByType<Overworld>();
+		return _data.Skill.LearnCost >= overWorld.OverworldPlayer.Gold;
 	}
 
 	private void UpdateUI()
 	{
-		SkillText.text = $"{_data.Skill.SkillName} ({_data.Skill.SPCost})";
+		SkillText.text = $"{_data.Skill.SkillName} ({_data.Skill.LearnCost})";
 		if (_data.Active)
 		{
 			ActiveImage.color = Color.green;

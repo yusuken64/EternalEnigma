@@ -13,6 +13,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	public SkillManager SkillManager;
 	public GameObject SceneTransferObjects;
 	public ScreenTransition ScreenTransition;
+	public MessageDialog MessageDialog;
 
 	public List<OverworldAlly> InstantiatedOverworldAllies = new();
 	public Transform OverworldAllyParent;

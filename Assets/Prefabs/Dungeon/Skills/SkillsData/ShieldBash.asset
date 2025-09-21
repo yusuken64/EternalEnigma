@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ShieldBash
   m_EditorClassIdentifier: 
   SkillName: ShieldBash
+  LearnCost: 50
   SPCost: 1
   TargetSelector:
     Team: 1

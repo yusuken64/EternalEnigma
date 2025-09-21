@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Anger
   m_EditorClassIdentifier: 
   SkillName: Anger
+  LearnCost: 50
   SPCost: 1
   TargetSelector:
     Team: 3

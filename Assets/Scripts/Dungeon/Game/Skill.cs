@@ -7,6 +7,7 @@ using UnityEngine;
 public class Skill : ScriptableObject
 {
 	public string SkillName;
+	public int LearnCost;
 	public int SPCost;
 
 	public TargetSelector TargetSelector;

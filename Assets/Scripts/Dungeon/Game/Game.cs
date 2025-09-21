@@ -98,17 +98,14 @@ public class Game : SingletonMonoBehaviour<Game>
 			Allies.Add(ally);
 
 			Destroy(overworldAlly);
-		}
 
-		foreach (var ally in Allies)
-		{
 			ally.InitialzeVitalsFromStats();
 			ally.Vitals.Level = 1;
 
-			ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName("Anger"));
-			ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName("Damage"));
-			ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName("ShieldBash"));
-			ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName("Healing"));
+			foreach (var skill in overworldAlly.Skills)
+			{
+				ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName(skill));
+			}
 			ally.SyncDisplayedStats();
 		}
 

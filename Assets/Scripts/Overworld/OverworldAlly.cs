@@ -8,4 +8,6 @@ public class OverworldAlly : OverworldCharacter
 	public string Description;
 
 	public GameObject AnimatedModel;
+
+	public List<string> Skills;
 }

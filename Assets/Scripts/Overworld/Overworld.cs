@@ -53,9 +53,6 @@ public class Overworld : MonoBehaviour
 		overworldSaveData.Inventory = OverworldPlayer.Inventory.ToList();
 		//overworldSaveData.RecruitedAlliesData = OverworldPlayer.RecruitedAllies.ToList();
 		//overworldSaveData.RecruitedAlliesData.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
-
-        var ballistaDialog = FindFirstObjectByType<BallistaDialog>(FindObjectsInactive.Include);
-        overworldSaveData.ActiveSkillNames = ballistaDialog.GetActiveSkillsSave();
     }
 
     public void GenerateAllies()

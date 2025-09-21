@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +10,6 @@ public class SkillGridItem : MonoBehaviour
 	public Image ActiveImage;
 
 	private TogglableSkillGridItem _data;
-	private Func<bool> _skillsFull;
 	private float clickCooldownSeconds;
 
 	public Action SkillToggledCallback { get; internal set; }
@@ -24,17 +21,18 @@ public class SkillGridItem : MonoBehaviour
 
 	public void ToggleOn_Clicked()
 	{
-		if (clickCooldownSeconds <= 0)
+		if (clickCooldownSeconds > 0)
 		{
-			clickCooldownSeconds = 0.4f;
-			bool skillsFull = _skillsFull();
-			if (!skillsFull ||
-				(skillsFull && _data.Active))
-			{
-				_data.Active = !_data.Active;
-				UpdateUI();
-				SkillToggledCallback?.Invoke();
-			}
+			return;
+		}
+
+		clickCooldownSeconds = 0.4f;
+		if (!_data.Active)
+		{
+			//TODO prompt are you sure;
+			_data.Active = !_data.Active;
+			UpdateUI();
+			SkillToggledCallback?.Invoke();
 		}
 	}
 
@@ -51,10 +49,9 @@ public class SkillGridItem : MonoBehaviour
 		}
 	}
 
-	internal void Setup(TogglableSkillGridItem data, Func<bool> skillsFull)
+	internal void Setup(TogglableSkillGridItem data)
 	{
 		this._data = data;
-		this._skillsFull = skillsFull;
 		UpdateUI();
 	}
 

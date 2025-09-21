@@ -16,12 +16,11 @@ public class OverworldSaveData
 	public int DonationTotal;
 	public List<string> Inventory = new();
 	public List<OverworldAllyData> RecruitedAlliesData = new();
-	public List<string> ActiveSkillNames = new();
-	public int ActiveSkillMax = 1;
 }
 
 [Serializable]
 public class OverworldAllyData
 {
 	public string AllyName;
+	public List<string> Skills;
 }

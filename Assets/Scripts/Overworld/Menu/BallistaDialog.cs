@@ -13,6 +13,7 @@ public class BallistaDialog : Dialog
 	public SkillGridItem SkillGridSelectablePrefab;
 	public Transform SkillGridContainer;
 	public List<SkillGridItem> SkillGridItems { get; private set; }
+	public OverworldAlly Character { get; internal set; }
 
 	internal override void SetFirstSelect()
 	{
@@ -23,29 +24,21 @@ public class BallistaDialog : Dialog
 	internal void Show()
 	{
 		this.gameObject.SetActive(true);
-		_maxSkills = Common.Instance.GameSaveData.OverworldSaveData.ActiveSkillMax;
-		var activeSkills = Common.Instance.GameSaveData.OverworldSaveData.ActiveSkillNames;
+		var activeSkills = Character.Skills;
 
-		List<TogglableSkillGridItem> datas = Common.Instance.SkillManager.SkillPrefabs.Select(x => new TogglableSkillGridItem()
-		{
-			Active = activeSkills.Contains(x.SkillName),
-			Skill = x
-		}).ToList();
+		List<TogglableSkillGridItem> datas = Common.Instance.SkillManager.SkillPrefabs
+			.Select(x => new TogglableSkillGridItem()
+			{
+				Active = activeSkills.Contains(x.SkillName),
+				Skill = x
+			}).ToList();
 		Action<SkillGridItem, TogglableSkillGridItem> action = (view, data) =>
 		{
-			view.Setup(data, skillsFull);
+			view.Setup(data);
 			view.SkillToggledCallback = HandleSkillChanged;
 		};
 		SkillGridItems = SkillGridContainer.RePopulateObjects(SkillGridSelectablePrefab, datas, action);
 		UpdateUI();
-	}
-
-	private int _maxSkills = 2;//TODO get from playerdata
-
-	private bool skillsFull()
-	{
-		var active = SkillGridItems.Count(x => x.IsSkillActive());
-		return active >= _maxSkills;
 	}
 
 	private void HandleSkillChanged()
@@ -56,7 +49,7 @@ public class BallistaDialog : Dialog
 	private void UpdateUI()
 	{
 		var active = SkillGridItems.Count(x => x.IsSkillActive());
-		SkillsText.text = $"Skills ({active}/{_maxSkills})";
+		SkillsText.text = $"Skills ({active})";
 	}
 
 	public void Close_Clicked()

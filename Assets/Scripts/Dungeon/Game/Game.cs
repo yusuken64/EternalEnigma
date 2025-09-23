@@ -47,13 +47,13 @@ public class Game : SingletonMonoBehaviour<Game>
 	
 	public List<Character> DeadUnits; //dead units are added to this, destroy at end turn;
 
-	public StatsDisplay LevelDisplay;
-	public StatsDisplay HpDisplay;
-	public StatsDisplay SpDisplay;
-	public StatsDisplay HungerDisplay;
 	public TextMeshProUGUI SkilText;
 	public TextMeshProUGUI FloorText;
 	public TextMeshProUGUI InventoryText;
+
+	public Transform CharacterStatsDisplayContainer;
+	public CharacterStatsDisplay CharacterStatsDisplayPrefab;
+	public List<CharacterStatsDisplay> CharacterStatsDisplays;
 
 	// Start is called before the first frame update
 	void Start()
@@ -67,28 +67,16 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		GameOverScreen.gameObject.SetActive(false);
 		InitializeGame();
-
-		SetupUI();
-	}
-
-	private void SetupUI()
-	{
-		LevelDisplay.Setup("Lv",
-			() => PlayerController.DisplayedVitals.Level.ToString(),
-			() => { return LevelSystem.GetPercentageToNextLevel(PlayerController.DisplayedVitals); });
-		HpDisplay.Setup("HP",
-			() => $"{PlayerController.DisplayedVitals.HP}/{PlayerController.DisplayedStats.HPMax}",
-			() => (float)PlayerController.DisplayedVitals.HP / PlayerController.DisplayedStats.HPMax);
-		SpDisplay.Setup("SP",
-			() => $"{PlayerController.DisplayedVitals.SP}/{PlayerController.DisplayedStats.SPMax}",
-			() => (float)PlayerController.DisplayedVitals.SP / PlayerController.DisplayedStats.SPMax);
-		HungerDisplay.Setup("Full",
-			() => $"{PlayerController.DisplayedVitals.Hunger}/{PlayerController.DisplayedStats.HungerMax}",
-			() => (float)PlayerController.DisplayedVitals.Hunger / PlayerController.DisplayedStats.HungerMax);
 	}
 
 	private void InitializeGame()
 	{
+		foreach (Transform child in CharacterStatsDisplayContainer)
+		{
+			Destroy(child.gameObject);
+		}
+		CharacterStatsDisplays.Clear();
+
 		foreach (Transform overworldAllyTransform in Common.Instance.OverworldAllyParent)
 		{
 			var overworldAlly = overworldAllyTransform.GetComponent<OverworldAlly>();
@@ -107,6 +95,10 @@ public class Game : SingletonMonoBehaviour<Game>
 				ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName(skill));
 			}
 			ally.SyncDisplayedStats();
+
+			var newItem = Instantiate(CharacterStatsDisplayPrefab, CharacterStatsDisplayContainer);
+			newItem.Setup(ally);
+			CharacterStatsDisplays.Add(newItem);
 		}
 
 		PlayerController.TakeControl(Allies[0]);
@@ -241,10 +233,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	{
 		if (PlayerController == null) { return; }
 		FloorText.text = $"{PlayerController.Floor}F";
-		LevelDisplay.UpdateUI();
-		HpDisplay.UpdateUI();
-		SpDisplay.UpdateUI();
-		HungerDisplay.UpdateUI();
+		CharacterStatsDisplays.ForEach(x => x.UpdateUI());
 
 		var inventoryText = 
 			@$"Gold {PlayerController.Gold}g

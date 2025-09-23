@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: Dot
+  m_EditorClassIdentifier: 
+  SkillName: Dot
+  LearnCost: 50
+  SPCost: 1
+  TargetSelector:
+    Team: 1
+    Area: 1
+  ActionEffects:
+  - rid: 3678569488985358336
+  SkillAnimation:
+    Steps: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569488985358336
+      type: {class: ApplyStatusEffectAction, ns: , asm: Assembly-CSharp}
+      data:
+        StatusEffect: {fileID: -7662635009657674273, guid: b9b9aec7a999e57498eb5ef00cab4d3b, type: 3}

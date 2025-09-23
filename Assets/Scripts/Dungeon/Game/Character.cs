@@ -381,10 +381,24 @@ disp: {displayedVitals}");
 
 	public List<GameAction> GetStatusEffectSideEffects()
 	{
-		return StatusEffects.Where(x => x.IsExpired())
-			.Select(x => new RemoveStatusEffectAction(this, x))
-			.Cast<GameAction>()
-			.ToList();
+		var result = new List<GameAction>();
+
+		foreach (var effect in StatusEffects)
+		{
+			var tickEffects = effect.GetTickEffects(this);
+			if (tickEffects != null && tickEffects.Count > 0)
+			{
+				foreach (var tickAction in tickEffects)
+				{
+					result.Add(tickAction);
+				}
+			}
+
+			if (effect.IsExpired())
+				result.Add(new RemoveStatusEffectAction(this, effect));
+		}
+
+		return result;
 	}
 
 	public T ApplyStatusEffect<T>(T newStatusPrefab) where T : StatusEffect

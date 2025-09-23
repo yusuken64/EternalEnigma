@@ -52,7 +52,7 @@ public class SkillGridItem : MonoBehaviour
 	private bool CanAfford()
 	{
 		var overWorld = FindFirstObjectByType<Overworld>();
-		return _data.Skill.LearnCost >= overWorld.OverworldPlayer.Gold;
+		return _data.Skill.LearnCost <= overWorld.OverworldPlayer.Gold;
 	}
 
 	private void UpdateUI()

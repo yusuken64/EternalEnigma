@@ -3232,7 +3232,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 1247342651}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -4138,6 +4138,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a40b9d11540f2ff498eb38112aec276c, type: 2}
   - {fileID: 11400000, guid: d6e8e533c667e984da932ce496c2f181, type: 2}
   - {fileID: 11400000, guid: bf612cba0be85e14b89b4002c6b37e61, type: 2}
+  - {fileID: 11400000, guid: 2af5e0e8bf008c847be30f1252746333, type: 2}
+  - {fileID: 11400000, guid: bb491d5c7d633634585dee1a0eefad9e, type: 2}
 --- !u!4 &1524591525
 Transform:
   m_ObjectHideFlags: 0

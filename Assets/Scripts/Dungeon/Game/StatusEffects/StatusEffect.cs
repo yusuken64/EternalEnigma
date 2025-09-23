@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class StatusEffect : MonoBehaviour
@@ -39,4 +40,6 @@ public abstract class StatusEffect : MonoBehaviour
 
 	//return true if this status effect prevents this action
 	internal virtual bool Interupts(GameAction action) { return false; }
+
+	internal virtual List<GameAction> GetTickEffects(Character character) { return null; }
 }

@@ -10,4 +10,17 @@ public class OverworldAlly : OverworldCharacter
 	public GameObject AnimatedModel;
 
 	public List<string> Skills;
+
+	public SpriteRenderer CirlcleRenderer;
+	public Color AllyColor;
+	public Color PlayerColor;
+	internal void SetToCPU()
+	{
+		CirlcleRenderer.color = AllyColor;
+	}
+
+	internal void SetToPlayer()
+	{
+		CirlcleRenderer.color = PlayerColor;
+	}
 }

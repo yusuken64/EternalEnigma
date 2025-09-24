@@ -16,6 +16,10 @@ public class Ally : Character
 	private WanderPolicy WanderPolicy;
 	public override bool IsWaitingForPlayerInput { get; set; }
 
+	public SpriteRenderer CirlcleRenderer;
+	public Color AllyColor;
+	public Color PlayerColor;
+
 	private void Start()
 	{
 		AllyAttackPolicy = new AllyAttackPolicy(Game.Instance, this, 1);
@@ -290,6 +294,16 @@ public class Ally : Character
 	internal bool IsRangedAttack(out GameObject projectilePrefab)
 	{
 		return Equipment.IsRangedAttack(out projectilePrefab);
+	}
+
+	internal void SetToCPU()
+	{
+		CirlcleRenderer.color = AllyColor;
+	}
+
+	internal void SetToPlayer()
+	{
+		CirlcleRenderer.color = PlayerColor;
 	}
 }
 

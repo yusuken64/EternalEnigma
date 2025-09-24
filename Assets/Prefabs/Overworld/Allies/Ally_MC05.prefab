@@ -2785,6 +2785,10 @@ MonoBehaviour:
   Description: Alex, a skilled archer, grew up in a nomadic tribe mastering the art
     of ranged combat.
   AnimatedModel: {fileID: 661115457174243071}
+  Skills: []
+  CirlcleRenderer: {fileID: 8103258936086618030}
+  AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
+  PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}
 --- !u!114 &8252662816703256869
 MonoBehaviour:
   m_ObjectHideFlags: 0

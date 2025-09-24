@@ -2237,6 +2237,10 @@ MonoBehaviour:
   Description: Casey, a skilled engineer, spent years crafting intricate devices
     and constructs.
   AnimatedModel: {fileID: 7490205836832366250}
+  Skills: []
+  CirlcleRenderer: {fileID: 8103258936086618030}
+  AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
+  PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}
 --- !u!114 &6732437311684683461
 MonoBehaviour:
   m_ObjectHideFlags: 0

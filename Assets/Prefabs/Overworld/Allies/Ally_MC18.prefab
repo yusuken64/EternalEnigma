@@ -2545,6 +2545,10 @@ MonoBehaviour:
   Description: Logan, a former gladiator, fought in the arenas and now seeks redemption
     through heroic deeds.
   AnimatedModel: {fileID: 2286424205215356903}
+  Skills: []
+  CirlcleRenderer: {fileID: 8103258936086618030}
+  AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
+  PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}
 --- !u!114 &2339500301759457749
 MonoBehaviour:
   m_ObjectHideFlags: 0

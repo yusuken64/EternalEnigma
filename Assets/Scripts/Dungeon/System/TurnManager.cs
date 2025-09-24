@@ -254,6 +254,7 @@ public interface Actor
 	List<GameAction> GetInteractableSideEffects();
 
     int ActionsLeft { get; }
+	string CharacterName { get; }
 }
 
 [System.Serializable]

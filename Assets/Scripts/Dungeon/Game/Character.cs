@@ -172,6 +172,7 @@ public abstract class Character : MonoBehaviour, Actor
 	public abstract IEnumerator ExecuteActionRoutine(GameAction action);
 	public abstract void StartTurn();
 	int Actor.ActionsLeft { get => Vitals.ActionsPerTurnLeft; }
+	public string CharacterName { get; internal set; }
 
 	public Vector3Int? PursuitPosition; //only used in ai controlled
 	public Character PursuitTarget; //only used in ai controlled

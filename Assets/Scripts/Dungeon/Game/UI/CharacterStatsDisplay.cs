@@ -1,8 +1,10 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class CharacterStatsDisplay : MonoBehaviour
 {
+	public TextMeshProUGUI NameText;
 	public StatsDisplay LevelDisplay;
 	public StatsDisplay HpDisplay;
 	public StatsDisplay SpDisplay;
@@ -13,6 +15,11 @@ public class CharacterStatsDisplay : MonoBehaviour
 	internal void Setup(Character character)
 	{
 		Character = character;
+
+		if (character is Ally ally)
+		{
+			NameText.text = ally.CharacterName;
+		}
 
 		var game = FindObjectOfType<Game>();
 		var levelSystem = game.LevelSystem;

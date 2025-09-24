@@ -89,6 +89,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 			ally.InitialzeVitalsFromStats();
 			ally.Vitals.Level = 1;
+			ally.CharacterName = overworldAlly.Name;
 
 			foreach (var skill in overworldAlly.Skills)
 			{

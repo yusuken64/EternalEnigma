@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24585cf4f695ebe41acabf945481b6a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TilemapPosition: {x: 0, y: 0, z: 0}
+  tilemapPosition: {x: 0, y: 0, z: 0}
   Team: 0
   VisualParent: {fileID: 878550475739156372}
   CurrentFacing: 0
@@ -65,12 +65,14 @@ MonoBehaviour:
     AttacksPerTurnMax: 1
   FootPrint: 0
   StatusEffects: []
-  Inventory: {fileID: 0}
   Equipment: {fileID: 8669051643142028373}
   PursuitTarget: {fileID: 0}
   Skills: []
   HeroAnimator: {fileID: 3890444182482089279}
   AllyStrategy: 0
+  CirlcleRenderer: {fileID: 8959743426064059013}
+  AllyColor: {r: 0.6392157, g: 0.99215686, b: 0.9647059, a: 1}
+  PlayerColor: {r: 0.3864516, g: 0.97735846, b: 0.37434664, a: 1}
 --- !u!114 &8669051643142028373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,11 +85,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa4135f76ef33f47812dc41a988e156, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EquipedWeapon:
+  EquippedWeapon:
     ItemDefinition: {fileID: 0}
-  EquipedShield:
+  EquippedShield:
     ItemDefinition: {fileID: 0}
-  EquipedAccessory:
+  EquippedAccessory:
     ItemDefinition: {fileID: 0}
 --- !u!1 &878550475739156372
 GameObject:

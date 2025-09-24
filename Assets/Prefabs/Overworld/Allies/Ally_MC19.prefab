@@ -3090,6 +3090,10 @@ MonoBehaviour:
   Description: Kai, a stoic monk, follows the path of discipline and enlightenment,
     mastering both mind and body.
   AnimatedModel: {fileID: 4421272603399701194}
+  Skills: []
+  CirlcleRenderer: {fileID: 8103258936086618030}
+  AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
+  PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}
 --- !u!114 &1308891214494913950
 MonoBehaviour:
   m_ObjectHideFlags: 0

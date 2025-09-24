@@ -183,7 +183,13 @@ public class OverworldPlayer : MonoBehaviour
 		}
 
 		allyIndex = (allyIndex + 1) % RecruitedAllies.Count;
-		ControllingOverworldAlly = RecruitedAllies[allyIndex];
+		var oldAlly = ControllingOverworldAlly;
+		var newAlly = RecruitedAllies[allyIndex];
+
+		oldAlly?.SetToCPU();
+		newAlly.SetToPlayer();
+
+		ControllingOverworldAlly = newAlly;
 	}
 
 	internal void SetAction(OverworldAction overworldAction)

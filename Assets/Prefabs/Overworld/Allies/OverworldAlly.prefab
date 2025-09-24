@@ -117,6 +117,10 @@ MonoBehaviour:
   Name: 
   Description: 
   AnimatedModel: {fileID: 0}
+  Skills: []
+  CirlcleRenderer: {fileID: 8103258936086618030}
+  AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
+  PlayerColor: {r: 0.28256175, g: 0.93962264, b: 0.18969738, a: 1}
 --- !u!114 &3056893096522460405
 MonoBehaviour:
   m_ObjectHideFlags: 0

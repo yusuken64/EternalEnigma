@@ -2645,6 +2645,10 @@ MonoBehaviour:
   Description: Finley, a quick-witted trickster, navigates the world with a mischievous
     sense of humor.
   AnimatedModel: {fileID: 4310782682817512421}
+  Skills: []
+  CirlcleRenderer: {fileID: 8103258936086618030}
+  AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
+  PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}
 --- !u!114 &6443118456509964163
 MonoBehaviour:
   m_ObjectHideFlags: 0

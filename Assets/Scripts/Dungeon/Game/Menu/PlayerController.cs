@@ -323,12 +323,14 @@ public class PlayerController : MonoBehaviour
         if (oldAlly != null)
         {
             oldAlly.IsWaitingForPlayerInput = false;
+            oldAlly.SetToCPU();
         }
         if (newAlly != null)
         {
             ControlledAlly = newAlly;
             newAlly.IsWaitingForPlayerInput = true;
             CameraController.SetFollowTarget(newAlly.transform);
+            newAlly.SetToPlayer();
         }
     }
 

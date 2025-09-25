@@ -80,7 +80,7 @@ public class PlayerController : MonoBehaviour
         switch (CurrentControlMode)
         {
             case PlayerControlMode.FollowAlly:
-                CameraController.SetFollowTarget(ControlledAlly.transform);
+                CameraController.SetFollowTarget(ControlledAlly.CirlcleRenderer.transform);
                 break;
         }
     }
@@ -329,7 +329,7 @@ public class PlayerController : MonoBehaviour
         {
             ControlledAlly = newAlly;
             newAlly.IsWaitingForPlayerInput = true;
-            CameraController.SetFollowTarget(newAlly.transform);
+            CameraController.SetFollowTarget(newAlly.CirlcleRenderer.transform);
             newAlly.SetToPlayer();
         }
     }

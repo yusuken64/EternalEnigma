@@ -12,10 +12,18 @@ public class CursorManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
         }
         // If mouse was moved/clicked this frame
-        else if (Mouse.current != null && Mouse.current.wasUpdatedThisFrame)
+        else if (Mouse.current != null)
         {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            bool mouseMoved = Mouse.current.delta.ReadValue() != Vector2.zero;
+            bool mouseClicked = Mouse.current.leftButton.wasPressedThisFrame
+                                || Mouse.current.rightButton.wasPressedThisFrame
+                                || Mouse.current.middleButton.wasPressedThisFrame;
+
+            if (mouseMoved || mouseClicked)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
         }
         // If keyboard was pressed this frame (optional)
         else if (Keyboard.current != null && Keyboard.current.wasUpdatedThisFrame)

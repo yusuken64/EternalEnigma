@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5999873314562429099}
   - component: {fileID: 5245011834009076061}
   - component: {fileID: 6637448193267955990}
+  - component: {fileID: 689308171180052080}
   m_Layer: 8
   m_Name: OverworldPlayer
   m_TagString: Untagged
@@ -47,7 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ControllingOverworldAlly: {fileID: 4836490534235309529}
-  Overworld: {fileID: 0}
   Camera: {fileID: 0}
   CameraOffset: {x: 1, y: -1.87, z: -5.23}
   WalkableMap: {fileID: 0}
@@ -56,6 +56,9 @@ MonoBehaviour:
   UIText: {fileID: 0}
   RecruitedAllies: []
   WalkPositionHistory: []
+  rotationSpeed: 120
+  minPitch: 20
+  maxPitch: 80
 --- !u!114 &6637448193267955990
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -789,6 +792,21 @@ MonoBehaviour:
     AnimatorController: {fileID: 9100000, guid: 02e5eecee0504ce987c3aa6f7cd04eec, type: 2}
   - Stance: 7
     AnimatorController: {fileID: 9100000, guid: e8892ed92f9a4079a3a789e7863095e6, type: 2}
+--- !u!114 &689308171180052080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3124527309009811511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13c06ebc6405a7d49a31fd4df8ced468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 0}
+  CameraOffset: {x: 1, y: -7.24, z: -11.02}
+  _followTarget: {fileID: 0}
 --- !u!1001 &6984751746082051157
 PrefabInstance:
   m_ObjectHideFlags: 0

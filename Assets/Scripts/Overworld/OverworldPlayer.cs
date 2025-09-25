@@ -12,8 +12,8 @@ public class OverworldPlayer : MonoBehaviour
 	public OverworldAlly ControllingOverworldAlly;
 	private float holdTime = 0f;
 	private float repeatTime = 0.1f;
-	public Camera Camera;
-	public Vector3 CameraOffset = new Vector3(1, -7.23999977f, -11.0200005f);
+
+	public CameraController CameraController;
 
 	private bool _busy;
 	public WalkableMap WalkableMap;
@@ -58,14 +58,8 @@ public class OverworldPlayer : MonoBehaviour
 		return WalkPositionHistory[Mathf.Clamp(index, 0, WalkPositionHistory.Count - 1)];
 	}
 
-	private void LateUpdate()
-    {
-		if (ControllingOverworldAlly == null) { return; }
-        Camera.transform.position = ControllingOverworldAlly.transform.position + CameraOffset;
-    }
-
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
 	{
 		if (!initialied) { return; }
 		if (ControllerHeld)
@@ -190,6 +184,7 @@ public class OverworldPlayer : MonoBehaviour
 		newAlly.SetToPlayer();
 
 		ControllingOverworldAlly = newAlly;
+		CameraController.SetFollowTarget(newAlly.CirlcleRenderer.transform);
 	}
 
 	internal void SetAction(OverworldAction overworldAction)

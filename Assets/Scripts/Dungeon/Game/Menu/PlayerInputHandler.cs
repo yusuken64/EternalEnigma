@@ -8,6 +8,7 @@
         public PlayerInput PlayerInput;
 
         public Vector2 moveInput { get; private set; }
+        public Vector2 lookInput { get; private set; }
         public bool isMoving { get; private set; }
         public bool attackPressed { get; private set; }
         public bool interactPressed { get; private set; }
@@ -19,6 +20,7 @@
         public bool holdPosition { get; private set; }
 
         private InputAction moveAction;
+        private InputAction lookAction;
         private InputAction attackAction;
         private InputAction interactAction;
         //private InputAction waitAction;
@@ -32,6 +34,7 @@
         {
             base.Initialize();
             moveAction = PlayerInput.actions["Move"];
+            lookAction = PlayerInput.actions["Look"];
             attackAction = PlayerInput.actions["Attack"];
             interactAction = PlayerInput.actions["Use"];
             //waitAction = PlayerInput.actions["Wait"];
@@ -48,6 +51,8 @@
         {
             moveInput = moveAction.ReadValue<Vector2>();
             isMoving = moveInput.sqrMagnitude > 0.1f;
+
+            lookInput = lookAction.ReadValue<Vector2>();
 
             attackPressed = attackAction.WasPressedThisFrame();
             interactPressed = interactAction.WasPressedThisFrame();

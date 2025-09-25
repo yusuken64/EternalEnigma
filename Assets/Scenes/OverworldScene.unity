@@ -215,7 +215,7 @@ MonoBehaviour:
   OptionInput: 0
   PlayerInput: {fileID: 9813881}
   NavigateActions:
-    m_Name: 
+    m_Name: Navigate Actions
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: 0d4608bd-099e-4850-974e-b9e7f960de97
@@ -260,7 +260,7 @@ MonoBehaviour:
     m_SingletonActionBindings: []
     m_Flags: 0
   OpenOptions:
-    m_Name: 
+    m_Name: Open Options
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: 7ef77a08-e075-40e2-a0b1-317baccff050
@@ -13022,13 +13022,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 871175301}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 15.06, y: 20.448044, z: -10.99}
+  m_LocalRotation: {x: -0.44557282, y: 0, z: 0, w: 0.89524573}
+  m_LocalPosition: {x: 13.58, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: -52.92, y: 0, z: 0}
 --- !u!1001 &895322219
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18258,6 +18258,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf5dd189d98893e40b261ab8e7da8be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1287486348 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 689308171180052080, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+  m_PrefabInstance: {fileID: 2681777398217613811}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13c06ebc6405a7d49a31fd4df8ced468, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1309538783
@@ -29688,6 +29699,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 689308171180052080, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: maxZ
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 689308171180052080, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: minX
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 689308171180052080, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: minZ
+      value: -11
+      objectReference: {fileID: 0}
+    - target: {fileID: 689308171180052080, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: Camera
+      value: 
+      objectReference: {fileID: 519420031}
+    - target: {fileID: 689308171180052080, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: CameraOffset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 689308171180052080, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: CameraOffset.y
+      value: -1.87
+      objectReference: {fileID: 0}
+    - target: {fileID: 689308171180052080, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: CameraOffset.z
+      value: -5.23
+      objectReference: {fileID: 0}
     - target: {fileID: 734655116080678107, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -29736,6 +29775,14 @@ PrefabInstance:
       propertyPath: HeroAnimator
       value: 
       objectReference: {fileID: 1287486347}
+    - target: {fileID: 5245011834009076061, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: CameraController
+      value: 
+      objectReference: {fileID: 1287486348}
+    - target: {fileID: 5245011834009076061, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
+      propertyPath: ControllingOverworldAlly
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5385981450199687510, guid: e9bf19b765443594892d03e4fd1e6d46, type: 3}
       propertyPath: m_IsActive
       value: 0

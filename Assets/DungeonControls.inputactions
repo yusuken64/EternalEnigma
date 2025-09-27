@@ -42,15 +42,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Use",
-                    "type": "Button",
-                    "id": "f8c5c5a2-192d-40cf-b9c4-cc8a60294ef1",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "HoldPosition",
                     "type": "Button",
                     "id": "6b3fc6c1-846c-4684-9402-0a1da6039879",
@@ -356,28 +347,6 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Attack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "6191371a-4876-47a5-a315-e0bb8e21c9ae",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Use",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c4373c12-4f3b-4340-9cad-dd5c2f34c4ad",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Use",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

@@ -11,7 +11,7 @@
         public Vector2 lookInput { get; private set; }
         public bool isMoving { get; private set; }
         public bool attackPressed { get; private set; }
-        public bool interactPressed { get; private set; }
+        //public bool interactPressed { get; private set; }
         public bool waitPressed { get; private set; }
         public bool menuPressed { get; private set; }
         public bool skillsPressed { get; private set; }
@@ -22,7 +22,7 @@
         private InputAction moveAction;
         private InputAction lookAction;
         private InputAction attackAction;
-        private InputAction interactAction;
+        //private InputAction interactAction;
         //private InputAction waitAction;
         private InputAction holdPositionAction;
         private InputAction menuAction;
@@ -36,7 +36,7 @@
             moveAction = PlayerInput.actions["Move"];
             lookAction = PlayerInput.actions["Look"];
             attackAction = PlayerInput.actions["Attack"];
-            interactAction = PlayerInput.actions["Use"];
+            //interactAction = PlayerInput.actions["Use"];
             //waitAction = PlayerInput.actions["Wait"];
             holdPositionAction = PlayerInput.actions["HoldPosition"];
             menuAction = PlayerInput.actions["Menu"];
@@ -55,7 +55,7 @@
             lookInput = lookAction.ReadValue<Vector2>();
 
             attackPressed = attackAction.WasPressedThisFrame();
-            interactPressed = interactAction.WasPressedThisFrame();
+            //interactPressed = interactAction.WasPressedThisFrame();
             menuPressed = menuAction.WasPressedThisFrame();
             skillsPressed = skillsAction.WasPressedThisFrame();
             mapPressed = mapAction.WasPressedThisFrame();

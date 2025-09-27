@@ -16,6 +16,7 @@ public class OverworldPlayer : MonoBehaviour
 	public CameraController CameraController;
 
 	private bool _busy;
+	private bool _menuBusy;
 	public WalkableMap WalkableMap;
 
 	public int Gold;
@@ -71,7 +72,7 @@ public class OverworldPlayer : MonoBehaviour
 		{
 			return;
 		}
-		if (!_busy)
+		if (!_busy && !_menuBusy)
 		{
 			DeterminePlayerAction();
 		}
@@ -143,11 +144,14 @@ public class OverworldPlayer : MonoBehaviour
 			var originalPosition = ControllingOverworldAlly.TilemapPosition;
 			var newMapPosition = ControllingOverworldAlly.TilemapPosition + offset;
 
-			if (WalkableMap.CanWalkTo(originalPosition, newMapPosition))
+			if (!PlayerInputHandler.Instance.holdPosition)
 			{
-				SetAction(new OverworldMovement(this, originalPosition, newMapPosition));
-				holdTime = 0f;
-				return;
+				if (WalkableMap.CanWalkTo(originalPosition, newMapPosition))
+				{
+					SetAction(new OverworldMovement(this, originalPosition, newMapPosition));
+					holdTime = 0f;
+					return;
+				}
 			}
 		}
 
@@ -155,18 +159,37 @@ public class OverworldPlayer : MonoBehaviour
 		{
 			CycleAlly();
 		}
-		//if (Input.GetKeyDown(KeyCode.Tab))
-		//{
-		//	_busy = true;
-		//	var overworldMenu = FindFirstObjectByType<OverworldMenu>();
-		//	OverworldMenuManager.Open(overworldMenu.OverworldHelpDialog);
-		//	overworldMenu.OverworldHelpDialog.Show(); //this should be done to all dialogs in Open()
-		//	overworldMenu.OverworldHelpDialog.CloseAction = () =>
-		//	{
-		//		_busy = false;
-		//	};
-		//	return;
-		//}
+
+		if (inputHandler.attackPressed)
+		{
+			//determine ally at attackposition;
+			var offset = Dungeon.GetFacingOffset(ControllingOverworldAlly.CurrentFacing);
+			var originalPosition = ControllingOverworldAlly.TilemapPosition;
+			var targetMapPosition = originalPosition + offset;
+
+			var targetingAlly = RecruitedAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
+			if (targetingAlly != null)
+			{
+				_menuBusy = true;
+				var overworldMenu = FindFirstObjectByType<OverworldMenu>();
+				overworldMenu.AllyRecruitDialog.Show(targetingAlly, AllyRecruitDialogMode.Talk);
+				overworldMenu.AllyRecruitDialog.CloseAction = () =>
+				{
+					//Do nothing
+					StartCoroutine(Wait(() =>
+					{
+						_menuBusy = false;
+					}));
+				};
+				OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
+			}
+		}
+	}
+
+	private IEnumerator Wait(Action? action)
+	{
+		yield return null;
+		action?.Invoke();
 	}
 
 	private void CycleAlly()
@@ -218,7 +241,7 @@ public class OverworldPlayer : MonoBehaviour
 			var ally = overworld.OverworldAllies.First(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition);
 			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 			OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
-			overworldMenu.AllyRecruitDialog.Show(ally); //this should be done to all dialogs in Open()
+			overworldMenu.AllyRecruitDialog.Show(ally, AllyRecruitDialogMode.Recruit);
 			overworldMenu.AllyRecruitDialog.CloseAction = () =>
 			{
 				SetAction(reverse);

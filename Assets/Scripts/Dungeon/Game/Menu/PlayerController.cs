@@ -197,7 +197,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
         
-        if (PlayerInputHandler.Instance.interactPressed)
+        if (PlayerInputHandler.Instance.attackPressed)
         {
             if (ControlledAlly.currentInteractable != null)
             {

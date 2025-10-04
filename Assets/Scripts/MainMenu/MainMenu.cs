@@ -24,10 +24,12 @@ public class MainMenu : MonoBehaviour
 
 	public void Continue_Clicked()
 	{
-		Common.Instance.ScreenTransition.DoTransition(() =>
-		{
-			SceneManager.LoadScene("OverworldScene");
-		});
+		Common.Instance.ScreenTransition.DoTransition(
+			() =>
+			{
+				SceneManager.LoadScene("OverworldScene");
+			},
+			false);
 	}
 
 
@@ -35,10 +37,12 @@ public class MainMenu : MonoBehaviour
 	{
 		Common.Instance.GameSaveData = NewSaveData();
 		SaveSystem.SaveData(Common.Instance.GameSaveData);
-		Common.Instance.ScreenTransition.DoTransition(() =>
-		{
-			SceneManager.LoadScene("OverworldScene");
-		});
+		Common.Instance.ScreenTransition.DoTransition(
+			() =>
+			{
+				SceneManager.LoadScene("OverworldScene");
+			},
+			false);
 	}
 
 	private GameSaveData NewSaveData()

@@ -19,12 +19,12 @@ public class ScreenTransition : MonoBehaviour
         BlockScreen.gameObject.SetActive(false);
     }
 
-    public void DoTransition(Action postTransition)
+    public void DoTransition(Action postTransition, bool autoOpen = true)
     {
-        StartCoroutine(DoTransitionRoutine(postTransition));
+        StartCoroutine(DoTransitionRoutine(postTransition, autoOpen));
     }
 
-    private IEnumerator DoTransitionRoutine(Action postTransition)
+    private IEnumerator DoTransitionRoutine(Action postTransition, bool autoOpen = true)
     {
         BlockScreen.gameObject.SetActive(true);
         ShutterScreen.gameObject.SetActive(true);
@@ -35,9 +35,30 @@ public class ScreenTransition : MonoBehaviour
         yield return closeTween.WaitForCompletion();
 
         postTransition?.Invoke();
-        yield return new WaitForSeconds(OpenDelayTimeSeconds);
 
-        //AudioManager.Instance?.PlaySound(OpenClip);
+        if (autoOpen)
+        {
+            yield return new WaitForSeconds(OpenDelayTimeSeconds);
+
+            //AudioManager.Instance?.PlaySound(OpenClip);
+            var openTween = ShutterScreen.DOFade(0, TransitionTimeSeconds);
+            yield return openTween.WaitForCompletion();
+
+            ShutterScreen.gameObject.SetActive(false);
+            BlockScreen.gameObject.SetActive(false);
+        }
+    }
+
+    internal void DoOpen()
+    {
+        StartCoroutine(DoOpenRoutine());
+    }
+    private IEnumerator DoOpenRoutine()
+    {
+        BlockScreen.gameObject.SetActive(true);
+        ShutterScreen.gameObject.SetActive(true);
+        ShutterScreen.color = new Color(0, 0, 0, 1);
+
         var openTween = ShutterScreen.DOFade(0, TransitionTimeSeconds);
         yield return openTween.WaitForCompletion();
 

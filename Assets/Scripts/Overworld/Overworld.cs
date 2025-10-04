@@ -163,5 +163,6 @@ public class Overworld : MonoBehaviour
         OverworldPlayer.Initialize();
 
         Debug.Log("Overworld done");
+        Common.Instance.ScreenTransition.DoOpen();
     }
 }

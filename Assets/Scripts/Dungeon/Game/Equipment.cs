@@ -26,35 +26,80 @@ public class Equipment : MonoBehaviour
 			EquippedAccessory?.GetEquipmentStatModification();
 	}
 
-	public void Equip(EquipableInventoryItem equipableInventoryItem)
+	public void Equip(EquipableInventoryItem newItem)
 	{
-		UnEquip(equipableInventoryItem.EquipmentSlot);
+		var slots = new Dictionary<EquipmentSlot, EquipableInventoryItem>();
 
-		switch (equipableInventoryItem.EquipmentSlot)
+		if (EquippedWeapon != null)
+			slots[EquipmentSlot.MainHand] = EquippedWeapon;
+		if (EquippedShield != null)
+			slots[EquipmentSlot.OffHand] = EquippedShield;
+		if (EquippedAccessory != null)
+			slots[EquipmentSlot.Accessory] = EquippedAccessory;
+
+		ApplyEquipChange(slots, newItem);
+
+		// Now commit the changes back
+		slots.TryGetValue(EquipmentSlot.MainHand, out EquippedWeapon);
+		slots.TryGetValue(EquipmentSlot.OffHand, out EquippedShield);
+		slots.TryGetValue(EquipmentSlot.Accessory, out EquippedAccessory);
+
+		HandleEquipmentChanged?.Invoke(EquipChangeType.Equip, newItem);
+	}
+
+	private static void ApplyEquipChange(
+	Dictionary<EquipmentSlot, EquipableInventoryItem> slots,
+	EquipableInventoryItem newItem)
+	{
+		switch (newItem.EquipmentSlot)
 		{
 			case EquipmentSlot.TwoHand:
-				EquippedWeapon = equipableInventoryItem;
-				EquippedShield = null;
+				slots[EquipmentSlot.MainHand] = newItem;
+				slots.Remove(EquipmentSlot.OffHand);
 				break;
+
 			case EquipmentSlot.MainHand:
-				EquippedWeapon = equipableInventoryItem;
+				// If there’s a two-hander equipped, it’s replaced
+				slots[EquipmentSlot.MainHand] = newItem;
 				break;
+
 			case EquipmentSlot.OffHand:
-				EquippedShield = equipableInventoryItem;
-				if (EquippedWeapon?.ItemDefinition is EquipmentItemDefinition equipment)
+				// If main hand is a two-hander, remove it
+				if (slots.TryGetValue(EquipmentSlot.MainHand, out var currentMain) &&
+					currentMain?.EquipmentItemDefinition?.WeaponType == WeaponType.TwoHandSword)
 				{
-					if (equipment.WeaponType == WeaponType.TwoHandSword)
-					{
-						EquippedWeapon = null;
-					}
+					slots.Remove(EquipmentSlot.MainHand);
 				}
+				slots[EquipmentSlot.OffHand] = newItem;
 				break;
+
 			case EquipmentSlot.Accessory:
-				EquippedAccessory = equipableInventoryItem;
+				slots[EquipmentSlot.Accessory] = newItem;
 				break;
 		}
+	}
 
-		HandleEquipmentChanged?.Invoke(EquipChangeType.Equip, equipableInventoryItem);
+	public StatModification GetStatsIfEquipped(EquipableInventoryItem newItem)
+	{
+		var slots = new Dictionary<EquipmentSlot, EquipableInventoryItem>();
+
+		if (EquippedWeapon != null)
+			slots[EquipmentSlot.MainHand] = EquippedWeapon;
+		if (EquippedShield != null)
+			slots[EquipmentSlot.OffHand] = EquippedShield;
+		if (EquippedAccessory != null)
+			slots[EquipmentSlot.Accessory] = EquippedAccessory;
+
+		ApplyEquipChange(slots, newItem);
+
+		// Now sum up stats from simulated slots
+		StatModification total = new();
+		foreach (var kvp in slots)
+		{
+			total += kvp.Value.GetEquipmentStatModification();
+		}
+
+		return total;
 	}
 
 	internal bool CanEquip(EquipableInventoryItem equipableInventoryItem)

@@ -20,6 +20,28 @@ public class EquipmentItemDefinition : ItemDefinition
 	{
 		return StatModification;
 	}
+
+	public string GetEquipmentDescription()
+	{
+		switch (WeaponType)
+		{
+			case WeaponType.SingleSword:
+				break;
+			case WeaponType.Spear:
+				break;
+			case WeaponType.BowAndArrow:
+				break;
+			case WeaponType.TwoHandSword:
+				break;
+			case WeaponType.MagicWand:
+				break;
+			case WeaponType.OffhandSword:
+				break;
+			case WeaponType.OffhandShield:
+				break;
+		}
+		return "";
+	}
 }
 
 public enum WeaponType

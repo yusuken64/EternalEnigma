@@ -58,19 +58,21 @@ public class InventoryMenu : Dialog
     {
         InventoryItemPreview.Setup(data);
 
-        if (data is EquipableInventoryItem equipmentItemDefinition)
+        if (data is EquipableInventoryItem equipable)
         {
-            var statModification = equipmentItemDefinition.GetEquipmentStatModification();
-            int newStrength = character.BaseStats.Strength + statModification.Strength;
-            int newDefense = character.BaseStats.Defense + statModification.Defense;
+            var currentStats = character.BaseStats + character.Equipment.GetEquipmentStatModification();
+            var simulatedStats = character.BaseStats + character.Equipment.GetStatsIfEquipped(equipable);
 
-            StatText.text = $@"Strength: {character.DisplayedStats.Strength} >> {newStrength}
-Defense: {character.DisplayedStats.Defense} >> {newDefense}";
+            StatText.text =
+    $@"Strength: {currentStats.Strength} >> {simulatedStats.Strength}
+Defense:  {currentStats.Defense}  >> {simulatedStats.Defense}";
         }
         else
         {
-            StatText.text = $@"Strength: {character.DisplayedStats.Strength}
-Defense: {character.DisplayedStats.Defense}";
+            var currentStats = character.BaseStats + character.Equipment.GetEquipmentStatModification();
+            StatText.text =
+    $@"Strength: {currentStats.Strength}
+Defense:  {currentStats.Defense}";
         }
     }
 

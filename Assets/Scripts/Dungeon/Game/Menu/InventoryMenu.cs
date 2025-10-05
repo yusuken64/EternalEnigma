@@ -83,13 +83,21 @@ Defense:  {currentStats.Defense}";
 
     private Vector3 KeepFullyOnScreen(RectTransform rectTransform, Vector3 newPosition)
     {
-        var canvasRectTransform = canvas.GetComponent<RectTransform>();
-        float halfWidth = rectTransform.sizeDelta.x / 2f;
-        float halfHeight = rectTransform.sizeDelta.y / 2f;
-        var x = Mathf.Clamp(newPosition.x, halfWidth, canvasRectTransform.sizeDelta.x - halfWidth);
-        var y = Mathf.Clamp(newPosition.y, halfHeight, canvasRectTransform.sizeDelta.y - halfHeight);
+        var canvasRect = canvas.GetComponent<RectTransform>();
 
-        return new Vector3(x, y, 0);
+        // Panel size in local canvas units
+        float halfWidth = rectTransform.rect.width / 2f;
+        float halfHeight = rectTransform.rect.height / 2f;
+
+        // Canvas size
+        float canvasHalfWidth = canvasRect.rect.width / 2f;
+        float canvasHalfHeight = canvasRect.rect.height / 2f;
+
+        // Clamp relative to canvas center (local position)
+        float x = Mathf.Clamp(newPosition.x, -canvasHalfWidth + halfWidth, canvasHalfWidth - halfWidth);
+        float y = Mathf.Clamp(newPosition.y, -canvasHalfHeight + halfHeight, canvasHalfHeight - halfHeight);
+
+        return new Vector3(x, y, newPosition.z);
     }
 
     public void SetNavigation()

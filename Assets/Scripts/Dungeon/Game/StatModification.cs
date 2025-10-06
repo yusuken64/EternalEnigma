@@ -25,6 +25,7 @@ public class StatModification : StartingStats
     {
         HPMax = stats.HPMax;
         HungerMax = stats.HungerMax;
+        SPMax += stats.SPMax;
         Strength = stats.Strength;
         Defense = stats.Defense;
         EXPOnKill = stats.EXPOnKill;
@@ -45,6 +46,7 @@ public class StatModification : StartingStats
 
         result.HPMax += b.HPMax;
         result.HungerMax += b.HungerMax;
+        result.SPMax += b.SPMax;
         result.Strength += b.Strength;
         result.Defense += b.Defense;
         result.EXPOnKill += b.EXPOnKill;

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_Shield15
   m_EditorClassIdentifier: 
   ItemName: Shield15
+  Description: 
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1
@@ -25,7 +26,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
-    Defense: 5
+    Defense: 15
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
@@ -35,3 +36,5 @@ MonoBehaviour:
     AttacksPerTurnMax: 0
   WeaponModelName: Shield15
   WeaponType: 7
+  IsRangedAttack: 0
+  ProjectilePrefab: {fileID: 0}

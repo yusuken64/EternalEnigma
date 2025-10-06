@@ -56,6 +56,12 @@ public abstract class Character : MonoBehaviour, Actor
 
 	internal bool CanCast(Skill skill, out string reason)
 	{
+		if (skill.ActivationType != ActivationType.Active)
+		{
+			reason = "Not active skill";
+			return false;
+		}
+
 		if (Vitals.SP < skill.SPCost)
 		{
 			reason = "Not enough SP";
@@ -85,11 +91,21 @@ public abstract class Character : MonoBehaviour, Actor
 		}
 	}
 
+	internal void InvalidateCachedStats()
+	{
+		cachedFinalStats = null;
+	}
+
 	internal void UpdateCachedStats()
 	{
+		var passiveSkillStats = Skills
+			.Where(x => x.ActivationType == ActivationType.Passive)
+				.Aggregate(new StatModification(), (accumulate, passiveSkill) => accumulate + passiveSkill.PassiveStatModification);
+
 		cachedFinalStats = BaseStats +
 			Equipment?.GetEquipmentStatModification() +
-			StatusEffects.Aggregate(new StatModification(), (accumulate, newa) => accumulate + newa.GetStatModification());
+			passiveSkillStats +
+			StatusEffects.Aggregate(new StatModification(), (accumulate, statusEffect) => accumulate + statusEffect.GetStatModification());
 	}
 
 	private Vitals vitals;

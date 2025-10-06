@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a615cddea2edfde4b856265aa092fb06, type: 3}
   m_Name: RightHand_OHS03_Sword
   m_EditorClassIdentifier: 
-  ItemName: OHS03_Sword
+  ItemName: Sword
+  Description: 
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1
@@ -24,7 +25,7 @@ MonoBehaviour:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
-    Strength: 5
+    Strength: 3
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -35,3 +36,5 @@ MonoBehaviour:
     AttacksPerTurnMax: 0
   WeaponModelName: OHS03_Sword
   WeaponType: 0
+  IsRangedAttack: 0
+  ProjectilePrefab: {fileID: 0}

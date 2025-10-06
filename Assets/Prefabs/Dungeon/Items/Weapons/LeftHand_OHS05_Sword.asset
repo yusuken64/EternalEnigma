@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS05_Sword
   m_EditorClassIdentifier: 
   ItemName: Offhand Sword 5
+  Description: 
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1
@@ -35,3 +36,5 @@ MonoBehaviour:
     AttacksPerTurnMax: 0
   WeaponModelName: OHS05_Sword
   WeaponType: 6
+  IsRangedAttack: 0
+  ProjectilePrefab: {fileID: 0}

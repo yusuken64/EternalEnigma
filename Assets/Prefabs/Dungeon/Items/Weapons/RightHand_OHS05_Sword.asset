@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a615cddea2edfde4b856265aa092fb06, type: 3}
   m_Name: RightHand_OHS05_Sword
   m_EditorClassIdentifier: 
-  ItemName: OHS05_Sword
+  ItemName: Sword
+  Description: 
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1
@@ -35,3 +36,5 @@ MonoBehaviour:
     AttacksPerTurnMax: 0
   WeaponModelName: OHS05_Sword
   WeaponType: 0
+  IsRangedAttack: 0
+  ProjectilePrefab: {fileID: 0}

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS01_Stick
   m_EditorClassIdentifier: 
   ItemName: Stick
+  Description: 
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1
@@ -24,7 +25,7 @@ MonoBehaviour:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
-    Strength: 5
+    Strength: 1
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -35,3 +36,5 @@ MonoBehaviour:
     AttacksPerTurnMax: 0
   WeaponModelName: OHS01_Stick
   WeaponType: 6
+  IsRangedAttack: 0
+  ProjectilePrefab: {fileID: 0}

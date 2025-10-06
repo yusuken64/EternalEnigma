@@ -87,14 +87,18 @@ public class Game : SingletonMonoBehaviour<Game>
 
 			Destroy(overworldAlly);
 
-			ally.InitialzeVitalsFromStats();
-			ally.Vitals.Level = 1;
 			ally.CharacterName = overworldAlly.Name;
 
 			foreach (var skill in overworldAlly.Skills)
 			{
-				ally.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName(skill));
+				Skill skillInstance = Common.Instance.SkillManager.GetSkillInstanceByName(skill);
+				ally.Skills.Add(skillInstance);
 			}
+			ally.InvalidateCachedStats();
+
+			ally.InitialzeVitalsFromStats();
+			ally.Vitals.Level = 1;
+
 			ally.SyncDisplayedStats();
 
 			var newItem = Instantiate(CharacterStatsDisplayPrefab, CharacterStatsDisplayContainer);

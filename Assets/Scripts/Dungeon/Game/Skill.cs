@@ -8,10 +8,10 @@ public class Skill : ScriptableObject
 {
 	public string SkillName;
 	public int LearnCost;
+	public ActivationType ActivationType;
+
 	public int SPCost;
-
 	public TargetSelector TargetSelector;
-
 	[SerializeReference]
 	public List<GameAction> ActionEffects;
 
@@ -29,6 +29,7 @@ public class Skill : ScriptableObject
 			ActionEffects.Select(x => x.AsTargetedSkill(caster, target))
 			.ToList();
 	}
+
 	internal IEnumerator ExecuteRoutine(Character caster, Character target)
 	{
 		yield return SkillAnimation.ExecuteRoutine(caster, target);
@@ -40,5 +41,12 @@ public class Skill : ScriptableObject
 	}
 
 	internal List<Vector3Int> GetTargets(Character caster) => TargetSelector.GetTargets(caster);
+
+	public StatModification PassiveStatModification;
 }
 
+public enum ActivationType
+{
+	Active,
+	Passive
+}

@@ -62,6 +62,7 @@ public class OverworldPlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		UpdateUI();
 		if (!initialied) { return; }
 		if (ControllerHeld)
 		{
@@ -76,8 +77,6 @@ public class OverworldPlayer : MonoBehaviour
 		{
 			DeterminePlayerAction();
 		}
-
-		UpdateUI();
 	}
 
 	private void UpdateUI()

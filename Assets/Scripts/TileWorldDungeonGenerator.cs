@@ -7,6 +7,7 @@ using UnityEngine;
 public class TileWorldDungeonGenerator : MonoBehaviour
 {
 	public TileWorldCreator TileWorldCreator;
+	public TileWorldCreator ThroneTileWorldCreator;
 	public string FloorLayerName;
 
 	public TileWorldDungeon TileWorldDungeonPrefab;
@@ -17,6 +18,9 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 	{
 		TileWorldCreator.OnBlueprintLayersComplete += BluePrintComplete;
 		TileWorldCreator.OnBuildLayersComplete += BuildComplete;
+
+		ThroneTileWorldCreator.OnBlueprintLayersComplete += BluePrintComplete;
+		ThroneTileWorldCreator.OnBuildLayersComplete += BuildComplete;
 	}
 
 	internal void GenerateDungeon()
@@ -29,6 +33,16 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 		TileWorldCreator.ExecuteAllBlueprintLayers();
 	}
 
+	internal void GenerateThroneRoom()
+	{
+		if (GeneratedDungeon != null)
+		{
+			Destroy(GeneratedDungeon.gameObject);
+		}
+		GeneratedDungeon = null;
+		ThroneTileWorldCreator.ExecuteAllBlueprintLayers();
+	}
+
 	private void BluePrintComplete(TileWorldCreator _twc)
 	{
 		_twc.ExecuteAllBuildLayers(true);
@@ -37,7 +51,7 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 	private void BuildComplete(TileWorldCreator _twc)
 	{
 		var newDungeon = Instantiate(TileWorldDungeonPrefab);
-		newDungeon.Setup(TileWorldCreator);
+		newDungeon.Setup(_twc);
 		GeneratedDungeon = newDungeon;
 	}
 }

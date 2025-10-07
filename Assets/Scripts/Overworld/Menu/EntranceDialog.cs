@@ -1,5 +1,4 @@
 ﻿using JuicyChickenGames.Menu;
-using System;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -23,6 +22,9 @@ public class EntranceDialog : Dialog
 			{
 				AllyName = x.Name
 			}).ToList();
+			//TODO somehow make this harder over time;
+			Common.Instance.GameSaveData.DungeonSaveData.StartFloor = 0;
+			Common.Instance.GameSaveData.DungeonSaveData.EndFloor = 5;
 			SaveSystem.SaveData(Common.Instance.GameSaveData);
 			SceneManager.LoadScene("DungeonScene");
 		});

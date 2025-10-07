@@ -16,7 +16,8 @@ public class FloorCommand : IConsoleCommand
             startingFloor = 0;
         }
 
-        Common.Instance.GameSaveData.StartingFloor = startingFloor;
+        Common.Instance.GameSaveData.DungeonSaveData.StartFloor = startingFloor;
+        Common.Instance.GameSaveData.DungeonSaveData.EndFloor = startingFloor + 2;
         console.Log($"Starting dungeon at floor {startingFloor}...");
         SceneManager.LoadScene("DungeonScene");
     }

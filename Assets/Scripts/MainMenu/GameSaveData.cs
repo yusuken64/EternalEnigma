@@ -5,7 +5,14 @@ using System.Collections.Generic;
 public class GameSaveData
 {
 	public OverworldSaveData OverworldSaveData = new();
-	public int StartingFloor;
+	public DungeonSaveData DungeonSaveData = new();
+}
+
+[Serializable]
+public class DungeonSaveData
+{
+	public int StartFloor;
+	public int EndFloor;
 }
 
 [Serializable]

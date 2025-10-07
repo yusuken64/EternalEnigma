@@ -24,6 +24,11 @@ with {playerController.Gold} Treasure";
 
 	public void TryAgain_Clicked()
 	{
+		GoBackToOverworld(false);
+	}
+
+	public static void GoBackToOverworld(bool isWin)
+	{
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
 			SceneManager.LoadScene("OverworldScene");

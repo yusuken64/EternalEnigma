@@ -7,6 +7,7 @@ using UnityEngine;
 public class TileWorldDungeon : MonoBehaviour
 {
 	public string FloorLayerName;
+	public string StairPositionLayerName;
 
 	public List<Interactable> Interactables;
 
@@ -17,6 +18,9 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal int dungeonWidth => _tileWorldCreator.twcAsset.mapWidth;
 	internal int dungeonHeight => _tileWorldCreator.twcAsset.mapHeight;
+	public bool IsThroneFloor;
+	public bool IsExitFloor;
+
 	private TileWorldCreator _tileWorldCreator;
 	private bool[,] _isHallwayCache;
 
@@ -319,6 +323,17 @@ public class TileWorldDungeon : MonoBehaviour
 		return new Vector3Int(node.X, node.Y);
 	}
 
+	public Vector3Int GetStairPosition(bool isThroneFloor)
+	{
+		if (!isThroneFloor) { return GetRandomOpenEnemyPosition(); }
+
+		//var floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(StairPositionLayerName);
+		//var startPos = Flatten(floorMap, (x) => x).Sample();
+
+		//return new Vector3Int(startPos.Coord.x, startPos.Coord.y, 0);
+		return new Vector3Int(6, 9);
+	}
+
 	internal Vector3Int GetRandomOpenEnemyPosition()
 	{
 		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
@@ -479,12 +494,17 @@ public class TileWorldDungeon : MonoBehaviour
 		return floorMap[newMapPosition.x, newMapPosition.y];
 	}
 
-	internal Vector3Int GetStartPositioon()
+	internal Vector3Int GetStartPosition(bool throneFloor)
 	{
-		var floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
-		var startPos = Flatten(floorMap, (x) => x).Sample();
+		if (!throneFloor)
+		{
+			var floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
+			var startPos = Flatten(floorMap, (x) => x).Sample();
 
-		return new Vector3Int(startPos.Coord.x, startPos.Coord.y, 0);
+			return new Vector3Int(startPos.Coord.x, startPos.Coord.y, 0);
+		}
+
+		return new Vector3Int(6, 4);
 	}
 
 	public static List<CoordValue<T>> Flatten<T>(T[,] arr, Func<T, bool> predicate = null)

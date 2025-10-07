@@ -310,10 +310,24 @@ public class PlayerController : MonoBehaviour
         if (ControlledAlly.currentInteractable is Stairs stairs &&
             ControlledAlly.MovedThisTurn)
         {
-            var target = stairs;
-            MenuManager.Instance.ShowYesNoDialog(
-                () => ControlledAlly.SetAction(new InteractAction(target)),
-                () => { });
+            if (!Game.Instance.CurrentDungeon.IsExitFloor)
+            {
+                var target = stairs;
+                MenuManager.Instance.ShowYesNoDialog(
+                    "Take Stairs?",
+                    () => ControlledAlly.SetAction(new InteractAction(target)),
+                    () => { });
+			}
+			else
+			{
+                MenuManager.Instance.ShowYesNoDialog(
+                    "Exit Dungeon?",
+                    () =>
+                    {
+                        GameOverScreen.GoBackToOverworld(true);
+                    },
+                    () => { });
+            }
         }
     }
 

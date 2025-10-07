@@ -224,12 +224,12 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		confirmCooldown = confirmCooldownStart;
 	}
 
-	internal void ShowYesNoDialog(Action yesAction, Action noAction)
+	internal void ShowYesNoDialog(string prompt, Action yesAction, Action noAction)
 	{
 		MenuInputHandler.Instance.OpenMenu();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(StairDialog);
-		StairDialog.Setup(yesAction, noAction);
+		StairDialog.Setup(prompt, yesAction, noAction);
 		CurrentDialog = StairDialog;
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 

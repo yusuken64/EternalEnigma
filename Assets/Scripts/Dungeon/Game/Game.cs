@@ -108,9 +108,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		PlayerController.TakeControl(Allies[0]);
 
-		var floor = Common.Instance.GameSaveData.StartingFloor;
+		var floor = Common.Instance.GameSaveData.DungeonSaveData.StartFloor;
 		PlayerController.Floor = floor;
-		Common.Instance.GameSaveData.StartingFloor = 0;
+		Common.Instance.GameSaveData.DungeonSaveData.StartFloor = 0;
 
 		PlayerController.Inventory.Clear();
 		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
@@ -133,8 +133,6 @@ public class Game : SingletonMonoBehaviour<Game>
 	{
 		TurnManager.InteruptTurn();
 		
-		PlayerController.Floor++;
-		PlayerController.ControlledAlly.currentInteractable = null;
 		StartCoroutine(AdvanceFloorRoutine());
 
 		NewFloorMessage.HideScreen();
@@ -142,6 +140,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	private IEnumerator AdvanceFloorRoutine()
 	{
+		bool throneFloor = PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor ||
+			PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
+
 		Enemies.ForEach(x => DestroyImmediate(x.gameObject));
 		Enemies.Clear();
 
@@ -151,7 +152,15 @@ public class Game : SingletonMonoBehaviour<Game>
 			Destroy(CurrentDungeon.gameObject);
 			CurrentDungeon = null;
 		}
-		DungeonGenerator.GenerateDungeon();
+
+		if (throneFloor)
+		{
+			DungeonGenerator.GenerateThroneRoom();
+		}
+		else
+		{
+			DungeonGenerator.GenerateDungeon();
+		}
 		while(DungeonGenerator.GeneratedDungeon == null)
 		{
 			yield return null;
@@ -163,13 +172,15 @@ public class Game : SingletonMonoBehaviour<Game>
 		map.transform.localScale = new Vector3(1, 1, 3.3499999f);
 
 		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
+		CurrentDungeon.IsThroneFloor = throneFloor;
+		CurrentDungeon.IsExitFloor = throneFloor && PlayerController.Floor >= Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
 		CurrentDungeon.InitializeCache();
 		FindFirstObjectByType<FogOverlay>().Initialize(CurrentDungeon);
 		FindFirstObjectByType<Minimap>().Initialize(CurrentDungeon);
 
 		yield return null;
 
-		var startPosition = CurrentDungeon.GetStartPositioon();
+		var startPosition = CurrentDungeon.GetStartPosition(throneFloor);
 		PlayerController.ControlledAlly.SetPosition(startPosition);
 		var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(PlayerController.ControlledAlly, PlayerController.TilemapPosition);
 		Minimap minimap = FindFirstObjectByType<Minimap>();
@@ -191,41 +202,47 @@ public class Game : SingletonMonoBehaviour<Game>
 			}
 		}
 
-		CurrentDungeon.SetStairs(CurrentDungeon.GetRandomOpenEnemyPosition());
+		CurrentDungeon.SetStairs(CurrentDungeon.GetStairPosition(throneFloor));
 		Debug.Log("Stairs Created", this);
 
-		for (int i = 0; i < 10; i++)
+		if (!throneFloor)
 		{
-			var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerController.Floor);
-			var enemy = Instantiate(enemyPrefab, this.transform);
-			enemy.UpdateCachedStats();
-			enemy.InitialzeVitalsFromStats();
-			enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-			Enemies.Add(enemy);
-		}
+			for (int i = 0; i < 10; i++)
+			{
+				var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerController.Floor);
+				var enemy = Instantiate(enemyPrefab, this.transform);
+				enemy.UpdateCachedStats();
+				enemy.InitialzeVitalsFromStats();
+				enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
+				Enemies.Add(enemy);
+			}
 
-		for (int i = 0; i < 5; i++)
-		{
-			var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-			CurrentDungeon.SetTreasure(treasurePosition);
-		}
+			for (int i = 0; i < 5; i++)
+			{
+				var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
+				CurrentDungeon.SetTreasure(treasurePosition);
+			}
 
-		for (int i = 0; i < 5; i++)
-		{
-			var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-			var item = Common.Instance.ItemManager.GetRandomDrop(null);
-			CurrentDungeon.SetDroppedItem(treasurePosition, item);
-		}
+			for (int i = 0; i < 5; i++)
+			{
+				var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
+				var item = Common.Instance.ItemManager.GetRandomDrop(null);
+				CurrentDungeon.SetDroppedItem(treasurePosition, item);
+			}
 
-		for (int i = 0; i < 5; i++)
-		{
-			var trapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-			var item = Common.Instance.ItemManager.GetRandomDrop(null);
-			CurrentDungeon.SetTrap(trapPosition);
+			for (int i = 0; i < 5; i++)
+			{
+				var trapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
+				var item = Common.Instance.ItemManager.GetRandomDrop(null);
+				CurrentDungeon.SetTrap(trapPosition);
+			}
 		}
 
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
+
+		PlayerController.Floor++;
+		PlayerController.ControlledAlly.currentInteractable = null;
 		Game.Instance.PlayerController.StartTurn();
 	}
 

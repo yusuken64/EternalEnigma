@@ -66,7 +66,8 @@ public class ShopMenuDialog : Dialog
 		{
 			ShopItemDatas.Remove(item);
 			player.Gold -= item.Cost;
-			player.Inventory.Add(item.ItemName);
+			var inventoryItem = Common.Instance.ItemManager.GetAsInventoryItemByName(item.ItemName);
+			player.Inventory.Add(inventoryItem);
 
 			Setup();
 		}

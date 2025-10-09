@@ -8,6 +8,12 @@ public class InventoryItemPreview : MonoBehaviour
 
     public void Setup(InventoryItem inventoryItem)
     {
+        if (inventoryItem == null)
+		{
+            ItemText.text = "No Item Selected";
+            return;
+		}
+
         ItemText.text = $"{inventoryItem.ItemDefinition.Description}";
 
         if (inventoryItem is EquipableInventoryItem equipableInventoryItem)

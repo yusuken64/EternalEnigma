@@ -50,7 +50,9 @@ public class Overworld : MonoBehaviour
 		OverworldSaveData overworldSaveData = Common.Instance.GameSaveData.OverworldSaveData;
 		overworldSaveData.Gold = OverworldPlayer.Gold;
 		overworldSaveData.DonationTotal = statueDialog.DonatedAmount;
-		overworldSaveData.Inventory = OverworldPlayer.Inventory.ToList();
+		overworldSaveData.Inventory = OverworldPlayer.Inventory
+            .Select(x => x.ItemName)
+            .ToList();
 		//overworldSaveData.RecruitedAlliesData = OverworldPlayer.RecruitedAllies.ToList();
 		//overworldSaveData.RecruitedAlliesData.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
     }

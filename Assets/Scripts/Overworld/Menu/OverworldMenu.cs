@@ -1,3 +1,4 @@
+using JuicyChickenGames.Menu;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,8 @@ public class OverworldMenu : MonoBehaviour
 	public OverworldHelpDialog OverworldHelpDialog;
 	public BallistaDialog BallistaDialog;
 	public EntranceDialog EntranceDialog;
+
+	public InventoryMenu InventoryMenu;
 
 	private void Start()
 	{

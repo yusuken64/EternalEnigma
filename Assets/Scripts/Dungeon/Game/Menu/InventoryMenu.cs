@@ -17,19 +17,19 @@ public class InventoryMenu : Dialog
 
     public TextMeshProUGUI StatText;
     public InventoryItemPreview InventoryItemPreview;
-
+    public GameObject EmptyMessage;
     public List<InventoryMenuItem> InventoryMenuItems { get; private set; }
     public FaceCamDisplay FaceCamDisplay;
 
-    private Character followingChar;
+    private GameObject followingObject;
 
     public void Setup(List<InventoryItem> Items, Character character)
     {
-        followingChar = character;
-        FaceCamDisplay.SetFollow(followingChar.VisualParent);
+        followingObject = character.VisualParent;
+        FaceCamDisplay.SetFollow(followingObject);
         Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
         {
-            view.Setup(data, character);
+            view.Setup(data, (data) => { return character.Equipment.IsEquipped(data); });
             Button button = view.GetComponent<Button>();
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
@@ -52,9 +52,82 @@ public class InventoryMenu : Dialog
             };
         };
         InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
+
+        if (Items.Count() == 0)
+		{
+            EmptyMessage.gameObject.SetActive(true);
+            InventoryItemPreview.Setup(null);
+        }
+		else
+        {
+            EmptyMessage.gameObject.SetActive(false);
+        }
     }
 
-    private void UpdatedItemPreview(InventoryItem data, Character character)
+    public void SetupOverworld(List<InventoryItem> Items, OverworldCharacter character)
+    {
+        followingObject = character.VisualParent;
+        FaceCamDisplay.SetFollow(followingObject);
+        Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
+        {
+            view.Setup(data, (data) => { return character.Equipment.IsEquipped(data); });
+            Button button = view.GetComponent<Button>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() =>
+            {
+                //ActionDialog.Setup(view, data, character);
+                //ActionDialog.SetNavigation();
+                //ActionDialog.gameObject.SetActive(true);
+
+                //MenuManager.Open(ActionDialog);
+
+                //var newPosition = view.transform.position;
+                //newPosition = KeepFullyOnScreen(ActionDialog.Panel.GetComponent<RectTransform>(), newPosition);
+                //ActionDialog.Panel.transform.position = newPosition;
+            });
+
+            view.SelectCallBack = () =>
+            {
+                ScrollToSelected(view.gameObject);
+                UpdatedItemPreviewOverworld(data, character);
+            };
+        };
+        InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
+
+        if (Items.Count() == 0)
+        {
+            EmptyMessage.gameObject.SetActive(true);
+            InventoryItemPreview.Setup(null);
+        }
+        else
+        {
+            EmptyMessage.gameObject.SetActive(false);
+        }
+    }
+
+	private void UpdatedItemPreviewOverworld(InventoryItem data, OverworldCharacter character)
+    {
+        InventoryItemPreview.Setup(data);
+
+        if (data is EquipableInventoryItem equipable)
+        {
+            var currentStats = character.BaseStats + character.Equipment.GetEquipmentStatModification();
+            var simulatedStats = character.BaseStats + character.Equipment.GetStatsIfEquipped(equipable);
+
+            StatText.text =
+    $@"Strength: {currentStats.Strength} >> {simulatedStats.Strength}
+Defense:  {currentStats.Defense}  >> {simulatedStats.Defense}";
+        }
+        else
+        {
+            var currentStats = character.BaseStats + character.Equipment.GetEquipmentStatModification();
+            StatText.text =
+    $@"Strength: {currentStats.Strength}
+Defense:  {currentStats.Defense}";
+        }
+    }
+
+	private void UpdatedItemPreview(InventoryItem data, Character character)
     {
         InventoryItemPreview.Setup(data);
 
@@ -78,7 +151,7 @@ Defense:  {currentStats.Defense}";
 
     internal void Close()
     {
-        FaceCamDisplay.Unfollow(followingChar.VisualParent);
+        FaceCamDisplay.Unfollow(followingObject);
     }
 
     private Vector3 KeepFullyOnScreen(RectTransform rectTransform, Vector3 newPosition)

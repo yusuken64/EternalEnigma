@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class OverworldPlayer : MonoBehaviour
 {
@@ -20,7 +19,7 @@ public class OverworldPlayer : MonoBehaviour
 	public WalkableMap WalkableMap;
 
 	public int Gold;
-	public List<string> Inventory;
+	public List<InventoryItem> Inventory = new();
 
 	public TextMeshProUGUI UIText;
 
@@ -81,9 +80,7 @@ public class OverworldPlayer : MonoBehaviour
 
 	private void UpdateUI()
 	{
-		var inventoryString = string.Join(Environment.NewLine, Inventory);
-		UIText.text = $@"{Gold}g
-{inventoryString}";
+		UIText.text = $@"{Gold}";
 	}
 
 	private void DeterminePlayerAction()
@@ -183,6 +180,7 @@ public class OverworldPlayer : MonoBehaviour
 				OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
 			}
 		}
+
 	}
 
 	private IEnumerator Wait(Action? action)

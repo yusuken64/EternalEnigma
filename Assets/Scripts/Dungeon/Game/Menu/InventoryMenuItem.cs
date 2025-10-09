@@ -12,18 +12,20 @@ public class InventoryMenuItem : Button
 	private InventoryItem _data;
     private Character _character;
 
-    public Action SelectCallBack { get; internal set; }
+	public Func<InventoryItem, bool> IsEquipped { get; set; }
+	public Action SelectCallBack { get; internal set; }
 
-	internal void Setup(InventoryItem data, Character character)
+	internal void Setup(InventoryItem data, Func<InventoryItem, bool> isEquipped)
 	{
 		this._data = data;
-		this._character = character;
+		this.IsEquipped = isEquipped;
 		UpdateUI();
 	}
 
 	private void UpdateUI()
 	{
-		var equipped = _character.Equipment.IsEquipped(_data);
+		//var equipped = _character.Equipment.IsEquipped(_data);
+		var equipped = IsEquipped(_data);
 
 		var inventoryText = $"{_data.ItemName} " +
 			$"{ (_data.StackStock.HasValue ? $"x{_data.StackStock.Value}" : "") }" +

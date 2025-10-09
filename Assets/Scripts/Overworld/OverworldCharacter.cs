@@ -8,6 +8,9 @@ public abstract class OverworldCharacter : MonoBehaviour
 	public GameObject VisualParent;
 	public Facing CurrentFacing;
 
+	public Equipment Equipment;
+	public Stats BaseStats;
+
 	public void SetFacing(Facing facing)
 	{
 		CurrentFacing = facing;

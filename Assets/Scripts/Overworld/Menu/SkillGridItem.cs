@@ -9,6 +9,9 @@ public class SkillGridItem : MonoBehaviour
 	public Button GridButton;
 	public Image ActiveImage;
 
+	public GameObject CostObject;
+	public TextMeshProUGUI CostText;
+
 	private TogglableSkillGridItem _data;
 	private float clickCooldownSeconds;
 
@@ -57,14 +60,17 @@ public class SkillGridItem : MonoBehaviour
 
 	private void UpdateUI()
 	{
-		SkillText.text = $"{_data.Skill.SkillName} ({_data.Skill.LearnCost})";
+		SkillText.text = $"{_data.Skill.SkillName}";
 		if (_data.Active)
 		{
 			ActiveImage.color = Color.green;
+			CostObject.gameObject.SetActive(false);
 		}
 		else
 		{
 			ActiveImage.color = Color.white;
+			CostText.text = $"{_data.Skill.LearnCost}";
+			CostObject.gameObject.SetActive(true);
 		}
 	}
 

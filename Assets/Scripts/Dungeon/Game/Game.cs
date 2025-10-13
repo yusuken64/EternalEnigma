@@ -110,7 +110,6 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		var floor = Common.Instance.GameSaveData.DungeonSaveData.StartFloor;
 		PlayerController.Floor = floor;
-		Common.Instance.GameSaveData.DungeonSaveData.StartFloor = 0;
 
 		PlayerController.Inventory.Clear();
 		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));

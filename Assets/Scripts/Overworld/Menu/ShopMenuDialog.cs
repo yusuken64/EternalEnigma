@@ -13,7 +13,7 @@ public class ShopMenuDialog : Dialog
 	//in the item defintion?
 	public void GenerateShop()
 	{
-		var itemDefinitions = Common.Instance.ItemManager.ItemDefinitions.Sample(6);
+		var itemDefinitions = Common.Instance.ItemManager.ItemDefinitions.Sample(5);
 		ShopItemDatas = itemDefinitions.Select(x => new ShopItemData(x.ItemName, UnityEngine.Random.Range(100, 300))).ToList();
 	}
 
@@ -76,8 +76,8 @@ public class ShopMenuDialog : Dialog
 	internal override void SetFirstSelect()
 	{
 		if (ShopItems.IsNullOrEmpty()) { return; }
-		ShopItems[0].Select();
-		ScrollToSelected(ShopItems[0].gameObject);
+		ShopItems[0].BuyButton.Select();
+		ScrollToSelected(ShopItems[0].BuyButton.gameObject);
 	}
 
 	public void Cancel_Clicked()

@@ -38,6 +38,7 @@ namespace JuicyChickenGames.Menu
 
 		public void ScrollToSelected(GameObject selectedItem)
 		{
+			if (scrollView == null) { return; }
 			//Debug.Log($"Scoll Item into view {selectedItem.GetComponent<InventoryMenuItem>().ItemText.text}", selectedItem);
 
 			RectTransform contentRectTransform = scrollView.content.GetComponent<RectTransform>();

@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class StatsDisplay : MonoBehaviour
 {
-	public TextMeshProUGUI StatNameText;
 	public TextMeshProUGUI ValueText;
 	public Slider StatValueSlider;
 	private string _statName;
@@ -21,8 +20,10 @@ public class StatsDisplay : MonoBehaviour
 
 	public void UpdateUI()
 	{
-		StatNameText.text = _statName;
-		ValueText.text = _statValueStringFunce?.Invoke();
+		if (ValueText != null)
+		{
+			ValueText.text = _statValueStringFunce?.Invoke();
+		}
 		if (_statValueSliderFunc != null)
 		{
 			StatValueSlider.value = (float)(_statValueSliderFunc.Invoke());

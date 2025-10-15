@@ -17,6 +17,25 @@ public class StairConfirm : Dialog
         PromptText.text = prompt;
         _yesAction = yesAction;
         _noAction = noAction;
+        
+        SetNavigation();
+    }
+
+    private void SetNavigation()
+    {
+        Navigation yesNav = new Navigation
+        {
+            mode = Navigation.Mode.Explicit,
+            selectOnLeft = NoButton,
+        };
+        YesButton.navigation = yesNav;
+
+        Navigation noNav = new Navigation
+        {
+            mode = Navigation.Mode.Explicit,
+            selectOnRight = YesButton,
+        };
+        NoButton.navigation = noNav;
     }
 
     public void YesClicked()

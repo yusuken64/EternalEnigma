@@ -23,6 +23,8 @@ public class InventoryMenu : Dialog
 
     private GameObject followingObject;
 
+    public GameObject SelectionArrow;
+
     public void Setup(List<InventoryItem> Items, Character character)
     {
         followingObject = character.VisualParent;
@@ -40,9 +42,23 @@ public class InventoryMenu : Dialog
 
                 MenuManager.Open(ActionDialog);
 
-                var newPosition = view.transform.position;
-                newPosition = KeepFullyOnScreen(ActionDialog.Panel.GetComponent<RectTransform>(), newPosition);
-                ActionDialog.Panel.transform.position = newPosition;
+                Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, view.transform.position);
+                Vector2 localPoint;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    canvas.GetComponent<RectTransform>(),
+                    screenPoint,
+                    canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Camera.main,
+                    out localPoint
+                );
+
+                RectTransform panelRect = ActionDialog.Panel.GetComponent<RectTransform>();
+                panelRect.localPosition = KeepFullyOnScreen(panelRect, localPoint);
+
+                SelectionArrow.transform.parent = ActionDialog.Panel.transform;
+                ActionDialog.CloseAction = () =>
+                {
+                    SelectionArrow.transform.parent = transform;
+                };
             });
 
             view.SelectCallBack = () =>

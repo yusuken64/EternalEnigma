@@ -21,6 +21,7 @@ public class NavigationHandler : MonoBehaviour
     private HashSet<MonoBehaviour> activeDialogs = new HashSet<MonoBehaviour>();
     
     public RectTransform selectionArrow;
+    public ArrowAnchor arrowAnchor = ArrowAnchor.Center;
     public Vector3 arrowOffset = new Vector3(0, 40, 0); // offset above button
     public float arrowFollowSpeed = 10f;
 
@@ -102,9 +103,31 @@ public class NavigationHandler : MonoBehaviour
         RectTransform target = current.GetComponent<RectTransform>();
         if (target != null)
         {
-            Vector3 targetPos = target.position + arrowOffset;
+            Vector3 anchorWorldPos = GetAnchorWorldPosition(target, arrowAnchor);
+            Vector3 targetPos = anchorWorldPos + arrowOffset;
             selectionArrow.position = Vector3.Lerp(selectionArrow.position, targetPos, Time.unscaledDeltaTime * arrowFollowSpeed);
         }
+    }
+
+    private Vector3 GetAnchorWorldPosition(RectTransform rect, ArrowAnchor anchor)
+    {
+        Vector3[] corners = new Vector3[4];
+        rect.GetWorldCorners(corners);
+
+        Vector3 center = (corners[0] + corners[2]) * 0.5f;
+        Vector3 left = (corners[0] + corners[1]) * 0.5f;
+        Vector3 right = (corners[2] + corners[3]) * 0.5f;
+        Vector3 top = (corners[1] + corners[2]) * 0.5f;
+        Vector3 bottom = (corners[0] + corners[3]) * 0.5f;
+
+        return anchor switch
+        {
+            ArrowAnchor.Left => left,
+            ArrowAnchor.Right => right,
+            ArrowAnchor.Top => top,
+            ArrowAnchor.Bottom => bottom,
+            _ => center,
+        };
     }
 
     private void LateUpdate()
@@ -198,4 +221,52 @@ public class NavigationHandler : MonoBehaviour
         selectionStack.Clear();
         dialogFirstSelectables.Clear();
     }
+
+    public void OnPointerEnter(GameObject hovered)
+    {
+        if (hovered != lastSelected)
+            es.SetSelectedGameObject(hovered);
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("Preview Arrow Position")]
+    public void PreviewArrowPosition()
+    {
+        if (selectionArrow == null)
+        {
+            Debug.LogWarning("Selection Arrow is not assigned.");
+            return;
+        }
+
+        GameObject current = EventSystem.current?.currentSelectedGameObject ?? defaultSelectable;
+        if (current == null)
+        {
+            Debug.LogWarning("No selected GameObject or defaultSelectable found.");
+            return;
+        }
+
+        RectTransform target = current.GetComponent<RectTransform>();
+        if (target == null)
+        {
+            Debug.LogWarning("Selected object does not have a RectTransform.");
+            return;
+        }
+
+        Vector3 anchorWorldPos = GetAnchorWorldPosition(target, arrowAnchor);
+        Vector3 targetPos = anchorWorldPos + arrowOffset;
+
+        //Undo.RecordObject(selectionArrow, "Preview Arrow Position");
+        selectionArrow.position = targetPos;
+
+        Debug.Log($"Arrow previewed at {targetPos} from {target.name} ({arrowAnchor})");
+    }
+#endif
+}
+public enum ArrowAnchor
+{
+    Center,
+    Left,
+    Right,
+    Top,
+    Bottom
 }

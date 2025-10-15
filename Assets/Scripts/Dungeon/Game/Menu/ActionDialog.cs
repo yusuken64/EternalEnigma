@@ -30,22 +30,28 @@ namespace JuicyChickenGames.Menu
 				ally.SetAction(new UseInventoryItemAction(Game.Instance.PlayerController.Inventory, ally, _data));
 			}
 
+			this.CloseAction?.Invoke();
 			MenuManager.Instance.CloseAllMenus();
 		}
 
 		public void Throw_Clicked()
 		{
 			_character.SetAction(new ThrowItemAction(Game.Instance.PlayerController.Inventory, _character, _data, Game.Instance.ThrownItemProjectilePrefab));
+
+			this.CloseAction?.Invoke();
 			MenuManager.Instance.CloseAllMenus();
 		}
 
 		public void Drop_Clicked()
 		{
 			_character.SetAction(new DropItemAction(Game.Instance.PlayerController.Inventory, _data, _character.TilemapPosition));
+
+			this.CloseAction?.Invoke();
 			MenuManager.Instance.CloseAllMenus();
 		}
 		public void Cancel_Clicked()
 		{
+			this.CloseAction?.Invoke();
 			MenuManager.Close(this);
 		}
 

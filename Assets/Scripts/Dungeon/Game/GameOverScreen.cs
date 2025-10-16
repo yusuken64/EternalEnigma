@@ -11,24 +11,25 @@ public class GameOverScreen : Dialog
 {
 	public TextMeshProUGUI MessageText;
 	public Button OkButton;
+	private PlayerController _playerController;
 
 	internal void Setup(PlayerController playerController)
 	{
+		_playerController = playerController;
 		MessageText.text = $@"Player Perished
 On floor {playerController.Floor}
 with {playerController.Gold} Treasure";
-
-		Common.Instance.GameSaveData.OverworldSaveData.Gold += playerController.Gold;
-		SaveSystem.SaveData(Common.Instance.GameSaveData);
 	}
 
 	public void TryAgain_Clicked()
 	{
-		GoBackToOverworld(false);
+		GoBackToOverworld(false, _playerController);
 	}
 
-	public static void GoBackToOverworld(bool isWin)
+	public static void GoBackToOverworld(bool isWin, PlayerController playerController)
 	{
+		Common.Instance.GameSaveData.OverworldSaveData.Gold += playerController.Gold;
+		SaveSystem.SaveData(Common.Instance.GameSaveData);
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
 			SceneManager.LoadScene("OverworldScene");

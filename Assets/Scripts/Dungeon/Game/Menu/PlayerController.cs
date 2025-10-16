@@ -324,7 +324,7 @@ public class PlayerController : MonoBehaviour
                     "Exit Dungeon?",
                     () =>
                     {
-                        GameOverScreen.GoBackToOverworld(true);
+                        GameOverScreen.GoBackToOverworld(true, this);
                     },
                     () => { });
             }

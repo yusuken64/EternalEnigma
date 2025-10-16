@@ -6,6 +6,7 @@ public class EntranceOverworldBuilding : OverworldBuilding
 	{
 		var overworldMenu = FindFirstObjectByType<OverworldMenu>();
 		OverworldMenuManager.Open(overworldMenu.EntranceDialog);
+		overworldMenu.EntranceDialog.Setup();
 		overworldMenu.EntranceDialog.Show();
 		overworldMenu.EntranceDialog.CloseAction = () =>
 		{

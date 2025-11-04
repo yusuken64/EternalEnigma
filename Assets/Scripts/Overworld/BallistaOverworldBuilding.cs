@@ -3,7 +3,8 @@
 	public override void Interact(OverworldPlayer overworldPlayer, OverworldAction reverse)
 	{
 		var overworldMenu = FindFirstObjectByType<OverworldMenu>();
-		OverworldMenuManager.Open(overworldMenu.BallistaDialog);
+		var overworldMenuManager = FindFirstObjectByType<OverworldMenuManager>();
+		overworldMenuManager.Open(overworldMenu.BallistaDialog);
 		overworldMenu.BallistaDialog.Character = overworldPlayer.ControllingOverworldAlly;
 		overworldMenu.BallistaDialog.Show(); //this should be done to all dialogs in Open()
 		overworldMenu.BallistaDialog.CloseAction = () =>

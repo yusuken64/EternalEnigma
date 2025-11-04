@@ -138,6 +138,15 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Plan"",
+                    ""type"": ""Button"",
+                    ""id"": ""f773d6c7-5483-4e58-a2cf-33b68d4a83a7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Menu"",
                     ""type"": ""Button"",
                     ""id"": ""a458cc7d-6e17-4a31-8e8f-ffb70ce8ff68"",
@@ -555,6 +564,28 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Skills"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d8f59c63-b805-46f7-b424-2513926da903"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Plan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bbe08e2e-e734-4cc5-8614-39737ba112fa"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Plan"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1163,6 +1194,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_HoldPosition = m_Player.FindAction("HoldPosition", throwIfNotFound: true);
+        m_Player_Plan = m_Player.FindAction("Plan", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
         m_Player_Skills = m_Player.FindAction("Skills", throwIfNotFound: true);
         m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
@@ -1269,6 +1301,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_HoldPosition;
+    private readonly InputAction m_Player_Plan;
     private readonly InputAction m_Player_Menu;
     private readonly InputAction m_Player_Skills;
     private readonly InputAction m_Player_Map;
@@ -1305,6 +1338,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/HoldPosition".
         /// </summary>
         public InputAction @HoldPosition => m_Wrapper.m_Player_HoldPosition;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Plan".
+        /// </summary>
+        public InputAction @Plan => m_Wrapper.m_Player_Plan;
         /// <summary>
         /// Provides access to the underlying input action "Player/Menu".
         /// </summary>
@@ -1366,6 +1403,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @HoldPosition.started += instance.OnHoldPosition;
             @HoldPosition.performed += instance.OnHoldPosition;
             @HoldPosition.canceled += instance.OnHoldPosition;
+            @Plan.started += instance.OnPlan;
+            @Plan.performed += instance.OnPlan;
+            @Plan.canceled += instance.OnPlan;
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
@@ -1407,6 +1447,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @HoldPosition.started -= instance.OnHoldPosition;
             @HoldPosition.performed -= instance.OnHoldPosition;
             @HoldPosition.canceled -= instance.OnHoldPosition;
+            @Plan.started -= instance.OnPlan;
+            @Plan.performed -= instance.OnPlan;
+            @Plan.canceled -= instance.OnPlan;
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
@@ -1790,6 +1833,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnHoldPosition(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Plan" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPlan(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Menu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

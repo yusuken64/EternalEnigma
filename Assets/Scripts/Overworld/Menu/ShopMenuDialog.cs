@@ -46,7 +46,7 @@ public class ShopMenuDialog : Dialog
 				BuyConfirmationDialog.gameObject.SetActive(true);
 				BuyConfirmationDialog.BuyCallBack = BuyItem;
 
-				OverworldMenuManager.Open(BuyConfirmationDialog);
+				FindFirstObjectByType<OverworldMenuManager>().Open(BuyConfirmationDialog);
 			});
 
 			view.SelectCallBack = () =>
@@ -82,7 +82,7 @@ public class ShopMenuDialog : Dialog
 
 	public void Cancel_Clicked()
 	{
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 		CloseAction?.Invoke();
 	}
 }

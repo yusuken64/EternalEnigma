@@ -16,7 +16,7 @@ public class OverworldHelpDialog : Dialog
 	public void Ok_Clicked()
 	{
 		this.CloseAction?.Invoke();
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 	}
 
 	internal void Show()

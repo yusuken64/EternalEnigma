@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 namespace JuicyChickenGames.Menu
 {
-    public class MenuInputHandler : SingletonMonoBehaviour<MenuInputHandler>
+    public class MenuInputHandler : MonoBehaviour
 	{
 		private Stack<Dialog> dialogStack = new();
 
@@ -29,10 +29,13 @@ namespace JuicyChickenGames.Menu
 		public Vector2 MoveInput;
 		public bool IsMoving;
 
-		protected override void Initialize()
+		private void Awake()
 		{
-			base.Initialize();
+			Initialize();
+		}
 
+		protected void Initialize()
+		{
 			NavigateActions = PlayerInput.actions["Navigate"];
 			MenuOpenCloseAction = PlayerInput.actions["OpenMenu"];
 			OpenSkillMenuAction = PlayerInput.actions["OpenSkillMenu"];
@@ -56,11 +59,29 @@ namespace JuicyChickenGames.Menu
         internal void SwitchToPlayerInput()
 		{
 			PlayerInput.SwitchCurrentActionMap("Player");
+			ClearInputThisFrame();
 		}
 
         internal void SwitchToUIInput()
 		{
 			PlayerInput.SwitchCurrentActionMap("UI");
+			ClearInputThisFrame();
 		}
-    }
+
+		public void ClearInputThisFrame()
+		{
+			// Clears WasPressedThisFrame() flags for all actions
+			var currentMap = PlayerInput.currentActionMap;
+			currentMap.Disable();
+			currentMap.Enable();
+
+			// Also reset cached booleans
+			MenuOpenClosedInput = false;
+			OpenSkillMenuInput = false;
+			SubmitMenuInput = false;
+			CancelMenuInput = false;
+			OptionInput = false;
+		}
+
+	}
 }

@@ -17,6 +17,7 @@
         public bool skillsPressed { get; private set; }
         public bool mapPressed { get; private set; }
         public bool swapAllyPressed { get; private set; }
+        public bool planPressed { get; private set; }
         public bool holdPosition { get; private set; }
 
         private InputAction moveAction;
@@ -29,6 +30,7 @@
         private InputAction skillsAction;
         private InputAction mapAction;
         private InputAction swapAllyAction;
+        private InputAction planAction;
 
         protected override void Initialize()
         {
@@ -43,6 +45,7 @@
             skillsAction = PlayerInput.actions["Skills"];
             mapAction = PlayerInput.actions["Map"];
             swapAllyAction = PlayerInput.actions["SwapAlly"];
+            planAction = PlayerInput.actions["Plan"];
 
             PlayerInput.SwitchCurrentActionMap("Player");
         }
@@ -62,14 +65,15 @@
             //waitPressed = waitAction.WasPressedThisFrame();
             holdPosition = holdPositionAction.IsPressed();
             swapAllyPressed = swapAllyAction.WasPressedThisFrame();
+            planPressed = planAction.WasPressedThisFrame();
 
             if (PlayerInput.currentActionMap.name == "Player")
             {
-                MenuInputHandler.Instance.MenuOpenClosedInput = menuPressed;
+                Common.Instance.MenuInputHandler.MenuOpenClosedInput = menuPressed;
             }
             if (PlayerInput.currentActionMap.name == "Player")
             {
-                MenuInputHandler.Instance.OpenSkillMenuInput = skillsPressed;
+                Common.Instance.MenuInputHandler.OpenSkillMenuInput = skillsPressed;
             }
         }
 

@@ -25,6 +25,7 @@ public class OverworldPlayer : MonoBehaviour
 
 	public List<OverworldAlly> RecruitedAllies;
 	public List<Vector3Int> WalkPositionHistory;
+	private OverworldMenuManager overworldMenuManager;
 	private bool initialied = false;
 	private int allyIndex;
 
@@ -32,6 +33,7 @@ public class OverworldPlayer : MonoBehaviour
 
 	public void Initialize()
 	{
+		overworldMenuManager = FindFirstObjectByType<OverworldMenuManager>();
 		initialied = true;
 		CycleAlly();
 	}
@@ -68,7 +70,7 @@ public class OverworldPlayer : MonoBehaviour
 			holdTime += Time.deltaTime;
 		}
 
-		if (OverworldMenuManager.Instance.DialogStack.Count > 0)
+		if (overworldMenuManager.DialogStack.Count > 0)
 		{
 			return;
 		}
@@ -177,10 +179,9 @@ public class OverworldPlayer : MonoBehaviour
 						_menuBusy = false;
 					}));
 				};
-				OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
+				overworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
 			}
 		}
-
 	}
 
 	private IEnumerator Wait(Action? action)
@@ -237,7 +238,7 @@ public class OverworldPlayer : MonoBehaviour
 		{
 			var ally = overworld.OverworldAllies.First(x => x.TilemapPosition == this.ControllingOverworldAlly.TilemapPosition);
 			var overworldMenu = FindFirstObjectByType<OverworldMenu>();
-			OverworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
+			overworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
 			overworldMenu.AllyRecruitDialog.Show(ally, AllyRecruitDialogMode.Recruit);
 			overworldMenu.AllyRecruitDialog.CloseAction = () =>
 			{

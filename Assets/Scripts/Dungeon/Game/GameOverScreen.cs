@@ -19,6 +19,11 @@ public class GameOverScreen : Dialog
 		MessageText.text = $@"Player Perished
 On floor {playerController.Floor}
 with {playerController.Gold} Treasure";
+
+		var nav = OkButton.navigation;
+		nav.mode = Navigation.Mode.None;
+		OkButton.navigation = nav;
+		OkButton.Select();
 	}
 
 	public void TryAgain_Clicked()

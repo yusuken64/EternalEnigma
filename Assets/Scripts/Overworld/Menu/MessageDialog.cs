@@ -15,7 +15,7 @@ public class MessageDialog : Dialog
 
 	public void Ok_Clicked()
 	{
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 	}
 
 	internal override void SetFirstSelect()

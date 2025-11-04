@@ -114,7 +114,7 @@ namespace JuicyChickenGames.Menu
 			TargetSelectedAction = targetSelected;
 			TargetingSkill = skill;
 
-			MenuInputHandler.Instance.SubmitMenuInput = false;
+			Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 			Game.Instance.PlayerController.CurrentControlMode = PlayerControlMode.TargetSelecting;
 			CameraTarget = possibleTargets.First();
 			MenuManager.Instance.TargetArrow.transform.position = CameraTarget.transform.position;
@@ -192,8 +192,8 @@ namespace JuicyChickenGames.Menu
 
 		private void HandleTargetInput()
 		{
-			Vector2 move = MenuInputHandler.Instance.MoveInput;
-			if (!MenuInputHandler.Instance.IsMoving || move.magnitude < 0.5f)
+			Vector2 move = Common.Instance.MenuInputHandler.MoveInput;
+			if (!Common.Instance.MenuInputHandler.IsMoving || move.magnitude < 0.5f)
 				return;
 
 			Facing facing = Facing.Down;

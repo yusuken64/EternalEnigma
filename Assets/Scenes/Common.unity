@@ -168,6 +168,7 @@ MonoBehaviour:
   MessageDialog: {fileID: 1740998369}
   InstantiatedOverworldAllies: []
   OverworldAllyParent: {fileID: 1923826960}
+  MenuInputHandler: {fileID: 2061633078}
 --- !u!4 &24939713
 Transform:
   m_ObjectHideFlags: 0
@@ -189,6 +190,7 @@ Transform:
   - {fileID: 572655990}
   - {fileID: 1923826960}
   - {fileID: 1740998365}
+  - {fileID: 2061633075}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &24939714
@@ -5277,6 +5279,157 @@ RectTransform:
   m_AnchoredPosition: {x: 0.000061035156, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2061633074
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2061633075}
+  - component: {fileID: 2061633078}
+  - component: {fileID: 2061633077}
+  - component: {fileID: 2061633076}
+  m_Layer: 0
+  m_Name: MenuInputHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2061633075
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061633074}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 24939713}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2061633076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061633074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 05a6201d4ef7d8c418df96db574b4852, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &2061633077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061633074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83af0dd2a680746499fcbed35efe904e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JuicyChickenGames.Menu.PlayerInputHandler
+  PlayerInput: {fileID: 2061633076}
+--- !u!114 &2061633078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061633074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5457bf92a1ef1548863a0a8d9f079b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JuicyChickenGames.Menu.MenuInputHandler
+  MenuOpenClosedInput: 0
+  OpenSkillMenuInput: 0
+  SubmitMenuInput: 0
+  CancelMenuInput: 0
+  OptionInput: 0
+  PlayerInput: {fileID: 2061633076}
+  NavigateActions:
+    m_Name: Navigate Actions
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 8795d54c-0e02-4125-867e-7d35d2e88080
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  MenuOpenCloseAction:
+    m_Name: Menu Open Close
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: b8fb0c1a-5cd1-44e1-af6c-4736a99cb35b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  OpenSkillMenuAction:
+    m_Name: Open Skill Menu
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 56a5b897-9ebc-40c4-9079-5e610195f1bb
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  SubmitAction:
+    m_Name: Submit
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 3bd6ef81-a46a-4a53-af21-ab77fc28f7c0
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  CancelAction:
+    m_Name: Cancel
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 9d130523-6ce9-4e48-995f-43955069cd7f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  OpenOptions:
+    m_Name: Open Options
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 21c8bfd4-95c9-4a9c-b33c-558beae5b99b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  MoveInput: {x: 0, y: 0}
+  IsMoving: 0
 --- !u!1 &2069271107
 GameObject:
   m_ObjectHideFlags: 0

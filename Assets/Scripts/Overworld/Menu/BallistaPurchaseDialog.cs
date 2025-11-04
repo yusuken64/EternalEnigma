@@ -46,20 +46,21 @@ public class BallistaPurchaseDialog : Dialog
 
 	internal void Setup(Skill skill)
 	{
-        OverworldMenuManager.Open(this);
+        FindFirstObjectByType<OverworldMenuManager>().Open(this);
 
         TitleText.text = $"{skill.SkillName} ({skill.SPCost})";
         DescriptionText.text = skill.Description;
+        SetNavigation();
 	}
 
     public void Purchase_Clicked()
     {
         PurcahseCallBack?.Invoke();
-        OverworldMenuManager.Close(this);
+        FindFirstObjectByType<OverworldMenuManager>().Close(this);
     }
 
     public void Cancel_ClickeD()
     {
-        OverworldMenuManager.Close(this);
+        FindFirstObjectByType<OverworldMenuManager>().Close(this);
     }
 }

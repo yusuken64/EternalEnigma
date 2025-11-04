@@ -16,7 +16,7 @@ public class GlobalSettings : MonoBehaviour
 
 	public void ShowDialog()
 	{
-		MenuInputHandler.Instance?.SwitchToPlayerInput();
+		Common.Instance.MenuInputHandler.SwitchToPlayerInput();
 		SettingsCanvas.gameObject.SetActive(true);
 		FindFirstObjectByType<NavigationHandler>().PushDialog(this, FirstSelected);
     }
@@ -24,7 +24,7 @@ public class GlobalSettings : MonoBehaviour
     private void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.Escape) ||
-			MenuInputHandler.Instance?.OptionInput == true)
+			Common.Instance.MenuInputHandler?.OptionInput == true)
 		{
 			SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
 			if (SettingsCanvas.activeSelf)

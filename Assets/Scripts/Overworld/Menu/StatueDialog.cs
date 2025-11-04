@@ -45,13 +45,13 @@ public class StatueDialog : Dialog
 		overworldPlayer.Gold -= amount;
 		DonatedAmount += amount;
 
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 		CloseAction?.Invoke();
 	}
 
 	public void Cancel_Clicked()
 	{
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 		CloseAction?.Invoke();
 	}
 }

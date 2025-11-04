@@ -52,6 +52,28 @@ namespace JuicyChickenGames.Menu
             Buttons = ButtonContainer.RePopulateObjects(ActionButtonPrefab, dynamicActionInfos, setupAction);
         }
 
+
+        internal void SetupOverworld(OverworldAlly controllingOverworldAlly)
+        {
+            var dynamicActionInfos = controllingOverworldAlly.Skills.Select((skill, index) =>
+            {
+                return new DynamicActionInfo()
+                {
+                    ActionName = $"{skill}",
+                    ClickAction = () =>
+                    {
+                        //do nothing on overworld
+                    }
+                };
+            }).ToList();
+
+            Action<DynamicActionButton, DynamicActionInfo> setupAction = (view, data) =>
+            {
+                view.Setup(data);
+            };
+            Buttons = ButtonContainer.RePopulateObjects(ActionButtonPrefab, dynamicActionInfos, setupAction);
+        }
+
         internal override void SetFirstSelect()
         {
             if(!Buttons.Any()) { return; }
@@ -76,5 +98,5 @@ namespace JuicyChickenGames.Menu
                 item.navigation = customNav;
             }
         }
-    }
+	}
 }

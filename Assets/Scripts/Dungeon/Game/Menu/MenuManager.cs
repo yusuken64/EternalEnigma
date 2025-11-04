@@ -39,7 +39,8 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	{
 		confirmCooldown -= Time.deltaTime;
 		if (confirmCooldown > 0) { return; }
-		if (MenuInputHandler.Instance.MenuOpenClosedInput)
+		if (Common.Instance.MenuInputHandler.MenuOpenClosedInput ||
+			PlayerInputHandler.Instance.menuPressed)
 		{
 			if (!Opened)
 			{
@@ -56,7 +57,8 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 				return;
 			}
 		}
-		else if (MenuInputHandler.Instance.OpenSkillMenuInput)
+		else if (Common.Instance.MenuInputHandler.OpenSkillMenuInput ||
+				PlayerInputHandler.Instance.skillsPressed)
 		{
 			if (!Opened)
 			{
@@ -74,7 +76,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			}
 		}
 
-		if (MenuInputHandler.Instance.SubmitMenuInput)
+		if (Common.Instance.MenuInputHandler.SubmitMenuInput)
 		{
 			if (Game.Instance.PlayerController.CurrentControlMode == PlayerControlMode.FollowAlly)
 			{
@@ -92,17 +94,12 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			}
 		}
 
-		if (MenuInputHandler.Instance.CancelMenuInput && DialogStack.Count > 0)
+		if (Common.Instance.MenuInputHandler.CancelMenuInput && DialogStack.Count > 0)
         {
 			var top = DialogStack.Peek();
 			Close(top);
 			return;
         }
-	}
-
-	internal void OpenDialogueMenu(BallistaPurchaseDialog ballistaPurchaseDialog)
-	{
-		CurrentDialog = ballistaPurchaseDialog;
 	}
 
 	internal void CloseAllMenus()
@@ -119,13 +116,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		DialogStack.Clear();
 
 		Opened = false;
-		MenuInputHandler.Instance.SwitchToPlayerInput();
+		Common.Instance.MenuInputHandler.SwitchToPlayerInput();
 		confirmCooldown = confirmCooldownStart;
 	}
 
 	private void OpenMenu()
 	{
-		MenuInputHandler.Instance.SwitchToUIInput();
+		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		MenuManager.Open(InventoryMenu);
 		var equippedItems = Game.Instance.PlayerController.ControlledAlly.Equipment.GetEquippedItems();
 		var items = Game.Instance.PlayerController.Inventory.InventoryItems;
@@ -143,7 +140,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;
-		MenuInputHandler.Instance.SubmitMenuInput = false;
+		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		confirmCooldown = confirmCooldownStart;
 	}
 
@@ -166,13 +163,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
         AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
         Opened = true;
-		MenuInputHandler.Instance.SubmitMenuInput = false;
+		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		confirmCooldown = confirmCooldownStart;
 	}
 
 	public void OpenAllyMenu(Ally ally)
 	{
-		MenuInputHandler.Instance.SwitchToUIInput();
+		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(AllyActionDialog);
 		AllyActionDialog.Setup(ally);
@@ -185,13 +182,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;
-		MenuInputHandler.Instance.SubmitMenuInput = false;
+		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		confirmCooldown = confirmCooldownStart;
 	}
 
 	public void OpenSkillsMenu(Character character)
 	{
-		MenuInputHandler.Instance.SwitchToUIInput();
+		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(SkillDialog);
 		SkillDialog.Setup(character);
@@ -204,13 +201,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;
-		MenuInputHandler.Instance.SubmitMenuInput = false;
+		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		confirmCooldown = confirmCooldownStart;
 	}
 
 	public void OpenTargetingMenu(Character character, Skill skill)
 	{
-		MenuInputHandler.Instance.SwitchToUIInput();
+		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(TargetDialog);
 		TargetDialog.Setup(character, skill);
@@ -225,13 +222,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;
-		MenuInputHandler.Instance.SubmitMenuInput = false;
+		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		confirmCooldown = confirmCooldownStart;
 	}
 
 	internal void ShowYesNoDialog(string prompt, Action yesAction, Action noAction)
 	{
-		MenuInputHandler.Instance.SwitchToUIInput();
+		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(StairDialog);
 		StairDialog.Setup(prompt, yesAction, noAction);
@@ -239,7 +236,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
 		Opened = true;
-		MenuInputHandler.Instance.SubmitMenuInput = false;
+		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		confirmCooldown = confirmCooldownStart;
 	}
 
@@ -253,7 +250,8 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	public static void Open(Dialog dialog)
 	{
-		MenuInputHandler.Instance.SubmitMenuInput = false;
+		Common.Instance.MenuInputHandler.ClearInputThisFrame();
+		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		MenuManager.Instance.confirmCooldown = MenuManager.Instance.confirmCooldownStart;
 		if (MenuManager.Instance.DialogStack.Count > 0)
 		{

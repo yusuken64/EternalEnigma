@@ -76,6 +76,7 @@ public class Overworld : MonoBehaviour
             AllyRecruitDialog.Recruit(this, allyInstance);
             allyInstance.TilemapPosition = startPosition;
             allyInstance.transform.position = WalkableMap.CellToWorld(allyInstance.TilemapPosition);
+            allyInstance.Skills = allyData.Skills ?? new();
         }
 
         var allyPositions = GetPositions("Allies");//TODO add count as param

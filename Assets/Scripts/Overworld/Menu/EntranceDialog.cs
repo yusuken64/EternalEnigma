@@ -72,7 +72,8 @@ public class EntranceDialog : Dialog
 			Common.Instance.GameSaveData.OverworldSaveData.RecruitedAlliesData =
 			overworld.OverworldPlayer.RecruitedAllies.Select(x => new OverworldAllyData()
 			{
-				AllyName = x.Name
+				AllyName = x.Name,
+				Skills = x.Skills
 			}).ToList();
 
 			Common.Instance.GameSaveData.DungeonSaveData.StartFloor = data.StartFloor;
@@ -84,7 +85,7 @@ public class EntranceDialog : Dialog
 
 	public void Cancel_Clicked()
 	{
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 		CloseAction?.Invoke();
 	}
 

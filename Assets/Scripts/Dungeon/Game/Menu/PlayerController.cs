@@ -166,7 +166,7 @@ public class PlayerController : MonoBehaviour
             var targetAlly = Game.Instance.Allies.FirstOrDefault(x => x.TilemapPosition == ControlledAlly.TilemapPosition + offset);
             if (targetAlly != null)
 			{
-                FindObjectOfType<MenuManager>().OpenAllyMenu(targetAlly);
+                //FindObjectOfType<MenuManager>().OpenAllyMenu(targetAlly);
                 return;
             }
             else if (ControlledAlly.IsRangedAttack(out GameObject projectilePrefab))
@@ -209,6 +209,11 @@ public class PlayerController : MonoBehaviour
         if (PlayerInputHandler.Instance.swapAllyPressed)
         {
             TakeControlNextAlly();
+        }
+
+        if (PlayerInputHandler.Instance.planPressed)
+		{
+            MenuManager.Instance.OpenAllyMenu(ControlledAlly);
         }
     }
 
@@ -292,6 +297,8 @@ public class PlayerController : MonoBehaviour
 
     public void StartTurn()
     {
+        Common.Instance.MenuInputHandler.SwitchToPlayerInput();
+
         ControlledAlly.IsWaitingForPlayerInput = true;
         Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
         Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;

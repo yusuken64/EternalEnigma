@@ -52,7 +52,7 @@ public class SkillGridItem : MonoBehaviour
 				messageDialog.PromptText.text = "Not enough gold to buy skill";
 				messageDialog.gameObject.SetActive(true);
 
-				OverworldMenuManager.Open(messageDialog);
+				FindFirstObjectByType<OverworldMenuManager>().Open(messageDialog);
 			}
 		}
 	}

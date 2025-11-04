@@ -59,7 +59,7 @@ public class BallistaDialog : Dialog
 	public void Close_Clicked()
 	{
 		FindAnyObjectByType<Overworld>().WriteSaveData();
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 		CloseAction?.Invoke();
 	}
 

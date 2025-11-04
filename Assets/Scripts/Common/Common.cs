@@ -1,3 +1,4 @@
+using JuicyChickenGames.Menu;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 
 	public List<OverworldAlly> InstantiatedOverworldAllies = new();
 	public Transform OverworldAllyParent;
+
+	public MenuInputHandler MenuInputHandler;
 
 	protected override void Initialize()
 	{

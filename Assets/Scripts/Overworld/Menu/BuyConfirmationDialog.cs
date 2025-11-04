@@ -28,12 +28,12 @@ public class BuyConfirmationDialog : Dialog
 	public void Ok_Clicked()
 	{
 		BuyCallBack?.Invoke(this._view, this._data);
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 	}
 
 	public void Cancel_Clicked()
 	{
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 	}
 
 	internal void SetNavigation()

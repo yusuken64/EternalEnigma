@@ -75,7 +75,7 @@ public class AllyRecruitDialog : Dialog
 		}
 
 		FaceCamDisplay.Unfollow(_ally.VisualParent);
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 		CloseAction?.Invoke();
 	}
 
@@ -88,7 +88,7 @@ public class AllyRecruitDialog : Dialog
 			messageDialog.PromptText.text = "Max Part Size is 4";
 			messageDialog.gameObject.SetActive(true);
 
-			OverworldMenuManager.Open(messageDialog);
+			FindFirstObjectByType<OverworldMenuManager>().Open(messageDialog);
 			return;
 		}
 
@@ -104,7 +104,7 @@ public class AllyRecruitDialog : Dialog
 		}
 
 		FaceCamDisplay.Unfollow(_ally.VisualParent);
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 		CloseAction?.Invoke();
 	}
 
@@ -131,7 +131,7 @@ public class AllyRecruitDialog : Dialog
 	public void Cancel_Clicked()
 	{
 		FaceCamDisplay.Unfollow(_ally.VisualParent);
-		OverworldMenuManager.Close(this);
+		FindFirstObjectByType<OverworldMenuManager>().Close(this);
 		CloseAction?.Invoke();
 	}
 }

@@ -44,6 +44,7 @@ public class Skill : ScriptableObject
 
 	public StatModification PassiveStatModification;
 
+	[TextArea]
 	public string Description;
 }
 

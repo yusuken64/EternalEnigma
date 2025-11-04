@@ -36,6 +36,7 @@ MonoBehaviour:
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
+  Description: Passive SP Max up
   references:
     version: 2
     RefIds:

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillName: Hot
   LearnCost: 50
+  ActivationType: 0
   SPCost: 1
   TargetSelector:
     Team: 2
@@ -22,6 +23,20 @@ MonoBehaviour:
   - rid: 3678569488985358401
   SkillAnimation:
     Steps: []
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Heal over time to ally
   references:
     version: 2
     RefIds:

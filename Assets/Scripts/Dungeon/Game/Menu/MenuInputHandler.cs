@@ -53,12 +53,12 @@ namespace JuicyChickenGames.Menu
 			OptionInput = OpenOptions.WasPressedThisFrame();
 		}
 
-        internal void CloseMenu()
+        internal void SwitchToPlayerInput()
 		{
 			PlayerInput.SwitchCurrentActionMap("Player");
 		}
 
-        internal void OpenMenu()
+        internal void SwitchToUIInput()
 		{
 			PlayerInput.SwitchCurrentActionMap("UI");
 		}

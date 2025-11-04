@@ -16,6 +16,7 @@ public class SkillGridItem : MonoBehaviour
 	private float clickCooldownSeconds;
 
 	public Action SkillToggledCallback { get; internal set; }
+	public BallistaPurchaseDialog BallistaPurchaseDialog { get; internal set; }
 
 	private void Update()
 	{
@@ -34,12 +35,16 @@ public class SkillGridItem : MonoBehaviour
 		{
 			if (CanAfford())
 			{
-				//TODO prompt are you sure;
-				_data.Active = !_data.Active;
-				var overWorld = FindFirstObjectByType<Overworld>();
-				overWorld.OverworldPlayer.Gold -= _data.Skill.LearnCost;
-				UpdateUI();
-				SkillToggledCallback?.Invoke();
+				BallistaPurchaseDialog.Setup(_data.Skill);
+				BallistaPurchaseDialog.PurcahseCallBack = () =>
+				{
+					//TODO prompt are you sure;
+					_data.Active = !_data.Active;
+					var overWorld = FindFirstObjectByType<Overworld>();
+					overWorld.OverworldPlayer.Gold -= _data.Skill.LearnCost;
+					UpdateUI();
+					SkillToggledCallback?.Invoke();
+				};
 			}
 			else
 			{

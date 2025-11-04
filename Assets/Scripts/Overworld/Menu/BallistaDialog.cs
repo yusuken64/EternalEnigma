@@ -15,6 +15,8 @@ public class BallistaDialog : Dialog
 	public List<SkillGridItem> SkillGridItems { get; private set; }
 	public OverworldAlly Character { get; internal set; }
 
+	public BallistaPurchaseDialog BallistaPurchaseDialog;
+
 	internal override void SetFirstSelect()
 	{
 		EventSystem.current.SetSelectedGameObject(null);
@@ -23,6 +25,7 @@ public class BallistaDialog : Dialog
 
 	internal void Show()
 	{
+		BallistaPurchaseDialog.gameObject.SetActive(false);
 		this.gameObject.SetActive(true);
 		var activeSkills = Character.Skills;
 
@@ -36,6 +39,7 @@ public class BallistaDialog : Dialog
 		{
 			view.Setup(data);
 			view.SkillToggledCallback = HandleSkillChanged;
+			view.BallistaPurchaseDialog = BallistaPurchaseDialog;
 		};
 		SkillGridItems = SkillGridContainer.RePopulateObjects(SkillGridSelectablePrefab, datas, action);
 		UpdateUI();

@@ -131,6 +131,8 @@ public class OverworldMenuManager : SingletonMonoBehaviour<OverworldMenuManager>
 		{
 			dialog.SetFirstSelect();
 		};
+
+		MenuInputHandler.Instance.SwitchToUIInput();
 	}
 
 	internal static void Close(Dialog dialog)
@@ -140,6 +142,7 @@ public class OverworldMenuManager : SingletonMonoBehaviour<OverworldMenuManager>
 
 		if (OverworldMenuManager.Instance.DialogStack.Count <= 0)
 		{
+			MenuInputHandler.Instance.SwitchToPlayerInput();
 			OverworldMenuManager.Instance.Opened = false;
 			return;
 		}
@@ -160,7 +163,7 @@ public class OverworldMenuManager : SingletonMonoBehaviour<OverworldMenuManager>
 		DialogStack.Clear();
 
 		Opened = false;
-		MenuInputHandler.Instance.CloseMenu();
+		MenuInputHandler.Instance.SwitchToPlayerInput();
 		confirmCooldown = confirmCooldownStart;
 	}
 

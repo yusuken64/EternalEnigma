@@ -16,7 +16,7 @@ public class GlobalSettings : MonoBehaviour
 
 	public void ShowDialog()
 	{
-		MenuInputHandler.Instance?.CloseMenu();
+		MenuInputHandler.Instance?.SwitchToPlayerInput();
 		SettingsCanvas.gameObject.SetActive(true);
 		FindFirstObjectByType<NavigationHandler>().PushDialog(this, FirstSelected);
     }

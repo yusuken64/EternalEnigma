@@ -43,6 +43,8 @@ public class Skill : ScriptableObject
 	internal List<Vector3Int> GetTargets(Character caster) => TargetSelector.GetTargets(caster);
 
 	public StatModification PassiveStatModification;
+
+	public string Description;
 }
 
 public enum ActivationType

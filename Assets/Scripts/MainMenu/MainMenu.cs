@@ -1,24 +1,26 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+	public GameObject StartButton;
 	public GameObject ContinueButton;
+
+	public NavigationHandler NavigationHandler;
 
 	private void Start()
 	{
 		if (Common.Instance.GameSaveData != null)
 		{
 			ContinueButton.gameObject.SetActive(true);
+			ContinueButton.GetComponent<Button>().Select();
 		}
 		else
 		{
 			ContinueButton.gameObject.SetActive(false);
+			StartButton.GetComponent<Button>().Select();
 		}
 	}
 
@@ -62,8 +64,12 @@ public class MainMenu : MonoBehaviour
 
 	public void Options_Clicked()
 	{
-        GlobalSettings globalSettings = FindFirstObjectByType<GlobalSettings>();
-		globalSettings.ShowDialog();
+		NavigationHandler.gameObject.SetActive(false);
+		Common.Instance.GlobalSettings.ShowDialog();
+		Common.Instance.GlobalSettings.CloseAction = () =>
+		{
+			NavigationHandler.gameObject.SetActive(true);
+		};
 	}
 
 	public void Exit_Clicked()

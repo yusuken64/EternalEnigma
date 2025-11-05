@@ -20,6 +20,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	public Transform OverworldAllyParent;
 
 	public MenuInputHandler MenuInputHandler;
+	public GlobalSettings GlobalSettings;
 
 	protected override void Initialize()
 	{

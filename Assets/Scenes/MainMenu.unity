@@ -1512,7 +1512,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ad28c64d3012e4e9a4974afa021dd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StartButton: {fileID: 437284388}
   ContinueButton: {fileID: 6967896922278924393}
+  NavigationHandler: {fileID: 1656518435}
   DebugAllies:
   - AllyName: Rowan
     Skills: []
@@ -1562,6 +1564,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultSelectable: {fileID: 437284388}
   selectionArrow: {fileID: 485540312}
+  arrowAnchor: 0
   arrowOffset: {x: -192.4, y: 0, z: 0}
   arrowFollowSpeed: 10
 --- !u!4 &1815029353 stripped

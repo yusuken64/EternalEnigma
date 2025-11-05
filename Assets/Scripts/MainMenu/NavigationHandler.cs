@@ -31,7 +31,12 @@ public class NavigationHandler : MonoBehaviour
         controls = new DungeonControls();
     }
 
-    private void OnEnable()
+	public void Init()
+    {
+        es = EventSystem.current;
+    }
+
+	private void OnEnable()
     {
         controls.UI.Enable();
         controls.UI.Navigate.performed += OnNavigatePerformed;

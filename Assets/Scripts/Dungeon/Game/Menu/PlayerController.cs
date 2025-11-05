@@ -54,6 +54,11 @@ public class PlayerController : MonoBehaviour
 
     private bool ShouldBlockInput()
     {
+        if (Common.Instance.GlobalSettings.gameObject.activeSelf)
+		{
+            return true;
+		}
+
         if (_cheatConsole.ScreenObject.activeSelf)
             return true;
 
@@ -214,6 +219,11 @@ public class PlayerController : MonoBehaviour
         if (PlayerInputHandler.Instance.planPressed)
 		{
             MenuManager.Instance.OpenAllyMenu(ControlledAlly);
+        }
+
+        if (PlayerInputHandler.Instance.optionsPressed)
+        {
+            Common.Instance.GlobalSettings.ShowDialog();
         }
     }
 

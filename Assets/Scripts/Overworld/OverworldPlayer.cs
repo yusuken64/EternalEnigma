@@ -182,6 +182,14 @@ public class OverworldPlayer : MonoBehaviour
 				overworldMenuManager.Open(overworldMenu.AllyRecruitDialog);
 			}
 		}
+
+		if (inputHandler.optionsPressed)
+		{
+			if (overworldMenuManager.DialogStack.Count == 0)
+			{
+				Common.Instance.GlobalSettings.ShowDialog();
+			}
+		}
 	}
 
 	private IEnumerator Wait(Action? action)

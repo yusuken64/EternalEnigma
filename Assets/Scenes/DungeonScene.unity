@@ -18721,6 +18721,7 @@ MonoBehaviour:
   TargetIndicator: {fileID: 800946522}
   Floor: 0
   Gold: 0
+  Minimap: {fileID: 503098999}
 --- !u!114 &1609639455
 MonoBehaviour:
   m_ObjectHideFlags: 0

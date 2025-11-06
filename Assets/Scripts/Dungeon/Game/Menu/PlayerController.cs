@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
 
     // === Control Mode ===
     public PlayerControlMode CurrentControlMode { get; set; }
+    public Minimap Minimap;
 
     private void Start()
     {
@@ -318,10 +319,7 @@ public class PlayerController : MonoBehaviour
         //update minimap
         if (Game.Instance.CurrentDungeon != null)
         {
-            var visibleTiles = Game.Instance.CurrentDungeon.GetVisionBounds(ControlledAlly, this.TilemapPosition);
-            Minimap minimap = FindFirstObjectByType<Minimap>();
-            minimap.UpdateVision(visibleTiles);
-            minimap.UpdateMinimap(visibleTiles);
+            Game.Instance.UpdateMiniMap();
         }
 
         if (ControlledAlly.currentInteractable is Stairs stairs &&

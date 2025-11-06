@@ -1,4 +1,5 @@
 using JuicyChickenGames.Menu;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,8 +51,9 @@ public class Minimap : MonoBehaviour
         UpdateMinimapMode();
     }
 
-    public void UpdateVision(BoundsInt visibleTiles)
+    public void UpdateVision(HashSet<Vector3Int> visibleTiles)
     {
+        // Mark previous visible tiles as explored
         for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
         {
             for (int y = 0; y < _currentDungeon.dungeonHeight; y++)
@@ -61,21 +63,17 @@ public class Minimap : MonoBehaviour
             }
         }
 
-        for (int x = visibleTiles.xMin; x < visibleTiles.xMax; x++)
+        // Apply combined visibility
+        foreach (var pos in visibleTiles)
         {
-            for (int y = visibleTiles.yMin; y < visibleTiles.yMax; y++)
+            if (pos.x >= 0 && pos.x < _currentDungeon.dungeonWidth &&
+                pos.y >= 0 && pos.y < _currentDungeon.dungeonHeight)
             {
-                // Bounds check to prevent errors
-                if (x >= 0 && x < _currentDungeon.dungeonWidth &&
-                    y >= 0 && y < _currentDungeon.dungeonHeight)
-                {
-                    dungeonMap[x, y].visibility = MinimapTileVisibility.Visible;
-                }
+                dungeonMap[pos.x, pos.y].visibility = MinimapTileVisibility.Visible;
             }
         }
     }
-
-    public void UpdateMinimap(BoundsInt visionBounds)
+    public void UpdateMinimapWithVisibleTiles(HashSet<Vector3Int> visibleTiles)
     {
         for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
         {
@@ -118,7 +116,7 @@ public class Minimap : MonoBehaviour
                     }
                     break;
                 case Enemy enemy:
-                    if (visionBounds.Contains(new Vector3Int(enemy.TilemapPosition.x, enemy.TilemapPosition.y, 0)))
+                    if (visibleTiles.Contains(new Vector3Int(enemy.TilemapPosition.x, enemy.TilemapPosition.y, 0)))
                     {
                         minimapTexture.SetPixel(enemy.TilemapPosition.x, enemy.TilemapPosition.y, EnemyColor);
                     }
@@ -134,13 +132,13 @@ public class Minimap : MonoBehaviour
             {
                 if (trap.VisualObject.activeSelf)
                 {
-                    if (visionBounds.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)))
+                    if (visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)))
                     {
                         minimapTexture.SetPixel(interactable.Position.x, interactable.Position.y, ItemColor);
                     }
                 }
             }
-            else if (visionBounds.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)))
+            else if (visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)))
             {
                 minimapTexture.SetPixel(interactable.Position.x, interactable.Position.y, ItemColor);
             }
@@ -148,7 +146,7 @@ public class Minimap : MonoBehaviour
 
         minimapTexture.Apply();
 
-        FogOverlay.UpdateFog(dungeonMap, Game.Instance.PlayerController.transform.position);
+        FogOverlay.UpdateFog(dungeonMap);
     }
 
     public void Update()

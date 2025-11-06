@@ -43,7 +43,7 @@ public class FogOverlay : MonoBehaviour
         fogMaterial.SetTexture("_FogTex", fogTexture);
     }
 
-    internal void UpdateFog(Minimap.MinimapTileData[,] dungeonMap, Vector3 playerPos)
+    internal void UpdateFog(Minimap.MinimapTileData[,] dungeonMap)
     {
         int width = dungeonMap.GetLength(0);
         int height = dungeonMap.GetLength(1);

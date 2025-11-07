@@ -24,6 +24,8 @@ internal class ThrowItemAction : GameAction
 		this.projectilePrefab = projectilePrefab;
 	}
 
+	public bool LookAt { get; set; }
+
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		var game = Game.Instance;
@@ -76,9 +78,14 @@ internal class ThrowItemAction : GameAction
 		var projectile = UnityEngine.Object.Instantiate(projectilePrefab, null);
 		projectile.transform.position = character.VisualParent.transform.position;
 		var attackerWorldPosition = game.CurrentDungeon.CellToWorld(character.TilemapPosition);
-		var offset = new Vector3(1.25f, 1.25f, 0);
 		var targetWorldPosition = game.CurrentDungeon.CellToWorld(rangedAttackTargetPosition);
-		projectile.transform.LookAt(targetWorldPosition + offset);
+
+		Vector3 offset = Vector3.zero;
+		if (LookAt)
+		{
+			offset = new Vector3(1.25f, 1.25f, 0);
+			projectile.transform.LookAt(targetWorldPosition + offset);
+		}
 		yield return projectile.transform.DOMove(targetWorldPosition + offset, 0.5f)
 			.WaitForCompletion();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +37,18 @@ namespace JuicyChickenGames.Menu
 
 		public void Throw_Clicked()
 		{
-			_character.SetAction(new ThrowItemAction(Game.Instance.PlayerController.Inventory, _character, _data, Game.Instance.ThrownItemProjectilePrefab));
+			var droppedItemPrefab = Game.Instance.CurrentDungeon.DroppedItemPrefabs
+				.FirstOrDefault(x => x.DroppedItemVisual == _data.ItemDefinition.DroppedItemVisual)
+				.gameObject;
+
+			if (droppedItemPrefab == null)
+			{
+				droppedItemPrefab = Game.Instance.ThrownItemProjectilePrefab;
+			}
+			_character.SetAction(new ThrowItemAction(Game.Instance.PlayerController.Inventory, _character, _data, droppedItemPrefab)
+			{
+				LookAt = false
+			});
 
 			this.CloseAction?.Invoke();
 			MenuManager.Instance.CloseAllMenus();

@@ -1,0 +1,5 @@
+{
+  "name": "EternalEnigma.Tests.PlayMode",
+  "references": ["EternalEnigma.Game", "Unity.InputSystem", "Unity.TextMeshPro", "Unity.ugui", "TileWorldCreator", "TileWorldCreator.OdinSerializer", "EternalEnigma.TweenModules"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

@@ -258,7 +258,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2632747552074778711}
-        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.ActionDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.ActionDialog, EternalEnigma.Game
         m_MethodName: Cancel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -653,7 +653,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2632747552074778711}
-        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.ActionDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.ActionDialog, EternalEnigma.Game
         m_MethodName: Drop_Clicked
         m_Mode: 1
         m_Arguments:
@@ -786,7 +786,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2632747552074778711}
-        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.ActionDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.ActionDialog, EternalEnigma.Game
         m_MethodName: Throw_Clicked
         m_Mode: 1
         m_Arguments:
@@ -1055,7 +1055,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2632747552074778711}
-        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.ActionDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.ActionDialog, EternalEnigma.Game
         m_MethodName: Use_Clicked
         m_Mode: 1
         m_Arguments:

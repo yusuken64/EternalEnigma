@@ -41,5 +41,5 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 2821550384257433666
-      type: {class: ModifyStatAction, ns: , asm: Assembly-CSharp}
+      type: {class: ModifyStatAction, ns: , asm: EternalEnigma.Game}
       data: 

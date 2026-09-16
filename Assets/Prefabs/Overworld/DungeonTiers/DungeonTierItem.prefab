@@ -50,7 +50,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff80bf6399196da49b0d4efb4954cf3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DungeonTierItem
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonTierItem
   TierText: {fileID: 8465021357143790342}
   DungeonTierData: {fileID: 0}
   Button: {fileID: 6384013575003184767}
@@ -99,7 +99,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 770001041825077598}
-        m_TargetAssemblyTypeName: DungeonTierItem, Assembly-CSharp
+        m_TargetAssemblyTypeName: DungeonTierItem, EternalEnigma.Game
         m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:

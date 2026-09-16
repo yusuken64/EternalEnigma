@@ -1,0 +1,4 @@
+{
+  "name": "EternalEnigma.TweenModules",
+  "references": ["Unity.ugui"]
+}

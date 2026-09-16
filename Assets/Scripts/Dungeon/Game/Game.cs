@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class Game : SingletonMonoBehaviour<Game>
 {
+	public bool IsReady { get; private set; }
 	public TileWorldDungeonGenerator DungeonGenerator;
 	public TileWorldDungeon CurrentDungeon;
 
@@ -130,6 +131,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void AdvanceFloor()
 	{
+		IsReady = false;
 		TurnManager.InteruptTurn();
 		
 		StartCoroutine(AdvanceFloorRoutine());
@@ -240,6 +242,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerController.ControlledAlly.currentInteractable = null;
 		Game.Instance.PlayerController.StartTurn();
 		UpdateMiniMap();
+		IsReady = true;
 	}
 
 	public void UpdateMiniMap()

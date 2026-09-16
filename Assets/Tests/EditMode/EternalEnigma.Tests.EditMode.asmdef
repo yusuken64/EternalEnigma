@@ -1,0 +1,6 @@
+{
+  "name": "EternalEnigma.Tests.EditMode",
+  "references": ["EternalEnigma.Game"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

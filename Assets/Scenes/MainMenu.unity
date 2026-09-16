@@ -381,7 +381,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
+      value: MainMenu, EternalEnigma.Game
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -968,7 +968,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
+      value: MainMenu, EternalEnigma.Game
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -1070,7 +1070,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1656518432}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_TargetAssemblyTypeName: MainMenu, EternalEnigma.Game
         m_MethodName: TestDungeon_Clicked
         m_Mode: 1
         m_Arguments:
@@ -1466,7 +1466,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
+      value: MainMenu, EternalEnigma.Game
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -2099,7 +2099,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
+      value: MainMenu, EternalEnigma.Game
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName

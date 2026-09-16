@@ -1,0 +1,5 @@
+{
+  "name": "EternalEnigma.Editor",
+  "references": ["EternalEnigma.Game"],
+  "includePlatforms": ["Editor"]
+}

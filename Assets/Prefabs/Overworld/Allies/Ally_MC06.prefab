@@ -2764,7 +2764,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fa4135f76ef33f47812dc41a988e156, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Equipment
+  m_EditorClassIdentifier: EternalEnigma.Game::Equipment
   EquippedWeapon:
     ItemDefinition: {fileID: 0}
   EquippedShield:

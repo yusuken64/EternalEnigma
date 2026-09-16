@@ -1,0 +1,6 @@
+{
+  "name": "EternalEnigma.Tests.Driver",
+  "references": [],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

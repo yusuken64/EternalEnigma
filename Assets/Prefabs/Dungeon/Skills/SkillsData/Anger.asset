@@ -41,6 +41,6 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3678569255368130636
-      type: {class: ApplyStatusEffectAction, ns: , asm: Assembly-CSharp}
+      type: {class: ApplyStatusEffectAction, ns: , asm: EternalEnigma.Game}
       data:
         StatusEffect: {fileID: -6332391657329485210, guid: 37c179b2e0581a248ad717b2b006533e, type: 3}

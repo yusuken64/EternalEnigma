@@ -42,12 +42,12 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3678569255368130626
-      type: {class: TakeDamageAction, ns: , asm: Assembly-CSharp}
+      type: {class: TakeDamageAction, ns: , asm: EternalEnigma.Game}
       data:
         damage: 5
         doDamageAnimation: 0
     - rid: 3678569417729900614
-      type: {class: ParticleActionStep, ns: , asm: Assembly-CSharp}
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
       data:
         MuzzlePrefab: {fileID: 0}
         ProjectilePrefab: {fileID: 0}

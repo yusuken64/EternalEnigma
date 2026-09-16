@@ -147,7 +147,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4123290561872443529}
-        m_TargetAssemblyTypeName: VolumeSlider, Assembly-CSharp
+        m_TargetAssemblyTypeName: VolumeSlider, EternalEnigma.Game
         m_MethodName: OnSliderChanged
         m_Mode: 0
         m_Arguments:

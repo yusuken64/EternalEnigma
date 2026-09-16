@@ -41,10 +41,20 @@ public class LoadingSceneIntegration
 #if UNITY_EDITOR
 	public static int otherScene = -2;
 
+	// SessionState survives Test Runner domain reloads; normal editor play defaults to automatic loading.
+	public static bool SuppressAutomaticSceneLoading
+	{
+		get => UnityEditor.SessionState.GetBool("EternalEnigma.SuppressAutomaticSceneLoading", false);
+		set => UnityEditor.SessionState.SetBool("EternalEnigma.SuppressAutomaticSceneLoading", value);
+	}
+
 	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 	static void InitLoadingScene()
 	{
+		if (SuppressAutomaticSceneLoading) return;
 		int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+		// Test Runner and isolated editor scenes own their initialization.
+		if (sceneIndex < 0) return;
 		if (sceneIndex == 0)
 		{
 			otherScene = 1;

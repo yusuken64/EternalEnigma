@@ -258,7 +258,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1163746911629854005}
-        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.DynamicActionButton, Assembly-CSharp
+        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.DynamicActionButton, EternalEnigma.Game
         m_MethodName: ActionButton_Clicked
         m_Mode: 1
         m_Arguments:

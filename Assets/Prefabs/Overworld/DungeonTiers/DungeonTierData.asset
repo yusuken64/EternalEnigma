@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f96298ee862bdd84b9dcf1ba0fde2c7b, type: 3}
   m_Name: DungeonTierData
-  m_EditorClassIdentifier: Assembly-CSharp::DungeonTierData
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonTierData
   TierName: 
   StartFloor: 1
   EndFloor: 5

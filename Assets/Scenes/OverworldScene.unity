@@ -1149,7 +1149,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1398564951}
-        m_TargetAssemblyTypeName: BallistaPurchaseDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: BallistaPurchaseDialog, EternalEnigma.Game
         m_MethodName: Cancel_ClickeD
         m_Mode: 1
         m_Arguments:
@@ -1817,7 +1817,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f4b30574005a2540af12c1b3b835c3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NavigationHandler
+  m_EditorClassIdentifier: EternalEnigma.Game::NavigationHandler
   defaultSelectable: {fileID: 0}
   selectionArrow: {fileID: 1352587650}
   arrowAnchor: 0
@@ -2755,7 +2755,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 123820220}
-        m_TargetAssemblyTypeName: EntranceDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: EntranceDialog, EternalEnigma.Game
         m_MethodName: Ok_Clicked
         m_Mode: 1
         m_Arguments:
@@ -3486,7 +3486,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 127130600}
-        m_TargetAssemblyTypeName: BuyConfirmationDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: BuyConfirmationDialog, EternalEnigma.Game
         m_MethodName: Cancel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -3627,7 +3627,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f4b30574005a2540af12c1b3b835c3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NavigationHandler
+  m_EditorClassIdentifier: EternalEnigma.Game::NavigationHandler
   defaultSelectable: {fileID: 0}
   selectionArrow: {fileID: 1245184070}
   arrowAnchor: 0
@@ -3823,7 +3823,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 350286389}
-        m_TargetAssemblyTypeName: ShopMenuDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: ShopMenuDialog, EternalEnigma.Game
         m_MethodName: Cancel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -7530,7 +7530,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 201729934}
-        m_TargetAssemblyTypeName: BallistaDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: BallistaDialog, EternalEnigma.Game
         m_MethodName: Close_Clicked
         m_Mode: 1
         m_Arguments:
@@ -7867,7 +7867,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f4b30574005a2540af12c1b3b835c3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NavigationHandler
+  m_EditorClassIdentifier: EternalEnigma.Game::NavigationHandler
   defaultSelectable: {fileID: 0}
   selectionArrow: {fileID: 805462049}
   arrowAnchor: 1
@@ -10716,7 +10716,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1335359602}
-        m_TargetAssemblyTypeName: AllyRecruitDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: AllyRecruitDialog, EternalEnigma.Game
         m_MethodName: Cancel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -11730,7 +11730,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1335359602}
-        m_TargetAssemblyTypeName: AllyRecruitDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: AllyRecruitDialog, EternalEnigma.Game
         m_MethodName: Remove_Clicked
         m_Mode: 1
         m_Arguments:
@@ -12931,7 +12931,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1335359602}
-        m_TargetAssemblyTypeName: AllyRecruitDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: AllyRecruitDialog, EternalEnigma.Game
         m_MethodName: Cancel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -13190,7 +13190,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1335359602}
-        m_TargetAssemblyTypeName: AllyRecruitDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: AllyRecruitDialog, EternalEnigma.Game
         m_MethodName: Recruit_Clicked
         m_Mode: 1
         m_Arguments:
@@ -15767,7 +15767,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 159999921}
-        m_TargetAssemblyTypeName: StatueDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: StatueDialog, EternalEnigma.Game
         m_MethodName: Ok_Clicked
         m_Mode: 1
         m_Arguments:
@@ -15931,7 +15931,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 123820220}
-        m_TargetAssemblyTypeName: EntranceDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: EntranceDialog, EternalEnigma.Game
         m_MethodName: Cancel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -17152,7 +17152,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 159999921}
-        m_TargetAssemblyTypeName: StatueDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: StatueDialog, EternalEnigma.Game
         m_MethodName: Cancel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -21810,7 +21810,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f4b30574005a2540af12c1b3b835c3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NavigationHandler
+  m_EditorClassIdentifier: EternalEnigma.Game::NavigationHandler
   defaultSelectable: {fileID: 573364415}
   selectionArrow: {fileID: 1464756799}
   arrowAnchor: 0
@@ -21938,7 +21938,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 127130600}
-        m_TargetAssemblyTypeName: BuyConfirmationDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: BuyConfirmationDialog, EternalEnigma.Game
         m_MethodName: Ok_Clicked
         m_Mode: 1
         m_Arguments:
@@ -22731,7 +22731,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dabc6f9487d58614ab730a9e3c60df8e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BallistaPurchaseDialog
+  m_EditorClassIdentifier: EternalEnigma.Game::BallistaPurchaseDialog
   scrollView: {fileID: 0}
   PurchaseButton: {fileID: 1704844999}
   CancelButton: {fileID: 103182045}
@@ -28736,7 +28736,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1398564951}
-        m_TargetAssemblyTypeName: BallistaPurchaseDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: BallistaPurchaseDialog, EternalEnigma.Game
         m_MethodName: Purchase_Clicked
         m_Mode: 1
         m_Arguments:

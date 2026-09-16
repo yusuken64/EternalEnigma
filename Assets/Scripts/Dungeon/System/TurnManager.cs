@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
+	public bool IsProcessingTurn { get; private set; }
 	public SimultaneousCoroutines SimultaneousCoroutines;
 	public SequentialCoroutines SequentialCoroutines;
 	private bool interuptTurn = false; //this happens when the stairs are taken
@@ -19,7 +20,14 @@ public class TurnManager : MonoBehaviour
 	public void ProcessTurn()
 	{
 		interuptTurn = false;
-		StartCoroutine(ProcessTurnRoutine());
+		StartCoroutine(TrackTurnRoutine());
+	}
+
+	private IEnumerator TrackTurnRoutine()
+	{
+		IsProcessingTurn = true;
+		try { yield return ProcessTurnRoutine(); }
+		finally { IsProcessingTurn = false; }
 	}
 
 	private IEnumerator ProcessTurnRoutine()

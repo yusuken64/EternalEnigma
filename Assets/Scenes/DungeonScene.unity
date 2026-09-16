@@ -11435,7 +11435,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1425972713}
-        m_TargetAssemblyTypeName: StairConfirm, Assembly-CSharp
+        m_TargetAssemblyTypeName: StairConfirm, EternalEnigma.Game
         m_MethodName: YesClicked
         m_Mode: 1
         m_Arguments:
@@ -14007,7 +14007,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1391722945}
-        m_TargetAssemblyTypeName: GameOverScreen, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameOverScreen, EternalEnigma.Game
         m_MethodName: TryAgain_Clicked
         m_Mode: 1
         m_Arguments:
@@ -15959,7 +15959,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f4b30574005a2540af12c1b3b835c3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NavigationHandler
+  m_EditorClassIdentifier: EternalEnigma.Game::NavigationHandler
   defaultSelectable: {fileID: 1865861869}
   selectionArrow: {fileID: 125617468}
   arrowAnchor: 0
@@ -17875,7 +17875,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1925964870}
-        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.AllyActionDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.AllyActionDialog, EternalEnigma.Game
         m_MethodName: Strategy_Clicked
         m_Mode: 1
         m_Arguments:
@@ -21237,7 +21237,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1391722945}
-        m_TargetAssemblyTypeName: GameOverScreen, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameOverScreen, EternalEnigma.Game
         m_MethodName: Quit_Clicked
         m_Mode: 1
         m_Arguments:
@@ -22179,7 +22179,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1425972713}
-        m_TargetAssemblyTypeName: StairConfirm, Assembly-CSharp
+        m_TargetAssemblyTypeName: StairConfirm, EternalEnigma.Game
         m_MethodName: NoClicked
         m_Mode: 1
         m_Arguments:
@@ -24335,7 +24335,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1925964870}
-        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.AllyActionDialog, Assembly-CSharp
+        m_TargetAssemblyTypeName: JuicyChickenGames.Menu.AllyActionDialog, EternalEnigma.Game
         m_MethodName: Cancel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -25832,7 +25832,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f4b30574005a2540af12c1b3b835c3f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NavigationHandler
+  m_EditorClassIdentifier: EternalEnigma.Game::NavigationHandler
   defaultSelectable: {fileID: 0}
   selectionArrow: {fileID: 1615311709}
   arrowAnchor: 1

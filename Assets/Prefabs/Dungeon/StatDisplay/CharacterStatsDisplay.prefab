@@ -450,7 +450,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ce0f11d8b322154699518619edd958f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StatsDisplay
+  m_EditorClassIdentifier: EternalEnigma.Game::StatsDisplay
   ValueText: {fileID: 5740974737774634133}
   StatValueSlider: {fileID: 4045395969855291716}
 --- !u!114 &4045395969855291716
@@ -1633,7 +1633,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ce0f11d8b322154699518619edd958f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StatsDisplay
+  m_EditorClassIdentifier: EternalEnigma.Game::StatsDisplay
   ValueText: {fileID: 9030187882873072648}
   StatValueSlider: {fileID: 8001394148571005845}
 --- !u!114 &8001394148571005845
@@ -1860,7 +1860,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ce0f11d8b322154699518619edd958f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StatsDisplay
+  m_EditorClassIdentifier: EternalEnigma.Game::StatsDisplay
   ValueText: {fileID: 4126150398471295782}
   StatValueSlider: {fileID: 7809546942313032705}
 --- !u!114 &7809546942313032705
@@ -2103,7 +2103,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ce0f11d8b322154699518619edd958f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StatsDisplay
+  m_EditorClassIdentifier: EternalEnigma.Game::StatsDisplay
   ValueText: {fileID: 7842157003133534101}
   StatValueSlider: {fileID: 1022128927295127114}
 --- !u!114 &1022128927295127114

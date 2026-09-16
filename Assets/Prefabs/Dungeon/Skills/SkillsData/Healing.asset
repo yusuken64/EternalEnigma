@@ -42,12 +42,12 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 3678569255368130628
-      type: {class: TakeHealAction, ns: , asm: Assembly-CSharp}
+      type: {class: TakeHealAction, ns: , asm: EternalEnigma.Game}
       data:
         healing: 10
         doHealAnimation: 0
     - rid: 3678569417729900613
-      type: {class: ParticleActionStep, ns: , asm: Assembly-CSharp}
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
       data:
         MuzzlePrefab: {fileID: 0}
         ProjectilePrefab: {fileID: 0}

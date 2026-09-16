@@ -677,7 +677,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 8590636590653912323}
-        m_TargetAssemblyTypeName: SkillGridItem, Assembly-CSharp
+        m_TargetAssemblyTypeName: SkillGridItem, EternalEnigma.Game
         m_MethodName: ToggleOn_Clicked
         m_Mode: 1
         m_Arguments:

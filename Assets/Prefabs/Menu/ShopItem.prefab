@@ -550,7 +550,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c7156afad40b6745abecb475fc93362, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShopMenuItem
+  m_EditorClassIdentifier: EternalEnigma.Game::ShopMenuItem
   ItemText: {fileID: 724522957250582548}
   CostText: {fileID: 6834198913458326695}
   BuyButton: {fileID: 1628961601439381302}

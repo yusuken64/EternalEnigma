@@ -1,0 +1,4 @@
+{
+  "name": "EternalEnigma.Game",
+  "references": ["Unity.InputSystem", "Unity.TextMeshPro", "Unity.ugui", "Unity.2D.Tilemap.Extras", "Unity.VisualScripting.Core", "TileWorldCreator", "TileWorldCreator.OdinSerializer", "EternalEnigma.TweenModules"]
+}

@@ -168,6 +168,15 @@ public class PlayerController : MonoBehaviour
 
         if (PlayerInputHandler.Instance.attackPressed)
         {
+            if (ControlledAlly.currentInteractable != null && !PlayerInputHandler.Instance.holdPosition)
+            {
+                if (ControlledAlly.currentInteractable is Stairs stairs)
+                    ShowStairPrompt(stairs);
+                else
+                    ControlledAlly.SetAction(new InteractAction(ControlledAlly.currentInteractable));
+                return;
+            }
+
             var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
             var targetAlly = Game.Instance.Allies.FirstOrDefault(x => x.TilemapPosition == ControlledAlly.TilemapPosition + offset);
             if (targetAlly != null)
@@ -201,15 +210,6 @@ public class PlayerController : MonoBehaviour
                 ControlledAlly.SetAction(new AttackAction(ControlledAlly, originalPosition, newMapPosition));
             }
             return;
-        }
-        
-        if (PlayerInputHandler.Instance.attackPressed)
-        {
-            if (ControlledAlly.currentInteractable != null)
-            {
-                ControlledAlly.SetAction(new InteractAction(ControlledAlly.currentInteractable));
-                return;
-            }
         }
         
         if (PlayerInputHandler.Instance.swapAllyPressed)
@@ -325,24 +325,25 @@ public class PlayerController : MonoBehaviour
         if (ControlledAlly.currentInteractable is Stairs stairs &&
             ControlledAlly.MovedThisTurn)
         {
-            if (!Game.Instance.CurrentDungeon.IsExitFloor)
-            {
-                var target = stairs;
-                MenuManager.Instance.ShowYesNoDialog(
-                    "Take Stairs?",
-                    () => ControlledAlly.SetAction(new InteractAction(target)),
-                    () => { });
-			}
-			else
-			{
-                MenuManager.Instance.ShowYesNoDialog(
-                    "Exit Dungeon?",
-                    () =>
-                    {
-                        GameOverScreen.GoBackToOverworld(true, this);
-                    },
-                    () => { });
-            }
+            ShowStairPrompt(stairs);
+        }
+    }
+
+    private void ShowStairPrompt(Stairs stairs)
+    {
+        if (!Game.Instance.CurrentDungeon.IsExitFloor)
+        {
+            MenuManager.Instance.ShowYesNoDialog(
+                "Take Stairs?",
+                () => ControlledAlly.SetAction(new InteractAction(stairs)),
+                () => { });
+        }
+        else
+        {
+            MenuManager.Instance.ShowYesNoDialog(
+                "Exit Dungeon?",
+                () => GameOverScreen.GoBackToOverworld(true, this),
+                () => { });
         }
     }
 

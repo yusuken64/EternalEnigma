@@ -19,10 +19,10 @@ public static class HarnessTestRunner
     }
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
-    public static void RunEditMode() => Run(TestMode.EditMode, "SaveStoreTests");
+    public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run PlayMode")]
-    public static void RunPlayMode() => Run(TestMode.PlayMode, "HarnessSmokeTests");
+    public static void RunPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode");
 
     private static void Run(TestMode mode, string filter)
     {
@@ -48,7 +48,7 @@ public static class HarnessTestRunner
         try
         {
             var id = Api.Execute(new ExecutionSettings(new Filter {
-                testMode = (TestMode)Enum.Parse(typeof(TestMode), run.mode), testNames = new[] { run.filter }
+                testMode = (TestMode)Enum.Parse(typeof(TestMode), run.mode), assemblyNames = new[] { run.filter }
             }));
             SessionState.SetString(SessionKey + ".Job", id);
         }

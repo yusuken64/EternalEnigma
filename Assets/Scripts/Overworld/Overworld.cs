@@ -37,6 +37,9 @@ public class Overworld : MonoBehaviour
         shopMenuDialog.GenerateShop();
 
         OverworldPlayer.Gold = Common.Instance.GameSaveData.OverworldSaveData.Gold;
+        OverworldPlayer.Inventory.Clear();
+        foreach (var itemName in Common.Instance.GameSaveData.OverworldSaveData.Inventory)
+            OverworldPlayer.Inventory.Add(Common.Instance.ItemManager.GetAsInventoryItemByName(itemName));
         statueDialog.DonatedAmount = Common.Instance.GameSaveData.OverworldSaveData.DonationTotal;
 
         Debug.Log($"Overworld seed {Common.Instance.GameSaveData.OverworldSaveData.OverworldSeed}");
@@ -53,8 +56,10 @@ public class Overworld : MonoBehaviour
 		overworldSaveData.Inventory = OverworldPlayer.Inventory
             .Select(x => x.ItemName)
             .ToList();
-		//overworldSaveData.RecruitedAlliesData = OverworldPlayer.RecruitedAllies.ToList();
-		//overworldSaveData.RecruitedAlliesData.ForEach(x => x.transform.SetParent(Common.Instance.SceneTransferObjects.transform));
+		overworldSaveData.RecruitedAlliesData = OverworldPlayer.RecruitedAllies
+            .Select(ally => new OverworldAllyData {
+                AllyName = ally.Name, Skills = new List<string>(ally.Skills)
+            }).ToList();
     }
 
     public void GenerateAllies()
@@ -76,7 +81,7 @@ public class Overworld : MonoBehaviour
             AllyRecruitDialog.Recruit(this, allyInstance);
             allyInstance.TilemapPosition = startPosition;
             allyInstance.transform.position = WalkableMap.CellToWorld(allyInstance.TilemapPosition);
-            allyInstance.Skills = allyData.Skills ?? new();
+            allyInstance.Skills = allyData.Skills != null ? new List<string>(allyData.Skills) : new();
         }
 
         var allyPositions = GetPositions("Allies");//TODO add count as param

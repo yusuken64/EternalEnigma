@@ -113,6 +113,12 @@ public class GlobalSettings : MonoBehaviour
 
 	public void MainMenu_Clicked()
 	{
+		var overworld = FindFirstObjectByType<Overworld>();
+		if (overworld != null)
+		{
+			overworld.WriteSaveData();
+			SaveSystem.SaveData(Common.Instance.GameSaveData);
+		}
 		SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
 		NavigationHandler.PopDialog(this);
 		SceneManager.LoadScene("MainMenu");

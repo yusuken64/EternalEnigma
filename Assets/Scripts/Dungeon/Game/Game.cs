@@ -110,7 +110,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerController.TakeControl(Allies[0]);
 
 		var floor = Common.Instance.GameSaveData.DungeonSaveData.StartFloor;
-		PlayerController.Floor = floor;
+		PlayerController.Floor = floor - 1;
 
 		PlayerController.Inventory.Clear();
 		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
@@ -131,6 +131,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void AdvanceFloor()
 	{
+		PlayerController.Floor++;
 		IsReady = false;
 		TurnManager.InteruptTurn();
 		
@@ -238,7 +239,6 @@ public class Game : SingletonMonoBehaviour<Game>
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 
-		PlayerController.Floor++;
 		PlayerController.ControlledAlly.currentInteractable = null;
 		Game.Instance.PlayerController.StartTurn();
 		UpdateMiniMap();

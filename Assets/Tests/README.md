@@ -2,7 +2,8 @@
 
 Run these tests with Unity 6000.2.7f2, outside an existing Play Mode session.
 Open **Window > General > Test Runner**. Run `SaveStoreTests` in EditMode and
-`HarnessSmokeTests` in PlayMode. PlayMode fixtures are editor-only and load the
+`HarnessSmokeTests` and `AuditRegressionTests` in PlayMode, plus
+`EquipmentRegressionTests` in EditMode. PlayMode fixtures are editor-only and load the
 production scenes through `EditorSceneManager`; they are not player tests.
 
 ```csharp
@@ -110,6 +111,17 @@ with its GUID preserved and its generator path updated. Scene UnityEvents,
 managed-reference data and editor class identifiers were migrated to the new
 assembly name. Tests have friend access to internal gameplay methods.
 
-The harness smoke tests establish working setup and one ordinary equip operation.
-They are not the complete regression suite for the audit findings. No equipment,
-inventory-restoration, floor-numbering or interaction fix is included.
+The harness commands run the entire corresponding test assembly. Audit regressions
+cover equipment displacement, two-handed removal, inventory restoration, town
+progress saved through the return-to-menu button, floor labels, and declining then
+reopening the stair prompt. The stair test injects a sampled attack edge into the
+production decision method; it does not validate physical keyboard bindings.
+
+Several catalog definitions share an ItemName. Tests requiring a specific weapon
+must construct it from its exact definition instead of using AddItem(name).
+The existing name-based save format still cannot distinguish these variants.
+
+**Tools > Eternal Enigma > Tests > Build Windows Player** performs a development
+build of all enabled build scenes to `Builds/AuditVerification`. Its result is
+written to `Temp/HarnessResults/Build.txt`. Run it outside Play Mode after tests
+finish. This checks player compilation and packaging, not gameplay in the executable.

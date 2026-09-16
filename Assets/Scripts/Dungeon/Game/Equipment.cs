@@ -28,6 +28,8 @@ public class Equipment : MonoBehaviour
 
 	public void Equip(EquipableInventoryItem newItem)
 	{
+		if (newItem == null || IsEquipped(newItem)) return;
+		var previousItems = GetEquippedItems().ToArray();
 		var slots = new Dictionary<EquipmentSlot, EquipableInventoryItem>();
 
 		if (EquippedWeapon != null)
@@ -45,6 +47,8 @@ public class Equipment : MonoBehaviour
 		slots.TryGetValue(EquipmentSlot.Accessory, out EquippedAccessory);
 
 		HandleEquipmentChanged?.Invoke(EquipChangeType.Equip, newItem);
+		foreach (var displaced in previousItems.Where(item => !IsEquipped(item)))
+			HandleEquipmentChanged?.Invoke(EquipChangeType.UnEquip, displaced);
 	}
 
 	private static void ApplyEquipChange(
@@ -66,7 +70,7 @@ public class Equipment : MonoBehaviour
 			case EquipmentSlot.OffHand:
 				// If main hand is a two-hander, remove it
 				if (slots.TryGetValue(EquipmentSlot.MainHand, out var currentMain) &&
-					currentMain?.EquipmentItemDefinition?.WeaponType == WeaponType.TwoHandSword)
+					currentMain?.EquipmentSlot == EquipmentSlot.TwoHand)
 				{
 					slots.Remove(EquipmentSlot.MainHand);
 				}
@@ -109,6 +113,7 @@ public class Equipment : MonoBehaviour
 
 	internal void UnEquip(EquipableInventoryItem equipableInventoryItem)
 	{
+		if (!IsEquipped(equipableInventoryItem)) return;
 		UnEquip(equipableInventoryItem.EquipmentSlot);
 	}
 
@@ -118,6 +123,7 @@ public class Equipment : MonoBehaviour
 
 		switch (slot)
 		{
+			case EquipmentSlot.TwoHand:
 			case EquipmentSlot.MainHand:
 				unequippedItem = EquippedWeapon;
 				EquippedWeapon = null;

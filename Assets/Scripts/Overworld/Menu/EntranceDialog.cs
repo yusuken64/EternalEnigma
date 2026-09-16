@@ -69,13 +69,6 @@ public class EntranceDialog : Dialog
 		overworld.WriteSaveData();
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
-			Common.Instance.GameSaveData.OverworldSaveData.RecruitedAlliesData =
-			overworld.OverworldPlayer.RecruitedAllies.Select(x => new OverworldAllyData()
-			{
-				AllyName = x.Name,
-				Skills = x.Skills
-			}).ToList();
-
 			Common.Instance.GameSaveData.DungeonSaveData.StartFloor = data.StartFloor;
 			Common.Instance.GameSaveData.DungeonSaveData.EndFloor = data.EndFloor;
 			SaveSystem.SaveData(Common.Instance.GameSaveData);

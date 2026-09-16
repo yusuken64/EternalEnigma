@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,7 +21,6 @@ public class SequentialCoroutines
             yield return runningCoroutine;
             runningCoroutines.Remove(runningCoroutine);
         }
-        yield return null;
     }
 
     public void StopAllRunningCoroutines()

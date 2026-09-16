@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,6 +49,7 @@ internal class RangedAttackAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation) yield break;
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
 
@@ -70,6 +71,12 @@ internal class RangedAttackAction : GameAction
 
 		UnityEngine.Object.Destroy(projectile.gameObject);
 	}
+
+    internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
+    {
+        foreach (var cell in base.AnimationCells(actor)) yield return cell;
+        foreach (var cell in AnimationPath(actor, rangedAttackTargetPosition)) yield return cell;
+    }
 
 	internal override bool IsValid(Character character)
 	{

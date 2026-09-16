@@ -20,11 +20,19 @@ public static class BFS
         }
     }
 
-    public static List<Node> FindPath(Node[,] grid, Node startNode, Func<Node, bool> predicate)
+    public static List<Node> FindPath(Node[,] grid, Node startNode, Func<Node, bool> predicate,
+        DiagonalMovement diagonal = DiagonalMovement.RequireOpenSides)
     {
         Queue<Node> queue = new Queue<Node>();
         List<Node> path = new List<Node>();
 
+        if (startNode == null) return path;
+        foreach (var node in grid)
+        {
+            if (node == null) continue;
+            node.IsVisited = false;
+            node.Parent = null;
+        }
         queue.Enqueue(startNode);
         startNode.IsVisited = true;
 
@@ -37,7 +45,7 @@ public static class BFS
                 return RetracePath(startNode, currentNode);
             }
 
-            foreach (Node neighbor in GetNeighbors(grid, currentNode))
+            foreach (Node neighbor in GetNeighbors(grid, currentNode, diagonal))
             {
                 if (!neighbor.IsVisited)
                 {
@@ -67,26 +75,11 @@ public static class BFS
         return path;
     }
 
-    static List<Node> GetNeighbors(Node[,] grid, Node node)
+    static IEnumerable<Node> GetNeighbors(Node[,] grid, Node node, DiagonalMovement diagonal)
     {
-        List<Node> neighbors = new List<Node>();
-        int[] xOffset = { -1, 0, 1, -1, 1, -1, 0, 1 };
-        int[] yOffset = { -1, -1, -1, 0, 0, 1, 1, 1 };
-
-        for (int i = 0; i < 8; i++)
-        {
-            int neighborX = node.X + xOffset[i];
-            int neighborY = node.Y + yOffset[i];
-
-            if (neighborX >= 0 && neighborX < grid.GetLength(0) && neighborY >= 0 && neighborY < grid.GetLength(1))
-            {
-                if (grid[neighborX, neighborY] != null)
-                {
-                    neighbors.Add(grid[neighborX, neighborY]);
-                }
-            }
-        }
-
-        return neighbors;
+        bool IsWalkable(Vector3Int cell) =>
+            GridMovement.Contains(grid.GetLength(0), grid.GetLength(1), cell) && grid[cell.x, cell.y] != null;
+        foreach (var cell in GridMovement.GetNeighbors(new Vector3Int(node.X, node.Y), IsWalkable, diagonal))
+            yield return grid[cell.x, cell.y];
     }
 }

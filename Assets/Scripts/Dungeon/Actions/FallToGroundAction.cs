@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +36,11 @@ internal class FallToGroundAction : GameAction
 	{
 		droppedItemInstance.transform.position = Game.Instance.CurrentDungeon.CellToWorld(dropPosition);
 		droppedItemInstance.gameObject.SetActive(true);
+        if (skipAnimation)
+        {
+            droppedItemInstance.transform.position = Game.Instance.CurrentDungeon.CellToWorld(finalDropPositon);
+            yield break;
+        }
 		if (finalDropPositon != dropPosition)
 		{
 			var finalDungeonPosition = Game.Instance.CurrentDungeon.CellToWorld(finalDropPositon);
@@ -44,6 +49,12 @@ internal class FallToGroundAction : GameAction
 		}
 		yield return null;
 	}
+
+    internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
+    {
+        foreach (var cell in base.AnimationCells(actor)) yield return cell;
+        foreach (var cell in AnimationPath(actor, finalDropPositon)) yield return cell;
+    }
 
 	internal override bool IsValid(Character character)
 	{

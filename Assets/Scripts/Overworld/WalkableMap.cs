@@ -44,11 +44,7 @@ public class WalkableMap : MonoBehaviour
 
 	internal Vector3 CellToWorld(Vector3Int newMapPosition)
 	{
-		//float cellSize = TileWorldCreator.twcAsset.cellSize;
-		float cellSize = 2;
-		return new Vector3(newMapPosition.x * cellSize,
-			newMapPosition.y * cellSize,
-			newMapPosition.z * cellSize);
+		return GridMovement.CellToWorld(newMapPosition, TileWorldCreator.twcAsset.cellSize);
 	}
 
 	internal CoordValue<bool> RandomEntrancePosition()
@@ -80,14 +76,7 @@ public class WalkableMap : MonoBehaviour
 
 	internal bool CanWalkTo(Vector3Int from, Vector3Int to)
 	{
-		int width = _walkableMap.GetLength(0);
-		int height = _walkableMap.GetLength(1);
-
-		if (to.x < 0 || to.y < 0 || to.x >= width || to.y >= height)
-		{
-			return false;
-		}
-
-		return _walkableMap[to.x, to.y];
+		return GridMovement.CanStep(from, to, cell => GridMovement.IsWalkable(_walkableMap, cell),
+			DiagonalMovement.AllowCornerCutting);
 	}
 }

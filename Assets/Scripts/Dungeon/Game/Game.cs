@@ -245,41 +245,46 @@ public class Game : SingletonMonoBehaviour<Game>
 		IsReady = true;
 	}
 
-	public void UpdateMiniMap()
-	{
-		if (CurrentDungeon != null)
-		{
-			var aliveAllies = Allies.Where(a => a.Vitals.HP > 0).ToList();
-			var visibleTiles = new HashSet<Vector3Int>();
+    internal readonly HashSet<Vector3Int> PartyVisibleTiles = new();
+    private readonly Dictionary<Ally, Vector3Int> displayedSightOrigins = new();
+    private TileWorldDungeon sightDungeon;
+    internal readonly HashSet<Vector3Int> PlaybackVisibleTiles = new();
 
-			foreach (var ally in aliveAllies)
-			{
-				var bounds = Game.Instance.CurrentDungeon.GetVisionBounds(ally, ally.TilemapPosition);
+    private IEnumerable<Ally> SightAllies() => Allies.Concat(DeadUnits.OfType<Ally>())
+        .Where(a => a != null && a.DisplayedVitals.HP > 0);
 
-				// Add all tiles inside this ally's vision bounds to the set
-				for (int x = bounds.xMin; x < bounds.xMax; x++)
-				{
-					for (int y = bounds.yMin; y < bounds.yMax; y++)
-					{
-						if (x >= 0 && x < Game.Instance.CurrentDungeon.dungeonWidth &&
-							y >= 0 && y < Game.Instance.CurrentDungeon.dungeonHeight)
-						{
-							// Optional: if you have LOS or shape filtering, apply it here
-							visibleTiles.Add(new Vector3Int(x, y, 0));
-						}
-					}
-				}
-			}
+    private void LateUpdate() => RefreshSight();
 
-			var minimap = FindFirstObjectByType<Minimap>();
-			minimap.UpdateVision(visibleTiles);
+    internal void RefreshSight()
+    {
+        if (!IsReady || CurrentDungeon == null) return;
+        int count = 0;
+        bool changed = sightDungeon != CurrentDungeon;
+        foreach (var ally in SightAllies())
+        {
+            count++;
+            var cell = CurrentDungeon.WorldToCell(ally.transform.position);
+            if (!displayedSightOrigins.TryGetValue(ally, out var oldCell) || oldCell != cell) changed = true;
+        }
+        if (changed || count != displayedSightOrigins.Count) UpdateMiniMap();
+    }
 
-			// You can still pass a rough bounding area for performance in UpdateMinimap
-			// or just reuse all visible tiles again:
-			minimap.UpdateMinimapWithVisibleTiles(visibleTiles);
-		}
-
-	}
+    public void UpdateMiniMap()
+    {
+        if (CurrentDungeon == null) return;
+        sightDungeon = CurrentDungeon;
+        PartyVisibleTiles.Clear();
+        displayedSightOrigins.Clear();
+        foreach (var ally in SightAllies())
+        {
+            var origin = CurrentDungeon.WorldToCell(ally.transform.position);
+            displayedSightOrigins[ally] = origin;
+            PartyVisibleTiles.UnionWith(CurrentDungeon.GetVisibleTiles(ally, origin));
+        }
+        var minimap = FindFirstObjectByType<Minimap>();
+        minimap.UpdateVision(PartyVisibleTiles);
+        minimap.UpdateMinimapWithVisibleTiles(PartyVisibleTiles);
+    }
 
 	private void Update()
 	{

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class Interactable : MonoBehaviour
 {
+    protected virtual void Awake() => gameObject.AddComponent<FogHiddenVisual>();
+
 	public bool Opened { get; set; }
 	public Vector3Int Position { get; internal set; }
 	abstract internal List<GameAction> GetInteractionSideEffects(Character character);

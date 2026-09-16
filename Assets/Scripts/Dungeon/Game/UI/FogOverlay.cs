@@ -3,6 +3,30 @@ using UnityEngine;
 
 public class FogOverlay : MonoBehaviour
 {
+    internal static FogOverlay Instance { get; private set; }
+    private Minimap.MinimapTileData[,] visibilityMap;
+    private float cellSize;
+
+    private void Awake() => Instance = this;
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+        if (fogTexture != null) Destroy(fogTexture);
+        if (fogMaterial != null) Destroy(fogMaterial);
+    }
+
+    internal bool IsCurrentlyVisible(Vector3 worldPosition, FootPrint footprint = FootPrint.Size1x1)
+    {
+        if (visibilityMap == null || cellSize <= 0) return false;
+        int x = Mathf.RoundToInt(worldPosition.x / cellSize);
+        int y = Mathf.RoundToInt(worldPosition.y / cellSize);
+        foreach (var cell in Character.ToBounds(footprint, new Vector3Int(x, y, 0)).allPositionsWithin)
+            if (cell.x >= 0 && cell.y >= 0 && cell.x < visibilityMap.GetLength(0) && cell.y < visibilityMap.GetLength(1)
+                && visibilityMap[cell.x, cell.y].visibility == Minimap.MinimapTileVisibility.Visible) return true;
+        return false;
+    }
+
     public GameObject fogOverlayQuad;
     public Vector2 worldSize; // e.g., (100, 100)
     public Vector2 worldOrigin; // e.g., (0, 0)
@@ -12,24 +36,27 @@ public class FogOverlay : MonoBehaviour
 
     internal void Initialize(TileWorldDungeon currentDungeon)
     {
+        visibilityMap = null;
+        cellSize = currentDungeon.CellToWorld(Vector3Int.right).x;
+        if (fogTexture != null) Destroy(fogTexture);
         worldSize = new Vector2(currentDungeon.dungeonWidth, currentDungeon.dungeonHeight);
 
         // Set quad size
-        fogOverlayQuad.transform.localScale = new Vector3(worldSize.x * 2, worldSize.y * 2, 1);
+        fogOverlayQuad.transform.localScale = new Vector3(worldSize.x * cellSize, worldSize.y * cellSize, 1);
 
         // Center it on world
         fogOverlayQuad.transform.position = new Vector3(
-            worldOrigin.x + worldSize.x,
-            worldOrigin.y + worldSize.y,
+            worldOrigin.x + worldSize.x * cellSize / 2,
+            worldOrigin.y + worldSize.y * cellSize / 2,
             -3.35f
         );
 
         // Cache material once
-        fogMaterial = fogOverlayQuad.GetComponent<Renderer>().material;
+        if (fogMaterial == null) fogMaterial = fogOverlayQuad.GetComponent<Renderer>().material;
 
         // Pass shader uniforms
-        fogMaterial.SetVector("_FogWorldSize", new Vector4(worldSize.x * 2, worldSize.y * 2, 0, 0));
-        fogMaterial.SetVector("_FogWorldOrigin", new Vector4(worldOrigin.x, 0, worldOrigin.y, 0));
+        fogMaterial.SetVector("_FogWorldSize", new Vector4(worldSize.x * cellSize, worldSize.y * cellSize, 0, 0));
+        fogMaterial.SetVector("_FogWorldOrigin", new Vector4(worldOrigin.x, worldOrigin.y, 0, 0));
 
         // Create and setup texture once
         int width = currentDungeon.dungeonWidth;
@@ -45,6 +72,7 @@ public class FogOverlay : MonoBehaviour
 
     internal void UpdateFog(Minimap.MinimapTileData[,] dungeonMap)
     {
+        visibilityMap = dungeonMap;
         int width = dungeonMap.GetLength(0);
         int height = dungeonMap.GetLength(1);
 
@@ -52,10 +80,13 @@ public class FogOverlay : MonoBehaviour
         {
             for (int x = 0; x < width; x++)
             {
-                bool visible = dungeonMap[x, y].visibility == Minimap.MinimapTileVisibility.Visible;
-
-                // Fully visible = white (alpha = 1), hidden = black (alpha = 0)
-                float alpha = visible ? 1f : 0f;
+                // The shader inverts this value to produce fog opacity.
+                float alpha = dungeonMap[x, y].visibility switch
+                {
+                    Minimap.MinimapTileVisibility.Visible => 1f,
+                    Minimap.MinimapTileVisibility.Explored => 0.5f,
+                    _ => 0f
+                };
                 fogTexture.SetPixel(x, y, new Color(1, 1, 1, alpha));
             }
         }

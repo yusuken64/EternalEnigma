@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,12 +31,29 @@ internal class WarpAction : GameAction
 	{
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(warpLoccation);
 
+		if (skipAnimation)
+		{
+			attacker.transform.position = worldPosition;
+			attacker.PlayIdleAnimation();
+			yield break;
+		}
 		attacker.PlayWalkAnimation();
 		yield return attacker.transform.DOMove(worldPosition, 0.1f)
 			.WaitForCompletion();
 
 		attacker.PlayIdleAnimation();
 	}
+
+    internal override void AddDestinationSight(HashSet<Vector3Int> tiles)
+    {
+        AddAllySight(tiles, attacker, warpLoccation);
+    }
+
+    internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
+    {
+        foreach (var cell in base.AnimationCells(actor)) yield return cell;
+        foreach (var cell in AnimationPath(actor, warpLoccation)) yield return cell;
+    }
 
 	internal override bool IsValid(Character character)
 	{

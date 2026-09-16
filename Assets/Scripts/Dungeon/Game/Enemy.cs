@@ -16,6 +16,7 @@ public class Enemy : Character
 
     private void Start()
 	{
+        gameObject.AddComponent<FogHiddenVisual>();
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(TilemapPosition);
 		this.transform.position = worldPosition;
 
@@ -113,9 +114,7 @@ public class Enemy : Character
 	public override IEnumerator ExecuteActionRoutine(GameAction action)
 	{
 		if (this == null) { yield break; }
-		var playerPosition = Game.Instance.PlayerController.TilemapPosition;
-		var tooFar = Vector3Int.Distance(playerPosition, this.TilemapPosition) > 15;
-		yield return StartCoroutine(action.ExecuteRoutine(this, tooFar));
+		yield return action.ExecuteRoutine(this, !action.ShouldAnimate(this));
 
 		action.UpdateDisplayedStats();
 	}

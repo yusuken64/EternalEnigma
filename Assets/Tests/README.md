@@ -1,6 +1,38 @@
 # Game test harness
 
+Sight coverage: `DungeonSightTests` verifies wall occlusion, blocked diagonal
+corners, symmetric range limits, room/corridor classification, and immediate
+completion of skipped visual effects. `SightPlaybackTests` advances from the
+entry room to a generated floor and checks shared AI/skill visibility, camera
+filtering, fog following displayed positions, and offscreen damage/status/death
+completion. `FogVisibilityTests` checks explored fog opacity and renderer hiding.
+
+Dungeon sight uses an eight-tile Chebyshev radius in open room areas (tiles in an
+open 2x2 square), and a one-tile corridor radius (two for large units). Walls are
+visible endpoints and block tiles behind them; either blocked side prevents
+diagonal corner sight. All living allies share fog knowledge. Explored terrain
+remains under 50% fog, but live enemies and items require current sight. Animation
+playback also requires camera relevance; controlled-player actions and effects on
+that player remain animated. Movement batches consider sight before and after
+movement. These tests validate behavior, not measured frame-time improvements.
+
 Run these tests with Unity 6000.2.7f2, outside an existing Play Mode session.
+
+Movement coverage: `GridMovementTests` (EditMode) checks diagonal policies,
+bounds, invalid steps, reusable searches, movement costs, and facing offsets.
+`MovementRegressionTests` (PlayMode) loads both real scenes and injects sampled
+movement/hold-position values into the existing input decision methods, checking
+turn-in-place, completed movement, and overworld trail recording. It does not
+simulate physical keyboard/controller bindings. Recompile scripts before running
+the harness after adding tests, and confirm the new fixtures appear in the XML.
+
+`GridMovement` owns terrain step rules shared by overworld, dungeon, A* and BFS.
+Overworld retains its houses/trees mask and allows corner cutting; dungeon and
+searches require both diagonal side cells to be open. Occupancy, large-unit
+hallway behavior, turns, party following and interactions remain in mode-specific
+actions. Coordinate conversion uses the generator's cell size (currently 2).
+Dungeon position searches fall back to their supplied origin when no suitable
+cell is reachable; this fallback does not guarantee an unoccupied placement.
 Open **Window > General > Test Runner**. Run `SaveStoreTests` in EditMode and
 `HarnessSmokeTests` and `AuditRegressionTests` in PlayMode, plus
 `EquipmentRegressionTests` in EditMode. PlayMode fixtures are editor-only and load the

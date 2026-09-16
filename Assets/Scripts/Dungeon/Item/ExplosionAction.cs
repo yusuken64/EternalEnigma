@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -40,6 +40,7 @@ internal class ExplosionAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation) yield break;
 		var explosion = UnityEngine.Object.Instantiate(explosionParticleEffectPrefab);
 		explosion.transform.position = attacker.transform.position;
 		UnityEngine.Object.Destroy(explosion.gameObject, 5f);

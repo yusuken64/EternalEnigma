@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,6 +33,7 @@ internal class UseInventoryItemAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation) yield break;
 		//TODO get sound from item
 		AudioManager.Instance.SoundEffects.UseItem.PlayAsSound();
 		Game.Instance.DoFloatingText(item.ItemName, Color.white, character.transform.position);

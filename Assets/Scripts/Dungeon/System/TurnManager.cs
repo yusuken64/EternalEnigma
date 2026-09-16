@@ -147,6 +147,13 @@ public class TurnManager : MonoBehaviour
 			var simultaneousEffects = GetSimultaneousActions(action, actionReplays);
 			actionReplays.RemoveAll(simultaneousEffects.Contains);
 
+            Game.Instance.RefreshSight();
+            Game.Instance.PlaybackVisibleTiles.Clear();
+            Game.Instance.PlaybackVisibleTiles.UnionWith(Game.Instance.PartyVisibleTiles);
+            // Preserve both sides of a movement batch so entering/leaving sight animates.
+            foreach (var replay in simultaneousEffects)
+                replay.Action.AddDestinationSight(Game.Instance.PlaybackVisibleTiles);
+
 			var effectsGroupedByActors = simultaneousEffects.GroupBy(x => x.Actor);
 
 			List<IEnumerator> simulaneousEffects = effectsGroupedByActors.Select(x =>
@@ -163,6 +170,7 @@ public class TurnManager : MonoBehaviour
 			}).ToList();
 
 			yield return SimultaneousCoroutines.RunCoroutines(simulaneousEffects);
+            Game.Instance.PlaybackVisibleTiles.Clear();
 		}
 
 		if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerController.ControlledAlly))
@@ -278,9 +286,68 @@ public abstract class GameAction
 		return action == this;
 	}
 
+    internal virtual void AddDestinationSight(HashSet<Vector3Int> tiles) { }
+
+    protected void AddAllySight(HashSet<Vector3Int> tiles, Character character, Vector3Int destination)
+    {
+        if (character is Ally && character.DisplayedVitals.HP > 0)
+            tiles.UnionWith(Game.Instance.CurrentDungeon.GetVisibleTiles(character, destination));
+    }
+
+    private readonly HashSet<Character> animationTargets = new();
+
+    protected void TrackAnimationTarget(Character target) => animationTargets.Add(target);
+
+    internal virtual IEnumerable<Vector3Int> AnimationCells(Character actor)
+    {
+        var dungeon = Game.Instance.CurrentDungeon;
+        foreach (var cell in Character.ToBounds(actor.FootPrint, dungeon.WorldToCell(actor.transform.position)).allPositionsWithin)
+            yield return cell;
+        foreach (var target in animationTargets)
+        {
+            if (target == null) continue;
+            foreach (var cell in Character.ToBounds(target.FootPrint, dungeon.WorldToCell(target.transform.position)).allPositionsWithin)
+                yield return cell;
+        }
+    }
+
+    internal bool ShouldAnimate(Character actor)
+    {
+        var game = Game.Instance;
+        if (actor == game.PlayerController.ControlledAlly ||
+            animationTargets.Contains(game.PlayerController.ControlledAlly)) return true;
+        game.RefreshSight();
+        var camera = game.PlayerController.CameraController?.Camera;
+        if (camera == null) return true;
+        var planes = GeometryUtility.CalculateFrustumPlanes(camera);
+        float size = game.CurrentDungeon.CellToWorld(Vector3Int.right).x;
+        foreach (var cell in AnimationCells(actor))
+        {
+            if (!game.PartyVisibleTiles.Contains(cell) && !game.PlaybackVisibleTiles.Contains(cell)) continue;
+            // Include the tile's model volume, not just its ground anchor.
+            var bounds = new Bounds(game.CurrentDungeon.CellToWorld(cell) + new Vector3(size / 2, size / 2, 0),
+                new Vector3(size * 2, size * 2, size * 3));
+            if (GeometryUtility.TestPlanesAABB(planes, bounds)) return true;
+        }
+        return false;
+    }
+
+    protected IEnumerable<Vector3Int> AnimationPath(Character actor, Vector3Int destination)
+    {
+        var origin = Game.Instance.CurrentDungeon.WorldToCell(actor.transform.position);
+        int steps = Mathf.Max(Mathf.Abs(destination.x - origin.x), Mathf.Abs(destination.y - origin.y));
+        for (int i = 0; i <= steps; i++)
+        {
+            float t = steps == 0 ? 0 : (float)i / steps;
+            yield return new Vector3Int(Mathf.RoundToInt(Mathf.Lerp(origin.x, destination.x, t)),
+                Mathf.RoundToInt(Mathf.Lerp(origin.y, destination.y, t)), 0);
+        }
+    }
+
 	//immediately applied to realstats, enques change to displayed stats
 	public void AddMetricsModification(Character target, Action<Stats, Vitals> metricModification)
 	{
+		animationTargets.Add(target);
 		metricModification?.Invoke(target.BaseStats, target.Vitals);
 		Action applyToDisplayedStats = () => metricModification?.Invoke(target.DisplayedStats, target.DisplayedVitals);
 		MetricsModifications.Add(applyToDisplayedStats);

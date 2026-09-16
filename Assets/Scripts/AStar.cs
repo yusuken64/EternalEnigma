@@ -24,11 +24,21 @@ public static class AStar
 		}
     }
 
-    public static List<Node> FindPath(Node[,] grid, Node startNode, Node targetNode)
+    public static List<Node> FindPath(Node[,] grid, Node startNode, Node targetNode,
+        DiagonalMovement diagonal = DiagonalMovement.RequireOpenSides)
     {
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
 
+        if (startNode == null || targetNode == null) return null;
+        foreach (var node in grid)
+        {
+            if (node == null) continue;
+            node.GCost = double.PositiveInfinity;
+            node.HCost = 0;
+            node.Parent = null;
+        }
+        startNode.GCost = 0;
         openSet.Add(startNode);
 
         while (openSet.Count > 0)
@@ -50,18 +60,18 @@ public static class AStar
 				return RetracePath(startNode, targetNode);
 			}
 
-			foreach (Node neighbor in GetNeighbors(grid, currentNode))
+			foreach (Node neighbor in GetNeighbors(grid, currentNode, diagonal))
 			{
 				if (!neighbor.IsWalkable || closedSet.Contains(neighbor))
 				{
 					continue;
 				}
 
-				double newMovementCostToNeighbor = currentNode.GCost + GetDistance(currentNode, neighbor);
+				double newMovementCostToNeighbor = currentNode.GCost + GetDistance(currentNode, neighbor) + neighbor.MovePenalty;
 				if (newMovementCostToNeighbor < neighbor.GCost || !openSet.Contains(neighbor))
 				{
-					neighbor.GCost = newMovementCostToNeighbor + neighbor.MovePenalty;
-					neighbor.HCost = GetDistance(neighbor, targetNode) + neighbor.MovePenalty;
+					neighbor.GCost = newMovementCostToNeighbor;
+					neighbor.HCost = GetDistance(neighbor, targetNode);
 					neighbor.Parent = currentNode;
 
 					if (!openSet.Contains(neighbor))
@@ -90,33 +100,13 @@ public static class AStar
         return path;
     }
 
-    static Vector3Int from;
-    static Vector3Int to;
-    static List<Node> GetNeighbors(Node[,] grid, Node node)
+    static IEnumerable<Node> GetNeighbors(Node[,] grid, Node node, DiagonalMovement diagonal)
     {
-        List<Node> neighbors = new List<Node>();
-        int[] xOffset = { -1, 0, 1, -1, 1, -1, 0, 1 };
-        int[] yOffset = { -1, -1, -1, 0, 0, 1, 1, 1 };
-
-        for (int i = 0; i < 8; i++)
-        {
-            int neighborX = node.X + xOffset[i];
-            int neighborY = node.Y + yOffset[i];
-
-            if (neighborX >= 0 && neighborX < grid.GetLength(0) && neighborY >= 0 && neighborY < grid.GetLength(1))
-            {
-                from.x = node.X;
-                from.y = node.Y;
-                to.x = neighborX;
-                to.y = neighborY;
-                if (Game.Instance.CurrentDungeon.CanWalkTo(from, to))
-                {
-                    neighbors.Add(grid[neighborX, neighborY]);
-                }
-            }
-        }
-
-        return neighbors;
+        bool IsWalkable(Vector3Int cell) =>
+            GridMovement.Contains(grid.GetLength(0), grid.GetLength(1), cell) &&
+            grid[cell.x, cell.y] != null && grid[cell.x, cell.y].IsWalkable;
+        foreach (var cell in GridMovement.GetNeighbors(new Vector3Int(node.X, node.Y), IsWalkable, diagonal))
+            yield return grid[cell.x, cell.y];
     }
 
     static double GetDistance(Node nodeA, Node nodeB)

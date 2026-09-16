@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,11 +40,24 @@ internal class SpawnEnemyAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		_spawnedEnemy.VisualParent.gameObject.SetActive(true);
-		_spawnedEnemy.VisualParent.transform.DOScale(Vector3.one * 2, 0.1f);
+
 		var endValue = Game.Instance.CurrentDungeon.CellToWorld(spawnTilePosition) + new Vector3(1.25f, 1.25f, 0);
+        if (skipAnimation)
+        {
+            _spawnedEnemy.VisualParent.transform.localScale = Vector3.one * 2;
+            _spawnedEnemy.VisualParent.transform.position = endValue;
+            yield break;
+        }
+        _spawnedEnemy.VisualParent.transform.DOScale(Vector3.one * 2, 0.1f);
 		var moveTween = _spawnedEnemy.VisualParent.transform.DOMove(endValue, 0.5f);
 		yield return moveTween.WaitForCompletion();
 	}
+
+    internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
+    {
+        foreach (var cell in base.AnimationCells(actor)) yield return cell;
+        foreach (var cell in AnimationPath(actor, spawnTilePosition)) yield return cell;
+    }
 
 	internal override bool IsValid(Character character)
 	{

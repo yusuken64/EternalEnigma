@@ -70,6 +70,7 @@ public class Dungeon : MonoBehaviour
 				}
 			}
 		}
+		if (!GridMovement.Contains(dungeonWidth, dungeonHeight, startPosition)) return null;
 		BFS.Node startNode = grid[startPosition.x, startPosition.y];
 
 		var path = BFS.FindPath(grid,
@@ -81,7 +82,7 @@ public class Dungeon : MonoBehaviour
 				return tile == null;
 			});
 
-		if (path == null)
+		if (path == null || path.Count == 0)
 		{
 			return null;
 		}
@@ -97,59 +98,12 @@ public class Dungeon : MonoBehaviour
 
 	internal bool CanWalkTo(Vector3Int origin, Vector3Int destination)
 	{
-		var validWalkDirections = GetValidWalkDirections(origin);
-		var validWalkPositions = validWalkDirections.Select(x => origin + GetFacingOffset(x));
-
-		return validWalkPositions.Contains(destination);
+		return GridMovement.CanStep(origin, destination, CanWalk);
 	}
 
 	internal List<Facing> GetValidWalkDirections(Vector3Int tilemapPosition)
 	{
-		var dungeonGenerator = Game.Instance.DungeonGenerator;
-		List<Facing> ret = new();
-
-		if (CanWalk(tilemapPosition + GetFacingOffset(Facing.Left)) &&
-			CanWalk(tilemapPosition + GetFacingOffset(Facing.Down)) &&
-			CanWalk(tilemapPosition + GetFacingOffset(Facing.DownLeft)))
-		{
-			ret.Add(Facing.DownLeft);
-		}
-		if (CanWalk(tilemapPosition + GetFacingOffset(Facing.Down)))
-		{
-			ret.Add(Facing.Down);
-		}
-		if (CanWalk(tilemapPosition + GetFacingOffset(Facing.Right)) &&
-			CanWalk(tilemapPosition + GetFacingOffset(Facing.Down)) &&
-			CanWalk(tilemapPosition + GetFacingOffset(Facing.DownRight)))
-		{
-			ret.Add(Facing.DownRight);
-		}
-		if (CanWalk(tilemapPosition + GetFacingOffset(Facing.Left)))
-		{
-			ret.Add(Facing.Left);
-		}
-		if (CanWalk(tilemapPosition + GetFacingOffset(Facing.Right)))
-		{
-			ret.Add(Facing.Right);
-		}
-		if (CanWalk(tilemapPosition + GetFacingOffset(Facing.Left)) &&
-			CanWalk(tilemapPosition + GetFacingOffset(Facing.Up)) &&
-			CanWalk(tilemapPosition + GetFacingOffset(Facing.UpLeft)))
-		{
-			ret.Add(Facing.UpLeft);
-		}
-		if (CanWalk(tilemapPosition + GetFacingOffset(Facing.Up)))
-		{
-			ret.Add(Facing.Up);
-		}
-		if (CanWalk(tilemapPosition + GetFacingOffset(Facing.Right)) &&
-			CanWalk(tilemapPosition + GetFacingOffset(Facing.Up)) &&
-			CanWalk(tilemapPosition + GetFacingOffset(Facing.UpRight)))
-		{
-			ret.Add(Facing.UpRight);
-		}
-
-		return ret;
+		return GridMovement.GetValidDirections(tilemapPosition, CanWalk).ToList();
 	}
 
 	internal Vector3Int GetRangedAttackPosition(
@@ -232,28 +186,7 @@ public class Dungeon : MonoBehaviour
 
 	static public Vector3Int GetFacingOffset(Facing facing)
 	{
-		switch (facing)
-		{
-			case Facing.Up:
-				return new Vector3Int(0, 1, 0);
-			case Facing.Down:
-				return new Vector3Int(0, -1, 0);
-			case Facing.Left:
-				return new Vector3Int(-1, 0, 0);
-			case Facing.Right:
-				return new Vector3Int(1, 0, 0);
-			case Facing.UpLeft:
-				return new Vector3Int(-1, 1, 0);
-			case Facing.UpRight:
-				return new Vector3Int(1, 1, 0);
-			case Facing.DownLeft:
-				return new Vector3Int(-1, -1, 0);
-			case Facing.DownRight:
-				return new Vector3Int(1, -1, 0);
-		}
-
-		//this should never happen
-		return new Vector3Int(0, 0, 0);
+		return GridMovement.GetFacingOffset(facing);
 	}
 
 	internal void SetDroppedItem(Vector3Int treasurePosition, ItemDefinition item, DroppedItemTile droppedItemTile, int? stock = null)

@@ -540,24 +540,21 @@ disp: {displayedVitals}");
 	internal Character GetPursuitTarget()
 	{
 		var game = Game.Instance;
-
-		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(this, TilemapPosition);
-
 		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team == Team.Player);
 
 		return playerTeamCharacters
 			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
 			.ThenBy(x => x.TilemapPosition == PursuitPosition)
-			.FirstOrDefault(x => Contains2D(visionBounds, x.TilemapPosition));
+			.FirstOrDefault(x => game.CurrentDungeon.CanSee(this, x));
 	}
 
-	//BoundsInt.Contain doesn't work?
+	// Match BoundsInt's exclusive maximum edges while ignoring the Z dimension.
 	public static bool Contains2D(BoundsInt visionBounds, Vector3Int tilemapPosition)
 	{
 		return visionBounds.xMin <= tilemapPosition.x &&
-			visionBounds.xMax >= tilemapPosition.x &&
+			visionBounds.xMax > tilemapPosition.x &&
 			visionBounds.yMin <= tilemapPosition.y &&
-			visionBounds.yMax >= tilemapPosition.y;
+			visionBounds.yMax > tilemapPosition.y;
 	}
 
 	public void SetAction(GameAction forcedAction)

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -34,8 +34,15 @@ internal class SkillAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		return skill.ExecuteRoutine(caster, target);
+		if (skipAnimation) yield break;
+		yield return skill.ExecuteRoutine(caster, target);
 	}
+
+    internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
+    {
+        foreach (var cell in base.AnimationCells(actor)) yield return cell;
+        foreach (var cell in AnimationPath(actor, target.TilemapPosition)) yield return cell;
+    }
 
 	internal override bool IsValid(Character character)
 	{

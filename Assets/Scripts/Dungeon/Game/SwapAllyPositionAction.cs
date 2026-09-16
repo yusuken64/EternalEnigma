@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,6 +34,14 @@ internal class SwapAllyPositionAction : GameAction
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 		var worldPosition2 = Game.Instance.CurrentDungeon.CellToWorld(originalPosition);
 
+        if (skipAnimation)
+        {
+            character.transform.position = worldPosition;
+            swapAlly.transform.position = worldPosition2;
+            character.PlayIdleAnimation();
+            swapAlly.PlayIdleAnimation();
+            yield break;
+        }
 		character.PlayWalkAnimation();
 		swapAlly.PlayWalkAnimation();
 
@@ -46,6 +54,17 @@ internal class SwapAllyPositionAction : GameAction
 		character.PlayIdleAnimation();
 		swapAlly.PlayIdleAnimation();
 	}
+
+    internal override void AddDestinationSight(HashSet<Vector3Int> tiles)
+    {
+        AddAllySight(tiles, ally, newMapPosition); AddAllySight(tiles, swapAlly, originalPosition);
+    }
+
+    internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
+    {
+        foreach (var cell in base.AnimationCells(actor)) yield return cell;
+        foreach (var cell in AnimationPath(actor, newMapPosition)) yield return cell;
+    }
 
 	internal override bool IsValid(Character character)
 	{

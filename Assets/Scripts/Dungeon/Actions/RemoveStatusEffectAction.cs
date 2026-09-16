@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 
 public class RemoveStatusEffectAction : GameAction
@@ -29,7 +29,7 @@ public class RemoveStatusEffectAction : GameAction
 		{
 			UnityEngine.Object.Destroy(removedInstance.gameObject);
 		}
-		yield return null;
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character)

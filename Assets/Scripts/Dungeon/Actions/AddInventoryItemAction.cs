@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +24,7 @@ internal class AddInventoryItemAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		yield return null;
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character)

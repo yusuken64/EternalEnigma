@@ -30,12 +30,11 @@ public class SimultaneousCoroutines
             yield return null;
         }
 
-        yield return null;
     }
 
     private IEnumerator HandleCoroutine(IEnumerator routine, Action post)
     {
-        yield return context.StartCoroutine(routine);
+        yield return routine;
         post?.Invoke();
     }
 

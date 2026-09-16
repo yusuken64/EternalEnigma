@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -26,11 +26,14 @@ public class TargetSelector
         BoundsInt? bounds = Area switch
         {
             TargetArea.All => null,
-            TargetArea.Visible => Game.Instance.CurrentDungeon.GetVisionBounds(caster, caster.TilemapPosition),
+            TargetArea.Visible => null,
             TargetArea.Melee => caster.GetAttackBounds(),
             TargetArea.Self => new BoundsInt(caster.TilemapPosition, Vector3Int.one),
             _ => null // Custom can be handled separately
         };
+
+        if (Area == TargetArea.Visible)
+            candidates = candidates.Where(x => Game.Instance.CurrentDungeon.CanSee(caster, x));
 
         if (bounds.HasValue)
             candidates = candidates.Where(x => bounds.Value.Contains(x.TilemapPosition));

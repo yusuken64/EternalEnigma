@@ -97,28 +97,29 @@ public class Minimap : MonoBehaviour
         }
 
         // Draw player
-        var playerPos = Game.Instance.PlayerController.TilemapPosition;
+        var playerPos = _currentDungeon.WorldToCell(Game.Instance.PlayerController.ControlledAlly.transform.position);
         minimapTexture.SetPixel(playerPos.x, playerPos.y, PlayerColor);
         var playerController = FindFirstObjectByType<PlayerController>();
 
         foreach(var character in Game.Instance.AllCharacters)
         {
+            var displayedCell = _currentDungeon.WorldToCell(character.transform.position);
             switch (character)
             {
                 case Ally ally:
                     if (playerController.ControlledAlly == ally)
                     {
-                        minimapTexture.SetPixel(ally.TilemapPosition.x, ally.TilemapPosition.y, PlayerColor);
+                        minimapTexture.SetPixel(displayedCell.x, displayedCell.y, PlayerColor);
                     }
                     else
                     {
-                        minimapTexture.SetPixel(ally.TilemapPosition.x, ally.TilemapPosition.y, AllyColor);
+                        minimapTexture.SetPixel(displayedCell.x, displayedCell.y, AllyColor);
                     }
                     break;
                 case Enemy enemy:
-                    if (visibleTiles.Contains(new Vector3Int(enemy.TilemapPosition.x, enemy.TilemapPosition.y, 0)))
+                    if (DungeonSight.OverlapsVisible(visibleTiles, Character.ToBounds(enemy.FootPrint, displayedCell)))
                     {
-                        minimapTexture.SetPixel(enemy.TilemapPosition.x, enemy.TilemapPosition.y, EnemyColor);
+                        minimapTexture.SetPixel(displayedCell.x, displayedCell.y, EnemyColor);
                     }
                     break;
                 default:

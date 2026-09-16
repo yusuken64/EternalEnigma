@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,6 +27,7 @@ public class ApplyStatusEffectAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		TrackAnimationTarget(target);
 		statusInstance = target.ApplyStatusEffect(statusEffectPrefab);
 		statusInstance?.gameObject.SetActive(false);
 		return new();
@@ -34,12 +35,12 @@ public class ApplyStatusEffectAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		statusInstance?.gameObject.SetActive(true);
 		if (skipAnimation) { yield break; }
 
 		//TODO get sound from status
 		AudioManager.Instance.SoundEffects.Sleep.PlayAsSound();
 		Game.Instance.DoFloatingText($"{statusEffectPrefab.GetEffectName()}!", Color.yellow, caster.transform.position);
-		statusInstance?.gameObject.SetActive(true);
 		yield return null;
 	}
 

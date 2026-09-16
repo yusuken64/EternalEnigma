@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 
 public abstract class GameActionResponse : GameAction
@@ -13,7 +13,7 @@ public abstract class GameActionResponse : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		yield return null;
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character)

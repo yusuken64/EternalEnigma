@@ -93,8 +93,6 @@ public class Ally : Character
 	{
 		var game = Game.Instance;
 
-		BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(this, TilemapPosition);
-
 		List<Character> pursuitTargets = new List<Character>();
 
 		if (AllyStrategy == AllyStrategy.Aggresive)
@@ -102,7 +100,7 @@ public class Ally : Character
 			pursuitTargets.AddRange(game.Enemies);
 
 			var aggressiveTarget = pursuitTargets
-				.Where(x => Enemy.Contains2D(visionBounds, x.TilemapPosition))
+				.Where(x => game.CurrentDungeon.CanSee(this, x))
 				.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
 				.ThenBy(x => x.TilemapPosition == PursuitPosition)
 				.FirstOrDefault();
@@ -148,7 +146,7 @@ public class Ally : Character
 	{
 		if (this == null) { yield break; }
 
-		yield return StartCoroutine(action.ExecuteRoutine(this));
+		yield return action.ExecuteRoutine(this, !action.ShouldAnimate(this));
 		action.UpdateDisplayedStats();
 	}
 
@@ -342,7 +340,7 @@ internal class AllyAttackPolicy : PolicyBase
 		_isRangedAttack = _ally.IsRangedAttack(out _projectilePrefab);
 		if (_isRangedAttack)
 		{
-			BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(_ally, _ally.TilemapPosition);
+			var visibleTiles = game.CurrentDungeon.GetVisibleTiles(_ally, _ally.TilemapPosition);
 			var facings = Enum.GetValues(typeof(Facing)).Cast<Facing>().ToArray();
 			Shuffle(facings);
 			foreach (Facing direction in facings)
@@ -354,7 +352,7 @@ internal class AllyAttackPolicy : PolicyBase
 					10, // define this on Ally
 					Dungeon.StopArrow);
 
-				if (!visionBounds.Contains(pos)) { continue; }
+				if (!visibleTiles.Contains(pos)) { continue; }
 
 				// Find enemy at pos (if any)
 				target = Game.Instance.AllCharacters
@@ -374,6 +372,7 @@ internal class AllyAttackPolicy : PolicyBase
 				.Where(x => x != null)
 				.Where(x => x.Team != _ally.Team)
 				.Where(x => attackBounds.Overlaps2D(x.ToBounds()))
+                .Where(x => game.CurrentDungeon.CanSee(_ally, x))
 				.FirstOrDefault();
 		}
 
@@ -463,8 +462,7 @@ public class AllyRangedPositioningPolicy : PolicyBase
 
 		foreach (var target in game.Enemies)
 		{
-			BoundsInt visionBounds = game.CurrentDungeon.GetVisionBounds(ally, ally.TilemapPosition);
-			if (!visionBounds.Contains(target.TilemapPosition)) { continue; }
+			if (!game.CurrentDungeon.CanSee(ally, target)) { continue; }
 
 			// If already exactly 3 tiles away, no need to reposition
 			if (TileWorldDungeon.ManhattanDistance(ally.TilemapPosition, target.TilemapPosition) == RangedAttackDistance)

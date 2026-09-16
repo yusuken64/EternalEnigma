@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -51,6 +51,17 @@ internal class MovementAction : GameAction
 
 		character.PlayIdleAnimation();
 	}
+
+    internal override void AddDestinationSight(HashSet<Vector3Int> tiles)
+    {
+        AddAllySight(tiles, Character, newMapPosition);
+    }
+
+    internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
+    {
+        foreach (var cell in base.AnimationCells(actor)) yield return cell;
+        foreach (var cell in AnimationPath(actor, newMapPosition)) yield return cell;
+    }
 
 	internal override bool IsValid(Character character)
 	{
@@ -108,6 +119,8 @@ internal class AttackAction : GameAction
 		}
 
 		List<GameAction> ret = new();
+
+        TrackAnimationTarget(target);
 
 		AddMetricsModification(attacker, (stats, vitals) =>
 		{
@@ -180,6 +193,7 @@ public class TakeDamageAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+        TrackAnimationTarget(target);
 		if (!miss)
 		{
 			AddMetricsModification(target, (metrics, vitals) =>
@@ -253,6 +267,7 @@ public class TakeHealAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+        TrackAnimationTarget(target);
 		if (!miss)
 		{
 			AddMetricsModification(target, (metrics, vitals) =>
@@ -335,7 +350,7 @@ public class ModifyStatAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		if (doDamageAnimation)
+		if (doDamageAnimation && !skipAnimation)
 		{
 			target.PlayTakeDamageAnimation();
 			yield return new WaitForSecondsRealtime(0.3f);
@@ -369,6 +384,7 @@ public class DeathAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+        TrackAnimationTarget(target);
 		Game.Instance.Allies.Remove(target as Ally);
 		Game.Instance.Enemies.Remove(target as Enemy);
 		Game.Instance.DeadUnits.Add(target);
@@ -389,9 +405,12 @@ public class DeathAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		AudioManager.Instance.SoundEffects.Enemy_death.PlayAsSound();
-		target.PlayDeathAnimation();
-		yield return new WaitForSecondsRealtime(0.4f);
+        if (!skipAnimation)
+        {
+            AudioManager.Instance.SoundEffects.Enemy_death.PlayAsSound();
+            target.PlayDeathAnimation();
+            yield return new WaitForSecondsRealtime(0.4f);
+        }
 		target.VisualParent.gameObject.SetActive(false);
 
 		Game game = Game.Instance;
@@ -451,7 +470,7 @@ internal class AddXPAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		yield return null;
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character)
@@ -478,6 +497,7 @@ public class InteractAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+		if (skipAnimation) yield break;
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
 	}
@@ -498,7 +518,7 @@ public class WaitAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		yield return null;
+		if (!skipAnimation) yield return null;
 		//yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.1f)
 		//	.WaitForCompletion();
 	}

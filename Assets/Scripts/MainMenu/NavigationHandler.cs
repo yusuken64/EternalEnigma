@@ -1,277 +1,85 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class NavigationHandler : MonoBehaviour
 {
-    [Tooltip("Default UI element to select when none is active.")]
     public GameObject defaultSelectable;
-
-    private DungeonControls controls;
-    private EventSystem es;
-    private GameObject lastSelected;
-    private bool navigatePressedThisFrame;
-    private float lastHoverSoundTime;
-    private const float hoverSoundCooldown = 0.1f;
-
-    private Stack<GameObject> selectionStack = new Stack<GameObject>();
-    private Stack<GameObject> dialogFirstSelectables = new Stack<GameObject>();
-    private HashSet<MonoBehaviour> activeDialogs = new HashSet<MonoBehaviour>();
-    
     public RectTransform selectionArrow;
     public ArrowAnchor arrowAnchor = ArrowAnchor.Center;
-    public Vector3 arrowOffset = new Vector3(0, 40, 0); // offset above button
-    public float arrowFollowSpeed = 10f;
+    public Vector3 arrowOffset = new Vector3(0, 40, 0);
+    [Min(0)] public float arrowMoveDuration = 0.08f;
 
-    private void Awake()
-    {
-        es = EventSystem.current;
-        controls = new DungeonControls();
-    }
+    private EventSystem es;
+    private GameObject lastSelected;
+    private Vector3 arrowStart;
+    private float arrowStartedAt;
+    private readonly Vector3[] corners = new Vector3[4];
 
-	public void Init()
-    {
-        es = EventSystem.current;
-    }
-
-	private void OnEnable()
-    {
-        controls.UI.Enable();
-        controls.UI.Navigate.performed += OnNavigatePerformed;
-    }
-
-    private void OnDisable()
-    {
-        controls.UI.Navigate.performed -= OnNavigatePerformed;
-        controls.UI.Disable();
-        ClearAllDialogs();
-    }
-
-    private void Update()
-    {
-        if (es == null) return;
-
-        // Reestablish UI focus if navigation is used and nothing is selected
-        if (es.currentSelectedGameObject == null && navigatePressedThisFrame)
-            ReestablishUIFocus();
-
-        // Hover sound playback when changing selection
-        GameObject current = es.currentSelectedGameObject;
-
-        UpdateSelectionArrow(current);
-
-        if (lastSelected != current)
-        {
-            lastSelected = current;
-            if (lastSelected != null && Time.unscaledTime - lastHoverSoundTime > hoverSoundCooldown)
-            {
-                Common.Instance.AudioManager.PlaySoundEffect(Common.Instance.AudioManager.SoundEffects.Hover);
-                lastHoverSoundTime = Time.unscaledTime;
-                
-                // Trigger "Selected" animation on Buttons or any Selectable
-                var selectable = lastSelected.GetComponent<Selectable>();
-                if (selectable != null && selectable.enabled && selectable.interactable)
-                {
-                    // Force it into its 'Selected' visual state
-                    selectable.OnSelect(null);
-
-                    // If it’s a Button, also notify the Animator
-                    var animator = selectable.animator;
-                    if (animator != null && animator.isActiveAndEnabled)
-                    {
-                        // Unity’s default button animator uses the "Highlighted" trigger when selected
-                        animator.SetTrigger("Highlighted");
-                    }
-                }
-            }
-        }
-    }
-
-    private void UpdateSelectionArrow(GameObject current)
-    {
-        if (selectionArrow == null)
-            return;
-
-        if (current == null || !current.activeInHierarchy)
-        {
-            selectionArrow.gameObject.SetActive(false);
-            return;
-        }
-
-        // Make arrow visible
-        if (!selectionArrow.gameObject.activeSelf)
-            selectionArrow.gameObject.SetActive(true);
-
-        // Smoothly move arrow toward selected UI element
-        RectTransform target = current.GetComponent<RectTransform>();
-        if (target != null)
-        {
-            Vector3 anchorWorldPos = GetAnchorWorldPosition(target, arrowAnchor);
-            Vector3 targetPos = anchorWorldPos + arrowOffset;
-            selectionArrow.position = Vector3.Lerp(selectionArrow.position, targetPos, Time.unscaledDeltaTime * arrowFollowSpeed);
-        }
-    }
-
-    private Vector3 GetAnchorWorldPosition(RectTransform rect, ArrowAnchor anchor)
-    {
-        Vector3[] corners = new Vector3[4];
-        rect.GetWorldCorners(corners);
-
-        Vector3 center = (corners[0] + corners[2]) * 0.5f;
-        Vector3 left = (corners[0] + corners[1]) * 0.5f;
-        Vector3 right = (corners[2] + corners[3]) * 0.5f;
-        Vector3 top = (corners[1] + corners[2]) * 0.5f;
-        Vector3 bottom = (corners[0] + corners[3]) * 0.5f;
-
-        return anchor switch
-        {
-            ArrowAnchor.Left => left,
-            ArrowAnchor.Right => right,
-            ArrowAnchor.Top => top,
-            ArrowAnchor.Bottom => bottom,
-            _ => center,
-        };
-    }
+    public void Init() => es = EventSystem.current;
+    private void OnEnable() => Init();
 
     private void LateUpdate()
     {
-        navigatePressedThisFrame = false; // Reset flag each frame
+        if (es == null || es != EventSystem.current) Init();
+        if (es == null) return;
+        var current = es.currentSelectedGameObject;
+        if (!MenuUIInputModule.IsUsable(current))
+        {
+            if (selectionArrow != null) selectionArrow.gameObject.SetActive(false);
+            return;
+        }
+
+        bool changed = lastSelected != current;
+        if (changed)
+        {
+            lastSelected = current;
+            arrowStartedAt = Time.unscaledTime;
+            if (selectionArrow != null) arrowStart = selectionArrow.position;
+            var audio = AudioManager.Instance;
+            if (audio != null) audio.PlaySoundEffect(audio.SoundEffects.Hover);
+        }
+
+        if (selectionArrow == null) return;
+        var target = current.GetComponent<RectTransform>();
+        if (target == null) return;
+        Vector3 destination = GetAnchorWorldPosition(target) + arrowOffset;
+        if (!selectionArrow.gameObject.activeSelf)
+        {
+            selectionArrow.position = destination;
+            arrowStart = destination;
+            selectionArrow.gameObject.SetActive(true);
+        }
+        float progress = arrowMoveDuration <= 0 ? 1 : Mathf.Clamp01((Time.unscaledTime - arrowStartedAt) / arrowMoveDuration);
+        selectionArrow.position = Vector3.Lerp(arrowStart, destination, Mathf.SmoothStep(0, 1, progress));
     }
 
-    private void OnNavigatePerformed(InputAction.CallbackContext context)
+    private Vector3 GetAnchorWorldPosition(RectTransform rect)
     {
-        Vector2 input = context.ReadValue<Vector2>();
-        if (input.sqrMagnitude > 0.1f)
-            navigatePressedThisFrame = true;
+        rect.GetWorldCorners(corners);
+        return arrowAnchor switch
+        {
+            ArrowAnchor.Left => (corners[0] + corners[1]) * 0.5f,
+            ArrowAnchor.Right => (corners[2] + corners[3]) * 0.5f,
+            ArrowAnchor.Top => (corners[1] + corners[2]) * 0.5f,
+            ArrowAnchor.Bottom => (corners[0] + corners[3]) * 0.5f,
+            _ => (corners[0] + corners[2]) * 0.5f
+        };
     }
 
     private void OnApplicationFocus(bool hasFocus)
     {
-        if (hasFocus)
-            ReestablishUIFocus();
-    }
-
-    private void ReestablishUIFocus()
-    {
-        if (es == null || es.currentSelectedGameObject != null)
-            return;
-
-        GameObject toSelect = null;
-
-        if (lastSelected != null && lastSelected.activeInHierarchy)
-            toSelect = lastSelected;
-        else if (defaultSelectable != null)
-            toSelect = defaultSelectable;
-        else if (es.firstSelectedGameObject != null)
-            toSelect = es.firstSelectedGameObject;
-
-        if (toSelect != null)
-            SetSelectable(toSelect);
-    }
-
-    public void PushDialog(MonoBehaviour dialogOwner, GameObject firstSelectable)
-    {
-        // Prevent duplicates
-        if (activeDialogs.Contains(dialogOwner))
-            return;
-
-        activeDialogs.Add(dialogOwner);
-
-        // Save current selection
-        var current = es.currentSelectedGameObject;
-        if (current != null)
-            selectionStack.Push(current);
-
-        dialogFirstSelectables.Push(firstSelectable);
-        SetSelectable(firstSelectable);
-    }
-
-    public void PopDialog(MonoBehaviour dialogOwner)
-    {
-        // Cleanup nulls before processing
-        activeDialogs.RemoveWhere(d => d == null);
-
-        if (!activeDialogs.Contains(dialogOwner))
-            return;
-
-        activeDialogs.Remove(dialogOwner);
-
-        if (dialogFirstSelectables.Count > 0)
-            dialogFirstSelectables.Pop();
-
-        if (selectionStack.Count > 0)
-        {
-            SetSelectable(selectionStack.Pop());
-        }
-        else
-        {
-            SetSelectable(es.firstSelectedGameObject ?? defaultSelectable);
-        }
-    }
-
-    private void SetSelectable(GameObject obj)
-    {
-        if (obj != null && obj.activeInHierarchy)
-        {
-            es.SetSelectedGameObject(obj);
-            lastSelected = obj;
-        }
-    }
-
-    public void ClearAllDialogs()
-    {
-        activeDialogs.Clear();
-        selectionStack.Clear();
-        dialogFirstSelectables.Clear();
-    }
-
-    public void OnPointerEnter(GameObject hovered)
-    {
-        if (hovered != lastSelected)
-            es.SetSelectedGameObject(hovered);
+        if (hasFocus) MenuUIInputModule.Active?.RestoreFocus(defaultSelectable);
     }
 
 #if UNITY_EDITOR
     [ContextMenu("Preview Arrow Position")]
     public void PreviewArrowPosition()
     {
-        if (selectionArrow == null)
-        {
-            Debug.LogWarning("Selection Arrow is not assigned.");
-            return;
-        }
-
-        GameObject current = EventSystem.current?.currentSelectedGameObject ?? defaultSelectable;
-        if (current == null)
-        {
-            Debug.LogWarning("No selected GameObject or defaultSelectable found.");
-            return;
-        }
-
-        RectTransform target = current.GetComponent<RectTransform>();
-        if (target == null)
-        {
-            Debug.LogWarning("Selected object does not have a RectTransform.");
-            return;
-        }
-
-        Vector3 anchorWorldPos = GetAnchorWorldPosition(target, arrowAnchor);
-        Vector3 targetPos = anchorWorldPos + arrowOffset;
-
-        //Undo.RecordObject(selectionArrow, "Preview Arrow Position");
-        selectionArrow.position = targetPos;
-
-        Debug.Log($"Arrow previewed at {targetPos} from {target.name} ({arrowAnchor})");
+        var current = EventSystem.current?.currentSelectedGameObject ?? defaultSelectable;
+        if (selectionArrow != null && current != null && current.TryGetComponent<RectTransform>(out var target))
+            selectionArrow.position = GetAnchorWorldPosition(target) + arrowOffset;
     }
 #endif
 }
-public enum ArrowAnchor
-{
-    Center,
-    Left,
-    Right,
-    Top,
-    Bottom
-}
+
+public enum ArrowAnchor { Center, Left, Right, Top, Bottom }

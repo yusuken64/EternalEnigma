@@ -12,15 +12,16 @@ public class OverworldMenuManager : MonoBehaviour
 	public Stack<Dialog> DialogStack = new();
 	public Dialog CurrentDialog;
 
-	private float confirmCooldown;
-	private float confirmCooldownStart = 0.2f;
 
 	private void Update()
 	{
-		confirmCooldown -= Time.deltaTime;
-		if (confirmCooldown > 0) { return; }
-		if (Common.Instance.MenuInputHandler.MenuOpenClosedInput ||
-			PlayerInputHandler.Instance.menuPressed)
+		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
+		if (Opened && Common.Instance.MenuInputHandler.OptionInput && !Common.Instance.MenuInputHandler.CancelMenuInput)
+		{
+			Common.Instance.GlobalSettings.ShowDialog();
+			return;
+		}
+		if (Common.Instance.MenuInputHandler.MenuOpenClosedInput)
 		{
 			if (!Opened)
 			{
@@ -33,12 +34,11 @@ public class OverworldMenuManager : MonoBehaviour
 			}
 			else
 			{
-				Close(CurrentDialog);
-				CurrentDialog.CloseAction?.Invoke();
+				CloseAllMenus();
 				return;
 			}
 		}
-		else if (PlayerInputHandler.Instance.skillsPressed)
+		else if (Common.Instance.MenuInputHandler.OpenSkillMenuInput)
 		{
 			if (!Opened)
 			{
@@ -56,30 +56,6 @@ public class OverworldMenuManager : MonoBehaviour
 			}
 		}
 
-		//if (MenuInputHandler.Instance.SubmitMenuInput)
-		//{
-		//	if (Game.Instance.PlayerController.CurrentControlMode == PlayerControlMode.FollowAlly)
-		//	{
-		//		if (DialogStack.Count > 0)
-		//		{
-		//			DialogStack.Peek().Submit();
-		//			return;
-		//		}
-		//	}
-		//	else
-		//	{
-		//		TargetDialog.ConfirmTarget();
-		//		CloseAllMenus();
-		//		return;
-		//	}
-		//}
-
-		if (Common.Instance.MenuInputHandler.CancelMenuInput && DialogStack.Count > 0)
-		{
-			var top = DialogStack.Peek();
-			Close(top);
-			return;
-		}
 	}
 
 	private void OpenMenu()
@@ -90,6 +66,7 @@ public class OverworldMenuManager : MonoBehaviour
 		Open(overworldMenu.InventoryMenu);
 		List<InventoryItem> inventoryItems = overworldPlayer.Inventory;
 		overworldMenu.InventoryMenu.SetupOverworld(inventoryItems, overworldPlayer.ControllingOverworldAlly);
+		overworldMenu.InventoryMenu.SetNavigation();
 		overworldMenu.InventoryMenu.CloseAction = () =>
 		{
 			overworldMenu.InventoryMenu.Close();
@@ -105,16 +82,16 @@ public class OverworldMenuManager : MonoBehaviour
 		List<InventoryItem> inventoryItems = overworldPlayer.Inventory;
 		overworldMenu.SkillDialog.gameObject.SetActive(true);
 		overworldMenu.SkillDialog.SetupOverworld(overworldPlayer.ControllingOverworldAlly);
+		overworldMenu.SkillDialog.SetNavigation();
 		overworldMenu.SkillDialog.CloseAction = () =>
 		{
-			overworldMenu.InventoryMenu.Close();
+			// This is an informational skill list; it owns no inventory face camera.
 		};
 	}
 
 	internal void CloseMenu()
 	{
-		DialogStack.Clear();
-		Opened = false;
+		CloseAllMenus();
 	}
 
 	public Action LateAction;
@@ -132,8 +109,10 @@ public class OverworldMenuManager : MonoBehaviour
 			DialogStack.Peek().SaveSelection();
 		}
 
+		if (DialogStack.Contains(dialog)) return;
 		dialog.gameObject.SetActive(true);
 		DialogStack.Push(dialog);
+		MenuUIInputModule.Active?.PushDialog(dialog, dialog.transform, back: () => Close(dialog));
 		CurrentDialog = dialog;
 		Opened = true;
 
@@ -147,14 +126,18 @@ public class OverworldMenuManager : MonoBehaviour
 
 	internal void Close(Dialog dialog)
 	{
+		if (DialogStack.Count == 0 || DialogStack.Peek() != dialog) return;
 		dialog.gameObject.SetActive(false);
-		dialog.CloseAction?.Invoke();
+		MenuUIInputModule.Active?.PopDialog(dialog);
 		DialogStack.Pop();
+		dialog.CloseAction?.Invoke();
 
 		if (DialogStack.Count <= 0)
 		{
 			Common.Instance.MenuInputHandler.SwitchToPlayerInput();
 			Opened = false;
+			CurrentDialog = null;
+			LateAction = null;
 			return;
 		}
 
@@ -168,14 +151,19 @@ public class OverworldMenuManager : MonoBehaviour
 
 	internal void CloseAllMenus()
 	{
-		CurrentDialog?.CloseAction?.Invoke();
-		CurrentDialog = null;
-		FindFirstObjectByType<OverworldMenu>().InventoryMenu.gameObject.SetActive(false);
-		DialogStack.Clear();
+		while (DialogStack.Count > 0)
+        {
+            var dialog = DialogStack.Pop();
+            dialog.gameObject.SetActive(false);
+            MenuUIInputModule.Active?.PopDialog(dialog);
+            dialog.CloseAction?.Invoke();
+        }
+        CurrentDialog = null;
+        LateAction = null;
 
 		Opened = false;
 		Common.Instance.MenuInputHandler.SwitchToPlayerInput();
-		confirmCooldown = confirmCooldownStart;
+		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
 
 }

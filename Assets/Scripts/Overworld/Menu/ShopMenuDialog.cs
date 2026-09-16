@@ -83,6 +83,5 @@ public class ShopMenuDialog : Dialog
 	public void Cancel_Clicked()
 	{
 		FindFirstObjectByType<OverworldMenuManager>().Close(this);
-		CloseAction?.Invoke();
 	}
 }

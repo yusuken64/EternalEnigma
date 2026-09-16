@@ -76,7 +76,6 @@ public class AllyRecruitDialog : Dialog
 
 		FaceCamDisplay.Unfollow(_ally.VisualParent);
 		FindFirstObjectByType<OverworldMenuManager>().Close(this);
-		CloseAction?.Invoke();
 	}
 
 	public void Recruit_Clicked()
@@ -105,7 +104,6 @@ public class AllyRecruitDialog : Dialog
 
 		FaceCamDisplay.Unfollow(_ally.VisualParent);
 		FindFirstObjectByType<OverworldMenuManager>().Close(this);
-		CloseAction?.Invoke();
 	}
 
 	public static void Recruit(Overworld overworld, OverworldAlly ally)
@@ -132,7 +130,6 @@ public class AllyRecruitDialog : Dialog
 	{
 		FaceCamDisplay.Unfollow(_ally.VisualParent);
 		FindFirstObjectByType<OverworldMenuManager>().Close(this);
-		CloseAction?.Invoke();
 	}
 }
 

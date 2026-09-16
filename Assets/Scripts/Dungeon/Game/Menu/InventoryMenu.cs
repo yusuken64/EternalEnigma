@@ -61,9 +61,11 @@ public class InventoryMenu : Dialog
                 };
             });
 
-            view.SelectCallBack = () =>
+            view.SelectCallBack = eventData =>
             {
-                ScrollToSelected(view.gameObject);
+                if (!(eventData is PointerEventData))
+                    ScrollToSelected(view.gameObject);
+                else StopAutoScroll();
                 UpdatedItemPreview(data, character);
             };
         };
@@ -102,9 +104,11 @@ public class InventoryMenu : Dialog
                 //ActionDialog.Panel.transform.position = newPosition;
             });
 
-            view.SelectCallBack = () =>
+            view.SelectCallBack = eventData =>
             {
-                ScrollToSelected(view.gameObject);
+                if (!(eventData is PointerEventData))
+                    ScrollToSelected(view.gameObject);
+                else StopAutoScroll();
                 UpdatedItemPreviewOverworld(data, character);
             };
         };

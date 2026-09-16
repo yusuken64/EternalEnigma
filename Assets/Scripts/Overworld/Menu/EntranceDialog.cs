@@ -79,7 +79,6 @@ public class EntranceDialog : Dialog
 	public void Cancel_Clicked()
 	{
 		FindFirstObjectByType<OverworldMenuManager>().Close(this);
-		CloseAction?.Invoke();
 	}
 
 	internal void Show()

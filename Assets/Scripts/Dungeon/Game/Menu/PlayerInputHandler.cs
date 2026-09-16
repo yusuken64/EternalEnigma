@@ -71,14 +71,7 @@
             planPressed = planAction.WasPressedThisFrame();
             optionsPressed = optionsAction.WasPressedThisFrame();
 
-            if (PlayerInput.currentActionMap.name == "Player")
-            {
-                Common.Instance.MenuInputHandler.MenuOpenClosedInput = menuPressed;
-            }
-            if (PlayerInput.currentActionMap.name == "Player")
-            {
-                Common.Instance.MenuInputHandler.OpenSkillMenuInput = skillsPressed;
-            }
+
         }
 
         void OnEnable()

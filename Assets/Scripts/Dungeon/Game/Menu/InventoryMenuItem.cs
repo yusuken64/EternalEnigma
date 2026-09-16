@@ -6,14 +6,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryMenuItem : Button
+public class InventoryMenuItem : SelectToActivateButton
 {
 	public TextMeshProUGUI ItemText;
 	private InventoryItem _data;
     private Character _character;
 
 	public Func<InventoryItem, bool> IsEquipped { get; set; }
-	public Action SelectCallBack { get; internal set; }
+	public Action<BaseEventData> SelectCallBack { get; internal set; }
 
 	internal void Setup(InventoryItem data, Func<InventoryItem, bool> isEquipped)
 	{
@@ -36,6 +36,6 @@ public class InventoryMenuItem : Button
 	public override void OnSelect(BaseEventData eventData)
 	{
 		base.OnSelect(eventData);
-		SelectCallBack?.Invoke();
+		SelectCallBack?.Invoke(eventData);
 	}
 }

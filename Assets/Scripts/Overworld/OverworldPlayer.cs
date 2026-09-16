@@ -63,6 +63,7 @@ public class OverworldPlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
 		UpdateUI();
 		if (!initialied) { return; }
 		if (ControllerHeld)

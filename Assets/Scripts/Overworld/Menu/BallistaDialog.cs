@@ -60,7 +60,6 @@ public class BallistaDialog : Dialog
 	{
 		FindAnyObjectByType<Overworld>().WriteSaveData();
 		FindFirstObjectByType<OverworldMenuManager>().Close(this);
-		CloseAction?.Invoke();
 	}
 
 	[ContextMenu("Force Select")]

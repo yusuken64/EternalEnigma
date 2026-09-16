@@ -1,127 +1,116 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GlobalSettings : MonoBehaviour
 {
-	public GameObject SettingsCanvas;
-	public GameObject FirstSelected;
+    public GameObject SettingsCanvas;
+    public GameObject FirstSelected;
+    public NavigationHandler NavigationHandler;
+    public Action CloseAction;
+    public TabGroup TabGroup;
+    public Button ResumeButton;
+    public Button ReturntoMainButton;
+    public bool IsOpen => SettingsCanvas != null && SettingsCanvas.activeInHierarchy;
+    private bool returnToGameplay;
 
-	public NavigationHandler NavigationHandler;
-	public Action CloseAction;
-
-	public TabGroup TabGroup;
-	public Button ResumeButton;
-	public Button ReturntoMainButton;
-
-	private void Start()
-	{
-		SettingsCanvas.gameObject.SetActive(false);
-		NavigationHandler.gameObject.SetActive(false);
-
-		SetupTabNavigation();
-	}
-
-	private void SetupTabNavigation()
-	{
-		var resumeNav = new Navigation
-		{
-			mode = Navigation.Mode.Explicit
-		};
-		resumeNav.selectOnDown = TabGroup.TabContents.First().TabButton;
-		ResumeButton.navigation = resumeNav;
-
-		var returntoMainButtonNav = new Navigation
-		{
-			mode = Navigation.Mode.Explicit
-		};
-		returntoMainButtonNav.selectOnUp = TabGroup.TabContents.Last().TabButton;
-		ReturntoMainButton.navigation = returntoMainButtonNav;
-
-		var tabs = TabGroup.TabContents;
-		for (int i = 0; i < tabs.Count; i++)
-		{
-			var button = tabs[i].TabButton;
-			var nav = new Navigation
-			{
-				mode = Navigation.Mode.Explicit
-			};
-
-			if (i == 0)
-			{
-				nav.selectOnUp = ResumeButton;
-			}
-
-			if (i == tabs.Count - 1)
-			{
-				nav.selectOnDown = ReturntoMainButton;
-			}
-
-			// Set Up
-			if (i > 0)
-				nav.selectOnUp = tabs[i - 1].TabButton;
-
-			// Set Down
-			if (i < tabs.Count - 1)
-				nav.selectOnDown = tabs[i + 1].TabButton;
-
-			button.navigation = nav;
-		}
-	}
-
-	private void OnEnable()
-	{
-		TabGroup.TabClicked += HandleTabClicked;
-	}
-
-	private void OnDisable()
-	{
-		TabGroup.TabClicked -= HandleTabClicked;
-	}
-
-	public void HandleTabClicked(TabContent tabContent)
-	{
-		GameObject content = tabContent.Content;
-		// Try to find the first selectable child
-		var firstSelectable = content.GetComponentInChildren<Selectable>(includeInactive: false);
-
-		if (firstSelectable != null)
-		{
-			firstSelectable.Select();
-		}
-	}
-
-	public void ShowDialog()
-	{
-		this.gameObject.SetActive(true);
-		SettingsCanvas.gameObject.SetActive(true);
-		NavigationHandler.gameObject.SetActive(true);
-		NavigationHandler.Init();
-		NavigationHandler.PushDialog(this, FirstSelected);
+    private void Start()
+    {
+        TabGroup.Setup();
+        SetupTabNavigation();
+        SettingsCanvas.SetActive(false);
+        gameObject.SetActive(false);
     }
 
-	public void Exit_Clicked()
-	{
-		SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
-		NavigationHandler.PopDialog(this);
-		NavigationHandler.gameObject.SetActive(false);
-		CloseAction?.Invoke();
-		CloseAction = null;
-	}
+    private void OnEnable() => TabGroup.TabClicked += HandleTabClicked;
+    private void OnDisable() => TabGroup.TabClicked -= HandleTabClicked;
 
-	public void MainMenu_Clicked()
-	{
-		var overworld = FindFirstObjectByType<Overworld>();
-		if (overworld != null)
-		{
-			overworld.WriteSaveData();
-			SaveSystem.SaveData(Common.Instance.GameSaveData);
-		}
-		SettingsCanvas.gameObject.SetActive(!SettingsCanvas.gameObject.activeSelf);
-		NavigationHandler.PopDialog(this);
-		SceneManager.LoadScene("MainMenu");
-		NavigationHandler.gameObject.SetActive(false);
-	}
+    private void SetupTabNavigation()
+    {
+        var tabs = TabGroup.TabContents;
+        if (tabs.Count == 0) return;
+        ResumeButton.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnDown = tabs[0].TabButton };
+        ReturntoMainButton.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnUp = tabs[^1].TabButton };
+        for (int i = 0; i < tabs.Count; i++)
+        {
+            var tab = tabs[i];
+            var contents = tab.Content.GetComponentsInChildren<Selectable>()
+                .Where(s => s.IsActive() && s.IsInteractable()).ToArray();
+            tab.TabButton.navigation = new Navigation
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnUp = i == 0 ? ResumeButton : tabs[i - 1].TabButton,
+                selectOnDown = i == tabs.Count - 1 ? ReturntoMainButton : tabs[i + 1].TabButton,
+                selectOnRight = tab == TabGroup.SelectedTab ? contents.FirstOrDefault() : null
+            };
+            for (int j = 0; j < contents.Length; j++)
+            {
+                var selectable = contents[j];
+                selectable.navigation = new Navigation
+                {
+                    mode = Navigation.Mode.Explicit,
+                    selectOnUp = j == 0 ? tab.TabButton : contents[j - 1],
+                    selectOnDown = j == contents.Length - 1 ? ReturntoMainButton : contents[j + 1],
+                    // Horizontal sliders retain Left/Right for value adjustment.
+                    selectOnLeft = selectable is Slider ? null : tab.TabButton
+                };
+            }
+        }
+    }
+
+    public void HandleTabClicked(TabContent tabContent)
+    {
+        // Activating a category keeps the highlight on it. Right enters its controls.
+        SetupTabNavigation();
+    }
+
+    public void ShowDialog()
+    {
+        if (IsOpen) return;
+        returnToGameplay = Common.Instance.MenuInputHandler.PlayerInput.currentActionMap?.name != "UI";
+        gameObject.SetActive(true);
+        SettingsCanvas.SetActive(true);
+        TabGroup.Setup();
+        SetupTabNavigation();
+        NavigationHandler.Init();
+        MenuUIInputModule.Active?.PushDialog(this, SettingsCanvas.transform, FirstSelected, Back, Exit_Clicked);
+        Common.Instance.MenuInputHandler.SwitchToUIInput();
+    }
+
+    private void Back()
+    {
+        var tab = TabGroup.SelectedTab;
+        var selected = EventSystem.current?.currentSelectedGameObject;
+        if (tab != null && selected != null && selected.transform.IsChildOf(tab.Content.transform))
+            tab.TabButton.Select();
+        else Exit_Clicked();
+    }
+
+    public void Exit_Clicked()
+    {
+        if (!IsOpen) return;
+        SettingsCanvas.SetActive(false);
+        MenuUIInputModule.Active?.PopDialog(this);
+        if (returnToGameplay) Common.Instance.MenuInputHandler.SwitchToPlayerInput();
+        else Common.Instance.MenuInputHandler.ClearInputThisFrame();
+        var callback = CloseAction;
+        CloseAction = null;
+        gameObject.SetActive(false);
+        callback?.Invoke();
+    }
+
+    public void MainMenu_Clicked()
+    {
+        var overworld = FindFirstObjectByType<Overworld>();
+        if (overworld != null)
+        {
+            overworld.WriteSaveData();
+            SaveSystem.SaveData(Common.Instance.GameSaveData);
+        }
+        Exit_Clicked();
+        SceneManager.LoadScene("MainMenu");
+    }
 }

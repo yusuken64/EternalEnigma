@@ -1,35 +1,50 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 public class CursorManager : MonoBehaviour
 {
-    void Update()
-    {
-        // If any controller was used this frame
-        if (Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame)
-        {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
-        // If mouse was moved/clicked this frame
-        else if (Mouse.current != null)
-        {
-            bool mouseMoved = Mouse.current.delta.ReadValue() != Vector2.zero;
-            bool mouseClicked = Mouse.current.leftButton.wasPressedThisFrame
-                                || Mouse.current.rightButton.wasPressedThisFrame
-                                || Mouse.current.middleButton.wasPressedThisFrame;
+    private Gamepad previousPad;
+    private Vector2 previousLeftStick;
+    private Vector2 previousRightStick;
+    private Vector2 previousDpad;
 
-            if (mouseMoved || mouseClicked)
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-        }
-        // If keyboard was pressed this frame (optional)
-        else if (Keyboard.current != null && Keyboard.current.wasUpdatedThisFrame)
+    private void Update()
+    {
+        var pad = Gamepad.current;
+        bool controllerUsed = false;
+        if (pad != null)
         {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            if (pad != previousPad)
+                previousLeftStick = previousRightStick = previousDpad = Vector2.zero;
+            var left = pad.leftStick.ReadValue();
+            var right = pad.rightStick.ReadValue();
+            var dpad = pad.dpad.ReadValue();
+            controllerUsed = DeliberateMovement(left, previousLeftStick)
+                || DeliberateMovement(right, previousRightStick) || DeliberateMovement(dpad, previousDpad);
+            foreach (var control in pad.allControls)
+                if (control is ButtonControl button && button.wasPressedThisFrame)
+                    controllerUsed = true;
+            previousLeftStick = left;
+            previousRightStick = right;
+            previousDpad = dpad;
         }
+        previousPad = pad;
+
+        var mouse = Mouse.current;
+        bool mouseUsed = mouse != null && (mouse.delta.ReadValue().sqrMagnitude >= 1f
+            || mouse.scroll.ReadValue().sqrMagnitude > 0f
+            || mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame
+            || mouse.middleButton.wasPressedThisFrame);
+
+        // Mouse wins simultaneous activity. A held stick or unchanged report
+        // cannot steal the pointer back on the following frame.
+        if (mouseUsed) Cursor.visible = true;
+        else if (controllerUsed) Cursor.visible = false;
+        // Hide without warping the pointer to the screen centre.
+        Cursor.lockState = CursorLockMode.None;
     }
+
+    private static bool DeliberateMovement(Vector2 value, Vector2 previous) =>
+        value.sqrMagnitude >= 0.35f * 0.35f && (value - previous).sqrMagnitude >= 0.15f * 0.15f;
 }

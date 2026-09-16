@@ -9,6 +9,8 @@ using UnityEngine.UI;
 public class TabGroup : MonoBehaviour
 {
     public List<TabContent> TabContents;
+    public TabContent SelectedTab { get; private set; }
+    private bool initialized;
 
     public Color NormalColor = Color.white;
     public Color SelectedColor = Color.green;
@@ -29,6 +31,8 @@ public class TabGroup : MonoBehaviour
 
     public void Setup()
     {
+        if (initialized) return;
+        initialized = true;
         foreach (var tab in TabContents)
         {
             tab.TabButton.onClick.AddListener(() => OnTabSelected(tab));
@@ -47,26 +51,24 @@ public class TabGroup : MonoBehaviour
 
     private void OnTabSelected(TabContent selectedTab)
     {
+        SelectedTab = selectedTab;
         foreach (var tab in TabContents)
         {
             bool isSelected = tab == selectedTab;
             tab.Content.SetActive(isSelected);
             SetCanvasGroupState(tab.Content, isSelected);
 
-            var image = tab.TabButton.targetGraphic;
             var tabText = tab.TabButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (image != null)
-            {
-                image.DOColor(isSelected ? SelectedColor : NormalColor, 0.2f);
-            }
             if (tabText != null)
             {
-                tabText.DOColor(isSelected ? SelectedTextColor : NormalTextColor, 0.2f);
+                tabText.DOKill();
+                tabText.DOColor(isSelected ? SelectedTextColor : NormalTextColor, 0.12f).SetUpdate(true);
             }
 
             // Animate scale for a nice pop effect
             Transform tabTransform = tab.TabButton.transform;
-            tabTransform.DOScale(isSelected ? 1.1f : 1f, 0.2f).SetEase(Ease.OutBack);
+            tabTransform.DOKill();
+            tabTransform.DOScale(isSelected ? 1.05f : 1f, 0.12f).SetUpdate(true);
         }
 
         NotifyTabClicked(selectedTab);
@@ -75,31 +77,13 @@ public class TabGroup : MonoBehaviour
     private void SetCanvasGroupState(GameObject content, bool isVisible)
     {
         var group = content.GetComponent<CanvasGroup>();
-        var rectTransform = content.GetComponent<RectTransform>();
-        var duration = 0.3f;
-
-        if (group != null && rectTransform != null)
-        {
-            // Slide in from the left
-            if (isVisible)
-            {
-                // Move from the left side of the screen (you can adjust the X value if needed)
-                rectTransform.DOLocalMoveX(0, duration).SetEase(Ease.OutBack);
-            }
-            else
-            {
-                // Move offscreen to the left
-                rectTransform.DOLocalMoveX(Screen.width, duration).SetEase(Ease.InBack);
-            }
-
-            // Animate fade in/out
-            group.DOFade(isVisible ? 1 : 0, duration);
-
-            // Set interactable and raycastable based on visibility
-            group.interactable = isVisible;
-            group.blocksRaycasts = isVisible;
-        }
+        if (group == null) return;
+        group.DOKill();
+        group.alpha = isVisible ? 1 : 0;
+        group.interactable = isVisible;
+        group.blocksRaycasts = isVisible;
     }
+
 }
 
 [System.Serializable]

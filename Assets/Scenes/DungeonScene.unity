@@ -9644,11 +9644,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 870554937}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Script: {fileID: 11500000, guid: a79503e2f1f44c96a51f8fbf2d47a2ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_SendPointerHoverToParent: 1
-  m_MoveRepeatDelay: 0.1
+  m_MoveRepeatDelay: 0.3
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
   m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
@@ -11399,7 +11399,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1037800300}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -13033,7 +13033,7 @@ MonoBehaviour:
   selectionArrow: {fileID: 0}
   arrowAnchor: 0
   arrowOffset: {x: 0, y: 40, z: 0}
-  arrowFollowSpeed: 10
+  arrowMoveDuration: 0.08
 --- !u!1 &1144146798
 GameObject:
   m_ObjectHideFlags: 0
@@ -13971,7 +13971,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1204557028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -15964,7 +15964,7 @@ MonoBehaviour:
   selectionArrow: {fileID: 125617468}
   arrowAnchor: 0
   arrowOffset: {x: -32.5, y: 58.6, z: 0}
-  arrowFollowSpeed: 10
+  arrowMoveDuration: 0.08
 --- !u!43 &1458079902
 Mesh:
   m_ObjectHideFlags: 0
@@ -17839,7 +17839,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1544246154}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -21201,7 +21201,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1776162883}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -22143,7 +22143,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1865861869}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -24299,7 +24299,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2039450982}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -25837,7 +25837,7 @@ MonoBehaviour:
   selectionArrow: {fileID: 1615311709}
   arrowAnchor: 1
   arrowOffset: {x: -41.6, y: 0, z: 0}
-  arrowFollowSpeed: 10
+  arrowMoveDuration: 0.08
 --- !u!1001 &4482407506725392007
 PrefabInstance:
   m_ObjectHideFlags: 0

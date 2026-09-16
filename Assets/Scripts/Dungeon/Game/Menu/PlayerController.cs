@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour
 
     private bool ShouldBlockInput()
     {
-        if (Common.Instance.GlobalSettings.gameObject.activeSelf)
+        if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen)
 		{
             return true;
 		}

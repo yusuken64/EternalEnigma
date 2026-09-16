@@ -46,12 +46,10 @@ public class StatueDialog : Dialog
 		DonatedAmount += amount;
 
 		FindFirstObjectByType<OverworldMenuManager>().Close(this);
-		CloseAction?.Invoke();
 	}
 
 	public void Cancel_Clicked()
 	{
 		FindFirstObjectByType<OverworldMenuManager>().Close(this);
-		CloseAction?.Invoke();
 	}
 }

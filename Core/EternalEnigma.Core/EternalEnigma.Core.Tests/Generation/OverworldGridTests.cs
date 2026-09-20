@@ -46,10 +46,13 @@ public sealed class OverworldGridTests
         }
     }
 
-    [Fact]
-    public void GridReachabilityMatchesCampaignForSampledCapabilityAndResolvedLockStates()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(42)]
+    [InlineData(-1)]
+    public void GridReachabilityMatchesCampaignForSampledCapabilityAndResolvedLockStates(int seed)
     {
-        var campaign = CampaignGenerator.Generate(42);
+        var campaign = CampaignGenerator.Generate(seed);
         var grid = OverworldGridGenerator.Generate(campaign);
         var capabilities = campaign.Manifest.Select(c => c.Id).ToArray();
         int fullMask = (1 << capabilities.Length) - 1;
@@ -126,6 +129,95 @@ public sealed class OverworldGridTests
             Assert.Equal(campaign.Routes.Count, grid.Routes.Count);
         }
     }
+
+    [Theory]
+    [InlineData(0, 6)]
+    [InlineData(42, 6)]
+    [InlineData(-1, 6)]
+    [InlineData(42, 1)]
+    [InlineData(42, 12)]
+    public void ExpansionPreservesEmbeddingAndTerrainAtGates(int seed, int radius)
+    {
+        var campaign = CampaignGenerator.Generate(seed);
+        var original = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: 0));
+        var expanded = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: radius));
+        var again = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: radius));
+        Assert.Equal(original.CampaignFingerprint, expanded.CampaignFingerprint);
+        Assert.Equal(original.Locations, expanded.Locations);
+        foreach (var route in original.Routes) Assert.Equal(route.Value, expanded.Routes[route.Key]);
+        foreach (var layer in expanded.Layers)
+            Assert.Equal(layer.Value.ToArray().Cast<bool>(), again.Layers[layer.Key].ToArray().Cast<bool>());
+        foreach (string layer in new[] { OverworldLayers.Roads, OverworldLayers.Locks, OverworldLayers.AreaLocks,
+            OverworldLayers.ObstacleLocks, OverworldLayers.InteractionLocks, OverworldLayers.Water })
+            Assert.Equal(original.Layers[layer].ToArray().Cast<bool>(), expanded.Layers[layer].ToArray().Cast<bool>());
+        foreach (var gate in original.Locks)
+        {
+            Assert.Equal(gate.Cells, expanded.Locks.Single(g => g.RouteId == gate.RouteId).Cells);
+            foreach (var cell in gate.Cells)
+            for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++)
+            foreach (string layer in new[] { OverworldLayers.Ground, OverworldLayers.Trees, OverworldLayers.Mountains })
+                Assert.Equal(original.Layers[layer][cell.X + dx, cell.Y + dy], expanded.Layers[layer][cell.X + dx, cell.Y + dy]);
+        }
+        var distances = new Dictionary<GridPoint, int>();
+        var queue = new Queue<GridPoint>();
+        for (int y = 0; y < original.Height; y++) for (int x = 0; x < original.Width; x++)
+        {
+            var cell = new GridPoint(x, y);
+            // The legacy floor consists exactly of route paths and 3x3 location clearings.
+            bool legacy = original.Layers[OverworldLayers.Roads][x, y] || original.Locations.Values.Any(p => Math.Abs(p.X - x) <= 1 && Math.Abs(p.Y - y) <= 1);
+            Assert.Equal(legacy, original.IsGround(cell));
+            if (legacy)
+            {
+                Assert.True(expanded.IsGround(cell));
+                if (original.LockAt(cell) == null) { distances[cell] = 0; queue.Enqueue(cell); }
+            }
+        }
+        while (queue.Count > 0)
+        {
+            var at = queue.Dequeue();
+            foreach (var next in OverworldMovement.Neighbors(at).Where(p => p.X == at.X || p.Y == at.Y))
+                if (expanded.IsGround(next) && expanded.LockAt(next) == null && !distances.ContainsKey(next))
+                { distances[next] = distances[at] + 1; queue.Enqueue(next); }
+        }
+        for (int y = 0; y < expanded.Height; y++) for (int x = 0; x < expanded.Width; x++)
+        {
+            var cell = new GridPoint(x, y);
+            Assert.Equal(expanded.IsGround(cell) ? 1 : 0, campaign.Regions.Count(r => expanded.Layers[OverworldLayers.Region(r.Id)][x, y]));
+            if (expanded.IsGround(cell) && !original.IsGround(cell))
+            {
+                Assert.True(distances.TryGetValue(cell, out int distance));
+                Assert.InRange(distance, 1, radius);
+                Assert.True(expanded.IsWalkable(cell, CapabilitySet.Empty));
+                Assert.False(expanded.Layers[OverworldLayers.Roads][x, y]);
+            }
+        }
+    }
+
+    [Fact]
+    public void DefaultExpansionCreatesBroadOpenSpaces()
+    {
+        var campaign = CampaignGenerator.Generate(42);
+        var original = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: 0));
+        var expanded = OverworldGridGenerator.Generate(campaign);
+        Assert.True(expanded.Layers[OverworldLayers.Walkable].ToArray().Cast<bool>().Count(v => v) >=
+            2 * original.Layers[OverworldLayers.Walkable].ToArray().Cast<bool>().Count(v => v));
+        int patches = 0;
+        var used = new HashSet<GridPoint>();
+        for (int y = 0; y < expanded.Height - 4; y++) for (int x = 0; x < expanded.Width - 4; x++)
+        {
+            var patch = Enumerable.Range(0, 25).Select(i => new GridPoint(x + i % 5, y + i / 5)).ToArray();
+            if (patch.Any(p => used.Contains(p) || !expanded.IsWalkable(p, CapabilitySet.Empty))) continue;
+            foreach (var p in patch) used.Add(p);
+            patches++;
+        }
+        Assert.True(patches >= 2, $"Only {patches} disjoint 5x5 spaces.");
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(13)]
+    public void InvalidExpansionRadiusIsRejected(int radius) =>
+        Assert.Throws<ArgumentOutOfRangeException>(() => new OverworldGridOptions(areaExpansionRadius: radius));
 
     [Fact]
     public void ValidatorRejectsCarvedBypassAroundARealizedGate()

@@ -98,11 +98,22 @@ the renderer adapter, not a replacement player controller or automatic scene flo
 
 ## Geometry and validation
 
-Version 1 embeds the current campaign **tree** as separated branches with small
-location clearings, shared junctions and reserved gate approaches. Seed streams
-100/101 determine branch order and blocked-background decoration. Existing campaign
-streams are unchanged. This is a conservative overworld layout foundation, not
-finished natural geography, seas, docks, broad capability fields or populated towns.
+Version 2 expands the current campaign **tree** into broad, irregular walkable
+zones, retaining the original location positions, roads and narrow gate approaches.
+Roads are navigation hints; ordinary floor around them is freely walkable.
+`new OverworldGridOptions(areaExpansionRadius: 6)` is the default for all callers,
+including the console explorer and Unity. The optional radius accepts 0–12;
+zero preserves the original corridor geometry. Campaign versions and fingerprints
+are unchanged.
+
+Before decoration, the generator labels original floor components with all gates
+closed. Seeded orthogonal growth inherits its source region, costs one or two per
+tile, and stops at the radius or a total cost of twelve. Different components
+cannot touch, even diagonally. The one-tile halo around every gate retains its
+original terrain, and the two-tile outer water border stays intact. Walkability,
+region, decoration and reservation masks include the expanded floor; roads remain
+separate. Seed streams 100/101 control branch order and background decoration;
+stream 102 controls expansion. Existing campaign streams are unchanged.
 
 Cyclic/parallel-route campaigns fail explicitly rather than silently dropping
 routes or introducing crossings. A map too small for the layout reports its

@@ -22,11 +22,11 @@ public sealed class TestScenario
             throw new ArgumentException("Expected 1 <= StartFloor <= EndFloor.");
         return new GameSaveData {
             DungeonSaveData = new DungeonSaveData { StartFloor = StartFloor, EndFloor = EndFloor },
-            OverworldSaveData = new OverworldSaveData {
-                Gold = Gold, OverworldSeed = Seed,
+            TownSaveData = new TownSaveData {
+                Gold = Gold, TownSeed = Seed,
                 Inventory = new List<string>(Items),
-                RecruitedAlliesData = new List<OverworldAllyData> {
-                    new OverworldAllyData { AllyName = AllyName, Skills = new List<string>(Skills) }
+                RecruitedAlliesData = new List<TownAllyData> {
+                    new TownAllyData { AllyName = AllyName, Skills = new List<string>(Skills) }
                 }
             }
         };

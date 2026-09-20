@@ -24,6 +24,9 @@ public static class SaveSystem
             return null;
         }
 
+        // Migrate the original public JSON keys without changing item/ally names.
+        json = json.Replace("\"OverworldSaveData\":", "\"TownSaveData\":")
+            .Replace("\"OverworldSeed\":", "\"TownSeed\":");
         GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
         return data;
     }

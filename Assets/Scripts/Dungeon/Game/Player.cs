@@ -203,7 +203,7 @@
 
 //	internal void InitialzeSkillsFromSave()
 //	{
-//		var activeSkills = Common.Instance.GameSaveData.OverworldSaveData.ActiveSkillNames;
+//		var activeSkills = Common.Instance.GameSaveData.TownSaveData.ActiveSkillNames;
 //		foreach (var skillName in activeSkills)
 //		{
 //			Skill skill = Common.Instance.SkillManager.GetSkillByName(skillName);

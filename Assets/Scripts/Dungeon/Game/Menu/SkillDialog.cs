@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -60,16 +60,19 @@ namespace JuicyChickenGames.Menu
         }
 
 
-        internal void SetupOverworld(OverworldAlly controllingOverworldAlly)
+        internal void SetupTown(TownAlly controllingTownAlly)
         {
-            var dynamicActionInfos = controllingOverworldAlly.Skills.Select((skill, index) =>
+            var dynamicActionInfos = controllingTownAlly.Skills.Select((skill, index) =>
             {
                 return new DynamicActionInfo()
                 {
                     ActionName = $"{skill}",
                     ClickAction = () =>
                     {
-                        //do nothing on overworld
+                        var definition = Common.Instance.SkillManager.GetSkillByName(skill);
+                        TownMenu.ShowMessage(definition != null
+                            ? $"{definition.SkillName} ({definition.SPCost} SP)\n{definition.Description}\nUse active skills in the dungeon."
+                            : $"Unknown skill: {skill}");
                     }
                 };
             }).ToList();

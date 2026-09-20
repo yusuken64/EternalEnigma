@@ -11,7 +11,7 @@
             return;
         }
 
-        var player = console.FindOverworldPlayer();
+        var player = console.FindTownPlayer();
         if (player != null)
         {
             player.Gold += amount;

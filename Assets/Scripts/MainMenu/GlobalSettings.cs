@@ -104,11 +104,16 @@ public class GlobalSettings : MonoBehaviour
 
     public void MainMenu_Clicked()
     {
-        var overworld = FindFirstObjectByType<Overworld>();
-        if (overworld != null)
+        var town = FindFirstObjectByType<Town>();
+        if (town != null)
         {
-            overworld.WriteSaveData();
+            town.WriteSaveData();
             SaveSystem.SaveData(Common.Instance.GameSaveData);
+        }
+        else
+        {
+            var dungeon = FindFirstObjectByType<Game>();
+            if (dungeon != null) GameOverScreen.CommitAbandonedRun(dungeon.PlayerController);
         }
         Exit_Clicked();
         SceneManager.LoadScene("MainMenu");

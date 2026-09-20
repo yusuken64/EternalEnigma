@@ -11,7 +11,7 @@
         ally.InitialzeVitalsFromStats();
         ally.Vitals.Level = 1;
         ally.SyncDisplayedStats();
-        //ally.InitialzeModel(overworldAlly);
+        //ally.InitialzeModel(townAlly);
         Game.Instance.Allies.Add(ally);
         ally.SetPosition(Game.Instance.PlayerController.TilemapPosition);
     }

@@ -9,6 +9,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 {
 	public GameSaveData GameSaveData;
 	internal DemoDungeonLoadout PendingDemoLoadout;
+	public TownConfiguration CurrentTownConfiguration { get; internal set; }
 
 	public AudioManager AudioManager;
 	public ItemManager ItemManager;
@@ -17,8 +18,8 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	public ScreenTransition ScreenTransition;
 	public MessageDialog MessageDialog;
 
-	public List<OverworldAlly> InstantiatedOverworldAllies = new();
-	public Transform OverworldAllyParent;
+	public List<TownAlly> InstantiatedTownAllies = new();
+	public Transform TownAllyParent;
 
 	public MenuInputHandler MenuInputHandler;
 	public GlobalSettings GlobalSettings;

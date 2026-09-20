@@ -342,7 +342,7 @@ public class PlayerController : MonoBehaviour
         {
             MenuManager.Instance.ShowYesNoDialog(
                 "Exit Dungeon?",
-                () => GameOverScreen.GoBackToOverworld(true, this),
+                () => GameOverScreen.GoBackToTown(true, this),
                 () => { });
         }
     }

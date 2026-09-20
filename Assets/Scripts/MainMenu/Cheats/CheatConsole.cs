@@ -87,9 +87,9 @@ public class CheatConsole : MonoBehaviour
         ConsoleLog.text += Environment.NewLine + message;
     }
 
-    internal OverworldPlayer FindOverworldPlayer()
+    internal TownPlayer FindTownPlayer()
     {
-        return FindFirstObjectByType<OverworldPlayer>();
+        return FindFirstObjectByType<TownPlayer>();
     }
     internal Ally FindPlayer()
     {

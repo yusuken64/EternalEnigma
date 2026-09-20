@@ -25,165 +25,90 @@ public class InventoryMenu : Dialog
 
     public GameObject SelectionArrow;
 
-    public void Setup(List<InventoryItem> Items, Character character,
+    public void Setup(List<InventoryItem> items, Character character,
         Action<InventoryItem> selectItem = null, string selectionPrompt = null, bool followPortrait = true)
     {
-        followingObject = followPortrait ? character.VisualParent : null;
-        if (followingObject != null) FaceCamDisplay.SetFollow(followingObject);
-        Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
-        {
-            view.Setup(data, (data) => { return character.Equipment.IsEquipped(data); });
-            Button button = view.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() =>
+        SetupView(items, followPortrait ? character.VisualParent : null, character.Equipment.IsEquipped,
+            (view, data) =>
             {
-                if (selectItem != null)
-                {
-                    selectItem(data);
-                    return;
-                }
+                if (selectItem != null) { selectItem(data); return; }
                 ActionDialog.Setup(view, data, character);
                 ActionDialog.SetNavigation();
-                ActionDialog.gameObject.SetActive(true);
-
                 MenuManager.Open(ActionDialog);
-
                 Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, view.transform.position);
-                Vector2 localPoint;
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    canvas.GetComponent<RectTransform>(),
-                    screenPoint,
-                    canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Camera.main,
-                    out localPoint
-                );
-
-                RectTransform panelRect = ActionDialog.Panel.GetComponent<RectTransform>();
-                panelRect.localPosition = KeepFullyOnScreen(panelRect, localPoint);
-
+                    canvas.GetComponent<RectTransform>(), screenPoint,
+                    canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Camera.main, out var localPoint);
+                var panel = ActionDialog.Panel.GetComponent<RectTransform>();
+                panel.localPosition = KeepFullyOnScreen(panel, localPoint);
                 SelectionArrow.transform.parent = ActionDialog.Panel.transform;
-                ActionDialog.CloseAction = () =>
-                {
-                    SelectionArrow.transform.parent = transform;
-                };
-            });
-
-            view.SelectCallBack = eventData =>
+                ActionDialog.CloseAction = () => SelectionArrow.transform.parent = transform;
+            },
+            data =>
             {
-                if (!(eventData is PointerEventData))
-                    ScrollToSelected(view.gameObject);
-                else StopAutoScroll();
                 if (selectItem != null)
                 {
                     InventoryItemPreview.Setup(data);
                     StatText.text = selectionPrompt;
                 }
-                else UpdatedItemPreview(data, character);
-            };
-        };
-        InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
+                else UpdateItemPreview(data, character.BaseStats, character.Equipment);
+            });
         if (selectItem != null) StatText.text = selectionPrompt;
-
-        if (Items.Count() == 0)
-		{
-            EmptyMessage.gameObject.SetActive(true);
-            InventoryItemPreview.Setup(null);
-        }
-		else
-        {
-            EmptyMessage.gameObject.SetActive(false);
-        }
     }
 
-    public void SetupOverworld(List<InventoryItem> Items, OverworldCharacter character)
+    public void SetupTown(List<InventoryItem> items, TownCharacter character)
     {
-        followingObject = character.VisualParent;
-        FaceCamDisplay.SetFollow(followingObject);
-        Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
+        SetupView(items, character.VisualParent, character.Equipment.IsEquipped,
+            (view, item) => FindFirstObjectByType<TownMenu>().OpenItemActions(this, (TownAlly)character, item),
+            item => UpdateItemPreview(item, character.BaseStats, character.Equipment));
+    }
+
+    // Rendering, focus, portrait and scrolling are shared; callers provide the allowed actions.
+    public void SetupView(List<InventoryItem> items, GameObject portrait, Func<InventoryItem, bool> isEquipped,
+        Action<InventoryMenuItem, InventoryItem> clicked, Action<InventoryItem> preview)
+    {
+        if (followingObject != portrait)
         {
-            view.Setup(data, (data) => { return character.Equipment.IsEquipped(data); });
-            Button button = view.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() =>
-            {
-                //ActionDialog.Setup(view, data, character);
-                //ActionDialog.SetNavigation();
-                //ActionDialog.gameObject.SetActive(true);
-
-                //MenuManager.Open(ActionDialog);
-
-                //var newPosition = view.transform.position;
-                //newPosition = KeepFullyOnScreen(ActionDialog.Panel.GetComponent<RectTransform>(), newPosition);
-                //ActionDialog.Panel.transform.position = newPosition;
-            });
-
+            if (followingObject != null) FaceCamDisplay.Unfollow(followingObject);
+            followingObject = portrait;
+            if (portrait != null) FaceCamDisplay.SetFollow(portrait);
+        }
+        InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, items, (view, item) =>
+        {
+            view.Setup(item, isEquipped);
+            view.onClick.RemoveAllListeners();
+            view.onClick.AddListener(() => clicked(view, item));
             view.SelectCallBack = eventData =>
             {
-                if (!(eventData is PointerEventData))
-                    ScrollToSelected(view.gameObject);
-                else StopAutoScroll();
-                UpdatedItemPreviewOverworld(data, character);
+                if (eventData is PointerEventData) StopAutoScroll();
+                else ScrollToSelected(view.gameObject);
+                preview(item);
             };
-        };
-        InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
-
-        if (Items.Count() == 0)
+        });
+        EmptyMessage.SetActive(items.Count == 0);
+        if (items.Count == 0)
         {
-            EmptyMessage.gameObject.SetActive(true);
             InventoryItemPreview.Setup(null);
-        }
-        else
-        {
-            EmptyMessage.gameObject.SetActive(false);
+            StatText.text = "";
         }
     }
 
-	private void UpdatedItemPreviewOverworld(InventoryItem data, OverworldCharacter character)
+    private void UpdateItemPreview(InventoryItem data, Stats stats, Equipment equipment)
     {
         InventoryItemPreview.Setup(data);
-
-        if (data is EquipableInventoryItem equipable)
+        var current = stats + equipment.GetEquipmentStatModification();
+        if (data is EquipableInventoryItem item)
         {
-            var currentStats = character.BaseStats + character.Equipment.GetEquipmentStatModification();
-            var simulatedStats = character.BaseStats + character.Equipment.GetStatsIfEquipped(equipable);
-
-            StatText.text =
-    $@"Strength: {currentStats.Strength} >> {simulatedStats.Strength}
-Defense:  {currentStats.Defense}  >> {simulatedStats.Defense}";
+            var simulated = stats + equipment.GetStatsIfEquipped(item);
+            StatText.text = $"Strength: {current.Strength} >> {simulated.Strength}\nDefense: {current.Defense} >> {simulated.Defense}";
         }
-        else
-        {
-            var currentStats = character.BaseStats + character.Equipment.GetEquipmentStatModification();
-            StatText.text =
-    $@"Strength: {currentStats.Strength}
-Defense:  {currentStats.Defense}";
-        }
-    }
-
-	private void UpdatedItemPreview(InventoryItem data, Character character)
-    {
-        InventoryItemPreview.Setup(data);
-
-        if (data is EquipableInventoryItem equipable)
-        {
-            var currentStats = character.BaseStats + character.Equipment.GetEquipmentStatModification();
-            var simulatedStats = character.BaseStats + character.Equipment.GetStatsIfEquipped(equipable);
-
-            StatText.text =
-    $@"Strength: {currentStats.Strength} >> {simulatedStats.Strength}
-Defense:  {currentStats.Defense}  >> {simulatedStats.Defense}";
-        }
-        else
-        {
-            var currentStats = character.BaseStats + character.Equipment.GetEquipmentStatModification();
-            StatText.text =
-    $@"Strength: {currentStats.Strength}
-Defense:  {currentStats.Defense}";
-        }
+        else StatText.text = $"Strength: {current.Strength}\nDefense: {current.Defense}";
     }
 
     internal void Close()
     {
         if (followingObject != null) FaceCamDisplay.Unfollow(followingObject);
+        followingObject = null;
     }
 
     private Vector3 KeepFullyOnScreen(RectTransform rectTransform, Vector3 newPosition)

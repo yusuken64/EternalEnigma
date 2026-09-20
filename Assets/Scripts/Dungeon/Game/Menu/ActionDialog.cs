@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -23,9 +23,11 @@ namespace JuicyChickenGames.Menu
 		private InventoryItem _data;
 		private InventoryMenuItem _view;
         private Character _character;
+        private Action contextualUse;
 
 		public void Use_Clicked()
 		{
+            if (contextualUse != null) { contextualUse(); return; }
 			if (_character is Ally ally)
 			{
 				MenuManager.Instance.UseInventoryItem(ally, _data);
@@ -58,11 +60,13 @@ namespace JuicyChickenGames.Menu
 		}
 		public void Cancel_Clicked()
 		{
-			MenuManager.Close(this);
+			CloseDialog();
 		}
 
 		internal void Setup(InventoryMenuItem view, InventoryItem data, Character character)
 		{
+            contextualUse = null;
+            foreach (var button in Buttons) button.gameObject.SetActive(true);
 			this._data = data;
 			this._view = view;
 			this._character = character;
@@ -85,6 +89,18 @@ namespace JuicyChickenGames.Menu
 			}
 		}
 
+        public void SetupActions(string title, string actionLabel, Action action)
+        {
+            _character = null;
+            contextualUse = action;
+            ItemNameText.text = title;
+            UseItemText.text = actionLabel;
+            // Dungeon prefab order: Use, Throw, Drop, Cancel.
+            for (int i = 0; i < Buttons.Count; i++)
+                Buttons[i].gameObject.SetActive(i == 0 || i == Buttons.Count - 1);
+            SetNavigation();
+        }
+
 		internal override void SetFirstSelect()
 		{
 			Buttons[0].Select();
@@ -92,14 +108,15 @@ namespace JuicyChickenGames.Menu
 
 		public void SetNavigation()
 		{
-			for (int i = 0; i < Buttons.Count; i++)
+			var active = Buttons.Where(b => b.gameObject.activeSelf).ToList();
+            for (int i = 0; i < active.Count; i++)
 			{
-				var item = Buttons[i];
+				var item = active[i];
 
 				Navigation customNav = new Navigation();
 				customNav.mode = Navigation.Mode.Explicit;
-				customNav.selectOnDown = Buttons[(i + 1) % Buttons.Count];
-				customNav.selectOnUp = Buttons[(i - 1 + Buttons.Count) % Buttons.Count];
+				customNav.selectOnDown = active[(i + 1) % active.Count];
+				customNav.selectOnUp = active[(i - 1 + active.Count) % active.Count];
 				item.navigation = customNav;
 			}
 		}

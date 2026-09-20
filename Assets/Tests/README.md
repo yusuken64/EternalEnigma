@@ -122,12 +122,12 @@ Movement coverage: `GridMovementTests` (EditMode) checks diagonal policies,
 bounds, invalid steps, reusable searches, movement costs, and facing offsets.
 `MovementRegressionTests` (PlayMode) loads both real scenes and injects sampled
 movement/hold-position values into the existing input decision methods, checking
-turn-in-place, completed movement, and overworld trail recording. It does not
+turn-in-place, completed movement, and town trail recording. It does not
 simulate physical keyboard/controller bindings. Recompile scripts before running
 the harness after adding tests, and confirm the new fixtures appear in the XML.
 
-`GridMovement` owns terrain step rules shared by overworld, dungeon, A* and BFS.
-Overworld retains its houses/trees mask and allows corner cutting; dungeon and
+`GridMovement` owns terrain step rules shared by town, dungeon, A* and BFS.
+Town retains its houses/trees mask and allows corner cutting; dungeon and
 searches require both diagonal side cells to be open. Occupancy, large-unit
 hallway behavior, turns, party following and interactions remain in mode-specific
 actions. Coordinate conversion uses the generator's cell size (currently 2).
@@ -169,7 +169,7 @@ public IEnumerator TearDown() => harness.Cleanup();
 - `LoadDungeon(scenario)` loads Common, supplies a real ally prefab, and loads
   DungeonScene. It waits for initialization and the floor announcement animation.
   The first floor is the game's normal throne room. No synthetic test room is used.
-- `LoadOverworld(save)` runs the real overworld load path, including generation.
+- `LoadTown(save)` runs the real town load path, including generation.
   It deliberately does not compensate for missing inventory restoration.
 - `TestScenario.Items` uses **ItemDefinition.ItemName**, not asset filenames.
   StartingItems are excluded unless `IncludeStartingItems` is true. The game still
@@ -224,7 +224,7 @@ node Tools/unity-mcp.mjs get_scene_info
 node Tools/unity-mcp.mjs harness EditMode
 node Tools/unity-mcp.mjs harness PlayMode
 node Tools/unity-mcp.mjs harness Skills
-node Tools/unity-mcp.mjs harness Overworld
+node Tools/unity-mcp.mjs harness Town
 ```
 
 These commands invoke **Tools > Eternal Enigma > Tests** and wait for the matching
@@ -237,8 +237,11 @@ For generic MCP calls with JSON arguments, PowerShell hosts that strip quotes ca
 use a JSON file: `node Tools/unity-mcp.mjs run_tests @Tools/harness-playmode.json`.
 Prefer the `harness` commands above for reliable Play Mode result collection.
 
-`harness Overworld` checks Continue, dungeon return, and direct overworld loading.
-The overworld holds the transition fully opaque while generating, then initializes
+`harness Town` checks Continue, dungeon return, direct town loading, caller-supplied
+configuration, custom building dialogs, shop stock and purchase validation,
+immediate training saves, donation unlocks, shared equipment menus, party safeguards,
+and victory/defeat inventory persistence. See [Town authoring](../../Docs/Town.md).
+The town holds the transition fully opaque while generating, then initializes
 the party, snaps the camera to the controlled hero, and starts the reveal. The
 transition tests observe coverage during generation and camera position/orientation
 when the world becomes ready.

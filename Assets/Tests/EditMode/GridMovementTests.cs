@@ -36,7 +36,7 @@ public class GridMovementTests
     }
 
     [Test]
-    public void OverworldAdapterPreservesCornerCuttingAndRejectsUninitializedMap()
+    public void TownAdapterPreservesCornerCuttingAndRejectsUninitializedMap()
     {
         var owner = new GameObject();
         owner.SetActive(false);

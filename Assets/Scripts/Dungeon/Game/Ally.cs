@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class Ally : Character
 {
+	public string TownAllyId;
 	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;
@@ -232,15 +233,15 @@ public class Ally : Character
 		HeroAnimator?.PlayDeathAnimation();
 	}
 
-	internal void InitialzeModel(OverworldAlly overworldAlly)
+	internal void InitialzeModel(TownAlly townAlly)
 	{
-		var heroAnimator = overworldAlly.GetComponent<HeroAnimator>();
+		var heroAnimator = townAlly.GetComponent<HeroAnimator>();
 		var newHeroAnimator = this.gameObject.AddComponent<HeroAnimator>();
 		heroAnimator.CopyFieldsTo(newHeroAnimator);
 		this.HeroAnimator = newHeroAnimator;
 		this.HeroAnimator.Animator.applyRootMotion = false;
 
-		ReplaceChildGameObject(this.gameObject, "GameObject/RPGHeroHP", overworldAlly.AnimatedModel);
+		ReplaceChildGameObject(this.gameObject, "GameObject/RPGHeroHP", townAlly.AnimatedModel);
 	}
 
 	private void ReplaceChildGameObject(GameObject gameObject, string childPath, GameObject animatedModel)

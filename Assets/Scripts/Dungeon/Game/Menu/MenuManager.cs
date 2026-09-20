@@ -14,14 +14,14 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public AllyActionDialog AllyActionDialog;
 	public SkillDialog SkillDialog;
 	public TargetDialog TargetDialog;
-	public bool Opened;
-	public Dialog CurrentDialog;
+	public bool Opened => dialogs.Opened;
+	public Dialog CurrentDialog => dialogs.Current;
 	public StairConfirm StairDialog;
 
-	public Stack<Dialog> DialogStack = new();
+	private readonly DialogController dialogs = new(() => AudioManager.Instance.SoundEffects.Unpause.PlayAsSound());
+    public Stack<Dialog> DialogStack => dialogs.Stack;
 
 	public GameObject TargetArrow;
-
 
 	protected override void Initialize()
 	{
@@ -94,22 +94,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
         }
 	}
 
-	internal void CloseAllMenus()
-	{
-		while (DialogStack.Count > 0)
-        {
-            var dialog = DialogStack.Pop();
-            dialog.gameObject.SetActive(false);
-            MenuUIInputModule.Active?.PopDialog(dialog);
-            dialog.CloseAction?.Invoke();
-        }
-        CurrentDialog = null;
-        LateAction = null;
-
-		Opened = false;
-		Common.Instance.MenuInputHandler.SwitchToPlayerInput();
-		Common.Instance.MenuInputHandler.ClearInputThisFrame();
-	}
+    internal void CloseAllMenus() => dialogs.CloseAll();
 
 	private void OpenMenu()
 	{
@@ -123,14 +108,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 		InventoryMenu.Setup(allItems, Game.Instance.PlayerController.ControlledAlly);
 		InventoryMenu.SetNavigation();
-		CurrentDialog = InventoryMenu;
+
 		InventoryMenu.CloseAction = () =>
 		{
 			InventoryMenu.Close();
 		};
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
-		Opened = true;
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
@@ -146,14 +130,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
         InventoryMenu.Setup(allItems, ally);
         InventoryMenu.SetNavigation();
-        CurrentDialog = InventoryMenu;
+
         InventoryMenu.CloseAction = () =>
         {
             InventoryMenu.Close();
         };
         AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
-        Opened = true;
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
@@ -164,7 +147,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		this.gameObject.SetActive(true);
 		MenuManager.Open(AllyActionDialog);
 		AllyActionDialog.Setup(ally);
-		CurrentDialog = AllyActionDialog;
+
 		AllyActionDialog.CloseAction = () =>
 		{
 			AllyActionDialog.Close();
@@ -172,7 +155,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		AllyActionDialog.SetNavigation();
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
-		Opened = true;
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
@@ -183,7 +165,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		this.gameObject.SetActive(true);
 		MenuManager.Open(SkillDialog);
 		SkillDialog.Setup(character);
-		CurrentDialog = SkillDialog;
+
 		SkillDialog.CloseAction = () =>
 		{
 			SkillDialog.Close();
@@ -191,7 +173,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		SkillDialog.SetNavigation();
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
-		Opened = true;
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
@@ -234,8 +215,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			pickerCanvas.sortingOrder = originalOrder;
 			if (temporary) Destroy(picker.gameObject);
 		};
-		CurrentDialog = picker;
-		Opened = true;
+
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
 
@@ -255,7 +235,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		this.gameObject.SetActive(true);
 		MenuManager.Open(TargetDialog);
 		TargetDialog.Setup(character, targets, createAction, missileRange);
-		CurrentDialog = TargetDialog;
+
 		TargetDialog.CloseAction = () =>
 		{
 			TargetDialog.Close();
@@ -265,7 +245,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		TargetDialog.SetNavigation();
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
-		Opened = true;
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
@@ -308,63 +287,17 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		this.gameObject.SetActive(true);
 		MenuManager.Open(StairDialog);
 		StairDialog.Setup(prompt, yesAction, noAction);
-		CurrentDialog = StairDialog;
+
 		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
 
-		Opened = true;
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
 
-	public Action LateAction;
+    public Action LateAction { get => dialogs.LateAction; set => dialogs.LateAction = value; }
+    private void LateUpdate() => dialogs.Tick();
 
-	private void LateUpdate()
-	{
-		LateAction?.Invoke();
-		LateAction = null;
-	}
+    public static void Open(Dialog dialog) => Instance.dialogs.Open(dialog);
 
-	public static void Open(Dialog dialog)
-	{
-		Common.Instance.MenuInputHandler.ClearInputThisFrame();
-		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
-
-		if (MenuManager.Instance.DialogStack.Count > 0)
-		{
-			MenuManager.Instance.DialogStack.Peek().SaveSelection();
-		}
-
-		if (MenuManager.Instance.DialogStack.Contains(dialog)) return;
-		dialog.gameObject.SetActive(true);
-		MenuManager.Instance.DialogStack.Push(dialog);
-		MenuUIInputModule.Active?.PushDialog(dialog, dialog.transform, back: () => Close(dialog));
-
-		MenuManager.Instance.LateAction = () =>
-		{
-			dialog.SetFirstSelect();
-		};
-	}
-
-	public static void Close(Dialog dialog)
-	{
-		if (MenuManager.Instance.DialogStack.Count == 0 || MenuManager.Instance.DialogStack.Peek() != dialog) return;
-		AudioManager.Instance.SoundEffects.Unpause.PlayAsSound();
-		dialog.gameObject.SetActive(false);
-		MenuUIInputModule.Active?.PopDialog(dialog);
-		MenuManager.Instance.DialogStack.Pop();
-		dialog.CloseAction?.Invoke();
-
-		if (MenuManager.Instance.DialogStack.Count <= 0)
-		{
-			MenuManager.Instance.CloseAllMenus();
-			return;
-		}
-
-		var top = MenuManager.Instance.DialogStack.Peek();
-		MenuManager.Instance.CurrentDialog = top;
-		MenuManager.Instance.LateAction = () =>
-		{
-			top.RestoreSelect();
-		};
-	}
+    public static void Close(Dialog dialog) => Instance.dialogs.Close(dialog);
 }

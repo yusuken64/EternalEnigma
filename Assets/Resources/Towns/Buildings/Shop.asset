@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f2f86b7ee394074887f3ca1025a4d29, type: 3}
+  m_Name: Shop
+  m_EditorClassIdentifier: 
+  Id: shop
+  DisplayName: Shop
+  Prefab: {fileID: 7142182611612574415, guid: 55e58d3af7033d447b21c703f4b80440, type: 3}
+  DialogId: shop
+  ShopCatalog:
+  - Item: {fileID: 11400000, guid: 116376209b212d04fa1596427673ff74, type: 2}
+    Price: 100
+    Quantity: 2
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: a33470c7c9dc09a4ab5304d36443971c, type: 2}
+    Price: 125
+    Quantity: 2
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 418086085d8bfb4499a428508f9be8c6, type: 2}
+    Price: 150
+    Quantity: 2
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 007a08a601e606243a49223708727b7c, type: 2}
+    Price: 175
+    Quantity: 2
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 1cb8263decec17a4b863ab136f9243e6, type: 2}
+    Price: 200
+    Quantity: 2
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 700d604e733ad5b40ab647fa891275f3, type: 2}
+    Price: 225
+    Quantity: 2
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 16b1908d966f66e43a043410b7bdb159, type: 2}
+    Price: 250
+    Quantity: 2
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 34d0c14480277cf4eab594c82580c3cf, type: 2}
+    Price: 275
+    Quantity: 2
+    StackCount: 1

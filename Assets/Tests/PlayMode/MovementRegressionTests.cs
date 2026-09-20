@@ -53,31 +53,31 @@ public class MovementRegressionTests
     }
 
     [UnityTest]
-    public IEnumerator OverworldInputStillTurnsInPlaceThenMovesAndRecordsTrail()
+    public IEnumerator TownInputStillTurnsInPlaceThenMovesAndRecordsTrail()
     {
-        yield return harness.LoadOverworld(new TestScenario().CreateSave());
-        var world = Object.FindFirstObjectByType<Overworld>();
-        var player = world.OverworldPlayer;
-        var origin = player.ControllingOverworldAlly.TilemapPosition;
+        yield return harness.LoadTown(new TestScenario().CreateSave());
+        var world = Object.FindFirstObjectByType<Town>();
+        var player = world.TownPlayer;
+        var origin = player.ControllingTownAlly.TilemapPosition;
         var direction = System.Enum.GetValues(typeof(Facing)).Cast<Facing>().First(f => {
             var target = origin + GridMovement.GetFacingOffset(f);
             return player.WalkableMap.CanWalkTo(origin, target) &&
-                !world.OverworldBuildings.Any(b => b.TilemapPosition == target) &&
-                !world.OverworldAllies.Any(a => a.TilemapPosition == target);
+                !world.TownBuildings.Any(b => b.TilemapPosition == target) &&
+                !world.TownAllies.Any(a => a.TilemapPosition == target);
         });
         var offset = GridMovement.GetFacingOffset(direction);
         Input(offset, true);
         Decide(player);
-        Assert.That(player.ControllingOverworldAlly.CurrentFacing, Is.EqualTo(direction));
-        Assert.That(player.ControllingOverworldAlly.TilemapPosition, Is.EqualTo(origin));
+        Assert.That(player.ControllingTownAlly.CurrentFacing, Is.EqualTo(direction));
+        Assert.That(player.ControllingTownAlly.TilemapPosition, Is.EqualTo(origin));
         Input(offset, false);
         Decide(player);
         Input(Vector3Int.zero, false);
-        yield return harness.WaitUntil(() => !(bool)typeof(OverworldPlayer)
-            .GetField("_busy", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(player), "overworld move");
-        Assert.That(player.ControllingOverworldAlly.TilemapPosition, Is.EqualTo(origin + offset));
+        yield return harness.WaitUntil(() => !(bool)typeof(TownPlayer)
+            .GetField("_busy", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(player), "town move");
+        Assert.That(player.ControllingTownAlly.TilemapPosition, Is.EqualTo(origin + offset));
         Assert.That(player.GetNthFromLastPosition(0), Is.EqualTo(origin + offset));
-        Assert.That(Vector3.Distance(player.ControllingOverworldAlly.transform.position,
+        Assert.That(Vector3.Distance(player.ControllingTownAlly.transform.position,
             player.WalkableMap.CellToWorld(origin + offset)), Is.LessThan(0.001f));
     }
 }

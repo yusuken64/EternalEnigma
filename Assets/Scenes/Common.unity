@@ -151,8 +151,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameSaveData:
-    OverworldSaveData:
-      OverworldSeed: 0
+    TownSaveData:
+      TownSeed: 0
       Gold: 100
       DonationTotal: 0
       Inventory: []
@@ -166,8 +166,8 @@ MonoBehaviour:
   SceneTransferObjects: {fileID: 579481371}
   ScreenTransition: {fileID: 572655991}
   MessageDialog: {fileID: 1740998369}
-  InstantiatedOverworldAllies: []
-  OverworldAllyParent: {fileID: 1923826960}
+  InstantiatedTownAllies: []
+  TownAllyParent: {fileID: 1923826960}
   MenuInputHandler: {fileID: 2061633078}
   GlobalSettings: {fileID: 1710529775}
 --- !u!4 &24939713

@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e8e9928c7b4d5e9cee94e862e50f41, type: 3}
+  m_Name: DefaultTown
+  m_EditorClassIdentifier: 
+  Id: DefaultTown
+  PartySpawn: {x: 10, y: 4, z: 0}
+  BuildingLayer: Buildings
+  AllyLayer: Allies
+  MaxPartySize: 4
+  Buildings:
+  - {fileID: 11400000, guid: c421491ac28f47288dd4aa51e7abac2f, type: 2}
+  - {fileID: 11400000, guid: 3df8397fb15944f5bacd8d0534bafd71, type: 2}
+  - {fileID: 11400000, guid: 81ae232e17f64536a559bf1b30ed267a, type: 2}
+  - {fileID: 11400000, guid: bba2db5e4876423aa2622b81a63a0449, type: 2}
+  AllyCatalog:
+  - {fileID: 2589701936800338316, guid: d3dd9f4baffd29e43bf87ab29437b30f, type: 3}
+  - {fileID: 3774027414549183022, guid: 173b3bf3552315a408b274b2cb9f7cbe, type: 3}
+  - {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  - {fileID: 6643917906737728025, guid: c0c955fd7e95ab24e836ec40e4ceb8b2, type: 3}
+  - {fileID: 785305266141966241, guid: 72cc990e9ae0c9849a631719a2431227, type: 3}
+  - {fileID: 3295220195997638175, guid: b94c6bed23a28be499beb9a7aacffe06, type: 3}
+  - {fileID: 6166277843530506077, guid: f856c5228c5189d45891d5e429791694, type: 3}
+  - {fileID: 7183231083008599651, guid: 485a983a93bc5974c91c4599e8cfecd6, type: 3}
+  - {fileID: 6927427057722977477, guid: 41c5a0bf98e7d0246add0078566dfb23, type: 3}
+  - {fileID: 3734423572453517047, guid: 47f27c89d15496d488b89528fcc5c970, type: 3}
+  - {fileID: 4631776927347543709, guid: 355be7c629ed2c54bb20a558c41b1d5d, type: 3}
+  - {fileID: 5524891631670157740, guid: 177de5b2cdf7c5d45bed8ebb5519327e, type: 3}
+  - {fileID: 3008215768973429717, guid: 73b36038ad20f3147ae7c1d7e2377d08, type: 3}
+  - {fileID: 5209443267437398054, guid: f771be67989ed494b9bd8afc86f42824, type: 3}
+  - {fileID: 405097878530494142, guid: 2904ad47018b4a346af5daccce458f5c, type: 3}
+  - {fileID: 4754958033825121962, guid: b0d62fc7388488a40b0b07dc00ee8768, type: 3}
+  - {fileID: 8632222719332666010, guid: adf833241425af5438a45f42a0b50d0d, type: 3}
+  - {fileID: 7360780755404092609, guid: a1a66819d0b73094f845c71c40b5208a, type: 3}
+  - {fileID: 683989285475840526, guid: 7b41db0a4e891c24093789f3ff6a8c65, type: 3}
+  - {fileID: 2119416412175072694, guid: 5aeb231ec594b13458da991976aeedde, type: 3}
+  - {fileID: 5056214920727966237, guid: 066579380a2cc5d479da8424adabfea7, type: 3}
+  - {fileID: 7782356630008377252, guid: cbef25a4db7dbee41bd2ab6e4cb5fe48, type: 3}
+  - {fileID: 4524939041097900574, guid: ce1a8d7760520a046bc6dd1813244da7, type: 3}
+  - {fileID: 92611680284767584, guid: cd1892de4263374498332f1cec37465a, type: 3}
+  Recruits:
+  - Ally: {fileID: 2589701936800338316, guid: d3dd9f4baffd29e43bf87ab29437b30f, type: 3}
+    Cost: 300
+  - Ally: {fileID: 3774027414549183022, guid: 173b3bf3552315a408b274b2cb9f7cbe, type: 3}
+    Cost: 300
+  - Ally: {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+    Cost: 300
+  - Ally: {fileID: 6643917906737728025, guid: c0c955fd7e95ab24e836ec40e4ceb8b2, type: 3}
+    Cost: 300
+  - Ally: {fileID: 785305266141966241, guid: 72cc990e9ae0c9849a631719a2431227, type: 3}
+    Cost: 300
+  - Ally: {fileID: 3295220195997638175, guid: b94c6bed23a28be499beb9a7aacffe06, type: 3}
+    Cost: 300
+  - Ally: {fileID: 6166277843530506077, guid: f856c5228c5189d45891d5e429791694, type: 3}
+    Cost: 300
+  - Ally: {fileID: 7183231083008599651, guid: 485a983a93bc5974c91c4599e8cfecd6, type: 3}
+    Cost: 300
+  - Ally: {fileID: 6927427057722977477, guid: 41c5a0bf98e7d0246add0078566dfb23, type: 3}
+    Cost: 300
+  - Ally: {fileID: 3734423572453517047, guid: 47f27c89d15496d488b89528fcc5c970, type: 3}
+    Cost: 300
+  - Ally: {fileID: 4631776927347543709, guid: 355be7c629ed2c54bb20a558c41b1d5d, type: 3}
+    Cost: 300
+  - Ally: {fileID: 5524891631670157740, guid: 177de5b2cdf7c5d45bed8ebb5519327e, type: 3}
+    Cost: 300
+  - Ally: {fileID: 3008215768973429717, guid: 73b36038ad20f3147ae7c1d7e2377d08, type: 3}
+    Cost: 300
+  - Ally: {fileID: 5209443267437398054, guid: f771be67989ed494b9bd8afc86f42824, type: 3}
+    Cost: 300
+  - Ally: {fileID: 405097878530494142, guid: 2904ad47018b4a346af5daccce458f5c, type: 3}
+    Cost: 300
+  - Ally: {fileID: 4754958033825121962, guid: b0d62fc7388488a40b0b07dc00ee8768, type: 3}
+    Cost: 300
+  - Ally: {fileID: 8632222719332666010, guid: adf833241425af5438a45f42a0b50d0d, type: 3}
+    Cost: 300
+  - Ally: {fileID: 7360780755404092609, guid: a1a66819d0b73094f845c71c40b5208a, type: 3}
+    Cost: 300
+  - Ally: {fileID: 683989285475840526, guid: 7b41db0a4e891c24093789f3ff6a8c65, type: 3}
+    Cost: 300
+  - Ally: {fileID: 2119416412175072694, guid: 5aeb231ec594b13458da991976aeedde, type: 3}
+    Cost: 300
+  - Ally: {fileID: 5056214920727966237, guid: 066579380a2cc5d479da8424adabfea7, type: 3}
+    Cost: 300
+  - Ally: {fileID: 7782356630008377252, guid: cbef25a4db7dbee41bd2ab6e4cb5fe48, type: 3}
+    Cost: 300
+  - Ally: {fileID: 4524939041097900574, guid: ce1a8d7760520a046bc6dd1813244da7, type: 3}
+    Cost: 300
+  - Ally: {fileID: 92611680284767584, guid: cd1892de4263374498332f1cec37465a, type: 3}
+    Cost: 300
+  StartingParty:
+  - {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  DungeonTiers:
+  - {fileID: 11400000, guid: 26de43e20445e6a4a9ce515e6552cd33, type: 2}
+  - {fileID: 11400000, guid: f638620f30ab32e45862f172b34ae5f6, type: 2}
+  - {fileID: 11400000, guid: f7fc0a1cbc44d2642a65d7c1bb78a948, type: 2}
+  - {fileID: 11400000, guid: 7358319ba19e56b41a11d02dabaf325d, type: 2}
+  LearnableSkills:
+  - {fileID: 11400000, guid: adc76eb01c3af324d8490112cfaf9ce5, type: 2}
+  - {fileID: 11400000, guid: a40b9d11540f2ff498eb38112aec276c, type: 2}
+  - {fileID: 11400000, guid: d6e8e533c667e984da932ce496c2f181, type: 2}
+  - {fileID: 11400000, guid: bf612cba0be85e14b89b4002c6b37e61, type: 2}
+  - {fileID: 11400000, guid: 2af5e0e8bf008c847be30f1252746333, type: 2}
+  - {fileID: 11400000, guid: bb491d5c7d633634585dee1a0eefad9e, type: 2}
+  - {fileID: 11400000, guid: ebf8b2c16c55827438d42629d41e7dca, type: 2}
+  - {fileID: 11400000, guid: a77946d42bfea5f4282f25031ca64671, type: 2}
+  - {fileID: 11400000, guid: e2811b6004ecc1d4e9be72f25ce57e48, type: 2}
+  - {fileID: 11400000, guid: 2b45301970efc1a4bbac193e39ec61f0, type: 2}
+  - {fileID: 11400000, guid: 23371b2dd9ccf3146a43883ef21121b1, type: 2}
+  LoseItemsOnDefeat: 1
+  KeepGoldOnDefeat: 1

@@ -32,17 +32,18 @@ public sealed class GameTestHarness
         Begin(scenario.CreateSave());
         yield return LoadScene("Common");
         var common = Common.Instance;
-        if (!scenario.IncludeStartingItems) common.ItemManager.StartingItems.Clear();
+        if (scenario.IncludeStartingItems)
+            common.GameSaveData.TownSaveData.Inventory.AddRange(common.ItemManager.StartingItems.Select(i => i.ItemName));
         foreach (var item in scenario.Items) RequireItem(item);
 
         foreach (var allyName in new[] { scenario.AllyName }.Concat(scenario.AdditionalAllies))
         {
-            var prefab = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Overworld/Allies" })
-                .Select(g => AssetDatabase.LoadAssetAtPath<OverworldAlly>(AssetDatabase.GUIDToAssetPath(g)))
+            var prefab = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Town/Allies" })
+                .Select(g => AssetDatabase.LoadAssetAtPath<TownAlly>(AssetDatabase.GUIDToAssetPath(g)))
                 .FirstOrDefault(a => a != null && a.Name == allyName);
             Assert.That(prefab, Is.Not.Null, $"No ally prefab named '{allyName}'.");
-            var overworldAlly = Object.Instantiate(prefab, common.OverworldAllyParent);
-            overworldAlly.Skills = scenario.Skills.ToList();
+            var townAlly = Object.Instantiate(prefab, common.TownAllyParent);
+            townAlly.Skills = scenario.Skills.ToList();
         }
 
         void Configure(Scene scene, LoadSceneMode mode)
@@ -62,21 +63,22 @@ public sealed class GameTestHarness
         yield return WaitForIdle();
     }
 
-    public IEnumerator LoadOverworld(GameSaveData save)
+    public IEnumerator LoadTown(GameSaveData save, TownConfiguration configuration = null)
     {
         Begin(save);
         yield return LoadScene("Common");
+        TownSceneLoader.Configure(configuration ?? TownSceneLoader.Default);
         void Configure(Scene scene, LoadSceneMode mode)
         {
-            if (scene.name == "OverworldScene")
-                Seed(Object.FindFirstObjectByType<Overworld>().WalkableMap.TileWorldCreator,
-                    save.OverworldSaveData.OverworldSeed);
+            if (scene.name == "Town")
+                Seed(Object.FindFirstObjectByType<Town>().WalkableMap.TileWorldCreator,
+                    save.TownSaveData.TownSeed);
         }
         SceneManager.sceneLoaded += Configure;
-        try { yield return LoadScene("OverworldScene"); }
+        try { yield return LoadScene("Town"); }
         finally { SceneManager.sceneLoaded -= Configure; }
-        yield return WaitUntil(() => Object.FindFirstObjectByType<OverworldPlayer>()?.ControllingOverworldAlly != null
-            && !Common.Instance.ScreenTransition.BlockScreen.activeSelf, "overworld initialization");
+        yield return WaitUntil(() => Object.FindFirstObjectByType<TownPlayer>()?.ControllingTownAlly != null
+            && !Common.Instance.ScreenTransition.BlockScreen.activeSelf, "town initialization");
     }
 
     public IEnumerator LoadMainMenu(GameSaveData save)
@@ -99,7 +101,7 @@ public sealed class GameTestHarness
         Store = new MemorySaveStore();
         saveScope = SaveSystem.UseStore(Store);
         SaveSystem.SaveData(save); // Same JSON serialization as the real save path.
-        UnityEngine.Random.InitState(save.OverworldSaveData.OverworldSeed);
+        UnityEngine.Random.InitState(save.TownSaveData.TownSeed);
     }
 
     private void Seed(TileWorldCreator creator, int seed)

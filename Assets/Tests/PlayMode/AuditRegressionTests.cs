@@ -57,34 +57,34 @@ public class AuditRegressionTests
     }
 
     [UnityTest]
-    public IEnumerator SavedInventorySurvivesOverworldLoadAndSnapshot()
+    public IEnumerator SavedInventorySurvivesTownLoadAndSnapshot()
     {
         // Discover an actual catalog item without hard-coding renamed game content.
         var definition = UnityEditor.AssetDatabase.FindAssets("t:EquipmentItemDefinition")
             .Select(g => UnityEditor.AssetDatabase.LoadAssetAtPath<EquipmentItemDefinition>(UnityEditor.AssetDatabase.GUIDToAssetPath(g)))
             .First();
         var save = new TestScenario { Items = new[] { definition.ItemName, definition.ItemName } }.CreateSave();
-        yield return harness.LoadOverworld(save);
-        var world = Object.FindFirstObjectByType<Overworld>();
-        Assert.That(world.OverworldPlayer.Inventory.Select(x => x.ItemName), Is.EqualTo(save.OverworldSaveData.Inventory));
+        yield return harness.LoadTown(save);
+        var world = Object.FindFirstObjectByType<Town>();
+        Assert.That(world.TownPlayer.Inventory.Select(x => x.ItemName), Is.EqualTo(save.TownSaveData.Inventory));
         world.WriteSaveData();
-        Assert.That(Common.Instance.GameSaveData.OverworldSaveData.Inventory, Is.EqualTo(save.OverworldSaveData.Inventory));
+        Assert.That(Common.Instance.GameSaveData.TownSaveData.Inventory, Is.EqualTo(save.TownSaveData.Inventory));
     }
 
     [UnityTest]
-    public IEnumerator ReturnToMainMenuSavesOverworldProgress()
+    public IEnumerator ReturnToMainMenuSavesTownProgress()
     {
-        yield return harness.LoadOverworld(new TestScenario().CreateSave());
-        var world = Object.FindFirstObjectByType<Overworld>();
-        world.OverworldPlayer.Gold = 37;
+        yield return harness.LoadTown(new TestScenario().CreateSave());
+        var world = Object.FindFirstObjectByType<Town>();
+        world.TownPlayer.Gold = 37;
         Object.FindFirstObjectByType<StatueDialog>(FindObjectsInactive.Include).DonatedAmount = 63;
         var item = Common.Instance.ItemManager.ItemDefinitions.First();
-        world.OverworldPlayer.Inventory.Add(item.AsInventoryItem(null));
-        world.OverworldPlayer.RecruitedAllies[0].Skills.Add("regression-snapshot");
+        world.TownPlayer.Inventory.Add(item.AsInventoryItem(null));
+        world.TownPlayer.RecruitedAllies[0].Skills.Add("regression-snapshot");
         Common.Instance.GlobalSettings.ShowDialog();
         Common.Instance.GlobalSettings.ReturntoMainButton.onClick.Invoke();
         yield return null;
-        var saved = SaveSystem.LoadData().OverworldSaveData;
+        var saved = SaveSystem.LoadData().TownSaveData;
         Assert.That(saved.Gold, Is.EqualTo(37));
         Assert.That(saved.DonationTotal, Is.EqualTo(63));
         Assert.That(saved.Inventory, Does.Contain(item.ItemName));

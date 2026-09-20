@@ -111,7 +111,7 @@ namespace EternalEnigma.Tests
                 }
                 Assert.That(harness.Store.Read(), Is.EqualTo(savedJson));
             }
-            if (save != null) Assert.That(save.OverworldSaveData.Gold, Is.EqualTo(731));
+            if (save != null) Assert.That(save.TownSaveData.Gold, Is.EqualTo(731));
             harness.Game.AdvanceFloor();
             yield return harness.WaitForIdle();
             Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(2));
@@ -128,30 +128,30 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator ContinueKeepsOverworldCoveredUntilHeroCameraIsReady()
+        public IEnumerator ContinueKeepsTownCoveredUntilHeroCameraIsReady()
         {
             yield return harness.LoadMainMenu(new TestScenario().CreateSave());
             Object.FindFirstObjectByType<MainMenu>().Continue_Clicked();
-            yield return CheckOverworldReveal();
+            yield return CheckTownReveal();
         }
 
         [UnityTest]
-        public IEnumerator DungeonReturnKeepsOverworldCoveredUntilHeroCameraIsReady()
+        public IEnumerator DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady()
         {
             yield return harness.LoadDungeon(new TestScenario());
-            GameOverScreen.GoBackToOverworld(false, harness.Game.PlayerController);
-            yield return CheckOverworldReveal();
+            GameOverScreen.GoBackToTown(false, harness.Game.PlayerController);
+            yield return CheckTownReveal();
         }
 
-        private IEnumerator CheckOverworldReveal()
+        private IEnumerator CheckTownReveal()
         {
             var transition = Common.Instance.ScreenTransition;
             bool sawGeneration = false;
             float deadline = Time.realtimeSinceStartup + 60;
-            Overworld world;
-            while ((world = Object.FindFirstObjectByType<Overworld>()) == null || !world.IsReady)
+            Town world;
+            while ((world = Object.FindFirstObjectByType<Town>()) == null || !world.IsReady)
             {
-                Assert.That(Time.realtimeSinceStartup, Is.LessThan(deadline), "Overworld did not become ready.");
+                Assert.That(Time.realtimeSinceStartup, Is.LessThan(deadline), "Town did not become ready.");
                 if (world != null)
                 {
                     sawGeneration = true;
@@ -162,19 +162,19 @@ namespace EternalEnigma.Tests
                 yield return null;
             }
             Assert.That(sawGeneration, Is.True);
-            var camera = world.OverworldPlayer.CameraController;
-            Assert.That(camera._followTarget, Is.SameAs(world.OverworldPlayer.ControllingOverworldAlly.CirlcleRenderer.transform));
+            var camera = world.TownPlayer.CameraController;
+            Assert.That(camera._followTarget, Is.SameAs(world.TownPlayer.ControllingTownAlly.CirlcleRenderer.transform));
             Assert.That(Vector3.Distance(camera.Camera.transform.position, camera._followTarget.position + camera.CameraOffset), Is.LessThan(0.001f));
             Assert.That(Vector3.Dot(camera.Camera.transform.forward,
                 (camera._followTarget.position - camera.Camera.transform.position).normalized), Is.GreaterThan(0.999f));
-            yield return harness.WaitUntil(() => !transition.BlockScreen.activeSelf, "overworld reveal");
+            yield return harness.WaitUntil(() => !transition.BlockScreen.activeSelf, "town reveal");
             Assert.That(transition.ShutterScreen.gameObject.activeSelf, Is.False);
         }
 
         [UnityTest]
         public IEnumerator SettingsKeepCategoryFocusAndBackReturnsToGameplay()
         {
-            yield return harness.LoadOverworld(new TestScenario().CreateSave());
+            yield return harness.LoadTown(new TestScenario().CreateSave());
             UsePad();
             var settings = Common.Instance.GlobalSettings;
             settings.ShowDialog();

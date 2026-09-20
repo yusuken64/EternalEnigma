@@ -28,26 +28,35 @@ with {playerController.Gold} Treasure";
 
 	public void TryAgain_Clicked()
 	{
-		GoBackToOverworld(false, _playerController);
+		GoBackToTown(false, _playerController);
 	}
 
-	public static void GoBackToOverworld(bool isWin, PlayerController playerController)
+	public static void GoBackToTown(bool isWin, PlayerController playerController)
 	{
-		Common.Instance.GameSaveData.OverworldSaveData.Gold += playerController.Gold;
-		SaveSystem.SaveData(Common.Instance.GameSaveData);
-		Common.Instance.ScreenTransition.DoTransition(() =>
-		{
-			SceneManager.LoadScene("OverworldScene");
-		}, autoOpen: false);
+        var common = Common.Instance;
+        var configuration = TownSceneLoader.ResolveSaved();
+        DungeonReturnService.Commit(common.GameSaveData, configuration, isWin,
+            playerController.Gold, playerController.Inventory.InventoryItems, Game.Instance.Allies);
+        SaveSystem.SaveData(common.GameSaveData);
+        TownSceneLoader.Load(configuration);
 	}
 
 	public void Quit_Clicked()
 	{
+		CommitAbandonedRun(_playerController);
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
 			SceneManager.LoadScene("MainMenu");
 		});
 	}
+
+    public static void CommitAbandonedRun(PlayerController player)
+    {
+        var common = Common.Instance;
+        DungeonReturnService.Commit(common.GameSaveData, TownSceneLoader.ResolveSaved(), false,
+            player.Gold, player.Inventory.InventoryItems, Game.Instance.Allies);
+        SaveSystem.SaveData(common.GameSaveData);
+    }
 
 	internal override void SetFirstSelect()
 	{

@@ -33,11 +33,14 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutOverwritingExistingSave");
 
-    [MenuItem("Tools/Eternal Enigma/Tests/Run Overworld")]
-    public static void RunOverworld() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsOverworldCoveredUntilHeroCameraIsReady",
-        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsOverworldCoveredUntilHeroCameraIsReady",
-        "HarnessSmokeTests.OverworldScenarioLoadsSuppliedGoldAndAlly");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town")]
+    public static void RunTown() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownGameplayTests",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.SettingsKeepCategoryFocusAndBackReturnsToGameplay",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady",
+        "HarnessSmokeTests.TownScenarioLoadsSuppliedGoldAndAlly");
 
     private static void Run(TestMode mode, string filter, params string[] testFilters)
     {

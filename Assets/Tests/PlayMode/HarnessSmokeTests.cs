@@ -27,19 +27,19 @@ public class HarnessSmokeTests
         Assert.That(harness.Ally.CharacterName, Is.EqualTo("Rowan"));
         Assert.That(harness.Ally.Vitals.HP, Is.EqualTo(7));
         Assert.That(harness.Game.PlayerController.Inventory.Count(), Is.Zero);
-        Assert.That(SaveSystem.LoadData().OverworldSaveData.OverworldSeed, Is.EqualTo(12345));
+        Assert.That(SaveSystem.LoadData().TownSaveData.TownSeed, Is.EqualTo(12345));
         harness.PlaceBesideStairs();
         Assert.That(harness.Game.CurrentDungeon.IsWalkable(harness.Ally.TilemapPosition), Is.True);
     }
 
     [UnityTest]
-    public IEnumerator OverworldScenarioLoadsSuppliedGoldAndAlly()
+    public IEnumerator TownScenarioLoadsSuppliedGoldAndAlly()
     {
-        yield return harness.LoadOverworld(new TestScenario { Gold = 432 }.CreateSave());
-        var player = UnityEngine.Object.FindFirstObjectByType<OverworldPlayer>();
+        yield return harness.LoadTown(new TestScenario { Gold = 432 }.CreateSave());
+        var player = UnityEngine.Object.FindFirstObjectByType<TownPlayer>();
         Assert.That(player.Gold, Is.EqualTo(432));
         Assert.That(player.RecruitedAllies.Count, Is.EqualTo(1));
-        Assert.That(player.ControllingOverworldAlly.Name, Is.EqualTo("Rowan"));
+        Assert.That(player.ControllingTownAlly.Name, Is.EqualTo("Rowan"));
     }
 
     [UnityTest]

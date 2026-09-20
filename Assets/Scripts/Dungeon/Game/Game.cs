@@ -79,19 +79,22 @@ public class Game : SingletonMonoBehaviour<Game>
 		}
 		CharacterStatsDisplays.Clear();
 
-		foreach (Transform overworldAllyTransform in Common.Instance.OverworldAllyParent)
+		foreach (Transform townAllyTransform in Common.Instance.TownAllyParent)
 		{
-			var overworldAlly = overworldAllyTransform.GetComponent<OverworldAlly>();
+			var townAlly = townAllyTransform.GetComponent<TownAlly>();
 			var ally = Instantiate(AllyPrefab);
-			ally.InitialzeModel(overworldAlly);
+			ally.InitialzeModel(townAlly);
 			ally.AllyStrategy = AllyStrategy.Aggresive;
 			Allies.Add(ally);
 
-			Destroy(overworldAlly);
+			Destroy(townAlly);
 
-			ally.CharacterName = overworldAlly.Name;
+            ally.CharacterName = townAlly.Name;
+            ally.TownAllyId = townAlly.Id;
+            foreach (var equipment in townAlly.Equipment.GetEquippedItems())
+                ally.Equipment.Equip(equipment);
 
-			foreach (var skill in overworldAlly.Skills)
+			foreach (var skill in townAlly.Skills)
 			{
 				Skill skillInstance = Common.Instance.SkillManager.GetSkillInstanceByName(skill);
 				ally.Skills.Add(skillInstance);
@@ -114,9 +117,11 @@ public class Game : SingletonMonoBehaviour<Game>
 		PlayerController.Floor = floor - 1;
 
 		PlayerController.Inventory.Clear();
-		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
-		Common.Instance.ItemManager.StartingItems.ForEach(x => PlayerController.Inventory.Add(x.AsInventoryItem(null)));
-		items.ToList().ForEach(x => PlayerController.Inventory.Add(x));
+        var townSave = Common.Instance.GameSaveData.TownSaveData;
+        var items = townSave.InventoryFormatVersion >= 1
+            ? townSave.InventoryItems.Select(i => i.Restore(Common.Instance.ItemManager))
+            : townSave.Inventory.Select(n => Common.Instance.ItemManager.GetAsInventoryItemByName(n));
+        items.ToList().ForEach(x => PlayerController.Inventory.Add(x));
 		demoLoadout = Common.Instance.PendingDemoLoadout;
 		Common.Instance.PendingDemoLoadout = null;
 		if (demoLoadout != null) demoLoadout.Apply(this);

@@ -12,6 +12,9 @@ namespace JuicyChickenGames.Menu
         private Selectable savedSelectable;
         private Coroutine scrollAnimation;
         public Action CloseAction { get; internal set; }
+        public DialogController Owner { get; internal set; }
+        public void CloseDialog() => Owner?.Close(this);
+        public virtual void PrepareTown(TownInteractionContext context) { }
 
         internal abstract void SetFirstSelect();
         internal void RestoreSelect()

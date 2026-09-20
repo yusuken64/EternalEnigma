@@ -1,6 +1,7 @@
 using EternalEnigma.Core.Progression;
 using EternalEnigma.Core.World;
 using EternalEnigma.Core.Validation;
+using EternalEnigma.Core.Capabilities;
 
 namespace EternalEnigma.Core.Generation;
 
@@ -19,7 +20,7 @@ public sealed class OverworldGridOptions
     }
 }
 
-/// <summary>Embeds the current campaign tree without crossings; unsupported cyclic graphs fail explicitly.</summary>
+/// <summary>Deterministic two-dimensional districts, sealed branch gates and keyed inter-biome passages.</summary>
 public static class OverworldGridGenerator
 {
     public static OverworldGrid Generate(Campaign campaign, OverworldGridOptions? options = null)
@@ -28,45 +29,54 @@ public static class OverworldGridGenerator
         var validation = CampaignValidator.Validate(campaign);
         if (!validation.IsValid) throw new ArgumentException("Invalid campaign:\n" + string.Join("\n", validation.Errors), nameof(campaign));
         options ??= new OverworldGridOptions();
-        if (campaign.Routes.Count != campaign.Locations.Count - 1)
-            throw new NotSupportedException("Grid generation currently supports tree campaigns only; cycles/parallel routes need a planar embedding strategy.");
-        var byId = campaign.Locations.ToDictionary(l => l.Id, StringComparer.Ordinal);
-        var children = byId.Keys.ToDictionary(id => id, _ => new List<(string child, CampaignRoute route)>(), StringComparer.Ordinal);
-        var depths = new Dictionary<string, int>(StringComparer.Ordinal);
-        var postorder = new List<string>();
-        var random = new SeedStream(campaign.Seed, 100);
-        void Orient(string node, string? parent, int depth)
+        if (options.Width < 248 || options.Height < 248)
+            throw new ArgumentException("Compact district embedding needs at least 248x248 tiles.", nameof(options));
+        var diagnostics = new List<string>();
+        for (int attempt = 0; attempt < 64; attempt++)
         {
-            if (depths.ContainsKey(node)) throw new NotSupportedException("Campaign routes contain a cycle.");
-            depths[node] = depth;
-            var edges = random.Shuffle(campaign.Routes.Where(r => r.Other(node) != null && r.Other(node) != parent).OrderBy(r => r.Id, StringComparer.Ordinal));
-            foreach (var edge in edges)
-            { string child = edge.Other(node)!; children[node].Add((child, edge)); Orient(child, node, depth + 1); }
-            postorder.Add(node);
+            try { return Embed(campaign, options, attempt); }
+            catch (InvalidOperationException error) { diagnostics.Add($"Attempt {attempt}: {error.Message}"); }
         }
-        // Checkpoint-rooted layout is compact; player start remains the campaign's start town.
-        string root = campaign.Locations.Where(l => l.Kind == LocationKind.Checkpoint).OrderBy(l => l.Stage).ThenBy(l => l.Id, StringComparer.Ordinal).FirstOrDefault()?.Id ?? campaign.StartLocationId;
-        Orient(root, null, 0);
-        if (depths.Count != byId.Count) throw new ArgumentException("Campaign is disconnected.", nameof(campaign));
-        const int margin = 4, depthSpacing = 12, leafSpacing = 5;
-        int requiredWidth = margin * 2 + depths.Values.Max() * depthSpacing + 3;
-        int leafCount = children.Values.Count(c => c.Count == 0);
-        int requiredHeight = margin * 2 + (leafCount - 1) * leafSpacing + 3;
-        if (requiredWidth > options.Width || requiredHeight > options.Height)
-            throw new ArgumentException($"Campaign needs at least {requiredWidth}x{requiredHeight} tiles; requested {options.Width}x{options.Height}. Increase map dimensions.", nameof(options));
+        throw new InvalidOperationException($"Seed {campaign.Seed}: no valid embedding in 64 attempts.\n" + string.Join("\n", diagnostics));
+    }
 
-        int leaf = 0;
+    private static OverworldGrid Embed(Campaign campaign, OverworldGridOptions options, int attempt)
+    {
+        var byId = campaign.Locations.ToDictionary(l => l.Id, StringComparer.Ordinal);
+        var physicalStage = campaign.Locations.ToDictionary(l => l.Id, l => l.Stage);
+        foreach (var objective in campaign.ReturnObjectives)
+            foreach (string id in objective.DestinationIds) physicalStage[id] = 0;
         var positions = new Dictionary<string, GridPoint>(StringComparer.Ordinal);
-        var spans = new Dictionary<string, (int low, int high)>(StringComparer.Ordinal);
-        int offsetX = (options.Width - requiredWidth) / 2, offsetY = (options.Height - requiredHeight) / 2;
-        foreach (var node in postorder)
+        int offsetX = (options.Width - 256) / 2, offsetY = (options.Height - 256) / 2;
+        // Three-by-three biome slots: . F E / A B D / . . C. Extra stages stay inside F.
+        GridPoint Center(int stage)
         {
-            var next = children[node];
-            int low = next.Count == 0 ? margin + leaf++ * leafSpacing : spans[next[0].child].low;
-            int high = next.Count == 0 ? low : spans[next[next.Count - 1].child].high;
-            spans[node] = (low, high);
-            positions[node] = new GridPoint(offsetX + margin + depths[node] * depthSpacing, offsetY + (low + high) / 2);
+            var centers = new[] { new GridPoint(40, 128), new GridPoint(128, 128), new GridPoint(216, 40),
+                new GridPoint(216, 128), new GridPoint(216, 216), new GridPoint(128, 216), new GridPoint(80, 216), new GridPoint(40, 216) };
+            var at = centers[stage]; return new GridPoint(offsetX + at.X, offsetY + at.Y);
         }
+        var random = new SeedStream(campaign.Seed, (uint)(110 + attempt));
+        foreach (var group in campaign.Locations.GroupBy(l => physicalStage[l.Id]).OrderBy(g => g.Key))
+        {
+            var center = Center(group.Key);
+            var leaves = random.Shuffle(group.Where(l => l.Kind != LocationKind.Checkpoint)).OrderBy(l => l.RegionId, StringComparer.Ordinal).ToArray();
+            if (leaves.Length > 20 || group.Key == 1 && leaves.Length > 10)
+                throw new InvalidOperationException($"District {group.Key} has too many destinations ({leaves.Length}).");
+            foreach (var checkpoint in group.Where(l => l.Kind == LocationKind.Checkpoint)) positions.Add(checkpoint.Id, center);
+            // B reserves its east side for C/D/E and its center for F. C/E reserve their diagonal arrival corners.
+            for (int i = 0; i < leaves.Length; i++)
+            {
+                int bank = i % 2, slot = i / 2;
+                int dx = group.Key == 1 ? -(slot + 1) * 6 :
+                    (group.Key == 4 && bank == 0 || group.Key == 2 && bank == 1) ? (slot + 1) * 6 :
+                    (slot / 2 + 1) * 6 * (slot % 2 == 0 ? -1 : 1);
+                positions.Add(leaves[i].Id, new GridPoint(center.X + dx, center.Y + (bank == 0 ? -24 : 24)));
+            }
+        }
+        var rawPositions = positions.ToDictionary(p => p.Key, p => p.Value);
+        int Bend(int y) { int phase = (y / 6 + campaign.Seed % 8 + 8) % 8; return phase <= 2 ? phase : phase <= 6 ? 4 - phase : phase - 8; }
+        GridPoint Warp(GridPoint p) => new GridPoint(p.X + Bend(p.Y), p.Y);
+        foreach (string id in positions.Keys.ToArray()) positions[id] = Warp(positions[id]);
         var masks = new Dictionary<string, bool[,]>(StringComparer.Ordinal);
         foreach (string name in new[] { OverworldLayers.Ground, OverworldLayers.Walkable, OverworldLayers.Roads,
             OverworldLayers.Mountains, OverworldLayers.Trees, OverworldLayers.Water, OverworldLayers.Reserved,
@@ -88,32 +98,77 @@ public static class OverworldGridGenerator
         }
         var routePaths = new Dictionary<string, IReadOnlyList<GridPoint>>(StringComparer.Ordinal);
         var locks = new List<GridLock>();
-        foreach (var parent in postorder)
-        foreach (var connection in children[parent])
+        foreach (var route in campaign.Routes.OrderBy(r => r.Id, StringComparer.Ordinal))
         {
-            var from = positions[parent]; var to = positions[connection.child];
-            int branchX = from.X + depthSpacing / 2;
+            if (route.IsWarp)
+            {
+                routePaths.Add(route.Id, Array.AsReadOnly(new[] { positions[route.From], positions[route.To] }));
+                continue;
+            }
+            var from = rawPositions[route.From]; var to = rawPositions[route.To];
             var path = new List<GridPoint> { from };
             void LineTo(int x, int y)
             {
-                var current = path[path.Count - 1];
-                while (current.X != x || current.Y != y)
+                var start = path[path.Count - 1]; int dx = x - start.X, dy = y - start.Y;
+                int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+                for (int i = 1; i <= steps; i++)
+                    path.Add(new GridPoint(start.X + (int)Math.Round((double)dx * i / steps), start.Y + (int)Math.Round((double)dy * i / steps)));
+            }
+            int a = physicalStage[route.From], b = physicalStage[route.To];
+            if (route.ShortcutKind == ShortcutKind.Keyed)
+            {
+                if (a != 1 || b < 3 || b > 5) throw new InvalidOperationException("Expected a B-D/E/F key passage.");
+                LineTo(to.X, to.Y);
+            }
+            else if (a == b)
+            {
+                LineTo(from.X, Center(a).Y); LineTo(to.X, Center(a).Y); LineTo(to.X, to.Y);
+            }
+            else
+            {
+                if (!route.IsProgressionBoundary) throw new InvalidOperationException($"Unsupported inter-district route {route.Id}.");
+                LineTo(to.X, to.Y);
+            }
+            bool diagonalCorridor = route.ShortcutKind == ShortcutKind.Keyed || route.IsProgressionBoundary && a == 1 && b == 2;
+            var winding = new List<GridPoint> { Warp(path[0]) };
+            for (int i = 1; i < path.Count; i++)
+            {
+                var previous = winding[winding.Count - 1]; var next = Warp(path[i]);
+                if (diagonalCorridor)
                 {
-                    current = new GridPoint(current.X + Math.Sign(x - current.X), current.Y + Math.Sign(y - current.Y));
-                    path.Add(current);
+                    while (!previous.Equals(next))
+                    {
+                        previous = new GridPoint(previous.X + Math.Sign(next.X - previous.X), previous.Y + Math.Sign(next.Y - previous.Y));
+                        winding.Add(previous);
+                    }
+                }
+                else
+                {
+                    if (previous.X != next.X && previous.Y != next.Y)
+                        winding.Add(next.Y > previous.Y ? new GridPoint(next.X, previous.Y) : new GridPoint(previous.X, next.Y));
+                    winding.Add(next);
                 }
             }
-            LineTo(branchX, from.Y); LineTo(branchX, to.Y); LineTo(to.X, to.Y);
-            foreach (var cell in path) Carve(cell, byId[parent].RegionId, true);
-            if (connection.route.From != parent) path.Reverse();
-            routePaths.Add(connection.route.Id, Array.AsReadOnly(path.ToArray()));
-            if (!connection.route.Requirement.IsOpen)
+            path = winding;
+            var corridor = new HashSet<GridPoint>(path);
+            if (diagonalCorridor)
+                for (int i = 1; i < path.Count; i++)
+                    if (path[i - 1].X != path[i].X && path[i - 1].Y != path[i].Y)
+                    { corridor.Add(new GridPoint(path[i - 1].X, path[i].Y)); corridor.Add(new GridPoint(path[i].X, path[i - 1].Y)); }
+            foreach (var cell in corridor)
+                Carve(cell, Math.Abs(cell.X - positions[route.From].X) + Math.Abs(cell.Y - from.Y) <
+                    Math.Abs(cell.X - positions[route.To].X) + Math.Abs(cell.Y - to.Y) ? byId[route.From].RegionId : byId[route.To].RegionId, true);
+            routePaths.Add(route.Id, Array.AsReadOnly(path.ToArray()));
+            if (route.HasGate)
             {
-                int length = connection.route.Form == LockForm.Area ? 3 : 1;
-                var cells = Enumerable.Range(0, length).Select(i => new GridPoint(to.X - 3 - i, to.Y)).ToArray();
-                locks.Add(new GridLock(connection.route.Id, cells));
-                string layer = connection.route.Form == LockForm.Area ? OverworldLayers.AreaLocks :
-                    connection.route.Form == LockForm.Obstacle ? OverworldLayers.ObstacleLocks : OverworldLayers.InteractionLocks;
+                int length = route.Form == LockForm.Area ? 3 : 1;
+                int gateIndex = route.IsProgressionBoundary ? path.Count / 2 : path.Count - 6;
+                var cells = diagonalCorridor
+                    ? corridor.Where(p => from.Y != to.Y ? p.Y == (from.Y + to.Y) / 2 : p.X == (positions[route.From].X + positions[route.To].X) / 2).OrderBy(p => p.X).ThenBy(p => p.Y).ToArray()
+                    : path.Skip(gateIndex - length / 2).Take(length).ToArray();
+                locks.Add(new GridLock(route.Id, cells));
+                string layer = route.Form == LockForm.Area ? OverworldLayers.AreaLocks :
+                    route.Form == LockForm.Obstacle ? OverworldLayers.ObstacleLocks : OverworldLayers.InteractionLocks;
                 foreach (var cell in cells) { masks[OverworldLayers.Locks][cell.X, cell.Y] = true; masks[layer][cell.X, cell.Y] = true; }
             }
         }
@@ -133,14 +188,27 @@ public static class OverworldGridGenerator
         var start = positions[campaign.StartLocationId];
         masks[OverworldLayers.PlayerStart][start.X, start.Y] = true;
         var originalGround = (bool[,])ground.Clone();
-        ExpandAreas(ground, masks[OverworldLayers.Locks], regionOwner, options.AreaExpansionRadius, campaign.Seed);
+        ExpandAreas(ground, masks[OverworldLayers.Locks], regionOwner, options.AreaExpansionRadius, campaign, positions);
         var decoration = new SeedStream(campaign.Seed, 101);
+        var palette = SelectBiomes(campaign);
+        var nearestBiome = new OverworldBiome[options.Width, options.Height];
+        for (int y = 2; y < options.Height - 2; y++) for (int x = 2; x < options.Width - 2; x++)
+        {
+            int best = int.MaxValue;
+            foreach (var location in campaign.Locations)
+            {
+                var p = positions[location.Id]; int distance = Math.Abs(p.X - x) + Math.Abs(p.Y - y);
+                if (distance >= best) continue;
+                best = distance; nearestBiome[x, y] = palette[location.RegionId];
+            }
+        }
         for (int y = 0; y < options.Height; y++)
         for (int x = 0; x < options.Width; x++)
         {
             bool border = x < 2 || y < 2 || x >= options.Width - 2 || y >= options.Height - 2;
             // Consume the original decoration stream even where expansion replaces background.
-            bool tree = !originalGround[x, y] && !border && decoration.Range(4) == 0;
+            int decorationRoll = decoration.Range(8);
+            bool tree = nearestBiome[x, y] == OverworldBiome.Forest || nearestBiome[x, y] == OverworldBiome.Marsh && decorationRoll < 5;
             if (ground[x, y])
             {
                 masks[OverworldLayers.Region(regionOwner[x, y]!)][x, y] = true;
@@ -154,20 +222,79 @@ public static class OverworldGridGenerator
                 masks[OverworldLayers.Water][x, y] = true;
             else masks[tree ? OverworldLayers.Trees : OverworldLayers.Mountains][x, y] = true;
         }
-        var grid = new OverworldGrid(campaign, masks.ToDictionary(m => m.Key, m => new GridLayer(m.Value), StringComparer.Ordinal), positions, routePaths, locks);
+        var biomes = AssignBiomes(campaign, masks, originalGround, regionOwner, locks);
+        var grid = new OverworldGrid(campaign, masks.ToDictionary(m => m.Key, m => new GridLayer(m.Value), StringComparer.Ordinal), positions, routePaths, locks, biomes);
         var gridValidation = OverworldGridValidator.Validate(campaign, grid);
         if (!gridValidation.IsValid) throw new InvalidOperationException("Grid embedding failed validation:\n" + string.Join("\n", gridValidation.Errors));
         return grid;
     }
 
-    private static void ExpandAreas(bool[,] ground, bool[,] gates, string?[,] regions, int radius, int seed)
+    private static Dictionary<string, OverworldBiome> SelectBiomes(Campaign campaign)
+    {
+        var random = new SeedStream(campaign.Seed, 103);
+        string startingRegion = campaign.Locations.Single(l => l.Id == campaign.StartLocationId).RegionId;
+        var palette = random.Shuffle(new[] { OverworldBiome.Desert, OverworldBiome.Water, OverworldBiome.Mountain,
+            OverworldBiome.Forest, OverworldBiome.Tundra, OverworldBiome.Marsh, OverworldBiome.Volcanic });
+        if (campaign.Regions.Count > palette.Count + 1)
+            throw new NotSupportedException("Campaign has more regions than the distinct biome pool supports. Add biomes before adding regions.");
+        var regions = new Dictionary<string, OverworldBiome>(StringComparer.Ordinal) { [startingRegion] = OverworldBiome.Grassland };
+        int index = 0;
+        foreach (var region in campaign.Regions.Where(r => r.Id != startingRegion).OrderBy(r => r.Id, StringComparer.Ordinal))
+            regions[region.Id] = palette[index++];
+        return regions;
+    }
+
+    private static Dictionary<string, OverworldBiome> AssignBiomes(Campaign campaign, Dictionary<string, bool[,]> masks,
+        bool[,] originalGround, string?[,] owners, List<GridLock> locks)
+    {
+        var regions = SelectBiomes(campaign);
+        var ground = masks[OverworldLayers.Ground];
+        int width = ground.GetLength(0), height = ground.GetLength(1);
+        foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome))) masks[OverworldLayers.Biome(biome)] = new bool[width, height];
+        var water = masks[OverworldLayers.NavigableWater] = new bool[width, height];
+        var bridges = masks[OverworldLayers.Bridges] = new bool[width, height];
+        // Boat-only area gates become actual water crossings. Alternative-capability
+        // routes keep their original requirements and dry floor.
+        foreach (var gate in locks)
+        {
+            var route = campaign.Routes.Single(r => r.Id == gate.RouteId);
+            if (route.Form == LockForm.Area && route.Requirement.Alternatives.All(a => a.Contains(Capability.Boat)))
+                foreach (var cell in gate.Cells) water[cell.X, cell.Y] = true;
+        }
+        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
+        {
+            if (!ground[x, y]) continue;
+            var biome = regions[owners[x, y]!];
+            if (biome == OverworldBiome.Water)
+            {
+                // Keep the original road network and location clearings as causeways
+                // and islands. This guarantees boat providers are never flooded out.
+                water[x, y] |= !originalGround[x, y];
+                bridges[x, y] = !water[x, y] && masks[OverworldLayers.Roads][x, y];
+                if (!water[x, y]) biome = OverworldBiome.Grassland;
+            }
+            if (water[x, y])
+            {
+                biome = OverworldBiome.Water;
+                masks[OverworldLayers.Water][x, y] = true;
+                masks[OverworldLayers.Walkable][x, y] = false;
+            }
+            masks[OverworldLayers.Biome(biome)][x, y] = true;
+        }
+        return regions;
+    }
+
+    private static void ExpandAreas(bool[,] ground, bool[,] gates, string?[,] regions, int radius,
+        Campaign campaign, IReadOnlyDictionary<string, GridPoint> positions)
     {
         if (radius == 0) return;
         int width = ground.GetLength(0), height = ground.GetLength(1);
         var owners = new int[width, height];
         var protectedCells = new bool[width, height];
         var costs = new int[width, height];
-        var random = new SeedStream(seed, 102);
+        var random = new SeedStream(campaign.Seed, 102);
+        var palette = SelectBiomes(campaign);
+        string startingRegion = campaign.Locations.Single(l => l.Id == campaign.StartLocationId).RegionId;
         var directions = new[] { new GridPoint(1, 0), new GridPoint(0, 1), new GridPoint(-1, 0), new GridPoint(0, -1) };
         bool Contains(int x, int y) => x >= 0 && y >= 0 && x < width && y < height;
         for (int y = 0; y < height; y++)
@@ -208,12 +335,20 @@ public static class OverworldGridGenerator
             .Select(_ => new Queue<(GridPoint at, int owner, string region, int distance)>()).ToArray();
         void Offer(GridPoint at, int owner, string region, int distance, int spent)
         {
-            if (distance >= radius) return;
+            var biome = palette[region];
+            int reach = region == startingRegion ? Math.Min(3, radius) : radius;
+            if (distance >= reach) return;
             foreach (var direction in directions)
             {
                 int x = at.X + direction.X, y = at.Y + direction.Y;
                 if (x < 2 || y < 2 || x >= width - 2 || y >= height - 2 || ground[x, y] || protectedCells[x, y]) continue;
-                int cost = spent + costs[x, y];
+                bool broken = biome == OverworldBiome.Tundra ? Math.Abs(x * 13 + y * 7) % 11 == 0 :
+                    biome == OverworldBiome.Marsh ? Math.Abs(x * 3 - y * 5) % 13 < 3 :
+                    biome == OverworldBiome.Forest && Math.Abs(x * 7 + y * 11) % 29 < 2;
+                if (broken) continue;
+                int terrainCost = biome == OverworldBiome.Grassland || biome == OverworldBiome.Desert || biome == OverworldBiome.Water ? 1 :
+                    biome == OverworldBiome.Mountain && direction.Y != 0 ? 3 : costs[x, y];
+                int cost = spent + terrainCost;
                 if (cost <= budget) frontier[cost].Enqueue((new GridPoint(x, y), owner, region, distance + 1));
             }
         }
@@ -228,6 +363,12 @@ public static class OverworldGridGenerator
             bool touchesOther = false;
             for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++)
                 if (owners[x + dx, y + dy] != 0 && owners[x + dx, y + dy] != next.owner) touchesOther = true;
+            // Leave two tiles of impassable terrain between different region interiors.
+            // Original floor is never removed: roads and gate approaches remain the
+            // pre-existing connections through these broader biome boundaries.
+            for (int dy = -2; dy <= 2; dy++) for (int dx = -2; dx <= 2; dx++)
+                if (Contains(x + dx, y + dy) && regions[x + dx, y + dy] != null && regions[x + dx, y + dy] != next.region)
+                    touchesOther = true;
             if (touchesOther) continue;
             ground[x, y] = true;
             owners[x, y] = next.owner;

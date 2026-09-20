@@ -3,6 +3,7 @@ using EternalEnigma.Core.Capabilities;
 namespace EternalEnigma.Core.Progression;
 
 public enum LocationKind { Checkpoint, Town, StoryDungeon, RepeatableDungeon, FinalDungeon, Converter, Landmark, Secret }
+public enum ShortcutKind { None, FarSide, Capability, Keyed }
 public enum LockForm { None, Obstacle, Interaction, Area }
 
 public sealed class CampaignRegion
@@ -10,7 +11,10 @@ public sealed class CampaignRegion
     public string Id { get; }
     public string Theme { get; }
     public int Tier { get; }
-    public CampaignRegion(string id, string theme, int tier) { Id = id; Theme = theme; Tier = tier; }
+    public int ProgressionOrder { get; }
+    public string Label => ProgressionOrder >= 0 ? ((char)('A' + ProgressionOrder)).ToString() : Id;
+    public CampaignRegion(string id, string theme, int tier, int progressionOrder = -1)
+    { Id = id; Theme = theme; Tier = tier; ProgressionOrder = progressionOrder; }
 }
 
 public sealed class CampaignLocation
@@ -35,12 +39,28 @@ public sealed class CampaignRoute
     public LockForm Form { get; }
     public bool Required { get; }
     public bool IsProgressionBoundary { get; }
-    public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false)
-    { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; }
+    public ShortcutKind ShortcutKind { get; }
+    public string? UnlockingEndpoint { get; }
+    public string? KeyId { get; }
+    public string? KeyLocationId { get; }
+    public bool IsWarp { get; }
+    public string GateHint => ShortcutKind == ShortcutKind.Keyed ? "Requires: " + KeyId :
+        ShortcutKind == ShortcutKind.FarSide ? "Open shortcut at the far endpoint." : "Requires: " + Requirement;
+    public bool HasGate => !Requirement.IsOpen || ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed;
+    public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false, ShortcutKind shortcutKind = ShortcutKind.None, string? unlockingEndpoint = null, string? keyId = null, string? keyLocationId = null, bool isWarp = false)
+    { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; ShortcutKind = shortcutKind; UnlockingEndpoint = unlockingEndpoint; KeyId = keyId; KeyLocationId = keyLocationId; IsWarp = isWarp; }
     public string? Other(string location) => location == From ? To : location == To ? From : null;
     public bool CanTraverse(CapabilitySet held, ISet<string> resolved) =>
-        (Form != LockForm.Area && resolved.Contains(Id)) || Requirement.IsSatisfiedBy(held);
-    public bool Latches => Form == LockForm.Obstacle || Form == LockForm.Interaction;
+        (ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed) ? resolved.Contains(Id) :
+        (Latches && resolved.Contains(Id)) || Requirement.IsSatisfiedBy(held);
+    public bool Latches => ShortcutKind == ShortcutKind.None && (Form == LockForm.Obstacle || Form == LockForm.Interaction);
+    public bool TryCollectKey(string locationId, ISet<string> resolved) =>
+        ShortcutKind == ShortcutKind.Keyed && locationId == KeyLocationId && resolved.Add(Id);
+    public bool TryUnlock(string endpoint, ISet<string> resolved)
+    {
+        if (ShortcutKind != ShortcutKind.FarSide || endpoint != UnlockingEndpoint) return false;
+        return resolved.Add(Id);
+    }
 }
 
 public sealed class CampaignCompanion
@@ -67,6 +87,23 @@ public sealed class CapabilitySource
     }
 }
 
+public sealed class ReturnObjective
+{
+    public string RegionId { get; }
+    public IReadOnlyList<string> DestinationIds { get; }
+    public IReadOnlyList<string> GateIds { get; }
+    public Capability EnablingCapability { get; }
+    public int AcquisitionStage { get; }
+    public bool Required { get; }
+    public Capability? RewardCapability { get; }
+    public ReturnObjective(string regionId, IEnumerable<string> destinations, IEnumerable<string> gates,
+        Capability enablingCapability, int acquisitionStage, bool required, Capability? rewardCapability = null)
+    {
+        RegionId = regionId; DestinationIds = Array.AsReadOnly(destinations.ToArray()); GateIds = Array.AsReadOnly(gates.ToArray());
+        EnablingCapability = enablingCapability; AcquisitionStage = acquisitionStage; Required = required; RewardCapability = rewardCapability;
+    }
+}
+
 /// <summary>Immutable, engine-independent logical campaign. It contains no terrain or mutable player state.</summary>
 public sealed class Campaign
 {
@@ -80,11 +117,13 @@ public sealed class Campaign
     public IReadOnlyList<CampaignRoute> Routes { get; }
     public IReadOnlyList<CapabilitySource> Sources { get; }
     public IReadOnlyList<CampaignCompanion> Companions { get; }
+    public IReadOnlyList<ReturnObjective> ReturnObjectives { get; }
     public Campaign(int seed, int generatorVersion, string startLocationId, string finalLocationId,
         IEnumerable<ActivatedCapability> manifest, IEnumerable<CampaignRegion> regions,
         IEnumerable<CampaignLocation> locations, IEnumerable<CampaignRoute> routes,
-        IEnumerable<CapabilitySource> sources, IEnumerable<CampaignCompanion> companions)
+        IEnumerable<CapabilitySource> sources, IEnumerable<CampaignCompanion> companions, IEnumerable<ReturnObjective>? returnObjectives = null)
     {
+        ReturnObjectives = Array.AsReadOnly((returnObjectives ?? Array.Empty<ReturnObjective>()).ToArray());
         Seed = seed; GeneratorVersion = generatorVersion; StartLocationId = startLocationId; FinalLocationId = finalLocationId;
         Manifest = Array.AsReadOnly(manifest.ToArray()); Regions = Array.AsReadOnly(regions.ToArray());
         Locations = Array.AsReadOnly(locations.ToArray()); Routes = Array.AsReadOnly(routes.ToArray());

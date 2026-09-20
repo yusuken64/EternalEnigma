@@ -57,25 +57,27 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             if (width != previousWidth || height != previousHeight) Console.Clear();
             previousWidth = width; previousHeight = height;
             var options = menu == "Party" ? session.Roster.Select(c => $"{(session.IsActive(c.Id) ? "[x]" : "[ ]")} {c.Capability} ({c.Id})").ToArray()
-                : menu == "Travel" ? session.VisitedTowns.ToArray() : Array.Empty<string>();
+                : menu == "Travel" ? session.VisitedTowns.ToArray() : menu == "Warp" ? session.WarpsHere.Select(session.WarpLabel).ToArray() : Array.Empty<string>();
             selection = Math.Clamp(selection, 0, Math.Max(0, options.Length - 1));
             var lines = new List<string> { $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | {session.Position} | {session.Location?.Id ?? "Overworld"}" };
-            int mapHeight = Math.Max(1, height - 8);
+            int mapHeight = Math.Max(1, height - 10);
             if (menu == null) lines.AddRange(renderer.Render(width, mapHeight));
             else
             {
                 lines.Add(menu + " | Up/Down: select | Enter: apply | Esc: close");
                 int first = Math.Max(0, selection - Math.Max(1, mapHeight - 2) / 2);
                 for (int j = first; j < options.Length && lines.Count < mapHeight + 1; j++) lines.Add((j == selection ? "> " : "  ") + options[j]);
-                if (options.Length == 0) lines.Add("No companions recruited yet. Explore and claim rewards with Enter.");
+                if (options.Length == 0) lines.Add(menu == "Warp" ? "Stand on a cyan warp gate (O)." : "No options available yet.");
             }
             while (lines.Count < mapHeight + 1) lines.Add("");
             lines.Add("Held: " + (session.Held.Count == 0 ? "none" : session.Held.ToString()));
             lines.Add(session.Message);
+            lines.Add(session.RequiredReturn);
+            lines.Add("Keys: " + string.Join(", ", session.CollectedKeys));
             lines.Add("Move: arrows/WASD | Diagonal: QEZC/numpad | Esc: quit");
-            lines.Add("Enter: claim reward | P: party (town) | T: fast travel");
+            lines.Add("Enter: reward | V: warp | P: party (town) | T: fast travel");
             lines.Add("@ you  T town  D dungeon  R repeatable  F final  C converter");
-            lines.Add("+ closed gate  / open gate  : road  . ground  # rock  ~ water");
+            lines.Add("+ gate  O warp  K key  / open  : road  . ground  # rock  ~ water");
             lines.Add("Rewards simulate encounters. No combat or saving.");
             if (height < 12 || width < 40) lines = new List<string> { "Enlarge terminal to at least 41x13.", "Esc: quit" };
             Console.SetCursorPosition(0, 0);
@@ -94,6 +96,7 @@ static void Run(ExplorerSession session, MapRenderer renderer)
                 else if (key == ConsoleKey.Enter && options.Length > 0)
                 {
                     if (menu == "Party") session.ToggleCompanion(session.Roster[selection].Id);
+                    else if (menu == "Warp") { session.Warp(session.WarpsHere[selection].Id); menu = null; }
                     else { session.FastTravel(session.VisitedTowns[selection]); menu = null; }
                 }
                 continue;
@@ -103,6 +106,7 @@ static void Run(ExplorerSession session, MapRenderer renderer)
                 case ConsoleKey.Escape: return;
                 case ConsoleKey.P: menu = "Party"; selection = 0; break;
                 case ConsoleKey.T: menu = "Travel"; selection = 0; break;
+                case ConsoleKey.V: menu = "Warp"; selection = 0; break;
                 case ConsoleKey.Enter: session.ClaimRewards(); break;
                 case ConsoleKey.W: case ConsoleKey.UpArrow: case ConsoleKey.NumPad8: session.Move(0, 1); break;
                 case ConsoleKey.S: case ConsoleKey.DownArrow: case ConsoleKey.NumPad2: session.Move(0, -1); break;

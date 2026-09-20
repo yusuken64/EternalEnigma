@@ -24,8 +24,20 @@ public sealed class ExplorerSession
     public CapabilitySet Held => permanent.Union(CapabilitySet.From(Campaign.Companions.Where(c => active.Contains(c.Id)).Select(c => c.Capability)));
     public IReadOnlyList<CampaignCompanion> Roster => Campaign.Companions.Where(c => recruited.Contains(c.Id)).ToArray();
     public IReadOnlyList<string> VisitedTowns => towns.OrderBy(t => t, StringComparer.Ordinal).ToArray();
+    public IReadOnlyList<string> CollectedKeys => Campaign.Routes.Where(r => r.KeyId != null && resolved.Contains(r.Id)).Select(r => r.KeyId!).ToArray();
     public bool IsActive(string id) => active.Contains(id);
     public bool IsWalkable(GridPoint point) => Grid.IsWalkable(point, Held, resolved);
+    public IReadOnlyList<CampaignRoute> WarpsHere => Grid.WarpsAt(Position).ToArray();
+    public string WarpLabel(CampaignRoute route) => "Warp to biome " + Campaign.Regions.Single(r => r.Id == Campaign.Locations.Single(l => l.Id == route.Other(Location!.Id)).RegionId).Label +
+        (route.CanTraverse(Held, resolved) ? "" : " | " + route.GateHint);
+    public bool Warp(string routeId)
+    {
+        if (!Grid.TryWarp(routeId, Position, Held, resolved, out var destination))
+        { Message = WarpsHere.FirstOrDefault(r => r.Id == routeId)?.GateHint ?? "Stand on a warp gate."; return false; }
+        Position = destination;
+        Message = "Warped to " + Location!.Id + ". V: warp destinations";
+        return true;
+    }
 
     public ExplorerSession(CampaignDefinition campaign, OverworldGrid grid)
     {
@@ -45,7 +57,8 @@ public sealed class ExplorerSession
         if (!Grid.CanStep(Position, next, Held, resolved))
         {
             var gate = Grid.LockAt(next);
-            Message = gate == null ? "Blocked." : "Requires: " + routes[gate.RouteId].Requirement;
+            Message = Grid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires Boat to sail." :
+                gate == null ? "Blocked." : routes[gate.RouteId].GateHint;
             return false;
         }
         Position = next;
@@ -55,12 +68,29 @@ public sealed class ExplorerSession
         Message = Location == null ? "" : Location.Id == Campaign.FinalLocationId
             ? "You reached the final dungeon! Esc to quit, or keep exploring."
             : $"{Location.Id} ({Location.Kind}) | Enter: claim rewards";
+        var nearby = OverworldMovement.Neighbors(Position).Select(Grid.LockAt).Where(g => g != null).Select(g => g!.RouteId).Distinct();
+        foreach (string id in nearby)
+        {
+            var route = routes[id];
+            if (route.CanTraverse(Held, resolved)) continue;
+            Message += " | " + route.GateHint;
+        }
+        if (Campaign.Routes.Any(r => r.UnlockingEndpoint == Location?.Id && !resolved.Contains(r.Id))) Message += " | Enter: Open shortcut";
+        foreach (var warp in WarpsHere) Message += " | V: " + WarpLabel(warp);
+        foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId == Location?.Id && !resolved.Contains(r.Id)))
+            Message += " | Enter: Collect " + route.KeyId;
         return true;
     }
 
+    public string RequiredReturn => string.Join("; ", Campaign.ReturnObjectives.Where(o => o.Required).Select(o =>
+        $"Return to {o.RegionId}: {o.EnablingCapability} -> {o.RewardCapability}"));
     public void ClaimRewards()
     {
+        foreach (var route in Campaign.Routes)
+            if (route.TryUnlock(Location?.Id ?? "", resolved)) { Message = "Opened shortcut: " + route.Id; return; }
         var rewards = new List<string>();
+        foreach (var route in Campaign.Routes)
+            if (route.TryCollectKey(Location?.Id ?? "", resolved)) rewards.Add(route.KeyId + " (" + route.Id + " opened permanently)");
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == Location?.Id && !claimed.Contains(s.Id)))
         {
             if (!source.Prerequisites.IsSatisfiedBy(Held)) continue;

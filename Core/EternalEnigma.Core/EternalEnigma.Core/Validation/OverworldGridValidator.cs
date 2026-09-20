@@ -26,10 +26,10 @@ public static class OverworldGridValidator
         Check(grid.Locations.Count == campaign.Locations.Count && campaign.Locations.All(l => grid.Locations.ContainsKey(l.Id)), "locations: Missing/extra location placements.");
         Check(grid.Routes.Count == campaign.Routes.Count && campaign.Routes.All(r => grid.Routes.ContainsKey(r.Id)), "routes: Missing/extra route realizations.");
         Check(grid.Locks.Select(l => l.RouteId).Distinct(StringComparer.Ordinal).Count() == grid.Locks.Count, "locks: Duplicate lock footprints.");
-        Check(campaign.Routes.Where(r => !r.Requirement.IsOpen).Select(r => r.Id).OrderBy(id => id, StringComparer.Ordinal)
+        Check(campaign.Routes.Where(r => r.HasGate && !r.IsWarp).Select(r => r.Id).OrderBy(id => id, StringComparer.Ordinal)
             .SequenceEqual(grid.Locks.Select(l => l.RouteId).OrderBy(id => id, StringComparer.Ordinal)), "locks: Footprints do not match campaign locks.");
         foreach (var location in grid.Locations)
-            Check(grid.IsGround(location.Value) && grid.LockAt(location.Value) == null, $"location: {location.Key} is blocked or inside a lock.");
+            Check(grid.IsGround(location.Value) && grid.LockAt(location.Value) == null && !grid.RequiresBoat(location.Value), $"location: {location.Key} is blocked, flooded or inside a lock.");
         foreach (var gate in grid.Locks)
         {
             Check(gate.Cells.Count > 0 && gate.Cells.Distinct().Count() == gate.Cells.Count && gate.Cells.All(grid.IsGround), $"lock: Invalid footprint for {gate.RouteId}.");
@@ -68,7 +68,7 @@ public static class OverworldGridValidator
             while (parents[id] != id) { parents[id] = parents[parents[id]]; id = parents[id]; }
             return id;
         }
-        foreach (var route in campaign.Routes.Where(r => r.Requirement.IsOpen)) parents[Root(route.To)] = Root(route.From);
+        foreach (var route in campaign.Routes.Where(r => !r.HasGate && !r.IsWarp)) parents[Root(route.To)] = Root(route.From);
         var graphToMap = new Dictionary<string, int>(StringComparer.Ordinal);
         var mapToGraph = new Dictionary<int, string>();
         foreach (var location in campaign.Locations)
@@ -106,9 +106,46 @@ public static class OverworldGridValidator
         {
             var path = grid.Routes[route.Id];
             Check(path.Count >= 2 && path[0].Equals(grid.Locations[route.From]) && path[path.Count - 1].Equals(grid.Locations[route.To]), $"route.endpoints: {route.Id} has incorrect endpoints.");
+            if (route.IsWarp)
+            {
+                Check(path.Count == 2 && grid.Warps.Any(w => w.Id == route.Id), $"warp.endpoints: {route.Id} must have exactly two landing pads.");
+                continue;
+            }
             for (int i = 1; i < path.Count; i++)
-                Check(grid.CanStep(path[i - 1], path[i], all), $"route.step: {route.Id} has an illegal grid step.");
+            {
+                Check(grid.CanStep(path[i - 1], path[i], all, new HashSet<string>(campaign.Routes.Select(r => r.Id))), $"route.step: {route.Id} has an illegal grid step.");
+                if (grid.RequiresBoat(path[i]))
+                    Check(route.Form == LockForm.Area && route.Requirement.Alternatives.All(a => a.Contains(Capability.Boat)),
+                        $"route.water: {route.Id} adds a Boat requirement not present in the campaign.");
+            }
+        }
+        var occupied = Enumerable.Range(0, grid.Width * grid.Height).Select(i => new GridPoint(i % grid.Width, i / grid.Width)).Where(grid.IsGround).ToArray();
+        int spanX = occupied.Max(p => p.X) - occupied.Min(p => p.X) + 1, spanY = occupied.Max(p => p.Y) - occupied.Min(p => p.Y) + 1;
+        Check(Math.Max(spanX, spanY) <= 1.5 * Math.Min(spanX, spanY), "layout.aspect: Occupied terrain exceeds aspect ratio 1.5.");
+        var unlocked = new HashSet<string>(campaign.Routes.Select(r => r.Id));
+        foreach (var route in campaign.Routes.Where(r => r.ShortcutKind != ShortcutKind.None))
+        {
+            int before = Distance(grid, grid.Locations[route.From], grid.Locations[route.To], all, unlocked, route.Id);
+            int after = Distance(grid, grid.Locations[route.From], grid.Locations[route.To], all, unlocked);
+            Check(before > 0 && after > 0 && after * 4 <= before * 3, $"shortcut.savings: {route.Id} saves less than 25% ({before} -> {after}).");
         }
         return new OverworldGridValidationResult(errors.Distinct());
     }
+    public static int Distance(OverworldGrid grid, GridPoint from, GridPoint to, CapabilitySet held, ISet<string> resolved, string? blockedRoute = null)
+    {
+        var distance = new Dictionary<GridPoint, int> { [from] = 0 };
+        var queue = new Queue<GridPoint>(); queue.Enqueue(from);
+        bool Walkable(GridPoint p) => grid.IsWalkable(p, held, resolved) && (blockedRoute == null || grid.LockAt(p)?.RouteId != blockedRoute);
+        while (queue.Count > 0)
+        {
+            var at = queue.Dequeue();
+            if (at.Equals(to)) return distance[at];
+            foreach (var next in OverworldMovement.Neighbors(at).Where(p => OverworldMovement.CanStep(at, p, Walkable))
+                .Concat(grid.WarpDestinations(at, held, resolved, blockedRoute)))
+                if (!distance.ContainsKey(next))
+                { distance[next] = distance[at] + 1; queue.Enqueue(next); }
+        }
+        return -1;
+    }
+
 }

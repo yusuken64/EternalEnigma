@@ -41,7 +41,7 @@ public static class CampaignValidator
         Check(locations.TryGetValue(campaign.FinalLocationId, out var final) && final.Kind == LocationKind.FinalDungeon && final.Tier == 4,
             "final: Final location must be a tier-four final dungeon.");
         foreach (var location in campaign.Locations)
-            Check(regions.TryGetValue(location.RegionId, out var region) && location.Tier == region.Tier && location.Tier >= 0 && location.Tier < 5,
+            Check(regions.TryGetValue(location.RegionId, out var region) && location.Tier >= 0 && location.Tier < 5,
                 $"location.region: {location.Id} has an invalid region/tier.");
         foreach (var route in campaign.Routes)
         {
@@ -49,6 +49,13 @@ public static class CampaignValidator
             Check(ActiveRequirement(route.Requirement), $"route.manifest: {route.Id} requires an inactive capability.");
             Check(Enum.IsDefined(typeof(LockForm), route.Form) && (route.Form == LockForm.None) == route.Requirement.IsOpen,
                 $"route.form: {route.Id} has an inconsistent lock form.");
+            Check(Enum.IsDefined(typeof(ShortcutKind), route.ShortcutKind) &&
+                (route.ShortcutKind == ShortcutKind.FarSide ? route.Requirement.IsOpen && route.UnlockingEndpoint == route.To : route.UnlockingEndpoint == null),
+                $"shortcut.metadata: {route.Id} has invalid unlocking metadata.");
+            Check(route.ShortcutKind == ShortcutKind.Keyed
+                ? route.Requirement.IsOpen && !string.IsNullOrWhiteSpace(route.KeyId) && route.KeyLocationId != null && locations.ContainsKey(route.KeyLocationId)
+                : route.KeyId == null && route.KeyLocationId == null, $"shortcut.key: {route.Id} has invalid key metadata.");
+            if (route.ShortcutKind == ShortcutKind.Capability) Check(!route.Requirement.IsOpen && route.Form == LockForm.Area, $"shortcut.capability: {route.Id} must remain conditional.");
             if (route.Required) Check(route.Requirement.Alternatives.Any(critical.ContainsAll), $"route.critical: {route.Id} has no fully critical solution.");
         }
         foreach (var companion in campaign.Companions)
@@ -66,6 +73,7 @@ public static class CampaignValidator
 
         // Stage cuts declare intended progression independently of the existence of a completion path.
         // Every crossing must imply the intended DNF, including long shortcuts crossing several cuts.
+        var returnGates = new HashSet<string>(campaign.ReturnObjectives.SelectMany(o => o.GateIds));
         var boundaries = campaign.Routes.Where(r => r.IsProgressionBoundary).ToArray();
         Check(boundaries.Length >= 5 && boundaries.Length <= 7, "boundary.count: Expected 5–7 progression boundaries.");
         Check(start!.Stage == 0 && final!.Stage == boundaries.Length && campaign.Locations.All(l => l.Stage >= 0 && l.Stage <= boundaries.Length),
@@ -77,7 +85,7 @@ public static class CampaignValidator
             if (intended.Length != 1) continue;
             Check(!intended[0].Requirement.IsOpen, $"boundary.open: Stage {stage} must be gated.");
             foreach (var crossing in campaign.Routes.Where(r =>
-                Math.Min(locations[r.From].Stage, locations[r.To].Stage) <= stage &&
+                r.ShortcutKind != ShortcutKind.Keyed && !returnGates.Contains(r.Id) && Math.Min(locations[r.From].Stage, locations[r.To].Stage) <= stage &&
                 Math.Max(locations[r.From].Stage, locations[r.To].Stage) > stage))
                 Check(crossing.Requirement.Alternatives.All(intended[0].Requirement.IsSatisfiedBy),
                     $"boundary.bypass: {crossing.Id} bypasses the intended requirement at stage {stage}.");
@@ -122,6 +130,83 @@ public static class CampaignValidator
         }
         if (errors.Count > 0) return new CampaignValidationResult(errors);
 
+        if (campaign.GeneratorVersion >= 3)
+        {
+            Check(campaign.ReturnObjectives.Count(o => o.Required) == 1 && campaign.ReturnObjectives.Count(o => !o.Required) == 3,
+                "return.count: Expected one required and three optional return objectives.");
+            var shortcuts = campaign.Routes.Where(r => r.ShortcutKind != ShortcutKind.None).ToArray();
+            if (campaign.GeneratorVersion >= 4)
+            {
+                Check(campaign.Regions.Count == 6 && campaign.Regions.Select(r => r.ProgressionOrder).OrderBy(i => i).SequenceEqual(Enumerable.Range(0, 6)),
+                    "biomes.spine: Expected exactly six ordered biomes A-F.");
+                Check(shortcuts.Length == 3 && shortcuts.All(r => r.ShortcutKind == ShortcutKind.Keyed) && shortcuts.Select(r => r.KeyId).Distinct().Count() == 3,
+                    "shortcut.count: Expected three distinct later-zone keys.");
+                if (campaign.GeneratorVersion >= 5)
+                    Check(campaign.Routes.All(r => r.IsWarp == (r.ShortcutKind == ShortcutKind.Keyed)),
+                        "warp.kind: Only the three keyed shortcuts may be warps.");
+                foreach (int later in new[] { 3, 4, 5 })
+                {
+                    var matches = shortcuts.Where(r => r.From == "checkpoint-1" && r.To == $"checkpoint-{later}").ToArray();
+                    Check(matches.Length == 1, $"shortcut.hub: Missing B-{(char)('A' + later)} connection.");
+                    if (matches.Length != 1) continue;
+                    var route = matches[0];
+                    Check(route.KeyLocationId != null && locations[route.KeyLocationId].RegionId == locations[route.To].RegionId &&
+                        locations[route.KeyLocationId].Stage >= locations[route.To].Stage, $"shortcut.keyStage: {route.Id} key must be in its later biome.");
+                }
+                var normal = CampaignExplorer.Explore(campaign, excludedRoutes: new HashSet<string>(shortcuts.Select(r => r.Id)));
+                foreach (var shortcut in shortcuts)
+                    Check(normal.ReachableLocations.Contains(shortcut.KeyLocationId!), $"shortcut.keyCycle: {shortcut.Id} key requires a shortcut.");
+                foreach (var boundary in boundaries)
+                {
+                    var cut = CampaignExplorer.Explore(campaign, excludedRoutes: new HashSet<string> { boundary.Id });
+                    int stage = locations[boundary.From].Stage;
+                    Check(!campaign.Locations.Any(l => l.Kind == LocationKind.Checkpoint && l.Stage > stage && cut.ReachableLocations.Contains(l.Id)),
+                        $"shortcut.early: Keys or routes bypass stage {stage} before its normal boundary.");
+                }
+            }
+            foreach (var objective in campaign.ReturnObjectives)
+            {
+                bool valid = regions.ContainsKey(objective.RegionId) && objective.DestinationIds.Count > 0 &&
+                    objective.DestinationIds.All(locations.ContainsKey) && objective.GateIds.Count == objective.DestinationIds.Count &&
+                    objective.GateIds.All(id => campaign.Routes.Any(r => r.Id == id));
+                Check(valid, "return.references: Invalid destination or gate.");
+                if (!valid) continue;
+                int firstVisit = campaign.Locations.Where(l => l.RegionId == objective.RegionId && !objective.DestinationIds.Contains(l.Id)).Min(l => l.Stage);
+                Check(objective.AcquisitionStage > firstVisit && objective.AcquisitionStage < boundaries.Length,
+                    "return.stage: Enabler must be acquired after the initial biome visit and before the final stage.");
+                var enablingSources = campaign.Sources.Where(s => s.Capability == objective.EnablingCapability).ToArray();
+                Check(enablingSources.Length > 0 && enablingSources.Min(s => locations[s.LocationId].Stage) == objective.AcquisitionStage,
+                    "return.acquisitionStage: Enabler providers disagree with the declared acquisition stage.");
+                if (objective.Required)
+                    Check(enablingSources.All(s => locations[s.LocationId].RegionId != objective.RegionId), "return.enablerRegion: Required return enabler must be acquired in another region.");
+                Check(enablingSources.All(s => !objective.DestinationIds.Contains(s.LocationId)),
+                    "return.circular: Enabler is inside its own destination.");
+                Check(objective.DestinationIds.All(id => locations[id].RegionId == objective.RegionId), "return.region: Destination outside earlier biome.");
+                foreach (string id in objective.DestinationIds)
+                {
+                    var entrances = campaign.Routes.Where(r => r.Other(id) != null).ToArray();
+                    Check(entrances.Length == 1 && objective.GateIds.Contains(entrances[0].Id) &&
+                        entrances[0].Requirement.Alternatives.Count == 1 && entrances[0].Requirement.Alternatives[0].Equals(CapabilitySet.Of(objective.EnablingCapability)) &&
+                        locations[entrances[0].Other(id)!].Stage < objective.AcquisitionStage,
+                        "return.gate: Return destination must have one sealed entrance on an earlier path.");
+                }
+                if (objective.Required)
+                {
+                    Check(objective.RewardCapability.HasValue && objective.RewardCapability != Capability.Engineering && critical.Contains(objective.RewardCapability.Value),
+                        "return.reward: Required return must reward a critical capability other than Engineering.");
+                    if (objective.RewardCapability.HasValue)
+                    {
+                        var providers = campaign.Sources.Where(s => s.Capability == objective.RewardCapability.Value).ToArray();
+                        Check(providers.Length == 2 && providers.All(s => objective.DestinationIds.Contains(s.LocationId)), "return.providers: Both providers must require returning.");
+                        Check(!CampaignExplorer.Explore(campaign, excludedCapability: objective.RewardCapability).ReachableLocations.Contains(campaign.FinalLocationId),
+                            "return.bypass: Completion can omit the return reward.");
+                    }
+                }
+                else Check(objective.DestinationIds.All(id => locations[id].Kind == LocationKind.Secret && !locations[id].Required), "return.optional: Optional returns must be optional secrets.");
+            }
+            var optional = new HashSet<string>(campaign.ReturnObjectives.Where(o => !o.Required).SelectMany(o => o.DestinationIds));
+            Check(CampaignExplorer.Explore(campaign, excludedLocations: optional).ReachableLocations.Contains(campaign.FinalLocationId), "return.optional: Completion depends on optional returns.");
+        }
         var full = CampaignExplorer.Explore(campaign);
         var guaranteed = CampaignExplorer.Explore(campaign, guaranteedOnly: true, criticalOnly: true, maxPersonalCapabilities: 1);
         foreach (var location in campaign.Locations)

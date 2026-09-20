@@ -978,6 +978,8 @@ namespace TWC.editor
 			foreach(var type in types)
 			{
 				var _categoryAttribute = (ActionCategoryAttribute)type.GetCustomAttribute(typeof(ActionCategoryAttribute), false);
+				// Programmatic actions (such as campaign masks) are not entries in the authoring menu.
+				if (_categoryAttribute == null) continue;
 				var _nameAttribute = (ActionNameAttribute)type.GetCustomAttribute(typeof(ActionNameAttribute), false);
 				
 				Assembly _assembly = Assembly.GetAssembly(type);

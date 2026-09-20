@@ -51,12 +51,34 @@ public sealed class ConsoleExplorerTests
         Assert.Equal("::::@", renderer.Render(5, 1)[0]);
     }
 
-    private static ExplorerSession Create(LockForm form)
+    [Fact]
+    public void WarpMenuRequiresLaterKeyAndTeleportsBothWays()
+    {
+        var session = Create(LockForm.None, warp: true);
+        Assert.Contains("Requires: Later key", session.WarpLabel(Assert.Single(session.WarpsHere)));
+        Assert.False(session.Warp("gate"));
+        Assert.Equal("start", session.Location!.Id);
+        for (int i = 0; i < 14; i++) Assert.True(session.Move(1, 0));
+        Assert.False(session.Warp("gate"));
+        session.ClaimRewards();
+        Assert.Equal(new[] { "Later key" }, session.CollectedKeys);
+        Assert.True(session.Warp("gate"));
+        Assert.Equal("start", session.Location!.Id);
+        Assert.True(session.Warp("gate"));
+        Assert.Equal("end", session.Location!.Id);
+        Assert.True(session.Move(-1, 0));
+        Assert.Empty(session.WarpsHere);
+        Assert.False(session.Warp("gate"));
+    }
+
+    private static ExplorerSession Create(LockForm form, bool warp = false)
     {
         var campaign = new CampaignDefinition(1, 1, "start", "end", Array.Empty<ActivatedCapability>(),
             new[] { new CampaignRegion("region", "test", 0) },
             new[] { new CampaignLocation("start", "region", 0, LocationKind.Town), new CampaignLocation("end", "region", 0, LocationKind.Town) },
-            new[] { new CampaignRoute("gate", "start", "end", new Requirement(CapabilitySet.Of(Capability.Climb)), form) },
+            new[] { warp ? new CampaignRoute("gate", "start", "end", Requirement.Open, LockForm.None,
+                shortcutKind: ShortcutKind.Keyed, keyId: "Later key", keyLocationId: "end", isWarp: true) :
+                new CampaignRoute("gate", "start", "end", new Requirement(CapabilitySet.Of(Capability.Climb)), form) },
             new[] { new CapabilitySource("reward", "start", Capability.Climb, "climber") },
             new[] { new CampaignCompanion("climber", Capability.Climb) });
         var ground = new bool[15, 1];
@@ -68,7 +90,7 @@ public sealed class ConsoleExplorerTests
         };
         var grid = new OverworldGrid(campaign, layers,
             new Dictionary<string, GridPoint> { ["start"] = new(0, 0), ["end"] = new(14, 0) },
-            new Dictionary<string, IReadOnlyList<GridPoint>>(), new[] { new GridLock("gate", new[] { new GridPoint(7, 0) }) });
+            new Dictionary<string, IReadOnlyList<GridPoint>>(), warp ? Array.Empty<GridLock>() : new[] { new GridLock("gate", new[] { new GridPoint(7, 0) }) });
         return new ExplorerSession(campaign, grid);
     }
 }

@@ -1,5 +1,5 @@
 {
   "name": "EternalEnigma.Editor",
-  "references": ["EternalEnigma.Game"],
+  "references": ["EternalEnigma.Game", "TileWorldCreator", "TileWorldCreator.OdinSerializer"],
   "includePlatforms": ["Editor"]
 }

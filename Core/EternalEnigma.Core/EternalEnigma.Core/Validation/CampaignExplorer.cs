@@ -34,7 +34,7 @@ public sealed class ExplorationResult
 public static class CampaignExplorer
 {
     public static ExplorationResult Explore(Campaign campaign, bool guaranteedOnly = false,
-        bool criticalOnly = false, int maxPersonalCapabilities = 3, string? excludedCompanionId = null)
+        bool criticalOnly = false, int maxPersonalCapabilities = 3, string? excludedCompanionId = null, ISet<string>? excludedLocations = null, Capability? excludedCapability = null, ISet<string>? excludedRoutes = null)
     {
         if (maxPersonalCapabilities < 0 || maxPersonalCapabilities > 3) throw new ArgumentOutOfRangeException(nameof(maxPersonalCapabilities));
         var byLocation = campaign.Locations.ToDictionary(l => l.Id, StringComparer.Ordinal);
@@ -65,12 +65,14 @@ public static class CampaignExplorer
                     var current = queue.Dequeue();
                     if (reachable.Add(current)) changed = true;
                     if (byLocation[current].Kind == LocationKind.Town && towns.Add(current)) changed = true;
+                    foreach (var shortcut in campaign.Routes.Where(r => excludedRoutes?.Contains(r.Id) != true))
+                        if (shortcut.TryCollectKey(current, resolved)) changed = true;
                     foreach (var source in campaign.Sources.Where(s => s.LocationId == current).OrderBy(s => s.Id, StringComparer.Ordinal))
                     {
                         if (sources.Contains(source.Id) || (guaranteedOnly && !source.Guaranteed) ||
                             (excludedCompanionId != null && source.CompanionId == excludedCompanionId) ||
                             (criticalOnly && manifest[source.Capability].Role != CapabilityRole.Critical) ||
-                            !source.Prerequisites.IsSatisfiedBy(held)) continue;
+                            source.Capability == excludedCapability || !source.Prerequisites.IsSatisfiedBy(held)) continue;
                         sources.Add(source.Id);
                         changed = true;
                         if (source.Capability.Kind() == CapabilityKind.Personal)
@@ -81,6 +83,9 @@ public static class CampaignExplorer
                     }
                     foreach (var route in adjacency[current])
                     {
+                        if (excludedRoutes?.Contains(route.Id) == true) continue;
+                        if (excludedLocations?.Contains(route.Other(current)!) == true) continue;
+                        if (route.TryUnlock(current, resolved)) changed = true;
                         if (!route.CanTraverse(held, resolved)) continue;
                         if (route.Latches && resolved.Add(route.Id)) changed = true;
                         string next = route.Other(current)!;

@@ -22,7 +22,7 @@ public sealed class OverworldGridTests
         Assert.Equal(256, grid.Width);
         Assert.Equal(256, grid.Height);
         Assert.Equal(campaign.Locations.Count, grid.Locations.Count);
-        Assert.Equal(campaign.Routes.Count(r => !r.Requirement.IsOpen), grid.Locks.Count);
+        Assert.Equal(campaign.Routes.Count(r => r.HasGate && !r.IsWarp), grid.Locks.Count);
         Assert.True(OverworldGridValidator.Validate(campaign, grid).IsValid);
         foreach (var layer in grid.Layers)
             Assert.Equal(layer.Value.ToArray().Cast<bool>(), again.Layers[layer.Key].ToArray().Cast<bool>());
@@ -95,8 +95,8 @@ public sealed class OverworldGridTests
             var route = campaign.Routes.Single(r => r.Id == gate.RouteId);
             var cell = gate.Cells[0];
             Assert.False(grid.IsWalkable(cell, CapabilitySet.Empty));
-            Assert.True(grid.IsWalkable(cell, route.Requirement.Alternatives[0]));
-            Assert.Equal(route.Latches, grid.IsWalkable(cell, CapabilitySet.Empty, new HashSet<string> { gate.RouteId }));
+            Assert.Equal(route.ShortcutKind != ShortcutKind.FarSide && route.ShortcutKind != ShortcutKind.Keyed, grid.IsWalkable(cell, route.Requirement.Alternatives[0]));
+            Assert.Equal(route.Latches || route.ShortcutKind == ShortcutKind.FarSide || route.ShortcutKind == ShortcutKind.Keyed, grid.IsWalkable(cell, CapabilitySet.Empty, new HashSet<string> { gate.RouteId }));
         }
     }
 
@@ -109,14 +109,14 @@ public sealed class OverworldGridTests
     }
 
     [Fact]
-    public void SmallMapsAndUnsupportedCyclesFailExplicitly()
+    public void SmallMapsFailAndLocalCyclesAreSupported()
     {
         var campaign = CampaignGenerator.Generate(42);
         Assert.Throws<ArgumentException>(() => OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(16, 16)));
         var open = campaign.Routes.First(r => r.Requirement.IsOpen);
         var parallel = new CampaignRoute("extra-route", open.From, open.To, Requirement.Open, LockForm.None);
         var cyclic = CampaignGeneratorTests.With(campaign, routes: campaign.Routes.Concat(new[] { parallel }));
-        Assert.Throws<NotSupportedException>(() => OverworldGridGenerator.Generate(cyclic));
+        Assert.True(OverworldGridValidator.Validate(cyclic, OverworldGridGenerator.Generate(cyclic)).IsValid);
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public sealed class OverworldGridTests
         foreach (var layer in expanded.Layers)
             Assert.Equal(layer.Value.ToArray().Cast<bool>(), again.Layers[layer.Key].ToArray().Cast<bool>());
         foreach (string layer in new[] { OverworldLayers.Roads, OverworldLayers.Locks, OverworldLayers.AreaLocks,
-            OverworldLayers.ObstacleLocks, OverworldLayers.InteractionLocks, OverworldLayers.Water })
+            OverworldLayers.ObstacleLocks, OverworldLayers.InteractionLocks })
             Assert.Equal(original.Layers[layer].ToArray().Cast<bool>(), expanded.Layers[layer].ToArray().Cast<bool>());
         foreach (var gate in original.Locks)
         {
@@ -187,9 +187,31 @@ public sealed class OverworldGridTests
             {
                 Assert.True(distances.TryGetValue(cell, out int distance));
                 Assert.InRange(distance, 1, radius);
-                Assert.True(expanded.IsWalkable(cell, CapabilitySet.Empty));
+                Assert.Equal(!expanded.RequiresBoat(cell), expanded.IsWalkable(cell, CapabilitySet.Empty));
                 Assert.False(expanded.Layers[OverworldLayers.Roads][x, y]);
             }
+        }
+    }
+
+    [Fact]
+    public void StartingLocationsStayTogetherAndExpansionRemainsNearOriginalTerrain()
+    {
+        var campaign = CampaignGenerator.Generate(42);
+        var grid = OverworldGridGenerator.Generate(campaign);
+        var original = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: 0));
+        string startingRegion = campaign.Locations.Single(l => l.Id == campaign.StartLocationId).RegionId;
+        var startLocations = campaign.Locations.Where(l => l.RegionId == startingRegion)
+            .Select(l => grid.Locations[l.Id]).ToArray();
+        Assert.True(startLocations.Max(p => p.Y) - startLocations.Min(p => p.Y) <= 60,
+            "Starting locations must not straddle the full campaign height.");
+        for (int y = 0; y < grid.Height; y++) for (int x = 0; x < grid.Width; x++)
+        {
+            var point = new GridPoint(x, y);
+            if (!grid.IsGround(point) || original.IsGround(point)) continue;
+            string region = campaign.Regions.Single(r => grid.Layers[OverworldLayers.Region(r.Id)][x, y]).Id;
+            int radius = region == startingRegion ? 3 : 6;
+            Assert.Contains(Enumerable.Range(-radius, 2 * radius + 1).SelectMany(dy => Enumerable.Range(-radius, 2 * radius + 1).Select(dx => new GridPoint(x + dx, y + dy))),
+                p => original.IsGround(p) && Math.Abs(p.X - x) + Math.Abs(p.Y - y) <= radius);
         }
     }
 
@@ -226,8 +248,8 @@ public sealed class OverworldGridTests
         var grid = OverworldGridGenerator.Generate(campaign);
         var gate = grid.Locks[0];
         var ground = grid.Layers[OverworldLayers.Ground].ToArray();
-        int left = gate.Cells.Min(c => c.X) - 1, right = gate.Cells.Max(c => c.X) + 1, y = gate.Cells[0].Y;
-        for (int x = left; x <= right; x++) ground[x, y + 1] = true;
+        for (int y = gate.Cells.Min(c => c.Y) - 1; y <= gate.Cells.Max(c => c.Y) + 1; y++)
+        for (int x = gate.Cells.Min(c => c.X) - 1; x <= gate.Cells.Max(c => c.X) + 1; x++) ground[x, y] = true;
         var layers = grid.Layers.ToDictionary(p => p.Key, p => p.Value);
         layers[OverworldLayers.Ground] = new GridLayer(ground);
         var broken = new OverworldGrid(campaign, layers, grid.Locations.ToDictionary(p => p.Key, p => p.Value),

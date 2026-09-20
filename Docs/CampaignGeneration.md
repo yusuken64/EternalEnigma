@@ -1,7 +1,7 @@
 # Core campaign generation
 
 `CampaignGenerator.Generate(int seed)` produces an immutable logical campaign and
-validates it before returning. Generation version 1 uses explicit seeded streams
+validates it before returning. Generation version 5 uses explicit seeded streams
 for activation, topology and identity. It does not use Unity, global random state,
 time, hash-table iteration order or runtime-dependent `System.Random` sequences.
 
@@ -22,12 +22,16 @@ by this campaign; this is the core model and traversal API for that integration.
 
 ## Generated content
 
-| Component | Version 1 behavior |
+Version 5 retains the guarantee of Boat in every campaign, with two converter-site providers
+requiring Engineering. This supports navigable water in the biome grid while
+keeping acquisition on the original land route network. Earlier fingerprints intentionally change; biome assignment belongs to grid generation version 7.
+
+| Component | Version 5 behavior |
 |---|---|
-| Manifest | Closed 21-capability vocabulary; activates 3–4 personal, 2–3 vehicle and 4–5 utility capabilities, with required area/water/narrative coverage. |
-| Roles | 5–7 critical and 4–6 exploratory, partitioning the active set; Engineering critical, 1–2 personal critical, at least one vehicle critical. Three active vehicles always include an exploratory one. |
-| Progression | Five tiers, with 5–7 gated stages along a spine. Every boundary includes a critical solution and at least one exploratory alternate. |
-| Regions | 6–8 semantic regions, unique themes, and one designated region landmark each. No coordinates or physical adjacency are generated yet. |
+| Manifest | Closed 21-capability vocabulary; activates 3â€“4 personal, 2â€“3 vehicle and 4â€“5 utility capabilities, with required area/water/narrative coverage. |
+| Roles | 5â€“7 critical and 4â€“6 exploratory, partitioning the active set; Engineering critical, 1â€“2 personal critical, at least one vehicle critical. Three active vehicles always include an exploratory one. |
+| Progression | Five tiers, with 5â€“7 gated stages along a spine. Every boundary includes a critical solution. The required return reward has a sole-solution boundary; other boundaries retain exploratory alternatives. |
+| Regions | Six ordered semantic regions A through F, unique themes, and one designated landmark each. Physical coordinates use grid version 7. Later logical stages can occupy earlier regions. |
 | Towns | Six roster/fast-travel locations. A town separates same-tier personal gates when needed to preserve the one-specialist required route. |
 | Dungeons | Four story locations, a final dungeon, and one source-free repeatable location in every tier. These are dungeon interfaces, not floor layouts. |
 | Sources | Two guaranteed providers per capability, respecting source tiers. Personal abilities have two distinct companion providers; utility/vehicle abilities latch permanently. |
@@ -35,10 +39,44 @@ by this campaign; this is the core model and traversal API for that integration.
 | Converters | Vehicle sources are converter sites requiring Engineering. Claiming a reward consumes no permanent capability. Component items/recipes are not implemented yet. |
 
 The spine topology is deliberately bounded. Seeds vary capabilities, roles, their
-order, alternatives, source placement, region count and themes. This does not yet
-implement arbitrary region topology, geographical embedding or the full spec's
-pacing/content distributions. Specialist providers number 6–8; a complete authored
+order, alternatives, source placement and themes. The grid supports the generated district topology and keyed inter-biome loops, rather than arbitrary nonplanar graphs. Specialist providers number 6â€“8; a complete authored
 eight-person combat roster is separate from this capability-provider model.
+
+## Return objectives and shortcuts
+
+Every campaign contains one required return objective and three optional return
+secrets. `ReturnObjectives` records each earlier region, destination and gate IDs,
+enabling capability, its acquisition stage, required flag and optional critical
+reward. The three secrets reuse existing capability payoffs. Their sole capability
+first becomes obtainable at least one stage after the initial biome visit.
+
+Both providers of the required reward move behind separate gates in the same
+earlier biome. The reward is critical and is never Engineering. Its enabler is
+obtained elsewhere after the opening stage. A subsequent progression boundary
+requires the reward without alternatives. Source counts and Engineering
+prerequisites remain intact. The earlier gate entrances are available before the
+enabler; inspecting them is optional. Optional return secrets can all be omitted.
+
+Six ordered regions form the biome chain A–B–C–D–E–F. Three keyed warps join
+B–D, B–E and B–F. Each key is collected at the corresponding later biome's
+landmark, reached through normal progression first. Keys are permanent and
+nonconsumable; collecting one unlocks its warp in both directions. With all keys,
+every pair of biomes is at most two transitions apart. Extra progression stages
+remain inside F. Region `ProgressionOrder`, route `ShortcutKind`, `KeyId`,
+`KeyLocationId` and `IsWarp` are included in fingerprints and diagnostic exports.
+
+`CampaignRoute.TryCollectKey` and `CampaignSession.TryCollectShortcutKey` share
+the resolved-route state used by permanent locks. Collecting at any other site
+fails; a shortcut cannot be opened by interacting at its endpoint. Legacy far-side
+and capability route support remains available in the core. Water requires Boat
+regardless of key ownership.
+
+Validation checks return metadata, provider exclusivity, sealed entrances,
+circular dependencies, completion without optional secrets, and failure to
+complete without the required reward. The explorer simulates reachable unlocking
+actions. Grid validation checks all closed components and gate contacts, including
+loops, diagonal sealing, compactness and shortcut savings. Fingerprints include
+all return and shortcut metadata; earlier fingerprints intentionally change.
 
 ## Runtime rules
 
@@ -53,6 +91,8 @@ eight-person combat roster is separate from this capability-provider model.
 - `TryMove(routeId)` traverses a connected bidirectional route using held
   capabilities. Obstacle/interaction locks stay resolved. Area gates always check
   current capabilities. A new recruit cannot become active in the field.
+- `TryCollectShortcutKey(routeId)` requires the route's key location and permanently
+  opens that keyed passage. Keys persist through defeat and reset with the session.
 - `TryFastTravel(townId)` reaches visited towns only, from any location.
 - `ReturnAfterDefeat()` returns to the starting town and preserves all campaign
   progression. Combat gold/consumable penalties belong to the host.
@@ -72,8 +112,11 @@ source tiers and providers, converter requirements, repeatable-source exclusion,
 payoffs, required destinations and companion independence.
 
 Declared progression boundaries define cuts between stages. Every route crossing
-a cut must imply its intended DNF requirement, including shortcuts across several
-cuts. The boundary route itself supplies the intended alternatives, making the
+a cut must imply its intended DNF requirement, except keyed shortcuts, which use
+reachable key acquisition instead. Validation removes each progression boundary
+and simulates all reachable key collections; no later checkpoint may become
+reachable through a shortcut or chain of shortcuts. It also verifies that all key
+sites remain reachable with shortcuts excluded. The boundary route itself supplies the intended alternatives, making the
 effective graph requirement equivalent. A free bypass is rejected even though it
 makes completion easier. This checks the **logical graph**, not physical terrain.
 
@@ -108,7 +151,7 @@ assumptions, not all 64 v5 guarantees.
 ## Reproducibility and checks
 
 `CampaignFingerprint` hashes all logical fields in canonical order. The test suite
-pins seed 42 for generation version 1. An intentional generation change requires
+pins seed 42 for generation version 5. An intentional generation change requires
 a version and fixture update; a shared seed should always include that version.
 CLI JSON contains both versioned campaign content and its fingerprint, but is not
 a supported restore format.

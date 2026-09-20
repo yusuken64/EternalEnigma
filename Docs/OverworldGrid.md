@@ -17,10 +17,44 @@ GridPoint town = grid.Locations["town-0"];
 
 Every layer uses `[x, y]` indexing with exactly `Width × Height` cells. `ToArray()`
 returns an independent copy, so TWC cannot modify the core's movement model.
-`grid.Routes` maps route IDs to contiguous, ordered grid paths from the campaign
-route's `From` to `To`. `grid.Locks` maps gated route IDs to their footprints.
+`grid.Routes` maps walking route IDs to contiguous, ordered grid paths from the
+campaign route's `From` to `To`. Warp routes instead contain exactly two landing
+pad coordinates; no terrain is carved between them. `grid.Warps` identifies these
+nonlocal links. `grid.Locks` maps physical gated routes to their footprints.
 
 ## TileWorldCreator setup
+
+### Playable Overworld scene
+
+Open `Assets/Scenes/Overworld.unity` and press Play. `OverworldScene` builds seed
+42 through `CampaignOverworld`, spawns the Town hero at the campaign start town,
+and follows it with an orthographic camera. Change `CampaignOverworld.Seed` to
+explore another campaign. The dedicated `Assets/Overworld/CampaignTerrain.asset`
+reuses Town's park and road tile presets without changing Town's generator.
+
+Move with WASD, arrows, or a gamepad's left stick/D-pad. Diagonals obey the core's
+sealed-corner rule. Enter or gamepad A claims a location's eligible rewards as a
+simulated encounter. Recruited companions can be equipped/dismissed using the
+buttons shown while standing at a town (three active slots). Green markers are
+towns, red markers dungeons, gold markers other locations, and purple bars closed
+gates. Permanent gates remain open after crossing; area gates track current
+capabilities. Progress is in memory for the current Play session. Location markers
+do not launch combat or load the existing Town/Dungeon scenes.
+
+Actor roots retain Town's cell-corner coordinates (`cell * cellSize`). Terrain,
+markers and camera focus use the half-tile center offset, matching the Town hero's
+visual child; this offset does not change grid movement or gate checks.
+
+The scene is included in build settings; the main-menu flow is unchanged.
+`Tools > Eternal Enigma > Overworld > Set Up Scene` authors the setup into an empty
+Overworld scene and refuses to replace an existing controller. For a mesh preview
+outside Play Mode, use `Generate And Build Overworld` on `CampaignOverworld`.
+
+`node Tools/unity-mcp.mjs harness Overworld` loads the authored scene in Play Mode,
+checks terrain construction, hero movement, camera following and closed gates,
+and writes a camera render to `Temp/OverworldScene/play-preview.png`.
+
+### Custom scenes
 
 1. Use a dedicated GameObject with **TileWorldCreator** and **CampaignOverworld**.
    Keep the existing town generator on its own object.
@@ -65,9 +99,13 @@ blueprint generation. TWC's own build-layer visual randomness is separate.
 | Layer | Meaning |
 |---|---|
 | `Ground` | All potential walkable ground, including conditional gate tiles. Use for floor/terrain rendering. |
-| `Walkable` | Conservative mask with all locks closed; adapter can produce a capability/resolution snapshot. Do not treat it as permanently authoritative. |
+| `Walkable` | Conservative mask with all locks closed and no Boat; adapter can produce a capability/resolution snapshot. Do not treat it as permanently authoritative. |
 | `Roads` | Carved routes, including the portions crossing gates. Rendering roads must not create new walkable tiles. |
-| `Mountains`, `Trees`, `Water` | Disjoint blocked-background masks. Water currently forms an outer border; this is not navigable vehicle-zone generation. |
+| `Mountains`, `Trees` | Blocked-background decoration; these differ from the walkable mountain/forest biomes. |
+| `Water` | All visible water, including the blocked outer border and navigable inland water. |
+| `NavigableWater` | Water within `Ground`; always requires Boat, including when adjacent locks are resolved. |
+| `Bridges` | Dry road/causeway tiles crossing a water region. No Boat needed. |
+| `Biome/<name>` | Grassland, Desert, Water, Mountain, Forest, Tundra, Marsh, Volcanic. Mutually exclusive masks partitioning `Ground`. |
 | `Reserved` | Ground plus a one-tile sealing halo. Decoration must not carve or block these cells. This is metadata, not a prefab placement layer. |
 | `Towns`, `StoryDungeons`, `RepeatableDungeons`, `FinalDungeon`, `Converters`, `Landmarks`, `Secrets` | One-tile placement markers by location kind. These are entrances/anchors, not building footprints or interiors. |
 | `PlayerStart` | Exactly one marker at the start town. |
@@ -93,33 +131,68 @@ three corridor tiles; other gates occupy one tile.
 These queries do not mutate progression. A movement/interaction controller must
 record permanent resolutions through its progression logic. The existing town
 `WalkableMap` is not an overworld controller: its Houses/Trees mask and permissive
-corner policy cannot represent these gates. This change supplies generation and
-the renderer adapter, not a replacement player controller or automatic scene flow.
+corner policy cannot represent these gates. The dedicated `OverworldScene`
+controller uses these queries for movement and records latched gates on crossing.
 
 ## Geometry and validation
 
-Version 2 expands the current campaign **tree** into broad, irregular walkable
-zones, retaining the original location positions, roads and narrow gate approaches.
-Roads are navigation hints; ordinary floor around them is freely walkable.
-`new OverworldGridOptions(areaExpansionRadius: 6)` is the default for all callers,
-including the console explorer and Unity. The optional radius accepts 0–12;
-zero preserves the original corridor geometry. Campaign versions and fingerprints
-are unchanged.
+Grid generation **version 7** places six ordered biomes in fixed 3×3 slots,
+independently of graph depth:
 
-Before decoration, the generator labels original floor components with all gates
-closed. Seeded orthogonal growth inherits its source region, costs one or two per
-tile, and stops at the radius or a total cost of twelve. Different components
-cannot touch, even diagonally. The one-tile halo around every gate retains its
-original terrain, and the two-tile outer water border stays intact. Walkability,
-region, decoration and reservation masks include the expanded floor; roads remain
-separate. Seed streams 100/101 control branch order and background decoration;
-stream 102 controls expansion. Existing campaign streams are unchanged.
+```text
+. F E
+A B D
+. . C
+```
 
-Cyclic/parallel-route campaigns fail explicitly rather than silently dropping
-routes or introducing crossings. A map too small for the layout reports its
-minimum required dimensions. Dimensions are configurable from 16 to 1024 per axis;
-default dimensions are 256×256. The generator validates the campaign first and
-the finished grid before returning either to a renderer.
+The normal walking route follows A–B–C–D–E–F, including the diagonal B–C route.
+B–D, B–E and B–F are keyed warps with cyan landing pads at their checkpoints;
+extra progression stages remain within F. Destinations occupy district branches;
+return destinations physically belong to the starting biome even though their
+logical acquisition stages are later. Seeded bends wind the routes through the
+terrain. The three inter-biome warp loops are supported; arbitrary walking crossings are
+rejected with diagnostics. Up to 64 deterministic placements are attempted.
+
+The default remains 256×256. This embedding needs at least 248×248; options accept
+dimensions up to 1024. `areaExpansionRadius` remains 0–12 (default 6). Zero produces
+only location clearings and corridors. Expansion grows from the original floor,
+with small starting grasslands, open desert, forest glades, mountain valleys,
+broken tundra, marsh pockets and volcanic chambers. Closed-gate components cannot
+touch, including diagonally. Gate halos and two-tile region barriers stay sealed.
+
+Biomes are sampled without replacement using stream 103, with grassland reserved
+for the starting region. `RegionBiomes` describes region identity; `BiomeAt` gives
+the actual floor biome. Water regions retain dry islands and causeways around
+original locations and routes. Boat-only area gates are water crossings. Every
+navigable water tile requires Boat, even with resolved gates; the outer water
+border remains impassable. Boat providers and required non-Boat routes remain dry.
+
+`CampaignRoute.HasGate` includes keyed shortcuts even though their capability
+requirement is empty; `IsWarp` distinguishes them from physical gate footprints.
+Each warp starts locked from both ends. Collect its
+key at the landmark in D, E or F using Enter / gamepad A or **Collect key**.
+`TryCollectKey` records the passage in the same resolved-route set as permanent
+locks; `CanTraverse` then allows travel in both directions without consuming the
+key. `grid.TryWarp` validates the current endpoint, unlock state and destination
+before returning the landing position. Walking remains restricted to adjacent cells.
+The console shows O for warp gates and K/k for uncollected/collected key sites;
+press V at a gate to choose a destination. Unity uses cyan pads and explicit
+**Warp to biome** HUD buttons. HUDs list keys and the required return objective.
+With all three keys, every biome is at most two biome transitions away.
+Keys and gate resolutions remain session-local. Actual water still requires Boat.
+The core also retains support for far-side and capability shortcut kinds.
+
+The validator rejects occupied-floor aspect ratios above 1.5 and shortcuts that
+save less than 25% of shortest endpoint travel with all capabilities
+and all reachable permanent unlocks available. The comparison blocks only the
+shortcut's own gate or warp, leaving other shortcuts usable. Warp activation costs
+one step in this comparison. This detects redundant loops
+and terrain that erases their travel benefit.
+
+Unity's `OverworldBiomeRenderer` draws textured, chunked floor meshes using the
+existing half-tile alignment. Edit `Assets/Overworld/Biome*.mat` to change the
+palette. **Tools > Eternal Enigma > Overworld > Apply Biome Floors** assigns the
+materials to an existing scene while preserving material edits.
 
 `OverworldGridValidator` removes gate footprints and compares the remaining tile
 components against the campaign's open-route components. Each gate must connect

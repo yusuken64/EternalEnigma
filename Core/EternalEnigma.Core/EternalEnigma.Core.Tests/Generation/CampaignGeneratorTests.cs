@@ -10,9 +10,9 @@ namespace EternalEnigma.Core.Tests.Generation;
 public sealed class CampaignGeneratorTests
 {
     [Fact]
-    public void VersionOneSeed42HasStableGoldenFingerprint()
+    public void VersionFiveSeed42HasStableGoldenFingerprint()
     {
-        Assert.Equal("76573a1fec60e44c6812f5cc818c8c7d2c067c9345f87970930db0999f53083f",
+        Assert.Equal("2d0a5925c9428cc076f43cff650af5e91625592c71b5e07411c312385961a890",
             CampaignFingerprint.Compute(CampaignGenerator.Generate(42)));
     }
 
@@ -98,7 +98,7 @@ public sealed class CampaignGeneratorTests
     {
         var campaign = CampaignGenerator.Generate(42);
         var reordered = new Campaign(campaign.Seed, campaign.GeneratorVersion, campaign.StartLocationId, campaign.FinalLocationId,
-            campaign.Manifest.Reverse(), campaign.Regions.Reverse(), campaign.Locations.Reverse(), campaign.Routes.Reverse(), campaign.Sources.Reverse(), campaign.Companions.Reverse());
+            campaign.Manifest.Reverse(), campaign.Regions.Reverse(), campaign.Locations.Reverse(), campaign.Routes.Reverse(), campaign.Sources.Reverse(), campaign.Companions.Reverse(), campaign.ReturnObjectives.Reverse());
         string expected = CampaignFingerprint.Compute(campaign);
         Assert.Equal(expected, CampaignFingerprint.Compute(reordered));
         var previous = CultureInfo.CurrentCulture;
@@ -112,7 +112,7 @@ public sealed class CampaignGeneratorTests
 
     internal static Campaign With(Campaign c, IEnumerable<CapabilitySource>? sources = null, IEnumerable<CampaignRoute>? routes = null,
         IEnumerable<CampaignLocation>? locations = null) => new(c.Seed, c.GeneratorVersion, c.StartLocationId, c.FinalLocationId,
-            c.Manifest, c.Regions, locations ?? c.Locations, routes ?? c.Routes, sources ?? c.Sources, c.Companions);
+            c.Manifest, c.Regions, locations ?? c.Locations, routes ?? c.Routes, sources ?? c.Sources, c.Companions, c.ReturnObjectives);
 
     [Fact]
     public void ValidatorRejectsARequiredCapabilityLockedBehindItself()

@@ -6,7 +6,7 @@ namespace EternalEnigma.Core.Generation;
 
 public static class CampaignGenerator
 {
-    public const int Version = 1;
+    public const int Version = 5;
     public const int TierCount = 5;
 
     public static Campaign Generate(int seed)
@@ -16,7 +16,7 @@ public static class CampaignGenerator
         var topology = new SeedStream(seed, 1);
         var identity = new SeedStream(seed, 2);
         var personal = Select(activation, CapabilityKind.Personal, 3 + activation.Range(2), c => c.HasAreaForm());
-        var vehicles = Select(activation, CapabilityKind.Vehicle, 2 + activation.Range(2), c => c == Capability.Boat || c == Capability.Icebreaker);
+        var vehicles = Select(activation, CapabilityKind.Vehicle, 2 + activation.Range(2), c => c == Capability.Boat);
         var utility = new List<Capability> { Capability.Engineering };
         utility.Add(activation.Shuffle(CapabilityCatalog.All.Where(c => c.IsNarrative()))[0]);
         utility.AddRange(activation.Shuffle(CapabilityCatalog.All.Where(c => c.Kind() == CapabilityKind.Utility && !utility.Contains(c)))
@@ -44,14 +44,14 @@ public static class CampaignGenerator
         int[] tierAnchor = Enumerable.Range(0, TierCount).Select(t => Enumerable.Range(0, critical.Count).First(i => Tier(i) == t)).ToArray();
 
         var themes = identity.Shuffle(new[] { "Highlands", "Marsh", "Coast", "Forest", "Desert", "Tundra", "Ruins", "Volcanic" });
-        var regions = Enumerable.Range(0, 6 + identity.Range(3))
-            .Select(i => new CampaignRegion($"region-{i}", themes[i], i < 5 ? i : identity.Range(5))).ToList();
+        var regions = Enumerable.Range(0, 6)
+            .Select(i => new CampaignRegion($"region-{i}", themes[i], Tier(i), progressionOrder: i)).ToList();
         var locations = new List<CampaignLocation>();
         var routes = new List<CampaignRoute>();
         var sources = new List<CapabilitySource>();
         var companions = new List<CampaignCompanion>();
         void Location(string id, int tier, LocationKind kind, bool required = false, string? region = null, int? stage = null) =>
-            locations.Add(new CampaignLocation(id, region ?? $"region-{tier}", tier, kind, required, stage ?? tierAnchor[tier]));
+            locations.Add(new CampaignLocation(id, region ?? $"region-{Math.Min(5, stage ?? tierAnchor[tier])}", tier, kind, required, stage ?? tierAnchor[tier]));
         void Connect(string from, string to, Requirement? requirement = null, LockForm form = LockForm.None, bool required = false, bool boundary = false) =>
             routes.Add(new CampaignRoute($"route-{routes.Count:D3}", from, to, requirement ?? Requirement.Open, form, required, boundary));
 
@@ -94,14 +94,9 @@ public static class CampaignGenerator
             {
                 string id = $"source-{capability}-{provider}";
                 string location;
-                if (provider == 0 && entry.Tier < 4 && capability.Kind() != CapabilityKind.Vehicle)
-                    location = $"story-{entry.Tier}";
-                else
-                {
-                    location = id + "-site";
-                    Location(location, entry.Tier, capability.Kind() == CapabilityKind.Vehicle ? LocationKind.Converter : LocationKind.Landmark, stage: index);
-                    Connect($"checkpoint-{index}", location);
-                }
+                location = id + "-site";
+                Location(location, entry.Tier, capability.Kind() == CapabilityKind.Vehicle ? LocationKind.Converter : LocationKind.Landmark, stage: index);
+                Connect($"checkpoint-{index}", location);
                 string? companionId = null;
                 if (capability.Kind() == CapabilityKind.Personal)
                 {
@@ -119,11 +114,59 @@ public static class CampaignGenerator
         foreach (var region in regions)
         {
             string landmark = region.Id + "-landmark";
-            Location(landmark, region.Tier, LocationKind.Landmark, region: region.Id);
-            Connect($"checkpoint-{tierAnchor[region.Tier]}", landmark);
+            Location(landmark, region.Tier, LocationKind.Landmark, region: region.Id, stage: region.ProgressionOrder);
+            Connect($"checkpoint-{region.ProgressionOrder}", landmark);
         }
 
-        var campaign = new Campaign(seed, Version, "town-0", "final-dungeon", manifest, regions, locations, routes, sources, companions);
+        // Physical home and acquisition stage are deliberately independent.
+        var returns = new List<ReturnObjective>();
+        var reward = critical[2];
+        var enabling = critical[1];
+        var rewardSites = sources.Where(s => s.Capability == reward).Select(s => s.LocationId).ToArray();
+        void Relocate(string id)
+        {
+            int at = locations.FindIndex(l => l.Id == id); var old = locations[at];
+            locations[at] = new CampaignLocation(old.Id, "region-0", old.Tier, old.Kind, old.Required, rewardSites.Contains(id) ? 1 : old.Stage);
+        }
+        var rewardGates = new List<string>();
+        foreach (string site in rewardSites)
+        {
+            Relocate(site);
+            int at = routes.FindIndex(r => r.To == site); var old = routes[at];
+            routes[at] = new CampaignRoute(old.Id, "checkpoint-0", site, new Requirement(CapabilitySet.Of(enabling)), LockForm.Interaction);
+            rewardGates.Add(old.Id);
+        }
+        returns.Add(new ReturnObjective("region-0", rewardSites, rewardGates, enabling, 1, true, reward));
+        int boundaryIndex = routes.FindIndex(r => r.IsProgressionBoundary && r.From == "checkpoint-2");
+        var boundary = routes[boundaryIndex];
+        var displaced = boundary.Requirement.Alternatives.Where(a => !a.Contains(reward)).ToArray();
+        routes[boundaryIndex] = new CampaignRoute(boundary.Id, boundary.From, boundary.To,
+            new Requirement(CapabilitySet.Of(reward)), boundary.Form, true, true);
+        // Preserve exploratory required-route uses, without weakening the return boundary.
+        foreach (var alternative in displaced)
+        {
+            int stage = alternative.Values.Select(c => sourceIndex[c]).Max();
+            int at = routes.FindIndex(r => r.IsProgressionBoundary && r.From == $"checkpoint-{Math.Max(3, stage)}");
+            var old = routes[at];
+            routes[at] = new CampaignRoute(old.Id, old.From, old.To, new Requirement(old.Requirement.Alternatives.Concat(new[] { alternative }).ToArray()), old.Form, true, true);
+        }
+        foreach (var capability in critical.Where(c => sourceIndex[c] >= 1).Take(3))
+        {
+            string site = $"payoff-{capability}"; Relocate(site);
+            int at = routes.FindIndex(r => r.To == site); var old = routes[at];
+            routes[at] = new CampaignRoute(old.Id, "checkpoint-0", site, old.Requirement, old.Form);
+            returns.Add(new ReturnObjective("region-0", new[] { site }, new[] { old.Id }, capability, capability == reward ? 1 : sourceIndex[capability], false));
+        }
+        // A-B-C-D-E-F is always the normal route. Later-zone keys add the B hub's missing edges.
+        foreach (int later in new[] { 3, 4, 5 })
+        {
+            string label = ((char)('A' + later)).ToString();
+            routes.Add(new CampaignRoute($"shortcut-B-{label}", "checkpoint-1", $"checkpoint-{later}",
+                Requirement.Open, LockForm.None, shortcutKind: ShortcutKind.Keyed,
+                keyId: $"Biome {label} key", keyLocationId: $"region-{later}-landmark", isWarp: true));
+        }
+
+        var campaign = new Campaign(seed, Version, "town-0", "final-dungeon", manifest, regions, locations, routes, sources, companions, returns);
         var validation = CampaignValidator.Validate(campaign);
         if (!validation.IsValid) throw new InvalidOperationException($"Campaign {seed} failed validation:\n{string.Join("\n", validation.Errors)}");
         return campaign;

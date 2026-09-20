@@ -1,0 +1,107 @@
+using System;
+using System.Collections.Generic;
+using EternalEnigma.Core.World;
+using TWC;
+using UnityEngine;
+
+[Serializable]
+public sealed class OverworldBiomeMaterial
+{
+    public OverworldBiome Biome;
+    public Material Material;
+}
+
+/// <summary>Chunked, textured XY floor surfaces; core masks remain movement authority.</summary>
+[ExecuteAlways, RequireComponent(typeof(CampaignOverworld))]
+public sealed class OverworldBiomeRenderer : MonoBehaviour
+{
+    public OverworldBiomeMaterial[] Biomes = Array.Empty<OverworldBiomeMaterial>();
+    public Material RoadMaterial;
+    public Material BridgeMaterial;
+    public Material BarrierMaterial;
+    private TileWorldCreator creator;
+    private GameObject surfaces;
+    private readonly List<Mesh> meshes = new();
+
+    private void OnEnable()
+    {
+        creator = GetComponent<TileWorldCreator>();
+        creator.OnBuildLayersComplete += Build;
+    }
+
+    private void Build(TileWorldCreator _)
+    {
+        var grid = GetComponent<CampaignOverworld>().CurrentGrid;
+        if (grid == null) return;
+        Clear();
+        surfaces = new GameObject("Biome Floors") { hideFlags = HideFlags.DontSave };
+        surfaces.transform.SetParent(transform, false);
+        // Town actors keep their root at the cell corner and their visuals half a
+        // tile inside it. Match that convention without changing logical positions.
+        float halfTile = creator.twcAsset.cellSize * .5f;
+        surfaces.transform.localPosition = new Vector3(halfTile, halfTile, 0);
+        Draw(grid, OverworldLayers.Mountains, BarrierMaterial, .04f);
+        Draw(grid, OverworldLayers.Trees, BarrierMaterial, .04f);
+        foreach (var entry in Biomes)
+        {
+            string layer = entry.Biome == OverworldBiome.Water ? OverworldLayers.Water : OverworldLayers.Biome(entry.Biome);
+            Draw(grid, layer, entry.Material, .02f);
+        }
+        Draw(grid, OverworldLayers.Roads, RoadMaterial, .005f, excludeWater: true);
+        Draw(grid, OverworldLayers.Bridges, BridgeMaterial, -.005f);
+        foreach (var renderer in creator.worldObject.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
+    }
+
+    private void Draw(OverworldGrid grid, string layerName, Material material, float z, bool excludeWater = false)
+    {
+        if (material == null || !grid.Layers.TryGetValue(layerName, out var mask)) return;
+        float size = creator.twcAsset.cellSize;
+        const int chunkSize = 32;
+        for (int cy = 0; cy < grid.Height; cy += chunkSize)
+        for (int cx = 0; cx < grid.Width; cx += chunkSize)
+        {
+            var vertices = new List<Vector3>();
+            var uv = new List<Vector2>();
+            var triangles = new List<int>();
+            for (int y = cy; y < Math.Min(cy + chunkSize, grid.Height); y++)
+            for (int x = cx; x < Math.Min(cx + chunkSize, grid.Width); x++)
+            {
+                if (!mask[x, y] || (excludeWater && grid.RequiresBoat(new GridPoint(x, y)))) continue;
+                int first = vertices.Count;
+                vertices.Add(new Vector3((x - .5f) * size, (y - .5f) * size, z));
+                vertices.Add(new Vector3((x + .5f) * size, (y - .5f) * size, z));
+                vertices.Add(new Vector3((x + .5f) * size, (y + .5f) * size, z));
+                vertices.Add(new Vector3((x - .5f) * size, (y + .5f) * size, z));
+                uv.Add(new Vector2(0, 0)); uv.Add(new Vector2(1, 0)); uv.Add(new Vector2(1, 1)); uv.Add(new Vector2(0, 1));
+                triangles.AddRange(new[] { first, first + 2, first + 1, first, first + 3, first + 2 });
+            }
+            if (vertices.Count == 0) continue;
+            var mesh = new Mesh { name = layerName + " floor", hideFlags = HideFlags.DontSave };
+            mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetTriangles(triangles, 0);
+            mesh.RecalculateNormals(); mesh.RecalculateBounds();
+            meshes.Add(mesh);
+            var chunk = new GameObject(layerName + " " + cx + "," + cy) { hideFlags = HideFlags.DontSave };
+            chunk.transform.SetParent(surfaces.transform, false);
+            chunk.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = chunk.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = material;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (creator != null) creator.OnBuildLayersComplete -= Build;
+        if (surfaces != null && creator != null)
+            foreach (var renderer in creator.worldObject.GetComponentsInChildren<Renderer>()) renderer.enabled = true;
+        Clear();
+    }
+
+    private void Clear()
+    {
+        if (surfaces != null) { if (Application.isPlaying) Destroy(surfaces); else DestroyImmediate(surfaces); }
+        foreach (var mesh in meshes) { if (Application.isPlaying) Destroy(mesh); else DestroyImmediate(mesh); }
+        meshes.Clear();
+        surfaces = null;
+    }
+}

@@ -84,7 +84,11 @@ dotnet run --project Core/EternalEnigma.Core/EternalEnigma.Campaign.Explorer -- 
 
 Use arrows or WASD to walk, Q/E/Z/C or the numpad for diagonals, and Esc to quit.
 The camera follows `@`; `+` gates enforce the active party's capabilities.
-Stand on a location marker and press Enter to claim its rewards (simulated encounter
+`O` marks a warp gate; `K`/`k` marks an uncollected/collected key site.
+Keys in biomes D, E and F permanently unlock B–D, B–E and B–F warps in both directions.
+Stand on a warp gate and press V to choose a destination. Locked destinations show their key requirements.
+The HUD lists collected keys and the required return objective.
+Stand on a location marker and press Enter to collect its key or claim its rewards (simulated encounter
 completion). Press P to equip or dismiss recruited companions while standing on a
 town; up to three can be active. Press T to travel to a previously visited town.
 Menus use up/down and Enter; Esc closes them. Obstacle and interaction gates stay

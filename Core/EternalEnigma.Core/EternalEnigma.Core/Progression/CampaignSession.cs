@@ -41,6 +41,10 @@ public sealed class CampaignSession
         return true;
     }
 
+    public bool TryCollectShortcutKey(string routeId) => campaign.Routes.FirstOrDefault(r => r.Id == routeId)?.TryCollectKey(LocationId, resolved) == true;
+
+    public bool TryOpenShortcut(string routeId) => campaign.Routes.FirstOrDefault(r => r.Id == routeId)?.TryUnlock(LocationId, resolved) == true;
+
     public bool TryMove(string routeId)
     {
         var route = campaign.Routes.FirstOrDefault(r => r.Id == routeId);

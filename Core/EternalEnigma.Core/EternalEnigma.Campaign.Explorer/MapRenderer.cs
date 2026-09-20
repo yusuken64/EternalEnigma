@@ -32,13 +32,21 @@ public sealed class MapRenderer
     private char Glyph(GridPoint p)
     {
         if (p.Equals(session.Position)) return '@';
+        if (session.Grid.WarpsAt(p).Any()) return 'O';
+        var key = session.Campaign.Routes.FirstOrDefault(r => r.KeyLocationId != null && session.Grid.Locations[r.KeyLocationId].Equals(p));
+        if (key != null) return session.CollectedKeys.Contains(key.KeyId!) ? 'k' : 'K';
         if (locations.TryGetValue(p, out var kind)) return kind switch
         {
             LocationKind.Town => 'T', LocationKind.StoryDungeon => 'D', LocationKind.RepeatableDungeon => 'R',
             LocationKind.FinalDungeon => 'F', LocationKind.Converter => 'C', LocationKind.Secret => '?',
             LocationKind.Landmark => '*', _ => 'o'
         };
-        if (session.Grid.LockAt(p) != null) return session.IsWalkable(p) ? '/' : '+';
+        if (session.Grid.RequiresBoat(p)) return '~';
+        if (session.Grid.LockAt(p) is { } gate)
+        {
+            var route = session.Campaign.Routes.Single(r => r.Id == gate.RouteId);
+            return session.IsWalkable(p) ? '/' : route.ShortcutKind == ShortcutKind.Keyed ? 'S' : route.ShortcutKind == ShortcutKind.FarSide ? 'S' : route.ShortcutKind == ShortcutKind.Capability ? 'A' : '+';
+        }
         if (session.Grid.IsGround(p)) return session.Grid.Layers[OverworldLayers.Roads][p.X, p.Y] ? ':' : '.';
         if (session.Grid.Layers[OverworldLayers.Water][p.X, p.Y]) return '~';
         if (session.Grid.Layers[OverworldLayers.Trees][p.X, p.Y]) return '"';

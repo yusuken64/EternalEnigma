@@ -53,9 +53,10 @@ try
                 File.WriteAllText(Path.Combine(output, $"overworld-{campaign.Seed}.json"), JsonSerializer.Serialize(new
                 {
                     version = OverworldGrid.GenerationVersion, grid.CampaignFingerprint, grid.Width, grid.Height,
-                    grid.PlayerStart, grid.Locations, grid.Routes, grid.Locks, layers
+                    grid.PlayerStart, grid.Locations, grid.Routes, grid.Locks, grid.Warps, grid.RegionBiomes, campaign.ReturnObjectives,
+                    shortcuts = campaign.Routes.Where(r => r.ShortcutKind != EternalEnigma.Core.Progression.ShortcutKind.None), layers
                 }, options));
-                File.WriteAllText(Path.Combine(output, $"overworld-{campaign.Seed}.svg"), GridPreview.Svg(grid));
+                File.WriteAllText(Path.Combine(output, $"overworld-{campaign.Seed}.svg"), GridPreview.Svg(grid, campaign));
             }
         }
     }

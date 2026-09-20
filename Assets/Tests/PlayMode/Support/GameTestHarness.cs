@@ -9,6 +9,7 @@ using TWC;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -34,12 +35,15 @@ public sealed class GameTestHarness
         if (!scenario.IncludeStartingItems) common.ItemManager.StartingItems.Clear();
         foreach (var item in scenario.Items) RequireItem(item);
 
-        var prefab = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Overworld/Allies" })
-            .Select(g => AssetDatabase.LoadAssetAtPath<OverworldAlly>(AssetDatabase.GUIDToAssetPath(g)))
-            .FirstOrDefault(a => a != null && a.Name == scenario.AllyName);
-        Assert.That(prefab, Is.Not.Null, $"No ally prefab named '{scenario.AllyName}'.");
-        var overworldAlly = Object.Instantiate(prefab, common.OverworldAllyParent);
-        overworldAlly.Skills = scenario.Skills.ToList();
+        foreach (var allyName in new[] { scenario.AllyName }.Concat(scenario.AdditionalAllies))
+        {
+            var prefab = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Overworld/Allies" })
+                .Select(g => AssetDatabase.LoadAssetAtPath<OverworldAlly>(AssetDatabase.GUIDToAssetPath(g)))
+                .FirstOrDefault(a => a != null && a.Name == allyName);
+            Assert.That(prefab, Is.Not.Null, $"No ally prefab named '{allyName}'.");
+            var overworldAlly = Object.Instantiate(prefab, common.OverworldAllyParent);
+            overworldAlly.Skills = scenario.Skills.ToList();
+        }
 
         void Configure(Scene scene, LoadSceneMode mode)
         {
@@ -73,6 +77,14 @@ public sealed class GameTestHarness
         finally { SceneManager.sceneLoaded -= Configure; }
         yield return WaitUntil(() => Object.FindFirstObjectByType<OverworldPlayer>()?.ControllingOverworldAlly != null
             && !Common.Instance.ScreenTransition.BlockScreen.activeSelf, "overworld initialization");
+    }
+
+    public IEnumerator LoadMainMenu(GameSaveData save)
+    {
+        Begin(save ?? new TestScenario().CreateSave());
+        if (save == null) SaveSystem.ClearData();
+        yield return LoadScene("Common");
+        yield return LoadScene("MainMenu");
     }
 
     private void Begin(GameSaveData save)
@@ -237,5 +249,26 @@ public sealed class MemorySaveStore : ISaveStore
     public string Read() => Json;
     public void Write(string json) => Json = json;
     public void Clear() => Json = null;
+}
+
+// Synthetic keyboard/mouse events must reach Play Mode even when the Test Runner has focus.
+public sealed class TestInputScope : IDisposable
+{
+    private readonly InputSettings previous = InputSystem.settings;
+    private readonly InputSettings settings;
+
+    public TestInputScope()
+    {
+        settings = Object.Instantiate(previous);
+        settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+        settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+        InputSystem.settings = settings;
+    }
+
+    public void Dispose()
+    {
+        InputSystem.settings = previous;
+        Object.DestroyImmediate(settings);
+    }
 }
 #endif

@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class Common : PersistedSingletonMonoBehaviour<Common>
 {
 	public GameSaveData GameSaveData;
+	internal DemoDungeonLoadout PendingDemoLoadout;
 
 	public AudioManager AudioManager;
 	public ItemManager ItemManager;

@@ -3,11 +3,11 @@
 [Serializable]
 public class EquipableInventoryItem : InventoryItem
 {
-	public readonly EquipmentItemDefinition EquipmentItemDefinition;
+	// Use the serialized definition; Unity does not restore constructor-only readonly fields.
+	public EquipmentItemDefinition EquipmentItemDefinition => ItemDefinition as EquipmentItemDefinition;
 	public EquipmentSlot EquipmentSlot => EquipmentItemDefinition.EquipmentSlot;
 	public EquipableInventoryItem(EquipmentItemDefinition equipmentItemDefinition, int? stock = null) : base(equipmentItemDefinition, stock)
 	{
-		this.EquipmentItemDefinition = equipmentItemDefinition;
 	}
 
 	public StatModification GetEquipmentStatModification()

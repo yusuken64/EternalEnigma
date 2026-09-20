@@ -32,11 +32,11 @@ public class Equipment : MonoBehaviour
 		var previousItems = GetEquippedItems().ToArray();
 		var slots = new Dictionary<EquipmentSlot, EquipableInventoryItem>();
 
-		if (EquippedWeapon != null)
+		if (EquippedWeapon?.EquipmentItemDefinition != null)
 			slots[EquipmentSlot.MainHand] = EquippedWeapon;
-		if (EquippedShield != null)
+		if (EquippedShield?.EquipmentItemDefinition != null)
 			slots[EquipmentSlot.OffHand] = EquippedShield;
-		if (EquippedAccessory != null)
+		if (EquippedAccessory?.EquipmentItemDefinition != null)
 			slots[EquipmentSlot.Accessory] = EquippedAccessory;
 
 		ApplyEquipChange(slots, newItem);
@@ -87,11 +87,11 @@ public class Equipment : MonoBehaviour
 	{
 		var slots = new Dictionary<EquipmentSlot, EquipableInventoryItem>();
 
-		if (EquippedWeapon != null)
+		if (EquippedWeapon?.EquipmentItemDefinition != null)
 			slots[EquipmentSlot.MainHand] = EquippedWeapon;
-		if (EquippedShield != null)
+		if (EquippedShield?.EquipmentItemDefinition != null)
 			slots[EquipmentSlot.OffHand] = EquippedShield;
-		if (EquippedAccessory != null)
+		if (EquippedAccessory?.EquipmentItemDefinition != null)
 			slots[EquipmentSlot.Accessory] = EquippedAccessory;
 
 		ApplyEquipChange(slots, newItem);

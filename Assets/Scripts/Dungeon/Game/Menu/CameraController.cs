@@ -32,7 +32,12 @@ public class CameraController : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if (_followTarget != null)
+		SnapToFollowTarget();
+	}
+
+	internal void SnapToFollowTarget()
+	{
+		if (_followTarget != null && Camera != null)
 		{
 			Camera.transform.position = _followTarget.position + CameraOffset;
 			Camera.transform.LookAt(_followTarget);

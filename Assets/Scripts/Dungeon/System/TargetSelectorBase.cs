@@ -9,8 +9,11 @@ public class TargetSelector
     public TargetArea Area;
 
     public List<Vector3Int> GetTargets(Character caster)
+        => GetCharacters(caster).Select(x => x.TilemapPosition).Distinct().ToList();
+
+    public List<Character> GetCharacters(Character caster)
     {
-        IEnumerable<Character> candidates = Game.Instance.AllCharacters;
+        IEnumerable<Character> candidates = Game.Instance.AllCharacters.Where(x => x != null && x.Vitals.HP > 0);
 
         // --- Team filtering ---
         candidates = Team switch
@@ -36,10 +39,16 @@ public class TargetSelector
             candidates = candidates.Where(x => Game.Instance.CurrentDungeon.CanSee(caster, x));
 
         if (bounds.HasValue)
-            candidates = candidates.Where(x => bounds.Value.Contains(x.TilemapPosition));
+            candidates = candidates.Where(x => x.OverlapsWith(bounds.Value));
+
+        if (Area == TargetArea.Melee)
+            candidates = candidates.Where(x => Game.Instance.CurrentDungeon.CanSee(caster, x));
+
+        // Custom has no configured geometry yet; do not silently target the entire floor.
+        if (Area == TargetArea.Custom) return new();
 
         return candidates
-            .Select(x => x.TilemapPosition)
+            .Distinct()
             .ToList();
     }
 }

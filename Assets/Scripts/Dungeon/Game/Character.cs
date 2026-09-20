@@ -56,19 +56,39 @@ public abstract class Character : MonoBehaviour, Actor
 
 	internal bool CanCast(Skill skill, out string reason)
 	{
+		if (skill == null || !Skills.Contains(skill))
+		{
+			reason = "Skill not learned";
+			return false;
+		}
+		if (Vitals.HP <= 0 || StatusEffects.Any(x => !x.IsExpired() &&
+			(x.PreventsMenu() || x.Interupts(new SkillAction(this, skill, this)))))
+		{
+			reason = "Cannot cast while incapacitated or silenced";
+			return false;
+		}
 		if (skill.ActivationType != ActivationType.Active)
 		{
 			reason = "Not active skill";
 			return false;
 		}
 
+		bool inventoryTargeting = skill.Targeting == SkillTargeting.InventoryItem;
+		if (skill.SPCost < 0 || !skill.TargetingRules.IsConfigured || skill.ActionEffects == null ||
+			(!inventoryTargeting && skill.ActionEffects.Any(effect => effect is InventorySkillEffect)))
+		{
+			reason = "Invalid skill configuration";
+			return false;
+		}
 		if (Vitals.SP < skill.SPCost)
 		{
 			reason = "Not enough SP";
 			return false;
 		}
 
-		if (!skill.GetTargets(this).Any())
+		bool hasTargets = skill.Targeting == SkillTargeting.Missile || (inventoryTargeting ? skill.GetInventoryTargets(this).Any() :
+			(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any());
+		if (!hasTargets)
 		{
 			reason = "No valid targets";
 			return false;
@@ -402,6 +422,11 @@ disp: {displayedVitals}");
 
 		foreach (var effect in StatusEffects)
 		{
+			if (effect.IsExpired())
+			{
+				result.Add(new RemoveStatusEffectAction(this, effect));
+				continue;
+			}
 			var tickEffects = effect.GetTickEffects(this);
 			if (tickEffects != null && tickEffects.Count > 0)
 			{
@@ -410,9 +435,8 @@ disp: {displayedVitals}");
 					result.Add(tickAction);
 				}
 			}
+			if (effect.TurnsLeft == 1) result.Add(new RemoveStatusEffectAction(this, effect));
 
-			if (effect.IsExpired())
-				result.Add(new RemoveStatusEffectAction(this, effect));
 		}
 
 		return result;
@@ -420,9 +444,10 @@ disp: {displayedVitals}");
 
 	public T ApplyStatusEffect<T>(T newStatusPrefab) where T : StatusEffect
 	{
-		if (StatusEffects.OfType<T>().Any())
+		var matchingStatus = StatusEffects.FirstOrDefault(x => x.GetType() == newStatusPrefab.GetType());
+		if (matchingStatus != null)
 		{
-			T existingStatus = StatusEffects.OfType<T>().FirstOrDefault();
+			var existingStatus = (T)matchingStatus;
 			existingStatus.ReApply(newStatusPrefab);
 			UpdateCachedStats();
 			DisplayedStats.Sync(FinalStats);
@@ -443,7 +468,7 @@ disp: {displayedVitals}");
 
 	public T RemoveStatusEffect<T>(T expiredStatus) where T : StatusEffect
 	{
-		T existingStatus = StatusEffects.OfType<T>().FirstOrDefault();
+		T existingStatus = (T)StatusEffects.FirstOrDefault(x => x.GetType() == expiredStatus.GetType());
 		StatusEffects.Remove(existingStatus);
 		UpdateCachedStats();
 		DisplayedStats.Sync(FinalStats);
@@ -471,7 +496,7 @@ disp: {displayedVitals}");
 
 	public bool GetActionInterupt(GameAction action)
 	{
-		return StatusEffects.Any(x => x.Interupts(action));
+		return StatusEffects.Any(x => !x.IsExpired() && x.Interupts(action));
 	}
 
 	internal List<AStar.Node> CalculatePursuitPath()
@@ -559,6 +584,7 @@ disp: {displayedVitals}");
 
 	public void SetAction(GameAction forcedAction)
 	{
+		if (forcedAction is SkillAction && (Game.Instance.TurnManager.IsProcessingTurn || !forcedAction.IsValid(this))) return;
 		_forcedAction = forcedAction;
 		if (Game.Instance.PlayerController.ControlledAlly == this)
 		{

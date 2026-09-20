@@ -25,10 +25,11 @@ public class InventoryMenu : Dialog
 
     public GameObject SelectionArrow;
 
-    public void Setup(List<InventoryItem> Items, Character character)
+    public void Setup(List<InventoryItem> Items, Character character,
+        Action<InventoryItem> selectItem = null, string selectionPrompt = null, bool followPortrait = true)
     {
-        followingObject = character.VisualParent;
-        FaceCamDisplay.SetFollow(followingObject);
+        followingObject = followPortrait ? character.VisualParent : null;
+        if (followingObject != null) FaceCamDisplay.SetFollow(followingObject);
         Action<InventoryMenuItem, InventoryItem> action = (view, data) =>
         {
             view.Setup(data, (data) => { return character.Equipment.IsEquipped(data); });
@@ -36,6 +37,11 @@ public class InventoryMenu : Dialog
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
             {
+                if (selectItem != null)
+                {
+                    selectItem(data);
+                    return;
+                }
                 ActionDialog.Setup(view, data, character);
                 ActionDialog.SetNavigation();
                 ActionDialog.gameObject.SetActive(true);
@@ -66,10 +72,16 @@ public class InventoryMenu : Dialog
                 if (!(eventData is PointerEventData))
                     ScrollToSelected(view.gameObject);
                 else StopAutoScroll();
-                UpdatedItemPreview(data, character);
+                if (selectItem != null)
+                {
+                    InventoryItemPreview.Setup(data);
+                    StatText.text = selectionPrompt;
+                }
+                else UpdatedItemPreview(data, character);
             };
         };
         InventoryMenuItems = MenuItemContainer.RePopulateObjects(InventoryMenuItemPrefab, Items, action);
+        if (selectItem != null) StatText.text = selectionPrompt;
 
         if (Items.Count() == 0)
 		{
@@ -171,7 +183,7 @@ Defense:  {currentStats.Defense}";
 
     internal void Close()
     {
-        FaceCamDisplay.Unfollow(followingObject);
+        if (followingObject != null) FaceCamDisplay.Unfollow(followingObject);
     }
 
     private Vector3 KeepFullyOnScreen(RectTransform rectTransform, Vector3 newPosition)

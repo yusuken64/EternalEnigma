@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public sealed class TestScenario
 {
     public string AllyName = "Rowan";
+    public string[] AdditionalAllies = Array.Empty<string>();
     public string[] Items = Array.Empty<string>();
     public string[] Skills = Array.Empty<string>();
     public int Gold = 100;

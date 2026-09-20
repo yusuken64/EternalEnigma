@@ -29,7 +29,7 @@ internal class RangedAttackAction : GameAction
 	{
 		var game = Game.Instance;
 		var ret = new List<GameAction>();
-		rangedAttackTargetPosition = 
+		rangedAttackTargetPosition = target != null ? target.TilemapPosition :
 			game.CurrentDungeon.GetRangedAttackPosition(
 				attacker,
 				attacker.TilemapPosition,
@@ -37,7 +37,7 @@ internal class RangedAttackAction : GameAction
 				40,
 				Dungeon.StopArrow);
 		
-		Character rangedAttackTarget = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == rangedAttackTargetPosition);
+		Character rangedAttackTarget = target != null ? target : Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == rangedAttackTargetPosition);
 
 		if (rangedAttackTarget != null)
 		{
@@ -49,7 +49,7 @@ internal class RangedAttackAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		if (skipAnimation) yield break;
+		if (skipAnimation || projectilePrefab == null) yield break;
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
 

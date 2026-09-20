@@ -13,7 +13,7 @@ public class ScreenTransition : MonoBehaviour
     public float TransitionTimeSeconds;
     public float OpenDelayTimeSeconds;
 
-    private void Start()
+    private void Awake()
     {
         ShutterScreen.gameObject.SetActive(false);
         BlockScreen.gameObject.SetActive(false);
@@ -21,7 +21,22 @@ public class ScreenTransition : MonoBehaviour
 
     public void DoTransition(Action postTransition, bool autoOpen = true)
     {
+        CancelAnimation();
         StartCoroutine(DoTransitionRoutine(postTransition, autoOpen));
+    }
+
+    private void CancelAnimation()
+    {
+        StopAllCoroutines();
+        ShutterScreen.DOKill();
+    }
+
+    internal void HoldClosed()
+    {
+        CancelAnimation();
+        BlockScreen.SetActive(true);
+        ShutterScreen.gameObject.SetActive(true);
+        ShutterScreen.color = Color.black;
     }
 
     private IEnumerator DoTransitionRoutine(Action postTransition, bool autoOpen = true)
@@ -51,6 +66,7 @@ public class ScreenTransition : MonoBehaviour
 
     internal void DoOpen()
     {
+        CancelAnimation();
         StartCoroutine(DoOpenRoutine());
     }
     private IEnumerator DoOpenRoutine()

@@ -16,10 +16,13 @@ public class Overworld : MonoBehaviour
     public List<OverworldAlly> OverworldAllies;
     public OverworldBuildingManager OverworldBuildingManager;
     public List<OverworldBuilding> OverworldBuildings;
+    public bool IsReady { get; private set; }
+    private bool finishingGeneration;
 
     // Start is called before the first frame update
     void Start()
     {
+        Common.Instance.ScreenTransition.HoldClosed();
         Debug.Log("Load Save Data");
         LoadSaveData();
 
@@ -161,6 +164,13 @@ public class Overworld : MonoBehaviour
 
     private void buildLayersComplete(TileWorldCreator _twc)
     {
+        if (finishingGeneration) return;
+        finishingGeneration = true;
+        StartCoroutine(FinishGeneration());
+    }
+
+    private IEnumerator FinishGeneration()
+    {
         Debug.Log("Generate Buildings");
         GenerateInteractableBuildings();
 
@@ -169,6 +179,14 @@ public class Overworld : MonoBehaviour
 
         Debug.Log("Initialize Player");
         OverworldPlayer.Initialize();
+
+        // Let newly spawned actors finish Start before placing the camera.
+        yield return null;
+        var camera = OverworldPlayer.CameraController;
+        while (OverworldPlayer.ControllingOverworldAlly == null || camera._followTarget == null || camera.Camera == null)
+            yield return null;
+        camera.SnapToFollowTarget();
+        IsReady = true;
 
         Debug.Log("Overworld done");
         Common.Instance.ScreenTransition.DoOpen();

@@ -1,0 +1,1002 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8323509424938543610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Ally Mend'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Ally Mend'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 2
+    Area: 1
+  Targeting: 0
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 3678569255368130628
+  SkillAnimation:
+    Steps:
+    - rid: 3678569417729900613
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Choose one visible ally (including yourself) to heal.
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569255368130628
+      type: {class: TakeHealAction, ns: , asm: EternalEnigma.Game}
+      data:
+        healing: 10
+        doHealAnimation: 0
+    - rid: 3678569417729900613
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 06495f2f4e00d8d438cf199613dbc18c, type: 3}
+        delay: 2
+        duration: 0
+--- !u!114 &-4937013768755952714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3af677b09cf80149b5b838b0dd38fa5, type: 3}
+  m_Name: Arrow Shot Item Effect
+  m_EditorClassIdentifier: EternalEnigma.Game::SkillItemEffectDefinition
+  EffectSkill: {fileID: -439961101009620800}
+--- !u!114 &-4612568324786663991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Party Mend'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Party Mend'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 2
+    Area: 1
+  Targeting: 2
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 3678569255368130628
+  SkillAnimation:
+    Steps:
+    - rid: 3678569417729900613
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Cast immediately on all visible allies.
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569255368130628
+      type: {class: TakeHealAction, ns: , asm: EternalEnigma.Game}
+      data:
+        healing: 10
+        doHealAnimation: 0
+    - rid: 3678569417729900613
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 06495f2f4e00d8d438cf199613dbc18c, type: 3}
+        delay: 2
+        duration: 0
+--- !u!114 &-4340555138424677867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Inspect Item'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Inspect Item'
+  Description: Choose any inventory item to inspect its stock or stats. Does not
+    consume the selected item. Use spends one scroll, no SP. Cancel spends nothing.
+  ItemEffectDefinition: {fileID: 0}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 3
+  TargetSelector:
+    Team: 3
+    Area: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 1
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects:
+  - rid: 292415574222307396
+  references:
+    version: 2
+    RefIds:
+    - rid: 292415574222307396
+      type: {class: InspectInventoryItemEffect, ns: , asm: EternalEnigma.Game}
+      data: 
+--- !u!114 &-4194801254302060389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Inspect Weapon'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Inspect Weapon'
+  Description: Choose a weapon to inspect its stats. Does not consume or enchant
+    the selected weapon. Use spends one scroll, no SP. Cancel spends nothing.
+  ItemEffectDefinition: {fileID: 0}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 3
+  TargetSelector:
+    Team: 3
+    Area: 1
+  InventoryTargetSelector:
+    ItemType: 2
+    IncludeEquipped: 1
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects:
+  - rid: 292415574222307397
+  references:
+    version: 2
+    RefIds:
+    - rid: 292415574222307397
+      type: {class: InspectInventoryItemEffect, ns: , asm: EternalEnigma.Game}
+      data: 
+--- !u!114 &-4159740513227030897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3af677b09cf80149b5b838b0dd38fa5, type: 3}
+  m_Name: Area Burst Item Effect
+  m_EditorClassIdentifier: EternalEnigma.Game::SkillItemEffectDefinition
+  EffectSkill: {fileID: 2602254160721733326}
+--- !u!114 &-3612467566862657434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Single Hit'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Single Hit'
+  Description: Choose one visible enemy to damage. Use spends one scroll, no SP.
+    Cancel spends nothing.
+  ItemEffectDefinition: {fileID: -3472550292180710157}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 0
+  TargetSelector:
+    Team: 1
+    Area: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &-3472550292180710157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3af677b09cf80149b5b838b0dd38fa5, type: 3}
+  m_Name: Single Hit Item Effect
+  m_EditorClassIdentifier: EternalEnigma.Game::SkillItemEffectDefinition
+  EffectSkill: {fileID: 3789083504729965244}
+--- !u!114 &-3470271041815270059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Ally Mend'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Ally Mend'
+  Description: Choose one visible ally (including yourself) to heal. Use spends one
+    scroll, no SP. Cancel spends nothing.
+  ItemEffectDefinition: {fileID: 3163525555380041772}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 0
+  TargetSelector:
+    Team: 2
+    Area: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &-1247155779731937525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Party Mend'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Party Mend'
+  Description: Cast immediately on all visible allies. Use spends one scroll, no
+    SP. Cancel spends nothing.
+  ItemEffectDefinition: {fileID: 718196461677307367}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 2
+  TargetSelector:
+    Team: 2
+    Area: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &-980631683019515620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Area Burst'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Area Burst'
+  Description: Choose an enemy. Hits enemies within one tile of it; allies are excluded.
+    Use spends one scroll, no SP. Cancel spends nothing.
+  ItemEffectDefinition: {fileID: -4159740513227030897}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 0
+  TargetSelector:
+    Team: 1
+    Area: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 1
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &-439961101009620800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Arrow Shot'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Arrow Shot'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 1
+    Area: 1
+  Targeting: 4
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 3678569255368130626
+  SkillAnimation:
+    Steps: []
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Aim in eight directions. Hits the first enemy in the path, up to 8
+    tiles. Walls and allies block shots.
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569255368130626
+      type: {class: TakeDamageAction, ns: , asm: EternalEnigma.Game}
+      data:
+        damage: 5
+        doDamageAnimation: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d264ff6ec548e8a41940e93d3f6628cf, type: 3}
+  m_Name: Loadout
+  m_EditorClassIdentifier: EternalEnigma.Game::DemoDungeonLoadout
+  Skills:
+  - {fileID: 3789083504729965244}
+  - {fileID: -8323509424938543610}
+  - {fileID: 2602254160721733326}
+  - {fileID: 408063713925920109}
+  - {fileID: -4612568324786663991}
+  - {fileID: 4880279119323682689}
+  - {fileID: 5958298332951699496}
+  - {fileID: 8760561745808761881}
+  - {fileID: -439961101009620800}
+  Items:
+  - {fileID: -3612467566862657434}
+  - {fileID: -3470271041815270059}
+  - {fileID: -980631683019515620}
+  - {fileID: 7565334439156694691}
+  - {fileID: -1247155779731937525}
+  - {fileID: 8459649142911794548}
+  - {fileID: -4340555138424677867}
+  - {fileID: -4194801254302060389}
+  - {fileID: 2046126679513295709}
+  - {fileID: 11400000, guid: 700d604e733ad5b40ab647fa891275f3, type: 2}
+  - {fileID: 1998815761713717308}
+  PracticeTargetPrefab: {fileID: 3119655136135461553, guid: 49c443980e452864aa0273aa7487d543, type: 3}
+--- !u!114 &408063713925920109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Enemy Pulse'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Enemy Pulse'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 1
+    Area: 1
+  Targeting: 2
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 3678569255368130626
+  SkillAnimation:
+    Steps:
+    - rid: 3678569417729900614
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Cast immediately on all visible enemies.
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569255368130626
+      type: {class: TakeDamageAction, ns: , asm: EternalEnigma.Game}
+      data:
+        damage: 5
+        doDamageAnimation: 0
+    - rid: 3678569417729900614
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 81c02b133175879409c54d4913fca6d4, type: 3}
+        delay: 1
+        duration: 0
+--- !u!114 &718196461677307367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3af677b09cf80149b5b838b0dd38fa5, type: 3}
+  m_Name: Party Mend Item Effect
+  m_EditorClassIdentifier: EternalEnigma.Game::SkillItemEffectDefinition
+  EffectSkill: {fileID: -4612568324786663991}
+--- !u!114 &1998815761713717308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a615cddea2edfde4b856265aa092fb06, type: 3}
+  m_Name: Demo Training Sword
+  m_EditorClassIdentifier: 
+  ItemName: Demo Training Sword
+  Description: Use Inspect Item or Inspect Weapon on this sword to try inventory
+    targeting. It can also be equipped.
+  ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
+  ApplyToThrownTarget: 0
+  StackStartMin: 1
+  StackStartMax: 1
+  StackMax: 0
+  DroppedItemVisual: 0
+  EquipmentSlot: 0
+  StatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 5
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  WeaponModelName: Arrows
+  WeaponType: 0
+  IsRangedAttack: 0
+  ProjectilePrefab: {fileID: 0}
+--- !u!114 &2046126679513295709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Arrow Shot'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Arrow Shot'
+  Description: Aim in eight directions. Hits the first enemy in the path, up to 8
+    tiles. Walls and allies block shots. Use spends one scroll, no SP. Cancel spends
+    nothing.
+  ItemEffectDefinition: {fileID: -4937013768755952714}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 4
+  TargetSelector:
+    Team: 1
+    Area: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &2602254160721733326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Area Burst'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Area Burst'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 1
+    Area: 1
+  Targeting: 0
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 1
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 3678569255368130626
+  SkillAnimation:
+    Steps:
+    - rid: 3678569417729900614
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Choose an enemy. Hits enemies within one tile of it; allies are excluded.
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569255368130626
+      type: {class: TakeDamageAction, ns: , asm: EternalEnigma.Game}
+      data:
+        damage: 5
+        doDamageAnimation: 0
+    - rid: 3678569417729900614
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 81c02b133175879409c54d4913fca6d4, type: 3}
+        delay: 1
+        duration: 0
+--- !u!114 &3163525555380041772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3af677b09cf80149b5b838b0dd38fa5, type: 3}
+  m_Name: Ally Mend Item Effect
+  m_EditorClassIdentifier: EternalEnigma.Game::SkillItemEffectDefinition
+  EffectSkill: {fileID: -8323509424938543610}
+--- !u!114 &3789083504729965244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Single Hit'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Single Hit'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 1
+    Area: 1
+  Targeting: 0
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 3678569255368130626
+  SkillAnimation:
+    Steps:
+    - rid: 3678569417729900614
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Choose one visible enemy to damage.
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569255368130626
+      type: {class: TakeDamageAction, ns: , asm: EternalEnigma.Game}
+      data:
+        damage: 5
+        doDamageAnimation: 0
+    - rid: 3678569417729900614
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 81c02b133175879409c54d4913fca6d4, type: 3}
+        delay: 1
+        duration: 0
+--- !u!114 &4387666134115303020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3af677b09cf80149b5b838b0dd38fa5, type: 3}
+  m_Name: Self Focus Item Effect
+  m_EditorClassIdentifier: EternalEnigma.Game::SkillItemEffectDefinition
+  EffectSkill: {fileID: 4880279119323682689}
+--- !u!114 &4880279119323682689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Self Focus'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Self Focus'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 3
+    Area: 4
+  Targeting: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 3678569255368130636
+  SkillAnimation:
+    Steps: []
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Cast immediately on yourself. Applies the Anger status.
+  references:
+    version: 2
+    RefIds:
+    - rid: 3678569255368130636
+      type: {class: ApplyStatusEffectAction, ns: , asm: EternalEnigma.Game}
+      data:
+        StatusEffect: {fileID: -6332391657329485210, guid: 37c179b2e0581a248ad717b2b006533e, type: 3}
+--- !u!114 &5958298332951699496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Inspect Item'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Inspect Item'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 3
+    Area: 1
+  Targeting: 3
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 1
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 292415574222307398
+  SkillAnimation:
+    Steps: []
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Choose any inventory item to inspect its stock or stats. Does not
+    consume the selected item.
+  references:
+    version: 2
+    RefIds:
+    - rid: 292415574222307398
+      type: {class: InspectInventoryItemEffect, ns: , asm: EternalEnigma.Game}
+      data: 
+--- !u!114 &6702725309827704848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3af677b09cf80149b5b838b0dd38fa5, type: 3}
+  m_Name: Enemy Pulse Item Effect
+  m_EditorClassIdentifier: EternalEnigma.Game::SkillItemEffectDefinition
+  EffectSkill: {fileID: 408063713925920109}
+--- !u!114 &7565334439156694691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Enemy Pulse'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Enemy Pulse'
+  Description: Cast immediately on all visible enemies. Use spends one scroll, no
+    SP. Cancel spends nothing.
+  ItemEffectDefinition: {fileID: 6702725309827704848}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 2
+  TargetSelector:
+    Team: 1
+    Area: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &8459649142911794548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: 'Demo Scroll: Self Focus'
+  m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
+  ItemName: 'Demo Scroll: Self Focus'
+  Description: Cast immediately on yourself. Applies the Anger status. Use spends
+    one scroll, no SP. Cancel spends nothing.
+  ItemEffectDefinition: {fileID: 4387666134115303020}
+  ApplyToThrownTarget: 0
+  StackStartMin: 20
+  StackStartMax: 20
+  StackMax: 99
+  DroppedItemVisual: 0
+  Targeting: 1
+  TargetSelector:
+    Team: 3
+    Area: 4
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &8760561745808761881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: 'Demo: Inspect Weapon'
+  m_EditorClassIdentifier: 
+  SkillName: 'Demo: Inspect Weapon'
+  LearnCost: 50
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 3
+    Area: 1
+  Targeting: 3
+  InventoryTargetSelector:
+    ItemType: 2
+    IncludeEquipped: 1
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ActionEffects:
+  - rid: 292415574222307399
+  SkillAnimation:
+    Steps: []
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+  Description: Choose a weapon to inspect its stats. Does not consume or enchant
+    the selected weapon.
+  references:
+    version: 2
+    RefIds:
+    - rid: 292415574222307399
+      type: {class: InspectInventoryItemEffect, ns: , asm: EternalEnigma.Game}
+      data: 

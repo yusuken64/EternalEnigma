@@ -391,7 +391,9 @@ public class PlayerController : MonoBehaviour
 
     internal bool CanOpenMenu()
     {
-        return !ControlledAlly.StatusEffects.Any(x => x.PreventsMenu());
+        return Game.Instance.IsReady && !Game.Instance.TurnManager.IsProcessingTurn &&
+            ControlledAlly != null && ControlledAlly.Vitals.HP > 0 && ControlledAlly.IsWaitingForPlayerInput &&
+            !ControlledAlly.StatusEffects.Any(x => !x.IsExpired() && x.PreventsMenu());
     }
 }
 

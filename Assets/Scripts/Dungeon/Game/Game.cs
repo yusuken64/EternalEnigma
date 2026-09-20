@@ -9,6 +9,7 @@ using UnityEngine;
 public class Game : SingletonMonoBehaviour<Game>
 {
 	public bool IsReady { get; private set; }
+	private DemoDungeonLoadout demoLoadout;
 	public TileWorldDungeonGenerator DungeonGenerator;
 	public TileWorldDungeon CurrentDungeon;
 
@@ -116,6 +117,9 @@ public class Game : SingletonMonoBehaviour<Game>
 		var items = Common.Instance.GameSaveData.OverworldSaveData.Inventory.Select(x => Common.Instance.ItemManager.GetAsInventoryItemByName(x));
 		Common.Instance.ItemManager.StartingItems.ForEach(x => PlayerController.Inventory.Add(x.AsInventoryItem(null)));
 		items.ToList().ForEach(x => PlayerController.Inventory.Add(x));
+		demoLoadout = Common.Instance.PendingDemoLoadout;
+		Common.Instance.PendingDemoLoadout = null;
+		if (demoLoadout != null) demoLoadout.Apply(this);
 
 		UpdateUI();
 		AdvanceFloor();
@@ -236,6 +240,8 @@ public class Game : SingletonMonoBehaviour<Game>
 			}
 		}
 
+		if (demoLoadout != null && PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor)
+			yield return demoLoadout.PreparePracticeRoom(this);
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 

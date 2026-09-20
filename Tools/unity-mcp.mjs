@@ -26,8 +26,8 @@ try {
     const name = process.argv[2] ?? 'get_scene_info';
     if (name === 'harness') {
         const mode = process.argv[3] ?? 'EditMode';
-        if (!['EditMode', 'PlayMode', 'Skills'].includes(mode)) throw Error('Expected EditMode, PlayMode or Skills.');
-        const resultPath = join(root, `Temp/HarnessResults/${mode === 'Skills' ? 'PlayMode' : mode}.json`);
+        if (!['EditMode', 'PlayMode', 'Skills', 'Demo', 'Overworld'].includes(mode)) throw Error('Expected EditMode, PlayMode, Skills, Demo or Overworld.');
+        const resultPath = join(root, `Temp/HarnessResults/${['Skills', 'Demo', 'Overworld'].includes(mode) ? 'PlayMode' : mode}.json`);
         const readSummary = () => {
             try { return JSON.parse(readFileSync(resultPath, 'utf8')); } catch { return null; }
         };

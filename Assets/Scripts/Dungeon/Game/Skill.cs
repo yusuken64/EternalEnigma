@@ -15,8 +15,10 @@ public class Skill : ScriptableObject
 	public SkillTargeting Targeting;
 	public InventoryTargetSelector InventoryTargetSelector = new();
 	[Min(0)] public int AreaRadius;
-	internal bool RequiresTargetSelection => Targeting == SkillTargeting.SelectedTarget &&
-		TargetSelector.Team != TargetTeam.Self && TargetSelector.Area != TargetArea.Self;
+	[Min(1)] public int MissileRange = 8;
+	public GameObject MissileProjectilePrefab;
+	internal ActionTargeting TargetingRules => new(Targeting, TargetSelector, InventoryTargetSelector, AreaRadius, MissileRange);
+	internal bool RequiresTargetSelection => Targeting == SkillTargeting.Missile || TargetingRules.RequiresSelection;
 	[SerializeReference]
 	public List<GameAction> ActionEffects;
 
@@ -59,15 +61,11 @@ public class Skill : ScriptableObject
 	internal List<Vector3Int> GetTargets(Character caster) => GetTargetCharacters(caster).Select(c => c.TilemapPosition).Distinct().ToList();
 
 	internal List<Character> GetTargetCharacters(Character caster) =>
-		Targeting == SkillTargeting.InventoryItem ? new() : TargetSelector.GetCharacters(caster);
+		TargetingRules.GetCharacters(caster);
 
 	internal List<Character> GetAffectedCharacters(Character caster, Character selectedTarget)
 	{
-		var candidates = GetTargetCharacters(caster);
-		if (Targeting == SkillTargeting.AllTargets) return candidates;
-		var center = RequiresTargetSelection ? selectedTarget : caster;
-		if (center == null || (RequiresTargetSelection && !candidates.Contains(center))) return new();
-		return candidates.Where(c => TileWorldDungeon.ChevDistance(c.TilemapPosition, center.TilemapPosition) <= AreaRadius).ToList();
+		return TargetingRules.GetAffected(caster, selectedTarget);
 	}
 
 	public StatModification PassiveStatModification;
@@ -87,5 +85,6 @@ public enum SkillTargeting
 	SelectedTarget, // Radius zero affects only the selected character.
 	Self,           // Cast immediately, centered on the caster.
 	AllTargets,     // Cast immediately on every character allowed by the selector.
-	InventoryItem  // Select one eligible item from the party inventory.
+	InventoryItem, // Select one eligible item from the party inventory.
+	Missile        // Aim in one of eight directions; the first character or wall stops the shot.
 }

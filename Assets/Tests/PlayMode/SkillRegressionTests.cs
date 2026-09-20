@@ -23,6 +23,7 @@ namespace EternalEnigma.Tests
         private Keyboard keyboard;
         private Mouse mouse;
         private readonly List<Skill> skills = new();
+        private readonly List<Object> itemAssets = new();
         private Ally caster => harness.Ally;
         private Ally friend;
         private Character first, second, distant;
@@ -74,6 +75,8 @@ namespace EternalEnigma.Tests
             {
                 foreach (var skill in skills) Object.DestroyImmediate(skill);
                 skills.Clear();
+                foreach (var asset in itemAssets) Object.DestroyImmediate(asset);
+                itemAssets.Clear();
                 inputScope.Dispose();
             }
         }
@@ -109,6 +112,146 @@ namespace EternalEnigma.Tests
             yield return null;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
             yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator MissileSkillAimsDiagonallyCancelsAndHitsOnlyFirstCharacter()
+        {
+            var skill = Learn("Damage");
+            skill.Targeting = SkillTargeting.Missile;
+            skill.TargetSelector.Area = TargetArea.All;
+            yield return Press(Key.R);
+            yield return Press(Key.Enter);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.UpArrow, Key.RightArrow));
+            yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            yield return null;
+            Assert.That(MenuManager.Instance.TargetDialog.Direction, Is.EqualTo(new Vector3Int(1, 1)));
+            Assert.That(MenuManager.Instance.TargetDialog.CameraTarget, Is.SameAs(second));
+            yield return Press(Key.Escape);
+            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            yield return Press(Key.Enter);
+            yield return Press(GamepadButton.DpadRight);
+            Assert.That(MenuManager.Instance.TargetDialog.Direction, Is.EqualTo(Vector3Int.right));
+            friend.SetAction(new WaitAction());
+            yield return Press(GamepadButton.South);
+            yield return harness.WaitForIdle();
+            Assert.That(first.Vitals.HP, Is.EqualTo(55));
+            Assert.That(second.Vitals.HP, Is.EqualTo(60));
+            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator MissileRangeWallsFriendlyBlockersAndEmptyShotsAreRespected()
+        {
+            var skill = Learn("Damage");
+            skill.Targeting = SkillTargeting.Missile;
+            skill.TargetSelector.Area = TargetArea.All;
+            Assert.That(MissileTargeting.Trace(caster, Vector3Int.left, 8).Character, Is.SameAs(friend));
+            friend.SetAction(new WaitAction());
+            yield return harness.ExecuteAction(SkillAction.ForMissile(caster, skill, Vector3Int.left));
+            Assert.That(friend.Vitals.HP, Is.EqualTo(60), "Team filter prevents damage, but the ally blocks the shot.");
+            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(MissileTargeting.Trace(caster, Vector3Int.up, 1).Cell, Is.EqualTo(caster.TilemapPosition + Vector3Int.up));
+            var hit = MissileTargeting.Trace(caster, Vector3Int.up, 1000);
+            Assert.That(hit.Character, Is.Null);
+            Assert.That(harness.Game.CurrentDungeon.IsWalkable(hit.Cell), Is.True);
+            Assert.That(harness.Game.CurrentDungeon.IsWalkable(hit.Cell + Vector3Int.up), Is.False);
+            friend.SetAction(new WaitAction());
+            yield return harness.ExecuteAction(SkillAction.ForMissile(caster, skill, Vector3Int.up));
+            Assert.That(caster.Vitals.SP, Is.EqualTo(18), "A confirmed miss still spends energy.");
+            Assert.That(SkillAction.ForMissile(caster, skill, Vector3Int.zero).IsValid(caster), Is.False);
+            skill.MissileRange = 0;
+            Assert.That(caster.CanCast(skill, out _), Is.False);
+        }
+
+        private InventoryItem HealingItem(SkillTargeting targeting, TargetTeam team)
+        {
+            var definition = ScriptableObject.CreateInstance<UsableItemDefinition>();
+            var effect = ScriptableObject.CreateInstance<ModifyStatsItemEffectDefinition>();
+            itemAssets.Add(definition); itemAssets.Add(effect);
+            definition.ItemName = "Targeted potion";
+            definition.Targeting = targeting;
+            definition.TargetSelector = new TargetSelector { Team = team, Area = TargetArea.All };
+            definition.ItemEffectDefinition = effect;
+            definition.StackMax = 10;
+            effect.StatModification = new StatModification();
+            effect.VitalModification = new VitalModification { Hp = 10 };
+            var item = definition.AsInventoryItem(3);
+            harness.Game.PlayerController.Inventory.Add(item);
+            return item;
+        }
+
+        [UnityTest]
+        public IEnumerator ItemSelectedAllyWorkflowCancelsThenHealsWithoutSpCost()
+        {
+            var item = HealingItem(SkillTargeting.SelectedTarget, TargetTeam.Allies);
+            yield return Press(Key.Q);
+            yield return Press(Key.Enter);
+            yield return Press(Key.Enter);
+            Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.True);
+            yield return Press(Key.Escape);
+            Assert.That(item.StackStock, Is.EqualTo(3));
+            yield return Press(Key.Enter);
+            yield return Press(Key.LeftArrow);
+            Assert.That(MenuManager.Instance.TargetDialog.CameraTarget, Is.SameAs(friend));
+            friend.SetAction(new WaitAction());
+            yield return Press(Key.Enter);
+            yield return harness.WaitForIdle();
+            Assert.That(friend.Vitals.HP, Is.EqualTo(70));
+            Assert.That(caster.Vitals.HP, Is.EqualTo(60));
+            Assert.That(item.StackStock, Is.EqualTo(2));
+            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+        }
+
+        [UnityTest]
+        public IEnumerator ItemAreaAllTargetsAndSelfConsumeOncePerUse()
+        {
+            var item = HealingItem(SkillTargeting.SelectedTarget, TargetTeam.Allies);
+            var definition = (UsableItemDefinition)item.ItemDefinition;
+            definition.AreaRadius = 1;
+            var inventory = harness.Game.PlayerController.Inventory;
+            friend.SetAction(new WaitAction());
+            yield return harness.ExecuteAction(new UseInventoryItemAction(inventory, caster, item).WithTarget(caster));
+            Assert.That(caster.Vitals.HP, Is.EqualTo(70));
+            Assert.That(friend.Vitals.HP, Is.EqualTo(70));
+            Assert.That(item.StackStock, Is.EqualTo(2));
+            definition.Targeting = SkillTargeting.AllTargets;
+            friend.SetAction(new WaitAction());
+            yield return harness.ExecuteAction(new UseInventoryItemAction(inventory, caster, item));
+            Assert.That(caster.Vitals.HP, Is.EqualTo(80));
+            Assert.That(friend.Vitals.HP, Is.EqualTo(80));
+            definition.Targeting = SkillTargeting.Self; definition.AreaRadius = 0;
+            friend.SetAction(new WaitAction());
+            yield return harness.ExecuteAction(new UseInventoryItemAction(inventory, caster, item));
+            Assert.That(caster.Vitals.HP, Is.EqualTo(90));
+            Assert.That(friend.Vitals.HP, Is.EqualTo(80));
+            Assert.That(inventory.InventoryItems, Has.No.Member(item));
+            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+        }
+
+        [UnityTest]
+        public IEnumerator MissileItemUsesChosenDirectionAndConsumesOneArrow()
+        {
+            var definition = AssetDatabase.LoadAssetAtPath<UsableItemDefinition>("Assets/Prefabs/Dungeon/Items/Arrows_WoodenArrows.asset");
+            Assert.That(definition.Targeting, Is.EqualTo(SkillTargeting.Missile));
+            Assert.That(definition.MissileProjectilePrefab, Is.Not.Null);
+            var item = definition.AsInventoryItem(3);
+            harness.Game.PlayerController.Inventory.Add(item);
+            caster.CurrentFacing = Facing.Left;
+            yield return Press(Key.Q);
+            yield return Press(Key.Enter);
+            yield return Press(Key.Enter);
+            Assert.That(MenuManager.Instance.TargetDialog.Direction, Is.EqualTo(Vector3Int.left));
+            yield return Press(Key.RightArrow);
+            friend.SetAction(new WaitAction());
+            yield return Press(Key.Enter);
+            yield return harness.WaitForIdle();
+            Assert.That(first.Vitals.HP, Is.EqualTo(55));
+            Assert.That(friend.Vitals.HP, Is.EqualTo(60));
+            Assert.That(item.StackStock, Is.EqualTo(2));
+            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
         }
 
         [UnityTest]

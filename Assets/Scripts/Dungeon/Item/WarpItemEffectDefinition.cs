@@ -8,7 +8,7 @@ public class WarpItemEffectDefinition : ItemEffectDefinition
 	{
 		return new List<GameAction>()
 		{
-			new WarpAction(attacker)
+			new WarpAction(target)
 		};
 	}
 }

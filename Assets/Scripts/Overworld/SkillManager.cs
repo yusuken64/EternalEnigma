@@ -10,7 +10,8 @@ public class SkillManager : MonoBehaviour
 
 	internal Skill GetSkillByName(string skillName)
 	{
-		return SkillPrefabs.FirstOrDefault(x => x.SkillName == skillName);
+		return SkillPrefabs.FirstOrDefault(x => x.SkillName == skillName) ??
+			DemoDungeonLoadout.Load()?.Skills.FirstOrDefault(x => x.SkillName == skillName);
 	}
 	internal Skill GetSkillInstanceByName(string skillName)
 	{

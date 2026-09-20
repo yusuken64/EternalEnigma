@@ -114,6 +114,7 @@ public class MainMenu : MonoBehaviour
 			common.InstantiatedOverworldAllies.Add(ally);
 		}
 
+		common.PendingDemoLoadout = DemoDungeonLoadout.Load();
 		SceneManager.LoadScene("DungeonScene");
 	}
 }

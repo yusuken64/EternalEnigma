@@ -38,7 +38,7 @@ with {playerController.Gold} Treasure";
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
 			SceneManager.LoadScene("OverworldScene");
-		});
+		}, autoOpen: false);
 	}
 
 	public void Quit_Clicked()

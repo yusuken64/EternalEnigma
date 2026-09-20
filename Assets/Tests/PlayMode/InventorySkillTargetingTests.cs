@@ -224,6 +224,73 @@ namespace EternalEnigma.Tests
             yield return Press(Key.Escape);
         }
 
+        [UnityTest]
+        public IEnumerator ItemUseOpensNestedPickerAndCancelPreservesOriginalInventory()
+        {
+            var scroll = AddUsable();
+            var definition = (UsableItemDefinition)scroll.ItemDefinition;
+            definition.Targeting = SkillTargeting.InventoryItem;
+            definition.InventoryTargetSelector.ItemType = InventoryTargetType.Weapon;
+            definition.InventoryEffects.Add(effect);
+            definition.StackMax = 10; scroll.StackStock = 2;
+            var sword = AddEquipment(EquipmentSlot.MainHand);
+            yield return Press(Key.Q);
+            yield return Press(Key.Enter);
+            var useButton = EventSystem.current.currentSelectedGameObject;
+            yield return Press(Key.Enter);
+            var picker = MenuManager.Instance.CurrentDialog as InventoryMenu;
+            Assert.That(picker, Is.Not.Null);
+            Assert.That(picker, Is.Not.SameAs(harness.Game.InventoryMenu));
+            Assert.That(picker.InventoryMenuItems.Count, Is.EqualTo(1));
+            yield return Press(Key.Escape);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(useButton));
+            Assert.That(scroll.StackStock, Is.EqualTo(2));
+            Assert.That(effect.Marked, Is.Empty);
+            yield return Press(Key.Enter);
+            picker = (InventoryMenu)MenuManager.Instance.CurrentDialog;
+            var row = picker.InventoryMenuItems[0];
+            var canvas = row.GetComponentInParent<Canvas>();
+            var position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
+                row.transform.position);
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position, buttons = 1 });
+            yield return null;
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
+            yield return null;
+            yield return harness.WaitForIdle();
+            Assert.That(effect.Marked, Is.EquivalentTo(new[] { sword }));
+            Assert.That(scroll.StackStock, Is.EqualTo(1));
+            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(MenuManager.Instance.DialogStack, Is.Empty);
+            yield return Press(Key.Q);
+            Assert.That(harness.Game.InventoryMenu.InventoryMenuItems.Count, Is.EqualTo(2));
+            yield return Press(Key.Enter);
+            Assert.That(MenuManager.Instance.DialogStack.Peek(), Is.SameAs(harness.Game.InventoryMenu.ActionDialog));
+            yield return Press(Key.Q);
+        }
+
+        [UnityTest]
+        public IEnumerator ItemUseRevalidatesSourceStockAndSelectedItem()
+        {
+            var scroll = AddUsable();
+            var definition = (UsableItemDefinition)scroll.ItemDefinition;
+            definition.Targeting = SkillTargeting.InventoryItem;
+            definition.InventoryTargetSelector.ItemType = InventoryTargetType.Weapon;
+            definition.InventoryEffects.Add(effect);
+            definition.StackMax = 10; scroll.StackStock = 2;
+            var sword = AddEquipment(EquipmentSlot.MainHand);
+            var action = new UseInventoryItemAction(bag, caster, scroll).WithItem(sword);
+            Assert.That(action.IsValid(caster), Is.True);
+            bag.Remove(scroll);
+            Assert.That(action.ExecuteImmediate(caster), Is.Empty);
+            bag.Add(scroll); scroll.StackStock = 0;
+            Assert.That(action.ExecuteImmediate(caster), Is.Empty);
+            scroll.StackStock = 2; bag.Remove(sword);
+            Assert.That(action.ExecuteImmediate(caster), Is.Empty);
+            Assert.That(scroll.StackStock, Is.EqualTo(2));
+            Assert.That(effect.Marked, Is.Empty);
+            yield return null;
+        }
+
         // Test effect records per-item identification without introducing an identification
         // or enchantment system into the game's existing item/save model.
         [Serializable]

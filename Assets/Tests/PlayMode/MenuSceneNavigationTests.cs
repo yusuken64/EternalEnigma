@@ -70,6 +70,47 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(1));
             Assert.That(Common.Instance.GameSaveData.DungeonSaveData.EndFloor, Is.EqualTo(5));
             Assert.That(harness.Store.Read(), Is.EqualTo(savedJson));
+            var loadout = DemoDungeonLoadout.Load();
+            Assert.That(loadout, Is.Not.Null);
+            Assert.That(loadout.Skills.Count, Is.EqualTo(9));
+            Assert.That(loadout.Skills.Select(s => s.Targeting).Distinct(),
+                Is.EquivalentTo(System.Enum.GetValues(typeof(SkillTargeting))));
+            Assert.That(loadout.Items.OfType<UsableItemDefinition>().Select(i => i.Targeting).Distinct(),
+                Is.EquivalentTo(System.Enum.GetValues(typeof(SkillTargeting))));
+            Assert.That(harness.Game.Enemies.Count, Is.EqualTo(3));
+            Assert.That(harness.Game.Enemies.All(e => e.Vitals.HP == 500), Is.True);
+            Assert.That(harness.Game.Enemies.Cast<Enemy>().All(e => e.Policies.Count == 0), Is.True);
+            Assert.That(harness.Game.Allies.All(a => a.Vitals.HP < a.FinalStats.HPMax && a.Vitals.SP >= 50), Is.True);
+            var inventory = harness.Game.PlayerController.Inventory;
+            Assert.That(inventory.Count(), Is.EqualTo(loadout.Items.Count));
+            foreach (var definition in loadout.Items)
+                Assert.That(Common.Instance.ItemManager.GetAsInventoryItemByName(definition.ItemName).ItemDefinition, Is.SameAs(definition));
+            foreach (var skill in loadout.Skills)
+                Assert.That(Common.Instance.SkillManager.GetSkillByName(skill.SkillName), Is.SameAs(skill));
+            if (save == null)
+            {
+                var weapon = inventory.InventoryItems.OfType<EquipableInventoryItem>().First();
+                foreach (var skill in harness.Ally.Skills.Where(s => loadout.Skills.Any(d => d.SkillName == s.SkillName)))
+                {
+                    Assert.That(harness.Ally.CanCast(skill, out var reason), Is.True, skill.SkillName + ": " + reason);
+                    var target = skill.TargetSelector.Team == TargetTeam.Enemies ? harness.Game.Enemies[0] : harness.Ally;
+                    var action = skill.Targeting == SkillTargeting.InventoryItem ? SkillAction.ForInventoryItem(harness.Ally, skill, weapon) :
+                        skill.Targeting == SkillTargeting.Missile ? SkillAction.ForMissile(harness.Ally, skill, Vector3Int.right) :
+                        new SkillAction(harness.Ally, skill, target);
+                    yield return harness.ExecuteAction(action);
+                }
+                foreach (var item in inventory.InventoryItems.OfType<UsableInventoryItem>().ToArray())
+                {
+                    var definition = (UsableItemDefinition)item.ItemDefinition;
+                    var target = definition.TargetSelector.Team == TargetTeam.Enemies ? harness.Game.Enemies[0] : harness.Ally;
+                    var action = new UseInventoryItemAction(inventory, harness.Ally, item).WithTarget(target)
+                        .WithItem(weapon).WithDirection(Vector3Int.right);
+                    Assert.That(action.IsValid(harness.Ally), Is.True, item.ItemName);
+                    yield return harness.ExecuteAction(action);
+                    Assert.That(item.StackStock, Is.EqualTo(19), item.ItemName);
+                }
+                Assert.That(harness.Store.Read(), Is.EqualTo(savedJson));
+            }
             if (save != null) Assert.That(save.OverworldSaveData.Gold, Is.EqualTo(731));
             harness.Game.AdvanceFloor();
             yield return harness.WaitForIdle();
@@ -84,6 +125,50 @@ namespace EternalEnigma.Tests
             yield return null;
             InputSystem.QueueStateEvent(pad, new GamepadState());
             yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ContinueKeepsOverworldCoveredUntilHeroCameraIsReady()
+        {
+            yield return harness.LoadMainMenu(new TestScenario().CreateSave());
+            Object.FindFirstObjectByType<MainMenu>().Continue_Clicked();
+            yield return CheckOverworldReveal();
+        }
+
+        [UnityTest]
+        public IEnumerator DungeonReturnKeepsOverworldCoveredUntilHeroCameraIsReady()
+        {
+            yield return harness.LoadDungeon(new TestScenario());
+            GameOverScreen.GoBackToOverworld(false, harness.Game.PlayerController);
+            yield return CheckOverworldReveal();
+        }
+
+        private IEnumerator CheckOverworldReveal()
+        {
+            var transition = Common.Instance.ScreenTransition;
+            bool sawGeneration = false;
+            float deadline = Time.realtimeSinceStartup + 60;
+            Overworld world;
+            while ((world = Object.FindFirstObjectByType<Overworld>()) == null || !world.IsReady)
+            {
+                Assert.That(Time.realtimeSinceStartup, Is.LessThan(deadline), "Overworld did not become ready.");
+                if (world != null)
+                {
+                    sawGeneration = true;
+                    Assert.That(transition.BlockScreen.activeSelf, Is.True);
+                    Assert.That(transition.ShutterScreen.gameObject.activeSelf, Is.True);
+                    Assert.That(transition.ShutterScreen.color.a, Is.EqualTo(1).Within(0.001f));
+                }
+                yield return null;
+            }
+            Assert.That(sawGeneration, Is.True);
+            var camera = world.OverworldPlayer.CameraController;
+            Assert.That(camera._followTarget, Is.SameAs(world.OverworldPlayer.ControllingOverworldAlly.CirlcleRenderer.transform));
+            Assert.That(Vector3.Distance(camera.Camera.transform.position, camera._followTarget.position + camera.CameraOffset), Is.LessThan(0.001f));
+            Assert.That(Vector3.Dot(camera.Camera.transform.forward,
+                (camera._followTarget.position - camera.Camera.transform.position).normalized), Is.GreaterThan(0.999f));
+            yield return harness.WaitUntil(() => !transition.BlockScreen.activeSelf, "overworld reveal");
+            Assert.That(transition.ShutterScreen.gameObject.activeSelf, Is.False);
         }
 
         [UnityTest]

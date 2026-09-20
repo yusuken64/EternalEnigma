@@ -28,6 +28,17 @@ public static class HarnessTestRunner
     public static void RunSkills() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.InventorySkillTargetingTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Demo")]
+    public static void RunDemo() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutOverwritingExistingSave");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Overworld")]
+    public static void RunOverworld() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsOverworldCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsOverworldCoveredUntilHeroCameraIsReady",
+        "HarnessSmokeTests.OverworldScenarioLoadsSuppliedGoldAndAlly");
+
     private static void Run(TestMode mode, string filter, params string[] testFilters)
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);

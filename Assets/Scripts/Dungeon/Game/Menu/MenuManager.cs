@@ -199,14 +199,26 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public void OpenInventoryTargetingMenu(Character character, Skill skill)
 	{
 		if (skill.Targeting != SkillTargeting.InventoryItem || !character.CanCast(skill, out _)) return;
+		OpenInventoryPicker(character, skill.GetInventoryTargets(character),
+			item => SkillAction.ForInventoryItem(character, skill, item),
+			$"Choose an item for {skill.SkillName} ({skill.SPCost} SP)");
+	}
+
+	private void OpenInventoryPicker(Character character, List<InventoryItem> targets,
+		Func<InventoryItem, GameAction> createAction, string prompt)
+	{
 		Common.Instance.MenuInputHandler.SwitchToUIInput();
-		var pickerCanvas = InventoryMenu.GetComponent<Canvas>();
+		// Item use can open a second inventory picker over the original inventory.
+		// Keep its rows/callbacks separate so Back restores the original item menu.
+		bool temporary = DialogStack.Contains(InventoryMenu);
+		var picker = temporary ? Instantiate(InventoryMenu, InventoryMenu.transform.parent) : InventoryMenu;
+		var pickerCanvas = picker.GetComponent<Canvas>();
 		int originalOrder = pickerCanvas.sortingOrder;
 		pickerCanvas.sortingOrder = Mathf.Max(originalOrder, SkillDialog.GetComponent<Canvas>().sortingOrder + 1);
-		Open(InventoryMenu);
-		InventoryMenu.Setup(skill.GetInventoryTargets(character), character, item =>
+		Open(picker);
+		picker.Setup(targets, character, item =>
 		{
-			var action = SkillAction.ForInventoryItem(character, skill, item);
+			var action = createAction(item);
 			if (!action.IsValid(character))
 			{
 				Game.Instance.DoFloatingText("That item can no longer be targeted", Color.yellow, character.transform.position);
@@ -214,14 +226,15 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			}
 			CloseAllMenus();
 			character.SetAction(action);
-		}, $"Choose an item for {skill.SkillName} ({skill.SPCost} SP)");
-		InventoryMenu.SetNavigation();
-		InventoryMenu.CloseAction = () =>
+		}, prompt, followPortrait: !temporary);
+		picker.SetNavigation();
+		picker.CloseAction = () =>
 		{
-			InventoryMenu.Close();
+			picker.Close();
 			pickerCanvas.sortingOrder = originalOrder;
+			if (temporary) Destroy(picker.gameObject);
 		};
-		CurrentDialog = InventoryMenu;
+		CurrentDialog = picker;
 		Opened = true;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
@@ -229,10 +242,19 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public void OpenTargetingMenu(Character character, Skill skill)
 	{
 		if (!character.CanCast(skill, out _)) return;
+		OpenWorldTargeting(character, skill.GetTargetCharacters(character),
+			(target, direction) => skill.Targeting == SkillTargeting.Missile ?
+				SkillAction.ForMissile(character, skill, direction) : new SkillAction(character, skill, target),
+			skill.Targeting == SkillTargeting.Missile ? skill.MissileRange : 0);
+	}
+
+	private void OpenWorldTargeting(Character character, List<Character> targets,
+		Func<Character, Vector3Int, GameAction> createAction, int missileRange = 0)
+	{
 		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(TargetDialog);
-		TargetDialog.Setup(character, skill);
+		TargetDialog.Setup(character, targets, createAction, missileRange);
 		CurrentDialog = TargetDialog;
 		TargetDialog.CloseAction = () =>
 		{
@@ -246,6 +268,38 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		Opened = true;
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
+	}
+
+	internal void UseInventoryItem(Character character, InventoryItem item)
+	{
+		var inventory = Game.Instance.PlayerController.Inventory;
+		UseInventoryItemAction Create() => new(inventory, character, item);
+		if (!Create().CanBegin(character))
+		{
+			Game.Instance.DoFloatingText("That item cannot be used now", Color.yellow, character.transform.position);
+			Common.Instance.MenuInputHandler.ClearInputThisFrame();
+			return;
+		}
+		if (item.ItemDefinition is UsableItemDefinition definition)
+		{
+			if (definition.Targeting == SkillTargeting.InventoryItem)
+			{
+				OpenInventoryPicker(character, definition.GetInventoryTargets(character), selected => Create().WithItem(selected),
+					$"Choose an item for {item.ItemName}");
+				return;
+			}
+			if (definition.Targeting == SkillTargeting.Missile || definition.TargetingRules.RequiresSelection)
+			{
+				OpenWorldTargeting(character, definition.TargetingRules.GetCharacters(character),
+					(target, direction) => Create().WithTarget(target).WithDirection(direction),
+					definition.Targeting == SkillTargeting.Missile ? definition.MissileRange : 0);
+				return;
+			}
+		}
+		var action = Create();
+		if (!action.IsValid(character)) return;
+		CloseAllMenus();
+		character.SetAction(action);
 	}
 
 	internal void ShowYesNoDialog(string prompt, Action yesAction, Action noAction)

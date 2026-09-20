@@ -74,8 +74,7 @@ public abstract class Character : MonoBehaviour, Actor
 		}
 
 		bool inventoryTargeting = skill.Targeting == SkillTargeting.InventoryItem;
-		if (skill.SPCost < 0 || (!inventoryTargeting && (skill.AreaRadius < 0 || skill.TargetSelector == null)) ||
-			(inventoryTargeting && skill.InventoryTargetSelector == null) ||
+		if (skill.SPCost < 0 || !skill.TargetingRules.IsConfigured || skill.ActionEffects == null ||
 			(!inventoryTargeting && skill.ActionEffects.Any(effect => effect is InventorySkillEffect)))
 		{
 			reason = "Invalid skill configuration";
@@ -87,8 +86,8 @@ public abstract class Character : MonoBehaviour, Actor
 			return false;
 		}
 
-		bool hasTargets = inventoryTargeting ? skill.GetInventoryTargets(this).Any() :
-			(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any();
+		bool hasTargets = skill.Targeting == SkillTargeting.Missile || (inventoryTargeting ? skill.GetInventoryTargets(this).Any() :
+			(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any());
 		if (!hasTargets)
 		{
 			reason = "No valid targets";

@@ -28,10 +28,8 @@ namespace JuicyChickenGames.Menu
 		{
 			if (_character is Ally ally)
 			{
-				ally.SetAction(new UseInventoryItemAction(Game.Instance.PlayerController.Inventory, ally, _data));
+				MenuManager.Instance.UseInventoryItem(ally, _data);
 			}
-
-			MenuManager.Instance.CloseAllMenus();
 		}
 
 		public void Throw_Clicked()

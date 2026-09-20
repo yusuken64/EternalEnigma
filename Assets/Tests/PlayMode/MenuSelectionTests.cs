@@ -27,10 +27,12 @@ namespace EternalEnigma.Tests
         private CursorLockMode previousLock;
         private bool previousCursorVisible;
         private float previousTimeScale;
+        private TestInputScope inputScope;
 
         [UnitySetUp]
         public IEnumerator SetUp()
         {
+            inputScope = new TestInputScope();
             previousLock = Cursor.lockState;
             previousCursorVisible = Cursor.visible;
             previousTimeScale = Time.timeScale;
@@ -78,6 +80,7 @@ namespace EternalEnigma.Tests
             Cursor.lockState = previousLock;
             Cursor.visible = previousCursorVisible;
             Time.timeScale = previousTimeScale;
+            inputScope.Dispose();
         }
 
         private IEnumerator Pointer(SelectToActivateButton button, bool down)

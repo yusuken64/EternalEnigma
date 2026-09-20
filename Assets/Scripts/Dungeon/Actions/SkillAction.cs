@@ -8,6 +8,7 @@ internal class SkillAction : GameAction
 	private Character caster;
 	private Skill skill;
 	private Character target;
+	private List<Character> affected = new();
 
 	public SkillAction()
 	{
@@ -22,6 +23,8 @@ internal class SkillAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		if (!IsValid(character)) return new();
+		affected = skill.GetAffectedCharacters(caster, target);
 		AddMetricsModification(
 			caster,
 			(stats, vitals) =>
@@ -29,23 +32,27 @@ internal class SkillAction : GameAction
 				vitals.SP -= skill.SPCost;
 			});
 
-		return skill.GetEffects(caster, target);
+		return affected.SelectMany(recipient => skill.GetEffects(caster, recipient)).ToList();
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
-		yield return skill.ExecuteRoutine(caster, target);
+		foreach (var recipient in affected)
+			if (recipient != null) yield return skill.ExecuteRoutine(caster, recipient);
 	}
 
     internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
     {
         foreach (var cell in base.AnimationCells(actor)) yield return cell;
-        foreach (var cell in AnimationPath(actor, target.TilemapPosition)) yield return cell;
+        foreach (var recipient in affected)
+            if (recipient != null)
+                foreach (var cell in AnimationPath(actor, recipient.TilemapPosition)) yield return cell;
     }
 
 	internal override bool IsValid(Character character)
 	{
-		return skill.IsValid(caster);
+		return character == caster && skill != null && skill.IsValid(caster) &&
+			skill.GetAffectedCharacters(caster, target).Any();
 	}
 }

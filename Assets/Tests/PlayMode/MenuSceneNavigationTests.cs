@@ -19,10 +19,12 @@ namespace EternalEnigma.Tests
         private GameTestHarness harness;
         private Gamepad pad;
         private Keyboard keyboard;
+        private TestInputScope inputScope;
 
         [UnitySetUp]
         public IEnumerator SetUp()
         {
+            inputScope = new TestInputScope();
             harness = new GameTestHarness();
             yield return null;
         }
@@ -34,6 +36,7 @@ namespace EternalEnigma.Tests
             if (pad != null) InputSystem.RemoveDevice(pad);
             if (keyboard != null) InputSystem.RemoveDevice(keyboard);
             yield return harness.Cleanup();
+            inputScope.Dispose();
         }
 
         private void UsePad()
@@ -41,6 +44,38 @@ namespace EternalEnigma.Tests
             pad = InputSystem.AddDevice<Gamepad>();
             keyboard = InputSystem.AddDevice<Keyboard>();
             MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { pad, keyboard };
+        }
+
+        [UnityTest]
+        public IEnumerator TestDungeonStartsWithoutASave() => CheckTestDungeon(null);
+
+        [UnityTest]
+        public IEnumerator TestDungeonStartsWithoutOverwritingExistingSave() =>
+            CheckTestDungeon(new TestScenario { Gold = 731, StartFloor = 6, EndFloor = 10 }.CreateSave());
+
+        private IEnumerator CheckTestDungeon(GameSaveData save)
+        {
+            yield return harness.LoadMainMenu(save);
+            var savedJson = harness.Store.Read();
+            var menu = Object.FindFirstObjectByType<MainMenu>();
+            var names = menu.DebugAllies.Select(ally => ally.AllyName).ToArray();
+            var button = Object.FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .Single(b => Enumerable.Range(0, b.onClick.GetPersistentEventCount()).Any(i =>
+                    b.onClick.GetPersistentTarget(i) == menu &&
+                    b.onClick.GetPersistentMethodName(i) == nameof(MainMenu.TestDungeon_Clicked)));
+            button.onClick.Invoke();
+            yield return harness.WaitForIdle();
+            Assert.That(harness.Game.Allies.Select(ally => ally.CharacterName), Is.EqualTo(names));
+            Assert.That(harness.Ally, Is.Not.Null);
+            Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(1));
+            Assert.That(Common.Instance.GameSaveData.DungeonSaveData.EndFloor, Is.EqualTo(5));
+            Assert.That(harness.Store.Read(), Is.EqualTo(savedJson));
+            if (save != null) Assert.That(save.OverworldSaveData.Gold, Is.EqualTo(731));
+            harness.Game.AdvanceFloor();
+            yield return harness.WaitForIdle();
+            Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(2));
+            Assert.That(harness.Game.CurrentDungeon.IsThroneFloor, Is.False);
+            Assert.That(harness.Game.Enemies, Is.Not.Empty);
         }
 
         private IEnumerator Press(GamepadButton button)

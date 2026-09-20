@@ -77,12 +77,11 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		}
 
 		// UI buttons receive Submit once through EventSystem. Only world-target
-		// selection (which disables EventSystem) needs a manual confirm path.
+		// selection needs a manual confirm path.
 		if (Common.Instance.MenuInputHandler.SubmitMenuInput &&
 			Game.Instance.PlayerController.CurrentControlMode == PlayerControlMode.TargetSelecting)
 		{
 			TargetDialog.ConfirmTarget();
-			CloseAllMenus();
 			return;
 		}
 
@@ -199,6 +198,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	public void OpenTargetingMenu(Character character, Skill skill)
 	{
+		if (!character.CanCast(skill, out _)) return;
 		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(TargetDialog);

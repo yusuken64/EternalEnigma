@@ -24,12 +24,15 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run PlayMode")]
     public static void RunPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode");
 
-    private static void Run(TestMode mode, string filter)
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Skills")]
+    public static void RunSkills() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.SkillRegressionTests");
+
+    private static void Run(TestMode mode, string filter, string testFilter = null)
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         if (!string.IsNullOrEmpty(SessionState.GetString(SessionKey, "")))
             throw new InvalidOperationException("A harness run is already active.");
-        var run = new RunSummary { runId = Guid.NewGuid().ToString("N"), mode = mode.ToString(), state = "Queued", filter = filter };
+        var run = new RunSummary { runId = Guid.NewGuid().ToString("N"), mode = mode.ToString(), state = "Queued", filter = filter, testFilter = testFilter };
         Directory.CreateDirectory("Temp/HarnessResults");
         SessionState.SetString(SessionKey, JsonUtility.ToJson(run));
         Write(run);
@@ -48,7 +51,8 @@ public static class HarnessTestRunner
         try
         {
             var id = Api.Execute(new ExecutionSettings(new Filter {
-                testMode = (TestMode)Enum.Parse(typeof(TestMode), run.mode), assemblyNames = new[] { run.filter }
+                testMode = (TestMode)Enum.Parse(typeof(TestMode), run.mode), assemblyNames = new[] { run.filter },
+                testNames = string.IsNullOrEmpty(run.testFilter) ? null : new[] { run.testFilter }
             }));
             SessionState.SetString(SessionKey + ".Job", id);
         }
@@ -89,6 +93,7 @@ public static class HarnessTestRunner
         public string mode;
         public string state;
         public string filter;
+        public string testFilter;
         public int passed;
         public int failed;
         public int skipped;

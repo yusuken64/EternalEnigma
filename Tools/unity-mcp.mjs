@@ -26,8 +26,8 @@ try {
     const name = process.argv[2] ?? 'get_scene_info';
     if (name === 'harness') {
         const mode = process.argv[3] ?? 'EditMode';
-        if (!['EditMode', 'PlayMode'].includes(mode)) throw Error('Expected EditMode or PlayMode.');
-        const resultPath = join(root, `Temp/HarnessResults/${mode}.json`);
+        if (!['EditMode', 'PlayMode', 'Skills'].includes(mode)) throw Error('Expected EditMode, PlayMode or Skills.');
+        const resultPath = join(root, `Temp/HarnessResults/${mode === 'Skills' ? 'PlayMode' : mode}.json`);
         const readSummary = () => {
             try { return JSON.parse(readFileSync(resultPath, 'utf8')); } catch { return null; }
         };
@@ -35,7 +35,7 @@ try {
         const started = await client.callTool({ name: 'execute_menu_item',
             arguments: { menuPath: `Tools/Eternal Enigma/Tests/Run ${mode}` } });
         if (started.isError) throw Error(JSON.stringify(started));
-        const deadline = Date.now() + 240000;
+        const deadline = Date.now() + 600000;
         let summary;
         while (Date.now() < deadline) {
             summary = readSummary();

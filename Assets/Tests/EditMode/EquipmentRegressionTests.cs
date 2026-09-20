@@ -22,6 +22,38 @@ public class EquipmentRegressionTests
         return new EquipableInventoryItem(definition);
     }
 
+    [Test]
+    public void OffhandPreviewAndEquipHandleSerializedEmptySlots()
+    {
+        JsonUtility.FromJsonOverwrite("{\"EquippedWeapon\":{\"ItemDefinition\":null},\"EquippedShield\":{\"ItemDefinition\":null},\"EquippedAccessory\":{\"ItemDefinition\":null}}", equipment);
+        Assert.That(equipment.EquippedWeapon, Is.Not.Null, "Unity represents inline empty slots as objects.");
+        Assert.That(equipment.EquippedWeapon.ItemDefinition, Is.Null);
+        var shield = Item(EquipmentSlot.OffHand);
+        Assert.DoesNotThrow(() => equipment.GetStatsIfEquipped(shield));
+        Assert.DoesNotThrow(() => equipment.Equip(shield));
+        Assert.That(equipment.EquippedShield, Is.SameAs(shield));
+        Assert.That(equipment.EquippedWeapon, Is.Null);
+    }
+
+    [Test]
+    public void SerializedEquipmentRetainsDefinitionSlotAndStats()
+    {
+        var weapon = Item(EquipmentSlot.TwoHand);
+        weapon.EquipmentItemDefinition.StatModification = new StatModification { Strength = 7 };
+        equipment.Equip(weapon);
+        var clone = Object.Instantiate(owner);
+        try
+        {
+            var restored = clone.GetComponent<Equipment>();
+            Assert.That(restored.EquippedWeapon.EquipmentItemDefinition, Is.SameAs(weapon.ItemDefinition));
+            Assert.That(restored.EquippedWeapon.EquipmentSlot, Is.EqualTo(EquipmentSlot.TwoHand));
+            Assert.That(restored.GetEquipmentStatModification().Strength, Is.EqualTo(7));
+            restored.Equip(Item(EquipmentSlot.OffHand));
+            Assert.That(restored.EquippedWeapon, Is.Null);
+        }
+        finally { Object.DestroyImmediate(clone); }
+    }
+
     [TestCase(EquipmentSlot.MainHand)]
     [TestCase(EquipmentSlot.OffHand)]
     [TestCase(EquipmentSlot.Accessory)]

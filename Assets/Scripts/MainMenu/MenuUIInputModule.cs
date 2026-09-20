@@ -156,6 +156,9 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public override void Process()
     {
         scopes.RemoveAll(s => s.Owner == null || s.Root == null || !s.Root.gameObject.activeInHierarchy);
+        // World targets use directional/confirm input in TargetDialog and MenuManager.
+        // Keep EventSystem enabled so a settings dialog pushed above targeting still works.
+        if (scopes.Count > 0 && scopes[^1].Owner is JuicyChickenGames.Menu.TargetDialog) return;
         RememberSelection();
         if (!InputConsumed && scopes.Count > 0)
         {

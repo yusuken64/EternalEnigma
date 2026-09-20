@@ -1373,11 +1373,21 @@ MonoBehaviour:
   NavigationHandler: {fileID: 1656518435}
   DebugAllies:
   - AllyName: Rowan
-    Skills: []
+    Skills:
+    - Damage
+    - Dot
   - AllyName: Alex
-    Skills: []
+    Skills:
+    - ShieldBash
+    - Anger
   - AllyName: Reese
-    Skills: []
+    Skills:
+    - Healing
+    - Hot
+  DebugAllyPrefabs:
+  - {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  - {fileID: 785305266141966241, guid: 72cc990e9ae0c9849a631719a2431227, type: 3}
+  - {fileID: 8632222719332666010, guid: adf833241425af5438a45f42a0b50d0d, type: 3}
 --- !u!4 &1656518433
 Transform:
   m_ObjectHideFlags: 0

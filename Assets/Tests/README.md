@@ -1,5 +1,33 @@
 # Game test harness
 
+## Skills
+
+`SkillRegressionTests` runs the production dungeon, skill assets, menu, input
+bindings and turn pipeline. It checks single-target damage/healing, healing caps,
+self buffs, ally/enemy selection, dead and out-of-range targets, area effects,
+untargeted effects, SP costs, passive/unknown skills, silence, status coexistence,
+reapplication and expiry, and casting on behalf of another party member.
+
+Skill authoring uses `Targeting` (`SelectedTarget`, `Self`, or `AllTargets`) and
+`AreaRadius` (Chebyshev tile radius, zero for a single character). Existing assets
+default to selected single-target behavior; self-only selectors cast immediately.
+`Self` centers an area on the caster. `AllTargets` casts immediately on every
+living character allowed by the team/range selector. Area effects retain the
+selector's team and range restrictions, and charge SP once per cast, regardless
+of recipient count. `Custom` range has no geometry implementation and therefore
+offers no targets. AoE and untargeted tests use clones of production skills to
+exercise these settings without changing the existing skill balance.
+
+Dungeon controls: **R / left shoulder** opens or closes skills; **WASD, arrows,
+D-pad or left stick** selects a skill/target; **Enter, Space / south button**
+confirms; **Escape / east button** goes back. Self/untargeted skills cast on the
+first confirmation. Targeted skills require a second confirmation and can be
+cancelled without spending SP or a turn. Target selection enables its component
+only while needed, and disables it after confirm/cancel. Gamepad/keyboard/mouse
+tests inject device events through the real Input System bindings; they do not
+test physical hardware. The test dungeon party carries all six active skills:
+Rowan has Damage/Dot, Alex has ShieldBash/Anger, and Reese has Healing/Hot.
+
 Sight coverage: `DungeonSightTests` verifies wall occlusion, blocked diagonal
 corners, symmetric range limits, room/corridor classification, and immediate
 completion of skipped visual effects. `SightPlaybackTests` advances from the
@@ -123,12 +151,13 @@ without depending on a host's cached connection to a different Unity project:
 node Tools/unity-mcp.mjs get_scene_info
 node Tools/unity-mcp.mjs harness EditMode
 node Tools/unity-mcp.mjs harness PlayMode
+node Tools/unity-mcp.mjs harness Skills
 ```
 
 These commands invoke **Tools > Eternal Enigma > Tests** and wait for the matching
 run ID in `Temp/HarnessResults/{mode}.json`. NUnit XML is written alongside it.
 The local results survive MCP disconnects at Play Mode transitions. The client
-returns nonzero for errors, failed/empty runs, or a four-minute timeout. A timeout
+returns nonzero for errors, failed/empty runs, or a ten-minute timeout. A timeout
 does not automatically stop Unity; use **Tools > Eternal Enigma > Tests > Cancel Run**.
 
 For generic MCP calls with JSON arguments, PowerShell hosts that strip quotes can

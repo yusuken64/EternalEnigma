@@ -16,7 +16,7 @@ namespace JuicyChickenGames.Menu
 
         public void Setup(Character character)
         {
-            var dynamicActionInfos = character.Skills.Select((skill, index) =>
+            var dynamicActionInfos = character.Skills.Where(skill => skill != null && skill.ActivationType == ActivationType.Active).Select((skill, index) =>
             {
                 return new DynamicActionInfo()
                 {
@@ -25,12 +25,17 @@ namespace JuicyChickenGames.Menu
                     {
                         if (character.CanCast(skill, out string reason))
                         {
-                            //MenuManager.Open(MenuManager.Instance.TargetDialog);
-                            MenuManager.Instance.OpenTargetingMenu(character, skill);
+                            if (skill.RequiresTargetSelection)
+                                MenuManager.Instance.OpenTargetingMenu(character, skill);
+                            else
+                            {
+                                MenuManager.Instance.CloseAllMenus();
+                                character.SetAction(new SkillAction(character, skill, character));
+                            }
                         }
 						else
 						{
-                            //TODO warn based on reason
+                            Game.Instance.DoFloatingText(reason, Color.yellow, character.transform.position);
 						}
                     }
                 };

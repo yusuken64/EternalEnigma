@@ -12,6 +12,10 @@ public class Skill : ScriptableObject
 
 	public int SPCost;
 	public TargetSelector TargetSelector;
+	public SkillTargeting Targeting;
+	[Min(0)] public int AreaRadius;
+	internal bool RequiresTargetSelection => Targeting == SkillTargeting.SelectedTarget &&
+		TargetSelector.Team != TargetTeam.Self && TargetSelector.Area != TargetArea.Self;
 	[SerializeReference]
 	public List<GameAction> ActionEffects;
 
@@ -32,15 +36,26 @@ public class Skill : ScriptableObject
 
 	internal IEnumerator ExecuteRoutine(Character caster, Character target)
 	{
-		yield return SkillAnimation.ExecuteRoutine(caster, target);
+		if (SkillAnimation != null) yield return SkillAnimation.ExecuteRoutine(caster, target);
 	}
 
 	internal bool IsValid(Character caster)
 	{
-		return caster.Vitals.SP >= SPCost && GetTargets(caster).Any();
+		return caster != null && caster.CanCast(this, out _);
 	}
 
 	internal List<Vector3Int> GetTargets(Character caster) => TargetSelector.GetTargets(caster);
+
+	internal List<Character> GetTargetCharacters(Character caster) => TargetSelector.GetCharacters(caster);
+
+	internal List<Character> GetAffectedCharacters(Character caster, Character selectedTarget)
+	{
+		var candidates = GetTargetCharacters(caster);
+		if (Targeting == SkillTargeting.AllTargets) return candidates;
+		var center = RequiresTargetSelection ? selectedTarget : caster;
+		if (center == null || (RequiresTargetSelection && !candidates.Contains(center))) return new();
+		return candidates.Where(c => TileWorldDungeon.ChevDistance(c.TilemapPosition, center.TilemapPosition) <= AreaRadius).ToList();
+	}
 
 	public StatModification PassiveStatModification;
 
@@ -52,4 +67,11 @@ public enum ActivationType
 {
 	Active,
 	Passive
+}
+
+public enum SkillTargeting
+{
+	SelectedTarget, // Radius zero affects only the selected character.
+	Self,           // Cast immediately, centered on the caster.
+	AllTargets      // Cast immediately on every character allowed by the selector.
 }

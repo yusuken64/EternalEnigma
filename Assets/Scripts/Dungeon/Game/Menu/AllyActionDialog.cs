@@ -92,26 +92,8 @@ namespace JuicyChickenGames.Menu
 
 		public void Skill_Clicked()
 		{
-			MenuManager.Open(DynamicActionDialog);
-
-			List<DynamicActionInfo> dynamicActionInfos = 
-				_ally.Skills.Select((skill, index) => 
-				{ 
-					return new DynamicActionInfo()
-					{
-						ActionName = $"{skill.SkillName}({skill.SPCost})",
-						ClickAction = () =>
-						{
-							//_ally.SetAction(new SkillAction(_ally, skill));
-						}
-					};
-				}).ToList();
-			DynamicActionDialog.Setup(dynamicActionInfos);
-			DynamicActionDialog.SetNavigation();
-			MenuManager.Instance.LateAction = () =>
-			{
-				DynamicActionDialog.SetFirstSelect();
-			};
+			MenuManager.Close(this);
+			MenuManager.Instance.OpenSkillsMenu(_ally);
 		}
 
 		public void Talk_Clicked()

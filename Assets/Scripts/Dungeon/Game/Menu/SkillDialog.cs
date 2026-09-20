@@ -25,7 +25,9 @@ namespace JuicyChickenGames.Menu
                     {
                         if (character.CanCast(skill, out string reason))
                         {
-                            if (skill.RequiresTargetSelection)
+                            if (skill.Targeting == SkillTargeting.InventoryItem)
+                                MenuManager.Instance.OpenInventoryTargetingMenu(character, skill);
+                            else if (skill.RequiresTargetSelection)
                                 MenuManager.Instance.OpenTargetingMenu(character, skill);
                             else
                             {

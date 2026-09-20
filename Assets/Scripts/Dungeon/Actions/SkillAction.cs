@@ -8,6 +8,7 @@ internal class SkillAction : GameAction
 	private Character caster;
 	private Skill skill;
 	private Character target;
+	private InventoryItem inventoryTarget;
 	private List<Character> affected = new();
 
 	public SkillAction()
@@ -21,10 +22,14 @@ internal class SkillAction : GameAction
 		this.target = target;
 	}
 
+	internal static SkillAction ForInventoryItem(Character caster, Skill skill, InventoryItem item) =>
+		new SkillAction(caster, skill, null) { inventoryTarget = item };
+
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if (!IsValid(character)) return new();
-		affected = skill.GetAffectedCharacters(caster, target);
+		bool inventoryTargeting = skill.Targeting == SkillTargeting.InventoryItem;
+		affected = inventoryTargeting ? new List<Character> { caster } : skill.GetAffectedCharacters(caster, target);
 		AddMetricsModification(
 			caster,
 			(stats, vitals) =>
@@ -32,7 +37,8 @@ internal class SkillAction : GameAction
 				vitals.SP -= skill.SPCost;
 			});
 
-		return affected.SelectMany(recipient => skill.GetEffects(caster, recipient)).ToList();
+		return inventoryTargeting ? skill.GetInventoryEffects(caster, inventoryTarget) :
+			affected.SelectMany(recipient => skill.GetEffects(caster, recipient)).ToList();
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
@@ -53,6 +59,8 @@ internal class SkillAction : GameAction
 	internal override bool IsValid(Character character)
 	{
 		return character == caster && skill != null && skill.IsValid(caster) &&
-			skill.GetAffectedCharacters(caster, target).Any();
+			(skill.Targeting == SkillTargeting.InventoryItem ?
+				skill.GetInventoryTargets(caster).Contains(inventoryTarget) :
+				inventoryTarget == null && skill.GetAffectedCharacters(caster, target).Any());
 	}
 }

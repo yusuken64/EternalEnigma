@@ -196,6 +196,36 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
 
+	public void OpenInventoryTargetingMenu(Character character, Skill skill)
+	{
+		if (skill.Targeting != SkillTargeting.InventoryItem || !character.CanCast(skill, out _)) return;
+		Common.Instance.MenuInputHandler.SwitchToUIInput();
+		var pickerCanvas = InventoryMenu.GetComponent<Canvas>();
+		int originalOrder = pickerCanvas.sortingOrder;
+		pickerCanvas.sortingOrder = Mathf.Max(originalOrder, SkillDialog.GetComponent<Canvas>().sortingOrder + 1);
+		Open(InventoryMenu);
+		InventoryMenu.Setup(skill.GetInventoryTargets(character), character, item =>
+		{
+			var action = SkillAction.ForInventoryItem(character, skill, item);
+			if (!action.IsValid(character))
+			{
+				Game.Instance.DoFloatingText("That item can no longer be targeted", Color.yellow, character.transform.position);
+				return;
+			}
+			CloseAllMenus();
+			character.SetAction(action);
+		}, $"Choose an item for {skill.SkillName} ({skill.SPCost} SP)");
+		InventoryMenu.SetNavigation();
+		InventoryMenu.CloseAction = () =>
+		{
+			InventoryMenu.Close();
+			pickerCanvas.sortingOrder = originalOrder;
+		};
+		CurrentDialog = InventoryMenu;
+		Opened = true;
+		Common.Instance.MenuInputHandler.ClearInputThisFrame();
+	}
+
 	public void OpenTargetingMenu(Character character, Skill skill)
 	{
 		if (!character.CanCast(skill, out _)) return;

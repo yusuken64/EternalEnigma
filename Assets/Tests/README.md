@@ -18,6 +18,29 @@ of recipient count. `Custom` range has no geometry implementation and therefore
 offers no targets. AoE and untargeted tests use clones of production skills to
 exercise these settings without changing the existing skill balance.
 
+Inventory skills use `Targeting = InventoryItem`. Configure
+`InventoryTargetSelector.ItemType` as `AnyItem`, `Equipment`, or `Weapon`;
+`IncludeEquipped` optionally adds the caster's equipped items to the shared party
+bag. Weapon filtering includes main-hand/two-handed weapons and off-hand swords,
+and excludes shields/accessories. Character team/range and area radius do not
+apply to this mode.
+
+Add `InventorySkillEffect` implementations to the skill's `ActionEffects`.
+Override `CanTarget(caster, item)` for effect-specific restrictions (such as
+unidentified items or an enchantment cap), and `Bind(caster, item)` to create a
+fresh `GameAction` operating on that exact runtime item. Do not mutate shared
+item-definition assets. Identification/enchantment rules belong to those effects;
+this mode supplies selection, validation and dispatch without changing the item
+or save-data model. Empty/mixed character-effect lists offer no eligible items.
+
+Casting opens a filtered inventory picker with the usual keyboard/controller/mouse
+controls. Confirm casts on the chosen copy; Back returns to the skill list without
+spending SP or a turn. Ownership, eligibility, status restrictions and SP are
+checked again on confirm/execution. Item-skill animations play on the caster.
+`InventorySkillTargetingTests` covers filters, duplicate-name item identity,
+equipped-item inclusion, cancellation, stale targets, costs, mouse confirmation,
+and restoring normal inventory actions. `harness Skills` runs both skill fixtures.
+
 Dungeon controls: **R / left shoulder** opens or closes skills; **WASD, arrows,
 D-pad or left stick** selects a skill/target; **Enter, Space / south button**
 confirms; **Escape / east button** goes back. Self/untargeted skills cast on the

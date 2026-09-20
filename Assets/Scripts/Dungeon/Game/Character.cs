@@ -73,7 +73,10 @@ public abstract class Character : MonoBehaviour, Actor
 			return false;
 		}
 
-		if (skill.SPCost < 0 || skill.AreaRadius < 0 || skill.TargetSelector == null)
+		bool inventoryTargeting = skill.Targeting == SkillTargeting.InventoryItem;
+		if (skill.SPCost < 0 || (!inventoryTargeting && (skill.AreaRadius < 0 || skill.TargetSelector == null)) ||
+			(inventoryTargeting && skill.InventoryTargetSelector == null) ||
+			(!inventoryTargeting && skill.ActionEffects.Any(effect => effect is InventorySkillEffect)))
 		{
 			reason = "Invalid skill configuration";
 			return false;
@@ -84,7 +87,9 @@ public abstract class Character : MonoBehaviour, Actor
 			return false;
 		}
 
-		if (!(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any())
+		bool hasTargets = inventoryTargeting ? skill.GetInventoryTargets(this).Any() :
+			(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any();
+		if (!hasTargets)
 		{
 			reason = "No valid targets";
 			return false;

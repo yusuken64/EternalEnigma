@@ -25,14 +25,15 @@ public static class HarnessTestRunner
     public static void RunPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Skills")]
-    public static void RunSkills() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.SkillRegressionTests");
+    public static void RunSkills() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.InventorySkillTargetingTests");
 
-    private static void Run(TestMode mode, string filter, string testFilter = null)
+    private static void Run(TestMode mode, string filter, params string[] testFilters)
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         if (!string.IsNullOrEmpty(SessionState.GetString(SessionKey, "")))
             throw new InvalidOperationException("A harness run is already active.");
-        var run = new RunSummary { runId = Guid.NewGuid().ToString("N"), mode = mode.ToString(), state = "Queued", filter = filter, testFilter = testFilter };
+        var run = new RunSummary { runId = Guid.NewGuid().ToString("N"), mode = mode.ToString(), state = "Queued", filter = filter, testFilters = testFilters };
         Directory.CreateDirectory("Temp/HarnessResults");
         SessionState.SetString(SessionKey, JsonUtility.ToJson(run));
         Write(run);
@@ -52,7 +53,7 @@ public static class HarnessTestRunner
         {
             var id = Api.Execute(new ExecutionSettings(new Filter {
                 testMode = (TestMode)Enum.Parse(typeof(TestMode), run.mode), assemblyNames = new[] { run.filter },
-                testNames = string.IsNullOrEmpty(run.testFilter) ? null : new[] { run.testFilter }
+                testNames = run.testFilters == null || run.testFilters.Length == 0 ? null : run.testFilters
             }));
             SessionState.SetString(SessionKey + ".Job", id);
         }
@@ -93,7 +94,7 @@ public static class HarnessTestRunner
         public string mode;
         public string state;
         public string filter;
-        public string testFilter;
+        public string[] testFilters;
         public int passed;
         public int failed;
         public int skipped;

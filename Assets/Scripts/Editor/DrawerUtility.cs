@@ -14,7 +14,7 @@ public static class DrawerUtility
 				try { return asm.GetTypes(); }
 				catch { return Type.EmptyTypes; }
 			})
-			.Where(t => !t.IsAbstract &&
+			.Where(t => !t.IsAbstract && !t.IsNestedPrivate &&
 						baseType.IsAssignableFrom(t))
 			.ToDictionary(t => ObjectNames.NicifyVariableName(t.Name), t => t);
 

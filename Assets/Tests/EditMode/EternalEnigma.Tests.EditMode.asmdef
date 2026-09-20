@@ -1,6 +1,8 @@
 {
   "name": "EternalEnigma.Tests.EditMode",
-  "references": ["EternalEnigma.Game"],
+  "references": ["EternalEnigma.Game", "TileWorldCreator", "TileWorldCreator.OdinSerializer"],
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll", "EternalEnigma.Core.dll"],
   "includePlatforms": ["Editor"],
   "optionalUnityReferences": ["TestAssemblies"]
 }

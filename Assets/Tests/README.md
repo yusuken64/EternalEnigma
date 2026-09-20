@@ -1,5 +1,15 @@
 # Game test harness
 
+The EditMode assembly also includes `EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests`.
+It generates seed 42 through the imported core DLL, checks its fingerprint against
+the headless golden value, validates the result and starts a campaign session.
+Rebuild the DLL with **Tools > Eternal Enigma > Core > Build and Import DLL**
+after changing `Core/`. The standalone core tests and 1,000-seed CI sweep live in
+the separate solution; see [campaign generation](../../Docs/CampaignGeneration.md).
+`CampaignOverworldTests` also verifies the grid-to-TileWorldCreator adapter,
+template isolation and real town-marker instantiation. See
+[overworld grid setup](../../Docs/OverworldGrid.md).
+
 ## Skills
 
 `SkillRegressionTests` runs the production dungeon, skill assets, menu, input

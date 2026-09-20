@@ -14,8 +14,12 @@ Core/
       Progression/               Lock requirements, graphs and state transitions
       Generation/                Seeded construction and world descriptions
       Validation/                Reachability and structural checks
+      World/                     Grid coordinates, immutable layers and capability-aware movement
     EternalEnigma.Core.Tests/     net10.0 xUnit tests
       Architecture/              Engine boundary and target-framework checks
+      Generation/                Seed sweeps, fingerprints, invalid campaigns, runtime completion
+      Progression/               Lock algebra, party traversal and permanent progression
+    EternalEnigma.Campaign.Cli/   Headless generation, validation and JSON export
 ```
 
 Run from this `Core` directory so `global.json` selects the SDK:
@@ -69,12 +73,25 @@ Ordinary command-line Release builds still go to
 `EternalEnigma.Core/EternalEnigma.Core/bin/Release/netstandard2.1/`; the import
 command stages its build under the repository's ignored `Temp/CoreDllImport/`.
 
-## Next implementation
+## Generate a campaign
 
-The domain folders currently document ownership; they contain no gameplay stubs.
-Start with a capability manifest, normalized alternative lock requirements and
-one evaluator, followed by a hand-authored progression fixture with completion and
-circular-dependency tests. Add tests under matching domain folders as behavior is
-implemented. Resolve proof-model questions in
-[`Procedural_RPG_Spec_Review.md`](../Docs/Procedural_RPG_Spec_Review.md) before
-claiming a general world-solvability guarantee.
+```powershell
+dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --output ../Temp/CampaignPreview
+dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 0 --count 1000
+dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --grid --output ../Temp/OverworldPreview
+```
+
+Every generated campaign passes structural validation before it is returned.
+The CLI exits nonzero on failure and reports a versioned content fingerprint.
+JSON exports are diagnostic world descriptions, not player saves.
+
+Library entry points are `CampaignGenerator.Generate(seed)`,
+`CampaignValidator.Validate(campaign)` and `new CampaignSession(campaign)`.
+See [campaign generation](../Docs/CampaignGeneration.md) for the implemented
+contract, examples and the boundary between logical validation and future terrain
+or combat validation.
+
+`OverworldGridGenerator.Generate(campaign)` returns a validated grid with boolean
+layers and placement metadata. `CampaignOverworld` imports these into TWC through
+its component context menu. See [overworld grids](../Docs/OverworldGrid.md) for
+layer definitions, setup, supported topology and movement queries.

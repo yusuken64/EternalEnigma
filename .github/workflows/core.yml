@@ -31,9 +31,11 @@ jobs:
         run: dotnet build EternalEnigma.Core/EternalEnigma.Core.slnx --configuration Release --no-restore
       - name: Test
         run: dotnet test EternalEnigma.Core/EternalEnigma.Core.slnx --configuration Release --no-build --logger trx --results-directory TestResults
+      - name: Validate 1000 campaign and overworld seeds
+        run: dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release --no-build -- --seed -500 --count 1000 --grid > TestResults/campaign-seeds.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: core-test-results
-          path: Core/TestResults/*.trx
+          path: Core/TestResults/
           if-no-files-found: ignore

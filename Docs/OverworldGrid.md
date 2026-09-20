@@ -35,10 +35,16 @@ reuses Town's park and road tile presets without changing Town's generator.
 Move with WASD, arrows, or a gamepad's left stick/D-pad. Diagonals obey the core's
 sealed-corner rule. Enter or gamepad A claims a location's eligible rewards as a
 simulated encounter. Recruited companions can be equipped/dismissed using the
-buttons shown while standing at a town (three active slots). Green markers are
+buttons shown while standing at a town (three active slots). Equipped allies
+follow the hero in a line along previously visited tiles, using the town hero
+prefab and ally-colored selection rings. Dismissing an ally removes its character;
+warping brings everyone to the destination and starts a new trail. Green markers are
 towns, red markers dungeons, gold markers other locations, and purple bars closed
-gates. Permanent gates remain open after crossing; area gates track current
-capabilities. Progress is in memory for the current Play session. Location markers
+gates. Acquiring a key or capability leaves physical gates visible and blocked.
+Stand directly beside a gate and press Enter / gamepad A (or its HUD button) to
+use the matching key or capability. Opening displays a confirmation; permanent
+gates stay open, while area gates still require current capabilities. Boat-only
+water crossings remain automatic sailing checks. Progress is in memory for the current Play session. Location markers
 do not launch combat or load the existing Town/Dungeon scenes.
 
 Actor roots retain Town's cell-corner coordinates (`cell * cellSize`). Terrain,
@@ -125,19 +131,22 @@ GridLock gate = grid.LockAt(toCell); // null outside a lock footprint
 Movement is eight-way, one tile per step, with sealing corners: diagonal movement
 requires both orthogonal side cells to be passable. Lock tiles use the campaign's
 same DNF requirement evaluator. Obstacle and interaction resolutions can latch;
-area gates always require the currently held capabilities. Area footprints span
-three corridor tiles; other gates occupy one tile.
+area gates always require the currently held capabilities. Gate footprints span
+short passes of two to four tiles through sealed territory boundaries.
 
 These queries do not mutate progression. A movement/interaction controller must
 record permanent resolutions through its progression logic. The existing town
 `WalkableMap` is not an overworld controller: its Houses/Trees mask and permissive
 corner policy cannot represent these gates. The dedicated `OverworldScene`
-controller uses these queries for movement and records latched gates on crossing.
+controller adds `OverworldGates` interaction state to these queries and records
+latched gates when the player explicitly opens them. The console explorer uses
+the same interaction state. Keys remain in inventory after use.
 
 ## Geometry and validation
 
-Grid generation **version 7** places six ordered biomes in fixed 3×3 slots,
-independently of graph depth:
+Grid generation **version 8** shapes a continuous landmass before laying roads.
+Seeded smooth coordinate noise bends a weighted territory partition; A is given
+extra space for required returns. The loose geographical guide remains:
 
 ```text
 . F E
@@ -145,25 +154,31 @@ A B D
 . . C
 ```
 
-The normal walking route follows A–B–C–D–E–F, including the diagonal B–C route.
-B–D, B–E and B–F are keyed warps with cyan landing pads at their checkpoints;
-extra progression stages remain within F. Destinations occupy district branches;
-return destinations physically belong to the starting biome even though their
-logical acquisition stages are later. Seeded bends wind the routes through the
-terrain. The three inter-biome warp loops are supported; arbitrary walking crossings are
-rejected with diagnostics. Up to 64 deterministic placements are attempted.
+Consecutive progression stages share short sealed passes, including B�C.
+Additional stages occupy separate territories inside F. Ungated graph components
+share countryside; gated rewards occupy irregular protected pockets with one
+entrance. Return destinations remain physically in A. Destinations use seeded
+minimum-distance sampling (15 tiles), with clearances from boundaries.
 
-The default remains 256×256. This embedding needs at least 248×248; options accept
-dimensions up to 1024. `areaExpansionRadius` remains 0–12 (default 6). Zero produces
-only location clearings and corridors. Expansion grows from the original floor,
-with small starting grasslands, open desert, forest glades, mountain valleys,
-broken tundra, marsh pockets and volcanic chambers. Closed-gate components cannot
-touch, including diagonally. Gate halos and two-tile region barriers stay sealed.
+Roads use deterministic cardinal terrain pathfinding and stay grid-aligned. Each open area has a minimum
+spanning network under Manhattan distance plus one additional edge when it has
+at least three destinations. Campaign routes remain valid navigation records;
+only gate routes and the local network become visible roads. B�D/E/F remain
+keyed warps. Closed-gate components and sealed diagonal corners are checked by
+the existing graph-to-grid validator. Failed constraints produce diagnostics
+through at most 64 deterministic retries; there is no corridor-layout fallback.
+
+The default remains 256�256, with supported dimensions from 248 through 1024.
+`AreaExpansionRadius` is source-compatible (0�12, default 6) and now controls
+boundary variation strength. Zero produces smooth, broad territories.
+Landscape biome masks (`Landscape/<biome>`) cover impassable land as well as
+floor, separately from gameplay biome masks and `Ground`. The renderer uses
+existing biome materials for continuous terrain and shallow raised barriers.
 
 Biomes are sampled without replacement using stream 103, with grassland reserved
 for the starting region. `RegionBiomes` describes region identity; `BiomeAt` gives
 the actual floor biome. Water regions retain dry islands and causeways around
-original locations and routes. Boat-only area gates are water crossings. Every
+sampled locations and navigation routes. Boat-only area gates are water crossings. Every
 navigable water tile requires Boat, even with resolved gates; the outer water
 border remains impassable. Boat providers and required non-Boat routes remain dry.
 
@@ -171,9 +186,12 @@ border remains impassable. Boat providers and required non-Boat routes remain dr
 requirement is empty; `IsWarp` distinguishes them from physical gate footprints.
 Each warp starts locked from both ends. Collect its
 key at the landmark in D, E or F using Enter / gamepad A or **Collect key**.
-`TryCollectKey` records the passage in the same resolved-route set as permanent
-locks; `CanTraverse` then allows travel in both directions without consuming the
-key. `grid.TryWarp` validates the current endpoint, unlock state and destination
+In the playable simulations, `OverworldGates.CollectKey` only adds the key to
+inventory. Return to either warp pad and press Enter / A to use it and open the
+passage; warp travel remains a separate action. Opening records the passage in
+the resolved-route set, allowing travel in both directions without consuming the
+key. The abstract campaign solver still combines collection and resolution for
+reachability analysis. `grid.TryWarp` validates the current endpoint, unlock state and destination
 before returning the landing position. Walking remains restricted to adjacent cells.
 The console shows O for warp gates and K/k for uncollected/collected key sites;
 press V at a gate to choose a destination. Unity uses cyan pads and explicit
@@ -198,7 +216,8 @@ materials to an existing scene while preserving material edits.
 components against the campaign's open-route components. Each gate must connect
 exactly its intended components. Gate footprints must be connected and cannot
 touch other gates, which rules out diagonal interactions between gate states.
-The validator also checks location placement and every realized route's steps.
+The validator also checks location placement, every realized route's steps, and
+requires at least 30% of each dry region's floor to have a fully open 5�5 neighborhood.
 This establishes graph/grid connectivity equivalence for combinations of gate
 states under the shared sealing rule, rather than checking just one spoiler path.
 It does not assert that arbitrary prefab colliders or later TWC modifiers preserve
@@ -224,3 +243,12 @@ JSON layers use rows of `0`/`1` strings: array index is y, character index is x.
 Rows run from y=0 upwards; the SVG flips y for display and includes location-ID
 hover labels. Exports are diagnostics, not a save/restore format. CI also validates
 1,000 campaign/grid pairs and retains the sweep log.
+
+Terrain variation uses independent seeded smooth noise for water, vegetation and
+rock. Grassland has lakes, groves and rocky patches; forest favors trees, mountain
+and volcanic regions favor rock, marsh favors water and vegetation, and desert
+and tundra use sparser features. Trees and rock are impassable; inland water
+requires Boat. Two-tile route/location buffers and five-tile gate halos preserve
+access and short approaches. Disconnected scraps are absorbed into solid terrain.
+Gated pockets use periodic angular noise with multiple scales to vary their
+outlines, while their sealing barriers and single entrances remain validated.

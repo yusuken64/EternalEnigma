@@ -18,6 +18,8 @@ internal static class GridPreview
         }
         Draw(OverworldLayers.Water, "#245f85"); Draw(OverworldLayers.Ground, "#88a66b");
         string[] colors = { "#75aa58", "#d9b968", "#368ac0", "#8d9097", "#39734b", "#cadfe3", "#6b8770", "#785653" };
+        foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome))) Draw(OverworldLayers.Landscape(biome), colors[(int)biome]);
+        Draw(OverworldLayers.Mountains, "#666b60"); Draw(OverworldLayers.Trees, "#294b36");
         foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome))) Draw(OverworldLayers.Biome(biome), colors[(int)biome]);
         Draw(OverworldLayers.Roads, "#d4cba9"); Draw(OverworldLayers.AreaLocks, "#599ee3");
         Draw(OverworldLayers.ObstacleLocks, "#e8874d"); Draw(OverworldLayers.InteractionLocks, "#c479db");

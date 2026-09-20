@@ -13,15 +13,23 @@ public sealed class ConsoleExplorerTests
     [InlineData(LockForm.Obstacle, true)]
     [InlineData(LockForm.Interaction, true)]
     [InlineData(LockForm.Area, false)]
-    public void PhysicalCrossingLatchesOnlyPermanentLocks(LockForm form, bool remainsOpen)
+    public void ExplicitOpeningLatchesOnlyPermanentLocks(LockForm form, bool remainsOpen)
     {
         var session = Create(form);
         Assert.False(session.FastTravel("end"));
         Assert.False(session.Move(-1, 0));
+        Assert.False(session.OpenGate("gate"));
         session.ClaimRewards();
         Assert.False(session.Held.Contains(Capability.Climb));
         Assert.True(session.ToggleCompanion("climber"));
-        for (int i = 0; i < 14; i++) Assert.True(session.Move(1, 0));
+        Assert.False(session.OpenGate("gate"));
+        for (int i = 0; i < 6; i++) Assert.True(session.Move(1, 0));
+        Assert.False(session.IsWalkable(new GridPoint(7, 0)));
+        Assert.False(session.Move(1, 0));
+        Assert.Contains("Use Climb", session.Message);
+        session.ClaimRewards();
+        Assert.Contains("Opened gate", session.Message);
+        for (int i = 0; i < 8; i++) Assert.True(session.Move(1, 0));
         Assert.Equal("end", session.Location?.Id);
         Assert.True(session.ToggleCompanion("climber"));
         Assert.True(session.FastTravel("start"));
@@ -45,7 +53,9 @@ public sealed class ConsoleExplorerTests
         session.ClaimRewards();
         Assert.Single(session.Roster);
         session.ToggleCompanion("climber");
-        for (int i = 0; i < 10; i++) Assert.True(session.Move(1, 0));
+        for (int i = 0; i < 6; i++) Assert.True(session.Move(1, 0));
+        Assert.True(session.OpenGate("gate"));
+        for (int i = 0; i < 4; i++) Assert.True(session.Move(1, 0));
         Assert.Equal("::@::", renderer.Render(5, 1)[0]);
         for (int i = 0; i < 4; i++) Assert.True(session.Move(1, 0));
         Assert.Equal("::::@", renderer.Render(5, 1)[0]);
@@ -62,6 +72,12 @@ public sealed class ConsoleExplorerTests
         Assert.False(session.Warp("gate"));
         session.ClaimRewards();
         Assert.Equal(new[] { "Later key" }, session.CollectedKeys);
+        Assert.False(session.Warp("gate"));
+        Assert.True(session.Move(-1, 0));
+        Assert.False(session.OpenGate("gate"));
+        Assert.True(session.Move(1, 0));
+        session.ClaimRewards();
+        Assert.Contains("Opened gate", session.Message);
         Assert.True(session.Warp("gate"));
         Assert.Equal("start", session.Location!.Id);
         Assert.True(session.Warp("gate"));
@@ -71,13 +87,36 @@ public sealed class ConsoleExplorerTests
         Assert.False(session.Warp("gate"));
     }
 
-    private static ExplorerSession Create(LockForm form, bool warp = false)
+    [Fact]
+    public void PhysicalKeyGateStaysVisibleAndBlockedUntilKeyIsUsedBesideIt()
+    {
+        var session = Create(LockForm.Interaction, keyed: true);
+        Assert.False(session.OpenGate("gate"));
+        session.ClaimRewards();
+        Assert.Contains("Gate key", session.CollectedKeys);
+        Assert.False(session.OpenGate("gate"));
+        Assert.False(session.IsWalkable(new GridPoint(7, 0)));
+        for (int i = 0; i < 6; i++) Assert.True(session.Move(1, 0));
+        Assert.Contains("S", new MapRenderer(session).Render(5, 1)[0]);
+        Assert.False(session.Move(1, 0));
+        Assert.False(session.OpenGate("unknown"));
+        Assert.True(session.OpenGate("gate"));
+        Assert.False(session.OpenGate("gate"));
+        Assert.True(session.Move(1, 0));
+        Assert.True(session.Move(1, 0));
+        Assert.True(session.Move(-1, 0));
+        Assert.Contains("Gate key", session.CollectedKeys);
+    }
+
+    private static ExplorerSession Create(LockForm form, bool warp = false, bool keyed = false)
     {
         var campaign = new CampaignDefinition(1, 1, "start", "end", Array.Empty<ActivatedCapability>(),
             new[] { new CampaignRegion("region", "test", 0) },
             new[] { new CampaignLocation("start", "region", 0, LocationKind.Town), new CampaignLocation("end", "region", 0, LocationKind.Town) },
             new[] { warp ? new CampaignRoute("gate", "start", "end", Requirement.Open, LockForm.None,
-                shortcutKind: ShortcutKind.Keyed, keyId: "Later key", keyLocationId: "end", isWarp: true) :
+                shortcutKind: ShortcutKind.Keyed, keyId: "Later key", keyLocationId: "end", isWarp: true) : keyed ?
+                new CampaignRoute("gate", "start", "end", Requirement.Open, form,
+                    shortcutKind: ShortcutKind.Keyed, keyId: "Gate key", keyLocationId: "start") :
                 new CampaignRoute("gate", "start", "end", new Requirement(CapabilitySet.Of(Capability.Climb)), form) },
             new[] { new CapabilitySource("reward", "start", Capability.Climb, "climber") },
             new[] { new CampaignCompanion("climber", Capability.Climb) });

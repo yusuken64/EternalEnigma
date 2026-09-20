@@ -195,8 +195,29 @@ namespace EternalEnigma.Tests
                 Assert.That(c.Locations.Single(l => l.Id == enabling.LocationId).RegionId, Is.Not.EqualTo(objective.RegionId));
                 yield return WalkTo(world, grid.Locations[enabling.LocationId]); world.ClaimRewards();
                 yield return WalkTo(world, grid.PlayerStart);
-                if (enabling.CompanionId != null) Assert.That(world.ToggleCompanion(enabling.CompanionId), Is.True);
+                if (enabling.CompanionId != null)
+                {
+                    Assert.That(world.ToggleCompanion(enabling.CompanionId), Is.True);
+                    var follower = world.Followers.Single(a => a.Id == enabling.CompanionId);
+                    Assert.That(follower.CirlcleRenderer.color, Is.EqualTo(follower.AllyColor));
+                    Assert.That(world.ToggleCompanion(enabling.CompanionId), Is.True);
+                    Assert.That(follower.gameObject.activeSelf, Is.False);
+                    Assert.That(world.Followers.Any(a => a.Id == enabling.CompanionId), Is.False);
+                    Assert.That(world.ToggleCompanion(enabling.CompanionId), Is.True);
+                    Assert.That(world.Followers.Count(a => a.Id == enabling.CompanionId), Is.EqualTo(1));
+                }
                 Assert.That(world.Held.Contains(objective.EnablingCapability), Is.True);
+                var gateMarkers = world.GetComponentsInChildren<Transform>(true)
+                    .Where(t => t.name == "Gate " + gate.RouteId).Select(t => t.gameObject).ToArray();
+                Assert.That(gateMarkers, Is.Not.Empty);
+                Assert.That(gateMarkers.All(m => m.activeSelf), Is.True, "Acquiring the requirement must not hide the gate.");
+                Assert.That(world.OpenGate(gate.RouteId), Is.False, "Cannot open a gate remotely.");
+                yield return WalkTo(world, approach);
+                Assert.That(world.TryMove(blocked.X - approach.X, blocked.Y - approach.Y), Is.False);
+                world.ClaimRewards();
+                Assert.That(world.Message, Does.Contain("Opened gate"));
+                Assert.That(gateMarkers.All(m => !m.activeSelf), Is.True);
+                Assert.That(world.CanStep(approach, blocked), Is.True);
                 var reward = c.Sources.First(source => source.Capability == objective.RewardCapability);
                 yield return WalkTo(world, grid.Locations[reward.LocationId]); world.ClaimRewards();
                 yield return WalkTo(world, grid.PlayerStart);
@@ -231,13 +252,25 @@ namespace EternalEnigma.Tests
                     yield return WalkTo(world, grid.Locations[shortcut.KeyLocationId]); world.ClaimRewards();
                     Assert.That(world.CollectedKeys, Does.Contain(shortcut.KeyId));
                     yield return WalkTo(world, grid.Locations[shortcut.To]);
+                    Assert.That(world.Warp(shortcut.Id), Is.False, "Collecting a key must leave the gate locked.");
+                    Assert.That(world.OpenGate(shortcut.Id), Is.True);
+                    Assert.That(world.Message, Does.Contain("Opened gate"));
                     Assert.That(world.Warp(shortcut.Id), Is.True);
                     Assert.That(world.Position, Is.EqualTo(grid.Locations[shortcut.From]));
+                    foreach (var follower in world.Followers)
+                    {
+                        Assert.That(follower.TilemapPosition, Is.EqualTo(world.Player.TilemapPosition));
+                        Assert.That(Vector3.Distance(follower.transform.position, world.Player.transform.position), Is.LessThan(.01f));
+                    }
                     Assert.That(Vector3.Distance(world.Player.transform.position, world.CellToWorld(world.Position)), Is.LessThan(.01f));
                     Assert.That(world.Warp(shortcut.Id), Is.True);
                     Assert.That(world.Position, Is.EqualTo(grid.Locations[shortcut.To]));
                 }
                 CaptureOverview(world, "Temp/OverworldScene/biome-" + seed + ".png");
+                CaptureOverview(world, "Temp/OverworldScene/countryside-" + seed + ".png", world.Position);
+                var crossing = grid.Locks.First(g => c.Routes.Single(r => r.Id == g.RouteId).IsProgressionBoundary);
+                CaptureOverview(world, "Temp/OverworldScene/crossing-" + seed + ".png", crossing.Cells[0]);
+                CaptureOverview(world, "Temp/OverworldScene/destination-" + seed + ".png", grid.Locations[objective.DestinationIds[0]]);
             }
             finally { Time.timeScale = previousTimeScale; }
         }
@@ -250,7 +283,7 @@ namespace EternalEnigma.Tests
             {
                 var at = queue.Dequeue();
                 foreach (var next in OverworldMovement.Neighbors(at))
-                    if (!parents.ContainsKey(next) && world.CanStep(at, next)) { parents[next] = at; queue.Enqueue(next); }
+                    if (!parents.ContainsKey(next) && (world.CanStep(at, next) || (at.X == next.X || at.Y == next.Y) && world.Map.CurrentGrid.CanStep(at, next, world.Held))) { parents[next] = at; queue.Enqueue(next); }
             }
             if (!parents.ContainsKey(target)) return null;
             var path = new Stack<GridPoint>();
@@ -265,14 +298,26 @@ namespace EternalEnigma.Tests
             while (path.Count > 0)
             {
                 var next = path.Pop();
+                var previousPartyCells = new[] { world.Player }.Concat(world.Followers)
+                    .Select(a => a.TilemapPosition).ToArray();
+                if (!world.CanStep(world.Position, next))
+                    Assert.That(world.OpenGate(), Is.True, "Eligible gates must be opened locally before crossing.");
                 Assert.That(world.TryMove(next.X - world.Position.X, next.Y - world.Position.Y), Is.True);
                 float deadline = Time.realtimeSinceStartup + 3;
                 while (world.IsMoving && Time.realtimeSinceStartup < deadline) yield return null;
                 Assert.That(world.IsMoving, Is.False);
+                for (int i = 0; i < world.Followers.Count; i++)
+                {
+                    var follower = world.Followers[i];
+                    var expected = previousPartyCells[i];
+                    Assert.That(follower.TilemapPosition, Is.EqualTo(expected), "Each ally follows its leader's previous tile.");
+                    Assert.That(Vector3.Distance(follower.transform.position,
+                        world.CellToWorld(new GridPoint(expected.x, expected.y))), Is.LessThan(.01f));
+                }
             }
         }
 
-        private static void CaptureOverview(OverworldScene world, string path)
+        private static void CaptureOverview(OverworldScene world, string path, GridPoint? detail = null)
         {
             var camera = world.ViewCamera; var grid = world.Map.CurrentGrid;
             var target = new RenderTexture(1024, 1024, 24); var image = new Texture2D(1024, 1024, TextureFormat.RGB24, false);
@@ -282,7 +327,14 @@ namespace EternalEnigma.Tests
             {
                 Vector3 center = world.CellToWorld(new GridPoint(grid.Width / 2, grid.Height / 2));
                 camera.transform.position = center + Vector3.back * 100; camera.transform.LookAt(center, Vector3.up);
-                camera.orthographicSize = grid.Height * world.Map.Template.cellSize * .53f; camera.targetTexture = target; camera.Render();
+                camera.orthographicSize = grid.Height * world.Map.Template.cellSize * .53f;
+                if (detail.HasValue)
+                {
+                    camera.transform.position = world.CellCenterToWorld(detail.Value) + world.CameraOffset;
+                    camera.transform.rotation = rotation;
+                    camera.orthographicSize = size;
+                }
+                camera.targetTexture = target; camera.Render();
                 RenderTexture.active = target; image.ReadPixels(new Rect(0, 0, 1024, 1024), 0, 0); image.Apply();
                 Directory.CreateDirectory("Temp/OverworldScene"); File.WriteAllBytes(path, image.EncodeToPNG());
             }

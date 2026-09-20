@@ -24,9 +24,13 @@ public sealed class OverworldScene : MonoBehaviour
     public bool IsMoving => moving;
     public GridPoint Position { get; private set; }
     public TownAlly Player { get; private set; }
+    public IReadOnlyList<TownAlly> Followers => followers.AsReadOnly();
+    private readonly List<TownAlly> followers = new();
+    private readonly List<GridPoint> walkHistory = new();
     public Campaign Campaign { get; private set; }
     public CapabilitySet Held => permanent.Union(CapabilitySet.From(Campaign.Companions.Where(c => active.Contains(c.Id)).Select(c => c.Capability)));
-    public IEnumerable<string> CollectedKeys => Campaign.Routes.Where(r => r.KeyId != null && resolved.Contains(r.Id)).Select(r => r.KeyId);
+    public IEnumerable<string> CollectedKeys => gates.CollectedKeys;
+    private OverworldGates gates;
     public string Message { get; private set; } = "Generating campaign…";
     private CapabilitySet permanent = CapabilitySet.Empty;
     private readonly HashSet<string> claimed = new(), recruited = new(), active = new(), resolved = new();
@@ -42,6 +46,7 @@ public sealed class OverworldScene : MonoBehaviour
         creator = Map.GetComponent<TileWorldCreator>();
         Campaign = CampaignGenerator.Generate(Map.Seed);
         var grid = Map.Generate(Campaign);
+        gates = new OverworldGates(Campaign, grid, resolved);
         locations = Campaign.Locations.ToDictionary(l => grid.Locations[l.Id]);
         Position = grid.PlayerStart;
         creator.OnBuildLayersComplete += TerrainReady;
@@ -101,8 +106,9 @@ public sealed class OverworldScene : MonoBehaviour
         Player.SetToPlayer();
         Player.HeroAnimator.PlayIdleAnimation();
         Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);
+        walkHistory.Add(Position);
         IsReady = true;
-        Message = "Explore locations. Enter / A claims their rewards (simulated encounters).";
+        Message = "Enter / A: claim location rewards or use a key at a gate.";
         FollowCamera();
     }
 
@@ -127,13 +133,13 @@ public sealed class OverworldScene : MonoBehaviour
         TryMove(Mathf.Abs(move.x) > .3f ? System.Math.Sign(move.x) : 0, Mathf.Abs(move.y) > .3f ? System.Math.Sign(move.y) : 0);
     }
 
-    public bool CanStep(GridPoint from, GridPoint to) => IsReady && Map.CurrentGrid.CanStep(from, to, Held, resolved);
+    public bool CanStep(GridPoint from, GridPoint to) => IsReady && OverworldMovement.CanStep(from, to, cell => gates.IsWalkable(cell, Held));
 
     public bool TryMove(int dx, int dy)
     {
         if (!IsReady || moving) return false;
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
-        if (!Map.CurrentGrid.CanStep(Position, next, Held, resolved))
+        if (!CanStep(Position, next))
         {
             var gate = Map.CurrentGrid.LockAt(next);
             Message = Map.CurrentGrid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires: Boat to sail." :
@@ -146,12 +152,14 @@ public sealed class OverworldScene : MonoBehaviour
         var crossed = Map.CurrentGrid.LockAt(next);
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
         RefreshGates();
-        Message = locations.TryGetValue(Position, out var location) ? location.Id + " — " + location.Kind + " | Enter / A: claim rewards" : "";
+        Message = locations.TryGetValue(Position, out var location) ? location.Id + " — " + location.Kind + " | Enter / A: interact" : "";
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
-            if (!Campaign.Routes.First(r => r.Id == id).CanTraverse(Held, resolved)) Message += " | " + GateDescription(id);
-        foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !resolved.Contains(r.Id)))
+            if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) Message += " | " + GateDescription(id);
+        foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
             Message += " | Enter / A: Collect " + route.KeyId;
         foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
+        walkHistory.Add(Position);
+        if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
         StartCoroutine(Walk());
         return true;
     }
@@ -159,28 +167,43 @@ public sealed class OverworldScene : MonoBehaviour
     private IEnumerator Walk()
     {
         moving = true;
-        var from = Player.transform.position;
-        var to = CellToWorld(Position);
-        Vector3 direction = to - from;
-        Player.VisualParent.transform.eulerAngles = new Vector3(0, 0, -Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg);
-        Player.HeroAnimator.PlayWalkAnimation();
-        Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);
+        var party = new[] { Player }.Concat(followers).ToArray();
+        var from = party.Select(ally => ally.transform.position).ToArray();
+        var to = new Vector3[party.Length];
+        for (int i = 0; i < party.Length; i++)
+        {
+            var cell = TrailCell(i);
+            to[i] = CellToWorld(cell);
+            var direction = to[i] - from[i];
+            if (direction.sqrMagnitude > .0001f)
+            {
+                party[i].SetFacing(Character.GetFacing(new Vector3Int(
+                    System.Math.Sign(direction.x), System.Math.Sign(direction.y), 0)));
+                party[i].HeroAnimator.PlayWalkAnimation();
+            }
+            party[i].TilemapPosition = new Vector3Int(cell.X, cell.Y, 0);
+        }
+        RefreshLocationMarkers();
         float elapsed = 0;
         while (elapsed < .15f)
         {
             elapsed += Time.deltaTime;
-            Player.transform.position = Vector3.Lerp(from, to, Mathf.Clamp01(elapsed / .15f));
+            for (int i = 0; i < party.Length; i++)
+                party[i].transform.position = Vector3.Lerp(from[i], to[i], Mathf.Clamp01(elapsed / .15f));
             yield return null;
         }
-        Player.transform.position = to;
-        Player.HeroAnimator.PlayIdleAnimation();
+        for (int i = 0; i < party.Length; i++)
+        {
+            party[i].transform.position = to[i];
+            party[i].HeroAnimator.PlayIdleAnimation();
+        }
         moving = false;
     }
 
     private string GateDescription(string id)
     {
         var route = Campaign.Routes.First(r => r.Id == id);
-        return route.GateHint;
+        return gates.Hint(route, Held);
     }
 
     private string WarpLabel(CampaignRoute route)
@@ -188,22 +211,38 @@ public sealed class OverworldScene : MonoBehaviour
         string destination = Map.CurrentGrid.Locations[route.From].Equals(Position) ? route.To : route.From;
         string region = Campaign.Locations.First(l => l.Id == destination).RegionId;
         return "Warp to biome " + Campaign.Regions.First(r => r.Id == region).Label +
-            (route.CanTraverse(Held, resolved) ? "" : " | " + route.GateHint);
+            (route.CanTraverse(Held, resolved) ? "" : " | " + gates.Hint(route, Held));
     }
 
     public bool Warp(string routeId)
     {
         if (!IsReady || moving) return false;
         if (!Map.CurrentGrid.TryWarp(routeId, Position, Held, resolved, out var destination))
-        { Message = Map.CurrentGrid.WarpsAt(Position).FirstOrDefault(r => r.Id == routeId)?.GateHint ?? "Stand on a warp gate."; return false; }
+        { Message = Map.CurrentGrid.WarpsAt(Position).FirstOrDefault(r => r.Id == routeId) is CampaignRoute blocked ? gates.Hint(blocked, Held) : "Stand on a warp gate."; return false; }
         if (locationVisuals.TryGetValue(Position, out var previous)) previous.SetActive(true);
         Position = destination;
         if (locationVisuals.TryGetValue(Position, out var current)) current.SetActive(false);
         Player.transform.position = CellToWorld(Position);
         Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);
+        walkHistory.Clear();
+        walkHistory.Add(Position);
+        PlaceFollowers();
         RefreshGates(); FollowCamera();
         Message = "Warp complete. Choose a destination below to return.";
         return true;
+    }
+
+    public bool OpenGate(string routeId = null)
+    {
+        if (!IsReady || moving) return false;
+        foreach (var route in gates.Nearby(Position))
+            if ((routeId == null || route.Id == routeId) && gates.TryOpen(route.Id, Position, Held))
+            {
+                Message = "Opened gate: " + route.Id + ". Used " + (route.KeyId ?? route.Requirement.ToString()) + ".";
+                RefreshGates();
+                return true;
+            }
+        return false;
     }
 
     public bool OpenShortcut()
@@ -216,11 +255,13 @@ public sealed class OverworldScene : MonoBehaviour
 
     public void ClaimRewards()
     {
-        if (!IsReady || moving || !locations.TryGetValue(Position, out var location)) return;
+        if (!IsReady || moving) return;
+        if (OpenGate()) return;
+        if (!locations.TryGetValue(Position, out var location)) return;
         if (OpenShortcut()) return;
         var rewards = new List<string>();
         foreach (var route in Campaign.Routes)
-            if (route.TryCollectKey(location.Id, resolved)) rewards.Add(route.KeyId + " (passage opened permanently)");
+            if (gates.CollectKey(route, location.Id)) rewards.Add(route.KeyId + " (use it at the gate)");
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == location.Id && !claimed.Contains(s.Id)))
         {
             if (!source.Prerequisites.IsSatisfiedBy(Held)) continue;
@@ -240,19 +281,55 @@ public sealed class OverworldScene : MonoBehaviour
     public bool ToggleCompanion(string id)
     {
         if (!IsReady || moving || !locations.TryGetValue(Position, out var location) || location.Kind != LocationKind.Town || !recruited.Contains(id)) return false;
-        if (!active.Remove(id))
+        if (active.Remove(id))
+        {
+            var follower = followers.Single(a => a.Id == id);
+            followers.Remove(follower);
+            follower.gameObject.SetActive(false);
+            Destroy(follower.gameObject);
+        }
+        else
         {
             if (active.Count >= 3) { Message = "Three companion slots are full."; return false; }
             active.Add(id);
+            var follower = Instantiate(PlayerPrefab, CellToWorld(Position), Quaternion.identity, transform);
+            follower.Id = id;
+            follower.Name = id;
+            follower.name = "Campaign Ally " + id;
+            follower.SetToCPU();
+            follower.SetFacing(Player.CurrentFacing);
+            followers.Add(follower);
         }
+        PlaceFollowers();
         RefreshGates();
         return true;
+    }
+
+    private GridPoint TrailCell(int index) => walkHistory[Mathf.Max(0, walkHistory.Count - index - 1)];
+
+    private void PlaceFollowers()
+    {
+        for (int i = 0; i < followers.Count; i++)
+        {
+            var cell = TrailCell(i + 1);
+            followers[i].transform.position = CellToWorld(cell);
+            followers[i].TilemapPosition = new Vector3Int(cell.X, cell.Y, 0);
+            followers[i].HeroAnimator.PlayIdleAnimation();
+        }
+        RefreshLocationMarkers();
+    }
+
+    private void RefreshLocationMarkers()
+    {
+        foreach (var marker in locationVisuals)
+            marker.Value.SetActive(!marker.Key.Equals(Position) && !followers.Any(a =>
+                a.TilemapPosition.x == marker.Key.X && a.TilemapPosition.y == marker.Key.Y));
     }
 
     private void RefreshGates()
     {
         foreach (var gate in Map.CurrentGrid.Locks)
-            foreach (var visual in gateVisuals[gate.RouteId]) visual.SetActive(!Map.CurrentGrid.IsWalkable(gate.Cells[0], Held, resolved));
+            foreach (var visual in gateVisuals[gate.RouteId]) visual.SetActive(!gates.IsWalkable(gate.Cells[0], Held));
     }
 
     private void LateUpdate() { if (IsReady) FollowCamera(); }
@@ -267,7 +344,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         GUILayout.BeginArea(new Rect(16, 16, 580, 430), GUI.skin.box);
         GUILayout.Label("CAMPAIGN OVERWORLD  |  Seed " + Map.Seed);
-        GUILayout.Label("WASD / arrows / left stick: move   •   Enter / A: claim rewards");
+        GUILayout.Label("WASD / arrows / left stick: move   •   Enter / A: interact");
         GUILayout.Label("Green: town   Red: dungeon   Gold: landmark   Purple: closed gate");
         GUILayout.Label(Message);
         if (IsReady)
@@ -276,10 +353,12 @@ public sealed class OverworldScene : MonoBehaviour
                 (Held.Contains(Capability.Boat) ? " | Boat acquired" : " | Water requires Boat"));
             GUILayout.Label("Capabilities: " + Held);
             GUILayout.Label("Keys: " + string.Join(", ", CollectedKeys));
+            foreach (var route in gates.Nearby(Position).Where(gates.NeedsOpening))
+                if (GUILayout.Button(gates.Hint(route, Held))) OpenGate(route.Id);
             foreach (var route in Map.CurrentGrid.WarpsAt(Position))
                 if (GUILayout.Button(WarpLabel(route))) Warp(route.Id);
             GUILayout.Label("Biomes: " + string.Join(" | ", Campaign.Regions.Select(r => r.Label + " " + Map.CurrentGrid.RegionBiomes[r.Id])));
-            foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !resolved.Contains(r.Id)))
+            foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
                 if (GUILayout.Button("Collect " + route.KeyId)) ClaimRewards();
             foreach (var objective in Campaign.ReturnObjectives.Where(o => o.Required))
                 GUILayout.Label("Required return: " + objective.RegionId + " | Requires " + objective.EnablingCapability + " | Reward " + objective.RewardCapability);

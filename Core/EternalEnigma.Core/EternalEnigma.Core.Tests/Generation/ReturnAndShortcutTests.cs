@@ -80,7 +80,8 @@ public sealed class ReturnAndShortcutTests
             Assert.DoesNotContain(grid.Locks, g => g.RouteId == route.Id);
             Assert.Equal(2, grid.Routes[route.Id].Count);
             var far = grid.Locations[route.To];
-            Assert.False(grid.IsGround(new GridPoint((cell.X + far.X) / 2, (cell.Y + far.Y) / 2)));
+            // A warp has no physical footprint; its midpoint may be open countryside.
+            Assert.Equal(new[] { cell, far }, grid.Routes[route.Id]);
             Assert.Equal(ShortcutKind.Keyed, route.ShortcutKind);
             Assert.False(route.CanTraverse(all, state));
             Assert.False(route.TryUnlock(route.From, state));

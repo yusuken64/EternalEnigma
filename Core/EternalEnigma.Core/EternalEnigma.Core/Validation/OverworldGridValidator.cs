@@ -34,11 +34,11 @@ public static class OverworldGridValidator
         {
             Check(gate.Cells.Count > 0 && gate.Cells.Distinct().Count() == gate.Cells.Count && gate.Cells.All(grid.IsGround), $"lock: Invalid footprint for {gate.RouteId}.");
             foreach (var cell in gate.Cells)
-            foreach (var neighbor in OverworldMovement.Neighbors(cell))
-            {
-                var other = grid.LockAt(neighbor);
-                Check(other == null || other.RouteId == gate.RouteId, $"lock.contact: {gate.RouteId} touches a different gate.");
-            }
+                foreach (var neighbor in OverworldMovement.Neighbors(cell))
+                {
+                    var other = grid.LockAt(neighbor);
+                    Check(other == null || other.RouteId == gate.RouteId, $"lock.contact: {gate.RouteId} touches a different gate.");
+                }
         }
         if (errors.Count > 0) return new OverworldGridValidationResult(errors);
 
@@ -48,20 +48,20 @@ public static class OverworldGridValidator
         bool ClosedFloor(GridPoint p) => grid.IsGround(p) && grid.LockAt(p) == null;
         int count = 0;
         for (int y = 0; y < grid.Height; y++)
-        for (int x = 0; x < grid.Width; x++)
-        {
-            var first = new GridPoint(x, y);
-            if (!ClosedFloor(first) || components[x, y] >= 0) continue;
-            var queue = new Queue<GridPoint>(); queue.Enqueue(first); components[x, y] = count;
-            while (queue.Count > 0)
+            for (int x = 0; x < grid.Width; x++)
             {
-                var at = queue.Dequeue();
-                foreach (var next in OverworldMovement.Neighbors(at))
-                    if (OverworldMovement.CanStep(at, next, ClosedFloor) && components[next.X, next.Y] < 0)
-                    { components[next.X, next.Y] = count; queue.Enqueue(next); }
+                var first = new GridPoint(x, y);
+                if (!ClosedFloor(first) || components[x, y] >= 0) continue;
+                var queue = new Queue<GridPoint>(); queue.Enqueue(first); components[x, y] = count;
+                while (queue.Count > 0)
+                {
+                    var at = queue.Dequeue();
+                    foreach (var next in OverworldMovement.Neighbors(at))
+                        if (OverworldMovement.CanStep(at, next, ClosedFloor) && components[next.X, next.Y] < 0)
+                        { components[next.X, next.Y] = count; queue.Enqueue(next); }
+                }
+                count++;
             }
-            count++;
-        }
         var parents = campaign.Locations.ToDictionary(l => l.Id, l => l.Id, StringComparer.Ordinal);
         string Root(string id)
         {
@@ -100,6 +100,22 @@ public static class OverworldGridValidator
             }
             Check(visited.Count == gate.Cells.Count, $"lock.connectivity: {gate.RouteId} footprint is disconnected.");
             Check(expected.SetEquals(contacts), $"lock.contacts: {gate.RouteId} connects the wrong map components.");
+        }
+        foreach (var region in campaign.Regions)
+        {
+            if (grid.RegionBiomes[region.Id] == OverworldBiome.Water) continue;
+            int cells = 0, broad = 0;
+            var mask = grid.Layers[OverworldLayers.Region(region.Id)];
+            for (int y = 2; y < grid.Height - 2; y++) for (int x = 2; x < grid.Width - 2; x++)
+            {
+                if (!mask[x, y]) continue;
+                cells++;
+                bool interior = true;
+                for (int dy = -2; dy <= 2 && interior; dy++) for (int dx = -2; dx <= 2; dx++)
+                    if (!ClosedFloor(new GridPoint(x + dx, y + dy)) || grid.RequiresBoat(new GridPoint(x + dx, y + dy))) { interior = false; break; }
+                if (interior) broad++;
+            }
+            Check(cells > 0 && broad >= cells * .3, $"layout.interior: {region.Id} has only {broad}/{cells} broad cells (requires 30%).");
         }
         var all = CapabilitySet.From(campaign.Manifest.Select(c => c.Id));
         foreach (var route in campaign.Routes)

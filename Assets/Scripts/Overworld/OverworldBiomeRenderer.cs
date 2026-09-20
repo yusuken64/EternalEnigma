@@ -40,19 +40,26 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
         // tile inside it. Match that convention without changing logical positions.
         float halfTile = creator.twcAsset.cellSize * .5f;
         surfaces.transform.localPosition = new Vector3(halfTile, halfTile, 0);
-        Draw(grid, OverworldLayers.Mountains, BarrierMaterial, .04f);
-        Draw(grid, OverworldLayers.Trees, BarrierMaterial, .04f);
+        foreach (var entry in Biomes)
+            Draw(grid, OverworldLayers.Landscape(entry.Biome), entry.Material, .045f);
         foreach (var entry in Biomes)
         {
             string layer = entry.Biome == OverworldBiome.Water ? OverworldLayers.Water : OverworldLayers.Biome(entry.Biome);
             Draw(grid, layer, entry.Material, .02f);
+        }
+        foreach (var entry in Biomes)
+        {
+            if (entry.Biome == OverworldBiome.Mountain)
+                Draw(grid, OverworldLayers.Mountains, entry.Material, .015f, raised: true);
+            if (entry.Biome == OverworldBiome.Forest)
+                Draw(grid, OverworldLayers.Trees, entry.Material, .01f, raised: true);
         }
         Draw(grid, OverworldLayers.Roads, RoadMaterial, .005f, excludeWater: true);
         Draw(grid, OverworldLayers.Bridges, BridgeMaterial, -.005f);
         foreach (var renderer in creator.worldObject.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
     }
 
-    private void Draw(OverworldGrid grid, string layerName, Material material, float z, bool excludeWater = false)
+    private void Draw(OverworldGrid grid, string layerName, Material material, float z, bool excludeWater = false, bool raised = false)
     {
         if (material == null || !grid.Layers.TryGetValue(layerName, out var mask)) return;
         float size = creator.twcAsset.cellSize;
@@ -73,7 +80,14 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
                 vertices.Add(new Vector3((x + .5f) * size, (y + .5f) * size, z));
                 vertices.Add(new Vector3((x - .5f) * size, (y + .5f) * size, z));
                 uv.Add(new Vector2(0, 0)); uv.Add(new Vector2(1, 0)); uv.Add(new Vector2(1, 1)); uv.Add(new Vector2(0, 1));
-                triangles.AddRange(new[] { first, first + 2, first + 1, first, first + 3, first + 2 });
+                if (raised)
+                {
+                    vertices.Add(new Vector3(x * size, y * size, z - size * .22f));
+                    uv.Add(new Vector2(.5f, .5f));
+                    triangles.AddRange(new[] { first,first+4,first+1, first+1,first+4,first+2,
+                        first+2,first+4,first+3, first+3,first+4,first });
+                }
+                else triangles.AddRange(new[] { first, first + 2, first + 1, first, first + 3, first + 2 });
             }
             if (vertices.Count == 0) continue;
             var mesh = new Mesh { name = layerName + " floor", hideFlags = HideFlags.DontSave };
@@ -85,6 +99,16 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
             chunk.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = chunk.AddComponent<MeshRenderer>();
             renderer.sharedMaterial = material;
+            if (raised)
+            {
+                // Keep the biome texture while making the impassable ridge legible at player height.
+                var tint = material.color * .65f;
+                tint.a = material.color.a;
+                var properties = new MaterialPropertyBlock();
+                properties.SetColor("_Color", tint);
+                properties.SetColor("_BaseColor", tint);
+                renderer.SetPropertyBlock(properties);
+            }
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
     }

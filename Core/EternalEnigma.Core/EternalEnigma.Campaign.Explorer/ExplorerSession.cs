@@ -24,16 +24,17 @@ public sealed class ExplorerSession
     public CapabilitySet Held => permanent.Union(CapabilitySet.From(Campaign.Companions.Where(c => active.Contains(c.Id)).Select(c => c.Capability)));
     public IReadOnlyList<CampaignCompanion> Roster => Campaign.Companions.Where(c => recruited.Contains(c.Id)).ToArray();
     public IReadOnlyList<string> VisitedTowns => towns.OrderBy(t => t, StringComparer.Ordinal).ToArray();
-    public IReadOnlyList<string> CollectedKeys => Campaign.Routes.Where(r => r.KeyId != null && resolved.Contains(r.Id)).Select(r => r.KeyId!).ToArray();
+    public IReadOnlyList<string> CollectedKeys => gates.CollectedKeys.ToArray();
+    private readonly OverworldGates gates;
     public bool IsActive(string id) => active.Contains(id);
-    public bool IsWalkable(GridPoint point) => Grid.IsWalkable(point, Held, resolved);
+    public bool IsWalkable(GridPoint point) => gates.IsWalkable(point, Held);
     public IReadOnlyList<CampaignRoute> WarpsHere => Grid.WarpsAt(Position).ToArray();
     public string WarpLabel(CampaignRoute route) => "Warp to biome " + Campaign.Regions.Single(r => r.Id == Campaign.Locations.Single(l => l.Id == route.Other(Location!.Id)).RegionId).Label +
-        (route.CanTraverse(Held, resolved) ? "" : " | " + route.GateHint);
+        (route.CanTraverse(Held, resolved) ? "" : " | " + gates.Hint(route, Held));
     public bool Warp(string routeId)
     {
         if (!Grid.TryWarp(routeId, Position, Held, resolved, out var destination))
-        { Message = WarpsHere.FirstOrDefault(r => r.Id == routeId)?.GateHint ?? "Stand on a warp gate."; return false; }
+        { Message = WarpsHere.FirstOrDefault(r => r.Id == routeId) is CampaignRoute blocked ? gates.Hint(blocked, Held) : "Stand on a warp gate."; return false; }
         Position = destination;
         Message = "Warped to " + Location!.Id + ". V: warp destinations";
         return true;
@@ -43,6 +44,7 @@ public sealed class ExplorerSession
     {
         Campaign = campaign;
         Grid = grid;
+        gates = new OverworldGates(campaign, grid, resolved);
         if (grid.CampaignFingerprint != Core.Generation.CampaignFingerprint.Compute(campaign))
             throw new ArgumentException("Grid does not belong to this campaign.", nameof(grid));
         locations = campaign.Locations.ToDictionary(l => grid.Locations[l.Id]);
@@ -54,11 +56,11 @@ public sealed class ExplorerSession
     public bool Move(int dx, int dy)
     {
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
-        if (!Grid.CanStep(Position, next, Held, resolved))
+        if (!OverworldMovement.CanStep(Position, next, IsWalkable))
         {
             var gate = Grid.LockAt(next);
             Message = Grid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires Boat to sail." :
-                gate == null ? "Blocked." : routes[gate.RouteId].GateHint;
+                gate == null ? "Blocked." : gates.Hint(routes[gate.RouteId], Held);
             return false;
         }
         Position = next;
@@ -72,25 +74,34 @@ public sealed class ExplorerSession
         foreach (string id in nearby)
         {
             var route = routes[id];
-            if (route.CanTraverse(Held, resolved)) continue;
-            Message += " | " + route.GateHint;
+            if (!gates.NeedsOpening(route)) continue;
+            Message += " | " + gates.Hint(route, Held);
         }
         if (Campaign.Routes.Any(r => r.UnlockingEndpoint == Location?.Id && !resolved.Contains(r.Id))) Message += " | Enter: Open shortcut";
         foreach (var warp in WarpsHere) Message += " | V: " + WarpLabel(warp);
-        foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId == Location?.Id && !resolved.Contains(r.Id)))
+        foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && r.KeyLocationId == Location?.Id && !gates.HasKey(r)))
             Message += " | Enter: Collect " + route.KeyId;
         return true;
     }
 
     public string RequiredReturn => string.Join("; ", Campaign.ReturnObjectives.Where(o => o.Required).Select(o =>
         $"Return to {o.RegionId}: {o.EnablingCapability} -> {o.RewardCapability}"));
+    public bool OpenGate(string? routeId = null)
+    {
+        foreach (var route in gates.Nearby(Position))
+            if ((routeId == null || route.Id == routeId) && gates.TryOpen(route.Id, Position, Held))
+            { Message = "Opened gate: " + route.Id + ". Used " + (route.KeyId ?? route.Requirement.ToString()) + "."; return true; }
+        return false;
+    }
+
     public void ClaimRewards()
     {
+        if (OpenGate()) return;
         foreach (var route in Campaign.Routes)
             if (route.TryUnlock(Location?.Id ?? "", resolved)) { Message = "Opened shortcut: " + route.Id; return; }
         var rewards = new List<string>();
         foreach (var route in Campaign.Routes)
-            if (route.TryCollectKey(Location?.Id ?? "", resolved)) rewards.Add(route.KeyId + " (" + route.Id + " opened permanently)");
+            if (gates.CollectKey(route, Location?.Id ?? "")) rewards.Add(route.KeyId + " (use it at the gate)");
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == Location?.Id && !claimed.Contains(s.Id)))
         {
             if (!source.Prerequisites.IsSatisfiedBy(Held)) continue;

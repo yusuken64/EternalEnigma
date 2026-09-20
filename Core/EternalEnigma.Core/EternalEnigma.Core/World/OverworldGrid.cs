@@ -14,6 +14,7 @@ public static class OverworldLayers
     public const string Water = "Water";
     public const string NavigableWater = "NavigableWater";
     public const string Bridges = "Bridges";
+    public static string Landscape(OverworldBiome biome) => "Landscape/" + biome;
     public static string Biome(OverworldBiome biome) => "Biome/" + biome;
     public const string Reserved = "Reserved";
     public const string Towns = "Towns";
@@ -55,7 +56,7 @@ public sealed class OverworldGrid
 {
     private readonly int[,] lockIndices;
     private readonly CampaignRoute[] lockRoutes;
-    public const int GenerationVersion = 7;
+    public const int GenerationVersion = 8;
     public int Width { get; }
     public int Height { get; }
     public int CampaignSeed { get; }

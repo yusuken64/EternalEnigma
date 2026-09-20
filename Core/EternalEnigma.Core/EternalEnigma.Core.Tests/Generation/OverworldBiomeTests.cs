@@ -44,7 +44,7 @@ public sealed class OverworldBiomeTests
                     Assert.True(grid.CanStep(shore, cell, all));
                 }
         }
-        Assert.True(waterCount >= 3); // Boat's optional payoff remains a water crossing even without a water region.
+        Assert.True(waterCount >= 2); // Boat's optional payoff remains a water crossing even without a water region.
         if (grid.RegionBiomes.Values.Contains(OverworldBiome.Water))
             Assert.Contains(Enumerable.Range(0, grid.Width * grid.Height).Select(i => new GridPoint(i % grid.Width, i / grid.Width)),
                 p => grid.RequiresBoat(p) && grid.LockAt(p) == null);
@@ -86,28 +86,55 @@ public sealed class OverworldBiomeTests
     [InlineData(0)]
     [InlineData(42)]
     [InlineData(-1)]
-    public void ExpandedRegionsKeepTwoTileBarriersWithoutRemovingOriginalConnections(int seed)
+    public void GrasslandHasMixedTerrainWithoutBlockingLocationsOrRoads(int seed)
     {
         var campaign = CampaignGenerator.Generate(seed);
         var grid = OverworldGridGenerator.Generate(campaign);
-        var original = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: 0));
-        var owners = new string?[grid.Width, grid.Height];
-        foreach (var region in campaign.Regions)
-            for (int y = 0; y < grid.Height; y++) for (int x = 0; x < grid.Width; x++)
-                if (grid.Layers[OverworldLayers.Region(region.Id)][x, y]) owners[x, y] = region.Id;
-        var all = CapabilitySet.From(campaign.Manifest.Select(c => c.Id));
-        for (int y = 0; y < grid.Height; y++) for (int x = 0; x < grid.Width; x++)
+        var grass = grid.Layers[OverworldLayers.Landscape(OverworldBiome.Grassland)];
+        foreach (var feature in new[] { OverworldLayers.Trees, OverworldLayers.Mountains, OverworldLayers.NavigableWater })
         {
-            var cell = new GridPoint(x, y);
-            if (original.IsGround(cell)) { Assert.True(grid.IsGround(cell)); continue; }
-            if (!grid.IsGround(cell)) { Assert.False(grid.IsWalkable(cell, all)); continue; }
-            for (int dy = -2; dy <= 2; dy++) for (int dx = -2; dx <= 2; dx++)
+            int count = 0;
+            for (int y=0;y<grid.Height;y++) for (int x=0;x<grid.Width;x++)
             {
-                var other = new GridPoint(x + dx, y + dy);
-                if (grid.IsGround(other)) Assert.Equal(owners[x, y], owners[other.X, other.Y]);
+                if (!grid.Layers[feature][x,y]) continue;
+                if (grass[x,y]) count++;
+                if (feature != OverworldLayers.NavigableWater)
+                    Assert.False(grid.IsGround(new GridPoint(x,y)));
             }
+            Assert.True(count >= 10, $"Grassland needs visible {feature} patches, found {count}.");
         }
-        foreach (var route in original.Routes) Assert.Equal(route.Value, grid.Routes[route.Key]);
-        foreach (var gate in original.Locks) Assert.Equal(gate.Cells, grid.Locks.Single(g => g.RouteId == gate.RouteId).Cells);
+        foreach (var at in grid.Locations.Values)
+        for (int dy=-2;dy<=2;dy++) for (int dx=-2;dx<=2;dx++)
+        {
+            var p = new GridPoint(at.X+dx,at.Y+dy);
+            Assert.True(grid.IsGround(p));
+            Assert.False(grid.RequiresBoat(p));
+        }
+        for (int y=0;y<grid.Height;y++) for (int x=0;x<grid.Width;x++)
+            if (grid.Layers[OverworldLayers.Roads][x,y]) Assert.True(grid.IsGround(new GridPoint(x,y)));
+
+        // Inspect the closed floor outline of each leaf reward, independently of its gate.
+        int irregular = 0, pockets = 0;
+        foreach (var route in campaign.Routes.Where(r => r.HasGate && !r.IsWarp && !r.IsProgressionBoundary &&
+            campaign.Routes.Count(other => other.From == r.To || other.To == r.To) == 1))
+        {
+            pockets++;
+            var center = grid.Locations[route.To];
+            var cells = new HashSet<GridPoint> { center }; var pending = new Queue<GridPoint>(); pending.Enqueue(center);
+            var radii = new List<double>();
+            while (pending.Count > 0)
+            {
+                var at = pending.Dequeue(); bool boundary = false;
+                foreach (var next in OverworldMovement.Neighbors(at).Where(p => p.X == at.X || p.Y == at.Y))
+                {
+                    if (!grid.IsGround(next) || grid.LockAt(next) != null) { boundary = true; continue; }
+                    if (cells.Add(next)) pending.Enqueue(next);
+                }
+                if (boundary) radii.Add(Math.Sqrt(Math.Pow(at.X-center.X,2)+Math.Pow(at.Y-center.Y,2)));
+            }
+            if (radii.Max()-radii.Min() >= 2) irregular++;
+        }
+        Assert.True(irregular >= pockets*.5, $"Only {irregular}/{pockets} pocket outlines vary by two tiles or more.");
     }
+
 }

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="EternalEnigma.Core/EternalEnigma.Core.csproj" />
+  <Project Path="EternalEnigma.Core.Tests/EternalEnigma.Core.Tests.csproj" />
+</Solution>

@@ -1,0 +1,39 @@
+name: Core checks
+
+on:
+  push:
+    paths:
+      - 'Core/**'
+      - '.github/workflows/core.yml'
+  pull_request:
+    paths:
+      - 'Core/**'
+      - '.github/workflows/core.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore
+        run: dotnet restore EternalEnigma.Core/EternalEnigma.Core.slnx
+      - name: Build
+        run: dotnet build EternalEnigma.Core/EternalEnigma.Core.slnx --configuration Release --no-restore
+      - name: Test
+        run: dotnet test EternalEnigma.Core/EternalEnigma.Core.slnx --configuration Release --no-build --logger trx --results-directory TestResults
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-test-results
+          path: Core/TestResults/*.trx
+          if-no-files-found: ignore

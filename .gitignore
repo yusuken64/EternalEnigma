@@ -35,6 +35,12 @@ ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+# Hand-authored standalone core projects are not Unity-generated files.
+!/Core/**/*.csproj
+!/Core/**/*.sln
+/Core/**/bin/
+/Core/**/obj/
+/Core/**/TestResults/
 *.suo
 *.tmp
 *.user

@@ -14,5 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../EternalEnigma.Core/EternalEnigma.Core.csproj" />
+    <ProjectReference Include="../EternalEnigma.Campaign.Explorer/EternalEnigma.Campaign.Explorer.csproj" />
   </ItemGroup>
 </Project>

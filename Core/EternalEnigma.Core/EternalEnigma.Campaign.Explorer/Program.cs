@@ -1,0 +1,119 @@
+using EternalEnigma.ConsoleExplorer;
+using EternalEnigma.Core.Generation;
+
+int seed = 42;
+bool snapshot = false;
+for (int i = 0; i < args.Length; i++)
+{
+    if (args[i] is "--help" or "-h")
+    {
+        Console.WriteLine("Campaign Explorer [--seed <integer>] [--snapshot]\nArrows/WASD: move; Q/E/Z/C: diagonals; Enter: reward; P: party; T: travel; Esc: quit.\nRewards simulate encounter completion. Progress is not saved. --snapshot prints a static preview.");
+        return 0;
+    }
+    if (args[i] == "--snapshot") { snapshot = true; continue; }
+    if (args[i] == "--seed" && i + 1 < args.Length && int.TryParse(args[++i], out seed)) continue;
+    Console.Error.WriteLine("Invalid arguments. Use --help.");
+    return 1;
+}
+if (!snapshot && (Console.IsInputRedirected || Console.IsOutputRedirected))
+{
+    Console.Error.WriteLine("Interactive exploration requires a terminal. Run with --snapshot for a static preview.");
+    return 1;
+}
+try
+{
+    var campaign = CampaignGenerator.Generate(seed);
+    var session = new ExplorerSession(campaign, OverworldGridGenerator.Generate(campaign));
+    var renderer = new MapRenderer(session);
+    if (snapshot)
+    {
+        Console.WriteLine($"Campaign seed {seed} | {session.Position} | {session.Location?.Id}");
+        foreach (string row in renderer.Render(79, 25)) Console.WriteLine(row);
+        Console.WriteLine("@ you  T town  D dungeon  R repeatable  F final  + gate  : road  # mountain");
+        return 0;
+    }
+    Run(session, renderer);
+    return 0;
+}
+catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or IOException)
+{
+    Console.Error.WriteLine("Explorer failed: " + ex.Message);
+    return 1;
+}
+
+static void Run(ExplorerSession session, MapRenderer renderer)
+{
+    string? menu = null;
+    int selection = 0;
+    bool cursorVisible = !OperatingSystem.IsWindows() || Console.CursorVisible;
+    try
+    {
+        Console.CursorVisible = false;
+        Console.Clear();
+        int previousWidth = 0, previousHeight = 0;
+        while (true)
+        {
+            int width = Math.Max(1, Console.WindowWidth - 1), height = Math.Max(1, Console.WindowHeight - 1);
+            if (width != previousWidth || height != previousHeight) Console.Clear();
+            previousWidth = width; previousHeight = height;
+            var options = menu == "Party" ? session.Roster.Select(c => $"{(session.IsActive(c.Id) ? "[x]" : "[ ]")} {c.Capability} ({c.Id})").ToArray()
+                : menu == "Travel" ? session.VisitedTowns.ToArray() : Array.Empty<string>();
+            selection = Math.Clamp(selection, 0, Math.Max(0, options.Length - 1));
+            var lines = new List<string> { $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | {session.Position} | {session.Location?.Id ?? "Overworld"}" };
+            int mapHeight = Math.Max(1, height - 8);
+            if (menu == null) lines.AddRange(renderer.Render(width, mapHeight));
+            else
+            {
+                lines.Add(menu + " | Up/Down: select | Enter: apply | Esc: close");
+                int first = Math.Max(0, selection - Math.Max(1, mapHeight - 2) / 2);
+                for (int j = first; j < options.Length && lines.Count < mapHeight + 1; j++) lines.Add((j == selection ? "> " : "  ") + options[j]);
+                if (options.Length == 0) lines.Add("No companions recruited yet. Explore and claim rewards with Enter.");
+            }
+            while (lines.Count < mapHeight + 1) lines.Add("");
+            lines.Add("Held: " + (session.Held.Count == 0 ? "none" : session.Held.ToString()));
+            lines.Add(session.Message);
+            lines.Add("Move: arrows/WASD | Diagonal: QEZC/numpad | Esc: quit");
+            lines.Add("Enter: claim reward | P: party (town) | T: fast travel");
+            lines.Add("@ you  T town  D dungeon  R repeatable  F final  C converter");
+            lines.Add("+ closed gate  / open gate  : road  . ground  # rock  ~ water");
+            lines.Add("Rewards simulate encounters. No combat or saving.");
+            if (height < 12 || width < 40) lines = new List<string> { "Enlarge terminal to at least 41x13.", "Esc: quit" };
+            Console.SetCursorPosition(0, 0);
+            for (int row = 0; row < height; row++)
+            {
+                string line = row < lines.Count ? lines[row] : "";
+                Console.Write(line.Length > width ? line[..width] : line.PadRight(width));
+                if (row + 1 < height) Console.WriteLine();
+            }
+            var key = Console.ReadKey(true).Key;
+            if (menu != null)
+            {
+                if (key == ConsoleKey.Escape) menu = null;
+                else if (key == ConsoleKey.UpArrow) selection = Math.Max(0, selection - 1);
+                else if (key == ConsoleKey.DownArrow) selection = Math.Min(Math.Max(0, options.Length - 1), selection + 1);
+                else if (key == ConsoleKey.Enter && options.Length > 0)
+                {
+                    if (menu == "Party") session.ToggleCompanion(session.Roster[selection].Id);
+                    else { session.FastTravel(session.VisitedTowns[selection]); menu = null; }
+                }
+                continue;
+            }
+            switch (key)
+            {
+                case ConsoleKey.Escape: return;
+                case ConsoleKey.P: menu = "Party"; selection = 0; break;
+                case ConsoleKey.T: menu = "Travel"; selection = 0; break;
+                case ConsoleKey.Enter: session.ClaimRewards(); break;
+                case ConsoleKey.W: case ConsoleKey.UpArrow: case ConsoleKey.NumPad8: session.Move(0, 1); break;
+                case ConsoleKey.S: case ConsoleKey.DownArrow: case ConsoleKey.NumPad2: session.Move(0, -1); break;
+                case ConsoleKey.A: case ConsoleKey.LeftArrow: case ConsoleKey.NumPad4: session.Move(-1, 0); break;
+                case ConsoleKey.D: case ConsoleKey.RightArrow: case ConsoleKey.NumPad6: session.Move(1, 0); break;
+                case ConsoleKey.Q: case ConsoleKey.NumPad7: session.Move(-1, 1); break;
+                case ConsoleKey.E: case ConsoleKey.NumPad9: session.Move(1, 1); break;
+                case ConsoleKey.Z: case ConsoleKey.NumPad1: session.Move(-1, -1); break;
+                case ConsoleKey.C: case ConsoleKey.NumPad3: session.Move(1, -1); break;
+            }
+        }
+    }
+    finally { Console.CursorVisible = cursorVisible; Console.Clear(); }
+}

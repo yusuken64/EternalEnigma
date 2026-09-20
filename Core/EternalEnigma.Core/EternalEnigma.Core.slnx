@@ -2,4 +2,5 @@
   <Project Path="EternalEnigma.Core/EternalEnigma.Core.csproj" />
   <Project Path="EternalEnigma.Core.Tests/EternalEnigma.Core.Tests.csproj" />
   <Project Path="EternalEnigma.Campaign.Cli/EternalEnigma.Campaign.Cli.csproj" />
+  <Project Path="EternalEnigma.Campaign.Explorer/EternalEnigma.Campaign.Explorer.csproj" />
 </Solution>

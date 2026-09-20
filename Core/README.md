@@ -20,6 +20,7 @@ Core/
       Generation/                Seed sweeps, fingerprints, invalid campaigns, runtime completion
       Progression/               Lock algebra, party traversal and permanent progression
     EternalEnigma.Campaign.Cli/   Headless generation, validation and JSON export
+    EternalEnigma.Campaign.Explorer/ Interactive console map exploration
 ```
 
 Run from this `Core` directory so `global.json` selects the SDK:
@@ -74,6 +75,28 @@ Ordinary command-line Release builds still go to
 command stages its build under the repository's ignored `Temp/CoreDllImport/`.
 
 ## Generate a campaign
+
+To explore a generated campaign in a scrolling console window, run from the repository root:
+
+```powershell
+dotnet run --project Core/EternalEnigma.Core/EternalEnigma.Campaign.Explorer -- --seed 42
+```
+
+Use arrows or WASD to walk, Q/E/Z/C or the numpad for diagonals, and Esc to quit.
+The camera follows `@`; `+` gates enforce the active party's capabilities.
+Stand on a location marker and press Enter to claim its rewards (simulated encounter
+completion). Press P to equip or dismiss recruited companions while standing on a
+town; up to three can be active. Press T to travel to a previously visited town.
+Menus use up/down and Enter; Esc closes them. Obstacle and interaction gates stay
+open after crossing; area gates always require their capability. The entire map is
+visible without fog. Progress is in memory only; restarting resets the campaign.
+
+Use `--snapshot` to print a static viewport in redirected output or CI, or `--help`
+for controls. Interactive mode needs a terminal of at least 41 columns by 13 rows.
+The console host owns tile-based progression and references the core library;
+it does not require Unity or change the imported Unity DLL.
+
+For generation/export only, run from `Core`:
 
 ```powershell
 dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --output ../Temp/CampaignPreview

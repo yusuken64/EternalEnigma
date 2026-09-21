@@ -8,6 +8,21 @@ using UnityEngine.SceneManagement;
 public class Common : PersistedSingletonMonoBehaviour<Common>
 {
 	public GameSaveData GameSaveData;
+    public EternalEnigma.Core.Progression.CampaignContext CampaignContext { get; internal set; }
+    public CampaignTravelService Travel { get; private set; }
+    private GameSaveData playerSave;
+    public void BeginSandbox(int seed)
+    {
+        EndSandbox();
+        playerSave = GameSaveData;
+        GameSaveData = new GameSaveData { IsSandbox = true };
+        CampaignContext = new(new(EternalEnigma.Core.Progression.OverworldLaunchMode.Sandbox, seed));
+    }
+    public void EndSandbox()
+    {
+        if (CampaignContext?.IsSandbox != true) return;
+        GameSaveData = playerSave; playerSave = null; CampaignContext = null;
+    }
 	internal DemoDungeonLoadout PendingDemoLoadout;
 	public TownConfiguration CurrentTownConfiguration { get; internal set; }
 
@@ -27,6 +42,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	protected override void Initialize()
 	{
 		LoadData();
+        Travel = new CampaignTravelService(this);
 #if !UNITY_EDITOR
 		SceneManager.LoadScene(1);
 #endif
@@ -35,6 +51,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	private void LoadData()
 	{
 		GameSaveData = SaveSystem.LoadData();
+        Travel = new CampaignTravelService(this);
 	}
 }
 

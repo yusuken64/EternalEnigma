@@ -47,7 +47,7 @@ public static class CampaignValidator
         {
             Check(locations.ContainsKey(route.From) && locations.ContainsKey(route.To) && route.From != route.To, $"route.endpoint: {route.Id} has invalid endpoints.");
             Check(ActiveRequirement(route.Requirement), $"route.manifest: {route.Id} requires an inactive capability.");
-            Check(Enum.IsDefined(typeof(LockForm), route.Form) && (route.Form == LockForm.None) == route.Requirement.IsOpen,
+            Check(Enum.IsDefined(typeof(LockForm), route.Form) && ((route.Form == LockForm.None) == route.Requirement.IsOpen || route.IsStarterExit && route.Form == LockForm.Interaction),
                 $"route.form: {route.Id} has an inconsistent lock form.");
             Check(Enum.IsDefined(typeof(ShortcutKind), route.ShortcutKind) &&
                 (route.ShortcutKind == ShortcutKind.FarSide ? route.Requirement.IsOpen && route.UnlockingEndpoint == route.To : route.UnlockingEndpoint == null),
@@ -130,11 +130,27 @@ public static class CampaignValidator
         }
         if (errors.Count > 0) return new CampaignValidationResult(errors);
 
+        if (campaign.GeneratorVersion >= 6)
+        {
+            var exits = campaign.Routes.Where(r => r.IsStarterExit).ToArray();
+            Check(exits.Length == 1 && exits[0].From == "town-0" && exits[0].To == "checkpoint-0" &&
+                exits[0].KeyLocationId == "story-0" && !exits[0].IsWarp && exits[0].ShortcutKind == ShortcutKind.Keyed,
+                "starter.exit: Expected one completion-keyed physical exit.");
+            var initial = new HashSet<string> { campaign.StartLocationId };
+            bool changed;
+            do { changed = false; foreach (var route in campaign.Routes.Where(r => !r.HasGate))
+                if (initial.Contains(route.From) || initial.Contains(route.To)) { changed |= initial.Add(route.From); changed |= initial.Add(route.To); }
+            } while (changed);
+            Check(initial.SetEquals(campaign.StarterLocations), "starter.enclosure: Only town-0 and story-0 may be initially reachable.");
+            Check(campaign.Routes.Count(r => initial.Contains(r.From) != initial.Contains(r.To)) == 1,
+                "starter.bypass: Starting enclosure must have exactly one exit, including warps.");
+        }
+
         if (campaign.GeneratorVersion >= 3)
         {
             Check(campaign.ReturnObjectives.Count(o => o.Required) == 1 && campaign.ReturnObjectives.Count(o => !o.Required) == 3,
                 "return.count: Expected one required and three optional return objectives.");
-            var shortcuts = campaign.Routes.Where(r => r.ShortcutKind != ShortcutKind.None).ToArray();
+            var shortcuts = campaign.Routes.Where(r => r.ShortcutKind != ShortcutKind.None && !r.IsStarterExit).ToArray();
             if (campaign.GeneratorVersion >= 4)
             {
                 Check(campaign.Regions.Count == 6 && campaign.Regions.Select(r => r.ProgressionOrder).OrderBy(i => i).SequenceEqual(Enumerable.Range(0, 6)),
@@ -142,7 +158,7 @@ public static class CampaignValidator
                 Check(shortcuts.Length == 3 && shortcuts.All(r => r.ShortcutKind == ShortcutKind.Keyed) && shortcuts.Select(r => r.KeyId).Distinct().Count() == 3,
                     "shortcut.count: Expected three distinct later-zone keys.");
                 if (campaign.GeneratorVersion >= 5)
-                    Check(campaign.Routes.All(r => r.IsWarp == (r.ShortcutKind == ShortcutKind.Keyed)),
+                    Check(campaign.Routes.All(r => r.IsWarp == (r.ShortcutKind == ShortcutKind.Keyed && !r.IsStarterExit)),
                         "warp.kind: Only the three keyed shortcuts may be warps.");
                 foreach (int later in new[] { 3, 4, 5 })
                 {

@@ -28,17 +28,26 @@ public static class SaveSystem
         json = json.Replace("\"OverworldSaveData\":", "\"TownSaveData\":")
             .Replace("\"OverworldSeed\":", "\"TownSeed\":");
         GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
+        if (data.CampaignFormatVersion == 0) data.Campaign = null;
+        if (data.CampaignFormatVersion > 1) throw new InvalidOperationException("Unsupported campaign save format.");
         return data;
     }
 
     public static void SaveData(GameSaveData data)
     {
+        if (data == null || data.IsSandbox) return;
+        var common = UnityEngine.Object.FindFirstObjectByType<Common>();
+        if (common != null && common.CampaignContext?.IsSandbox == true) return;
+        if (common != null && ReferenceEquals(common.GameSaveData, data) && common.CampaignContext != null)
+            data.Campaign = common.CampaignContext.Capture();
+        if (!string.IsNullOrEmpty(data.Campaign?.Fingerprint)) data.CampaignFormatVersion = 1;
         string json = JsonUtility.ToJson(data);
         store.Write(json);
     }
 
     public static void ClearData()
     {
+        if (UnityEngine.Object.FindFirstObjectByType<Common>()?.CampaignContext?.IsSandbox == true) return;
         store.Clear();
     }
 

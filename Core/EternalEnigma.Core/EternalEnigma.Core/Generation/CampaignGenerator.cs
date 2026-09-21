@@ -6,7 +6,7 @@ namespace EternalEnigma.Core.Generation;
 
 public static class CampaignGenerator
 {
-    public const int Version = 5;
+    public const int Version = 6;
     public const int TierCount = 5;
 
     public static Campaign Generate(int seed)
@@ -59,9 +59,13 @@ public static class CampaignGenerator
         for (int tier = 0; tier < TierCount; tier++)
         {
             Location($"town-{tier}", tier, LocationKind.Town, true);
-            Connect($"checkpoint-{tierAnchor[tier]}", $"town-{tier}", required: true);
+            if (tier == 0)
+                routes.Add(new CampaignRoute("starter-exit", "town-0", "checkpoint-0", Requirement.Open,
+                    LockForm.Interaction, required: true, shortcutKind: ShortcutKind.Keyed,
+                    keyId: "Starting key", keyLocationId: "story-0", keyCondition: KeyAcquisition.DungeonCompletion));
+            else Connect($"checkpoint-{tierAnchor[tier]}", $"town-{tier}", required: true);
             Location($"repeatable-{tier}", tier, LocationKind.RepeatableDungeon, true);
-            Connect($"town-{tier}", $"repeatable-{tier}", required: true);
+            Connect(tier == 0 ? "checkpoint-0" : $"town-{tier}", $"repeatable-{tier}", required: true);
             if (tier < 4)
             {
                 Location($"story-{tier}", tier, LocationKind.StoryDungeon, true);

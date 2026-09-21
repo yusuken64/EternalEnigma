@@ -26,20 +26,29 @@ nonlocal links. `grid.Locks` maps physical gated routes to their footprints.
 
 ### Playable Overworld scene
 
-Open `Assets/Scenes/Overworld.unity` and press Play. `OverworldScene` builds seed
-42 through `CampaignOverworld`, spawns the Town hero at the campaign start town,
-and follows it with an orthographic camera. Change `CampaignOverworld.Seed` to
-explore another campaign. The dedicated `Assets/Overworld/CampaignTerrain.asset`
-reuses Town's park and road tile presets without changing Town's generator.
+Use **Tools > Eternal Enigma > Launch Overworld Sandbox**, or open
+`Assets/Scenes/Overworld.unity` and press Play. Both use the scene's
+`CampaignOverworld.Seed` (42 by default). Normal New Game / Continue navigation
+explicitly selects campaign mode. There is no separate test scene.
 
-Move with WASD, arrows, or a gamepad's left stick/D-pad. Diagonals obey the core's
-sealed-corner rule. Enter or gamepad A claims a location's eligible rewards as a
-simulated encounter. Recruited companions can be equipped/dismissed using the
-buttons shown while standing at a town (three active slots). Equipped allies
-follow the hero in a line along previously visited tiles, using the town hero
-prefab and ally-colored selection rings. Dismissing an ally removes its character;
-warping brings everyone to the destination and starts a new trail. Green markers are
-towns, red markers dungeons, gold markers other locations, and purple bars closed
+Both modes render the same `CampaignContext.Grid`, with identical location seeds,
+starting enclosure, capabilities and physical gates. Sandbox owns a temporary
+save object; writes and clears are suppressed and exiting restores the previous
+player save object. `OverworldSandboxControls` is enabled only for sandbox mode.
+Its buttons claim eligible rewards, select companions at town markers, and
+simulate a victory at the current dungeon marker through `CompleteDungeon`.
+An ordinary reward claim cannot obtain the starting key.
+
+The starting enclosure contains only `town-0` and `story-0`. Complete `story-0`
+to acquire its permanent key, then interact with the single physical exit leading
+to `checkpoint-0`. `repeatable-0` is outside. Even Boat, diagonal movement and
+unlocked later warps cannot bypass the closed starting exit.
+
+Move with WASD, arrows, or a gamepad's left stick/D-pad. Enter / gamepad A enters
+a town or dungeon in campaign mode, claims a landmark reward, or opens an adjacent
+gate. Campaign party selection is inside towns; sandbox selection is at town
+markers. Green markers are towns, red markers dungeons, gold markers other
+locations, and purple bars closed
 gates. Acquiring a key or capability leaves physical gates visible and blocked.
 Stand directly beside a gate and press Enter / gamepad A (or its HUD button) to
 use the matching key or capability. Opening displays a confirmation; permanent
@@ -144,7 +153,7 @@ the same interaction state. Keys remain in inventory after use.
 
 ## Geometry and validation
 
-Grid generation **version 8** shapes a continuous landmass before laying roads.
+Grid generation **version 9** shapes a continuous landmass before laying roads.
 Seeded smooth coordinate noise bends a weighted territory partition; A is given
 extra space for required returns. The loose geographical guide remains:
 

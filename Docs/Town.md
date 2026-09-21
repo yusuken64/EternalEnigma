@@ -8,8 +8,9 @@ TownSceneLoader.Load(configuration);
 
 `TownSceneLoader.Configure(configuration)` is also available for callers that own
 their scene transition/loading process. The caller must configure before loading.
-The main menu supplies its serialized `TownConfiguration`; dungeon return retains
-the same configuration through `Common`. Direct editor play uses the saved town
+Campaign navigation uses `CampaignTravelService` to clone a location-specific
+configuration and stable seed. Legacy saves retain `TownSceneLoader` and their
+existing town flow. See [campaign flow](CampaignFlow.md). Direct editor play uses the saved town
 configuration, falling back to the default for older saves without a town ID.
 
 ## Authoring a town

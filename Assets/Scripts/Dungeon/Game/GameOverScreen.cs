@@ -34,6 +34,7 @@ with {playerController.Gold} Treasure";
 	public static void GoBackToTown(bool isWin, PlayerController playerController)
 	{
         var common = Common.Instance;
+        if (common.CampaignContext != null) { common.Travel.FinishDungeon(isWin, playerController); return; }
         var configuration = TownSceneLoader.ResolveSaved();
         DungeonReturnService.Commit(common.GameSaveData, configuration, isWin,
             playerController.Gold, playerController.Inventory.InventoryItems, Game.Instance.Allies);
@@ -43,6 +44,7 @@ with {playerController.Gold} Treasure";
 
 	public void Quit_Clicked()
 	{
+        if (Common.Instance.CampaignContext != null) { Common.Instance.Travel.ReturnToMenu(); return; }
 		CommitAbandonedRun(_playerController);
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
@@ -53,6 +55,7 @@ with {playerController.Gold} Treasure";
     public static void CommitAbandonedRun(PlayerController player)
     {
         var common = Common.Instance;
+        if (common.CampaignContext != null) { common.Travel.FinishDungeon(false, player, false); return; }
         DungeonReturnService.Commit(common.GameSaveData, TownSceneLoader.ResolveSaved(), false,
             player.Gold, player.Inventory.InventoryItems, Game.Instance.Allies);
         SaveSystem.SaveData(common.GameSaveData);

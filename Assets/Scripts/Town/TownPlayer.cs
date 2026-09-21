@@ -33,6 +33,7 @@ public class TownPlayer : MonoBehaviour
 	public void Initialize()
 	{
 		townMenuManager = FindFirstObjectByType<TownMenuManager>();
+		Common.Instance.MenuInputHandler.SwitchToPlayerInput();
 		initialied = true;
 		CycleAlly();
 	}
@@ -62,7 +63,7 @@ public class TownPlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
+		if (Common.Instance.Travel.IsTransitioning || MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
 		UpdateUI();
 		if (!initialied) { return; }
 		if (ControllerHeld)
@@ -242,6 +243,8 @@ public class TownPlayer : MonoBehaviour
 		}
 
 		var town = FindFirstObjectByType<Town>();
+		if (Common.Instance.CampaignContext != null && ControllingTownAlly.TilemapPosition == new Vector3Int(10, 0, 0))
+        { Common.Instance.Travel.ExitTown(town); _busy = false; yield break; }
 		var overlappingBuilding = town.TownBuildings.FirstOrDefault(x => x.TilemapPosition == this.ControllingTownAlly.TilemapPosition);
 		if (overlappingBuilding != null)
 		{

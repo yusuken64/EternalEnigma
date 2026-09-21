@@ -72,7 +72,7 @@ public sealed class ReturnAndShortcutTests
         var c = CampaignGenerator.Generate(seed); var grid = OverworldGridGenerator.Generate(c);
         var all = CapabilitySet.From(c.Manifest.Select(m => m.Id));
         var resolved = c.Routes.Select(r => r.Id).ToHashSet();
-        foreach (var route in c.Routes.Where(r => r.ShortcutKind != ShortcutKind.None))
+        foreach (var route in c.Routes.Where(r => r.ShortcutKind != ShortcutKind.None && !r.IsStarterExit))
         {
             var state = new HashSet<string>();
             var cell = grid.Locations[route.From];
@@ -135,10 +135,10 @@ public sealed class ReturnAndShortcutTests
             }
             Assert.Equal(6, distance.Count); Assert.All(distance.Values, d => Assert.InRange(d, 0, 2));
         }
-        var shortcutIds = c.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed).Select(r => r.Id).ToHashSet();
+        var shortcutIds = c.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed && !r.IsStarterExit).Select(r => r.Id).ToHashSet();
         var normal = CampaignExplorer.Explore(c, excludedRoutes: shortcutIds);
         Assert.Contains(c.FinalLocationId, normal.ReachableLocations);
-        foreach (var route in c.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed))
+        foreach (var route in c.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed && !r.IsStarterExit))
         {
             Assert.Contains(route.KeyLocationId!, normal.ReachableLocations);
             int later = locations[route.To].Stage;
@@ -170,7 +170,7 @@ public sealed class ReturnAndShortcutTests
     [Fact]
     public void ValidatorRejectsEarlyOrMissingKeys()
     {
-        var c = CampaignGenerator.Generate(42); var route = c.Routes.First(r => r.ShortcutKind == ShortcutKind.Keyed);
+        var c = CampaignGenerator.Generate(42); var route = c.Routes.First(r => r.ShortcutKind == ShortcutKind.Keyed && !r.IsStarterExit);
         var early = new CampaignRoute(route.Id, route.From, route.To, route.Requirement, route.Form,
             shortcutKind: ShortcutKind.Keyed, keyId: route.KeyId, keyLocationId: c.StartLocationId);
         Assert.NotEqual(CampaignFingerprint.Compute(c), CampaignFingerprint.Compute(CampaignGeneratorTests.With(c, routes: c.Routes.Select(r => r == route ? early : r))));

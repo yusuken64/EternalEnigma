@@ -75,7 +75,7 @@ namespace EternalEnigma.Tests.CoreIntegration
             }
             Assert.That(creator.GetMapOutputFromBlueprintLayer("Places").Cast<bool>().Count(v => v), Is.EqualTo(6));
             Assert.That(creator.GetMapOutputFromBlueprintLayer("Floor").Cast<bool>(), Is.EqualTo(grid.Layers[OverworldLayers.Ground].ToArray().Cast<bool>()));
-            var gate = grid.Locks[0].Cells[0];
+            var gate = grid.Locks.First(g => !campaign.Routes.Single(r => r.Id == g.RouteId).IsStarterExit).Cells[0];
             Assert.That(creator.GetMapOutputFromBlueprintLayer("Passable")[gate.X, gate.Y], Is.False);
             var oldAsset = creator.twcAsset;
             adapter.Apply(grid, CapabilitySet.From(campaign.Manifest.Select(c => c.Id)));

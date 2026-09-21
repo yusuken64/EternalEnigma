@@ -4,6 +4,13 @@ using System.Collections.Generic;
 [Serializable]
 public class GameSaveData
 {
+    [NonSerialized] public bool IsSandbox;
+    // JsonUtility materializes missing nested classes, so null is not a migration discriminator.
+    public int CampaignFormatVersion;
+    public EternalEnigma.Core.Progression.CampaignSnapshot Campaign;
+    public List<TownAllyData> Roster = new();
+    public string ProtagonistId;
+    public string PreRunTownJson;
 	public TownSaveData TownSaveData = new();
 	public DungeonSaveData DungeonSaveData = new();
 }

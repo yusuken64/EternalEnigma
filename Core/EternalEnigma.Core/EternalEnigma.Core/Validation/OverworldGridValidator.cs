@@ -139,7 +139,7 @@ public static class OverworldGridValidator
         int spanX = occupied.Max(p => p.X) - occupied.Min(p => p.X) + 1, spanY = occupied.Max(p => p.Y) - occupied.Min(p => p.Y) + 1;
         Check(Math.Max(spanX, spanY) <= 1.5 * Math.Min(spanX, spanY), "layout.aspect: Occupied terrain exceeds aspect ratio 1.5.");
         var unlocked = new HashSet<string>(campaign.Routes.Select(r => r.Id));
-        foreach (var route in campaign.Routes.Where(r => r.ShortcutKind != ShortcutKind.None))
+        foreach (var route in campaign.Routes.Where(r => r.ShortcutKind != ShortcutKind.None && !r.IsStarterExit))
         {
             int before = Distance(grid, grid.Locations[route.From], grid.Locations[route.To], all, unlocked, route.Id);
             int after = Distance(grid, grid.Locations[route.From], grid.Locations[route.To], all, unlocked);

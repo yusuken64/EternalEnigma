@@ -73,6 +73,7 @@ public class EntranceDialog : Dialog
 	public void DungeonClicked(DungeonTierData data)
 	{
 		var town = FindFirstObjectByType<Town>();
+        if (Common.Instance.CampaignContext != null) { TownMenu.ShowMessage("Leave town through the southern exit and enter a dungeon marker."); return; }
         if (!town.Services.CanEnter(data))
         {
             TownMenu.ShowMessage($"Donate {data.RequiredDonation}g total at the statue to unlock this tier.");

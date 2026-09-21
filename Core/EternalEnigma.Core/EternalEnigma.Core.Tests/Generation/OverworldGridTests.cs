@@ -120,7 +120,7 @@ public sealed class OverworldGridTests
     {
         var campaign = CampaignGenerator.Generate(42);
         Assert.Throws<ArgumentException>(() => OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(16, 16)));
-        var open = campaign.Routes.First(r => r.Requirement.IsOpen);
+        var open = campaign.Routes.First(r => !r.HasGate);
         var parallel = new CampaignRoute("extra-route", open.From, open.To, Requirement.Open, LockForm.None);
         var cyclic = CampaignGeneratorTests.With(campaign, routes: campaign.Routes.Concat(new[] { parallel }));
         Assert.True(OverworldGridValidator.Validate(cyclic, OverworldGridGenerator.Generate(cyclic)).IsValid);
@@ -147,11 +147,11 @@ public sealed class OverworldGridTests
     {
         var campaign = CampaignGenerator.Generate(seed);
         var grid = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: variation));
-        Assert.Equal(8, OverworldGrid.GenerationVersion);
+        Assert.Equal(9, OverworldGrid.GenerationVersion);
         Assert.Equal(CampaignFingerprint.Compute(campaign), grid.CampaignFingerprint);
         foreach (var a in grid.Locations)
         foreach (var b in grid.Locations.Where(b => StringComparer.Ordinal.Compare(a.Key,b.Key)<0))
-            Assert.True(Math.Pow(a.Value.X-b.Value.X,2)+Math.Pow(a.Value.Y-b.Value.Y,2)>=225);
+            Assert.True(Math.Pow(a.Value.X-b.Value.X,2)+Math.Pow(a.Value.Y-b.Value.Y,2) >= (campaign.StarterLocations.Contains(a.Key) && campaign.StarterLocations.Contains(b.Key) ? 36 : 225));
         foreach (var gate in grid.Locks)
         {
             Assert.InRange(gate.Cells.Count,2,4);

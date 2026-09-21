@@ -9,7 +9,7 @@ using TWC;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>Standalone, in-memory campaign exploration using the same terrain and hero art as Town.</summary>
+/// <summary>Shared campaign and sandbox scene; all progression is owned by Common.</summary>
 public sealed class OverworldScene : MonoBehaviour
 {
     public CampaignOverworld Map;
@@ -22,18 +22,21 @@ public sealed class OverworldScene : MonoBehaviour
     public Vector3 CameraOffset = new(0, -14, -20);
     public bool IsReady { get; private set; }
     public bool IsMoving => moving;
-    public GridPoint Position { get; private set; }
+    public CampaignContext Context { get; private set; }
+    public GridPoint Position { get => Context.Position; private set => Context.Position = value; }
     public TownAlly Player { get; private set; }
     public IReadOnlyList<TownAlly> Followers => followers.AsReadOnly();
     private readonly List<TownAlly> followers = new();
     private readonly List<GridPoint> walkHistory = new();
     public Campaign Campaign { get; private set; }
-    public CapabilitySet Held => permanent.Union(CapabilitySet.From(Campaign.Companions.Where(c => active.Contains(c.Id)).Select(c => c.Capability)));
+    public CapabilitySet Held => Context.Held;
     public IEnumerable<string> CollectedKeys => gates.CollectedKeys;
     private OverworldGates gates;
     public string Message { get; private set; } = "Generating campaign…";
-    private CapabilitySet permanent = CapabilitySet.Empty;
-    private readonly HashSet<string> claimed = new(), recruited = new(), active = new(), resolved = new();
+    private HashSet<string> claimed => Context.Claimed;
+    private HashSet<string> recruited => Context.Roster;
+    private HashSet<string> active => Context.Active;
+    private HashSet<string> resolved => Context.Resolved;
     private readonly Dictionary<string, List<GameObject>> gateVisuals = new();
     private readonly Dictionary<GridPoint, GameObject> locationVisuals = new();
     private Dictionary<GridPoint, CampaignLocation> locations;
@@ -44,11 +47,17 @@ public sealed class OverworldScene : MonoBehaviour
     private void Start()
     {
         creator = Map.GetComponent<TileWorldCreator>();
-        Campaign = CampaignGenerator.Generate(Map.Seed);
-        var grid = Map.Generate(Campaign);
-        gates = new OverworldGates(Campaign, grid, resolved);
+        var common = Common.Instance;
+        if (common.CampaignContext == null) common.BeginSandbox(OverworldLaunch.TakeSeed(Map.Seed));
+        Context = common.CampaignContext;
+        Campaign = Context.Campaign;
+        Map.Seed = Campaign.Seed;
+        var grid = Context.Grid;
+        Map.Apply(grid, Held, resolved);
+        gates = Context.Gates;
         locations = Campaign.Locations.ToDictionary(l => grid.Locations[l.Id]);
-        Position = grid.PlayerStart;
+        var controls = gameObject.AddComponent<OverworldSandboxControls>();
+        controls.Scene = this; controls.enabled = Context.IsSandbox;
         creator.OnBuildLayersComplete += TerrainReady;
         Map.BuildMeshes();
     }
@@ -108,6 +117,10 @@ public sealed class OverworldScene : MonoBehaviour
         Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);
         walkHistory.Add(Position);
         IsReady = true;
+        Common.Instance.Travel.SceneReady();
+        Common.Instance.ScreenTransition.DoOpen();
+        RebuildFollowers();
+        RefreshGates();
         Message = "Enter / A: claim location rewards or use a key at a gate.";
         FollowCamera();
     }
@@ -118,7 +131,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void Update()
     {
-        if (!IsReady || moving) return;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
         var keyboard = Keyboard.current;
         var pad = Gamepad.current;
         if (keyboard?.enterKey.wasPressedThisFrame == true || pad?.buttonSouth.wasPressedThisFrame == true) ClaimRewards();
@@ -137,7 +150,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     public bool TryMove(int dx, int dy)
     {
-        if (!IsReady || moving) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
         if (!CanStep(Position, next))
         {
@@ -151,6 +164,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (locationVisuals.TryGetValue(Position, out var occupiedMarker)) occupiedMarker.SetActive(false);
         var crossed = Map.CurrentGrid.LockAt(next);
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
+        SaveProgress();
         RefreshGates();
         Message = locations.TryGetValue(Position, out var location) ? location.Id + " — " + location.Kind + " | Enter / A: interact" : "";
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
@@ -216,7 +230,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     public bool Warp(string routeId)
     {
-        if (!IsReady || moving) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
         if (!Map.CurrentGrid.TryWarp(routeId, Position, Held, resolved, out var destination))
         { Message = Map.CurrentGrid.WarpsAt(Position).FirstOrDefault(r => r.Id == routeId) is CampaignRoute blocked ? gates.Hint(blocked, Held) : "Stand on a warp gate."; return false; }
         if (locationVisuals.TryGetValue(Position, out var previous)) previous.SetActive(true);
@@ -228,18 +242,20 @@ public sealed class OverworldScene : MonoBehaviour
         walkHistory.Add(Position);
         PlaceFollowers();
         RefreshGates(); FollowCamera();
+        SaveProgress();
         Message = "Warp complete. Choose a destination below to return.";
         return true;
     }
 
     public bool OpenGate(string routeId = null)
     {
-        if (!IsReady || moving) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
         foreach (var route in gates.Nearby(Position))
             if ((routeId == null || route.Id == routeId) && gates.TryOpen(route.Id, Position, Held))
             {
                 Message = "Opened gate: " + route.Id + ". Used " + (route.KeyId ?? route.Requirement.ToString()) + ".";
                 RefreshGates();
+                SaveProgress();
                 return true;
             }
         return false;
@@ -247,62 +263,62 @@ public sealed class OverworldScene : MonoBehaviour
 
     public bool OpenShortcut()
     {
-        if (!IsReady || moving || !locations.TryGetValue(Position, out var location)) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !locations.TryGetValue(Position, out var location)) return false;
         foreach (var route in Campaign.Routes)
-            if (route.TryUnlock(location.Id, resolved)) { Message = "Opened shortcut: " + route.Id; RefreshGates(); return true; }
+            if (route.TryUnlock(location.Id, resolved)) { Message = "Opened shortcut: " + route.Id; RefreshGates(); SaveProgress(); return true; }
         return false;
     }
 
     public void ClaimRewards()
     {
-        if (!IsReady || moving) return;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
         if (OpenGate()) return;
         if (!locations.TryGetValue(Position, out var location)) return;
         if (OpenShortcut()) return;
+        if (!Context.IsSandbox && Common.Instance.Travel.EnterLocation()) return;
         var rewards = new List<string>();
         foreach (var route in Campaign.Routes)
             if (gates.CollectKey(route, location.Id)) rewards.Add(route.KeyId + " (use it at the gate)");
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == location.Id && !claimed.Contains(s.Id)))
         {
-            if (!source.Prerequisites.IsSatisfiedBy(Held)) continue;
-            if (source.Capability.Kind() == CapabilityKind.Personal)
-            {
-                if (source.CompanionId == null) continue;
-                recruited.Add(source.CompanionId);
-            }
-            else permanent = permanent.Union(CapabilitySet.Of(source.Capability));
-            claimed.Add(source.Id);
+            if (!Context.Claim(source.Id)) continue;
             rewards.Add(source.Capability.ToString());
         }
+        SaveProgress();
         Message = rewards.Count == 0 ? "No eligible unclaimed rewards here." : "Acquired: " + string.Join(", ", rewards) + ". Equip companions at a town.";
         RefreshGates();
     }
 
     public bool ToggleCompanion(string id)
     {
-        if (!IsReady || moving || !locations.TryGetValue(Position, out var location) || location.Kind != LocationKind.Town || !recruited.Contains(id)) return false;
-        if (active.Remove(id))
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !Context.IsSandbox || !locations.TryGetValue(Position, out var location) || location.Kind != LocationKind.Town || !recruited.Contains(id)) return false;
+        var ids = active.Contains(id) ? active.Where(x => x != id).ToArray() : active.Concat(new[] { id }).ToArray();
+        if (!Context.SetParty(ids)) return false;
+        RebuildFollowers(); SaveProgress(); RefreshGates(); return true;
+    }
+
+    private void RebuildFollowers()
+    {
+        foreach (var ally in followers) { ally.gameObject.SetActive(false); Destroy(ally.gameObject); }
+        followers.Clear();
+        foreach (var id in active)
         {
-            var follower = followers.Single(a => a.Id == id);
-            followers.Remove(follower);
-            follower.gameObject.SetActive(false);
-            Destroy(follower.gameObject);
-        }
-        else
-        {
-            if (active.Count >= 3) { Message = "Three companion slots are full."; return false; }
-            active.Add(id);
-            var follower = Instantiate(PlayerPrefab, CellToWorld(Position), Quaternion.identity, transform);
-            follower.Id = id;
-            follower.Name = id;
-            follower.name = "Campaign Ally " + id;
-            follower.SetToCPU();
-            follower.SetFacing(Player.CurrentFacing);
-            followers.Add(follower);
+            var prefab = CampaignParty.Resolve(id, TownSceneLoader.Default) ?? PlayerPrefab;
+            var follower = Instantiate(prefab, CellToWorld(Position), Quaternion.identity, transform);
+            follower.Id = id; follower.name = "Campaign Ally " + id;
+            follower.SetToCPU(); follower.SetFacing(Player.CurrentFacing); followers.Add(follower);
         }
         PlaceFollowers();
-        RefreshGates();
-        return true;
+    }
+    private void SaveProgress()
+    {
+        if (!Context.IsSandbox) SaveSystem.SaveData(Common.Instance.GameSaveData);
+    }
+    public bool SimulateDungeonVictory()
+    {
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !Context.IsSandbox || !Context.BeginDungeon()) return false;
+        Context.CompleteDungeon(true); RefreshGates();
+        Message = "Dungeon victory committed. Use the awarded key at the exit gate."; return true;
     }
 
     private GridPoint TrailCell(int index) => walkHistory[Mathf.Max(0, walkHistory.Count - index - 1)];
@@ -351,6 +367,7 @@ public sealed class OverworldScene : MonoBehaviour
         {
             GUILayout.Label("Biome: " + Map.CurrentGrid.BiomeAt(Position) + (Map.CurrentGrid.RequiresBoat(Position) ? " | Sailing" : "") +
                 (Held.Contains(Capability.Boat) ? " | Boat acquired" : " | Water requires Boat"));
+            if (Context.State.Finished) GUILayout.Label("Campaign complete!");
             GUILayout.Label("Capabilities: " + Held);
             GUILayout.Label("Keys: " + string.Join(", ", CollectedKeys));
             foreach (var route in gates.Nearby(Position).Where(gates.NeedsOpening))
@@ -364,9 +381,6 @@ public sealed class OverworldScene : MonoBehaviour
                 GUILayout.Label("Required return: " + objective.RegionId + " | Requires " + objective.EnablingCapability + " | Reward " + objective.RewardCapability);
             foreach (var route in Campaign.Routes.Where(r => r.UnlockingEndpoint != null && Map.CurrentGrid.Locations[r.UnlockingEndpoint].Equals(Position) && !resolved.Contains(r.Id)))
                 if (GUILayout.Button("Open shortcut")) OpenShortcut();
-            if (locations.TryGetValue(Position, out var location) && location.Kind == LocationKind.Town)
-                foreach (var companion in Campaign.Companions.Where(c => recruited.Contains(c.Id)))
-                    if (GUILayout.Button((active.Contains(companion.Id) ? "Dismiss " : "Equip ") + companion.Id + " (" + companion.Capability + ")")) ToggleCompanion(companion.Id);
         }
         GUILayout.EndArea();
     }

@@ -22,6 +22,7 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
     private TileWorldCreator creator;
     private GameObject surfaces;
     private readonly List<Mesh> meshes = new();
+    private Renderer[] hiddenRenderers = Array.Empty<Renderer>();
 
     private void OnEnable()
     {
@@ -56,7 +57,8 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
         }
         Draw(grid, OverworldLayers.Roads, RoadMaterial, .005f, excludeWater: true);
         Draw(grid, OverworldLayers.Bridges, BridgeMaterial, -.005f);
-        foreach (var renderer in creator.worldObject.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
+        hiddenRenderers = creator.worldObject.GetComponentsInChildren<Renderer>();
+        foreach (var renderer in hiddenRenderers) renderer.enabled = false;
     }
 
     private void Draw(OverworldGrid grid, string layerName, Material material, float z, bool excludeWater = false, bool raised = false)
@@ -116,8 +118,9 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
     private void OnDisable()
     {
         if (creator != null) creator.OnBuildLayersComplete -= Build;
-        if (surfaces != null && creator != null)
-            foreach (var renderer in creator.worldObject.GetComponentsInChildren<Renderer>()) renderer.enabled = true;
+        // worldObject is a creating getter; never call it while its scene is unloading.
+        foreach (var renderer in hiddenRenderers) if (renderer != null) renderer.enabled = true;
+        hiddenRenderers = Array.Empty<Renderer>();
         Clear();
     }
 

@@ -56,7 +56,7 @@ public sealed class OverworldGrid
 {
     private readonly int[,] lockIndices;
     private readonly CampaignRoute[] lockRoutes;
-    public const int GenerationVersion = 8;
+    public const int GenerationVersion = 9;
     public int Width { get; }
     public int Height { get; }
     public int CampaignSeed { get; }

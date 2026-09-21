@@ -80,6 +80,8 @@ public sealed class TownServices
         if (!town.TownAllies.Contains(ally)) return false;
         reason = "Not enough gold.";
         if (Player.Gold < ally.RecruitCost) return false;
+        var context = Common.Instance.CampaignContext;
+        if (context != null) { context.Roster.Add(ally.Id); context.Active.Add(ally.Id); }
         Player.Gold -= ally.RecruitCost;
         AllyRecruitDialog.Recruit(town, ally);
         town.SaveProgress();
@@ -93,6 +95,13 @@ public sealed class TownServices
         if (Player.RecruitedAllies.Count <= 1) return false;
         reason = "This ally is not in the party.";
         if (!Player.RecruitedAllies.Contains(ally)) return false;
+        var context = Common.Instance.CampaignContext;
+        if (context != null)
+        {
+            if (ally.Id == Common.Instance.GameSaveData.ProtagonistId) { reason = "The protagonist stays in the party."; return false; }
+            town.WriteSaveData(); context.Active.Remove(ally.Id);
+            town.RefreshCampaignParty(); reason = null; return true;
+        }
         foreach (var item in ally.Equipment.GetEquippedItems().ToArray())
         {
             ally.Equipment.UnEquip(item);

@@ -47,6 +47,42 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator TownMovementAcceptsWasdAndArrowsWithoutMenuFocus()
+        {
+            yield return harness.LoadTown(new TestScenario().CreateSave());
+            keyboard = InputSystem.AddDevice<Keyboard>();
+            var input = Common.Instance.MenuInputHandler.PlayerInput;
+            input.SwitchCurrentControlScheme(keyboard);
+            MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { keyboard };
+            var town = Object.FindFirstObjectByType<Town>();
+            var player = town.TownPlayer;
+            input.SwitchCurrentActionMap("UI");
+            player.Initialize();
+            Assert.That(input.currentActionMap.name, Is.EqualTo("Player"));
+            EventSystem.current.SetSelectedGameObject(null);
+
+            foreach (bool arrows in new[] { false, true })
+            {
+                var origin = player.ControllingTownAlly.TilemapPosition;
+                var offset = new[] { Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right }
+                    .First(d => player.WalkableMap.CanWalkTo(origin, origin + d) &&
+                        !town.TownBuildings.Any(b => b.TilemapPosition == origin + d) &&
+                        !town.TownAllies.Any(a => a.TilemapPosition == origin + d));
+                var key = offset == Vector3Int.up ? (arrows ? Key.UpArrow : Key.W) :
+                    offset == Vector3Int.down ? (arrows ? Key.DownArrow : Key.S) :
+                    offset == Vector3Int.left ? (arrows ? Key.LeftArrow : Key.A) :
+                    (arrows ? Key.RightArrow : Key.D);
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState(key));
+                var deadline = Time.realtimeSinceStartup + 3;
+                while (player.ControllingTownAlly.TilemapPosition == origin && Time.realtimeSinceStartup < deadline)
+                    yield return null;
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                Assert.That(player.ControllingTownAlly.TilemapPosition, Is.Not.EqualTo(origin), key.ToString());
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
+
+        [UnityTest]
         public IEnumerator TestDungeonStartsWithoutASave() => CheckTestDungeon(null);
 
         [UnityTest]

@@ -4,6 +4,7 @@ namespace EternalEnigma.Core.Progression;
 
 public enum LocationKind { Checkpoint, Town, StoryDungeon, RepeatableDungeon, FinalDungeon, Converter, Landmark, Secret }
 public enum ShortcutKind { None, FarSide, Capability, Keyed }
+public enum KeyAcquisition { AtLocation, DungeonCompletion }
 public enum LockForm { None, Obstacle, Interaction, Area }
 
 public sealed class CampaignRegion
@@ -43,19 +44,21 @@ public sealed class CampaignRoute
     public string? UnlockingEndpoint { get; }
     public string? KeyId { get; }
     public string? KeyLocationId { get; }
+    public KeyAcquisition KeyCondition { get; }
+    public bool IsStarterExit => KeyCondition == KeyAcquisition.DungeonCompletion;
     public bool IsWarp { get; }
     public string GateHint => ShortcutKind == ShortcutKind.Keyed ? "Requires: " + KeyId :
         ShortcutKind == ShortcutKind.FarSide ? "Open shortcut at the far endpoint." : "Requires: " + Requirement;
     public bool HasGate => !Requirement.IsOpen || ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed;
-    public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false, ShortcutKind shortcutKind = ShortcutKind.None, string? unlockingEndpoint = null, string? keyId = null, string? keyLocationId = null, bool isWarp = false)
-    { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; ShortcutKind = shortcutKind; UnlockingEndpoint = unlockingEndpoint; KeyId = keyId; KeyLocationId = keyLocationId; IsWarp = isWarp; }
+    public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false, ShortcutKind shortcutKind = ShortcutKind.None, string? unlockingEndpoint = null, string? keyId = null, string? keyLocationId = null, bool isWarp = false, KeyAcquisition keyCondition = KeyAcquisition.AtLocation)
+    { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; ShortcutKind = shortcutKind; UnlockingEndpoint = unlockingEndpoint; KeyId = keyId; KeyLocationId = keyLocationId; IsWarp = isWarp; KeyCondition = keyCondition; }
     public string? Other(string location) => location == From ? To : location == To ? From : null;
     public bool CanTraverse(CapabilitySet held, ISet<string> resolved) =>
         (ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed) ? resolved.Contains(Id) :
         (Latches && resolved.Contains(Id)) || Requirement.IsSatisfiedBy(held);
     public bool Latches => ShortcutKind == ShortcutKind.None && (Form == LockForm.Obstacle || Form == LockForm.Interaction);
-    public bool TryCollectKey(string locationId, ISet<string> resolved) =>
-        ShortcutKind == ShortcutKind.Keyed && locationId == KeyLocationId && resolved.Add(Id);
+    public bool TryCollectKey(string locationId, ISet<string> resolved, ISet<string>? completed = null) =>
+        ShortcutKind == ShortcutKind.Keyed && locationId == KeyLocationId && (KeyCondition == KeyAcquisition.AtLocation || completed?.Contains(locationId) == true) && resolved.Add(Id);
     public bool TryUnlock(string endpoint, ISet<string> resolved)
     {
         if (ShortcutKind != ShortcutKind.FarSide || endpoint != UnlockingEndpoint) return false;
@@ -107,6 +110,7 @@ public sealed class ReturnObjective
 /// <summary>Immutable, engine-independent logical campaign. It contains no terrain or mutable player state.</summary>
 public sealed class Campaign
 {
+    public IReadOnlyList<string> StarterLocations => Array.AsReadOnly(new[] { StartLocationId, "story-0" });
     public int Seed { get; }
     public int GeneratorVersion { get; }
     public string StartLocationId { get; }

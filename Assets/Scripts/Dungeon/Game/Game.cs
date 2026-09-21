@@ -60,7 +60,16 @@ public class Game : SingletonMonoBehaviour<Game>
 	// Start is called before the first frame update
 	void Start()
 	{
+        Common.Instance.Travel.SceneReady();
+		Common.Instance.ScreenTransition.HoldClosed();
 		ResetGame();
+		StartCoroutine(RevealDungeonWhenReady());
+	}
+
+	private IEnumerator RevealDungeonWhenReady()
+	{
+		while (!IsReady) yield return null;
+		Common.Instance.ScreenTransition.DoOpen();
 	}
 
 	internal void ResetGame()

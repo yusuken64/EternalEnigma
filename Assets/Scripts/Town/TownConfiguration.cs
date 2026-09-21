@@ -14,6 +14,7 @@ public class TownConfiguration : ScriptableObject
     [Min(1)] public int MaxPartySize = 4;
     public List<TownBuildingDefinition> Buildings = new();
     public List<TownAlly> AllyCatalog = new();
+    public List<CampaignCompanionPrefab> CampaignCompanions = new();
     public List<TownRecruitOffer> Recruits = new();
     public List<TownAlly> StartingParty = new();
     public List<DungeonTierData> DungeonTiers = new();

@@ -27,6 +27,12 @@ public sealed class GameTestHarness
     private bool started;
     private Scene originalScene;
 
+    public IEnumerator LoadCommon(GameSaveData save = null)
+    {
+        Begin(save ?? new TestScenario().CreateSave());
+        yield return LoadScene("Common");
+    }
+
     public IEnumerator LoadDungeon(TestScenario scenario)
     {
         Begin(scenario.CreateSave());

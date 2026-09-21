@@ -55,7 +55,7 @@ public sealed class OverworldBiomeTests
         {
             var at = queue.Dequeue();
             foreach (var next in OverworldMovement.Neighbors(at))
-                if (grid.CanStep(at, next, withoutBoat) && reachable.Add(next)) queue.Enqueue(next);
+                if (grid.CanStep(at, next, withoutBoat, new HashSet<string> { "starter-exit" }) && reachable.Add(next)) queue.Enqueue(next);
         }
         Assert.Contains(campaign.Sources.Where(s => s.Capability == Capability.Boat), s => reachable.Contains(grid.Locations[s.LocationId]));
         foreach (var cell in grid.Locations.Values) Assert.False(grid.RequiresBoat(cell));

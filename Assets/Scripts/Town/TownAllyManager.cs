@@ -8,6 +8,7 @@ public class TownAllyManager : MonoBehaviour
     private TownConfiguration configuration;
     public void Configure(TownConfiguration value) => configuration = value;
     internal TownAlly GetAlly(TownAllyData data) =>
+        (Common.Instance.CampaignContext != null ? CampaignParty.Resolve(data.AllyId, configuration) : null) ??
         configuration.AllyCatalog.FirstOrDefault(a => !string.IsNullOrEmpty(data.AllyId) ? a.Id == data.AllyId : a.Name == data.AllyName) ??
         throw new InvalidOperationException($"Ally '{data.AllyName}' is missing from town '{configuration.Id}' catalog.");
 

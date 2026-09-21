@@ -8,6 +8,7 @@ namespace EternalEnigma.ConsoleExplorer;
 /// <summary>Console host progression at physical tiles; rewards simulate completed encounters.</summary>
 public sealed class ExplorerSession
 {
+    private readonly HashSet<string> completed = new();
     private readonly HashSet<string> claimed = new();
     private readonly HashSet<string> recruited = new();
     private readonly HashSet<string> active = new();
@@ -44,7 +45,7 @@ public sealed class ExplorerSession
     {
         Campaign = campaign;
         Grid = grid;
-        gates = new OverworldGates(campaign, grid, resolved);
+        gates = new OverworldGates(campaign, grid, resolved, completed: completed);
         if (grid.CampaignFingerprint != Core.Generation.CampaignFingerprint.Compute(campaign))
             throw new ArgumentException("Grid does not belong to this campaign.", nameof(grid));
         locations = campaign.Locations.ToDictionary(l => grid.Locations[l.Id]);
@@ -99,6 +100,7 @@ public sealed class ExplorerSession
         if (OpenGate()) return;
         foreach (var route in Campaign.Routes)
             if (route.TryUnlock(Location?.Id ?? "", resolved)) { Message = "Opened shortcut: " + route.Id; return; }
+        if (Location?.Kind == LocationKind.StoryDungeon || Location?.Kind == LocationKind.FinalDungeon) completed.Add(Location.Id);
         var rewards = new List<string>();
         foreach (var route in Campaign.Routes)
             if (gates.CollectKey(route, Location?.Id ?? "")) rewards.Add(route.KeyId + " (use it at the gate)");

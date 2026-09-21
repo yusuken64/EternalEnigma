@@ -14,6 +14,8 @@ public class MainMenu : MonoBehaviour
 
 	private void Start()
 	{
+        Common.Instance.EndSandbox();
+        Common.Instance.Travel.SceneReady();
 		if (Common.Instance.GameSaveData != null)
 		{
 			ContinueButton.gameObject.SetActive(true);
@@ -28,15 +30,15 @@ public class MainMenu : MonoBehaviour
 
 	public void Continue_Clicked()
 	{
-        TownSceneLoader.Load(TownSceneLoader.ResolveSaved(TownConfiguration));
+        Common.Instance.Travel.Continue();
 	}
 
 
 	public void StartGame_Clicked()
 	{
+        if (Common.Instance.Travel.IsTransitioning) return;
 		Common.Instance.GameSaveData = NewSaveData();
-		SaveSystem.SaveData(Common.Instance.GameSaveData);
-        TownSceneLoader.Load(TownConfiguration ?? TownSceneLoader.Default);
+		Common.Instance.Travel.NewCampaign(Common.Instance.GameSaveData.TownSaveData.TownSeed);
 	}
 
 	private GameSaveData NewSaveData()
@@ -92,6 +94,7 @@ public class MainMenu : MonoBehaviour
 			Skills = data.Skills != null ? new List<string>(data.Skills) : new List<string>()
 		}).ToList();
 		// A debug launch must also work without a save and must not overwrite one.
+		common.CampaignContext = null;
 		common.GameSaveData = save;
 		common.InstantiatedTownAllies.Clear();
 		foreach (Transform child in common.TownAllyParent.Cast<Transform>().ToArray())

@@ -45,6 +45,7 @@ public static class CampaignExplorer
         var reachable = new HashSet<string>(StringComparer.Ordinal);
         var sources = new HashSet<string>(StringComparer.Ordinal);
         var resolved = new HashSet<string>(StringComparer.Ordinal);
+        var completed = new HashSet<string>(StringComparer.Ordinal);
         var ownedPersonal = CapabilitySet.Empty;
         var permanent = CapabilitySet.Empty;
         var witnesses = new List<AcquisitionWitness>();
@@ -65,8 +66,10 @@ public static class CampaignExplorer
                     var current = queue.Dequeue();
                     if (reachable.Add(current)) changed = true;
                     if (byLocation[current].Kind == LocationKind.Town && towns.Add(current)) changed = true;
+                    // Exploration assumes a reachable dungeon can be completed. Runtime requires an explicit victory.
+                    if (byLocation[current].Kind == LocationKind.StoryDungeon) completed.Add(current);
                     foreach (var shortcut in campaign.Routes.Where(r => excludedRoutes?.Contains(r.Id) != true))
-                        if (shortcut.TryCollectKey(current, resolved)) changed = true;
+                        if (shortcut.TryCollectKey(current, resolved, completed)) changed = true;
                     foreach (var source in campaign.Sources.Where(s => s.LocationId == current).OrderBy(s => s.Id, StringComparer.Ordinal))
                     {
                         if (sources.Contains(source.Id) || (guaranteedOnly && !source.Guaranteed) ||

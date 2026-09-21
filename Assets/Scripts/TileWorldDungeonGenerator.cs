@@ -16,6 +16,11 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 
 	private void Awake()
 	{
+        if (Common.Instance.CampaignContext != null)
+        {
+            TileWorldCreator.twcAsset = Instantiate(TileWorldCreator.twcAsset);
+            ThroneTileWorldCreator.twcAsset = Instantiate(ThroneTileWorldCreator.twcAsset);
+        }
 		TileWorldCreator.OnBlueprintLayersComplete += BluePrintComplete;
 		TileWorldCreator.OnBuildLayersComplete += BuildComplete;
 
@@ -30,6 +35,7 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 			Destroy(GeneratedDungeon.gameObject);
 		}
 		GeneratedDungeon = null;
+		SetCampaignSeed(TileWorldCreator);
 		TileWorldCreator.ExecuteAllBlueprintLayers();
 	}
 
@@ -40,8 +46,15 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 			Destroy(GeneratedDungeon.gameObject);
 		}
 		GeneratedDungeon = null;
+		SetCampaignSeed(ThroneTileWorldCreator);
 		ThroneTileWorldCreator.ExecuteAllBlueprintLayers();
 	}
+
+    private void SetCampaignSeed(TileWorldCreator creator)
+    {
+        var context = Common.Instance.CampaignContext;
+        if (context != null) creator.SetCustomRandomSeed(context.LocationSeed(context.State.LocationId, Game.Instance.PlayerController.Floor));
+    }
 
 	private void BluePrintComplete(TileWorldCreator _twc)
 	{

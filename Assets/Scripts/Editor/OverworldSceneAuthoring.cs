@@ -11,6 +11,17 @@ using EternalEnigma.Core.World;
 
 public static class OverworldSceneAuthoring
 {
+    [MenuItem("Tools/Eternal Enigma/Launch Overworld Sandbox")]
+    public static void LaunchSandbox()
+    {
+        if (EditorApplication.isPlaying) return;
+        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/Overworld.unity");
+        var map = UnityEngine.Object.FindFirstObjectByType<CampaignOverworld>();
+        SessionState.SetInt("EternalEnigma.SandboxSeed", map.Seed);
+        EditorApplication.EnterPlaymode();
+    }
+
     private const string Folder = "Assets/Overworld";
 
     [MenuItem("Tools/Eternal Enigma/Overworld/Apply Biome Floors")]

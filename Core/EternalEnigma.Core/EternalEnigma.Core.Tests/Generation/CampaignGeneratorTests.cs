@@ -10,9 +10,9 @@ namespace EternalEnigma.Core.Tests.Generation;
 public sealed class CampaignGeneratorTests
 {
     [Fact]
-    public void VersionFiveSeed42HasStableGoldenFingerprint()
+    public void VersionSixSeed42HasStableGoldenFingerprint()
     {
-        Assert.Equal("2d0a5925c9428cc076f43cff650af5e91625592c71b5e07411c312385961a890",
+        Assert.Equal("cdfb4b1262b357d6d655fdb3583b4b711a461f750ba54210e1a7a130567a360b",
             CampaignFingerprint.Compute(CampaignGenerator.Generate(42)));
     }
 
@@ -41,6 +41,8 @@ public sealed class CampaignGeneratorTests
                 {
                     string current = session.LocationId;
                     excursion.Add(current);
+                    session.CompleteLocation();
+                    foreach (var gate in campaign.Routes) if (session.TryCollectShortcutKey(gate.Id)) changed = true;
                     if (visited.Add(current)) changed = true;
                     foreach (var source in campaign.Sources.Where(s => s.LocationId == current && s.Guaranteed && critical.Contains(s.Capability)))
                         if (!claimed.Contains(source.Id) && session.TryClaimSource(source.Id))

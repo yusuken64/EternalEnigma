@@ -8,17 +8,18 @@ public sealed class OverworldGates
 {
     private readonly OverworldGrid grid;
     private readonly Dictionary<string, CampaignRoute> routes;
-    private readonly HashSet<string> keys = new(StringComparer.Ordinal);
-    private readonly HashSet<string> opened = new(StringComparer.Ordinal);
+    private readonly ISet<string> keys;
+    private readonly ISet<string> opened;
+    private readonly ISet<string> completed;
     private readonly ISet<string> resolved;
 
-    public OverworldGates(Campaign campaign, OverworldGrid grid, ISet<string> resolved)
-    { this.grid = grid; this.resolved = resolved; routes = campaign.Routes.ToDictionary(r => r.Id); }
+    public OverworldGates(Campaign campaign, OverworldGrid grid, ISet<string> resolved, ISet<string>? keys = null, ISet<string>? opened = null, ISet<string>? completed = null)
+    { this.keys = keys ?? new HashSet<string>(); this.opened = opened ?? new HashSet<string>(); this.completed = completed ?? new HashSet<string>(); this.grid = grid; this.resolved = resolved; routes = campaign.Routes.ToDictionary(r => r.Id); }
 
     public IEnumerable<string> CollectedKeys => keys.OrderBy(k => k, StringComparer.Ordinal);
     public bool HasKey(CampaignRoute route) => route.KeyId != null && keys.Contains(route.KeyId);
     public bool CollectKey(CampaignRoute route, string locationId) =>
-        route.ShortcutKind == ShortcutKind.Keyed && route.KeyLocationId == locationId && route.KeyId != null && keys.Add(route.KeyId);
+        route.ShortcutKind == ShortcutKind.Keyed && route.KeyLocationId == locationId && route.KeyId != null && (route.KeyCondition == KeyAcquisition.AtLocation || completed.Contains(locationId)) && keys.Add(route.KeyId);
 
     public bool IsWalkable(GridPoint cell, CapabilitySet held)
     {

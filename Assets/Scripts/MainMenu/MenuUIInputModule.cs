@@ -187,7 +187,9 @@ public class MenuUIInputModule : InputSystemUIInputModule
         {
             RestoreFocus();
             // Recover the highlight without also moving past or activating it.
-            ConsumeInput();
+            // With no open UI, these same keys belong to world movement.
+            if (IsUsable(eventSystem.currentSelectedGameObject) && Allows(eventSystem.currentSelectedGameObject))
+                ConsumeInput();
         }
 
         bool sendNavigation = eventSystem.sendNavigationEvents;

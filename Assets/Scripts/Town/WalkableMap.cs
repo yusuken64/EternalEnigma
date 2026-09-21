@@ -74,6 +74,11 @@ public class WalkableMap : MonoBehaviour
 		return startPos;
 	}
 
+    internal List<Vector3Int> CampaignBuildingPositions(TownConfiguration configuration, IEnumerable<Vector3Int> existing) =>
+        CampaignTownCorridor.CompleteBuildingPositions(_walkableMap,
+            TileWorldCreator.GetMapOutputFromBlueprintLayer(configuration.AllyLayer), existing,
+            configuration.PartySpawn, configuration.Buildings.Count);
+
 	internal bool CanWalkTo(Vector3Int from, Vector3Int to)
 	{
 		return GridMovement.CanStep(from, to, cell => GridMovement.IsWalkable(_walkableMap, cell),

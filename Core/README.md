@@ -122,3 +122,12 @@ or combat validation.
 layers and placement metadata. `CampaignOverworld` imports these into TWC through
 its component context menu. See [overworld grids](../Docs/OverworldGrid.md) for
 layer definitions, setup, supported topology and movement queries.
+
+## Shared Unity campaign and sandbox
+
+See [Campaign flow](../Docs/CampaignFlow.md). Campaign generation v6 / grid v9
+include the sealed starting enclosure. Complete story-0 and then use its key at
+the physical starter-exit. The console explorer's Enter command simulates dungeon
+completion; the Unity sandbox has a separate victory button. Ordinary location
+claims cannot award a completion-conditioned key. New Game and Continue use the
+same Overworld scene with the persistent CampaignContext owned by Common.

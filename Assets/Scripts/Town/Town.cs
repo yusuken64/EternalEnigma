@@ -23,6 +23,7 @@ public class Town : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Common.Instance.Travel.SceneReady();
         Common.Instance.ScreenTransition.HoldClosed();
         Debug.Log("Load Save Data");
         Configuration = Common.Instance.CurrentTownConfiguration ?? TownSceneLoader.ResolveSaved();
@@ -31,6 +32,11 @@ public class Town : MonoBehaviour
         FindFirstObjectByType<TownMenu>().ValidateBindings(Configuration);
         Services = new TownServices(this);
         LoadSaveData();
+        if (Common.Instance.CampaignContext != null)
+        {
+            gameObject.AddComponent<CampaignTownControls>().Town = this;
+            CampaignTownCorridor.Configure(WalkableMap.TileWorldCreator);
+        }
 
         Debug.Log("WalkableMap type: " + (WalkableMap == null ? "NULL" : WalkableMap.GetType().FullName));
         Debug.Log("TileWorldCreator type: " + (WalkableMap.TileWorldCreator == null ? "NULL" : WalkableMap.TileWorldCreator.GetType().FullName));
@@ -68,12 +74,23 @@ public class Town : MonoBehaviour
                 AllyId = ally.Id, AllyName = ally.Name, Skills = new List<string>(ally.Skills),
                 Equipment = ItemSaveData.Capture(ally.Equipment.GetEquippedItems())
             }).ToList();
+        CampaignParty.Capture(Common.Instance);
     }
 
     public void SaveProgress()
     {
         WriteSaveData();
         SaveSystem.SaveData(Common.Instance.GameSaveData);
+    }
+
+    public void RefreshCampaignParty()
+    {
+        foreach (var ally in TownPlayer.RecruitedAllies.Concat(TownAllies).ToArray())
+        { ally.gameObject.SetActive(false); Destroy(ally.gameObject); }
+        TownPlayer.RecruitedAllies.Clear(); TownAllies.Clear();
+        CampaignParty.PrepareActive(Common.Instance, Configuration);
+        GenerateAllies(); TownPlayer.ControllingTownAlly = null; TownPlayer.EnsureControlledAlly();
+        SaveProgress();
     }
 
     public void GenerateAllies()
@@ -86,6 +103,7 @@ public class Town : MonoBehaviour
 
         //restore allies
         var startPosition = Configuration.PartySpawn;
+        TownPlayer.WalkPositionHistory = new() { startPosition };
         var previousAllies = Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData;
         if (previousAllies.Count == 0)
             previousAllies.AddRange(Configuration.StartingParty.Select(a => new TownAllyData { AllyId = a.Id, AllyName = a.Name, Skills = new() }));
@@ -94,6 +112,7 @@ public class Town : MonoBehaviour
             var prefab = TownAllyManager.GetAlly(allyData);
 
             var allyInstance = Instantiate(prefab, this.transform);
+            if (Common.Instance.CampaignContext != null) allyInstance.Id = allyData.AllyId;
             AllyRecruitDialog.Recruit(this, allyInstance);
             allyInstance.TilemapPosition = startPosition;
             allyInstance.transform.position = WalkableMap.CellToWorld(allyInstance.TilemapPosition);
@@ -108,7 +127,7 @@ public class Town : MonoBehaviour
         var allyPositions = GetPositions(Configuration.AllyLayer);
 
 		int count = allyPositions.Count;
-		var allies = TownAllyManager.GenerateRandomAllies(count, TownPlayer.RecruitedAllies.Select(a => a.Id));
+		var allies = TownAllyManager.GenerateRandomAllies(count, (Common.Instance.CampaignContext != null ? Common.Instance.CampaignContext.Roster.Append(Common.Instance.GameSaveData.ProtagonistId) : TownPlayer.RecruitedAllies.Select(a => a.Id)));
 		for (int i = 0; i < allies.Count; i++)
 		{
 			var ally = allies[i];
@@ -145,7 +164,10 @@ public class Town : MonoBehaviour
 	[ContextMenu("Generate Entrance")]
     public void GenerateInteractableBuildings()
     {
-        TownBuildings = TownBuildingManager.Spawn(Configuration, GetPositions(Configuration.BuildingLayer), WalkableMap);
+        var positions = GetPositions(Configuration.BuildingLayer);
+        if (Common.Instance.CampaignContext != null)
+            positions = WalkableMap.CampaignBuildingPositions(Configuration, positions);
+        TownBuildings = TownBuildingManager.Spawn(Configuration, positions, WalkableMap);
     }
 
     private void Awake()

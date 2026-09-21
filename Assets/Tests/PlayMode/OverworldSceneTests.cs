@@ -18,6 +18,9 @@ namespace EternalEnigma.Tests
     [PostBuildCleanup(typeof(HarnessSceneBootstrap))]
     public class OverworldSceneTests
     {
+        private GameTestHarness harness;
+        [UnitySetUp]
+        public IEnumerator Setup() { harness = new GameTestHarness(); yield return harness.LoadCommon(); }
         private Scene scene;
         private Keyboard keyboard;
         private Gamepad pad;
@@ -175,6 +178,15 @@ namespace EternalEnigma.Tests
             Assert.That(world.IsReady, Is.True);
             Assert.That(world.Campaign.Seed, Is.EqualTo(seed));
             var c = world.Campaign; var grid = world.Map.CurrentGrid;
+            yield return WalkTo(world, grid.Locations["story-0"]);
+            world.ClaimRewards();
+            Assert.That(world.CollectedKeys, Is.Empty, "An ordinary claim cannot award the completion key.");
+            Assert.That(world.SimulateDungeonVictory(), Is.True);
+            var exit = grid.Locks.Single(g => g.RouteId == "starter-exit");
+            var exitApproach = exit.Cells.SelectMany(OverworldMovement.Neighbors).First(p =>
+                exit.Cells.Any(g => System.Math.Abs(g.X - p.X) + System.Math.Abs(g.Y - p.Y) == 1) && Path(world, p) != null);
+            yield return WalkTo(world, exitApproach);
+            Assert.That(world.OpenGate("starter-exit"), Is.True);
             var objective = c.ReturnObjectives.Single(o => o.Required);
             var gate = grid.Locks.Single(g => g.RouteId == objective.GateIds[0]);
             var approach = gate.Cells.SelectMany(OverworldMovement.Neighbors).Distinct()
@@ -184,7 +196,7 @@ namespace EternalEnigma.Tests
             try
             {
                 Time.timeScale = 15;
-                yield return WalkTo(world, approach);
+                yield return WalkTo(world, approach, gate.RouteId);
                 var blocked = gate.Cells.First(g => System.Math.Abs(g.X - approach.X) + System.Math.Abs(g.Y - approach.Y) == 1);
                 Assert.That(world.TryMove(blocked.X - approach.X, blocked.Y - approach.Y), Is.False);
                 Assert.That(world.Message, Does.Contain(objective.EnablingCapability.ToString()));
@@ -212,7 +224,7 @@ namespace EternalEnigma.Tests
                 Assert.That(gateMarkers, Is.Not.Empty);
                 Assert.That(gateMarkers.All(m => m.activeSelf), Is.True, "Acquiring the requirement must not hide the gate.");
                 Assert.That(world.OpenGate(gate.RouteId), Is.False, "Cannot open a gate remotely.");
-                yield return WalkTo(world, approach);
+                yield return WalkTo(world, approach, gate.RouteId);
                 Assert.That(world.TryMove(blocked.X - approach.X, blocked.Y - approach.Y), Is.False);
                 world.ClaimRewards();
                 Assert.That(world.Message, Does.Contain("Opened gate"));
@@ -275,7 +287,7 @@ namespace EternalEnigma.Tests
             finally { Time.timeScale = previousTimeScale; }
         }
 
-        private static Stack<GridPoint> Path(OverworldScene world, GridPoint target)
+        private static Stack<GridPoint> Path(OverworldScene world, GridPoint target, string blockedRoute = null)
         {
             var parents = new Dictionary<GridPoint, GridPoint> { [world.Position] = world.Position };
             var queue = new Queue<GridPoint>(); queue.Enqueue(world.Position);
@@ -283,7 +295,7 @@ namespace EternalEnigma.Tests
             {
                 var at = queue.Dequeue();
                 foreach (var next in OverworldMovement.Neighbors(at))
-                    if (!parents.ContainsKey(next) && (world.CanStep(at, next) || (at.X == next.X || at.Y == next.Y) && world.Map.CurrentGrid.CanStep(at, next, world.Held))) { parents[next] = at; queue.Enqueue(next); }
+                    if ((blockedRoute == null || world.Map.CurrentGrid.LockAt(next)?.RouteId != blockedRoute) && !parents.ContainsKey(next) && (world.CanStep(at, next) || (at.X == next.X || at.Y == next.Y) && world.Map.CurrentGrid.CanStep(at, next, world.Held))) { parents[next] = at; queue.Enqueue(next); }
             }
             if (!parents.ContainsKey(target)) return null;
             var path = new Stack<GridPoint>();
@@ -291,9 +303,9 @@ namespace EternalEnigma.Tests
             return path;
         }
 
-        private static IEnumerator WalkTo(OverworldScene world, GridPoint target)
+        private static IEnumerator WalkTo(OverworldScene world, GridPoint target, string blockedRoute = null)
         {
-            var path = Path(world, target);
+            var path = Path(world, target, blockedRoute);
             Assert.That(path, Is.Not.Null, "No walkable path to " + target + " with " + world.Held);
             while (path.Count > 0)
             {
@@ -352,6 +364,7 @@ namespace EternalEnigma.Tests
             if (keyboard != null) InputSystem.RemoveDevice(keyboard);
             if (pad != null) InputSystem.RemoveDevice(pad);
             if (scene.IsValid() && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+            yield return harness.Cleanup();
         }
     }
 }

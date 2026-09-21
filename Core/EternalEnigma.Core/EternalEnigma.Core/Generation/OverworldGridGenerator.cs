@@ -113,9 +113,27 @@ public static class OverworldGridGenerator
             return true;
         }
         var positions = new Dictionary<string, GridPoint>(StringComparer.Ordinal);
+        // Reserve one compact pocket for the two starting locations before scattering other sites.
+        if (campaign.Routes.Any(r => r.IsStarterExit))
+        {
+            GridPoint starterCenter = default;
+            bool found = false;
+            for (int trial = 0; trial < 6000; trial++)
+            {
+                starterCenter = new GridPoint(random.Range(w), random.Range(h));
+                if (DiskFits(starterCenter, 0, 15)) { found = true; break; }
+            }
+            if (!found) throw new InvalidOperationException("No starting enclosure fits.");
+            int starterGroup = groupOf[campaign.StartLocationId];
+            for (int dy = -9; dy <= 9; dy++) for (int dx = -9; dx <= 9; dx++)
+                owner[starterCenter.X + dx, starterCenter.Y + dy] = starterGroup;
+            positions.Add("town-0", new GridPoint(starterCenter.X - 3, starterCenter.Y));
+            positions.Add("story-0", new GridPoint(starterCenter.X + 3, starterCenter.Y));
+        }
         // Sample pockets first so each has a sealing halo; all destinations share a minimum spacing.
         foreach (var location in campaign.Locations.OrderBy(l => groupOf[l.Id] == primary[stages[l.Id]] ? 1 : 0).ThenBy(l => l.Id, StringComparer.Ordinal))
         {
+            if (positions.ContainsKey(location.Id)) continue;
             int stage = stages[location.Id], group = groupOf[location.Id];
             bool pocket = group != primary[stage];
             GridPoint at = default; bool found = false;

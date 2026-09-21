@@ -54,7 +54,9 @@ namespace EternalEnigma.Tests
             foreach (var gate in world.Map.CurrentGrid.Locks)
                 Assert.That(world.Map.CurrentGrid.IsWalkable(gate.Cells[0], world.Held), Is.False);
             var start = world.Position;
-            var next = OverworldMovement.Neighbors(start).First(p => world.Map.CurrentGrid.CanStep(start, p, world.Held));
+            Assert.That(world.TryMove(1, 0), Is.False, "The interior dungeon must unlock town departure first.");
+            Assert.That(world.SimulateDungeonVictory(), Is.True);
+            var next = OverworldMovement.Neighbors(start).First(p => world.CanStep(start, p));
             Assert.That(world.TryMove(next.X - start.X, next.Y - start.Y), Is.True);
             yield return new WaitForSeconds(.25f);
             Assert.That(world.Position, Is.EqualTo(next));
@@ -135,7 +137,7 @@ namespace EternalEnigma.Tests
                 {
                     if ((cell.X == at.X || cell.Y == at.Y) && world.Map.CurrentGrid.LockAt(cell) != null && !world.Map.CurrentGrid.IsWalkable(cell, world.Held))
                     { approach = at; blockedGate = cell; break; }
-                    if (parents.ContainsKey(cell) || !world.Map.CurrentGrid.CanStep(at, cell, world.Held)) continue;
+                    if (parents.ContainsKey(cell) || !world.CanStep(at, cell)) continue;
                     parents[cell] = at;
                     pending.Enqueue(cell);
                 }
@@ -181,6 +183,8 @@ namespace EternalEnigma.Tests
             yield return WalkTo(world, grid.Locations["story-0"]);
             world.ClaimRewards();
             Assert.That(world.CollectedKeys, Is.Empty, "An ordinary claim cannot award the completion key.");
+            Assert.That(world.SimulateDungeonVictory(), Is.True);
+            yield return WalkTo(world, grid.Locations["repeatable-0"]);
             Assert.That(world.SimulateDungeonVictory(), Is.True);
             var exit = grid.Locks.Single(g => g.RouteId == "starter-exit");
             var exitApproach = exit.Cells.SelectMany(OverworldMovement.Neighbors).First(p =>

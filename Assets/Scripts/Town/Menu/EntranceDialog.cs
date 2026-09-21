@@ -24,6 +24,19 @@ public class EntranceDialog : Dialog
 
 	internal void Setup()
 	{
+        var campaign = Common.Instance.CampaignContext;
+        if (campaign != null)
+        {
+            var town = FindFirstObjectByType<Town>();
+            var dungeons = campaign.Campaign.Locations.Where(l => l.ParentTownId == town.Configuration.Id).ToList();
+            items = Container.RePopulateObjects(DungeonTierItemPrefab, dungeons, (view, location) =>
+                view.SetupCampaign(location, campaign.Completed.Contains(location.Id), () =>
+                {
+                    if (!Common.Instance.Travel.EnterTownDungeon(town, location.Id))
+                        TownMenu.ShowMessage("This dungeon cannot be entered right now.");
+                }));
+            return;
+        }
 		Action<DungeonTierItem, DungeonTierData> setupAction = (view, data) =>
 		{
 			view.Setup(data);
@@ -73,7 +86,7 @@ public class EntranceDialog : Dialog
 	public void DungeonClicked(DungeonTierData data)
 	{
 		var town = FindFirstObjectByType<Town>();
-        if (Common.Instance.CampaignContext != null) { TownMenu.ShowMessage("Leave town through the southern exit and enter a dungeon marker."); return; }
+        if (Common.Instance.CampaignContext != null) return;
         if (!town.Services.CanEnter(data))
         {
             TownMenu.ShowMessage($"Donate {data.RequiredDonation}g total at the statue to unlock this tier.");

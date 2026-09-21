@@ -10,7 +10,7 @@ public sealed class MapRenderer
     public MapRenderer(ExplorerSession session)
     {
         this.session = session;
-        locations = session.Campaign.Locations.ToDictionary(l => session.Grid.Locations[l.Id], l => l.Kind);
+        locations = session.Campaign.Locations.Where(l => l.ParentTownId == null).ToDictionary(l => session.Grid.Locations[l.Id], l => l.Kind);
     }
 
     public string[] Render(int width, int height)

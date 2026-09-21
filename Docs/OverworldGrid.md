@@ -39,10 +39,13 @@ Its buttons claim eligible rewards, select companions at town markers, and
 simulate a victory at the current dungeon marker through `CompleteDungeon`.
 An ordinary reward claim cannot obtain the starting key.
 
-The starting enclosure contains only `town-0` and `story-0`. Complete `story-0`
-to acquire its permanent key, then interact with the single physical exit leading
-to `checkpoint-0`. `repeatable-0` is outside. Even Boat, diagonal movement and
-unlocked later warps cannot bypass the closed starting exit.
+The opening has two gates. Clear `story-0` inside `town-0` to unlock the town
+exit. Clear `repeatable-0` in the surrounding town area to receive a separate
+key, then use it at the physical `starter-exit` gate to reach `checkpoint-0`.
+Town exits are scene gates; `grid.CanStep` also enforces departure from the town
+marker for sandbox/explorer movement. Interior nodes share their town tile and
+have one-point graph route projections, with no separate overworld marker.
+Boat, diagonal movement and later warps cannot bypass either opening gate.
 
 Move with WASD, arrows, or a gamepad's left stick/D-pad. Enter / gamepad A enters
 a town or dungeon in campaign mode, claims a landmark reward, or opens an adjacent
@@ -153,7 +156,7 @@ the same interaction state. Keys remain in inventory after use.
 
 ## Geometry and validation
 
-Grid generation **version 9** shapes a continuous landmass before laying roads.
+Grid generation **version 10** shapes a continuous landmass before laying roads.
 Seeded smooth coordinate noise bends a weighted territory partition; A is given
 extra space for required returns. The loose geographical guide remains:
 
@@ -167,7 +170,7 @@ Consecutive progression stages share short sealed passes, including B–C.
 Additional stages occupy separate territories inside F. Ungated graph components
 share countryside; gated rewards occupy irregular protected pockets with one
 entrance. Return destinations remain physically in A. Destinations use seeded
-minimum-distance sampling (15 tiles), with clearances from boundaries.
+minimum-distance sampling (11 tiles, 6 for the opening pair), with clearances from boundaries.
 
 Roads use deterministic cardinal terrain pathfinding and stay grid-aligned. Each open area has a minimum
 spanning network under Manhattan distance plus one additional edge when it has
@@ -261,3 +264,9 @@ requires Boat. Two-tile route/location buffers and five-tile gate halos preserve
 access and short approaches. Disconnected scraps are absorbed into solid terrain.
 Gated pockets use periodic angular noise with multiple scales to vary their
 outlines, while their sealing barriers and single entrances remain validated.
+
+Version 10 targets regions about 25% smaller in travel scale: a reduced land
+footprint on the same canvas, shorter destination spacing, and fewer separate
+reward sites. Scene gates have no physical lock footprint; connectivity validation
+projects their town-area routes into the same terrain component while runtime
+departure checks preserve the logical gate. Exact distances vary by seed.

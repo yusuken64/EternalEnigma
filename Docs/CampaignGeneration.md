@@ -1,7 +1,7 @@
 # Core campaign generation
 
 `CampaignGenerator.Generate(int seed)` produces an immutable logical campaign and
-validates it before returning. Generation version 6 uses explicit seeded streams
+validates it before returning. Generation version 7 uses explicit seeded streams
 for activation, topology and identity. It does not use Unity, global random state,
 time, hash-table iteration order or runtime-dependent `System.Random` sequences.
 
@@ -24,16 +24,16 @@ by this campaign; this is the core model and traversal API for that integration.
 
 Version 6 retains the guarantee of Boat in every campaign, with two converter-site providers
 requiring Engineering. This supports navigable water in the biome grid while
-keeping acquisition on the original land route network. Earlier fingerprints intentionally change; biome assignment belongs to grid generation version 9.
+keeping acquisition on the original land route network. Earlier fingerprints intentionally change; biome assignment belongs to grid generation version 10.
 
-| Component | Version 6 behavior |
+| Component | Version 7 behavior |
 |---|---|
 | Manifest | Closed 21-capability vocabulary; activates 3â€“4 personal, 2â€“3 vehicle and 4â€“5 utility capabilities, with required area/water/narrative coverage. |
 | Roles | 5â€“7 critical and 4â€“6 exploratory, partitioning the active set; Engineering critical, 1â€“2 personal critical, at least one vehicle critical. Three active vehicles always include an exploratory one. |
 | Progression | Five tiers, with 5â€“7 gated stages along a spine. Every boundary includes a critical solution. The required return reward has a sole-solution boundary; other boundaries retain exploratory alternatives. |
-| Regions | Six ordered semantic regions A through F, unique themes, and one designated landmark each. Physical coordinates use grid version 9. Later logical stages can occupy earlier regions. |
-| Towns | Six roster/fast-travel locations. A town separates same-tier personal gates when needed to preserve the one-specialist required route. |
-| Dungeons | Four story locations, a final dungeon, and one source-free repeatable location in every tier. These are dungeon interfaces, not floor layouts. |
+| Regions | Six ordered semantic regions A through F, unique themes, and one designated landmark each. Physical coordinates use grid version 10. Later logical stages can occupy earlier regions. |
+| Towns | At least one roster/fast-travel town in each of the six biomes (6-7 towns total). A town separates same-tier personal gates when needed to preserve the one-specialist required route. |
+| Dungeons | Four story locations, a final dungeon, and source-free repeatable locations covering every tier, plus one in the extra town. These are dungeon interfaces, not floor layouts. |
 | Sources | Two guaranteed providers per capability, respecting source tiers. Personal abilities have two distinct companion providers; utility/vehicle abilities latch permanently. |
 | Payoffs | Every active capability is used by at least two locks and has a sole-solution optional payoff. Exploratory capabilities also appear as required-route alternates. |
 | Converters | Vehicle sources are converter sites requiring Engineering. Claiming a reward consumes no permanent capability. Component items/recipes are not implemented yet. |
@@ -151,7 +151,7 @@ assumptions, not all 64 v5 guarantees.
 ## Reproducibility and checks
 
 `CampaignFingerprint` hashes all logical fields in canonical order. The test suite
-pins seed 42 for generation version 6. An intentional generation change requires
+pins seed 42 for generation version 7. An intentional generation change requires
 a version and fixture update; a shared seed should always include that version.
 CLI JSON contains both versioned campaign content and its fingerprint, but is not
 a supported restore format.
@@ -179,12 +179,17 @@ log. The Unity integration check runs with the existing EditMode harness.
 ## Starting enclosure and completion keys
 
 Version 6 adds `Campaign.StarterLocations` and a physical `starter-exit` route.
-`KeyAcquisition.DungeonCompletion` requires a victory at `story-0`; location-only
-collection leaves this key unavailable. The key is permanent and opening is a
-separate cardinal-adjacent interaction. The graph explorer assumes reachable
+`KeyAcquisition.DungeonCompletion` gates the two opening steps separately:
+`story-0` unlocks the town exit, then `repeatable-0` awards the key for the
+physical `starter-exit` out of the town area. Location-only collection leaves
+both keys unavailable. The area gate requires a cardinal-adjacent interaction. The graph explorer assumes reachable
 story encounters can be completed; gameplay calls the production completion API.
-The validator rejects extra starting locations, extra exits and warp bypasses.
-Grid version 9 places the starting pair six tiles apart inside a compact pocket;
-other location pairs retain their fifteen-tile minimum spacing.
+The validator rejects extra starting locations, bypasses of either opening gate,
+and warp bypasses. Town exits are enforced by scene travel and map departure;
+only the outer area gate has an overworld lock footprint.
+Grid version 10 places the starting story dungeon inside town-0. Interior
+dungeon nodes share their parent town position; distinct overworld destinations
+use eleven-tile minimum spacing (six for the opening town/outdoor dungeon pair). See campaign flow for interior entry
+and return behavior.
 
 See [campaign flow](CampaignFlow.md) for launch modes, persistence and travel.

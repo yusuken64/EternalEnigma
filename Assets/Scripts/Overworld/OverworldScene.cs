@@ -55,7 +55,7 @@ public sealed class OverworldScene : MonoBehaviour
         var grid = Context.Grid;
         Map.Apply(grid, Held, resolved);
         gates = Context.Gates;
-        locations = Campaign.Locations.ToDictionary(l => grid.Locations[l.Id]);
+        locations = Campaign.Locations.Where(l => l.ParentTownId == null).ToDictionary(l => grid.Locations[l.Id]);
         var controls = gameObject.AddComponent<OverworldSandboxControls>();
         controls.Scene = this; controls.enabled = Context.IsSandbox;
         creator.OnBuildLayersComplete += TerrainReady;
@@ -65,7 +65,7 @@ public sealed class OverworldScene : MonoBehaviour
     private void TerrainReady(TileWorldCreator _)
     {
         creator.OnBuildLayersComplete -= TerrainReady;
-        foreach (var location in Campaign.Locations)
+        foreach (var location in Campaign.Locations.Where(l => l.ParentTownId == null))
         {
             var prefab = location.Kind == LocationKind.Town ? TownMarker :
                 location.Kind == LocationKind.StoryDungeon || location.Kind == LocationKind.RepeatableDungeon || location.Kind == LocationKind.FinalDungeon
@@ -146,11 +146,13 @@ public sealed class OverworldScene : MonoBehaviour
         TryMove(Mathf.Abs(move.x) > .3f ? System.Math.Sign(move.x) : 0, Mathf.Abs(move.y) > .3f ? System.Math.Sign(move.y) : 0);
     }
 
-    public bool CanStep(GridPoint from, GridPoint to) => IsReady && OverworldMovement.CanStep(from, to, cell => gates.IsWalkable(cell, Held));
+    public bool CanStep(GridPoint from, GridPoint to) => IsReady && Map.CurrentGrid.CanStep(from, to, Held, resolved) && OverworldMovement.CanStep(from, to, cell => gates.IsWalkable(cell, Held));
 
     public bool TryMove(int dx, int dy)
     {
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
+        if (Context.Location?.Kind == LocationKind.Town && !Context.CanLeaveTown(Context.Location.Id))
+        { Message = "Clear the dungeon inside town to unlock the town gate."; return false; }
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
         if (!CanStep(Position, next))
         {
@@ -316,9 +318,12 @@ public sealed class OverworldScene : MonoBehaviour
     }
     public bool SimulateDungeonVictory()
     {
-        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !Context.IsSandbox || !Context.BeginDungeon()) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !Context.IsSandbox) return false;
+        var interior = Context.Campaign.Locations.FirstOrDefault(l => l.ParentTownId != null && l.ParentTownId == Context.Location?.Id);
+        if (!(interior != null ? Context.BeginTownDungeon(interior.Id) : Context.BeginDungeon())) return false;
         Context.CompleteDungeon(true); RefreshGates();
-        Message = "Dungeon victory committed. Use the awarded key at the exit gate."; return true;
+        Message = Context.State.Scene == "Town" ? "Town dungeon cleared. The town gate is unlocked."
+            : "Dungeon victory committed. Use any awarded key at its exit gate."; return true;
     }
 
     private GridPoint TrailCell(int index) => walkHistory[Mathf.Max(0, walkHistory.Count - index - 1)];

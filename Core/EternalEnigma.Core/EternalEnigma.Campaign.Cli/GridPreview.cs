@@ -31,7 +31,7 @@ internal static class GridPreview
             svg.Append($"<circle cx=\"{location.Value.X}.5\" cy=\"{grid.Height - location.Value.Y - 1}.5\" r=\"1.3\" fill=\"transparent\"><title>{SecurityElement.Escape(location.Key)}</title></circle>");
         foreach (var route in campaign.Routes.Where(r => r.ShortcutKind != ShortcutKind.None))
         {
-            if (route.IsWarp) continue;
+            if (route.IsWarp || route.IsTownExit) continue;
             var point = grid.Locks.Single(g => g.RouteId == route.Id).Cells[0];
             svg.Append($"<circle cx=\"{point.X + .5}\" cy=\"{grid.Height - point.Y - .5}\" r=\"1.5\" fill=\"{(route.ShortcutKind == ShortcutKind.FarSide || route.ShortcutKind == ShortcutKind.Keyed ? "#00ffff" : "#ffff00")}\"><title>{route.ShortcutKind}: {route.GateHint}; key at {route.KeyLocationId}; open at {route.UnlockingEndpoint}</title></circle>");
         }

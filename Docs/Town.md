@@ -32,7 +32,9 @@ Create a **Game > Town > Configuration** asset. The shipped configuration is
   when restoring the party.
 - `StartingParty`, `PartySpawn` and `MaxPartySize` define new-game party rules and
   placement. Party progress comes from the save when continuing.
-- `DungeonTiers` defines available dungeon ranges. Each tier has a cumulative
+- In campaign mode the entrance lists dungeon nodes whose `ParentTownId` matches
+  this town; victory and interrupted runs return inside that town.
+- Outside campaign mode, `DungeonTiers` defines available dungeon ranges. Each tier has a cumulative
   `RequiredDonation`; `LearnableSkills` defines the trainer's offerings.
 - `LoseItemsOnDefeat` and `KeepGoldOnDefeat` configure the return rules.
 

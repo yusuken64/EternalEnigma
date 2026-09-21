@@ -48,7 +48,7 @@ public sealed class ExplorerSession
         gates = new OverworldGates(campaign, grid, resolved, completed: completed);
         if (grid.CampaignFingerprint != Core.Generation.CampaignFingerprint.Compute(campaign))
             throw new ArgumentException("Grid does not belong to this campaign.", nameof(grid));
-        locations = campaign.Locations.ToDictionary(l => grid.Locations[l.Id]);
+        locations = campaign.Locations.Where(l => l.ParentTownId == null).ToDictionary(l => grid.Locations[l.Id]);
         routes = campaign.Routes.ToDictionary(r => r.Id);
         Position = grid.PlayerStart;
         towns.Add(campaign.StartLocationId);
@@ -57,7 +57,7 @@ public sealed class ExplorerSession
     public bool Move(int dx, int dy)
     {
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
-        if (!OverworldMovement.CanStep(Position, next, IsWalkable))
+        if (!Grid.CanStep(Position, next, Held, resolved) || !OverworldMovement.CanStep(Position, next, IsWalkable))
         {
             var gate = Grid.LockAt(next);
             Message = Grid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires Boat to sail." :
@@ -100,11 +100,13 @@ public sealed class ExplorerSession
         if (OpenGate()) return;
         foreach (var route in Campaign.Routes)
             if (route.TryUnlock(Location?.Id ?? "", resolved)) { Message = "Opened shortcut: " + route.Id; return; }
-        if (Location?.Kind == LocationKind.StoryDungeon || Location?.Kind == LocationKind.FinalDungeon) completed.Add(Location.Id);
+        var rewardLocation = Campaign.Locations.FirstOrDefault(l => l.ParentTownId != null && l.ParentTownId == Location?.Id) ?? Location;
+        if (rewardLocation?.Kind == LocationKind.StoryDungeon || rewardLocation?.Kind == LocationKind.RepeatableDungeon || rewardLocation?.Kind == LocationKind.FinalDungeon) completed.Add(rewardLocation.Id);
         var rewards = new List<string>();
         foreach (var route in Campaign.Routes)
-            if (gates.CollectKey(route, Location?.Id ?? "")) rewards.Add(route.KeyId + " (use it at the gate)");
-        foreach (var source in Campaign.Sources.Where(s => s.LocationId == Location?.Id && !claimed.Contains(s.Id)))
+            if (gates.CollectKey(route, rewardLocation?.Id ?? "")) rewards.Add(route.KeyId + " (use it at the gate)");
+        foreach (var route in Campaign.Routes.Where(r => r.IsTownExit && gates.HasKey(r))) resolved.Add(route.Id);
+        foreach (var source in Campaign.Sources.Where(s => s.LocationId == rewardLocation?.Id && !claimed.Contains(s.Id)))
         {
             if (!source.Prerequisites.IsSatisfiedBy(Held)) continue;
             if (source.Capability.Kind() == CapabilityKind.Personal)

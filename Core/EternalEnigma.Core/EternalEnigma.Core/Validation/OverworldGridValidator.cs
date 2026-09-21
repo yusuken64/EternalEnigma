@@ -26,10 +26,13 @@ public static class OverworldGridValidator
         Check(grid.Locations.Count == campaign.Locations.Count && campaign.Locations.All(l => grid.Locations.ContainsKey(l.Id)), "locations: Missing/extra location placements.");
         Check(grid.Routes.Count == campaign.Routes.Count && campaign.Routes.All(r => grid.Routes.ContainsKey(r.Id)), "routes: Missing/extra route realizations.");
         Check(grid.Locks.Select(l => l.RouteId).Distinct(StringComparer.Ordinal).Count() == grid.Locks.Count, "locks: Duplicate lock footprints.");
-        Check(campaign.Routes.Where(r => r.HasGate && !r.IsWarp).Select(r => r.Id).OrderBy(id => id, StringComparer.Ordinal)
+        Check(campaign.Routes.Where(r => r.HasGate && !r.IsWarp && !r.IsTownExit).Select(r => r.Id).OrderBy(id => id, StringComparer.Ordinal)
             .SequenceEqual(grid.Locks.Select(l => l.RouteId).OrderBy(id => id, StringComparer.Ordinal)), "locks: Footprints do not match campaign locks.");
         foreach (var location in grid.Locations)
             Check(grid.IsGround(location.Value) && grid.LockAt(location.Value) == null && !grid.RequiresBoat(location.Value), $"location: {location.Key} is blocked, flooded or inside a lock.");
+        foreach (var interior in campaign.Locations.Where(l => l.ParentTownId != null))
+            Check(grid.Locations.TryGetValue(interior.Id, out var at) && grid.Locations.TryGetValue(interior.ParentTownId!, out var townAt) && at.Equals(townAt),
+                $"interior.position: {interior.Id} must project onto its parent town.");
         foreach (var gate in grid.Locks)
         {
             Check(gate.Cells.Count > 0 && gate.Cells.Distinct().Count() == gate.Cells.Count && gate.Cells.All(grid.IsGround), $"lock: Invalid footprint for {gate.RouteId}.");
@@ -68,7 +71,7 @@ public static class OverworldGridValidator
             while (parents[id] != id) { parents[id] = parents[parents[id]]; id = parents[id]; }
             return id;
         }
-        foreach (var route in campaign.Routes.Where(r => !r.HasGate && !r.IsWarp)) parents[Root(route.To)] = Root(route.From);
+        foreach (var route in campaign.Routes.Where(r => (!r.HasGate || r.IsTownExit) && !r.IsWarp)) parents[Root(route.To)] = Root(route.From);
         var graphToMap = new Dictionary<string, int>(StringComparer.Ordinal);
         var mapToGraph = new Dictionary<int, string>();
         foreach (var location in campaign.Locations)
@@ -121,7 +124,8 @@ public static class OverworldGridValidator
         foreach (var route in campaign.Routes)
         {
             var path = grid.Routes[route.Id];
-            Check(path.Count >= 2 && path[0].Equals(grid.Locations[route.From]) && path[path.Count - 1].Equals(grid.Locations[route.To]), $"route.endpoints: {route.Id} has incorrect endpoints.");
+            bool interiorRoute = campaign.Locations.Any(l => l.ParentTownId != null && route.Other(l.Id) == l.ParentTownId);
+            Check(path.Count >= (interiorRoute ? 1 : 2) && path[0].Equals(grid.Locations[route.From]) && path[path.Count - 1].Equals(grid.Locations[route.To]), $"route.endpoints: {route.Id} has incorrect endpoints.");
             if (route.IsWarp)
             {
                 Check(path.Count == 2 && grid.Warps.Any(w => w.Id == route.Id), $"warp.endpoints: {route.Id} must have exactly two landing pads.");

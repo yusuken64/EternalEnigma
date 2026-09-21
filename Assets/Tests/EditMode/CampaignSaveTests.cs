@@ -31,7 +31,7 @@ namespace EternalEnigma.Tests.CoreIntegration
         {
             var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
             context.Position = context.Grid.Locations["story-0"];
-            context.BeginDungeon(); context.CompleteDungeon(true);
+            context.BeginTownDungeon("story-0"); context.CompleteDungeon(true);
             var store = new Store();
             using (SaveSystem.UseStore(store))
             {
@@ -39,7 +39,7 @@ namespace EternalEnigma.Tests.CoreIntegration
                 var save = SaveSystem.LoadData();
                 Assert.That(save.CampaignFormatVersion, Is.EqualTo(1));
                 var restored = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
-                Assert.That(restored.Keys, Contains.Item("Starting key"));
+                Assert.That(restored.Keys, Contains.Item("Town gate key"));
                 Assert.That(restored.Resolved, Does.Not.Contain("starter-exit"));
                 Assert.That(restored.State.Identity, Is.EqualTo(context.State.Identity));
                 Assert.That(restored.Position, Is.EqualTo(context.Position));

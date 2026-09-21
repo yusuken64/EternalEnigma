@@ -6,7 +6,7 @@ namespace EternalEnigma.Core.Generation;
 
 public static class CampaignGenerator
 {
-    public const int Version = 6;
+    public const int Version = 7;
     public const int TierCount = 5;
 
     public static Campaign Generate(int seed)
@@ -50,8 +50,8 @@ public static class CampaignGenerator
         var routes = new List<CampaignRoute>();
         var sources = new List<CapabilitySource>();
         var companions = new List<CampaignCompanion>();
-        void Location(string id, int tier, LocationKind kind, bool required = false, string? region = null, int? stage = null) =>
-            locations.Add(new CampaignLocation(id, region ?? $"region-{Math.Min(5, stage ?? tierAnchor[tier])}", tier, kind, required, stage ?? tierAnchor[tier]));
+        void Location(string id, int tier, LocationKind kind, bool required = false, string? region = null, int? stage = null, string? parentTownId = null) =>
+            locations.Add(new CampaignLocation(id, region ?? $"region-{Math.Min(5, stage ?? tierAnchor[tier])}", tier, kind, required, stage ?? tierAnchor[tier], parentTownId));
         void Connect(string from, string to, Requirement? requirement = null, LockForm form = LockForm.None, bool required = false, bool boundary = false) =>
             routes.Add(new CampaignRoute($"route-{routes.Count:D3}", from, to, requirement ?? Requirement.Open, form, required, boundary));
 
@@ -60,24 +60,39 @@ public static class CampaignGenerator
         {
             Location($"town-{tier}", tier, LocationKind.Town, true);
             if (tier == 0)
-                routes.Add(new CampaignRoute("starter-exit", "town-0", "checkpoint-0", Requirement.Open,
+                routes.Add(new CampaignRoute("starter-exit", "repeatable-0", "checkpoint-0", Requirement.Open,
                     LockForm.Interaction, required: true, shortcutKind: ShortcutKind.Keyed,
-                    keyId: "Starting key", keyLocationId: "story-0", keyCondition: KeyAcquisition.DungeonCompletion));
+                    keyId: "Town area key", keyLocationId: "repeatable-0", keyCondition: KeyAcquisition.DungeonCompletion));
             else Connect($"checkpoint-{tierAnchor[tier]}", $"town-{tier}", required: true);
-            Location($"repeatable-{tier}", tier, LocationKind.RepeatableDungeon, true);
-            Connect(tier == 0 ? "checkpoint-0" : $"town-{tier}", $"repeatable-{tier}", required: true);
+            Location($"repeatable-{tier}", tier, LocationKind.RepeatableDungeon, true, parentTownId: tier == 4 ? "town-4" : null);
+            if (tier == 0)
+                routes.Add(new CampaignRoute("town-exit", "town-0", "repeatable-0", Requirement.Open,
+                    LockForm.Interaction, required: true, shortcutKind: ShortcutKind.Keyed,
+                    keyId: "Town gate key", keyLocationId: "story-0", keyCondition: KeyAcquisition.DungeonCompletion, isTownExit: true));
+            else Connect($"town-{tier}", $"repeatable-{tier}", required: true);
             if (tier < 4)
             {
-                Location($"story-{tier}", tier, LocationKind.StoryDungeon, true);
+                Location($"story-{tier}", tier, LocationKind.StoryDungeon, true, parentTownId: $"town-{tier}");
                 Connect($"town-{tier}", $"story-{tier}", required: true);
             }
         }
-        // If two personal area gates occupy one tier, a roster stop between them prevents a two-specialist spine.
+        // Fill biomes without a tier town, prioritizing the roster stop between
+        // same-tier personal gates to preserve the one-specialist required route.
         var personalIndices = Enumerable.Range(0, critical.Count).Where(i => critical[i].Kind() == CapabilityKind.Personal).ToArray();
         int extraTownIndex = personalIndices.Length == 2 && Tier(personalIndices[0]) == Tier(personalIndices[1])
             ? personalIndices[0] + 1 : critical.Count;
-        Location("town-5", Tier(extraTownIndex), LocationKind.Town, true, stage: extraTownIndex);
-        Connect($"checkpoint-{extraTownIndex}", "town-5", required: true);
+        var missingTownRegions = regions.Where(r => !locations.Any(l => l.Kind == LocationKind.Town && l.RegionId == r.Id))
+            .OrderBy(r => r.ProgressionOrder == extraTownIndex ? 0 : 1).ThenBy(r => r.ProgressionOrder).ToArray();
+        for (int i = 0; i < missingTownRegions.Length; i++)
+        {
+            var region = missingTownRegions[i];
+            int stage = region.ProgressionOrder;
+            string town = $"town-{5 + i}", dungeon = $"repeatable-{5 + i}";
+            Location(town, Tier(stage), LocationKind.Town, true, region: region.Id, stage: stage);
+            Connect($"checkpoint-{stage}", town, required: true);
+            Location(dungeon, Tier(stage), LocationKind.RepeatableDungeon, region: region.Id, stage: stage, parentTownId: town);
+            Connect(town, dungeon);
+        }
 
         for (int i = 0; i < critical.Count; i++)
         {
@@ -98,9 +113,20 @@ public static class CampaignGenerator
             {
                 string id = $"source-{capability}-{provider}";
                 string location;
-                location = id + "-site";
-                Location(location, entry.Tier, capability.Kind() == CapabilityKind.Vehicle ? LocationKind.Converter : LocationKind.Landmark, stage: index);
-                Connect($"checkpoint-{index}", location);
+                // Share existing destinations for ordinary rewards. Keep the return reward's
+                // two sites independent, and preserve Engineering-gated vehicle converters.
+                if (capability.Kind() != CapabilityKind.Vehicle && capability != critical[2] && index < 6)
+                    location = provider == 0 ? $"checkpoint-{index}" : $"region-{index}-landmark";
+                else
+                {
+                    location = capability.Kind() == CapabilityKind.Vehicle && capability != critical[2]
+                        ? $"converter-{index}-{provider}" : id + "-site";
+                    if (!locations.Any(l => l.Id == location))
+                    {
+                        Location(location, entry.Tier, capability.Kind() == CapabilityKind.Vehicle ? LocationKind.Converter : LocationKind.Landmark, stage: index);
+                        Connect($"checkpoint-{index}", location);
+                    }
+                }
                 string? companionId = null;
                 if (capability.Kind() == CapabilityKind.Personal)
                 {

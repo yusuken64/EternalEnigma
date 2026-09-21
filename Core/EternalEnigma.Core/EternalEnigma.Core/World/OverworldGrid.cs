@@ -56,7 +56,8 @@ public sealed class OverworldGrid
 {
     private readonly int[,] lockIndices;
     private readonly CampaignRoute[] lockRoutes;
-    public const int GenerationVersion = 9;
+    private readonly CampaignRoute[] townExits;
+    public const int GenerationVersion = 10;
     public int Width { get; }
     public int Height { get; }
     public int CampaignSeed { get; }
@@ -87,6 +88,7 @@ public sealed class OverworldGrid
         Warps = Array.AsReadOnly(campaign.Routes.Where(r => r.IsWarp).ToArray());
         PlayerStart = Locations[campaign.StartLocationId];
         lockRoutes = Locks.Select(l => campaign.Routes.Single(r => r.Id == l.RouteId)).ToArray();
+        townExits = campaign.Routes.Where(r => r.IsTownExit).ToArray();
         lockIndices = new int[Width, Height];
         for (int y = 0; y < Height; y++) for (int x = 0; x < Width; x++) lockIndices[x, y] = -1;
         for (int i = 0; i < Locks.Count; i++)
@@ -118,6 +120,7 @@ public sealed class OverworldGrid
         return route.CanTraverse(held, resolvedLocks ?? new HashSet<string>());
     }
     public bool CanStep(GridPoint from, GridPoint to, CapabilitySet held, ISet<string>? resolvedLocks = null) =>
+        townExits.Where(r => Locations[r.From].Equals(from)).All(r => r.CanTraverse(held, resolvedLocks ?? new HashSet<string>())) &&
         OverworldMovement.CanStep(from, to, cell => IsWalkable(cell, held, resolvedLocks));
     public IEnumerable<CampaignRoute> WarpsAt(GridPoint cell) => Warps.Where(r => Locations[r.From].Equals(cell) || Locations[r.To].Equals(cell));
     public bool CanWarp(string routeId, GridPoint from, CapabilitySet held, ISet<string> resolved, out GridPoint destination)

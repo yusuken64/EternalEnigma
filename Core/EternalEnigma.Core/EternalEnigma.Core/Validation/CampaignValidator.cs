@@ -43,6 +43,17 @@ public static class CampaignValidator
         foreach (var location in campaign.Locations)
             Check(regions.TryGetValue(location.RegionId, out var region) && location.Tier >= 0 && location.Tier < 5,
                 $"location.region: {location.Id} has an invalid region/tier.");
+        foreach (var interior in campaign.Locations.Where(l => l.ParentTownId != null))
+        {
+            Check(locations.TryGetValue(interior.ParentTownId!, out var town) && town.Kind == LocationKind.Town &&
+                town.RegionId == interior.RegionId && town.Stage == interior.Stage && town.Tier == interior.Tier,
+                $"interior.parent: {interior.Id} must belong to a town in the same region, stage and tier.");
+            Check(interior.Kind == LocationKind.StoryDungeon || interior.Kind == LocationKind.RepeatableDungeon || interior.Kind == LocationKind.FinalDungeon,
+                $"interior.kind: {interior.Id} must be a dungeon.");
+            var entrances = campaign.Routes.Where(r => r.Other(interior.Id) != null).ToArray();
+            Check(entrances.Length == 1 && entrances[0].Other(interior.Id) == interior.ParentTownId && !entrances[0].HasGate && !entrances[0].IsWarp,
+                $"interior.entrance: {interior.Id} must have exactly one open route to its parent town.");
+        }
         foreach (var route in campaign.Routes)
         {
             Check(locations.ContainsKey(route.From) && locations.ContainsKey(route.To) && route.From != route.To, $"route.endpoint: {route.Id} has invalid endpoints.");
@@ -57,6 +68,10 @@ public static class CampaignValidator
                 : route.KeyId == null && route.KeyLocationId == null, $"shortcut.key: {route.Id} has invalid key metadata.");
             if (route.ShortcutKind == ShortcutKind.Capability) Check(!route.Requirement.IsOpen && route.Form == LockForm.Area, $"shortcut.capability: {route.Id} must remain conditional.");
             if (route.Required) Check(route.Requirement.Alternatives.Any(critical.ContainsAll), $"route.critical: {route.Id} has no fully critical solution.");
+            if (route.IsTownExit) Check(route.IsStarterExit && !route.IsWarp && route.ShortcutKind == ShortcutKind.Keyed &&
+                locations.TryGetValue(route.From, out var town) && town.Kind == LocationKind.Town &&
+                route.KeyLocationId != null && locations.TryGetValue(route.KeyLocationId, out var dungeon) && dungeon.ParentTownId == town.Id,
+                $"town.exit: {route.Id} must require completion of a dungeon inside its town.");
         }
         foreach (var companion in campaign.Companions)
             Check(active.Contains(companion.Capability) && companion.Capability.Kind() == CapabilityKind.Personal, $"companion.capability: {companion.Id} has an invalid capability.");
@@ -104,7 +119,9 @@ public static class CampaignValidator
         Check(vehicles.Any(critical.Contains) && (vehicles.Length != 3 || vehicles.Any(c => !critical.Contains(c))), "manifest.vehicleRoles: Invalid critical/exploratory vehicle split.");
         Check(campaign.Regions.Count >= 6 && campaign.Regions.Count <= 8 && campaign.Regions.Select(r => r.Theme).Distinct(StringComparer.Ordinal).Count() == campaign.Regions.Count,
             "regions: Expected 6–8 regions with unique themes.");
-        Check(campaign.Locations.Count(l => l.Kind == LocationKind.Town) == 6, "towns: Expected six towns.");
+        foreach (var region in campaign.Regions)
+            Check(campaign.Locations.Any(l => l.Kind == LocationKind.Town && l.RegionId == region.Id),
+                $"towns.biome: {region.Id} needs at least one town.");
         Check(campaign.Locations.Count(l => l.Kind == LocationKind.StoryDungeon) == 4 && campaign.Locations.Count(l => l.Kind == LocationKind.FinalDungeon) == 1,
             "dungeons.story: Expected four story dungeons and one final dungeon.");
         foreach (var entry in campaign.Manifest)
@@ -132,9 +149,9 @@ public static class CampaignValidator
 
         if (campaign.GeneratorVersion >= 6)
         {
-            var exits = campaign.Routes.Where(r => r.IsStarterExit).ToArray();
-            Check(exits.Length == 1 && exits[0].From == "town-0" && exits[0].To == "checkpoint-0" &&
-                exits[0].KeyLocationId == "story-0" && !exits[0].IsWarp && exits[0].ShortcutKind == ShortcutKind.Keyed,
+            var exits = campaign.Routes.Where(r => r.IsStarterExit && !r.IsTownExit).ToArray();
+            Check(exits.Length == 1 && exits[0].From == (campaign.GeneratorVersion >= 7 ? "repeatable-0" : "town-0") && exits[0].To == "checkpoint-0" &&
+                exits[0].KeyLocationId == (campaign.GeneratorVersion >= 7 ? "repeatable-0" : "story-0") && !exits[0].IsWarp && exits[0].ShortcutKind == ShortcutKind.Keyed,
                 "starter.exit: Expected one completion-keyed physical exit.");
             var initial = new HashSet<string> { campaign.StartLocationId };
             bool changed;
@@ -144,6 +161,22 @@ public static class CampaignValidator
             Check(initial.SetEquals(campaign.StarterLocations), "starter.enclosure: Only town-0 and story-0 may be initially reachable.");
             Check(campaign.Routes.Count(r => initial.Contains(r.From) != initial.Contains(r.To)) == 1,
                 "starter.bypass: Starting enclosure must have exactly one exit, including warps.");
+            if (campaign.GeneratorVersion >= 7)
+            {
+                var townExits = campaign.Routes.Where(r => r.IsTownExit).ToArray();
+                Check(townExits.Length == 1 && townExits[0].From == "town-0" && townExits[0].To == "repeatable-0" && townExits[0].KeyLocationId == "story-0",
+                    "starter.townExit: The interior dungeon must unlock the first town's exit to the outdoor dungeon.");
+                Check(townExits.Length == 1 && exits.Length == 1 && townExits[0].KeyId != exits[0].KeyId &&
+                    locations.TryGetValue("story-0", out var inside) && inside.ParentTownId == "town-0" &&
+                    locations.TryGetValue("repeatable-0", out var outside) && outside.ParentTownId == null,
+                    "starter.keys: Interior and outdoor dungeon victories must unlock separate gates with distinct keys.");
+                var area = new HashSet<string>(initial);
+                do { changed = false; foreach (var route in campaign.Routes.Where(r => !r.HasGate || r.IsTownExit))
+                    if (area.Contains(route.From) || area.Contains(route.To)) { changed |= area.Add(route.From); changed |= area.Add(route.To); }
+                } while (changed);
+                Check(area.SetEquals(campaign.StarterAreaLocations) && campaign.Routes.Count(r => area.Contains(r.From) != area.Contains(r.To)) == 1,
+                    "starter.areaBypass: The first town area must contain only its town and two dungeons, with one exit.");
+            }
         }
 
         if (campaign.GeneratorVersion >= 3)

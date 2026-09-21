@@ -9,12 +9,14 @@ public class DungeonTierItem : MonoBehaviour
 
     public DungeonTierData DungeonTierData;
     public Action<DungeonTierData> ClickCallback;
+    private Action campaignClick;
 	private DungeonTierData _data;
 
     public Button Button;
 
     public void Setup(DungeonTierData data)
     {
+        campaignClick = null;
         _data = data;
         TierText.text = $"Dungeon Level {data.StartFloor} - {data.EndFloor}";
         var save = Common.Instance.GameSaveData.TownSaveData;
@@ -24,8 +26,16 @@ public class DungeonTierItem : MonoBehaviour
             TierText.text += " - Complete";
     }
 
+    public void SetupCampaign(EternalEnigma.Core.Progression.CampaignLocation location, bool completed, Action onClick)
+    {
+        var floors = EternalEnigma.Core.Progression.CampaignContext.Floors(location.Tier);
+        string kind = location.Kind == EternalEnigma.Core.Progression.LocationKind.RepeatableDungeon ? "Repeatable dungeon" : "Story dungeon";
+        TierText.text = $"{kind}: Level {floors.Start} - {floors.End}" + (completed ? " - Complete" : "");
+        campaignClick = onClick;
+    }
+
     public void OnClick()
 	{
-        ClickCallback?.Invoke(_data);
+        if (campaignClick != null) campaignClick(); else ClickCallback?.Invoke(_data);
     }
 }

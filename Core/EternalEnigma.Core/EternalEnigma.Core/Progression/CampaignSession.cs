@@ -12,7 +12,7 @@ public sealed class CampaignSession
     private readonly HashSet<string> resolved = new(StringComparer.Ordinal);
     private readonly HashSet<string> towns = new(StringComparer.Ordinal);
     private readonly HashSet<string> completed = new();
-    public bool CompleteLocation() => locations[LocationId].Kind == LocationKind.StoryDungeon && completed.Add(LocationId);
+    public bool CompleteLocation() => (locations[LocationId].Kind == LocationKind.StoryDungeon || locations[LocationId].Kind == LocationKind.RepeatableDungeon || locations[LocationId].Kind == LocationKind.FinalDungeon) && completed.Add(LocationId);
     private string[] active = Array.Empty<string>();
     public string LocationId { get; private set; }
     public CapabilitySet PermanentCapabilities { get; private set; }

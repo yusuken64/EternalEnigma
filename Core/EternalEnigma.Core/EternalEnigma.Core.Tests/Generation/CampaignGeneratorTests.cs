@@ -10,10 +10,51 @@ namespace EternalEnigma.Core.Tests.Generation;
 public sealed class CampaignGeneratorTests
 {
     [Fact]
-    public void VersionSixSeed42HasStableGoldenFingerprint()
+    public void EveryTownHasAnExplicitInteriorAndInvalidParentsOrExtraEntrancesAreRejected()
     {
-        Assert.Equal("cdfb4b1262b357d6d655fdb3583b4b711a461f750ba54210e1a7a130567a360b",
+        var campaign = CampaignGenerator.Generate(42);
+        foreach (var town in campaign.Locations.Where(l => l.Kind == LocationKind.Town))
+        {
+            var dungeon = Assert.Single(campaign.Locations, l => l.ParentTownId == town.Id);
+            Assert.Equal(town.Id, Assert.Single(campaign.Routes, r => r.Other(dungeon.Id) != null).Other(dungeon.Id));
+        }
+        var original = campaign.Locations.Single(l => l.Id == "story-0");
+        var invalid = new CampaignLocation(original.Id, original.RegionId, original.Tier, original.Kind, original.Required, original.Stage, "missing-town");
+        Assert.Contains(CampaignValidator.Validate(With(campaign, locations: campaign.Locations.Select(l => l.Id == original.Id ? invalid : l))).Errors,
+            error => error.StartsWith("interior.parent:"));
+        Assert.Contains(CampaignValidator.Validate(With(campaign, routes: campaign.Routes.Append(
+            new CampaignRoute("extra-interior-entry", "checkpoint-0", original.Id, Requirement.Open, LockForm.None)))).Errors,
+            error => error.StartsWith("interior.entrance:"));
+    }
+
+    [Fact]
+    public void VersionSevenSeed42HasStableGoldenFingerprint()
+    {
+        Assert.Equal("e509265e3acab6e0684c79da680ca483667fad439f7406e72a3e4fff153da77b",
             CampaignFingerprint.Compute(CampaignGenerator.Generate(42)));
+    }
+
+    [Fact]
+    public void InteriorVictoryCannotAlsoUnlockTheOuterAreaGate()
+    {
+        var campaign = CampaignGenerator.Generate(42);
+        var townExit = campaign.Routes.Single(r => r.IsTownExit);
+        var areaExit = campaign.Routes.Single(r => r.Id == "starter-exit");
+        var sharedKey = new CampaignRoute(areaExit.Id, areaExit.From, areaExit.To, areaExit.Requirement, areaExit.Form,
+            required: true, shortcutKind: ShortcutKind.Keyed, keyId: townExit.KeyId, keyLocationId: areaExit.KeyLocationId,
+            keyCondition: KeyAcquisition.DungeonCompletion);
+        Assert.Contains(CampaignValidator.Validate(With(campaign, routes: campaign.Routes.Select(r => r == areaExit ? sharedKey : r))).Errors,
+            error => error.StartsWith("starter.keys:"));
+    }
+
+    [Fact]
+    public void ValidatorRejectsABiomeWithoutATown()
+    {
+        var campaign = CampaignGenerator.Generate(42);
+        var removed = new HashSet<string> { "town-5", "repeatable-5" };
+        var withoutTown = With(campaign, locations: campaign.Locations.Where(l => !removed.Contains(l.Id)),
+            routes: campaign.Routes.Where(r => !removed.Contains(r.From) && !removed.Contains(r.To)));
+        Assert.Contains(CampaignValidator.Validate(withoutTown).Errors, error => error.StartsWith("towns.biome:"));
     }
 
     [Theory]
@@ -75,8 +116,9 @@ public sealed class CampaignGeneratorTests
         var validation = CampaignValidator.Validate(campaign);
         Assert.True(validation.IsValid, string.Join("\n", validation.Errors));
         Assert.Contains(campaign.FinalLocationId, validation.GuaranteedCriticalPath!.ReachableLocations);
-        Assert.Equal(6, campaign.Locations.Count(l => l.Kind == LocationKind.Town));
-        Assert.Equal(5, campaign.Locations.Count(l => l.Kind == LocationKind.RepeatableDungeon));
+        Assert.All(campaign.Regions, r => Assert.Contains(campaign.Locations, l => l.Kind == LocationKind.Town && l.RegionId == r.Id));
+        Assert.InRange(campaign.Locations.Count(l => l.Kind == LocationKind.Town), 6, 7);
+        Assert.Equal(campaign.Locations.Count(l => l.Kind == LocationKind.Town), campaign.Locations.Count(l => l.Kind == LocationKind.RepeatableDungeon));
         Assert.Equal(4, campaign.Locations.Count(l => l.Kind == LocationKind.StoryDungeon));
     }
 

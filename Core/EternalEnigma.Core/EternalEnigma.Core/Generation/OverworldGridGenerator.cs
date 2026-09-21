@@ -47,7 +47,7 @@ public static class OverworldGridGenerator
     {
         int w = options.Width, h = options.Height;
         // Preserve square-ish geography on wide/tall map options; surplus space becomes ocean.
-        int landWidth = Math.Min(w, h * 4 / 3), landHeight = Math.Min(h, w * 4 / 3);
+        int landWidth = Math.Min(w, h * 4 / 3) * 7 / 10, landHeight = Math.Min(h, w * 4 / 3) * 7 / 10;
         var random = new SeedStream(campaign.Seed, (uint)(110 + attempt));
         var palette = SelectBiomes(campaign);
         var stages = campaign.Locations.ToDictionary(l => l.Id, l => l.Stage);
@@ -55,7 +55,7 @@ public static class OverworldGridGenerator
             foreach (var id in objective.DestinationIds) stages[id] = 0;
         var parents = campaign.Locations.ToDictionary(l => l.Id, l => l.Id);
         string Root(string id) { while (parents[id] != id) id = parents[id]; return id; }
-        foreach (var r in campaign.Routes.Where(r => !r.HasGate && !r.IsWarp)) parents[Root(r.To)] = Root(r.From);
+        foreach (var r in campaign.Routes.Where(r => (!r.HasGate || r.IsTownExit) && !r.IsWarp)) parents[Root(r.To)] = Root(r.From);
         var groups = campaign.Locations.GroupBy(l => Root(l.Id)).ToArray();
         var groupOf = groups.SelectMany((g, i) => g.Select(l => (l.Id, i))).ToDictionary(p => p.Id, p => p.i);
         int stageCount = stages.Values.Max() + 1;
@@ -92,7 +92,7 @@ public static class OverworldGridGenerator
         var territory = new int[w, h]; var owner = new int[w, h];
         for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
         {
-            double nx = x + Noise(x, y, 0) * options.AreaExpansionRadius, ny = y + Noise(x, y, 1) * options.AreaExpansionRadius;
+            double nx = x + Noise(x, y, 0) * options.AreaExpansionRadius * .75, ny = y + Noise(x, y, 1) * options.AreaExpansionRadius * .75;
             int best = 0; double score = double.MaxValue;
             for (int i = 0; i < stageCount; i++)
             {
@@ -121,17 +121,19 @@ public static class OverworldGridGenerator
             for (int trial = 0; trial < 6000; trial++)
             {
                 starterCenter = new GridPoint(random.Range(w), random.Range(h));
-                if (DiskFits(starterCenter, 0, 15)) { found = true; break; }
+                if (DiskFits(starterCenter, 0, 12)) { found = true; break; }
             }
             if (!found) throw new InvalidOperationException("No starting enclosure fits.");
             int starterGroup = groupOf[campaign.StartLocationId];
-            for (int dy = -9; dy <= 9; dy++) for (int dx = -9; dx <= 9; dx++)
+            for (int dy = -7; dy <= 7; dy++) for (int dx = -7; dx <= 7; dx++)
                 owner[starterCenter.X + dx, starterCenter.Y + dy] = starterGroup;
             positions.Add("town-0", new GridPoint(starterCenter.X - 3, starterCenter.Y));
-            positions.Add("story-0", new GridPoint(starterCenter.X + 3, starterCenter.Y));
+            if (campaign.GeneratorVersion >= 7)
+                positions.Add("repeatable-0", new GridPoint(starterCenter.X + 3, starterCenter.Y));
+            else positions.Add("story-0", new GridPoint(starterCenter.X + 3, starterCenter.Y));
         }
         // Sample pockets first so each has a sealing halo; all destinations share a minimum spacing.
-        foreach (var location in campaign.Locations.OrderBy(l => groupOf[l.Id] == primary[stages[l.Id]] ? 1 : 0).ThenBy(l => l.Id, StringComparer.Ordinal))
+        foreach (var location in campaign.Locations.Where(l => l.ParentTownId == null).OrderBy(l => groupOf[l.Id] == primary[stages[l.Id]] ? 1 : 0).ThenBy(l => l.Id, StringComparer.Ordinal))
         {
             if (positions.ContainsKey(location.Id)) continue;
             int stage = stages[location.Id], group = groupOf[location.Id];
@@ -140,8 +142,8 @@ public static class OverworldGridGenerator
             for (int trial = 0; trial < 6000; trial++)
             {
                 at = new GridPoint(random.Range(w), random.Range(h));
-                if (!DiskFits(at, stage, pocket ? 12 : 4)) continue;
-                if (positions.Values.Any(p => (p.X - at.X) * (p.X - at.X) + (p.Y - at.Y) * (p.Y - at.Y) < 225)) continue;
+                if (!DiskFits(at, stage, pocket ? 10 : 4)) continue;
+                if (positions.Values.Any(p => (p.X - at.X) * (p.X - at.X) + (p.Y - at.Y) * (p.Y - at.Y) < 121)) continue;
                 found = true; break;
             }
             if (!found) throw new InvalidOperationException($"Separated placement failed for {location.Id} in stage {stage}.");
@@ -150,14 +152,17 @@ public static class OverworldGridGenerator
             {
                 // Periodic angular noise varies the whole boundary, rather than just the circle's size.
                 double phase = pocketRandom.Range(6283) / 1000.0, secondPhase = pocketRandom.Range(6283) / 1000.0;
-                for (int dy = -9; dy <= 9; dy++) for (int dx = -9; dx <= 9; dx++)
+                for (int dy = -7; dy <= 7; dy++) for (int dx = -7; dx <= 7; dx++)
                 {
                     double angle = Math.Atan2(dy, dx);
-                    double radius = 6.8 + 1.1 * Math.Sin(3 * angle + phase) + .7 * Math.Sin(5 * angle + secondPhase);
+                    double radius = 5.8 + .6 * Math.Sin(3 * angle + phase) + .4 * Math.Sin(5 * angle + secondPhase);
                     if (dx * dx + dy * dy <= radius * radius) owner[at.X + dx, at.Y + dy] = group;
                 }
             }
         }
+        // Interior nodes project onto their town, without a separate overworld marker.
+        foreach (var interior in campaign.Locations.Where(l => l.ParentTownId != null))
+            positions.Add(interior.Id, positions[interior.ParentTownId!]);
         var masks = new Dictionary<string, bool[,]>(StringComparer.Ordinal);
         foreach (string name in new[] { OverworldLayers.Ground, OverworldLayers.Walkable, OverworldLayers.Roads,
             OverworldLayers.Mountains, OverworldLayers.Trees, OverworldLayers.Water, OverworldLayers.Reserved,
@@ -199,7 +204,7 @@ public static class OverworldGridGenerator
         for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) ground[x, y] &= retained[x, y];
         var locks = new List<GridLock>();
         var gateCells = new Dictionary<string, GridPoint[]>();
-        foreach (var route in campaign.Routes.Where(r => r.HasGate && !r.IsWarp))
+        foreach (var route in campaign.Routes.Where(r => r.HasGate && !r.IsWarp && !r.IsTownExit))
         {
             int a = groupOf[route.From], b = groupOf[route.To];
             bool Broad(int x, int y, int group)
@@ -270,8 +275,8 @@ public static class OverworldGridGenerator
         foreach (var route in campaign.Routes)
         {
             var path = route.IsWarp ? new List<GridPoint> { positions[route.From], positions[route.To] } :
-                Path(positions[route.From], positions[route.To], groupOf[route.From], groupOf[route.To], route.HasGate ? route.Id : null);
-            routePaths.Add(route.Id, path.AsReadOnly()); Dry(path, route.HasGate && !route.IsWarp);
+                Path(positions[route.From], positions[route.To], groupOf[route.From], groupOf[route.To], route.HasGate && !route.IsTownExit ? route.Id : null);
+            routePaths.Add(route.Id, path.AsReadOnly()); Dry(path, route.HasGate && !route.IsWarp && !route.IsTownExit);
         }
         // Prim's minimum spanning network, followed by one shortest unused edge.
         foreach (var g in groups)
@@ -287,7 +292,7 @@ public static class OverworldGridGenerator
             if (points.Length >= 3) { var edge = pairs.First(e => !edges.Contains((e.a, e.b))); edges.Add((edge.a, edge.b)); }
             foreach (var e in edges) Dry(Path(points[e.Item1], points[e.Item2], groupOf[g.First().Id], groupOf[g.First().Id]), true);
         }
-        foreach (var location in campaign.Locations)
+        foreach (var location in campaign.Locations.Where(l => l.ParentTownId == null))
         {
             var at = positions[location.Id]; Dry(new[] { at }, false);
             string? layer = location.Kind switch

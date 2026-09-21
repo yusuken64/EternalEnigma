@@ -13,13 +13,15 @@ public sealed class CampaignTownControls : MonoBehaviour
         marker.transform.position = Town.WalkableMap.CellToWorld(Exit) + new Vector3(.5f, .5f, -.1f) * Town.WalkableMap.TileWorldCreator.twcAsset.cellSize;
         marker.transform.localScale = new Vector3(1, 1, .1f) * Town.WalkableMap.TileWorldCreator.twcAsset.cellSize;
         Destroy(marker.GetComponent<Collider>());
-        marker.GetComponent<Renderer>().material.color = Color.cyan;
+        marker.GetComponent<Renderer>().material.color = Common.Instance.CampaignContext.CanLeaveTown(Town.Configuration.Id) ? Color.cyan : Color.red;
     }
     private void OnGUI()
     {
         if (!Town.IsReady || Common.Instance.Travel.IsTransitioning || Common.Instance.CampaignContext == null) return;
         GUILayout.BeginArea(new Rect(16, 16, 340, 380), GUI.skin.box);
-        GUILayout.Label("Southern exit: follow the clear corridor south.");
+        GUILayout.Label(Common.Instance.CampaignContext.CanLeaveTown(Town.Configuration.Id)
+            ? "Town gate unlocked: follow the clear corridor south."
+            : "Town gate locked: clear the dungeon inside town.");
         if (Town.TownPlayer.ControllingTownAlly.TilemapPosition == Exit && GUILayout.Button("Leave town")) Common.Instance.Travel.ExitTown(Town);
         var context = Common.Instance.CampaignContext;
         GUILayout.Label("Party: protagonist + three companions");

@@ -8,6 +8,31 @@ namespace EternalEnigma.Core.Tests.Progression;
 public sealed class CampaignContextTests
 {
     [Fact]
+    public void TownAndInteriorRunsDoNotGenerateTheOverworldUntilItIsRequested()
+    {
+        var context = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        Assert.False(context.IsGridGenerated);
+        Assert.Equal("town-0", context.Location!.Id);
+        Assert.True(context.SetParty());
+        Assert.True(context.BeginTownDungeon("story-0"));
+        Assert.False(context.IsGridGenerated);
+        var restored = new CampaignContext(new(OverworldLaunchMode.Campaign), context.Capture());
+        Assert.False(restored.IsGridGenerated);
+        Assert.True(restored.RecoverInterruptedRun());
+        Assert.False(restored.IsGridGenerated);
+        Assert.True(restored.BeginTownDungeon("story-0"));
+        Assert.True(restored.CompleteDungeon(true));
+        Assert.True(restored.CanLeaveTown("town-0"));
+        Assert.False(restored.IsGridGenerated);
+        var grid = restored.Grid;
+        Assert.True(restored.IsGridGenerated);
+        Assert.Same(grid, restored.Grid);
+        Assert.Equal(grid.PlayerStart, restored.Position);
+        Assert.Same(restored.Gates, restored.Gates);
+        Assert.Contains("town-exit", restored.Resolved);
+    }
+
+    [Fact]
     public void InteriorDungeonRequiresItsTownAndSurvivesSaveWithoutBecomingAnOverworldEntrance()
     {
         var context = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));

@@ -37,7 +37,26 @@ public sealed class CampaignSnapshot
 public sealed class CampaignContext
 {
     public Campaign Campaign { get; }
-    public OverworldGrid Grid { get; }
+    private OverworldGrid? grid;
+    private OverworldGates? gates;
+    private bool positionInitialized;
+    public bool IsGridGenerated => grid != null;
+    public OverworldGrid Grid
+    {
+        get
+        {
+            if (grid == null)
+            {
+                grid = OverworldGridGenerator.Generate(Campaign);
+                if (!positionInitialized)
+                {
+                    var location = Campaign.Locations.Single(l => l.Id == State.LocationId);
+                    Position = grid.Locations[location.ParentTownId ?? location.Id];
+                }
+            }
+            return grid;
+        }
+    }
     public OverworldLaunchMode Mode { get; }
     public bool IsSandbox => Mode == OverworldLaunchMode.Sandbox;
     public CampaignSnapshot State { get; }
@@ -51,10 +70,15 @@ public HashSet<string> Towns { get; }
 public HashSet<string> Completed { get; }
     public CapabilitySet Permanent { get; private set; }
     public CapabilitySet Held => Permanent.Union(CapabilitySet.From(Campaign.Companions.Where(c => Active.Contains(c.Id)).Select(c => c.Capability)));
-    public OverworldGates Gates { get; }
-    public GridPoint Position { get => new(State.X, State.Y); set { State.X = value.X; State.Y = value.Y; } }
+    public OverworldGates Gates => gates ??= new OverworldGates(Campaign, Grid, Resolved, Keys, Opened, Completed);
+    public GridPoint Position
+    {
+        get { if (!positionInitialized) _ = Grid; return new(State.X, State.Y); }
+        set { State.X = value.X; State.Y = value.Y; positionInitialized = true; }
+    }
     public CampaignLocation? Location => State.PendingDungeon.Length != 0
         ? Campaign.Locations.First(l => l.Id == State.PendingDungeon)
+        : !positionInitialized && State.Scene == "Town" ? Campaign.Locations.First(l => l.Id == State.LocationId)
         : Campaign.Locations.FirstOrDefault(l => l.ParentTownId == null && Grid.Locations[l.Id].Equals(Position));
 
     public CampaignContext(OverworldLaunchOptions options, CampaignSnapshot? snapshot = null)
@@ -67,12 +91,12 @@ public HashSet<string> Completed { get; }
         var fingerprint = CampaignFingerprint.Compute(Campaign);
         if (snapshot != null && State.Fingerprint != fingerprint) throw new InvalidOperationException("Campaign save fingerprint mismatch.");
         State.Fingerprint = fingerprint;
-        Grid = OverworldGridGenerator.Generate(Campaign);
+        positionInitialized = snapshot != null && State.Scene != "Town" &&
+            !Campaign.Locations.Any(l => l.Id == State.PendingDungeon && l.ParentTownId != null);
         Keys = new(State.Keys); Opened = new(State.Opened); Resolved = new(State.Resolved); Claimed = new(State.Claimed);
         Roster = new(State.Roster); Active = new(State.Active); Towns = new(State.Towns); Completed = new(State.Completed);
         Permanent = CapabilitySet.From(State.Permanent);
-        Gates = new OverworldGates(Campaign, Grid, Resolved, Keys, Opened, Completed);
-        if (snapshot == null) { Position = Grid.PlayerStart; Towns.Add(Campaign.StartLocationId); }
+        if (snapshot == null) Towns.Add(Campaign.StartLocationId);
     }
     public CampaignSnapshot Capture()
     {
@@ -121,25 +145,34 @@ public HashSet<string> Completed { get; }
         if (id.Length == 0) return false;
         if (victory)
         {
-            Position = Grid.Locations[id]; Completed.Add(id);
-            foreach (var route in Campaign.Routes) Gates.CollectKey(route, id);
-            foreach (var route in Campaign.Routes.Where(r => r.IsTownExit && r.KeyLocationId == id && Gates.HasKey(r)))
+            Completed.Add(id);
+            foreach (var route in Campaign.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed && r.KeyLocationId == id && r.KeyId != null))
+                Keys.Add(route.KeyId!);
+            foreach (var route in Campaign.Routes.Where(r => r.IsTownExit && r.KeyLocationId == id && r.KeyId != null && Keys.Contains(r.KeyId)))
             { Resolved.Add(route.Id); Opened.Add(route.Id); }
             foreach (var source in Campaign.Sources.Where(s => s.LocationId == id)) Claim(source.Id);
             State.Finished |= id == Campaign.FinalLocationId; State.Scene = "Overworld"; State.LocationId = id;
             var parent = Campaign.Locations.Single(l => l.Id == id).ParentTownId;
-            if (parent != null) { State.LocationId = parent; Position = Grid.Locations[parent]; State.Scene = "Town"; }
+            if (parent != null) ReturnToTown(parent);
+            else Position = Grid.Locations[id];
         }
-        else { State.LocationId = State.LastTownId; Position = Grid.Locations[State.LastTownId]; State.Scene = "Town"; }
+        else ReturnToTown(State.LastTownId);
         State.PendingDungeon = "";
         return true;
+    }
+    private void ReturnToTown(string id)
+    {
+        State.LocationId = id; State.Scene = "Town";
+        positionInitialized = false;
+        if (grid != null) Position = grid.Locations[id];
     }
     public bool RecoverInterruptedRun()
     {
         if (State.PendingDungeon.Length == 0) return false;
         var dungeon = Campaign.Locations.Single(l => l.Id == State.PendingDungeon);
         State.LocationId = dungeon.ParentTownId ?? dungeon.Id;
-        Position = Grid.Locations[State.LocationId];
+        if (dungeon.ParentTownId != null) ReturnToTown(dungeon.ParentTownId);
+        else Position = Grid.Locations[State.LocationId];
         State.PendingDungeon = ""; State.Scene = dungeon.ParentTownId == null ? "Overworld" : "Town"; return true;
     }
     public static (int Start, int End) Floors(int tier) => tier switch

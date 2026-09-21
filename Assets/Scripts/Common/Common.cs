@@ -8,7 +8,19 @@ using UnityEngine.SceneManagement;
 public class Common : PersistedSingletonMonoBehaviour<Common>
 {
 	public GameSaveData GameSaveData;
-    public EternalEnigma.Core.Progression.CampaignContext CampaignContext { get; internal set; }
+    private EternalEnigma.Core.Progression.CampaignContext campaignContext;
+    private OverworldTerrainCache overworldTerrain;
+    public OverworldTerrainCache OverworldTerrain => overworldTerrain ??= new OverworldTerrainCache(transform);
+    public EternalEnigma.Core.Progression.CampaignContext CampaignContext
+    {
+        get => campaignContext;
+        internal set
+        {
+            if (!ReferenceEquals(campaignContext, value)) overworldTerrain?.Clear();
+            campaignContext = value;
+        }
+    }
+    private void OnDestroy() { overworldTerrain?.Clear(); }
     public CampaignTravelService Travel { get; private set; }
     private GameSaveData playerSave;
     public void BeginSandbox(int seed)

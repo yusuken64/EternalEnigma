@@ -21,6 +21,8 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
     public Material BarrierMaterial;
     private TileWorldCreator creator;
     private GameObject surfaces;
+    private GameObject cachedSurfaces;
+    public GameObject RenderedSurfaces => surfaces != null ? surfaces : cachedSurfaces;
     private readonly List<Mesh> meshes = new();
     private Renderer[] hiddenRenderers = Array.Empty<Renderer>();
 
@@ -115,6 +117,19 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
         }
     }
 
+    public GameObject ReleaseSurfacesOwnership(out Mesh[] generatedMeshes)
+    {
+        cachedSurfaces = surfaces;
+        surfaces = null;
+        generatedMeshes = meshes.ToArray();
+        meshes.Clear();
+        // Cached TWC renderers must stay hidden when this scene's component is disabled.
+        hiddenRenderers = Array.Empty<Renderer>();
+        return cachedSurfaces;
+    }
+
+    public void UseCachedSurfaces(GameObject cached) { cachedSurfaces = cached; }
+
     private void OnDisable()
     {
         if (creator != null) creator.OnBuildLayersComplete -= Build;
@@ -122,6 +137,7 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
         foreach (var renderer in hiddenRenderers) if (renderer != null) renderer.enabled = true;
         hiddenRenderers = Array.Empty<Renderer>();
         Clear();
+        cachedSurfaces = null;
     }
 
     private void Clear()

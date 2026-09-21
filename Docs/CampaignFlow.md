@@ -1,5 +1,19 @@
 # Campaign and sandbox flow
 
+The overworld is generated lazily. Starting or continuing inside a town (including
+its interior dungeon) uses the logical campaign without building the overworld
+grid. The first request for an overworld position/grid generates it once. On the
+first overworld scene entry, Common's `OverworldTerrainCache` takes ownership of
+the completed terrain, biome meshes and TWC blueprint data. Later visits reuse
+those objects and rebuild only the scene's party, markers and gate presentation.
+Terrain is inactive while visiting towns/dungeons. Movement and gate checks still
+use the current campaign state, so cached terrain cannot restore stale unlocks.
+
+This cache is in memory, not part of the save file. Changing campaign contexts,
+leaving sandbox or destroying Common releases it; a different terrain template
+also triggers a rebuild. Continue creates a fresh context, whose overworld stays
+lazy until it is needed. The campaign seed, layout and save format are unchanged.
+
 One Overworld scene serves both modes. Common owns CampaignContext; campaign
 snapshots include identity, generation versions/fingerprint, tile position,
 permanent abilities, keys, opened and resolved gates, claimed rewards, completed

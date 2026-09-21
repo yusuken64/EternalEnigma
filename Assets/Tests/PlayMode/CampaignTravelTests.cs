@@ -27,6 +27,56 @@ namespace EternalEnigma.Tests
             yield return WaitTown();
         }
         [UnityTest]
+        public IEnumerator OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel()
+        {
+            yield return StartCampaign();
+            var common = Common.Instance;
+            var context = common.CampaignContext;
+            Assert.That(context.IsGridGenerated, Is.False);
+            Assert.That(common.OverworldTerrain.IsBuilt, Is.False);
+            Assert.That(context.BeginTownDungeon("story-0"), Is.True);
+            Assert.That(context.CompleteDungeon(true), Is.True);
+            Assert.That(context.IsGridGenerated, Is.False);
+            Assert.That(common.Travel.ExitTown(Object.FindFirstObjectByType<Town>()), Is.True);
+            yield return WaitWorld();
+            var cache = common.OverworldTerrain;
+            var root = cache.Root;
+            var grid = context.Grid;
+            var biomeMesh = root.GetComponentsInChildren<MeshFilter>().First(m => m.sharedMesh.name.EndsWith(" floor")).sharedMesh;
+            Assert.That(cache.BuildCount, Is.EqualTo(1));
+            Assert.That(common.Travel.EnterLocation(), Is.True);
+            yield return WaitTown();
+            Assert.That(root.activeSelf, Is.False);
+            Assert.That(biomeMesh != null, Is.True);
+            Assert.That(common.Travel.ExitTown(Object.FindFirstObjectByType<Town>()), Is.True);
+            yield return WaitWorld();
+            Assert.That(cache.Root, Is.SameAs(root));
+            Assert.That(root.activeSelf, Is.True);
+            Assert.That(context.Grid, Is.SameAs(grid));
+            Assert.That(cache.BuildCount, Is.EqualTo(1));
+            Assert.That(root.GetComponentsInChildren<MeshFilter>().Any(m => m.sharedMesh == biomeMesh), Is.True);
+            context.Position = grid.Locations["repeatable-0"];
+            Assert.That(common.Travel.EnterLocation(), Is.True);
+            yield return harness.WaitForIdle();
+            Assert.That(root.activeSelf, Is.False);
+            Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True);
+            yield return WaitWorld();
+            Assert.That(cache.Root, Is.SameAs(root));
+            Assert.That(cache.BuildCount, Is.EqualTo(1));
+            Assert.That(context.Keys, Contains.Item("Town area key"));
+            var world = Object.FindFirstObjectByType<OverworldScene>();
+            Assert.That(world.Context.Gates, Is.SameAs(context.Gates));
+            Assert.That(common.Travel.ReturnToMenu(), Is.True);
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>() != null, "menu before changing campaigns");
+            common.BeginSandbox(99);
+            Assert.That(cache.IsBuilt, Is.False);
+            yield return null;
+            Assert.That(root == null, Is.True);
+            Assert.That(biomeMesh == null, Is.True);
+            Assert.That(common.CampaignContext.IsGridGenerated, Is.False);
+            common.EndSandbox();
+        }
+        [UnityTest]
         public IEnumerator TownEntranceVictoryAndDuplicateCallbacksPersistKeyAndReturnInsideTown()
         {
             yield return StartCampaign();

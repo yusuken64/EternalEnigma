@@ -45,7 +45,7 @@ namespace EternalEnigma.Tests
             Assert.That(biomeRenderer.BarrierMaterial, Is.Not.Null);
             Assert.That(biomeRenderer.Biomes.All(b => b.Material != null && b.Material.mainTexture != null), Is.True);
             Assert.That(biomeRenderer.Biomes.Select(b => b.Material.color).Distinct().Count(), Is.EqualTo(8));
-            Assert.That(biomeRenderer.GetComponentsInChildren<MeshRenderer>().Any(r => r.enabled && r.sharedMaterial == biomeRenderer.Biomes.First(b => b.Biome == OverworldBiome.Water).Material), Is.True);
+            Assert.That(biomeRenderer.RenderedSurfaces.GetComponentsInChildren<MeshRenderer>().Any(r => r.enabled && r.sharedMaterial == biomeRenderer.Biomes.First(b => b.Biome == OverworldBiome.Water).Material), Is.True);
             var grid = world.Map.CurrentGrid;
             var water = Enumerable.Range(0, grid.Width * grid.Height).Select(i => new GridPoint(i % grid.Width, i / grid.Width))
                 .First(p => grid.RequiresBoat(p));

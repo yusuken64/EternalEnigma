@@ -29,6 +29,7 @@ public sealed class CampaignOverworld : MonoBehaviour
     [Tooltip("Empty imports every core layer using its own name. Otherwise only these mappings are imported.")]
     public List<CampaignLayerBinding> LayerBindings = new();
     public OverworldGrid CurrentGrid { get; private set; }
+    public event Action<TileWorldCreator> TerrainBuilt;
 
     [SerializeField, HideInInspector] private TileWorldCreatorAsset generatedAsset;
     [SerializeField, HideInInspector] private TileWorldCreatorAsset previousAsset;
@@ -131,11 +132,32 @@ public sealed class CampaignOverworld : MonoBehaviour
         Creator.OnBuildLayersComplete += BuildFinished;
         building = true;
         try { Creator.ExecuteAllBuildLayers(true); }
-        catch { BuildFinished(Creator); throw; }
+        catch { building = false; Creator.OnBuildLayersComplete -= BuildFinished; throw; }
+    }
+
+    public TileWorldCreatorAsset ReleaseGeneratedAssetOwnership()
+    {
+        if (building || generatedAsset == null) throw new InvalidOperationException("Terrain must finish building before it can be cached.");
+        var asset = generatedAsset;
+        generatedAsset = null; previousMaps = null;
+        return asset;
+    }
+
+    public void UseCachedTerrain(OverworldGrid grid, TileWorldCreatorAsset asset, Dictionary<string, WorldMap> maps, GameObject world)
+    {
+        if (building) throw new InvalidOperationException("Cannot restore terrain during a build.");
+        ReleaseAsset();
+        CurrentGrid = grid;
+        Creator.twcAsset = asset;
+        Creator.generatedBlueprintMaps = maps;
+        Creator.worldObject = world;
     }
 
     private void BuildFinished(TileWorldCreator creator)
-    { building = false; creator.OnBuildLayersComplete -= BuildFinished; }
+    {
+        building = false; creator.OnBuildLayersComplete -= BuildFinished;
+        TerrainBuilt?.Invoke(creator);
+    }
 
     private void OnDestroy()
     {

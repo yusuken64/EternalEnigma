@@ -41,6 +41,8 @@ public sealed class OverworldScene : MonoBehaviour
     private readonly Dictionary<GridPoint, GameObject> locationVisuals = new();
     private Dictionary<GridPoint, CampaignLocation> locations;
     private TileWorldCreator creator;
+    private OverworldTerrainCache terrainCache;
+    private bool restoredTerrain;
     private bool moving;
     private float nextMove;
 
@@ -53,18 +55,22 @@ public sealed class OverworldScene : MonoBehaviour
         Campaign = Context.Campaign;
         Map.Seed = Campaign.Seed;
         var grid = Context.Grid;
-        Map.Apply(grid, Held, resolved);
         gates = Context.Gates;
         locations = Campaign.Locations.Where(l => l.ParentTownId == null).ToDictionary(l => grid.Locations[l.Id]);
         var controls = gameObject.AddComponent<OverworldSandboxControls>();
         controls.Scene = this; controls.enabled = Context.IsSandbox;
-        creator.OnBuildLayersComplete += TerrainReady;
+        terrainCache = common.OverworldTerrain;
+        restoredTerrain = terrainCache.TryRestore(Context, Map, this);
+        if (restoredTerrain) { TerrainReady(creator); return; }
+        Map.Apply(grid, Held, resolved);
+        Map.TerrainBuilt += TerrainReady;
         Map.BuildMeshes();
     }
 
     private void TerrainReady(TileWorldCreator _)
     {
-        creator.OnBuildLayersComplete -= TerrainReady;
+        Map.TerrainBuilt -= TerrainReady;
+        if (!restoredTerrain) terrainCache.Store(Context, Map, this);
         foreach (var location in Campaign.Locations.Where(l => l.ParentTownId == null))
         {
             var prefab = location.Kind == LocationKind.Town ? TownMarker :
@@ -390,5 +396,6 @@ public sealed class OverworldScene : MonoBehaviour
         GUILayout.EndArea();
     }
 
-    private void OnDestroy() { if (creator != null) creator.OnBuildLayersComplete -= TerrainReady; }
+    private void OnDisable() { terrainCache?.Hide(this); }
+    private void OnDestroy() { if (Map != null) Map.TerrainBuilt -= TerrainReady; }
 }

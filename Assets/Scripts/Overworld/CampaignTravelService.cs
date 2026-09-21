@@ -44,7 +44,7 @@ public sealed class CampaignTravelService
     {
         if (transitioning || Context == null || Context.IsSandbox) return false;
         var location = Context.Location;
-        if (location == null || !Context.Gates.IsWalkable(Context.Position, Context.Held)) return false;
+        if (location == null || (Context.State.Scene != "Town" && !Context.Gates.IsWalkable(Context.Position, Context.Held))) return false;
         if (location.Kind == LocationKind.Town)
         {
             Context.State.LastTownId = location.Id; Context.Towns.Add(location.Id);

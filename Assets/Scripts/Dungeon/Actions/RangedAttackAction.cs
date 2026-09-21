@@ -41,7 +41,8 @@ internal class RangedAttackAction : GameAction
 
 		if (rangedAttackTarget != null)
 		{
-			ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, damage, true, false));
+			int resolvedDamage = AutoplayRunner.GodmodeFor(attacker) ? Math.Max(0, rangedAttackTarget.Vitals.HP) : damage;
+			ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, resolvedDamage, true, false));
 		}
 
 		return ret;

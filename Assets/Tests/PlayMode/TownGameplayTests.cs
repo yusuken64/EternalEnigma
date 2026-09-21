@@ -31,6 +31,22 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator PartyWithoutAnimationComponentCanWalk()
+        {
+            yield return harness.LoadTown(new TestScenario().CreateSave());
+            var player = World.TownPlayer;
+            var ally = player.ControllingTownAlly;
+            ally.HeroAnimator = null; // Some campaign companion prefabs have static visuals.
+            var from = ally.TilemapPosition;
+            var target = new[] { Vector3Int.up, Vector3Int.right, Vector3Int.down, Vector3Int.left }
+                .Select(offset => from + offset).First(cell => player.WalkableMap.CanWalkTo(from, cell));
+            player.SetAction(new TownMovement(player, from, target));
+            yield return harness.WaitUntil(() => !player.IsBusy, "static companion movement");
+            Assert.That(ally.TilemapPosition, Is.EqualTo(target));
+            Assert.That(Vector3.Distance(ally.transform.position, player.WalkableMap.CellToWorld(target)), Is.LessThan(.01f));
+        }
+
+        [UnityTest]
         public IEnumerator CallerControlsBuildingsAndRecruitsAndShopsHaveIndependentStock()
         {
             var configuration = Object.Instantiate(TownSceneLoader.Default);

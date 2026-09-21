@@ -61,12 +61,13 @@ internal class UseInventoryItemAction : GameAction
 			}
 			effects = recipients.SelectMany(recipient => item.GetGameActions(character, recipient, inventory, item)).ToList();
 		}
-		if (item.HasStacks)
+		bool consume = !AutoplayRunner.InfiniteResourcesFor(character);
+		if (consume && item.HasStacks)
 		{
 			item.Decrement();
 		}
 
-		if (item.ShouldRemoveAfterUse())
+		if (consume && item.ShouldRemoveAfterUse())
 		{
 			inventory.Remove(item);
 		}

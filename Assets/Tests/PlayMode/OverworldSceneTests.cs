@@ -26,6 +26,35 @@ namespace EternalEnigma.Tests
         private Gamepad pad;
 
         [UnityTest]
+        public IEnumerator StaticCompanionCanSpawnWalkAndReloadCachedTerrain()
+        {
+            Common.Instance.BeginSandbox(42);
+            var context = Common.Instance.CampaignContext;
+            var companion = context.Campaign.Companions.First(c =>
+                CampaignParty.Resolve(c.Id, TownSceneLoader.Default).HeroAnimator == null);
+            context.Roster.Add(companion.Id);
+            Assert.That(context.SetParty(new[] { companion.Id }), Is.True);
+            for (int visit = 0; visit < 2; visit++)
+            {
+                yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+                scene = SceneManager.GetSceneByName("Overworld");
+                var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+                float deadline = Time.realtimeSinceStartup + 90;
+                while (!world.IsReady && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.That(world.IsReady, Is.True, "Overworld with static companion did not become ready.");
+                var follower = world.Followers.Single();
+                Assert.That(follower.HeroAnimator, Is.Null);
+                if (visit == 0) Assert.That(world.SimulateDungeonVictory(), Is.True);
+                var start = world.Position;
+                var next = OverworldMovement.Neighbors(start).First(p => world.CanStep(start, p));
+                yield return WalkTo(world, next);
+                yield return WalkTo(world, start); // The follower moves on this step too.
+                Assert.That(world.IsMoving, Is.False);
+                yield return SceneManager.UnloadSceneAsync(scene);
+            }
+        }
+
+        [UnityTest]
         public IEnumerator AuthoredSceneBuildsCampaignAndMovesHeroWithSealedGates()
         {
             yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);

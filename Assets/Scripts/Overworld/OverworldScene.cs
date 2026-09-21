@@ -119,7 +119,7 @@ public sealed class OverworldScene : MonoBehaviour
         Player.name = "Campaign Player";
         Player.SetFacing(Facing.Down);
         Player.SetToPlayer();
-        Player.HeroAnimator.PlayIdleAnimation();
+        Player.HeroAnimator?.PlayIdleAnimation();
         Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);
         walkHistory.Add(Position);
         IsReady = true;
@@ -137,6 +137,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void Update()
     {
+        if (AutoplayRunner.Active != null) return;
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
         var keyboard = Keyboard.current;
         var pad = Gamepad.current;
@@ -201,7 +202,7 @@ public sealed class OverworldScene : MonoBehaviour
             {
                 party[i].SetFacing(Character.GetFacing(new Vector3Int(
                     System.Math.Sign(direction.x), System.Math.Sign(direction.y), 0)));
-                party[i].HeroAnimator.PlayWalkAnimation();
+                party[i].HeroAnimator?.PlayWalkAnimation();
             }
             party[i].TilemapPosition = new Vector3Int(cell.X, cell.Y, 0);
         }
@@ -217,7 +218,7 @@ public sealed class OverworldScene : MonoBehaviour
         for (int i = 0; i < party.Length; i++)
         {
             party[i].transform.position = to[i];
-            party[i].HeroAnimator.PlayIdleAnimation();
+            party[i].HeroAnimator?.PlayIdleAnimation();
         }
         moving = false;
     }
@@ -341,7 +342,8 @@ public sealed class OverworldScene : MonoBehaviour
             var cell = TrailCell(i + 1);
             followers[i].transform.position = CellToWorld(cell);
             followers[i].TilemapPosition = new Vector3Int(cell.X, cell.Y, 0);
-            followers[i].HeroAnimator.PlayIdleAnimation();
+            // Static companion prefabs have no animation component.
+            followers[i].HeroAnimator?.PlayIdleAnimation();
         }
         RefreshLocationMarkers();
     }
@@ -369,6 +371,8 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void OnGUI()
     {
+        bool previousEnabled = GUI.enabled;
+        GUI.enabled = previousEnabled && AutoplayRunner.Active == null;
         GUILayout.BeginArea(new Rect(16, 16, 580, 430), GUI.skin.box);
         GUILayout.Label("CAMPAIGN OVERWORLD  |  Seed " + Map.Seed);
         GUILayout.Label("WASD / arrows / left stick: move   •   Enter / A: interact");
@@ -394,6 +398,7 @@ public sealed class OverworldScene : MonoBehaviour
                 if (GUILayout.Button("Open shortcut")) OpenShortcut();
         }
         GUILayout.EndArea();
+        GUI.enabled = previousEnabled;
     }
 
     private void OnDisable() { terrainCache?.Hide(this); }

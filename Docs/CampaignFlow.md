@@ -1,5 +1,9 @@
 # Campaign and sandbox flow
 
+For manually launched campaign autoplay, the app's Watch demo, debug godmode,
+and failure reports, see [Autoplay](Autoplay.md). These runs use isolated saves
+and are not started by CI.
+
 The overworld is generated lazily. Starting or continuing inside a town (including
 its interior dungeon) uses the logical campaign without building the overworld
 grid. The first request for an overworld position/grid generates it once. On the

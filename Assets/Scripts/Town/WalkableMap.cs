@@ -84,4 +84,12 @@ public class WalkableMap : MonoBehaviour
 		return GridMovement.CanStep(from, to, cell => GridMovement.IsWalkable(_walkableMap, cell),
 			DiagonalMovement.AllowCornerCutting);
 	}
+
+    internal AStar.Node[,] GetAStarGrid()
+    {
+        var grid = new AStar.Node[_walkableMap.GetLength(0),_walkableMap.GetLength(1)];
+        for (int x=0;x<grid.GetLength(0);x++) for (int y=0;y<grid.GetLength(1);y++)
+            grid[x,y] = new AStar.Node(x,y,_walkableMap[x,y],0);
+        return grid;
+    }
 }

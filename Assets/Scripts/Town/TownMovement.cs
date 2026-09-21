@@ -60,7 +60,7 @@ internal class TownMovement : TownAction
 					  (int)offsetWorld.z);
 			ally.SetFacing(GetFacing(direction));
 
-			ally.HeroAnimator.PlayWalkAnimation();
+			ally.HeroAnimator?.PlayWalkAnimation();
 			var tween = ally.transform.DOMove(targetWorld, 0.2f);
 			tweens.Add(tween);
 		}
@@ -74,7 +74,7 @@ internal class TownMovement : TownAction
 		// Play idle for everyone
 		foreach (var ally in orderedAllies)
 		{
-			ally.HeroAnimator.PlayIdleAnimation();
+			ally.HeroAnimator?.PlayIdleAnimation();
 		}
 	}
 

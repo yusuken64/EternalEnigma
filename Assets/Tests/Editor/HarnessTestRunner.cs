@@ -34,6 +34,12 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign")]
     public static void RunCampaign() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CampaignTravelTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay")]
+    public static void RunAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayTests.InputPromptCancelAndReturnPreserveOriginalSave",
+        "EternalEnigma.Tests.AutoplayTests.NormalModeAllowsDefeatAndWritesTuningReport",
+        "EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Demo")]
     public static void RunDemo() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
@@ -53,6 +59,8 @@ public static class HarnessTestRunner
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         if (!string.IsNullOrEmpty(SessionState.GetString(SessionKey, "")))
             throw new InvalidOperationException("A harness run is already active.");
+        SessionState.SetBool("EternalEnigma.Autoplay.ManualChecks", Array.Exists(testFilters,
+            name => name.StartsWith("EternalEnigma.Tests.AutoplayTests.", StringComparison.Ordinal)));
         var run = new RunSummary { runId = Guid.NewGuid().ToString("N"), mode = mode.ToString(), state = "Queued", filter = filter, testFilters = testFilters };
         Directory.CreateDirectory("Temp/HarnessResults");
         SessionState.SetString(SessionKey, JsonUtility.ToJson(run));
@@ -102,6 +110,7 @@ public static class HarnessTestRunner
         }
         SessionState.EraseString(SessionKey);
         SessionState.EraseString(SessionKey + ".Job");
+        SessionState.EraseBool("EternalEnigma.Autoplay.ManualChecks");
     }
 
     private static void Write(RunSummary run) =>
@@ -140,6 +149,7 @@ public static class HarnessTestRunner
             Write(run);
             SessionState.EraseString(SessionKey);
             SessionState.EraseString(SessionKey + ".Job");
+            SessionState.EraseBool("EternalEnigma.Autoplay.ManualChecks");
         }
     }
 }

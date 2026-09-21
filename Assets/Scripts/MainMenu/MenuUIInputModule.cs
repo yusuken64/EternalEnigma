@@ -155,6 +155,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public override void Process()
     {
+        if (AutoplayRunner.Active != null) { consumedFrame = Time.frameCount; return; }
         scopes.RemoveAll(s => s.Owner == null || s.Root == null || !s.Root.gameObject.activeInHierarchy);
         // World targets use directional/confirm input in TargetDialog and MenuManager.
         // Keep EventSystem enabled so a settings dialog pushed above targeting still works.

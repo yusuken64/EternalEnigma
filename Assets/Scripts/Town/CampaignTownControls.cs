@@ -17,6 +17,7 @@ public sealed class CampaignTownControls : MonoBehaviour
     }
     private void OnGUI()
     {
+        if (AutoplayRunner.Active != null) return;
         if (!Town.IsReady || Common.Instance.Travel.IsTransitioning || Common.Instance.CampaignContext == null) return;
         GUILayout.BeginArea(new Rect(16, 16, 340, 380), GUI.skin.box);
         GUILayout.Label(Common.Instance.CampaignContext.CanLeaveTown(Town.Configuration.Id)

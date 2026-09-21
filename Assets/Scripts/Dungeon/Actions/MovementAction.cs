@@ -137,6 +137,8 @@ internal class AttackAction : GameAction
 
 	public static void GetAttackDamage(Character attacker, Character target, out bool hit, out int damage)
 	{
+		// Resolve infinite strength as lethal damage, avoiding overflowing integer stats or saved equipment.
+		if (AutoplayRunner.GodmodeFor(attacker)) { hit = true; damage = Math.Max(0, target.Vitals.HP); return; }
 		hit = UnityEngine.Random.value > 0.2f;
 		var baseDamage = attacker.FinalStats.Strength * MathF.Pow((15f / 16f), target.FinalStats.Defense);
 		float n = (float)UnityEngine.Random.Range(112, 143);

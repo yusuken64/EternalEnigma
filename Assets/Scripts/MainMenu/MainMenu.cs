@@ -26,6 +26,7 @@ public class MainMenu : MonoBehaviour
 			ContinueButton.gameObject.SetActive(false);
 			StartButton.GetComponent<Button>().Select();
 		}
+		gameObject.AddComponent<WatchDemoMenu>().Initialize(this);
 	}
 
 	public void Continue_Clicked()
@@ -42,6 +43,9 @@ public class MainMenu : MonoBehaviour
 	}
 
 	private GameSaveData NewSaveData()
+		=> CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue));
+
+	public GameSaveData CreateNewSave(int seed)
 	{
 		var gameSaveData = new GameSaveData();
         var configuration = TownConfiguration ?? TownSceneLoader.Default;
@@ -49,7 +53,7 @@ public class MainMenu : MonoBehaviour
         gameSaveData.TownSaveData.ConfigurationId = configuration.Id;
         gameSaveData.TownSaveData.RecruitedAlliesData = configuration.StartingParty.Select(a =>
             new TownAllyData { AllyId = a.Id, AllyName = a.Name, Skills = a.Skills != null ? new(a.Skills) : new() }).ToList();
-		gameSaveData.TownSaveData.TownSeed = UnityEngine.Random.Range(1, int.MaxValue);
+		gameSaveData.TownSaveData.TownSeed = seed;
 
         var supplies = Common.Instance.ItemManager.StartingItems.Select(i => i.AsInventoryItem(null)).ToList();
         gameSaveData.TownSaveData.Inventory = supplies.Select(i => i.ItemName).ToList();

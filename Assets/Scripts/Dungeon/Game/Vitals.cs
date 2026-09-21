@@ -20,8 +20,11 @@ public class Vitals
 		get { return hp; }
 		set
 		{
+			if (AutoplayRunner.Protects(this)) value = LinkedStats().HPMax;
 			if (hp != value)
 			{
+				value = Math.Clamp(value, 0, LinkedStats().HPMax);
+				AutoplayRunner.RecordHPChange(this, hp, value);
 				hp = value;
 				ClampVitals();
 			}
@@ -34,6 +37,7 @@ public class Vitals
 		get { return sp; }
 		set
 		{
+			if (AutoplayRunner.Replenishes(this)) value = LinkedStats().SPMax;
 			if (sp != value)
 			{
 				sp = value;
@@ -73,6 +77,7 @@ public class Vitals
 		get { return hunger; }
 		set
 		{
+			if (AutoplayRunner.Replenishes(this)) value = LinkedStats().HungerMax;
 			if (hunger != value)
 			{
 				hunger = value;

@@ -76,6 +76,14 @@ namespace EternalEnigma.Tests
             Assert.That(biomeRenderer.Biomes.Select(b => b.Material.color).Distinct().Count(), Is.EqualTo(8));
             Assert.That(biomeRenderer.RenderedSurfaces.GetComponentsInChildren<MeshRenderer>().Any(r => r.enabled && r.sharedMaterial == biomeRenderer.Biomes.First(b => b.Biome == OverworldBiome.Water).Material), Is.True);
             var grid = world.Map.CurrentGrid;
+            foreach (var town in grid.TownFootprints)
+            {
+                var townVisual = biomeRenderer.RenderedSurfaces.transform.Find("Town " + town.LocationId);
+                Assert.That(townVisual, Is.Not.Null);
+                Assert.That(townVisual.GetComponentsInChildren<MeshRenderer>().Length, Is.EqualTo(3));
+                Assert.That(townVisual.GetComponentsInChildren<Collider>(), Is.Empty);
+                Assert.That(townVisual.gameObject.activeInHierarchy, Is.True, "Standing at the entrance must not hide the town.");
+            }
             var water = Enumerable.Range(0, grid.Width * grid.Height).Select(i => new GridPoint(i % grid.Width, i / grid.Width))
                 .First(p => grid.RequiresBoat(p));
             Assert.That(grid.IsWalkable(water, CapabilitySet.Empty), Is.False);
@@ -95,15 +103,20 @@ namespace EternalEnigma.Tests
             Assert.That(world.TryMove(start.X - next.X, start.Y - next.Y), Is.True);
             yield return new WaitForSeconds(.25f);
             keyboard = InputSystem.AddDevice<Keyboard>();
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.RightArrow));
-            Assert.That(world.CanStep(start, new GridPoint(start.X + 1, start.Y)), Is.True);
+            var gateway = grid.TownFootprints.Single(t => t.Entrance.Equals(start));
+            var gatewayApproach = gateway.Approach;
+            int stepX = gatewayApproach.X - start.X, stepY = gatewayApproach.Y - start.Y;
+            var outwardKey = stepX > 0 ? Key.RightArrow : stepX < 0 ? Key.LeftArrow : stepY > 0 ? Key.UpArrow : Key.DownArrow;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(outwardKey));
+            Assert.That(world.CanStep(start, gatewayApproach), Is.True);
             float inputDeadline = Time.realtimeSinceStartup + 2;
             while (world.Position.Equals(start) && Time.realtimeSinceStartup < inputDeadline) yield return null;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
             yield return new WaitForSeconds(.25f);
-            Assert.That(world.Position, Is.EqualTo(new GridPoint(start.X + 1, start.Y)), "Keyboard should move one cell.");
+            Assert.That(world.Position, Is.EqualTo(gatewayApproach), "Keyboard should leave through the single gateway.");
             pad = InputSystem.AddDevice<Gamepad>();
-            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.DpadLeft));
+            var inwardButton = stepX > 0 ? GamepadButton.DpadLeft : stepX < 0 ? GamepadButton.DpadRight : stepY > 0 ? GamepadButton.DpadDown : GamepadButton.DpadUp;
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(inwardButton));
             inputDeadline = Time.realtimeSinceStartup + 2;
             while (!world.Position.Equals(start) && Time.realtimeSinceStartup < inputDeadline) yield return null;
             InputSystem.QueueStateEvent(pad, new GamepadState());

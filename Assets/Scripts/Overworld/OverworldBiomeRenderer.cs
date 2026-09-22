@@ -59,6 +59,8 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
         }
         Draw(grid, OverworldLayers.Roads, RoadMaterial, .005f, excludeWater: true);
         Draw(grid, OverworldLayers.Bridges, BridgeMaterial, -.005f);
+        OverworldTownVisuals.Build(grid, surfaces.transform, creator.twcAsset.cellSize,
+            BarrierMaterial, RoadMaterial, meshes);
         hiddenRenderers = creator.worldObject.GetComponentsInChildren<Renderer>();
         foreach (var renderer in hiddenRenderers) renderer.enabled = false;
     }

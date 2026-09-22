@@ -9,7 +9,7 @@ public sealed class OverworldGridOptions
 {
     public int Width { get; }
     public int Height { get; }
-    /// <summary>Boundary variation strength (0–12). Zero keeps smooth, broad territories.</summary>
+    /// <summary>Boundary variation strength (0â€“12). Zero keeps smooth, broad territories.</summary>
     public int AreaExpansionRadius { get; }
     public OverworldGridOptions(int width = 256, int height = 256, int areaExpansionRadius = 6)
     {
@@ -166,7 +166,8 @@ public static class OverworldGridGenerator
         var masks = new Dictionary<string, bool[,]>(StringComparer.Ordinal);
         foreach (string name in new[] { OverworldLayers.Ground, OverworldLayers.Walkable, OverworldLayers.Roads,
             OverworldLayers.Mountains, OverworldLayers.Trees, OverworldLayers.Water, OverworldLayers.Reserved,
-            OverworldLayers.Towns, OverworldLayers.StoryDungeons, OverworldLayers.RepeatableDungeons, OverworldLayers.FinalDungeon,
+            OverworldLayers.Towns, OverworldLayers.TownFootprints, OverworldLayers.TownWalls, OverworldLayers.TownInteriors,
+            OverworldLayers.StoryDungeons, OverworldLayers.RepeatableDungeons, OverworldLayers.FinalDungeon,
             OverworldLayers.Converters, OverworldLayers.Landmarks, OverworldLayers.Secrets, OverworldLayers.PlayerStart,
             OverworldLayers.Locks, OverworldLayers.AreaLocks, OverworldLayers.ObstacleLocks, OverworldLayers.InteractionLocks }) masks[name] = new bool[w, h];
         foreach (var region in campaign.Regions) masks[OverworldLayers.Region(region.Id)] = new bool[w, h];
@@ -240,6 +241,42 @@ public static class OverworldGridGenerator
             string layer = route.Form == LockForm.Area ? OverworldLayers.AreaLocks : route.Form == LockForm.Obstacle ? OverworldLayers.ObstacleLocks : OverworldLayers.InteractionLocks;
             foreach (var p in chosen) { ground[p.X, p.Y] = true; masks[OverworldLayers.Locks][p.X, p.Y] = true; masks[layer][p.X, p.Y] = true; }
         }
+        // Reserve settlements before routing: the existing location coordinate becomes the sole
+        // gateway. Roads route around the blocked miniature rather than through its walls.
+        var towns = new List<GridTown>();
+        foreach (var location in campaign.Locations.Where(l => l.Kind == LocationKind.Town && l.ParentTownId == null).OrderBy(l => l.Id, StringComparer.Ordinal))
+        {
+            var entrance = positions[location.Id];
+            int group = groupOf[location.Id];
+            var orientations = Directions.Select(d => new GridTown(location.Id, entrance, d)).ToArray();
+            int offset = random.Range(orientations.Length);
+            GridTown? town = null;
+            for (int i = 0; i < orientations.Length; i++)
+            {
+                var candidate = orientations[(i + offset) % orientations.Length];
+                bool fits = true;
+                // A ground halo prevents the new walls from pinching a gate or territory boundary.
+                foreach (var cell in candidate.Cells)
+                for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++)
+                {
+                    int x = cell.X + dx, y = cell.Y + dy;
+                    if (!Inside(x, y) || !ground[x, y] || owner[x, y] != group ||
+                        masks[OverworldLayers.Locks][x, y] || masks[OverworldLayers.TownFootprints][x, y]) fits = false;
+                }
+                if (!fits || positions.Any(p => !p.Value.Equals(entrance) && candidate.Cells.Contains(p.Value))) continue;
+                town = candidate; break;
+            }
+            if (town == null) throw new InvalidOperationException("No walled town footprint fits " + location.Id);
+            towns.Add(town);
+            foreach (var cell in town.Cells)
+            {
+                masks[OverworldLayers.TownFootprints][cell.X, cell.Y] = true;
+                masks[OverworldLayers.Reserved][cell.X, cell.Y] = true;
+                ground[cell.X, cell.Y] = cell.Equals(entrance);
+            }
+            foreach (var cell in town.Walls) masks[OverworldLayers.TownWalls][cell.X, cell.Y] = true;
+            foreach (var cell in town.Interior) masks[OverworldLayers.TownInteriors][cell.X, cell.Y] = true;
+        }
         List<GridPoint> Path(GridPoint from, GridPoint to, int a, int b, string? gate = null)
         {
             bool Allowed(GridPoint p) => Inside(p.X, p.Y) && ground[p.X, p.Y] &&
@@ -272,6 +309,8 @@ public static class OverworldGridGenerator
                 for (int dy = -2; dy <= 2; dy++) for (int dx = -2; dx <= 2; dx++) if (Inside(p.X + dx, p.Y + dy)) dry[p.X + dx, p.Y + dy] = true;
             }
         }
+        // Keep the outside ring and the only approach free of subsequent terrain noise.
+        foreach (var town in towns) Dry(town.Cells, false);
         foreach (var route in campaign.Routes)
         {
             var path = route.IsWarp ? new List<GridPoint> { positions[route.From], positions[route.To] } :
@@ -381,12 +420,13 @@ public static class OverworldGridGenerator
                 masks[OverworldLayers.Walkable][x, y] = !masks[OverworldLayers.Locks][x, y];
                 masks[OverworldLayers.Reserved][x, y] = true;
             }
+            else if (masks[OverworldLayers.TownFootprints][x, y]) continue;
             else if (owner[x, y] < 0) masks[OverworldLayers.Water][x, y] = true;
             else if (!masks[OverworldLayers.Trees][x, y] && !masks[OverworldLayers.Mountains][x, y])
                 masks[palette[regionOwner[x, y]!] == OverworldBiome.Forest ? OverworldLayers.Trees : OverworldLayers.Mountains][x, y] = true;
         }
         var biomes = AssignBiomes(campaign, masks, flooded, regionOwner, locks);
-        var grid = new OverworldGrid(campaign, masks.ToDictionary(m => m.Key, m => new GridLayer(m.Value)), positions, routePaths, locks, biomes);
+        var grid = new OverworldGrid(campaign, masks.ToDictionary(m => m.Key, m => new GridLayer(m.Value)), positions, routePaths, locks, biomes, towns);
         var validation = OverworldGridValidator.Validate(campaign, grid);
         if (!validation.IsValid) throw new InvalidOperationException(string.Join("\n", validation.Errors));
         return grid;

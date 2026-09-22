@@ -1,0 +1,19 @@
+{
+    "triangles": 968,
+    "renderers": 1,
+    "submeshes": 1,
+    "colliders": 3,
+    "boundsCenter": {
+        "x": 1.25,
+        "y": 1.2494999170303345,
+        "z": -0.42500004172325137
+    },
+    "boundsSize": {
+        "x": 1.4700000286102296,
+        "y": 1.6410003900527955,
+        "z": 1.2500003576278687
+    },
+    "prefabGuid": "5ceac4a30c1424843b64d40722512f49",
+    "shader": "Standard",
+    "texture": "Assets/Art/EternalEnigma/Props/Stairs/EE_Stairs_Palette.png"
+}

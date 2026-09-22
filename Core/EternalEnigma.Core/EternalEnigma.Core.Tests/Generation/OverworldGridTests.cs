@@ -157,7 +157,7 @@ public sealed class OverworldGridTests
     {
         var campaign = CampaignGenerator.Generate(seed);
         var grid = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: variation));
-        Assert.Equal(10, OverworldGrid.GenerationVersion);
+        Assert.Equal(11, OverworldGrid.GenerationVersion);
         Assert.Equal(CampaignFingerprint.Compute(campaign), grid.CampaignFingerprint);
         foreach (var a in grid.Locations.Where(p => campaign.Locations.Single(l => l.Id == p.Key).ParentTownId == null))
         foreach (var b in grid.Locations.Where(b => campaign.Locations.Single(l => l.Id == b.Key).ParentTownId == null && StringComparer.Ordinal.Compare(a.Key,b.Key)<0))
@@ -235,7 +235,8 @@ public sealed class OverworldGridTests
         var layers = grid.Layers.ToDictionary(p => p.Key, p => p.Value);
         layers[OverworldLayers.Ground] = new GridLayer(ground);
         var broken = new OverworldGrid(campaign, layers, grid.Locations.ToDictionary(p => p.Key, p => p.Value),
-            grid.Routes.ToDictionary(p => p.Key, p => p.Value), grid.Locks);
+            grid.Routes.ToDictionary(p => p.Key, p => p.Value), grid.Locks,
+            grid.RegionBiomes.ToDictionary(p => p.Key, p => p.Value), grid.TownFootprints);
         var result = OverworldGridValidator.Validate(campaign, broken);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.StartsWith("bypass:", StringComparison.Ordinal));

@@ -33,6 +33,27 @@ public static class OverworldGridValidator
         foreach (var interior in campaign.Locations.Where(l => l.ParentTownId != null))
             Check(grid.Locations.TryGetValue(interior.Id, out var at) && grid.Locations.TryGetValue(interior.ParentTownId!, out var townAt) && at.Equals(townAt),
                 $"interior.position: {interior.Id} must project onto its parent town.");
+        Check(campaign.Locations.Where(l => l.Kind == LocationKind.Town && l.ParentTownId == null).Select(l => l.Id).OrderBy(id => id, StringComparer.Ordinal)
+            .SequenceEqual(grid.TownFootprints.Select(t => t.LocationId).OrderBy(id => id, StringComparer.Ordinal)), "towns: Missing/extra town footprints.");
+        var townCells = new HashSet<GridPoint>();
+        foreach (var town in grid.TownFootprints)
+        {
+            Check(grid.Locations.TryGetValue(town.LocationId, out var entrance) && entrance.Equals(town.Entrance), "town.entrance: Location must be the gateway.");
+            foreach (var cell in town.Cells)
+            {
+                Check(grid.Contains(cell) && townCells.Add(cell), "town.footprint: Towns overlap or leave the map.");
+                Check(grid.IsGround(cell) == cell.Equals(town.Entrance) && grid.LockAt(cell) == null && !grid.RequiresBoat(cell),
+                    "town.blocked: Only the gateway may be ground; settlements cannot contain locks/water.");
+                foreach (var layer in new[] { OverworldLayers.TownFootprints, OverworldLayers.TownWalls, OverworldLayers.TownInteriors })
+                    Check(grid.Layers.TryGetValue(layer, out var mask) && grid.Contains(cell) && mask[cell.X, cell.Y] ==
+                        (layer == OverworldLayers.TownFootprints || (layer == OverworldLayers.TownWalls ? town.Walls : town.Interior).Contains(cell)),
+                        "town.layer: Footprint and render masks disagree.");
+            }
+            var approaches = OverworldMovement.Neighbors(town.Entrance)
+                .Where(p => OverworldMovement.CanStep(p, town.Entrance, grid.IsGround)).ToArray();
+            Check(approaches.Length == 1 && approaches[0].Equals(town.Approach) && !grid.RequiresBoat(town.Approach),
+                "town.approach: Town must have exactly one dry outside entrance.");
+        }
         foreach (var gate in grid.Locks)
         {
             Check(gate.Cells.Count > 0 && gate.Cells.Distinct().Count() == gate.Cells.Count && gate.Cells.All(grid.IsGround), $"lock: Invalid footprint for {gate.RouteId}.");

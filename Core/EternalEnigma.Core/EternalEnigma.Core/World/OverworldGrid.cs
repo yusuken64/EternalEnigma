@@ -18,6 +18,9 @@ public static class OverworldLayers
     public static string Biome(OverworldBiome biome) => "Biome/" + biome;
     public const string Reserved = "Reserved";
     public const string Towns = "Towns";
+    public const string TownFootprints = "TownFootprints";
+    public const string TownWalls = "TownWalls";
+    public const string TownInteriors = "TownInteriors";
     public const string StoryDungeons = "StoryDungeons";
     public const string RepeatableDungeons = "RepeatableDungeons";
     public const string FinalDungeon = "FinalDungeon";
@@ -57,7 +60,7 @@ public sealed class OverworldGrid
     private readonly int[,] lockIndices;
     private readonly CampaignRoute[] lockRoutes;
     private readonly CampaignRoute[] townExits;
-    public const int GenerationVersion = 10;
+    public const int GenerationVersion = 11;
     public int Width { get; }
     public int Height { get; }
     public int CampaignSeed { get; }
@@ -66,13 +69,14 @@ public sealed class OverworldGrid
     public IReadOnlyDictionary<string, GridPoint> Locations { get; }
     public IReadOnlyDictionary<string, IReadOnlyList<GridPoint>> Routes { get; }
     public IReadOnlyList<GridLock> Locks { get; }
+    public IReadOnlyList<GridTown> TownFootprints { get; }
     public IReadOnlyList<CampaignRoute> Warps { get; }
     public IReadOnlyDictionary<string, OverworldBiome> RegionBiomes { get; }
     public GridPoint PlayerStart { get; }
 
     internal OverworldGrid(Campaign campaign, IDictionary<string, GridLayer> layers,
         IDictionary<string, GridPoint> locations, IDictionary<string, IReadOnlyList<GridPoint>> routes, IEnumerable<GridLock> locks,
-        IDictionary<string, OverworldBiome>? regionBiomes = null)
+        IDictionary<string, OverworldBiome>? regionBiomes = null, IEnumerable<GridTown>? townFootprints = null)
     {
         CampaignSeed = campaign.Seed;
         CampaignFingerprint = Generation.CampaignFingerprint.Compute(campaign);
@@ -85,6 +89,7 @@ public sealed class OverworldGrid
         Routes = new ReadOnlyDictionary<string, IReadOnlyList<GridPoint>>(routes.ToDictionary(r => r.Key,
             r => (IReadOnlyList<GridPoint>)Array.AsReadOnly(r.Value.ToArray()), StringComparer.Ordinal));
         Locks = Array.AsReadOnly(locks.ToArray());
+        TownFootprints = Array.AsReadOnly((townFootprints ?? Array.Empty<GridTown>()).ToArray());
         Warps = Array.AsReadOnly(campaign.Routes.Where(r => r.IsWarp).ToArray());
         PlayerStart = Locations[campaign.StartLocationId];
         lockRoutes = Locks.Select(l => campaign.Routes.Single(r => r.Id == l.RouteId)).ToArray();

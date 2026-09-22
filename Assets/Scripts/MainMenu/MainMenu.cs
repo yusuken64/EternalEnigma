@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
     public TownConfiguration TownConfiguration;
 	public GameObject StartButton;
 	public GameObject ContinueButton;
+    public Button TestDungeonButton;
 
 	public NavigationHandler NavigationHandler;
 
@@ -26,7 +27,6 @@ public class MainMenu : MonoBehaviour
 			ContinueButton.gameObject.SetActive(false);
 			StartButton.GetComponent<Button>().Select();
 		}
-		gameObject.AddComponent<WatchDemoMenu>().Initialize(this);
 	}
 
 	public void Continue_Clicked()
@@ -117,4 +117,10 @@ public class MainMenu : MonoBehaviour
 		common.PendingDemoLoadout = DemoDungeonLoadout.Load();
 		SceneManager.LoadScene("DungeonScene");
 	}
+
+	public void DebugAutoplay_Clicked()
+	{
+        AutoplayRunner.WatchDemo(new AutoplayOptions {
+            DebugPlaythrough = true, Godmode = true, InfiniteResources = true, Speed = 1 });
+    }
 }

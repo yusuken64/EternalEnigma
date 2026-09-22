@@ -1783,7 +1783,7 @@ MonoBehaviour:
     HPMax: 30
     SPMax: 0
     HungerMax: 0
-    Strength: 0
+    Strength: 12
     Defense: 19
     EXPOnKill: 25
     HungerAccumulateThreshold: 0

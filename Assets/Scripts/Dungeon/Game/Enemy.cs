@@ -130,64 +130,47 @@ public class Enemy : Character
 	}
 
 	#region Animation
+	// Controllers use both generic states and monster-prefixed clip/state names.
+	internal string[] AnimationStates(string action)
+	{
+		return Animator.runtimeAnimatorController.animationClips
+			.SelectMany(clip => new[] { clip.name, clip.name.Substring(clip.name.LastIndexOf('_') + 1) })
+			.Where(name => name.IndexOf(action, StringComparison.OrdinalIgnoreCase) >= 0 && HasAnimation(Animator, name))
+			.Distinct().OrderBy(name => name.Length).ThenBy(name => name, StringComparer.Ordinal).ToArray();
+	}
+	internal string WalkAnimationState => AnimationStates("WalkFWD").FirstOrDefault()
+		?? AnimationStates("FlyFWD").FirstOrDefault() ?? AnimationStates("Walk").FirstOrDefault()
+		?? AnimationStates("IdleNormal").FirstOrDefault(); // Worm has no locomotion clip.
+	private void PlayState(string state)
+	{
+		if (state == null) throw new InvalidOperationException($"Enemy '{name}' has no matching animation state.");
+		Animator.Play(state, 0, 0f);
+		Animator.Update(0f);
+	}
 	internal override void PlayWalkAnimation()
 	{
-		if (HasAnimation(Animator, "WalkFWD"))
-		{
-			Animator.Play("WalkFWD", 0);
-		}
-		else
-		{
-			Animator.Play("Fly", 0);
-		}
-		//Animator.speed = 5f;
+		PlayState(WalkAnimationState);
 	}
 	internal bool HasAnimation(Animator animator, string animationNameToCheck)
 	{
-		AnimatorClipInfo[] clips = animator.GetCurrentAnimatorClipInfo(0); // Get current animation clips (Layer 0)
-
-		foreach (var clipInfo in clips)
-		{
-			if (clipInfo.clip != null && clipInfo.clip.name == animationNameToCheck)
-			{
-				//Debug.Log("Animator contains the animation: " + animationNameToCheck);
-				return true;
-			}
-		}
-
-		return false;
+		return animator != null && animator.HasState(0, Animator.StringToHash(animationNameToCheck));
 	}
 	internal override void PlayIdleAnimation()
 	{
-		if (HasAnimation(Animator, "IdleNormal"))
-		{
-			Animator.Play("IdleNormal", 0);
-			Animator.Update(0f);
-		}
-		else
-		{
-			Animator.StopPlayback();
-		}
+		PlayState(AnimationStates("IdleNormal").FirstOrDefault());
 	}
 	internal override void PlayAttackAnimation()
 	{
-		var clips = Animator.runtimeAnimatorController.animationClips;
-		var clip = clips
-			.Where(x => x.name.Contains("Attack"))
-			.OrderBy(x => Guid.NewGuid())
-			.First();
-		Animator.Play(clip.name, 0, 0f);
-		Animator.Update(0f);
+		var states = AnimationStates("Attack");
+		PlayState(states.Length > 0 ? states[UnityEngine.Random.Range(0, states.Length)] : null);
 	}
 	internal override void PlayTakeDamageAnimation()
 	{
-		Animator.Play("GetHit", 0, 0f);
-		Animator.Update(0f);
+		PlayState(AnimationStates("GetHit").FirstOrDefault());
 	}
 	internal override void PlayDeathAnimation()
 	{
-		Animator.Play("Die", 0, 0f);
-		Animator.Update(0f);
+		PlayState(AnimationStates("Die").FirstOrDefault());
 	}
 
 	public override List<GameAction> GetTrapSideEffects()

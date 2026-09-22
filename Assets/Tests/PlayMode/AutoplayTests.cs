@@ -41,16 +41,10 @@ namespace EternalEnigma.Tests
         {
             yield return harness.LoadMainMenu(new TestScenario { Gold = 321 }.CreateSave());
             var original = Common.Instance.GameSaveData; string json = harness.Store.Json;
-            Assert.That(Object.FindFirstObjectByType<WatchDemoMenu>().WatchButton, Is.Not.Null);
             Directory.CreateDirectory("Temp/AutoplayValidation");
             ScreenCapture.CaptureScreenshot("Temp/AutoplayValidation/main-menu.png");
             yield return null;
-            var demoMenu = Object.FindFirstObjectByType<WatchDemoMenu>();
-            demoMenu.WatchButton.onClick.Invoke();
-            Assert.That(demoMenu.IsConfiguring,Is.True);
-            ScreenCapture.CaptureScreenshot("Temp/AutoplayValidation/demo-options.png");
-            yield return null;
-            demoMenu.StartDemo();
+            AutoplayRunner.WatchDemo(new AutoplayOptions { Speed = 1 });
             var run = AutoplayRunner.Active;
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true,"demo's separate campaign");
             run.Report.ValidationOnly = true;
@@ -89,9 +83,10 @@ namespace EternalEnigma.Tests
                     InputSystem.QueueStateEvent(mouse,new MouseState { position = new Vector2(Screen.width-30, Screen.height-40), buttons = 1 });
                     yield return null; yield return null;
                     Assert.That(run.ReturnPromptOpen,Is.False,"Clicking the playback panel does not interrupt playback.");
-                    InputSystem.QueueStateEvent(mouse,new MouseState { position = new Vector2(50,50) });
-                    yield return null;
-                    InputSystem.QueueStateEvent(mouse,new MouseState { position = new Vector2(50,50), buttons = 1 });
+                    var outsidePanel = new Vector2(5, Screen.height - 5);
+                    InputSystem.QueueStateEvent(mouse,new MouseState { position = outsidePanel });
+                    yield return null; yield return null;
+                    InputSystem.QueueStateEvent(mouse,new MouseState { position = outsidePanel, buttons = 1 });
                     yield return null; yield return null;
                     Assert.That(run.ReturnPromptOpen,Is.True,"Clicking outside controls opens the return prompt.");
                     InputSystem.QueueStateEvent(mouse,new MouseState());
@@ -103,7 +98,7 @@ namespace EternalEnigma.Tests
                     InputSystem.QueueStateEvent(pad,new GamepadState());
                     run.ConfirmReturn(false);
                     yield return new WaitForSecondsRealtime(.55f);
-                    InputSystem.QueueStateEvent(touch,new TouchState { touchId = 1, phase = UnityEngine.InputSystem.TouchPhase.Began, position = new Vector2(50,50) });
+                    InputSystem.QueueStateEvent(touch,new TouchState { touchId = 1, phase = UnityEngine.InputSystem.TouchPhase.Began, position = outsidePanel });
                     yield return null; yield return null;
                     Assert.That(run.ReturnPromptOpen,Is.True,"Touch opens the return prompt.");
                     InputSystem.QueueStateEvent(touch,new TouchState { touchId = 1, phase = UnityEngine.InputSystem.TouchPhase.Ended });
@@ -115,6 +110,14 @@ namespace EternalEnigma.Tests
                     Assert.That(Common.Instance.GameSaveData,Is.SameAs(original));
                     Assert.That(harness.Store.Json,Is.EqualTo(json));
                     Assert.That(Common.Instance.GameSaveData.TownSaveData.Gold,Is.EqualTo(321));
+                    var debugButton = Object.FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None)
+                        .Single(button => Enumerable.Range(0, button.onClick.GetPersistentEventCount())
+                            .Any(i => button.onClick.GetPersistentMethodName(i) == nameof(MainMenu.DebugAutoplay_Clicked)));
+                    debugButton.onClick.Invoke();
+                    Assert.That(AutoplayRunner.Active, Is.Not.Null);
+                    Assert.That(AutoplayRunner.Active.Options.DebugPlaythrough, Is.True);
+                    Assert.That(AutoplayRunner.Active.Options.Godmode, Is.True);
+                    Assert.That(AutoplayRunner.Active.Options.InfiniteResources, Is.True);
                 }
                 finally { InputSystem.RemoveDevice(keyboard); InputSystem.RemoveDevice(mouse); InputSystem.RemoveDevice(pad); InputSystem.RemoveDevice(touch); }
             }

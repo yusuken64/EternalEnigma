@@ -1,7 +1,10 @@
-# Manual playthrough and Watch demo
+# Manual playthrough and Debug autoplay
 
-Choose **Watch demo** from the main menu, choose a seed and normal/debug options,
-then Watch. The same runtime engine is available in a built app. The playback
+For a one-click debug run, choose **Debug autoplay** directly below **Test Dungeon**
+on the main menu. It starts seed 42 at 1x with godmode, infinite strength and infinite
+resources enabled; playback controls remain available during the run.
+
+The same runtime engine is available in a built app. The playback
 overlay offers **0.5x, 1x, 2x, 4x, and 8x**, plus **Pause/Resume**. Speed changes
 apply to game time and bot pacing; changing speed while paused keeps it paused.
 Move the pointer freely to reach the controls. Keyboard/controller input and mouse
@@ -11,7 +14,7 @@ the prior playback state. Exiting restores the original player save; the demo ha
 its own save store for its entire lifetime.
 
 For developer runs, open **Tools > Eternal Enigma > Playthrough > Open** in Unity.
-This supports speed, time limit, stall timeout, pause/stop, and an optional goal of
+This supports seed, normal/debug options, speed, time limit, stall timeout, pause/stop, and an optional goal of
 visiting every generated destination and completing every dungeon once. The
 default goal is the campaign's actual Finished flag. Neither launcher is invoked
 by CI or by opening the game. Run Normal and Run Debug menu commands use seed 42.

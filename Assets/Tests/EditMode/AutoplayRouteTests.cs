@@ -1,10 +1,36 @@
 using NUnit.Framework;
 using UnityEngine;
+using System;
+using System.Linq;
+using EternalEnigma.Core.Capabilities;
+using EternalEnigma.Core.Progression;
+using EternalEnigma.Core.World;
 
 namespace EternalEnigma.Tests
 {
     public sealed class AutoplayRouteTests
     {
+        [Test]
+        public void WaterCrossingsAreNotGateOpeningObjectives()
+        {
+            var options = new OverworldLaunchOptions(OverworldLaunchMode.Sandbox, 42);
+            var snapshot = new CampaignContext(options).Capture();
+            snapshot.Permanent = (Capability[])Enum.GetValues(typeof(Capability));
+            var context = new CampaignContext(options, snapshot);
+            var approaches = AutoplayRunner.GateApproaches(context).ToHashSet();
+            Assert.That(approaches, Is.Not.Empty, "Eligible land gates remain objectives.");
+            foreach (var cell in approaches)
+                Assert.That(context.Gates.Nearby(cell).Any(r => context.Gates.NeedsOpening(r) &&
+                    (r.ShortcutKind == ShortcutKind.Keyed ? context.Gates.HasKey(r) : r.CanTraverse(context.Held, context.Resolved))),
+                    Is.True, "Every gate objective must allow an actual gate interaction at " + cell);
+            var waterOnly = context.Grid.Locks.SelectMany(g => g.Cells).Where(context.Grid.RequiresBoat)
+                .SelectMany(cell => new[] { new GridPoint(cell.X+1,cell.Y), new GridPoint(cell.X-1,cell.Y),
+                    new GridPoint(cell.X,cell.Y+1), new GridPoint(cell.X,cell.Y-1) })
+                .Where(cell => !context.Gates.Nearby(cell).Any()).ToArray();
+            Assert.That(waterOnly, Is.Not.Empty, "Seed includes water crossings.");
+            Assert.That(waterOnly.Any(approaches.Contains), Is.False);
+        }
+
         [Test]
         public void FollowsSharedAStarRouteAndReplansAroundNewObstruction()
         {

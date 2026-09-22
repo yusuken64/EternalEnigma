@@ -361,13 +361,7 @@ public sealed class AutoplayRunner : MonoBehaviour
             worldSteps.Clear();
         }
         var goals = c.Campaign.Locations.Where(l => l.ParentTownId == null && Objective(l)).Select(l => c.Grid.Locations[l.Id]).ToHashSet();
-        foreach (var gate in c.Grid.Locks)
-        {
-            var route = c.Campaign.Routes.First(r => r.Id == gate.RouteId);
-            if (!c.Gates.NeedsOpening(route) || !(route.ShortcutKind == ShortcutKind.Keyed ? c.Gates.HasKey(route) : route.CanTraverse(c.Held,c.Resolved))) continue;
-            foreach (var cell in gate.Cells)
-                foreach (var offset in Steps.Take(4)) goals.Add(new GridPoint(cell.X + offset.x, cell.Y + offset.y));
-        }
+        goals.UnionWith(GateApproaches(c));
         foreach (var route in c.Campaign.Routes.Where(r => r.UnlockingEndpoint != null && !c.Resolved.Contains(r.Id)))
             goals.Add(c.Grid.Locations[route.UnlockingEndpoint]);
         goals.Remove(c.Position);
@@ -384,6 +378,18 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (path == null || path.Count == 0) { Finish("Stalled", "No reachable objective or town with current capabilities. Inspect campaign and action log."); return; }
         foreach (var step in path) worldSteps.Enqueue(step);
         if (MoveWorldStep(world,worldSteps.Peek())) worldSteps.Dequeue();
+    }
+
+    internal static IEnumerable<GridPoint> GateApproaches(CampaignContext c)
+    {
+        foreach (var gate in c.Grid.Locks)
+        {
+            var route = c.Campaign.Routes.First(r => r.Id == gate.RouteId);
+            if (!c.Gates.NeedsOpening(route) || !(route.ShortcutKind == ShortcutKind.Keyed ? c.Gates.HasKey(route) : route.CanTraverse(c.Held,c.Resolved))) continue;
+            // Match OverworldGates.Nearby: water is traversed with Boat, never opened as a door.
+            foreach (var cell in gate.Cells.Where(cell => !c.Grid.RequiresBoat(cell)))
+                foreach (var offset in Steps.Take(4)) yield return new GridPoint(cell.X + offset.x, cell.Y + offset.y);
+        }
     }
 
     private bool MoveWorldStep(OverworldScene world, GridPoint next)

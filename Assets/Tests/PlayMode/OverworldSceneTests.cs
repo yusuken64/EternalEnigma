@@ -26,12 +26,11 @@ namespace EternalEnigma.Tests
         private Gamepad pad;
 
         [UnityTest]
-        public IEnumerator StaticCompanionCanSpawnWalkAndReloadCachedTerrain()
+        public IEnumerator CompanionWithoutAnimatorCanWalkAfterCachedTerrainReload()
         {
             Common.Instance.BeginSandbox(42);
             var context = Common.Instance.CampaignContext;
-            var companion = context.Campaign.Companions.First(c =>
-                CampaignParty.Resolve(c.Id, TownSceneLoader.Default).HeroAnimator == null);
+            var companion = context.Campaign.Companions.First();
             context.Roster.Add(companion.Id);
             Assert.That(context.SetParty(new[] { companion.Id }), Is.True);
             for (int visit = 0; visit < 2; visit++)
@@ -43,7 +42,8 @@ namespace EternalEnigma.Tests
                 while (!world.IsReady && Time.realtimeSinceStartup < deadline) yield return null;
                 Assert.That(world.IsReady, Is.True, "Overworld with static companion did not become ready.");
                 var follower = world.Followers.Single();
-                Assert.That(follower.HeroAnimator, Is.Null);
+                // Synthetic missing-component regression; authored hero prefabs must all be wired.
+                follower.HeroAnimator = null;
                 if (visit == 0) Assert.That(world.SimulateDungeonVictory(), Is.True);
                 var start = world.Position;
                 var next = OverworldMovement.Neighbors(start).First(p => world.CanStep(start, p));

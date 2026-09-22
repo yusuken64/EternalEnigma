@@ -3413,7 +3413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 171d63fcdded82c4e86986807264f060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HeroAnimator: {fileID: 0}
+  HeroAnimator: {fileID: 7993872811738386488}
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 6007775086357394207}
   CurrentFacing: 0

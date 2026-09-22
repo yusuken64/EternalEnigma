@@ -55,7 +55,13 @@ public class HeroAnimator : MonoBehaviour
 
 	internal void SetWeapon(EquipmentItemDefinition mainHandItemDefinition, EquipmentItemDefinition offHandItemDefinition)
 	{
-		if (offHandItemDefinition?.WeaponType == WeaponType.OffhandShield)
+		// The bow model is equipped in the left hand in the shipped item catalog.
+		if (mainHandItemDefinition?.WeaponType == WeaponType.BowAndArrow ||
+			offHandItemDefinition?.WeaponType == WeaponType.BowAndArrow)
+		{
+			CurrentStance = Stance.BowAndArrowStance;
+		}
+		else if (offHandItemDefinition?.WeaponType == WeaponType.OffhandShield)
 		{
 			CurrentStance = Stance.SwordAndShield;
 		}
@@ -70,10 +76,6 @@ public class HeroAnimator : MonoBehaviour
 		else if (mainHandItemDefinition.WeaponType == WeaponType.TwoHandSword)
 		{
 			CurrentStance = Stance.TwoHandSword;
-		}
-		else if (mainHandItemDefinition.WeaponType == WeaponType.BowAndArrow)
-		{
-			CurrentStance = Stance.BowAndArrowStance;
 		}
 		else if (mainHandItemDefinition.WeaponType == WeaponType.Spear)
 		{

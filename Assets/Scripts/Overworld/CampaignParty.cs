@@ -38,7 +38,7 @@ public static class CampaignParty
             {
                 var prefab = Resolve(id, configuration);
                 if (prefab == null) throw new InvalidOperationException("Missing campaign companion prefab: " + id);
-                save.Roster.Add(new TownAllyData { AllyId = id, AllyName = prefab.Name, Skills = prefab.Skills.ToList() });
+                save.Roster.Add(HeroClassBinding.FromPrefab(prefab, new TownAllyData { AllyId = id, AllyName = prefab.Name, Skills = prefab.Skills.ToList() }));
             }
         save.TownSaveData.RecruitedAlliesData = new[] { save.ProtagonistId }.Concat(context.Active)
             .Select(id => save.Roster.Single(a => a.AllyId == id)).ToList();
@@ -58,6 +58,7 @@ public static class CampaignParty
         {
             var ally = UnityEngine.Object.Instantiate(Resolve(data.AllyId, configuration), common.TownAllyParent);
             ally.Id = data.AllyId; ally.Skills = data.Skills.ToList();
+            HeroClassBinding.Apply(ally, data, common.GameSaveData);
             foreach (var item in data.Equipment)
                 if (item.Restore(common.ItemManager) is EquipableInventoryItem equipment) ally.Equipment.Equip(equipment);
             common.InstantiatedTownAllies.Add(ally);

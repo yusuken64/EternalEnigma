@@ -73,10 +73,10 @@ public class Town : MonoBehaviour
             .Select(x => x.ItemName)
             .ToList();
 		townSaveData.RecruitedAlliesData = TownPlayer.RecruitedAllies
-            .Select(ally => new TownAllyData {
+            .Select(ally => HeroClassBinding.FromPrefab(ally, new TownAllyData {
                 AllyId = ally.Id, AllyName = ally.Name, Skills = new List<string>(ally.Skills),
                 Equipment = ItemSaveData.Capture(ally.Equipment.GetEquippedItems())
-            }).ToList();
+            })).ToList();
         CampaignParty.Capture(Common.Instance);
     }
 
@@ -109,13 +109,15 @@ public class Town : MonoBehaviour
         TownPlayer.WalkPositionHistory = new() { startPosition };
         var previousAllies = Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData;
         if (previousAllies.Count == 0)
-            previousAllies.AddRange(Configuration.StartingParty.Select(a => new TownAllyData { AllyId = a.Id, AllyName = a.Name, Skills = new() }));
+            previousAllies.AddRange(Configuration.StartingParty.Select(a => HeroClassBinding.FromPrefab(a,
+                new TownAllyData { AllyId = a.Id, AllyName = a.Name, Skills = new() })));
         foreach(var allyData in previousAllies)
 		{
             var prefab = TownAllyManager.GetAlly(allyData);
 
             var allyInstance = Instantiate(prefab, this.transform);
             if (Common.Instance.CampaignContext != null) allyInstance.Id = allyData.AllyId;
+            HeroClassBinding.Apply(allyInstance, allyData, Common.Instance.GameSaveData);
             AllyRecruitDialog.Recruit(this, allyInstance);
             allyInstance.TilemapPosition = startPosition;
             allyInstance.transform.position = WalkableMap.CellToWorld(allyInstance.TilemapPosition);

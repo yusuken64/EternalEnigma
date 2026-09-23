@@ -105,6 +105,9 @@ and skills display details and explain that their use belongs in the dungeon.
 - Starting supplies are granted on a new game, not on every dungeon entrance.
 - The final party member cannot be dismissed. Dismissing the controlled ally
   selects a remaining ally; dismissed equipment goes back into the bag.
+- Each hero has a fixed class (or primary/secondary combination) set on its `TownAlly` prefab; the protagonist's class is chosen at new game and stored in the save (`TownAllyData.PrimaryClassId`/`SecondaryClassId`). Classes never change.
+- Equipping a weapon or off-hand item outside the hero's class is refused with a message; accessories are unrestricted and unequipping is always allowed. Classless heroes can equip anything.
+- The recruit/party dialog shows `Name - Class`, and the trainer header shows the selected hero's class.
 
 Saves migrate the former world/seed JSON keys. Item snapshots preserve stack
 counts and per-ally equipment; the old name list remains for legacy compatibility.
@@ -116,6 +119,7 @@ Only migration code/tests retain the old scene terminology.
 node Tools/unity-mcp.mjs harness Town
 node Tools/unity-mcp.mjs harness EditMode
 node Tools/unity-mcp.mjs harness PlayMode
+node Tools/unity-mcp.mjs harness Classes
 ```
 
 `TownGameplayTests` covers caller configuration, multiple shops, stock persistence,

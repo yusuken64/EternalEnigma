@@ -37,6 +37,9 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Heroes")]
     public static void RunHeroes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.HeroPrefabTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Classes")]
+    public static void RunClasses() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.ClassAssignmentTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign")]
     public static void RunCampaign() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CampaignTravelTests");
 

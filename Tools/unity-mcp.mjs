@@ -26,8 +26,8 @@ try {
     const name = process.argv[2] ?? 'get_scene_info';
     if (name === 'harness') {
         const mode = process.argv[3] ?? 'EditMode';
-        if (!['EditMode', 'PlayMode', 'Skills', 'Demo', 'Town', 'Overworld', 'Campaign', 'Autoplay', 'Enemies', 'Heroes'].includes(mode)) throw Error('Expected EditMode, PlayMode, Skills, Demo, Town, Overworld, Campaign, Autoplay, Enemies or Heroes.');
-        const resultPath = join(root, `Temp/HarnessResults/${['Skills', 'Demo', 'Town', 'Overworld', 'Campaign', 'Autoplay', 'Enemies', 'Heroes'].includes(mode) ? 'PlayMode' : mode}.json`);
+        if (!['EditMode', 'PlayMode', 'Skills', 'Demo', 'Town', 'Overworld', 'Campaign', 'Autoplay', 'Enemies', 'Heroes', 'Classes'].includes(mode)) throw Error('Expected EditMode, PlayMode, Skills, Demo, Town, Overworld, Campaign, Autoplay, Enemies, Heroes or Classes.');
+        const resultPath = join(root, `Temp/HarnessResults/${['Skills', 'Demo', 'Town', 'Overworld', 'Campaign', 'Autoplay', 'Enemies', 'Heroes', 'Classes'].includes(mode) ? 'PlayMode' : mode}.json`);
         const readSummary = () => {
             try { return JSON.parse(readFileSync(resultPath, 'utf8')); } catch { return null; }
         };

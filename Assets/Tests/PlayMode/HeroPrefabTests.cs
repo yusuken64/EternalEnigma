@@ -115,6 +115,30 @@ namespace EternalEnigma.Tests
                 harness.Game.Allies.Remove(ally); Object.Destroy(ally.gameObject); yield return null;
             }
         }
+
+        [Test]
+        public void AssignedHeroClassesAreValidAndStartingGearFits()
+        {
+            var catalog = ClassCatalog.Load();
+            var heroes = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Town/Allies" })
+                .Select(g => AssetDatabase.LoadAssetAtPath<TownAlly>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(p => p != null && p.name.StartsWith("Ally_MC", StringComparison.Ordinal)).ToArray();
+            foreach (var hero in heroes.Where(h => h.PrimaryClass != null))
+            {
+                string label = hero.name + " (" + hero.Name + ")";
+                Assert.That(catalog, Is.Not.Null, "Class catalog asset is missing.");
+                Assert.That(catalog.Classes, Does.Contain(hero.PrimaryClass), label + " primary class not in catalog");
+                if (hero.SecondaryClass != null)
+                {
+                    Assert.That(catalog.Classes, Does.Contain(hero.SecondaryClass), label + " secondary class not in catalog");
+                    Assert.That(hero.SecondaryClass.Id, Is.Not.EqualTo(hero.PrimaryClass.Id), label + " secondary equals primary");
+                }
+                foreach (var item in hero.Equipment.GetEquippedItems())
+                    Assert.That(HeroClass.AllowsItem(hero.PrimaryClass, hero.SecondaryClass, item), Is.True,
+                        label + " starts with " + item.ItemName + " outside its class");
+            }
+            // Phase 7 assigns every hero a class and then requires PrimaryClass != null here.
+        }
     }
 }
 #endif

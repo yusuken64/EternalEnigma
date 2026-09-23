@@ -18,3 +18,5 @@ Corrections made during the audit:
 - Bow stance selection now recognizes the catalog's left-hand bow, rather than selecting the unarmed or main-hand weapon stance.
 
 This is a prefab wiring and baseline combat audit, not an exhaustive skill or balance certification.
+
+`AssignedHeroClassesAreValidAndStartingGearFits` checks every hero with a class: the class (and secondary) are in `Resources/Classes/ClassCatalog`, secondary differs from primary, and starting equipment fits the class. Unassigned heroes are skipped until Phase 7 assigns classes.

@@ -23,6 +23,11 @@ public class Skill : ScriptableObject
 	[Min(0)] public int AreaRadius;
 	[Min(1)] public int MissileRange = 8;
 	public GameObject MissileProjectilePrefab;
+	[Min(0)] public int ArrowCost;
+	public ArrowCostMode ArrowCostMode;
+	// Weapon skills are blocked by Arm bind (arrow skills are always treated as weapon skills).
+	public bool IsWeaponSkill;
+	public bool UsesArrows => ArrowCost > 0;
 	internal ActionTargeting TargetingRules => new(Targeting, TargetSelector, InventoryTargetSelector, AreaRadius, MissileRange);
 	internal bool RequiresTargetSelection => Targeting == SkillTargeting.Missile || TargetingRules.RequiresSelection;
 	[SerializeReference]
@@ -35,6 +40,7 @@ public class Skill : ScriptableObject
 		if (string.IsNullOrEmpty(SkillName)) SkillName = name;
 		if (ActionEffects == null) ActionEffects = new();
 		if (RankScaling == null) RankScaling = new();
+		if (PassiveResponses == null) PassiveResponses = new();
 	}
 
 	internal List<GameAction> GetEffects(Character caster, Character target)
@@ -76,6 +82,8 @@ public class Skill : ScriptableObject
 	}
 
 	public StatModification PassiveStatModification;
+	[SerializeReference]
+	public List<PassiveResponse> PassiveResponses = new();
 
 	// Passive bonus scaled by rank: every integer stat grows one step per extra rank; DropRate is not scaled.
 	internal StatModification GetScaledPassiveModification()
@@ -118,4 +126,10 @@ public enum SkillTargeting
 	AllTargets,     // Cast immediately on every character allowed by the selector.
 	InventoryItem, // Select one eligible item from the party inventory.
 	Missile        // Aim in one of eight directions; the first character or wall stops the shot.
+}
+
+public enum ArrowCostMode
+{
+	Fixed,     // needs and uses exactly ArrowCost arrows
+	PerTarget  // needs at least 1; uses one arrow per affected recipient, skipping recipients once arrows run out
 }

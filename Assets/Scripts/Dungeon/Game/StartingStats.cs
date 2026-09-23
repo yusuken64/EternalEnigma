@@ -15,4 +15,10 @@ public class StartingStats
 	public float DropRate;
 	public int ActionsPerTurnMax;
 	public int AttacksPerTurnMax;
+	public int FireResistance;
+	public int IceResistance;
+	public int LightningResistance;
+	public float CritChance;
+	public float Evasion;
+	public float HitBonus;
 }

@@ -32,53 +32,55 @@ public class SkillGridItem : MonoBehaviour
 		}
 
 		clickCooldownSeconds = 0.4f;
-		if (!_data.Active)
+		var offer = _data.Offer;
+		if (offer == null || offer.IsMaxed) return;
+		if (!offer.CanLearn)
 		{
-			if (CanAfford())
-			{
-				BallistaPurchaseDialog.Setup(_data.Skill);
-				BallistaPurchaseDialog.PurcahseCallBack = () =>
-				{
-                    var town = FindFirstObjectByType<Town>();
-                    if (!town.Services.Learn(Character, _data.Skill, out var reason))
-                    {
-                        TownMenu.ShowMessage(reason);
-                        return;
-                    }
-                    _data.Active = true;
-                    UpdateUI();
-                    SkillToggledCallback?.Invoke();
-				};
-			}
-			else
-			{
-				var messageDialog = Common.Instance.MessageDialog;
-				messageDialog.PromptText.text = "Not enough gold to buy skill";
-				messageDialog.gameObject.SetActive(true);
-
-				FindFirstObjectByType<TownMenuManager>().Open(messageDialog);
-			}
+			TownMenu.ShowMessage(string.IsNullOrEmpty(offer.LockReason) ? "This skill cannot be learned." : offer.LockReason);
+			return;
 		}
+		if (!CanAfford())
+		{
+			var messageDialog = Common.Instance.MessageDialog;
+			messageDialog.PromptText.text = "Not enough gold to buy skill";
+			messageDialog.gameObject.SetActive(true);
+			FindFirstObjectByType<TownMenuManager>().Open(messageDialog);
+			return;
+		}
+		BallistaPurchaseDialog.Setup(offer.Skill, offer.CurrentRank + 1, offer.NextCost);
+		BallistaPurchaseDialog.PurcahseCallBack = () =>
+		{
+			var town = FindFirstObjectByType<Town>();
+			if (!town.Services.Learn(Character, offer.Skill, out var reason))
+			{
+				TownMenu.ShowMessage(reason);
+				return;
+			}
+			SkillToggledCallback?.Invoke();
+		};
 	}
 
 	private bool CanAfford()
 	{
 		var town = FindFirstObjectByType<Town>();
-		return _data.Skill.LearnCost <= town.TownPlayer.Gold;
+		return _data.Offer != null ? _data.Offer.NextCost <= town.TownPlayer.Gold : _data.Skill.LearnCost <= town.TownPlayer.Gold;
 	}
 
 	private void UpdateUI()
 	{
-		SkillText.text = $"{_data.Skill.SkillName}";
-		if (_data.Active)
+		var offer = _data.Offer;
+		SkillText.text = offer != null ? offer.Label : $"{_data.Skill.SkillName}";
+		bool maxed = offer != null ? offer.IsMaxed : _data.Active;
+		if (maxed)
 		{
 			ActiveImage.color = Color.green;
 			CostObject.gameObject.SetActive(false);
 		}
 		else
 		{
-			ActiveImage.color = Color.white;
-			CostText.text = $"{_data.Skill.LearnCost}";
+			bool locked = offer != null && !offer.CanLearn;
+			ActiveImage.color = locked ? Color.gray : (_data.Active ? Color.cyan : Color.white);
+			CostText.text = $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)}";
 			CostObject.gameObject.SetActive(true);
 		}
 	}

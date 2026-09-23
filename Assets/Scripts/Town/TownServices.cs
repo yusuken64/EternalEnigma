@@ -48,13 +48,15 @@ public sealed class TownServices
     public bool Learn(TownAlly ally, Skill skill, out string reason)
     {
         reason = "This skill cannot be learned.";
-        if (!Player.RecruitedAllies.Contains(ally) || !town.Configuration.LearnableSkills.Contains(skill)) return false;
-        reason = "Already learned.";
-        if (ally.Skills.Contains(skill.SkillName)) return false;
+        if (ally == null || skill == null || !Player.RecruitedAllies.Contains(ally)) return false;
+        var offer = TrainerOffers.Find(ally, town.Configuration, skill);
+        if (offer == null) return false;
+        if (offer.IsMaxed) { reason = offer.MaxRank <= 1 ? "Already learned." : "Already at max rank."; return false; }
+        if (!offer.CanLearn) { reason = string.IsNullOrEmpty(offer.LockReason) ? "This skill cannot be learned." : offer.LockReason; return false; }
         reason = "Not enough gold.";
-        if (skill.LearnCost < 0 || Player.Gold < skill.LearnCost) return false;
-        Player.Gold -= skill.LearnCost;
-        ally.Skills.Add(skill.SkillName);
+        if (offer.NextCost < 0 || Player.Gold < offer.NextCost) return false;
+        Player.Gold -= offer.NextCost;
+        ally.SetRank(offer.Skill.SkillName, offer.CurrentRank + 1);
         town.SaveProgress();
         reason = null;
         return true;
@@ -83,6 +85,7 @@ public sealed class TownServices
         var context = Common.Instance.CampaignContext;
         if (context != null) { context.Roster.Add(ally.Id); context.Active.Add(ally.Id); }
         Player.Gold -= ally.RecruitCost;
+        ally.EnsureStartingSkills();
         AllyRecruitDialog.Recruit(town, ally);
         town.SaveProgress();
         reason = null;

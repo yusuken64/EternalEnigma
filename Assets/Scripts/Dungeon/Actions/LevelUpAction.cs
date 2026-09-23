@@ -7,6 +7,8 @@ internal class LevelUpAction : GameAction
 	public LevelUpAction() { }
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		// Allies grow by class; enemies and classless heroes keep the flat +2 Strength / +5 HPMax.
+		var growth = HeroClass.Growth(character is Ally ally ? ally.PrimaryClass : null);
 		return new()
 		{
 			new ModifyStatAction(
@@ -14,10 +16,13 @@ internal class LevelUpAction : GameAction
 				character,
 				(stats, vitals) =>
 				{
-					stats.Strength += 2;
-					stats.HPMax += 5;
-					//vitals.Level = levelUp.Level;
-					vitals.HP += 5;
+					stats.HPMax += growth.HPMax;
+					stats.SPMax += growth.SPMax;
+					stats.HungerMax += growth.HungerMax;
+					stats.Strength += growth.Strength;
+					stats.Defense += growth.Defense;
+					vitals.HP += growth.HPMax;
+					vitals.SP += growth.SPMax;
 				},
 				false)
 		};

@@ -114,8 +114,11 @@ public sealed class TownServices
         return true;
     }
 
-    public bool ToggleEquipment(TownAlly ally, InventoryItem item)
+    public bool ToggleEquipment(TownAlly ally, InventoryItem item) => ToggleEquipment(ally, item, out _);
+
+    public bool ToggleEquipment(TownAlly ally, InventoryItem item, out string reason)
     {
+        reason = null;
         if (!Player.RecruitedAllies.Contains(ally) || item is not EquipableInventoryItem equipment) return false;
         if (ally.Equipment.IsEquipped(item))
         {
@@ -124,6 +127,11 @@ public sealed class TownServices
         }
         else
         {
+            if (!HeroClass.AllowsItem(ally.PrimaryClass, ally.SecondaryClass, equipment))
+            {
+                reason = $"{ally.Name} ({HeroClass.Label(ally.PrimaryClass, ally.SecondaryClass)}) can't equip {item.ItemName}.";
+                return false;
+            }
             if (!Player.Inventory.Remove(item)) return false;
             var previous = ally.Equipment.GetEquippedItems().ToArray();
             ally.Equipment.Equip(equipment);

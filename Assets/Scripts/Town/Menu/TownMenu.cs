@@ -73,7 +73,12 @@ public class TownMenu : MonoBehaviour
         var town = FindFirstObjectByType<Town>();
         ItemActionDialog.SetupActions(item.ItemName, character.Equipment.IsEquipped(item) ? "Unequip" : "Equip", () =>
         {
-            town.Services.ToggleEquipment(character, item);
+            if (!town.Services.ToggleEquipment(character, item, out var reason) && !string.IsNullOrEmpty(reason))
+            {
+                ItemActionDialog.CloseDialog();
+                ShowMessage(reason);
+                return;
+            }
             ItemActionDialog.CloseDialog();
             inventory.SetupTown(character.Equipment.GetEquippedItems().Cast<InventoryItem>().Concat(town.TownPlayer.Inventory).ToList(), character);
             inventory.SetNavigation();

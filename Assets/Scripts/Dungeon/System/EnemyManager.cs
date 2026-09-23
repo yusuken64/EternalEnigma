@@ -23,6 +23,16 @@ public class EnemyManager : MonoBehaviour
 		return spawnDefinition.EnemyCharacterPrefab;
 	}
 
+	/// <summary>Deterministic pick: candidates for the floor ordered by SpawnName (ordinal), indexed by roll.</summary>
+	internal Enemy GetEnemyPrefab(int floor, int roll)
+	{
+		floor = Mathf.Clamp(floor, 1, 27);
+		var candidates = SpawnDefinitions.Where(x => x.FloorMin <= floor && x.FloorMax >= floor)
+			.OrderBy(x => x.SpawnName, StringComparer.Ordinal).ToList();
+		if (candidates.Count == 0) throw new InvalidOperationException($"No spawn definitions cover floor {floor}.");
+		return candidates[(int)((uint)roll % (uint)candidates.Count)].EnemyCharacterPrefab;
+	}
+
 #if UNITY_EDITOR
 	[ContextMenu("Generate Spawn Definitions")]
 	public void GenerateSpawnDefinitions()

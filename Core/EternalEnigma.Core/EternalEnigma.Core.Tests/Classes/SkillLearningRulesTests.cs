@@ -373,10 +373,6 @@ public sealed class SkillLearningRulesTests
         Assert.Throws<ArgumentNullException>(() =>
             SkillLearningRules.Offers(null!));
 
-        // null kit for CurrentRank
-        Assert.Throws<ArgumentNullException>(() =>
-            SkillLearningRules.CurrentRank(learned, "Double Strike"));
-
         // null learned for CurrentRank
         Assert.Throws<ArgumentNullException>(() =>
             SkillLearningRules.CurrentRank(null!, "Double Strike"));

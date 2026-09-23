@@ -8,6 +8,8 @@ using UnityEngine;
 public class Ally : Character
 {
 	public string TownAllyId;
+	public ClassDefinition PrimaryClass;
+	public ClassDefinition SecondaryClass;
 	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;
@@ -232,6 +234,9 @@ public class Ally : Character
 	{
 		HeroAnimator?.PlayDeathAnimation();
 	}
+
+	protected override StatModification GetStartingStatBonus() =>
+		PrimaryClass != null ? PrimaryClass.StartingStatBonus : null;
 
 	internal void InitialzeModel(TownAlly townAlly)
 	{

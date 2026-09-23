@@ -11,6 +11,9 @@ public class TownAlly : TownCharacter
 	public GameObject AnimatedModel;
 
 	public List<string> Skills;
+	// Fixed per hero prefab (assigned in Phase 7). The protagonist's instance is overwritten from the save.
+	public ClassDefinition PrimaryClass;
+	public ClassDefinition SecondaryClass;
 	public int RecruitCost { get; internal set; }
 	private void Awake()
 	{

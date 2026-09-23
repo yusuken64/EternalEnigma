@@ -111,6 +111,7 @@ public class Game : SingletonMonoBehaviour<Game>
 			foreach (var skill in townAlly.Skills)
 			{
 				Skill skillInstance = Common.Instance.SkillManager.GetSkillInstanceByName(skill);
+				skillInstance.Rank = Mathf.Max(1, townAlly.GetRank(skill));
 				ally.Skills.Add(skillInstance);
 			}
 			ally.InvalidateCachedStats();

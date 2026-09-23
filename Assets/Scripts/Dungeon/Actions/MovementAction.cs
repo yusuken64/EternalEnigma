@@ -193,6 +193,12 @@ public class TakeDamageAction : GameAction
 		return new TakeDamageAction(caster, target, damage, doDamageAnimation, miss);
 	}
 
+	internal override GameAction AsTargetedSkill(Character caster, Character target, SkillRankContext rank)
+	{
+		var scaling = rank.Scaling ?? new SkillRankScaling();
+		return new TakeDamageAction(caster, target, scaling.ScalePower(damage, rank.Rank), doDamageAnimation, miss);
+	}
+
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
         TrackAnimationTarget(target);
@@ -265,6 +271,12 @@ public class TakeHealAction : GameAction
 	internal override GameAction AsTargetedSkill(Character caster, Character target)
 	{
 		return new TakeHealAction(caster, target, healing, doHealAnimation, miss);
+	}
+
+	internal override GameAction AsTargetedSkill(Character caster, Character target, SkillRankContext rank)
+	{
+		var scaling = rank.Scaling ?? new SkillRankScaling();
+		return new TakeHealAction(caster, target, scaling.ScalePower(healing, rank.Rank), doHealAnimation, miss);
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)

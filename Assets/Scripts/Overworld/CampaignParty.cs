@@ -58,9 +58,14 @@ public static class CampaignParty
         {
             var ally = UnityEngine.Object.Instantiate(Resolve(data.AllyId, configuration), common.TownAllyParent);
             ally.Id = data.AllyId; ally.Skills = data.Skills.ToList();
+            ally.SkillRanks = (data.SkillRanks ?? new System.Collections.Generic.List<SkillRankSaveData>())
+                .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
+                .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList();
+            ally.HighestLevel = Mathf.Max(1, data.HighestLevel);
             HeroClassBinding.Apply(ally, data, common.GameSaveData);
             foreach (var item in data.Equipment)
                 if (item.Restore(common.ItemManager) is EquipableInventoryItem equipment) ally.Equipment.Equip(equipment);
+            ally.EnsureStartingSkills();
             common.InstantiatedTownAllies.Add(ally);
         }
     }

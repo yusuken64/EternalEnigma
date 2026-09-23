@@ -81,6 +81,16 @@ public class MainMenu : MonoBehaviour
         gameSaveData.TownSaveData.Inventory = supplies.Select(i => i.ItemName).ToList();
         gameSaveData.TownSaveData.InventoryItems = ItemSaveData.Capture(supplies);
         gameSaveData.TownSaveData.InventoryFormatVersion = 1;
+
+        var catalog = ClassCatalog.Load();
+        if (catalog != null)
+            foreach (var data in gameSaveData.TownSaveData.RecruitedAlliesData)
+            {
+                data.Skills ??= new List<string>();
+                foreach (var skillName in TownAlly.StartingSkillNames(catalog.Get(data.PrimaryClassId), catalog.Get(data.SecondaryClassId)))
+                    if (!data.Skills.Contains(skillName)) data.Skills.Add(skillName);
+            }
+
 		return gameSaveData;
 	}
 

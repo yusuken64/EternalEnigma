@@ -119,8 +119,8 @@ public abstract class Character : MonoBehaviour, Actor
 	internal void UpdateCachedStats()
 	{
 		var passiveSkillStats = Skills
-			.Where(x => x.ActivationType == ActivationType.Passive)
-				.Aggregate(new StatModification(), (accumulate, passiveSkill) => accumulate + passiveSkill.PassiveStatModification);
+			.Where(x => x != null && x.ActivationType == ActivationType.Passive)
+				.Aggregate(new StatModification(), (accumulate, passiveSkill) => accumulate + passiveSkill.GetScaledPassiveModification());
 
 		cachedFinalStats = BaseStats +
 			Equipment?.GetEquipmentStatModification() +

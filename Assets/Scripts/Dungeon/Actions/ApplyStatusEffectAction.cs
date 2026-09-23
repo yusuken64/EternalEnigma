@@ -9,6 +9,8 @@ public class ApplyStatusEffectAction : GameAction
 	private readonly StatusEffect statusEffectPrefab;
 	private readonly Character caster;
 	private StatusEffect statusInstance;
+	// Extra turns granted by the casting skill's rank (0 when unranked).
+	private int durationDelta;
 
 	public StatusEffect StatusEffect;
 
@@ -25,10 +27,26 @@ public class ApplyStatusEffectAction : GameAction
 		return new ApplyStatusEffectAction(target, StatusEffect, caster);
 	}
 
+	internal override GameAction AsTargetedSkill(Character caster, Character target, SkillRankContext rank)
+	{
+		var action = new ApplyStatusEffectAction(target, StatusEffect, caster);
+		if (StatusEffect != null)
+		{
+			var scaling = rank.Scaling ?? new SkillRankScaling();
+			action.durationDelta = scaling.ScaleDuration(StatusEffect.TurnsLeft, rank.Rank) - StatusEffect.TurnsLeft;
+		}
+		return action;
+	}
+
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		TrackAnimationTarget(target);
 		statusInstance = target.ApplyStatusEffect(statusEffectPrefab);
+		if (durationDelta != 0)
+		{
+			var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x.GetType() == statusEffectPrefab.GetType());
+			if (applied != null) applied.TurnsLeft += durationDelta;
+		}
 		statusInstance?.gameObject.SetActive(false);
 		return new();
 	}

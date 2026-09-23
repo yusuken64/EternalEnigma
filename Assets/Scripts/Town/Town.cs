@@ -75,7 +75,11 @@ public class Town : MonoBehaviour
 		townSaveData.RecruitedAlliesData = TownPlayer.RecruitedAllies
             .Select(ally => HeroClassBinding.FromPrefab(ally, new TownAllyData {
                 AllyId = ally.Id, AllyName = ally.Name, Skills = new List<string>(ally.Skills),
-                Equipment = ItemSaveData.Capture(ally.Equipment.GetEquippedItems())
+                Equipment = ItemSaveData.Capture(ally.Equipment.GetEquippedItems()),
+                SkillRanks = (ally.SkillRanks ?? new List<SkillRankSaveData>())
+                    .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
+                    .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList(),
+                HighestLevel = Mathf.Max(1, ally.HighestLevel)
             })).ToList();
         CampaignParty.Capture(Common.Instance);
     }
@@ -122,10 +126,15 @@ public class Town : MonoBehaviour
             allyInstance.TilemapPosition = startPosition;
             allyInstance.transform.position = WalkableMap.CellToWorld(allyInstance.TilemapPosition);
             allyInstance.Skills = allyData.Skills != null ? new List<string>(allyData.Skills) : new();
+            allyInstance.SkillRanks = (allyData.SkillRanks ?? new List<SkillRankSaveData>())
+                .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
+                .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList();
+            allyInstance.HighestLevel = Mathf.Max(1, allyData.HighestLevel);
             allyInstance.RecruitCost = Configuration.Recruits.FirstOrDefault(r => r.Ally == prefab)?.Cost ?? 0;
             foreach (var item in allyData.Equipment ?? new())
                 if (item.Restore(Common.Instance.ItemManager) is EquipableInventoryItem equipment)
                     allyInstance.Equipment.Equip(equipment);
+            allyInstance.EnsureStartingSkills();
             allyInstance.RefreshEquipmentVisuals();
         }
 

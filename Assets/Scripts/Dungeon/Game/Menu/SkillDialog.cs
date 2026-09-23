@@ -20,7 +20,7 @@ namespace JuicyChickenGames.Menu
             {
                 return new DynamicActionInfo()
                 {
-                    ActionName = $"{skill.SkillName}({skill.SPCost})",
+                    ActionName = skill.Rank > 1 ? $"{skill.SkillName} R{skill.Rank}({skill.SPCost})" : $"{skill.SkillName}({skill.SPCost})",
                     ClickAction = () =>
                     {
                         if (character.CanCast(skill, out string reason))
@@ -66,12 +66,12 @@ namespace JuicyChickenGames.Menu
             {
                 return new DynamicActionInfo()
                 {
-                    ActionName = $"{skill}",
+                    ActionName = controllingTownAlly.GetRank(skill) > 1 ? $"{skill} R{controllingTownAlly.GetRank(skill)}" : $"{skill}",
                     ClickAction = () =>
                     {
                         var definition = Common.Instance.SkillManager.GetSkillByName(skill);
                         TownMenu.ShowMessage(definition != null
-                            ? $"{definition.SkillName} ({definition.SPCost} SP)\n{definition.Description}\nUse active skills in the dungeon."
+                            ? $"{definition.SkillName} ({definition.SPCost} SP), rank {Mathf.Max(1, controllingTownAlly.GetRank(skill))}\n{definition.Description}\nUse active skills in the dungeon."
                             : $"Unknown skill: {skill}");
                     }
                 };

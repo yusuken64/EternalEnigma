@@ -51,4 +51,15 @@ public class TownAllyData
 	public string SecondaryClassId = "";
 	public List<string> Skills;
 	public List<ItemSaveData> Equipment = new();
+	// Parallel to Skills: a learned skill with no entry here is rank 1.
+	public List<SkillRankSaveData> SkillRanks = new();
+	// Highest dungeon level this hero has reached; gates trainer ranks and tiers.
+	public int HighestLevel = 1;
+}
+
+[Serializable]
+public class SkillRankSaveData
+{
+	public string SkillName;
+	public int Rank = 1;
 }

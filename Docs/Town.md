@@ -100,7 +100,7 @@ and skills display details and explain that their use belongs in the dungeon.
   Completed tiers are marked after a victory.
 - Victory carries back remaining bag items and equipped items with their remaining
   stack quantities. Defeat clears carried items and equipment while retaining
-  earned gold. Party membership and learned skills remain.
+  earned gold. Party membership, learned skills, skill ranks and each hero's highest level reached remain.
   Leaving a dungeon through settings or the game-over Quit button uses defeat rules.
 - Starting supplies are granted on a new game, not on every dungeon entrance.
 - The final party member cannot be dismissed. Dismissing the controlled ally

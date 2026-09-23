@@ -111,13 +111,14 @@ public sealed class TownPlan
         }
 
         // Validate spawn and exit points are in bounds
-        if (!Contains(partySpawn))
+        var walkableLayerForValidation = layers[TownLayers.Walkable];
+        if (!walkableLayerForValidation.Contains(partySpawn))
             throw new ArgumentException("PartySpawn is out of bounds.", nameof(partySpawn));
 
-        if (!Contains(exit))
+        if (!walkableLayerForValidation.Contains(exit))
             throw new ArgumentException("Exit is out of bounds.", nameof(exit));
 
-        if (!Contains(dungeonEntrance))
+        if (!walkableLayerForValidation.Contains(dungeonEntrance))
             throw new ArgumentException("DungeonEntrance is out of bounds.", nameof(dungeonEntrance));
 
         // Store properties

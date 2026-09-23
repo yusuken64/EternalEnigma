@@ -1,4 +1,5 @@
 using EternalEnigma.Core.Capabilities;
+using EternalEnigma.Core.Generation;
 using EternalEnigma.Core.Progression;
 using EternalEnigma.Core.World;
 using CampaignDefinition = EternalEnigma.Core.Progression.Campaign;
@@ -58,8 +59,141 @@ public sealed class ExplorerSession
     public bool NoClip { get; private set; }
     public void ToggleNoClip() { NoClip = !NoClip; Message = NoClip ? "No-clip enabled: ignoring gates, water and terrain." : "No-clip disabled."; }
 
+    private readonly Dictionary<string, TownPlan> townInteriors = new();
+    private readonly Dictionary<string, DungeonFloor> dungeonInteriors = new();
+    private readonly Dictionary<string, HashSet<GridPoint>> clearedInteriorCells = new();
+    public bool InInterior { get; private set; }
+    public TownPlan? Town { get; private set; }
+    public DungeonFloor? Dungeon { get; private set; }
+    public GridPoint InteriorPosition { get; private set; }
+    public bool CanEnterLocation => !InInterior && Location != null && (Location.Kind == LocationKind.Town ||
+        Location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon);
+
+    /// <summary>Enters the town or dungeon standing under the party, generating its interior on first visit.</summary>
+    public bool EnterLocation()
+    {
+        if (InInterior) { Message = "Already inside. I: leave."; return false; }
+        var location = Location;
+        if (location == null) { Message = "Nothing here to enter."; return false; }
+        int seed = LocationSeed(Campaign.Seed, location.Id);
+        if (location.Kind == LocationKind.Town)
+        {
+            if (!townInteriors.TryGetValue(location.Id, out var plan))
+                townInteriors[location.Id] = plan = TownPlanGenerator.Generate(new TownPlanOptions(seed));
+            Town = plan;
+            InteriorPosition = plan.PartySpawn;
+            InInterior = true;
+            Message = $"Entered {location.Id}. Walk to the south road to leave, or press I.";
+            return true;
+        }
+        if (location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon)
+        {
+            if (!dungeonInteriors.TryGetValue(location.Id, out var floor))
+                dungeonInteriors[location.Id] = floor = DungeonFloorGenerator.Generate(new DungeonFloorOptions(seed));
+            Dungeon = floor;
+            InteriorPosition = floor.Start;
+            InInterior = true;
+            Message = $"Entered {location.Id}. Walk back to the entrance to leave, or press I.";
+            return true;
+        }
+        Message = location.Id + " has no interior to enter.";
+        return false;
+    }
+
+    public bool LeaveLocation()
+    {
+        if (!InInterior) return false;
+        Town = null;
+        Dungeon = null;
+        InInterior = false;
+        Message = "Returned to the overworld.";
+        return true;
+    }
+
+    /// <summary>Interacts with whatever occupies the current interior cell (dungeon encounters, loot).</summary>
+    public bool InteriorInteract()
+    {
+        if (Dungeon is not { } dungeon) { Message = "Nothing to interact with here."; return false; }
+        if (IsCleared(InteriorPosition)) { Message = "Already cleared."; return false; }
+        string? kind = dungeon.Enemies.Any(e => e.Cell.Equals(InteriorPosition)) ? "enemy" :
+            dungeon.Traps.Any(t => t.Cell.Equals(InteriorPosition)) ? "trap" :
+            dungeon.Gold.Any(g => g.Cell.Equals(InteriorPosition)) ? "gold" :
+            dungeon.Items.Any(i => i.Cell.Equals(InteriorPosition)) ? "item" : null;
+        if (kind == null) { Message = "Nothing here."; return false; }
+        if (!clearedInteriorCells.TryGetValue(Location!.Id, out var cleared))
+            clearedInteriorCells[Location.Id] = cleared = new HashSet<GridPoint>();
+        cleared.Add(InteriorPosition);
+        Message = kind switch
+        {
+            "enemy" => "Defeated the enemy.",
+            "trap" => "Disarmed the trap.",
+            "gold" => "Collected gold.",
+            _ => "Picked up the item.",
+        };
+        return true;
+    }
+
+    public bool IsCleared(GridPoint cell) =>
+        Location != null && clearedInteriorCells.TryGetValue(Location.Id, out var cleared) && cleared.Contains(cell);
+
+    private static int LocationSeed(int campaignSeed, string locationId)
+    {
+        uint hash = 2166136261u;
+        unchecked
+        {
+            foreach (char c in locationId) { hash ^= c; hash *= 16777619u; }
+            return campaignSeed * 397 ^ (int)hash;
+        }
+    }
+
+    private bool MoveInterior(int dx, int dy)
+    {
+        var next = new GridPoint(InteriorPosition.X + dx, InteriorPosition.Y + dy);
+        if (Town is { } town)
+        {
+            if (!(NoClip ? town.Contains(next) : town.CanStep(InteriorPosition, next)))
+            { Message = NoClip ? "Edge of the map." : "Blocked."; return false; }
+            InteriorPosition = next;
+            if (next.Equals(town.Exit)) return LeaveLocation();
+            Message = Describe(NoClip, DescribeTownCell(town, next));
+            return true;
+        }
+        if (Dungeon is { } dungeon)
+        {
+            if (!(NoClip ? dungeon.Contains(next) : dungeon.CanStep(InteriorPosition, next)))
+            { Message = NoClip ? "Edge of the map." : "Blocked."; return false; }
+            InteriorPosition = next;
+            if (next.Equals(dungeon.Start)) return LeaveLocation();
+            Message = Describe(NoClip, DescribeDungeonCell(dungeon, next));
+            return true;
+        }
+        return false;
+    }
+
+    private static string Describe(bool noClip, string description) =>
+        noClip ? "No-clip" + (description.Length > 0 ? " | " + description : "") : description;
+
+    private static string DescribeTownCell(TownPlan town, GridPoint cell)
+    {
+        if (town.BuildingIndexAt(cell) != null) return town.ShopRoomAt(cell) != null ? "Shop entrance." : "House door.";
+        if (town.AllySlots.Any(a => a.Cell.Equals(cell))) return "An ally stands here.";
+        return "";
+    }
+
+    private string DescribeDungeonCell(DungeonFloor dungeon, GridPoint cell)
+    {
+        if (cell.Equals(dungeon.Stairs)) return "You found the stairs down.";
+        if (IsCleared(cell)) return "";
+        if (dungeon.Enemies.Any(e => e.Cell.Equals(cell))) return "An enemy blocks the way. Enter: fight.";
+        if (dungeon.Traps.Any(t => t.Cell.Equals(cell))) return "A trap! Enter: disarm.";
+        if (dungeon.Gold.Any(g => g.Cell.Equals(cell))) return "Gold glints here. Enter: collect.";
+        if (dungeon.Items.Any(i => i.Cell.Equals(cell))) return "An item lies here. Enter: collect.";
+        return "";
+    }
+
     public bool Move(int dx, int dy)
     {
+        if (InInterior) return MoveInterior(dx, dy);
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
         if (NoClip)
         {
@@ -152,6 +286,16 @@ public sealed class ExplorerSession
         if (!towns.Contains(id)) return false;
         Position = Grid.Locations[id];
         Message = "Arrived at " + id;
+        return true;
+    }
+
+    /// <summary>Unconditional placement onto any location, bypassing gates. Used to seed the initial world/town/dungeon view.</summary>
+    public bool JumpTo(string locationId)
+    {
+        if (!Grid.Locations.TryGetValue(locationId, out var point)) return false;
+        Position = point;
+        if (Location?.Kind == LocationKind.Town) towns.Add(Location.Id);
+        Message = "Warped to " + locationId + ".";
         return true;
     }
 }

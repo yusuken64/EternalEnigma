@@ -154,6 +154,8 @@ public abstract class Character : MonoBehaviour, Actor
 	internal void InitialzeVitalsFromStats()
 	{
 		BaseStats.FromStartingStats(StartingStats);
+		var startingBonus = GetStartingStatBonus();
+		if (startingBonus != null) BaseStats = BaseStats + startingBonus;
 		Vitals = new();
 		DisplayedVitals = new();
 		Vitals.HP = FinalStats.HPMax;
@@ -161,6 +163,9 @@ public abstract class Character : MonoBehaviour, Actor
 		Vitals.Hunger = FinalStats.HungerMax;
 		Vitals.Level = 1;
 	}
+
+	// Extra base stats applied once when vitals are initialised (e.g. an ally's class bonus). Null means none.
+	protected virtual StatModification GetStartingStatBonus() => null;
 
 	public List<StatusEffect> StatusEffects = new();
 

@@ -12,6 +12,10 @@ public class Equipment : MonoBehaviour
 	public delegate void EquipmentChangedEventHandler(EquipChangeType equipChangeType, EquipableInventoryItem item);
 	public event EquipmentChangedEventHandler HandleEquipmentChanged;
 
+	// Optional class restriction used by player-initiated equips (CanEquip). Null allows everything.
+	// Equip() itself never checks it, so restoring saved/starting equipment is unaffected.
+	[NonSerialized] public Func<EquipableInventoryItem, bool> ClassFilter;
+
 	internal IEnumerable<EquipableInventoryItem> GetEquippedItems()
 	{
 		if (EquippedWeapon?.ItemDefinition != null) yield return EquippedWeapon;
@@ -108,7 +112,8 @@ public class Equipment : MonoBehaviour
 
 	internal bool CanEquip(EquipableInventoryItem equipableInventoryItem)
 	{
-		return !IsEquipped(equipableInventoryItem);
+		return !IsEquipped(equipableInventoryItem) &&
+			(ClassFilter == null || ClassFilter(equipableInventoryItem));
 	}
 
 	internal void UnEquip(EquipableInventoryItem equipableInventoryItem)

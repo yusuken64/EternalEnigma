@@ -45,6 +45,10 @@ public class TownAllyData
 {
 	public string AllyId;
 	public string AllyName;
+	// ClassDefinition.Id values; empty means "no class". For recruits the prefab is
+	// authoritative; for the protagonist these saved values are authoritative.
+	public string PrimaryClassId = "";
+	public string SecondaryClassId = "";
 	public List<string> Skills;
 	public List<ItemSaveData> Equipment = new();
 }

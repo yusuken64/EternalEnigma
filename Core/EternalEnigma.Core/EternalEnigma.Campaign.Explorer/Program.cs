@@ -7,7 +7,7 @@ for (int i = 0; i < args.Length; i++)
 {
     if (args[i] is "--help" or "-h")
     {
-        Console.WriteLine("Campaign Explorer [--seed <integer>] [--snapshot]\nArrows/WASD: move; Q/E/Z/C: diagonals; Enter: reward; P: party; T: travel; Esc: quit.\nRewards simulate encounter completion. Progress is not saved. --snapshot prints a static preview.");
+        Console.WriteLine("Campaign Explorer [--seed <integer>] [--snapshot]\nArrows/WASD: move; Q/E/Z/C: diagonals; Enter: reward; P: party; T: travel; N: no-clip; Esc: quit.\nRewards simulate encounter completion. Progress is not saved. --snapshot prints a static preview.\nNo-clip is a debug flight mode that ignores gates, water and terrain; it stands in for the future airship.");
         return 0;
     }
     if (args[i] == "--snapshot") { snapshot = true; continue; }
@@ -59,7 +59,8 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             var options = menu == "Party" ? session.Roster.Select(c => $"{(session.IsActive(c.Id) ? "[x]" : "[ ]")} {c.Capability} ({c.Id})").ToArray()
                 : menu == "Travel" ? session.VisitedTowns.ToArray() : menu == "Warp" ? session.WarpsHere.Select(session.WarpLabel).ToArray() : Array.Empty<string>();
             selection = Math.Clamp(selection, 0, Math.Max(0, options.Length - 1));
-            var lines = new List<string> { $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | {session.Position} | {session.Location?.Id ?? "Overworld"}" };
+            var lines = new List<string> { $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | {session.Position} | {session.Location?.Id ?? "Overworld"}" +
+                (session.NoClip ? " | NO-CLIP" : "") };
             int mapHeight = Math.Max(1, height - 10);
             if (menu == null) lines.AddRange(renderer.Render(width, mapHeight));
             else
@@ -75,7 +76,7 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             lines.Add(session.RequiredReturn);
             lines.Add("Keys: " + string.Join(", ", session.CollectedKeys));
             lines.Add("Move: arrows/WASD | Diagonal: QEZC/numpad | Esc: quit");
-            lines.Add("Enter: reward | V: warp | P: party (town) | T: fast travel");
+            lines.Add("Enter: reward | V: warp | P: party (town) | T: fast travel | N: no-clip (debug)");
             lines.Add("@ you  T town  D dungeon  R repeatable  F final  C converter");
             lines.Add("+ gate  O warp  K key  / open  : road  . ground  # rock  ~ water");
             lines.Add("Rewards simulate encounters. No combat or saving.");
@@ -107,6 +108,7 @@ static void Run(ExplorerSession session, MapRenderer renderer)
                 case ConsoleKey.P: menu = "Party"; selection = 0; break;
                 case ConsoleKey.T: menu = "Travel"; selection = 0; break;
                 case ConsoleKey.V: menu = "Warp"; selection = 0; break;
+                case ConsoleKey.N: session.ToggleNoClip(); break;
                 case ConsoleKey.Enter: session.ClaimRewards(); break;
                 case ConsoleKey.W: case ConsoleKey.UpArrow: case ConsoleKey.NumPad8: session.Move(0, 1); break;
                 case ConsoleKey.S: case ConsoleKey.DownArrow: case ConsoleKey.NumPad2: session.Move(0, -1); break;

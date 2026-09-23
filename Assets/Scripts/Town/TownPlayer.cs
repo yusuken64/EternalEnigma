@@ -147,7 +147,8 @@ public class TownPlayer : MonoBehaviour
 
 			if (!PlayerInputHandler.Instance.holdPosition)
 			{
-				if (WalkableMap.CanWalkTo(originalPosition, newMapPosition))
+				if (WalkableMap.CanWalkTo(originalPosition, newMapPosition) &&
+					!FindFirstObjectByType<Town>().ShopVendors.Any(v => v.TilemapPosition == newMapPosition))
 				{
 					SetAction(new TownMovement(this, originalPosition, newMapPosition));
 					holdTime = 0f;
@@ -183,6 +184,17 @@ public class TownPlayer : MonoBehaviour
 					}));
 				};
 				townMenuManager.Open(townMenu.AllyRecruitDialog);
+			}
+			else
+			{
+				var vendor = FindFirstObjectByType<Town>().ShopVendors.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
+				if (vendor != null)
+				{
+					_menuBusy = true;
+					var townMenu = FindFirstObjectByType<TownMenu>();
+					var dialog = townMenu.OpenBuilding(vendor.Building, this, null);
+					dialog.CloseAction = () => StartCoroutine(Wait(() => { _menuBusy = false; }));
+				}
 			}
 		}
 
@@ -247,7 +259,8 @@ public class TownPlayer : MonoBehaviour
 		var town = FindFirstObjectByType<Town>();
 		if (Common.Instance.CampaignContext != null && ControllingTownAlly.TilemapPosition == new Vector3Int(10, 0, 0))
         { Common.Instance.Travel.ExitTown(town); _busy = false; yield break; }
-		var overlappingBuilding = town.TownBuildings.FirstOrDefault(x => x.TilemapPosition == this.ControllingTownAlly.TilemapPosition);
+		var overlappingBuilding = town.TownBuildings.FirstOrDefault(x =>
+			x.TilemapPosition == this.ControllingTownAlly.TilemapPosition && !x.HasInterior);
 		if (overlappingBuilding != null)
 		{
 			overlappingBuilding.Interact(this, reverse);

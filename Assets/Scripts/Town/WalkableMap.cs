@@ -29,15 +29,17 @@ public class WalkableMap : MonoBehaviour
 
 		bool[,] houseMap = _twc.GetMapOutputFromBlueprintLayer("Houses");
 		bool[,] treeMap = _twc.GetMapOutputFromBlueprintLayer("Trees");
-		
+		bool[,] shopWallMap = _twc.GetMapOutputFromBlueprintLayer("ShopWalls");
+
 		for (int x = 0; x < width; x++)
 		{
 			for (int y = 0; y < height; y++)
 			{
 				bool hasHouse = houseMap != null && houseMap[x, y];
 				bool hasTree = treeMap != null && treeMap[x, y];
+				bool hasShopWall = shopWallMap != null && shopWallMap[x, y];
 
-				_walkableMap[x, y] = !(hasHouse || hasTree);
+				_walkableMap[x, y] = !(hasHouse || hasTree || hasShopWall);
 			}
 		}
 	}

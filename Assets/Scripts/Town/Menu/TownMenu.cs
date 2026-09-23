@@ -37,7 +37,7 @@ public class TownMenu : MonoBehaviour
                 throw new InvalidOperationException($"No town dialog binding for '{building.DialogId}'.");
     }
 
-    public void OpenBuilding(TownBuildingDefinition building, TownPlayer player, TownAction reverse)
+    public Dialog OpenBuilding(TownBuildingDefinition building, TownPlayer player, TownAction reverse)
     {
         Dialog dialog;
         if (building.DialogPrefab != null)
@@ -53,6 +53,7 @@ public class TownMenu : MonoBehaviour
         dialog.PrepareTown(new TownInteractionContext(FindFirstObjectByType<Town>(), building));
         dialog.CloseAction = () => player.SetAction(reverse);
         FindFirstObjectByType<TownMenuManager>().Open(dialog);
+        return dialog;
     }
 
     public static void ShowMessage(string text)

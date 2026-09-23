@@ -15,6 +15,8 @@ public class TownBuildingDefinition : ScriptableObject
     [Tooltip("Optional self-contained view. When supplied, the caller can add this building without editing the Town scene.")]
     public Dialog DialogPrefab;
     public List<TownShopOffer> ShopCatalog = new();
+    [Tooltip("Optional vendor to spawn inside this shop's carved interior. Falls back to a shared placeholder when unset.")]
+    public ShopVendor VendorPrefab;
 
     public void Validate()
     {

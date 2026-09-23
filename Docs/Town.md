@@ -58,6 +58,30 @@ party, configuration and services. Use `CloseDialog()` for every close path.
 The generic building arranges interaction and return movement. Put state changes
 in services rather than a dialog's close callback.
 
+## Shop interiors
+
+Any building with a non-empty `ShopCatalog` gets a small procedurally carved
+interior instead of opening its dialog the moment the player steps on its tile.
+`ShopInteriorCarver` runs as part of the Town's TileWorldCreator generation: it
+reads the `Buildings` layer's raster-ordered markers (the same order
+`TownConfiguration.Buildings` is authored in) and, for each one whose building
+has a shop catalog, carves a small room north of that marker into two new
+layers (`ShopFloor`, `ShopWalls`) and clears the `Houses`/`Trees` layers within
+that footprint so scenery never overlaps the room. A room that would go out of
+bounds, overlap another room, or land on an ally spawn point is silently
+skipped for that building, which then keeps today's walk-onto-tile behavior.
+
+A `ShopVendor` is spawned at the back of a successfully carved room (falling
+back to a placeholder capsule when the definition's `VendorPrefab` is unset).
+The player walks through the door like any other floor tile - it no longer
+opens a dialog by itself - and faces the vendor and presses interact to open
+the shop, exactly like talking to a party member. `TownBuilding.HasInterior`
+is only ever true once a room and vendor actually exist for that instance, so
+generation never has to special-case a shop whose room could not be carved.
+
+Non-shop buildings (no `ShopCatalog` entries) are completely unaffected - they
+keep the original single-tile, walk-on-triggers-dialog-and-bounce-back flow.
+
 Town and dungeon share `DialogController`, `Dialog`, inventory and skill views,
 and the item action prefab. The controller owns modal focus, Back, input switching,
 selection restoration, and exactly-once close callbacks. Town equipment changes

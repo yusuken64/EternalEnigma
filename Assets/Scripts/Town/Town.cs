@@ -17,6 +17,8 @@ public class Town : MonoBehaviour
     public List<TownAlly> TownAllies;
     public TownBuildingManager TownBuildingManager;
     public List<TownBuilding> TownBuildings;
+    public List<ShopVendor> ShopVendors = new();
+    private readonly List<GameObject> shopWalls = new();
     public bool IsReady { get; private set; }
     private bool finishingGeneration;
 
@@ -37,6 +39,7 @@ public class Town : MonoBehaviour
             gameObject.AddComponent<CampaignTownControls>().Town = this;
             CampaignTownCorridor.Configure(WalkableMap.TileWorldCreator);
         }
+        ShopInteriorCarver.Configure(WalkableMap.TileWorldCreator, Configuration);
 
         Debug.Log("WalkableMap type: " + (WalkableMap == null ? "NULL" : WalkableMap.GetType().FullName));
         Debug.Log("TileWorldCreator type: " + (WalkableMap.TileWorldCreator == null ? "NULL" : WalkableMap.TileWorldCreator.GetType().FullName));
@@ -170,6 +173,47 @@ public class Town : MonoBehaviour
         TownBuildings = TownBuildingManager.Spawn(Configuration, positions, WalkableMap);
     }
 
+    /// <summary>Spawns the carved rooms' wall visuals and a vendor per shop whose room actually exists this generation.</summary>
+    public void GenerateShopInteriors()
+    {
+        foreach (var wall in shopWalls) if (wall != null) Destroy(wall);
+        shopWalls.Clear();
+        foreach (var vendor in ShopVendors) if (vendor != null) Destroy(vendor.gameObject);
+        ShopVendors.Clear();
+
+        var wallMap = WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayer("ShopWalls");
+        if (wallMap != null)
+            for (int x = 0; x < wallMap.GetLength(0); x++)
+                for (int y = 0; y < wallMap.GetLength(1); y++)
+                {
+                    if (!wallMap[x, y]) continue;
+                    var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    wall.name = "ShopWall";
+                    wall.transform.SetParent(transform);
+                    wall.transform.position = WalkableMap.CellToWorld(new Vector3Int(x, y, 0)) + Vector3.up * 0.5f;
+                    wall.transform.localScale = Vector3.one * WalkableMap.TileWorldCreator.twcAsset.cellSize;
+                    shopWalls.Add(wall);
+                }
+
+        var floorMap = WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayer("ShopFloor");
+        foreach (var building in TownBuildings)
+        {
+            building.HasInterior = false;
+            if (building.Definition.ShopCatalog.Count == 0) continue;
+            if (!ShopInteriorCarver.TryGetInteriorAnchor(floorMap, building.TilemapPosition, out var anchor)) continue;
+
+            var vendor = building.Definition.VendorPrefab != null
+                ? Instantiate(building.Definition.VendorPrefab, transform)
+                : ShopVendor.CreateDefault(transform);
+            vendor.Building = building.Definition;
+            vendor.TilemapPosition = anchor;
+            vendor.transform.position = WalkableMap.CellToWorld(anchor);
+            vendor.SetFacing(Facing.Down);
+            ShopVendors.Add(vendor);
+            building.HasInterior = true;
+        }
+    }
+
     private void Awake()
 	{
         WalkableMap.TileWorldCreator.OnBlueprintLayersComplete += blueprintLayersComplete;
@@ -198,6 +242,7 @@ public class Town : MonoBehaviour
     {
         Debug.Log("Generate Buildings");
         GenerateInteractableBuildings();
+        GenerateShopInteriors();
 
         Debug.Log("Generate Allies");
         GenerateAllies();

@@ -54,14 +54,27 @@ public sealed class ExplorerSession
         towns.Add(campaign.StartLocationId);
     }
 
+    /// <summary>Debug flight: ignores gates, water and terrain. Foreshadows the airship, which will fly over the same grid.</summary>
+    public bool NoClip { get; private set; }
+    public void ToggleNoClip() { NoClip = !NoClip; Message = NoClip ? "No-clip enabled: ignoring gates, water and terrain." : "No-clip disabled."; }
+
     public bool Move(int dx, int dy)
     {
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
+        if (NoClip)
+        {
+            if (!Grid.Contains(next)) { Message = "Edge of the map."; return false; }
+            Position = next;
+            Message = Location == null ? "No-clip | " + Position : $"No-clip | {Location.Id} ({Location.Kind})";
+            return true;
+        }
         if (!Grid.CanStep(Position, next, Held, resolved) || !OverworldMovement.CanStep(Position, next, IsWalkable))
         {
             var gate = Grid.LockAt(next);
+            var blockingExit = gate == null ? Campaign.Routes.FirstOrDefault(r => r.IsTownExit && Grid.Locations[r.From].Equals(Position) && !r.CanTraverse(Held, resolved)) : null;
             Message = Grid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires Boat to sail." :
-                gate == null ? "Blocked." : gates.Hint(routes[gate.RouteId], Held);
+                gate != null ? gates.Hint(routes[gate.RouteId], Held) :
+                blockingExit != null ? gates.Hint(blockingExit, Held) : "Blocked.";
             return false;
         }
         Position = next;

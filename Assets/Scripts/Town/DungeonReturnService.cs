@@ -19,6 +19,8 @@ public static class DungeonReturnService
             var ally = allies.FirstOrDefault(a => a != null && (!string.IsNullOrEmpty(member.AllyId)
                 ? a.TownAllyId == member.AllyId : a.CharacterName == member.AllyName));
             member.Equipment = keepItems && ally != null ? ItemSaveData.Capture(ally.Equipment.GetEquippedItems()) : new();
+            if (ally != null && ally.Vitals != null)
+                member.HighestLevel = System.Math.Max(System.Math.Max(1, member.HighestLevel), ally.Vitals.Level);
         }
         if (victory)
         {

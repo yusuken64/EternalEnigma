@@ -8,6 +8,12 @@ public class Skill : ScriptableObject
 {
 	public string SkillName;
 	public int LearnCost;
+	// Authoring default; the class entry's MaxRank is authoritative for learning.
+	[Min(1)] public int MaxRank = 5;
+	public SkillRankScaling RankScaling = new();
+	// Runtime rank of this per-character instance (set when the ally is built). Not saved in the asset.
+	[System.NonSerialized] public int Rank = 1;
+	internal SkillRankContext RankContext => new(Rank, RankScaling);
 	public ActivationType ActivationType;
 
 	public int SPCost;
@@ -28,12 +34,13 @@ public class Skill : ScriptableObject
 	{
 		if (string.IsNullOrEmpty(SkillName)) SkillName = name;
 		if (ActionEffects == null) ActionEffects = new();
+		if (RankScaling == null) RankScaling = new();
 	}
 
 	internal List<GameAction> GetEffects(Character caster, Character target)
 	{
-		return 
-			ActionEffects.Select(x => x.AsTargetedSkill(caster, target))
+		return
+			ActionEffects.Select(x => x.AsTargetedSkill(caster, target, RankContext))
 			.ToList();
 	}
 
@@ -69,6 +76,30 @@ public class Skill : ScriptableObject
 	}
 
 	public StatModification PassiveStatModification;
+
+	// Passive bonus scaled by rank: every integer stat grows one step per extra rank; DropRate is not scaled.
+	internal StatModification GetScaledPassiveModification()
+	{
+		var baseMod = PassiveStatModification;
+		if (baseMod == null) return new StatModification();
+		var scaling = RankScaling ?? new SkillRankScaling();
+		int rank = Rank < 1 ? 1 : Rank;
+		return new StatModification
+		{
+			HPMax = scaling.ScaleBuff(baseMod.HPMax, rank),
+			SPMax = scaling.ScaleBuff(baseMod.SPMax, rank),
+			HungerMax = scaling.ScaleBuff(baseMod.HungerMax, rank),
+			Strength = scaling.ScaleBuff(baseMod.Strength, rank),
+			Defense = scaling.ScaleBuff(baseMod.Defense, rank),
+			EXPOnKill = scaling.ScaleBuff(baseMod.EXPOnKill, rank),
+			HungerAccumulateThreshold = scaling.ScaleBuff(baseMod.HungerAccumulateThreshold, rank),
+			HPRegenAcccumlateThreshold = scaling.ScaleBuff(baseMod.HPRegenAcccumlateThreshold, rank),
+			SPRegenAcccumlateThreshold = scaling.ScaleBuff(baseMod.SPRegenAcccumlateThreshold, rank),
+			DropRate = baseMod.DropRate,
+			ActionsPerTurnMax = scaling.ScaleBuff(baseMod.ActionsPerTurnMax, rank),
+			AttacksPerTurnMax = scaling.ScaleBuff(baseMod.AttacksPerTurnMax, rank),
+		};
+	}
 
 	[TextArea]
 	public string Description;

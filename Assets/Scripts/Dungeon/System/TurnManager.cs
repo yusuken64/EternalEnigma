@@ -362,4 +362,7 @@ public abstract class GameAction
 
 	//this is a temp fix
 	internal virtual GameAction AsTargetedSkill(Character caster, Character target) { return this; }
+
+	// Rank-aware variant used by Skill.GetEffects. Effects that scale with rank override this one.
+	internal virtual GameAction AsTargetedSkill(Character caster, Character target, SkillRankContext rank) => AsTargetedSkill(caster, target);
 }

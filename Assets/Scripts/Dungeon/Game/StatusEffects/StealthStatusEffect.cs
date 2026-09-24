@@ -21,7 +21,7 @@ public class StealthStatusEffect : StatusEffect
 
 	internal override IEnumerable<GameAction> GetResponseTo(Character owner, GameAction action)
 	{
-		if (action is TakeDamageAction hit && hit.Attacker == owner && hit.Target != owner)
+		if (action is TakeDamageAction hit && hit.Attacker == owner && hit.Target != owner && !(hit.Target != null && hit.Target.Vitals.HP <= 0 && ClassPassives.KeepsStealthOnKill(owner)))
 		{
 			return new List<GameAction> { new RemoveStatusEffectAction(owner, this) };
 		}

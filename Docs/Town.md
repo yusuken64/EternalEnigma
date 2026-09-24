@@ -108,6 +108,7 @@ and skills display details and explain that their use belongs in the dungeon.
 - Each hero has a fixed class (or primary/secondary combination) set on its `TownAlly` prefab; the protagonist's class is chosen at new game and stored in the save (`TownAllyData.PrimaryClassId`/`SecondaryClassId`). Classes never change.
 - Equipping a weapon or off-hand item outside the hero's class is refused with a message; accessories are unrestricted and unequipping is always allowed. Classless heroes can equip anything.
 - The recruit/party dialog shows `Name - Class`, and the trainer header shows the selected hero's class.
+- Heroes learn their class skills at the trainer. `LearnableSkills` is empty in the shipped town; a non-empty list acts as an allowlist. Each hero starts with their class's tier-1 mastery.
 
 Saves migrate the former world/seed JSON keys. Item snapshots preserve stack
 counts and per-ally equipment; the old name list remains for legacy compatibility.

@@ -38,19 +38,19 @@ internal class SkillAction : GameAction
 		affected = inventoryTargeting ? new List<Character> { caster } : skill.GetAffectedCharacters(caster, target);
 		if (skill.Targeting == SkillTargeting.Missile)
 		{
-			missileHit = MissileTargeting.Trace(caster, direction, skill.MissileRange);
+			missileHit = MissileTargeting.Trace(caster, direction, skill.MissileRange + (skill.UsesArrows ? ClassPassives.MissileRangeBonus(caster) : 0));
 			affected = skill.TargetingRules.GetMissileAffected(caster, missileHit);
 		}
 		if (skill.UsesArrows && skill.Targeting != SkillTargeting.InventoryItem)
 		{
 			if (skill.ArrowCostMode == ArrowCostMode.PerTarget)
 			{
-				int fired = ArrowSupply.Consume(caster, affected.Count);
+				int fired = ArrowSupply.Consume(caster, affected.Count, ClassPassives.ArrowRecoveryChance(caster));
 				if (fired < affected.Count) affected = affected.Take(fired).ToList();
 			}
 			else
 			{
-				ArrowSupply.Consume(caster, skill.ArrowCost);
+				ArrowSupply.Consume(caster, skill.ArrowCost, ClassPassives.ArrowRecoveryChance(caster));
 			}
 		}
 		AddMetricsModification(

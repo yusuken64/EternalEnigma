@@ -85,29 +85,9 @@ public class Skill : ScriptableObject
 	[SerializeReference]
 	public List<PassiveResponse> PassiveResponses = new();
 
-	// Passive bonus scaled by rank: every integer stat grows one step per extra rank; DropRate is not scaled.
-	internal StatModification GetScaledPassiveModification()
-	{
-		var baseMod = PassiveStatModification;
-		if (baseMod == null) return new StatModification();
-		var scaling = RankScaling ?? new SkillRankScaling();
-		int rank = Rank < 1 ? 1 : Rank;
-		return new StatModification
-		{
-			HPMax = scaling.ScaleBuff(baseMod.HPMax, rank),
-			SPMax = scaling.ScaleBuff(baseMod.SPMax, rank),
-			HungerMax = scaling.ScaleBuff(baseMod.HungerMax, rank),
-			Strength = scaling.ScaleBuff(baseMod.Strength, rank),
-			Defense = scaling.ScaleBuff(baseMod.Defense, rank),
-			EXPOnKill = scaling.ScaleBuff(baseMod.EXPOnKill, rank),
-			HungerAccumulateThreshold = scaling.ScaleBuff(baseMod.HungerAccumulateThreshold, rank),
-			HPRegenAcccumlateThreshold = scaling.ScaleBuff(baseMod.HPRegenAcccumlateThreshold, rank),
-			SPRegenAcccumlateThreshold = scaling.ScaleBuff(baseMod.SPRegenAcccumlateThreshold, rank),
-			DropRate = baseMod.DropRate,
-			ActionsPerTurnMax = scaling.ScaleBuff(baseMod.ActionsPerTurnMax, rank),
-			AttacksPerTurnMax = scaling.ScaleBuff(baseMod.AttacksPerTurnMax, rank),
-		};
-	}
+	// Passive bonus scaled by rank: ints +1 step per rank, crit/evasion/hit ×(1 + 0.25 per extra rank), DropRate unscaled.
+	internal StatModification GetScaledPassiveModification() =>
+		StatScaling.Scale(PassiveStatModification, RankScaling ?? new SkillRankScaling(), Rank < 1 ? 1 : Rank);
 
 	[TextArea]
 	public string Description;

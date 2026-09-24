@@ -25,6 +25,28 @@ public static class SkillIntents
 	public static bool TargetsEnemies(Skill skill) => skill?.TargetSelector != null &&
 		(skill.TargetSelector.Team == TargetTeam.Enemies || skill.TargetSelector.Team == TargetTeam.All);
 
+	private static SkillIntent ClassifyStatus(StatusEffect status, bool enemies)
+	{
+		if (status == null)
+			return SkillIntent.None;
+
+		var name = status.GetEffectName();
+		if (enemies)
+		{
+			if (DisablingStatuses.Contains(name))
+				return SkillIntent.CrowdControl;
+			else if (DebuffStatuses.Contains(name))
+				return SkillIntent.Debuff;
+		}
+		else
+		{
+			if (status is TimedBuffStatusEffect || name == "Strength" || name == "Hot")
+				return SkillIntent.Buff;
+		}
+
+		return SkillIntent.None;
+	}
+
 	public static SkillIntent Classify(Skill skill)
 	{
 		if (skill == null || skill.ActivationType != ActivationType.Active || skill.Targeting == SkillTargeting.InventoryItem || skill.ActionEffects == null)
@@ -87,26 +109,49 @@ public static class SkillIntents
 			{
 				if (applyStatus.StatusEffect != null)
 				{
-					var name = applyStatus.StatusEffect.GetEffectName();
-					if (enemies)
+					result |= ClassifyStatus(applyStatus.StatusEffect, enemies);
+				}
+			}
+			else if (effect is ScaledDamageAction || effect is PierceLineAction || effect is RandomHitsAction)
+			{
+				if (enemies)
+					result |= SkillIntent.Damage;
+			}
+			else if (effect is ScaledHealAction)
+			{
+				result |= SkillIntent.Heal;
+			}
+			else if (effect is RestoreSPAction)
+			{
+				result |= SkillIntent.Buff;
+			}
+			else if (effect is ApplyStatusChanceAction c)
+			{
+				if (c.StatusEffect != null)
+				{
+					if (c.OnCaster)
 					{
-						if (DisablingStatuses.Contains(name))
-						{
-							result |= SkillIntent.CrowdControl;
-						}
-						else if (DebuffStatuses.Contains(name))
-						{
-							result |= SkillIntent.Debuff;
-						}
+						result |= SkillIntent.Buff;
 					}
 					else
 					{
-						if (applyStatus.StatusEffect is TimedBuffStatusEffect || name == "Strength" || name == "Hot")
-						{
-							result |= SkillIntent.Buff;
-						}
+						result |= ClassifyStatus(c.StatusEffect, enemies);
 					}
 				}
+			}
+			else if (effect is CleanseAction x)
+			{
+				if (x.Buffs && enemies)
+					result |= SkillIntent.Debuff;
+				// ICureEffect case already covers Ailments/Binds for party targets
+			}
+			else if (effect is SpreadAilmentsAction)
+			{
+				result |= SkillIntent.Debuff;
+			}
+			else if (effect is FieldKitchenAction)
+			{
+				result |= SkillIntent.Utility;
 			}
 		}
 

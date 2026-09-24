@@ -127,15 +127,20 @@ namespace EternalEnigma.Tests
             building.Interact(World.TownPlayer, null);
             yield return null;
             var trainer = (BallistaDialog)Manager.CurrentDialog;
-            var skill = World.Configuration.LearnableSkills.First();
-            trainer.SkillGridItems[0].ToggleOn_Clicked();
+            var ally = World.TownPlayer.ControllingTownAlly;
+            var offers = TrainerOffers.Build(ally, World.Configuration);
+            int index = offers.FindIndex(o => o.CanLearn && o.CurrentRank == 0);
+            Assert.That(index, Is.GreaterThanOrEqualTo(0), "The starting hero's class offers a learnable skill.");
+            var skill = offers[index].Skill;
+            int cost = offers[index].NextCost;
+            trainer.SkillGridItems[index].ToggleOn_Clicked();
             yield return null;
             trainer.BallistaPurchaseDialog.Purchase_Clicked();
             Assert.That(Manager.CurrentDialog, Is.SameAs(trainer));
             var save = SaveSystem.LoadData().TownSaveData;
             Assert.That(save.RecruitedAlliesData[0].Skills, Does.Contain(skill.SkillName));
-            Assert.That(save.Gold, Is.EqualTo(10000 - skill.LearnCost));
-            Assert.That(World.Services.Learn(World.TownPlayer.ControllingTownAlly, skill, out _), Is.False);
+            Assert.That(save.Gold, Is.EqualTo(10000 - cost));
+            Assert.That(World.Services.Learn(ally, skill, out _), Is.False, "Rank 2 needs a higher level (or the skill is single-rank).");
             Assert.That(World.TownPlayer.Gold, Is.EqualTo(save.Gold));
         }
 

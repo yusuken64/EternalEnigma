@@ -26,7 +26,7 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Skills")]
     public static void RunSkills() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.InventorySkillTargetingTests", "EternalEnigma.Tests.SkillRankRegressionTests", "EternalEnigma.Tests.CombatFoundationTests", "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.AllyAiClassPartyTests");
+        "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.InventorySkillTargetingTests", "EternalEnigma.Tests.SkillRankRegressionTests", "EternalEnigma.Tests.CombatFoundationTests", "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.AllyAiClassPartyTests", "EternalEnigma.Tests.ClassSkillSmokeTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run AllyAI")]
     public static void RunAllyAI() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

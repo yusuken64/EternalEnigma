@@ -56,6 +56,76 @@ public static class SkillEstimates
 			{
 				sum += s.PercentPerHit * Math.Max(1, SongRules.ActiveSongs(caster).Count) * BaseAttackDamage(caster, target);
 			}
+			// ScaledDamageAction case
+			else if (effect is ScaledDamageAction scaled)
+			{
+				float perHit = 0f;
+				if (scaled.Scaling == DamageScaling.Strength || scaled.Scaling == DamageScaling.ShieldStrength)
+				{
+					perHit = BaseAttackDamage(caster, target) * scaled.Percent;
+				}
+				else if (scaled.Scaling == DamageScaling.Magic)
+				{
+					perHit = (scaled.BaseDamage + scaled.PerLevel * Math.Max(1, caster.Vitals.Level)) *
+						MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaled.Percent;
+				}
+				if (skill.RankScaling != null)
+					perHit = skill.RankScaling.ScalePower((int)perHit, rank);
+				perHit = ElementMath.Apply((int)perHit, target.FinalStats, scaled.Element);
+				if (scaled.RollToHit)
+					perHit *= CombatMath.HitChance(caster, target);
+				sum += perHit * scaled.Hits;
+			}
+			// PierceLineAction case
+			else if (effect is PierceLineAction pierce)
+			{
+				if (pierce.Damage != null)
+				{
+					// Estimate as if it were a ScaledDamageAction
+					var scaledDmg = pierce.Damage;
+					float perHit = 0f;
+					if (scaledDmg.Scaling == DamageScaling.Strength || scaledDmg.Scaling == DamageScaling.ShieldStrength)
+					{
+						perHit = BaseAttackDamage(caster, target) * scaledDmg.Percent;
+					}
+					else if (scaledDmg.Scaling == DamageScaling.Magic)
+					{
+						perHit = (scaledDmg.BaseDamage + scaledDmg.PerLevel * Math.Max(1, caster.Vitals.Level)) *
+							MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaledDmg.Percent;
+					}
+					if (skill.RankScaling != null)
+						perHit = skill.RankScaling.ScalePower((int)perHit, rank);
+					perHit = ElementMath.Apply((int)perHit, target.FinalStats, scaledDmg.Element);
+					if (scaledDmg.RollToHit)
+						perHit *= CombatMath.HitChance(caster, target);
+					sum += perHit * scaledDmg.Hits;
+				}
+			}
+			// RandomHitsAction case
+			else if (effect is RandomHitsAction random)
+			{
+				if (random.Damage != null)
+				{
+					// Estimate as if it were a ScaledDamageAction
+					var scaledDmg = random.Damage;
+					float perHit = 0f;
+					if (scaledDmg.Scaling == DamageScaling.Strength || scaledDmg.Scaling == DamageScaling.ShieldStrength)
+					{
+						perHit = BaseAttackDamage(caster, target) * scaledDmg.Percent;
+					}
+					else if (scaledDmg.Scaling == DamageScaling.Magic)
+					{
+						perHit = (scaledDmg.BaseDamage + scaledDmg.PerLevel * Math.Max(1, caster.Vitals.Level)) *
+							MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaledDmg.Percent;
+					}
+					if (skill.RankScaling != null)
+						perHit = skill.RankScaling.ScalePower((int)perHit, rank);
+					perHit = ElementMath.Apply((int)perHit, target.FinalStats, scaledDmg.Element);
+					if (scaledDmg.RollToHit)
+						perHit *= CombatMath.HitChance(caster, target);
+					sum += perHit * (random.MinHits + random.MaxHits) / 2f;
+				}
+			}
 		}
 
 		return Math.Max(0f, sum);
@@ -77,6 +147,14 @@ public static class SkillEstimates
 			if (effect is TakeHealAction h)
 			{
 				int healed = skill.RankScaling != null ? skill.RankScaling.ScalePower(h.healing, rank) : h.healing;
+				sum += healed;
+			}
+			// ScaledHealAction case: use caster-independent value (level 1) since no caster parameter available
+			else if (effect is ScaledHealAction scaledHeal)
+			{
+				int healed = scaledHeal.BaseHeal + (int)(scaledHeal.PerLevel * 1);
+				if (skill.RankScaling != null)
+					healed = skill.RankScaling.ScalePower(healed, rank);
 				sum += healed;
 			}
 		}

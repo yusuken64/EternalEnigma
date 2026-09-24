@@ -137,7 +137,8 @@ namespace EternalEnigma.Tests
                     Assert.That(HeroClass.AllowsItem(hero.PrimaryClass, hero.SecondaryClass, item), Is.True,
                         label + " starts with " + item.ItemName + " outside its class");
             }
-            // Phase 7 assigns every hero a class and then requires PrimaryClass != null here.
+            Assert.That(heroes.Where(h => h.PrimaryClass == null).Select(h => h.name), Is.Empty,
+                "Every hero needs a class. Run Tools > Eternal Enigma > Classes > Generate All Class Content.");
         }
     }
 }

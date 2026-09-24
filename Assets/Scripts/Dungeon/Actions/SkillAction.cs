@@ -13,6 +13,8 @@ internal class SkillAction : GameAction
 	private MissileTargeting.Hit missileHit;
 	private List<Character> affected = new();
 
+	internal Skill Skill => skill;
+
 	public SkillAction()
 	{
 
@@ -38,6 +40,18 @@ internal class SkillAction : GameAction
 		{
 			missileHit = MissileTargeting.Trace(caster, direction, skill.MissileRange);
 			affected = skill.TargetingRules.GetMissileAffected(caster, missileHit);
+		}
+		if (skill.UsesArrows && skill.Targeting != SkillTargeting.InventoryItem)
+		{
+			if (skill.ArrowCostMode == ArrowCostMode.PerTarget)
+			{
+				int fired = ArrowSupply.Consume(caster, affected.Count);
+				if (fired < affected.Count) affected = affected.Take(fired).ToList();
+			}
+			else
+			{
+				ArrowSupply.Consume(caster, skill.ArrowCost);
+			}
 		}
 		AddMetricsModification(
 			caster,

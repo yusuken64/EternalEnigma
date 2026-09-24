@@ -72,6 +72,8 @@ public class TurnManager : MonoBehaviour
 					foreach (var actor2 in actors)
 					{
 						gameActions.AddRange(actor2.GetResponseTo(sideEffectAction));
+						if (actor2 is Character responder && responder != null)
+							gameActions.AddRange(responder.GetClassResponses(sideEffectAction));
 					}
 				}
 

@@ -20,7 +20,7 @@ namespace JuicyChickenGames.Menu
             {
                 return new DynamicActionInfo()
                 {
-                    ActionName = skill.Rank > 1 ? $"{skill.SkillName} R{skill.Rank}({skill.SPCost})" : $"{skill.SkillName}({skill.SPCost})",
+                    ActionName = SkillLabel(skill),
                     ClickAction = () =>
                     {
                         if (character.CanCast(skill, out string reason))
@@ -108,5 +108,14 @@ namespace JuicyChickenGames.Menu
                 item.navigation = customNav;
             }
         }
+
+		private static string SkillLabel(Skill skill)
+		{
+			if (!skill.UsesArrows)
+				return skill.Rank > 1 ? $"{skill.SkillName} R{skill.Rank}({skill.SPCost})" : $"{skill.SkillName}({skill.SPCost})";
+			string rankPrefix = skill.Rank > 1 ? $" R{skill.Rank}" : "";
+			string arrows = skill.ArrowCostMode == ArrowCostMode.PerTarget ? "1/target" : skill.ArrowCost.ToString();
+			return $"{skill.SkillName}{rankPrefix}({skill.SPCost} SP, {arrows} arrows)";
+		}
 	}
 }

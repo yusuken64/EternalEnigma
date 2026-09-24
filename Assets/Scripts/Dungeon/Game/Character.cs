@@ -86,6 +86,20 @@ public abstract class Character : MonoBehaviour, Actor
 			return false;
 		}
 
+		if (skill.UsesArrows)
+		{
+			if (!ArrowSupply.HasBow(this))
+			{
+				reason = "Needs a bow";
+				return false;
+			}
+			if (ArrowSupply.Count(this) < ArrowSupply.RequiredToCast(skill))
+			{
+				reason = "Not enough arrows";
+				return false;
+			}
+		}
+
 		bool hasTargets = skill.Targeting == SkillTargeting.Missile || (inventoryTargeting ? skill.GetInventoryTargets(this).Any() :
 			(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any());
 		if (!hasTargets)
@@ -449,11 +463,10 @@ disp: {displayedVitals}");
 
 	public T ApplyStatusEffect<T>(T newStatusPrefab) where T : StatusEffect
 	{
-		var matchingStatus = StatusEffects.FirstOrDefault(x => x.GetType() == newStatusPrefab.GetType());
+		var matchingStatus = StatusEffects.FirstOrDefault(x => x != null && x.StackKey == newStatusPrefab.StackKey);
 		if (matchingStatus != null)
 		{
-			var existingStatus = (T)matchingStatus;
-			existingStatus.ReApply(newStatusPrefab);
+			matchingStatus.ReApply(newStatusPrefab);
 			UpdateCachedStats();
 			DisplayedStats.Sync(FinalStats);
 
@@ -473,8 +486,10 @@ disp: {displayedVitals}");
 
 	public T RemoveStatusEffect<T>(T expiredStatus) where T : StatusEffect
 	{
-		T existingStatus = (T)StatusEffects.FirstOrDefault(x => x.GetType() == expiredStatus.GetType());
-		StatusEffects.Remove(existingStatus);
+		var existing = StatusEffects.Contains(expiredStatus) ? expiredStatus :
+			StatusEffects.FirstOrDefault(x => x != null && x.StackKey == expiredStatus.StackKey);
+		T existingStatus = existing as T;
+		StatusEffects.Remove(existing);
 		UpdateCachedStats();
 		DisplayedStats.Sync(FinalStats);
 
@@ -493,6 +508,44 @@ disp: {displayedVitals}");
 
 		//TODO: check abilities, skills, weapons
 		return ret.ToList();
+	}
+
+	// Status-effect and passive-skill responses. Called once per actor per executed action by TurnManager.
+	internal List<GameAction> GetClassResponses(GameAction action)
+	{
+		var result = new List<GameAction>();
+		if (this == null || Vitals == null || Vitals.HP <= 0 || action == null) return result;
+		foreach (var status in StatusEffects.ToList())
+		{
+			if (status == null || status.IsExpired()) continue;
+			var responses = status.GetResponseTo(this, action);
+			if (responses != null) result.AddRange(responses.Where(x => x != null));
+		}
+		foreach (var skill in (Skills ?? new List<Skill>()).ToList())
+		{
+			if (skill == null || skill.ActivationType != ActivationType.Passive || skill.PassiveResponses == null) continue;
+			foreach (var passive in skill.PassiveResponses)
+			{
+				if (passive == null) continue;
+				var responses = passive.Respond(this, skill, action);
+				if (responses != null) result.AddRange(responses.Where(x => x != null));
+			}
+		}
+		return result;
+	}
+
+	// Lets this character's statuses and passive skills adjust damage about to be dealt to anyone.
+	internal void InterceptDamage(DamageContext context)
+	{
+		if (context == null || this == null || Vitals == null || Vitals.HP <= 0) return;
+		foreach (var status in StatusEffects.ToList())
+			if (status != null && !status.IsExpired()) status.ModifyIncomingDamage(this, context);
+		foreach (var skill in (Skills ?? new List<Skill>()).ToList())
+		{
+			if (skill == null || skill.ActivationType != ActivationType.Passive || skill.PassiveResponses == null) continue;
+			foreach (var passive in skill.PassiveResponses)
+				passive?.ModifyIncomingDamage(this, skill, context);
+		}
 	}
 
 	public abstract IEnumerable<GameAction> GetResponseTo(GameAction sideEffectAction);
@@ -572,10 +625,11 @@ disp: {displayedVitals}");
 		var game = Game.Instance;
 		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team == Team.Player);
 
-		return playerTeamCharacters
+		var visible = playerTeamCharacters
 			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
 			.ThenBy(x => x.TilemapPosition == PursuitPosition)
-			.FirstOrDefault(x => game.CurrentDungeon.CanSee(this, x));
+			.Where(x => game.CurrentDungeon.CanSee(this, x));
+		return EnemyTargeting.SelectTarget(this, visible);
 	}
 
 	// Match BoundsInt's exclusive maximum edges while ignoring the Z dimension.

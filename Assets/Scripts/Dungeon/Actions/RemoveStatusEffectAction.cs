@@ -20,7 +20,8 @@ public class RemoveStatusEffectAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		removedInstance = target.RemoveStatusEffect(statusEffectPrefab);
-		return new();
+		var effects = removedInstance != null ? removedInstance.GetExpiryEffects(target) : null;
+		return effects ?? new();
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)

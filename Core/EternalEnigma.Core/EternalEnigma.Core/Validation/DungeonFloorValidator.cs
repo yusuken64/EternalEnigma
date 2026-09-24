@@ -80,6 +80,9 @@ public static class DungeonFloorValidator
         var placementCells = new HashSet<GridPoint>();
         ValidatePlacements(floor, options, errors, placementCells);
 
+        // 6b. Validate gathering sites
+        ValidateGathering(floor, options, errors, placementCells);
+
         // 7. Validate reachability: every Floor cell is reachable from Start
         var reachable = GridSearch.VisitOrder(floor.Start, floor.Neighbors);
         var reachableSet = new HashSet<GridPoint>(reachable);
@@ -138,6 +141,8 @@ public static class DungeonFloorValidator
                 "throne.items: Throne floor must have no items.");
             Check(floor.Traps.Count == 0,
                 "throne.traps: Throne floor must have no traps.");
+            Check(floor.GatheringSites.Count == 0,
+                "throne.gathering: Throne floor must have no gathering sites.");
         }
 
         // 10. Validate Start and Stairs layers contain exactly one true cell at Start/Stairs
@@ -223,6 +228,65 @@ public static class DungeonFloorValidator
             $"items.count: Floor has {floor.Items.Count} items, expected {options.ItemCount}.");
         Check(floor.Traps.Count == options.TrapCount,
             $"traps.count: Floor has {floor.Traps.Count} traps, expected {options.TrapCount}.");
+    }
+
+    private static void ValidateGathering(DungeonFloor floor, DungeonFloorOptions options, List<string> errors, HashSet<GridPoint> placementCells)
+    {
+        var floorLayer = floor.Layers[DungeonLayers.Floor];
+
+        bool floorValid = true;
+        bool roomValid = true;
+        bool pathValid = true;
+        bool overlapValid = true;
+        bool distinctValid = true;
+        bool countValid = true;
+
+        // Get the required path for checking
+        var requiredPath = GatheringPlacement.RequiredPath(floorLayer, floor.Start, floor.Stairs);
+        var requiredPathSet = new HashSet<GridPoint>(requiredPath);
+
+        // Check each gathering site
+        foreach (var site in floor.GatheringSites)
+        {
+            // Check if site is on floor
+            if (floorValid && !floorLayer.At(site.Cell))
+                floorValid = false;
+
+            // Check if site is in a room
+            if (roomValid && !floor.IsRoom(site.Cell))
+                roomValid = false;
+
+            // Check if site is on required path
+            if (pathValid && requiredPathSet.Contains(site.Cell))
+                pathValid = false;
+
+            // Check if site overlaps start, stairs, or other placements
+            if (overlapValid && (site.Cell.Equals(floor.Start) || site.Cell.Equals(floor.Stairs) || placementCells.Contains(site.Cell)))
+                overlapValid = false;
+        }
+
+        // Check for distinct site cells
+        var siteCells = floor.GatheringSites.Select(s => s.Cell).ToList();
+        if (siteCells.Count != new HashSet<GridPoint>(siteCells).Count)
+            distinctValid = false;
+
+        // Check count
+        if (floor.GatheringSites.Count > options.GatheringCount)
+            countValid = false;
+
+        // Add error messages (at most once per rule)
+        if (!floorValid)
+            errors.Add("gathering.floor: Gathering sites must be on Floor.");
+        if (!roomValid)
+            errors.Add("gathering.room: Gathering sites must be in rooms.");
+        if (!pathValid)
+            errors.Add("gathering.path: Gathering sites must not be on the Start-to-Stairs path.");
+        if (!overlapValid)
+            errors.Add("gathering.overlap: Gathering sites must not overlap Start, Stairs or other placements.");
+        if (!distinctValid)
+            errors.Add("gathering.distinct: Gathering site cells must be distinct.");
+        if (!countValid)
+            errors.Add($"gathering.count: Floor has {floor.GatheringSites.Count} gathering sites, at most {options.GatheringCount} allowed.");
     }
 
     private static void ValidateMarkerLayer(DungeonFloor floor, string layerName, GridPoint expectedPosition, List<string> errors)

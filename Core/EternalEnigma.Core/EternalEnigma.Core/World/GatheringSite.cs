@@ -19,4 +19,7 @@ public readonly struct GatheringSite : IEquatable<GatheringSite>
     public override bool Equals(object? obj) => obj is GatheringSite other && Equals(other);
     public override int GetHashCode() => unchecked((Cell.GetHashCode() * 397 ^ (int)Kind) * 397 ^ Roll);
     public override string ToString() => $"{Cell}:{Kind}#{Roll}";
+
+    public static bool operator ==(GatheringSite left, GatheringSite right) => left.Equals(right);
+    public static bool operator !=(GatheringSite left, GatheringSite right) => !left.Equals(right);
 }

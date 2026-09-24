@@ -124,6 +124,15 @@ public static class DungeonFloorGenerator
         var (startPos, stairsPos, enemies, gold, items, traps) =
             GeneratePlacements(options, place, floorLayer, rooms, W, H);
 
+        // Step 7: optional gathering sites. Own seed stream (900+attempt) drawn after every other stream,
+        // so existing layers and placements are unchanged.
+        var occupiedCells = new List<GridPoint> { startPos, stairsPos };
+        occupiedCells.AddRange(enemies.Select(p => p.Cell));
+        occupiedCells.AddRange(gold.Select(p => p.Cell));
+        occupiedCells.AddRange(items.Select(p => p.Cell));
+        occupiedCells.AddRange(traps.Select(p => p.Cell));
+        var gatheringSites = GatheringPlacement.Place(floorLayer, startPos, stairsPos, occupiedCells, seed, options.GatheringCount, attempt);
+
         // Create and return the floor
         var floor = new DungeonFloor(
             seed: seed,
@@ -135,7 +144,8 @@ public static class DungeonFloorGenerator
             enemies: enemies,
             gold: gold,
             items: items,
-            traps: traps
+            traps: traps,
+            gatheringSites: gatheringSites
         );
 
         // Validate before returning

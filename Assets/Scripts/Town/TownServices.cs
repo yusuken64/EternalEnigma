@@ -45,6 +45,21 @@ public sealed class TownServices
         return true;
     }
 
+    public static int SellPrice(InventoryItem item) =>
+        item?.ItemDefinition is MaterialItemDefinition material ? material.SellValue * System.Math.Max(1, item.StackStock ?? 1) : 0;
+
+    public bool Sell(InventoryItem item, out string reason)
+    {
+        reason = "This item cannot be sold.";
+        int price = SellPrice(item);
+        if (price <= 0 || !Player.Inventory.Contains(item)) return false;
+        Player.Inventory.Remove(item);
+        Player.Gold += price;
+        town.SaveProgress();
+        reason = null;
+        return true;
+    }
+
     public bool Learn(TownAlly ally, Skill skill, out string reason)
     {
         reason = "This skill cannot be learned.";

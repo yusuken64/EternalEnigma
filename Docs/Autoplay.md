@@ -37,9 +37,11 @@ equipment upgrades, fights with the existing ally attack policy, uses restorativ
 items, and confirms the real stair/exit prompt. Content IDs, positions, number of
 dungeons and floor counts are not encoded in the route. Supporting new mechanics
 can still require policy changes. This is a baseline bot, not a claim of optimal
-combat or a human-equivalent difficulty measurement; it currently has no active
-skill selection or deliberate grinding strategy. Optional destination coverage
-does not assert that every dialogue, shop offer or skill has been exercised.
+combat or a human-equivalent difficulty measurement; it casts skills through the
+same ally skill AI as AI-controlled party members (revive, emergency heal, cure,
+buff upkeep, crowd control, damage) and has no deliberate grinding strategy.
+Optional destination coverage does not assert that every dialogue, shop offer or
+skill has been exercised.
 
 Outcomes distinguish Victory, Defeat, Stalled, TimeLimit, Unsupported, GameError,
 AutomationError and manual Stopped. There are no automatic retries or hidden
@@ -52,7 +54,8 @@ Each run writes a unique directory under `Logs/Playthroughs` in the editor or
 
 - `report.json`: options, outcome, explanation, seed/generation fingerprint,
   app/Unity/build identifiers, elapsed time, actions, damage/healing, inventory,
-  party and enemies, and completed/visited objectives.
+  party and enemies, and completed/visited objectives. `report.json` also lists
+  each actor's class and per-actor skill casts (`SkillUses`).
 - `actions.jsonl`: chronological actions with location, floor, position, party
   leader resources and elapsed time.
 - `save.json`: the isolated campaign save using production serialization.

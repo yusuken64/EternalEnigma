@@ -19,6 +19,7 @@ public class Ally : Character
 	private AllyRangedPositioningPolicy AllyRangedPositioningPolicy;
 	private AllyPursuitPolicy PursuitPolicy;
 	private WanderPolicy WanderPolicy;
+	internal AllySkillPolicy SkillPolicy;
 	public override bool IsWaitingForPlayerInput { get; set; }
 
 	public SpriteRenderer CirlcleRenderer;
@@ -27,6 +28,7 @@ public class Ally : Character
 
 	private void Start()
 	{
+		SkillPolicy = new AllySkillPolicy(Game.Instance, this, 0);
 		AllyAttackPolicy = new AllyAttackPolicy(Game.Instance, this, 1);
 		AllyRangedPositioningPolicy = new AllyRangedPositioningPolicy(Game.Instance, this, 2);
 		PursuitPolicy = new AllyPursuitPolicy(Game.Instance, this, 3);
@@ -58,6 +60,12 @@ public class Ally : Character
 				_forcedAction
 			};
 			_forcedAction = null;
+			return;
+		}
+
+		if (SkillPolicy != null && SkillPolicy.ShouldRun())
+		{
+			determinedActions = SkillPolicy.GetActions();
 			return;
 		}
 

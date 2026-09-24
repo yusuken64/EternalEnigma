@@ -744,20 +744,29 @@ Each item below can be built and merged independently once phase 2 lands.
 
 ### Phase 6: ally AI skill use
 
-- Add an `AllySkillPolicy` ahead of the existing attack/pursuit/ranged policies
-  in `Ally`. It scores castable skills each turn, in priority order:
-  1. revive
-  2. emergency heal (below 30%)
+Implemented in `Assets/Scripts/Dungeon/Game/AllyAI/`.
+
+- `AllySkillPolicy` runs before the attack/pursuit/ranged policies for every
+  AI-controlled ally (never the player-controlled one). It tries seven
+  evaluators in order and casts the first valid choice:
+  1. revive (a downed ally is in range)
+  2. emergency heal (a party member below 30% HP)
   3. cure binds and ailments
-  4. keep class buffs (songs, commands, barriers) running while enemies are visible
-  5. crowd control on the most dangerous enemy
-  6. damage skills when they beat a normal attack
-- It keeps an SP reserve for heals and revives, and never uses arrow skills when
-  arrows are nearly gone (it keeps a few for normal shots).
-- `AllyStrategy` affects it: HoldPosition skips movement skills, and Aggressive
-  lowers the SP reserve.
-- **Tests:** EditMode scenario tests for each priority and the SP/arrow reserves.
-  Extend the Autoplay harness (`Docs/Autoplay.md`) to run parties of every class.
+  4. keep songs, commands, barriers, buffs and clones running while enemies are visible
+  5. crowd control or debuffs, scored by enemy danger (strength × health, bosses ×2)
+  6. damage skills when the estimate beats a normal attack by 25%
+  7. out-of-combat utility (Disarm)
+- The AI is class-agnostic. It reads what a skill does from its effect types
+  (`SkillIntents.Classify`), so new content only needs the existing effect
+  classes. Cure skills use `CureStatusEffectsAction`.
+- **SP reserve:** the highest SP cost among the ally's heal/revive skills,
+  halved for Aggressive. Other skills can't dip below it.
+- **Arrow reserve:** arrow skills keep at least 3 arrows in the bag.
+- HoldPosition skips movement skills. Retreat is never cast by the AI.
+- Autoplay uses the same AI for the controlled hero and reports per-actor skill
+  casts and classes.
+- **Tests:** `AllySkillIntentTests` (EditMode), `AllySkillPolicyTests` and
+  `AllyAiClassPartyTests` (`node Tools/unity-mcp.mjs harness AllyAI`).
 
 ### Phase 7: content and balance
 

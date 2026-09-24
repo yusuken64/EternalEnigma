@@ -10,9 +10,10 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
     public int GoldCount { get; }
     public int ItemCount { get; }
     public int TrapCount { get; }
+    public int GatheringCount { get; }
 
     public DungeonFloorOptions(int seed, int width = 32, int height = 32, bool isThroneFloor = false,
-        int enemyCount = 10, int goldCount = 5, int itemCount = 5, int trapCount = 5)
+        int enemyCount = 10, int goldCount = 5, int itemCount = 5, int trapCount = 5, int gatheringCount = 3) // == GatheringPlacement.DefaultCount
     {
         if (width < 12 || width > 128)
             throw new ArgumentOutOfRangeException(nameof(width), "Width must be between 12 and 128.");
@@ -26,10 +27,12 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
             throw new ArgumentOutOfRangeException(nameof(itemCount), "Item count must be between 0 and 64.");
         if (trapCount < 0 || trapCount > 64)
             throw new ArgumentOutOfRangeException(nameof(trapCount), "Trap count must be between 0 and 64.");
+        if (gatheringCount < 0 || gatheringCount > 16)
+            throw new ArgumentOutOfRangeException(nameof(gatheringCount), "Gathering count must be between 0 and 16.");
 
         if (isThroneFloor)
         {
-            if (width != 12 || height != 12 || enemyCount != 0 || goldCount != 0 || itemCount != 0 || trapCount != 0)
+            if (width != 12 || height != 12 || enemyCount != 0 || goldCount != 0 || itemCount != 0 || trapCount != 0 || gatheringCount != 0)
                 throw new ArgumentException("Throne floors are fixed 12x12 with no placements.");
         }
 
@@ -41,9 +44,10 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
         GoldCount = goldCount;
         ItemCount = itemCount;
         TrapCount = trapCount;
+        GatheringCount = gatheringCount;
     }
 
-    public static DungeonFloorOptions Throne(int seed) => new(seed, 12, 12, true, 0, 0, 0, 0);
+    public static DungeonFloorOptions Throne(int seed) => new(seed, 12, 12, true, 0, 0, 0, 0, 0);
 
     public bool Equals(DungeonFloorOptions? other) =>
         other != null &&
@@ -54,7 +58,8 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
         EnemyCount == other.EnemyCount &&
         GoldCount == other.GoldCount &&
         ItemCount == other.ItemCount &&
-        TrapCount == other.TrapCount;
+        TrapCount == other.TrapCount &&
+        GatheringCount == other.GatheringCount;
 
     public override bool Equals(object? obj) => Equals(obj as DungeonFloorOptions);
 
@@ -67,10 +72,11 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
             EnemyCount * 397 ^
             GoldCount * 397 ^
             ItemCount * 397 ^
-            TrapCount * 397
+            TrapCount * 397 ^
+            GatheringCount * 397
         );
 
     public override string ToString() =>
         $"DungeonFloorOptions(Seed={Seed}, {Width}x{Height}, IsThroneFloor={IsThroneFloor}, " +
-        $"Enemies={EnemyCount}, Gold={GoldCount}, Items={ItemCount}, Traps={TrapCount})";
+        $"Enemies={EnemyCount}, Gold={GoldCount}, Items={ItemCount}, Traps={TrapCount}, Gathering={GatheringCount})";
 }

@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     // === team stuff ====
     public int Floor;
     public int Gold;
+    internal bool PendingRetreat;
 
     // === Control Mode ===
     public PlayerControlMode CurrentControlMode { get; set; }
@@ -309,6 +310,13 @@ public class PlayerController : MonoBehaviour
 
     public void StartTurn()
     {
+        if (PendingRetreat)
+        {
+            PendingRetreat = false;
+            GameOverScreen.Retreat(this);
+            return;
+        }
+
         Common.Instance.MenuInputHandler.SwitchToPlayerInput();
 
         ControlledAlly.IsWaitingForPlayerInput = true;

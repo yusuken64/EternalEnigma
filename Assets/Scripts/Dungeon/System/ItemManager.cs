@@ -16,7 +16,8 @@ public class ItemManager : MonoBehaviour
 	internal InventoryItem GetAsInventoryItemByName(string itemName, int? stock = null)
 	{
 		var itemDefinition = ItemDefinitions.FirstOrDefault(x => x.ItemName == itemName) ??
-			DemoDungeonLoadout.Load()?.Items.FirstOrDefault(x => x.ItemName == itemName);
+			DemoDungeonLoadout.Load()?.Items.FirstOrDefault(x => x.ItemName == itemName) ??
+			(ItemDefinition)MaterialCatalog.Find(itemName);
 		if (itemDefinition == null) throw new InvalidOperationException($"Unknown item '{itemName}'.");
 		return itemDefinition.AsInventoryItem(stock);
 	}

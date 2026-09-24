@@ -5,7 +5,7 @@ namespace EternalEnigma.Core.World;
 /// <summary>Immutable, validated result type of dungeon-floor generation.</summary>
 public sealed class DungeonFloor
 {
-    public const int GenerationVersion = 1;
+    public const int GenerationVersion = 2;
     public int Width { get; }
     public int Height { get; }
     public int Seed { get; }
@@ -18,10 +18,11 @@ public sealed class DungeonFloor
     public IReadOnlyList<Placement> Gold { get; }
     public IReadOnlyList<Placement> Items { get; }
     public IReadOnlyList<Placement> Traps { get; }
+    public IReadOnlyList<GatheringSite> GatheringSites { get; }
 
     internal DungeonFloor(int seed, bool isThroneFloor, IDictionary<string, GridLayer> layers, IEnumerable<GridRect> rooms,
         GridPoint start, GridPoint stairs, IEnumerable<Placement> enemies, IEnumerable<Placement> gold,
-        IEnumerable<Placement> items, IEnumerable<Placement> traps)
+        IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null)
     {
         // Validate layers
         if (!layers.ContainsKey(DungeonLayers.Floor))
@@ -88,6 +89,7 @@ public sealed class DungeonFloor
         Gold = Array.AsReadOnly(gold.ToArray());
         Items = Array.AsReadOnly(items.ToArray());
         Traps = Array.AsReadOnly(traps.ToArray());
+        GatheringSites = Array.AsReadOnly((gatheringSites ?? Enumerable.Empty<GatheringSite>()).ToArray());
     }
 
     /// <summary>Checks if a cell is within bounds.</summary>

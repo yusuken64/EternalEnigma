@@ -175,12 +175,14 @@ public class Ally : Character
 
 	public override List<GameAction> GetTrapSideEffects()
 	{
-		if (currentInteractable is Trap trap)
+		if (currentInteractable is Trap trap && trap is not CaltropTrap)
 		{
 			currentInteractable = null;
 			Game.Instance.DoFloatingText(trap.GetInteractionText(), Color.yellow, this.VisualParent.transform.position);
 			return trap.GetTrapSideEffects(this);
 		}
+
+		if (currentInteractable is CaltropTrap) currentInteractable = null;
 
 		return new();
 	}
@@ -210,6 +212,7 @@ public class Ally : Character
 
 		InvalidateCachedStats();
 		SyncDisplayedStats();
+		TrapSense.RevealAround(this);
 		_forcedAction = null;
 	}
 

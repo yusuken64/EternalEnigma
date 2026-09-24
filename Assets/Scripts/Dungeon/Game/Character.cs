@@ -649,7 +649,7 @@ disp: {displayedVitals}");
 		var visible = playerTeamCharacters
 			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
 			.ThenBy(x => x.TilemapPosition == PursuitPosition)
-			.Where(x => game.CurrentDungeon.CanSee(this, x));
+			.Where(x => EnemyAwareness.CanNotice(this, x) && game.CurrentDungeon.CanSee(this, x));
 		return EnemyTargeting.SelectTarget(this, visible);
 	}
 

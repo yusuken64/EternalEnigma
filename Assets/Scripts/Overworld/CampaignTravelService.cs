@@ -78,11 +78,11 @@ public sealed class CampaignTravelService
         { TownMenu.ShowMessage("Clear the dungeon inside town to unlock the town gate."); return false; }
         town.WriteSaveData(); CampaignParty.ClearLiveParty(common); Context.Position = Context.Grid.Locations[Context.State.LocationId]; Load("Overworld"); return true;
     }
-    public bool FinishDungeon(bool victory, PlayerController player, bool travel = true)
+    public bool FinishDungeon(bool victory, PlayerController player, bool travel = true, bool keepLoot = false)
     {
         if (Context == null || Context.IsSandbox || transitioning || Context.State.PendingDungeon.Length == 0) return false;
         DungeonReturnService.Commit(common.GameSaveData, TownSceneLoader.ResolveSaved(), victory,
-            player.Gold, player.Inventory.InventoryItems, PartyRules.PartyMembers(Game.Instance));
+            player.Gold, player.Inventory.InventoryItems, PartyRules.PartyMembers(Game.Instance), keepLoot);
         Context.CompleteDungeon(victory);
         CampaignParty.ClearLiveParty(common);
         CampaignParty.Capture(common);

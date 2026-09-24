@@ -42,6 +42,18 @@ with {playerController.Gold} Treasure";
         TownSceneLoader.Load(configuration);
 	}
 
+	// Retreat skill: victory return rules (keep gold and items) without completing the dungeon.
+	public static void Retreat(PlayerController playerController)
+	{
+		var common = Common.Instance;
+		if (common.CampaignContext != null) { common.Travel.FinishDungeon(false, playerController, true, keepLoot: true); return; }
+		var configuration = TownSceneLoader.ResolveSaved();
+		DungeonReturnService.Commit(common.GameSaveData, configuration, false,
+			playerController.Gold, playerController.Inventory.InventoryItems, Game.Instance.Allies, keepLoot: true);
+		SaveSystem.SaveData(common.GameSaveData);
+		TownSceneLoader.Load(configuration);
+	}
+
 	public void Quit_Clicked()
 	{
         if (Common.Instance.CampaignContext != null) { Common.Instance.Travel.ReturnToMenu(); return; }

@@ -3,9 +3,15 @@ using System.Linq;
 
 public static class EnemyTargeting
 {
-	public static bool CanBeTargeted(Character target) =>
-		target != null && target.Vitals != null && target.Vitals.HP > 0 &&
-		!target.StatusEffects.Any(s => s is StealthStatusEffect && !s.IsExpired());
+	public static bool CanBeTargeted(Character target)
+	{
+		if (target == null || target.Vitals == null || target.Vitals.HP <= 0)
+			return false;
+		if (target.StatusEffects.Any(s => s is SafePassageStatusEffect && !s.IsExpired())) return false;
+		if (target.StatusEffects.Any(s => s is StealthStatusEffect && !s.IsExpired()))
+			return false;
+		return true;
+	}
 
 	// Candidates are already ordered by preference (nearest first) and filtered to what the enemy can see.
 	// Returns the enemy's taunter if it is among the targetable candidates, else the first targetable candidate.

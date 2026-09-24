@@ -80,6 +80,16 @@ public abstract class Character : MonoBehaviour, Actor
 			reason = "Invalid skill configuration";
 			return false;
 		}
+
+		foreach (var precondition in skill.ActionEffects.OfType<ISkillEffectPrecondition>())
+		{
+			if (!precondition.CanUse(this, out string preconditionReason))
+			{
+				reason = string.IsNullOrEmpty(preconditionReason) ? "Cannot use this now" : preconditionReason;
+				return false;
+			}
+		}
+
 		if (Vitals.SP < skill.SPCost)
 		{
 			reason = "Not enough SP";

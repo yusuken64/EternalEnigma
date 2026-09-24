@@ -82,7 +82,7 @@ public sealed class CampaignTravelService
     {
         if (Context == null || Context.IsSandbox || transitioning || Context.State.PendingDungeon.Length == 0) return false;
         DungeonReturnService.Commit(common.GameSaveData, TownSceneLoader.ResolveSaved(), victory,
-            player.Gold, player.Inventory.InventoryItems, Game.Instance.Allies);
+            player.Gold, player.Inventory.InventoryItems, PartyRules.PartyMembers(Game.Instance));
         Context.CompleteDungeon(victory);
         CampaignParty.ClearLiveParty(common);
         CampaignParty.Capture(common);

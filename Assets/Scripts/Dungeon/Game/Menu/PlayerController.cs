@@ -368,7 +368,7 @@ public class PlayerController : MonoBehaviour
     public void TakeControlNextAlly()
     {
         var allies = Game.Instance.Allies
-            .Where(x => x.Vitals.HP > 0)
+            .Where(x => x != null && x.Vitals.HP > 0 && !PartyRules.IsSummon(x))
             .ToList();
 
         if (allies.Count == 0)

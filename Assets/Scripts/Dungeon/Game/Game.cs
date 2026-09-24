@@ -23,6 +23,12 @@ public class Game : SingletonMonoBehaviour<Game>
 	public List<Ally> Allies;
 	public Ally AllyPrefab;
 
+	// Allies at 0 HP: out of Allies/AllCharacters, not destroyed. Restored by Revive or the next floor.
+	public List<Ally> DownedAllies = new();
+
+	// Per-floor reveal flags (Floor Sense, Farsight, Treasure Hunter). Reset every floor.
+	public FloorRevealState FloorReveal = new();
+
 	public List<Character> Enemies;
 
 	public TextMeshPro FloatingTextPrefab;
@@ -82,6 +88,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	private void InitializeGame()
 	{
+		DownedAllies.Clear();
+
 		foreach (Transform child in CharacterStatsDisplayContainer)
 		{
 			Destroy(child.gameObject);
@@ -172,6 +180,10 @@ public class Game : SingletonMonoBehaviour<Game>
 		Enemies.ForEach(x => DestroyImmediate(x.gameObject));
 		Enemies.Clear();
 
+		SummonRules.DespawnClones(this);
+		PartyRules.RestoreAllDowned(this, 1);
+		FloorReveal = new FloorRevealState();
+
 		yield return null;
 		if (CurrentDungeon != null)
 		{
@@ -203,6 +215,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		CurrentDungeon.InitializeCache();
 		FindFirstObjectByType<FogOverlay>().Initialize(CurrentDungeon);
 		FindFirstObjectByType<Minimap>().Initialize(CurrentDungeon);
+
+		FloorReveal.TreasureRevealed = PassiveModifiers.PartyHas<RevealTreasurePassive>(this);
 
 		yield return null;
 
@@ -276,7 +290,7 @@ public class Game : SingletonMonoBehaviour<Game>
     private TileWorldDungeon sightDungeon;
     internal readonly HashSet<Vector3Int> PlaybackVisibleTiles = new();
 
-    private IEnumerable<Ally> SightAllies() => Allies.Concat(DeadUnits.OfType<Ally>())
+    private IEnumerable<Ally> SightAllies() => Allies.Concat(DownedAllies).Concat(DeadUnits.OfType<Ally>())
         .Where(a => a != null && a.DisplayedVitals.HP > 0);
 
     private void LateUpdate() => RefreshSight();

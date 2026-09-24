@@ -426,7 +426,7 @@ public sealed class AutoplayRunner : MonoBehaviour
     private void DungeonTick(Game game)
     {
         if (!game.IsReady) return;
-        if (game.GameOverScreen.gameObject.activeSelf || !game.Allies.Any(a => a != null && a.Vitals.HP > 0))
+        if (game.GameOverScreen.gameObject.activeSelf || PartyRules.IsPartyDefeated(game))
         { Finish("Defeat", "Party defeated by normal gameplay. No retry or difficulty adjustment applied."); return; }
         if (game.TurnManager.IsProcessingTurn || game.NewFloorMessage.gameObject.activeSelf) return;
         if (MenuManager.Instance.CurrentDialog is StairConfirm stairsPrompt) { stairsPrompt.YesClicked(); Log("Confirm stairs/exit"); return; }
@@ -652,7 +652,7 @@ public sealed class AutoplayRunner : MonoBehaviour
         }
         Report.Floor = game.PlayerController.Floor; Report.Gold = game.PlayerController.Gold;
         Report.Inventory = game.PlayerController.Inventory.InventoryItems.Select(ItemLabel).ToArray();
-        Report.Party = game.Allies.Concat(game.DeadUnits.OfType<Ally>()).Where(a => a != null).Distinct().Select(a => new AutoplayActor {
+        Report.Party = game.Allies.Concat(game.DownedAllies).Concat(game.DeadUnits.OfType<Ally>()).Where(a => a != null && !PartyRules.IsSummon(a)).Distinct().Select(a => new AutoplayActor {
             Id = a.TownAllyId, Name = common.GameSaveData.Roster.FirstOrDefault(r => r.AllyId == a.TownAllyId)?.AllyName ?? a.name,
             HP = a.Vitals.HP, MaxHP = a.FinalStats.HPMax, SP = a.Vitals.SP, Hunger = a.Vitals.Hunger,
             Level = a.Vitals.Level, Strength = a.FinalStats.Strength, Defense = a.FinalStats.Defense, X = a.TilemapPosition.x, Y = a.TilemapPosition.y,

@@ -13,6 +13,8 @@ public class Ally : Character
 	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;
+	// True while this ally is in Game.DownedAllies (0 HP, not destroyed). Set by PartyRules.
+	public bool IsDowned { get; internal set; }
     private AllyAttackPolicy AllyAttackPolicy;
 	private AllyRangedPositioningPolicy AllyRangedPositioningPolicy;
 	private AllyPursuitPolicy PursuitPolicy;
@@ -33,7 +35,7 @@ public class Ally : Character
 
 	public override void DetermineAction()
 	{
-		if (Vitals.HP <= 0)
+		if (IsDowned || Vitals.HP <= 0)
 		{
 			determinedActions = new();
 			return;
@@ -100,7 +102,7 @@ public class Ally : Character
 
 		if (AllyStrategy == AllyStrategy.Aggresive)
 		{
-			pursuitTargets.AddRange(game.Enemies);
+			pursuitTargets.AddRange(game.Enemies.Where(x => x != null && x.Team != Team));
 
 			var aggressiveTarget = pursuitTargets
 				.Where(x => game.CurrentDungeon.CanSee(this, x))
@@ -206,6 +208,7 @@ public class Ally : Character
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
 
+		InvalidateCachedStats();
 		SyncDisplayedStats();
 		_forcedAction = null;
 	}

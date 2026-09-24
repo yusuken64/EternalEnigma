@@ -421,6 +421,7 @@ public class DeathAction : GameAction
 	private Vector3Int dropPosition;
 	private bool droppedItem;
 	private readonly Character attacker;
+	private bool downed;
 
 	public DeathAction() {}
 	public DeathAction(Character target, Character attacker)
@@ -432,9 +433,18 @@ public class DeathAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
         TrackAnimationTarget(target);
-		Game.Instance.Allies.Remove(target as Ally);
-		Game.Instance.Enemies.Remove(target as Enemy);
-		Game.Instance.DeadUnits.Add(target);
+		if (target is Ally ally && !PartyRules.IsSummon(ally))
+		{
+			// Downed, not dead: stays in the scene, leaves the Allies list, restored by Revive or the next floor.
+			downed = true;
+			PartyRules.MarkDowned(Game.Instance, ally);
+		}
+		else
+		{
+			Game.Instance.Allies.Remove(target as Ally);
+			Game.Instance.Enemies.Remove(target as Enemy);
+			Game.Instance.DeadUnits.Add(target);
+		}
 
 		var gainXP = new AddXPAction(attacker, target.FinalStats.EXPOnKill);
 
@@ -458,7 +468,7 @@ public class DeathAction : GameAction
             target.PlayDeathAnimation();
             yield return new WaitForSecondsRealtime(0.4f);
         }
-		target.VisualParent.gameObject.SetActive(false);
+		if (!downed) target.VisualParent.gameObject.SetActive(false);
 
 		Game game = Game.Instance;
 		if (droppedItem)
@@ -488,6 +498,7 @@ internal class AddXPAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		if (PartyRules.IsSummon(this.character)) return new();
 		this.AddMetricsModification(this.character, ((stats, vitals) =>
 		{
 			vitals.Exp += eXP;

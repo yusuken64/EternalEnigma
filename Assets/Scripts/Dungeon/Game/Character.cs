@@ -86,6 +86,15 @@ public abstract class Character : MonoBehaviour, Actor
 			return false;
 		}
 
+		foreach (var condition in skill.ActionEffects.OfType<ISkillCastCondition>())
+		{
+			if (!condition.CanCast(this, out var conditionReason))
+			{
+				reason = string.IsNullOrEmpty(conditionReason) ? "Cannot cast now" : conditionReason;
+				return false;
+			}
+		}
+
 		if (skill.UsesArrows)
 		{
 			if (!ArrowSupply.HasBow(this))
@@ -139,7 +148,9 @@ public abstract class Character : MonoBehaviour, Actor
 		cachedFinalStats = BaseStats +
 			Equipment?.GetEquipmentStatModification() +
 			passiveSkillStats +
-			StatusEffects.Aggregate(new StatModification(), (accumulate, statusEffect) => accumulate + statusEffect.GetStatModification());
+			StatusEffects.Aggregate(new StatModification(), (accumulate, statusEffect) => accumulate + statusEffect.GetStatModification())
+			+ SongAura.ModificationFor(this)
+			+ CommandStatusEffect.ModificationFor(this);
 	}
 
 	private Vitals vitals;
@@ -486,8 +497,8 @@ disp: {displayedVitals}");
 
 	public T RemoveStatusEffect<T>(T expiredStatus) where T : StatusEffect
 	{
-		var existing = StatusEffects.Contains(expiredStatus) ? expiredStatus :
-			StatusEffects.FirstOrDefault(x => x != null && x.StackKey == expiredStatus.StackKey);
+		var existing = StatusEffects.FirstOrDefault(x => ReferenceEquals(x, expiredStatus))
+			?? StatusEffects.FirstOrDefault(x => x != null && expiredStatus != null && x.GetType() == expiredStatus.GetType());
 		T existingStatus = existing as T;
 		StatusEffects.Remove(existing);
 		UpdateCachedStats();
@@ -623,7 +634,7 @@ disp: {displayedVitals}");
 	internal Character GetPursuitTarget()
 	{
 		var game = Game.Instance;
-		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team == Team.Player);
+		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team != Team && x.Team != Team.Neutral);
 
 		var visible = playerTeamCharacters
 			.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))

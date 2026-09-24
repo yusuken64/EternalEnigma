@@ -11,6 +11,9 @@ public class Enemy : Character
 
 	public string Description { get; internal set; }
 
+	// Bosses resist Dominate. Authored on the enemy prefab (Phase 7 content).
+	public bool IsBoss;
+
     public List<PolicyBase> Policies;
     public override bool IsWaitingForPlayerInput { get; set; }
 

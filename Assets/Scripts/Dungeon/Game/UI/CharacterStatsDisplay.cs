@@ -11,6 +11,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 	public StatsDisplay HungerDisplay;
 
 	public Character Character;
+	private string baseName;
 
 	internal void Setup(Character character)
 	{
@@ -18,6 +19,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 
 		if (character is Ally ally)
 		{
+			baseName = ally.CharacterName;
 			NameText.text = ally.CharacterName;
 		}
 
@@ -40,6 +42,12 @@ public class CharacterStatsDisplay : MonoBehaviour
 
 	internal void UpdateUI()
 	{
+		if (Character is Ally ally && baseName != null)
+		{
+			string label = ally.IsDowned ? $"{baseName} (Downed)" : baseName;
+			if (NameText.text != label) NameText.text = label;
+		}
+
 		LevelDisplay.UpdateUI();
 		HpDisplay.UpdateUI();
 		SpDisplay.UpdateUI();

@@ -281,6 +281,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 
+		ClassPassives.OnFloorStart(this);
 		PlayerController.ControlledAlly.currentInteractable = null;
 		Game.Instance.PlayerController.StartTurn();
 		UpdateMiniMap();

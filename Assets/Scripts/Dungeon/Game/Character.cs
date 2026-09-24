@@ -160,7 +160,8 @@ public abstract class Character : MonoBehaviour, Actor
 			passiveSkillStats +
 			StatusEffects.Aggregate(new StatModification(), (accumulate, statusEffect) => accumulate + statusEffect.GetStatModification())
 			+ SongAura.ModificationFor(this)
-			+ CommandStatusEffect.ModificationFor(this);
+			+ CommandStatusEffect.ModificationFor(this)
+			+ ClassPassives.ConditionalStats(this);
 	}
 
 	private Vitals vitals;
@@ -484,6 +485,7 @@ disp: {displayedVitals}");
 
 	public T ApplyStatusEffect<T>(T newStatusPrefab) where T : StatusEffect
 	{
+		if (newStatusPrefab != null && ClassPassives.IsImmune(this, newStatusPrefab)) return null;
 		var matchingStatus = StatusEffects.FirstOrDefault(x => x != null && x.StackKey == newStatusPrefab.StackKey);
 		if (matchingStatus != null)
 		{

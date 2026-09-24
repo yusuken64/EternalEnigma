@@ -217,6 +217,7 @@ public class Ally : Character
 		determinedActions.Clear();
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
+		ClassPassives.OnTurnStart(this);
 
 		InvalidateCachedStats();
 		SyncDisplayedStats();

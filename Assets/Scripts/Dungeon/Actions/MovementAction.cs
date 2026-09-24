@@ -132,6 +132,10 @@ internal class AttackAction : GameAction
 		bool critical;
 		GetAttackDamage(attacker, target, out hit, out damage, out critical);
 
+		if (hit && damage > 0 && !AutoplayRunner.GodmodeFor(attacker))
+			damage = Mathf.Max(1, Mathf.RoundToInt(damage * ClassPassives.DamageMultiplier(
+				new OutgoingDamage(attacker, target, DamageCategory.Weapon, DamageElement.Physical, false))));
+
 		ret.Add(new TakeDamageAction(attacker, target, damage, true, !hit) { Critical = critical });
 		return ret;
 	}

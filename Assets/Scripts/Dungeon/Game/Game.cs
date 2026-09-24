@@ -249,6 +249,7 @@ public class Game : SingletonMonoBehaviour<Game>
 				var enemy = Instantiate(enemyPrefab, this.transform);
 				enemy.UpdateCachedStats();
 				enemy.InitialzeVitalsFromStats();
+				enemy.IsDormant = UnityEngine.Random.value < EnemyAwareness.DormantSpawnChance;
 				enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
 				Enemies.Add(enemy);
 			}
@@ -272,6 +273,7 @@ public class Game : SingletonMonoBehaviour<Game>
 				var item = Common.Instance.ItemManager.GetRandomDrop(null);
 				CurrentDungeon.SetTrap(trapPosition);
 			}
+			SpawnGatheringPoints(startPosition);
 		}
 
 		if (demoLoadout != null && PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor)
@@ -348,6 +350,28 @@ Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventor
 	public void AdvanceFloorCommand()
 	{
 		AdvanceFloor();
+	}
+
+	private void SpawnGatheringPoints(Vector3Int startPosition)
+	{
+		var stairs = CurrentDungeon.GetStairsCell();
+		if (stairs == null) return;
+		var floorLayer = new EternalEnigma.Core.World.GridLayer(CurrentDungeon.GetFloorMask());
+		var occupied = new List<EternalEnigma.Core.World.GridPoint>();
+		foreach (var interactable in CurrentDungeon.Interactables)
+			if (interactable != null) occupied.Add(new EternalEnigma.Core.World.GridPoint(interactable.Position.x, interactable.Position.y));
+		foreach (var character in AllCharacters)
+			if (character != null) occupied.Add(new EternalEnigma.Core.World.GridPoint(character.TilemapPosition.x, character.TilemapPosition.y));
+		var context = Common.Instance.CampaignContext;
+		int seed = context != null
+			? context.LocationSeed(context.State.LocationId, PlayerController.Floor)
+			: UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+		var sites = EternalEnigma.Core.Generation.GatheringPlacement.Place(floorLayer,
+			new EternalEnigma.Core.World.GridPoint(startPosition.x, startPosition.y),
+			new EternalEnigma.Core.World.GridPoint(stairs.Value.x, stairs.Value.y),
+			occupied, seed, EternalEnigma.Core.Generation.GatheringPlacement.DefaultCount);
+		foreach (var site in sites)
+			GatheringPoint.Spawn(CurrentDungeon, new Vector3Int(site.Cell.X, site.Cell.Y, 0), site.Kind, site.Roll);
 	}
 
 	public void DoFloatingText(string message, Color color, Vector3 worldPosition)

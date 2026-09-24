@@ -62,6 +62,12 @@ public sealed class DungeonFloorGeneratorTests
         for (int i = 0; i < floor1.Traps.Count; i++)
             Assert.Equal(floor1.Traps[i], floor2.Traps[i]);
 
+        Assert.Equal(floor1.GatheringSites.Count, floor2.GatheringSites.Count);
+        for (int i = 0; i < floor1.GatheringSites.Count; i++)
+            Assert.Equal(floor1.GatheringSites[i], floor2.GatheringSites[i]);
+
+        Assert.Equal(options.GatheringCount, floor1.GatheringSites.Count);
+
         // Verify validation
         var validation = DungeonFloorValidator.Validate(floor1, options);
         Assert.True(validation.IsValid, string.Join("\n", validation.Errors));
@@ -117,6 +123,7 @@ public sealed class DungeonFloorGeneratorTests
         Assert.Empty(floor1.Gold);
         Assert.Empty(floor1.Items);
         Assert.Empty(floor1.Traps);
+        Assert.Empty(floor1.GatheringSites);
 
         // Verify throne flag
         Assert.True(floor1.IsThroneFloor);
@@ -132,6 +139,12 @@ public sealed class DungeonFloorGeneratorTests
             var floor = DungeonFloorGenerator.Generate(options);
             var validation = DungeonFloorValidator.Validate(floor, options);
             Assert.True(validation.IsValid, $"Seed {seed}: {string.Join("\n", validation.Errors)}");
+
+            var requiredPath = GatheringPlacement.RequiredPath(floor.Layers[DungeonLayers.Floor], floor.Start, floor.Stairs);
+            foreach (var site in floor.GatheringSites)
+            {
+                Assert.DoesNotContain(site.Cell, requiredPath);
+            }
         }
     }
 
@@ -167,5 +180,72 @@ public sealed class DungeonFloorGeneratorTests
     {
         // Test invalid width (too small)
         Assert.Throws<ArgumentOutOfRangeException>(() => new DungeonFloorOptions(1, width: 8));
+    }
+
+    [Fact]
+    public void GatheringCountZeroGivesNoSites()
+    {
+        var options = new DungeonFloorOptions(9, gatheringCount: 0);
+        var floor = DungeonFloorGenerator.Generate(options);
+        Assert.Empty(floor.GatheringSites);
+
+        var validation = DungeonFloorValidator.Validate(floor, options);
+        Assert.True(validation.IsValid, string.Join("\n", validation.Errors));
+    }
+
+    [Fact]
+    public void GatheringDoesNotChangeExistingPlacements()
+    {
+        var optionsNoGathering = new DungeonFloorOptions(42, gatheringCount: 0);
+        var optionsWithGathering = new DungeonFloorOptions(42);
+
+        var floorNoGathering = DungeonFloorGenerator.Generate(optionsNoGathering);
+        var floorWithGathering = DungeonFloorGenerator.Generate(optionsWithGathering);
+
+        Assert.Equal(floorNoGathering.Start, floorWithGathering.Start);
+        Assert.Equal(floorNoGathering.Stairs, floorWithGathering.Stairs);
+
+        Assert.Equal(floorNoGathering.Enemies.Count, floorWithGathering.Enemies.Count);
+        for (int i = 0; i < floorNoGathering.Enemies.Count; i++)
+            Assert.Equal(floorNoGathering.Enemies[i], floorWithGathering.Enemies[i]);
+
+        Assert.Equal(floorNoGathering.Gold.Count, floorWithGathering.Gold.Count);
+        for (int i = 0; i < floorNoGathering.Gold.Count; i++)
+            Assert.Equal(floorNoGathering.Gold[i], floorWithGathering.Gold[i]);
+
+        Assert.Equal(floorNoGathering.Items.Count, floorWithGathering.Items.Count);
+        for (int i = 0; i < floorNoGathering.Items.Count; i++)
+            Assert.Equal(floorNoGathering.Items[i], floorWithGathering.Items[i]);
+
+        Assert.Equal(floorNoGathering.Traps.Count, floorWithGathering.Traps.Count);
+        for (int i = 0; i < floorNoGathering.Traps.Count; i++)
+            Assert.Equal(floorNoGathering.Traps[i], floorWithGathering.Traps[i]);
+
+        // Verify Floor layer cells are identical
+        var arrayNoGathering = floorNoGathering.Layers[DungeonLayers.Floor].ToArray();
+        var arrayWithGathering = floorWithGathering.Layers[DungeonLayers.Floor].ToArray();
+        for (int x = 0; x < floorNoGathering.Width; x++)
+        {
+            for (int y = 0; y < floorNoGathering.Height; y++)
+            {
+                Assert.Equal(arrayNoGathering[x, y], arrayWithGathering[x, y]);
+            }
+        }
+    }
+
+    [Fact]
+    public void GenerationVersionIsTwo()
+    {
+        Assert.Equal(2, DungeonFloor.GenerationVersion);
+    }
+
+    [Fact]
+    public void OptionsRejectGatheringOnThrone()
+    {
+        // Verify that throne options reject gathering
+        Assert.Throws<ArgumentException>(() => new DungeonFloorOptions(1, 12, 12, true, 0, 0, 0, 0, 1));
+
+        // Verify that throne options have gathering count of 0
+        Assert.Equal(0, DungeonFloorOptions.Throne(1).GatheringCount);
     }
 }

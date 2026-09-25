@@ -12,16 +12,18 @@ public class TownAllyManager : MonoBehaviour
         configuration.AllyCatalog.FirstOrDefault(a => !string.IsNullOrEmpty(data.AllyId) ? a.Id == data.AllyId : a.Name == data.AllyName) ??
         throw new InvalidOperationException($"Ally '{data.AllyName}' is missing from town '{configuration.Id}' catalog.");
 
-    internal List<TownAlly> GenerateRandomAllies(int capacity, IEnumerable<string> recruited)
+    /// Deterministic: rolls index into the remaining unrecruited offers (configuration order); each pick is removed before the next roll.
+    internal List<TownAlly> GenerateRandomAllies(IReadOnlyList<int> rolls, IEnumerable<string> recruited)
     {
         var names = recruited.ToHashSet();
         var candidates = configuration.Recruits.Where(r => !names.Contains(r.Ally.Id)).ToList();
         var result = new List<TownAlly>();
-        foreach (var offer in candidates.Sample(Mathf.Min(Mathf.Max(0, capacity), candidates.Count)))
+        foreach (int roll in rolls)
         {
-            var ally = Instantiate(offer.Ally, transform);
-            ally.RecruitCost = offer.Cost;
-            result.Add(ally);
+            if (candidates.Count == 0) break;
+            var offer = candidates[(int)((uint)roll % (uint)candidates.Count)];
+            candidates.Remove(offer);
+            var ally = Instantiate(offer.Ally, transform); ally.RecruitCost = offer.Cost; result.Add(ally);
         }
         return result;
     }

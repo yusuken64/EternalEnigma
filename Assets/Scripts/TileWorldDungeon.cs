@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EternalEnigma.Core.World;
 using TWC;
 using UnityEngine;
 
 public class TileWorldDungeon : MonoBehaviour
 {
-	public string FloorLayerName;
-	public string StairPositionLayerName;
-
 	public List<Interactable> Interactables;
 
 	public Gold GoldPrefab;
@@ -16,14 +14,17 @@ public class TileWorldDungeon : MonoBehaviour
 	public Stairs StairsPrefab;
 	public List<Trap> TrapPrefabs;
 
-	internal int dungeonWidth => _tileWorldCreator.twcAsset.mapWidth;
-	internal int dungeonHeight => _tileWorldCreator.twcAsset.mapHeight;
+	internal int dungeonWidth => Floor.Width;
+	internal int dungeonHeight => Floor.Height;
 	public bool IsThroneFloor;
 	public bool IsExitFloor;
 	// No boss floors exist yet; boss content sets this. Retreat is blocked while it is true.
 	public bool IsBossFloor;
 
+	public DungeonFloor Floor { get; private set; }
+
 	private TileWorldCreator _tileWorldCreator;
+	private bool[,] floorMask;
 	private bool[,] _isHallwayCache;
 
 	private void Awake()
@@ -36,9 +37,12 @@ public class TileWorldDungeon : MonoBehaviour
 		Debug.Log("Dungeon destroyed", this);
 	}
 
-	internal void Setup(TWC.TileWorldCreator tileWorldCreator)
+	internal void Setup(TileWorldCreator twc, DungeonFloor floor)
 	{
-		this._tileWorldCreator = tileWorldCreator;
+		this._tileWorldCreator = twc;
+		this.Floor = floor;
+		this.floorMask = floor.Layers[DungeonLayers.Floor].ToArray();
+		this.IsThroneFloor = floor.IsThroneFloor;
 	}
 
 	//This should be getcharacteratposition
@@ -87,7 +91,7 @@ public class TileWorldDungeon : MonoBehaviour
         var key = (origin, radius);
         if (!sightCache.TryGetValue(key, out var tiles))
         {
-            tiles = DungeonSight.VisibleTiles(_tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName), origin, radius);
+            tiles = Floor.VisibleTiles(origin.ToGridPoint(), radius).ToCellSet();
             sightCache[key] = tiles;
         }
         return tiles;
@@ -236,20 +240,11 @@ public class TileWorldDungeon : MonoBehaviour
 		return new Vector3Int(node.X, node.Y);
 	}
 
-	public Vector3Int GetStairPosition(bool isThroneFloor)
-	{
-		if (!isThroneFloor) { return GetRandomOpenEnemyPosition(); }
-
-		//var floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(StairPositionLayerName);
-		//var startPos = Flatten(floorMap, (x) => x).Sample();
-
-		//return new Vector3Int(startPos.Coord.x, startPos.Coord.y, 0);
-		return new Vector3Int(6, 9);
-	}
+	public Vector3Int GetStairPosition() => Floor.Stairs.ToCell();
 
 	internal Vector3Int GetRandomOpenEnemyPosition()
 	{
-		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
+		bool[,] floorMap = floorMask;
 		var flatMap = Flatten(floorMap, (x) => x);
 
 		var allCharacterBounds = Game.Instance.AllCharacters.Select(x => x.ToBounds());
@@ -265,7 +260,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal List<Vector3Int> GetWalkableNeighborhoodTiles(Vector3Int tilemapPosition)
 	{
-		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
+		bool[,] floorMap = floorMask;
 		List<Vector3Int> neighborhood = new();
 		for (int i = -1; i < 2; i++)
 		{
@@ -284,7 +279,7 @@ public class TileWorldDungeon : MonoBehaviour
 	internal int GetNeighborhoodTilesCount(Vector3Int tilemapPosition)
 	{
 		int count = 0;
-		bool[,] floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
+		bool[,] floorMap = floorMask;
 		for (int i = -1; i < 2; i++)
 		{
 			for (int j = -1; j < 2; j++)
@@ -321,6 +316,16 @@ public class TileWorldDungeon : MonoBehaviour
 	internal void SetTrap(Vector3Int position, Trap trap = null)
 	{
 		var trapPrefab = TrapPrefabs.Sample();
+		var trapInstance = Instantiate(trapPrefab, this.transform);
+		trapInstance.transform.position = CellToWorld(position);
+		trapInstance.Position = position;
+		trapInstance.VisualObject.gameObject.SetActive(false);
+		Interactables.Add(trapInstance);
+	}
+
+	internal void SetTrap(Vector3Int position, int roll)
+	{
+		var trapPrefab = TrapPrefabs[(int)((uint)roll % (uint)TrapPrefabs.Count)];
 		var trapInstance = Instantiate(trapPrefab, this.transform);
 		trapInstance.transform.position = CellToWorld(position);
 		trapInstance.Position = position;
@@ -393,7 +398,7 @@ public class TileWorldDungeon : MonoBehaviour
 		return Interactables.FirstOrDefault(x => x.Position == tilemapPosition);
 	}
 
-	internal bool[,] GetFloorMask() => (bool[,])_tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName).Clone();
+	internal bool[,] GetFloorMask() => (bool[,])floorMask.Clone();
 
 	internal Vector3Int? GetStairsCell()
 	{
@@ -453,22 +458,10 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal bool IsWalkable(Vector3Int newMapPosition)
 	{
-		return _tileWorldCreator != null && GridMovement.IsWalkable(
-			_tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName), newMapPosition);
+		return Floor != null && GridMovement.IsWalkable(floorMask, newMapPosition);
 	}
 
-	internal Vector3Int GetStartPosition(bool throneFloor)
-	{
-		if (!throneFloor)
-		{
-			var floorMap = _tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName);
-			var startPos = Flatten(floorMap, (x) => x).Sample();
-
-			return new Vector3Int(startPos.Coord.x, startPos.Coord.y, 0);
-		}
-
-		return new Vector3Int(6, 4);
-	}
+	internal Vector3Int GetStartPosition() => Floor.Start.ToCell();
 
 	public static List<CoordValue<T>> Flatten<T>(T[,] arr, Func<T, bool> predicate = null)
 	{
@@ -497,7 +490,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 	//if not hallway it's a room
     public bool IsHallway(Vector3Int position) =>
-        !DungeonSight.IsRoom(_tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName), position);
+        !Floor.IsRoom(position.ToGridPoint());
 
 	public static int ChevDistance(Vector3Int a, Vector3Int b)
 	{

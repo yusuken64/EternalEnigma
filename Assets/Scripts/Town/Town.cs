@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using EternalEnigma.Core.World;
 using TWC;
-using TWC.OdinSerializer;
 using UnityEngine;
 
 public class Town : MonoBehaviour
@@ -20,6 +20,7 @@ public class Town : MonoBehaviour
     public List<ShopVendor> ShopVendors = new();
     private readonly List<GameObject> shopWalls = new();
     public bool IsReady { get; private set; }
+    public TownPlan Plan { get; private set; }
     private bool finishingGeneration;
 
     // Start is called before the first frame update
@@ -37,9 +38,10 @@ public class Town : MonoBehaviour
         if (Common.Instance.CampaignContext != null)
         {
             gameObject.AddComponent<CampaignTownControls>().Town = this;
-            CampaignTownCorridor.Configure(WalkableMap.TileWorldCreator);
         }
-        ShopInteriorCarver.Configure(WalkableMap.TileWorldCreator, Configuration);
+        var twc = WalkableMap.TileWorldCreator;
+        twc.twcAsset = Instantiate(twc.twcAsset); twc.twcAsset.hideFlags = HideFlags.DontSave;
+        CoreTownLayerGenerator.Configure(twc.twcAsset, Configuration);
 
         Debug.Log("WalkableMap type: " + (WalkableMap == null ? "NULL" : WalkableMap.GetType().FullName));
         Debug.Log("TileWorldCreator type: " + (WalkableMap.TileWorldCreator == null ? "NULL" : WalkableMap.TileWorldCreator.GetType().FullName));
@@ -138,11 +140,10 @@ public class Town : MonoBehaviour
             allyInstance.RefreshEquipmentVisuals();
         }
 
-        var allyPositions = GetPositions(Configuration.AllyLayer);
-
-		int count = allyPositions.Count;
-		var allies = TownAllyManager.GenerateRandomAllies(count, (Common.Instance.CampaignContext != null ? Common.Instance.CampaignContext.Roster.Append(Common.Instance.GameSaveData.ProtagonistId) : TownPlayer.RecruitedAllies.Select(a => a.Id)));
-		for (int i = 0; i < allies.Count; i++)
+        var allyPositions = Plan.AllySlots.Select(p => p.Cell.ToCell()).ToList();
+        var rolls = Plan.AllySlots.Select(p => p.Roll).ToList();
+		var allies = TownAllyManager.GenerateRandomAllies(rolls, (Common.Instance.CampaignContext != null ? Common.Instance.CampaignContext.Roster.Append(Common.Instance.GameSaveData.ProtagonistId) : TownPlayer.RecruitedAllies.Select(a => a.Id)));
+		for (int i = 0; i < Mathf.Min(allies.Count, allyPositions.Count); i++)
 		{
 			var ally = allies[i];
 			var worldPosition = WalkableMap.CellToWorld(allyPositions[i]);
@@ -153,35 +154,10 @@ public class Town : MonoBehaviour
 		}
 	}
 
-	private List<Vector3Int> GetPositions(string bluePrintLayerName)
-	{
-        List<Vector3Int> positions = new();
-
-		var map = WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayer(bluePrintLayerName);
-		int width = map.GetLength(0);
-		int height = map.GetLength(1);
-
-		for (int x = 0; x < width; x++)
-		{
-			for (int y = 0; y < height; y++)
-			{
-				if (map[x, y])
-				{
-                    positions.Add(new Vector3Int(x, y, 0));
-				}
-			}
-		}
-
-        return positions;
-	}
-
 	[ContextMenu("Generate Entrance")]
     public void GenerateInteractableBuildings()
     {
-        var positions = GetPositions(Configuration.BuildingLayer);
-        if (Common.Instance.CampaignContext != null)
-            positions = WalkableMap.CampaignBuildingPositions(Configuration, positions);
-        TownBuildings = TownBuildingManager.Spawn(Configuration, positions, WalkableMap);
+        TownBuildings = TownBuildingManager.Spawn(Configuration, Plan.BuildingSlots.ToCells(), WalkableMap);
     }
 
     /// <summary>Spawns the carved rooms' wall visuals and a vendor per shop whose room actually exists this generation.</summary>
@@ -192,33 +168,32 @@ public class Town : MonoBehaviour
         foreach (var vendor in ShopVendors) if (vendor != null) Destroy(vendor.gameObject);
         ShopVendors.Clear();
 
-        var wallMap = WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayer("ShopWalls");
-        if (wallMap != null)
-            for (int x = 0; x < wallMap.GetLength(0); x++)
-                for (int y = 0; y < wallMap.GetLength(1); y++)
-                {
-                    if (!wallMap[x, y]) continue;
-                    var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    wall.name = "ShopWall";
-                    wall.transform.SetParent(transform);
-                    wall.transform.position = WalkableMap.CellToWorld(new Vector3Int(x, y, 0)) + Vector3.up * 0.5f;
-                    wall.transform.localScale = Vector3.one * WalkableMap.TileWorldCreator.twcAsset.cellSize;
-                    shopWalls.Add(wall);
-                }
+        var wallLayer = Plan.Layers[TownLayers.ShopWalls];
+        for (int x = 0; x < wallLayer.Width; x++)
+            for (int y = 0; y < wallLayer.Height; y++)
+            {
+                if (!wallLayer[x, y]) continue;
+                var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                wall.name = "ShopWall";
+                wall.transform.SetParent(transform);
+                wall.transform.position = WalkableMap.CellToWorld(new Vector3Int(x, y, 0)) + Vector3.up * 0.5f;
+                wall.transform.localScale = Vector3.one * WalkableMap.TileWorldCreator.twcAsset.cellSize;
+                shopWalls.Add(wall);
+            }
 
-        var floorMap = WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayer("ShopFloor");
         foreach (var building in TownBuildings)
         {
             building.HasInterior = false;
             if (building.Definition.ShopCatalog.Count == 0) continue;
-            if (!ShopInteriorCarver.TryGetInteriorAnchor(floorMap, building.TilemapPosition, out var anchor)) continue;
+            if (!Plan.TryGetVendorAnchor(building.TilemapPosition.ToGridPoint(), out var anchor)) continue;
+            var anchorCell = anchor.ToCell();
 
             var vendor = building.Definition.VendorPrefab != null
                 ? Instantiate(building.Definition.VendorPrefab, transform)
                 : ShopVendor.CreateDefault(transform);
             vendor.Building = building.Definition;
-            vendor.TilemapPosition = anchor;
-            vendor.transform.position = WalkableMap.CellToWorld(anchor);
+            vendor.TilemapPosition = anchorCell;
+            vendor.transform.position = WalkableMap.CellToWorld(anchorCell);
             vendor.SetFacing(Facing.Down);
             ShopVendors.Add(vendor);
             building.HasInterior = true;
@@ -235,10 +210,12 @@ public class Town : MonoBehaviour
     {
         WalkableMap.TileWorldCreator.OnBlueprintLayersComplete -= blueprintLayersComplete;
         WalkableMap.TileWorldCreator.OnBuildLayersComplete -= buildLayersComplete;
+        if (WalkableMap.TileWorldCreator.twcAsset != null) Destroy(WalkableMap.TileWorldCreator.twcAsset);
     }
 
     private void blueprintLayersComplete(TileWorldCreator _twc)
     {
+        CoreLayoutCache.ClearResultFlags(_twc.twcAsset);
         WalkableMap.TileWorldCreator.ExecuteAllBuildLayers(false);
     }
 
@@ -251,6 +228,10 @@ public class Town : MonoBehaviour
 
     private IEnumerator FinishGeneration()
     {
+        if (!CoreLayoutCache.TryGetTown(WalkableMap.TileWorldCreator, out var plan))
+            throw new InvalidOperationException("The town TWC asset has no Core Town Layer actions; run Tools/Eternal Enigma/Core Layers/Rewrite Town Asset.");
+        Plan = plan;
+
         Debug.Log("Generate Buildings");
         GenerateInteractableBuildings();
         GenerateShopInteriors();

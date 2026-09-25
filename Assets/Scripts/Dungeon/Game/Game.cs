@@ -220,14 +220,15 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		yield return null;
 
-		var startPosition = CurrentDungeon.GetStartPosition(throneFloor);
+		var floor = CurrentDungeon.Floor;
+		var startPosition = floor.Start.ToCell();
 		PlayerController.ControlledAlly.SetPosition(startPosition);
 
 		foreach (var ally in Allies)
 		{
 			if (ally != null)
 			{
-				var dropPosition = CurrentDungeon.GetPositionWith(startPosition, 
+				var dropPosition = CurrentDungeon.GetPositionWith(startPosition,
 					node =>
 					{
 						var first = AllCharacters.FirstOrDefault(x => x.TilemapPosition == new Vector3Int(node.X, node.Y));
@@ -238,41 +239,27 @@ public class Game : SingletonMonoBehaviour<Game>
 			}
 		}
 
-		CurrentDungeon.SetStairs(CurrentDungeon.GetStairPosition(throneFloor));
+		CurrentDungeon.SetStairs(floor.Stairs.ToCell());
 		Debug.Log("Stairs Created", this);
 
 		if (!throneFloor)
 		{
-			for (int i = 0; i < 10; i++)
+			foreach (var p in floor.Enemies)
 			{
-				var enemyPrefab = EnemyManager.GetEnemyPrefab(PlayerController.Floor);
-				var enemy = Instantiate(enemyPrefab, this.transform);
+				var enemy = Instantiate(EnemyManager.GetEnemyPrefab(PlayerController.Floor, p.Roll), this.transform);
 				enemy.UpdateCachedStats();
 				enemy.InitialzeVitalsFromStats();
 				enemy.IsDormant = UnityEngine.Random.value < EnemyAwareness.DormantSpawnChance;
-				enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
+				enemy.TilemapPosition = p.Cell.ToCell();
 				Enemies.Add(enemy);
 			}
 
-			for (int i = 0; i < 5; i++)
-			{
-				var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-				CurrentDungeon.SetTreasure(treasurePosition);
-			}
+			foreach (var p in floor.Gold) CurrentDungeon.SetTreasure(p.Cell.ToCell());
 
-			for (int i = 0; i < 5; i++)
-			{
-				var treasurePosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-				var item = Common.Instance.ItemManager.GetRandomDrop(null);
-				CurrentDungeon.SetDroppedItem(treasurePosition, item);
-			}
+			foreach (var p in floor.Items) CurrentDungeon.SetDroppedItem(p.Cell.ToCell(), Common.Instance.ItemManager.GetRandomDrop(p.Roll));
 
-			for (int i = 0; i < 5; i++)
-			{
-				var trapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
-				var item = Common.Instance.ItemManager.GetRandomDrop(null);
-				CurrentDungeon.SetTrap(trapPosition);
-			}
+			foreach (var p in floor.Traps) CurrentDungeon.SetTrap(p.Cell.ToCell(), p.Roll);
+
 			SpawnGatheringPoints(startPosition);
 		}
 

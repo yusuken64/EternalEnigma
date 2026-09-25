@@ -60,27 +60,88 @@ in services rather than a dialog's close callback.
 
 ## Shop interiors
 
-Any building with a non-empty `ShopCatalog` gets a small procedurally carved
-interior instead of opening its dialog the moment the player steps on its tile.
-`ShopInteriorCarver` runs as part of the Town's TileWorldCreator generation: it
-reads the `Buildings` layer's raster-ordered markers (the same order
-`TownConfiguration.Buildings` is authored in) and, for each one whose building
-has a shop catalog, carves a small room north of that marker into two new
-layers (`ShopFloor`, `ShopWalls`) and clears the `Houses`/`Trees` layers within
-that footprint so scenery never overlaps the room. A room that would go out of
-bounds, overlap another room, or land on an ally spawn point is silently
-skipped for that building, which then keeps today's walk-onto-tile behavior.
+**Status**: the code below is real and implemented. It has not yet been run
+inside Unity — no EditMode/PlayMode/Town harness has exercised it, and the
+shipped `.asset` files have not yet had the rewrite menu run against them (see
+the end of this section). Treat the Unity-side wiring as implemented-but-unverified.
 
-A `ShopVendor` is spawned at the back of a successfully carved room (falling
-back to a placeholder capsule when the definition's `VendorPrefab` is unset).
-The player walks through the door like any other floor tile - it no longer
-opens a dialog by itself - and faces the vendor and presses interact to open
-the shop, exactly like talking to a party member. `TownBuilding.HasInterior`
-is only ever true once a room and vendor actually exist for that instance, so
-generation never has to special-case a shop whose room could not be carved.
+The core `EternalEnigma.Core.World.TownPlan` (produced by
+`EternalEnigma.Core.Generation.TownPlanGenerator`) now owns every layer of a
+town, not just the overworld-facing ones: `Roads`, `Houses`, `Trees`, `Parks`,
+`Roofs`, `Buildings`, `Allies`, `Dungeon`, `ShopFloor`, `ShopWalls` and the
+derived `Walkable` mask (`Walkable == !(Houses | Trees | ShopWalls)`). A single
+TWC blueprint action, `CoreTownLayerGenerator`, generates all of them: each
+blueprint layer in the Town TWC asset carries one `CoreTownLayerGenerator`
+configured with that layer's name, and its `Execute` pulls the matching layer
+out of a `TownPlan` cached per-`TileWorldCreator` by `CoreLayoutCache.GetTown`.
 
-Non-shop buildings (no `ShopCatalog` entries) are completely unaffected - they
-keep the original single-tile, walk-on-triggers-dialog-and-bounce-back flow.
+`Town.Start` (`Assets/Scripts/Town/Town.cs`) clones the asset instance
+(`Instantiate(twc.twcAsset)`, `hideFlags = HideFlags.DontSave`), calls
+`CoreTownLayerGenerator.Configure(asset, Configuration)` to push the
+authored `TownConfiguration.Buildings` count/shop flags and party spawn onto
+every `CoreTownLayerGenerator` on the clone, sets the seed from
+`Common.Instance.GameSaveData.TownSaveData.TownSeed`, and runs
+`ExecuteAllBlueprintLayers()`. In campaign mode that seed is
+`CampaignContext.LocationSeed(townId)` — a deterministic hash of the campaign
+seed and the town's location id, so returning to the same town in the same
+campaign regenerates the same plan. Once blueprint generation completes,
+`CoreLayoutCache.ClearResultFlags` clears the "empty layer" failure flags TWC
+would otherwise raise on an all-false `Carpet`/`ShopFloor` mask, and build
+layers run; `Town.FinishGeneration` then reads the cached `TownPlan` back out
+via `CoreLayoutCache.TryGetTown` and throws if it is missing (meaning the
+asset's blueprint layers are not wired to `CoreTownLayerGenerator` yet).
+
+Building slots are `TownPlan.BuildingSlots`, one `GridPoint` per door marker in
+the `Buildings` layer, always in raster order (y-outer, x-inner) — the same
+order `TownConfiguration.Buildings` is authored in, so index *i* in one list is
+building *i* in the other. `AllyCount` on `CoreTownLayerGenerator` is an
+authored knob on the TWC action itself, independent of anything in
+`TownConfiguration`; it is not derived from the recruit pool.
+
+Any building whose slot index has a `1` in the remapped shop-flag string
+(`CoreTownLayerGenerator.ShopFlags`, one character per building in
+configuration order) gets a carved interior instead of opening its dialog the
+moment the player steps on its tile: `TownPlanGenerator` calls
+`ShopInteriors.ComputeRooms` after placing doors, which carves a room north of
+each shop door into the `ShopFloor`/`ShopWalls` layers and clears `Houses`
+inside that footprint, skipping any room that would go out of bounds, overlap
+another room, or land on an ally cell. `TownPlan.ShopRooms` exposes each
+carved room, `TownPlan.ShopRoomAt(door)` looks one up by its door cell, and
+`TownPlan.TryGetVendorAnchor(door, out anchor)` returns the room's vendor
+anchor only if that cell is actually on `ShopFloor`.
+
+`Town.GenerateShopInteriors()` (called from `FinishGeneration` after
+`GenerateInteractableBuildings()`) instantiates a wall cube per `ShopWalls`
+cell and, for each `TownBuilding` with a non-empty `ShopCatalog`, spawns a
+`ShopVendor` at `TryGetVendorAnchor`'s anchor (falling back to
+`ShopVendor.CreateDefault` when the definition's `VendorPrefab` is unset) and
+only then sets `building.HasInterior = true`. The player walks through the
+door like any other floor tile — it does not open a dialog by itself — and
+faces the vendor and presses interact to open the shop, exactly like talking
+to a party member. A shop whose room could not be carved (out of bounds,
+overlapping, etc.) keeps `HasInterior == false` and falls back to the
+original single-tile, walk-on-triggers-dialog-and-bounce-back flow, exactly
+like a non-shop building.
+
+The southern entrance corridor — `x` in 8..12, `y` from 0 up to `height / 2` —
+is reserved (`TownPlan.IsReservedCorridor`) and never receives a building,
+tree, park or ally, keeping the party's route to the exit clear.
+
+The Odin-serialized `.asset` files that TWC actually reads
+(`Assets/TileWorldCreator/VillageLSystemAsset.asset`, and the dungeon
+equivalents referenced from `Docs/DungeonFloor.md`) are rewritten to use
+`CoreTownLayerGenerator`/`CoreDungeonLayerGenerator` through
+`Assets/Scripts/Editor/CoreLayerAuthoring.cs`'s menu items:
+**Tools/Eternal Enigma/Core Layers/Rewrite Town Asset** rewrites every core
+town layer's action stack to a single `CoreTownLayerGenerator`, preserving
+blueprint layer GUIDs so build layers keep referencing the right source layer,
+and adds any of `ShopFloor`, `ShopWalls`, `Walkable` that the asset is
+missing. **Tools/Eternal Enigma/Core Layers/Verify Assets** checks that every
+core layer has exactly one action of the right type, that every core action in
+the asset shares the same options, and that build layers still reference a
+valid blueprint layer GUID. Never hand-edit the `.asset` YAML; always go
+through these menu items, then re-import the core DLL if core code changed
+(see `Core/README.md`'s "Import into Unity" section).
 
 Town and dungeon share `DialogController`, `Dialog`, inventory and skill views,
 and the item action prefab. The controller owns modal focus, Back, input switching,

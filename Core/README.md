@@ -14,8 +14,12 @@ Core/
       Classes/                   Class skill tables, learning rules and validation
       Progression/               Lock requirements, graphs and state transitions
       Generation/                Seeded construction and world descriptions
+                                  (DungeonFloorGenerator, TownPlanGenerator,
+                                  ShopInteriors, TownPlacement, ThroneRoomTemplate)
       Validation/                Reachability and structural checks
+                                  (DungeonFloorValidator, TownPlanValidator)
       World/                     Grid coordinates, immutable layers and capability-aware movement
+                                  (DungeonFloor, TownPlan, GridRect, GridSteps, GridSearch, GridSight)
     EternalEnigma.Core.Tests/     net10.0 xUnit tests
       Architecture/              Engine boundary and target-framework checks
       Generation/                Seed sweeps, fingerprints, invalid campaigns, runtime completion
@@ -96,10 +100,20 @@ Menus use up/down and Enter; Esc closes them. Obstacle and interaction gates sta
 open after crossing; area gates always require their capability. The entire map is
 visible without fog. Progress is in memory only; restarting resets the campaign.
 
+Entering a town or dungeon (Enter on the overworld marker, or choosing T/D at
+startup) switches the explorer into a town/dungeon view rendered by `TownRenderer`
+or `DungeonRenderer`. Inside that view, Enter enters a shop/dungeon door or
+descends the stairs to the next floor, R claims rewards, and Esc leaves back to
+the overworld. See [dungeon floors](../Docs/DungeonFloor.md) for the layer/room
+model behind these views.
+
 Use `--snapshot` to print a static viewport in redirected output or CI, or `--help`
 for controls. Interactive mode needs a terminal of at least 41 columns by 13 rows.
 The console host owns tile-based progression and references the core library;
-it does not require Unity or change the imported Unity DLL.
+it does not require Unity or change the imported Unity DLL. `--town <id>` prints a
+static preview of that town (implying `--snapshot`); `--dungeon <id>` prints a
+static preview of that dungeon, optionally at a specific `--floor <n>` (defaults
+to the dungeon's current floor).
 
 For generation/export only, run from `Core`:
 
@@ -107,11 +121,16 @@ For generation/export only, run from `Core`:
 dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --output ../Temp/CampaignPreview
 dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 0 --count 1000
 dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --grid --output ../Temp/OverworldPreview
+dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --town town-0 --output ../Temp/TownPreview
+dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --dungeon story-0 --floor 1 --output ../Temp/DungeonPreview
 ```
 
 Every generated campaign passes structural validation before it is returned.
 The CLI exits nonzero on failure and reports a versioned content fingerprint.
-JSON exports are diagnostic world descriptions, not player saves.
+JSON exports are diagnostic world descriptions, not player saves. `--town`
+exports one town's plan (JSON + SVG); `--dungeon` exports one dungeon floor
+(JSON + SVG, optionally at `--floor <n>`, default 1). Both require `--output`
+and are mutually exclusive with the campaign-sweep/`--grid` export above.
 
 Library entry points are `CampaignGenerator.Generate(seed)`,
 `CampaignValidator.Validate(campaign)` and `new CampaignSession(campaign)`.
@@ -123,6 +142,14 @@ or combat validation.
 layers and placement metadata. `CampaignOverworld` imports these into TWC through
 its component context menu. See [overworld grids](../Docs/OverworldGrid.md) for
 layer definitions, setup, supported topology and movement queries.
+
+`DungeonFloorGenerator.Generate(DungeonFloorOptions)` and
+`TownPlanGenerator.Generate(TownPlanOptions)` are the equivalent entry points for
+a single dungeon floor or town interior. `CampaignContext.DungeonFloor(locationId, floor)`
+and `CampaignContext.Town(townId, shopFlags, allyCount)` wrap them with the
+campaign's per-location seed. See [dungeon floors](../Docs/DungeonFloor.md) for
+layer definitions, throne floors, TWC integration and the console/CLI usage above,
+including the **Status** note there on what is still unverified inside Unity.
 
 ## Shared Unity campaign and sandbox
 

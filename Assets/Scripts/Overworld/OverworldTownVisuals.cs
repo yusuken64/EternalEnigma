@@ -8,49 +8,49 @@ internal static class OverworldTownVisuals
     public static void Build(OverworldGrid grid, Transform parent, float cellSize,
         Material stone, Material paving, List<Mesh> ownedMeshes)
     {
-        foreach (var town in grid.TownFootprints)
-        {
-            var root = new GameObject("Town " + town.LocationId);
-            root.transform.SetParent(parent, false);
-            root.transform.localPosition = new Vector3(town.Entrance.X, town.Entrance.Y, 0) * cellSize;
-            var walls = new Geometry(town, cellSize);
-            var roofs = new Geometry(town, cellSize);
-            var floor = new Geometry(town, cellSize);
-            floor.Box(-2.5f, 2.5f, -.5f, 4.5f, .012f, .03f);
+        //foreach (var town in grid.TownFootprints)
+        //{
+        //    var root = new GameObject("Town " + town.LocationId);
+        //    root.transform.SetParent(parent, false);
+        //    root.transform.localPosition = new Vector3(town.Entrance.X, town.Entrance.Y, 0) * cellSize;
+        //    var walls = new Geometry(town, cellSize);
+        //    var roofs = new Geometry(town, cellSize);
+        //    var floor = new Geometry(town, cellSize);
+        //    floor.Box(-2.5f, 2.5f, -.5f, 4.5f, .012f, .03f);
 
-            // Continuous battlement ring, with precisely one full-cell gateway at side=0, depth=0.
-            for (int depth = 0; depth < GridTown.Size; depth++)
-            for (int side = -GridTown.Size / 2; side <= GridTown.Size / 2; side++)
-            {
-                if (side == 0 && depth == 0) continue;
-                if (depth != 0 && depth != GridTown.Size - 1 && Mathf.Abs(side) != GridTown.Size / 2) continue;
-                bool corner = Mathf.Abs(side) == 2 && (depth == 0 || depth == 4);
-                float halfX = depth == 0 || depth == 4 ? .5f : .25f;
-                float halfY = Mathf.Abs(side) == 2 ? .5f : .25f;
-                float height = corner ? .85f : .55f;
-                walls.Box(side - halfX, side + halfX, depth - halfY, depth + halfY, 0, height);
-                if (depth == 0 || depth == 4)
-                    for (int crenel = -1; crenel <= 1; crenel++)
-                        walls.Box(side + crenel * .34f - .1f, side + crenel * .34f + .1f,
-                            depth - halfY, depth + halfY, height, height + .15f);
-                else
-                    for (int crenel = -1; crenel <= 1; crenel++)
-                        walls.Box(side - halfX, side + halfX, depth + crenel * .34f - .1f,
-                            depth + crenel * .34f + .1f, height, height + .15f);
-            }
+        //    // Continuous battlement ring, with precisely one full-cell gateway at side=0, depth=0.
+        //    for (int depth = 0; depth < GridTown.Size; depth++)
+        //    for (int side = -GridTown.Size / 2; side <= GridTown.Size / 2; side++)
+        //    {
+        //        if (side == 0 && depth == 0) continue;
+        //        if (depth != 0 && depth != GridTown.Size - 1 && Mathf.Abs(side) != GridTown.Size / 2) continue;
+        //        bool corner = Mathf.Abs(side) == 2 && (depth == 0 || depth == 4);
+        //        float halfX = depth == 0 || depth == 4 ? .5f : .25f;
+        //        float halfY = Mathf.Abs(side) == 2 ? .5f : .25f;
+        //        float height = corner ? .85f : .55f;
+        //        walls.Box(side - halfX, side + halfX, depth - halfY, depth + halfY, 0, height);
+        //        if (depth == 0 || depth == 4)
+        //            for (int crenel = -1; crenel <= 1; crenel++)
+        //                walls.Box(side + crenel * .34f - .1f, side + crenel * .34f + .1f,
+        //                    depth - halfY, depth + halfY, height, height + .15f);
+        //        else
+        //            for (int crenel = -1; crenel <= 1; crenel++)
+        //                walls.Box(side - halfX, side + halfX, depth + crenel * .34f - .1f,
+        //                    depth + crenel * .34f + .1f, height, height + .15f);
+        //    }
 
-            // Gateposts leave the entrance center and its approach unobstructed from above.
-            foreach (float side in new[] { -.65f, .65f })
-                walls.Box(side - .15f, side + .15f, -.3f, .3f, 0, .85f);
-            foreach (var house in new[] { new Vector2(-.85f, 1.3f), new Vector2(.85f, 1.3f), new Vector2(0, 3) })
-            {
-                walls.Box(house.x - .48f, house.x + .48f, house.y - .45f, house.y + .45f, .03f, .65f);
-                roofs.Roof(house.x, house.y, .58f, .55f, .65f, 1.05f);
-            }
-            floor.Render("Courtyard", root.transform, paving != null ? paving : stone, new Color(.73f, .66f, .49f), ownedMeshes);
-            walls.Render("Walls and houses", root.transform, stone, new Color(.66f, .65f, .58f), ownedMeshes);
-            roofs.Render("Roofs", root.transform, stone, new Color(.18f, .48f, .3f), ownedMeshes);
-        }
+        //    // Gateposts leave the entrance center and its approach unobstructed from above.
+        //    foreach (float side in new[] { -.65f, .65f })
+        //        walls.Box(side - .15f, side + .15f, -.3f, .3f, 0, .85f);
+        //    foreach (var house in new[] { new Vector2(-.85f, 1.3f), new Vector2(.85f, 1.3f), new Vector2(0, 3) })
+        //    {
+        //        walls.Box(house.x - .48f, house.x + .48f, house.y - .45f, house.y + .45f, .03f, .65f);
+        //        roofs.Roof(house.x, house.y, .58f, .55f, .65f, 1.05f);
+        //    }
+        //    floor.Render("Courtyard", root.transform, paving != null ? paving : stone, new Color(.73f, .66f, .49f), ownedMeshes);
+        //    walls.Render("Walls and houses", root.transform, stone, new Color(.66f, .65f, .58f), ownedMeshes);
+        //    roofs.Render("Roofs", root.transform, stone, new Color(.18f, .48f, .3f), ownedMeshes);
+        //}
     }
 
     private sealed class Geometry
@@ -109,4 +109,15 @@ internal static class OverworldTownVisuals
             renderer.SetPropertyBlock(properties);
         }
     }
+}
+
+internal class GridTown
+{
+    public Coord Inward { get; internal set; }
+}
+
+public class Coord
+{
+    public float X { get; internal set; }
+    public int Y { get; internal set; }
 }

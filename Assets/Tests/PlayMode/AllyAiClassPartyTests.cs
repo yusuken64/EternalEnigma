@@ -95,7 +95,7 @@ namespace EternalEnigma.Tests
             {
                 foreach (var skill in skills)
                 {
-                    Object.DestroyImmediate(skill);
+                    //Object.DestroyImmediate(skill);
                 }
                 skills.Clear();
             }

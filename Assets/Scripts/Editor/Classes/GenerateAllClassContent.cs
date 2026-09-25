@@ -23,7 +23,7 @@ public static class GenerateAllClassContent
 		ClassContent_Commander.Build();
 		ClassContent_Scout.Build();
 		AssignHeroClasses.Build();
-		TuneEnemyResistances.Build();
+		//TuneEnemyResistances.Build();
 		ClassContentTownSetup.Build();
 		AssetDatabase.SaveAssets();
 		AssetDatabase.Refresh();

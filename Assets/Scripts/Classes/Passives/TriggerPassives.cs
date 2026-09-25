@@ -92,7 +92,7 @@ public class SwiftnessPassive : ClassPassive
 		return Enumerable.Empty<GameAction>();
 	}
 
-	public override void OnTurnStart(Character owner, Skill skill)
+    internal override void OnTurnStart(Character owner, Skill skill)
 	{
 		if (owner == null || owner.Vitals == null || owner.Vitals.HP <= 0)
 			return;
@@ -120,7 +120,7 @@ public class OpeningActionPassive : ClassPassive
 		return Enumerable.Empty<GameAction>();
 	}
 
-	public override void OnFloorStart(Character owner, Skill skill)
+    internal override void OnFloorStart(Character owner, Skill skill)
 	{
 		if (owner == null || owner.Vitals == null || owner.Vitals.HP <= 0)
 			return;
@@ -153,7 +153,7 @@ public class FieldMedicinePassive : ClassPassive
 		return Enumerable.Empty<GameAction>();
 	}
 
-	public override void OnFloorStart(Character owner, Skill skill)
+	internal override void OnFloorStart(Character owner, Skill skill)
 	{
 		if (owner == null || owner.Vitals == null || owner.Vitals.HP <= 0)
 			return;
@@ -193,7 +193,7 @@ public class AuraOfCommandPassive : ClassPassive
 		return Enumerable.Empty<GameAction>();
 	}
 
-	public override void OnTurnStart(Character owner, Skill skill)
+    internal override void OnTurnStart(Character owner, Skill skill)
 	{
 		if (owner == null || owner.Vitals == null || owner.Vitals.HP <= 0)
 			return;

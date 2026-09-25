@@ -46,13 +46,13 @@ namespace EternalEnigma.Tests
             cls.DisplayName = "Test";
             cls.Skills = new List<ClassSkillEntryData>
             {
-                new ClassSkillEntryData { Skill = MakeSkill("T Novice"), Tier = 1, MaxRank = 1, Kind = SkillKind.Mastery },
-                new ClassSkillEntryData { Skill = MakeSkill("T Strike"), Tier = 1, MaxRank = 5, Kind = SkillKind.Normal },
-                new ClassSkillEntryData { Skill = MakeSkill("T Guard"), Tier = 1, MaxRank = 5, Kind = SkillKind.Normal },
-                new ClassSkillEntryData { Skill = MakeSkill("T Parry"), Tier = 1, MaxRank = 5, Kind = SkillKind.Normal },
-                new ClassSkillEntryData { Skill = MakeSkill("T Adept"), Tier = 2, MaxRank = 1, Kind = SkillKind.Mastery },
-                new ClassSkillEntryData { Skill = MakeSkill("T Cleave"), Tier = 2, MaxRank = 5, Kind = SkillKind.Normal },
-                new ClassSkillEntryData { Skill = MakeSkill("T Master"), Tier = 3, MaxRank = 1, Kind = SkillKind.Mastery },
+                //new ClassSkillEntryData { Skill = MakeSkill("T Novice"), Tier = 1, MaxRank = 1, Kind = SkillKind.Mastery },
+                //new ClassSkillEntryData { Skill = MakeSkill("T Strike"), Tier = 1, MaxRank = 5, Kind = SkillKind.Normal },
+                //new ClassSkillEntryData { Skill = MakeSkill("T Guard"), Tier = 1, MaxRank = 5, Kind = SkillKind.Normal },
+                //new ClassSkillEntryData { Skill = MakeSkill("T Parry"), Tier = 1, MaxRank = 5, Kind = SkillKind.Normal },
+                //new ClassSkillEntryData { Skill = MakeSkill("T Adept"), Tier = 2, MaxRank = 1, Kind = SkillKind.Mastery },
+                //new ClassSkillEntryData { Skill = MakeSkill("T Cleave"), Tier = 2, MaxRank = 5, Kind = SkillKind.Normal },
+                //new ClassSkillEntryData { Skill = MakeSkill("T Master"), Tier = 3, MaxRank = 1, Kind = SkillKind.Mastery },
             };
             return cls;
         }

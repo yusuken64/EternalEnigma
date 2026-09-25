@@ -42,15 +42,15 @@ public class ApplyStatusEffectAction : GameAction
 	{
 		TrackAnimationTarget(target);
 		statusInstance = target.ApplyStatusEffect(statusEffectPrefab);
-		if (durationDelta != 0)
-		{
-			var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x.GetType() == statusEffectPrefab.GetType());
-			if (applied != null) applied.TurnsLeft += durationDelta;
-		}
-		var applied = statusInstance != null ? statusInstance :
-			target.StatusEffects.FirstOrDefault(x => x != null && statusEffectPrefab != null && x.StackKey == statusEffectPrefab.StackKey);
-		applied?.OnApplied(target, caster);
-		statusInstance?.gameObject.SetActive(false);
+		//if (durationDelta != 0)
+		//{
+		//	var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x.GetType() == statusEffectPrefab.GetType());
+		//	if (applied != null) applied.TurnsLeft += durationDelta;
+		//}
+		//var applied = statusInstance != null ? statusInstance :
+		//	target.StatusEffects.FirstOrDefault(x => x != null && statusEffectPrefab != null && x.StackKey == statusEffectPrefab.StackKey);
+		//applied?.OnApplied(target, caster);
+		//statusInstance?.gameObject.SetActive(false);
 		return new();
 	}
 

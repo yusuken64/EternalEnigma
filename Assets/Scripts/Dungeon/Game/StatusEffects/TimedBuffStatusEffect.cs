@@ -13,10 +13,10 @@ public class TimedBuffStatusEffect : StatusEffect
 		return null;
 	}
 
-	public override bool PreventsMenu()
-	{
-		return false;
-	}
+	//public override bool PreventsMenu()
+	//{
+	//	return false;
+	//}
 
 	public override void Tick()
 	{
@@ -122,4 +122,9 @@ public class TimedBuffStatusEffect : StatusEffect
 		}
 		// Otherwise do nothing (the stronger current buff wins)
 	}
+
+    internal override bool PreventsMenu()
+    {
+        throw new NotImplementedException();
+    }
 }

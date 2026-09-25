@@ -205,7 +205,7 @@ namespace EternalEnigma.Tests
             Assert.That(caster.CanCast(arrowSkill, out var reason1), Is.False);
             Assert.That(reason1, Is.EqualTo("Not enough arrows"));
 
-            caster.Equipment.Unequip(bowItem.EquipmentItemDefinition);
+            caster.Equipment.UnEquip(bowItem);
             Assert.That(caster.CanCast(arrowSkill, out var reason2), Is.False);
             Assert.That(reason2, Is.EqualTo("Needs a bow"));
         }

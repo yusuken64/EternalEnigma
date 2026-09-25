@@ -175,14 +175,14 @@ namespace EternalEnigma.Tests
             arrowSkill.SkillName = damageSkill.SkillName;
             arrowSkill.ActivationType = damageSkill.ActivationType;
             arrowSkill.SPCost = damageSkill.SPCost;
-            //arrowSkill.TargetSelector = new TargetSelector(damageSkill.TargetSelector);
+            arrowSkill.TargetSelector = new TargetSelector(damageSkill.TargetSelector);
             arrowSkill.Targeting = damageSkill.Targeting;
             arrowSkill.MissileRange = damageSkill.MissileRange;
             arrowSkill.ArrowCost = 1;
             arrowSkill.ArrowCostMode = ArrowCostMode.Fixed;
             arrowSkill.ActionEffects = new List<GameAction>(damageSkill.ActionEffects);
             arrowSkill.SkillAnimation = damageSkill.SkillAnimation;
-            //arrowSkill.RankScaling = new SkillRankScaling(damageSkill.RankScaling);
+            arrowSkill.RankScaling = new SkillRankScaling(damageSkill.RankScaling);
 
             var bow = AssetDatabase.LoadAssetAtPath<EquipmentItemDefinition>("Assets/Prefabs/Dungeon/Items/Weapons/LeftHand_Bows.asset");
             Assert.That(bow, Is.Not.Null);
@@ -205,7 +205,7 @@ namespace EternalEnigma.Tests
             Assert.That(caster.CanCast(arrowSkill, out var reason1), Is.False);
             Assert.That(reason1, Is.EqualTo("Not enough arrows"));
 
-            //caster.Equipment.Unequip(bowItem.EquipmentItemDefinition);
+            caster.Equipment.Unequip(bowItem.EquipmentItemDefinition);
             Assert.That(caster.CanCast(arrowSkill, out var reason2), Is.False);
             Assert.That(reason2, Is.EqualTo("Needs a bow"));
         }
@@ -226,7 +226,7 @@ namespace EternalEnigma.Tests
             allTargetSkill.ArrowCostMode = ArrowCostMode.PerTarget;
             allTargetSkill.ActionEffects = new List<GameAction>(damageSkill.ActionEffects);
             allTargetSkill.SkillAnimation = damageSkill.SkillAnimation;
-            //allTargetSkill.RankScaling = new SkillRankScaling(damageSkill.RankScaling);
+            allTargetSkill.RankScaling = new SkillRankScaling(damageSkill.RankScaling);
 
             var arrows = harness.AddItem("Wooden Arrows");
             arrows.StackStock = 1;
@@ -243,54 +243,56 @@ namespace EternalEnigma.Tests
             Assert.That(damagedCount, Is.EqualTo(1));
         }
 
-        //[UnityTest]
-        //public IEnumerator TauntedEnemyTargetsTaunter()
-        //{
-        //    var taunt = CreateStatusTemplate<TauntStatusEffect>(3);
-        //    first.ApplyStatusEffect(taunt);
-        //    taunt.OnApplied(first, friend);
+        [UnityTest]
+        public IEnumerator TauntedEnemyTargetsTaunter()
+        {
+            var taunt = CreateStatusTemplate<TauntStatusEffect>(3);
+            first.ApplyStatusEffect(taunt);
+            taunt.OnApplied(first, friend);
 
-        //    var target = first.GetPursuitTarget();
-        //    Assert.That(target, Is.SameAs(friend));
-        //}
+            var target = first.GetPursuitTarget();
+            Assert.That(target, Is.SameAs(friend));
+            yield break;
+        }
 
-        //[UnityTest]
-        //public IEnumerator SongBuffsStackPerStatAndFamily()
-        //{
-        //    var song1 = CreateStatusTemplate<TimedBuffStatusEffect>(3);
-        //    song1.BuffName = "Song";
-        //    song1.Family = BuffFamily.Song;
-        //    song1.Modification = new StatModification { Strength = 2 };
+        [UnityTest]
+        public IEnumerator SongBuffsStackPerStatAndFamily()
+        {
+            var song1 = CreateStatusTemplate<TimedBuffStatusEffect>(3);
+            song1.BuffName = "Song";
+            song1.Family = BuffFamily.Song;
+            song1.Modification = new StatModification { Strength = 2 };
 
-        //    caster.ApplyStatusEffect(song1);
-        //    Assert.That(caster.StatusEffects.Count, Is.EqualTo(1));
-        //    Assert.That(((TimedBuffStatusEffect)caster.StatusEffects[0]).Modification.Strength, Is.EqualTo(2));
+            caster.ApplyStatusEffect(song1);
+            Assert.That(caster.StatusEffects.Count, Is.EqualTo(1));
+            Assert.That(((TimedBuffStatusEffect)caster.StatusEffects[0]).Modification.Strength, Is.EqualTo(2));
 
-        //    var song2 = CreateStatusTemplate<TimedBuffStatusEffect>(3);
-        //    song2.BuffName = "Song";
-        //    song2.Family = BuffFamily.Song;
-        //    song2.Modification = new StatModification { Strength = 5 };
+            var song2 = CreateStatusTemplate<TimedBuffStatusEffect>(3);
+            song2.BuffName = "Song";
+            song2.Family = BuffFamily.Song;
+            song2.Modification = new StatModification { Strength = 5 };
 
-        //    caster.ApplyStatusEffect(song2);
-        //    Assert.That(caster.StatusEffects.Count, Is.EqualTo(1));
-        //    Assert.That(((TimedBuffStatusEffect)caster.StatusEffects[0]).Modification.Strength, Is.EqualTo(5));
+            caster.ApplyStatusEffect(song2);
+            Assert.That(caster.StatusEffects.Count, Is.EqualTo(1));
+            Assert.That(((TimedBuffStatusEffect)caster.StatusEffects[0]).Modification.Strength, Is.EqualTo(5));
 
-        //    var song3 = CreateStatusTemplate<TimedBuffStatusEffect>(3);
-        //    song3.BuffName = "Song";
-        //    song3.Family = BuffFamily.Song;
-        //    song3.Modification = new StatModification { Defense = 2 };
+            var song3 = CreateStatusTemplate<TimedBuffStatusEffect>(3);
+            song3.BuffName = "Song";
+            song3.Family = BuffFamily.Song;
+            song3.Modification = new StatModification { Defense = 2 };
 
-        //    caster.ApplyStatusEffect(song3);
-        //    Assert.That(caster.StatusEffects.Count, Is.EqualTo(2));
+            caster.ApplyStatusEffect(song3);
+            Assert.That(caster.StatusEffects.Count, Is.EqualTo(2));
 
-        //    var command = CreateStatusTemplate<TimedBuffStatusEffect>(3);
-        //    command.BuffName = "Command";
-        //    command.Family = BuffFamily.Command;
-        //    command.Modification = new StatModification { Strength = 1 };
+            var command = CreateStatusTemplate<TimedBuffStatusEffect>(3);
+            command.BuffName = "Command";
+            command.Family = BuffFamily.Command;
+            command.Modification = new StatModification { Strength = 1 };
 
-        //    caster.ApplyStatusEffect(command);
-        //    Assert.That(caster.StatusEffects.Count, Is.EqualTo(3));
-        //}
+            caster.ApplyStatusEffect(command);
+            Assert.That(caster.StatusEffects.Count, Is.EqualTo(3));
+            yield break;
+        }
     }
 }
 #endif

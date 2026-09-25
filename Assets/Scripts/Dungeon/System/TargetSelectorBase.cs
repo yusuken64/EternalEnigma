@@ -8,6 +8,14 @@ public class TargetSelector
     public TargetTeam Team;
     public TargetArea Area;
 
+    public TargetSelector() { }
+
+    public TargetSelector(TargetSelector other)
+    {
+        Team = other.Team;
+        Area = other.Area;
+    }
+
     public List<Vector3Int> GetTargets(Character caster)
         => GetCharacters(caster).Select(x => x.TilemapPosition).Distinct().ToList();
 

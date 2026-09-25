@@ -128,7 +128,7 @@ public class CombatMathTests
 	[Test]
 	public void HitChanceIsClamped()
 	{
-		//Assert.That(CombatMath.HitChance(null, null), Is.EqualTo(0.8f).Within(1e-5f));
+		Assert.That(CombatMath.HitChance((Stats)null, (Stats)null), Is.EqualTo(0.8f).Within(1e-5f));
 
 		var attacker1 = new Stats { HitBonus = 1 };
 		Assert.That(CombatMath.HitChance(attacker1, null), Is.EqualTo(1f));

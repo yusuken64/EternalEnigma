@@ -114,22 +114,23 @@ namespace EternalEnigma.Tests
             Assert.That(dot.ActionEffects.OfType<ApplyStatusEffectAction>().Single().StatusEffect.TurnsLeft, Is.EqualTo(prefabTurnsLeft));
         }
 
-        //[UnityTest]
-        //public IEnumerator RankThreePassiveGrantsScaledBonus()
-        //{
-        //    var baseHp = caster.FinalStats.HPMax;
-        //    var passive = Learn("HP Up");
-        //    var basePassiveBonus = passive.PassiveStatModification.HPMax;
+        [UnityTest]
+        public IEnumerator RankThreePassiveGrantsScaledBonus()
+        {
+            var baseHp = caster.FinalStats.HPMax;
+            var passive = Learn("HP Up");
+            var basePassiveBonus = passive.PassiveStatModification.HPMax;
 
-        //    // At rank 1, should grant base bonus
-        //    Assert.That(caster.FinalStats.HPMax, Is.EqualTo(baseHp + basePassiveBonus));
+            // At rank 1, should grant base bonus
+            Assert.That(caster.FinalStats.HPMax, Is.EqualTo(baseHp + basePassiveBonus));
 
-        //    // At rank 3, should grant base + 2*sign
-        //    passive.Rank = 3;
-        //    caster.InvalidateCachedStats();
-        //    var sign = basePassiveBonus > 0 ? 1 : (basePassiveBonus < 0 ? -1 : 0);
-        //    Assert.That(caster.FinalStats.HPMax, Is.EqualTo(baseHp + basePassiveBonus + sign * 2));
-        //}
+            // At rank 3, should grant base + 2*sign
+            passive.Rank = 3;
+            caster.InvalidateCachedStats();
+            var sign = basePassiveBonus > 0 ? 1 : (basePassiveBonus < 0 ? -1 : 0);
+            Assert.That(caster.FinalStats.HPMax, Is.EqualTo(baseHp + basePassiveBonus + sign * 2));
+            yield break;
+        }
 
         [UnityTest]
         public IEnumerator DungeonReturnRecordsHighestLevel()

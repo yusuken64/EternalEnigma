@@ -645,6 +645,10 @@ disp: {displayedVitals}");
 
 	internal Character GetPursuitTarget()
 	{
+		var taunt = StatusEffects.OfType<TauntStatusEffect>().FirstOrDefault(x => x.Taunter != null);
+		if (taunt != null)
+			return taunt.Taunter;
+
 		var game = Game.Instance;
 		var playerTeamCharacters = game.AllCharacters.Where(x => x.Team != Team && x.Team != Team.Neutral);
 

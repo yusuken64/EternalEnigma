@@ -10,6 +10,16 @@ public class SkillRankScaling
 	public int BuffStepPerRank = 1;
 	public bool DurationBonusAtRanks3And5 = true;
 
+	public SkillRankScaling() { }
+
+	public SkillRankScaling(SkillRankScaling other)
+	{
+		PowerPercentPerRank = other.PowerPercentPerRank;
+		ChancePointsPerRank = other.ChancePointsPerRank;
+		BuffStepPerRank = other.BuffStepPerRank;
+		DurationBonusAtRanks3And5 = other.DurationBonusAtRanks3And5;
+	}
+
 	public int ScalePower(int baseValue, int rank)
 	{
 		int extra = Math.Max(0, rank - 1);

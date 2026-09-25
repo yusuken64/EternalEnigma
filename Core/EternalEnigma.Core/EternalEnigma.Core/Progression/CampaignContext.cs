@@ -177,8 +177,23 @@ public HashSet<string> Completed { get; }
     }
     public static (int Start, int End) Floors(int tier) => tier switch
     { 0 => (1, 5), 1 => (5, 10), 2 => (10, 20), 3 => (20, 30), 4 => (30, 40), _ => throw new ArgumentOutOfRangeException(nameof(tier)) };
-    public int LocationSeed(string location, int floor = 0)
+    public static int LocationSeed(int campaignSeed, string location, int floor = 0)
     {
-        unchecked { uint hash = 2166136261; foreach (char c in State.Seed.ToString(System.Globalization.CultureInfo.InvariantCulture) + "/" + location + "/" + floor.ToString(System.Globalization.CultureInfo.InvariantCulture)) hash = (hash ^ c) * 16777619; return (int)(hash & 0x7fffffff); }
+        unchecked { uint hash = 2166136261; foreach (char c in campaignSeed.ToString(System.Globalization.CultureInfo.InvariantCulture) + "/" + location + "/" + floor.ToString(System.Globalization.CultureInfo.InvariantCulture)) hash = (hash ^ c) * 16777619; return (int)(hash & 0x7fffffff); }
     }
+    public int LocationSeed(string location, int floor = 0) => LocationSeed(State.Seed, location, floor);
+    /// <summary>Throne floors are the first and last floor of the location's tier range.</summary>
+    public static DungeonFloorOptions DungeonFloorOptionsFor(int campaignSeed, string locationId, int floor, int tier)
+    {
+        var (start, end) = Floors(tier);
+        int seed = LocationSeed(campaignSeed, locationId, floor);
+        return floor == start || floor == end ? DungeonFloorOptions.Throne(seed) : new DungeonFloorOptions(seed);
+    }
+    public DungeonFloor DungeonFloor(string locationId, int floor)
+    {
+        var location = Campaign.Locations.FirstOrDefault(l => l.Id == locationId) ?? throw new ArgumentException("Unknown location.", nameof(locationId));
+        return DungeonFloorGenerator.Generate(DungeonFloorOptionsFor(State.Seed, locationId, floor, location.Tier));
+    }
+    public TownPlan Town(string townId, IReadOnlyList<bool>? shopFlags = null, int allyCount = 3) =>
+        TownPlanGenerator.Generate(new TownPlanOptions(this.LocationSeed(townId), shopFlags: shopFlags, allyCount: allyCount));
 }

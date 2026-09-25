@@ -151,4 +151,36 @@ public sealed class CampaignContextTests
         context.Position = context.Grid.Locations["repeatable-0"];
         Assert.False(context.SetParty("ordinary-1"));
     }
+    [Fact]
+    public void StaticLocationSeedMatchesInstance()
+    {
+        var context = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        Assert.Equal(CampaignContext.LocationSeed(42, "town-0", 3), context.LocationSeed("town-0", 3));
+    }
+    [Fact]
+    public void ThroneFloorsAreTierBounds()
+    {
+        var context = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var location = context.Campaign.Locations.First(l => l.Id == "story-0");
+        var (start, end) = CampaignContext.Floors(location.Tier);
+        var throneStart = context.DungeonFloor("story-0", start);
+        var throneEnd = context.DungeonFloor("story-0", end);
+        var middle = context.DungeonFloor("story-0", (start + end) / 2);
+        Assert.True(throneStart.IsThroneFloor);
+        Assert.True(throneEnd.IsThroneFloor);
+        Assert.False(middle.IsThroneFloor);
+        Assert.Equal(32, middle.Width);
+        Assert.Equal(32, middle.Height);
+    }
+    [Fact]
+    public void TownMatchesDirectGeneration()
+    {
+        var context = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var town = context.Town("town-0");
+        var directGeneration = TownPlanGenerator.Generate(new TownPlanOptions(context.LocationSeed("town-0")));
+        Assert.Equal(town.Seed, directGeneration.Seed);
+        Assert.Equal(town.Width, directGeneration.Width);
+        Assert.Equal(town.Height, directGeneration.Height);
+        Assert.Equal(town.Layers.Keys, directGeneration.Layers.Keys);
+    }
 }

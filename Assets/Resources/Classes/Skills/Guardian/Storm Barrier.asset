@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: Storm Barrier
+  m_EditorClassIdentifier: EternalEnigma.Game::Skill
+  SkillName: Storm Barrier
+  LearnCost: 150
+  MaxRank: 5
+  RankScaling:
+    PowerPercentPerRank: 15
+    ChancePointsPerRank: 5
+    BuffStepPerRank: 1
+    DurationBonusAtRanks3And5: 1
+  ActivationType: 0
+  SPCost: 2
+  TargetSelector:
+    Team: 2
+    Area: 1
+  Targeting: 2
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 0}
+  ArrowCost: 0
+  ArrowCostMode: 0
+  IsWeaponSkill: 0
+  ActionEffects:
+  - rid: 292415685818318974
+  SkillAnimation:
+    Steps:
+    - rid: 292415685818318975
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  PassiveResponses: []
+  Description: Lightning damage to the party -75% until your next turn.
+  references:
+    version: 2
+    RefIds:
+    - rid: 292415685818318974
+      type: {class: ApplyStatusChanceAction, ns: , asm: EternalEnigma.Game}
+      data:
+        StatusEffect: {fileID: 4963570673456588637, guid: 8d0b1448a61d9254da40ff834d6576ac, type: 3}
+        Chance: 1
+        IsAilment: 0
+        OnCaster: 0
+    - rid: 292415685818318975
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 06495f2f4e00d8d438cf199613dbc18c, type: 3}
+        delay: 2
+        duration: 0

@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95d827eb8927a664089b107bf3e6b9d0, type: 3}
+  m_Name: Rogue
+  m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
+  Id: rogue
+  DisplayName: Rogue
+  Role: Mobility and disruption
+  AllowedWeapons: 0000000005000000
+  GrowthPerLevel:
+    HPMax: 4
+    SPMax: 1
+    HungerMax: 0
+    Strength: 2
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  StartingStatBonus:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 1
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0.05
+    HitBonus: 0
+  Skills:
+  - Skill: {fileID: 11400000, guid: ae55183f3d1e4b44a97f1df4aa7f4f95, type: 2}
+    Tier: 1
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: 7505f4d96728e934a86100546ee43292, type: 2}
+    Tier: 1
+    MaxRank: 1
+    Kind: 2
+  - Skill: {fileID: 11400000, guid: 77f08e8b713dff342a7b4850f8740074, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: d01536bad79c942409a32d37d854f773, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 65c1634d877f4d741bc05b89e0163de0, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: eb09556e308bc5943a7794ac09048deb, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: ea7435c5f935a2d49ab1688db9c2c0b5, type: 2}
+    Tier: 2
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: 0697d90db7c0ce345bfa1dfbe3f55799, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 945a30a7c6027d044a4bf0e49b7dc938, type: 2}
+    Tier: 2
+    MaxRank: 3
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: c306e3c10b1a8ff478138b5862fd2c21, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 750d5fd3c3cc4ae47b4896e23a80a9ad, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: a9b98e21ccf7f0242b0704ecc0d34903, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: ab247e3ad53cee14c8432bbd1d37eecc, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 9eabcacd0aa16df469711c50a2f0caf5, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 14685e8e4d61ca94a982f7a4ce27c544, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: ffdcc0b5c7d552d4e8d6a9f4944e6e5f, type: 2}
+    Tier: 3
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: fabe97aab6290ef4ea5dc75f900a924c, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 3
+  - Skill: {fileID: 11400000, guid: fb3d1ec6563338b4a9d6f220b9ea77c2, type: 2}
+    Tier: 3
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: e13ab2e82807dcf4b93db5e45ca364a6, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 3
+  - Skill: {fileID: 11400000, guid: 1ea80484f7aaeaa488a0c89072f15de2, type: 2}
+    Tier: 3
+    MaxRank: 5
+    Kind: 0

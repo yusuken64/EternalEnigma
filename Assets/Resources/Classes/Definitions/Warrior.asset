@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95d827eb8927a664089b107bf3e6b9d0, type: 3}
+  m_Name: Warrior
+  m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
+  Id: warrior
+  DisplayName: Warrior
+  Role: Front-line physical attacker
+  AllowedWeapons: 000000000300000005000000
+  GrowthPerLevel:
+    HPMax: 5
+    SPMax: 0
+    HungerMax: 0
+    Strength: 3
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  StartingStatBonus:
+    HPMax: 5
+    SPMax: 0
+    HungerMax: 0
+    Strength: 1
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  Skills:
+  - Skill: {fileID: 11400000, guid: 5f597e5b924e1bb4cacc37bd22c63ee2, type: 2}
+    Tier: 1
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: 5381555dcb86bb04296c8f9aa2c8f8e0, type: 2}
+    Tier: 1
+    MaxRank: 1
+    Kind: 2
+  - Skill: {fileID: 11400000, guid: 46379907a31e01340bf1981b14030bed, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 481c71e4b3020e049b85ea48962b7e8d, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 3bdb83a8452520e4889a5ed54338bb4c, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: d83d51fbd330d1241b471cd9c74affda, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 14dd8808da92cc74b9125f38084d332a, type: 2}
+    Tier: 2
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: 08bf78596b50b034daa04aca3c1640b1, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: ac97fb98db5e875408a24bf08231b4b7, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 9cb7c9807c2eea1438587648c99970ca, type: 2}
+    Tier: 2
+    MaxRank: 1
+    Kind: 3
+  - Skill: {fileID: 11400000, guid: 32919392d4a13ef4e8192a8c71c4ff24, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 71c6026633bb67743b968ab72b858935, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: b8cc3ae52ffe08743b25e7659b78384b, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 0e7fb7863d351db4495fcf321f7a32be, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: e07049f9a2c91a748801fd371ebaef15, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 4b642e7d09fea2b4d940d06d92fec2fd, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: ee2a8413586852e4cacee6d227ad451e, type: 2}
+    Tier: 3
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 5b0109710168f404db855302edadf71f, type: 2}
+    Tier: 3
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 9cfc5da200ad76b4591cc1a3e6c5e2e5, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 3
+  - Skill: {fileID: 11400000, guid: 2d174973bf72c6240b83291ea9659c03, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 3

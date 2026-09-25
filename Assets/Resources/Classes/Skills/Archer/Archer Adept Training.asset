@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: Archer Adept Training
+  m_EditorClassIdentifier: EternalEnigma.Game::Skill
+  SkillName: Archer Adept Training
+  LearnCost: 300
+  MaxRank: 1
+  RankScaling:
+    PowerPercentPerRank: 15
+    ChancePointsPerRank: 5
+    BuffStepPerRank: 1
+    DurationBonusAtRanks3And5: 1
+  ActivationType: 1
+  SPCost: 0
+  TargetSelector:
+    Team: 3
+    Area: 4
+  Targeting: 1
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 0}
+  ArrowCost: 0
+  ArrowCostMode: 0
+  IsWeaponSkill: 0
+  ActionEffects: []
+  SkillAnimation:
+    Steps: []
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  PassiveResponses:
+  - rid: 292415685818318985
+  Description: Unlocks tier 2. +5% bow damage.
+  references:
+    version: 2
+    RefIds:
+    - rid: 292415685818318985
+      type: {class: DamageBonus, ns: , asm: EternalEnigma.Game}
+      data:
+        Category: 1
+        Percent: 5
+        PercentPerRank: 0

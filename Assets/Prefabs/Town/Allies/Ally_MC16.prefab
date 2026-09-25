@@ -2560,6 +2560,10 @@ MonoBehaviour:
     magic and enchant audiences.
   AnimatedModel: {fileID: 7707324632015850841}
   Skills: []
+  SkillRanks: []
+  HighestLevel: 1
+  PrimaryClass: {fileID: 11400000, guid: d50bea7a8f313eb4db3d0b29a443a68f, type: 2}
+  SecondaryClass: {fileID: 0}
   CirlcleRenderer: {fileID: 8103258936086618030}
   AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
   PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}

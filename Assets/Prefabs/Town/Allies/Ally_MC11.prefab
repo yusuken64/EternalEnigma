@@ -3061,6 +3061,10 @@ MonoBehaviour:
     in need with their medicinal expertise.
   AnimatedModel: {fileID: 3282268872051355090}
   Skills: []
+  SkillRanks: []
+  HighestLevel: 1
+  PrimaryClass: {fileID: 11400000, guid: 529df18312c221648a74df34d45ec9a7, type: 2}
+  SecondaryClass: {fileID: 0}
   CirlcleRenderer: {fileID: 8103258936086618030}
   AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
   PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}

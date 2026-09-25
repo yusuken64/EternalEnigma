@@ -12990,8 +12990,6 @@ MonoBehaviour:
   AllyActionDialog: {fileID: 1925964870}
   SkillDialog: {fileID: 782734155}
   TargetDialog: {fileID: 554154038}
-  Opened: 0
-  CurrentDialog: {fileID: 0}
   StairDialog: {fileID: 1425972713}
   TargetArrow: {fileID: 1526273066}
 --- !u!4 &1143341172
@@ -23162,6 +23160,11 @@ MonoBehaviour:
   ThrownItemProjectilePrefab: {fileID: 1117745424125422547, guid: b96c645e3ba5ede499fc63ebbf7677c1, type: 3}
   Allies: []
   AllyPrefab: {fileID: 2307167615619215408, guid: 0c1f330f26c84f74f935cdbcb514ba0e, type: 3}
+  DownedAllies: []
+  FloorReveal:
+    LayoutRevealed: 0
+    EnemiesRevealedTurns: 0
+    TreasureRevealed: 0
   Enemies: []
   FloatingTextPrefab: {fileID: 8280587295192345586, guid: be746c3ca68145042886a559482f3abf, type: 3}
   InventoryMenu: {fileID: 29014338}
@@ -23171,6 +23174,30 @@ MonoBehaviour:
   NewFloorMessage: {fileID: 1725011404}
   StatusEffectPrefabs:
   - {fileID: -2227396828684259627, guid: cf13d9807046ff643beb6e8228f3c8cd, type: 3}
+  - {fileID: 1385712952016483764, guid: 49b585ce9d6f65542b2fe53cdb7e37c8, type: 3}
+  - {fileID: 4302016278335656902, guid: 1b47df432b6fc5b44848597a8177822e, type: 3}
+  - {fileID: 5705863498382439826, guid: c81d9d898a873784b8f4ad710edd0fea, type: 3}
+  - {fileID: 1279281984147996146, guid: 22de80dc1db13ae45b10bf8b0915e0f8, type: 3}
+  - {fileID: 7535354448948634441, guid: 60d9bcece5282a747b8d5cea58599406, type: 3}
+  - {fileID: 3933722647467623664, guid: 16b88e29927e1fd44a5f40b762f06e15, type: 3}
+  - {fileID: 7083992389868019979, guid: 9feebcea94578a14293edc9c68a5d86b, type: 3}
+  - {fileID: 2312007475596982220, guid: 7a1f77f0b9e0fd047b055e2c7d8078ba, type: 3}
+  - {fileID: 2318408335893190042, guid: f5c0bb4de9bcb31438d6b6f529e0701f, type: 3}
+  - {fileID: 3776939738453519963, guid: b28bd10044697644b9919765c2b4bbf7, type: 3}
+  - {fileID: 6423001511151606655, guid: b5a0c5b8aa3b6a341996c5e722449e46, type: 3}
+  - {fileID: 2302124049856545698, guid: b9f8f5389f9baae48a3af3115ba35b48, type: 3}
+  - {fileID: 7313803310050694353, guid: 0494fe8f9e5588845ad6e15d4eb90567, type: 3}
+  - {fileID: 1624007683471796011, guid: 8d3421bfe4d8e4c468dac4d6f9368e99, type: 3}
+  - {fileID: 4415638945027345153, guid: 7c98a012a8a8b7941923e1cc3eb3bd96, type: 3}
+  - {fileID: 8362565955721151327, guid: 8bc6931248dc4c0499b5e196c8155a71, type: 3}
+  - {fileID: 8344555534366529742, guid: c72abd1cd7c13d84f9c6f212e67e92d0, type: 3}
+  - {fileID: 592842545331272329, guid: 9c8c7e802404982479999f596036bf84, type: 3}
+  - {fileID: 5710658270100480146, guid: 3b244ec29d9f58f47a03ec5ec76d56b5, type: 3}
+  - {fileID: 7277757448603918311, guid: 7922a3741e4c2674ea413ee7367acdec, type: 3}
+  - {fileID: 6745565518304543819, guid: f02930c8b0e80574888a72622a466376, type: 3}
+  - {fileID: 1954439370558435665, guid: 8f2f8dce0bbbafb4bab9864af5271823, type: 3}
+  - {fileID: 2465659495580269283, guid: 1a01e6bce8257e744a0ad6870c0d98af, type: 3}
+  - {fileID: 4963570673456588637, guid: 8d0b1448a61d9254da40ff834d6576ac, type: 3}
   DeadUnits: []
   SkilText: {fileID: 1209047416}
   FloorText: {fileID: 122596706}

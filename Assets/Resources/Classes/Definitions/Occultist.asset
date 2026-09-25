@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95d827eb8927a664089b107bf3e6b9d0, type: 3}
+  m_Name: Occultist
+  m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
+  Id: occultist
+  DisplayName: Occultist
+  Role: Debuff and status specialist
+  AllowedWeapons: 0400000000000000
+  GrowthPerLevel:
+    HPMax: 3
+    SPMax: 2
+    HungerMax: 0
+    Strength: 1
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  StartingStatBonus:
+    HPMax: -4
+    SPMax: 4
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  Skills:
+  - Skill: {fileID: 11400000, guid: 453d1b6a0640ebe449c3d78c77a58044, type: 2}
+    Tier: 1
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: b22d4b39a36e5ab4fad87de409a122a7, type: 2}
+    Tier: 1
+    MaxRank: 1
+    Kind: 2
+  - Skill: {fileID: 11400000, guid: 6118ce5e08a9260449f840c2849c78d7, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 2c63c80054d9dee47b578ac4f18bf48b, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 2233d7fb78ad8814e8f516322de193d7, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: ef18577d8edcccb44811c238d52cfc5b, type: 2}
+    Tier: 1
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 1265c138680302141b16248de88b4fad, type: 2}
+    Tier: 2
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: 5fe9970d68701d949b64d8b09eab0153, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 7b0128bdef1660247a3aa44ffa11adf5, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: c4f836b9e28b10a4caa5db16ecf34d6e, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 017d6a9a2c9a7f245b757e8761cb27ee, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: b514c9315a947c7489b1e5d4947fd5f6, type: 2}
+    Tier: 2
+    MaxRank: 1
+    Kind: 3
+  - Skill: {fileID: 11400000, guid: dd8297e98adba7a4d994950bb496697d, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: dbb5489699d0dc341be20416475d60bc, type: 2}
+    Tier: 2
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: ba3e5b04a415f614693a43ab1ce2ed89, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 1
+  - Skill: {fileID: 11400000, guid: 2060c9b21d50cf448b2f209d6e966377, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: dbd1e7c6686e7e9439a138dd6625fbb8, type: 2}
+    Tier: 3
+    MaxRank: 1
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: c3144bae7a860b44dad447bb5a93be2f, type: 2}
+    Tier: 3
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: a2dcca850c0a9554592b335812827f21, type: 2}
+    Tier: 3
+    MaxRank: 5
+    Kind: 0
+  - Skill: {fileID: 11400000, guid: 214e300225806434aa638892286586a3, type: 2}
+    Tier: 3
+    MaxRank: 5
+    Kind: 0

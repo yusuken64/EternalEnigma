@@ -47,6 +47,7 @@ MonoBehaviour:
   - {fileID: 7782356630008377252, guid: cbef25a4db7dbee41bd2ab6e4cb5fe48, type: 3}
   - {fileID: 4524939041097900574, guid: ce1a8d7760520a046bc6dd1813244da7, type: 3}
   - {fileID: 92611680284767584, guid: cd1892de4263374498332f1cec37465a, type: 3}
+  CampaignCompanions: []
   Recruits:
   - Ally: {fileID: 2589701936800338316, guid: d3dd9f4baffd29e43bf87ab29437b30f, type: 3}
     Cost: 300
@@ -103,17 +104,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f638620f30ab32e45862f172b34ae5f6, type: 2}
   - {fileID: 11400000, guid: f7fc0a1cbc44d2642a65d7c1bb78a948, type: 2}
   - {fileID: 11400000, guid: 7358319ba19e56b41a11d02dabaf325d, type: 2}
-  LearnableSkills:
-  - {fileID: 11400000, guid: adc76eb01c3af324d8490112cfaf9ce5, type: 2}
-  - {fileID: 11400000, guid: a40b9d11540f2ff498eb38112aec276c, type: 2}
-  - {fileID: 11400000, guid: d6e8e533c667e984da932ce496c2f181, type: 2}
-  - {fileID: 11400000, guid: bf612cba0be85e14b89b4002c6b37e61, type: 2}
-  - {fileID: 11400000, guid: 2af5e0e8bf008c847be30f1252746333, type: 2}
-  - {fileID: 11400000, guid: bb491d5c7d633634585dee1a0eefad9e, type: 2}
-  - {fileID: 11400000, guid: ebf8b2c16c55827438d42629d41e7dca, type: 2}
-  - {fileID: 11400000, guid: a77946d42bfea5f4282f25031ca64671, type: 2}
-  - {fileID: 11400000, guid: e2811b6004ecc1d4e9be72f25ce57e48, type: 2}
-  - {fileID: 11400000, guid: 2b45301970efc1a4bbac193e39ec61f0, type: 2}
-  - {fileID: 11400000, guid: 23371b2dd9ccf3146a43883ef21121b1, type: 2}
+  LearnableSkills: []
   LoseItemsOnDefeat: 1
   KeepGoldOnDefeat: 1

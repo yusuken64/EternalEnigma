@@ -3424,6 +3424,10 @@ MonoBehaviour:
     magical traditions.
   AnimatedModel: {fileID: 5476759686857995799}
   Skills: []
+  SkillRanks: []
+  HighestLevel: 1
+  PrimaryClass: {fileID: 11400000, guid: ae725b80ab1aa0446b45f78c7d60da30, type: 2}
+  SecondaryClass: {fileID: 0}
   CirlcleRenderer: {fileID: 8103258936086618030}
   AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
   PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}

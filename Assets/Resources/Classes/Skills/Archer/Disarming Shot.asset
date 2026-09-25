@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: Disarming Shot
+  m_EditorClassIdentifier: EternalEnigma.Game::Skill
+  SkillName: Disarming Shot
+  LearnCost: 50
+  MaxRank: 5
+  RankScaling:
+    PowerPercentPerRank: 15
+    ChancePointsPerRank: 5
+    BuffStepPerRank: 1
+    DurationBonusAtRanks3And5: 1
+  ActivationType: 0
+  SPCost: 1
+  TargetSelector:
+    Team: 1
+    Area: 0
+  Targeting: 4
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  ArrowCost: 1
+  ArrowCostMode: 0
+  IsWeaponSkill: 1
+  ActionEffects:
+  - rid: 292415685818318990
+  - rid: 292415685818318991
+  SkillAnimation:
+    Steps:
+    - rid: 292415685818318992
+  PassiveStatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  PassiveResponses: []
+  Description: Damage + Arm bind. Uses 1 arrow.
+  references:
+    version: 2
+    RefIds:
+    - rid: 292415685818318990
+      type: {class: ScaledDamageAction, ns: , asm: EternalEnigma.Game}
+      data:
+        Scaling: 0
+        Category: 1
+        Percent: 1
+        BaseDamage: 8
+        PerLevel: 2
+        Hits: 1
+        Element: 0
+        RollToHit: 1
+        Requires: 2
+        PerAilmentBonus: 0
+        HealCasterPerAilment: 0
+        ExecuteBelowFraction: 0
+        CanEcho: 0
+    - rid: 292415685818318991
+      type: {class: ApplyStatusChanceAction, ns: , asm: EternalEnigma.Game}
+      data:
+        StatusEffect: {fileID: 3776939738453519963, guid: b28bd10044697644b9919765c2b4bbf7, type: 3}
+        Chance: 1
+        IsAilment: 1
+        OnCaster: 0
+    - rid: 292415685818318992
+      type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
+      data:
+        MuzzlePrefab: {fileID: 0}
+        ProjectilePrefab: {fileID: 0}
+        ImpactPrefab: {fileID: 7873731064791489527, guid: 81c02b133175879409c54d4913fca6d4, type: 3}
+        delay: 1
+        duration: 0

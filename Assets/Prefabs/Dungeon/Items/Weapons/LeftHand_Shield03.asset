@@ -34,7 +34,13 @@ MonoBehaviour:
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
   WeaponModelName: Shield03
-  WeaponType: 7
+  WeaponType: 6
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

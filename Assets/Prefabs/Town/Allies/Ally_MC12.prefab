@@ -3217,6 +3217,10 @@ MonoBehaviour:
     an expert at hunting and survival.
   AnimatedModel: {fileID: 8312638071644023815}
   Skills: []
+  SkillRanks: []
+  HighestLevel: 1
+  PrimaryClass: {fileID: 11400000, guid: 86f31af26cb53124da4ef69ae1f242f2, type: 2}
+  SecondaryClass: {fileID: 0}
   CirlcleRenderer: {fileID: 8103258936086618030}
   AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
   PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}

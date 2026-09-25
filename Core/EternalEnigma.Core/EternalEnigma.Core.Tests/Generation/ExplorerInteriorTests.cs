@@ -43,7 +43,7 @@ public sealed class ExplorerInteriorTests
         Assert.True(session.InInterior);
         Assert.NotNull(session.Town);
         Assert.Null(session.Dungeon);
-        Assert.Equal(session.Town!.PartySpawn, session.InteriorPosition);
+        Assert.Equal(session.Town!.Plan.PartySpawn, session.InteriorPosition);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class ExplorerInteriorTests
     {
         var session = Create();
         session.EnterLocation();
-        var exit = session.Town!.Exit;
+        var exit = session.Town!.Plan.Exit;
         while (!session.InteriorPosition.Equals(exit))
         {
             int dy = Math.Sign(exit.Y - session.InteriorPosition.Y);
@@ -70,7 +70,7 @@ public sealed class ExplorerInteriorTests
         Assert.Equal("dungeon", session.Location!.Id);
         Assert.True(session.EnterLocation());
         Assert.NotNull(session.Dungeon);
-        Assert.Equal(session.Dungeon!.Start, session.InteriorPosition);
+        Assert.Equal(session.Dungeon!.Current.Start, session.InteriorPosition);
 
         Assert.False(session.EnterLocation()); // already inside
         Assert.True(session.LeaveLocation());
@@ -86,7 +86,7 @@ public sealed class ExplorerInteriorTests
         var firstPlan = session.Town;
         session.LeaveLocation();
         session.EnterLocation();
-        Assert.Same(firstPlan, session.Town);
+        Assert.Same(firstPlan!.Plan, session.Town!.Plan);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public sealed class ExplorerInteriorTests
         var session = Create();
         session.Move(1, 0);
         session.EnterLocation();
-        var dungeon = session.Dungeon!;
+        var dungeon = session.Dungeon!.Current;
 
         // Nothing to interact with at the entrance itself.
         Assert.False(session.InteriorInteract());
@@ -121,7 +121,7 @@ public sealed class ExplorerInteriorTests
     {
         var session = Create();
         session.EnterLocation();
-        var town = session.Town!;
+        var town = session.Town!.Plan;
         var wallCell = FindBlockedCellOutsideCorridor(town);
 
         session.ToggleNoClip();
@@ -143,7 +143,7 @@ public sealed class ExplorerInteriorTests
         var session = Create();
         session.Move(1, 0);
         session.EnterLocation();
-        var dungeon = session.Dungeon!;
+        var dungeon = session.Dungeon!.Current;
         var wallCell = FindBlockedCell(dungeon);
 
         session.ToggleNoClip();

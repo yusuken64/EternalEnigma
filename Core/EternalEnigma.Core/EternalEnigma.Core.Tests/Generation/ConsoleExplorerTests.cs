@@ -108,11 +108,53 @@ public sealed class ConsoleExplorerTests
         Assert.Contains("Gate key", session.CollectedKeys);
     }
 
-    private static ExplorerSession Create(LockForm form, bool warp = false, bool keyed = false)
+    [Fact]
+    public void EnterTownThenDungeonAndBack()
     {
+        var session = Create(LockForm.None, interior: true);
+        Assert.True(session.Enter());
+        Assert.Equal(ExplorerView.Town, session.View);
+        Assert.Equal(new GridPoint(10, 2), session.Town!.Position);
+        while (session.Town.Position.Y != 13) Assert.True(session.Move(0, 1));
+        Assert.True(session.Town.OnDungeonEntrance);
+        Assert.True(session.Enter());
+        Assert.Equal(ExplorerView.Dungeon, session.View);
+        Assert.Equal(1, session.Dungeon!.Floor);
+        Assert.True(session.Dungeon.Current.IsThroneFloor);
+        Assert.Equal(new GridPoint(6, 4), session.Dungeon.Position);
+        for (int i = 0; i < 5; i++) Assert.True(session.Move(0, 1));
+        Assert.True(session.Dungeon.OnStairs);
+        Assert.True(session.Enter());
+        Assert.Equal(2, session.Dungeon.Floor);
+        Assert.False(session.Dungeon.Current.IsThroneFloor);
+        session.Leave();
+        Assert.Equal(ExplorerView.Town, session.View);
+        session.Leave();
+        Assert.Equal(ExplorerView.Overworld, session.View);
+        Assert.Equal(new GridPoint(0, 0), session.Position);
+    }
+
+    [Fact]
+    public void RenderersShowPlayer()
+    {
+        var session = Create(LockForm.None, interior: true);
+        Assert.True(session.Enter());
+        Assert.Contains('@', TownRenderer.Render(session.Town!, 5, 1)[0]);
+        while (session.Town!.Position.Y != 13) Assert.True(session.Move(0, 1));
+        Assert.True(session.Enter());
+        Assert.Contains('@', DungeonRenderer.Render(session.Dungeon!, 5, 1)[0]);
+    }
+
+    private static ExplorerSession Create(LockForm form, bool warp = false, bool keyed = false, bool interior = false)
+    {
+        var locations = new List<CampaignLocation>
+        {
+            new("start", "region", 0, LocationKind.Town), new("end", "region", 0, LocationKind.Town),
+        };
+        if (interior) locations.Add(new CampaignLocation("inner", "region", 0, LocationKind.StoryDungeon, parentTownId: "start"));
         var campaign = new CampaignDefinition(1, 1, "start", "end", Array.Empty<ActivatedCapability>(),
             new[] { new CampaignRegion("region", "test", 0) },
-            new[] { new CampaignLocation("start", "region", 0, LocationKind.Town), new CampaignLocation("end", "region", 0, LocationKind.Town) },
+            locations.ToArray(),
             new[] { warp ? new CampaignRoute("gate", "start", "end", Requirement.Open, LockForm.None,
                 shortcutKind: ShortcutKind.Keyed, keyId: "Later key", keyLocationId: "end", isWarp: true) : keyed ?
                 new CampaignRoute("gate", "start", "end", Requirement.Open, form,

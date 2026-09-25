@@ -11,7 +11,7 @@ public sealed class DungeonRun
     public int Floor { get; private set; }
     public (int Start, int End) Floors { get; }
     public DungeonFloor Current { get; private set; }
-    public GridPoint Position { get; private set; }
+    public GridPoint Position { get; internal set; }
     public string Message { get; private set; } = "";
     public HashSet<GridPoint> Visited { get; } = new();
 

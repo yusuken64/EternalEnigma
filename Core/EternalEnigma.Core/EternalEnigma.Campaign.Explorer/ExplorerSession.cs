@@ -6,6 +6,8 @@ using CampaignDefinition = EternalEnigma.Core.Progression.Campaign;
 
 namespace EternalEnigma.ConsoleExplorer;
 
+public enum ExplorerView { Overworld, Town, Dungeon }
+
 /// <summary>Console host progression at physical tiles; rewards simulate completed encounters.</summary>
 public sealed class ExplorerSession
 {
@@ -21,6 +23,7 @@ public sealed class ExplorerSession
     public CampaignDefinition Campaign { get; }
     public OverworldGrid Grid { get; }
     public GridPoint Position { get; private set; }
+    public ExplorerView View { get; private set; } = ExplorerView.Overworld;
     public CampaignLocation? Location => locations.GetValueOrDefault(Position);
     public string Message { get; private set; } = "Explore with arrows/WASD. Stand on a location and press Enter to claim its reward.";
     public CapabilitySet Held => permanent.Union(CapabilitySet.From(Campaign.Companions.Where(c => active.Contains(c.Id)).Select(c => c.Capability)));
@@ -60,12 +63,12 @@ public sealed class ExplorerSession
     public void ToggleNoClip() { NoClip = !NoClip; Message = NoClip ? "No-clip enabled: ignoring gates, water and terrain." : "No-clip disabled."; }
 
     private readonly Dictionary<string, TownPlan> townInteriors = new();
-    private readonly Dictionary<string, DungeonFloor> dungeonInteriors = new();
     private readonly Dictionary<string, HashSet<GridPoint>> clearedInteriorCells = new();
     public bool InInterior { get; private set; }
-    public TownPlan? Town { get; private set; }
-    public DungeonFloor? Dungeon { get; private set; }
-    public GridPoint InteriorPosition { get; private set; }
+    public TownVisit? Town { get; private set; }
+    public DungeonRun? Dungeon { get; private set; }
+    private GridPoint lastInteriorPosition;
+    public GridPoint InteriorPosition => Town?.Position ?? Dungeon?.Position ?? lastInteriorPosition;
     public bool CanEnterLocation => !InInterior && Location != null && (Location.Kind == LocationKind.Town ||
         Location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon);
 
@@ -80,18 +83,17 @@ public sealed class ExplorerSession
         {
             if (!townInteriors.TryGetValue(location.Id, out var plan))
                 townInteriors[location.Id] = plan = TownPlanGenerator.Generate(new TownPlanOptions(seed));
-            Town = plan;
-            InteriorPosition = plan.PartySpawn;
+            Town = new TownVisit(location.Id, plan);
             InInterior = true;
             Message = $"Entered {location.Id}. Walk to the south road to leave, or press I.";
             return true;
         }
         if (location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon)
         {
-            if (!dungeonInteriors.TryGetValue(location.Id, out var floor))
-                dungeonInteriors[location.Id] = floor = DungeonFloorGenerator.Generate(new DungeonFloorOptions(seed));
-            Dungeon = floor;
-            InteriorPosition = floor.Start;
+            Dungeon = new DungeonRun(Campaign.Seed, location);
+            // Legacy interior exploration predates throne floors and expects lootable content on entry;
+            // skip the empty intro throne room automatically so old behaviour is preserved.
+            if (Dungeon.Current.IsThroneFloor && !Dungeon.IsLastFloor) Dungeon.Descend();
             InInterior = true;
             Message = $"Entered {location.Id}. Walk back to the entrance to leave, or press I.";
             return true;
@@ -103,6 +105,7 @@ public sealed class ExplorerSession
     public bool LeaveLocation()
     {
         if (!InInterior) return false;
+        lastInteriorPosition = InteriorPosition;
         Town = null;
         Dungeon = null;
         InInterior = false;
@@ -110,15 +113,88 @@ public sealed class ExplorerSession
         return true;
     }
 
+    /// <summary>Overworld: steps into a Town or dungeon location. Town: exits or descends into its dungeon. Dungeon: descends or finishes on the stairs.</summary>
+    public bool Enter()
+    {
+        if (View == ExplorerView.Overworld)
+        {
+            var location = Location;
+            if (location == null) return false;
+            if (location.Kind == LocationKind.Town)
+            {
+                Town = TownVisit.Create(Campaign.Seed, location.Id);
+                View = ExplorerView.Town;
+                return true;
+            }
+            if (location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon)
+            {
+                Dungeon = new DungeonRun(Campaign.Seed, location);
+                View = ExplorerView.Dungeon;
+                return true;
+            }
+            return false;
+        }
+        if (View == ExplorerView.Town)
+        {
+            var town = Town!;
+            if (town.OnExit) { Leave(); return true; }
+            if (town.OnDungeonEntrance)
+            {
+                var interior = Campaign.Locations.FirstOrDefault(l => l.ParentTownId == town.TownId);
+                if (interior == null) { Message = "No dungeon here."; return false; }
+                Dungeon = new DungeonRun(Campaign.Seed, interior);
+                View = ExplorerView.Dungeon;
+                return true;
+            }
+            return false;
+        }
+        if (View == ExplorerView.Dungeon)
+        {
+            var dungeon = Dungeon!;
+            if (dungeon.OnStairs)
+            {
+                if (dungeon.IsLastFloor)
+                {
+                    completed.Add(Location!.Id);
+                    ClaimRewards();
+                    Leave();
+                }
+                else dungeon.Descend();
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    /// <summary>Dungeon returns to the view it was entered from; Town returns to the overworld. The overworld position is unchanged.</summary>
+    public void Leave()
+    {
+        if (View == ExplorerView.Dungeon)
+        {
+            bool fromTown = Dungeon!.Location.ParentTownId != null;
+            Dungeon = null;
+            View = fromTown ? ExplorerView.Town : ExplorerView.Overworld;
+            Message = fromTown ? "Returned to " + Town!.TownId + "." : "Returned to the overworld.";
+            return;
+        }
+        if (View == ExplorerView.Town)
+        {
+            Town = null;
+            View = ExplorerView.Overworld;
+            Message = "Returned to the overworld.";
+        }
+    }
+
     /// <summary>Interacts with whatever occupies the current interior cell (dungeon encounters, loot).</summary>
     public bool InteriorInteract()
     {
         if (Dungeon is not { } dungeon) { Message = "Nothing to interact with here."; return false; }
         if (IsCleared(InteriorPosition)) { Message = "Already cleared."; return false; }
-        string? kind = dungeon.Enemies.Any(e => e.Cell.Equals(InteriorPosition)) ? "enemy" :
-            dungeon.Traps.Any(t => t.Cell.Equals(InteriorPosition)) ? "trap" :
-            dungeon.Gold.Any(g => g.Cell.Equals(InteriorPosition)) ? "gold" :
-            dungeon.Items.Any(i => i.Cell.Equals(InteriorPosition)) ? "item" : null;
+        string? kind = dungeon.Current.Enemies.Any(e => e.Cell.Equals(InteriorPosition)) ? "enemy" :
+            dungeon.Current.Traps.Any(t => t.Cell.Equals(InteriorPosition)) ? "trap" :
+            dungeon.Current.Gold.Any(g => g.Cell.Equals(InteriorPosition)) ? "gold" :
+            dungeon.Current.Items.Any(i => i.Cell.Equals(InteriorPosition)) ? "item" : null;
         if (kind == null) { Message = "Nothing here."; return false; }
         if (!clearedInteriorCells.TryGetValue(Location!.Id, out var cleared))
             clearedInteriorCells[Location.Id] = cleared = new HashSet<GridPoint>();
@@ -151,20 +227,34 @@ public sealed class ExplorerSession
         var next = new GridPoint(InteriorPosition.X + dx, InteriorPosition.Y + dy);
         if (Town is { } town)
         {
-            if (!(NoClip ? town.Contains(next) : town.CanStep(InteriorPosition, next)))
-            { Message = NoClip ? "Edge of the map." : "Blocked."; return false; }
-            InteriorPosition = next;
-            if (next.Equals(town.Exit)) return LeaveLocation();
-            Message = Describe(NoClip, DescribeTownCell(town, next));
+            if (NoClip)
+            {
+                if (!town.Plan.Contains(next)) { Message = "Edge of the map."; return false; }
+                town.Position = next;
+                if (next.Equals(town.Plan.Exit)) return LeaveLocation();
+                Message = Describe(true, DescribeTownCell(town.Plan, next));
+                return true;
+            }
+            if (!town.Plan.CanStep(InteriorPosition, next)) { Message = "Blocked."; return false; }
+            town.Position = next;
+            if (next.Equals(town.Plan.Exit)) return LeaveLocation();
+            Message = Describe(false, DescribeTownCell(town.Plan, next));
             return true;
         }
         if (Dungeon is { } dungeon)
         {
-            if (!(NoClip ? dungeon.Contains(next) : dungeon.CanStep(InteriorPosition, next)))
-            { Message = NoClip ? "Edge of the map." : "Blocked."; return false; }
-            InteriorPosition = next;
-            if (next.Equals(dungeon.Start)) return LeaveLocation();
-            Message = Describe(NoClip, DescribeDungeonCell(dungeon, next));
+            if (NoClip)
+            {
+                if (!dungeon.Current.Contains(next)) { Message = "Edge of the map."; return false; }
+                dungeon.Position = next;
+                if (next.Equals(dungeon.Current.Start)) return LeaveLocation();
+                Message = Describe(true, DescribeDungeonCell(dungeon.Current, next));
+                return true;
+            }
+            if (!dungeon.Current.CanStep(InteriorPosition, next)) { Message = "Blocked."; return false; }
+            dungeon.Position = next;
+            if (next.Equals(dungeon.Current.Start)) return LeaveLocation();
+            Message = Describe(false, DescribeDungeonCell(dungeon.Current, next));
             return true;
         }
         return false;
@@ -194,6 +284,8 @@ public sealed class ExplorerSession
     public bool Move(int dx, int dy)
     {
         if (InInterior) return MoveInterior(dx, dy);
+        if (View == ExplorerView.Town) { var ok = Town!.Move(dx, dy); Message = Town.Message; return ok; }
+        if (View == ExplorerView.Dungeon) { var ok = Dungeon!.Move(dx, dy); Message = Dungeon.Message; return ok; }
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
         if (NoClip)
         {
@@ -217,7 +309,9 @@ public sealed class ExplorerSession
         if (Location?.Kind == LocationKind.Town) towns.Add(Location.Id);
         Message = Location == null ? "" : Location.Id == Campaign.FinalLocationId
             ? "You reached the final dungeon! Esc to quit, or keep exploring."
-            : $"{Location.Id} ({Location.Kind}) | Enter: claim rewards";
+            : Location.Kind == LocationKind.Town || Location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon
+                ? $"{Location.Id} ({Location.Kind}) | Enter: enter | R: claim rewards"
+                : $"{Location.Id} ({Location.Kind}) | Enter: claim rewards";
         var nearby = OverworldMovement.Neighbors(Position).Select(Grid.LockAt).Where(g => g != null).Select(g => g!.RouteId).Distinct();
         foreach (string id in nearby)
         {

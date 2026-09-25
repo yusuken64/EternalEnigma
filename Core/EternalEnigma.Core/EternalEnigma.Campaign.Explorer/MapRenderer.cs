@@ -32,8 +32,8 @@ public sealed class MapRenderer
 
     private string[] RenderInterior(int width, int height)
     {
-        int gridWidth = session.Town?.Width ?? session.Dungeon!.Width;
-        int gridHeight = session.Town?.Height ?? session.Dungeon!.Height;
+        int gridWidth = session.Town?.Plan.Width ?? session.Dungeon?.Current.Width ?? 0;
+        int gridHeight = session.Town?.Plan.Height ?? session.Dungeon?.Current.Height ?? 0;
         width = Math.Clamp(width, 1, gridWidth);
         height = Math.Clamp(height, 1, gridHeight);
         int left = Math.Clamp(session.InteriorPosition.X - width / 2, 0, gridWidth - width);
@@ -51,8 +51,8 @@ public sealed class MapRenderer
     private char InteriorGlyph(GridPoint p)
     {
         if (p.Equals(session.InteriorPosition)) return '@';
-        if (session.Town is { } town) return TownGlyph(town, p);
-        if (session.Dungeon is { } dungeon) return DungeonGlyph(dungeon, p);
+        if (session.Town is { } town) return TownGlyph(town.Plan, p);
+        if (session.Dungeon is { } dungeon) return DungeonGlyph(dungeon.Current, p);
         return ' ';
     }
 

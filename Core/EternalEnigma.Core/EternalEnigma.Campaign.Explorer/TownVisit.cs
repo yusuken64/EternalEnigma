@@ -8,7 +8,7 @@ public sealed class TownVisit
 {
     public string TownId { get; }
     public TownPlan Plan { get; }
-    public GridPoint Position { get; private set; }
+    public GridPoint Position { get; internal set; }
     public string Message { get; private set; } = "";
 
     public TownVisit(string townId, TownPlan plan)

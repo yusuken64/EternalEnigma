@@ -72,6 +72,8 @@ public class TurnManager : MonoBehaviour
 					foreach (var actor2 in actors)
 					{
 						gameActions.AddRange(actor2.GetResponseTo(sideEffectAction));
+						if (actor2 is Character responder && responder != null)
+							gameActions.AddRange(responder.GetClassResponses(sideEffectAction));
 					}
 				}
 
@@ -173,20 +175,19 @@ public class TurnManager : MonoBehaviour
             Game.Instance.PlaybackVisibleTiles.Clear();
 		}
 
-		if (Game.Instance.DeadUnits.Contains(Game.Instance.PlayerController.ControlledAlly))
-		{
-			var allies = Game.Instance.Allies
-				.Where(x => x.Vitals.HP > 0)
-				.ToList();
+		var game = Game.Instance;
+		SummonRules.TickSummons(game);
+		if (game.FloorReveal != null && game.FloorReveal.EnemiesRevealedTurns > 0)
+			game.FloorReveal.EnemiesRevealedTurns--;
 
-			if (allies.Count == 0)
-			{
-				Game.Instance.ShowGameOver();
-			}
-			else
-			{
-				FindFirstObjectByType<PlayerController>().TakeControlNextAlly();
-			}
+		// Defeat only when no non-summon party member is standing; a downed protagonist does not end the run.
+		if (PartyRules.IsPartyDefeated(game))
+		{
+			game.ShowGameOver();
+		}
+		else if (!PartyRules.IsStanding(game, game.PlayerController.ControlledAlly))
+		{
+			FindFirstObjectByType<PlayerController>().TakeControlNextAlly();
 		}
 
 		foreach (var deadUnit in Game.Instance.DeadUnits)
@@ -362,4 +363,7 @@ public abstract class GameAction
 
 	//this is a temp fix
 	internal virtual GameAction AsTargetedSkill(Character caster, Character target) { return this; }
+
+	// Rank-aware variant used by Skill.GetEffects. Effects that scale with rank override this one.
+	internal virtual GameAction AsTargetedSkill(Character caster, Character target, SkillRankContext rank) => AsTargetedSkill(caster, target);
 }

@@ -23,8 +23,10 @@ public sealed class OverworldGridTests
         Assert.Equal(256, grid.Width);
         Assert.Equal(256, grid.Height);
         var ground = Enumerable.Range(0, grid.Width * grid.Height).Select(i => new GridPoint(i % grid.Width, i / grid.Width)).Where(grid.IsGround).ToArray();
-        Assert.InRange(ground.Max(p => p.X) - ground.Min(p => p.X) + 1, 1, 195);
-        Assert.InRange(ground.Max(p => p.Y) - ground.Min(p => p.Y) + 1, 1, 195);
+        // 250 = width/height minus the 3-tile border reserved as ocean on every edge; the warped
+        // coastline can legitimately stretch a peninsula close to that bound.
+        Assert.InRange(ground.Max(p => p.X) - ground.Min(p => p.X) + 1, 1, 250);
+        Assert.InRange(ground.Max(p => p.Y) - ground.Min(p => p.Y) + 1, 1, 250);
         Assert.Equal(campaign.Locations.Count, grid.Locations.Count);
         Assert.Equal(campaign.Routes.Count(r => r.HasGate && !r.IsWarp && !r.IsTownExit), grid.Locks.Count);
         Assert.True(OverworldGridValidator.Validate(campaign, grid).IsValid);
@@ -164,6 +166,13 @@ public sealed class OverworldGridTests
             Assert.True(Math.Pow(a.Value.X-b.Value.X,2)+Math.Pow(a.Value.Y-b.Value.Y,2) >= (campaign.StarterAreaLocations.Contains(a.Key) && campaign.StarterAreaLocations.Contains(b.Key) ? 36 : 121));
         foreach (var gate in grid.Locks)
         {
+            var gateRoute = campaign.Routes.Single(r => r.Id == gate.RouteId);
+            if (gateRoute.Form == LockForm.Area && gateRoute.Requirement.Alternatives.All(alt => alt.Contains(Capability.Boat)))
+            {
+                // Boat-only Area gates are carved into a wide sea crossing rather than a short pass.
+                Assert.True(gate.Cells.Count >= 7, "Sea crossing should carve a wide body of water, not a narrow strip.");
+                continue;
+            }
             Assert.InRange(gate.Cells.Count,2,4);
             var first = gate.Cells[0]; var last = gate.Cells[gate.Cells.Count-1];
             int dx = Math.Sign(last.X-first.X), dy = Math.Sign(last.Y-first.Y);

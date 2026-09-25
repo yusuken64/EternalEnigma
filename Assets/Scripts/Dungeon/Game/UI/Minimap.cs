@@ -73,8 +73,20 @@ public class Minimap : MonoBehaviour
             }
         }
     }
+
+    // Floor Sense: every unseen walkable tile becomes Explored.
+    public void RevealLayout()
+    {
+        if (_currentDungeon == null || dungeonMap == null) return;
+        for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
+            for (int y = 0; y < _currentDungeon.dungeonHeight; y++)
+                if (!dungeonMap[x, y].isWall && dungeonMap[x, y].visibility == MinimapTileVisibility.Unseen)
+                    dungeonMap[x, y].visibility = MinimapTileVisibility.Explored;
+    }
+
     public void UpdateMinimapWithVisibleTiles(HashSet<Vector3Int> visibleTiles)
     {
+        var reveal = Game.Instance.FloorReveal;
         for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
         {
             for (int y = 0; y < _currentDungeon.dungeonHeight; y++)
@@ -117,7 +129,7 @@ public class Minimap : MonoBehaviour
                     }
                     break;
                 case Enemy enemy:
-                    if (DungeonSight.OverlapsVisible(visibleTiles, Character.ToBounds(enemy.FootPrint, displayedCell)))
+                    if (DungeonSight.OverlapsVisible(visibleTiles, Character.ToBounds(enemy.FootPrint, displayedCell)) || (reveal != null && reveal.EnemiesRevealedTurns > 0))
                     {
                         minimapTexture.SetPixel(displayedCell.x, displayedCell.y, EnemyColor);
                     }
@@ -139,7 +151,8 @@ public class Minimap : MonoBehaviour
                     }
                 }
             }
-            else if (visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)))
+            else if (visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)) ||
+                (reveal != null && ((reveal.LayoutRevealed && interactable is Stairs) || (reveal.TreasureRevealed && interactable is Gold))))
             {
                 minimapTexture.SetPixel(interactable.Position.x, interactable.Position.y, ItemColor);
             }

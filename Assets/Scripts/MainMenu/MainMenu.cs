@@ -13,6 +13,8 @@ public class MainMenu : MonoBehaviour
 
 	public NavigationHandler NavigationHandler;
 
+	private ProtagonistClassPicker classPicker;
+
 	private void Start()
 	{
         Common.Instance.EndSandbox();
@@ -37,28 +39,58 @@ public class MainMenu : MonoBehaviour
 
 	public void StartGame_Clicked()
 	{
+        if (Common.Instance.Travel.IsTransitioning || classPicker != null) return;
+        var catalog = ClassCatalog.Load();
+        var classes = catalog != null ? catalog.Classes.Where(c => c != null).ToList() : new List<ClassDefinition>();
+        if (classes.Count == 0) { StartGame(null, null); return; }
+        NavigationHandler.gameObject.SetActive(false);
+        classPicker = ProtagonistClassPicker.Show(classes,
+            (primary, secondary) => { classPicker = null; NavigationHandler.gameObject.SetActive(true); StartGame(primary, secondary); },
+            () => { classPicker = null; NavigationHandler.gameObject.SetActive(true); StartButton.GetComponent<Button>().Select(); });
+	}
+
+	// Starts a campaign with the protagonist's chosen classes (null keeps the prefab's class).
+	public void StartGame(ClassDefinition primary, ClassDefinition secondary)
+	{
         if (Common.Instance.Travel.IsTransitioning) return;
-		Common.Instance.GameSaveData = NewSaveData();
+		Common.Instance.GameSaveData = CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue), primary, secondary);
 		Common.Instance.Travel.NewCampaign(Common.Instance.GameSaveData.TownSaveData.TownSeed);
 	}
 
 	private GameSaveData NewSaveData()
 		=> CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue));
 
-	public GameSaveData CreateNewSave(int seed)
+	public GameSaveData CreateNewSave(int seed, ClassDefinition primary = null, ClassDefinition secondary = null)
 	{
 		var gameSaveData = new GameSaveData();
         var configuration = TownConfiguration ?? TownSceneLoader.Default;
         configuration.Validate();
         gameSaveData.TownSaveData.ConfigurationId = configuration.Id;
-        gameSaveData.TownSaveData.RecruitedAlliesData = configuration.StartingParty.Select(a =>
-            new TownAllyData { AllyId = a.Id, AllyName = a.Name, Skills = a.Skills != null ? new(a.Skills) : new() }).ToList();
+        gameSaveData.TownSaveData.RecruitedAlliesData = configuration.StartingParty.Select(a => HeroClassBinding.FromPrefab(a,
+            new TownAllyData { AllyId = a.Id, AllyName = a.Name, Skills = a.Skills != null ? new(a.Skills) : new() })).ToList();
+        // The first starting-party member is the protagonist; their chosen class overrides the prefab's.
+        var protagonist = gameSaveData.TownSaveData.RecruitedAlliesData.FirstOrDefault();
+        if (protagonist != null && primary != null)
+        {
+            protagonist.PrimaryClassId = primary.Id;
+            protagonist.SecondaryClassId = secondary != null && secondary.Id != primary.Id ? secondary.Id : "";
+        }
 		gameSaveData.TownSaveData.TownSeed = seed;
 
         var supplies = Common.Instance.ItemManager.StartingItems.Select(i => i.AsInventoryItem(null)).ToList();
         gameSaveData.TownSaveData.Inventory = supplies.Select(i => i.ItemName).ToList();
         gameSaveData.TownSaveData.InventoryItems = ItemSaveData.Capture(supplies);
         gameSaveData.TownSaveData.InventoryFormatVersion = 1;
+
+        var catalog = ClassCatalog.Load();
+        if (catalog != null)
+            foreach (var data in gameSaveData.TownSaveData.RecruitedAlliesData)
+            {
+                data.Skills ??= new List<string>();
+                foreach (var skillName in TownAlly.StartingSkillNames(catalog.Get(data.PrimaryClassId), catalog.Get(data.SecondaryClassId)))
+                    if (!data.Skills.Contains(skillName)) data.Skills.Add(skillName);
+            }
+
 		return gameSaveData;
 	}
 

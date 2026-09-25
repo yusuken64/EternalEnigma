@@ -44,6 +44,9 @@ public sealed class GridLayer
     public bool this[int x, int y] => cells[x, y];
     public GridLayer(bool[,] cells) { this.cells = (bool[,])(cells ?? throw new ArgumentNullException(nameof(cells))).Clone(); }
     public bool[,] ToArray() => (bool[,])cells.Clone();
+    public bool Contains(GridPoint p) => p.X >= 0 && p.Y >= 0 && p.X < Width && p.Y < Height;
+    /// <summary>Bounds-safe read: false outside the layer.</summary>
+    public bool At(GridPoint p) => Contains(p) && cells[p.X, p.Y];
 }
 
 public sealed class GridLock

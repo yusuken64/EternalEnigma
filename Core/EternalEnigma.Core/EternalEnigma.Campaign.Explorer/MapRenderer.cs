@@ -15,6 +15,7 @@ public sealed class MapRenderer
 
     public string[] Render(int width, int height)
     {
+        if (session.InInterior) return RenderInterior(width, height);
         width = Math.Clamp(width, 1, session.Grid.Width);
         height = Math.Clamp(height, 1, session.Grid.Height);
         int left = Math.Clamp(session.Position.X - width / 2, 0, session.Grid.Width - width);
@@ -27,6 +28,63 @@ public sealed class MapRenderer
             rows[row] = new string(cells);
         }
         return rows;
+    }
+
+    private string[] RenderInterior(int width, int height)
+    {
+        int gridWidth = session.Town?.Width ?? session.Dungeon!.Width;
+        int gridHeight = session.Town?.Height ?? session.Dungeon!.Height;
+        width = Math.Clamp(width, 1, gridWidth);
+        height = Math.Clamp(height, 1, gridHeight);
+        int left = Math.Clamp(session.InteriorPosition.X - width / 2, 0, gridWidth - width);
+        int bottom = Math.Clamp(session.InteriorPosition.Y - height / 2, 0, gridHeight - height);
+        var rows = new string[height];
+        for (int row = 0; row < height; row++)
+        {
+            var cells = new char[width];
+            for (int col = 0; col < width; col++) cells[col] = InteriorGlyph(new GridPoint(left + col, bottom + height - 1 - row));
+            rows[row] = new string(cells);
+        }
+        return rows;
+    }
+
+    private char InteriorGlyph(GridPoint p)
+    {
+        if (p.Equals(session.InteriorPosition)) return '@';
+        if (session.Town is { } town) return TownGlyph(town, p);
+        if (session.Dungeon is { } dungeon) return DungeonGlyph(dungeon, p);
+        return ' ';
+    }
+
+    private static char TownGlyph(Core.World.TownPlan town, GridPoint p)
+    {
+        if (p.Equals(town.Exit)) return 'X';
+        if (p.Equals(town.DungeonEntrance)) return 'D';
+        if (town.BuildingIndexAt(p) != null) return '+';
+        if (town.Layers[TownLayers.ShopFloor].At(p)) return '=';
+        if (town.Layers[TownLayers.ShopWalls].At(p) || town.Layers[TownLayers.Houses].At(p)) return '#';
+        if (town.AllySlots.Any(a => a.Cell.Equals(p))) return 'A';
+        if (town.Layers[TownLayers.Trees].At(p)) return '"';
+        if (town.Layers[TownLayers.Parks].At(p)) return ',';
+        if (town.Layers[TownLayers.Roads].At(p)) return ':';
+        return town.IsWalkable(p) ? '.' : '#';
+    }
+
+    private char DungeonGlyph(Core.World.DungeonFloor dungeon, GridPoint p)
+    {
+        if (p.Equals(dungeon.Stairs)) return '>';
+        if (p.Equals(dungeon.Start)) return '<';
+        if (!session.IsCleared(p))
+        {
+            if (dungeon.Enemies.Any(e => e.Cell.Equals(p))) return 'e';
+            if (dungeon.Traps.Any(t => t.Cell.Equals(p))) return '^';
+            if (dungeon.Gold.Any(g => g.Cell.Equals(p))) return '$';
+            if (dungeon.Items.Any(i => i.Cell.Equals(p))) return 'i';
+        }
+        if (dungeon.Layers[DungeonLayers.Columns].At(p)) return 'I';
+        if (dungeon.Layers[DungeonLayers.Torchlights].At(p)) return '*';
+        if (dungeon.Layers[DungeonLayers.Carpet].At(p)) return ',';
+        return dungeon.IsWalkable(p) ? '.' : '#';
     }
 
     private char Glyph(GridPoint p)

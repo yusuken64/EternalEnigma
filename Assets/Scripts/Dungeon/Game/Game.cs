@@ -23,6 +23,12 @@ public class Game : SingletonMonoBehaviour<Game>
 	public List<Ally> Allies;
 	public Ally AllyPrefab;
 
+	// Allies at 0 HP: out of Allies/AllCharacters, not destroyed. Restored by Revive or the next floor.
+	public List<Ally> DownedAllies = new();
+
+	// Per-floor reveal flags (Floor Sense, Farsight, Treasure Hunter). Reset every floor.
+	public FloorRevealState FloorReveal = new();
+
 	public List<Character> Enemies;
 
 	public TextMeshPro FloatingTextPrefab;
@@ -82,6 +88,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	private void InitializeGame()
 	{
+		DownedAllies.Clear();
+
 		foreach (Transform child in CharacterStatsDisplayContainer)
 		{
 			Destroy(child.gameObject);
@@ -100,12 +108,18 @@ public class Game : SingletonMonoBehaviour<Game>
 
             ally.CharacterName = townAlly.Name;
             ally.TownAllyId = townAlly.Id;
+            ally.PrimaryClass = townAlly.PrimaryClass;
+            ally.SecondaryClass = townAlly.SecondaryClass;
             foreach (var equipment in townAlly.Equipment.GetEquippedItems())
                 ally.Equipment.Equip(equipment);
+            // Player-initiated dungeon equips (EquipAction / EquipEffectDefinition use CanEquip) respect the class.
+            var dungeonAlly = ally;
+            ally.Equipment.ClassFilter = item => HeroClass.AllowsItem(dungeonAlly.PrimaryClass, dungeonAlly.SecondaryClass, item);
 
 			foreach (var skill in townAlly.Skills)
 			{
 				Skill skillInstance = Common.Instance.SkillManager.GetSkillInstanceByName(skill);
+				skillInstance.Rank = Mathf.Max(1, townAlly.GetRank(skill));
 				ally.Skills.Add(skillInstance);
 			}
 			ally.InvalidateCachedStats();
@@ -166,6 +180,10 @@ public class Game : SingletonMonoBehaviour<Game>
 		Enemies.ForEach(x => DestroyImmediate(x.gameObject));
 		Enemies.Clear();
 
+		SummonRules.DespawnClones(this);
+		PartyRules.RestoreAllDowned(this, 1);
+		FloorReveal = new FloorRevealState();
+
 		yield return null;
 		if (CurrentDungeon != null)
 		{
@@ -198,6 +216,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		FindFirstObjectByType<FogOverlay>().Initialize(CurrentDungeon);
 		FindFirstObjectByType<Minimap>().Initialize(CurrentDungeon);
 
+		FloorReveal.TreasureRevealed = PassiveModifiers.PartyHas<RevealTreasurePassive>(this);
+
 		yield return null;
 
 		var startPosition = CurrentDungeon.GetStartPosition(throneFloor);
@@ -229,6 +249,7 @@ public class Game : SingletonMonoBehaviour<Game>
 				var enemy = Instantiate(enemyPrefab, this.transform);
 				enemy.UpdateCachedStats();
 				enemy.InitialzeVitalsFromStats();
+				enemy.IsDormant = UnityEngine.Random.value < EnemyAwareness.DormantSpawnChance;
 				enemy.TilemapPosition = CurrentDungeon.GetDropPosition(CurrentDungeon.GetRandomOpenEnemyPosition());
 				Enemies.Add(enemy);
 			}
@@ -252,6 +273,7 @@ public class Game : SingletonMonoBehaviour<Game>
 				var item = Common.Instance.ItemManager.GetRandomDrop(null);
 				CurrentDungeon.SetTrap(trapPosition);
 			}
+			SpawnGatheringPoints(startPosition);
 		}
 
 		if (demoLoadout != null && PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor)
@@ -259,6 +281,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 
+		ClassPassives.OnFloorStart(this);
 		PlayerController.ControlledAlly.currentInteractable = null;
 		Game.Instance.PlayerController.StartTurn();
 		UpdateMiniMap();
@@ -270,7 +293,7 @@ public class Game : SingletonMonoBehaviour<Game>
     private TileWorldDungeon sightDungeon;
     internal readonly HashSet<Vector3Int> PlaybackVisibleTiles = new();
 
-    private IEnumerable<Ally> SightAllies() => Allies.Concat(DeadUnits.OfType<Ally>())
+    private IEnumerable<Ally> SightAllies() => Allies.Concat(DownedAllies).Concat(DeadUnits.OfType<Ally>())
         .Where(a => a != null && a.DisplayedVitals.HP > 0);
 
     private void LateUpdate() => RefreshSight();
@@ -328,6 +351,28 @@ Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventor
 	public void AdvanceFloorCommand()
 	{
 		AdvanceFloor();
+	}
+
+	private void SpawnGatheringPoints(Vector3Int startPosition)
+	{
+		var stairs = CurrentDungeon.GetStairsCell();
+		if (stairs == null) return;
+		var floorLayer = new EternalEnigma.Core.World.GridLayer(CurrentDungeon.GetFloorMask());
+		var occupied = new List<EternalEnigma.Core.World.GridPoint>();
+		foreach (var interactable in CurrentDungeon.Interactables)
+			if (interactable != null) occupied.Add(new EternalEnigma.Core.World.GridPoint(interactable.Position.x, interactable.Position.y));
+		foreach (var character in AllCharacters)
+			if (character != null) occupied.Add(new EternalEnigma.Core.World.GridPoint(character.TilemapPosition.x, character.TilemapPosition.y));
+		var context = Common.Instance.CampaignContext;
+		int seed = context != null
+			? context.LocationSeed(context.State.LocationId, PlayerController.Floor)
+			: UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+		var sites = EternalEnigma.Core.Generation.GatheringPlacement.Place(floorLayer,
+			new EternalEnigma.Core.World.GridPoint(startPosition.x, startPosition.y),
+			new EternalEnigma.Core.World.GridPoint(stairs.Value.x, stairs.Value.y),
+			occupied, seed, EternalEnigma.Core.Generation.GatheringPlacement.DefaultCount);
+		foreach (var site in sites)
+			GatheringPoint.Spawn(CurrentDungeon, new Vector3Int(site.Cell.X, site.Cell.Y, 0), site.Kind, site.Roll);
 	}
 
 	public void DoFloatingText(string message, Color color, Vector3 worldPosition)

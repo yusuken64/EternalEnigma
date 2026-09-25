@@ -26,7 +26,11 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Skills")]
     public static void RunSkills() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.InventorySkillTargetingTests");
+        "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.InventorySkillTargetingTests", "EternalEnigma.Tests.SkillRankRegressionTests", "EternalEnigma.Tests.CombatFoundationTests", "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.AllyAiClassPartyTests", "EternalEnigma.Tests.ClassSkillSmokeTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run AllyAI")]
+    public static void RunAllyAI() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.AllyAiClassPartyTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Overworld")]
     public static void RunOverworld() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.OverworldSceneTests");
@@ -36,6 +40,9 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Heroes")]
     public static void RunHeroes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.HeroPrefabTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Classes")]
+    public static void RunClasses() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.ClassAssignmentTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign")]
     public static void RunCampaign() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CampaignTravelTests");
@@ -54,6 +61,7 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Town")]
     public static void RunTown() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.TownGameplayTests",
+        "EternalEnigma.Tests.TownTrainerRankTests",
         "EternalEnigma.Tests.MenuSceneNavigationTests.InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection",
         "EternalEnigma.Tests.MenuSceneNavigationTests.SettingsKeepCategoryFocusAndBackReturnsToGameplay",
         "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",

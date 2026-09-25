@@ -20,6 +20,8 @@ public class TileWorldDungeon : MonoBehaviour
 	internal int dungeonHeight => _tileWorldCreator.twcAsset.mapHeight;
 	public bool IsThroneFloor;
 	public bool IsExitFloor;
+	// No boss floors exist yet; boss content sets this. Retreat is blocked while it is true.
+	public bool IsBossFloor;
 
 	private TileWorldCreator _tileWorldCreator;
 	private bool[,] _isHallwayCache;
@@ -389,6 +391,64 @@ public class TileWorldDungeon : MonoBehaviour
 	internal Interactable GetInteractable(Vector3Int tilemapPosition)
 	{
 		return Interactables.FirstOrDefault(x => x.Position == tilemapPosition);
+	}
+
+	internal bool[,] GetFloorMask() => (bool[,])_tileWorldCreator.GetMapOutputFromBlueprintLayer(FloorLayerName).Clone();
+
+	internal Vector3Int? GetStairsCell()
+	{
+		var stairs = Interactables.OfType<Stairs>().FirstOrDefault();
+		return stairs == null ? null : stairs.Position;
+	}
+
+	// Makes hidden traps visible (same as having triggered them). Returns how many were newly revealed.
+	internal int RevealTrapsAround(Vector3Int center, int radius)
+	{
+		int revealed = 0;
+		foreach (var trap in Interactables.OfType<Trap>())
+		{
+			if (trap == null || trap.VisualObject == null || trap.VisualObject.activeSelf) continue;
+			if (ChevDistance(trap.Position, center) > radius) continue;
+			trap.VisualObject.SetActive(true);
+			revealed++;
+		}
+		return revealed;
+	}
+
+	// Revealed (visible) non-party trap on one of the 8 neighbours or the centre; the facing tile wins.
+	internal Trap FindAdjacentRevealedTrap(Vector3Int center, Facing preferred)
+	{
+		foreach (var cell in AdjacentCells(center, preferred).Prepend(center))
+		{
+			var trap = Interactables.OfType<Trap>().FirstOrDefault(t => t != null && t.Position == cell &&
+				t is not CaltropTrap && t.VisualObject != null && t.VisualObject.activeSelf);
+			if (trap != null) return trap;
+		}
+		return null;
+	}
+
+	// Walkable neighbour with no interactable and no character; the facing tile wins.
+	internal Vector3Int? FindFreeAdjacentTile(Vector3Int center, Facing preferred)
+	{
+		foreach (var cell in AdjacentCells(center, preferred))
+		{
+			if (!IsWalkable(cell) || GetInteractable(cell) != null) continue;
+			if (Game.Instance.AllCharacters.Any(c => c != null && Character.Contains2D(c.ToBounds(), cell))) continue;
+			return cell;
+		}
+		return null;
+	}
+
+	private IEnumerable<Vector3Int> AdjacentCells(Vector3Int center, Facing preferred)
+	{
+		var first = center + GetFacingOffset(preferred);
+		yield return first;
+		for (int dx = -1; dx <= 1; dx++)
+			for (int dy = -1; dy <= 1; dy++)
+			{
+				var cell = new Vector3Int(center.x + dx, center.y + dy, center.z);
+				if ((dx != 0 || dy != 0) && cell != first) yield return cell;
+			}
 	}
 
 	internal bool IsWalkable(Vector3Int newMapPosition)

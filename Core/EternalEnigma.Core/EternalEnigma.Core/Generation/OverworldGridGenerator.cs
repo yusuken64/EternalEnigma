@@ -89,6 +89,47 @@ public static class OverworldGridGenerator
                 (terrainNoise[ix, iy + 1, d] * (1 - u) + terrainNoise[ix + 1, iy + 1, d] * u) * v;
         }
         var pocketRandom = new SeedStream(campaign.Seed, (uint)(410 + attempt));
+        // Coastline silhouette: warp the sampling coordinates with a coarse field before the radial
+        // falloff test, then layer multi-octave noise on top of the falloff itself. Warping the
+        // coordinates (not just jittering the elevation) is what bends a circle into gulfs, isthmuses
+        // and peninsula arms instead of a lumpy disk. Independent stream: this must not perturb the
+        // Voronoi domain-warp noise, terrain noise or pocket placement rolls above.
+        var coastRandom = new SeedStream(campaign.Seed, (uint)(510 + attempt));
+        double[,] BuildCoastLattice(int size)
+        {
+            var lattice = new double[size, size];
+            for (int y = 0; y < size; y++) for (int x = 0; x < size; x++) lattice[x, y] = (coastRandom.Range(2001) - 1000) / 1000.0;
+            return lattice;
+        }
+        double SampleCoastLattice(double[,] lattice, int size, int x, int y)
+        {
+            double xx = x * (size - 1.0) / w, yy = y * (size - 1.0) / h;
+            int ix = (int)xx, iy = (int)yy; double u = xx - ix, v = yy - iy;
+            u = u * u * (3 - 2 * u); v = v * v * (3 - 2 * v);
+            return (lattice[ix, iy] * (1 - u) + lattice[ix + 1, iy] * u) * (1 - v) +
+                (lattice[ix, iy + 1] * (1 - u) + lattice[ix + 1, iy + 1] * u) * v;
+        }
+        var coastWarpX = BuildCoastLattice(5);
+        var coastWarpY = BuildCoastLattice(5);
+        var coastOctaves = new (double[,] Lattice, int Size, double Amplitude)[6];
+        {
+            int size = 6; double amp = 1.0;
+            for (int o = 0; o < coastOctaves.Length; o++)
+            {
+                coastOctaves[o] = (BuildCoastLattice(size), size, amp);
+                size = Math.Min(size * 2 + 2, 220);
+                amp *= 0.55;
+            }
+        }
+        double coastAmplitudeSum = coastOctaves.Sum(o => o.Amplitude);
+        bool CoastLand(int x, int y)
+        {
+            double wx = x + SampleCoastLattice(coastWarpX, 5, x, y) * 42, wy = y + SampleCoastLattice(coastWarpY, 5, x, y) * 42;
+            double cx = (wx - w * .5) / (landWidth * .5), cy = (wy - h * .5) / (landHeight * .5);
+            double radial = 1.0 - (cx * cx + cy * cy);
+            double fbm = coastOctaves.Sum(o => SampleCoastLattice(o.Lattice, o.Size, x, y) * o.Amplitude) / coastAmplitudeSum;
+            return radial + fbm * .95 > 0;
+        }
         var territory = new int[w, h]; var owner = new int[w, h];
         for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
         {
@@ -102,10 +143,36 @@ public static class OverworldGridGenerator
                 if (value < score) { score = value; best = i; }
             }
             territory[x, y] = best;
-            double ex = (nx - w * .5) / (landWidth * .48), ey = (ny - h * .5) / (landHeight * .48);
-            owner[x, y] = x < 3 || y < 3 || x >= w - 3 || y >= h - 3 || ex * ex + ey * ey > 1.12 ? -1 : primary[best];
+            owner[x, y] = x < 3 || y < 3 || x >= w - 3 || y >= h - 3 || !CoastLand(x, y) ? -1 : primary[best];
         }
         bool Inside(int x, int y) => x >= 0 && y >= 0 && x < w && y < h;
+        // A warped coastline can pinch off slivers of the main landmass; keep only the largest
+        // connected component so the graph below always embeds into one continent. Destination
+        // "pockets" are deliberately isolated later and must not be touched here.
+        {
+            var visited = new bool[w, h];
+            var best = new List<GridPoint>();
+            for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
+            {
+                if (owner[x, y] < 0 || visited[x, y]) continue;
+                var component = new List<GridPoint>(); var queue = new Queue<GridPoint>();
+                visited[x, y] = true; queue.Enqueue(new GridPoint(x, y));
+                while (queue.Count > 0)
+                {
+                    var p = queue.Dequeue(); component.Add(p);
+                    foreach (var d in Directions)
+                    {
+                        int nx = p.X + d.X, ny = p.Y + d.Y;
+                        if (!Inside(nx, ny) || visited[nx, ny] || owner[nx, ny] < 0) continue;
+                        visited[nx, ny] = true; queue.Enqueue(new GridPoint(nx, ny));
+                    }
+                }
+                if (component.Count > best.Count) best = component;
+            }
+            var keep = new bool[w, h];
+            foreach (var p in best) keep[p.X, p.Y] = true;
+            for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) if (!keep[x, y]) owner[x, y] = -1;
+        }
         bool DiskFits(GridPoint p, int stage, int radius)
         {
             for (int dy = -radius; dy <= radius; dy++) for (int dx = -radius; dx <= radius; dx++)
@@ -138,11 +205,17 @@ public static class OverworldGridGenerator
             if (positions.ContainsKey(location.Id)) continue;
             int stage = stages[location.Id], group = groupOf[location.Id];
             bool pocket = group != primary[stage];
+            // Vary each pocket's footprint instead of carving every one from the same fixed disk;
+            // clearance and the carve loop both scale with the drawn radius so bigger pockets still
+            // get a sealing halo of untouched primary territory before the mountain/tree ring forms.
+            double baseRadius = pocket ? 5.8 + pocketRandom.Range(2001) / 1000.0 : 0; // 5.8-7.8, was a fixed 5.8
+            int carveExtent = pocket ? (int)Math.Ceiling(baseRadius + 1.0) : 0;
+            int clearance = pocket ? carveExtent + 2 : 4;
             GridPoint at = default; bool found = false;
             for (int trial = 0; trial < 6000; trial++)
             {
                 at = new GridPoint(random.Range(w), random.Range(h));
-                if (!DiskFits(at, stage, pocket ? 10 : 4)) continue;
+                if (!DiskFits(at, stage, clearance)) continue;
                 if (positions.Values.Any(p => (p.X - at.X) * (p.X - at.X) + (p.Y - at.Y) * (p.Y - at.Y) < 121)) continue;
                 found = true; break;
             }
@@ -152,10 +225,10 @@ public static class OverworldGridGenerator
             {
                 // Periodic angular noise varies the whole boundary, rather than just the circle's size.
                 double phase = pocketRandom.Range(6283) / 1000.0, secondPhase = pocketRandom.Range(6283) / 1000.0;
-                for (int dy = -7; dy <= 7; dy++) for (int dx = -7; dx <= 7; dx++)
+                for (int dy = -carveExtent; dy <= carveExtent; dy++) for (int dx = -carveExtent; dx <= carveExtent; dx++)
                 {
                     double angle = Math.Atan2(dy, dx);
-                    double radius = 5.8 + .6 * Math.Sin(3 * angle + phase) + .4 * Math.Sin(5 * angle + secondPhase);
+                    double radius = baseRadius + .6 * Math.Sin(3 * angle + phase) + .4 * Math.Sin(5 * angle + secondPhase);
                     if (dx * dx + dy * dy <= radius * radius) owner[at.X + dx, at.Y + dy] = group;
                 }
             }
@@ -205,6 +278,42 @@ public static class OverworldGridGenerator
         for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) ground[x, y] &= retained[x, y];
         var locks = new List<GridLock>();
         var gateCells = new Dictionary<string, GridPoint[]>();
+        // A boat-only Area gate is rendered as open water below; grow it from the narrow shared-boundary
+        // strip into a real sea crossing so islands read as separated by ocean rather than a river. Growth
+        // stays inside the two territories the route already connects, so the components validated above
+        // (and the third-party territories around them) are never touched.
+        GridPoint[] WidenSeaCrossing(GridPoint[] line, int a, int b)
+        {
+            var d0 = new GridPoint(Math.Sign(line[line.Length - 1].X - line[0].X), Math.Sign(line[line.Length - 1].Y - line[0].Y));
+            var perp = new GridPoint(-d0.Y, d0.X);
+            int halfWidth = 3 + random.Range(5); // 3-7 tiles either side of the spine: 7-15 tiles across.
+            int extend = 3 + random.Range(6); // push each shore back 3-8 tiles further along the crossing.
+            bool Clear(GridPoint p) => Inside(p.X, p.Y) && (owner[p.X, p.Y] == a || owner[p.X, p.Y] == b) &&
+                !positions.Values.Any(loc => Math.Abs(loc.X - p.X) <= 3 && Math.Abs(loc.Y - p.Y) <= 3) &&
+                !locks.Any(g => g.Cells.Any(c => Math.Abs(c.X - p.X) <= 2 && Math.Abs(c.Y - p.Y) <= 2));
+            var spine = new List<GridPoint>(line);
+            for (int step = 1; step <= extend; step++)
+            {
+                var p = new GridPoint(line[0].X - d0.X * step, line[0].Y - d0.Y * step);
+                if (!Clear(p)) break;
+                spine.Add(p);
+            }
+            for (int step = 1; step <= extend; step++)
+            {
+                var p = new GridPoint(line[line.Length - 1].X + d0.X * step, line[line.Length - 1].Y + d0.Y * step);
+                if (!Clear(p)) break;
+                spine.Add(p);
+            }
+            var sea = new HashSet<GridPoint>(spine);
+            foreach (var p in spine)
+                for (int k = 1; k <= halfWidth; k++)
+                    foreach (int sign in new[] { -1, 1 })
+                    {
+                        var q = new GridPoint(p.X + perp.X * k * sign, p.Y + perp.Y * k * sign);
+                        if (Clear(q)) sea.Add(q);
+                    }
+            return sea.ToArray();
+        }
         foreach (var route in campaign.Routes.Where(r => r.HasGate && !r.IsWarp && !r.IsTownExit))
         {
             int a = groupOf[route.From], b = groupOf[route.To];
@@ -237,6 +346,8 @@ public static class OverworldGridGenerator
             }
             if (candidates.Count == 0) throw new InvalidOperationException("No short shared boundary for " + route.Id);
             var chosen = candidates[random.Range(candidates.Count)];
+            if (route.Form == LockForm.Area && route.Requirement.Alternatives.All(alt => alt.Contains(Capability.Boat)))
+                chosen = WidenSeaCrossing(chosen, a, b);
             locks.Add(new GridLock(route.Id, chosen)); gateCells.Add(route.Id, chosen);
             string layer = route.Form == LockForm.Area ? OverworldLayers.AreaLocks : route.Form == LockForm.Obstacle ? OverworldLayers.ObstacleLocks : OverworldLayers.InteractionLocks;
             foreach (var p in chosen) { ground[p.X, p.Y] = true; masks[OverworldLayers.Locks][p.X, p.Y] = true; masks[layer][p.X, p.Y] = true; }

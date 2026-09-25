@@ -129,20 +129,30 @@ internal class AttackAction : GameAction
 
 		bool hit;
 		int damage;
-		GetAttackDamage(attacker, target, out hit, out damage);
+		bool critical;
+		GetAttackDamage(attacker, target, out hit, out damage, out critical);
 
-		ret.Add(new TakeDamageAction(attacker, target, damage, true, !hit));
+		if (hit && damage > 0 && !AutoplayRunner.GodmodeFor(attacker))
+			damage = Mathf.Max(1, Mathf.RoundToInt(damage * ClassPassives.DamageMultiplier(
+				new OutgoingDamage(attacker, target, DamageCategory.Weapon, DamageElement.Physical, false))));
+
+		ret.Add(new TakeDamageAction(attacker, target, damage, true, !hit) { Critical = critical });
 		return ret;
 	}
 
-	public static void GetAttackDamage(Character attacker, Character target, out bool hit, out int damage)
+	public static void GetAttackDamage(Character attacker, Character target, out bool hit, out int damage) =>
+		GetAttackDamage(attacker, target, out hit, out damage, out _);
+
+	public static void GetAttackDamage(Character attacker, Character target, out bool hit, out int damage, out bool critical)
 	{
 		// Resolve infinite strength as lethal damage, avoiding overflowing integer stats or saved equipment.
-		if (AutoplayRunner.GodmodeFor(attacker)) { hit = true; damage = Math.Max(0, target.Vitals.HP); return; }
-		hit = UnityEngine.Random.value > 0.2f;
+		if (AutoplayRunner.GodmodeFor(attacker)) { hit = true; damage = Math.Max(0, target.Vitals.HP); critical = false; return; }
+		hit = CombatMath.RollHit(attacker, target);
 		var baseDamage = attacker.FinalStats.Strength * MathF.Pow((15f / 16f), target.FinalStats.Defense);
 		float n = (float)UnityEngine.Random.Range(112, 143);
 		damage = (int)MathF.Floor(baseDamage * (n / 128f));
+		critical = hit && CombatMath.RollCrit(attacker);
+		if (critical) damage = CombatMath.ApplyCrit(damage);
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
@@ -171,30 +181,63 @@ internal class AttackAction : GameAction
 public class TakeDamageAction : GameAction
 {
 	private readonly Character attacker;
-	internal readonly Character target;
+	internal Character target;
 	public int damage;
 	[SerializeField]
 	public bool doDamageAnimation;
-	private readonly bool miss;
+	private bool miss;
+	public DamageElement Element;
+	public bool RollToHit;
+	public int ResponseDepth;
+	internal bool Critical;
+	private bool resolved;
 
 	public TakeDamageAction() {}
 
-	public TakeDamageAction(Character attacker, Character target, int damage, bool doDamageAnimation = true, bool miss = false)
+	public TakeDamageAction(Character attacker, Character target, int damage, bool doDamageAnimation = true, bool miss = false, DamageElement element = DamageElement.Physical)
 	{
 		this.attacker = attacker;
 		this.target = target;
 		this.damage = damage;
 		this.doDamageAnimation = doDamageAnimation;
 		this.miss = miss;
+		Element = element;
 	}
+
+	public Character Attacker => attacker;
+	public Character Target => target;
+	public int Damage => damage;
+	public bool Missed => miss;
 
 	internal override GameAction AsTargetedSkill(Character caster, Character target)
 	{
-		return new TakeDamageAction(caster, target, damage, doDamageAnimation, miss);
+		return new TakeDamageAction(caster, target, damage, doDamageAnimation, miss, Element) { RollToHit = RollToHit };
+	}
+
+	internal override GameAction AsTargetedSkill(Character caster, Character target, SkillRankContext rank)
+	{
+		var scaling = rank.Scaling ?? new SkillRankScaling();
+		return new TakeDamageAction(caster, target, scaling.ScalePower(damage, rank.Rank), doDamageAnimation, miss, Element) { RollToHit = RollToHit };
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		if (!resolved)
+		{
+			resolved = true;
+			if (RollToHit && !miss) miss = !CombatMath.RollHit(attacker, target);
+			if (!miss) damage = ElementMath.Apply(damage, target.FinalStats, Element);
+			var context = new DamageContext(attacker, target, damage, Element, miss, ResponseDepth);
+			var game = Game.Instance;
+			if (game != null)
+				foreach (var character_char in game.AllCharacters.ToList())
+					if (character_char != null && character_char.Vitals != null && character_char.Vitals.HP > 0)
+						character_char.InterceptDamage(context);
+			if (context.Target != null) target = context.Target;
+			damage = System.Math.Max(0, context.Damage);
+			miss = context.Missed;
+		}
+
         TrackAnimationTarget(target);
 		if (!miss)
 		{
@@ -223,7 +266,7 @@ public class TakeDamageAction : GameAction
 		if (!miss)
 		{
 			AudioManager.Instance.SoundEffects.Impact_flesh.PlayAsSound();
-			game.DoFloatingText(damage.ToString(), Color.red, target.VisualParent.gameObject.transform.position);
+			game.DoFloatingText(Critical ? damage + "!" : damage.ToString(), Color.red, target.VisualParent.gameObject.transform.position);
 		}
 		else
 		{
@@ -265,6 +308,12 @@ public class TakeHealAction : GameAction
 	internal override GameAction AsTargetedSkill(Character caster, Character target)
 	{
 		return new TakeHealAction(caster, target, healing, doHealAnimation, miss);
+	}
+
+	internal override GameAction AsTargetedSkill(Character caster, Character target, SkillRankContext rank)
+	{
+		var scaling = rank.Scaling ?? new SkillRankScaling();
+		return new TakeHealAction(caster, target, scaling.ScalePower(healing, rank.Rank), doHealAnimation, miss);
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
@@ -376,6 +425,7 @@ public class DeathAction : GameAction
 	private Vector3Int dropPosition;
 	private bool droppedItem;
 	private readonly Character attacker;
+	private bool downed;
 
 	public DeathAction() {}
 	public DeathAction(Character target, Character attacker)
@@ -387,9 +437,18 @@ public class DeathAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
         TrackAnimationTarget(target);
-		Game.Instance.Allies.Remove(target as Ally);
-		Game.Instance.Enemies.Remove(target as Enemy);
-		Game.Instance.DeadUnits.Add(target);
+		if (target is Ally ally && !PartyRules.IsSummon(ally))
+		{
+			// Downed, not dead: stays in the scene, leaves the Allies list, restored by Revive or the next floor.
+			downed = true;
+			PartyRules.MarkDowned(Game.Instance, ally);
+		}
+		else
+		{
+			Game.Instance.Allies.Remove(target as Ally);
+			Game.Instance.Enemies.Remove(target as Enemy);
+			Game.Instance.DeadUnits.Add(target);
+		}
 
 		var gainXP = new AddXPAction(attacker, target.FinalStats.EXPOnKill);
 
@@ -413,7 +472,7 @@ public class DeathAction : GameAction
             target.PlayDeathAnimation();
             yield return new WaitForSecondsRealtime(0.4f);
         }
-		target.VisualParent.gameObject.SetActive(false);
+		if (!downed) target.VisualParent.gameObject.SetActive(false);
 
 		Game game = Game.Instance;
 		if (droppedItem)
@@ -443,6 +502,7 @@ internal class AddXPAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		if (PartyRules.IsSummon(this.character)) return new();
 		this.AddMetricsModification(this.character, ((stats, vitals) =>
 		{
 			vitals.Exp += eXP;

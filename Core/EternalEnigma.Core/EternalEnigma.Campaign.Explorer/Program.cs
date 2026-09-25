@@ -1,5 +1,6 @@
 using EternalEnigma.ConsoleExplorer;
 using EternalEnigma.Core.Generation;
+using EternalEnigma.Core.Progression;
 
 int seed = 42;
 bool snapshot = false;
@@ -7,7 +8,7 @@ for (int i = 0; i < args.Length; i++)
 {
     if (args[i] is "--help" or "-h")
     {
-        Console.WriteLine("Campaign Explorer [--seed <integer>] [--snapshot]\nArrows/WASD: move; Q/E/Z/C: diagonals; Enter: reward; P: party; T: travel; Esc: quit.\nRewards simulate encounter completion. Progress is not saved. --snapshot prints a static preview.");
+        Console.WriteLine("Campaign Explorer [--seed <integer>] [--snapshot]\nOn start, choose a view: W: world, T: town, D: dungeon.\nArrows/WASD: move; Q/E/Z/C: diagonals; Enter: reward; I: enter/leave town or dungeon; P: party; T: travel; N: no-clip; Esc: quit (or leave town/dungeon).\nRewards simulate encounter completion. Progress is not saved. --snapshot prints a static preview.\nNo-clip is a debug flight mode that ignores gates, water and terrain; it stands in for the future airship.");
         return 0;
     }
     if (args[i] == "--snapshot") { snapshot = true; continue; }
@@ -32,6 +33,13 @@ try
         Console.WriteLine("@ you  T town  D dungeon  R repeatable  F final  + gate  : road  # mountain");
         return 0;
     }
+    var view = ChooseStartView();
+    if (view == StartView.Quit) return 0;
+    if (view != StartView.World)
+    {
+        var target = campaign.Locations.FirstOrDefault(l => l.ParentTownId == null && Matches(l.Kind, view));
+        if (target != null) { session.JumpTo(target.Id); session.EnterLocation(); }
+    }
     Run(session, renderer);
     return 0;
 }
@@ -39,6 +47,34 @@ catch (Exception ex) when (ex is ArgumentException or InvalidOperationException 
 {
     Console.Error.WriteLine("Explorer failed: " + ex.Message);
     return 1;
+}
+
+static bool Matches(LocationKind kind, StartView view) => view == StartView.Town
+    ? kind == LocationKind.Town
+    : kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon;
+
+static StartView ChooseStartView()
+{
+    Console.CursorVisible = false;
+    Console.Clear();
+    Console.WriteLine("ETERNAL ENIGMA");
+    Console.WriteLine();
+    Console.WriteLine("What would you like to view?");
+    Console.WriteLine("  W: World (overworld)");
+    Console.WriteLine("  T: Town");
+    Console.WriteLine("  D: Dungeon");
+    Console.WriteLine();
+    Console.WriteLine("Press a key, or Esc to quit.");
+    while (true)
+    {
+        switch (Console.ReadKey(true).Key)
+        {
+            case ConsoleKey.W: return StartView.World;
+            case ConsoleKey.T: return StartView.Town;
+            case ConsoleKey.D: return StartView.Dungeon;
+            case ConsoleKey.Escape: return StartView.Quit;
+        }
+    }
 }
 
 static void Run(ExplorerSession session, MapRenderer renderer)
@@ -59,7 +95,10 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             var options = menu == "Party" ? session.Roster.Select(c => $"{(session.IsActive(c.Id) ? "[x]" : "[ ]")} {c.Capability} ({c.Id})").ToArray()
                 : menu == "Travel" ? session.VisitedTowns.ToArray() : menu == "Warp" ? session.WarpsHere.Select(session.WarpLabel).ToArray() : Array.Empty<string>();
             selection = Math.Clamp(selection, 0, Math.Max(0, options.Length - 1));
-            var lines = new List<string> { $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | {session.Position} | {session.Location?.Id ?? "Overworld"}" };
+            var lines = new List<string> { (session.InInterior
+                ? $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | {session.InteriorPosition} | {session.Location?.Id} (inside)"
+                : $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | {session.Position} | {session.Location?.Id ?? "Overworld"}") +
+                    (session.NoClip ? " | NO-CLIP" : "") };
             int mapHeight = Math.Max(1, height - 10);
             if (menu == null) lines.AddRange(renderer.Render(width, mapHeight));
             else
@@ -74,10 +113,22 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             lines.Add(session.Message);
             lines.Add(session.RequiredReturn);
             lines.Add("Keys: " + string.Join(", ", session.CollectedKeys));
-            lines.Add("Move: arrows/WASD | Diagonal: QEZC/numpad | Esc: quit");
-            lines.Add("Enter: reward | V: warp | P: party (town) | T: fast travel");
-            lines.Add("@ you  T town  D dungeon  R repeatable  F final  C converter");
-            lines.Add("+ gate  O warp  K key  / open  : road  . ground  # rock  ~ water");
+            lines.Add(session.InInterior
+                ? "Move: arrows/WASD | Diagonal: QEZC/numpad | Esc: return to overworld"
+                : "Move: arrows/WASD | Diagonal: QEZC/numpad | Esc: quit");
+            if (session.InInterior)
+            {
+                lines.Add("Enter: interact | I/Esc: leave | N: no-clip (debug)");
+                lines.Add(session.Town != null
+                    ? "@ you  + door  = shop  # wall  A ally  \" tree  , park  : road  X exit  D dungeon door"
+                    : "@ you  < entrance  > stairs  # wall  e enemy  ^ trap  $ gold  i item  I pillar  * torch");
+            }
+            else
+            {
+                lines.Add("Enter: reward | I: enter town/dungeon | V: warp | P: party (town) | T: fast travel | N: no-clip (debug)");
+                lines.Add("@ you  T town  D dungeon  R repeatable  F final  C converter");
+                lines.Add("+ gate  O warp  K key  / open  : road  . ground  # rock  ~ water");
+            }
             lines.Add("Rewards simulate encounters. No combat or saving.");
             if (height < 12 || width < 40) lines = new List<string> { "Enlarge terminal to at least 41x13.", "Esc: quit" };
             Console.SetCursorPosition(0, 0);
@@ -103,11 +154,13 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             }
             switch (key)
             {
-                case ConsoleKey.Escape: return;
-                case ConsoleKey.P: menu = "Party"; selection = 0; break;
-                case ConsoleKey.T: menu = "Travel"; selection = 0; break;
-                case ConsoleKey.V: menu = "Warp"; selection = 0; break;
-                case ConsoleKey.Enter: session.ClaimRewards(); break;
+                case ConsoleKey.Escape: if (session.InInterior) session.LeaveLocation(); else return; break;
+                case ConsoleKey.P: if (!session.InInterior) { menu = "Party"; selection = 0; } break;
+                case ConsoleKey.T: if (!session.InInterior) { menu = "Travel"; selection = 0; } break;
+                case ConsoleKey.V: if (!session.InInterior) { menu = "Warp"; selection = 0; } break;
+                case ConsoleKey.N: session.ToggleNoClip(); break;
+                case ConsoleKey.I: if (session.InInterior) session.LeaveLocation(); else session.EnterLocation(); break;
+                case ConsoleKey.Enter: if (session.InInterior) session.InteriorInteract(); else session.ClaimRewards(); break;
                 case ConsoleKey.W: case ConsoleKey.UpArrow: case ConsoleKey.NumPad8: session.Move(0, 1); break;
                 case ConsoleKey.S: case ConsoleKey.DownArrow: case ConsoleKey.NumPad2: session.Move(0, -1); break;
                 case ConsoleKey.A: case ConsoleKey.LeftArrow: case ConsoleKey.NumPad4: session.Move(-1, 0); break;
@@ -121,3 +174,5 @@ static void Run(ExplorerSession session, MapRenderer renderer)
     }
     finally { Console.CursorVisible = cursorVisible; Console.Clear(); }
 }
+
+enum StartView { World, Town, Dungeon, Quit }

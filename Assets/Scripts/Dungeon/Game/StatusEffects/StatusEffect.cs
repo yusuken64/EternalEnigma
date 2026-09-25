@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class StatusEffect : MonoBehaviour
@@ -42,4 +43,23 @@ public abstract class StatusEffect : MonoBehaviour
 	internal virtual bool Interupts(GameAction action) { return false; }
 
 	internal virtual List<GameAction> GetTickEffects(Character character) { return null; }
+
+	public BuffFamily Family;
+
+	// Two statuses with the same key on one character merge (ReApply) instead of coexisting.
+	internal virtual string StackKey => GetType().FullName;
+
+	// Called once per executed action (from TurnManager) while the owner is alive. Never return null.
+	internal virtual IEnumerable<GameAction> GetResponseTo(Character owner, GameAction action) => Enumerable.Empty<GameAction>();
+
+	// Called when this status is removed from its owner (expiry or cleanse). May return null.
+	internal virtual List<GameAction> GetExpiryEffects(Character owner) => null;
+
+	// Called before damage is applied, for every living character's statuses.
+	internal virtual void ModifyIncomingDamage(Character owner, DamageContext context) { }
+
+	// Called after this status is applied or re-applied to owner; source is the caster (may be null).
+	internal virtual void OnApplied(Character owner, Character source) { }
 }
+
+public enum BuffFamily { None, Song, Command, Barrier }

@@ -45,6 +45,21 @@ public class TownAllyData
 {
 	public string AllyId;
 	public string AllyName;
+	// ClassDefinition.Id values; empty means "no class". For recruits the prefab is
+	// authoritative; for the protagonist these saved values are authoritative.
+	public string PrimaryClassId = "";
+	public string SecondaryClassId = "";
 	public List<string> Skills;
 	public List<ItemSaveData> Equipment = new();
+	// Parallel to Skills: a learned skill with no entry here is rank 1.
+	public List<SkillRankSaveData> SkillRanks = new();
+	// Highest dungeon level this hero has reached; gates trainer ranks and tiers.
+	public int HighestLevel = 1;
+}
+
+[Serializable]
+public class SkillRankSaveData
+{
+	public string SkillName;
+	public int Rank = 1;
 }

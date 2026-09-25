@@ -8,13 +8,18 @@ using UnityEngine;
 public class Ally : Character
 {
 	public string TownAllyId;
+	public ClassDefinition PrimaryClass;
+	public ClassDefinition SecondaryClass;
 	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;
+	// True while this ally is in Game.DownedAllies (0 HP, not destroyed). Set by PartyRules.
+	public bool IsDowned { get; internal set; }
     private AllyAttackPolicy AllyAttackPolicy;
 	private AllyRangedPositioningPolicy AllyRangedPositioningPolicy;
 	private AllyPursuitPolicy PursuitPolicy;
 	private WanderPolicy WanderPolicy;
+	internal AllySkillPolicy SkillPolicy;
 	public override bool IsWaitingForPlayerInput { get; set; }
 
 	public SpriteRenderer CirlcleRenderer;
@@ -23,6 +28,7 @@ public class Ally : Character
 
 	private void Start()
 	{
+		SkillPolicy = new AllySkillPolicy(Game.Instance, this, 0);
 		AllyAttackPolicy = new AllyAttackPolicy(Game.Instance, this, 1);
 		AllyRangedPositioningPolicy = new AllyRangedPositioningPolicy(Game.Instance, this, 2);
 		PursuitPolicy = new AllyPursuitPolicy(Game.Instance, this, 3);
@@ -31,7 +37,7 @@ public class Ally : Character
 
 	public override void DetermineAction()
 	{
-		if (Vitals.HP <= 0)
+		if (IsDowned || Vitals.HP <= 0)
 		{
 			determinedActions = new();
 			return;
@@ -54,6 +60,12 @@ public class Ally : Character
 				_forcedAction
 			};
 			_forcedAction = null;
+			return;
+		}
+
+		if (SkillPolicy != null && SkillPolicy.ShouldRun())
+		{
+			determinedActions = SkillPolicy.GetActions();
 			return;
 		}
 
@@ -98,7 +110,7 @@ public class Ally : Character
 
 		if (AllyStrategy == AllyStrategy.Aggresive)
 		{
-			pursuitTargets.AddRange(game.Enemies);
+			pursuitTargets.AddRange(game.Enemies.Where(x => x != null && x.Team != Team));
 
 			var aggressiveTarget = pursuitTargets
 				.Where(x => game.CurrentDungeon.CanSee(this, x))
@@ -171,12 +183,14 @@ public class Ally : Character
 
 	public override List<GameAction> GetTrapSideEffects()
 	{
-		if (currentInteractable is Trap trap)
+		if (currentInteractable is Trap trap && trap is not CaltropTrap)
 		{
 			currentInteractable = null;
 			Game.Instance.DoFloatingText(trap.GetInteractionText(), Color.yellow, this.VisualParent.transform.position);
 			return trap.GetTrapSideEffects(this);
 		}
+
+		if (currentInteractable is CaltropTrap) currentInteractable = null;
 
 		return new();
 	}
@@ -203,8 +217,11 @@ public class Ally : Character
 		determinedActions.Clear();
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
 		Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
+		ClassPassives.OnTurnStart(this);
 
+		InvalidateCachedStats();
 		SyncDisplayedStats();
+		TrapSense.RevealAround(this);
 		_forcedAction = null;
 	}
 
@@ -232,6 +249,9 @@ public class Ally : Character
 	{
 		HeroAnimator?.PlayDeathAnimation();
 	}
+
+	protected override StatModification GetStartingStatBonus() =>
+		PrimaryClass != null ? PrimaryClass.StartingStatBonus : null;
 
 	internal void InitialzeModel(TownAlly townAlly)
 	{

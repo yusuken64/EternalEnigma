@@ -11,6 +11,12 @@ public class Enemy : Character
 
 	public string Description { get; internal set; }
 
+	// Bosses resist Dominate. Authored on the enemy prefab (Phase 7 content).
+	public bool IsBoss;
+
+	// Dormant ("sleeping") enemies skip turns until woken by nearby party movement or damage.
+	public bool IsDormant;
+
     public List<PolicyBase> Policies;
     public override bool IsWaitingForPlayerInput { get; set; }
 
@@ -48,6 +54,12 @@ public class Enemy : Character
 		if (Vitals.HP <= 0)
 		{
 			determinedActions = new();
+			return;
+		}
+
+		if (IsDormant)
+		{
+			determinedActions = new() { new SleepTurnAction(this) };
 			return;
 		}
 
@@ -108,6 +120,11 @@ public class Enemy : Character
 
 	public override IEnumerable<GameAction> GetResponseTo(GameAction action)
 	{
+		if (IsDormant)
+		{
+			if (action is TakeDamageAction damage && damage.Target == this) IsDormant = false;
+			else if (action is MovementAction move && EnemyAwareness.ProximityWakes(this, move.Character)) IsDormant = false;
+		}
 		return GetActionResponses(action);
 	}
 
@@ -175,7 +192,9 @@ public class Enemy : Character
 
 	public override List<GameAction> GetTrapSideEffects()
 	{
-		//TODO adapt this when enemies set off traps
+		var dungeon = Game.Instance.CurrentDungeon;
+		if (MovedThisTurn && dungeon != null && dungeon.GetInteractable(TilemapPosition) is CaltropTrap caltrops)
+			return caltrops.GetTrapSideEffects(this);
 		return new();
 	}
 	public override List<GameAction> GetInteractableSideEffects()

@@ -49,7 +49,8 @@ public class AllyRecruitDialog : Dialog
 
 	private void UpdateUI()
 	{
-		NameText.text = _ally.Name;
+		var classLabel = HeroClass.Label(_ally.PrimaryClass, _ally.SecondaryClass);
+		NameText.text = string.IsNullOrEmpty(classLabel) ? _ally.Name : $"{_ally.Name} - {classLabel}";
 		DescriptionText.text = _ally.Description;
 
 		switch (AllyRecruitDialogMode)

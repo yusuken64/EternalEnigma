@@ -18,6 +18,13 @@ public class Stats
 	private int actionsPerTurnMax;
 	private int attacksPerTurnMax;
 
+	private int fireResistance;
+	private int iceResistance;
+	private int lightningResistance;
+	private float critChance;
+	private float evasion;
+	private float hitBonus;
+
 	public int HPMax
 	{
 		get => hPMax;
@@ -124,6 +131,66 @@ public class Stats
 		}
 	}
 
+	public int FireResistance
+	{
+		get => fireResistance;
+		set
+		{
+			fireResistance = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
+	public int IceResistance
+	{
+		get => iceResistance;
+		set
+		{
+			iceResistance = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
+	public int LightningResistance
+	{
+		get => lightningResistance;
+		set
+		{
+			lightningResistance = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
+	public float CritChance
+	{
+		get => critChance;
+		set
+		{
+			critChance = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
+	public float Evasion
+	{
+		get => evasion;
+		set
+		{
+			evasion = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
+	public float HitBonus
+	{
+		get => hitBonus;
+		set
+		{
+			hitBonus = value;
+			OnStatChanged?.Invoke();
+		}
+	}
+
 	internal void FromStartingStats(StartingStats startingStats)
 	{
 		HPMax = startingStats.HPMax;
@@ -138,6 +205,12 @@ public class Stats
 		DropRate = startingStats.DropRate;
 		ActionsPerTurnMax = startingStats.ActionsPerTurnMax;
 		AttacksPerTurnMax = startingStats.AttacksPerTurnMax;
+		FireResistance = startingStats.FireResistance;
+		IceResistance = startingStats.IceResistance;
+		LightningResistance = startingStats.LightningResistance;
+		CritChance = startingStats.CritChance;
+		Evasion = startingStats.Evasion;
+		HitBonus = startingStats.HitBonus;
 	}
 
 	public float DropRate
@@ -171,6 +244,12 @@ public class Stats
 		DropRate = other.DropRate;
 		ActionsPerTurnMax = other.ActionsPerTurnMax;
 		AttacksPerTurnMax = other.AttacksPerTurnMax;
+		FireResistance = other.FireResistance;
+		IceResistance = other.IceResistance;
+		LightningResistance = other.LightningResistance;
+		CritChance = other.CritChance;
+		Evasion = other.Evasion;
+		HitBonus = other.HitBonus;
 	}
 
 	public static Stats operator +(Stats stats, StatModification modification)
@@ -188,8 +267,16 @@ public class Stats
 		retStats.EXPOnKill += modification.EXPOnKill;
 		retStats.HungerAccumulateThreshold += modification.HungerAccumulateThreshold;
 		retStats.HPRegenAcccumlateThreshold += modification.HPRegenAcccumlateThreshold;
+		retStats.SPRegenAcccumlateThreshold += modification.SPRegenAcccumlateThreshold;
+		retStats.DropRate += modification.DropRate;
 		retStats.ActionsPerTurnMax += modification.ActionsPerTurnMax;
 		retStats.AttacksPerTurnMax += modification.AttacksPerTurnMax;
+		retStats.FireResistance += modification.FireResistance;
+		retStats.IceResistance += modification.IceResistance;
+		retStats.LightningResistance += modification.LightningResistance;
+		retStats.CritChance += modification.CritChance;
+		retStats.Evasion += modification.Evasion;
+		retStats.HitBonus += modification.HitBonus;
 
 		return retStats;
 	}
@@ -208,6 +295,12 @@ public class Stats
 		DropRate = other.DropRate;
 		ActionsPerTurnMax = other.ActionsPerTurnMax;
 		AttacksPerTurnMax = other.AttacksPerTurnMax;
+		FireResistance = other.FireResistance;
+		IceResistance = other.IceResistance;
+		LightningResistance = other.LightningResistance;
+		CritChance = other.CritChance;
+		Evasion = other.Evasion;
+		HitBonus = other.HitBonus;
 	}
 
 	public override int GetHashCode()
@@ -227,6 +320,12 @@ public class Stats
 			hash = hash * 23 + DropRate.GetHashCode();
 			hash = hash * 23 + ActionsPerTurnMax.GetHashCode();
 			hash = hash * 23 + AttacksPerTurnMax.GetHashCode();
+			hash = hash * 23 + FireResistance.GetHashCode();
+			hash = hash * 23 + IceResistance.GetHashCode();
+			hash = hash * 23 + LightningResistance.GetHashCode();
+			hash = hash * 23 + CritChance.GetHashCode();
+			hash = hash * 23 + Evasion.GetHashCode();
+			hash = hash * 23 + HitBonus.GetHashCode();
 			return hash;
 		}
 	}
@@ -242,8 +341,14 @@ public class Stats
 			$"HungerAccumulateThreshold: {HungerAccumulateThreshold} " +
 			$"HPRegenAcccumlateThreshold: {HPRegenAcccumlateThreshold} " +
 			$"SPRegenAcccumlateThreshold: {SPRegenAcccumlateThreshold} " +
-			$"DropRate: {DropRate}" +
-			$"ActionsPerTurnMax: {ActionsPerTurnMax}" +
-			$"AttacksPerTurnMax: {AttacksPerTurnMax}";
+			$"DropRate: {DropRate} " +
+			$"ActionsPerTurnMax: {ActionsPerTurnMax} " +
+			$"AttacksPerTurnMax: {AttacksPerTurnMax} " +
+			$"FireResistance: {FireResistance} " +
+			$"IceResistance: {IceResistance} " +
+			$"LightningResistance: {LightningResistance} " +
+			$"CritChance: {CritChance} " +
+			$"Evasion: {Evasion} " +
+			$"HitBonus: {HitBonus}";
 	}
 }

@@ -11,6 +11,7 @@ Core/
     EternalEnigma.Core.slnx
     EternalEnigma.Core/           netstandard2.1 library
       Capabilities/              IDs, manifests and capability sets
+      Classes/                   Class skill tables, learning rules and validation
       Progression/               Lock requirements, graphs and state transitions
       Generation/                Seeded construction and world descriptions
       Validation/                Reachability and structural checks

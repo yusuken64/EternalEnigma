@@ -24,7 +24,7 @@ public sealed class AutoplayOptions
 public sealed class AutoplayReport
 {
     public string Outcome = "Running", Reason, StartedUtc, EndedUtc, GameVersion, BuildId, UnityVersion;
-    public string Policy = "astar-objectives-v1", Observation = "Full campaign graph and full dungeon map/stairs (omniscient navigation)";
+    public string Policy = "astar-objectives-v2-skills", Observation = "Full campaign graph and full dungeon map/stairs (omniscient navigation)";
     public AutoplayOptions Options;
     public bool EligibleForBalance;
     public bool InfiniteStrength;
@@ -37,6 +37,7 @@ public sealed class AutoplayReport
     public string[] Visited, Inventory;
     public List<AutoplayActor> Party = new();
     public List<AutoplayActor> Enemies = new();
+    public List<AutoplaySkillUse> SkillUses = new();
     public Vector3Int[] WalkableTiles, DiscoveredTiles, Stairs;
 }
 
@@ -46,6 +47,14 @@ public sealed class AutoplayActor
     public string Name, Id;
     public int HP, MaxHP, SP, Hunger, Level, Strength, Defense, X, Y;
     public string[] Equipment, Skills;
+    public string Class;
+}
+
+[Serializable]
+public sealed class AutoplaySkillUse
+{
+    public string Actor, Skill, Evaluator;
+    public int Casts;
 }
 
 /// <summary>Opt-in isolated session shared by the app's Watch Demo and the manual editor launcher.</summary>
@@ -131,6 +140,7 @@ public sealed class AutoplayRunner : MonoBehaviour
             StartedUtc = DateTime.UtcNow.ToString("O"), GameVersion = Application.version,
             BuildId = typeof(Game).Assembly.ManifestModule.ModuleVersionId.ToString(), UnityVersion = Application.unityVersion };
         Application.logMessageReceived += OnLog;
+        AllySkillPolicy.Cast += RecordSkillCast;
         Time.timeScale = Options.Speed;
         WriteReport();
     }
@@ -158,6 +168,15 @@ public sealed class AutoplayRunner : MonoBehaviour
             !Game.Instance.Allies.Any(a => a != null && ReferenceEquals(a.Vitals,vitals))) return;
         Active.Report.DamageTaken += Math.Max(0,before-after);
         Active.Report.HealingReceived += Math.Max(0,after-before);
+    }
+
+    private void RecordSkillCast(Ally ally, AllySkillChoice choice)
+    {
+        if (!Running || ally == null || choice?.Option?.Skill == null) return;
+        string actor = ally.CharacterName, skill = choice.Option.Skill.SkillName;
+        var use = Report.SkillUses.FirstOrDefault(u => u.Actor == actor && u.Skill == skill && u.Evaluator == choice.Evaluator);
+        if (use == null) Report.SkillUses.Add(use = new AutoplaySkillUse { Actor = actor, Skill = skill, Evaluator = choice.Evaluator });
+        use.Casts++;
     }
 
     private void OnLog(string message, string stack, LogType type)
@@ -426,7 +445,7 @@ public sealed class AutoplayRunner : MonoBehaviour
     private void DungeonTick(Game game)
     {
         if (!game.IsReady) return;
-        if (game.GameOverScreen.gameObject.activeSelf || !game.Allies.Any(a => a != null && a.Vitals.HP > 0))
+        if (game.GameOverScreen.gameObject.activeSelf || PartyRules.IsPartyDefeated(game))
         { Finish("Defeat", "Party defeated by normal gameplay. No retry or difficulty adjustment applied."); return; }
         if (game.TurnManager.IsProcessingTurn || game.NewFloorMessage.gameObject.activeSelf) return;
         if (MenuManager.Instance.CurrentDialog is StairConfirm stairsPrompt) { stairsPrompt.YesClicked(); Log("Confirm stairs/exit"); return; }
@@ -450,6 +469,12 @@ public sealed class AutoplayRunner : MonoBehaviour
         {
             var use = new UseInventoryItemAction(player.Inventory,ally,item);
             if (use.IsValid(ally)) { Report.ItemsUsed++; Act(ally,use,"Use " + item.ItemName); return; }
+        }
+        var skills = new AllySkillPolicy(game, ally, 0) { IncludeControlledAlly = true };
+        if (skills.ShouldRun())
+        {
+            var cast = skills.GetActions().FirstOrDefault();
+            if (cast != null) { Act(ally, cast, "Skill " + skills.LastChoice.Option.Skill.SkillName + " (" + skills.LastChoice.Evaluator + ")"); return; }
         }
         var attack = new AllyAttackPolicy(game,ally,0);
         if (attack.ShouldRun()) { var action = attack.GetActions().FirstOrDefault(a => a.IsValid(ally)); if (action != null) { Act(ally,action,"Attack"); return; } }
@@ -647,16 +672,16 @@ public sealed class AutoplayRunner : MonoBehaviour
             Report.Inventory = town != null ? town.TownPlayer.Inventory.Select(ItemLabel).ToArray() : Array.Empty<string>();
             if (town != null) Report.Party = town.TownPlayer.RecruitedAllies.Select(a => new AutoplayActor {
                 Id = a.Id, Name = a.Name, X = a.TilemapPosition.x, Y = a.TilemapPosition.y,
-                Equipment = a.Equipment.GetEquippedItems().Select(ItemLabel).ToArray(), Skills = a.Skills.ToArray() }).ToList();
+                Equipment = a.Equipment.GetEquippedItems().Select(ItemLabel).ToArray(), Skills = a.Skills.ToArray(), Class = HeroClass.Label(a.PrimaryClass, a.SecondaryClass) }).ToList();
             return;
         }
         Report.Floor = game.PlayerController.Floor; Report.Gold = game.PlayerController.Gold;
         Report.Inventory = game.PlayerController.Inventory.InventoryItems.Select(ItemLabel).ToArray();
-        Report.Party = game.Allies.Concat(game.DeadUnits.OfType<Ally>()).Where(a => a != null).Distinct().Select(a => new AutoplayActor {
+        Report.Party = game.Allies.Concat(game.DownedAllies).Concat(game.DeadUnits.OfType<Ally>()).Where(a => a != null && !PartyRules.IsSummon(a)).Distinct().Select(a => new AutoplayActor {
             Id = a.TownAllyId, Name = common.GameSaveData.Roster.FirstOrDefault(r => r.AllyId == a.TownAllyId)?.AllyName ?? a.name,
             HP = a.Vitals.HP, MaxHP = a.FinalStats.HPMax, SP = a.Vitals.SP, Hunger = a.Vitals.Hunger,
             Level = a.Vitals.Level, Strength = a.FinalStats.Strength, Defense = a.FinalStats.Defense, X = a.TilemapPosition.x, Y = a.TilemapPosition.y,
-            Equipment = a.Equipment.GetEquippedItems().Select(i => i.ItemName).ToArray(), Skills = a.Skills.Select(s => s.SkillName).ToArray() }).ToList();
+            Equipment = a.Equipment.GetEquippedItems().Select(i => i.ItemName).ToArray(), Skills = a.Skills.Select(s => s.SkillName).ToArray(), Class = HeroClass.Label(a.PrimaryClass, a.SecondaryClass) }).ToList();
         Report.Enemies = game.Enemies.Where(e => e != null).Select(e => new AutoplayActor { Name = e.name, HP = e.Vitals.HP,
             MaxHP = e.FinalStats.HPMax, Level = e.Vitals.Level, Strength = e.FinalStats.Strength, Defense = e.FinalStats.Defense, X = e.TilemapPosition.x, Y = e.TilemapPosition.y }).ToList();
         if (!Running)
@@ -676,6 +701,7 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (Report.ValidationOnly) Report.EligibleForBalance = false;
         Report.Outcome = outcome; Report.Reason = reason; Report.EndedUtc = DateTime.UtcNow.ToString("O");
         Status = outcome + ": " + reason;
+        AllySkillPolicy.Cast -= RecordSkillCast;
         try
         {
             try { Capture(); } catch (Exception snapshotError) { Report.Reason += "\nSnapshot incomplete: " + snapshotError.Message; }
@@ -689,7 +715,7 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (disposed || Options == null) return;
         disposed = true;
         try { if (Running) Finish("Stopped","Play Mode ended."); }
-        finally { Application.logMessageReceived -= OnLog; actions?.Dispose(); saveScope?.Dispose(); Active = null; Time.timeScale = originalTimeScale; UnityEngine.Random.state = originalRandom; }
+        finally { AllySkillPolicy.Cast -= RecordSkillCast; Application.logMessageReceived -= OnLog; actions?.Dispose(); saveScope?.Dispose(); Active = null; Time.timeScale = originalTimeScale; UnityEngine.Random.state = originalRandom; }
     }
 
     private sealed class AutoplayStore : ISaveStore

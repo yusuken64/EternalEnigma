@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +57,7 @@ internal class ThrowItemAction : GameAction
 			else
 			{
 				//TODO get from item
-				int itemThrowDamage = 5;
+				int itemThrowDamage = Mathf.RoundToInt(5 * ClassPassives.ThrowDamageMultiplier(thrower));
 				ret.Add(new TakeDamageAction(thrower, rangedAttackTarget, itemThrowDamage, true, false));
 			}
 		}

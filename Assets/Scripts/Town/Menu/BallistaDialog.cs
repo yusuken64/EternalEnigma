@@ -33,14 +33,11 @@ public class BallistaDialog : Dialog
 	{
 		BallistaPurchaseDialog.gameObject.SetActive(false);
 		this.gameObject.SetActive(true);
-		var activeSkills = Character.Skills;
 
-		List<TogglableSkillGridItem> datas = FindFirstObjectByType<Town>().Configuration.LearnableSkills
-			.Select(x => new TogglableSkillGridItem()
-			{
-				Active = activeSkills.Contains(x.SkillName),
-				Skill = x
-			}).ToList();
+		var town = FindFirstObjectByType<Town>();
+		List<TogglableSkillGridItem> datas = TrainerOffers.Build(Character, town.Configuration)
+			.Select(o => new TogglableSkillGridItem { Active = o.CurrentRank > 0, Skill = o.Skill, Offer = o })
+			.ToList();
 		Action<SkillGridItem, TogglableSkillGridItem> action = (view, data) =>
 		{
 			view.Setup(data);
@@ -54,13 +51,17 @@ public class BallistaDialog : Dialog
 
 	private void HandleSkillChanged()
 	{
+		var offers = TrainerOffers.Build(Character, FindFirstObjectByType<Town>().Configuration);
+		for (int i = 0; i < SkillGridItems.Count && i < offers.Count; i++)
+			SkillGridItems[i].Setup(new TogglableSkillGridItem { Active = offers[i].CurrentRank > 0, Skill = offers[i].Skill, Offer = offers[i] });
 		UpdateUI();
 	}
 
 	private void UpdateUI()
 	{
 		var active = SkillGridItems.Count(x => x.IsSkillActive());
-		SkillsText.text = $"Skills ({active})";
+		var classLabel = Character != null ? HeroClass.Label(Character.PrimaryClass, Character.SecondaryClass) : "";
+		SkillsText.text = string.IsNullOrEmpty(classLabel) ? $"Skills ({active})" : $"{classLabel} - Skills ({active})";
 	}
 
 	public void Close_Clicked()
@@ -95,4 +96,5 @@ public class TogglableSkillGridItem
 {
 	public bool Active;
 	public Skill Skill;
+	public TrainerOffer Offer;
 }

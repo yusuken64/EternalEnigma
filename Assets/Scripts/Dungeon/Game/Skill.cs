@@ -8,6 +8,12 @@ public class Skill : ScriptableObject
 {
 	public string SkillName;
 	public int LearnCost;
+	// Authoring default; the class entry's MaxRank is authoritative for learning.
+	[Min(1)] public int MaxRank = 5;
+	public SkillRankScaling RankScaling = new();
+	// Runtime rank of this per-character instance (set when the ally is built). Not saved in the asset.
+	[System.NonSerialized] public int Rank = 1;
+	internal SkillRankContext RankContext => new(Rank, RankScaling);
 	public ActivationType ActivationType;
 
 	public int SPCost;
@@ -17,6 +23,11 @@ public class Skill : ScriptableObject
 	[Min(0)] public int AreaRadius;
 	[Min(1)] public int MissileRange = 8;
 	public GameObject MissileProjectilePrefab;
+	[Min(0)] public int ArrowCost;
+	public ArrowCostMode ArrowCostMode;
+	// Weapon skills are blocked by Arm bind (arrow skills are always treated as weapon skills).
+	public bool IsWeaponSkill;
+	public bool UsesArrows => ArrowCost > 0;
 	internal ActionTargeting TargetingRules => new(Targeting, TargetSelector, InventoryTargetSelector, AreaRadius, MissileRange);
 	internal bool RequiresTargetSelection => Targeting == SkillTargeting.Missile || TargetingRules.RequiresSelection;
 	[SerializeReference]
@@ -28,12 +39,14 @@ public class Skill : ScriptableObject
 	{
 		if (string.IsNullOrEmpty(SkillName)) SkillName = name;
 		if (ActionEffects == null) ActionEffects = new();
+		if (RankScaling == null) RankScaling = new();
+		if (PassiveResponses == null) PassiveResponses = new();
 	}
 
 	internal List<GameAction> GetEffects(Character caster, Character target)
 	{
-		return 
-			ActionEffects.Select(x => x.AsTargetedSkill(caster, target))
+		return
+			ActionEffects.Select(x => x.AsTargetedSkill(caster, target, RankContext))
 			.ToList();
 	}
 
@@ -69,6 +82,12 @@ public class Skill : ScriptableObject
 	}
 
 	public StatModification PassiveStatModification;
+	[SerializeReference]
+	public List<PassiveResponse> PassiveResponses = new();
+
+	// Passive bonus scaled by rank: ints +1 step per rank, crit/evasion/hit ×(1 + 0.25 per extra rank), DropRate unscaled.
+	internal StatModification GetScaledPassiveModification() =>
+		StatScaling.Scale(PassiveStatModification, RankScaling ?? new SkillRankScaling(), Rank < 1 ? 1 : Rank);
 
 	[TextArea]
 	public string Description;
@@ -87,4 +106,10 @@ public enum SkillTargeting
 	AllTargets,     // Cast immediately on every character allowed by the selector.
 	InventoryItem, // Select one eligible item from the party inventory.
 	Missile        // Aim in one of eight directions; the first character or wall stops the shot.
+}
+
+public enum ArrowCostMode
+{
+	Fixed,     // needs and uses exactly ArrowCost arrows
+	PerTarget  // needs at least 1; uses one arrow per affected recipient, skipping recipients once arrows run out
 }

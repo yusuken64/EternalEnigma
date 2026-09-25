@@ -41,8 +41,19 @@ internal class RangedAttackAction : GameAction
 
 		if (rangedAttackTarget != null)
 		{
-			int resolvedDamage = AutoplayRunner.GodmodeFor(attacker) ? Math.Max(0, rangedAttackTarget.Vitals.HP) : damage;
-			ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, resolvedDamage, true, false));
+			bool godmode = AutoplayRunner.GodmodeFor(attacker);
+			int resolvedDamage = godmode ? Math.Max(0, rangedAttackTarget.Vitals.HP) : damage;
+			bool hit = godmode || CombatMath.RollHit(attacker, rangedAttackTarget);
+			bool critical = !godmode && hit && CombatMath.RollCrit(attacker);
+			if (critical) resolvedDamage = CombatMath.ApplyCrit(resolvedDamage);
+			bool bow = !AutoplayRunner.GodmodeFor(attacker) && ArrowSupply.HasBow(attacker);
+			if (bow && resolvedDamage > 0)
+				resolvedDamage = Mathf.Max(1, Mathf.RoundToInt(resolvedDamage * ClassPassives.DamageMultiplier(
+					new OutgoingDamage(attacker, rangedAttackTarget, DamageCategory.Bow, DamageElement.Physical, false))));
+			ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, resolvedDamage, true, !hit) { Critical = critical });
+			if (bow && UnityEngine.Random.value < ClassPassives.ExtraShotChance(attacker) &&
+				ArrowSupply.Consume(attacker, 1, ClassPassives.ArrowRecoveryChance(attacker)) > 0)
+				ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, resolvedDamage, true, !hit) { Critical = critical });
 		}
 
 		return ret;

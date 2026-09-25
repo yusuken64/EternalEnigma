@@ -23,7 +23,7 @@ namespace EternalEnigma.Tests
         private IEnumerator StartCampaign()
         {
             yield return harness.LoadMainMenu(null);
-            Object.FindFirstObjectByType<MainMenu>().StartGame_Clicked();
+            Object.FindFirstObjectByType<MainMenu>().StartGame(null, null);
             yield return WaitTown();
         }
         [UnityTest]

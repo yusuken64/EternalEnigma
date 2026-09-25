@@ -58,6 +58,30 @@ party, configuration and services. Use `CloseDialog()` for every close path.
 The generic building arranges interaction and return movement. Put state changes
 in services rather than a dialog's close callback.
 
+## Shop interiors
+
+Any building with a non-empty `ShopCatalog` gets a small procedurally carved
+interior instead of opening its dialog the moment the player steps on its tile.
+`ShopInteriorCarver` runs as part of the Town's TileWorldCreator generation: it
+reads the `Buildings` layer's raster-ordered markers (the same order
+`TownConfiguration.Buildings` is authored in) and, for each one whose building
+has a shop catalog, carves a small room north of that marker into two new
+layers (`ShopFloor`, `ShopWalls`) and clears the `Houses`/`Trees` layers within
+that footprint so scenery never overlaps the room. A room that would go out of
+bounds, overlap another room, or land on an ally spawn point is silently
+skipped for that building, which then keeps today's walk-onto-tile behavior.
+
+A `ShopVendor` is spawned at the back of a successfully carved room (falling
+back to a placeholder capsule when the definition's `VendorPrefab` is unset).
+The player walks through the door like any other floor tile - it no longer
+opens a dialog by itself - and faces the vendor and presses interact to open
+the shop, exactly like talking to a party member. `TownBuilding.HasInterior`
+is only ever true once a room and vendor actually exist for that instance, so
+generation never has to special-case a shop whose room could not be carved.
+
+Non-shop buildings (no `ShopCatalog` entries) are completely unaffected - they
+keep the original single-tile, walk-on-triggers-dialog-and-bounce-back flow.
+
 Town and dungeon share `DialogController`, `Dialog`, inventory and skill views,
 and the item action prefab. The controller owns modal focus, Back, input switching,
 selection restoration, and exactly-once close callbacks. Town equipment changes
@@ -76,11 +100,15 @@ and skills display details and explain that their use belongs in the dungeon.
   Completed tiers are marked after a victory.
 - Victory carries back remaining bag items and equipped items with their remaining
   stack quantities. Defeat clears carried items and equipment while retaining
-  earned gold. Party membership and learned skills remain.
+  earned gold. Party membership, learned skills, skill ranks and each hero's highest level reached remain.
   Leaving a dungeon through settings or the game-over Quit button uses defeat rules.
 - Starting supplies are granted on a new game, not on every dungeon entrance.
 - The final party member cannot be dismissed. Dismissing the controlled ally
   selects a remaining ally; dismissed equipment goes back into the bag.
+- Each hero has a fixed class (or primary/secondary combination) set on its `TownAlly` prefab; the protagonist's class is chosen at new game and stored in the save (`TownAllyData.PrimaryClassId`/`SecondaryClassId`). Classes never change.
+- Equipping a weapon or off-hand item outside the hero's class is refused with a message; accessories are unrestricted and unequipping is always allowed. Classless heroes can equip anything.
+- The recruit/party dialog shows `Name - Class`, and the trainer header shows the selected hero's class.
+- Heroes learn their class skills at the trainer. `LearnableSkills` is empty in the shipped town; a non-empty list acts as an allowlist. Each hero starts with their class's tier-1 mastery.
 
 Saves migrate the former world/seed JSON keys. Item snapshots preserve stack
 counts and per-ally equipment; the old name list remains for legacy compatibility.
@@ -92,6 +120,7 @@ Only migration code/tests retain the old scene terminology.
 node Tools/unity-mcp.mjs harness Town
 node Tools/unity-mcp.mjs harness EditMode
 node Tools/unity-mcp.mjs harness PlayMode
+node Tools/unity-mcp.mjs harness Classes
 ```
 
 `TownGameplayTests` covers caller configuration, multiple shops, stock persistence,

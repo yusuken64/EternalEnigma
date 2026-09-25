@@ -37,7 +37,7 @@ public class TownMenu : MonoBehaviour
                 throw new InvalidOperationException($"No town dialog binding for '{building.DialogId}'.");
     }
 
-    public void OpenBuilding(TownBuildingDefinition building, TownPlayer player, TownAction reverse)
+    public Dialog OpenBuilding(TownBuildingDefinition building, TownPlayer player, TownAction reverse)
     {
         Dialog dialog;
         if (building.DialogPrefab != null)
@@ -53,6 +53,7 @@ public class TownMenu : MonoBehaviour
         dialog.PrepareTown(new TownInteractionContext(FindFirstObjectByType<Town>(), building));
         dialog.CloseAction = () => player.SetAction(reverse);
         FindFirstObjectByType<TownMenuManager>().Open(dialog);
+        return dialog;
     }
 
     public static void ShowMessage(string text)
@@ -64,6 +65,20 @@ public class TownMenu : MonoBehaviour
 
     public void OpenItemActions(InventoryMenu inventory, TownAlly character, InventoryItem item)
     {
+        if (item.ItemDefinition is MaterialItemDefinition)
+        {
+            var sellTown = FindFirstObjectByType<Town>();
+            ItemActionDialog.SetupActions(item.ItemName, $"Sell for {TownServices.SellPrice(item)} gold", () =>
+            {
+                if (!sellTown.Services.Sell(item, out var reason)) ShowMessage(reason);
+                ItemActionDialog.CloseDialog();
+                inventory.SetupTown(character.Equipment.GetEquippedItems().Cast<InventoryItem>().Concat(sellTown.TownPlayer.Inventory).ToList(), character);
+                inventory.SetNavigation();
+                inventory.SetFirstSelect();
+            });
+            FindFirstObjectByType<TownMenuManager>().Open(ItemActionDialog);
+            return;
+        }
         if (item is not EquipableInventoryItem)
         {
             ShowMessage($"{item.ItemName}\n{item.ItemDefinition.Description}\nUse this item in the dungeon.");
@@ -72,7 +87,12 @@ public class TownMenu : MonoBehaviour
         var town = FindFirstObjectByType<Town>();
         ItemActionDialog.SetupActions(item.ItemName, character.Equipment.IsEquipped(item) ? "Unequip" : "Equip", () =>
         {
-            town.Services.ToggleEquipment(character, item);
+            if (!town.Services.ToggleEquipment(character, item, out var reason) && !string.IsNullOrEmpty(reason))
+            {
+                ItemActionDialog.CloseDialog();
+                ShowMessage(reason);
+                return;
+            }
             ItemActionDialog.CloseDialog();
             inventory.SetupTown(character.Equipment.GetEquippedItems().Cast<InventoryItem>().Concat(town.TownPlayer.Inventory).ToList(), character);
             inventory.SetNavigation();

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -61,7 +61,8 @@ internal class UseInventoryItemAction : GameAction
 			}
 			effects = recipients.SelectMany(recipient => item.GetGameActions(character, recipient, inventory, item)).ToList();
 		}
-		bool consume = !AutoplayRunner.InfiniteResourcesFor(character);
+		bool consume = !AutoplayRunner.InfiniteResourcesFor(character) &&
+			!(UnityEngine.Random.value < ClassPassives.ConsumableSaveChance(character));
 		if (consume && item.HasStacks)
 		{
 			item.Decrement();

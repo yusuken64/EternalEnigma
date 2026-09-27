@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78a588ceb49564243b9af3598198a6e2, type: 3}
+  m_Name: House
+  m_EditorClassIdentifier: TileWorldCreator::TWC.TileWorldCreator4TilesPreset
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  useRulesForEdgeTile: 0
+  useRulesForExtCornerTile: 0
+  useRulesForIntCornerTile: 0
+  useRulesForFillTile: 0
+  edgeTile: {fileID: 1603486327171615647, guid: dc66d9bcc839a044a910a4ff13d61bff, type: 3}
+  exteriorCornerTile: {fileID: 8148113651496376555, guid: 246931293d571094cbd73e32aca694e7, type: 3}
+  interiorCornerTile: {fileID: 9183031141935270048, guid: 8a7cddff1507d8b4a83465561839e0bd, type: 3}
+  fillTile: {fileID: 1159705339495974988, guid: 6d4395e71b0f30b449bcff51d8984991, type: 3}
+  edgeTileRotationOffset: {x: 0, y: 0, z: 0}
+  exteriorCornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  interiorCornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  fillTileRotationOffset: {x: 0, y: 0, z: 0}
+  edgeTileScalingOffset: {x: 0, y: 0, z: 0}
+  exteriorCornerScalingOffset: {x: 0, y: 0, z: 0}
+  interiorCornerScalingOffset: {x: 0, y: 0, z: 0}
+  fillTileScalingOffset: {x: 0, y: 0, z: 0}

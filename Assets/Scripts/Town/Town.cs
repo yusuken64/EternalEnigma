@@ -169,10 +169,11 @@ public class Town : MonoBehaviour
         ShopVendors.Clear();
 
         var wallLayer = Plan.Layers[TownLayers.ShopWalls];
+        bool authoredWalls = WalkableMap.TileWorldCreator.twcAsset.mapBuildLayers.OfType<TownEnvironmentLayer>().Any(l => l.active);
         for (int x = 0; x < wallLayer.Width; x++)
             for (int y = 0; y < wallLayer.Height; y++)
             {
-                if (!wallLayer[x, y]) continue;
+                if (!wallLayer[x, y] || authoredWalls) continue;
                 var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 wall.name = "ShopWall";
                 wall.transform.SetParent(transform);

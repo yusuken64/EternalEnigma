@@ -76,14 +76,10 @@ namespace EternalEnigma.Tests
             Assert.That(biomeRenderer.Biomes.Select(b => b.Material.color).Distinct().Count(), Is.EqualTo(8));
             Assert.That(biomeRenderer.RenderedSurfaces.GetComponentsInChildren<MeshRenderer>().Any(r => r.enabled && r.sharedMaterial == biomeRenderer.Biomes.First(b => b.Biome == OverworldBiome.Water).Material), Is.True);
             var grid = world.Map.CurrentGrid;
-            foreach (var town in grid.TownFootprints)
-            {
-                var townVisual = biomeRenderer.RenderedSurfaces.transform.Find("Town " + town.LocationId);
-                Assert.That(townVisual, Is.Not.Null);
-                Assert.That(townVisual.GetComponentsInChildren<MeshRenderer>().Length, Is.EqualTo(3));
-                Assert.That(townVisual.GetComponentsInChildren<Collider>(), Is.Empty);
-                Assert.That(townVisual.gameObject.activeInHierarchy, Is.True, "Standing at the entrance must not hide the town.");
-            }
+            var cosmetic = world.Map.GetComponent<TWC.TileWorldCreator>().worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Single(o => o.name == SmartEnvironmentMasks.Walls + "_layer");
+            Assert.That(cosmetic.PropCount, Is.EqualTo(grid.TownFootprints.Sum(t => t.Walls.Count())));
+            Assert.That(cosmetic.GetComponentsInChildren<Collider>(), Is.Empty);
+            Assert.That(cosmetic.GetComponentsInChildren<MeshRenderer>().All(r => r.enabled && r.gameObject.activeInHierarchy), Is.True);
             var water = Enumerable.Range(0, grid.Width * grid.Height).Select(i => new GridPoint(i % grid.Width, i / grid.Width))
                 .First(p => grid.RequiresBoat(p));
             Assert.That(grid.IsWalkable(water, CapabilitySet.Empty), Is.False);

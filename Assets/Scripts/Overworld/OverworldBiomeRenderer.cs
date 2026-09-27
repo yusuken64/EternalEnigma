@@ -50,18 +50,21 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
             string layer = entry.Biome == OverworldBiome.Water ? OverworldLayers.Water : OverworldLayers.Biome(entry.Biome);
             Draw(grid, layer, entry.Material, .02f);
         }
+        bool smart = creator.twcAsset.mapBuildLayers.Exists(l => l.active && l is EnvironmentSmartTileLayer);
         foreach (var entry in Biomes)
         {
-            if (entry.Biome == OverworldBiome.Mountain)
+            if (!smart && entry.Biome == OverworldBiome.Mountain)
                 Draw(grid, OverworldLayers.Mountains, entry.Material, .015f, raised: true);
             if (entry.Biome == OverworldBiome.Forest)
                 Draw(grid, OverworldLayers.Trees, entry.Material, .01f, raised: true);
         }
-        Draw(grid, OverworldLayers.Roads, RoadMaterial, .005f, excludeWater: true);
+        if (!smart) Draw(grid, OverworldLayers.Roads, RoadMaterial, .005f, excludeWater: true);
         Draw(grid, OverworldLayers.Bridges, BridgeMaterial, -.005f);
-        OverworldTownVisuals.Build(grid, surfaces.transform, creator.twcAsset.cellSize,
-            BarrierMaterial, RoadMaterial, meshes);
-        hiddenRenderers = creator.worldObject.GetComponentsInChildren<Renderer>();
+        if (GetComponent<CampaignOverworld>().CosmeticKit == null)
+            OverworldTownVisuals.Build(grid, surfaces.transform, creator.twcAsset.cellSize,
+                BarrierMaterial, RoadMaterial, meshes);
+        hiddenRenderers = System.Array.FindAll(creator.worldObject.GetComponentsInChildren<Renderer>(),
+            r => r.GetComponentInParent<EnvironmentMeshOwner>() == null);
         foreach (var renderer in hiddenRenderers) renderer.enabled = false;
     }
 
@@ -85,7 +88,12 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
                 vertices.Add(new Vector3((x + .5f) * size, (y - .5f) * size, z));
                 vertices.Add(new Vector3((x + .5f) * size, (y + .5f) * size, z));
                 vertices.Add(new Vector3((x - .5f) * size, (y + .5f) * size, z));
-                uv.Add(new Vector2(0, 0)); uv.Add(new Vector2(1, 0)); uv.Add(new Vector2(1, 1)); uv.Add(new Vector2(0, 1));
+                if(material.shader.name == "EternalEnigma/Animated Ocean")
+                {
+                    uv.Add(new Vector2(x*size/8,y*size/8));uv.Add(new Vector2((x+1)*size/8,y*size/8));
+                    uv.Add(new Vector2((x+1)*size/8,(y+1)*size/8));uv.Add(new Vector2(x*size/8,(y+1)*size/8));
+                }
+                else {uv.Add(new Vector2(0, 0)); uv.Add(new Vector2(1, 0)); uv.Add(new Vector2(1, 1)); uv.Add(new Vector2(0, 1));}
                 if (raised)
                 {
                     vertices.Add(new Vector3(x * size, y * size, z - size * .22f));

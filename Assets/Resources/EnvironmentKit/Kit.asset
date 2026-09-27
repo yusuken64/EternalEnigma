@@ -1,0 +1,256 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fefe042e5e414940aed00ab521fdeac, type: 3}
+  m_Name: Kit
+  m_EditorClassIdentifier: EternalEnigma.Game::EnvironmentKit
+  Models:
+  - Id: Basalt
+    Mesh: {fileID: 4300000, guid: aac44493ac762fc4195aabcb75935dcd, type: 2}
+    Triangles: 22
+  - Id: Cactus
+    Mesh: {fileID: 4300000, guid: b5c54b89d615b7f45b12977329fa877a, type: 2}
+    Triangles: 60
+  - Id: CactusPair
+    Mesh: {fileID: 4300000, guid: 373d3471ecf0a34428ccfd5ef1d21209, type: 2}
+    Triangles: 120
+  - Id: CharredTree
+    Mesh: {fileID: 4300000, guid: 228aa46027355f8419edb312b26b2f59, type: 2}
+    Triangles: 60
+  - Id: CharredTreePair
+    Mesh: {fileID: 4300000, guid: 55781eb5d4e3019429ace8152da618bd, type: 2}
+    Triangles: 120
+  - Id: DeadTree
+    Mesh: {fileID: 4300000, guid: 6539e6743ddb3b8449277d764ee044b3, type: 2}
+    Triangles: 48
+  - Id: DeadTreePair
+    Mesh: {fileID: 4300000, guid: 00383c958a9a1a046a98fa3eb3251f86, type: 2}
+    Triangles: 96
+  - Id: DungeonPortal
+    Mesh: {fileID: 4300000, guid: f17c12e06cd0adc4e9f7c7c6722b720f, type: 2}
+    Triangles: 92
+  - Id: Flowers
+    Mesh: {fileID: 4300000, guid: b6e3807c6a293b541b2a64150728ed57, type: 2}
+    Triangles: 42
+  - Id: Gate
+    Mesh: {fileID: 4300000, guid: 16d9ccfbb87f10e419f901aa50137f06, type: 2}
+    Triangles: 156
+  - Id: House
+    Mesh: {fileID: 4300000, guid: 20adf25514870884bb5bf29bbded9e1d, type: 2}
+    Triangles: 188
+  - Id: Inn
+    Mesh: {fileID: 4300000, guid: c9fd7836169e7b24286bde026f6fffa9, type: 2}
+    Triangles: 246
+  - Id: InnSign
+    Mesh: {fileID: 4300000, guid: 9fe00bcfa31e2f74b884e5641cc576dd, type: 2}
+    Triangles: 72
+  - Id: Mangrove
+    Mesh: {fileID: 4300000, guid: 3171d756a49547c4884480da00172846, type: 2}
+    Triangles: 54
+  - Id: MangrovePair
+    Mesh: {fileID: 4300000, guid: 2c3b399100ea4d940a4fc3cd8aea509b, type: 2}
+    Triangles: 108
+  - Id: Mountain
+    Mesh: {fileID: 4300000, guid: 051a38b156559244d8833d9b747ec9fb, type: 2}
+    Triangles: 24
+  - Id: MountainPeak
+    Mesh: {fileID: 4300000, guid: 07aec590d91e8ae49a08822c27d2e904, type: 2}
+    Triangles: 15
+  - Id: MountainRidge
+    Mesh: {fileID: 4300000, guid: c27f8b9f3173c0b448909142ebf75660, type: 2}
+    Triangles: 45
+  - Id: MountainSpires
+    Mesh: {fileID: 4300000, guid: b8f93b670fe6af24f97abe7d03a6b811, type: 2}
+    Triangles: 45
+  - Id: Mushrooms
+    Mesh: {fileID: 4300000, guid: 7e893859c9460cc4a82ec1d21598e158, type: 2}
+    Triangles: 44
+  - Id: Palm
+    Mesh: {fileID: 4300000, guid: dda4be1cd33860e439f52312733aaa33, type: 2}
+    Triangles: 28
+  - Id: PalmPair
+    Mesh: {fileID: 4300000, guid: 3e00d2b35ba8cb14ea282246975d405c, type: 2}
+    Triangles: 56
+  - Id: Paving
+    Mesh: {fileID: 4300000, guid: 6076a17aabe52e94a983ce65e9bb18ea, type: 2}
+    Triangles: 2
+  - Id: Pine
+    Mesh: {fileID: 4300000, guid: 090dd58e0414bfc45a26089555b110a9, type: 2}
+    Triangles: 28
+  - Id: PineGrove
+    Mesh: {fileID: 4300000, guid: c4e1b63b0eebe4a4ab8444f6e74e10af, type: 2}
+    Triangles: 84
+  - Id: PinePair
+    Mesh: {fileID: 4300000, guid: a9728a9ba3e1d68469eb94e234aec35f, type: 2}
+    Triangles: 56
+  - Id: Reeds
+    Mesh: {fileID: 4300000, guid: 99e58fdb75290b345abda81efaf8123d, type: 2}
+    Triangles: 72
+  - Id: Rock
+    Mesh: {fileID: 4300000, guid: d10f32f0986a7f74eb8d8d6545f97990, type: 2}
+    Triangles: 22
+  - Id: Shop
+    Mesh: {fileID: 4300000, guid: 60ecef2eb882a974da4060ab9ecc755d, type: 2}
+    Triangles: 292
+  - Id: Shrine
+    Mesh: {fileID: 4300000, guid: df4f4b2080efa904098e6283e0bdd3c9, type: 2}
+    Triangles: 52
+  - Id: SmartHouseEdge
+    Mesh: {fileID: 4300000, guid: a7d3b5059fef6ae4595c337eb13044c6, type: 2}
+    Triangles: 70
+  - Id: SmartHouseFill
+    Mesh: {fileID: 4300000, guid: 75fa9c1e8a0c5114ea58c44a7472d0c4, type: 2}
+    Triangles: 8
+  - Id: SmartHouseInner
+    Mesh: {fileID: 4300000, guid: e5ebc51e472ac37429bc030f9b5ddaaf, type: 2}
+    Triangles: 8
+  - Id: SmartHouseOuter
+    Mesh: {fileID: 4300000, guid: bf3411acd9e463b47a673e5c781d8993, type: 2}
+    Triangles: 108
+  - Id: SmartMountainEdge
+    Mesh: {fileID: 4300000, guid: 7ebc98a8507d323408a63341a831c6b3, type: 2}
+    Triangles: 8
+  - Id: SmartMountainFill
+    Mesh: {fileID: 4300000, guid: 3ff0aad888aa11442ae82adf0151d5c1, type: 2}
+    Triangles: 2
+  - Id: SmartMountainInner
+    Mesh: {fileID: 4300000, guid: b41b7de20ab01134aa553b5f9e9d1190, type: 2}
+    Triangles: 8
+  - Id: SmartMountainOuter
+    Mesh: {fileID: 4300000, guid: 2bfcc40e0256ac84aa90cf3f8f8ba09c, type: 2}
+    Triangles: 8
+  - Id: SmartRoadEdge
+    Mesh: {fileID: 4300000, guid: 479d4f85a5e2348419f5846cf135dcfb, type: 2}
+    Triangles: 10
+  - Id: SmartRoadFill
+    Mesh: {fileID: 4300000, guid: 47b18934077ef8e47bb3effbdf4cb97f, type: 2}
+    Triangles: 4
+  - Id: SmartRoadInner
+    Mesh: {fileID: 4300000, guid: b4f373c4b723d7548874bdaefd452a99, type: 2}
+    Triangles: 11
+  - Id: SmartRoadOuter
+    Mesh: {fileID: 4300000, guid: cdae29bb2e7834f4f8b4df6e6eef0135, type: 2}
+    Triangles: 23
+  - Id: SmartShoreEdge
+    Mesh: {fileID: 4300000, guid: 978857677c7127b4a8b7989fec8c53fd, type: 2}
+    Triangles: 2
+  - Id: SmartShoreInner
+    Mesh: {fileID: 4300000, guid: 5490d1816c9ed4b4891983d826e6b8bd, type: 2}
+    Triangles: 2
+  - Id: SmartShoreOuter
+    Mesh: {fileID: 4300000, guid: ef136675a7bb7d740ba637cfd8bf59f8, type: 2}
+    Triangles: 2
+  - Id: SmartSummitEdge
+    Mesh: {fileID: 4300000, guid: 038b0b095473d664f9b3a4cc2921c532, type: 2}
+    Triangles: 8
+  - Id: SmartSummitFill
+    Mesh: {fileID: 4300000, guid: b5806357211e4054989006dae6604684, type: 2}
+    Triangles: 8
+  - Id: SmartSummitInner
+    Mesh: {fileID: 4300000, guid: 753c5980a4b955441bc03a1cd52dcafb, type: 2}
+    Triangles: 8
+  - Id: SmartSummitOuter
+    Mesh: {fileID: 4300000, guid: fe5999d5fb843434f80eb752b46b7e06, type: 2}
+    Triangles: 8
+  - Id: SmartWallCorner
+    Mesh: {fileID: 4300000, guid: bf48877770650274b8ab67c7eb4c4e03, type: 2}
+    Triangles: 72
+  - Id: SmartWallCross
+    Mesh: {fileID: 4300000, guid: 2fa9e1c7a38e8fe4c9d58abeee1368bf, type: 2}
+    Triangles: 120
+  - Id: SmartWallEnd
+    Mesh: {fileID: 4300000, guid: 0d00ba57bdcc6204bab77e2feced9b17, type: 2}
+    Triangles: 48
+  - Id: SmartWallSingle
+    Mesh: {fileID: 4300000, guid: d0214e6111baf9d4882752b8ea6ed50d, type: 2}
+    Triangles: 24
+  - Id: SmartWallStraight
+    Mesh: {fileID: 4300000, guid: c3d22454483f81647a9457e5ff1a1c24, type: 2}
+    Triangles: 72
+  - Id: SmartWallTee
+    Mesh: {fileID: 4300000, guid: 75dc07f2e6532b54daf0d9a4081f7b8d, type: 2}
+    Triangles: 96
+  - Id: SnowPine
+    Mesh: {fileID: 4300000, guid: 8b452201276c2f245939a1078f00f407, type: 2}
+    Triangles: 36
+  - Id: SnowPineGrove
+    Mesh: {fileID: 4300000, guid: 450bc81f2c6b3c741ae3011f8d506d81, type: 2}
+    Triangles: 108
+  - Id: SnowPinePair
+    Mesh: {fileID: 4300000, guid: f2a0dad2508308846b8db486a4bbf886, type: 2}
+    Triangles: 72
+  - Id: SnowRock
+    Mesh: {fileID: 4300000, guid: 6c008c99beff07248811d5da2cb72ae6, type: 2}
+    Triangles: 22
+  - Id: Trainer
+    Mesh: {fileID: 4300000, guid: 563da0746a421be4f86db2b5af9ee37d, type: 2}
+    Triangles: 226
+  - Id: Tree
+    Mesh: {fileID: 4300000, guid: c1db38fb0071d9644beabe5442723dc8, type: 2}
+    Triangles: 34
+  - Id: TreeGrove
+    Mesh: {fileID: 4300000, guid: 96683bed8d019d543b9b585a38e41129, type: 2}
+    Triangles: 102
+  - Id: TreePair
+    Mesh: {fileID: 4300000, guid: ca0b8b2df23f0b34cadae088c91270a3, type: 2}
+    Triangles: 68
+  - Id: TreeTall
+    Mesh: {fileID: 4300000, guid: 793c9307bf7ae324fb3778c70f3228f2, type: 2}
+    Triangles: 34
+  - Id: TreeWide
+    Mesh: {fileID: 4300000, guid: 1e63c2c1832ebd248a4f2733657e6d17, type: 2}
+    Triangles: 34
+  - Id: Wall
+    Mesh: {fileID: 4300000, guid: b1623dcc184cfb44cb2ff84c7d5261b7, type: 2}
+    Triangles: 60
+  - Id: Willow
+    Mesh: {fileID: 4300000, guid: e8c7866703237ae48ada064ca5d78bfe, type: 2}
+    Triangles: 50
+  - Id: WillowPair
+    Mesh: {fileID: 4300000, guid: 2a727ccae31083d4d9255f193469aa04, type: 2}
+    Triangles: 100
+  Palettes:
+  - Biome: 0
+    Props: {fileID: 2100000, guid: 68cab4684c05dd24baf7dc299d7753a4, type: 2}
+    Buildings: {fileID: 2100000, guid: 4e959ae50fa8dbc4faf12ea03cc378b7, type: 2}
+    Ground: {fileID: 2100000, guid: 353ff43fdce74f041be1a60e092b3301, type: 2}
+  - Biome: 1
+    Props: {fileID: 2100000, guid: e2c963c481c9daf4d9592d747405ce8c, type: 2}
+    Buildings: {fileID: 2100000, guid: 7b7d58cb394a1c9438f8bad317152eb1, type: 2}
+    Ground: {fileID: 2100000, guid: 976ea1ce21427ec4f80d436227a956ea, type: 2}
+  - Biome: 2
+    Props: {fileID: 2100000, guid: 35f5911d59ab7bc4396e5872943245f4, type: 2}
+    Buildings: {fileID: 2100000, guid: baf9a178bdd21b540a1ac88aa3e41a4e, type: 2}
+    Ground: {fileID: 2100000, guid: 88decef7249b97640a8743f62146467c, type: 2}
+  - Biome: 3
+    Props: {fileID: 2100000, guid: 6e771ab5424696b4eba2c1388fdd0f3d, type: 2}
+    Buildings: {fileID: 2100000, guid: 5da71dcf81f1d2043a693be07862b2e5, type: 2}
+    Ground: {fileID: 2100000, guid: b83ed1051edb5be4492770db93278fa2, type: 2}
+  - Biome: 4
+    Props: {fileID: 2100000, guid: dedf7d6893721a04abaf253d59b8375f, type: 2}
+    Buildings: {fileID: 2100000, guid: be66b2eb997605047af61d294d1fd7f3, type: 2}
+    Ground: {fileID: 2100000, guid: 0b1c3ff0314f7b845b469f611670fcc9, type: 2}
+  - Biome: 5
+    Props: {fileID: 2100000, guid: a234f74d2d98870459f8529d3a9664a8, type: 2}
+    Buildings: {fileID: 2100000, guid: f4f38bae9cb790b4ba513e68f2207979, type: 2}
+    Ground: {fileID: 2100000, guid: 01d1c6b17b84cd74c807a602c853c98c, type: 2}
+  - Biome: 6
+    Props: {fileID: 2100000, guid: cc84901d5db68d04db675cec2aefb86f, type: 2}
+    Buildings: {fileID: 2100000, guid: 182161d574b0ed348a8d234370152838, type: 2}
+    Ground: {fileID: 2100000, guid: 0867a7c172c33984b876959e412bfa23, type: 2}
+  - Biome: 7
+    Props: {fileID: 2100000, guid: b7206ac1a46bfd64384ba0070b205552, type: 2}
+    Buildings: {fileID: 2100000, guid: 60441f78e854766499d7dcfffa7410b7, type: 2}
+    Ground: {fileID: 2100000, guid: c6b06aaef9e86ac46ba8a7a1227f78d6, type: 2}
+  Paving: {fileID: 2100000, guid: 0996179f3546df94fbed7e389e38ffbd, type: 2}
+  Road: {fileID: 2100000, guid: 33a312ac343146147a0b3546b13a3470, type: 2}
+  Shore: {fileID: 2100000, guid: 331bea66e3f34b643b9b0711e52b0131, type: 2}
+  TreeModels: {fileID: 11400000, guid: 567dc25c02b4a064aba62d6ca286ad5a, type: 2}

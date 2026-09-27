@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78a588ceb49564243b9af3598198a6e2, type: 3}
+  m_Name: Summit
+  m_EditorClassIdentifier: TileWorldCreator::TWC.TileWorldCreator4TilesPreset
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  useRulesForEdgeTile: 0
+  useRulesForExtCornerTile: 0
+  useRulesForIntCornerTile: 0
+  useRulesForFillTile: 0
+  edgeTile: {fileID: 3315536326863006426, guid: 53059a54c0afcab4fa8ff62e0a4954c9, type: 3}
+  exteriorCornerTile: {fileID: 2107688651372920086, guid: 8345ebd775f462f4c8f086c15a33500d, type: 3}
+  interiorCornerTile: {fileID: 3431347416800616714, guid: aeda302ba0ec13e4da3c764cd40a9179, type: 3}
+  fillTile: {fileID: 845355352003225577, guid: 8453f832eb098bb43a2926f63ac2f884, type: 3}
+  edgeTileRotationOffset: {x: 0, y: 0, z: 0}
+  exteriorCornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  interiorCornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  fillTileRotationOffset: {x: 0, y: 0, z: 0}
+  edgeTileScalingOffset: {x: 0, y: 0, z: 0}
+  exteriorCornerScalingOffset: {x: 0, y: 0, z: 0}
+  interiorCornerScalingOffset: {x: 0, y: 0, z: 0}
+  fillTileScalingOffset: {x: 0, y: 0, z: 0}

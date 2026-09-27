@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::CampaignOverworld
   Template: {fileID: 11400000, guid: 592cad30711bdf547ba7b21fbcad6732, type: 2}
+  CosmeticKit: {fileID: 11400000, guid: c7ece03df003cf54480a9af06e8202d6, type: 2}
   Seed: 42
   Width: 256
   Height: 256
@@ -230,7 +231,7 @@ MonoBehaviour:
   - Biome: 1
     Material: {fileID: 2100000, guid: 976ea1ce21427ec4f80d436227a956ea, type: 2}
   - Biome: 2
-    Material: {fileID: 2100000, guid: 88decef7249b97640a8743f62146467c, type: 2}
+    Material: {fileID: 2100000, guid: 628859f318a31d946a20dee10ce1f3a0, type: 2}
   - Biome: 3
     Material: {fileID: 2100000, guid: b83ed1051edb5be4492770db93278fa2, type: 2}
   - Biome: 4
@@ -241,7 +242,7 @@ MonoBehaviour:
     Material: {fileID: 2100000, guid: 0867a7c172c33984b876959e412bfa23, type: 2}
   - Biome: 7
     Material: {fileID: 2100000, guid: c6b06aaef9e86ac46ba8a7a1227f78d6, type: 2}
-  RoadMaterial: {fileID: 2100000, guid: 02d139048c8069d418dbb30e22b4c949, type: 2}
+  RoadMaterial: {fileID: 2100000, guid: 0996179f3546df94fbed7e389e38ffbd, type: 2}
   BridgeMaterial: {fileID: 2100000, guid: c4730ca8bfe7adc4f96e6396d9013cdb, type: 2}
   BarrierMaterial: {fileID: 2100000, guid: 2e9c16c55e3baed44a3b13fb8900e7bf, type: 2}
 --- !u!1 &1117176238

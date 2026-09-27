@@ -543,6 +543,9 @@ public static class OverworldGridGenerator
         return grid;
     }
 
+    /// <summary>Presentation can resolve a town palette without constructing the lazy world grid.</summary>
+    public static OverworldBiome BiomeForRegion(Campaign campaign, string regionId) => SelectBiomes(campaign)[regionId];
+
     private static Dictionary<string, OverworldBiome> SelectBiomes(Campaign campaign)
     {
         var random = new SeedStream(campaign.Seed, 103);

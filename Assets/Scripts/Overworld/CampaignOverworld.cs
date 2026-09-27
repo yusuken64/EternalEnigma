@@ -23,6 +23,7 @@ public sealed class CampaignLayerBinding
 public sealed class CampaignOverworld : MonoBehaviour
 {
     public TileWorldCreatorAsset Template;
+    public EnvironmentKit CosmeticKit;
     public int Seed = 42;
     [Range(16, 1024)] public int Width = 256;
     [Range(16, 1024)] public int Height = 256;
@@ -92,9 +93,14 @@ public sealed class CampaignOverworld : MonoBehaviour
                 generatedAsset.mapBlueprintLayers.Add(new TileWorldCreatorAsset.BlueprintLayerData(binding.BlueprintLayer, true));
         foreach (var layer in generatedAsset.mapBlueprintLayers)
         {
+            // Keep authored Add/Shrink stacks for the nested cliff tiers, as in TWC's layered samples.
+            if (SmartEnvironmentMasks.IsDerived(layer.layerName)) continue;
             var binding = bindings.FirstOrDefault(b => b.BlueprintLayer == layer.layerName);
             var mask = binding == null ? new bool[grid.Width, grid.Height] : binding.CoreLayer == OverworldLayers.Walkable
                 ? grid.CreateWalkableLayer(held, resolvedLocks) : grid.Layers[binding.CoreLayer].ToArray();
+            if (layer.layerName == OverworldCosmetics.Layer && CosmeticKit != null)
+                foreach (var prop in OverworldCosmetics.Plan(grid, CosmeticKit,generatedAsset.mapBuildLayers.OfType<OverworldCosmeticLayer>().FirstOrDefault()?.TreeModels)) mask[prop.X, prop.Y] = true;
+            mask = SmartEnvironmentMasks.World(grid, layer.layerName) ?? mask;
             layer.stack = new List<TileWorldCreatorAsset.BlueprintLayerData.ActionStack>
             { new("Campaign mask", new CampaignLayerAction(mask)) };
             layer.active = true;
@@ -113,7 +119,7 @@ public sealed class CampaignOverworld : MonoBehaviour
             {
                 // Empty placement masks are valid (e.g. a seed without obstacle-form locks).
                 layer.mapResultFailed = false;
-                foreach (var action in layer.stack) ((CampaignLayerAction)action.action).resultFailed = false;
+                foreach (var action in layer.stack) if (action.action is TWC.Actions.TWCBlueprintAction blueprint) blueprint.resultFailed = false;
             }
         }
         finally { UnityEngine.Random.state = randomState; }

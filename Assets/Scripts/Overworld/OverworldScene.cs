@@ -80,6 +80,7 @@ public sealed class OverworldScene : MonoBehaviour
             var marker = Instantiate(prefab, CellCenterToWorld(Map.CurrentGrid.Locations[location.Id]), Quaternion.identity, transform);
             marker.name = location.Id;
             var cell = Map.CurrentGrid.Locations[location.Id];
+            BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
             locationVisuals.Add(cell, marker);
             marker.SetActive(!cell.Equals(Position));
         }
@@ -90,6 +91,7 @@ public sealed class OverworldScene : MonoBehaviour
             {
                 if (Map.CurrentGrid.RequiresBoat(cell)) continue;
                 var marker = Instantiate(GateMarker, CellCenterToWorld(cell), Quaternion.identity, transform);
+                BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
                 var route = Campaign.Routes.First(r => r.Id == gate.RouteId);
                 marker.name = (route.ShortcutKind == ShortcutKind.None ? "Gate " : "Shortcut ") + gate.RouteId;
                 if (route.ShortcutKind != ShortcutKind.None)

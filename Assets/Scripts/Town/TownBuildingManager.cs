@@ -17,6 +17,7 @@ public class TownBuildingManager : MonoBehaviour
             building.Name = definition.DisplayName;
             building.TilemapPosition = positions[i];
             building.transform.position = map.CellToWorld(positions[i]);
+            BiomeModel.ApplyAll(building.gameObject, map.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current ?? EternalEnigma.Core.World.OverworldBiome.Grassland);
             buildings.Add(building);
         }
         return buildings;

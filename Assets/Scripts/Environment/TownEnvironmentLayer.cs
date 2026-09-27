@@ -1,0 +1,59 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using EternalEnigma.Core.World;
+using TWC;
+using TWC.Actions;
+using UnityEngine;
+
+[Serializable, ActionName(Name = "Medieval town environment")]
+public sealed class TownEnvironmentLayer : TWCBuildLayer
+{
+    public EnvironmentKit Kit;
+    public TreeModelPicker TreeModels;
+    public override TWCBuildLayer Clone() => new TownEnvironmentLayer {
+        guid = guid, assignedGenerationLayerGuid = assignedGenerationLayerGuid, layerName = layerName, active = active, Kit = Kit, TreeModels=TreeModels };
+    public override void Execute(TileWorldCreator creator, bool force)
+    {
+        try
+        {
+            if (Kit == null || !CoreLayoutCache.TryGetTown(creator, out var plan)) return;
+            var root = creator.AddLayerObject(layerName, guid); root.transform.SetParent(creator.worldObject.transform, false);
+            root.transform.localRotation = Quaternion.identity;
+            foreach (var child in root.transform.Cast<Transform>().ToArray()) { child.gameObject.SetActive(false); if (Application.isPlaying) UnityEngine.Object.Destroy(child.gameObject); else UnityEngine.Object.DestroyImmediate(child.gameObject); }
+            var previous = root.GetComponent<EnvironmentMeshOwner>();
+            if (previous != null) { if (Application.isPlaying) UnityEngine.Object.Destroy(previous); else UnityEngine.Object.DestroyImmediate(previous); }
+            var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
+            var batch = new EnvironmentBatch(root.transform); float size = creator.twcAsset.cellSize;
+            bool innPlaced = false;
+            for (int y = 0; y < plan.Height; y++) for (int x = 0; x < plan.Width; x++)
+            {
+                var position = new Vector3(x + .5f, y + .5f, 0) * size;
+                batch.Add(Kit.Mesh("Paving"), Kit.Ground(biome), position + Vector3.forward * .02f, Vector3.one * size);
+                if (plan.Layers[TownLayers.Trees][x, y])
+                {
+                    uint hash=OverworldCosmetics.Hash(creator.currentSeed ^ 15401,x,y);
+                    var picker=TreeModels!=null?TreeModels:Kit.TreeModels;
+                    string model=picker!=null?picker.Pick(biome,hash):"Tree";
+                    batch.Add(Kit.Mesh(model),Kit.Material(biome),position,Vector3.one*size*(.85f+(hash>>8)%16*.01f),(hash>>16)%360);
+                }
+                if (!innPlaced && plan.Layers[TownLayers.Houses][x,y] && (y == 0 || !plan.Layers[TownLayers.Houses][x,y-1]))
+                {
+                    batch.Add(Kit.Mesh("InnSign"), Kit.Material(biome), new Vector3(x+.65f,y+.08f,0)*size, Vector3.one*size);
+                    innPlaced = true;
+                }
+            }
+            batch.Finish();
+        }
+        finally { creator.executedBuildLayersCount += 1; }
+    }
+#if UNITY_EDITOR
+    public override void DrawGUI(TileWorldCreatorAsset asset)
+    {
+        layerName=UnityEditor.EditorGUILayout.TextField("Layer name",layerName);
+        Kit=(EnvironmentKit)UnityEditor.EditorGUILayout.ObjectField("Biome kit",Kit,typeof(EnvironmentKit),false);
+        TreeModels=TreeModelPicker.Draw(TreeModels);
+    }
+#endif
+}
+

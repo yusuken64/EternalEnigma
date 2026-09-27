@@ -21,6 +21,11 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Environment")]
+    public static void RunEnvironment() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnvironmentPlaygroundTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Environment Assets")]
+    public static void RunEnvironmentAssets() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run PlayMode")]
     public static void RunPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode");
 

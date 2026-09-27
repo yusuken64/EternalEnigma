@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 628102230e27e94468c78365f9a41b1a, type: 3}
+  m_Name: Wall
+  m_EditorClassIdentifier: TileWorldCreator::TWC.TileWorldCreator6TilesPreset
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  useRulesForEdgeTile: 0
+  useRulesForExtCornerTile: 0
+  useRulesForIntCornerTile: 0
+  useRulesForFillTile: 0
+  singleTile: {fileID: 4026887349809408271, guid: 5b62428406953e5428e112f5871aa429, type: 3}
+  deadEndTile: {fileID: 1258338775948200748, guid: c8dfaf9c5aaed0d4a830c342ddfdcac5, type: 3}
+  straightTile: {fileID: 5262651417935085965, guid: 56e3415bf3393bf43b62170e6812a826, type: 3}
+  cornerTile: {fileID: 6416688578489419111, guid: 4c43c6fdc2ad2b54db6bc4722dddb2ce, type: 3}
+  threeWayTile: {fileID: 6071247033985510289, guid: 8a9b072e0da23694db0cdccb781b1be2, type: 3}
+  fourWayTile: {fileID: 4598854174323693743, guid: cc9e91834b881d54aba59fe78fa4a447, type: 3}
+  deadEndTileRotationOffset: {x: 0, y: 0, z: 0}
+  straightTileRotationOffset: {x: 0, y: 0, z: 0}
+  cornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  threeWayTileRotationOffset: {x: 0, y: 0, z: 0}
+  fourWayTileRotationOffset: {x: 0, y: 0, z: 0}
+  singleTileScalingOffset: {x: 0, y: 0, z: 0}
+  deadEndTileScalingOffset: {x: 0, y: 0, z: 0}
+  straightTileScalingOffset: {x: 0, y: 0, z: 0}
+  cornerTileScalingOffset: {x: 0, y: 0, z: 0}
+  threeWayTileScalingOffset: {x: 0, y: 0, z: 0}
+  fourWayTileScalingOffset: {x: 0, y: 0, z: 0}

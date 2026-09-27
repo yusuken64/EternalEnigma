@@ -32,7 +32,7 @@ MonoBehaviour:
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
-      Data: 8
+      Data: 11
     - Name: 
       Entry: 7
       Data: 1|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
@@ -777,13 +777,13 @@ MonoBehaviour:
       Data: 4|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
     - Name: actionName
       Entry: 1
-      Data: L-System
+      Data: Core Roads
     - Name: action
       Entry: 7
-      Data: 5|TWC.Actions.LSystem, TileWorldCreator
+      Data: 5|CoreTownLayerGenerator, EternalEnigma.Game
     - Name: guid
       Entry: 2
-      Data: 520807202aa44416bea5e2e59e9aacb2
+      Data: de799661a5954d4fa17d51d59e7ad8bf
     - Name: active
       Entry: 5
       Data: true
@@ -793,54 +793,30 @@ MonoBehaviour:
     - Name: resultFailed
       Entry: 5
       Data: false
-    - Name: rule
-      Entry: 7
-      Data: 6|TWC.Actions.LSystem+Rule, TileWorldCreator
-    - Name: letter
+    - Name: LayerName
       Entry: 1
-      Data: F
-    - Name: results
-      Entry: 7
-      Data: 7|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
-    - Name: 
-      Entry: 12
+      Data: Roads
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
       Data: 3
-    - Name: 
-      Entry: 1
-      Data: '[+F][-F]'
-    - Name: 
-      Entry: 1
-      Data: '[+F]F[-F]'
-    - Name: 
-      Entry: 1
-      Data: '[-F]F[+F]'
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: rootSentence
-      Entry: 1
-      Data: '[F]--F'
-    - Name: randomIgnoreRuleModifier
-      Entry: 5
-      Data: false
-    - Name: chanceToIgnoreRule
-      Entry: 4
-      Data: 0.3
-    - Name: iterations
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
       Entry: 3
       Data: 2
-    - Name: length
+    - Name: ExitX
       Entry: 3
-      Data: 3
-    - Name: shortenLength
-      Entry: 5
-      Data: false
+      Data: 10
+    - Name: ExitY
+      Entry: 3
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -858,7 +834,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 8|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+      Data: 6|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 499bf2251adf4ad79ef8894bb6779f4a
@@ -870,7 +846,7 @@ MonoBehaviour:
       Data: Houses
     - Name: map
       Entry: 7
-      Data: 9|System.Boolean[,], mscorlib
+      Data: 7|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
       Data: 225
@@ -1590,144 +1566,56 @@ MonoBehaviour:
       Data: false
     - Name: stack
       Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+      Data: 8|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 9|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+    - Name: actionName
+      Entry: 1
+      Data: Core Houses
+    - Name: action
+      Entry: 7
+      Data: 10|CoreTownLayerGenerator, EternalEnigma.Game
+    - Name: guid
+      Entry: 2
+      Data: fc1f3f4fa0fb46998a4a981d6c5341f0
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: foldout
+      Entry: 5
+      Data: false
+    - Name: resultFailed
+      Entry: 5
+      Data: false
+    - Name: LayerName
+      Entry: 1
+      Data: Houses
+    - Name: BuildingCount
+      Entry: 3
       Data: 4
-    - Name: 
-      Entry: 7
-      Data: 11|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
+    - Name: ShopFlags
       Entry: 1
-      Data: Add
-    - Name: action
-      Entry: 7
-      Data: 12|TWC.Actions.Add, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: c3b4d08977864b279e1c99ac7057e3ef
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
+      Data: 3
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: f39ee510813542d78ac94077deee6319
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 13|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Expand
-    - Name: action
-      Entry: 7
-      Data: 14|TWC.Actions.Expand, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 3364ab25210a4b9196d12c10345c1cd5
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 15|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Subtract
-    - Name: action
-      Entry: 7
-      Data: 16|TWC.Actions.Subtract, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 6d0e326b79a240d485a6df2a5c5bf4b0
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
-      Entry: 3
-      Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: f39ee510813542d78ac94077deee6319
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 17|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Select
-    - Name: action
-      Entry: 7
-      Data: 18|TWC.Actions.Select, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 90dec42c950a45aabd22072af5ec363c
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectType
-      Entry: 3
-      Data: 5
-    - Name: randomSelectionWeight
-      Entry: 4
-      Data: 0.35
-    - Name: neighbourSelectionRules
-      Entry: 7
-      Data: 19|System.Collections.Generic.List`1[[TWC.Actions.Select+SelectionRule,
-        TileWorldCreator]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -1745,7 +1633,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 20|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+      Data: 11|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 8be846962e2a49cca00cdeb1ac509bed
@@ -1757,7 +1645,7 @@ MonoBehaviour:
       Data: Roofs
     - Name: map
       Entry: 7
-      Data: 21|System.Boolean[,], mscorlib
+      Data: 12|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
       Data: 225
@@ -2477,84 +2365,56 @@ MonoBehaviour:
       Data: false
     - Name: stack
       Entry: 7
-      Data: 22|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+      Data: 13|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 14|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+    - Name: actionName
+      Entry: 1
+      Data: Core Roofs
+    - Name: action
+      Entry: 7
+      Data: 15|CoreTownLayerGenerator, EternalEnigma.Game
+    - Name: guid
+      Entry: 2
+      Data: 5865152253604155bbde2f4e95dad900
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: foldout
+      Entry: 5
+      Data: false
+    - Name: resultFailed
+      Entry: 5
+      Data: false
+    - Name: LayerName
+      Entry: 1
+      Data: Roofs
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
+      Data: 3
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
       Data: 2
-    - Name: 
-      Entry: 7
-      Data: 23|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Add
-    - Name: action
-      Entry: 7
-      Data: 24|TWC.Actions.Add, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 2f623cfa6f7949a2bae821df2ab547ff
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: 499bf2251adf4ad79ef8894bb6779f4a
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 25|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Select
-    - Name: action
-      Entry: 7
-      Data: 26|TWC.Actions.Select, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 9c69d90b9344493bb4dbd805c3f214e8
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: true
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectType
-      Entry: 3
-      Data: 5
-    - Name: randomSelectionWeight
-      Entry: 4
-      Data: 0.59
-    - Name: neighbourSelectionRules
-      Entry: 7
-      Data: 27|System.Collections.Generic.List`1[[TWC.Actions.Select+SelectionRule,
-        TileWorldCreator]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -2572,7 +2432,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 28|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+      Data: 16|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 96bc688eda3d48d1869e4593a02417a1
@@ -2584,7 +2444,7 @@ MonoBehaviour:
       Data: Parks
     - Name: map
       Entry: 7
-      Data: 29|System.Boolean[,], mscorlib
+      Data: 17|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
       Data: 225
@@ -3304,98 +3164,56 @@ MonoBehaviour:
       Data: false
     - Name: stack
       Entry: 7
-      Data: 30|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+      Data: 18|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 19|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+    - Name: actionName
+      Entry: 1
+      Data: Core Parks
+    - Name: action
+      Entry: 7
+      Data: 20|CoreTownLayerGenerator, EternalEnigma.Game
+    - Name: guid
+      Entry: 2
+      Data: f54c0ce0fb3349e0a27554cd6a0d163d
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: foldout
+      Entry: 5
+      Data: false
+    - Name: resultFailed
+      Entry: 5
+      Data: false
+    - Name: LayerName
+      Entry: 1
+      Data: Parks
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
       Data: 3
-    - Name: 
-      Entry: 7
-      Data: 31|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Add
-    - Name: action
-      Entry: 7
-      Data: 32|TWC.Actions.Add, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: be8916f4761c4030996965da121902ae
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: 499bf2251adf4ad79ef8894bb6779f4a
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 33|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Add
-    - Name: action
-      Entry: 7
-      Data: 34|TWC.Actions.Add, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 4177b3296bbf4dac90723c13edf59c96
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
-      Entry: 3
-      Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: f39ee510813542d78ac94077deee6319
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 35|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Invert
-    - Name: action
-      Entry: 7
-      Data: 36|TWC.Actions.Invert, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: f69ddc7830264d88992fb68f09d9525c
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -3413,7 +3231,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 37|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+      Data: 21|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: c4fa42c304094f568023e36e2c00a914
@@ -3425,7 +3243,7 @@ MonoBehaviour:
       Data: Trees
     - Name: map
       Entry: 7
-      Data: 38|System.Boolean[,], mscorlib
+      Data: 22|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
       Data: 225
@@ -4145,111 +3963,56 @@ MonoBehaviour:
       Data: false
     - Name: stack
       Entry: 7
-      Data: 39|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+      Data: 23|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 24|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+    - Name: actionName
+      Entry: 1
+      Data: Core Trees
+    - Name: action
+      Entry: 7
+      Data: 25|CoreTownLayerGenerator, EternalEnigma.Game
+    - Name: guid
+      Entry: 2
+      Data: 09cafff512954de5a4ddfb3c9c16eee4
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: foldout
+      Entry: 5
+      Data: false
+    - Name: resultFailed
+      Entry: 5
+      Data: false
+    - Name: LayerName
+      Entry: 1
+      Data: Trees
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
       Data: 3
-    - Name: 
-      Entry: 7
-      Data: 40|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Add
-    - Name: action
-      Entry: 7
-      Data: 41|TWC.Actions.Add, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 586295ad73094a7dac3a676b56862f60
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: 96bc688eda3d48d1869e4593a02417a1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 42|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Shrink
-    - Name: action
-      Entry: 7
-      Data: 43|TWC.Actions.Shrink, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 2c2b08b180c6447595c588dc4a7166c2
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 44|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Select
-    - Name: action
-      Entry: 7
-      Data: 45|TWC.Actions.Select, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: ad9b020e02834c55a2c5b2ed366a57be
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: true
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectType
-      Entry: 3
-      Data: 5
-    - Name: randomSelectionWeight
-      Entry: 4
-      Data: 0.4
-    - Name: neighbourSelectionRules
-      Entry: 7
-      Data: 46|System.Collections.Generic.List`1[[TWC.Actions.Select+SelectionRule,
-        TileWorldCreator]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -4267,7 +4030,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 47|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+      Data: 26|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 583cead6da454058b1719c196d311486
@@ -4279,7 +4042,7 @@ MonoBehaviour:
       Data: Dungeon
     - Name: map
       Entry: 7
-      Data: 48|System.Boolean[,], mscorlib
+      Data: 27|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
       Data: 225
@@ -4999,11 +4762,62 @@ MonoBehaviour:
       Data: false
     - Name: stack
       Entry: 7
-      Data: 49|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+      Data: 28|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 29|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+    - Name: actionName
+      Entry: 1
+      Data: Core Dungeon
+    - Name: action
+      Entry: 7
+      Data: 30|CoreTownLayerGenerator, EternalEnigma.Game
+    - Name: guid
+      Entry: 2
+      Data: 24596feb303a4cf1b85405e38a048a89
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: foldout
+      Entry: 5
+      Data: false
+    - Name: resultFailed
+      Entry: 5
+      Data: false
+    - Name: LayerName
+      Entry: 1
+      Data: Dungeon
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
+      Data: 3
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
+      Entry: 3
       Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 13
       Data: 
@@ -5015,7 +4829,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 50|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+      Data: 31|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 4fb432addb8a40b1bbbc164224d93394
@@ -5027,7 +4841,7 @@ MonoBehaviour:
       Data: Buildings
     - Name: map
       Entry: 7
-      Data: 51|System.Boolean[,], mscorlib
+      Data: 32|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
       Data: 225
@@ -5747,23 +5561,23 @@ MonoBehaviour:
       Data: false
     - Name: stack
       Entry: 7
-      Data: 52|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+      Data: 33|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
-      Data: 6
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 53|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+      Data: 34|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
     - Name: actionName
       Entry: 1
-      Data: Add
+      Data: Core Buildings
     - Name: action
       Entry: 7
-      Data: 54|TWC.Actions.Add, TileWorldCreator
+      Data: 35|CoreTownLayerGenerator, EternalEnigma.Game
     - Name: guid
       Entry: 2
-      Data: 0e11c1a7b62945a893455471e3e53f3d
+      Data: 779dd2c3a6c64296887d9a472f21d7ae
     - Name: active
       Entry: 5
       Data: true
@@ -5773,168 +5587,30 @@ MonoBehaviour:
     - Name: resultFailed
       Entry: 5
       Data: false
-    - Name: selectedLayerIndex
+    - Name: LayerName
+      Entry: 1
+      Data: Buildings
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
+      Data: 3
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: f39ee510813542d78ac94077deee6319
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 55|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Expand
-    - Name: action
-      Entry: 7
-      Data: 56|TWC.Actions.Expand, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: ca2c61fb6acc4b1bbec5e9dc593d35d7
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 57|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Subtract
-    - Name: action
-      Entry: 7
-      Data: 58|TWC.Actions.Subtract, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: d8b6abd7407944f387c084f1861523bb
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
-      Entry: 3
-      Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: f39ee510813542d78ac94077deee6319
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 59|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Subtract
-    - Name: action
-      Entry: 7
-      Data: 60|TWC.Actions.Subtract, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 252dc68199ae41cda8c936c792156dfc
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: true
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
-      Entry: 3
-      Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: 499bf2251adf4ad79ef8894bb6779f4a
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 61|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Subtract
-    - Name: action
-      Entry: 7
-      Data: 62|TWC.Actions.Subtract, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: ba1b36ce06b54c71b021d0249c00d1cf
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: true
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
-      Entry: 3
-      Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: c4fa42c304094f568023e36e2c00a914
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 63|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Pick
-    - Name: action
-      Entry: 7
-      Data: 64|TWC.Actions.Pick, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 0f08fde457604b22a84efd80e61f5c00
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: true
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: PickCount
-      Entry: 3
-      Data: 7
     - Name: 
       Entry: 8
       Data: 
@@ -5952,7 +5628,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 65|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+      Data: 36|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: d1116a218ef74a36b21a397cdd3953f7
@@ -5964,7 +5640,7 @@ MonoBehaviour:
       Data: Allies
     - Name: map
       Entry: 7
-      Data: 66|System.Boolean[,], mscorlib
+      Data: 37|System.Boolean[,], mscorlib
     - Name: 
       Entry: 12
       Data: 225
@@ -6684,38 +6360,65 @@ MonoBehaviour:
       Data: false
     - Name: stack
       Entry: 7
-      Data: 67|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+      Data: 38|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
-      Data: 7
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 68|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+      Data: 39|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
     - Name: actionName
       Entry: 1
-      Data: Add
+      Data: Core Allies
     - Name: action
       Entry: 7
-      Data: 69|TWC.Actions.Add, TileWorldCreator
+      Data: 40|CoreTownLayerGenerator, EternalEnigma.Game
     - Name: guid
       Entry: 2
-      Data: ac4705302dd04f76b557da728cacdfca
+      Data: 14ee0765465a4d9eb8cb9576a71ca626
     - Name: active
       Entry: 5
       Data: true
     - Name: foldout
       Entry: 5
-      Data: true
+      Data: false
     - Name: resultFailed
       Entry: 5
       Data: false
-    - Name: selectedLayerIndex
+    - Name: LayerName
+      Entry: 1
+      Data: Allies
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
+      Data: 3
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: f39ee510813542d78ac94077deee6319
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6724,91 +6427,110 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 70|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Expand
-    - Name: action
-      Entry: 7
-      Data: 71|TWC.Actions.Expand, TileWorldCreator
+      Data: 41|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
-      Data: d7ff935e4421414ab5136ecb0431ac29
+      Data: f953b1543a054648aed5ffd6fe99dd5f
     - Name: active
       Entry: 5
       Data: true
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: resultFailed
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 72|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
+    - Name: layerName
       Entry: 1
-      Data: Subtract
-    - Name: action
-      Entry: 7
-      Data: 73|TWC.Actions.Subtract, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 2352221a1d0f45628ca8552bd62529e1
-    - Name: active
-      Entry: 5
-      Data: true
-    - Name: foldout
-      Entry: 5
-      Data: true
-    - Name: resultFailed
+      Data: ShopFloor
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
       Entry: 5
       Data: false
-    - Name: selectedLayerIndex
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: f39ee510813542d78ac94077deee6319
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 42|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
     - Name: 
-      Entry: 8
-      Data: 
+      Entry: 12
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 74|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+      Data: 43|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
     - Name: actionName
       Entry: 1
-      Data: Subtract
+      Data: Core ShopFloor
     - Name: action
       Entry: 7
-      Data: 75|TWC.Actions.Subtract, TileWorldCreator
+      Data: 44|CoreTownLayerGenerator, EternalEnigma.Game
     - Name: guid
       Entry: 2
-      Data: 090cf060b153460ebb286e0c2a39f623
+      Data: 2b6d973c317e487796bdc5a7675dd9fd
     - Name: active
       Entry: 5
       Data: true
     - Name: foldout
       Entry: 5
-      Data: true
+      Data: false
     - Name: resultFailed
       Entry: 5
       Data: false
-    - Name: selectedLayerIndex
+    - Name: LayerName
+      Entry: 1
+      Data: ShopFloor
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
+      Data: 3
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: 499bf2251adf4ad79ef8894bb6779f4a
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6817,64 +6539,110 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 76|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Subtract
-    - Name: action
-      Entry: 7
-      Data: 77|TWC.Actions.Subtract, TileWorldCreator
+      Data: 45|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
-      Data: 2dff2356d7a74062bab323255d3aa3c0
+      Data: 3ae2d146910145b68b12ff7e22ec6d59
     - Name: active
       Entry: 5
       Data: true
-    - Name: foldout
-      Entry: 5
-      Data: true
-    - Name: resultFailed
+    - Name: layerName
+      Entry: 1
+      Data: ShopWalls
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
       Entry: 5
       Data: false
-    - Name: selectedLayerIndex
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: c4fa42c304094f568023e36e2c00a914
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 46|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
     - Name: 
-      Entry: 8
-      Data: 
+      Entry: 12
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 78|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+      Data: 47|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
     - Name: actionName
       Entry: 1
-      Data: Subtract
+      Data: Core ShopWalls
     - Name: action
       Entry: 7
-      Data: 79|TWC.Actions.Subtract, TileWorldCreator
+      Data: 48|CoreTownLayerGenerator, EternalEnigma.Game
     - Name: guid
       Entry: 2
-      Data: 7711cb2487204d7a9934ad830492bd97
+      Data: 7346cefc621d44a2b1604cbc037523a9
     - Name: active
       Entry: 5
       Data: true
     - Name: foldout
       Entry: 5
-      Data: true
+      Data: false
     - Name: resultFailed
       Entry: 5
       Data: false
-    - Name: selectedLayerIndex
+    - Name: LayerName
+      Entry: 1
+      Data: ShopWalls
+    - Name: BuildingCount
+      Entry: 3
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
+      Data: 3
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
       Entry: 3
       Data: 0
-    - Name: guidCopyLayer
-      Entry: 2
-      Data: 4fb432addb8a40b1bbbc164224d93394
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6883,16 +6651,68 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 80|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
-    - Name: actionName
-      Entry: 1
-      Data: Pick
-    - Name: action
-      Entry: 7
-      Data: 81|TWC.Actions.Pick, TileWorldCreator
+      Data: 49|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
     - Name: guid
       Entry: 2
-      Data: eaee27dafb2b4f6e945184706628d28c
+      Data: 81d5b826fe694686a090f3783ad57aa3
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Walkable
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 50|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 51|TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack, TileWorldCreator
+    - Name: actionName
+      Entry: 1
+      Data: Core Walkable
+    - Name: action
+      Entry: 7
+      Data: 52|CoreTownLayerGenerator, EternalEnigma.Game
+    - Name: guid
+      Entry: 2
+      Data: 70b92b6149834b108f2789b34d9c8ee2
     - Name: active
       Entry: 5
       Data: true
@@ -6902,9 +6722,30 @@ MonoBehaviour:
     - Name: resultFailed
       Entry: 5
       Data: false
-    - Name: PickCount
+    - Name: LayerName
+      Entry: 1
+      Data: Walkable
+    - Name: BuildingCount
       Entry: 3
-      Data: 7
+      Data: 4
+    - Name: ShopFlags
+      Entry: 1
+      Data: 0100
+    - Name: AllyCount
+      Entry: 3
+      Data: 3
+    - Name: PartySpawnX
+      Entry: 3
+      Data: 10
+    - Name: PartySpawnY
+      Entry: 3
+      Data: 2
+    - Name: ExitX
+      Entry: 3
+      Data: 10
+    - Name: ExitY
+      Entry: 3
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -6928,14 +6769,14 @@ MonoBehaviour:
       Data: 
     - Name: mapBuildLayers
       Entry: 7
-      Data: 82|System.Collections.Generic.List`1[[TWC.Actions.TWCBuildLayer, TileWorldCreator]],
+      Data: 53|System.Collections.Generic.List`1[[TWC.Actions.TWCBuildLayer, TileWorldCreator]],
         mscorlib
     - Name: 
       Entry: 12
       Data: 5
     - Name: 
       Entry: 7
-      Data: 83|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 54|TWC.Actions.InstantiateTiles, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: d43d50e89eb34247811bcf9942f93bc2
@@ -6956,14 +6797,14 @@ MonoBehaviour:
       Data: 0
     - Name: tiles
       Entry: 7
-      Data: 84|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
+      Data: 55|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 85|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
+      Data: 56|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
     - Name: rndSelectionWeight
       Entry: 4
       Data: 1
@@ -7074,7 +6915,7 @@ MonoBehaviour:
       Data: 
     - Name: ignoreLayers
       Entry: 7
-      Data: 86|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
+      Data: 57|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -7089,7 +6930,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 87|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 58|TWC.Actions.InstantiateTiles, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: e7dcc1ef99aa4ee99ed24c10d3b2f80d
@@ -7110,14 +6951,14 @@ MonoBehaviour:
       Data: 0
     - Name: tiles
       Entry: 7
-      Data: 88|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
+      Data: 59|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 89|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
+      Data: 60|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
     - Name: rndSelectionWeight
       Entry: 4
       Data: 1
@@ -7228,7 +7069,7 @@ MonoBehaviour:
       Data: 
     - Name: ignoreLayers
       Entry: 7
-      Data: 90|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
+      Data: 61|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -7243,7 +7084,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 91|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 62|TWC.Actions.InstantiateTiles, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 68f444db17724f8da2b3a0f61a25382c
@@ -7264,14 +7105,14 @@ MonoBehaviour:
       Data: 0
     - Name: tiles
       Entry: 7
-      Data: 92|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
+      Data: 63|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 93|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
+      Data: 64|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
     - Name: rndSelectionWeight
       Entry: 4
       Data: 1
@@ -7382,7 +7223,7 @@ MonoBehaviour:
       Data: 
     - Name: ignoreLayers
       Entry: 7
-      Data: 94|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
+      Data: 65|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -7397,7 +7238,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 95|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 66|TWC.Actions.InstantiateTiles, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 88e7114a765e474b820355e2773a923f
@@ -7418,14 +7259,14 @@ MonoBehaviour:
       Data: 0
     - Name: tiles
       Entry: 7
-      Data: 96|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
+      Data: 67|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 97|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
+      Data: 68|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
     - Name: rndSelectionWeight
       Entry: 4
       Data: 1
@@ -7536,7 +7377,7 @@ MonoBehaviour:
       Data: 
     - Name: ignoreLayers
       Entry: 7
-      Data: 98|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
+      Data: 69|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -7551,7 +7392,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 99|TWC.Actions.InstantiateObjects, TileWorldCreator
+      Data: 70|TWC.Actions.InstantiateObjects, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 434fd250320e4125b488013b786de25c
@@ -7596,7 +7437,7 @@ MonoBehaviour:
       Data: 4
     - Name: randomChildPrefabs
       Entry: 7
-      Data: 100|System.Collections.Generic.List`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
+      Data: 71|System.Collections.Generic.List`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
         mscorlib
     - Name: 
       Entry: 12

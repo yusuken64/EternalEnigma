@@ -12,7 +12,7 @@ public class InspectInventoryItemEffect : InventorySkillEffect
             string detail = item is EquipableInventoryItem equipment ?
                 $"{equipment.EquipmentSlot}: Strength +{equipment.GetEquipmentStatModification().Strength}" :
                 item.HasStacks ? $"Stock: {item.StackStock}" : "Single-use item";
-            Game.Instance.DoFloatingText($"{item.ItemName}: {detail}", Color.cyan, caster.transform.position);
+            Game.Instance.DoFloatingText($"{item.ItemName}: {detail}", Color.cyan, caster);
             return new List<GameAction>();
         }, null, () => item?.ItemDefinition != null);
 }

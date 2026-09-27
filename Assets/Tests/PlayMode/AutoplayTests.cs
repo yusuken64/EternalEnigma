@@ -17,6 +17,30 @@ namespace EternalEnigma.Tests
     public sealed class AutoplayTests
     {
         private GameTestHarness harness;
+        private static void CheckControlPreference(bool blocked)
+        {
+            bool hadKey = PlayerPrefs.HasKey("Dungeon.FullControl");
+            int saved = PlayerPrefs.GetInt("Dungeon.FullControl");
+            bool? previousOverride = DungeonPreferences.FullControlOverride;
+            try
+            {
+                foreach (int value in new[] { 0, 1 })
+                foreach (bool? controlOverride in new bool?[] { null, false, true })
+                {
+                    PlayerPrefs.SetInt("Dungeon.FullControl", value);
+                    DungeonPreferences.FullControlOverride = controlOverride;
+                    Assert.That(DungeonPreferences.FullControl, Is.EqualTo(!blocked && (controlOverride ?? value != 0)));
+                    Assert.That(PlayerPrefs.GetInt("Dungeon.FullControl"), Is.EqualTo(value));
+                    Assert.That(DungeonPreferences.FullControlOverride, Is.EqualTo(controlOverride));
+                }
+            }
+            finally
+            {
+                DungeonPreferences.FullControlOverride = previousOverride;
+                if (hadKey) PlayerPrefs.SetInt("Dungeon.FullControl", saved);
+                else PlayerPrefs.DeleteKey("Dungeon.FullControl");
+            }
+        }
         [UnitySetUp] public IEnumerator Setup()
         {
             if (!UnityEditor.SessionState.GetBool("EternalEnigma.Autoplay.ManualChecks",false))
@@ -52,9 +76,23 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Store.Json,Is.EqualTo(json));
             run.SetPaused(true);
             run.SetSpeed(4);
+            CheckControlPreference(true);
+            var settings = Common.Instance.GlobalSettings;
+            settings.ShowDialog();
+            yield return null;
+            var control = settings.GetComponentsInChildren<UnityEngine.UI.Button>(true)
+                .Single(b => b.GetComponentInChildren<TMPro.TMP_Text>(true)?.text == "Full Control: Off (Autoplay)");
+            Assert.That(control.interactable, Is.False);
+            int savedControl = PlayerPrefs.GetInt("Dungeon.FullControl", 0);
+            control.onClick.Invoke();
+            Assert.That(PlayerPrefs.GetInt("Dungeon.FullControl", 0), Is.EqualTo(savedControl));
+            settings.Exit_Clicked();
             Assert.That(Time.timeScale, Is.Zero, "Changing speed keeps the demo paused.");
+            run.SetSpeed(16);
+            Assert.That(run.Options.Speed, Is.EqualTo(16));
+            Assert.That(Time.timeScale, Is.Zero);
             run.SetPaused(false);
-            Assert.That(Time.timeScale, Is.EqualTo(4));
+            Assert.That(Time.timeScale, Is.EqualTo(16));
             run.SetSpeed(.5f);
             Assert.That(Time.timeScale, Is.EqualTo(.5f));
             run.SetPaused(true);
@@ -70,6 +108,7 @@ namespace EternalEnigma.Tests
                     InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Space));
                     yield return null; yield return null;
                     Assert.That(run.ReturnPromptOpen,Is.True);
+                    CheckControlPreference(true);
                     ScreenCapture.CaptureScreenshot("Temp/AutoplayValidation/return-prompt.png");
                     InputSystem.QueueStateEvent(keyboard,new KeyboardState());
                     yield return null;
@@ -80,7 +119,7 @@ namespace EternalEnigma.Tests
                     InputSystem.QueueStateEvent(mouse,new MouseState { delta = new Vector2(20,0) });
                     yield return null; yield return null;
                     Assert.That(run.ReturnPromptOpen,Is.False,"Pointer movement can reach playback controls.");
-                    InputSystem.QueueStateEvent(mouse,new MouseState { position = new Vector2(Screen.width-30, Screen.height-40), buttons = 1 });
+                    InputSystem.QueueStateEvent(mouse,new MouseState { position = new Vector2(Screen.width-30, Screen.height-90), buttons = 1 });
                     yield return null; yield return null;
                     Assert.That(run.ReturnPromptOpen,Is.False,"Clicking the playback panel does not interrupt playback.");
                     var outsidePanel = new Vector2(5, Screen.height - 5);
@@ -167,6 +206,7 @@ namespace EternalEnigma.Tests
                     Assert.That(game.PlayerController.Floor, Is.EqualTo(floor));
                     Assert.That(Time.timeScale, Is.EqualTo(1));
                     Assert.That(AutoplayRunner.BlocksPlayerInput, Is.False);
+                    CheckControlPreference(false);
                     Assert.That(run.PanelVisible, Is.False);
                     Assert.That(run.Report.Outcome, Is.EqualTo("PlayerControl"));
                     Assert.That(AutoplayRunner.GodmodeFor(game.PlayerController.ControlledAlly), Is.False);
@@ -196,6 +236,7 @@ namespace EternalEnigma.Tests
                     yield return null; yield return null;
                     Assert.That(Common.Instance.Travel.ReturnToMenu(), Is.True);
                     yield return harness.WaitUntil(() => AutoplayRunner.Active == null, "manual session exit");
+                    CheckControlPreference(false);
                     Assert.That(Common.Instance.GameSaveData, Is.SameAs(original));
                     Assert.That(harness.Store.Json, Is.EqualTo(json));
                 }
@@ -220,6 +261,7 @@ namespace EternalEnigma.Tests
             Assert.That(AutoplayRunner.InfiniteResourcesFor(harness.Ally),Is.False);
             run.SetPaused(false);
             yield return harness.WaitUntil(() => !run.Running,"automatic defeat detection");
+            CheckControlPreference(true);
             var report = JsonUtility.FromJson<AutoplayReport>(File.ReadAllText(Path.Combine(run.DirectoryPath,"report.json")));
             Assert.That(report.Outcome,Is.EqualTo("Defeat"));
             Assert.That(report.EligibleForBalance,Is.False,"Synthetic lethal damage must be excluded from tuning data.");

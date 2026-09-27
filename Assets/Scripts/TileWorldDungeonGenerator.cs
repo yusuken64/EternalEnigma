@@ -90,6 +90,7 @@ public class TileWorldDungeonGenerator : MonoBehaviour
         TileWorldCreator.StopAllCoroutines();ThroneTileWorldCreator.StopAllCoroutines();
         DungeonPresentation.ClearOutput(TileWorldCreator.worldObject);
         if(ThroneTileWorldCreator.worldObject!=TileWorldCreator.worldObject) DungeonPresentation.ClearOutput(ThroneTileWorldCreator.worldObject);
+        DungeonPresentation.PrepareMapRoot(creator.worldObject.transform, CurrentVisuals.IsLegacy);
         bool useSeed=creator.twcAsset.useRandomSeed;
         int seed=creator.twcAsset.randomSeed;
         var owned=throne?throneRuntime:regularRuntime;

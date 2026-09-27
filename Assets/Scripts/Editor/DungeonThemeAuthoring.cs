@@ -10,6 +10,50 @@ using UnityEditor.SceneManagement;
 
 public static class DungeonThemeAuthoring
 {
+    [MenuItem("Tools/Eternal Enigma/Dungeon Themes/Repair Active Ground Heights")]
+    public static void RepairActiveGroundHeights()
+    {
+        var game = Game.Instance;
+        if (!Application.isPlaying || game?.CurrentDungeon == null) throw new InvalidOperationException("Requires an active dungeon.");
+        CaptureActiveGround("Before");
+        foreach (var creator in new[] { game.DungeonGenerator.TileWorldCreator, game.DungeonGenerator.ThroneTileWorldCreator })
+        {
+            if (!creator.twcAsset.mapBuildLayers.OfType<DungeonThemeTileLayer>().Any()) continue;
+            foreach (Transform layer in creator.worldObject.transform)
+            {
+                var definition = creator.twcAsset.mapBuildLayers.OfType<DungeonThemeTileLayer>().FirstOrDefault(l => layer.name == l.layerName + "_layer");
+                if (definition != null)
+                {
+                    bool carpet = definition.layerName.ToLowerInvariant().Contains("carpet");
+                    if (carpet && !game.CurrentDungeon.IsThroneFloor)
+                    {
+                        var paving = creator.twcAsset.mapBuildLayers.OfType<DungeonThemeTileLayer>().First(l => l.layerName.ToLowerInvariant().Contains("floor"));
+                        definition.Preset = paving.Preset; layer.gameObject.SetActive(true);
+                        foreach (var renderer in layer.GetComponentsInChildren<MeshRenderer>()) renderer.sharedMaterial = paving.Preset.fillTile.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+                    }
+                    DungeonPresentation.SetGroundHeight(layer, carpet ? (game.CurrentDungeon.IsThroneFloor ? -.015f : 0) : definition.Offset.z);
+                }
+                else if (layer.name == "Theme cosmetics") DungeonPresentation.SetGroundHeight(layer);
+            }
+        }
+        CaptureActiveGround("After");
+        Debug.Log("Repaired active themed dungeon ground heights without regenerating the floor or changing units/items.");
+    }
+
+    static void CaptureActiveGround(string suffix)
+    {
+        Directory.CreateDirectory("Temp/GroundHeight");
+        var camera = Game.Instance.PlayerController.CameraController.Camera;
+        var old = camera.targetTexture; var previous = RenderTexture.active;
+        var rt = RenderTexture.GetTemporary(1280,800,24); var image = new Texture2D(1280,800,TextureFormat.RGB24,false);
+        try
+        {
+            camera.targetTexture = rt; camera.Render(); RenderTexture.active = rt;
+            image.ReadPixels(new Rect(0,0,1280,800),0,0); image.Apply();
+            File.WriteAllBytes("Temp/GroundHeight/" + suffix + ".png", image.EncodeToPNG());
+        }
+        finally { camera.targetTexture = old; RenderTexture.active = previous; RenderTexture.ReleaseTemporary(rt); UnityEngine.Object.DestroyImmediate(image); }
+    }
     [MenuItem("Tools/Eternal Enigma/Dungeon Themes/Capture All Themes")]
     public static void CaptureAll()
     {

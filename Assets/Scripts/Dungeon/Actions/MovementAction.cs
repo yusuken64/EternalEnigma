@@ -260,7 +260,7 @@ public class TakeDamageAction : GameAction
 		{
 			return new List<GameAction>()
 			{
-				new DeathAction(target, attacker)
+				new DeathAction(target, attacker) { AwardExperience = !Environmental }
 			};
 		}
 
@@ -272,7 +272,7 @@ public class TakeDamageAction : GameAction
 	{
 		if (skipAnimation) { yield break; }
 		Game game = Game.Instance;
-        DungeonFloatingText.Show(game, miss ? "Miss" : damage.ToString(), miss ? Color.white : new Color(1f,.38f,.35f), target.transform.position);
+        DungeonFloatingText.Show(game, miss ? "Miss" : damage.ToString(), miss ? Color.white : new Color(1f,.38f,.35f), target);
 		if (!miss)
 		{
 			AudioManager.Instance.SoundEffects.Impact_flesh.PlayAsSound();
@@ -354,7 +354,7 @@ public class TakeHealAction : GameAction
 	{
 		if (skipAnimation) { yield break; }
 		Game game = Game.Instance;
-        DungeonFloatingText.Show(game, miss ? "Miss" : "+" + healing, new Color(.55f,1f,.5f), target.transform.position);
+        DungeonFloatingText.Show(game, miss ? "Miss" : "+" + healing, new Color(.55f,1f,.5f), target);
 		if (!miss)
 		{
 			AudioManager.Instance.SoundEffects.Impact_heal.PlayAsSound();
@@ -431,6 +431,7 @@ public class ModifyStatAction : GameAction
 
 public class DeathAction : GameAction
 {
+	internal bool AwardExperience = true;
 	internal Character target;
 	private Vector3Int dropPosition;
 	private bool droppedItem;
@@ -462,6 +463,7 @@ public class DeathAction : GameAction
 
         GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} {(downed ? "was downed" : "died")}.");
         target.GetComponent<EnemyBehavior>()?.DropStolenLoot();
+        target.GetComponent<TrapCarriedItem>()?.TryDrop(true);
         foreach (var owner in Game.Instance.AllCharacters.ToList())
             foreach (var status in owner.StatusEffects.ToList())
                 if (status != null) status.OnCharacterDied(owner, target);
@@ -473,10 +475,7 @@ public class DeathAction : GameAction
 
 		dropPosition = Game.Instance.CurrentDungeon.GetDropPosition(target.TilemapPosition);
 
-		return new()
-		{
-			gainXP
-		};
+		return AwardExperience ? new() { gainXP } : new();
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)

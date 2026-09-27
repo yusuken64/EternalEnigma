@@ -34,7 +34,7 @@ internal class LevelUpAction : GameAction
 	{
 		if (skipAnimation) yield break;
 		AudioManager.Instance.SoundEffects.LevelUp.PlayAsSound();
-        DungeonFloatingText.Show(Game.Instance, "Level Up", new Color(.84f,.76f,1f), character.transform.position, true);
+        DungeonFloatingText.Show(Game.Instance, "Level Up", new Color(.84f,.76f,1f), character, true);
 
 		yield return new WaitForSecondsRealtime(1.0f);
 	}

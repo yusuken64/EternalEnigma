@@ -369,7 +369,9 @@ public sealed class AutoplayRunner : MonoBehaviour
     private void WorldTick(OverworldScene world, CampaignContext c)
     {
         if (pathWorld != world) { pathWorld = world; worldSteps.Clear(); }
-        if (world.OpenGate() || world.OpenShortcut()) { worldSteps.Clear(); Log("Open gate or shortcut"); return; }
+        // This is a probe on every tick, not a player attempt: a missing key must not
+        // reopen its modal forever and prevent routing to the key's source.
+        if (world.OpenGate(announceLocked: false) || world.OpenShortcut()) { worldSteps.Clear(); Log("Open gate or shortcut"); return; }
         var here = c.Location;
         bool Objective(CampaignLocation l) => IsDungeon(l) ? !c.Completed.Contains(l.Id) :
             (l.Kind == LocationKind.Town && (!visited.Contains(l.Id) || c.Campaign.Locations.Any(d => d.ParentTownId == l.Id && !c.Completed.Contains(d.Id)))) ||
@@ -380,7 +382,7 @@ public sealed class AutoplayRunner : MonoBehaviour
         {
             bool wanted = Objective(here);
             visited.Add(here.Id);
-            if (wanted) { worldSteps.Clear(); world.ClaimRewards(); Log("Interact " + here.Id); return; }
+            if (wanted) { worldSteps.Clear(); world.ClaimRewards(announceLocked: false); Log("Interact " + here.Id); return; }
         }
         if (worldSteps.Count > 0)
         {
@@ -455,7 +457,10 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (!game.IsReady) return;
         if (game.GameOverScreen.gameObject.activeSelf || PartyRules.IsPartyDefeated(game))
         { Finish("Defeat", "Party defeated by normal gameplay. No retry or difficulty adjustment applied."); return; }
-        if (game.TurnManager.IsProcessingTurn || game.NewFloorMessage.gameObject.activeSelf) return;
+        // Full Control keeps the round running while waiting for each ally's order.
+        // The focused ally still needs an autoplay command at that point.
+        if ((game.TurnManager.IsProcessingTurn && !game.TurnManager.AwaitingCommand) ||
+            game.NewFloorMessage.gameObject.activeSelf) return;
         if (MenuManager.Instance.CurrentDialog is StairConfirm stairsPrompt) { stairsPrompt.YesClicked(); Log("Confirm stairs/exit"); return; }
         if (MenuManager.Instance.Opened) { Finish("Unsupported", "Unhandled dungeon dialog: " + MenuManager.Instance.CurrentDialog.GetType().Name); return; }
         var player = game.PlayerController; var ally = player.ControlledAlly; var dungeon = game.CurrentDungeon;
@@ -486,6 +491,12 @@ public sealed class AutoplayRunner : MonoBehaviour
         }
         var attack = new AllyAttackPolicy(game,ally,0);
         if (attack.ShouldRun()) { var action = attack.GetActions().FirstOrDefault(a => a.IsValid(ally)); if (action != null) { Act(ally,action,"Attack"); return; } }
+        if (player.PartyLeader != null && ally != player.PartyLeader)
+        {
+            var follow = FollowerTravelAction(game, ally, player.PartyLeader);
+            Act(ally, follow, follow is WaitAction ? "Companion holds formation" : "Companion follows leader");
+            return;
+        }
         var stairs = dungeon.Interactables.OfType<Stairs>().FirstOrDefault();
         if (stairs == null) { Finish("Unsupported","Ready dungeon has no stairs objective."); return; }
         if (stairs != null && stairs.Position == ally.TilemapPosition)
@@ -524,6 +535,29 @@ public sealed class AutoplayRunner : MonoBehaviour
         Act(ally,movement,"Dungeon move " + next);
     }
 
+    internal static GameAction FollowerTravelAction(Game game, Ally ally, Ally leader)
+    {
+        if (ally.AllyStrategy == AllyStrategy.HoldPosition ||
+            TileWorldDungeon.ChevDistance(ally.TilemapPosition, leader.TilemapPosition) <= 1)
+            return new WaitAction();
+        var grid = Character.GetAStarGrid();
+        foreach (var node in grid)
+        {
+            var cell = new Vector3Int(node.X, node.Y);
+            // The occupied leader cell is the path target only; never move into it or swap.
+            if (cell != leader.TilemapPosition && game.CurrentDungeon.OverlapsAnyOtherCharacter(
+                ally, Character.ToBounds(ally.FootPrint, cell)) != null) node.IsWalkable = false;
+        }
+        var path = AStar.FindPath(grid, grid[ally.TilemapPosition.x, ally.TilemapPosition.y],
+            grid[leader.TilemapPosition.x, leader.TilemapPosition.y], DiagonalMovement.RequireOpenSides);
+        if (path == null || path.Count == 0) return new WaitAction();
+        var next = new Vector3Int(path[0].X, path[0].Y);
+        if (game.CurrentDungeon.OverlapsAnyOtherCharacter(ally, Character.ToBounds(ally.FootPrint, next)) != null)
+            return new WaitAction();
+        ally.SetFacingByTargetPosition(next);
+        return new MovementAction(ally, ally.TilemapPosition, next);
+    }
+
     private void Act(Ally ally, GameAction action, string description)
     {
         if (!action.IsValid(ally)) { Finish("Unsupported", "Policy selected invalid action: " + description); return; }
@@ -553,7 +587,7 @@ public sealed class AutoplayRunner : MonoBehaviour
     public void SetSpeed(float speed)
     {
         if (!Running || float.IsNaN(speed) || float.IsInfinity(speed)) return;
-        Options.Speed = Mathf.Clamp(speed, .5f, 8f);
+        Options.Speed = Mathf.Clamp(speed, .5f, 32f);
         if (!Paused) Time.timeScale = Options.Speed;
         nextTick = Time.unscaledTime;
         WriteReport();
@@ -647,8 +681,9 @@ public sealed class AutoplayRunner : MonoBehaviour
         }
     }
 
-    private Rect CollapsedPanel => new Rect(Mathf.Max(0, Screen.width - 148), 16, 132, 36);
-    private Rect PlaybackPanel => new Rect(Mathf.Max(0, Screen.width - 340), 16, Mathf.Min(324, Screen.width), 380);
+    private Rect CollapsedPanel => new Rect(Mathf.Max(0, Screen.width - 148), 64, 132, 36);
+    private Vector2 playbackScroll;
+    private Rect PlaybackPanel => new Rect(Mathf.Max(0, Screen.width - 340), 64, Mathf.Min(324, Screen.width), Mathf.Min(470, Screen.height - 80));
     private bool OverPlaybackPanel(Vector2 position) => (PanelVisible ? PlaybackPanel : CollapsedPanel).Contains(new Vector2(position.x, Screen.height - position.y));
 
     private bool UserInput()
@@ -712,6 +747,7 @@ public sealed class AutoplayRunner : MonoBehaviour
             GUILayout.EndArea(); return;
         }
         GameUISkin.LegacyBeginArea(PlaybackPanel);
+        playbackScroll = GUILayout.BeginScrollView(playbackScroll);
         if (GameUISkin.LegacyButton("Hide panel [F8]")) SetPanelVisible(false);
         GUILayout.Label(Options.DebugPlaythrough ? "AUTOPLAY — DEBUG PLAYTHROUGH" : "AUTOPLAY — NORMAL PLAYTHROUGH");
         if (Options.DebugPlaythrough) GUILayout.Label("Godmode + infinite strength: " + Options.Godmode + " | Infinite resources: " + Options.InfiniteResources);
@@ -720,21 +756,31 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (Running)
         {
             GUILayout.Label("Playback: " + Options.Speed.ToString("0.#") + "x" + (Paused ? " (paused)" : ""));
-            GUILayout.BeginHorizontal();
-            foreach (float speed in new[] { .5f, 1f, 2f, 4f, 8f })
+            float[] speeds = { .5f, 1f, 2f, 4f, 8f, 16f, 32f };
+            for (int row = 0; row < 2; row++)
             {
-                bool previousEnabled = GUI.enabled;
-                GUI.enabled = previousEnabled && !Mathf.Approximately(Options.Speed, speed);
-                if (GameUISkin.LegacyButton(speed.ToString("0.#") + "x")) SetSpeed(speed);
-                GUI.enabled = previousEnabled;
+                GUILayout.BeginHorizontal();
+                for (int column = 0; column < 4; column++)
+                {
+                    int index = row * 4 + column;
+                    if (index >= speeds.Length) break;
+                    float speed = speeds[index];
+                    bool previousEnabled = GUI.enabled;
+                    GUI.enabled = previousEnabled && !Mathf.Approximately(Options.Speed, speed);
+                    if (GameUISkin.LegacyButton(speed.ToString("0.#") + "x")) SetSpeed(speed);
+                    GUI.enabled = previousEnabled;
+                }
+                GUILayout.EndHorizontal();
             }
-            GUILayout.EndHorizontal();
+            if (GameUISkin.LegacyButton("Animations: " + DungeonPreferences.SpeedLabel))
+                DungeonPreferences.AnimationMode = (DungeonAnimationMode)(((int)DungeonPreferences.AnimationMode + 1) % 4);
             if (GameUISkin.LegacyButton(Paused ? "Resume" : "Pause")) SetPaused(!Paused);
         }
         if (!appSession && Running && GameUISkin.LegacyButton("Stop and report")) Stop();
         if (GameUISkin.LegacyButton("Stop autoplay...")) RequestReturn();
         if (appSession) GUILayout.Label("Input outside playback controls: stop autoplay options");
         if (!Running) GUILayout.Label(appSession ? "Playthrough report saved." : "Report saved: " + DirectoryPath);
+        GUILayout.EndScrollView();
         GUILayout.EndArea();
     }
 

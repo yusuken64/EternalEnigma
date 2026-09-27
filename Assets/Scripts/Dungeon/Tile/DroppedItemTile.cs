@@ -54,7 +54,7 @@ public class DroppedItemTile : InteractableTile
 			}
 			else
 			{
-				game.DoFloatingText("Inventory is full", Color.red, game.PlayerController.transform.position);
+				game.DoFloatingText("Inventory is full", Color.red, game.PlayerController.ControlledAlly);
 			}
 		}
 	}

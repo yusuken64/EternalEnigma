@@ -17,7 +17,8 @@ public class ItemManager : MonoBehaviour
 	{
 		var itemDefinition = ItemDefinitions.FirstOrDefault(x => x.ItemName == itemName) ??
 			DemoDungeonLoadout.Load()?.Items.FirstOrDefault(x => x.ItemName == itemName) ??
-			(ItemDefinition)MaterialCatalog.Find(itemName);
+			(ItemDefinition)MaterialCatalog.Find(itemName) ??
+			Resources.LoadAll<ItemDefinition>("TrapFood").FirstOrDefault(x => x.ItemName == itemName);
 		if (itemDefinition == null) throw new InvalidOperationException($"Unknown item '{itemName}'.");
 		return itemDefinition.AsInventoryItem(stock);
 	}

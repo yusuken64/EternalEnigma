@@ -7,6 +7,20 @@ using UnityEngine;
 
 public static class DungeonPresentation
 {
+    public const float GroundPlaneZ = .05f;
+    public static void PrepareMapRoot(Transform root, bool legacy)
+    {
+        // Configure before building: moving this root afterwards shifts the ground into units.
+        root.position = legacy ? new Vector3(0, 0, -1.51f) : Vector3.zero;
+        root.localScale = legacy ? new Vector3(1, 1, 3.35f) : Vector3.one;
+    }
+    // Legacy TWC output sits at Z=-1.51 to compensate for its old tile meshes.
+    // Themed meshes are already authored on the XY ground plane; don't inherit that lift.
+    public static void SetGroundHeight(Transform layer, float height = 0)
+    {
+        // Leave a small gap beneath unit feet and selection sprites at Z=0.
+        var position = layer.position; position.z = GroundPlaneZ + height; layer.position = position;
+    }
     public static TileWorldCreatorAsset CloneTemplate(TileWorldCreatorAsset source)
     {
         var clone=UnityEngine.Object.Instantiate(source);clone.hideFlags=HideFlags.DontSave;
@@ -72,6 +86,7 @@ public static class DungeonPresentation
     {
         if(floor.Scenery.Count==0)return;
         var root=new GameObject("Scenery preview");root.transform.SetParent(creator.worldObject.transform,false);
+        SetGroundHeight(root.transform);
         var dungeon=root.AddComponent<TileWorldDungeon>();dungeon.Interactables=new();dungeon.Setup(creator,floor);
         foreach(var definition in floor.Scenery)
         {
@@ -84,6 +99,7 @@ public static class DungeonPresentation
         var kit=EnvironmentKit.Load();
         if(kit==null) return;
         var root=new GameObject("Theme cosmetics"); root.transform.SetParent(creator.worldObject.transform,false);
+        SetGroundHeight(root.transform);
         var batch=new EnvironmentBatch(root.transform);
         float size=creator.twcAsset.cellSize;
         for(int cy=0;cy<floor.Height;cy+=32) for(int cx=0;cx<floor.Width;cx+=32)

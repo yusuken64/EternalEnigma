@@ -76,6 +76,7 @@ namespace JuicyChickenGames.Menu
 
         void OnEnable()
         {
+            if (moveAction == null) Initialize();
             PlayerInput.onControlsChanged += OnControlsChanged;
         }
 

@@ -38,9 +38,11 @@ public sealed class DungeonThemeCatalog : ScriptableObject
             {
                 string role = layer.layerName.ToLowerInvariant();
                 if(role.Contains("torch")) { layer.active=false; continue; }
-                var preset = role.Contains("carpet") ? theme.Accent : role.Contains("floor") || role.Contains("ground") ? theme.Floor : throne ? theme.ThroneBoundary : theme.RegularBoundary;
+                // Floor excludes the carpet mask, so both must supply paving on regular floors.
+                // Reserve the flat accent material for the throne's actual carpet.
+                var preset = role.Contains("carpet") ? (throne ? theme.Accent : theme.Floor) : role.Contains("floor") || role.Contains("ground") ? theme.Floor : throne ? theme.ThroneBoundary : theme.RegularBoundary;
                 clone.mapBuildLayers[i] = new DungeonThemeTileLayer { guid=layer.guid, assignedGenerationLayerGuid=layer.assignedGenerationLayerGuid,
-                    layerName=layer.layerName, active=layer.active, Preset=preset, Offset=tiles.globalPositionOffset,
+                    layerName=layer.layerName, active=layer.active, Preset=preset, Offset=tiles.globalPositionOffset + (role.Contains("carpet") && throne ? new Vector3(0,0,-.015f) : Vector3.zero),
                     IgnoreLayers=tiles.ignoreLayers.ToArray() };
             }
             else layer.active = false; // Legacy torches/gates/columns are replaced by bounded cosmetics.

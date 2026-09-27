@@ -65,6 +65,12 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void Start()
     {
+        // Unlike town/dungeon scenes, the generated overworld has no authored EventSystem.
+        if (UnityEngine.EventSystems.EventSystem.current == null)
+        {
+            var input = new GameObject("Overworld UI input", typeof(UnityEngine.EventSystems.EventSystem), typeof(MenuUIInputModule));
+            input.transform.SetParent(transform, false);
+        }
         creator = Map.GetComponent<TileWorldCreator>();
         var common = Common.Instance;
         if (common.CampaignContext == null) common.BeginSandbox(OverworldLaunch.TakeSeed(Map.Seed));
@@ -186,6 +192,7 @@ public sealed class OverworldScene : MonoBehaviour
             var gate = Map.CurrentGrid.LockAt(next);
             Message = Map.CurrentGrid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires: Boat to sail." :
                 gate == null ? "Blocked." : GateDescription(gate.RouteId);
+            if (gate != null) AnnounceMissingKey(Campaign.Routes.First(r => r.Id == gate.RouteId));
             return false;
         }
         if (locationVisuals.TryGetValue(Position, out var previousMarker)) previousMarker.SetActive(true);
@@ -227,6 +234,16 @@ public sealed class OverworldScene : MonoBehaviour
             party[i].TilemapPosition = new Vector3Int(cell.X, cell.Y, 0);
         }
         RefreshLocationMarkers();
+        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+        {
+            for (int i = 0; i < party.Length; i++)
+            {
+                party[i].transform.position = to[i];
+                party[i].HeroAnimator?.PlayIdleAnimation();
+            }
+            moving = false;
+            yield break;
+        }
         float elapsed = 0;
         while (elapsed < .15f)
         {
@@ -261,7 +278,12 @@ public sealed class OverworldScene : MonoBehaviour
     {
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
         if (!Map.CurrentGrid.TryWarp(routeId, Position, Held, resolved, out var destination))
-        { Message = Map.CurrentGrid.WarpsAt(Position).FirstOrDefault(r => r.Id == routeId) is CampaignRoute blocked ? gates.Hint(blocked, Held) : "Stand on a warp gate."; return false; }
+        {
+            var blocked = Map.CurrentGrid.WarpsAt(Position).FirstOrDefault(r => r.Id == routeId);
+            Message = blocked != null ? gates.Hint(blocked, Held) : "Stand on a warp gate.";
+            if (blocked != null) AnnounceMissingKey(blocked);
+            return false;
+        }
         if (locationVisuals.TryGetValue(Position, out var previous)) previous.SetActive(true);
         Position = destination;
         if (locationVisuals.TryGetValue(Position, out var current)) current.SetActive(false);
@@ -276,7 +298,7 @@ public sealed class OverworldScene : MonoBehaviour
         return true;
     }
 
-    public bool OpenGate(string routeId = null)
+    public bool OpenGate(string routeId = null, bool announceLocked = true)
     {
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
         foreach (var route in gates.Nearby(Position))
@@ -285,11 +307,25 @@ public sealed class OverworldScene : MonoBehaviour
                 Message = "Opened gate: " + route.Id + ". Used " + (route.KeyId ?? route.Requirement.ToString()) + ".";
                 RefreshGates();
                 SaveProgress();
+                if (route.ShortcutKind == ShortcutKind.Keyed && !string.IsNullOrEmpty(route.KeyId))
+                    Common.Instance.Travel.ShowKeyUsed(route.KeyId);
+                else if (!route.Requirement.IsOpen)
+                    Common.Instance.Travel.ShowCapabilityUsed(route.Requirement, Held);
                 return true;
             }
         var locked = gates.Nearby(Position).FirstOrDefault(r => (routeId == null || r.Id == routeId) && gates.NeedsOpening(r));
-        if (locked != null) Message = gates.Hint(locked, Held);
+        if (locked != null)
+        {
+            Message = gates.Hint(locked, Held);
+            if (announceLocked) AnnounceMissingKey(locked);
+        }
         return false;
+    }
+
+    private void AnnounceMissingKey(CampaignRoute route)
+    {
+        if (route.ShortcutKind == ShortcutKind.Keyed && gates.NeedsOpening(route) && !gates.HasKey(route))
+            Common.Instance.Travel.ShowMissingKey(route.KeyId);
     }
 
     public bool OpenShortcut()
@@ -300,24 +336,39 @@ public sealed class OverworldScene : MonoBehaviour
         return false;
     }
 
-    public void ClaimRewards()
+    public void ClaimRewards() => ClaimRewards(true);
+
+    public void ClaimRewards(bool announceLocked)
     {
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
-        if (OpenGate()) return;
-        if (!locations.TryGetValue(Position, out var location)) return;
+        if (OpenGate(announceLocked: false) || Common.Instance.Travel.IsTransitioning) return;
+        if (!locations.TryGetValue(Position, out var location))
+        {
+            if (announceLocked) OpenGate();
+            return;
+        }
         if (OpenShortcut()) return;
         if (!Context.IsSandbox && Common.Instance.Travel.EnterLocation()) return;
         var rewards = new List<string>();
+        var acquiredKeys = new List<string>();
+        var acquiredCapabilities = new List<string>();
         foreach (var route in Campaign.Routes)
-            if (gates.CollectKey(route, location.Id)) rewards.Add(route.KeyId + " (use it at the gate)");
+            if (gates.CollectKey(route, location.Id))
+            {
+                rewards.Add(route.KeyId + " (use it at the gate)");
+                acquiredKeys.Add(route.KeyId);
+            }
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == location.Id && !claimed.Contains(s.Id)))
         {
             if (!Context.Claim(source.Id)) continue;
             rewards.Add(source.Capability.ToString());
+            acquiredCapabilities.Add(CampaignTravelService.DescribeCapabilityReward(source));
         }
         SaveProgress();
         Message = rewards.Count == 0 ? "No eligible unclaimed rewards here." : "Acquired: " + string.Join(", ", rewards) + ". Equip companions at a town.";
         RefreshGates();
+        Common.Instance.Travel.ShowRewardsAcquired(acquiredKeys.Distinct().ToArray(), acquiredCapabilities.ToArray());
+        if (rewards.Count == 0 && announceLocked) OpenGate();
     }
 
     public bool ToggleCompanion(string id)

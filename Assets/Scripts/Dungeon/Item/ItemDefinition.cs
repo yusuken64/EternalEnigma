@@ -8,6 +8,10 @@ public abstract class ItemDefinition : ScriptableObject
 	public ItemEffectDefinition ItemEffectDefinition;
 
 	public bool ApplyToThrownTarget;
+	public bool IsFood;
+	public bool ProtectedFromTraps;
+	public ItemDefinition SpoiledFood;
+	public ItemDefinition CharredFood;
 
 	public int StackStartMin = 1; //randomize value between stackcstartmin and stackstarmax on pickup
 	public int StackStartMax = 1;

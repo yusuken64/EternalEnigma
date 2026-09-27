@@ -50,7 +50,7 @@ public sealed class AutoplayWindow : EditorWindow
                 EditorGUILayout.HelpBox("Infinite resources replenishes gold, SP and hunger, and preserves used consumables. Keys, companions and abilities must still be earned. Debug runs are excluded from balance results.", MessageType.None);
             }
             options.ExploreAll = EditorGUILayout.Toggle("Visit all destinations", options.ExploreAll);
-            options.Speed = EditorGUILayout.Slider("Playback speed", options.Speed, 1, 10);
+            options.Speed = EditorGUILayout.Slider("Playback speed", options.Speed, .5f, 16);
             options.TimeLimitMinutes = Mathf.Max(1, EditorGUILayout.FloatField("Time limit (minutes)", options.TimeLimitMinutes));
             options.StallSeconds = Mathf.Max(10, EditorGUILayout.FloatField("Stall timeout (seconds)", options.StallSeconds));
             EditorGUILayout.HelpBox("Manual only. Normal runs can lose. The policy reads the current campaign and uses full dungeon map knowledge with the shared A*. Optional coverage visits each destination and completes each dungeon once.", MessageType.Info);

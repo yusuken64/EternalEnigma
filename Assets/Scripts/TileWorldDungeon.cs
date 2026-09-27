@@ -21,16 +21,45 @@ public class TileWorldDungeon : MonoBehaviour
 	// No boss floors exist yet; boss content sets this. Retreat is blocked while it is true.
 	public bool IsBossFloor;
 
-	public DungeonFloor Floor { get; private set; }
+	private DungeonFloor runtimeFloor;
+	public DungeonFloor Floor
+    {
+        get { EnsureRuntimeData(); return runtimeFloor; }
+        private set => runtimeFloor = value;
+    }
 
-	private TileWorldCreator _tileWorldCreator;
+	[SerializeField] private TileWorldCreator _tileWorldCreator;
 	private bool[,] floorMask;
 	private bool[,] _isHallwayCache;
+
+    internal bool EnsureRuntimeData()
+    {
+        if (runtimeFloor == null)
+        {
+            if (_tileWorldCreator == null || _tileWorldCreator.twcAsset == null) return false;
+            // Core's immutable floor and multidimensional arrays aren't serialized by Unity.
+            // Recreate only the deterministic data after a script reload, not scene contents.
+            var generator = _tileWorldCreator.twcAsset.mapBlueprintLayers.SelectMany(layer => layer.stack)
+                .Select(entry => entry.action).OfType<CoreDungeonLayerGenerator>().FirstOrDefault();
+            if (generator == null) return false;
+            runtimeFloor = CoreLayoutCache.GetDungeon(_tileWorldCreator, generator.Options(_tileWorldCreator));
+        }
+        if (floorMask == null) floorMask = runtimeFloor.Layers[DungeonLayers.Floor].ToArray();
+        if (_isHallwayCache == null) InitializeCache();
+        return true;
+    }
 
 	private void Awake()
 	{
 		Debug.Log("Dungeon created", this);
 	}
+
+    private void LateUpdate()
+    {
+        var game = Game.Instance;
+        if (game == null || !game.IsReady || game.CurrentDungeon != this || game.TurnManager.IsProcessingTurn || !EnsureRuntimeData()) return;
+        if (DungeonPlacement.Recover(this)) { game.RefreshSight(); game.UpdateMiniMap(); }
+    }
 
 	private void OnDestroy()
 	{
@@ -61,7 +90,7 @@ public class TileWorldDungeon : MonoBehaviour
 	internal void InitializeCache()
 	{
 		sightCache.Clear();
-		_isHallwayCache = new bool[dungeonWidth, dungeonHeight];
+		_isHallwayCache = new bool[runtimeFloor.Width, runtimeFloor.Height];
 		for (int i = 0; i < dungeonWidth; i++)
 		{
 			for (int j = 0; j < dungeonHeight; j++)
@@ -325,7 +354,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal void SetTrap(Vector3Int position, Trap trap = null)
 	{
-		var trapPrefab = TrapPrefabs.Sample();
+		var trapPrefab = trap != null ? trap : FantasyTrap.PrefabFor(UnityEngine.Random.Range(0, FantasyTrap.KindCount));
 		var trapInstance = Instantiate(trapPrefab, this.transform);
 		trapInstance.transform.position = CellToWorld(position);
 		trapInstance.Position = position;
@@ -335,7 +364,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal void SetTrap(Vector3Int position, int roll)
 	{
-		var trapPrefab = TrapPrefabs[(int)((uint)roll % (uint)TrapPrefabs.Count)];
+		var trapPrefab = FantasyTrap.PrefabFor(roll);
 		var trapInstance = Instantiate(trapPrefab, this.transform);
 		trapInstance.transform.position = CellToWorld(position);
 		trapInstance.Position = position;
@@ -356,7 +385,8 @@ public class TileWorldDungeon : MonoBehaviour
 		if (currentInteractable == null) { return; }
 		//sometimes don't destroy
 		Interactables.Remove(currentInteractable);
-		Destroy(currentInteractable.gameObject);
+		if (Application.isPlaying) Destroy(currentInteractable.gameObject);
+		else DestroyImmediate(currentInteractable.gameObject);
 	}
 
 	internal bool CanWalkTo(Vector3Int origin, Vector3Int destination)

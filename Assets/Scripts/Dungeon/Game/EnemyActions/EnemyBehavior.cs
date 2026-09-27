@@ -25,6 +25,7 @@ public sealed class EnemyBehavior : MonoBehaviour
     private bool revealed;
     private int cooldown;
     private InventoryItem stolenItem;
+    internal InventoryItem TrapCarriedItem { get => stolenItem; set => stolenItem = value; }
     private int stolenGold;
     public bool Disguised => Mimic && !revealed;
     public bool CarryingLoot => stolenItem != null || stolenGold > 0;

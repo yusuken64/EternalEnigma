@@ -11,12 +11,15 @@ public class DamageTrap : Trap
 
 	internal override List<GameAction> GetTrapSideEffects(Character character)
 	{
+		if (!CanTrigger(character)) return new();
 		VisualObject.gameObject.SetActive(true);
 
-		var hit = UnityEngine.Random.value > 0.5f;
+		if (UnityEngine.Random.value >= 0.5f)
+			return new() { new TrapFeedbackAction(character, "Evaded", $"{GameMessages.Name(character)} evaded the Damage Trap; no damage was taken.") };
 		return new List<GameAction>()
 			{
-				new TakeDamageAction(character, character, TrapDamage, true, hit)
+				new TrapFeedbackAction(character, "Damage Trap", $"{GameMessages.Name(character)} triggered the Damage Trap."),
+				new TakeDamageAction(character, character, TrapDamage) { Environmental = true }
 			};
 	}
 }

@@ -59,6 +59,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     protected override void OnEnable()
     {
+        // Script reload restores the component, but not the generated action wrapper.
+        if (controls == null) Awake();
         base.OnEnable();
         Active = this;
         controls?.UI.Enable();

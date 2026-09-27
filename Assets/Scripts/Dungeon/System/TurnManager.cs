@@ -63,6 +63,7 @@ public class TurnManager : MonoBehaviour
 
 	private IEnumerator ProcessTurnRoutine()
 	{
+		DungeonPlacement.Recover(Game.Instance.CurrentDungeon);
 		FullControlThisRound = DungeonPreferences.FullControl;
         roundHasAction = false;
         var controlledAlly = Game.Instance.PlayerController.PartyLeader ?? Game.Instance.PlayerController.ControlledAlly;
@@ -428,6 +429,7 @@ public abstract class GameAction
     {
         var game = Game.Instance;
         var mode = playback?.Mode ?? DungeonPreferences.AnimationMode;
+        if (mode == DungeonAnimationMode.None) return false;
         var focus = playback != null ? playback.Focus : game.PlayerController.ControlledAlly;
         if (mode == DungeonAnimationMode.YourActionOnly && playback?.Commanded != true) return false;
         if (mode == DungeonAnimationMode.ControllingHero && actor != focus && playback?.Origin != focus &&

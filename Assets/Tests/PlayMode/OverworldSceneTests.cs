@@ -118,7 +118,7 @@ namespace EternalEnigma.Tests
             InputSystem.QueueStateEvent(pad, new GamepadState());
             yield return new WaitForSeconds(.25f);
             Assert.That(world.Position, Is.EqualTo(start), "Gamepad should return to the start town.");
-            world.ClaimRewards();
+            world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
             Assert.That(world.Message, Does.Not.Contain("Generating"));
 
             var target = new RenderTexture(1280, 720, 24);
@@ -219,7 +219,7 @@ namespace EternalEnigma.Tests
             Assert.That(world.Campaign.Seed, Is.EqualTo(seed));
             var c = world.Campaign; var grid = world.Map.CurrentGrid;
             yield return WalkTo(world, grid.Locations["story-0"]);
-            world.ClaimRewards();
+            world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
             Assert.That(world.CollectedKeys, Is.Empty, "An ordinary claim cannot award the completion key.");
             Assert.That(world.SimulateDungeonVictory(), Is.True);
             yield return WalkTo(world, grid.Locations["repeatable-0"]);
@@ -229,6 +229,7 @@ namespace EternalEnigma.Tests
                 exit.Cells.Any(g => System.Math.Abs(g.X - p.X) + System.Math.Abs(g.Y - p.Y) == 1) && Path(world, p) != null);
             yield return WalkTo(world, exitApproach);
             Assert.That(world.OpenGate("starter-exit"), Is.True);
+            yield return AcknowledgeKeyAnnouncement();
             var objective = c.ReturnObjectives.Single(o => o.Required);
             var gate = grid.Locks.Single(g => g.RouteId == objective.GateIds[0]);
             var approach = gate.Cells.SelectMany(OverworldMovement.Neighbors).Distinct()
@@ -243,11 +244,11 @@ namespace EternalEnigma.Tests
                 Assert.That(world.TryMove(blocked.X - approach.X, blocked.Y - approach.Y), Is.False);
                 Assert.That(world.Message, Does.Contain(objective.EnablingCapability.ToString()));
                 var engineering = c.Sources.First(source => source.Capability == Capability.Engineering);
-                yield return WalkTo(world, grid.Locations[engineering.LocationId]); world.ClaimRewards();
+                yield return WalkTo(world, grid.Locations[engineering.LocationId]); world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
                 Assert.That(world.Held.Contains(Capability.Engineering), Is.True);
                 var enabling = c.Sources.First(source => source.Capability == objective.EnablingCapability);
                 Assert.That(c.Locations.Single(l => l.Id == enabling.LocationId).RegionId, Is.Not.EqualTo(objective.RegionId));
-                yield return WalkTo(world, grid.Locations[enabling.LocationId]); world.ClaimRewards();
+                yield return WalkTo(world, grid.Locations[enabling.LocationId]); world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
                 yield return WalkTo(world, grid.PlayerStart);
                 if (enabling.CompanionId != null)
                 {
@@ -268,12 +269,12 @@ namespace EternalEnigma.Tests
                 Assert.That(world.OpenGate(gate.RouteId), Is.False, "Cannot open a gate remotely.");
                 yield return WalkTo(world, approach, gate.RouteId);
                 Assert.That(world.TryMove(blocked.X - approach.X, blocked.Y - approach.Y), Is.False);
-                world.ClaimRewards();
+                world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
                 Assert.That(world.Message, Does.Contain("Opened gate"));
                 Assert.That(gateMarkers.All(m => !m.activeSelf), Is.True);
                 Assert.That(world.CanStep(approach, blocked), Is.True);
                 var reward = c.Sources.First(source => source.Capability == objective.RewardCapability);
-                yield return WalkTo(world, grid.Locations[reward.LocationId]); world.ClaimRewards();
+                yield return WalkTo(world, grid.Locations[reward.LocationId]); world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
                 yield return WalkTo(world, grid.PlayerStart);
                 if (reward.CompanionId != null) Assert.That(world.ToggleCompanion(reward.CompanionId), Is.True);
                 Assert.That(world.Held.Contains(objective.RewardCapability.Value), Is.True);
@@ -288,7 +289,7 @@ namespace EternalEnigma.Tests
                         var critical = c.Manifest.Where(m => m.Role == CapabilityRole.Critical).Select(m => m.Id).ToArray();
                         var capability = boundary.Requirement.Alternatives.SelectMany(a => a.Values).First(critical.Contains);
                         var source = c.Sources.First(s => s.Capability == capability);
-                        yield return WalkTo(world, grid.Locations[source.LocationId]); world.ClaimRewards();
+                        yield return WalkTo(world, grid.Locations[source.LocationId]); world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
                         if (source.CompanionId != null && !world.Held.Contains(capability))
                         {
                             var town = c.Locations.Where(l => l.Kind == LocationKind.Town).Select(l => grid.Locations[l.Id])
@@ -303,11 +304,12 @@ namespace EternalEnigma.Tests
                     Assert.That(world.Warp(shortcut.Id), Is.False);
                     Assert.That(world.Message, Does.Contain(shortcut.KeyId));
                     Assert.That(world.OpenShortcut(), Is.False);
-                    yield return WalkTo(world, grid.Locations[shortcut.KeyLocationId]); world.ClaimRewards();
+                    yield return WalkTo(world, grid.Locations[shortcut.KeyLocationId]); world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
                     Assert.That(world.CollectedKeys, Does.Contain(shortcut.KeyId));
                     yield return WalkTo(world, grid.Locations[shortcut.To]);
                     Assert.That(world.Warp(shortcut.Id), Is.False, "Collecting a key must leave the gate locked.");
                     Assert.That(world.OpenGate(shortcut.Id), Is.True);
+                    yield return AcknowledgeKeyAnnouncement();
                     Assert.That(world.Message, Does.Contain("Opened gate"));
                     Assert.That(world.Warp(shortcut.Id), Is.True);
                     Assert.That(world.Position, Is.EqualTo(grid.Locations[shortcut.From]));
@@ -345,6 +347,20 @@ namespace EternalEnigma.Tests
             return path;
         }
 
+        private static IEnumerator AcknowledgeKeyAnnouncement()
+        {
+            var common = Common.Instance;
+            if (!common.Travel.IsTransitioning) yield break;
+            yield return null;
+            yield return null;
+            Assert.That(common.MessageDialog.gameObject.activeSelf, Is.True);
+            Assert.That(common.MessageDialog.PromptText.text, Does.Contain("GATE UNLOCKED!").Or.Contain("KEY ACQUIRED!").Or.Contain("KEYS ACQUIRED!").Or.Contain("CAPABILITY ACQUIRED!").Or.Contain("CAPABILITY USED!").Or.Contain("REWARDS ACQUIRED!"));
+            common.MessageDialog.Ok_Clicked();
+            yield return null;
+            yield return null;
+            Assert.That(common.Travel.IsTransitioning, Is.False);
+        }
+
         private static IEnumerator WalkTo(OverworldScene world, GridPoint target, string blockedRoute = null)
         {
             var path = Path(world, target, blockedRoute);
@@ -356,6 +372,7 @@ namespace EternalEnigma.Tests
                     .Select(a => a.TilemapPosition).ToArray();
                 if (!world.CanStep(world.Position, next))
                     Assert.That(world.OpenGate(), Is.True, "Eligible gates must be opened locally before crossing.");
+                yield return AcknowledgeKeyAnnouncement();
                 Assert.That(world.TryMove(next.X - world.Position.X, next.Y - world.Position.Y), Is.True);
                 float deadline = Time.realtimeSinceStartup + 3;
                 while (world.IsMoving && Time.realtimeSinceStartup < deadline) yield return null;

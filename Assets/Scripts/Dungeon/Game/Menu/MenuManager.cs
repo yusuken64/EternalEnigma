@@ -203,7 +203,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			var action = createAction(item);
 			if (!action.IsValid(character))
 			{
-				Game.Instance.DoFloatingText("That item can no longer be targeted", Color.yellow, character.transform.position);
+				Game.Instance.DoFloatingText("That item can no longer be targeted", Color.yellow, character);
 				return;
 			}
 			CloseAllMenus();
@@ -256,7 +256,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		UseInventoryItemAction Create() => new(inventory, character, item);
 		if (!Create().CanBegin(character))
 		{
-			Game.Instance.DoFloatingText("That item cannot be used now", Color.yellow, character.transform.position);
+			Game.Instance.DoFloatingText("That item cannot be used now", Color.yellow, character);
 			Common.Instance.MenuInputHandler.ClearInputThisFrame();
 			return;
 		}

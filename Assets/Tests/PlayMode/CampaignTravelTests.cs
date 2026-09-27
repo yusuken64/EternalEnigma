@@ -20,6 +20,17 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup() => harness.Cleanup();
         private IEnumerator WaitTown() => harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "campaign town");
         private IEnumerator WaitWorld() => harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true, "shared overworld");
+        private IEnumerator AcknowledgeKey(string key)
+        {
+            var common = Common.Instance;
+            yield return harness.WaitUntil(() => common.MessageDialog.gameObject.activeSelf, "key reward popup");
+            Assert.That(common.MessageDialog.PromptText.text, Does.Contain("KEY ACQUIRED!").Or.Contain("REWARDS ACQUIRED!"));
+            Assert.That(common.MessageDialog.PromptText.text, Does.Contain(key));
+            Assert.That(common.Travel.IsTransitioning, Is.True);
+            Assert.That(SaveSystem.LoadData().Campaign.Keys, Contains.Item(key), "Save the reward before acknowledgement.");
+            common.MessageDialog.Ok_Clicked();
+            yield return null;
+        }
         private IEnumerator StartCampaign()
         {
             yield return harness.LoadMainMenu(null);
@@ -94,6 +105,7 @@ namespace EternalEnigma.Tests
             yield return harness.WaitForIdle();
             Assert.That(root.activeSelf, Is.False);
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True);
+            yield return AcknowledgeKey("Town area key");
             yield return WaitWorld();
             Assert.That(cache.Root, Is.SameAs(root));
             Assert.That(cache.BuildCount, Is.EqualTo(1));
@@ -143,6 +155,7 @@ namespace EternalEnigma.Tests
             Game.Instance.PlayerController.Gold = 123;
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True);
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.False);
+            yield return AcknowledgeKey("Town gate key");
             yield return WaitTown();
             Assert.That(context.Position, Is.EqualTo(target));
             Assert.That(context.State.Scene, Is.EqualTo("Town"));
@@ -160,6 +173,7 @@ namespace EternalEnigma.Tests
             Assert.That(common.Travel.EnterLocation(), Is.True);
             yield return harness.WaitForIdle();
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True);
+            yield return AcknowledgeKey("Town area key");
             yield return WaitWorld();
             Assert.That(context.Keys, Contains.Item("Town area key"));
             Assert.That(context.Resolved, Does.Not.Contain("starter-exit"));

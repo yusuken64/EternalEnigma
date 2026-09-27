@@ -244,10 +244,6 @@ public class Game : SingletonMonoBehaviour<Game>
 		}
 		yield return null;
 
-		var map = GameObject.Find("TileWorldCreator_Map");
-		map.transform.position = new Vector3(0, 0, -1.50999999f);
-		map.transform.localScale = new Vector3(1, 1, DungeonGenerator.CurrentVisuals.IsLegacy ? 3.3499999f : 1f);
-
 		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
 		CurrentDungeon.IsThroneFloor = throneFloor;
 		CurrentDungeon.IsExitFloor = throneFloor && PlayerController.Floor >= Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
@@ -335,7 +331,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
     internal void RefreshSight()
     {
-        if (!IsReady || CurrentDungeon == null) return;
+        if (!IsReady || CurrentDungeon == null || !CurrentDungeon.EnsureRuntimeData()) return;
         int count = 0;
         bool changed = sightDungeon != CurrentDungeon;
         foreach (var ally in SightAllies())
@@ -349,7 +345,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
     public void UpdateMiniMap()
     {
-        if (CurrentDungeon == null) return;
+        if (CurrentDungeon == null || !CurrentDungeon.EnsureRuntimeData()) return;
         sightDungeon = CurrentDungeon;
         PartyVisibleTiles.Clear();
         displayedSightOrigins.Clear();
@@ -416,6 +412,13 @@ Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventor
 			GatheringPoint.Spawn(CurrentDungeon, new Vector3Int(site.Cell.X, site.Cell.Y, 0), site.Kind, site.Roll);
 	}
 
+    public void DoFloatingText(string message, Color color, Character subject)
+    {
+        if (subject == null) return;
+        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.Current)
+            DungeonFloatingText.Show(this, message, color, subject);
+        GameMessages.ForCharacter(subject, $"{GameMessages.Name(subject)}: {message}");
+    }
 	public void DoFloatingText(string message, Color color, Vector3 worldPosition)
 	{
         if (DungeonPreferences.AnimationMode == DungeonAnimationMode.Current)

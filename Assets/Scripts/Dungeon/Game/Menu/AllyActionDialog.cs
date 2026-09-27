@@ -31,7 +31,7 @@ namespace JuicyChickenGames.Menu
 					Data = AllyStrategy.Follow,
 					ClickAction = () =>
 					{
-						Game.Instance.DoFloatingText("Follow", Color.white, _ally.VisualParent.transform.position);
+						Game.Instance.DoFloatingText("Follow", Color.white, _ally);
 						_ally.AllyStrategy = AllyStrategy.Follow;
 						FaceCamDisplay.Unfollow(_ally.VisualParent);
 						MenuManager.Close(DynamicActionDialog);
@@ -54,7 +54,7 @@ namespace JuicyChickenGames.Menu
 					Data = AllyStrategy.Aggresive,
 					ClickAction = () =>
 					{
-						Game.Instance.DoFloatingText("Aggressive", Color.white, _ally.VisualParent.transform.position);
+						Game.Instance.DoFloatingText("Aggressive", Color.white, _ally);
 						_ally.AllyStrategy = AllyStrategy.Aggresive;
 						FaceCamDisplay.Unfollow(_ally.VisualParent);
 						MenuManager.Close(DynamicActionDialog);
@@ -67,7 +67,7 @@ namespace JuicyChickenGames.Menu
 					Data = AllyStrategy.HoldPosition,
 					ClickAction = () =>
 					{
-						Game.Instance.DoFloatingText("Hold Position", Color.white, _ally.VisualParent.transform.position);
+						Game.Instance.DoFloatingText("Hold Position", Color.white, _ally);
 						_ally.AllyStrategy = AllyStrategy.HoldPosition;
 						FaceCamDisplay.Unfollow(_ally.VisualParent);
 						MenuManager.Close(DynamicActionDialog);
@@ -98,7 +98,7 @@ namespace JuicyChickenGames.Menu
 
 		public void Talk_Clicked()
 		{
-			Game.Instance.DoFloatingText($"{_ally.Vitals.HP}HP, {_ally.Vitals.SP}SP", Color.white, _ally.VisualParent.transform.position);
+			Game.Instance.DoFloatingText($"{_ally.Vitals.HP}HP, {_ally.Vitals.SP}SP", Color.white, _ally);
 			FaceCamDisplay.Unfollow(_ally.VisualParent);
 			MenuManager.Close(this);
 		}

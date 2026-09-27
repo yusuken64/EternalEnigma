@@ -21,6 +21,46 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town And Prop Visuals")]
+    public static void RunTownAndPropVisuals() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Fantasy Traps")]
+    public static void RunFantasyTraps() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.CoreIntegration.FantasyTrapTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Fantasy Trap Playback")]
+    public static void RunFantasyTrapPlayback() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.FantasyTrapPlaybackTests");
+
+    // These synchronous geometry checks create isolated TWC output and can preserve a live run.
+    [MenuItem("Tools/Eternal Enigma/Tests/Check Dungeon Ground Heights")]
+    public static void CheckDungeonGroundHeights()
+    {
+        var assembly = System.Reflection.Assembly.Load("EternalEnigma.Tests.EditMode");
+        var type = assembly.GetType("EternalEnigma.Tests.CoreIntegration.DungeonThemeTests", true);
+        var fixture = Activator.CreateInstance(type);
+        var method = type.GetMethod("ThemedGroundIgnoresLegacyRaisedMapRoot");
+        method.Invoke(fixture, new object[] { false });
+        method.Invoke(fixture, new object[] { true });
+        Debug.Log("Dungeon ground-height regression checks passed: regular and throne floors.");
+    }
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Check Dungeon Reload Recovery")]
+    public static void CheckDungeonReloadRecovery()
+    {
+        var type = System.Reflection.Assembly.Load("EternalEnigma.Tests.EditMode")
+            .GetType("EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests", true);
+        foreach (bool throne in new[] { false, true })
+        {
+            var fixture = Activator.CreateInstance(type);
+            type.GetMethod("SetUp").Invoke(fixture, null);
+            try { type.GetMethod("RuntimeFloorRecoversAfterScriptReload").Invoke(fixture, new object[] { throne }); }
+            finally { type.GetMethod("TearDown").Invoke(fixture, null); }
+        }
+        Debug.Log("Dungeon reload recovery checks passed: regular and throne floors.");
+    }
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Scenery Gameplay")]
+    public static void RunSceneryGameplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.BiomeSceneryTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Hero Portraits")]
     public static void RunHeroPortraits() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.HeroPortraitTests");
 
@@ -107,6 +147,20 @@ public static class HarnessTestRunner
     public static void RunDemo() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutOverwritingExistingSave");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Main Menu")]
+    public static void RunMainMenu() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MainMenuPresentationTests",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutOverwritingExistingSave",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.SettingsKeepCategoryFocusAndBackReturnsToGameplay",
+        "EternalEnigma.Tests.DungeonControlTests.FullControlPromptsForEachActionAndRestoresLeader");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Main Menu Presentation")]
+    public static void RunMainMenuPresentation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MainMenuPresentationTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Startup")]
     public static void RunDungeonStartup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

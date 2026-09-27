@@ -10,6 +10,7 @@ internal class SpawnEnemyAction : GameAction
 	private Vector3Int spawnTilePosition;
 
 	private Enemy _spawnedEnemy;
+	internal Enemy SpawnedEnemy => _spawnedEnemy;
 
 	public SpawnEnemyAction()
 	{
@@ -26,6 +27,8 @@ internal class SpawnEnemyAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		_spawnedEnemy = UnityEngine.Object.Instantiate(enemyPrefab, Game.Instance.transform);
+		// Editor previews do not invoke Character.Awake; initialize the same base state there.
+		if (_spawnedEnemy.BaseStats == null) _spawnedEnemy.BaseStats = new Stats();
 		_spawnedEnemy.UpdateCachedStats();
 		_spawnedEnemy.InitialzeVitalsFromStats();
 		_spawnedEnemy.TilemapPosition = spawnTilePosition;

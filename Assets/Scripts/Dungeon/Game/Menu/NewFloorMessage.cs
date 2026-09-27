@@ -9,8 +9,23 @@ public class NewFloorMessage : MonoBehaviour
 	public Image BackgroundColor;
 	public TextMeshProUGUI FloorMessage;
 
+    private void OnEnable()
+    {
+        // A separate canvas keeps the fade above HUD canvases created at runtime.
+        var canvas = GetComponent<Canvas>();
+        if (canvas == null) canvas = gameObject.AddComponent<Canvas>();
+        canvas.overrideSorting = true;
+        canvas.sortingOrder = ScreenTransition.FloorOverlayOrder;
+        if (GetComponent<GraphicRaycaster>() == null) gameObject.AddComponent<GraphicRaycaster>();
+    }
+
 	public void ShowNewFloor(int floor)
 	{
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+		{
+			gameObject.SetActive(false);
+			return;
+		}
 		this.gameObject.SetActive(true);
 		BackgroundColor.sprite = null;
 		BackgroundColor.color = Color.black;

@@ -34,6 +34,24 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Game.TurnManager.AwaitingCommand,Is.True);
             Assert.That(harness.Game.PlayerController.ControlledAlly,Is.SameAs(expected));
         }
+        [UnityTest] public IEnumerator AutoplayFollowerDoesNotSwapLeaderBackward()
+        {
+            var game = harness.Game;
+            var leader = harness.Ally;
+            var follower = game.Allies.First(a => a != leader);
+            follower.AllyStrategy = AllyStrategy.Aggresive;
+            var near = new[] { Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down }
+                .Select(d => leader.TilemapPosition + d).First(game.CurrentDungeon.IsWalkable);
+            follower.SetPosition(near);
+            var leaderCell = leader.TilemapPosition;
+            var command = AutoplayRunner.FollowerTravelAction(game, follower, leader);
+            Assert.That(command, Is.TypeOf<WaitAction>(), "An adjacent follower must not undo the leader's move with a swap.");
+            command.ExecuteImmediate(follower);
+            Assert.That(leader.TilemapPosition, Is.EqualTo(leaderCell));
+            Assert.That(follower.TilemapPosition, Is.EqualTo(near));
+            yield return null;
+        }
+
         [UnityTest] public IEnumerator FullControlPromptsForEachActionAndRestoresLeader()
         {
             var game=harness.Game;var leader=harness.Ally;var second=game.Allies.First(a=>a!=leader);
@@ -165,7 +183,7 @@ namespace EternalEnigma.Tests
                 hit=new TakeDamageAction(other,leader,1,false);
                 hit.SetPlaybackContext(mode,false,leader,other);
                 leader.ExecuteActionImmediate(hit);
-                Assert.That(hit.ShouldAnimate(other),Is.EqualTo(mode!=DungeonAnimationMode.YourActionOnly));
+                Assert.That(hit.ShouldAnimate(other),Is.EqualTo(mode!=DungeonAnimationMode.YourActionOnly && mode!=DungeonAnimationMode.None));
                 yield return leader.ExecuteActionRoutine(hit);
             }
             Assert.That(leader.Vitals.HP,Is.EqualTo(hp-3));

@@ -71,27 +71,8 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
             dungeon.Interactables.Add(prop);
             return prop;
         }
-        var visual = new GameObject("Scenery visual"); visual.transform.SetParent(go.transform,false);
-        float size=dungeon.CellToWorld(Vector3Int.right).x-dungeon.CellToWorld(Vector3Int.zero).x;
-        visual.transform.localPosition=new Vector3(size*.5f,size*.5f,-.5f);
-        var biome=theme != null ? theme.Biome : OverworldBiome.Grassland;
-        Mesh mesh=null;
-        if(definition.Kind==DungeonSceneryKind.Destructible && (biome==OverworldBiome.Forest || biome==OverworldBiome.Marsh))
-            mesh=Resources.Load<Mesh>("DungeonThemes/CryptRoots");
-        if(mesh==null)
-        {
-            mesh=DungeonSceneryGeometry.Build(definition.Kind,biome);
-            go.AddComponent<EnvironmentMeshOwner>().Meshes.Add(mesh);
-        }
-        else
-        {
-            float scale=Mathf.Min(size*.6f/Mathf.Max(.01f,Mathf.Max(mesh.bounds.size.x,mesh.bounds.size.y)),.9f/Mathf.Max(.01f,mesh.bounds.size.z));
-            visual.transform.localScale=Vector3.one*scale;
-            visual.transform.localPosition=new Vector3(size*.5f,size*.5f,-.9f)-mesh.bounds.center*scale;
-        }
-        visual.AddComponent<MeshFilter>().sharedMesh=mesh;
-        var renderer=visual.AddComponent<MeshRenderer>();
-        if(theme!=null) renderer.sharedMaterial=definition.Kind==DungeonSceneryKind.Hazard && theme.PoolMaterial!=null ? theme.PoolMaterial : theme.DecorationMaterial;
+        float size = dungeon.CellToWorld(Vector3Int.right).x - dungeon.CellToWorld(Vector3Int.zero).x;
+        DungeonPropModels.Create(DungeonPropModels.ModelFor(definition.Kind, theme != null ? theme.Biome : OverworldBiome.Grassland), go.transform, size);
         dungeon.Interactables.Add(prop);
         return prop;
     }

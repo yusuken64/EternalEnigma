@@ -59,10 +59,21 @@ internal class TownMovement : TownAction
 					  (int)Mathf.Clamp(offsetWorld.y, -1, 1),
 					  (int)offsetWorld.z);
 			ally.SetFacing(GetFacing(direction));
+			if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+			{
+				ally.transform.position = targetWorld;
+				ally.HeroAnimator?.PlayIdleAnimation();
+				continue;
+			}
 
 			ally.HeroAnimator?.PlayWalkAnimation();
 			var tween = ally.transform.DOMove(targetWorld, 0.2f);
 			tweens.Add(tween);
+		}
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+		{
+			townPlayer.CameraController?.SnapToFollowTarget();
+			yield break;
 		}
 
 		// Wait for all tweens to complete in parallel
@@ -76,6 +87,7 @@ internal class TownMovement : TownAction
 		{
 			ally.HeroAnimator?.PlayIdleAnimation();
 		}
+		townPlayer.CameraController?.SnapToFollowTarget();
 	}
 
 	public Facing GetFacing(Vector3Int direction)

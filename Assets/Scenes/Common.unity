@@ -1219,30 +1219,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Keyboard
-
-
-    Move: WASD / Arrows
-
-    Attack: Space
-
-    Confirm: Space
-    / Enter
-
-    Inventory: Q
-
-    Skills: R
-
-    Ally menu: E
-
-    Switch ally:
-    Tab
-
-    Map: M
-
-    Hold position: Shift
-
-    Options / Back: Esc'
+  m_text: "<b>KEYBOARD / MOUSE</b>\n<b>Dungeon / town</b>\nMove: WASD / arrows (8 directions)\nAttack / interact / talk: Space\nInventory: Q   |   Skills: R\nAlly orders (dungeon): E\nNext ally: Tab*\nDungeon map: M\nWait one action: . (period)\nTurn in place: hold Shift + direction\nSettings: Esc or Options button\n\n<b>Overworld / town party</b>\nOverworld interact / unlock: Enter\nTown party selection: P\nClick travel buttons to interact / warp\n\n<b>Menus</b>\nNavigate: WASD / arrows\nConfirm: Space / Enter / click\nBack: Esc\n\n<b>Watching autoplay</b>\nShow / hide panel: F8\nGameplay input opens stop prompt\nTake control: T | Keep watching: Esc\nReturn to main menu: Enter"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5923,28 +5900,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Controller
-
-
-    Move: Left stick / D-pad
-
-    Attack / Confirm: South
-
-    Inventory:
-    West
-
-    Skills: L1 / LB
-
-    Ally menu / Back: East
-
-    Switch ally: R1 /
-    RB
-
-    Map: Select
-
-    Hold position: North
-
-    Options: Start'
+  m_text: "<b>CONTROLLER</b>\n<b>Dungeon / town</b>\nMove: Left stick / D-pad\nAttack / interact / talk: South (A)\nInventory: West (X)\nSkills: LB / L1\nAlly orders (dungeon): East (B)\nNext ally: RB / R1*\nDungeon map: Select / View\nWait one action: Right stick click\nTurn in place: hold North (Y) + direction\nSettings: Start / Menu\n\n<b>Overworld</b>\nMove: Left stick / D-pad\nInteract / unlock: South (A)\n\n<b>Menus</b>\nNavigate: Left stick / D-pad\nConfirm: South (A) | Back: East (B)\n\n<b>Watching autoplay</b>\nGameplay input opens stop prompt\nTake control: West (X)\nKeep watching: East (B)\nMain menu: South (A)\n\n*Dungeon switching needs Full Control\nOff. With it On, order each hero in turn.\nChange this under Settings > Gameplay."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

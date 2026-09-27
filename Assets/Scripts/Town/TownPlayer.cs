@@ -261,7 +261,7 @@ public class TownPlayer : MonoBehaviour
 		}
 
 		var town = FindFirstObjectByType<Town>();
-		if (Common.Instance.CampaignContext != null && ControllingTownAlly.TilemapPosition == new Vector3Int(10, 0, 0))
+		if (Common.Instance.CampaignContext != null && ControllingTownAlly.TilemapPosition == town.Plan.Exit.ToCell())
         { Common.Instance.Travel.ExitTown(town); _busy = false; yield break; }
 		var overlappingBuilding = town.TownBuildings.FirstOrDefault(x =>
 			x.TilemapPosition == this.ControllingTownAlly.TilemapPosition && !x.HasInterior);

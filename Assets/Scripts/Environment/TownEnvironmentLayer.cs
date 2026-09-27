@@ -43,7 +43,37 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                     innPlaced = true;
                 }
             }
+            // Expand the TWC scenery beyond the playable grid. Out-of-bounds cells are
+            // impassable in WalkableMap, so the visible enclosure matches movement.
+            const int border = 4;
+            for (int y = -border; y < plan.Height + border; y++)
+            for (int x = -border; x < plan.Width + border; x++)
+            {
+                if (x >= 0 && y >= 0 && x < plan.Width && y < plan.Height) continue;
+                var position = new Vector3(x + .5f, y + .5f, 0) * size;
+                batch.Add(Kit.Mesh("Paving"), Kit.Ground(biome), position + Vector3.forward * .02f, Vector3.one * size);
+                bool approach = y < 0 && Mathf.Abs(x - plan.Exit.X) <= 1;
+                bool inner = ((x == -1 || x == plan.Width) && y >= -1 && y <= plan.Height) ||
+                    ((y == -1 || y == plan.Height) && x >= -1 && x <= plan.Width);
+                if (approach)
+                    batch.Add(Kit.Mesh("Paving"), Kit.Road, position, Vector3.one * size);
+                else if (inner)
+                {
+                    batch.Add(Kit.Mesh("Wall"), Kit.Material(biome), position, Vector3.one * size,
+                        x == -1 || x == plan.Width ? 90 : 0);
+                    if ((x == -1 || x == plan.Width) && (y == -1 || y == plan.Height))
+                        batch.Add(Kit.Mesh("Wall"), Kit.Material(biome), position, Vector3.one * size);
+                }
+                else
+                {
+                    uint hash = OverworldCosmetics.Hash(creator.currentSeed ^ 15401, x, y);
+                    var picker = TreeModels != null ? TreeModels : Kit.TreeModels;
+                    batch.Add(Kit.Mesh(picker != null ? picker.Pick(biome, hash) : "Tree"), Kit.Material(biome),
+                        position, Vector3.one * size, (hash >> 16) % 360);
+                }
+            }
             batch.Finish();
+            TownGateVisuals.Create(Kit, biome, root.transform, plan.Exit, size, "Town gate", false);
         }
         finally { creator.executedBuildLayersCount += 1; }
     }

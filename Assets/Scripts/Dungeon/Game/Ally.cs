@@ -213,6 +213,7 @@ public class Ally : Character
 		if (this == null) { yield break; }
 
 		yield return action.ExecuteRoutine(this, !action.ShouldAnimate(this));
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None && Vitals.HP > 0) PlayIdleAnimation();
 		action.UpdateDisplayedStats();
 	}
 
@@ -236,14 +237,14 @@ public class Ally : Character
 
 	public override List<GameAction> GetTrapSideEffects()
 	{
-		if (currentInteractable is Trap trap && trap is not CaltropTrap)
+		if (MovedThisTurn && currentInteractable is Trap trap && trap is not CaltropTrap && trap is not FantasyTrap)
 		{
 			currentInteractable = null;
-			Game.Instance.DoFloatingText(trap.GetInteractionText(), Color.yellow, this.VisualParent.transform.position);
+			Game.Instance.DoFloatingText(trap.GetInteractionText(), Color.yellow, this);
 			return trap.GetTrapSideEffects(this);
 		}
 
-		if (currentInteractable is CaltropTrap) currentInteractable = null;
+		if (currentInteractable is Trap) currentInteractable = null;
 
 		return new();
 	}

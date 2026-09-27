@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27d795611e7f2904e9f21afa50f90fd2, type: 3}
+  m_Name: SpoiledBreadEffect
+  m_EditorClassIdentifier: EternalEnigma.Game::ModifyStatsItemEffectDefinition
+  StatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  VitalModification:
+    Hp: 0
+    Sp: 0
+    Level: 0
+    Exp: 0
+    Floor: 0
+    Hunger: 13
+    Gold: 0
+    HungerAccumulate: 0
+    HpRegenAcccumlate: 0
+    SpRegenAcccumlate: 0
+    ActionsPerTurnLeft: 0
+    AttacksPerTurnLeft: 0
+  DoDamageAnimation: 0

@@ -9,6 +9,7 @@ internal class DropItemAction : GameAction
 	private Inventory inventory;
 	private InventoryItem item;
 	private Vector3Int dropPosition;
+	private bool dropped;
 
 	public DropItemAction()	{}
 
@@ -22,14 +23,14 @@ internal class DropItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		Game game = Game.Instance;
-		inventory.Remove(item);
-		var finalDropPosition = game.CurrentDungeon.GetDropPosition(dropPosition);
-		game.CurrentDungeon.SetDroppedItem(finalDropPosition, item.ItemDefinition, item.StackStock);
+		if (!inventory.InventoryItems.Contains(item)) return new();
+		dropped = DungeonPlacement.TryDrop(game.CurrentDungeon, dropPosition, item, out _);
+		if (dropped) inventory.Remove(item);
 
 		return new();
 	}
 
-    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} dropped {item.ItemName}."); }
+    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, dropped ? $"{GameMessages.Name(character)} dropped {item.ItemName} nearby; it can be recovered." : $"{item.ItemName} was kept: no free drop location."); }
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) { yield break; }

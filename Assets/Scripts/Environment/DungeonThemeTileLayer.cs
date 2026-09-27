@@ -22,6 +22,7 @@ public sealed class DungeonThemeTileLayer : TWCBuildLayer
             var root=creator.AddLayerObject(layerName,guid);
             root.transform.SetParent(creator.worldObject.transform,false); root.transform.localRotation=Quaternion.identity;
             root.transform.localPosition=Offset;
+            DungeonPresentation.SetGroundHeight(root.transform, Offset.z);
             var batch=new EnvironmentBatch(root.transform);
             float unit=creator.twcAsset.cellSize*.5f;
             foreach(var tile in map.clusters.Values.SelectMany(c=>c.Values))

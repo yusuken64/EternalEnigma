@@ -7,6 +7,21 @@ using UnityEngine;
 /// <summary>Replace legacy serialized TWC clusters with a saved preview of the production smart layers.</summary>
 public static class EnvironmentTownPreview
 {
+    [MenuItem("Tools/Eternal Enigma/Art/Rebuild Town Preview")]
+    public static void Rebuild()
+    {
+        if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Exit Play Mode before baking the town.");
+        var setup = UnityEditor.SceneManagement.EditorSceneManager.GetSceneManagerSetup();
+        try
+        {
+            var scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Scenes/Town.unity");
+            var creator = Object.FindFirstObjectByType<WalkableMap>().TileWorldCreator;
+            Bake(creator, creator.twcAsset);
+            UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
+        }
+        finally { UnityEditor.SceneManagement.EditorSceneManager.RestoreSceneManagerSetup(setup); }
+    }
+
     public static void Bake(TileWorldCreator creator, TileWorldCreatorAsset template)
     {
         // Only the generator's output is replaced; scene controls, camera, and gameplay objects remain.

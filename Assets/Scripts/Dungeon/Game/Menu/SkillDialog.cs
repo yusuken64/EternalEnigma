@@ -37,7 +37,7 @@ namespace JuicyChickenGames.Menu
                         }
 						else
 						{
-                            Game.Instance.DoFloatingText(reason, Color.yellow, character.transform.position);
+                            Game.Instance.DoFloatingText(reason, Color.yellow, character);
 						}
                     }
                 };

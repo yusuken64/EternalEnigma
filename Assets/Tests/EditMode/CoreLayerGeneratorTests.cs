@@ -56,6 +56,28 @@ namespace EternalEnigma.Tests.CoreIntegration
             return clone;
         }
 
+        [TestCase(false)] [TestCase(true)]
+        public void RuntimeFloorRecoversAfterScriptReload(bool throne)
+        {
+            var clone = LoadClone(throne ? ThronePath : DungeonPath);
+            creator.SetCustomRandomSeed(84513);
+            creator.ExecuteAllBlueprintLayers();
+            Assert.That(CoreLayoutCache.TryGetDungeon(creator, out var original), Is.True);
+            var dungeon = host.AddComponent<TileWorldDungeon>();
+            dungeon.Setup(creator, original);
+            dungeon.InitializeCache();
+            var originalMask = dungeon.GetFloorMask().Cast<bool>().ToArray();
+            var originalSight = original.VisibleTiles(original.Start, 8);
+            CoreLayoutCache.Clear(creator);
+            foreach (var name in new[] { "runtimeFloor", "floorMask", "_isHallwayCache" })
+                typeof(TileWorldDungeon).GetField(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(dungeon, null);
+            Assert.That(dungeon.EnsureRuntimeData(), Is.True);
+            Assert.That(dungeon.Floor.Seed, Is.EqualTo(original.Seed));
+            Assert.That(dungeon.GetFloorMask().Cast<bool>(), Is.EqualTo(originalMask));
+            Assert.That(dungeon.Floor.VisibleTiles(original.Start, 8), Is.EquivalentTo(originalSight));
+            Assert.That(dungeon.IsHallway(original.Start.ToCell()), Is.EqualTo(!original.IsRoom(original.Start)));
+        }
+
         [Test]
         public void AssetsAreCoreBackedAndBuildLayerGuidsResolve()
         {

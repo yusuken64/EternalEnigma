@@ -23,18 +23,7 @@ public class GatheringPoint : Interactable
 		point.Roll = roll;
 
 		float size = dungeon.CellToWorld(Vector3Int.right).x - dungeon.CellToWorld(Vector3Int.zero).x;
-		var visual = GameObject.CreatePrimitive(kind == EternalEnigma.Core.World.GatheringKind.Ore ? PrimitiveType.Cube : PrimitiveType.Sphere);
-		visual.name = "Visual";
-		visual.transform.SetParent(root.transform, false);
-		visual.transform.localPosition = new Vector3(size * 0.5f, size * 0.5f, -0.25f * size);
-		visual.transform.localScale = Vector3.one * 0.45f * size;
-		Object.Destroy(visual.GetComponent<Collider>());
-		var color = kind == EternalEnigma.Core.World.GatheringKind.Ore ? new Color(0.55f, 0.55f, 0.6f)
-			: kind == EternalEnigma.Core.World.GatheringKind.Plant ? new Color(0.3f, 0.75f, 0.3f) : new Color(0.6f, 0.4f, 0.2f);
-		var block = new MaterialPropertyBlock();
-		block.SetColor("_Color", color); block.SetColor("_BaseColor", color);
-		visual.GetComponent<Renderer>().SetPropertyBlock(block);
-
+        DungeonPropModels.Create(kind == EternalEnigma.Core.World.GatheringKind.Ore ? "CrystalOre" : kind == EternalEnigma.Core.World.GatheringKind.Plant ? "Herbs" : "Mushrooms", root.transform, size);
 		dungeon.Interactables.Add(point);
 		return point;
 	}

@@ -13,6 +13,39 @@ namespace EternalEnigma.Tests.CoreIntegration
 {
     public class DungeonThemeTests
     {
+        [TestCase(false)] [TestCase(true)]
+        public void ThemedGroundIgnoresLegacyRaisedMapRoot(bool throne)
+        {
+            var source=AssetDatabase.LoadAssetAtPath<TileWorldCreatorAsset>("Assets/Prefabs/Dungeon/"+(throne?"DungeonThroneAsset":"DungeonAsset")+".asset");
+            var clone=DungeonPresentation.CloneTemplate(source);
+            var host=new GameObject("Raised ground regression"); var root=new GameObject("Legacy raised map");
+            DungeonPresentation.PrepareMapRoot(root.transform, true);
+            Assert.That(root.transform.position.z,Is.EqualTo(-1.51f));
+            Assert.That(root.transform.localScale.z,Is.EqualTo(3.35f));
+            DungeonPresentation.PrepareMapRoot(root.transform, false);
+            Assert.That(root.transform.position,Is.EqualTo(Vector3.zero));
+            Assert.That(root.transform.localScale,Is.EqualTo(Vector3.one));
+            var creator=host.AddComponent<TileWorldCreator>();creator.twcAsset=clone;creator.worldObject=root;
+            try
+            {
+                var catalog=Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
+                catalog.Apply(clone,new DungeonVisualSelection {Biome=OverworldBiome.Volcanic,Environment=DungeonEnvironmentKind.Interior,UseBiomePresentation=true},throne);
+                creator.SetCustomRandomSeed(12345);creator.ExecuteAllBlueprintLayers();CoreLayoutCache.ClearResultFlags(clone);creator.ExecuteAllBuildLayers(true);
+                var floorLayer=clone.mapBuildLayers.OfType<DungeonThemeTileLayer>().Single(l=>l.layerName.ToLowerInvariant().Contains("floor"));
+                var floor=root.transform.Find(floorLayer.layerName+"_layer");
+                Assert.That(floor.position.z,Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.0001f));
+                foreach(var renderer in floor.GetComponentsInChildren<MeshRenderer>())
+                    Assert.That(renderer.bounds.min.z,Is.GreaterThan(-.001f),"The floor must not cut into units standing at Z=0.");
+                var carpet=clone.mapBuildLayers.Single(l=>l.layerName.ToLowerInvariant().Contains("carpet"));
+                if(!throne)
+                {
+                    Assert.That(carpet.active,Is.True,"Floor excludes the carpet mask: leaving it inactive makes holes.");
+                    Assert.That(((DungeonThemeTileLayer)carpet).Preset,Is.SameAs(floorLayer.Preset),"Room centers must use textured paving too.");
+                }
+                else Assert.That(((DungeonThemeTileLayer)carpet).Offset.z,Is.LessThan(floorLayer.Offset.z));
+            }
+            finally { DungeonPresentation.ClearOutput(root);UnityEngine.Object.DestroyImmediate(root);UnityEngine.Object.DestroyImmediate(host);DungeonPresentation.ReleaseTemplate(clone); }
+        }
         [Test]
         public void SelectionMigratesAndRoundTripsWithoutOverworldGeneration()
         {

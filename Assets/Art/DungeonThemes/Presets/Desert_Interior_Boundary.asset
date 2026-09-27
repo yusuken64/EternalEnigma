@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78a588ceb49564243b9af3598198a6e2, type: 3}
+  m_Name: Desert_Interior_Boundary
+  m_EditorClassIdentifier: TileWorldCreator::TWC.TileWorldCreator4TilesPreset
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  useRulesForEdgeTile: 0
+  useRulesForExtCornerTile: 0
+  useRulesForIntCornerTile: 0
+  useRulesForFillTile: 0
+  edgeTile: {fileID: 8187297594448447770, guid: 3eede0077d43f8d4fb2b02145a14bbaf, type: 3}
+  exteriorCornerTile: {fileID: 9214622808175732188, guid: bce8473ac4eded346a00a6345dd2ddd6, type: 3}
+  interiorCornerTile: {fileID: 2802087481351669896, guid: 83b7ef455d0348f4184c2e968cede3a1, type: 3}
+  fillTile: {fileID: 3536988510562586159, guid: ba9b62e73e9b4a347b887b22d20f0b4d, type: 3}
+  edgeTileRotationOffset: {x: 0, y: 0, z: 0}
+  exteriorCornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  interiorCornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  fillTileRotationOffset: {x: 0, y: 0, z: 0}
+  edgeTileScalingOffset: {x: 0, y: 0, z: 0}
+  exteriorCornerScalingOffset: {x: 0, y: 0, z: 0}
+  interiorCornerScalingOffset: {x: 0, y: 0, z: 0}
+  fillTileScalingOffset: {x: 0, y: 0, z: 0}

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78a588ceb49564243b9af3598198a6e2, type: 3}
+  m_Name: Grassland_Interior_Throne
+  m_EditorClassIdentifier: TileWorldCreator::TWC.TileWorldCreator4TilesPreset
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  useRulesForEdgeTile: 0
+  useRulesForExtCornerTile: 0
+  useRulesForIntCornerTile: 0
+  useRulesForFillTile: 0
+  edgeTile: {fileID: 2990192208887482371, guid: 7da6b586b59fa1244ae200bf17f8bf92, type: 3}
+  exteriorCornerTile: {fileID: 6368307453248557119, guid: 2c29be779a6df33458931ef277d33265, type: 3}
+  interiorCornerTile: {fileID: 3097344909238594999, guid: 03b8308b57d5be74cb156f6060b13b09, type: 3}
+  fillTile: {fileID: 865042389833463256, guid: bb46fec1694ab3248bfccac9e1729333, type: 3}
+  edgeTileRotationOffset: {x: 0, y: 0, z: 0}
+  exteriorCornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  interiorCornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  fillTileRotationOffset: {x: 0, y: 0, z: 0}
+  edgeTileScalingOffset: {x: 0, y: 0, z: 0}
+  exteriorCornerScalingOffset: {x: 0, y: 0, z: 0}
+  interiorCornerScalingOffset: {x: 0, y: 0, z: 0}
+  fillTileScalingOffset: {x: 0, y: 0, z: 0}

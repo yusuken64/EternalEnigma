@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -786,7 +786,7 @@ namespace TWC.Actions
 						}
 				
 						
-						yield return null;
+						yield return null; if (_twc == null) yield break;
 						
 						if (mergeObjects)
 						{
@@ -801,7 +801,7 @@ namespace TWC.Actions
 							MonoBehaviour.DestroyImmediate(_cl);
 						}
 						
-						yield return null;
+						yield return null; if (_twc == null) yield break;
 					}
 				}
 				 
@@ -1043,7 +1043,7 @@ namespace TWC.Actions
 					
 					_clusterCount++;
 					
-					yield return null;
+					yield return null; if (_twc == null) yield break;
 					
 					if (mergeObjects)
 					{
@@ -1056,7 +1056,7 @@ namespace TWC.Actions
 			
 							
 			
-			yield return null;
+			yield return null; if (_twc == null) yield break;
 			
 #if UNITY_EDITOR
 			if (!Application.isPlaying)

@@ -42,7 +42,7 @@ namespace EternalEnigma.Tests
             var p = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<EnvironmentPlayground>()).Single();
             Assert.That(p.Gallery.GetComponentsInChildren<MeshFilter>().Length, Is.EqualTo(p.Kit.Models.Length + 48));
             var buttons = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Button>(true)).ToArray();
-            Assert.That(buttons.Length, Is.EqualTo(7));
+            Assert.That(buttons.Length, Is.EqualTo(21));
             Assert.That(buttons.All(b => b.image.sprite != null && b.onClick.GetPersistentEventCount() == 1), Is.True);
             int builds = 0;
             p.TownCreator.OnBuildLayersComplete += _ => builds++;

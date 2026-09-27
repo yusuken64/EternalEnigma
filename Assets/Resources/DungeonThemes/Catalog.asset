@@ -1,0 +1,271 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3a1237b09f087e4aadbadca66a13ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonThemeCatalog
+  Themes:
+  - Name: Existing dungeon
+    Biome: 0
+    Environment: 0
+    RegularBoundary: {fileID: 11400000, guid: b031c9b65ed22d84b981b6cef565c08d, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: b5f2257806b75904c81932a9fef161df, type: 2}
+    Floor: {fileID: 11400000, guid: c182d777afc55a2499571a57c7c5058a, type: 2}
+    Accent: {fileID: 11400000, guid: a27c3b2ec69755c40b6ec5f14b4dcdfc, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: 68cab4684c05dd24baf7dc299d7753a4, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - Rock
+    UseTrees: 0
+    Ambient: {r: 0.5775, g: 0.649, b: 0.4995, a: 1}
+    LightColor: {r: 0.87, g: 0.892, b: 0.846, a: 1}
+    LightIntensity: 0.8
+  - Name: Grassland outdoors
+    Biome: 0
+    Environment: 1
+    RegularBoundary: {fileID: 11400000, guid: 5cdfe1c668c715643bc59d4bd7815255, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 7e562e52f692d1f4d88eab449fd0448d, type: 2}
+    Floor: {fileID: 11400000, guid: f62be5f09fc5252458d61bb1978abbf2, type: 2}
+    Accent: {fileID: 11400000, guid: 09aaee4d8be8d3644bc54c4f4a5b7cdc, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: 68cab4684c05dd24baf7dc299d7753a4, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - Rock
+    UseTrees: 1
+    Ambient: {r: 0.7075, g: 0.757, b: 0.6535, a: 1}
+    LightColor: {r: 0.87, g: 0.892, b: 0.846, a: 1}
+    LightIntensity: 1.1
+  - Name: Sandstone tomb
+    Biome: 1
+    Environment: 0
+    RegularBoundary: {fileID: 11400000, guid: bea9829f4b0fec844900231e920aff4c, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 2b1ca04071147aa4683df6428810c95d, type: 2}
+    Floor: {fileID: 11400000, guid: b5b791fc52d033841a020553d72ecd06, type: 2}
+    Accent: {fileID: 11400000, guid: 2d8d9b661fcd0fc45844e6eef09ea067, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: e2c963c481c9daf4d9592d747405ce8c, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - Rock
+    UseTrees: 0
+    Ambient: {r: 0.792, g: 0.6685, b: 0.519, a: 1}
+    LightColor: {r: 0.936, g: 0.898, b: 0.852, a: 1}
+    LightIntensity: 0.8
+  - Name: Desert outdoors
+    Biome: 1
+    Environment: 1
+    RegularBoundary: {fileID: 11400000, guid: a9ef42acc1890ca47ad40c11e52df7d4, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: b46529fda60e85e4689ff39fa57a8d7b, type: 2}
+    Floor: {fileID: 11400000, guid: 57a8e83e9d1190a47b33be376d5efebe, type: 2}
+    Accent: {fileID: 11400000, guid: 9836a4fe459d5544b9519edd7b0fcaf6, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: e2c963c481c9daf4d9592d747405ce8c, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - Rock
+    - Cactus
+    - Palm
+    UseTrees: 1
+    Ambient: {r: 0.856, g: 0.7705, b: 0.667, a: 1}
+    LightColor: {r: 0.936, g: 0.898, b: 0.852, a: 1}
+    LightIntensity: 1.1
+  - Name: Flooded ruins
+    Biome: 2
+    Environment: 0
+    RegularBoundary: {fileID: 11400000, guid: df18a6451898b7e45b716989ecd40126, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 843901d4fc1049d4eb2eec17102ae96c, type: 2}
+    Floor: {fileID: 11400000, guid: d4029e6ef950538498eedb7e6eb2b481, type: 2}
+    Accent: {fileID: 11400000, guid: bb4fc271dca44d14190af88ef152cc0c, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: 35f5911d59ab7bc4396e5872943245f4, type: 2}
+    PoolMaterial: {fileID: 2100000, guid: e0c39e133f3c9ed4380794fde9386b3c, type: 2}
+    Decorations:
+    - Reeds
+    - Rock
+    UseTrees: 0
+    Ambient: {r: 0.5905, g: 0.69449997, b: 0.7075, a: 1}
+    LightColor: {r: 0.874, g: 0.906, b: 0.91, a: 1}
+    LightIntensity: 0.8
+  - Name: Water outdoors
+    Biome: 2
+    Environment: 1
+    RegularBoundary: {fileID: 11400000, guid: 559b3abe9d33e4f41ac157859c97e467, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 06c1389d58de9a04eb00e53d99abd7c3, type: 2}
+    Floor: {fileID: 11400000, guid: 0368436cabd9d8347a7152e1d130eba0, type: 2}
+    Accent: {fileID: 11400000, guid: 71b80f9fdba5b51428911dec03a998fe, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: 35f5911d59ab7bc4396e5872943245f4, type: 2}
+    PoolMaterial: {fileID: 2100000, guid: b0376f7866e03fd44bf0f2cf4eee9a60, type: 2}
+    Decorations:
+    - Reeds
+    - Rock
+    UseTrees: 1
+    Ambient: {r: 0.7165, g: 0.7885, b: 0.7975, a: 1}
+    LightColor: {r: 0.874, g: 0.906, b: 0.91, a: 1}
+    LightIntensity: 1.1
+  - Name: Rock chambers
+    Biome: 3
+    Environment: 0
+    RegularBoundary: {fileID: 11400000, guid: a170436d968d5b0449a5845062a70291, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 86f01fdf6becc054989175a65e30658b, type: 2}
+    Floor: {fileID: 11400000, guid: 8a29bd4f29583ac4f8c0a87056d16da7, type: 2}
+    Accent: {fileID: 11400000, guid: 091307c63d84dbd46ac30c7e95377bbe, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: 6e771ab5424696b4eba2c1388fdd0f3d, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - Rock
+    - MountainPeak
+    UseTrees: 0
+    Ambient: {r: 0.6035, g: 0.61, b: 0.6295, a: 1}
+    LightColor: {r: 0.878, g: 0.88, b: 0.88600004, a: 1}
+    LightIntensity: 0.8
+  - Name: Mountain outdoors
+    Biome: 3
+    Environment: 1
+    RegularBoundary: {fileID: 11400000, guid: 637d17c5b31465946abe4fe0fa893cc2, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 8760c4c879650984185abe65984987ce, type: 2}
+    Floor: {fileID: 11400000, guid: 614110deda8223244b4cdb53cda49049, type: 2}
+    Accent: {fileID: 11400000, guid: 00bb8c7b758f0c347b2e06b093e625da, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: 6e771ab5424696b4eba2c1388fdd0f3d, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - Rock
+    - MountainPeak
+    UseTrees: 1
+    Ambient: {r: 0.7255, g: 0.73, b: 0.7435, a: 1}
+    LightColor: {r: 0.878, g: 0.88, b: 0.88600004, a: 1}
+    LightIntensity: 1.1
+  - Name: Root-covered ruins
+    Biome: 4
+    Environment: 0
+    RegularBoundary: {fileID: 11400000, guid: d7d656dba0e61ff4da53e68bbaa0a854, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 516f2c66d753926489636b9a2004a197, type: 2}
+    Floor: {fileID: 11400000, guid: 96a9de1cab8839a40bfc1edc2951cb74, type: 2}
+    Accent: {fileID: 11400000, guid: a234132eb94d38f49b63c9519a1d7c39, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: dedf7d6893721a04abaf253d59b8375f, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - CryptRoots
+    - Mushrooms
+    UseTrees: 0
+    Ambient: {r: 0.532, g: 0.597, b: 0.493, a: 1}
+    LightColor: {r: 0.856, g: 0.876, b: 0.844, a: 1}
+    LightIntensity: 0.8
+  - Name: Forest outdoors
+    Biome: 4
+    Environment: 1
+    RegularBoundary: {fileID: 11400000, guid: 8b29c4e1cf2b3e34c8d963e36a8276d0, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 79e2701edcf207c409063b68cb477c3b, type: 2}
+    Floor: {fileID: 11400000, guid: 6c7057aaccda03043b151f8fb0183558, type: 2}
+    Accent: {fileID: 11400000, guid: 3fdf316293c9a114e80eb5628962e547, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: dedf7d6893721a04abaf253d59b8375f, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - CryptRoots
+    - Mushrooms
+    UseTrees: 1
+    Ambient: {r: 0.676, g: 0.721, b: 0.649, a: 1}
+    LightColor: {r: 0.856, g: 0.876, b: 0.844, a: 1}
+    LightIntensity: 1.1
+  - Name: Ice crypt
+    Biome: 5
+    Environment: 0
+    RegularBoundary: {fileID: 11400000, guid: 3a5fc11f07c74154a814709a5d6ca121, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 5856720b32bc3274fa250a7290f42d69, type: 2}
+    Floor: {fileID: 11400000, guid: a868810878cf8d24e9ad60d882864653, type: 2}
+    Accent: {fileID: 11400000, guid: b52659b92005c8b45a2ba0e873eaa5f3, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: a234f74d2d98870459f8529d3a9664a8, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - Rock
+    - SnowPine
+    UseTrees: 0
+    Ambient: {r: 0.792, g: 0.8765, b: 0.909, a: 1}
+    LightColor: {r: 0.936, g: 0.962, b: 0.972, a: 1}
+    LightIntensity: 0.8
+  - Name: Tundra outdoors
+    Biome: 5
+    Environment: 1
+    RegularBoundary: {fileID: 11400000, guid: 9193c87f0dcf8864d848c2234e05bbac, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 0a4cd03e7545d1642810600ed338317c, type: 2}
+    Floor: {fileID: 11400000, guid: f025f314c6791af41af8eab5f359c4ac, type: 2}
+    Accent: {fileID: 11400000, guid: 047d381183de2f34cb539be4dbd101f6, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: a234f74d2d98870459f8529d3a9664a8, type: 2}
+    PoolMaterial: {fileID: 0}
+    Decorations:
+    - Rock
+    - SnowPine
+    UseTrees: 1
+    Ambient: {r: 0.856, g: 0.9145, b: 0.93700004, a: 1}
+    LightColor: {r: 0.936, g: 0.962, b: 0.972, a: 1}
+    LightIntensity: 1.1
+  - Name: Moss crypt
+    Biome: 6
+    Environment: 0
+    RegularBoundary: {fileID: 11400000, guid: 53047c84af62b3148948ea56d8cacb60, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 9c40506de6a4f5e4fb1d43b9d454d046, type: 2}
+    Floor: {fileID: 11400000, guid: af7cc8e5060d5d346b58a1fae0114979, type: 2}
+    Accent: {fileID: 11400000, guid: f811f2199066e0949af59dfc9ebab459, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: cc84901d5db68d04db675cec2aefb86f, type: 2}
+    PoolMaterial: {fileID: 2100000, guid: 4680c8dbf76191643aa1aa0292eaf213, type: 2}
+    Decorations:
+    - CryptRoots
+    - Mushrooms
+    - Reeds
+    UseTrees: 0
+    Ambient: {r: 0.532, g: 0.571, b: 0.493, a: 1}
+    LightColor: {r: 0.856, g: 0.86800003, b: 0.844, a: 1}
+    LightIntensity: 0.8
+  - Name: Marsh outdoors
+    Biome: 6
+    Environment: 1
+    RegularBoundary: {fileID: 11400000, guid: 8f6626b1ab03d4947b9e61c6e1f23ccb, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 90137289f8127784dad8102ceb6590c6, type: 2}
+    Floor: {fileID: 11400000, guid: 96670cd40257c154d8bb9c14dcbaa0b0, type: 2}
+    Accent: {fileID: 11400000, guid: 69173894a3f54444094001697984c175, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: cc84901d5db68d04db675cec2aefb86f, type: 2}
+    PoolMaterial: {fileID: 2100000, guid: a56d2aacad7938340a639126498b2d0f, type: 2}
+    Decorations:
+    - CryptRoots
+    - Mushrooms
+    - Reeds
+    UseTrees: 1
+    Ambient: {r: 0.676, g: 0.703, b: 0.649, a: 1}
+    LightColor: {r: 0.856, g: 0.86800003, b: 0.844, a: 1}
+    LightIntensity: 1.1
+  - Name: Basalt halls
+    Biome: 7
+    Environment: 0
+    RegularBoundary: {fileID: 11400000, guid: 189089d6e3ea6d948a4d5fc31c20c4f9, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: edc67a6dcd9d67d4db8dfee4ee6c0431, type: 2}
+    Floor: {fileID: 11400000, guid: dd0088d0322c89144ad69f55d012a1e8, type: 2}
+    Accent: {fileID: 11400000, guid: ae327463d4061be4a9ff8d74b5860751, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: b7206ac1a46bfd64384ba0070b205552, type: 2}
+    PoolMaterial: {fileID: 2100000, guid: a4da3e3195367f74ca484850c42f9efa, type: 2}
+    Decorations:
+    - Basalt
+    - CharredTree
+    UseTrees: 0
+    Ambient: {r: 0.47349998, g: 0.4605, b: 0.48, a: 1}
+    LightColor: {r: 0.838, g: 0.834, b: 0.84000003, a: 1}
+    LightIntensity: 0.8
+  - Name: Volcanic outdoors
+    Biome: 7
+    Environment: 1
+    RegularBoundary: {fileID: 11400000, guid: 0b7af6e479643084897129003f4cc858, type: 2}
+    ThroneBoundary: {fileID: 11400000, guid: 0b212ff9c4baf2e40a75d2f03bc74f5f, type: 2}
+    Floor: {fileID: 11400000, guid: 4086911685a293846ba872af39b338b5, type: 2}
+    Accent: {fileID: 11400000, guid: 4363f7045df2b404c9f9e0a225840ad2, type: 2}
+    DecorationMaterial: {fileID: 2100000, guid: b7206ac1a46bfd64384ba0070b205552, type: 2}
+    PoolMaterial: {fileID: 2100000, guid: 6b4f10416176a394f82380aa7516f901, type: 2}
+    Decorations:
+    - Basalt
+    - CharredTree
+    UseTrees: 1
+    Ambient: {r: 0.6355, g: 0.6265, b: 0.64, a: 1}
+    LightColor: {r: 0.838, g: 0.834, b: 0.84000003, a: 1}
+    LightIntensity: 1.1

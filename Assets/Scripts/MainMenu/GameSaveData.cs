@@ -18,6 +18,8 @@ public class GameSaveData
 [Serializable]
 public class DungeonSaveData
 {
+    public int VisualSelectionVersion;
+    public DungeonVisualSelection VisualSelection;
 	public bool ReturnCommitted;
 	public int StartFloor;
 	public int EndFloor;

@@ -17,6 +17,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
     public TileWorldCreatorAsset TownTemplate;
     public SmartRulePreview RulePreview;
     public GameObject RuleLabels;
+    public DungeonThemeExplorer DungeonExplorer;
     public TownConfiguration TownConfiguration;
     public Camera ViewCamera;
     public TMP_Text Status;
@@ -68,7 +69,12 @@ public sealed class EnvironmentPlayground : MonoBehaviour
         }
         Visibility(); Frame(new Vector3(15, 15, 0), 18);
     }
-    public void NextSeed() { if (worldBuilding || townBuilding) return; Seed++; worldBuilt = townBuilt = false; Rebuild(); }
+    public void NextSeed() { if (worldBuilding || townBuilding || DungeonExplorer?.IsBuilding == true) return; Seed++; worldBuilt = townBuilt = false; Rebuild(); }
+    public void ShowDungeon()
+    {
+        View=4;Visibility();
+        if(!DungeonExplorer.IsReady) DungeonExplorer.Rebuild();else DungeonExplorer.Frame();
+    }
     public void ShowRules()
     {
         View = 3;
@@ -82,8 +88,9 @@ public sealed class EnvironmentPlayground : MonoBehaviour
         if (View == 1) { worldBuilt = false; ShowOverworld(); }
         else if (View == 2) { townBuilt = false; ShowTown(); }
         else if (View == 3) { RulePreview.Generate(); Visibility(); }
+        else if (View == 4) DungeonExplorer.Rebuild();
     }
-    public void NextBiome() { if (townBuilding) return; TownBiome = (OverworldBiome)(((int)TownBiome + 1) % 8); townBuilt = false; if (View == 2) ShowTown(); else Visibility(); }
+    public void NextBiome() { if(View==4) {DungeonExplorer.NextBiome();return;} if (townBuilding) return; TownBiome = (OverworldBiome)(((int)TownBiome + 1) % 8); townBuilt = false; if (View == 2) ShowTown(); else Visibility(); }
     private void TownBlueprints(TileWorldCreator creator) { CoreLayoutCache.ClearResultFlags(creator.twcAsset); creator.ExecuteAllBuildLayers(true); }
     private void TownBuilt(TileWorldCreator creator)
     {
@@ -146,11 +153,13 @@ public sealed class EnvironmentPlayground : MonoBehaviour
         if (townRoot != null) townRoot.SetActive(View == 2);
         if (RulePreview != null && RulePreview.WorldRoot != null) RulePreview.WorldRoot.SetActive(View == 3);
         if (RuleLabels != null) RuleLabels.SetActive(View == 3);
-        if (Status != null) Status.text = $"Seed {Seed}   |   Town palette: {TownBiome}   |   1 Gallery / 2 World / 3 Town / 4 Rules / B Biome / R Rebuild\nWASD pans, mouse wheel zooms. Three smart cliff tiers with dense summit noise patches. Cosmetic cap: 48 props/chunk; 120k triangles.";
+        if (DungeonExplorer != null) DungeonExplorer.SetVisible(View == 4);
+        if (Status != null) Status.text = $"Seed {Seed}   |   1 Gallery / 2 World / 3 Town / 4 Rules / 5 Dungeon / B Biome / R Rebuild\nWASD pans · Mouse wheel zooms";
     }
     private void Update()
     {
         if (!Application.isPlaying) return;
+        if (DungeonExplorer != null && DungeonExplorer.SeedInput != null && DungeonExplorer.SeedInput.isFocused) return;
         var keyboard = Keyboard.current;
         if (keyboard != null)
         {
@@ -158,6 +167,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
             if (keyboard.digit2Key.wasPressedThisFrame) ShowOverworld();
             if (keyboard.digit3Key.wasPressedThisFrame) ShowTown();
             if (keyboard.digit4Key.wasPressedThisFrame) ShowRules();
+            if (keyboard.digit5Key.wasPressedThisFrame) ShowDungeon();
             if (keyboard.rKey.wasPressedThisFrame) Rebuild();
             if (keyboard.bKey.wasPressedThisFrame) NextBiome();
             var move = new Vector3((keyboard.dKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed ? 1 : 0),

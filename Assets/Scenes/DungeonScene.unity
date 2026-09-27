@@ -334,6 +334,11 @@ MonoBehaviour:
   FloorLayerName: Floor
   TileWorldDungeonPrefab: {fileID: 7240928993998196610, guid: 6eef3a52d08373248b92c7be9b651d2a, type: 3}
   GeneratedDungeon: {fileID: 0}
+  ThemeCatalog: {fileID: 11400000, guid: 394b5183d7a399046aaee70a38c9f384, type: 2}
+  EncounterVisuals:
+    OverrideBiome: 0
+    Biome: 0
+    Environment: 0
 --- !u!43 &44568806
 Mesh:
   m_ObjectHideFlags: 0
@@ -6577,8 +6582,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 74.4
-  orthographic: 0
-  orthographic size: 12.98
+  orthographic: 1
+  orthographic size: 7.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -18746,13 +18751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 519420031}
-  CameraOffset: {x: 0, y: -1.87, z: -11.02}
-  verticalSpeed: 5
-  horizontalSpeed: 5
-  minZ: -11.02
-  maxZ: -3.75683
-  minX: -0.1
-  maxX: 0.1
+  CameraOffset: {x: 0, y: -10, z: -14}
   _followTarget: {fileID: 0}
 --- !u!1 &1615311708
 GameObject:

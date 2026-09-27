@@ -41,7 +41,7 @@ public sealed class CampaignTravelService
         if (Context.State.Scene == "Town") PrepareTown(Context.State.LocationId);
         Load(Context.State.Scene);
     }
-    public bool EnterLocation()
+    public bool EnterLocation(DungeonEncounterVisualSettings visuals = null)
     {
         if (transitioning || Context == null || Context.IsSandbox) return false;
         var location = Context.Location;
@@ -52,23 +52,24 @@ public sealed class CampaignTravelService
             Context.State.LocationId = location.Id; PrepareTown(location.Id); Load("Town"); return true;
         }
         if (!Context.BeginDungeon()) return false;
-        StartDungeon(location);
+        StartDungeon(location, visuals);
         return true;
     }
-    public bool EnterTownDungeon(Town town, string dungeonId)
+    public bool EnterTownDungeon(Town town, string dungeonId, DungeonEncounterVisualSettings visuals = null)
     {
         if (transitioning || Context == null || Context.IsSandbox || town == null ||
             Context.State.Scene != "Town" || town.Configuration.Id != Context.State.LocationId) return false;
         town.WriteSaveData();
         if (!Context.BeginTownDungeon(dungeonId)) return false;
-        StartDungeon(Context.Campaign.Locations.Single(l => l.Id == dungeonId));
+        StartDungeon(Context.Campaign.Locations.Single(l => l.Id == dungeonId), visuals);
         return true;
     }
-    private void StartDungeon(CampaignLocation location)
+    private void StartDungeon(CampaignLocation location, DungeonEncounterVisualSettings visuals)
     {
         var floors = CampaignContext.Floors(location.Tier);
         common.GameSaveData.PreRunTownJson = JsonUtility.ToJson(common.GameSaveData.TownSaveData);
         common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = floors.Start, EndFloor = floors.End };
+        DungeonVisualSelection.ResolveRun(common.GameSaveData.DungeonSaveData, Context, visuals);
         CampaignParty.BuildDungeonParty(common);
         Load("DungeonScene");
     }

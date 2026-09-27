@@ -260,6 +260,7 @@ public static class EnvironmentArtInstaller
         Button("Asset gallery",0,playground.ShowGallery); Button("Overworld",1,playground.ShowOverworld); Button("Town",2,playground.ShowTown);
         Button("Next biome",3,playground.NextBiome); Button("Next seed",4,playground.NextSeed); Button("World overview",5,playground.WorldOverview);
         Button("Smart tile rules",6,playground.ShowRules);
+        DungeonThemeExplorerAuthoring.Install(playground);
         new GameObject("EventSystem",typeof(EventSystem),typeof(MenuUIInputModule));
         // Rebind after all serialized references exist; ExecuteAlways was enabled when added.
         playground.enabled = false; playground.enabled = true; playground.ShowGallery();

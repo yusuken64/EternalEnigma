@@ -21,6 +21,9 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Themes")]
+    public static void RunDungeonThemes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonThemeTransitionTests", "EternalEnigma.Tests.DungeonThemeExplorerTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Environment")]
     public static void RunEnvironment() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnvironmentPlaygroundTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Environment Assets")]
@@ -69,6 +72,13 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Demo")]
     public static void RunDemo() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutOverwritingExistingSave");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Startup")]
+    public static void RunDungeonStartup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DirectDungeonStartCreatesPartyWithoutASave",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DirectDungeonStartPreservesExistingSave",
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutOverwritingExistingSave");
 

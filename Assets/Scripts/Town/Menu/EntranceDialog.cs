@@ -94,6 +94,7 @@ public class EntranceDialog : Dialog
         }
         town.WriteSaveData();
         Common.Instance.GameSaveData.DungeonSaveData.ReturnCommitted = false;
+        Common.Instance.GameSaveData.DungeonSaveData.VisualSelectionVersion = 0;
 		Common.Instance.ScreenTransition.DoTransition(() =>
 		{
 			Common.Instance.GameSaveData.DungeonSaveData.StartFloor = data.StartFloor;

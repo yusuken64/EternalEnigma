@@ -64,13 +64,50 @@ public class Game : SingletonMonoBehaviour<Game>
 	public List<CharacterStatsDisplay> CharacterStatsDisplays;
 
 	// Start is called before the first frame update
-	void Start()
+	IEnumerator Start()
 	{
+#if UNITY_EDITOR
+		// The editor bootstrap loads Common before reloading the requested scene.
+		// Do not initialize the original scene while that asynchronous load is pending.
+		while (FindFirstObjectByType<Common>() == null) yield return null;
+		PrepareEditorParty();
+#endif
         Common.Instance.Travel.SceneReady();
 		Common.Instance.ScreenTransition.HoldClosed();
 		ResetGame();
 		StartCoroutine(RevealDungeonWhenReady());
+		yield break;
 	}
+
+#if UNITY_EDITOR
+	private void PrepareEditorParty()
+	{
+		var common = Common.Instance;
+		if (common.TownAllyParent.GetComponentInChildren<TownAlly>() != null) return;
+
+		// A direct scene launch has no party transferred from town. Use a fresh,
+		// non-persistent run instead of changing the player's saved campaign.
+		var configuration = TownSceneLoader.Default;
+		configuration.Validate();
+		common.CampaignContext = null;
+		common.GameSaveData = new GameSaveData {
+			IsSandbox = true,
+			DungeonSaveData = new DungeonSaveData { StartFloor = 1, EndFloor = 5 }
+		};
+		common.GameSaveData.TownSaveData.ConfigurationId = configuration.Id;
+		common.GameSaveData.TownSaveData.Inventory = common.ItemManager.StartingItems
+			.Select(item => item.ItemName).ToList();
+		common.InstantiatedTownAllies.Clear();
+		foreach (var prefab in configuration.StartingParty)
+		{
+			var ally = Instantiate(prefab, common.TownAllyParent);
+			ally.EnsureStartingSkills();
+			common.InstantiatedTownAllies.Add(ally);
+			common.GameSaveData.TownSaveData.RecruitedAlliesData.Add(HeroClassBinding.FromPrefab(ally,
+				new TownAllyData { AllyId = ally.Id, AllyName = ally.Name, Skills = new List<string>(ally.Skills) }));
+		}
+	}
+#endif
 
 	private IEnumerator RevealDungeonWhenReady()
 	{
@@ -208,7 +245,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		var map = GameObject.Find("TileWorldCreator_Map");
 		map.transform.position = new Vector3(0, 0, -1.50999999f);
-		map.transform.localScale = new Vector3(1, 1, 3.3499999f);
+		map.transform.localScale = new Vector3(1, 1, DungeonGenerator.CurrentVisuals.IsLegacy ? 3.3499999f : 1f);
 
 		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
 		CurrentDungeon.IsThroneFloor = throneFloor;

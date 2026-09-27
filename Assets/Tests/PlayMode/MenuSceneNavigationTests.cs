@@ -86,6 +86,37 @@ namespace EternalEnigma.Tests
         public IEnumerator TestDungeonStartsWithoutASave() => CheckTestDungeon(null);
 
         [UnityTest]
+        public IEnumerator DirectDungeonStartCreatesPartyWithoutASave() => CheckDirectDungeonStart(null);
+
+        [UnityTest]
+        public IEnumerator DirectDungeonStartPreservesExistingSave() =>
+            CheckDirectDungeonStart(new TestScenario { Gold = 731, StartFloor = 6, EndFloor = 10 }.CreateSave());
+
+        private IEnumerator CheckDirectDungeonStart(GameSaveData save)
+        {
+            yield return harness.LoadCommon(save);
+            if (save == null)
+            {
+                SaveSystem.ClearData();
+                Common.Instance.GameSaveData = null;
+            }
+            var savedJson = harness.Store.Read();
+            Assert.That(Common.Instance.TownAllyParent.childCount, Is.Zero);
+            yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
+                "Assets/Scenes/DungeonScene.unity",
+                new UnityEngine.SceneManagement.LoadSceneParameters(UnityEngine.SceneManagement.LoadSceneMode.Single));
+            yield return harness.WaitForIdle();
+            Assert.That(harness.Game.IsReady, Is.True);
+            Assert.That(harness.Ally, Is.Not.Null);
+            Assert.That(harness.Game.Allies.Count, Is.EqualTo(TownSceneLoader.Default.StartingParty.Count));
+            Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(1));
+            Assert.That(Common.Instance.GameSaveData.DungeonSaveData.EndFloor, Is.EqualTo(5));
+            Assert.That(Common.Instance.GameSaveData.IsSandbox, Is.True);
+            SaveSystem.SaveData(Common.Instance.GameSaveData);
+            Assert.That(harness.Store.Read(), Is.EqualTo(savedJson));
+        }
+
+        [UnityTest]
         public IEnumerator TestDungeonStartsWithoutOverwritingExistingSave() =>
             CheckTestDungeon(new TestScenario { Gold = 731, StartFloor = 6, EndFloor = 10 }.CreateSave());
 

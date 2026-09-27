@@ -16,13 +16,29 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 	public TileWorldDungeon GeneratedDungeon;
 
 	public DungeonFloor CurrentFloor { get; private set; }
+    public DungeonThemeCatalog ThemeCatalog;
+    public DungeonEncounterVisualSettings EncounterVisuals = new();
+    public DungeonVisualSelection CurrentVisuals { get; private set; }
+    private TileWorldCreatorAsset regularTemplate, throneTemplate;
+    private TileWorldCreatorAsset regularRuntime, throneRuntime;
+    private Color originalAmbient;
+    private Light themeLight;
+    private Color originalLightColor;
+    private float originalLightIntensity;
 
 	private void Awake()
 	{
-        TileWorldCreator.twcAsset = Instantiate(TileWorldCreator.twcAsset);
+        regularTemplate=TileWorldCreator.twcAsset;
+        throneTemplate=ThroneTileWorldCreator.twcAsset;
+        originalAmbient=RenderSettings.ambientLight;
+        themeLight=RenderSettings.sun;
+        if(themeLight==null) foreach(var light in FindObjectsByType<Light>(FindObjectsSortMode.None)) if(light.type==LightType.Directional) {themeLight=light;break;}
+        if(themeLight!=null) {originalLightColor=themeLight.color;originalLightIntensity=themeLight.intensity;}
+        TileWorldCreator.twcAsset = DungeonPresentation.CloneTemplate(TileWorldCreator.twcAsset);
         TileWorldCreator.twcAsset.hideFlags = HideFlags.DontSave;
-        ThroneTileWorldCreator.twcAsset = Instantiate(ThroneTileWorldCreator.twcAsset);
+        ThroneTileWorldCreator.twcAsset = DungeonPresentation.CloneTemplate(ThroneTileWorldCreator.twcAsset);
         ThroneTileWorldCreator.twcAsset.hideFlags = HideFlags.DontSave;
+        regularRuntime=TileWorldCreator.twcAsset;throneRuntime=ThroneTileWorldCreator.twcAsset;
 
 		TileWorldCreator.OnBlueprintLayersComplete += BluePrintComplete;
 		TileWorldCreator.OnBuildLayersComplete += BuildComplete;
@@ -33,14 +49,9 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 
 	private void OnDestroy()
 	{
-		TileWorldCreator.OnBlueprintLayersComplete -= BluePrintComplete;
-		TileWorldCreator.OnBuildLayersComplete -= BuildComplete;
-
-		ThroneTileWorldCreator.OnBlueprintLayersComplete -= BluePrintComplete;
-		ThroneTileWorldCreator.OnBuildLayersComplete -= BuildComplete;
-
-		if (TileWorldCreator != null && TileWorldCreator.twcAsset != null) Destroy(TileWorldCreator.twcAsset);
-		if (ThroneTileWorldCreator != null && ThroneTileWorldCreator.twcAsset != null) Destroy(ThroneTileWorldCreator.twcAsset);
+        if(TileWorldCreator!=null) {TileWorldCreator.OnBlueprintLayersComplete-=BluePrintComplete;TileWorldCreator.OnBuildLayersComplete-=BuildComplete;}
+        if(ThroneTileWorldCreator!=null) {ThroneTileWorldCreator.OnBlueprintLayersComplete-=BluePrintComplete;ThroneTileWorldCreator.OnBuildLayersComplete-=BuildComplete;}
+        DungeonPresentation.ReleaseTemplate(regularRuntime);DungeonPresentation.ReleaseTemplate(throneRuntime);
 	}
 
 	internal void GenerateDungeon()
@@ -50,6 +61,7 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 			Destroy(GeneratedDungeon.gameObject);
 		}
 		GeneratedDungeon = null;
+		PreparePresentation(TileWorldCreator, false);
 		SetCampaignSeed(TileWorldCreator);
 		TileWorldCreator.ExecuteAllBlueprintLayers();
 	}
@@ -61,9 +73,34 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 			Destroy(GeneratedDungeon.gameObject);
 		}
 		GeneratedDungeon = null;
+		PreparePresentation(ThroneTileWorldCreator, true);
 		SetCampaignSeed(ThroneTileWorldCreator);
 		ThroneTileWorldCreator.ExecuteAllBlueprintLayers();
 	}
+
+    private void PreparePresentation(TileWorldCreator creator, bool throne)
+    {
+        var common=Common.Instance;
+        CurrentVisuals=DungeonVisualSelection.ResolveRun(common.GameSaveData?.DungeonSaveData,common.CampaignContext,EncounterVisuals);
+        if(ThemeCatalog==null) ThemeCatalog=Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
+        if(!CurrentVisuals.IsLegacy && ThemeCatalog==null) throw new InvalidOperationException("Dungeon theme catalog is missing.");
+        TileWorldCreator.StopAllCoroutines();ThroneTileWorldCreator.StopAllCoroutines();
+        DungeonPresentation.ClearOutput(TileWorldCreator.worldObject);
+        if(ThroneTileWorldCreator.worldObject!=TileWorldCreator.worldObject) DungeonPresentation.ClearOutput(ThroneTileWorldCreator.worldObject);
+        bool useSeed=creator.twcAsset.useRandomSeed;
+        int seed=creator.twcAsset.randomSeed;
+        var owned=throne?throneRuntime:regularRuntime;
+        if(owned!=creator.twcAsset) DungeonPresentation.ReleaseTemplate(owned);
+        DungeonPresentation.ReleaseTemplate(creator.twcAsset);
+        creator.twcAsset=DungeonPresentation.CloneTemplate(throne ? throneTemplate : regularTemplate);
+        if(throne) throneRuntime=creator.twcAsset;else regularRuntime=creator.twcAsset;
+        creator.twcAsset.hideFlags=HideFlags.DontSave;
+        creator.twcAsset.useRandomSeed=useSeed;creator.twcAsset.randomSeed=seed;
+        ThemeCatalog?.Apply(creator.twcAsset,CurrentVisuals,throne);
+        RenderSettings.ambientLight=CurrentVisuals.IsLegacy ? originalAmbient : ThemeCatalog.Get(CurrentVisuals).Ambient;
+        if(themeLight!=null) {themeLight.color=CurrentVisuals.IsLegacy ? originalLightColor : ThemeCatalog.Get(CurrentVisuals).LightColor;
+            themeLight.intensity=CurrentVisuals.IsLegacy ? originalLightIntensity : ThemeCatalog.Get(CurrentVisuals).LightIntensity;}
+    }
 
     private void SetCampaignSeed(TileWorldCreator creator)
     {
@@ -82,6 +119,8 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 		if (!CoreLayoutCache.TryGetDungeon(_twc, out var floor))
 			throw new InvalidOperationException("The TWC asset has no Core Dungeon Layer actions; run Tools/Eternal Enigma/Core Layers/Rewrite Dungeon Assets.");
 		CurrentFloor = floor;
+        if(!CurrentVisuals.IsLegacy) DungeonPresentation.Decorate(_twc, floor, ThemeCatalog.Get(CurrentVisuals));
+        else DungeonPresentation.TrackLegacyMeshes(_twc.worldObject);
 		var newDungeon = Instantiate(TileWorldDungeonPrefab);
 		newDungeon.Setup(_twc, floor);
 		GeneratedDungeon = newDungeon;

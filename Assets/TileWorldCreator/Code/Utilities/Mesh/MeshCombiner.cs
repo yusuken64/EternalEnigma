@@ -326,6 +326,11 @@ namespace TWC.Utilities
 			}
 	
 			combinedMesh.CombineMeshes(finalMeshCombineInstancesList.ToArray(), false);
+			// CombineMeshes copies vertex data; these temporary material submeshes have no owner.
+			foreach (var part in finalMeshCombineInstancesList)
+			{
+				if (Application.isPlaying) Destroy(part.mesh); else DestroyImmediate(part.mesh);
+			}
 			GenerateUV(combinedMesh);
 			meshFilters[0].sharedMesh = combinedMesh;
 			DeactivateCombinedGameObjects(meshFilters);

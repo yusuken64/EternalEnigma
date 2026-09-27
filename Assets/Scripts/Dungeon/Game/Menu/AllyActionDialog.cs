@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -54,7 +54,7 @@ namespace JuicyChickenGames.Menu
 					Data = AllyStrategy.Aggresive,
 					ClickAction = () =>
 					{
-						Game.Instance.DoFloatingText("Aggresive", Color.white, _ally.VisualParent.transform.position);
+						Game.Instance.DoFloatingText("Aggressive", Color.white, _ally.VisualParent.transform.position);
 						_ally.AllyStrategy = AllyStrategy.Aggresive;
 						FaceCamDisplay.Unfollow(_ally.VisualParent);
 						MenuManager.Close(DynamicActionDialog);

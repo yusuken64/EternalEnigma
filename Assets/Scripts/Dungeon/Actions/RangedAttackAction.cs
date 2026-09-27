@@ -41,6 +41,7 @@ internal class RangedAttackAction : GameAction
 
 		if (rangedAttackTarget != null)
 		{
+            GameMessages.ForCharacter(attacker, $"{GameMessages.Name(attacker)} attacked {GameMessages.VisibleName(rangedAttackTarget)}!");
 			bool godmode = AutoplayRunner.GodmodeFor(attacker);
 			int resolvedDamage = godmode ? Math.Max(0, rangedAttackTarget.Vitals.HP) : damage;
 			bool hit = godmode || CombatMath.RollHit(attacker, rangedAttackTarget);

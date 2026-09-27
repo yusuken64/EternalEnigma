@@ -61,7 +61,7 @@ public class ApplyStatusEffectAction : GameAction
 
 		//TODO get sound from status
 		AudioManager.Instance.SoundEffects.Sleep.PlayAsSound();
-		Game.Instance.DoFloatingText($"{statusEffectPrefab.GetEffectName()}!", Color.yellow, caster.transform.position);
+		GameMessages.ForCharacter(target, $"{GameMessages.Name(target)}: {statusEffectPrefab.GetEffectName()}!");
 		yield return null;
 	}
 

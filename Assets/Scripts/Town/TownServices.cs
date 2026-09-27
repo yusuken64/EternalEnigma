@@ -102,6 +102,7 @@ public sealed class TownServices
         Player.Gold -= ally.RecruitCost;
         ally.EnsureStartingSkills();
         AllyRecruitDialog.Recruit(town, ally);
+        GameMessages.Post($"{ally.Name} joined the party.");
         town.SaveProgress();
         reason = null;
         return true;
@@ -118,6 +119,7 @@ public sealed class TownServices
         {
             if (ally.Id == Common.Instance.GameSaveData.ProtagonistId) { reason = "The protagonist stays in the party."; return false; }
             town.WriteSaveData(); context.Active.Remove(ally.Id);
+            GameMessages.Post($"{ally.Name} left the party.");
             town.RefreshCampaignParty(); reason = null; return true;
         }
         foreach (var item in ally.Equipment.GetEquippedItems().ToArray())
@@ -126,6 +128,7 @@ public sealed class TownServices
             Player.Inventory.Add(item);
         }
         AllyRecruitDialog.RemoveAlly(town, ally);
+        GameMessages.Post($"{ally.Name} left the party.");
         Player.EnsureControlledAlly();
         town.SaveProgress();
         reason = null;

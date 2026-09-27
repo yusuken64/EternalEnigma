@@ -113,7 +113,7 @@ public sealed class CampaignHUD : MonoBehaviour
                 var button = GameUISkin.Button(rosterContent, (selected ? "Travelling: " : "Invite: ") + name, Vector2.zero, Vector2.one, () => {
                     Town.WriteSaveData();
                     var ids = selected ? context.Active.Where(x => x != id).ToArray() : context.Active.Concat(new[] { id }).ToArray();
-                    if (context.SetParty(ids)) Town.RefreshCampaignParty();
+                    if (context.SetParty(ids)) { Town.RefreshCampaignParty(); GameMessages.Post($"{name} {(selected ? "left the travelling party" : "joined the party")}."); }
                 });
                 button.gameObject.AddComponent<LayoutElement>().preferredHeight = 60;
                 button.interactable = selected || context.Active.Count < 3;

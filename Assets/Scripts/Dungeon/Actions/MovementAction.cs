@@ -123,6 +123,7 @@ internal class AttackAction : GameAction
 
 		List<GameAction> ret = new();
 
+        GameMessages.ForCharacter(attacker, $"{GameMessages.Name(attacker)} attacked {GameMessages.VisibleName(target)}!");
         TrackAnimationTarget(target);
 
 		AddMetricsModification(attacker, (stats, vitals) =>
@@ -251,6 +252,7 @@ public class TakeDamageAction : GameAction
 			});
 		}
 
+        GameMessages.ForCharacter(target, miss ? $"{GameMessages.Name(target)} evaded the attack." : $"{GameMessages.Name(target)} took {damage} damage{(Critical ? " (critical)!" : ".")}");
 		if (target.Vitals.HP <= 0)
 		{
 			return new List<GameAction>()
@@ -270,12 +272,12 @@ public class TakeDamageAction : GameAction
 		if (!miss)
 		{
 			AudioManager.Instance.SoundEffects.Impact_flesh.PlayAsSound();
-			game.DoFloatingText(Critical ? damage + "!" : damage.ToString(), Color.red, target.VisualParent.gameObject.transform.position);
+
 		}
 		else
 		{
 			AudioManager.Instance.SoundEffects.Miss_Evade.PlayAsSound();
-			game.DoFloatingText("miss", Color.white, target.VisualParent.gameObject.transform.position);
+
 		}
 
 		if (doDamageAnimation && !miss)
@@ -350,7 +352,7 @@ public class TakeHealAction : GameAction
 		if (!miss)
 		{
 			AudioManager.Instance.SoundEffects.Impact_heal.PlayAsSound();
-			game.DoFloatingText(healing.ToString(), Color.green, target.VisualParent.gameObject.transform.position);
+			GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} recovered {healing} HP.");
 		}
 		else
 		{
@@ -454,6 +456,7 @@ public class DeathAction : GameAction
 			Game.Instance.DeadUnits.Add(target);
 		}
 
+        GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} {(downed ? "was downed" : "died")}.");
 		var gainXP = new AddXPAction(attacker, target.FinalStats.EXPOnKill);
 
 		float value = UnityEngine.Random.value;

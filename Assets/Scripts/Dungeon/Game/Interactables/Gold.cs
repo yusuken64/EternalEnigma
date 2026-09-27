@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Gold : Interactable
@@ -11,7 +11,7 @@ public class Gold : Interactable
 		int goldAmount = SeededAmount ?? GetGoldPickupAmount(game.PlayerController.Floor);
 		game.CurrentDungeon.RemoveInteractable(this);
 		AudioManager.Instance.SoundEffects.BuySell.PlayAsSound();
-		game.DoFloatingText($"{goldAmount} Gold", Color.yellow, character.transform.position);
+		GameMessages.Post($"Picked up {goldAmount} gold.");
 		game.PlayerController.Gold += goldAmount;
 
 		return new();

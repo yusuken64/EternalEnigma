@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -47,6 +47,7 @@ internal class UseInventoryItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if (!IsValid(character)) return new();
+        GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} used {item.ItemName}.");
 		var definition = Definition;
 		List<GameAction> effects;
 		if (definition?.Targeting == SkillTargeting.InventoryItem)
@@ -82,7 +83,7 @@ internal class UseInventoryItemAction : GameAction
 			yield return MissileTargeting.Animate(character, missileHit.Cell, Definition.MissileProjectilePrefab);
 		//TODO get sound from item
 		AudioManager.Instance.SoundEffects.UseItem.PlayAsSound();
-		Game.Instance.DoFloatingText(item.ItemName, Color.white, character.transform.position);
+
 		yield return new WaitForSecondsRealtime(1f);
 	}
 

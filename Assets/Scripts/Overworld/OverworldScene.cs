@@ -32,7 +32,24 @@ public sealed class OverworldScene : MonoBehaviour
     public CapabilitySet Held => Context.Held;
     public IEnumerable<string> CollectedKeys => gates.CollectedKeys;
     private OverworldGates gates;
-    public string Message { get; private set; } = "Generating campaign…";
+    private string message = "Generating campaign…";
+    public string Message
+    {
+        get => message;
+        private set
+        {
+            if (message == value) return;
+            message = value;
+            messageChanged = true;
+        }
+    }
+    private bool messageChanged;
+    private void FlushMessage()
+    {
+        if (!messageChanged) return;
+        messageChanged = false;
+        GameMessages.Post(message, coalesce: true);
+    }
     private HashSet<string> claimed => Context.Claimed;
     private HashSet<string> recruited => Context.Roster;
     private HashSet<string> active => Context.Active;
@@ -270,6 +287,8 @@ public sealed class OverworldScene : MonoBehaviour
                 SaveProgress();
                 return true;
             }
+        var locked = gates.Nearby(Position).FirstOrDefault(r => (routeId == null || r.Id == routeId) && gates.NeedsOpening(r));
+        if (locked != null) Message = gates.Hint(locked, Held);
         return false;
     }
 
@@ -306,6 +325,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !Context.IsSandbox || !locations.TryGetValue(Position, out var location) || location.Kind != LocationKind.Town || !recruited.Contains(id)) return false;
         var ids = active.Contains(id) ? active.Where(x => x != id).ToArray() : active.Concat(new[] { id }).ToArray();
         if (!Context.SetParty(ids)) return false;
+        GameMessages.Post("Travelling party updated.");
         RebuildFollowers(); SaveProgress(); RefreshGates(); return true;
     }
 
@@ -364,7 +384,7 @@ public sealed class OverworldScene : MonoBehaviour
             foreach (var visual in gateVisuals[gate.RouteId]) visual.SetActive(!gates.IsWalkable(gate.Cells[0], Held));
     }
 
-    private void LateUpdate() { if (IsReady) FollowCamera(); }
+    private void LateUpdate() { FlushMessage(); if (IsReady) FollowCamera(); }
     private void FollowCamera()
     {
         var target = Player.transform.position + CellVisualOffset;

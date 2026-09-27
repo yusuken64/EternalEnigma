@@ -21,6 +21,12 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Messages")]
+    public static void RunMessages() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.GameMessageTests", "EternalEnigma.Tests.OverworldSceneTests", "EternalEnigma.Tests.InventorySkillTargetingTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Message Display")]
+    public static void RunMessageDisplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.GameMessageTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Biome Regression")]
     public static void RunBiomeRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.BiomeSceneryTests", "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.SkillMovementTests", "EternalEnigma.Tests.InventorySkillTargetingTests", "EternalEnigma.Tests.DungeonThemeTransitionTests", "EternalEnigma.Tests.DungeonThemeExplorerTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Biome Scenery")]

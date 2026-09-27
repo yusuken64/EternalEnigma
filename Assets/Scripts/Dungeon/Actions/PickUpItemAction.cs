@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,6 +22,7 @@ internal class PickUpItemAction : GameAction
 		canAdd = game.PlayerController.Inventory.CanAdd();
 		if (canAdd)
 		{
+            GameMessages.Post($"Picked up {droppedItem.InventoryItem.ItemName}.");
 			droppedItem.Opened = true;
 			AudioManager.Instance.SoundEffects.Unequip.PlayAsSound();
 			game.PlayerController.Inventory.Add(droppedItem.InventoryItem);

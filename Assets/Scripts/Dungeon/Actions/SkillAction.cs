@@ -36,6 +36,7 @@ internal class SkillAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if (!IsValid(character)) return new();
+        GameMessages.ForCharacter(caster, $"{GameMessages.Name(caster)} used {skill.SkillName}!");
 		bool inventoryTargeting = skill.Targeting == SkillTargeting.InventoryItem;
 		affected = inventoryTargeting ? new List<Character> { caster } : skill.GetAffectedCharacters(caster, target);
 		if (skill.Targeting == SkillTargeting.Missile)

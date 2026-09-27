@@ -370,6 +370,7 @@ public class PlayerController : MonoBehaviour
         }
         if (newAlly != null)
         {
+            if (oldAlly != null && oldAlly != newAlly) GameMessages.Post($"Now controlling {GameMessages.Name(newAlly)}.");
             ControlledAlly = newAlly;
             newAlly.IsWaitingForPlayerInput = true;
             CameraController.SetFollowTarget(newAlly.CirlcleRenderer.transform);

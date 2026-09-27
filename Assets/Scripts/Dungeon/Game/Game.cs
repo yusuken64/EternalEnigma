@@ -411,14 +411,11 @@ Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventor
 
 	public void DoFloatingText(string message, Color color, Vector3 worldPosition)
 	{
-		var text = Instantiate(FloatingTextPrefab, this.transform);
-		text.text = message;
-		text.color = color;
-		text.gameObject.transform.position = worldPosition;
-
-		Vector3 endValue = worldPosition + new Vector3(0, 0, -5.47f);
-		text.gameObject.transform.DOMove(endValue, 1.0f)
-			.SetEase(Ease.OutBounce);
-		Destroy(text.gameObject, 1.3f);
+        var subject = AllCharacters.Where(c => c != null)
+            .OrderBy(c => Vector3.SqrMagnitude((c.VisualParent != null ? c.VisualParent.transform.position : c.transform.position) - worldPosition))
+            .FirstOrDefault();
+        if (subject != null && Vector3.Distance((subject.VisualParent != null ? subject.VisualParent.transform.position : subject.transform.position), worldPosition) < 2f)
+            GameMessages.ForCharacter(subject, $"{GameMessages.Name(subject)}: {message}");
+        else if (FogOverlay.Instance == null || FogOverlay.Instance.IsCurrentlyVisible(worldPosition)) GameMessages.Post(message);
 	}
 }

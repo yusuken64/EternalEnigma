@@ -26,7 +26,9 @@ namespace EternalEnigma.Tests
             Assert.That(stage.GetComponentsInChildren<Collider>(true), Is.Empty);
             Assert.That(stage.GetComponentsInChildren<MonoBehaviour>(true).All(m => m is MenuSceneMotion), Is.True);
             var motions = stage.GetComponentsInChildren<MenuSceneMotion>();
-            Assert.That(motions.Length, Is.EqualTo(5));
+            Assert.That(motions.Length, Is.EqualTo(11));
+            Assert.That(RenderSettings.skybox, Is.Not.Null);
+            Assert.That(stage.transform.Find("Distant castle and mountains"), Is.Not.Null);
             Assert.That(motions.All(m => m.Clip != null && m.Animator != null && !m.Animator.applyRootMotion), Is.True);
             var positions = motions.Select(m => m.transform.position).ToArray();
             var bat = motions.First(m => m.Hover > 0);
@@ -55,22 +57,26 @@ namespace EternalEnigma.Tests
             Common.Instance.GlobalSettings.Exit_Clicked(); yield return null;
             Assert.That(menu.NavigationHandler.gameObject.activeInHierarchy, Is.True);
             menu.StartGame_Clicked(); yield return null;
-            Assert.That(Object.FindFirstObjectByType<ProtagonistClassPicker>(), Is.Not.Null);
+            Assert.That(Object.FindFirstObjectByType<ProtagonistHeroPicker>(), Is.Not.Null);
             // Exit is only invoked in a player; verify the retained serialized handler in editor.
             Assert.That(Object.FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .Any(b => Enumerable.Range(0, b.onClick.GetPersistentEventCount()).Any(i =>
                     b.onClick.GetPersistentTarget(i) == menu && b.onClick.GetPersistentMethodName(i) == nameof(MainMenu.Exit_Clicked))), Is.True);
-            var picker = Object.FindFirstObjectByType<ProtagonistClassPicker>();
+            var picker = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
             picker.GetComponentsInChildren<Button>().Single(b => b.GetComponentInChildren<TMPro.TMP_Text>()?.text == "Back").onClick.Invoke();
             yield return null;
-            Assert.That(menu.NavigationHandler.gameObject.activeInHierarchy, Is.True, "Cancelling class selection restores the menu.");
+            Assert.That(menu.NavigationHandler.gameObject.activeInHierarchy, Is.True, "Cancelling hero selection restores the menu.");
             menu.StartGame_Clicked(); yield return null;
-            picker = Object.FindFirstObjectByType<ProtagonistClassPicker>();
-            picker.transform.Find("Classes").GetComponentInChildren<Button>().onClick.Invoke();
-            yield return null;
-            picker.GetComponentsInChildren<Button>().Single(b => b.GetComponentInChildren<TMPro.TMP_Text>()?.text == "Begin with primary only").onClick.Invoke();
-            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "new campaign from class selection");
-            Assert.That(Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData[0].PrimaryClassId, Is.Not.Empty);
+            picker = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
+            var hero = (menu.TownConfiguration ?? TownSceneLoader.Default).AllyCatalog[1];
+            picker.GetComponentsInChildren<Button>().Single(b => b.name.StartsWith(hero.Name + "  ")).onClick.Invoke();
+            picker.GetComponentsInChildren<Button>().Single(b => b.name == "Begin journey").onClick.Invoke();
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "new campaign from hero selection");
+            Assert.That(Common.Instance.GameSaveData.ProtagonistId, Is.EqualTo(hero.Id));
+            Assert.That(Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData[0].PrimaryClassId, Is.EqualTo(hero.PrimaryClass.Id));
+            var townHero = Object.FindFirstObjectByType<Town>().TownPlayer.RecruitedAllies[0];
+            Assert.That(townHero.Id, Is.EqualTo(hero.Id));
+            Assert.That(townHero.PrimaryClass.Id, Is.EqualTo(hero.PrimaryClass.Id));
             Assert.That(Common.Instance.Travel.ReturnToMenu(), Is.True);
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>() != null && !Common.Instance.Travel.IsTransitioning, "return to animated menu");
             Assert.That(GameObject.Find("Menu Stage"), Is.Not.Null);

@@ -3,9 +3,17 @@
 `Assets/Scenes/MainMenu.unity` contains an editable `Menu Stage`: the MC03 hero
 with staff and shield, a red slime, three purple bats, dungeon tiles, columns,
 burning wall torches, a chest, stacked crates, an urn, a skull, and fallen masonry.
+Two companions join the foreground party, with a giant demon king, a flying
+dragon, and skeleton sentinels behind them. A modular, five-tower castle and
+faceted distant mountains fill the background. A menu-specific procedural
+twilight skybox adds drifting clouds, stars, and a moon; distance fog separates
+the castle from the foreground.
 The title, menu buttons, navigation, and click handlers remain on the original
 **Screen Space - Overlay** canvas. The old screenshot is no longer referenced by
 the scene; its source image remains available as the composition reference.
+New Journey opens a paged roster of existing heroes. Choosing one previews their
+model and fixed class or classes; Begin Journey starts the campaign with that hero
+as protagonist. The default hero remains available to debug launches.
 
 The stage uses visual models only. Menu material variants live in
 `Assets/Art/MainMenu`; editing them does not recolor gameplay assets.

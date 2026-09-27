@@ -162,6 +162,13 @@ public static class HarnessTestRunner
     public static void RunMainMenuPresentation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.MainMenuPresentationTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Hero Selection")]
+    public static void RunHeroSelection() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignPresentationTests.HeroPickerUsesRealArtworkAndBackDoesNotStartCampaign",
+        "EternalEnigma.Tests.CampaignPresentationTests.SelectedHeroConfirmsExactlyOnce",
+        "EternalEnigma.Tests.ClassAssignmentTests.NewSaveUsesTheChosenHeroesFixedClasses",
+        "EternalEnigma.Tests.MainMenuPresentationTests.VisualsLoopWithoutGameplayAndMenuRemainsUsable");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Startup")]
     public static void RunDungeonStartup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.MenuSceneNavigationTests.DirectDungeonStartCreatesPartyWithoutASave",

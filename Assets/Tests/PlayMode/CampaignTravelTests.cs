@@ -34,7 +34,7 @@ namespace EternalEnigma.Tests
         private IEnumerator StartCampaign()
         {
             yield return harness.LoadMainMenu(null);
-            Object.FindFirstObjectByType<MainMenu>().StartGame(null, null);
+            Object.FindFirstObjectByType<MainMenu>().StartGame();
             yield return WaitTown();
         }
         [UnityTest]

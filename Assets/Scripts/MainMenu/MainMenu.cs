@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
 
 	public NavigationHandler NavigationHandler;
 
-	private ProtagonistClassPicker classPicker;
+	private ProtagonistHeroPicker heroPicker;
 
 	private void Start()
 	{
@@ -40,42 +40,37 @@ public class MainMenu : MonoBehaviour
 
 	public void StartGame_Clicked()
 	{
-        if (Common.Instance.Travel.IsTransitioning || classPicker != null) return;
-        var catalog = ClassCatalog.Load();
-        var classes = catalog != null ? catalog.Classes.Where(c => c != null).ToList() : new List<ClassDefinition>();
-        if (classes.Count == 0) { StartGame(null, null); return; }
-        NavigationHandler.gameObject.SetActive(false);
-        classPicker = ProtagonistClassPicker.Show(classes,
-            (primary, secondary) => { classPicker = null; NavigationHandler.gameObject.SetActive(true); StartGame(primary, secondary); },
-            () => { classPicker = null; NavigationHandler.gameObject.SetActive(true); StartButton.GetComponent<Button>().Select(); });
+		if (Common.Instance.Travel.IsTransitioning || heroPicker != null) return;
+		var configuration = TownConfiguration ?? TownSceneLoader.Default;
+		configuration.Validate();
+		NavigationHandler.gameObject.SetActive(false);
+		heroPicker = ProtagonistHeroPicker.Show(configuration.AllyCatalog,
+			hero => { heroPicker = null; NavigationHandler.gameObject.SetActive(true); StartGame(hero); },
+			() => { heroPicker = null; NavigationHandler.gameObject.SetActive(true); StartButton.GetComponent<Button>().Select(); });
 	}
 
-	// Starts a campaign with the protagonist's chosen classes (null keeps the prefab's class).
-	public void StartGame(ClassDefinition primary, ClassDefinition secondary)
+	public void StartGame(TownAlly hero = null)
 	{
-        if (Common.Instance.Travel.IsTransitioning) return;
-		Common.Instance.GameSaveData = CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue), primary, secondary);
+		if (Common.Instance.Travel.IsTransitioning) return;
+		Common.Instance.GameSaveData = CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue), hero);
 		Common.Instance.Travel.NewCampaign(Common.Instance.GameSaveData.TownSaveData.TownSeed);
 	}
 
 	private GameSaveData NewSaveData()
 		=> CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue));
 
-	public GameSaveData CreateNewSave(int seed, ClassDefinition primary = null, ClassDefinition secondary = null)
+	public GameSaveData CreateNewSave(int seed, TownAlly hero = null)
 	{
 		var gameSaveData = new GameSaveData();
         var configuration = TownConfiguration ?? TownSceneLoader.Default;
         configuration.Validate();
+		var protagonist = hero ?? configuration.StartingParty[0];
+		if (!configuration.AllyCatalog.Contains(protagonist))
+			throw new System.ArgumentException("The chosen hero must belong to the town roster.", nameof(hero));
         gameSaveData.TownSaveData.ConfigurationId = configuration.Id;
-        gameSaveData.TownSaveData.RecruitedAlliesData = configuration.StartingParty.Select(a => HeroClassBinding.FromPrefab(a,
+		gameSaveData.ProtagonistId = protagonist.Id;
+		gameSaveData.TownSaveData.RecruitedAlliesData = new[] { protagonist }.Select(a => HeroClassBinding.FromPrefab(a,
             new TownAllyData { AllyId = a.Id, AllyName = a.Name, Skills = a.Skills != null ? new(a.Skills) : new() })).ToList();
-        // The first starting-party member is the protagonist; their chosen class overrides the prefab's.
-        var protagonist = gameSaveData.TownSaveData.RecruitedAlliesData.FirstOrDefault();
-        if (protagonist != null && primary != null)
-        {
-            protagonist.PrimaryClassId = primary.Id;
-            protagonist.SecondaryClassId = secondary != null && secondary.Id != primary.Id ? secondary.Id : "";
-        }
 		gameSaveData.TownSaveData.TownSeed = seed;
 
         var supplies = Common.Instance.ItemManager.StartingItems.Select(i => i.AsInventoryItem(null)).ToList();

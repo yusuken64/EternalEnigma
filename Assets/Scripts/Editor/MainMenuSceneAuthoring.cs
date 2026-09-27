@@ -35,14 +35,17 @@ public static class MainMenuSceneAuthoring
             foreach (var image in scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Image>(true)).ToArray())
                 if (image.sprite != null && AssetDatabase.GetAssetPath(image.sprite).Contains("Movie_002")) Object.DestroyImmediate(image.gameObject);
             var stage = new GameObject("Menu Stage").transform;
-            RenderSettings.skybox = null;
+            RenderSettings.skybox = SaveMaterial(new Material(Shader.Find("EternalEnigma/Menu Twilight Sky")), "TwilightSky");
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(.42f, .42f, .46f);
-            RenderSettings.fog = false;
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Linear;
+            RenderSettings.fogColor = new Color(.14f, .12f, .22f);
+            RenderSettings.fogStartDistance = 22; RenderSettings.fogEndDistance = 105;
             var camera = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Camera>()).First(c => c.CompareTag("MainCamera"));
             camera.orthographic = false;
-            camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = Color.black;
-            camera.nearClipPlane = .1f; camera.farClipPlane = 80;
+            camera.clearFlags = CameraClearFlags.Skybox;
+            camera.nearClipPlane = .1f; camera.farClipPlane = 140;
             camera.transform.position = new Vector3(0, .65f, 10);
             camera.transform.rotation = Quaternion.Euler(-15, 180, 0);
             var framing = camera.GetComponent<MenuCameraFraming>() ?? camera.gameObject.AddComponent<MenuCameraFraming>();
@@ -71,7 +74,7 @@ public static class MainMenuSceneAuthoring
 
             var slime = Visual(AssetDatabase.LoadAssetAtPath<GameObject>(Monsters + "CommonStuffs/Prefab/Wave01/CharacterMaskTint/SlimePAMaskTint.prefab"), stage, "Oversized red slime");
             var slimeClip = Clip(Monsters + "RPGMonsterWave01Polyart/Animations/Slime/IdleNormal_Slime_Anim.fbx");
-            Pose(slime, slimeClip); Fit(slime, new Vector3(-2.2f, -.1f, 1), 6.1f, 45);
+            Pose(slime, slimeClip); Fit(slime, new Vector3(-3.25f, -.1f, .5f), 5.35f, 45);
             slime.transform.localScale = Vector3.Scale(slime.transform.localScale, new Vector3(1.05f, 1, 1));
             Variants(slime, "Slime", new Color(.64f, .018f, .008f));
             Motion(slime, slimeClip, .65f, 0, 0, .018f);
@@ -100,7 +103,7 @@ public static class MainMenuSceneAuthoring
                 Variants(wall, "Wall", null);
             }
             var floorPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_prefabs/05_dungeon_groundTile.prefab");
-            for (int x = -4; x <= 4; x++) for (int z = -2; z <= 2; z++)
+            for (int x = -6; x <= 6; x++) for (int z = -4; z <= 3; z++)
             {
                 var floor = Visual(floorPrefab, stage, $"Stone floor {x},{z}");
                 var bounds = Bounds(floor);
@@ -110,6 +113,8 @@ public static class MainMenuSceneAuthoring
                 Variants(floor, "Floor", null);
             }
             AddScenery(stage);
+            AddCast(stage);
+            AddCastle(stage);
             AssetDatabase.SaveAssets();
             EditorSceneManager.SaveScene(scene);
             Capture();
@@ -118,6 +123,83 @@ public static class MainMenuSceneAuthoring
         {
             if (previous.IsValid()) SceneManager.SetActiveScene(previous);
             if (opened) EditorSceneManager.CloseScene(scene, true);
+        }
+    }
+
+    static void AddCast(Transform stage)
+    {
+        var cast = new GameObject("Heroes and looming enemies").transform;
+        cast.SetParent(stage, false);
+        var idle = Clip(Heroes + "Animation/NoWeapon/Idle_Normal_NoWeapon.fbx");
+        foreach (var entry in new[] {
+            (Prefab: "Ally_MC01", Name: "Golden warrior", Position: new Vector3(1.1f, 0, -.4f), Height: 2.65f, Yaw: 12f),
+            (Prefab: "Ally_MC13", Name: "Mage companion", Position: new Vector3(.2f, 0, -3.5f), Height: 3.6f, Yaw: -18f) })
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<TownAlly>("Assets/Prefabs/Town/Allies/" + entry.Prefab + ".prefab");
+            var hero = Visual(prefab.AnimatedModel, cast, entry.Name);
+            Pose(hero, idle); Fit(hero, entry.Position, entry.Height, entry.Yaw);
+            Variants(hero, "Companion", null);
+            Motion(hero, idle, .65f, entry.Height, 0, 0);
+        }
+        Monster(cast, "Demon king above the ramparts", "Wave03/CharacterPA/DemonKingPADefault.prefab",
+            "RPGMonsterWave03Polyart/Animation/DemonKing/DemonKing_IdleNormal.fbx", new Vector3(10, 0, -16), 15, -20, 0);
+        Monster(cast, "Dragon over the castle", "Wave01/CharacterPA/DragonPADefault.prefab",
+            "RPGMonsterWave01Polyart/Animations/Dragon/FlyForward_Dragon_Anim.fbx", new Vector3(-9, 11, -23), 9, 30, .06f);
+        for (int i = 0; i < 2; i++)
+            Monster(cast, "Skeleton sentinel " + (i + 1), "Wave01/CharacterPA/SkeletonPADefault.prefab",
+                "RPGMonsterWave01Polyart/Animations/Skeleton/IdleNormal_Skeleton_Anim.fbx",
+                new Vector3(i == 0 ? 7.8f : -7.8f, -.1f, -6), 3.4f, i == 0 ? -20 : 20, 0);
+    }
+
+    static void Monster(Transform parent, string name, string prefabPath, string animationPath, Vector3 position, float height, float yaw, float hover)
+    {
+        var model = Visual(AssetDatabase.LoadAssetAtPath<GameObject>(Monsters + "CommonStuffs/Prefab/" + prefabPath), parent, name);
+        var clip = Clip(Monsters + animationPath);
+        Pose(model, clip); Fit(model, position, height, yaw);
+        Variants(model, "BackdropEnemy", null);
+        Motion(model, clip, .6f, .35f, hover, 0);
+    }
+
+    static void AddCastle(Transform stage)
+    {
+        var castle = new GameObject("Distant castle and mountains").transform;
+        castle.SetParent(stage, false);
+        const string kit = "Assets/Art/KennyNL/Castle Kit/Models/";
+        GameObject Part(string mesh, string name, Vector3 position, float height, bool roof = false)
+        {
+            var part = Visual(AssetDatabase.LoadAssetAtPath<GameObject>(kit + mesh + ".fbx"), castle, name);
+            Fit(part, position, height, 0);
+            foreach (var renderer in part.GetComponentsInChildren<Renderer>())
+                renderer.sharedMaterials = renderer.sharedMaterials.Select(source =>
+                {
+                    var material = source != null ? new Material(source) : new Material(Shader.Find("Standard"));
+                    if (material.HasProperty("_Color")) material.SetColor("_Color", roof ? new Color(.3f, .4f, .65f) : new Color(.46f, .49f, .64f));
+                    return SaveMaterial(material, (roof ? "CastleRoof_" : "CastleStone_") + (source != null ? source.name : "Default"));
+                }).ToArray();
+            return part;
+        }
+        for (int i = -4; i <= 4; i++)
+            Part("wall", "Castle curtain wall " + i, new Vector3(i * 4.5f, 0, -35), 9);
+        foreach (int i in new[] { -2, -1, 0, 1, 2 })
+        {
+            float x = i * 9, z = i == 0 ? -39 : -35;
+            int levels = i == 0 ? 5 : (Mathf.Abs(i) == 1 ? 3 : 4);
+            Part("towerSquareBase", "Tower " + i + " foundation", new Vector3(x, 0, z), 4);
+            for (int level = 1; level < levels; level++)
+                Part("towerSquareMidWindows", "Tower " + i + " level " + level, new Vector3(x, level * 4, z), 4);
+            Part("towerSquareTopRoofHigh", "Tower " + i + " spire", new Vector3(x, levels * 4, z), i == 0 ? 7 : 5, true);
+            Part("flagBlue", "Tower " + i + " banner", new Vector3(x, levels * 4 + (i == 0 ? 6 : 4), z), 2.5f, true);
+        }
+        Part("gate", "Castle gate", new Vector3(0, 0, -32), 8);
+        var rockPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/EnvironmentKit/Prefabs/Mountain/Rock.prefab");
+        var mountainMaterial = new Material(Shader.Find("Standard")) { color = new Color(.12f, .15f, .23f) };
+        mountainMaterial.SetFloat("_Glossiness", 0);
+        mountainMaterial = SaveMaterial(mountainMaterial, "DistantMountains");
+        for (int i = -3; i <= 3; i++)
+        {
+            var rock = Visual(rockPrefab, castle, "Distant mountain " + i);
+            Fit(rock, new Vector3(i * 17, -3, -59 - Mathf.Abs(i) * 2), 17 + Mathf.Abs(i % 2) * 7, i * 37);
+            foreach (var renderer in rock.GetComponentsInChildren<Renderer>()) renderer.sharedMaterial = mountainMaterial;
         }
     }
 
@@ -131,7 +213,7 @@ public static class MainMenuSceneAuthoring
         Prop(dungeon + "treasureChest.prefab", scenery, "Forgotten treasure chest", new Vector3(1.8f, -.1f, -1.8f), 1.05f, 75);
         PaletteProp("Crate", scenery, "Crates beside the wall", new Vector3(5.7f, -.1f, -2.1f), .95f, -15);
         PaletteProp("Crate", scenery, "Stacked crate", new Vector3(5.8f, .85f, -2.1f), .7f, 8);
-        PaletteProp("Urn", scenery, "Old stoneware urn", new Vector3(.7f, -.1f, 2), .6f, 15);
+        PaletteProp("Urn", scenery, "Old stoneware urn", new Vector3(3, -.1f, 2), .6f, 15);
         Prop("Assets/Art/3D Props - Adorable Items/Adorable 3D Items/Prefabs/skull.prefab", scenery,
             "Skull on the floor", new Vector3(2, -.1f, 2), .28f, 25);
         for (int i = 0; i < 5; i++)
@@ -214,9 +296,15 @@ public static class MainMenuSceneAuthoring
     static void Fit(GameObject model, Vector3 bottomCenter, float height, float yaw)
     {
         model.transform.rotation = Quaternion.Euler(0, yaw, 0);
-        model.transform.localScale *= height / Bounds(model).size.y;
         var bounds = Bounds(model);
-        model.transform.position += bottomCenter - new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+        float scale = height / bounds.size.y;
+        var pivot = model.transform.position;
+        var bottom = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+        // Measure once, then scale about the model pivot. Baking a skinned mesh
+        // again before Unity has refreshed its skin matrices gives stale bounds.
+        var scaledBottom = pivot + (bottom - pivot) * scale;
+        model.transform.localScale *= scale;
+        model.transform.position += bottomCenter - scaledBottom;
     }
     static void Motion(GameObject model, AnimationClip clip, float speed, float phase, float hover, float wobble)
     {

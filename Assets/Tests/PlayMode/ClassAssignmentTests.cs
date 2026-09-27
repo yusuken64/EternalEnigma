@@ -38,22 +38,19 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator NewSaveStoresChosenProtagonistClass()
+        public IEnumerator NewSaveUsesTheChosenHeroesFixedClasses()
         {
             yield return harness.LoadMainMenu(null);
             var menu = Object.FindFirstObjectByType<MainMenu>();
 
-            // Test with chosen primary and secondary classes
-            var save = menu.CreateNewSave(7, Class("warrior"), Class("scout"));
-            Assert.That(save.TownSaveData.RecruitedAlliesData[0].PrimaryClassId, Is.EqualTo("warrior"));
-            Assert.That(save.TownSaveData.RecruitedAlliesData[0].SecondaryClassId, Is.EqualTo("scout"));
+            var chosen = TownSceneLoader.Default.AllyCatalog.First(a => a.SecondaryClass != null);
+            var save = menu.CreateNewSave(7, chosen);
+            Assert.That(save.ProtagonistId, Is.EqualTo(chosen.Id));
+            Assert.That(save.TownSaveData.RecruitedAlliesData.Single().AllyId, Is.EqualTo(chosen.Id));
+            Assert.That(save.TownSaveData.RecruitedAlliesData[0].PrimaryClassId, Is.EqualTo(chosen.PrimaryClass.Id));
+            Assert.That(save.TownSaveData.RecruitedAlliesData[0].SecondaryClassId, Is.EqualTo(chosen.SecondaryClass.Id));
 
-            // Test with same primary and secondary (should clear secondary)
-            save = menu.CreateNewSave(7, Class("warrior"), Class("warrior"));
-            Assert.That(save.TownSaveData.RecruitedAlliesData[0].PrimaryClassId, Is.EqualTo("warrior"));
-            Assert.That(save.TownSaveData.RecruitedAlliesData[0].SecondaryClassId, Is.EqualTo(""));
-
-            // Test with no classes (should match prefab defaults)
+            // Debug launches and existing callers without a choice keep the default hero.
             save = menu.CreateNewSave(7);
             var prefab = TownSceneLoader.Default.StartingParty[0];
             string expectedPrimary = prefab.PrimaryClass != null ? prefab.PrimaryClass.Id : "";

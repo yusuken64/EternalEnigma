@@ -11,6 +11,10 @@ public sealed class ProtagonistPreview : MonoBehaviour
 
     public void Show(TownAlly prefab, RawImage destination)
     {
+        if (view != null) view.targetTexture = null;
+        if (texture != null) { texture.Release(); Destroy(texture); texture = null; }
+        if (stage != null) { stage.SetActive(false); Destroy(stage); stage = null; }
+        destination.texture = null;
         if (prefab == null || prefab.AnimatedModel == null) return;
         stage = new GameObject("Protagonist portrait stage");
         stage.transform.position = new Vector3(10000, 10000, 10000);

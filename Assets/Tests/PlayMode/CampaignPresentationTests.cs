@@ -19,50 +19,48 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup() { yield return harness.Cleanup(); }
 
         [UnityTest]
-        public IEnumerator PickerUsesRealArtworkAndBackDoesNotStartCampaign()
+        public IEnumerator HeroPickerUsesRealArtworkAndBackDoesNotStartCampaign()
         {
             var menu = Object.FindFirstObjectByType<MainMenu>();
             menu.StartGame_Clicked();
             yield return null;
-            var picker = Object.FindFirstObjectByType<ProtagonistClassPicker>();
+            var picker = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
             Assert.That(picker, Is.Not.Null);
             Assert.That(picker.GetComponentInChildren<RawImage>().texture, Is.TypeOf<RenderTexture>());
-            var classes = ClassCatalog.Load().Classes;
-            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(classes.Count + 1));
-            foreach (var cls in classes) Assert.That(Resources.Load<Sprite>("UI/" + cls.DisplayName), Is.Not.Null, cls.DisplayName);
+            var heroes = menu.TownConfiguration != null ? menu.TownConfiguration.AllyCatalog : TownSceneLoader.Default.AllyCatalog;
+            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(8 + 4));
+            Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "Choose your hero"), Is.True);
             Canvas.ForceUpdateCanvases();
             Directory.CreateDirectory("Temp/UIValidation");
-            ScreenCapture.CaptureScreenshot("Temp/UIValidation/primary.png");
+            ScreenCapture.CaptureScreenshot("Temp/UIValidation/hero-picker.png");
             yield return new WaitForSecondsRealtime(.5f);
-            var first = picker.GetComponentsInChildren<Button>().First(b => b.name == classes[0].DisplayName);
-            first.onClick.Invoke();
+            picker.GetComponentsInChildren<Button>().Single(b => b.name == "Next").onClick.Invoke();
             yield return null;
-            Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "Choose a secondary class"), Is.True);
-            ScreenCapture.CaptureScreenshot("Temp/UIValidation/secondary.png");
-            yield return new WaitForSecondsRealtime(.5f);
+            Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "2 / 3"), Is.True);
+            Assert.That(picker.GetComponentsInChildren<Button>().Any(b => b.name.Contains(heroes[8].Name)), Is.True);
+            picker.GetComponentsInChildren<Button>().Single(b => b.name == "Previous").onClick.Invoke();
+            yield return null;
+            Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "1 / 3"), Is.True);
             picker.GetComponentsInChildren<Button>().Single(b => b.name == "Back").onClick.Invoke();
             yield return null;
-            Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "Choose your primary class"), Is.True);
-            picker.GetComponentsInChildren<Button>().Single(b => b.name == "Back").onClick.Invoke();
-            yield return null;
-            Assert.That(Object.FindFirstObjectByType<ProtagonistClassPicker>(), Is.Null);
+            Assert.That(Object.FindFirstObjectByType<ProtagonistHeroPicker>(), Is.Null);
             Assert.That(Object.FindFirstObjectByType<ProtagonistPreview>(), Is.Null);
             Assert.That(menu.NavigationHandler.gameObject.activeSelf, Is.True);
         }
 
         [UnityTest]
-        public IEnumerator PrimaryAndSecondaryConfirmExactlyOnce()
+        public IEnumerator SelectedHeroConfirmsExactlyOnce()
         {
             int confirmations = 0;
-            var classes = ClassCatalog.Load().Classes;
-            ClassDefinition primary = null, secondary = null;
-            var picker = ProtagonistClassPicker.Show(classes, (p, s) => { primary = p; secondary = s; confirmations++; }, () => Assert.Fail("Unexpected cancel"));
-            picker.GetComponentsInChildren<Button>().Single(b => b.name == classes[0].DisplayName).onClick.Invoke();
+            var heroes = TownSceneLoader.Default.AllyCatalog;
+            TownAlly chosen = null;
+            var picker = ProtagonistHeroPicker.Show(heroes, hero => { chosen = hero; confirmations++; }, () => Assert.Fail("Unexpected cancel"));
+            picker.GetComponentsInChildren<Button>().Single(b => b.name.StartsWith(heroes[1].Name + "  ")).onClick.Invoke();
             yield return null;
-            var second = picker.GetComponentsInChildren<Button>().Single(b => b.name == classes[1].DisplayName);
-            second.onClick.Invoke(); second.onClick.Invoke();
+            var begin = picker.GetComponentsInChildren<Button>().Single(b => b.name == "Begin journey");
+            begin.onClick.Invoke(); begin.onClick.Invoke();
             Assert.That(confirmations, Is.EqualTo(1));
-            Assert.That(primary, Is.SameAs(classes[0])); Assert.That(secondary, Is.SameAs(classes[1]));
+            Assert.That(chosen, Is.SameAs(heroes[1]));
             yield return null;
         }
 
@@ -91,7 +89,7 @@ namespace EternalEnigma.Tests
         public IEnumerator CampaignUsesTravelHudAndPartyCanCloseBeforeLeavingTown()
         {
             harness.TimeoutSeconds = 100;
-            Object.FindFirstObjectByType<MainMenu>().StartGame(null, null);
+            Object.FindFirstObjectByType<MainMenu>().StartGame();
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "campaign town");
             yield return new WaitForSecondsRealtime(.5f);
             var town = Object.FindFirstObjectByType<Town>();

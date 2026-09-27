@@ -55,6 +55,7 @@ public static class HeroPortraitAuthoring
         if (open.IsValid() && open.isLoaded)
         {
             CaptureAll(open.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<HeroPortraitStudio>()).Single());
+            EditorSceneManager.SaveScene(open);
             return;
         }
         Directory.CreateDirectory(Folder);
@@ -80,7 +81,7 @@ public static class HeroPortraitAuthoring
             var camera = new GameObject("Portrait Camera").AddComponent<Camera>();
             camera.transform.SetParent(studio.transform);
             camera.orthographic = true; camera.nearClipPlane = .01f; camera.farClipPlane = 50;
-            camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.10f, .13f, .18f, 1);
+            camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = Color.clear;
             camera.cullingMask = 1 << 31; camera.targetTexture = output;
             studio.PortraitCamera = camera;
             Light(studio.transform, "Key Light", new Vector3(25, 155, 0), 1.2f);
@@ -115,6 +116,7 @@ public static class HeroPortraitAuthoring
         var image = new Texture2D(studio.Output.width, studio.Output.height, TextureFormat.RGBA32, false);
         try
         {
+            studio.PrepareCapture();
             studio.PortraitCamera.Render(); RenderTexture.active = studio.Output;
             image.ReadPixels(new Rect(0, 0, image.width, image.height), 0, 0); image.Apply();
             File.WriteAllBytes(path, image.EncodeToPNG());
@@ -123,6 +125,7 @@ public static class HeroPortraitAuthoring
         AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
         var importer = (TextureImporter)AssetImporter.GetAtPath(path);
         importer.textureType = TextureImporterType.Sprite; importer.spriteImportMode = SpriteImportMode.Single;
+        importer.alphaSource = TextureImporterAlphaSource.FromInput; importer.alphaIsTransparency = true;
         importer.mipmapEnabled = false; importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.SaveAndReimport();
         var data = new SerializedObject(hero);

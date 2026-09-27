@@ -86,6 +86,7 @@ public class TurnManager : MonoBehaviour
                 bool commanded = requested != null && living == Game.Instance.PlayerController.ControlledAlly;
                 if (manual)
                 {
+                    ActiveActor = living;
                     var hero = (Ally)living;
                     Game.Instance.PlayerController.FocusCommand(hero);
                     if (!hero.PrepareManualAction())
@@ -113,6 +114,7 @@ public class TurnManager : MonoBehaviour
 				if (primaryAction == null) { continue; }
 				List<GameAction> gameActions = primaryAction;
                 var playback = new DungeonActionPlayback(commanded, focus, living);
+                bool consumesAllyAction = actor is Ally;
 
 				if (actor is Ally ally)
 				{
@@ -128,7 +130,8 @@ public class TurnManager : MonoBehaviour
 					if (actor == null) { continue; }
                     sideEffectAction.SetPlaybackContext(playback);
 					gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
-					actionReplays.Add(new ActorAction(actor, sideEffectAction));
+					actionReplays.Add(new ActorAction(actor, sideEffectAction, consumesAllyAction));
+                    consumesAllyAction = false;
 
 					if (interuptTurn)
 					{
@@ -275,11 +278,11 @@ public class TurnManager : MonoBehaviour
 			{
 				if (x.Count() > 1)
 				{
-					return SequentialCoroutines.RunCoroutines(x.Select(y => y.Actor.ExecuteActionRoutine(y.Action)).ToList());
+						return SequentialCoroutines.RunCoroutines(x.Select(ReplayAction).ToList());
 				}
 				else
 				{
-					return x.Key.ExecuteActionRoutine(x.First().Action);
+						return ReplayAction(x.First());
 				}
 
 			}).ToList();
@@ -288,6 +291,14 @@ public class TurnManager : MonoBehaviour
             Game.Instance.PlaybackVisibleTiles.Clear();
 		}
 
+    }
+
+    private IEnumerator ReplayAction(ActorAction replay)
+    {
+        yield return replay.Actor.ExecuteActionRoutine(replay.Action);
+        // Simulation can finish a whole round before playback begins.
+        if (replay.ConsumesAllyAction && replay.Actor is Ally ally && ally != null)
+            ally.DisplayedVitals.ActionsPerTurnLeft--;
     }
 
 	internal void InteruptTurn()
@@ -322,14 +333,16 @@ disp: {displayedVitals}");
 
 	private class ActorAction
 	{
-		public ActorAction(Actor actor, GameAction action)
+		public ActorAction(Actor actor, GameAction action, bool consumesAllyAction = false)
 		{
 			Actor = actor;
 			Action = action;
+            ConsumesAllyAction = consumesAllyAction;
 		}
 
 		public Actor Actor { get; }
 		public GameAction Action { get; }
+        internal bool ConsumesAllyAction { get; }
 	}
 
 	private List<ActorAction> GetSimultaneousActions(ActorAction action, List<ActorAction> actions)

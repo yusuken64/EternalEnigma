@@ -76,6 +76,7 @@ public sealed class DungeonPartyCard : MonoBehaviour
     private CharacterStatsDisplay display;
     private Image panel;
     private Image portraitHighlight;
+    private static Sprite highlightBorder;
     private TMP_Text order;
     private Transform statuses;
     private string statusKey;
@@ -94,13 +95,22 @@ public sealed class DungeonPartyCard : MonoBehaviour
         rect.pivot = new Vector2(.5f,1); rect.offsetMin = rect.offsetMax = Vector2.zero;
         var card = display.gameObject.AddComponent<DungeonPartyCard>(); card.display=display;
         card.panel=GameUISkin.Panel(display.transform,Vector2.zero,Vector2.one);
+        card.panel.color = new Color(.09f,.21f,.20f,.32f);
         card.portraitHighlight = GameUISkin.Panel(card.panel.transform,new Vector2(0,.105f),new Vector2(.36f,1));
         card.portraitHighlight.name = "Turn highlight";
-        card.portraitHighlight.sprite = GameUITheme.Current.Button;
+        if (highlightBorder == null)
+        {
+            var white = Texture2D.whiteTexture;
+            highlightBorder = Sprite.Create(white,new Rect(0,0,white.width,white.height),
+                new Vector2(.5f,.5f),100,0,SpriteMeshType.FullRect,new Vector4(1,1,1,1));
+            highlightBorder.hideFlags = HideFlags.HideAndDontSave;
+        }
+        card.portraitHighlight.sprite = highlightBorder;
         card.portraitHighlight.type = Image.Type.Sliced;
         card.portraitHighlight.fillCenter = false;
-        card.portraitHighlight.pixelsPerUnitMultiplier = 6;
+        card.portraitHighlight.pixelsPerUnitMultiplier = .5f;
         card.portraitHighlight.raycastTarget = false;
+        card.portraitHighlight.enabled = false;
         display.PortraitImage = GameUISkin.Rect("Portrait",card.panel.transform,new Vector2(.005f,.12f),new Vector2(.35f,.99f)).gameObject.AddComponent<Image>();
         display.PortraitImage.preserveAspect=true; display.PortraitImage.raycastTarget=false;
         display.NameText=GameUISkin.Label(card.panel.transform,"",new Vector2(.37f,.79f),new Vector2(.99f,.99f),26);
@@ -128,16 +138,10 @@ public sealed class DungeonPartyCard : MonoBehaviour
     private void Update()
     {
         if (display.Character is not Ally ally || Game.Instance == null) return;
-        var turn=Game.Instance.TurnManager;
-        bool ready = !turn.IsProcessingTurn || turn.AwaitingCommand;
-        bool controlled = Game.Instance.PlayerController.ControlledAlly == ally;
-        bool active = ally.Vitals.HP > 0 && (ready ? controlled : turn.ActiveActor == ally);
-        portraitHighlight.enabled = active;
-        portraitHighlight.color = ready ? new Color(1f,.84f,.30f) : new Color(.35f,.9f,.72f);
-        panel.color=active ? new Color(.15f,.38f,.33f,.58f) : new Color(.09f,.21f,.20f,.32f);
-        order.text=ally.IsDowned ? "Downed" : turn.UsesFullControl ?
-            turn.IsProcessingTurn && ally.Vitals.ActionsPerTurnLeft==0 ? "Done" : active && (!turn.IsProcessingTurn||turn.AwaitingCommand) ? "Your order" : $"{ally.Vitals.ActionsPerTurnLeft} actions" :
-            controlled ? "Leader" : ally.AllyStrategy.ToString().Replace("Aggresive","Aggressive").Replace("HoldPosition","Hold");
+        portraitHighlight.enabled = ally.IsTurnHighlighted;
+        portraitHighlight.color = ally.TurnHighlightColor;
+        order.text = ally == Game.Instance.PlayerController.PartyLeader ? "Leader" :
+            ally.AllyStrategy.ToString().Replace("Aggresive","Aggressive").Replace("HoldPosition","Hold");
         string key=DungeonHud.StatusSummary(ally);
         if (key==statusKey) return; statusKey=key;
         foreach (Transform child in statuses) Destroy(child.gameObject);

@@ -11,6 +11,13 @@ public sealed class HeroPortraitStudio : MonoBehaviour
     [SerializeField, HideInInspector] private GameObject model;
 
     private void Start() => Show(Index);
+    public void PrepareCapture()
+    {
+        PortraitCamera.clearFlags = CameraClearFlags.SolidColor;
+        PortraitCamera.backgroundColor = Color.clear;
+        PortraitCamera.targetTexture = Output;
+    }
+
     public void Show(int index)
     {
         if (Heroes == null || Heroes.Length == 0) return;
@@ -63,7 +70,7 @@ public sealed class HeroPortraitStudio : MonoBehaviour
         PortraitCamera.orthographicSize = Mathf.Max(bounds.size.y * .32f, halfWidth * 1.08f / ((float)Output.width / Output.height));
         PortraitCamera.transform.position = focus + Vector3.forward * 12;
         PortraitCamera.transform.LookAt(focus);
-        PortraitCamera.targetTexture = Output;
+        PrepareCapture();
         PortraitCamera.Render();
     }
 

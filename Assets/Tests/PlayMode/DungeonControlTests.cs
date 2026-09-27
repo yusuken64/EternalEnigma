@@ -42,10 +42,15 @@ namespace EternalEnigma.Tests
             DungeonPreferences.FullControlOverride=true;
             leader.SetAction(new WaitAction());yield return AwaitOrder(leader);
             Assert.That(leader.Vitals.ActionsPerTurnLeft,Is.EqualTo(1));
+            Assert.That(leader.DisplayedVitals.ActionsPerTurnLeft,Is.EqualTo(1));
+            DungeonHudPortraitTests.CheckIndicator(game,leader,true);
+            DungeonHudPortraitTests.CheckIndicator(game,second,false);
             Assert.That(second.Vitals.ActionsPerTurnLeft,Is.EqualTo(second.FinalStats.ActionsPerTurnMax));
             Assert.That(game.TurnManager.SubmitCommand(second,new WaitAction()),Is.False);
             Assert.That(leader.CanMove(),Is.True);
             leader.SetAction(new WaitAction());yield return null;yield return AwaitOrder(second);
+            DungeonHudPortraitTests.CheckIndicator(game,leader,false,true);
+            DungeonHudPortraitTests.CheckIndicator(game,second,true);
             Assert.That(game.PlayerController.PartyLeader,Is.SameAs(leader));
             Assert.That(game.PlayerController.CanOpenMenu(),Is.True);
             // A preference change must not switch the unfinished round into AI mode.
@@ -56,9 +61,49 @@ namespace EternalEnigma.Tests
             Assert.That(second.Vitals.HungerAccumulate,Is.EqualTo(secondHunger));
             Assert.That(leader.Vitals.HungerAccumulate,Is.EqualTo(hunger+2));
             Assert.That(game.TurnManager.UsesFullControl,Is.False);
+            DungeonHudPortraitTests.CheckIndicator(game,leader,true);
+            DungeonHudPortraitTests.CheckIndicator(game,second,false);
             yield return null;
             System.IO.Directory.CreateDirectory("Temp/DungeonUI");
             ScreenCapture.CaptureScreenshot("Temp/DungeonUI/party.png");yield return null;
+        }
+        [UnityTest] public IEnumerator NormalAllyPlaybackKeepsIndicatorsAlignedAtEverySpeed()
+        {
+            var game = harness.Game;
+            var leader = harness.Ally;
+            var second = game.Allies.First(a => a != leader);
+            second.AllyStrategy = AllyStrategy.HoldPosition;
+            foreach (DungeonAnimationMode mode in System.Enum.GetValues(typeof(DungeonAnimationMode)))
+            {
+                DungeonPreferences.AnimationOverride = mode;
+                var probe = new IndicatorProbeAction(() =>
+                {
+                    Assert.That(leader.Vitals.ActionsPerTurnLeft, Is.Zero);
+                    Assert.That(leader.DisplayedVitals.ActionsPerTurnLeft, Is.GreaterThan(0));
+                    DungeonHudPortraitTests.CheckIndicator(game,leader,true);
+                    DungeonHudPortraitTests.CheckIndicator(game,second,false);
+                });
+                leader.SetAction(probe);
+                yield return harness.WaitForIdle();
+                Assert.That(probe.Played, Is.True);
+                foreach (var ally in game.Allies)
+                    Assert.That(ally.DisplayedVitals.ActionsPerTurnLeft, Is.EqualTo(ally.Vitals.ActionsPerTurnLeft));
+                DungeonHudPortraitTests.CheckIndicator(game,leader,true);
+                DungeonHudPortraitTests.CheckIndicator(game,second,false);
+            }
+        }
+        private sealed class IndicatorProbeAction : GameAction
+        {
+            private readonly System.Action check;
+            internal bool Played;
+            internal IndicatorProbeAction(System.Action check) { this.check = check; }
+            internal override bool IsValid(Character actor) => true;
+            internal override System.Collections.Generic.List<GameAction> ExecuteImmediate(Character actor) => new();
+            internal override IEnumerator ExecuteRoutine(Character actor, bool skipAnimation = false)
+            {
+                check(); Played = true;
+                yield return null;
+            }
         }
         [UnityTest] public IEnumerator ImmediateMovementKeepsOrderedOutcomesAfterNextPrompt()
         {

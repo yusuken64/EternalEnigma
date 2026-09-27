@@ -27,6 +27,72 @@ public class Ally : Character
 	public Color AllyColor;
 	public Color PlayerColor;
 
+    private SpriteRenderer turnRing;
+    private static Sprite turnRingSprite;
+
+    internal bool IsTurnHighlighted => DisplayedVitals.HP > 0 && Game.Instance != null &&
+        (Game.Instance.TurnManager.IsProcessingTurn ? Game.Instance.TurnManager.ActiveActor == this :
+            Game.Instance.PlayerController.ControlledAlly == this);
+
+    internal Color TurnHighlightColor
+    {
+        get
+        {
+            var turn = Game.Instance.TurnManager;
+            float alpha = !turn.IsProcessingTurn || turn.AwaitingCommand ? 1f :
+                .75f + .25f*Mathf.Sin(Time.unscaledTime*Mathf.PI*2f/1.6f);
+            return new Color(1f,.84f,.30f,alpha);
+        }
+    }
+
+    private void LateUpdate()
+    {
+        var game = Game.Instance;
+        if (game == null || !game.IsReady || CirlcleRenderer == null) return;
+        if (turnRing == null) BuildTurnRing();
+        bool controlled = game.PlayerController.ControlledAlly == this;
+        bool downed = DisplayedVitals.HP <= 0;
+        var color = controlled ? PlayerColor : AllyColor;
+        CirlcleRenderer.color = downed ? new Color(.42f,.44f,.44f) :
+            DisplayedVitals.ActionsPerTurnLeft > 0 ? color :
+            new Color(color.r*.35f,color.g*.35f,color.b*.35f,color.a);
+        turnRing.enabled = CirlcleRenderer.enabled && IsTurnHighlighted;
+        turnRing.color = TurnHighlightColor;
+    }
+
+    private void BuildTurnRing()
+    {
+        if (turnRingSprite == null)
+        {
+            const int size = 128;
+            var texture = new Texture2D(size,size,TextureFormat.RGBA32,false)
+                { name = "World turn ring", hideFlags = HideFlags.HideAndDontSave, wrapMode = TextureWrapMode.Clamp };
+            var pixels = new Color[size*size];
+            for (int y=0;y<size;y++)
+                for (int x=0;x<size;x++)
+                {
+                    float radius = new Vector2(x+.5f-size*.5f,y+.5f-size*.5f).magnitude;
+                    float alpha = Mathf.Clamp01(63-radius)*Mathf.Clamp01(radius-58);
+                    pixels[y*size+x] = new Color(1,1,1,alpha);
+                }
+            texture.SetPixels(pixels); texture.Apply(false,true);
+            turnRingSprite = Sprite.Create(texture,new Rect(0,0,size,size),new Vector2(.5f,.5f),size);
+            turnRingSprite.hideFlags = HideFlags.HideAndDontSave;
+        }
+        var ring = new GameObject("Turn ring");
+        ring.layer = CirlcleRenderer.gameObject.layer;
+        ring.transform.SetParent(CirlcleRenderer.transform,false);
+        var bounds = CirlcleRenderer.sprite.bounds;
+        ring.transform.localPosition = bounds.center;
+        ring.transform.localScale = new Vector3(bounds.size.x*1.15f,bounds.size.y*1.15f,1);
+        turnRing = ring.AddComponent<SpriteRenderer>();
+        turnRing.sprite = turnRingSprite;
+        turnRing.sharedMaterial = CirlcleRenderer.sharedMaterial;
+        turnRing.sortingLayerID = CirlcleRenderer.sortingLayerID;
+        turnRing.sortingOrder = CirlcleRenderer.sortingOrder;
+        turnRing.maskInteraction = CirlcleRenderer.maskInteraction;
+    }
+
 	private void Start()
 	{
 		SkillPolicy = new AllySkillPolicy(Game.Instance, this, 0);
@@ -124,7 +190,6 @@ public class Ally : Character
 	public override List<GameAction> GetDeterminedAction()
 	{
 		this.Vitals.ActionsPerTurnLeft--;
-		this.DisplayedVitals.ActionsPerTurnLeft--;
 		return determinedActions;
 	}
 

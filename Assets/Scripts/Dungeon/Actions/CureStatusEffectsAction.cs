@@ -45,11 +45,13 @@ public class CureStatusEffectsAction : GameAction, ICureEffect
 		return cured.Select(s => (GameAction)new RemoveStatusEffectAction(target, s)).ToList();
 	}
 
+    internal override void RecordOutcome(Character character) { if (target != null) GameMessages.ForCharacter(target, removed > 0 ? "Status effects cured." : "Cure had no effect."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation || target == null) yield break;
-		Game.Instance.DoFloatingText(removed > 0 ? "Cured" : "No effect", Color.green, target.VisualParent.transform.position);
-		yield return null;
+
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character) => true;

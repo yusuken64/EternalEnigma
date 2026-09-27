@@ -1323,6 +1323,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Golem
   CurrentEnemyState: 0
   Animator: {fileID: 7378365251370065405}
 --- !u!1 &5646790942219880143

@@ -434,6 +434,7 @@ MonoBehaviour:
   Equipment: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Metal Slime
   CurrentEnemyState: 0
   Animator: {fileID: 3170974239184407639}
   IsBoss: 0

@@ -42,10 +42,12 @@ public class RestoreSPAction : GameAction
 		return new List<GameAction>();
 	}
 
+    internal override void RecordOutcome(Character character) { if (resolved > 0) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} recovered {resolved} SP."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation || resolved <= 0) yield break;
-		Game.Instance.DoFloatingText("+" + resolved + " SP", Color.cyan, target.VisualParent.transform.position);
-		yield return null;
+
+		if (!skipAnimation) yield return null;
 	}
 }

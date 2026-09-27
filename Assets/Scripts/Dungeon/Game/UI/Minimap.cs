@@ -31,10 +31,16 @@ public class Minimap : MonoBehaviour
         if (minimapTexture != null)
             Destroy(minimapTexture);
 
+        var frame = (RectTransform)transform;
+        frame.anchorMin = new Vector2(.80f,.22f); frame.anchorMax = new Vector2(.985f,.48f);
+        frame.offsetMin = frame.offsetMax = Vector2.zero;
         _currentDungeon = currentDungeon;
-        minimapTexture = new Texture2D(_currentDungeon.dungeonWidth, _currentDungeon.dungeonHeight);
+        minimapTexture = new Texture2D(_currentDungeon.dungeonWidth * 3, _currentDungeon.dungeonHeight * 3);
+        minimapTexture.wrapMode = TextureWrapMode.Clamp;
         minimapTexture.filterMode = FilterMode.Point;
         minimapImage.texture = minimapTexture;
+        var border = minimapImage.GetComponent<Outline>() ?? minimapImage.gameObject.AddComponent<Outline>();
+        border.effectColor = new Color(.7f,.53f,.25f,.9f); border.effectDistance = new Vector2(2,-2);
 
         dungeonMap = new MinimapTileData[_currentDungeon.dungeonWidth, _currentDungeon.dungeonHeight];
 
@@ -104,13 +110,13 @@ public class Minimap : MonoBehaviour
                         break;
                 }
 
-                minimapTexture.SetPixel(x, y, pixelColor);
+                PaintCell(x, y, pixelColor);
             }
         }
 
         // Draw player
         var playerPos = _currentDungeon.WorldToCell(Game.Instance.PlayerController.ControlledAlly.transform.position);
-        minimapTexture.SetPixel(playerPos.x, playerPos.y, PlayerColor);
+        PaintCell(playerPos.x, playerPos.y, PlayerColor);
         var playerController = FindFirstObjectByType<PlayerController>();
 
         foreach(var character in Game.Instance.AllCharacters)
@@ -121,17 +127,17 @@ public class Minimap : MonoBehaviour
                 case Ally ally:
                     if (playerController.ControlledAlly == ally)
                     {
-                        minimapTexture.SetPixel(displayedCell.x, displayedCell.y, PlayerColor);
+                        PaintCell(displayedCell.x, displayedCell.y, PlayerColor);
                     }
                     else
                     {
-                        minimapTexture.SetPixel(displayedCell.x, displayedCell.y, AllyColor);
+                        PaintCell(displayedCell.x, displayedCell.y, AllyColor);
                     }
                     break;
                 case Enemy enemy:
                     if (DungeonSight.OverlapsVisible(visibleTiles, Character.ToBounds(enemy.FootPrint, displayedCell)) || (reveal != null && reveal.EnemiesRevealedTurns > 0))
                     {
-                        minimapTexture.SetPixel(displayedCell.x, displayedCell.y, EnemyBehavior.IsDisguised(enemy) ? ItemColor : EnemyColor);
+                        PaintCell(displayedCell.x, displayedCell.y, EnemyBehavior.IsDisguised(enemy) ? ItemColor : EnemyColor);
                     }
                     break;
                 default:
@@ -147,7 +153,10 @@ public class Minimap : MonoBehaviour
                 {
                     if (visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)))
                     {
-                        minimapTexture.SetPixel(interactable.Position.x, interactable.Position.y, ItemColor);
+                        PaintCell(interactable.Position.x, interactable.Position.y,
+                    interactable is Stairs ? new Color(.3f,.9f,1f) :
+                    interactable is DungeonProp scenery && scenery.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard ? new Color(1f,.3f,.12f) : ItemColor);
+                if (interactable is Stairs) minimapTexture.SetPixel(interactable.Position.x*3+1,interactable.Position.y*3+1,Color.white);
                     }
                 }
             }
@@ -155,13 +164,25 @@ public class Minimap : MonoBehaviour
                 (interactable is DungeonProp prop && prop.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard && dungeonMap[prop.Position.x,prop.Position.y].visibility != MinimapTileVisibility.Unseen) ||
                 (reveal != null && ((reveal.LayoutRevealed && interactable is Stairs) || (reveal.TreasureRevealed && interactable is Gold))))
             {
-                minimapTexture.SetPixel(interactable.Position.x, interactable.Position.y, ItemColor);
+                PaintCell(interactable.Position.x, interactable.Position.y,
+                    interactable is Stairs ? new Color(.3f,.9f,1f) :
+                    interactable is DungeonProp scenery && scenery.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard ? new Color(1f,.3f,.12f) : ItemColor);
+                if (interactable is Stairs) minimapTexture.SetPixel(interactable.Position.x*3+1,interactable.Position.y*3+1,Color.white);
             }
         }
 
+        var facing = Dungeon.GetFacingOffset(playerController.ControlledAlly.CurrentFacing);
+        if (playerPos.x >= 0 && playerPos.y >= 0 && playerPos.x < _currentDungeon.dungeonWidth && playerPos.y < _currentDungeon.dungeonHeight)
+            minimapTexture.SetPixel(playerPos.x*3+1+facing.x,playerPos.y*3+1+facing.y,Color.white);
         minimapTexture.Apply();
 
         FogOverlay.UpdateFog(dungeonMap);
+    }
+
+    private void PaintCell(int x,int y,Color color)
+    {
+        if(x<0||y<0||x>=_currentDungeon.dungeonWidth||y>=_currentDungeon.dungeonHeight) return;
+        for(int dx=0;dx<3;dx++) for(int dy=0;dy<3;dy++) minimapTexture.SetPixel(x*3+dx,y*3+dy,color);
     }
 
     public void Update()
@@ -175,6 +196,7 @@ public class Minimap : MonoBehaviour
 
     private void UpdateMinimapMode()
     {
+        foreach (var panel in GetComponentsInChildren<Image>(true)) panel.enabled = currentMode == MinimapMode.Full;
         switch (currentMode)
         {
             case MinimapMode.Hidden:

@@ -312,6 +312,12 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		ClassPassives.OnFloorStart(this);
 		PlayerController.ControlledAlly.currentInteractable = null;
+        foreach (var actor in AllCharacters.Where(c=>c!=null && c.Vitals.HP>0))
+        {
+            actor.Vitals.ActionsPerTurnLeft=actor.FinalStats.ActionsPerTurnMax;
+            actor.Vitals.AttacksPerTurnLeft=actor.FinalStats.AttacksPerTurnMax;
+            actor.SyncDisplayedStats();
+        }
 		Game.Instance.PlayerController.StartTurn();
 		UpdateMiniMap();
 		IsReady = true;
@@ -412,6 +418,8 @@ Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventor
 
 	public void DoFloatingText(string message, Color color, Vector3 worldPosition)
 	{
+        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.Current)
+            DungeonFloatingText.Show(this, message, color, worldPosition);
         var subject = AllCharacters.Where(c => c != null)
             .OrderBy(c => Vector3.SqrMagnitude((c.VisualParent != null ? c.VisualParent.transform.position : c.transform.position) - worldPosition))
             .FirstOrDefault();

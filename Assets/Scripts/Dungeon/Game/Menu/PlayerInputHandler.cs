@@ -1,4 +1,4 @@
-﻿namespace JuicyChickenGames.Menu
+namespace JuicyChickenGames.Menu
 {
     using UnityEngine;
     using UnityEngine.InputSystem;
@@ -25,7 +25,7 @@
         private InputAction lookAction;
         private InputAction attackAction;
         //private InputAction interactAction;
-        //private InputAction waitAction;
+        private InputAction waitAction;
         private InputAction holdPositionAction;
         private InputAction menuAction;
         private InputAction skillsAction;
@@ -41,7 +41,7 @@
             lookAction = PlayerInput.actions["Look"];
             attackAction = PlayerInput.actions["Attack"];
             //interactAction = PlayerInput.actions["Use"];
-            //waitAction = PlayerInput.actions["Wait"];
+            waitAction = PlayerInput.actions["Wait"];
             holdPositionAction = PlayerInput.actions["HoldPosition"];
             menuAction = PlayerInput.actions["Menu"];
             skillsAction = PlayerInput.actions["Skills"];
@@ -65,7 +65,7 @@
             menuPressed = menuAction.WasPressedThisFrame();
             skillsPressed = skillsAction.WasPressedThisFrame();
             mapPressed = mapAction.WasPressedThisFrame();
-            //waitPressed = waitAction.WasPressedThisFrame();
+            waitPressed = waitAction.WasPressedThisFrame();
             holdPosition = holdPositionAction.IsPressed();
             swapAllyPressed = swapAllyAction.WasPressedThisFrame();
             planPressed = planAction.WasPressedThisFrame();

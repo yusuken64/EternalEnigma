@@ -1795,6 +1795,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Werewolf
   CurrentEnemyState: 0
   Animator: {fileID: 5017745908953136764}
 --- !u!1 &5603461390934827925

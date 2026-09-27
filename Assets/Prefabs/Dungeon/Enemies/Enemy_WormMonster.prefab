@@ -941,6 +941,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Worm Monster
   CurrentEnemyState: 0
   Animator: {fileID: 3377676644677971497}
 --- !u!1 &5781627487165025832

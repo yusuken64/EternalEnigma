@@ -6,6 +6,14 @@ using UnityEngine;
 
 public class Enemy : Character
 {
+    [Tooltip("Player-facing name used in the event history and target display.")]
+    public string DisplayName;
+
+    private void OnEnable()
+    {
+        if (string.IsNullOrWhiteSpace(CharacterName)) CharacterName = DisplayName;
+    }
+
 	public EnemyState CurrentEnemyState;
 	public Animator Animator;
 

@@ -1,10 +1,12 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterStatsDisplay : MonoBehaviour
 {
 	public TextMeshProUGUI NameText;
+	public Image PortraitImage;
 	public StatsDisplay LevelDisplay;
 	public StatsDisplay HpDisplay;
 	public StatsDisplay SpDisplay;
@@ -15,7 +17,13 @@ public class CharacterStatsDisplay : MonoBehaviour
 
 	internal void Setup(Character character)
 	{
+		DungeonPartyCard.Build(this);
 		Character = character;
+		if (PortraitImage != null)
+		{
+			PortraitImage.sprite = (character as Ally)?.Portrait;
+			PortraitImage.enabled = PortraitImage.sprite != null;
+		}
 
 		if (character is Ally ally)
 		{
@@ -30,13 +38,13 @@ public class CharacterStatsDisplay : MonoBehaviour
 			() => character.DisplayedVitals.Level.ToString(),
 			() => { return levelSystem.GetPercentageToNextLevel(character.DisplayedVitals); });
 		HpDisplay.Setup("HP",
-			() => $"{character.DisplayedVitals.HP}/{character.DisplayedStats.HPMax}",
+			() => $"HP  {character.DisplayedVitals.HP}/{character.DisplayedStats.HPMax}",
 			() => (float)character.DisplayedVitals.HP / character.DisplayedStats.HPMax);
 		SpDisplay.Setup("SP",
-			() => $"{character.DisplayedVitals.SP}/{character.DisplayedStats.SPMax}",
+			() => $"SP  {character.DisplayedVitals.SP}/{character.DisplayedStats.SPMax}",
 			() => (float)character.DisplayedVitals.SP / character.DisplayedStats.SPMax);
 		HungerDisplay.Setup("Full",
-			() => $"{character.DisplayedVitals.Hunger}/{character.DisplayedStats.HungerMax}",
+			() => $"Food  {character.DisplayedVitals.Hunger}/{character.DisplayedStats.HungerMax}",
 			() => (float)character.DisplayedVitals.Hunger / character.DisplayedStats.HungerMax);
 	}
 
@@ -44,7 +52,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 	{
 		if (Character is Ally ally && baseName != null)
 		{
-			string label = ally.IsDowned ? $"{baseName} (Downed)" : baseName;
+			string label = ally.IsDowned ? $"{baseName} (Downed)" : $"{baseName} - Lv {ally.DisplayedVitals.Level}";
 			if (NameText.text != label) NameText.text = label;
 		}
 

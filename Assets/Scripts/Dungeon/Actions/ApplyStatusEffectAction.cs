@@ -42,6 +42,7 @@ public class ApplyStatusEffectAction : GameAction
 	{
 		TrackAnimationTarget(target);
 		statusInstance = target.ApplyStatusEffect(statusEffectPrefab);
+        if (statusInstance != null) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)}: {statusEffectPrefab.GetEffectName()}!");
 		//if (durationDelta != 0)
 		//{
 		//	var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x.GetType() == statusEffectPrefab.GetType());
@@ -59,9 +60,9 @@ public class ApplyStatusEffectAction : GameAction
 		statusInstance?.gameObject.SetActive(true);
 		if (skipAnimation) { yield break; }
 
+		DungeonFloatingText.Show(Game.Instance, statusEffectPrefab.GetEffectName(), Color.white, target.transform.position);
 		//TODO get sound from status
 		AudioManager.Instance.SoundEffects.Sleep.PlayAsSound();
-		GameMessages.ForCharacter(target, $"{GameMessages.Name(target)}: {statusEffectPrefab.GetEffectName()}!");
 		yield return null;
 	}
 

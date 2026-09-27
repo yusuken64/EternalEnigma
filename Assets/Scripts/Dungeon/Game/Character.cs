@@ -250,9 +250,10 @@ public abstract class Character : MonoBehaviour, Actor
     protected List<GameAction> ExecuteWithScenery(GameAction action)
     {
         var dungeon=Game.Instance?.CurrentDungeon;
-        if(dungeon==null || !dungeon.Interactables.OfType<DungeonProp>().Any(p=>p.Definition.Kind==EternalEnigma.Core.World.DungeonSceneryKind.Hazard)) return action.ExecuteImmediate(this);
+        if(dungeon==null || !dungeon.Interactables.OfType<DungeonProp>().Any(p=>p.Definition.Kind==EternalEnigma.Core.World.DungeonSceneryKind.Hazard)) { var result = action.ExecuteImmediate(this); action.RecordOutcome(this); return result; }
         var positions=Game.Instance.AllCharacters.Where(c=>c!=null).ToDictionary(c=>c,c=>c.TilemapPosition);
         var effects=action.ExecuteImmediate(this);
+        action.RecordOutcome(this);
         foreach(var pair in positions)
             if(pair.Key!=null && pair.Key.Vitals.HP>0) effects.AddRange(dungeon.EntryEffects(pair.Key,pair.Value,pair.Key.TilemapPosition));
         return effects;
@@ -685,14 +686,9 @@ disp: {displayedVitals}");
 
 	public void SetAction(GameAction forcedAction)
 	{
-		if (forcedAction is SkillAction && (Game.Instance.TurnManager.IsProcessingTurn || !forcedAction.IsValid(this))) return;
-		_forcedAction = forcedAction;
-		if (Game.Instance.PlayerController.ControlledAlly == this)
-		{
-			Game.Instance.TurnManager.ProcessTurn();
-			IsWaitingForPlayerInput = false;
-		}
+        Game.Instance.TurnManager.SubmitCommand(this, forcedAction);
 	}
+
 }
 
 public enum Team

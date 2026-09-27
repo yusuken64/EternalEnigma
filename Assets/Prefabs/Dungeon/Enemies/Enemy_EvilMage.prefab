@@ -1658,6 +1658,7 @@ MonoBehaviour:
   Equipment: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Evil Mage
   CurrentEnemyState: 0
   Animator: {fileID: 4369890431100196491}
   IsBoss: 0

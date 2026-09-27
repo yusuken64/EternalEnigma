@@ -3423,6 +3423,7 @@ MonoBehaviour:
   Description: Avery, a skilled mage, grew up in a secluded village known for its
     magical traditions.
   AnimatedModel: {fileID: 5476759686857995799}
+  Portrait: {fileID: 21300000, guid: 5cc448bc096d2464384380b9f018400c, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

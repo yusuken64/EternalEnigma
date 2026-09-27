@@ -2917,6 +2917,7 @@ MonoBehaviour:
   Description: Rowan, a cunning rogue, spent their youth navigating the shadows of
     a bustling city.
   AnimatedModel: {fileID: 2583603852264508604}
+  Portrait: {fileID: 21300000, guid: 8eb92ba7552588643835f5cb1378eee1, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

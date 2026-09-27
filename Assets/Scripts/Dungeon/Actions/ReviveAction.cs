@@ -60,14 +60,15 @@ public class ReviveAction : GameAction, ISkillCastCondition
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { foreach (var ally in revived) GameMessages.ForCharacter(ally, $"{GameMessages.Name(ally)} was revived."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		foreach (var ally in revived)
 		{
 			if (ally == null) continue;
 			ally.PlayIdleAnimation();
-			if (!skipAnimation)
-				Game.Instance.DoFloatingText("Revived", Color.green, ally.VisualParent.transform.position);
+
 		}
 		if (!skipAnimation && revived.Count > 0) yield return new WaitForSecondsRealtime(0.3f);
 	}

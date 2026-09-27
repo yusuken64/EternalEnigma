@@ -3216,6 +3216,7 @@ MonoBehaviour:
   Description: Dakota, a skilled tracker, developed their senses in the wild, becoming
     an expert at hunting and survival.
   AnimatedModel: {fileID: 8312638071644023815}
+  Portrait: {fileID: 21300000, guid: e0c58bfd847eef8448d9b0628b92c765, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

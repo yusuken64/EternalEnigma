@@ -34,11 +34,13 @@ internal class RetreatAction : GameAction, ISkillEffectPrecondition
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, "Retreat!"); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
-		var who = caster ?? character;
-		Game.Instance.DoFloatingText("Retreat!", Color.cyan, who.transform.position);
+
+
 		yield return new WaitForSecondsRealtime(0.5f);
 	}
 

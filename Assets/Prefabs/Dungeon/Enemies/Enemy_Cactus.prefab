@@ -546,6 +546,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Cactus
   CurrentEnemyState: 0
   Animator: {fileID: 890134822278728857}
 --- !u!1 &5586676145426830287

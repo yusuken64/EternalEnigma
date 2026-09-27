@@ -53,12 +53,13 @@ public class DominateAction : GameAction
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { if (target != null) GameMessages.ForCharacter(target, dominated ? "Dominated!" : "Resisted domination."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation || target == null) yield break;
-		Game.Instance.DoFloatingText(dominated ? "Dominated!" : "Resisted", dominated ? Color.magenta : Color.white,
-			target.VisualParent.transform.position);
-		yield return null;
+
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character) => true;

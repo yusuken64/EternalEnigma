@@ -1755,6 +1755,7 @@ MonoBehaviour:
   Equipment: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Rat Assassin
   CurrentEnemyState: 0
   Animator: {fileID: 7765108269918664704}
   IsBoss: 0

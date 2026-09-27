@@ -2956,6 +2956,7 @@ MonoBehaviour:
   Description: Quinn, a wise scholar, dedicated their life to uncovering ancient
     mysteries and lost knowledge.
   AnimatedModel: {fileID: 8069771702291635392}
+  Portrait: {fileID: 21300000, guid: a0bfa21d1ea959a48907f81542bf6c70, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

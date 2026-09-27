@@ -569,6 +569,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Smiling Mushroom
   CurrentEnemyState: 0
   Animator: {fileID: 5129121569593755848}
 --- !u!1 &6583051263120105502

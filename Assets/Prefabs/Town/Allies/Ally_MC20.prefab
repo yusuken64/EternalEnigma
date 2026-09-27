@@ -2630,6 +2630,7 @@ MonoBehaviour:
   Description: Sydney, an agile acrobat, grew up in a traveling circus, mastering
     acrobatics and agility.
   AnimatedModel: {fileID: 4866159087841109392}
+  Portrait: {fileID: 21300000, guid: 0e9bbf045176ff1418afbd4f7da1e2dc, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

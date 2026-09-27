@@ -1153,6 +1153,7 @@ MonoBehaviour:
   Equipment: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Skeleton
   CurrentEnemyState: 0
   Animator: {fileID: 3444542614166759889}
   IsBoss: 0

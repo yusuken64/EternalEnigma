@@ -69,6 +69,7 @@ with {playerController.Gold} Treasure";
 
 	public void Quit_Clicked()
 	{
+        if (AutoplayRunner.Active != null && AutoplayRunner.Active.PlayerControlled) { AutoplayRunner.Active.ExitDemo(); return; }
         if (Common.Instance.CampaignContext != null) { Common.Instance.Travel.ReturnToMenu(); return; }
 		CommitAbandonedRun(_playerController);
 		Common.Instance.ScreenTransition.DoTransition(() =>

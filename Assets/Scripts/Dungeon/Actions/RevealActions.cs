@@ -20,11 +20,8 @@ public class RevealFloorLayoutAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-	{
-		if (!skipAnimation) Game.Instance.DoFloatingText("Floor revealed", Color.cyan, character.transform.position);
-		yield return null;
-	}
+    internal override void RecordOutcome(Character character) => GameMessages.ForCharacter(character, "Floor revealed");
+    internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false) { yield break; }
 
 	internal override bool IsValid(Character character) => true;
 }
@@ -50,11 +47,8 @@ public class RevealEnemiesAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-	{
-		if (!skipAnimation) Game.Instance.DoFloatingText("Enemies revealed", Color.cyan, character.transform.position);
-		yield return null;
-	}
+    internal override void RecordOutcome(Character character) => GameMessages.ForCharacter(character, "Enemies revealed");
+    internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false) { yield break; }
 
 	internal override bool IsValid(Character character) => true;
 }

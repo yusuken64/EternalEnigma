@@ -2713,6 +2713,7 @@ MonoBehaviour:
   Description: Morgan, a fearless warrior, hails from a distant land where martial
     arts are deeply revered.
   AnimatedModel: {fileID: 8883465907006839172}
+  Portrait: {fileID: 21300000, guid: 60de12d7da1a240478c62ede687a4971, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

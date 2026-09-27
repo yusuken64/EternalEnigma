@@ -19,6 +19,7 @@ public class GlobalSettings : MonoBehaviour
 
     private void Start()
     {
+        DungeonOptions.AddTo(this);
         TabGroup.Setup();
         SetupTabNavigation();
         SettingsCanvas.SetActive(false);
@@ -104,6 +105,7 @@ public class GlobalSettings : MonoBehaviour
 
     public void MainMenu_Clicked()
     {
+        if (AutoplayRunner.Active != null && AutoplayRunner.Active.PlayerControlled) { Exit_Clicked(); AutoplayRunner.Active.ExitDemo(); return; }
         if (Common.Instance.CampaignContext != null)
         { Exit_Clicked(); Common.Instance.Travel.ReturnToMenu(); return; }
         var town = FindFirstObjectByType<Town>();

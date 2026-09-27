@@ -1428,6 +1428,7 @@ MonoBehaviour:
   Equipment: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Salamander
   CurrentEnemyState: 0
   Animator: {fileID: 2977892617978063215}
   IsBoss: 0

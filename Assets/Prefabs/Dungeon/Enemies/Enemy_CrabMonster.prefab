@@ -1281,6 +1281,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Crab Monster
   CurrentEnemyState: 0
   Animator: {fileID: 6343963205705776767}
 --- !u!1 &5572398120355064862

@@ -66,16 +66,8 @@ public class ApplyCommandAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-	{
-		if (!skipAnimation && caster != null)
-		{
-			var game = Game.Instance;
-			if (game != null)
-				game.DoFloatingText($"{CommandName}!", Color.white, caster.VisualParent.gameObject.transform.position);
-		}
-		yield return null;
-	}
+    internal override void RecordOutcome(Character character) => GameMessages.ForCharacter(caster, $"{CommandName}!");
+    internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false) { yield break; }
 
 	internal override bool IsValid(Character character)
 	{
@@ -156,16 +148,8 @@ public class AmplifyCommandsAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-	{
-		if (!skipAnimation)
-		{
-			var game = Game.Instance;
-			if (game != null)
-				game.DoFloatingText("Decisive Order!", Color.white, caster.VisualParent.gameObject.transform.position);
-		}
-		yield return null;
-	}
+    internal override void RecordOutcome(Character character) => GameMessages.ForCharacter(caster, "Decisive Order!");
+    internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false) { yield break; }
 
 	internal override bool IsValid(Character character)
 	{

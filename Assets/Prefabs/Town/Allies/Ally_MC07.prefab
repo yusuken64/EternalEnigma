@@ -1828,6 +1828,7 @@ MonoBehaviour:
   Description: Riley, a mysterious druid, has a deep connection with nature and a
     penchant for shape-shifting.
   AnimatedModel: {fileID: 616914999212843001}
+  Portrait: {fileID: 21300000, guid: 74c8df6e2f4cdcf419859b9f4c8c8c3a, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

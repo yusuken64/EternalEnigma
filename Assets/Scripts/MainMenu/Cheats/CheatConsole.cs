@@ -35,7 +35,7 @@ public class CheatConsole : MonoBehaviour
 
     void Update()
     {
-        if (AutoplayRunner.Active != null) return;
+        if (AutoplayRunner.BlocksPlayerInput) return;
         if (Input.GetKeyDown(KeyCode.Tilde) ||
             Input.GetKeyDown(KeyCode.BackQuote))
         {

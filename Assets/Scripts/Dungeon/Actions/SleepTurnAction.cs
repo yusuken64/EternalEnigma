@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,12 +20,14 @@ internal class SleepTurnAction : GameAction
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} cannot act."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) { yield break; }
 		if (effectedCharacter == Game.Instance.PlayerController)
 		{
-			Game.Instance.DoFloatingText("Sleeping...", Color.white, effectedCharacter.VisualParent.transform.position);
+
 			yield return new WaitForSecondsRealtime(1f);
 		}
 	}

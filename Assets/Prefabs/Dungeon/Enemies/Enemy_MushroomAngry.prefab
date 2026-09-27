@@ -525,6 +525,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Angry Mushroom
   CurrentEnemyState: 0
   Animator: {fileID: 6163062986907309436}
 --- !u!114 &-428808270569946615

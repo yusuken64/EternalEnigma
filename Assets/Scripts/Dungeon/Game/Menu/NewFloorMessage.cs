@@ -12,7 +12,9 @@ public class NewFloorMessage : MonoBehaviour
 	public void ShowNewFloor(int floor)
 	{
 		this.gameObject.SetActive(true);
+		BackgroundColor.sprite = null;
 		BackgroundColor.color = Color.black;
+        FloorMessage.color = GameUITheme.LightInk;
 		FloorMessage.text = $"Floor {floor}";
 
 		BackgroundColor.CrossFadeAlpha(0, 3f, true);
@@ -24,7 +26,9 @@ public class NewFloorMessage : MonoBehaviour
 	{
 		BackgroundColor.CrossFadeAlpha(1, 1.0f, true);
 		this.gameObject.SetActive(true);
+		BackgroundColor.sprite = null;
 		BackgroundColor.color = Color.black;
+        FloorMessage.color = GameUITheme.LightInk;
 	}
 
 	[ContextMenu("Do Floor Message")]

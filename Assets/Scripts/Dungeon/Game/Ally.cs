@@ -8,6 +8,7 @@ using UnityEngine;
 public class Ally : Character
 {
 	public string TownAllyId;
+	public Sprite Portrait;
 	public ClassDefinition PrimaryClass;
 	public ClassDefinition SecondaryClass;
 	public HeroAnimator HeroAnimator;
@@ -35,34 +36,20 @@ public class Ally : Character
 		WanderPolicy = new WanderPolicy(Game.Instance, this, 4);
 	}
 
+    // Evaluate forced statuses only once per action, including random confusion/paralysis.
+    internal bool PrepareManualAction(bool evaluateStatuses = true)
+    {
+        if (IsDowned || Vitals.HP <= 0) { determinedActions = new(); return true; }
+        var overrides = evaluateStatuses ? StatusEffects.Where(s => s != null && !s.IsExpired())
+            .Select(s => s.GetActionOverride(this)).Where(a => a != null).ToList() : new List<GameAction>();
+        if (overrides.Count > 0) { _forcedAction = null; determinedActions = overrides; return true; }
+        if (_forcedAction == null) return false;
+        determinedActions = new() { _forcedAction }; _forcedAction = null; return true;
+    }
+
 	public override void DetermineAction()
 	{
-		if (IsDowned || Vitals.HP <= 0)
-		{
-			determinedActions = new();
-			return;
-		}
-
-		var actionOverrides = StatusEffects.Select(x => x.GetActionOverride(this))
-			.Where(x => x != null);
-		if (actionOverrides.Any())
-		{
-            _forcedAction = null; // A status consumes the requested turn, not a later turn after expiry.
-			determinedActions = actionOverrides.ToList();
-			return;
-		}
-
-		//set by player input
-		if (_forcedAction != null)
-		{
-			//do action
-			determinedActions = new List<GameAction>()
-			{
-				_forcedAction
-			};
-			_forcedAction = null;
-			return;
-		}
+        if (PrepareManualAction()) return;
 
 		if (SkillPolicy != null && SkillPolicy.ShouldRun())
 		{
@@ -124,10 +111,10 @@ public class Ally : Character
 		
 		if (AllyStrategy != AllyStrategy.HoldPosition)
 		{
-			if (TileWorldDungeon.ChevDistance(game.PlayerController.ControlledAlly.TilemapPosition,
+			if (TileWorldDungeon.ChevDistance(game.PlayerController.PartyLeader.TilemapPosition,
 				TilemapPosition) < 5)
 			{
-				return game.PlayerController.ControlledAlly;
+				return game.PlayerController.PartyLeader;
 			}
 		}
 
@@ -256,6 +243,7 @@ public class Ally : Character
 
 	internal void InitialzeModel(TownAlly townAlly)
 	{
+		Portrait = townAlly.Portrait;
 		var heroAnimator = townAlly.GetComponent<HeroAnimator>();
 		var newHeroAnimator = this.gameObject.AddComponent<HeroAnimator>();
 		heroAnimator.CopyFieldsTo(newHeroAnimator);

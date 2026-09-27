@@ -3005,6 +3005,7 @@ MonoBehaviour:
   Description: Jamie, a formidable tactician, rose through the military ranks with
     strategic brilliance.
   AnimatedModel: {fileID: 2665925320970719073}
+  Portrait: {fileID: 21300000, guid: 2ed0df628b536a14298650a6dde0092e, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

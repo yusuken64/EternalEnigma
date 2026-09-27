@@ -104,6 +104,7 @@ public sealed class CampaignTravelService
     }
     public bool ReturnToMenu()
     {
+        if (AutoplayRunner.Active != null && AutoplayRunner.Active.PlayerControlled) { AutoplayRunner.Active.ExitDemo(); return true; }
         if (transitioning || Context == null) return false;
         if (Context.IsSandbox) common.EndSandbox();
         else

@@ -1183,6 +1183,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Specter
   CurrentEnemyState: 0
   Animator: {fileID: 4803356146084465464}
 --- !u!1 &5570823990103377395

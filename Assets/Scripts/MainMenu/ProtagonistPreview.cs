@@ -30,7 +30,7 @@ public sealed class ProtagonistPreview : MonoBehaviour
         var cameraObject = new GameObject("Portrait camera", typeof(Camera)); cameraObject.transform.SetParent(stage.transform);
         view = cameraObject.GetComponent<Camera>();
         view.cullingMask = 1 << 31; view.targetTexture = texture;
-        view.clearFlags = CameraClearFlags.SolidColor; view.backgroundColor = new Color(.065f, .095f, .11f);
+        view.clearFlags = CameraClearFlags.SolidColor; view.backgroundColor = new Color(.82f, .72f, .51f);
         view.orthographic = true; view.orthographicSize = Mathf.Max(bounds.extents.y * 1.2f, bounds.extents.x * 1.6f);
         view.nearClipPlane = .01f; view.farClipPlane = 100;
         view.transform.position = bounds.center + Vector3.forward * 12;

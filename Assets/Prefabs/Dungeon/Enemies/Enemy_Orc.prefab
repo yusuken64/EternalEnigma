@@ -1678,6 +1678,7 @@ MonoBehaviour:
   Equipment: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Orc
   CurrentEnemyState: 0
   Animator: {fileID: 1946909771128962471}
   IsBoss: 0

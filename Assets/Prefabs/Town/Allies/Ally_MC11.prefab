@@ -3060,6 +3060,7 @@ MonoBehaviour:
   Description: Skylar, a nomadic healer, wandered the lands offering aid to those
     in need with their medicinal expertise.
   AnimatedModel: {fileID: 3282268872051355090}
+  Portrait: {fileID: 21300000, guid: fa44374a99ba5754f9dd5fce9a42c962, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

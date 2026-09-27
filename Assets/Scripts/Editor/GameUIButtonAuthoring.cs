@@ -18,7 +18,7 @@ public static class GameUIButtonAuthoring
     public static void Validate()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Validate outside Play Mode.");
-        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Resources/UI/Button.png");
+        var sprite = GameUITheme.Current.Button;
         int count = 0;
         void Check(Button button, string path)
         {
@@ -53,21 +53,22 @@ public static class GameUIButtonAuthoring
         for (int i = 0; i < SceneManager.sceneCount; i++)
             if (SceneManager.GetSceneAt(i).isDirty)
                 throw new InvalidOperationException("Save the open scene edits before baking button styles.");
+        CreateTheme();
         CreateButtonPrefab();
         CreateLegacySkin();
         int prefabButtons = 0, sceneButtons = 0;
         var scenes = AssetDatabase.FindAssets("t:Scene", new[] { "Assets/Scenes" }).Select(AssetDatabase.GUIDToAssetPath).ToArray();
         var prefabs = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs", "Assets/Resources" })
             .Select(AssetDatabase.GUIDToAssetPath)
-            .Concat(AssetDatabase.GetDependencies(scenes, true).Where(p => p.EndsWith(".prefab"))).Distinct().OrderBy(p => p).ToArray();
+            .Distinct().OrderBy(p => p).ToArray();
         foreach (string path in prefabs)
         {
             var root = PrefabUtility.LoadPrefabContents(path);
             try
             {
                 var buttons = root.GetComponentsInChildren<Button>(true);
-                foreach (var button in buttons) Style(button);
-                if (buttons.Length > 0) PrefabUtility.SaveAsPrefabAsset(root, path);
+                StyleHierarchy(root);
+                if (root.GetComponentsInChildren<Graphic>(true).Length > 0) PrefabUtility.SaveAsPrefabAsset(root, path);
                 prefabButtons += buttons.Length;
             }
             finally { PrefabUtility.UnloadPrefabContents(root); }
@@ -79,13 +80,13 @@ public static class GameUIButtonAuthoring
             {
                 var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
                 var buttons = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Button>(true)).ToArray();
+                foreach (var root in scene.GetRootGameObjects()) StyleHierarchy(root);
                 foreach (var button in buttons)
                 {
-                    Style(button);
                     foreach (var component in button.GetComponentsInChildren<Component>(true))
                         if (component != null && PrefabUtility.IsPartOfPrefabInstance(component)) PrefabUtility.RecordPrefabInstancePropertyModifications(component);
                 }
-                if (buttons.Length > 0) EditorSceneManager.SaveScene(scene);
+                EditorSceneManager.SaveScene(scene);
                 sceneButtons += buttons.Length;
             }
         }
@@ -96,29 +97,125 @@ public static class GameUIButtonAuthoring
         Debug.Log($"Baked styles into {sceneButtons} scene buttons and {prefabButtons} prefab buttons.");
     }
 
-    private static void Style(Button button)
+    private static void Style(Button button) => GameUITheme.Current.StyleButton(button);
+
+    private static void StyleHierarchy(GameObject root)
     {
-        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Resources/UI/Button.png");
-        var image = button.targetGraphic as Image;
-        bool hasLabel = button.GetComponentInChildren<TMP_Text>(true) != null || button.GetComponentInChildren<Text>(true) != null;
-        if (image == null || (!hasLabel && image.sprite != sprite))
+        var theme = GameUITheme.Current;
+        var images = root.GetComponentsInChildren<Image>(true);
+        foreach (var image in images)
         {
-            var existing = button.transform.Find("Button frame");
-            image = existing != null ? existing.GetComponent<Image>() :
-                GameUISkin.Rect("Button frame", button.transform, Vector2.zero, Vector2.one).gameObject.AddComponent<Image>();
-            image.transform.SetAsFirstSibling(); image.raycastTarget = false;
+            string name = image.name.ToLowerInvariant();
+            if (image.GetComponentInParent<Button>() != null || image.GetComponentInParent<Slider>() != null ||
+                image.GetComponentInParent<Toggle>() != null || image.GetComponentInParent<Scrollbar>() != null ||
+                image.GetComponent<Mask>() != null || image.color.a < .1f ||
+                name.Contains("portrait") || name.Contains("icon") || name.Contains("cursor") || name.Contains("shutter") ||
+                name.Contains("fade") || name.Contains("transition") || name.Contains("mask") || name.Contains("overlay")) continue;
+            bool plain = image.sprite == null || AssetDatabase.GetAssetPath(image.sprite).StartsWith("Resources/unity_builtin");
+            if (plain || name.Contains("background") || name.Contains("panel") || name.Contains("frame"))
+                theme.Surface(image, theme.Panel, 24);
         }
-        image.sprite = sprite; image.overrideSprite = null; image.type = Image.Type.Sliced;
-        image.pixelsPerUnitMultiplier = 2; image.color = Color.white;
-        button.targetGraphic = image; button.transition = Selectable.Transition.ColorTint;
-        button.colors = new ColorBlock {
-            normalColor = new Color(.82f, .86f, .9f), highlightedColor = new Color(1, .94f, .72f),
-            selectedColor = new Color(1, .86f, .48f), pressedColor = new Color(.6f, .67f, .73f),
-            disabledColor = new Color(.4f, .4f, .4f, .65f), colorMultiplier = 1, fadeDuration = .1f
-        };
-        foreach (var text in button.GetComponentsInChildren<TMP_Text>(true)) text.color = GameUISkin.Ink;
-        foreach (var text in button.GetComponentsInChildren<Text>(true)) text.color = GameUISkin.Ink;
-        EditorUtility.SetDirty(button); EditorUtility.SetDirty(image);
+        foreach (var label in root.GetComponentsInChildren<TMP_Text>(true))
+        {
+            // World labels and floating combat text keep their contrast against the world.
+            if (label is not TextMeshProUGUI) continue;
+            label.color = GameUITheme.Ink;
+            if ((label.name.ToLowerInvariant().Contains("title") || label.name.ToLowerInvariant().Contains("header")) && theme.HeadingFont != null)
+                label.font = theme.HeadingFont;
+        }
+        foreach (var label in root.GetComponentsInChildren<Text>(true)) label.color = GameUITheme.Ink;
+        foreach (var button in root.GetComponentsInChildren<Button>(true)) Style(button);
+        foreach (var slider in root.GetComponentsInChildren<Slider>(true)) theme.StyleSlider(slider);
+        foreach (var toggle in root.GetComponentsInChildren<Toggle>(true))
+        {
+            theme.Surface(toggle.targetGraphic as Image, theme.Toggle);
+            theme.Surface(toggle.graphic as Image, theme.Check);
+        }
+        foreach (var scrollbar in root.GetComponentsInChildren<Scrollbar>(true))
+        {
+            theme.Surface(scrollbar.GetComponent<Image>(), theme.Track);
+            theme.Surface(scrollbar.targetGraphic as Image, theme.Button);
+        }
+        foreach (var input in root.GetComponentsInChildren<TMP_InputField>(true))
+        {
+            theme.Surface(input.targetGraphic as Image, theme.Field);
+            input.selectionColor = GameUITheme.Selected;
+        }
+        foreach (var dropdown in root.GetComponentsInChildren<TMP_Dropdown>(true))
+        {
+            theme.Surface(dropdown.targetGraphic as Image, theme.Field);
+            var arrow = dropdown.transform.Find("Arrow")?.GetComponent<Image>();
+            theme.Surface(arrow, theme.Arrow);
+        }
+        foreach (var tabs in root.GetComponentsInChildren<TabGroup>(true))
+        {
+            tabs.NormalColor = Color.white; tabs.SelectedColor = GameUITheme.Selected;
+            tabs.NormalTextColor = tabs.SelectedTextColor = GameUITheme.Ink;
+        }
+        StyleWorldLabels(root);
+        foreach (var component in root.GetComponentsInChildren<Component>(true))
+        {
+            if (component == null) continue;
+            EditorUtility.SetDirty(component);
+            if (PrefabUtility.IsPartOfPrefabInstance(component)) PrefabUtility.RecordPrefabInstancePropertyModifications(component);
+        }
+    }
+
+    private static void StyleWorldLabels(GameObject root)
+    {
+        void Light(TMP_Text text)
+        {
+            if (text == null) return;
+            text.color = GameUITheme.LightInk;
+            var shadow = text.GetComponent<Shadow>() ?? text.gameObject.AddComponent<Shadow>();
+            shadow.effectColor = new Color(.12f,.065f,.025f,.95f); shadow.effectDistance = new Vector2(2,-2);
+        }
+        foreach (var text in root.GetComponentsInChildren<TMP_Text>(true))
+            if (text.text == "Eternal Enigma") Light(text);
+        foreach (var player in root.GetComponentsInChildren<TownPlayer>(true)) Light(player.UIText);
+    }
+
+    [MenuItem("Tools/Eternal Enigma/UI/Refresh World Label Contrast")]
+    private static void RefreshWorldLabelContrast()
+    {
+        if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");
+        var setup = EditorSceneManager.GetSceneManagerSetup();
+        try
+        {
+            foreach (string path in new[] { "Assets/Scenes/MainMenu.unity", "Assets/Scenes/Town.unity" })
+            {
+                var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+                foreach (var root in scene.GetRootGameObjects()) StyleWorldLabels(root);
+                EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
+            }
+        }
+        finally { EditorSceneManager.RestoreSceneManagerSetup(setup); }
+    }
+
+    private const string Pack = "Assets/Bamao/BamaoUIPack/";
+    private static void CreateTheme()
+    {
+        const string path = "Assets/Resources/UI/BamaoTheme.asset";
+        var theme = AssetDatabase.LoadAssetAtPath<GameUITheme>(path);
+        if (theme == null) { theme = ScriptableObject.CreateInstance<GameUITheme>(); AssetDatabase.CreateAsset(theme, path); }
+        Sprite Load(string name, Vector4 border)
+        {
+            string asset = Pack + "Sprites/Button/" + name + ".png";
+            var importer = (TextureImporter)AssetImporter.GetAtPath(asset);
+            if (border != Vector4.zero && importer.spriteBorder != border)
+            { importer.spriteBorder = border; importer.SaveAndReimport(); }
+            return AssetDatabase.LoadAssetAtPath<Sprite>(asset);
+        }
+        theme.Button = Load("button short", new Vector4(32,24,32,24));
+        theme.Panel = Load("Popup_paper_bg", Vector4.zero);
+        theme.Field = Load("typing button", new Vector4(24,24,24,24));
+        theme.Track = Load("number background dark", new Vector4(16,16,16,16));
+        theme.Knob = Load("radio_circle", Vector4.zero);
+        theme.Toggle = Load("radio_square", Vector4.zero);
+        theme.Check = Load("radio_square_check", Vector4.zero);
+        theme.Arrow = Load("dropdown triangle", Vector4.zero);
+        theme.HeadingFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(Pack + "Fonts/Magical Neverland SDF.asset");
+        EditorUtility.SetDirty(theme); AssetDatabase.SaveAssets();
     }
 
     private static void CreateButtonPrefab()
@@ -142,16 +239,21 @@ public static class GameUIButtonAuthoring
     {
         var skin = AssetDatabase.LoadAssetAtPath<GUISkin>(SkinPath);
         if (skin == null) { skin = ScriptableObject.CreateInstance<GUISkin>(); AssetDatabase.CreateAsset(skin, SkinPath); }
-        var texture = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/UI/Button.png");
+        var texture = GameUITheme.Current.Button.texture;
         skin.button = new GUIStyle {
             name = "button", alignment = TextAnchor.MiddleCenter, fontSize = 13,
-            border = new RectOffset(40, 40, 40, 40), padding = new RectOffset(12, 12, 6, 6),
+            border = new RectOffset(24, 24, 24, 24), padding = new RectOffset(12, 12, 6, 6),
             margin = new RectOffset(4, 4, 2, 2)
         };
         skin.button.normal.background = skin.button.hover.background = skin.button.active.background = skin.button.focused.background = texture;
         skin.button.normal.textColor = GameUISkin.Ink;
         skin.button.hover.textColor = skin.button.focused.textColor = Color.yellow;
         skin.button.active.textColor = Color.white;
+        skin.label = new GUIStyle { fontSize = 13, padding = new RectOffset(4,4,3,3), wordWrap = true };
+        skin.label.normal.textColor = GameUITheme.Ink;
+        skin.box = new GUIStyle { border = new RectOffset(48,48,48,48), padding = new RectOffset(16,16,12,12) };
+        skin.box.normal.background = GameUITheme.Current.Panel.texture;
+        skin.box.normal.textColor = GameUITheme.Ink;
         EditorUtility.SetDirty(skin);
     }
 }

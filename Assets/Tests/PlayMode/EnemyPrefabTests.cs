@@ -38,6 +38,8 @@ namespace EternalEnigma.Tests
             {
                 var prefab = AssetDatabase.LoadAssetAtPath<Enemy>(path);
                 Assert.That(prefab, Is.Not.Null, path);
+                Assert.That(prefab.DisplayName, Is.Not.Null.And.Not.Empty, path);
+                Assert.That(prefab.DisplayName, Does.Not.Contain("_").And.Not.Contain("(Clone)"), path);
                 Assert.That(prefab.Team, Is.EqualTo(Team.Enemy), path);
                 Assert.That(prefab.StartingStats.Strength, Is.GreaterThan(0), path);
                 Assert.That(prefab.StartingStats.ActionsPerTurnMax, Is.GreaterThan(0), path);
@@ -47,6 +49,8 @@ namespace EternalEnigma.Tests
                 yield return harness.SpawnEnemy(prefab.name, center);
                 var enemy = (Enemy)harness.Game.Enemies.Single();
                 enemy.Provoke(); // Dormant archetypes are deliberately passive until attacked.
+                Assert.That(enemy.CharacterName, Is.EqualTo(prefab.DisplayName), path);
+                Assert.That(GameMessages.Name(enemy), Is.EqualTo(prefab.DisplayName), path);
                 Assert.That(enemy.Animator, Is.Not.Null, path);
                 Assert.That(enemy.Animator.runtimeAnimatorController, Is.Not.Null, path);
                 AttackAction attack = null;
@@ -66,6 +70,8 @@ namespace EternalEnigma.Tests
                 Assert.That(attack, Is.Not.Null, path + " never selected an attack");
                 var effects = attack.ExecuteImmediate(enemy).OfType<TakeDamageAction>().ToArray();
                 Assert.That(effects.Length, Is.EqualTo(1), path);
+                Assert.That(Object.FindFirstObjectByType<GameMessages>().History,
+                    Does.Contain($"{prefab.DisplayName} attacked {GameMessages.Name(harness.Ally)}!"), path);
                 Assert.That(effects[0].target, Is.SameAs(harness.Ally), path);
                 Assert.That(effects[0].damage, Is.GreaterThan(0), path);
                 Assert.That(enemy.Vitals.AttacksPerTurnLeft, Is.EqualTo(enemy.FinalStats.AttacksPerTurnMax-1), path);

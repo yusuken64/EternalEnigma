@@ -3180,6 +3180,7 @@ MonoBehaviour:
   Description: Kai, a stoic monk, follows the path of discipline and enlightenment,
     mastering both mind and body.
   AnimatedModel: {fileID: 4421272603399701194}
+  Portrait: {fileID: 21300000, guid: 411edb19633788a478990008ac546204, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

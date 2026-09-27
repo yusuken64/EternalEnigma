@@ -28,11 +28,14 @@ internal class LevelUpAction : GameAction
 		};
 	}
 
+    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} leveled up."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
 		AudioManager.Instance.SoundEffects.LevelUp.PlayAsSound();
-		Game.Instance.DoFloatingText("Level Up", Color.yellow, character.transform.position);
+        DungeonFloatingText.Show(Game.Instance, "Level Up", new Color(.84f,.76f,1f), character.transform.position, true);
+
 		yield return new WaitForSecondsRealtime(1.0f);
 	}
 

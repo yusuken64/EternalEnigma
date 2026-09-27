@@ -918,6 +918,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Cyclops
   CurrentEnemyState: 0
   Animator: {fileID: 2294524733670598380}
 --- !u!1 &5862579661504271010

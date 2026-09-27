@@ -46,12 +46,14 @@ internal class PartyStealthAction : GameAction
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, "Safe Passage."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
 		var who = caster ?? character;
-		Game.Instance.DoFloatingText("Safe Passage", Color.cyan, who.transform.position);
-		yield return null;
+
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character) => true;

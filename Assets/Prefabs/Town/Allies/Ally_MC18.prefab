@@ -2623,6 +2623,7 @@ MonoBehaviour:
   Description: Logan, a former gladiator, fought in the arenas and now seeks redemption
     through heroic deeds.
   AnimatedModel: {fileID: 2286424205215356903}
+  Portrait: {fileID: 21300000, guid: 120696837e8dc8b4ca786caef8eb0106, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

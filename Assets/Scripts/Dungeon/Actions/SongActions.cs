@@ -86,16 +86,8 @@ public class StartSongAction : GameAction
 		return new();
 	}
 
-	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
-	{
-		if (!skipAnimation)
-		{
-			Game game = Game.Instance;
-			if (game != null)
-				game.DoFloatingText($"{SongName}!", Color.yellow, caster.transform.position);
-		}
-		yield return null;
-	}
+    internal override void RecordOutcome(Character character) => GameMessages.ForCharacter(caster, $"{SongName}!");
+    internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false) { yield break; }
 
 	internal override bool IsValid(Character character)
 	{

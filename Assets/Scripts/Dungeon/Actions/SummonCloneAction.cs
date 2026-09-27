@@ -40,11 +40,13 @@ public class SummonCloneAction : GameAction
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { if (spawned != null) GameMessages.ForCharacter(character, "Clone summoned."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation || spawned == null) yield break;
-		Game.Instance.DoFloatingText("Clone!", Color.cyan, spawned.transform.position);
-		yield return null;
+
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character) => true;

@@ -7,10 +7,15 @@ resources enabled; playback controls remain available during the run.
 The same runtime engine is available in a built app. The playback
 overlay offers **0.5x, 1x, 2x, 4x, and 8x**, plus **Pause/Resume**. Speed changes
 apply to game time and bot pacing; changing speed while paused keeps it paused.
+Use **Hide panel** or **F8** to collapse the debug panel; the small **Autoplay [F8]** button reopens it without pausing playback.
 Move the pointer freely to reach the controls. Keyboard/controller input and mouse
 clicks, scrolling or touch outside the playback panel pause the demo and ask whether
-to return to the main menu. Enter/A confirms, Escape/B cancels. Cancelling resumes
-the prior playback state. Exiting restores the original player save; the demo has
+to stop autoplay. Choose **Take control (T / X)** to play the current session,
+**Return to main menu (Enter / A)** to exit, or **Keep watching (Esc / B)** to resume
+the prior playback state. Taking control waits for the current action to finish,
+restores normal speed, hides the overlay, and disables autoplay cheats. It keeps
+the current party, floor and inventory. The session still uses its isolated save;
+returning to the main menu restores your normal game. Exiting restores the original player save; the demo has
 its own save store for its entire lifetime.
 
 For developer runs, open **Tools > Eternal Enigma > Playthrough > Open** in Unity.
@@ -44,7 +49,8 @@ Optional destination coverage does not assert that every dialogue, shop offer or
 skill has been exercised.
 
 Outcomes distinguish Victory, Defeat, Stalled, TimeLimit, Unsupported, GameError,
-AutomationError and manual Stopped. There are no automatic retries or hidden
+AutomationError, manual Stopped and PlayerControl. PlayerControl reports end at
+the handoff and are excluded from balance statistics. There are no automatic retries or hidden
 resources in normal mode. The final scene is frozen for inspection. Repeated
 actions with the same position and enemy HP, missing paths, and lack of progress
 produce a report rather than awarding success.
@@ -74,7 +80,7 @@ explicit fixtures in an assembly-wide selection:
 node Tools/unity-mcp.mjs harness Autoplay
 ```
 
-These short checks cover the input prompt, save restoration, lethal normal-mode
+These short checks cover panel dismissal, manual takeover, the input prompt, save restoration, lethal normal-mode
 damage and optional debug resource protection/infinite strength. Validation
 reports are marked separately and excluded from balance data. They do not launch a full campaign
 in automated test discovery.

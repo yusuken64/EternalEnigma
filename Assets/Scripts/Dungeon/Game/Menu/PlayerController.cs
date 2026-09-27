@@ -19,6 +19,19 @@ public class PlayerController : MonoBehaviour
 
     // === Controlled Character ===
     public Ally ControlledAlly { get; private set; }
+    public Ally PartyLeader { get; private set; }
+    private bool releaseInput;
+    public void FocusCommand(Ally ally)
+    {
+        if (ControlledAlly != null) { ControlledAlly.IsWaitingForPlayerInput = false; ControlledAlly.SetToCPU(); }
+        ControlledAlly = ally;
+        if (ally == null) return;
+        ally.SetToPlayer();
+        CameraController.SetFollowTarget(ally.CirlcleRenderer.transform);
+        holdTime = 0; menuCooldown = 0; releaseInput = true;
+        TargetIndicator.gameObject.SetActive(false);
+        CurrentControlMode = PlayerControlMode.FollowAlly;
+    }
     public Vector3Int TilemapPosition => ControlledAlly.TilemapPosition;
     public Stats FinalStats => ControlledAlly.FinalStats;
     public Stats DisplayedStats => ControlledAlly.DisplayedStats;
@@ -44,6 +57,13 @@ public class PlayerController : MonoBehaviour
     {
         if (ShouldBlockInput()) return;
 
+        if (releaseInput)
+        {
+            var input = PlayerInputHandler.Instance;
+            if (input.isMoving || input.attackPressed || input.menuPressed || input.skillsPressed) return;
+            releaseInput = false;
+            return;
+        }
         UpdateTimers();
 
         switch (CurrentControlMode)
@@ -57,7 +77,7 @@ public class PlayerController : MonoBehaviour
     private bool ShouldBlockInput()
     {
         if (ControlledAlly == null || Game.Instance == null || !Game.Instance.IsReady) return true;
-        if (AutoplayRunner.Active != null) return true;
+        if (AutoplayRunner.BlocksPlayerInput) return true;
         if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen)
 		{
             return true;
@@ -107,6 +127,7 @@ public class PlayerController : MonoBehaviour
         var originalPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
         var newMapPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
 
+        if (PlayerInputHandler.Instance.waitPressed) { ControlledAlly.SetAction(new WaitAction()); return; }
         Vector2 move = PlayerInputHandler.Instance.moveInput;
 
         if (move.sqrMagnitude >= 0.01f)
@@ -236,7 +257,7 @@ public class PlayerController : MonoBehaviour
 
     public List<GameAction> MoveSideEffects(Character character)
     {
-        bool hungerTick = character == ControlledAlly;
+        bool hungerTick = character == PartyLeader;
 
         List<GameAction> turnSideEffects = new();
 
@@ -362,6 +383,8 @@ public class PlayerController : MonoBehaviour
 
     public void TakeControl(Ally newAlly)
     {
+        if (Game.Instance?.TurnManager?.IsProcessingTurn == true) return;
+        PartyLeader = newAlly;
         var oldAlly = ControlledAlly;
         if (oldAlly != null)
         {
@@ -380,6 +403,7 @@ public class PlayerController : MonoBehaviour
 
     public void TakeControlNextAlly()
     {
+        if (Game.Instance.TurnManager.IsProcessingTurn || DungeonPreferences.FullControl) return;
         var allies = Game.Instance.Allies
             .Where(x => x != null && x.Vitals.HP > 0 && !PartyRules.IsSummon(x))
             .ToList();
@@ -403,9 +427,15 @@ public class PlayerController : MonoBehaviour
         TakeControl(nextAlly);
     }
 
+    internal void RestoreLeader()
+    {
+        if (!PartyRules.IsStanding(Game.Instance, PartyLeader)) PartyLeader = PartyRules.StandingMembers(Game.Instance).FirstOrDefault();
+        if (PartyLeader != null) FocusCommand(PartyLeader);
+    }
+
     internal bool CanOpenMenu()
     {
-        return Game.Instance.IsReady && !Game.Instance.TurnManager.IsProcessingTurn &&
+        return Game.Instance.IsReady && (!Game.Instance.TurnManager.IsProcessingTurn || Game.Instance.TurnManager.AwaitingCommand) &&
             ControlledAlly != null && ControlledAlly.Vitals.HP > 0 && ControlledAlly.IsWaitingForPlayerInput &&
             !ControlledAlly.StatusEffects.Any(x => !x.IsExpired() && x.PreventsMenu());
     }

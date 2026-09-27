@@ -41,12 +41,14 @@ internal class DisarmTrapAction : GameAction, ISkillEffectPrecondition
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { if (!string.IsNullOrEmpty(message)) GameMessages.ForCharacter(caster ?? character, message); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation || string.IsNullOrEmpty(message)) yield break;
-		var who = caster ?? character;
-		Game.Instance.DoFloatingText(message, Color.yellow, who.transform.position);
-		yield return null;
+
+
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character) => true;

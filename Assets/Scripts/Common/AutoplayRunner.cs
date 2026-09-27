@@ -62,6 +62,10 @@ public sealed class AutoplayRunner : MonoBehaviour
 {
     public const string PendingKey = "EternalEnigma.Autoplay.Pending";
     public static AutoplayRunner Active { get; private set; }
+    public static bool BlocksPlayerInput => Active != null && !Active.PlayerControlled;
+    public bool PlayerControlled { get; private set; }
+    public bool PanelVisible { get; private set; } = true;
+    private bool takingControl;
     public AutoplayOptions Options { get; private set; }
     public AutoplayReport Report { get; private set; }
     public string DirectoryPath { get; private set; }
@@ -187,18 +191,22 @@ public sealed class AutoplayRunner : MonoBehaviour
 
     private void Update()
     {
-        if (appSession && !exiting)
+        if (PlayerControlled || takingControl || exiting) return;
+        if (!ReturnPromptOpen && Keyboard.current?.f8Key.wasPressedThisFrame == true)
+        { SetPanelVisible(!PanelVisible); return; }
+        if (!exiting)
         {
             if (ReturnPromptOpen)
             {
                 if (Time.unscaledTime > acceptInputAfter)
                 {
                     if (Keyboard.current?.enterKey.wasPressedThisFrame == true || Gamepad.current?.buttonSouth.wasPressedThisFrame == true) ConfirmReturn(true);
+                    else if (Keyboard.current?.tKey.wasPressedThisFrame == true || Gamepad.current?.buttonWest.wasPressedThisFrame == true) TakeControl();
                     else if (Keyboard.current?.escapeKey.wasPressedThisFrame == true || Gamepad.current?.buttonEast.wasPressedThisFrame == true) ConfirmReturn(false);
                 }
                 return;
             }
-            if (Time.unscaledTime > acceptInputAfter && UserInput()) { RequestReturn(); return; }
+            if (appSession && Time.unscaledTime > acceptInputAfter && UserInput()) { RequestReturn(); return; }
         }
         if (!Running || Paused) return;
         if (pendingError != null) { Finish("GameError", pendingError); return; }
@@ -571,7 +579,7 @@ public sealed class AutoplayRunner : MonoBehaviour
     }
     public void RequestReturn()
     {
-        if (!appSession || exiting || ReturnPromptOpen) return;
+        if (PlayerControlled || takingControl || exiting || ReturnPromptOpen) return;
         wasPausedBeforePrompt = Paused;
         SetPaused(true); ReturnPromptOpen = true;
         acceptInputAfter = Time.unscaledTime + .2f;
@@ -583,8 +591,65 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (confirm) ExitDemo();
         else { SetPaused(wasPausedBeforePrompt); acceptInputAfter = Time.unscaledTime + .5f; }
     }
-    private Rect PlaybackPanel => new Rect(Mathf.Max(0, Screen.width - 340), 16, Mathf.Min(324, Screen.width), 340);
-    private bool OverPlaybackPanel(Vector2 position) => PlaybackPanel.Contains(new Vector2(position.x, Screen.height - position.y));
+    public void SetPanelVisible(bool visible)
+    {
+        PanelVisible = visible;
+        acceptInputAfter = Time.unscaledTime + .2f;
+    }
+
+    public void TakeControl()
+    {
+        if (!startedCampaign || PlayerControlled || takingControl || exiting) return;
+        takingControl = true;
+        ReturnPromptOpen = false;
+        SetPaused(false);
+        Time.timeScale = 1;
+        StartCoroutine(TakeControlRoutine());
+    }
+
+    private IEnumerator TakeControlRoutine()
+    {
+        // Finish the in-flight action before releasing input; never reset action budgets.
+        yield return null;
+        while (!exiting)
+        {
+            var common = Common.Instance;
+            var game = FindFirstObjectByType<Game>();
+            var town = FindFirstObjectByType<Town>();
+            var world = FindFirstObjectByType<OverworldScene>();
+            bool ready = common != null && !common.Travel.IsTransitioning &&
+                !common.ScreenTransition.BlockScreen.activeSelf &&
+                (game != null ? game.IsReady && (!game.TurnManager.IsProcessingTurn || game.TurnManager.AwaitingCommand) :
+                 town != null ? town.IsReady && !town.TownPlayer.IsBusy :
+                 world != null && world.IsReady && !world.IsMoving);
+            bool held = Keyboard.current?.anyKey.isPressed == true || Mouse.current?.leftButton.isPressed == true ||
+                Touchscreen.current?.primaryTouch.press.isPressed == true ||
+                Gamepad.all.Any(p => p.allControls.OfType<ButtonControl>().Any(b => b.isPressed));
+            if (!ready || held) { yield return null; continue; }
+            Report.EligibleForBalance = false;
+            Finish("PlayerControl", "Player took control of the isolated session.");
+            WriteReport();
+            if (game != null && game.PlayerController.ControlledAlly != null)
+            {
+                var ally = game.PlayerController.ControlledAlly;
+                bool waiting = ally.IsWaitingForPlayerInput;
+                game.PlayerController.FocusCommand(ally);
+                ally.IsWaitingForPlayerInput = waiting;
+            }
+            // Preserve an open stair/shop dialog's input map.
+            common.MenuInputHandler.ClearInputThisFrame();
+            Paused = false;
+            PanelVisible = false;
+            PlayerControlled = true;
+            takingControl = false;
+            Time.timeScale = 1;
+            yield break;
+        }
+    }
+
+    private Rect CollapsedPanel => new Rect(Mathf.Max(0, Screen.width - 148), 16, 132, 36);
+    private Rect PlaybackPanel => new Rect(Mathf.Max(0, Screen.width - 340), 16, Mathf.Min(324, Screen.width), 380);
+    private bool OverPlaybackPanel(Vector2 position) => (PanelVisible ? PlaybackPanel : CollapsedPanel).Contains(new Vector2(position.x, Screen.height - position.y));
 
     private bool UserInput()
     {
@@ -618,18 +683,36 @@ public sealed class AutoplayRunner : MonoBehaviour
 
     private void OnGUI()
     {
-        if (Options == null) return;
+        GameUISkin.UseLegacySkin();
+        if (Options == null || PlayerControlled || exiting) return;
+        if (takingControl)
+        {
+            GameUISkin.LegacyBeginArea(PlaybackPanel);
+            GUILayout.Label("Finishing current action...");
+            GUILayout.EndArea(); return;
+        }
         if (ReturnPromptOpen)
         {
             GUI.depth = -100;
-            GUILayout.BeginArea(new Rect((Screen.width-360)/2f,(Screen.height-180)/2f,360,180),GUI.skin.box);
-            GUILayout.Label("Return to main menu?");
+            GameUISkin.LegacyBeginArea(new Rect((Screen.width-360)/2f,(Screen.height-220)/2f,360,220));
+            GUILayout.Label("Stop autoplay?");
             GUILayout.Label("Your saved game is unchanged.");
+            bool canInteract = GUI.enabled;
+            GUI.enabled = canInteract && startedCampaign;
+            if (GameUISkin.LegacyButton("Take control (T / X)")) TakeControl();
+            GUI.enabled = canInteract;
             if (GameUISkin.LegacyButton("Return to main menu (Enter / A)")) ConfirmReturn(true);
             if (GameUISkin.LegacyButton("Keep watching (Esc / B)")) ConfirmReturn(false);
             GUILayout.EndArea(); return;
         }
-        GUILayout.BeginArea(PlaybackPanel, GUI.skin.box);
+        if (!PanelVisible)
+        {
+            GUILayout.BeginArea(CollapsedPanel);
+            if (GameUISkin.LegacyButton("Autoplay [F8]")) SetPanelVisible(true);
+            GUILayout.EndArea(); return;
+        }
+        GameUISkin.LegacyBeginArea(PlaybackPanel);
+        if (GameUISkin.LegacyButton("Hide panel [F8]")) SetPanelVisible(false);
         GUILayout.Label(Options.DebugPlaythrough ? "AUTOPLAY — DEBUG PLAYTHROUGH" : "AUTOPLAY — NORMAL PLAYTHROUGH");
         if (Options.DebugPlaythrough) GUILayout.Label("Godmode + infinite strength: " + Options.Godmode + " | Infinite resources: " + Options.InfiniteResources);
         GUILayout.Label(Status.Length > 220 ? Status.Substring(0,220) + "…" : Status);
@@ -649,8 +732,8 @@ public sealed class AutoplayRunner : MonoBehaviour
             if (GameUISkin.LegacyButton(Paused ? "Resume" : "Pause")) SetPaused(!Paused);
         }
         if (!appSession && Running && GameUISkin.LegacyButton("Stop and report")) Stop();
-        if (appSession && GameUISkin.LegacyButton("Return to main menu")) RequestReturn();
-        if (appSession) GUILayout.Label("Input outside playback controls: return to main menu");
+        if (GameUISkin.LegacyButton("Stop autoplay...")) RequestReturn();
+        if (appSession) GUILayout.Label("Input outside playback controls: stop autoplay options");
         if (!Running) GUILayout.Label(appSession ? "Playthrough report saved." : "Report saved: " + DirectoryPath);
         GUILayout.EndArea();
     }

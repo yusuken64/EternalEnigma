@@ -36,12 +36,14 @@ internal class GatherAction : GameAction
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { if (!string.IsNullOrEmpty(message)) GameMessages.ForCharacter(gatherer ?? character, message); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation || string.IsNullOrEmpty(message)) yield break;
-		var who = gatherer != null ? gatherer : character;
-		if (who != null) Game.Instance.DoFloatingText(message, color, who.transform.position);
-		yield return null;
+
+
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character) => point != null;

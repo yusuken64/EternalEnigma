@@ -869,6 +869,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Bishop Knight
   CurrentEnemyState: 0
   Animator: {fileID: 2743278401327740156}
 --- !u!1 &5917482148168463424

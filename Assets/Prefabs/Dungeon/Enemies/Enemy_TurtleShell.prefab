@@ -624,6 +624,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Turtle Shell
   CurrentEnemyState: 0
   Animator: {fileID: 22062101344077865}
 --- !u!1 &5630673672196152967

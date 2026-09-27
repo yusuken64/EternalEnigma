@@ -31,7 +31,7 @@ namespace EternalEnigma.Tests
             Assert.That(feed.History.Count(x => x == "Requires key"), Is.EqualTo(1));
             GameMessages.Post("Gate opened!");
             Assert.That(feed.GetComponentsInChildren<TMP_Text>().Any(t => t.text.Contains("Gate opened!")), Is.True);
-            Assert.That(feed.GetComponentInChildren<CanvasGroup>().blocksRaycasts, Is.False);
+            Assert.That(feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>(), Is.Not.Null);
             Assert.That(feed.GetComponentsInChildren<TMP_Text>().Last().richText, Is.False);
             yield return null;
             System.IO.Directory.CreateDirectory("Temp/MessagePreview");

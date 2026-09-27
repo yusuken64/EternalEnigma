@@ -1779,6 +1779,7 @@ MonoBehaviour:
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Lizard Warrior
   CurrentEnemyState: 0
   Animator: {fileID: 5406857271926768313}
 --- !u!1 &5620749668689929016

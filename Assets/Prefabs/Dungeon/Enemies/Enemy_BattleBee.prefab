@@ -963,6 +963,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Battle Bee
   CurrentEnemyState: 0
   Animator: {fileID: 493980311053126488}
 --- !u!1 &5592751505939839273

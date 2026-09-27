@@ -272,6 +272,7 @@ public class TakeDamageAction : GameAction
 	{
 		if (skipAnimation) { yield break; }
 		Game game = Game.Instance;
+        DungeonFloatingText.Show(game, miss ? "Miss" : damage.ToString(), miss ? Color.white : new Color(1f,.38f,.35f), target.transform.position);
 		if (!miss)
 		{
 			AudioManager.Instance.SoundEffects.Impact_flesh.PlayAsSound();
@@ -336,6 +337,7 @@ public class TakeHealAction : GameAction
 			});
 		}
 
+        GameMessages.ForCharacter(target, miss ? $"{GameMessages.Name(target)}: healing missed." : $"{GameMessages.Name(target)} recovered {healing} HP.");
 		if (target.Vitals.HP <= 0)
 		{
 			return new List<GameAction>()
@@ -352,15 +354,14 @@ public class TakeHealAction : GameAction
 	{
 		if (skipAnimation) { yield break; }
 		Game game = Game.Instance;
+        DungeonFloatingText.Show(game, miss ? "Miss" : "+" + healing, new Color(.55f,1f,.5f), target.transform.position);
 		if (!miss)
 		{
 			AudioManager.Instance.SoundEffects.Impact_heal.PlayAsSound();
-			GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} recovered {healing} HP.");
 		}
 		else
 		{
 			AudioManager.Instance.SoundEffects.Miss_Evade.PlayAsSound();
-			game.DoFloatingText("miss", Color.white, target.VisualParent.gameObject.transform.position);
 		}
 
 		if (doHealAnimation && !miss)
@@ -587,6 +588,7 @@ public class InteractAction : GameAction
 public class WaitAction : GameAction
 {
 	public WaitAction() {}
+    internal override void RecordOutcome(Character character) { if (character is Ally) GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} waited."); }
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		return new();

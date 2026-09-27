@@ -2350,6 +2350,7 @@ MonoBehaviour:
   Description: Sage, an ancient mystic, possesses knowledge of forgotten spells and
     ancient rituals.
   AnimatedModel: {fileID: 3354174391397484264}
+  Portrait: {fileID: 21300000, guid: 8650fc425a0a0d74881283c75ada257e, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

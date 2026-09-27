@@ -989,6 +989,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Spider
   CurrentEnemyState: 0
   Animator: {fileID: 2600546240259232609}
 --- !u!114 &856185822813198676

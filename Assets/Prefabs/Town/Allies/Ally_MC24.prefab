@@ -2052,6 +2052,7 @@ MonoBehaviour:
   Description: Alex, a charismatic diplomat, uses their silver tongue to navigate
     through political intrigue and diplomacy.
   AnimatedModel: {fileID: 8827025872439343956}
+  Portrait: {fileID: 21300000, guid: d6845186c56321b4b85c64dffed4afc7, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

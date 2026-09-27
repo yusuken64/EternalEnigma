@@ -1365,6 +1365,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Black Knight
   CurrentEnemyState: 0
   Animator: {fileID: 4147745955745372485}
 --- !u!1 &5594130036352148337

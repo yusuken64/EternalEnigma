@@ -3372,6 +3372,7 @@ MonoBehaviour:
   Description: Taylor, a diplomatic ambassador, honed their negotiation skills in
     the courts of a powerful kingdom.
   AnimatedModel: {fileID: 632281612782856439}
+  Portrait: {fileID: 21300000, guid: ab0461a88d4f1db459a146bec14b2f6a, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

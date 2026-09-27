@@ -24,7 +24,6 @@ internal class PickUpItemAction : GameAction
 		{
             GameMessages.Post($"Picked up {droppedItem.InventoryItem.ItemName}.");
 			droppedItem.Opened = true;
-			AudioManager.Instance.SoundEffects.Unequip.PlayAsSound();
 			game.PlayerController.Inventory.Add(droppedItem.InventoryItem);
 			game.CurrentDungeon.RemoveInteractable(droppedItem); //this should be removeimmediate, and remove routine
 		}
@@ -32,13 +31,17 @@ internal class PickUpItemAction : GameAction
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { if (!canAdd) GameMessages.ForCharacter(character, "Inventory is full."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+        if (skipAnimation) yield break;
+        if (canAdd) AudioManager.Instance.SoundEffects.Unequip.PlayAsSound();
 		if (!canAdd)
 		{
-			Game.Instance.DoFloatingText("Inventory is full", Color.red, Game.Instance.PlayerController.transform.position);
+
 		}
-		yield return null;
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character)

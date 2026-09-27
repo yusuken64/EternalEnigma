@@ -19,6 +19,12 @@ public class TabGroup : MonoBehaviour
     public Color SelectedTextColor = Color.black;
 
     public event Action<TabContent> TabClicked;
+    public void AddTab(TabContent tab)
+    {
+        TabContents.Add(tab);
+        if (initialized) tab.TabButton.onClick.AddListener(() => OnTabSelected(tab));
+        tab.Content.SetActive(false);
+    }
     public void NotifyTabClicked(TabContent tab)
     {
         TabClicked?.Invoke(tab);

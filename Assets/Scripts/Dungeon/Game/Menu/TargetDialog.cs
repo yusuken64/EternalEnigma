@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -14,6 +14,7 @@ namespace JuicyChickenGames.Menu
         private List<DungeonProp> props = new();
         private System.Func<Character, Vector3Int, GameAction> createAction;
         private int missileRange;
+        public string RangeLabel => missileRange > 0 ? $"Range: {missileRange} tiles" : targetingSkill != null ? "Choose a highlighted valid target" : "";
         private TMPro.TMP_Text promptText;
         private string originalPrompt;
         public Vector3Int Direction { get; private set; }

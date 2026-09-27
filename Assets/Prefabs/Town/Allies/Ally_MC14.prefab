@@ -3153,6 +3153,7 @@ MonoBehaviour:
   Description: Cameron, a master of illusions, honed their magical abilities in the
     arcane arts.
   AnimatedModel: {fileID: 3655746805047853902}
+  Portrait: {fileID: 21300000, guid: 6ccde7351df3dd44cbde7b93b5b820bc, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

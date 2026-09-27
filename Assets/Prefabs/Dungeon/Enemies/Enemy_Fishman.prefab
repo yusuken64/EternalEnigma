@@ -1469,6 +1469,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Fishman
   CurrentEnemyState: 0
   Animator: {fileID: 6560564101480700063}
 --- !u!1 &5557982870221090621

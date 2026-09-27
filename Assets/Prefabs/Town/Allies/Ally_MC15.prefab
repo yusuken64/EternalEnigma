@@ -2732,6 +2732,7 @@ MonoBehaviour:
   Description: Finley, a quick-witted trickster, navigates the world with a mischievous
     sense of humor.
   AnimatedModel: {fileID: 4310782682817512421}
+  Portrait: {fileID: 21300000, guid: 24ae685f29cb7f7489afb0246690b781, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

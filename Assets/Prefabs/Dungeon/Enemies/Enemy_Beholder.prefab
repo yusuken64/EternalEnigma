@@ -1139,6 +1139,7 @@ MonoBehaviour:
   Equipment: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Beholder
   CurrentEnemyState: 0
   Animator: {fileID: 1113255689686739991}
   IsBoss: 0

@@ -886,6 +886,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Bat
   CurrentEnemyState: 0
   Animator: {fileID: 5526061412298216174}
 --- !u!114 &-4799698183092622733

@@ -157,7 +157,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void Update()
     {
-        if (AutoplayRunner.Active != null) return;
+        if (AutoplayRunner.BlocksPlayerInput) return;
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
         var keyboard = Keyboard.current;
         var pad = Gamepad.current;
@@ -394,10 +394,11 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void OnGUI()
     {
+        GameUISkin.UseLegacySkin();
         if (Context == null || !Context.IsSandbox || !IsReady) return;
         bool previousEnabled = GUI.enabled;
-        GUI.enabled = previousEnabled && AutoplayRunner.Active == null;
-        GUILayout.BeginArea(new Rect(16, 16, 580, 430), GUI.skin.box);
+        GUI.enabled = previousEnabled && !AutoplayRunner.BlocksPlayerInput;
+        GameUISkin.LegacyBeginArea(new Rect(16, 16, 580, 430));
         GUILayout.Label("CAMPAIGN OVERWORLD  |  Seed " + Map.Seed);
         GUILayout.Label("WASD / arrows / left stick: move   •   Enter / A: interact");
         GUILayout.Label("Green: town   Red: dungeon   Gold: landmark   Purple: closed gate");

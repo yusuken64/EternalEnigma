@@ -1907,6 +1907,7 @@ MonoBehaviour:
   Description: Taylor, a skilled archer, honed their marksmanship in the dense forests,
     becoming a master of ranged combat.
   AnimatedModel: {fileID: 1919695215845753677}
+  Portrait: {fileID: 21300000, guid: 5fd2b7f08ebc0cf4da6190e915280d5a, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

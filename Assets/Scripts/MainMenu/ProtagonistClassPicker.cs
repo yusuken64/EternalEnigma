@@ -25,7 +25,7 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
         var canvas = GameUISkin.Canvas("ProtagonistClassPicker", null, 1000);
         var picker = canvas.gameObject.AddComponent<ProtagonistClassPicker>();
         picker.classes = classes; picker.confirmed = confirmed; picker.cancelled = cancelled;
-        GameUISkin.Panel(canvas.transform, Vector2.zero, Vector2.one).color = new Color(.025f, .04f, .05f, 1);
+        GameUISkin.Panel(canvas.transform, Vector2.zero, Vector2.one).color = Color.white;
         GameUISkin.Label(canvas.transform, "ETERNAL ENIGMA  /  A NEW JOURNEY", new Vector2(.05f, .92f), new Vector2(.95f, .97f), 22);
         picker.title = GameUISkin.Label(canvas.transform, "Choose your primary class", new Vector2(.05f, .82f), new Vector2(.95f, .92f), 48);
         var portrait = GameUISkin.Panel(canvas.transform, new Vector2(.05f, .21f), new Vector2(.34f, .81f));
@@ -99,7 +99,7 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
         }
         string weapons = string.Join(", ", cls.AllowedWeapons);
         string tierOne = string.Join(", ", cls.Skills.Where(s => s != null && s.Skill != null && s.Tier == 1).Select(s => s.Skill.SkillName));
-        details.text = $"<size=36>{cls.DisplayName}</size>  <color=#B9C5C8>{cls.Role}</color>\nWeapons: {weapons}\n" +
+        details.text = $"<size=36>{cls.DisplayName}</size>  <color=#765535>{cls.Role}</color>\nWeapons: {weapons}\n" +
             (secondaryStep ? "Secondary: tiers 1-2, rank 3 maximum; no secondary masteries.\nPrimary keeps full progression.\n" :
             "Sets starting stat bonuses and growth each level.\nPrimary skills: all tiers, up to rank 5.\n") +
             $"Start with: {start}\n<size=22>Tier 1 training: {tierOne}</size>";

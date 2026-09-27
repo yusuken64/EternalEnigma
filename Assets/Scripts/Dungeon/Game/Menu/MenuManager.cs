@@ -35,7 +35,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	private void Update()
 	{
-		if (AutoplayRunner.Active != null) return;
+		if (AutoplayRunner.BlocksPlayerInput) return;
 		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
 		if (Opened && Common.Instance.MenuInputHandler.OptionInput && !Common.Instance.MenuInputHandler.CancelMenuInput)
 		{

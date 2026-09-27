@@ -21,6 +21,15 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Hero Portraits")]
+    public static void RunHeroPortraits() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.HeroPortraitTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon HUD Portraits")]
+    public static void RunDungeonHudPortraits() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonHudPortraitTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Controls")]
+    public static void RunDungeonControls() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonControlTests", "EternalEnigma.Tests.DungeonHudPortraitTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Enemy Behaviors")]
     public static void RunEnemyBehaviors() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnemyBehaviorTests", "EternalEnigma.Tests.EnemyPrefabTests");
 
@@ -56,6 +65,10 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.CampaignPresentationTests", "EternalEnigma.Tests.MenuSelectionTests",
         "EternalEnigma.Tests.CampaignTravelTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Bamao Dialog Preview")]
+    public static void RunBamaoDialogPreview() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayTests.InputPromptCancelAndReturnPreserveOriginalSave");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run ButtonStyles")]
     public static void RunButtonStyles() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.CampaignPresentationTests", "EternalEnigma.Tests.MenuSelectionTests");
@@ -85,6 +98,7 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay")]
     public static void RunAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayTests.HidePanelAndTakeControlPreserveSessionAndSave",
         "EternalEnigma.Tests.AutoplayTests.InputPromptCancelAndReturnPreserveOriginalSave",
         "EternalEnigma.Tests.AutoplayTests.NormalModeAllowsDefeatAndWritesTuningReport",
         "EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit");

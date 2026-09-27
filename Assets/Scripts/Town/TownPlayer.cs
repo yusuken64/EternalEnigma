@@ -65,7 +65,7 @@ public class TownPlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (AutoplayRunner.Active != null) { UpdateUI(); return; }
+		if (AutoplayRunner.BlocksPlayerInput) { UpdateUI(); return; }
 		if (Common.Instance.Travel.IsTransitioning || MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
 		UpdateUI();
 		if (!initialied) { return; }

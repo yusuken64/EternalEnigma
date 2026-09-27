@@ -3117,6 +3117,7 @@ MonoBehaviour:
   Description: Reese, a seasoned blacksmith, forges powerful weapons and armor with
     unmatched craftsmanship.
   AnimatedModel: {fileID: 6916085392432544907}
+  Portrait: {fileID: 21300000, guid: e15e60ee3de628748bb9d1fc84d96529, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 
 internal class EquipAction : GameAction
@@ -19,6 +19,7 @@ internal class EquipAction : GameAction
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} equipped {equipableInventoryItem.ItemName}."); }
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) { yield break; }

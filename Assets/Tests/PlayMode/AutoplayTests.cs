@@ -124,6 +124,86 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator HidePanelAndTakeControlPreserveSessionAndSave()
+        {
+            yield return harness.LoadMainMenu(new TestScenario { Gold = 321 }.CreateSave());
+            var original = Common.Instance.GameSaveData;
+            string json = harness.Store.Json;
+            AutoplayRunner.WatchDemo(new AutoplayOptions { DebugPlaythrough = true, Speed = 8 });
+            var run = AutoplayRunner.Active;
+            run.Report.ValidationOnly = true;
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Game>()?.IsReady == true, "demo dungeon");
+            run.SetPaused(true);
+            using (var input = new TestInputScope())
+            {
+                var keyboard = InputSystem.AddDevice<Keyboard>();
+                try
+                {
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.F8));
+                    yield return null; yield return null;
+                    Assert.That(run.PanelVisible, Is.False);
+                    Assert.That(run.ReturnPromptOpen, Is.False);
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    yield return null; yield return null;
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.F8));
+                    yield return null; yield return null;
+                    Assert.That(run.PanelVisible, Is.True);
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    yield return null;
+                    var game = Game.Instance;
+                    var party = game.Allies.ToArray();
+                    int floor = game.PlayerController.Floor;
+                    int actions = run.Report.Actions;
+                    run.RequestReturn();
+                    Assert.That(run.ReturnPromptOpen, Is.True);
+                    yield return new WaitForSecondsRealtime(.25f);
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.T));
+                    yield return null; yield return null;
+                    Assert.That(run.ReturnPromptOpen, Is.False);
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    yield return harness.WaitUntil(() => run.PlayerControlled, "manual control at action boundary");
+                    Assert.That(Game.Instance, Is.SameAs(game));
+                    CollectionAssert.AreEquivalent(party, game.Allies);
+                    Assert.That(game.PlayerController.Floor, Is.EqualTo(floor));
+                    Assert.That(Time.timeScale, Is.EqualTo(1));
+                    Assert.That(AutoplayRunner.BlocksPlayerInput, Is.False);
+                    Assert.That(run.PanelVisible, Is.False);
+                    Assert.That(run.Report.Outcome, Is.EqualTo("PlayerControl"));
+                    Assert.That(AutoplayRunner.GodmodeFor(game.PlayerController.ControlledAlly), Is.False);
+                    Assert.That(AutoplayRunner.InfiniteResourcesFor(game.PlayerController.ControlledAlly), Is.False);
+                    yield return new WaitForSecondsRealtime(.2f);
+                    Assert.That(run.Report.Actions, Is.EqualTo(actions));
+                    yield return harness.WaitUntil(() => game.PlayerController.ControlledAlly.IsWaitingForPlayerInput &&
+                        !game.NewFloorMessage.gameObject.activeSelf, "player command prompt");
+                    yield return new WaitForSecondsRealtime(.3f);
+                    var hero = game.PlayerController.ControlledAlly;
+                    int hunger = hero.Vitals.HungerAccumulate;
+                    var playerInput = Common.Instance.MenuInputHandler.PlayerInput;
+                    playerInput.SwitchCurrentControlScheme(keyboard);
+                    MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { keyboard };
+                    Assert.That(playerInput.currentActionMap.name, Is.EqualTo("Player"));
+                    yield return null;
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Period));
+                    yield return null; yield return null;
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    yield return harness.WaitUntil(() => hero.Vitals.HungerAccumulate != hunger, "manual keyboard wait action");
+                    yield return harness.WaitForIdle();
+                    Assert.That(run.Report.Actions, Is.EqualTo(actions), "Manual commands do not restart the bot.");
+                    SaveSystem.SaveData(Common.Instance.GameSaveData);
+                    Assert.That(harness.Store.Json, Is.EqualTo(json), "Manual demo play remains isolated.");
+                    Directory.CreateDirectory("Temp/AutoplayValidation");
+                    ScreenCapture.CaptureScreenshot("Temp/AutoplayValidation/manual-control.png");
+                    yield return null; yield return null;
+                    Assert.That(Common.Instance.Travel.ReturnToMenu(), Is.True);
+                    yield return harness.WaitUntil(() => AutoplayRunner.Active == null, "manual session exit");
+                    Assert.That(Common.Instance.GameSaveData, Is.SameAs(original));
+                    Assert.That(harness.Store.Json, Is.EqualTo(json));
+                }
+                finally { InputSystem.RemoveDevice(keyboard); }
+            }
+        }
+
+        [UnityTest]
         public IEnumerator NormalModeAllowsDefeatAndWritesTuningReport()
         {
             yield return harness.LoadMainMenu(null);

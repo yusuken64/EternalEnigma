@@ -2312,6 +2312,7 @@ MonoBehaviour:
   Description: Casey, a skilled engineer, spent years crafting intricate devices
     and constructs.
   AnimatedModel: {fileID: 7490205836832366250}
+  Portrait: {fileID: 21300000, guid: 1a144fb14b2cd3043a537f8eeb978556, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

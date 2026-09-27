@@ -1600,6 +1600,7 @@ MonoBehaviour:
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Flying Demon
   CurrentEnemyState: 0
   Animator: {fileID: 4256435833506852635}
 --- !u!1 &5551408519772984746

@@ -375,6 +375,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Slime
   CurrentEnemyState: 0
   Animator: {fileID: 3681299977725512890}
 --- !u!1 &6101004939991340086

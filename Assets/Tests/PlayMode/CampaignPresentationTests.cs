@@ -76,10 +76,10 @@ namespace EternalEnigma.Tests
             yield return new WaitForSecondsRealtime(.3f);
             foreach (var button in Object.FindObjectsByType<Button>(FindObjectsSortMode.None))
             {
-                Assert.That((button.targetGraphic as Image)?.sprite, Is.EqualTo(Resources.Load<Sprite>("UI/Button")), button.name);
+                Assert.That((button.targetGraphic as Image)?.sprite, Is.EqualTo(GameUITheme.Current.Button), button.name);
             }
             var prefab = Resources.Load<Button>("UI/GameButton");
-            Assert.That((prefab.targetGraphic as Image)?.sprite, Is.EqualTo(Resources.Load<Sprite>("UI/Button")));
+            Assert.That((prefab.targetGraphic as Image)?.sprite, Is.EqualTo(GameUITheme.Current.Button));
             var dynamicButton = GameUISkin.Button(Object.FindFirstObjectByType<Canvas>().transform,
                 "Dynamic test button", Vector2.zero, Vector2.one, null);
             Assert.That((dynamicButton.targetGraphic as Image)?.sprite, Is.EqualTo((prefab.targetGraphic as Image)?.sprite));

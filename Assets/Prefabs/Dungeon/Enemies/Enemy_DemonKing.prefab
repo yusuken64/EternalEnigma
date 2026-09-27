@@ -1162,6 +1162,7 @@ MonoBehaviour:
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Demon King
   CurrentEnemyState: 0
   Animator: {fileID: 3580532259483622180}
 --- !u!1 &5735949592359047265

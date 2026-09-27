@@ -65,7 +65,7 @@ public sealed class CampaignHUD : MonoBehaviour
     {
         if (message == null) return;
         var common = Common.Instance;
-        bool ready = common != null && !common.Travel.IsTransitioning && AutoplayRunner.Active == null && !common.GlobalSettings.IsOpen;
+        bool ready = common != null && !common.Travel.IsTransitioning && !AutoplayRunner.BlocksPlayerInput && !common.GlobalSettings.IsOpen;
         if (Overworld != null)
         {
             ready &= Overworld.IsReady;

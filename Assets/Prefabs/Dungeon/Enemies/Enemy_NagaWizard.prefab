@@ -1499,6 +1499,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Naga Wizard
   CurrentEnemyState: 0
   Animator: {fileID: 4351467422328874111}
 --- !u!114 &-6325787788829205602

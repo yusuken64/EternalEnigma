@@ -2866,6 +2866,7 @@ MonoBehaviour:
   Description: Alex, a skilled archer, grew up in a nomadic tribe mastering the art
     of ranged combat.
   AnimatedModel: {fileID: 661115457174243071}
+  Portrait: {fileID: 21300000, guid: 1f3bf1953603be5428ee2b039b78d8d8, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

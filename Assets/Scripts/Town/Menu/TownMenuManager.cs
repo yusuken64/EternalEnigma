@@ -16,7 +16,7 @@ public class TownMenuManager : MonoBehaviour
 
 	private void Update()
 	{
-		if (AutoplayRunner.Active != null) return;
+		if (AutoplayRunner.BlocksPlayerInput) return;
 		if (campaignHUD == null && Common.Instance.CampaignContext != null) campaignHUD = FindFirstObjectByType<CampaignHUD>();
 		if (campaignHUD != null && campaignHUD.IsPartyOpen) return;
 		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;

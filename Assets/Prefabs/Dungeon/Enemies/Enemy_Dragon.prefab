@@ -1116,6 +1116,7 @@ MonoBehaviour:
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Dragon
   CurrentEnemyState: 0
   Animator: {fileID: 529943002580800338}
 --- !u!1 &5663138750262062092

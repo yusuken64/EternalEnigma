@@ -3848,6 +3848,7 @@ MonoBehaviour:
   Description: Blake, a skilled alchemist, experiments with potions and elixirs to
     unlock the secrets of transmutation.
   AnimatedModel: {fileID: 9107083800784469074}
+  Portrait: {fileID: 21300000, guid: fd132b4bd2ec5984987ae6fc1d633851, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

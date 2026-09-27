@@ -2041,6 +2041,7 @@ MonoBehaviour:
   Description: Jordan, a charismatic bard, traveled the lands collecting stories
     and spreading joy through music.
   AnimatedModel: {fileID: 1510732828319696935}
+  Portrait: {fileID: 21300000, guid: 5bbcab6df218ae747b7fa0995c5aec1b, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

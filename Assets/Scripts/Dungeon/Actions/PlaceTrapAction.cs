@@ -34,12 +34,14 @@ internal class PlaceTrapAction : GameAction, ISkillEffectPrecondition
 		return new();
 	}
 
+    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(caster ?? character, placed ? "Caltrops placed." : "No room for caltrops."); }
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
-		var owner = caster ?? character;
-		Game.Instance.DoFloatingText(placed ? "Caltrops!" : "No room", Color.yellow, owner.transform.position);
-		yield return null;
+
+
+		if (!skipAnimation) yield return null;
 	}
 
 	internal override bool IsValid(Character character) => true;

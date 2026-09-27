@@ -1077,6 +1077,7 @@ MonoBehaviour:
   StatusEffects: []
   Inventory: {fileID: 0}
   PursuitTarget: {fileID: 0}
+  DisplayName: Stingray
   CurrentEnemyState: 0
   Animator: {fileID: 926256788817480239}
 --- !u!1 &5662740588755465401

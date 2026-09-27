@@ -2559,6 +2559,7 @@ MonoBehaviour:
   Description: Harper, a skilled musician, uses the power of their melodies to weave
     magic and enchant audiences.
   AnimatedModel: {fileID: 7707324632015850841}
+  Portrait: {fileID: 21300000, guid: 48f81d3742c967b40a554e5eaa6342a5, type: 3}
   Skills: []
   SkillRanks: []
   HighestLevel: 1

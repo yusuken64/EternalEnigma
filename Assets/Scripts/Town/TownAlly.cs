@@ -11,6 +11,7 @@ public class TownAlly : TownCharacter
 	public string Description;
 
 	public GameObject AnimatedModel;
+	public Sprite Portrait;
 
 	public List<string> Skills;
 	// Parallel to Skills; a learned skill without an entry is rank 1.

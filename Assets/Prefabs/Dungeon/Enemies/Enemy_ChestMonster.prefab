@@ -689,6 +689,7 @@ MonoBehaviour:
   Equipment: {fileID: 0}
   PursuitTarget: {fileID: 0}
   Skills: []
+  DisplayName: Chest Monster
   CurrentEnemyState: 0
   Animator: {fileID: 4193216673872474806}
   IsBoss: 0

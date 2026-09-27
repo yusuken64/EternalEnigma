@@ -8,12 +8,26 @@ public class FaceCamDisplay : MonoBehaviour
     public LayerMask LayerMask;
     private GameObject currentFollowedObject;
     private int originalLayer;
+    private bool usingPortrait;
+    private Texture liveTexture;
 
     internal void SetFollow(GameObject followObject)
     {
         if (currentFollowedObject != null && currentFollowedObject != followObject)
         {
             Unfollow(currentFollowedObject);
+        }
+
+        var image = GetComponentInChildren<UnityEngine.UI.RawImage>(true);
+        var portrait = followObject.GetComponentInParent<TownAlly>(true)?.Portrait
+            ?? followObject.GetComponentInParent<Ally>(true)?.Portrait;
+        if (image != null && portrait != null)
+        {
+            if (!usingPortrait) liveTexture = image.texture;
+            image.texture = portrait.texture;
+            usingPortrait = true;
+            currentFollowedObject = followObject;
+            return;
         }
 
         var faceCam = FindFirstObjectByType<FaceCam>();
@@ -33,6 +47,14 @@ public class FaceCamDisplay : MonoBehaviour
     {
         if (currentFollowedObject == followObject)
         {
+            if (usingPortrait)
+            {
+                var image = GetComponentInChildren<UnityEngine.UI.RawImage>(true);
+                if (image != null) image.texture = liveTexture;
+                usingPortrait = false;
+                currentFollowedObject = null;
+                return;
+            }
             Debug.Log($"setting to layer unfollow {originalLayer}", followObject);
             SetLayerRecursively(followObject, originalLayer);
             currentFollowedObject = null;

@@ -8,12 +8,54 @@ public static class GameUISkin
 {
     private static GUISkin legacySkin;
     private static Button buttonPrefab;
-    public static readonly Color Ink = new(1f, .91f, .72f);
+    private static GUIStyle legacyButtonLabel;
+    public static Color Ink => GameUITheme.Ink;
 
-    public static bool LegacyButton(string label)
+    public static void UseLegacySkin()
     {
         if (legacySkin == null) legacySkin = Resources.Load<GUISkin>("UI/GameSkin");
-        return GUILayout.Button(label, legacySkin.button);
+        GUI.skin = legacySkin;
+    }
+
+    public static void LegacyBeginArea(UnityEngine.Rect rect)
+    {
+        if (Event.current.type == EventType.Repaint) DrawLegacySprite(rect, GameUITheme.Current.Panel, 8);
+        GUILayout.BeginArea(rect, new GUIStyle { padding = new RectOffset(16,16,12,12) });
+    }
+    private static void DrawLegacySprite(UnityEngine.Rect rect, Sprite sprite, float thickness)
+    {
+        var texture = sprite.texture;
+        var source = sprite.border;
+        float border = Mathf.Min(thickness, rect.height / 2f);
+        var xs = new[] { rect.xMin, rect.xMin + border, rect.xMax - border, rect.xMax };
+        var ys = new[] { rect.yMin, rect.yMin + border, rect.yMax - border, rect.yMax };
+        var us = new[] { 0f, source.x / texture.width, 1f - source.z / texture.width, 1f };
+        var vs = new[] { 1f, 1f - source.w / texture.height, source.y / texture.height, 0f };
+        for (int y = 0; y < 3; y++)
+            for (int x = 0; x < 3; x++)
+                GUI.DrawTextureWithTexCoords(UnityEngine.Rect.MinMaxRect(xs[x], ys[y], xs[x+1], ys[y+1]), texture,
+                    UnityEngine.Rect.MinMaxRect(us[x], vs[y+1], us[x+1], vs[y]));
+    }
+    public static bool LegacyButton(string label)
+    {
+        if (legacyButtonLabel == null)
+        {
+            legacyButtonLabel = new GUIStyle { alignment = TextAnchor.MiddleCenter, fontSize = 13,
+                padding = new RectOffset(12,12,6,6), margin = new RectOffset(4,4,2,2) };
+            legacyButtonLabel.normal.textColor = Ink;
+        }
+        var content = new GUIContent(label);
+        var rect = GUILayoutUtility.GetRect(content, legacyButtonLabel);
+        if (Event.current.type == EventType.Repaint)
+        {
+            var tint = GUI.color;
+            if (GUI.enabled && rect.Contains(Event.current.mousePosition)) GUI.color = GameUITheme.Selected;
+            DrawLegacySprite(rect, GameUITheme.Current.Button, 6);
+            GUI.color = tint;
+        }
+        bool clicked = GUI.Button(rect, GUIContent.none, GUIStyle.none);
+        GUI.Label(rect, content, legacyButtonLabel);
+        return clicked;
     }
     public static RectTransform Rect(string name, Transform parent, Vector2 min, Vector2 max)
     {
@@ -39,7 +81,7 @@ public static class GameUISkin
     public static Image Panel(Transform parent, Vector2 min, Vector2 max)
     {
         var image = Rect("Panel", parent, min, max).gameObject.AddComponent<Image>();
-        image.color = new Color(.055f, .075f, .09f, .96f);
+        GameUITheme.Current.Surface(image, GameUITheme.Current.Panel, 24);
         return image;
     }
 

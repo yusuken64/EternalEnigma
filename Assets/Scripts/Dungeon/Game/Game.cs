@@ -218,6 +218,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		Enemies.ForEach(x => DestroyImmediate(x.gameObject));
 		Enemies.Clear();
 
+        foreach(var ally in Allies) if(ally!=null) ally.currentInteractable=null;
 		SummonRules.DespawnClones(this);
 		PartyRules.RestoreAllDowned(this, 1);
 		FloorReveal = new FloorRevealState();
@@ -298,6 +299,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 			foreach (var p in floor.Traps) CurrentDungeon.SetTrap(p.Cell.ToCell(), p.Roll);
 
+            foreach (var definition in floor.Scenery)
+                DungeonProp.Create(CurrentDungeon, definition, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
 			SpawnGatheringPoints(startPosition);
 		}
 
@@ -380,6 +383,12 @@ Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventor
 
 	private void SpawnGatheringPoints(Vector3Int startPosition)
 	{
+        if(Common.Instance.GameSaveData.DungeonSaveData.LayoutVersion > 0)
+        {
+            foreach(var site in CurrentDungeon.Floor.GatheringSites)
+                GatheringPoint.Spawn(CurrentDungeon,site.Cell.ToCell(),site.Kind,site.Roll);
+            return;
+        }
 		var stairs = CurrentDungeon.GetStairsCell();
 		if (stairs == null) return;
 		var floorLayer = new EternalEnigma.Core.World.GridLayer(CurrentDungeon.GetFloorMask());

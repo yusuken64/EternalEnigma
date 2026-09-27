@@ -226,16 +226,16 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		OpenWorldTargeting(character, skill.GetTargetCharacters(character),
 			(target, direction) => skill.Targeting == SkillTargeting.Missile ?
 				SkillAction.ForMissile(character, skill, direction) : new SkillAction(character, skill, target),
-			skill.Targeting == SkillTargeting.Missile ? skill.MissileRange : 0);
+			skill.Targeting == SkillTargeting.Missile ? skill.MissileRange : 0, skill);
 	}
 
 	private void OpenWorldTargeting(Character character, List<Character> targets,
-		Func<Character, Vector3Int, GameAction> createAction, int missileRange = 0)
+		Func<Character, Vector3Int, GameAction> createAction, int missileRange = 0, Skill skill = null)
 	{
 		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(TargetDialog);
-		TargetDialog.Setup(character, targets, createAction, missileRange);
+		if(skill != null) TargetDialog.Setup(character,skill); else TargetDialog.Setup(character, targets, createAction, missileRange);
 
 		TargetDialog.CloseAction = () =>
 		{

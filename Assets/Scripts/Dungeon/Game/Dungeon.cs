@@ -234,9 +234,9 @@ public class Dungeon : MonoBehaviour
 			})
 			.FirstOrDefault(x => x.TilemapPosition == currentPosition);
 
-		if (target != null) { return true; }
+		if (target != null || Game.Instance.CurrentDungeon.PropAt(currentPosition)?.Alive == true) { return true; }
 
-		bool hitWall = !Game.Instance.CurrentDungeon.IsWalkable(nextPosition);
+		bool hitWall = !Game.Instance.CurrentDungeon.IsFloorCell(nextPosition);
 		if (hitWall) { return true; }
 
 		return false;

@@ -10,6 +10,8 @@ public static class DungeonFloorGenerator
     {
         if (options == null) throw new ArgumentNullException(nameof(options));
 
+        if (options.LayoutVersion > 0) return BiomeDungeonGenerator.Generate(options);
+
         // Throne floors use the fixed template
         if (options.IsThroneFloor)
         {

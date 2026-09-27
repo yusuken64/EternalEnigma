@@ -85,7 +85,7 @@ try
             if (location == null) throw new ArgumentException($"Unknown location: {dungeon}");
 
             int dungeonSeed = CampaignContext.LocationSeed(seed, dungeon, floor);
-            var floorOptions = CampaignContext.DungeonFloorOptionsFor(seed, dungeon, floor, location.Tier);
+            var floorOptions = CampaignContext.DungeonFloorOptionsFor(seed, dungeon, floor, location.Tier, OverworldGridGenerator.BiomeForRegion(campaign,location.RegionId),1);
             var dungeonFloor = DungeonFloorGenerator.Generate(floorOptions);
 
             // Build JSON object
@@ -108,7 +108,11 @@ try
                 enemies = dungeonFloor.Enemies,
                 gold = dungeonFloor.Gold,
                 items = dungeonFloor.Items,
-                traps = dungeonFloor.Traps
+                traps = dungeonFloor.Traps,
+                scenery = dungeonFloor.Scenery,
+                layoutVersion = floorOptions.LayoutVersion,
+                biome = floorOptions.Biome,
+                role = floorOptions.Role
             };
 
             File.WriteAllText(Path.Combine(output!, $"dungeon-{dungeonSeed}-{dungeon}-{floor}.json"), JsonSerializer.Serialize(dungeonJson, jsonOptions));

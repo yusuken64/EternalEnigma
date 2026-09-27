@@ -206,6 +206,9 @@ public class GrandFinaleAction : GameAction
 		{
 			result.Add(new TakeDamageAction(caster, enemy, rank.Scaling.ScalePower(DamagePerSong * n, rank.Rank)));
 		}
+        var visible=game.CurrentDungeon.GetVisibleTiles(caster,caster.TilemapPosition);
+        foreach(var prop in game.CurrentDungeon.Interactables.OfType<DungeonProp>().Where(p=>p.Alive && visible.Contains(p.Position)))
+            result.Add(prop.Damage(caster,rank.Scaling.ScalePower(DamagePerSong*n,rank.Rank)));
 
 		return result;
 	}

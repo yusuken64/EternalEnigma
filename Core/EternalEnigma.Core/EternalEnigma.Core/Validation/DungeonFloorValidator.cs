@@ -125,7 +125,7 @@ public static class DungeonFloorValidator
         }
 
         // 9. Validate throne constraints if applicable
-        if (floor.IsThroneFloor)
+        if (floor.IsThroneFloor && options.LayoutVersion == 0)
         {
             Check(floor.Width == 12 && floor.Height == 12,
                 "throne.size: Throne floor must be 12x12.");
@@ -219,6 +219,25 @@ public static class DungeonFloorValidator
         if (allPlacementCells.Count != new HashSet<GridPoint>(allPlacementCells).Count)
             errors.Add("placements.distinct: All placement cells must be pairwise distinct.");
 
+        if (options.LayoutVersion > 0)
+        {
+            int area = floorLayer.ToArray().Cast<bool>().Count(v=>v);
+            int Scale(int n) => Math.Min(64,(int)Math.Round(n*BiomeDungeonGenerator.Density(area),MidpointRounding.AwayFromZero));
+            Check(floor.Enemies.Count == Scale(options.EnemyCount), "enemies.count: Scaled enemy count differs.");
+            Check(floor.Gold.Count + floor.Scenery.Count(p=>p.Reward==SceneryReward.Gold) == Scale(options.GoldCount), "gold.budget: Scenery must share the gold budget.");
+            Check(floor.Items.Count + floor.Scenery.Count(p=>p.Reward==SceneryReward.Item) == Scale(options.ItemCount), "items.budget: Scenery must share the item budget.");
+            var blocked = floor.Scenery.Where(p=>p.Kind!=DungeonSceneryKind.Hazard).Select(p=>p.Cell).ToHashSet();
+            Check(GridSearch.VisitOrder(floor.Start,p=>BiomeDungeonGenerator.Neighbors(floorLayer,p,blocked)).Count==area-blocked.Count,"scenery.connectivity: Blocking props disconnect floor.");
+            blocked.UnionWith(floor.Scenery.Select(p=>p.Cell));
+            Check(GridSearch.VisitOrder(floor.Start,p=>BiomeDungeonGenerator.Neighbors(floorLayer,p,blocked)).Contains(floor.Stairs),"scenery.hazards: No safe stair route.");
+            foreach(var prop in floor.Scenery)
+            {
+                Check(floorLayer.At(prop.Cell) && placementCells.Add(prop.Cell),"scenery.placement: Invalid or overlapping prop.");
+                Check(Math.Max(Math.Abs(prop.Cell.X-floor.Start.X),Math.Abs(prop.Cell.Y-floor.Start.Y))>3,"scenery.spawn: Prop inside spawn clearance.");
+            }
+            if(options.Role!=DungeonFloorRole.Regular) Check(floor.Scenery.Count==0 && floor.Enemies.Count==0,"entry: Unsafe entry/exit floor.");
+            return;
+        }
         // Validate counts match options
         Check(floor.Enemies.Count == options.EnemyCount,
             $"enemies.count: Floor has {floor.Enemies.Count} enemies, expected {options.EnemyCount}.");
@@ -271,7 +290,7 @@ public static class DungeonFloorValidator
             distinctValid = false;
 
         // Check count
-        if (floor.GatheringSites.Count > options.GatheringCount)
+        if (floor.GatheringSites.Count > (options.LayoutVersion == 0 ? options.GatheringCount : Math.Min(16,(int)Math.Round(options.GatheringCount * BiomeDungeonGenerator.Density(floorLayer.ToArray().Cast<bool>().Count(v=>v)),MidpointRounding.AwayFromZero))))
             countValid = false;
 
         // Add error messages (at most once per rule)

@@ -15,6 +15,7 @@ public class FogHiddenVisual : MonoBehaviour
         var fog = FogOverlay.Instance;
         bool hidden = fog == null || !fog.IsCurrentlyVisible(transform.position,
             character != null ? character.FootPrint : FootPrint.Size1x1);
+        if (GetComponent<DungeonProp>() is DungeonProp prop && prop.Definition != null && prop.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard) hidden = fog == null || !fog.IsExplored(transform.position);
         // Reuse the list and include newly attached status effects and inactive trap visuals.
         GetComponentsInChildren(true, renderers);
         foreach (var renderer in renderers)

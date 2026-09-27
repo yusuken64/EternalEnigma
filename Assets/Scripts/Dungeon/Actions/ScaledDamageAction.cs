@@ -138,6 +138,14 @@ public class ScaledDamageAction : GameAction, ISkillCastCondition
 		return result;
 	}
 
+    internal int RawSceneryDamage(Character source, SkillRankContext context)
+    {
+        float strength = source.FinalStats.Strength;
+        if (Scaling == DamageScaling.ShieldStrength) strength += 2 * (source.Equipment?.EquippedShield?.EquipmentItemDefinition?.StatModification?.Defense ?? 0);
+        float raw = (Scaling == DamageScaling.Magic ? BaseDamage + PerLevel * System.Math.Max(1, source.Vitals.Level) : strength) * Percent * UnityEngine.Random.Range(112,143) / 128f;
+        int damage = Mathf.FloorToInt(raw);
+        return Mathf.Max(1, context.Scaling != null ? context.Scaling.ScalePower(damage,context.Rank) : damage);
+    }
 	private int RollDamage(out bool critical)
 	{
 		float defense = target.FinalStats.Defense;

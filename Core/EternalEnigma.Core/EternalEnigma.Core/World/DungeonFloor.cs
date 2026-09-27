@@ -6,6 +6,7 @@ namespace EternalEnigma.Core.World;
 public sealed class DungeonFloor
 {
     public const int GenerationVersion = 2;
+    public IReadOnlyList<DungeonScenery> Scenery { get; }
     public int Width { get; }
     public int Height { get; }
     public int Seed { get; }
@@ -22,7 +23,7 @@ public sealed class DungeonFloor
 
     internal DungeonFloor(int seed, bool isThroneFloor, IDictionary<string, GridLayer> layers, IEnumerable<GridRect> rooms,
         GridPoint start, GridPoint stairs, IEnumerable<Placement> enemies, IEnumerable<Placement> gold,
-        IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null)
+        IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null, IEnumerable<DungeonScenery>? scenery = null)
     {
         // Validate layers
         if (!layers.ContainsKey(DungeonLayers.Floor))
@@ -79,6 +80,7 @@ public sealed class DungeonFloor
             wrappedLayers[DungeonLayers.Stairs] = new GridLayer(stairsCells);
         }
 
+        Scenery = Array.AsReadOnly((scenery ?? Enumerable.Empty<DungeonScenery>()).ToArray());
         Seed = seed;
         IsThroneFloor = isThroneFloor;
         Layers = new ReadOnlyDictionary<string, GridLayer>(wrappedLayers);

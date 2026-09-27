@@ -171,6 +171,9 @@ public class PlayerController : MonoBehaviour
 
         if (PlayerInputHandler.Instance.attackPressed)
         {
+            var prop = Game.Instance.CurrentDungeon.PropAt(ControlledAlly.TilemapPosition + Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing));
+            if (prop != null && prop.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Container && !PlayerInputHandler.Instance.holdPosition)
+            { ControlledAlly.SetAction(new InteractAction(prop)); return; }
             if (ControlledAlly.currentInteractable != null && !PlayerInputHandler.Instance.holdPosition)
             {
                 if (ControlledAlly.currentInteractable is Stairs stairs)

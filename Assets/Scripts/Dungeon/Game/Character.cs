@@ -121,6 +121,8 @@ public abstract class Character : MonoBehaviour, Actor
 
 		bool hasTargets = skill.Targeting == SkillTargeting.Missile || (inventoryTargeting ? skill.GetInventoryTargets(this).Any() :
 			(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any());
+        if (!hasTargets && !inventoryTargeting && Game.Instance?.PlayerController?.ControlledAlly == this)
+            hasTargets = skill.RequiresTargetSelection ? ScenerySkillTargets.Candidates(this,skill).Any() : ScenerySkillTargets.Affected(this,skill,this,null,default).Any();
 		if (!hasTargets)
 		{
 			reason = "No valid targets";
@@ -245,6 +247,16 @@ public abstract class Character : MonoBehaviour, Actor
 	public abstract bool IsWaitingForPlayerInput { get; set; }
 	public abstract List<GameAction> GetDeterminedAction();
 	public abstract void DetermineAction();
+    protected List<GameAction> ExecuteWithScenery(GameAction action)
+    {
+        var dungeon=Game.Instance?.CurrentDungeon;
+        if(dungeon==null || !dungeon.Interactables.OfType<DungeonProp>().Any(p=>p.Definition.Kind==EternalEnigma.Core.World.DungeonSceneryKind.Hazard)) return action.ExecuteImmediate(this);
+        var positions=Game.Instance.AllCharacters.Where(c=>c!=null).ToDictionary(c=>c,c=>c.TilemapPosition);
+        var effects=action.ExecuteImmediate(this);
+        foreach(var pair in positions)
+            if(pair.Key!=null && pair.Key.Vitals.HP>0) effects.AddRange(dungeon.EntryEffects(pair.Key,pair.Value,pair.Key.TilemapPosition));
+        return effects;
+    }
 	public abstract List<GameAction> ExecuteActionImmediate(GameAction action);
 	public abstract IEnumerator ExecuteActionRoutine(GameAction action);
 	public abstract void StartTurn();
@@ -537,7 +549,7 @@ disp: {displayedVitals}");
 	internal List<GameAction> GetClassResponses(GameAction action)
 	{
 		var result = new List<GameAction>();
-		if (this == null || Vitals == null || Vitals.HP <= 0 || action == null) return result;
+		if (this == null || Vitals == null || Vitals.HP <= 0 || action == null || action is PropDamageAction || action is TakeDamageAction { Environmental: true }) return result;
 		foreach (var status in StatusEffects.ToList())
 		{
 			if (status == null || status.IsExpired()) continue;
@@ -599,7 +611,7 @@ disp: {displayedVitals}");
 					.OfType<Trap>()
 					.Where(x => x.VisualObject.activeInHierarchy)
 					.Any(x => x.Position == new Vector3Int(i, j));
-				var movePenalty = containsCharacter || containsTrap ? 5 : 0;
+				var movePenalty = game.CurrentDungeon.IsHazard(new Vector3Int(i,j)) ? 100 : containsCharacter || containsTrap ? 5 : 0;
 				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
 			}
 		}
@@ -635,7 +647,7 @@ disp: {displayedVitals}");
 				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
 
 				var containsCharacter = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
-				var movePenalty = containsCharacter ? 5 : 0;
+				var movePenalty = game.CurrentDungeon.IsHazard(new Vector3Int(i,j)) ? 100 : containsCharacter ? 5 : 0;
 				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
 			}
 		}

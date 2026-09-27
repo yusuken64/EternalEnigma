@@ -17,16 +17,20 @@ public sealed class CoreDungeonLayerGenerator : TWCBlueprintAction, ITWCAction
 {
     public string LayerName = DungeonLayers.Floor;
     public bool Throne;
+    public int LayoutVersion, Tier;
+    public OverworldBiome Biome;
+    public DungeonFloorRole Role;
+    public int GatheringCount = 3;
     public int EnemyCount = 10, GoldCount = 5, ItemCount = 5, TrapCount = 5;
     [NonSerialized] private TWCGUILayout guiLayout;
 
     public CoreDungeonLayerGenerator() { }
-    public ITWCAction Clone() => new CoreDungeonLayerGenerator { LayerName = LayerName, Throne = Throne, EnemyCount = EnemyCount, GoldCount = GoldCount, ItemCount = ItemCount, TrapCount = TrapCount };
+    public ITWCAction Clone() => new CoreDungeonLayerGenerator { LayerName = LayerName, Throne = Throne, LayoutVersion = LayoutVersion, Tier = Tier, Biome = Biome, Role = Role, GatheringCount = GatheringCount, EnemyCount = EnemyCount, GoldCount = GoldCount, ItemCount = ItemCount, TrapCount = TrapCount };
     public float GetGUIHeight() => guiLayout != null ? guiLayout.height : 18 * 6;
 
     public DungeonFloorOptions Options(TileWorldCreator twc) =>
-        Throne ? DungeonFloorOptions.Throne(twc.currentSeed)
-               : new DungeonFloorOptions(twc.currentSeed, twc.twcAsset.mapWidth, twc.twcAsset.mapHeight, false, EnemyCount, GoldCount, ItemCount, TrapCount);
+        Throne && LayoutVersion == 0 ? DungeonFloorOptions.Throne(twc.currentSeed)
+               : new DungeonFloorOptions(twc.currentSeed, twc.twcAsset.mapWidth, twc.twcAsset.mapHeight, Throne, EnemyCount, GoldCount, ItemCount, TrapCount, GatheringCount, LayoutVersion, Biome, Tier, Role);
 
     public bool[,] Execute(bool[,] map, TileWorldCreator twc)
     {
@@ -39,7 +43,22 @@ public sealed class CoreDungeonLayerGenerator : TWCBlueprintAction, ITWCAction
     }
 
     /// Sets the same options on every CoreDungeonLayerGenerator in the asset (all layers of one asset must agree).
-    public static void Configure(TileWorldCreatorAsset asset, bool throne, int enemies = 10, int gold = 5, int items = 5, int traps = 5) { /* iterate asset.mapBlueprintLayers[*].stack[*].action as CoreDungeonLayerGenerator and assign */ }
+    public static void Configure(TileWorldCreatorAsset asset, bool throne, int enemies = 10, int gold = 5, int items = 5, int traps = 5) {
+        Configure(asset, throne ? DungeonFloorOptions.Throne(asset.randomSeed) : new DungeonFloorOptions(asset.randomSeed, asset.mapWidth, asset.mapHeight, false, enemies, gold, items, traps));
+    }
+    public static void Configure(TileWorldCreatorAsset asset, DungeonFloorOptions options)
+    {
+        asset.mapWidth = options.Width; asset.mapHeight = options.Height;
+        foreach (var layer in asset.mapBlueprintLayers)
+            foreach (var entry in layer.stack)
+                if (entry.action is CoreDungeonLayerGenerator g)
+                {
+                    g.Throne = options.IsThroneFloor; g.LayoutVersion = options.LayoutVersion;
+                    g.Tier = options.Tier; g.Biome = options.Biome; g.Role = options.Role;
+                    g.EnemyCount = options.EnemyCount; g.GoldCount = options.GoldCount;
+                    g.ItemCount = options.ItemCount; g.TrapCount = options.TrapCount; g.GatheringCount = options.GatheringCount;
+                }
+    }
 
 #if UNITY_EDITOR
     public override void DrawGUI(Rect rect, int layerIndex, TileWorldCreatorAsset asset, TileWorldCreator twc)

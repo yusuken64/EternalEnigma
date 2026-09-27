@@ -18,6 +18,9 @@ public class GameSaveData
 [Serializable]
 public class DungeonSaveData
 {
+    public int LayoutVersion;
+    public int LayoutTier;
+    public EternalEnigma.Core.World.OverworldBiome LayoutBiome;
     public int VisualSelectionVersion;
     public DungeonVisualSelection VisualSelection;
 	public bool ReturnCommitted;

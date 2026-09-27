@@ -19,7 +19,8 @@ public struct DungeonVisualSelection
 {
     public OverworldBiome Biome;
     public DungeonEnvironmentKind Environment;
-    public bool IsLegacy => Biome == OverworldBiome.Grassland && Environment == DungeonEnvironmentKind.Interior;
+    public bool UseBiomePresentation;
+    public bool IsLegacy => !UseBiomePresentation && Biome == OverworldBiome.Grassland && Environment == DungeonEnvironmentKind.Interior;
 
     // Never access Context.Location/Position/Grid: these can lazily generate the overworld.
     public static DungeonVisualSelection Resolve(CampaignContext context, DungeonEncounterVisualSettings settings = null)

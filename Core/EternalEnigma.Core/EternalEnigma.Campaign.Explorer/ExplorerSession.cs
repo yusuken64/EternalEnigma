@@ -90,7 +90,7 @@ public sealed class ExplorerSession
         }
         if (location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon)
         {
-            Dungeon = new DungeonRun(Campaign.Seed, location);
+            Dungeon = new DungeonRun(Campaign.Seed, location, OverworldGridGenerator.BiomeForRegion(Campaign,location.RegionId),1);
             // Legacy interior exploration predates throne floors and expects lootable content on entry;
             // skip the empty intro throne room automatically so old behaviour is preserved.
             if (Dungeon.Current.IsThroneFloor && !Dungeon.IsLastFloor) Dungeon.Descend();
@@ -128,7 +128,7 @@ public sealed class ExplorerSession
             }
             if (location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon)
             {
-                Dungeon = new DungeonRun(Campaign.Seed, location);
+                Dungeon = new DungeonRun(Campaign.Seed, location, OverworldGridGenerator.BiomeForRegion(Campaign,location.RegionId),1);
                 View = ExplorerView.Dungeon;
                 return true;
             }
@@ -142,7 +142,7 @@ public sealed class ExplorerSession
             {
                 var interior = Campaign.Locations.FirstOrDefault(l => l.ParentTownId == town.TownId);
                 if (interior == null) { Message = "No dungeon here."; return false; }
-                Dungeon = new DungeonRun(Campaign.Seed, interior);
+                Dungeon = new DungeonRun(Campaign.Seed, interior, OverworldGridGenerator.BiomeForRegion(Campaign,interior.RegionId),1);
                 View = ExplorerView.Dungeon;
                 return true;
             }

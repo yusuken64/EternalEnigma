@@ -121,8 +121,11 @@ public sealed class ConsoleExplorerTests
         Assert.Equal(ExplorerView.Dungeon, session.View);
         Assert.Equal(1, session.Dungeon!.Floor);
         Assert.True(session.Dungeon.Current.IsThroneFloor);
-        Assert.Equal(new GridPoint(6, 4), session.Dungeon.Position);
-        for (int i = 0; i < 5; i++) Assert.True(session.Move(0, 1));
+        Assert.Equal(session.Dungeon.Current.Start, session.Dungeon.Position);
+        Assert.Equal(16,session.Dungeon.Current.Width);
+        var path=GridSearch.Path(session.Dungeon.Position,session.Dungeon.Current.Stairs,session.Dungeon.Current.Neighbors);
+        foreach(var point in path.Skip(1))
+            Assert.True(session.Move(point.X-session.Dungeon.Position.X,point.Y-session.Dungeon.Position.Y));
         Assert.True(session.Dungeon.OnStairs);
         Assert.True(session.Enter());
         Assert.Equal(2, session.Dungeon.Floor);

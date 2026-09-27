@@ -4,7 +4,7 @@ namespace EternalEnigma.ConsoleExplorer;
 
 public static class DungeonRenderer
 {
-    public const string Legend = "@ you  < start  > stairs  e enemy  $ gold  i item  ^ trap  , carpet  I column  ! torch  # wall";
+    public const string Legend = "@ you  < start  > stairs  e enemy  $ gold  i item  ^ hazard/trap  C container  X destructible  , carpet  I column  ! torch  # wall";
 
     public static string[] Render(DungeonRun run, int width, int height)
     {
@@ -43,6 +43,8 @@ public static class DungeonRenderer
         if (dungeon.Gold.Any(g => g.Cell.Equals(p))) return '$';
         if (dungeon.Items.Any(i => i.Cell.Equals(p))) return 'i';
         if (dungeon.Traps.Any(t => t.Cell.Equals(p))) return '^';
+        var prop=dungeon.Scenery.FirstOrDefault(s=>s.Cell.Equals(p));
+        if(prop!=null) return prop.Kind==DungeonSceneryKind.Container?'C':prop.Kind==DungeonSceneryKind.Destructible?'X':'^';
 
         if (dungeon.Layers[DungeonLayers.Columns].At(p)) return 'I';
         if (dungeon.Layers[DungeonLayers.Torchlights].At(p)) return '!';

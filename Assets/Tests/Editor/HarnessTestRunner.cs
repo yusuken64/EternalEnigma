@@ -21,6 +21,13 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Biome Regression")]
+    public static void RunBiomeRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.BiomeSceneryTests", "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.SkillMovementTests", "EternalEnigma.Tests.InventorySkillTargetingTests", "EternalEnigma.Tests.DungeonThemeTransitionTests", "EternalEnigma.Tests.DungeonThemeExplorerTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Biome Scenery")]
+    public static void RunBiomeScenery() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.BiomeSceneryTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Biome Layouts")]
+    public static void RunBiomeLayouts() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests", "EternalEnigma.Tests.CoreIntegration.BiomePreviewTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Themes")]
     public static void RunDungeonThemes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonThemeTransitionTests", "EternalEnigma.Tests.DungeonThemeExplorerTests");
 

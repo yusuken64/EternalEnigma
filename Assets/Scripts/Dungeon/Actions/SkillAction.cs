@@ -8,6 +8,7 @@ internal class SkillAction : GameAction
 	private Character caster;
 	private Skill skill;
 	private Character target;
+    private DungeonProp sceneryTarget;
 	private InventoryItem inventoryTarget;
 	private Vector3Int direction;
 	private MissileTargeting.Hit missileHit;
@@ -26,6 +27,7 @@ internal class SkillAction : GameAction
 		this.target = target;
 	}
 
+    internal static SkillAction ForScenery(Character caster, Skill skill, DungeonProp prop) => new SkillAction(caster,skill,null) { sceneryTarget = prop };
 	internal static SkillAction ForInventoryItem(Character caster, Skill skill, InventoryItem item) =>
 		new SkillAction(caster, skill, null) { inventoryTarget = item };
 	internal static SkillAction ForMissile(Character caster, Skill skill, Vector3Int direction) =>
@@ -41,12 +43,16 @@ internal class SkillAction : GameAction
 			missileHit = MissileTargeting.Trace(caster, direction, skill.MissileRange + (skill.UsesArrows ? ClassPassives.MissileRangeBonus(caster) : 0));
 			affected = skill.TargetingRules.GetMissileAffected(caster, missileHit);
 		}
+        var scenery = ScenerySkillTargets.Affected(caster, skill, target, sceneryTarget, missileHit.Cell);
+        if (sceneryTarget != null && skill.AreaRadius > 0)
+            affected = skill.GetTargetCharacters(caster).Where(c => TileWorldDungeon.ChevDistance(c.TilemapPosition,sceneryTarget.Position) <= skill.AreaRadius).ToList();
 		if (skill.UsesArrows && skill.Targeting != SkillTargeting.InventoryItem)
 		{
 			if (skill.ArrowCostMode == ArrowCostMode.PerTarget)
 			{
-				int fired = ArrowSupply.Consume(caster, affected.Count, ClassPassives.ArrowRecoveryChance(caster));
-				if (fired < affected.Count) affected = affected.Take(fired).ToList();
+				int fired = ArrowSupply.Consume(caster, affected.Count + scenery.Count, ClassPassives.ArrowRecoveryChance(caster));
+				scenery = scenery.Take(Mathf.Max(0, fired - affected.Count)).ToList();
+                if (fired < affected.Count) affected = affected.Take(fired).ToList();
 			}
 			else
 			{
@@ -61,7 +67,7 @@ internal class SkillAction : GameAction
 			});
 
 		return inventoryTargeting ? skill.GetInventoryEffects(caster, inventoryTarget) :
-			affected.SelectMany(recipient => skill.GetEffects(caster, recipient)).ToList();
+			affected.SelectMany(recipient => skill.GetEffects(caster, recipient)).Concat(scenery.SelectMany(p => ScenerySkillTargets.Effects(caster,skill,p))).ToList();
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
@@ -88,6 +94,6 @@ internal class SkillAction : GameAction
 		return character == caster && skill != null && skill.IsValid(caster) &&
 			(skill.Targeting == SkillTargeting.Missile ? MissileTargeting.IsDirection(direction) : skill.Targeting == SkillTargeting.InventoryItem ?
 				skill.GetInventoryTargets(caster).Contains(inventoryTarget) :
-				inventoryTarget == null && skill.GetAffectedCharacters(caster, target).Any());
+				inventoryTarget == null && (sceneryTarget != null ? ScenerySkillTargets.Candidates(caster,skill).Contains(sceneryTarget) : skill.GetAffectedCharacters(caster, target).Any() || (skill.Targeting != SkillTargeting.SelectedTarget && ScenerySkillTargets.Affected(caster,skill,target,null,default).Any())));
 	}
 }

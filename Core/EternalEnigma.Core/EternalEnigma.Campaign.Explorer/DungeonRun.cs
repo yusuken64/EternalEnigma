@@ -6,6 +6,8 @@ namespace EternalEnigma.ConsoleExplorer;
 
 public sealed class DungeonRun
 {
+    private readonly OverworldBiome biome;
+    private readonly int layoutVersion;
     public int CampaignSeed { get; }
     public CampaignLocation Location { get; }
     public int Floor { get; private set; }
@@ -15,14 +17,15 @@ public sealed class DungeonRun
     public string Message { get; private set; } = "";
     public HashSet<GridPoint> Visited { get; } = new();
 
-    public DungeonRun(int campaignSeed, CampaignLocation location)
+    public DungeonRun(int campaignSeed, CampaignLocation location, OverworldBiome biome = OverworldBiome.Grassland, int layoutVersion = 0)
     {
+        this.biome=biome; this.layoutVersion=layoutVersion;
         CampaignSeed = campaignSeed;
         Location = location;
         Floors = CampaignContext.Floors(location.Tier);
         Floor = Floors.Start;
         Current = DungeonFloorGenerator.Generate(CampaignContext.DungeonFloorOptionsFor(
-            campaignSeed, location.Id, Floor, location.Tier));
+            campaignSeed, location.Id, Floor, location.Tier, biome, layoutVersion));
         Position = Current.Start;
         Visited.Add(Position);
     }
@@ -31,7 +34,7 @@ public sealed class DungeonRun
     {
         var target = new GridPoint(Position.X + dx, Position.Y + dy);
 
-        if (!Current.CanStep(Position, target))
+        if (!GridSteps.CanStep(Position, target, p=>Current.IsWalkable(p) && !Current.Scenery.Any(s=>s.Cell.Equals(p) && s.Kind!=DungeonSceneryKind.Hazard),DiagonalRule.RequireOpenSides))
         {
             Message = "Blocked.";
             return false;
@@ -63,7 +66,7 @@ public sealed class DungeonRun
 
         Floor++;
         Current = DungeonFloorGenerator.Generate(CampaignContext.DungeonFloorOptionsFor(
-            CampaignSeed, Location.Id, Floor, Location.Tier));
+            CampaignSeed, Location.Id, Floor, Location.Tier, biome, layoutVersion));
         Position = Current.Start;
         Visited.Clear();
         Visited.Add(Position);

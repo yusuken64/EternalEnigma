@@ -114,9 +114,12 @@ internal class AttackAction : GameAction
 		var target = Game.Instance.CurrentDungeon.OverlapsAnyOtherCharacter(attacker, Character.ToBounds(attackPosition));
 
 		if (target == null)
-		{
-			return new();
-		}
+        {
+            var prop = Game.Instance.CurrentDungeon.PropAt(attackPosition);
+            if (prop == null || !prop.Alive) return new();
+            AddMetricsModification(attacker, (stats, vitals) => vitals.AttacksPerTurnLeft -= 1);
+            return new() { prop.Damage(attacker, Mathf.Max(1, Mathf.FloorToInt(attacker.FinalStats.Strength * UnityEngine.Random.Range(112,143) / 128f))) };
+        }
 
 		List<GameAction> ret = new();
 
@@ -172,7 +175,7 @@ internal class AttackAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		var canMove = Game.Instance.CurrentDungeon.IsWalkable(attackPosition);
+		var canMove = Game.Instance.CurrentDungeon.IsFloorCell(attackPosition);
 
 		return canMove;
 	}
@@ -188,6 +191,7 @@ public class TakeDamageAction : GameAction
 	private bool miss;
 	public DamageElement Element;
 	public bool RollToHit;
+    public bool Environmental;
 	public int ResponseDepth;
 	internal bool Critical;
 	private bool resolved;
@@ -226,10 +230,10 @@ public class TakeDamageAction : GameAction
 		{
 			resolved = true;
 			if (RollToHit && !miss) miss = !CombatMath.RollHit(attacker, target);
-			if (!miss) damage = ElementMath.Apply(damage, target.FinalStats, Element);
+			if (!miss && !Environmental) damage = ElementMath.Apply(damage, target.FinalStats, Element);
 			var context = new DamageContext(attacker, target, damage, Element, miss, ResponseDepth);
 			var game = Game.Instance;
-			if (game != null)
+			if (game != null && !Environmental)
 				foreach (var character_char in game.AllCharacters.ToList())
 					if (character_char != null && character_char.Vitals != null && character_char.Vitals.HP > 0)
 						character_char.InterceptDamage(context);

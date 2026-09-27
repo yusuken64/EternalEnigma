@@ -250,6 +250,7 @@ public class TileWorldDungeon : MonoBehaviour
 		var allCharacterBounds = Game.Instance.AllCharacters.Select(x => x.ToBounds());
 
 		var openPosition = flatMap
+            .Where(x => IsWalkable(x.Coord))
 			.Where(x => !Interactables.Any(y => y.Position == x.Coord))
 			.Where(x => !allCharacterBounds.Any(y => y.Overlaps2D(x.Coord)))
 			.Sample()
@@ -266,7 +267,7 @@ public class TileWorldDungeon : MonoBehaviour
 		{
 			for (int j = -1; j < 2; j++)
 			{
-				if (GridMovement.IsWalkable(floorMap, tilemapPosition + new Vector3Int(i, j)))
+				if (IsWalkable(tilemapPosition + new Vector3Int(i, j)))
 				{
 					neighborhood.Add(new Vector3Int(tilemapPosition.x + i, tilemapPosition.y + j));
 				}
@@ -294,11 +295,12 @@ public class TileWorldDungeon : MonoBehaviour
 		return count;
 	}
 
-	internal void SetTreasure(Vector3Int treasurePosition)
+	internal void SetTreasure(Vector3Int treasurePosition, int? seededRoll = null)
 	{
 		var itemInstance = Instantiate(GoldPrefab, this.transform);
 		itemInstance.transform.position = CellToWorld(treasurePosition);
 		itemInstance.Setup(treasurePosition);
+        if(seededRoll.HasValue) itemInstance.SeededAmount = 5 + 4*(Mathf.Clamp(Game.Instance.PlayerController.Floor,1,30)-1) + (int)((uint)seededRoll.Value%4);
 		Interactables.Add(itemInstance);
 	}
 
@@ -456,9 +458,24 @@ public class TileWorldDungeon : MonoBehaviour
 			}
 	}
 
+    internal bool IsFloorCell(Vector3Int cell) => Floor != null && GridMovement.IsWalkable(floorMask, cell);
+    internal DungeonProp PropAt(Vector3Int cell) => Interactables.OfType<DungeonProp>().FirstOrDefault(p => p.Position == cell && !p.Opened);
+    internal bool IsHazard(Vector3Int cell) => PropAt(cell)?.Definition.Kind == DungeonSceneryKind.Hazard;
+    internal IDungeonDamageTarget DamageTargetAt(Vector3Int cell)
+    {
+        var character = GetCharacterAtPosition(cell);
+        if(character != null) return new CharacterDamageTarget(character);
+        var prop = PropAt(cell);
+        return prop != null && prop.Alive ? prop : null;
+    }
+    internal List<GameAction> EntryEffects(Character character, Vector3Int from, Vector3Int to)
+    {
+        if (from == to || !IsHazard(to)) return new();
+        return new() { new TakeDamageAction(character,character,Mathf.CeilToInt(character.FinalStats.HPMax*.1f)) { Environmental = true } };
+    }
 	internal bool IsWalkable(Vector3Int newMapPosition)
 	{
-		return Floor != null && GridMovement.IsWalkable(floorMask, newMapPosition);
+		return IsFloorCell(newMapPosition) && !Interactables.OfType<DungeonProp>().Any(p => p.Position == newMapPosition && p.BlocksMovement);
 	}
 
 	internal Vector3Int GetStartPosition() => Floor.Start.ToCell();
@@ -505,7 +522,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 	public static bool StopSight(Vector3Int currentPosition, Vector3Int nextPosition, Character thrower, bool hitFriendly)
 	{
-		bool hitWall = !Game.Instance.CurrentDungeon.IsWalkable(nextPosition);
+		bool hitWall = !Game.Instance.CurrentDungeon.IsFloorCell(nextPosition);
 		if (hitWall) { return true; }
 
 		return false;

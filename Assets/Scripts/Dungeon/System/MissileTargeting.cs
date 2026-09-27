@@ -23,10 +23,11 @@ internal static class MissileTargeting
         for (int i = 0; i < range; i++)
         {
             var next = cell + direction;
-            if (!dungeon.IsWalkable(next) || (direction.x != 0 && direction.y != 0 &&
-                (!dungeon.IsWalkable(cell + new Vector3Int(direction.x, 0)) ||
-                 !dungeon.IsWalkable(cell + new Vector3Int(0, direction.y))))) break;
+            if (!dungeon.IsFloorCell(next) || (direction.x != 0 && direction.y != 0 &&
+                (!dungeon.IsFloorCell(cell + new Vector3Int(direction.x, 0)) ||
+                 !dungeon.IsFloorCell(cell + new Vector3Int(0, direction.y))))) break;
             cell = next;
+            if (dungeon.PropAt(cell)?.Alive == true) return new Hit(cell,null);
             // Every living character blocks a shot, regardless of the effect's team filter.
             var hit = Game.Instance.AllCharacters.FirstOrDefault(c => c != caster && c != null &&
                 c.Vitals.HP > 0 && c.OverlapsWith(new BoundsInt(cell, Vector3Int.one)));

@@ -21,30 +21,12 @@ var town = TownPlanGenerator.Generate(new TownPlanOptions(seed: 42));
 bool[,] walkable = town.Layers[TownLayers.Walkable].ToArray();
 ```
 
-## Status
+## Versioned biome layouts
 
-The generation code in this document (`DungeonFloorGenerator`, `TownPlanGenerator`,
-`CoreDungeonLayerGenerator`, `CoreTownLayerGenerator`, `CoreLayoutCache`, and the
-rewired `Town.cs`/`WalkableMap.cs`/`TileWorldDungeon.cs`/`Game.cs`) is implemented
-and, where it is dotnet-testable outside Unity, passing. Two things are not yet
-true, and a developer picking this up should do them before relying on the
-Unity side:
-
-1. **The shipped `.asset` files have not been rewritten.** `Assets/Prefabs/Dungeon/DungeonAsset.asset`,
-   `Assets/Prefabs/Dungeon/DungeonThroneAsset.asset` and
-   `Assets/TileWorldCreator/VillageLSystemAsset.asset` still run their old
-   vendored generator action stacks. Open Unity and run
-   **Tools/Eternal Enigma/Core Layers/Rewrite Dungeon Assets** and
-   **Tools/Eternal Enigma/Core Layers/Rewrite Town Asset**, then
-   **Tools/Eternal Enigma/Core Layers/Verify Assets** to confirm all three
-   assets now carry exactly one `CoreDungeonLayerGenerator`/`CoreTownLayerGenerator`
-   action per core layer with matching options.
-2. **None of this has been run inside Unity.** No EditMode, PlayMode or Town
-   harness (`node Tools/unity-mcp.mjs harness EditMode|PlayMode|Town`) has
-   exercised the rewired scripts against a live Unity session, because this
-   environment has no Unity `Library/` folder. Treat the Unity-side wiring as
-   implemented-but-unverified, not as tested-and-working, until those harnesses
-   run and any resulting seed-dependent PlayMode test expectations are fixed.
+[Biome dungeons](BiomeDungeons.md) documents the version-1 profiles, run compatibility,
+interactive scenery, preview controls and current verification results. The generator
+and throne descriptions below describe the retained version-0 path unless stated otherwise.
+The Core DLL has been rebuilt and imported with the biome implementation.
 
 ## Layers
 

@@ -70,6 +70,10 @@ public sealed class CampaignTravelService
         common.GameSaveData.PreRunTownJson = JsonUtility.ToJson(common.GameSaveData.TownSaveData);
         common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = floors.Start, EndFloor = floors.End };
         DungeonVisualSelection.ResolveRun(common.GameSaveData.DungeonSaveData, Context, visuals);
+        var run = common.GameSaveData.DungeonSaveData;
+        run.LayoutVersion = EternalEnigma.Core.Generation.DungeonLayoutProfile.IsStarter(location.Id) ? 0 : 1;
+        run.LayoutTier = location.Tier;
+        run.LayoutBiome = EternalEnigma.Core.Generation.OverworldGridGenerator.BiomeForRegion(Context.Campaign, location.RegionId);
         CampaignParty.BuildDungeonParty(common);
         Load("DungeonScene");
     }

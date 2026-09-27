@@ -68,6 +68,17 @@ public static class DungeonPresentation
     }
     public static uint Hash(int seed,int x,int y)
     { unchecked { uint h=(uint)seed ^ (uint)x*0x9e3779b9u ^ (uint)y*0x85ebca6bu ^ 0x6d2b79f5u; h=(h^(h>>16))*0x7feb352du;return h^(h>>15); } }
+    public static void PreviewScenery(TileWorldCreator creator,DungeonFloor floor,DungeonTheme theme)
+    {
+        if(floor.Scenery.Count==0)return;
+        var root=new GameObject("Scenery preview");root.transform.SetParent(creator.worldObject.transform,false);
+        var dungeon=root.AddComponent<TileWorldDungeon>();dungeon.Interactables=new();dungeon.Setup(creator,floor);
+        foreach(var definition in floor.Scenery)
+        {
+            var prop=DungeonProp.Create(dungeon,definition,theme);
+            prop.GetComponent<FogHiddenVisual>().enabled=false;
+        }
+    }
     public static void Decorate(TileWorldCreator creator,DungeonFloor floor,DungeonTheme theme)
     {
         var kit=EnvironmentKit.Load();
@@ -79,7 +90,7 @@ public static class DungeonPresentation
         {
             var candidates=new List<(int x,int y,uint hash)>();
             for(int y=cy;y<Math.Min(cy+32,floor.Height);y++) for(int x=cx;x<Math.Min(cx+32,floor.Width);x++)
-                if(DecorationAllowed(floor,x,y)) candidates.Add((x,y,Hash(floor.Seed,x,y)));
+                if(DecorationAllowed(floor,x,y) && (floor.Layers[DungeonLayers.Floor].At(new GridPoint(x-1,y)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x+1,y)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x,y-1)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x,y+1)))) candidates.Add((x,y,Hash(floor.Seed,x,y)));
             foreach(var p in candidates.OrderBy(p=>p.hash).Take(16))
             {
                 string id=theme.UseTrees && (p.hash&1)==0 ? kit.TreeModels.Pick(theme.Biome,p.hash) : theme.Decorations.Length>0 ? theme.Decorations[p.hash%(uint)theme.Decorations.Length] : "Rock";

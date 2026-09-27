@@ -47,7 +47,7 @@ try
         var location = campaign.Locations.FirstOrDefault(l => l.Id == dungeonId &&
             l.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon);
         if (location == null) { Console.Error.WriteLine("Unknown dungeon: " + dungeonId); return 1; }
-        var run = new DungeonRun(seed, location);
+        var run = new DungeonRun(seed, location, OverworldGridGenerator.BiomeForRegion(campaign,location.RegionId),1);
         int targetFloor = floor ?? run.Floor;
         if (targetFloor < run.Floors.Start || targetFloor > run.Floors.End)
         { Console.Error.WriteLine($"Floor {targetFloor} is outside the range {run.Floors.Start}-{run.Floors.End} for {dungeonId}."); return 1; }

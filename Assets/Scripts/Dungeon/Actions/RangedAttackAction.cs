@@ -56,6 +56,8 @@ internal class RangedAttackAction : GameAction
 				ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, resolvedDamage, true, !hit) { Critical = critical });
 		}
 
+        if (rangedAttackTarget == null && game.CurrentDungeon.PropAt(rangedAttackTargetPosition) is DungeonProp prop && prop.Alive)
+            ret.Add(prop.Damage(attacker, damage));
 		return ret;
 	}
 

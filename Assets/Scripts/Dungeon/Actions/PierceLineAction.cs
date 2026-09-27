@@ -62,15 +62,21 @@ public class PierceLineAction : GameAction, ISkillCastCondition
 		int range = Range + (Damage.Category == DamageCategory.Bow ? ClassPassives.MissileRangeBonus(caster) : 0);
 
 		var hitCharacters = new HashSet<Character>();
+        int propHits=0;
 
 		for (int i = 1; i <= range; i++)
 		{
 			var cell = caster.TilemapPosition + step * i;
 
 			// Stop at the first cell where it's not walkable
-			if (!dungeon.IsWalkable(cell))
+			if (!dungeon.IsFloorCell(cell))
 				break;
 
+            if(dungeon.PropAt(cell) is DungeonProp prop && prop.Alive)
+            {
+                result.Add(prop.Damage(caster,Damage.RawSceneryDamage(caster,rank)));propHits++;
+                if(MaxTargets>0 && hitCharacters.Count+propHits>=MaxTargets) break;
+            }
 			// Find a character at this cell
 			var target = Game.Instance.AllCharacters.FirstOrDefault(c =>
 				c != null && c != caster && c.Vitals.HP > 0 && c.OverlapsWith(Character.ToBounds(cell)));
@@ -84,7 +90,7 @@ public class PierceLineAction : GameAction, ISkillCastCondition
 					hitCharacters.Add(target);
 
 					// Stop if we've hit MaxTargets
-					if (MaxTargets > 0 && hitCharacters.Count >= MaxTargets)
+					if (MaxTargets > 0 && hitCharacters.Count + propHits >= MaxTargets)
 						break;
 				}
 				// If it's an ally or already hit, skip but don't stop

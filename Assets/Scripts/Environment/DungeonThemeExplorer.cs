@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using EternalEnigma.Core.World;
+using EternalEnigma.Core.Generation;
 using TWC;
 using TMPro;
 using UnityEngine;
@@ -17,7 +18,10 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
     public OverworldBiome Biome;
     public DungeonEnvironmentKind Environment;
     public bool Throne;
-    public TMP_Text Summary, EnvironmentLabel, LayoutLabel;
+    public bool LegacyLayout = true;
+    [Range(0,4)] public int Tier;
+    public DungeonFloorRole FloorRole;
+    public TMP_Text Summary, EnvironmentLabel, LayoutLabel, TierLabel, LegacyLabel;
     public TMP_InputField SeedInput;
     public GameObject Controls;
     public bool IsReady {get;private set;}
@@ -47,9 +51,12 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
         if(value) {if(IsReady) ApplyLighting();UpdateControls();} else RestoreLighting();
     }
     public void SelectBiome(int value) {if(IsBuilding)return;Biome=(OverworldBiome)value;Rebuild();}
+    public void NextTier() { if(IsBuilding)return; Tier=(Tier+1)%5; Rebuild(); }
+    public void ToggleLegacy() { if(IsBuilding)return; LegacyLayout=!LegacyLayout; if(!LegacyLayout) {FloorRole=Throne?DungeonFloorRole.Entry:DungeonFloorRole.Regular;Throne=false;} Rebuild(); }
+    public void NextRole() { if(IsBuilding)return; Throne=false; FloorRole=(DungeonFloorRole)(((int)FloorRole+1)%3); Rebuild(); }
     public void NextBiome()=>SelectBiome(((int)Biome+1)%8);
     public void ToggleEnvironment() {if(IsBuilding)return;Environment=Environment==DungeonEnvironmentKind.Interior?DungeonEnvironmentKind.Outdoor:DungeonEnvironmentKind.Interior;Rebuild();}
-    public void ToggleLayout() {if(IsBuilding)return;Throne=!Throne;Rebuild();}
+    public void ToggleLayout() {if(IsBuilding)return;if(LegacyLayout) {Throne=!Throne;Rebuild();} else NextRole();}
     public void SetSeed(string text)
     {
         if(!IsBuilding && int.TryParse(text,out int seed)) {Playground.Seed=seed;Rebuild();}
@@ -60,9 +67,12 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
     {
         if(IsBuilding) return;
         ClearGeometry();IsReady=false;IsBuilding=true;
-        selection=new DungeonVisualSelection {Biome=Biome,Environment=Environment};
-        asset=DungeonPresentation.CloneTemplate(Throne?ThroneTemplate:RegularTemplate);asset.worldName="Playground dungeon themes";
-        Catalog.Apply(asset,selection,Throne);Creator.twcAsset=asset;
+        bool compact = LegacyLayout ? Throne : Throne || FloorRole != DungeonFloorRole.Regular;
+        selection=new DungeonVisualSelection {Biome=Biome,Environment=Environment,UseBiomePresentation=!LegacyLayout};
+        asset=DungeonPresentation.CloneTemplate(compact?ThroneTemplate:RegularTemplate);asset.worldName="Playground dungeon themes";
+        Catalog.Apply(asset,selection,compact);
+        if (!LegacyLayout) CoreDungeonLayerGenerator.Configure(asset, DungeonLayoutProfile.Options(Playground.Seed, Biome, Tier, Throne ? DungeonFloorRole.Entry : FloorRole));
+        Creator.twcAsset=asset;
         WorldRoot=new GameObject(asset.worldName) {hideFlags=HideFlags.DontSave};Creator.worldObject=WorldRoot;
         WorldRoot.SetActive(visible);Creator.SetCustomRandomSeed(Playground.Seed);CoreLayoutCache.Clear(Creator);
         UpdateControls();var random=UnityEngine.Random.state;
@@ -76,6 +86,7 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
         Floor=floor;
         if(!selection.IsLegacy) DungeonPresentation.Decorate(creator,floor,Catalog.Get(selection));
         else DungeonPresentation.TrackLegacyMeshes(WorldRoot);
+        DungeonPresentation.PreviewScenery(creator,floor,Catalog.Get(selection));
         IsBuilding=false;IsReady=true;WorldRoot.SetActive(visible);
         if(visible) {ApplyLighting();Frame();}UpdateControls();
     }
@@ -107,9 +118,11 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
     void UpdateControls()
     {
         if(EnvironmentLabel!=null) EnvironmentLabel.text=Environment.ToString();
-        if(LayoutLabel!=null) LayoutLabel.text=Throne?"Throne room":"Regular floor";
+        if(LayoutLabel!=null) LayoutLabel.text=LegacyLayout ? (Throne?"Throne room":"Regular floor") : FloorRole.ToString();
         if(SeedInput!=null) SeedInput.SetTextWithoutNotify(Playground.Seed.ToString());
-        if(Summary!=null) Summary.text=IsBuilding?"Building dungeon…":$"{Biome} · {Environment} · {(Throne?"Throne room":"Regular floor")} · Seed {Playground.Seed}";
+        if(Summary!=null) Summary.text=IsBuilding?"Building dungeon…":$"{Biome} · {Environment} · {(LegacyLayout ? (Throne?"Throne room":"Regular floor") : FloorRole.ToString())} · Tier {Tier} · Seed {Playground.Seed}";
+        if (TierLabel != null) TierLabel.text=$"Tier {Tier}";
+        if (LegacyLabel != null) LegacyLabel.text=LegacyLayout?"Legacy":"Biome layout";
         if(Controls!=null) foreach(var selectable in Controls.GetComponentsInChildren<Selectable>(true)) selectable.interactable=!IsBuilding;
     }
     void ClearGeometry()

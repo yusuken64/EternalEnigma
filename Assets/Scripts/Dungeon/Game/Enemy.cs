@@ -112,7 +112,7 @@ public class Enemy : Character
 			return new();
 		}
 
-		var sideEffects = action.ExecuteImmediate(this);
+		var sideEffects = ExecuteWithScenery(action);
 		sideEffects.AddRange(GetActionResponses(action));
 
 		return sideEffects;

@@ -183,16 +183,16 @@ public HashSet<string> Completed { get; }
     }
     public int LocationSeed(string location, int floor = 0) => LocationSeed(State.Seed, location, floor);
     /// <summary>Throne floors are the first and last floor of the location's tier range.</summary>
-    public static DungeonFloorOptions DungeonFloorOptionsFor(int campaignSeed, string locationId, int floor, int tier)
+    public static DungeonFloorOptions DungeonFloorOptionsFor(int campaignSeed, string locationId, int floor, int tier, OverworldBiome biome = OverworldBiome.Grassland, int layoutVersion = 0)
     {
         var (start, end) = Floors(tier);
         int seed = LocationSeed(campaignSeed, locationId, floor);
-        return floor == start || floor == end ? DungeonFloorOptions.Throne(seed) : new DungeonFloorOptions(seed);
+        return DungeonLayoutProfile.Options(seed, biome, tier, floor == start ? DungeonFloorRole.Entry : floor == end ? DungeonFloorRole.Exit : DungeonFloorRole.Regular, layoutVersion, locationId);
     }
     public DungeonFloor DungeonFloor(string locationId, int floor)
     {
         var location = Campaign.Locations.FirstOrDefault(l => l.Id == locationId) ?? throw new ArgumentException("Unknown location.", nameof(locationId));
-        return DungeonFloorGenerator.Generate(DungeonFloorOptionsFor(State.Seed, locationId, floor, location.Tier));
+        return DungeonFloorGenerator.Generate(DungeonFloorOptionsFor(State.Seed, locationId, floor, location.Tier, OverworldGridGenerator.BiomeForRegion(Campaign, location.RegionId), 1));
     }
     public TownPlan Town(string townId, IReadOnlyList<bool>? shopFlags = null, int allyCount = 3) =>
         TownPlanGenerator.Generate(new TownPlanOptions(this.LocationSeed(townId), shopFlags: shopFlags, allyCount: allyCount));

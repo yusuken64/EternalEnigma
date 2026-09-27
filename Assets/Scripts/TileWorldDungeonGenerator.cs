@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using EternalEnigma.Core.World;
+using EternalEnigma.Core.Generation;
 using TWC;
 using UnityEngine;
 
@@ -82,6 +83,8 @@ public class TileWorldDungeonGenerator : MonoBehaviour
     {
         var common=Common.Instance;
         CurrentVisuals=DungeonVisualSelection.ResolveRun(common.GameSaveData?.DungeonSaveData,common.CampaignContext,EncounterVisuals);
+        var run = common.GameSaveData?.DungeonSaveData;
+        var visuals = CurrentVisuals; visuals.UseBiomePresentation = run != null && run.LayoutVersion > 0; CurrentVisuals = visuals;
         if(ThemeCatalog==null) ThemeCatalog=Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
         if(!CurrentVisuals.IsLegacy && ThemeCatalog==null) throw new InvalidOperationException("Dungeon theme catalog is missing.");
         TileWorldCreator.StopAllCoroutines();ThroneTileWorldCreator.StopAllCoroutines();
@@ -106,6 +109,13 @@ public class TileWorldDungeonGenerator : MonoBehaviour
     {
         var context = Common.Instance.CampaignContext;
         if (context != null) creator.SetCustomRandomSeed(context.LocationSeed(context.State.LocationId, Game.Instance.PlayerController.Floor));
+        var run = Common.Instance.GameSaveData?.DungeonSaveData;
+        if (run != null && run.LayoutVersion > 0)
+        {
+            int floor = Game.Instance.PlayerController.Floor;
+            var role = floor == run.StartFloor ? DungeonFloorRole.Entry : floor == run.EndFloor ? DungeonFloorRole.Exit : DungeonFloorRole.Regular;
+            CoreDungeonLayerGenerator.Configure(creator.twcAsset, DungeonLayoutProfile.Options(creator.twcAsset.randomSeed, run.LayoutBiome, run.LayoutTier, role, run.LayoutVersion));
+        }
     }
 
 	private void BluePrintComplete(TileWorldCreator _twc)

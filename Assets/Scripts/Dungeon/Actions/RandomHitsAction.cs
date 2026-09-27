@@ -81,7 +81,9 @@ public class RandomHitsAction : GameAction, ISkillCastCondition
 				TileWorldDungeon.ChevDistance(c.TilemapPosition, caster.TilemapPosition) <= Radius)
 		).ToList();
 
-		if (candidates.Count == 0)
+        var visible=Game.Instance.CurrentDungeon.GetVisibleTiles(caster,caster.TilemapPosition);
+        var props=Game.Instance.CurrentDungeon.Interactables.OfType<DungeonProp>().Where(p=>p.Alive && (Visible ? visible.Contains(p.Position) : TileWorldDungeon.ChevDistance(p.Position,caster.TilemapPosition)<=Radius)).ToList();
+		if (candidates.Count + props.Count == 0)
 		{
 			return new();
 		}
@@ -100,7 +102,8 @@ public class RandomHitsAction : GameAction, ISkillCastCondition
 				}
 			}
 
-			int targetIndex = UnityEngine.Random.Range(0, candidates.Count);
+			int targetIndex = UnityEngine.Random.Range(0, candidates.Count+props.Count);
+            if(targetIndex>=candidates.Count) {result.Add(props[targetIndex-candidates.Count].Damage(caster,Damage.RawSceneryDamage(caster,rank)));continue;}
 			Character target = candidates[targetIndex];
 			var damageAction = Damage.AsTargetedSkill(caster, target, rank);
 			result.Add(damageAction);

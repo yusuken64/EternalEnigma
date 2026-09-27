@@ -11,6 +11,20 @@ using UnityEngine.UI;
 
 public static class DungeonThemeExplorerAuthoring
 {
+    [MenuItem("Tools/Eternal Enigma/Art/Upgrade Saved Dungeon Explorer")]
+    public static void UpgradeSaved()
+    {
+        const string path="Assets/Scenes/EnvironmentPlayground.unity";
+        var scene=UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
+        bool opened=!scene.IsValid() || !scene.isLoaded;
+        if(opened) scene=EditorSceneManager.OpenScene(path,OpenSceneMode.Additive);
+        try
+        {
+            var playground=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<EnvironmentPlayground>(true)).Single();
+            Install(playground);EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);
+        }
+        finally {if(opened) EditorSceneManager.CloseScene(scene,true);}
+    }
     [MenuItem("Tools/Eternal Enigma/Art/Install Dungeon Theme Explorer")]
     public static void InstallCurrent()
     {
@@ -60,7 +74,7 @@ public static class DungeonThemeExplorerAuthoring
         var text=GameUISkin.Label(inputPanel.transform,p.Seed.ToString(),new Vector2(.06f,.05f),new Vector2(.94f,.95f),24);
         input.textViewport=(RectTransform)inputPanel.transform;input.textComponent=text;input.contentType=TMP_InputField.ContentType.IntegerNumber;
         UnityEventTools.AddPersistentListener(input.onEndEdit,explorer.SetSeed);explorer.SeedInput=input;
-        Control("Next seed",.51f,.63f,explorer.NextSeed);Control("Rebuild",.64f,.78f,explorer.Rebuild);Control("Frame dungeon",.79f,.99f,explorer.Frame);
+        explorer.TierLabel=Control("Tier 0",.51f,.63f,explorer.NextTier).GetComponentInChildren<TMP_Text>();explorer.LegacyLabel=Control("Legacy",.64f,.81f,explorer.ToggleLegacy).GetComponentInChildren<TMP_Text>();Control("Frame",.82f,.99f,explorer.Frame);
         explorer.enabled=false;explorer.enabled=true;explorer.SetVisible(false);
         EditorUtility.SetDirty(p);EditorUtility.SetDirty(explorer);
     }

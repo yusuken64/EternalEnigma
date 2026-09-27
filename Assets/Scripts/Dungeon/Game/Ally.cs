@@ -147,7 +147,7 @@ public class Ally : Character
 			return new();
 		}
 
-		var sideEffects = action.ExecuteImmediate(this);
+		var sideEffects = ExecuteWithScenery(action);
 		var actionResponses = GetActionResponses(action);
 		var actionResponseEffects = actionResponses.SelectMany(x => x.ExecuteImmediate(this));
 		sideEffects.AddRange(actionResponseEffects);
@@ -197,7 +197,7 @@ public class Ally : Character
 
 	public override List<GameAction> GetInteractableSideEffects()
 	{
-        if (currentInteractable is not Trap and not null)
+        if (currentInteractable is not Trap and not DungeonProp and not null)
         {
 			if (currentInteractable is not Stairs)
 			{

@@ -70,6 +70,8 @@ public class ShadowDanceAction : GameAction
 			result.Add(Strike(caster, enemy, DamagePercent, rank));
 		}
 
+        foreach(var prop in Game.Instance.CurrentDungeon.Interactables.OfType<DungeonProp>().Where(p=>p.Alive && TileWorldDungeon.ChevDistance(p.Position,origin)<=Radius))
+            result.Add(prop.Damage(caster,new ScaledDamageAction {Percent=DamagePercent}.RawSceneryDamage(caster,rank)));
 		return result;
 	}
 

@@ -152,6 +152,7 @@ public class Minimap : MonoBehaviour
                 }
             }
             else if (visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)) ||
+                (interactable is DungeonProp prop && prop.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard && dungeonMap[prop.Position.x,prop.Position.y].visibility != MinimapTileVisibility.Unseen) ||
                 (reveal != null && ((reveal.LayoutRevealed && interactable is Stairs) || (reveal.TreasureRevealed && interactable is Gold))))
             {
                 minimapTexture.SetPixel(interactable.Position.x, interactable.Position.y, ItemColor);

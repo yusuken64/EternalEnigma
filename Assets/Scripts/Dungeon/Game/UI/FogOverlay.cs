@@ -27,6 +27,12 @@ public class FogOverlay : MonoBehaviour
         return false;
     }
 
+    internal bool IsExplored(Vector3 position)
+    {
+        if(visibilityMap==null || cellSize<=0)return false;
+        int x=Mathf.RoundToInt(position.x/cellSize),y=Mathf.RoundToInt(position.y/cellSize);
+        return x>=0 && y>=0 && x<visibilityMap.GetLength(0) && y<visibilityMap.GetLength(1) && visibilityMap[x,y].visibility!=Minimap.MinimapTileVisibility.Unseen;
+    }
     public GameObject fogOverlayQuad;
     public Vector2 worldSize; // e.g., (100, 100)
     public Vector2 worldOrigin; // e.g., (0, 0)

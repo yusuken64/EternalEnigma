@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using EternalEnigma.Core.World;
+using EternalEnigma.Core.Generation;
 using TWC;
 using UnityEditor;
 using UnityEngine;
@@ -11,7 +12,9 @@ public sealed class DungeonThemePreviewInspector : Editor
     OverworldBiome biome;
     DungeonEnvironmentKind environment;
     int seed=12345;
-    bool throne;
+    bool throne, legacy = true;
+    int tier;
+    DungeonFloorRole role;
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -21,7 +24,10 @@ public sealed class DungeonThemePreviewInspector : Editor
             biome=(OverworldBiome)EditorGUILayout.EnumPopup("Biome",biome);
             environment=(DungeonEnvironmentKind)EditorGUILayout.EnumPopup("Environment",environment);
             seed=EditorGUILayout.IntField("Seed",seed);throne=EditorGUILayout.Toggle("Throne layout",throne);
-            if(GUILayout.Button("Build theme preview")) DungeonThemePreview.Build((TileWorldDungeonGenerator)target,new DungeonVisualSelection {Biome=biome,Environment=environment},seed,throne);
+            legacy=EditorGUILayout.Toggle("Legacy layout",legacy);
+            tier=EditorGUILayout.IntSlider("Tier",tier,0,4);
+            role=(DungeonFloorRole)EditorGUILayout.EnumPopup("Floor role",role);
+            if(GUILayout.Button("Build theme preview")) DungeonThemePreview.Build((TileWorldDungeonGenerator)target,new DungeonVisualSelection {Biome=biome,Environment=environment},seed,throne,legacy,tier,role);
             if(GUILayout.Button("Restore authored Grassland preview")) DungeonThemePreview.Clear();
         }
     }
@@ -46,9 +52,11 @@ public static class DungeonThemePreview
         EditorApplication.playModeStateChanged+=s=>{if(s==PlayModeStateChange.ExitingEditMode) Clear();};
         UnityEditor.SceneManagement.EditorSceneManager.sceneClosing+=(s,removing)=>Clear();
     }
-    public static void Build(TileWorldDungeonGenerator generator,DungeonVisualSelection selection,int seed,bool throne)
+    public static void Build(TileWorldDungeonGenerator generator,DungeonVisualSelection selection,int seed,bool throne,bool legacy=true,int tier=0,DungeonFloorRole role=DungeonFloorRole.Regular)
     {
         Clear();
+        selection.UseBiomePresentation=!legacy;
+        if(!legacy) throne=role!=DungeonFloorRole.Regular;
         authored=generator.TileWorldCreator.worldObject;authoredActive=authored.activeSelf;authored.SetActive(false);
         ambient=RenderSettings.ambientLight;
         light=UnityEngine.Object.FindObjectsByType<Light>(FindObjectsSortMode.None).FirstOrDefault(l=>l.type==LightType.Directional);
@@ -60,6 +68,7 @@ public static class DungeonThemePreview
         creator.twcAsset=asset;creator.worldObject=world;
         var catalog=generator.ThemeCatalog!=null?generator.ThemeCatalog:Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
         catalog.Apply(asset,selection,throne);
+        if(!legacy) CoreDungeonLayerGenerator.Configure(asset,DungeonLayoutProfile.Options(seed,selection.Biome,tier,role));
         if(!selection.IsLegacy)
         {var t=catalog.Get(selection);RenderSettings.ambientLight=t.Ambient;if(light!=null){light.color=t.LightColor;light.intensity=t.LightIntensity;}}
         creator.SetCustomRandomSeed(seed);Building=true;
@@ -69,6 +78,7 @@ public static class DungeonThemePreview
             CoreLayoutCache.TryGetDungeon(c,out var floor);Floor=floor;
             if(!selection.IsLegacy) DungeonPresentation.Decorate(c,floor,catalog.Get(selection));
             else DungeonPresentation.TrackLegacyMeshes(world);
+            DungeonPresentation.PreviewScenery(c,floor,catalog.Get(selection));
             Building=false;SceneView.RepaintAll();Completed?.Invoke();
         };
         var random=UnityEngine.Random.state;

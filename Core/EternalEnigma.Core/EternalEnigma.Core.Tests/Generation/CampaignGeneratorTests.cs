@@ -9,6 +9,25 @@ namespace EternalEnigma.Core.Tests.Generation;
 
 public sealed class CampaignGeneratorTests
 {
+    [Theory]
+    [InlineData(0)]
+    [InlineData(42)]
+    [InlineData(99)]
+    public void FinalDungeonTerminatesProgressionInLastBiome(int seed)
+    {
+        var campaign = CampaignGenerator.Generate(seed);
+        var final = Assert.Single(campaign.Locations, l => l.Kind == LocationKind.FinalDungeon);
+        Assert.Equal(campaign.FinalLocationId, final.Id);
+        Assert.Equal(campaign.Regions.OrderBy(r => r.ProgressionOrder).Last().Id, final.RegionId);
+        Assert.Equal(campaign.Locations.Max(l => l.Stage), final.Stage);
+        Assert.True(final.Required);
+        Assert.Single(campaign.Routes, r => r.Other(final.Id) != null);
+        var misplaced = new CampaignLocation(final.Id, "region-0", final.Tier, final.Kind, final.Required, final.Stage);
+        Assert.Contains(CampaignValidator.Validate(With(campaign,
+            locations: campaign.Locations.Select(l => l.Id == final.Id ? misplaced : l))).Errors,
+            error => error.StartsWith("final.endpoint:"));
+    }
+
     [Fact]
     public void EveryTownHasAnExplicitInteriorAndInvalidParentsOrExtraEntrancesAreRejected()
     {

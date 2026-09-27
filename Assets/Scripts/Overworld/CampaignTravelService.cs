@@ -29,6 +29,7 @@ public sealed class CampaignTravelService
         if (transitioning) return;
         var save = common.GameSaveData;
         if (save.CampaignFormatVersion == 0 || save.Campaign == null) { common.CampaignContext = null; transitioning = true; TownSceneLoader.Load(TownSceneLoader.ResolveSaved()); return; }
+        if (save.Campaign.Finished) return;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
         if (Context.RecoverInterruptedRun())
         {
@@ -89,7 +90,11 @@ public sealed class CampaignTravelService
         common.GameSaveData.PreRunTownJson = null;
         if (Context.State.Scene == "Town") PrepareTown(Context.State.LocationId);
         SaveSystem.SaveData(common.GameSaveData);
-        if (travel) Load(Context.State.Scene);
+        if (travel)
+        {
+            if (victory && Context.State.Finished) Game.Instance.ShowGameOver(victory: true);
+            else Load(Context.State.Scene);
+        }
         return true;
     }
     public bool ReturnToMenu()

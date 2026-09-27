@@ -102,7 +102,8 @@ public static class CampaignGenerator
                 .Concat(alternatives.Select(c => CapabilitySet.Of(c))).ToArray());
             Connect($"checkpoint-{i}", $"checkpoint-{i + 1}", requirement, Form(critical[i]), true, boundary: true);
         }
-        Location("final-dungeon", 4, LocationKind.FinalDungeon, true, stage: critical.Count);
+        Location("final-dungeon", 4, LocationKind.FinalDungeon, true,
+            region: regions.OrderBy(r => r.ProgressionOrder).Last().Id, stage: critical.Count);
         Connect($"checkpoint-{critical.Count}", "final-dungeon", required: true);
 
         foreach (var entry in manifest)

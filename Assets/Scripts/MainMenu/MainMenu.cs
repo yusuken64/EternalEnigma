@@ -19,7 +19,8 @@ public class MainMenu : MonoBehaviour
 	{
         Common.Instance.EndSandbox();
         Common.Instance.Travel.SceneReady();
-		if (Common.Instance.GameSaveData != null)
+		var save = Common.Instance.GameSaveData;
+		if (save != null && !(save.CampaignFormatVersion != 0 && save.Campaign != null && save.Campaign.Finished))
 		{
 			ContinueButton.gameObject.SetActive(true);
 			ContinueButton.GetComponent<Button>().Select();

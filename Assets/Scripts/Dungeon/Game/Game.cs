@@ -153,10 +153,11 @@ public class Game : SingletonMonoBehaviour<Game>
 		AdvanceFloor();
 	}
 
-	internal void ShowGameOver()
+	internal void ShowGameOver(bool victory = false)
 	{
+		if (victory) { IsReady = false; TurnManager.InteruptTurn(); }
 		GameOverScreen.gameObject.SetActive(true);
-		GameOverScreen.Setup(PlayerController);
+		GameOverScreen.Setup(PlayerController, victory);
 
 		MenuManager.Open(GameOverScreen);
 	}

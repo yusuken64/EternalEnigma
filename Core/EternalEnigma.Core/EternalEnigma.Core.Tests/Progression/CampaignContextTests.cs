@@ -139,6 +139,24 @@ public sealed class CampaignContextTests
         restored.BeginDungeon(); Assert.True(restored.CompleteDungeon(true)); Assert.True(restored.State.Finished);
         Assert.False(restored.CompleteDungeon(true));
     }
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void OnlyFinalDungeonVictoryFinishesCampaignAndPersists(bool victory)
+    {
+        var context = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        context.Position = context.Grid.Locations[context.Campaign.FinalLocationId];
+        Assert.True(context.BeginDungeon());
+        Assert.False(context.State.Finished);
+        Assert.True(context.CompleteDungeon(victory));
+        Assert.Equal(victory, context.State.Finished);
+        Assert.Equal(victory, context.Completed.Contains(context.Campaign.FinalLocationId));
+        Assert.False(context.CompleteDungeon(true));
+        var restored = new CampaignContext(new(OverworldLaunchMode.Campaign), context.Capture());
+        Assert.Equal(victory, restored.State.Finished);
+        Assert.Empty(restored.State.PendingDungeon);
+    }
+
     [Fact]
     public void PartyIsTownOnlyAndBenchingDoesNotRemoveRosterMembers()
     {

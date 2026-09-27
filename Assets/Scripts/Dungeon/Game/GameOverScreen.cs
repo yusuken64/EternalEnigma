@@ -12,13 +12,25 @@ public class GameOverScreen : Dialog
 	public TextMeshProUGUI MessageText;
 	public Button OkButton;
 	private PlayerController _playerController;
+	private bool _victory;
+	private string _defaultButtonText;
 
-	internal void Setup(PlayerController playerController)
+	internal void Setup(PlayerController playerController, bool victory = false)
 	{
 		_playerController = playerController;
-		MessageText.text = $@"Player Perished
+		_victory = victory;
+		CloseAction = victory ? () => { Common.Instance.Travel.ReturnToMenu(); } : null;
+		MessageText.text = victory ? $@"Victory!
+Final dungeon cleared
+with {playerController.Gold} Treasure" : $@"Player Perished
 On floor {playerController.Floor}
 with {playerController.Gold} Treasure";
+		var label = OkButton.GetComponentInChildren<TMP_Text>();
+		if (label != null)
+		{
+			_defaultButtonText ??= label.text;
+			label.text = victory ? "Main Menu" : _defaultButtonText;
+		}
 
 		var nav = OkButton.navigation;
 		nav.mode = Navigation.Mode.None;
@@ -28,6 +40,7 @@ with {playerController.Gold} Treasure";
 
 	public void TryAgain_Clicked()
 	{
+		if (_victory) { Common.Instance.Travel.ReturnToMenu(); return; }
 		GoBackToTown(false, _playerController);
 	}
 

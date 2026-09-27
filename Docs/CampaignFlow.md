@@ -39,7 +39,10 @@ marker for an overworld dungeon. Defeat and explicit abandonment apply the exist
 return inside the last entered town. A pending run loaded by Continue restores
 its parent town or overworld entrance and pre-run town inventory/party without awarding victory or
 applying defeat losses. Completion commits once per pending run; repeatable
-rewards can be earned on subsequent runs. Final victory sets Finished.
+rewards can be earned on subsequent runs. The final dungeon is a terminal destination
+in the last biome and progression stage. Final victory saves Finished and loot once,
+then displays a victory game-over screen in the dungeon. Main Menu returns to the
+title screen; finished campaigns retain their save but no longer offer Continue.
 
 TownSaveData stores the active party's inventory/equipment representation;
 GameSaveData.Roster preserves all character records, including benched members.

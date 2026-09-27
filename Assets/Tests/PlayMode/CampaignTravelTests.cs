@@ -27,6 +27,40 @@ namespace EternalEnigma.Tests
             yield return WaitTown();
         }
         [UnityTest]
+        public IEnumerator FinalDungeonVictoryIsSavedOnceAndReturnsToMenu()
+        {
+            yield return StartCampaign();
+            var common = Common.Instance;
+            var context = common.CampaignContext;
+            context.Position = context.Grid.Locations[context.Campaign.FinalLocationId];
+            Assert.That(common.Travel.EnterLocation(), Is.True);
+            yield return harness.WaitForIdle();
+            var game = Game.Instance;
+            game.PlayerController.Gold = 123;
+            int gold = common.GameSaveData.TownSaveData.Gold;
+            MenuManager.Instance.ShowYesNoDialog("Exit Dungeon?",
+                () => GameOverScreen.GoBackToTown(true, game.PlayerController), () => { });
+            MenuManager.Instance.StairDialog.YesClicked();
+            Assert.That(game.GameOverScreen.gameObject.activeSelf, Is.True);
+            Assert.That(game.GameOverScreen.MessageText.text, Does.Contain("Victory!"));
+            Assert.That(game.IsReady, Is.False);
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("DungeonScene"));
+            Assert.That(common.Travel.FinishDungeon(true, game.PlayerController), Is.False);
+            var saved = SaveSystem.LoadData();
+            Assert.That(saved.Campaign.Finished, Is.True);
+            Assert.That(saved.Campaign.PendingDungeon, Is.Empty);
+            Assert.That(saved.Campaign.Completed, Contains.Item(context.Campaign.FinalLocationId));
+            Assert.That(saved.TownSaveData.Gold, Is.EqualTo(gold + 123));
+            game.GameOverScreen.TryAgain_Clicked();
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>() != null, "victory menu");
+            yield return null;
+            Assert.That(Object.FindFirstObjectByType<MainMenu>().ContinueButton.activeSelf, Is.False);
+            common.Travel.Continue();
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("MainMenu"));
+            Assert.That(SaveSystem.LoadData().Campaign.Finished, Is.True);
+        }
+
+        [UnityTest]
         public IEnumerator OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel()
         {
             yield return StartCampaign();

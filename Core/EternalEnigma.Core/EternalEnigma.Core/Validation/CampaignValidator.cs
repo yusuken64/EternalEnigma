@@ -40,6 +40,11 @@ public static class CampaignValidator
             "start: Start must be a tier-zero town.");
         Check(locations.TryGetValue(campaign.FinalLocationId, out var final) && final.Kind == LocationKind.FinalDungeon && final.Tier == 4,
             "final: Final location must be a tier-four final dungeon.");
+        Check(final != null && campaign.Regions.Count > 0 &&
+            final.RegionId == campaign.Regions.OrderBy(r => r.ProgressionOrder).Last().Id &&
+            final.Stage == campaign.Locations.Max(l => l.Stage) && final.Required &&
+            campaign.Locations.Count(l => l.Kind == LocationKind.FinalDungeon) == 1,
+            "final.endpoint: Campaign must end at one required final dungeon in the last biome and progression stage.");
         foreach (var location in campaign.Locations)
             Check(regions.TryGetValue(location.RegionId, out var region) && location.Tier >= 0 && location.Tier < 5,
                 $"location.region: {location.Id} has an invalid region/tier.");
@@ -276,6 +281,8 @@ public static class CampaignValidator
             Check(campaign.Locations.Where(l => l.Required || l.Id == campaign.FinalLocationId).All(l => without.ReachableLocations.Contains(l.Id)),
                 $"companion.mandatory: Required content depends on {companion.Id}.");
         }
+        Check(campaign.Routes.Count(r => r.Other(campaign.FinalLocationId) != null) == 1,
+            "final.endpoint: Final dungeon must have one entrance and no onward route.");
         return new CampaignValidationResult(errors, guaranteed);
     }
 }

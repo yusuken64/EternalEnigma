@@ -30,6 +30,7 @@ public static class SkillMovement
 	/// </summary>
 	public static bool CanOccupy(Character actor, Vector3Int destination)
 	{
+		if ((actor != null && actor.IsMovementBlocked)) return false;
 		var dungeon = Game.Instance?.CurrentDungeon;
 		if (dungeon == null || actor == null)
 			return false;
@@ -128,6 +129,7 @@ public static class SkillMovement
 	/// </summary>
 	public static void Place(Character actor, Vector3Int destination)
 	{
+		if ((actor != null && actor.IsMovementBlocked)) return;
 		actor.TilemapPosition = destination;
 	}
 
@@ -137,6 +139,7 @@ public static class SkillMovement
 	/// </summary>
 	public static IEnumerator AnimateMove(Character actor, Vector3Int destination, float seconds = 0.1f)
 	{
+		if ((actor != null && actor.IsMovementBlocked)) yield break;
 		if (actor == null)
 			yield break;
 
@@ -152,6 +155,7 @@ public static class SkillMovement
 	/// </summary>
 	public static void SnapTo(Character actor, Vector3Int destination)
 	{
+		if ((actor != null && actor.IsMovementBlocked)) return;
 		actor.transform.position = Game.Instance.CurrentDungeon.CellToWorld(destination);
 	}
 }

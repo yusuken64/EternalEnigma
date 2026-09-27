@@ -12,7 +12,7 @@ public sealed class GameMessages : MonoBehaviour
     private float lastMessage;
     public IReadOnlyList<string> History => history;
 
-    public static string Name(Character character) => character == null ? "Unknown" :
+    public static string Name(Character character) => character == null ? "Unknown" : EnemyBehavior.IsDisguised(character) ? "Treasure chest" :
         string.IsNullOrWhiteSpace(character.CharacterName) ? character.name.Replace("(Clone)", "").Trim() : character.CharacterName;
 
     public static bool Visible(Character character) => character != null &&

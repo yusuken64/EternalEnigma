@@ -376,8 +376,11 @@ public abstract class Character : MonoBehaviour, Actor
 		}
 	}
 
+	internal bool IsMovementBlocked => StatusEffects.Any(s => s != null && !s.IsExpired() && s.BlocksMovement);
+
 	internal bool CanMove()
 	{
+		if (IsMovementBlocked) return false;
 		var actionOverrides = StatusEffects.Select(x => x.GetActionOverride(this))
 			.Where(x => x != null);
 		return !actionOverrides.Any();

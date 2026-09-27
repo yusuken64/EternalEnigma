@@ -1772,8 +1772,8 @@ MonoBehaviour:
     HPRegenAcccumlateThreshold: 0
     SPRegenAcccumlateThreshold: 0
     DropRate: 0
-    ActionsPerTurnMax: 1
-    AttacksPerTurnMax: 1
+    ActionsPerTurnMax: 2
+    AttacksPerTurnMax: 2
   FootPrint: 0
   StatusEffects: []
   Inventory: {fileID: 0}

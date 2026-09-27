@@ -131,7 +131,7 @@ public class Minimap : MonoBehaviour
                 case Enemy enemy:
                     if (DungeonSight.OverlapsVisible(visibleTiles, Character.ToBounds(enemy.FootPrint, displayedCell)) || (reveal != null && reveal.EnemiesRevealedTurns > 0))
                     {
-                        minimapTexture.SetPixel(displayedCell.x, displayedCell.y, EnemyColor);
+                        minimapTexture.SetPixel(displayedCell.x, displayedCell.y, EnemyBehavior.IsDisguised(enemy) ? ItemColor : EnemyColor);
                     }
                     break;
                 default:

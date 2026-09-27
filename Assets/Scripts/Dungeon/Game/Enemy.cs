@@ -26,6 +26,7 @@ public class Enemy : Character
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(TilemapPosition);
 		this.transform.position = worldPosition;
 
+        GetComponent<EnemyBehavior>()?.Initialize(this);
 		CurrentEnemyState = EnemyState.Pursuit;
 
 		var game = Game.Instance;
@@ -59,7 +60,7 @@ public class Enemy : Character
 
 		if (IsDormant)
 		{
-			determinedActions = new() { new SleepTurnAction(this) };
+			determinedActions = new() { new WaitAction() };
 			return;
 		}
 
@@ -91,7 +92,11 @@ public class Enemy : Character
 			CurrentEnemyState = EnemyState.Wander;
 		}
 
+        var special = GetComponent<EnemyBehavior>()?.ChooseAction();
+        if (special != null) { determinedActions = new() { special }; return; }
 		var action = Policies.FirstOrDefault(x => x.ShouldRun());
+		if (GetComponent<EnemyBehavior>()?.Stationary == true && action is PursuitPolicy or WanderPolicy)
+        { determinedActions = new() { new WaitAction() }; return; }
 		if (action != null)
 		{
 			determinedActions = action.GetActions();
@@ -122,8 +127,8 @@ public class Enemy : Character
 	{
 		if (IsDormant)
 		{
-			if (action is TakeDamageAction damage && damage.Target == this) IsDormant = false;
-			else if (action is MovementAction move && EnemyAwareness.ProximityWakes(this, move.Character)) IsDormant = false;
+			if (action is TakeDamageAction damage && damage.Target == this) Provoke();
+			else if (GetComponent<EnemyBehavior>()?.OnlyWakesWhenAttacked != true && action is MovementAction move && EnemyAwareness.ProximityWakes(this, move.Character)) Provoke();
 		}
 		return GetActionResponses(action);
 	}
@@ -136,8 +141,16 @@ public class Enemy : Character
 		action.UpdateDisplayedStats();
 	}
 
+    internal void Provoke()
+    {
+        var behavior = GetComponent<EnemyBehavior>();
+        if (behavior != null) behavior.Provoke();
+        else IsDormant = false;
+    }
+
 	public override void StartTurn()
 	{
+        GetComponent<EnemyBehavior>()?.Tick();
 		MovedThisTurn = false;
 		determinedActions = null;
 		Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;

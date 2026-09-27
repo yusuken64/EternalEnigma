@@ -21,6 +21,7 @@ internal class MovementAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		if ((character != null && character.IsMovementBlocked)) { newMapPosition=originalPosition; return new(); }
 		bool excludeAllies = false;
 
 		var overlapTarget = Game.Instance.CurrentDungeon
@@ -66,6 +67,7 @@ internal class MovementAction : GameAction
 	internal override bool IsValid(Character character)
 	{
 		var canWalk = Game.Instance.CurrentDungeon.CanWalkTo(originalPosition, newMapPosition);
+		if ((character != null && character.IsMovementBlocked)) return false;
 
 		bool excludeAllies = true;
 		var overlapTarget = Game.Instance.CurrentDungeon
@@ -227,6 +229,7 @@ public class TakeDamageAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+        if (target is Enemy provoked && !Environmental) provoked.Provoke();
 		if (!resolved)
 		{
 			resolved = true;
@@ -457,6 +460,10 @@ public class DeathAction : GameAction
 		}
 
         GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} {(downed ? "was downed" : "died")}.");
+        target.GetComponent<EnemyBehavior>()?.DropStolenLoot();
+        foreach (var owner in Game.Instance.AllCharacters.ToList())
+            foreach (var status in owner.StatusEffects.ToList())
+                if (status != null) status.OnCharacterDied(owner, target);
 		var gainXP = new AddXPAction(attacker, target.FinalStats.EXPOnKill);
 
 		float value = UnityEngine.Random.value;

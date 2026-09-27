@@ -7,6 +7,12 @@ public abstract class StatusEffect : MonoBehaviour
 {
 	public int TurnsLeft;
 
+	// Prevents walking and displacement without preventing attacks or item use.
+	internal virtual bool BlocksMovement => false;
+
+	// Notifies active statuses when a character dies or is downed.
+	internal virtual void OnCharacterDied(Character owner, Character deceased) { }
+
 	//return true if it forces character to take a certain action
 	//i.e. sleep
 	public abstract GameAction GetActionOverride(Character character);

@@ -47,6 +47,7 @@ public class Ally : Character
 			.Where(x => x != null);
 		if (actionOverrides.Any())
 		{
+            _forcedAction = null; // A status consumes the requested turn, not a later turn after expiry.
 			determinedActions = actionOverrides.ToList();
 			return;
 		}
@@ -110,7 +111,7 @@ public class Ally : Character
 
 		if (AllyStrategy == AllyStrategy.Aggresive)
 		{
-			pursuitTargets.AddRange(game.Enemies.Where(x => x != null && x.Team != Team));
+			pursuitTargets.AddRange(game.Enemies.Where(x => x != null && !EnemyBehavior.IsDisguised(x) && x.Team != Team));
 
 			var aggressiveTarget = pursuitTargets
 				.Where(x => game.CurrentDungeon.CanSee(this, x))
@@ -377,7 +378,7 @@ internal class AllyAttackPolicy : PolicyBase
 
 				// Find enemy at pos (if any)
 				target = Game.Instance.AllCharacters
-					.FirstOrDefault(x => x.Team != _ally.Team && x.TilemapPosition == pos);
+					.FirstOrDefault(x => x.Team != _ally.Team && !EnemyBehavior.IsDisguised(x) && x.TilemapPosition == pos);
 
 				if (target != null)
 				{
@@ -391,7 +392,7 @@ internal class AllyAttackPolicy : PolicyBase
 			var attackBounds = _ally.GetAttackBounds();
 			target = Game.Instance.AllCharacters
 				.Where(x => x != null)
-				.Where(x => x.Team != _ally.Team)
+				.Where(x => x.Team != _ally.Team && !EnemyBehavior.IsDisguised(x))
 				.Where(x => attackBounds.Overlaps2D(x.ToBounds()))
                 .Where(x => game.CurrentDungeon.CanSee(_ally, x))
 				.FirstOrDefault();
@@ -483,7 +484,7 @@ public class AllyRangedPositioningPolicy : PolicyBase
 
 		foreach (var target in game.Enemies)
 		{
-			if (!game.CurrentDungeon.CanSee(ally, target)) { continue; }
+            if (target == null || EnemyBehavior.IsDisguised(target) || !game.CurrentDungeon.CanSee(ally, target)) { continue; }
 
 			// If already exactly 3 tiles away, no need to reposition
 			if (TileWorldDungeon.ManhattanDistance(ally.TilemapPosition, target.TilemapPosition) == RangedAttackDistance)

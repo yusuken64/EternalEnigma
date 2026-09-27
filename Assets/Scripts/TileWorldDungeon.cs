@@ -304,6 +304,14 @@ public class TileWorldDungeon : MonoBehaviour
 		Interactables.Add(itemInstance);
 	}
 
+    internal void SetGoldAmount(Vector3Int position, int amount)
+    {
+        var gold = Instantiate(GoldPrefab, transform);
+        gold.transform.position = CellToWorld(position);
+        gold.Setup(position); gold.SeededAmount = amount;
+        Interactables.Add(gold);
+    }
+
 	internal DroppedItem SetDroppedItem(Vector3Int position, ItemDefinition item, int? stackStock = null)
 	{
 		var droppedItemPrefab = DroppedItemPrefabs.First(x => x.DroppedItemVisual == item.DroppedItemVisual);

@@ -4,7 +4,7 @@ using System.Linq;
 public static class StatusCategories
 {
 	public static readonly HashSet<string> BindNames = new() { "Stuck", "Arm Bind", "Silence" };
-	public static readonly HashSet<string> AilmentNames = new() { "Dot", "Sleep", "Frail", "Paralysis", "Curse", "Fear", "Blind", "Burn", "Stun", "Weaken", "Exposed", "Defense Down" };
+	public static readonly HashSet<string> AilmentNames = new() { "Confusion", "Dot", "Sleep", "Frail", "Paralysis", "Curse", "Fear", "Blind", "Burn", "Stun", "Weaken", "Exposed", "Defense Down" };
 
 	public static bool IsBind(StatusEffect status) => status != null && BindNames.Contains(status.GetEffectName());
 	public static bool IsAilment(StatusEffect status) => status != null && AilmentNames.Contains(status.GetEffectName());

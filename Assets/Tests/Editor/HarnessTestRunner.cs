@@ -21,6 +21,12 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Enemy Behaviors")]
+    public static void RunEnemyBehaviors() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnemyBehaviorTests", "EternalEnigma.Tests.EnemyPrefabTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Roster Additions")]
+    public static void RunRosterAdditions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnemyBehaviorTests.SilverDevilActsTwiceAndGoopiRootsUntilKilled", "EternalEnigma.Tests.EnemyBehaviorTests.StatueAndMetalSlimeUseStaticAndRecoloredModels");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Messages")]
     public static void RunMessages() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.GameMessageTests", "EternalEnigma.Tests.OverworldSceneTests", "EternalEnigma.Tests.InventorySkillTargetingTests");
 

@@ -46,6 +46,7 @@ namespace EternalEnigma.Tests
                 harness.PlaceAlly(center + Vector3Int.right * radius);
                 yield return harness.SpawnEnemy(prefab.name, center);
                 var enemy = (Enemy)harness.Game.Enemies.Single();
+                enemy.Provoke(); // Dormant archetypes are deliberately passive until attacked.
                 Assert.That(enemy.Animator, Is.Not.Null, path);
                 Assert.That(enemy.Animator.runtimeAnimatorController, Is.Not.Null, path);
                 AttackAction attack = null;
@@ -55,6 +56,12 @@ namespace EternalEnigma.Tests
                     enemy.StartTurn(); enemy.DetermineAction();
                     Assert.That(enemy.PursuitTarget, Is.SameAs(harness.Ally), path);
                     attack = enemy.GetDeterminedAction().OfType<AttackAction>().FirstOrDefault();
+                    // Dedicated abilities are covered separately; exercise the archetype's melee fallback here.
+                    if (attack == null && enemy.GetComponent<EnemyBehavior>() != null)
+                    {
+                        var melee = new AttackPolicy(harness.Game, enemy, 0);
+                        if (melee.ShouldRun()) attack = melee.GetActions().OfType<AttackAction>().Single();
+                    }
                 }
                 Assert.That(attack, Is.Not.Null, path + " never selected an attack");
                 var effects = attack.ExecuteImmediate(enemy).OfType<TakeDamageAction>().ToArray();

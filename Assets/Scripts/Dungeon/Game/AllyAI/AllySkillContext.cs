@@ -34,7 +34,7 @@ public sealed class AllySkillContext
 		context.AllowMovement = ally.AllyStrategy != AllyStrategy.HoldPosition;
 
 		context.VisibleEnemies = game.AllCharacters
-			.Where(c => c != null && c != ally && c.Vitals.HP > 0 && c.Team != ally.Team && c.Team != Team.Neutral && game.CurrentDungeon.CanSee(ally, c))
+			.Where(c => c != null && !EnemyBehavior.IsDisguised(c) && c != ally && c.Vitals.HP > 0 && c.Team != ally.Team && c.Team != Team.Neutral && game.CurrentDungeon.CanSee(ally, c))
 			.ToList();
 
 		context.Party = PartyRules.StandingMembers(game);

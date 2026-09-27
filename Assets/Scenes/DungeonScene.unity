@@ -23284,7 +23284,7 @@ MonoBehaviour:
   - {fileID: 3119655136135461553, guid: f2a13fe35f15db341ac680c7ec1a6e45, type: 3}
   - {fileID: 3119655136135461553, guid: 0715dd1f833f811458ff1afdbcc58c9b, type: 3}
   - {fileID: 3119655136135461553, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
-  - {fileID: 3119655136135461553, guid: 7c370e0b6a3909a46bfce4f3148f45f7, type: 3}
+  - {fileID: 962086013001910613, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
   - {fileID: 3119655136135461553, guid: 7690bcdbfe7ffc54a9b2770987d50389, type: 3}
   - {fileID: 3119655136135461553, guid: 66fb2786e8def774ab7e09265cbd392b, type: 3}
   - {fileID: 3119655136135461553, guid: 9999e83e3517fc149acba436474e525a, type: 3}
@@ -23367,10 +23367,10 @@ MonoBehaviour:
     FloorMin: 10
     FloorMax: 20
     EnemyCharacterPrefab: {fileID: 3119655136135461553, guid: 62db1f0909cd6c04088b244f63b572a3, type: 3}
-  - SpawnName: Enemy_MushroomSmile (Enemy) 10-32
+  - SpawnName: Enemy_MetalSlime (Enemy) 10-32
     FloorMin: 10
     FloorMax: 32
-    EnemyCharacterPrefab: {fileID: 3119655136135461553, guid: 7c370e0b6a3909a46bfce4f3148f45f7, type: 3}
+    EnemyCharacterPrefab: {fileID: 962086013001910613, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
   - SpawnName: Enemy_BlackKnight (Enemy) 13-21
     FloorMin: 13
     FloorMax: 21

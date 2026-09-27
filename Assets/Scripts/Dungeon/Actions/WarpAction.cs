@@ -19,6 +19,7 @@ internal class WarpAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		if ((attacker != null && attacker.IsMovementBlocked)) {warpLoccation=attacker.TilemapPosition;return new();}
 		var game = Game.Instance;
 		warpLoccation = game.CurrentDungeon.GetRandomOpenEnemyPosition();
 

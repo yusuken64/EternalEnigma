@@ -56,13 +56,21 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
         gameObject.SetActive(false);
         Destroy(gameObject);
     }
-    internal static DungeonProp Create(TileWorldDungeon dungeon, DungeonScenery definition, DungeonTheme theme)
+    internal static DungeonProp Create(TileWorldDungeon dungeon, DungeonScenery definition, DungeonTheme theme, GameObject visualPrefab = null)
     {
         var go = new GameObject(definition.Kind.ToString());
         go.transform.SetParent(dungeon.transform, false);
         go.transform.position = dungeon.CellToWorld(definition.Cell.ToCell());
         var prop = go.AddComponent<DungeonProp>();
         prop.Definition = definition; prop.Position = definition.Cell.ToCell(); prop.HitPoints = definition.HitPoints;
+        if (visualPrefab != null)
+        {
+            var model=Instantiate(visualPrefab,go.transform,false);
+            float cellSize=dungeon.CellToWorld(Vector3Int.right).x-dungeon.CellToWorld(Vector3Int.zero).x;
+            model.transform.localPosition=new Vector3(cellSize*.5f,cellSize*.5f,-.1f);
+            dungeon.Interactables.Add(prop);
+            return prop;
+        }
         var visual = new GameObject("Scenery visual"); visual.transform.SetParent(go.transform,false);
         float size=dungeon.CellToWorld(Vector3Int.right).x-dungeon.CellToWorld(Vector3Int.zero).x;
         visual.transform.localPosition=new Vector3(size*.5f,size*.5f,-.5f);

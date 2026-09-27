@@ -46,7 +46,7 @@ public static class SkillCastOptions
 				{
 					var hit = MissileTargeting.Trace(caster, dir, skill.MissileRange);
 					var affected = skill.TargetingRules.GetMissileAffected(caster, hit);
-					if (affected.Count > 0)
+					if (affected.Any(c => !EnemyBehavior.IsDisguised(c)))
 						result.Add(new SkillCastOption(skill, hit.Character, dir, affected));
 				}
 			}
@@ -54,16 +54,16 @@ public static class SkillCastOptions
 			{
 				foreach (var candidate in skill.GetTargetCharacters(caster))
 				{
-					if (candidate == null) continue;
+					if (candidate == null || EnemyBehavior.IsDisguised(candidate)) continue;
 					var affected = skill.GetAffectedCharacters(caster, candidate);
-					if (affected.Count > 0)
+					if (affected.Any(c => !EnemyBehavior.IsDisguised(c)))
 						result.Add(new SkillCastOption(skill, candidate, null, affected));
 				}
 			}
 			else
 			{
 				var affected = skill.GetAffectedCharacters(caster, caster);
-				if (affected.Count > 0)
+				if (affected.Any(c => !EnemyBehavior.IsDisguised(c)))
 					result.Add(new SkillCastOption(skill, caster, null, affected));
 			}
 

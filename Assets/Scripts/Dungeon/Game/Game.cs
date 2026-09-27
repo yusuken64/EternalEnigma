@@ -302,6 +302,7 @@ public class Game : SingletonMonoBehaviour<Game>
             foreach (var definition in floor.Scenery)
                 DungeonProp.Create(CurrentDungeon, definition, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
 			SpawnGatheringPoints(startPosition);
+            if (PlayerController.Floor <= 3) EarlyDungeonStatue.Place(CurrentDungeon, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
 		}
 
 		if (demoLoadout != null && PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor)

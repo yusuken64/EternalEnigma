@@ -7,6 +7,7 @@ internal class SwapAllyPositionAction : GameAction
 {
 	private Ally ally;
 	private Ally swapAlly;
+    private bool blocked;
 
 	private Vector3Int originalPosition;
 	private Vector3Int newMapPosition;
@@ -24,6 +25,8 @@ internal class SwapAllyPositionAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+        blocked=(ally != null && ally.IsMovementBlocked) || (swapAlly != null && swapAlly.IsMovementBlocked);
+        if(blocked) return new();
 		ally.TilemapPosition = newMapPosition;
 		swapAlly.TilemapPosition = originalPosition;
 		return new();
@@ -31,6 +34,7 @@ internal class SwapAllyPositionAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
+        if(blocked) yield break;
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 		var worldPosition2 = Game.Instance.CurrentDungeon.CellToWorld(originalPosition);
 

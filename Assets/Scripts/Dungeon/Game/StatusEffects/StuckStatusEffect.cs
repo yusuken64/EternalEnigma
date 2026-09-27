@@ -1,5 +1,7 @@
 ﻿public class StuckStatusEffect : StatusEffect
 {
+	internal override bool BlocksMovement => true;
+
 	public override void Tick()
 	{
 		base.Tick();
@@ -12,12 +14,12 @@
 
 	public override GameAction GetActionOverride(Character character)
 	{
-		return new SleepTurnAction(character);
+		return null;
 	}
 
 	internal override bool PreventsMenu()
 	{
-		return true;
+		return false;
 	}
 
 	internal override string GetEffectName()

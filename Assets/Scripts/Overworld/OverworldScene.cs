@@ -52,6 +52,7 @@ public sealed class OverworldScene : MonoBehaviour
         var common = Common.Instance;
         if (common.CampaignContext == null) common.BeginSandbox(OverworldLaunch.TakeSeed(Map.Seed));
         Context = common.CampaignContext;
+        if (!Context.IsSandbox) gameObject.AddComponent<CampaignHUD>().Overworld = this;
         Campaign = Context.Campaign;
         Map.Seed = Campaign.Seed;
         var grid = Context.Grid;
@@ -229,7 +230,7 @@ public sealed class OverworldScene : MonoBehaviour
         return gates.Hint(route, Held);
     }
 
-    private string WarpLabel(CampaignRoute route)
+    public string WarpLabel(CampaignRoute route)
     {
         string destination = Map.CurrentGrid.Locations[route.From].Equals(Position) ? route.To : route.From;
         string region = Campaign.Locations.First(l => l.Id == destination).RegionId;
@@ -371,6 +372,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void OnGUI()
     {
+        if (Context == null || !Context.IsSandbox || !IsReady) return;
         bool previousEnabled = GUI.enabled;
         GUI.enabled = previousEnabled && AutoplayRunner.Active == null;
         GUILayout.BeginArea(new Rect(16, 16, 580, 430), GUI.skin.box);
@@ -386,16 +388,16 @@ public sealed class OverworldScene : MonoBehaviour
             GUILayout.Label("Capabilities: " + Held);
             GUILayout.Label("Keys: " + string.Join(", ", CollectedKeys));
             foreach (var route in gates.Nearby(Position).Where(gates.NeedsOpening))
-                if (GUILayout.Button(gates.Hint(route, Held))) OpenGate(route.Id);
+                if (GameUISkin.LegacyButton(gates.Hint(route, Held))) OpenGate(route.Id);
             foreach (var route in Map.CurrentGrid.WarpsAt(Position))
-                if (GUILayout.Button(WarpLabel(route))) Warp(route.Id);
+                if (GameUISkin.LegacyButton(WarpLabel(route))) Warp(route.Id);
             GUILayout.Label("Biomes: " + string.Join(" | ", Campaign.Regions.Select(r => r.Label + " " + Map.CurrentGrid.RegionBiomes[r.Id])));
             foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
-                if (GUILayout.Button("Collect " + route.KeyId)) ClaimRewards();
+                if (GameUISkin.LegacyButton("Collect " + route.KeyId)) ClaimRewards();
             foreach (var objective in Campaign.ReturnObjectives.Where(o => o.Required))
                 GUILayout.Label("Required return: " + objective.RegionId + " | Requires " + objective.EnablingCapability + " | Reward " + objective.RewardCapability);
             foreach (var route in Campaign.Routes.Where(r => r.UnlockingEndpoint != null && Map.CurrentGrid.Locations[r.UnlockingEndpoint].Equals(Position) && !resolved.Contains(r.Id)))
-                if (GUILayout.Button("Open shortcut")) OpenShortcut();
+                if (GameUISkin.LegacyButton("Open shortcut")) OpenShortcut();
         }
         GUILayout.EndArea();
         GUI.enabled = previousEnabled;

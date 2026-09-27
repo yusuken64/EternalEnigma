@@ -11,12 +11,25 @@ placeholder item models.
 dungeon items
 overworld lock and key
 
+dungeon generation logic
+the first dungeon is pretty good
+have later dungeons vary in size and feel.
+different hallway sizes,
 skinned dungeons
  dungeons themed based on biome
- decorative items
+ decorative items,
+ vary dungeon generation per biome
 
+overworld models
+  skin the walls, mountains, locks.
 overworld decorations
-  cosmetic items in the overworld themed t the biome  
+  cosmetic items in the overworld themed to the biome  
+  add them through a cosmetic layer in twc
+  be very mindful of polycount as overworld is very zoomed out
+town
+  create houses skinned to the biome
+  replace placeholder road, it should look like medieval fantasy.
+  create distinct look for inn, shop, and other buildinds
 
 placeholder screen
 replace starting unit selector with real graphics.
@@ -57,8 +70,3 @@ have enemies with ranged attacks.
 tricksters who steal items/money
 enemy who cause confuse
 mimics who act like treasure chests until attacked
-
-dungeon generation logic
-the first dungeon is pretty good
-have later dungeons vary in size and feel.
-different hallway sizes,

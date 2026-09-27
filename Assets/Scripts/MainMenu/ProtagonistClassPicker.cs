@@ -8,324 +8,109 @@ using UnityEngine.UI;
 
 public sealed class ProtagonistClassPicker : MonoBehaviour
 {
-	private IReadOnlyList<ClassDefinition> classes;
-	private Action<ClassDefinition, ClassDefinition> confirmed;
-	private Action cancelled;
-	private TextMeshProUGUI detailsText;
-	private Transform leftColumn;
-	private Transform rightColumn;
-	private int step = 1; // 1 = primary, 2 = secondary
-	private ClassDefinition primaryClass;
-	private bool finished = false;
+    private IReadOnlyList<ClassDefinition> classes;
+    private Action<ClassDefinition, ClassDefinition> confirmed;
+    private Action cancelled;
+    private ClassDefinition primaryClass;
+    private Transform choices;
+    private TextMeshProUGUI title;
+    private TextMeshProUGUI details;
+    private bool secondaryStep;
+    private bool finished;
 
-	/// <summary>
-	/// Builds the picker on its own overlay canvas. `confirmed(primary, secondaryOrNull)` or `cancelled()` is
-	/// invoked exactly once, then the picker destroys itself.
-	/// </summary>
-	public static ProtagonistClassPicker Show(IReadOnlyList<ClassDefinition> classes,
-		Action<ClassDefinition, ClassDefinition> confirmed, Action cancelled)
-	{
-		if (classes == null || classes.Count == 0)
-		{
-			confirmed?.Invoke(null, null);
-			return null;
-		}
+    public static ProtagonistClassPicker Show(IReadOnlyList<ClassDefinition> classes,
+        Action<ClassDefinition, ClassDefinition> confirmed, Action cancelled)
+    {
+        if (classes == null || classes.Count == 0) { confirmed?.Invoke(null, null); return null; }
+        var canvas = GameUISkin.Canvas("ProtagonistClassPicker", null, 1000);
+        var picker = canvas.gameObject.AddComponent<ProtagonistClassPicker>();
+        picker.classes = classes; picker.confirmed = confirmed; picker.cancelled = cancelled;
+        GameUISkin.Panel(canvas.transform, Vector2.zero, Vector2.one).color = new Color(.025f, .04f, .05f, 1);
+        GameUISkin.Label(canvas.transform, "ETERNAL ENIGMA  /  A NEW JOURNEY", new Vector2(.05f, .92f), new Vector2(.95f, .97f), 22);
+        picker.title = GameUISkin.Label(canvas.transform, "Choose your primary class", new Vector2(.05f, .82f), new Vector2(.95f, .92f), 48);
+        var portrait = GameUISkin.Panel(canvas.transform, new Vector2(.05f, .21f), new Vector2(.34f, .81f));
+        var raw = GameUISkin.Rect("Protagonist", portrait.transform, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
+        raw.raycastTarget = false;
+        var preview = raw.gameObject.AddComponent<ProtagonistPreview>();
+        var configuration = UnityEngine.Object.FindFirstObjectByType<MainMenu>()?.TownConfiguration ?? TownSceneLoader.Default;
+        preview.Show(configuration?.StartingParty.FirstOrDefault(), raw);
+        GameUISkin.Label(canvas.transform, "YOUR PROTAGONIST", new Vector2(.07f, .22f), new Vector2(.32f, .27f), 22).alignment = TextAlignmentOptions.Center;
+        picker.details = GameUISkin.Label(canvas.transform, "", new Vector2(.38f, .51f), new Vector2(.94f, .81f), 26);
+        picker.details.enableAutoSizing = true; picker.details.fontSizeMin = 20; picker.details.fontSizeMax = 28;
+        picker.choices = GameUISkin.Rect("Classes", canvas.transform, new Vector2(.38f, .2f), new Vector2(.95f, .5f));
+        GameUISkin.Label(canvas.transform,
+            "Your choice shapes the protagonist's combat style. Explore the same campaign, recruit companions, and unlock routes through their abilities and your discoveries.",
+            new Vector2(.05f, .095f), new Vector2(.72f, .18f), 24);
+        GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back);
+        picker.BuildChoices();
+        MenuUIInputModule.Active?.PushDialog(picker, canvas.transform, EventSystem.current?.currentSelectedGameObject, picker.Back);
+        return picker;
+    }
 
-		// Warn if no EventSystem exists, but continue
-		if (EventSystem.current == null)
-		{
-			Debug.LogWarning("ProtagonistClassPicker: no EventSystem in scene.");
-		}
+    private void BuildChoices()
+    {
+        foreach (Transform child in choices) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
+        title.text = secondaryStep ? "Choose a secondary class" : "Choose your primary class";
+        var available = classes.Where(c => !secondaryStep || c.Id != primaryClass.Id).ToList();
+        int count = available.Count + (secondaryStep ? 1 : 0);
+        int rows = Mathf.CeilToInt(count / 2f);
+        Button first = null;
+        for (int i = 0; i < count; i++)
+        {
+            var cls = secondaryStep && i == 0 ? null : available[i - (secondaryStep ? 1 : 0)];
+            float x = (i % 2) * .51f, top = 1 - (i / 2) / (float)rows;
+            var button = GameUISkin.Button(choices, cls == null ? "Begin with primary only" : cls.DisplayName,
+                new Vector2(x, top - .88f / rows), new Vector2(x + .49f, top), () => Choose(cls));
+            var relay = button.gameObject.AddComponent<ClassPickerFocus>();
+            relay.Focused = () => ShowDetails(cls);
+            if (cls != null)
+            {
+                var icon = GameUISkin.Rect("Class emblem", button.transform, new Vector2(.045f, .16f), new Vector2(.17f, .84f)).gameObject.AddComponent<Image>();
+                icon.sprite = Resources.Load<Sprite>("UI/" + cls.DisplayName); icon.preserveAspect = true; icon.raycastTarget = false;
+                button.GetComponentInChildren<TMP_Text>().rectTransform.anchorMin = new Vector2(.2f, .12f);
+            }
+            first ??= button;
+        }
+        first?.Select();
+        ShowDetails(secondaryStep ? null : available[0]);
+    }
 
-		// Create root GameObject with Canvas
-		var rootGO = new GameObject("ProtagonistClassPicker", typeof(RectTransform));
-		var canvas = rootGO.AddComponent<Canvas>();
-		canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-		canvas.sortingOrder = 1000;
+    private void Choose(ClassDefinition cls)
+    {
+        if (secondaryStep) { Finish(() => confirmed?.Invoke(primaryClass, cls)); return; }
+        primaryClass = cls; secondaryStep = true; BuildChoices();
+    }
 
-		// Add CanvasScaler
-		var scaler = rootGO.AddComponent<CanvasScaler>();
-		scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-		scaler.referenceResolution = new Vector2(1920, 1080);
+    private void Back()
+    {
+        if (secondaryStep) { secondaryStep = false; BuildChoices(); }
+        else Finish(cancelled);
+    }
 
-		// Add GraphicRaycaster
-		rootGO.AddComponent<GraphicRaycaster>();
+    private void ShowDetails(ClassDefinition cls)
+    {
+        var primary = secondaryStep ? primaryClass : cls;
+        var skills = TownAlly.StartingSkillNames(primary, secondaryStep ? cls : null);
+        string start = skills.Count > 0 ? string.Join(", ", skills) : "No class mastery";
+        if (cls == null)
+        {
+            details.text = $"<size=36>{primary.DisplayName}</size>\n{primary.Role}\n\nStart with: {start}\nPrimary skills: all tiers, up to rank 5.\nYou can begin without a secondary class.";
+            return;
+        }
+        string weapons = string.Join(", ", cls.AllowedWeapons);
+        string tierOne = string.Join(", ", cls.Skills.Where(s => s != null && s.Skill != null && s.Tier == 1).Select(s => s.Skill.SkillName));
+        details.text = $"<size=36>{cls.DisplayName}</size>  <color=#B9C5C8>{cls.Role}</color>\nWeapons: {weapons}\n" +
+            (secondaryStep ? "Secondary: tiers 1-2, rank 3 maximum; no secondary masteries.\nPrimary keeps full progression.\n" :
+            "Sets starting stat bonuses and growth each level.\nPrimary skills: all tiers, up to rank 5.\n") +
+            $"Start with: {start}\n<size=22>Tier 1 training: {tierOne}</size>";
+    }
 
-		// Add ProtagonistClassPicker component
-		var picker = rootGO.AddComponent<ProtagonistClassPicker>();
-		picker.classes = classes;
-		picker.confirmed = confirmed;
-		picker.cancelled = cancelled;
+    private void Finish(Action callback)
+    {
+        if (finished) return;
+        finished = true; MenuUIInputModule.Active?.PopDialog(this);
+        gameObject.SetActive(false); Destroy(gameObject); callback?.Invoke();
+    }
 
-		// Create full-screen dark panel
-		var panelGO = new GameObject("Panel", typeof(RectTransform));
-		panelGO.transform.SetParent(rootGO.transform, false);
-		var panelImage = panelGO.AddComponent<Image>();
-		panelImage.color = new Color(0, 0, 0, 0.85f);
-		var panelRect = panelGO.GetComponent<RectTransform>();
-		panelRect.anchorMin = Vector2.zero;
-		panelRect.anchorMax = Vector2.one;
-		panelRect.offsetMin = Vector2.zero;
-		panelRect.offsetMax = Vector2.zero;
-
-		// Create title text
-		var titleGO = new GameObject("Title", typeof(RectTransform));
-		titleGO.transform.SetParent(rootGO.transform, false);
-		var titleText = titleGO.AddComponent<TextMeshProUGUI>();
-		titleText.text = "Choose your class";
-		titleText.fontSize = 48;
-		titleText.alignment = TextAlignmentOptions.Center;
-		var titleRect = titleGO.GetComponent<RectTransform>();
-		titleRect.anchorMin = new Vector2(0.5f, 1);
-		titleRect.anchorMax = new Vector2(0.5f, 1);
-		titleRect.anchoredPosition = new Vector2(0, -50);
-		titleRect.sizeDelta = new Vector2(1920, 100);
-
-		// Create left column with buttons
-		var leftColumnGO = new GameObject("LeftColumn", typeof(RectTransform));
-		leftColumnGO.transform.SetParent(rootGO.transform, false);
-		var leftLayout = leftColumnGO.AddComponent<VerticalLayoutGroup>();
-		leftLayout.spacing = 8;
-		leftLayout.childControlHeight = true;
-		leftLayout.childControlWidth = true;
-		leftLayout.childForceExpandHeight = false;
-		var leftRect = leftColumnGO.GetComponent<RectTransform>();
-		leftRect.anchorMin = new Vector2(0.05f, 0.1f);
-		leftRect.anchorMax = new Vector2(0.45f, 0.85f);
-		leftRect.offsetMin = Vector2.zero;
-		leftRect.offsetMax = Vector2.zero;
-		picker.leftColumn = leftColumnGO.transform;
-
-		// Create right column with details
-		var rightColumnGO = new GameObject("RightColumn", typeof(RectTransform));
-		rightColumnGO.transform.SetParent(rootGO.transform, false);
-		var detailsGO = new GameObject("Details", typeof(RectTransform));
-		detailsGO.transform.SetParent(rightColumnGO.transform, false);
-		var details = detailsGO.AddComponent<TextMeshProUGUI>();
-		details.fontSize = 28;
-		details.alignment = TextAlignmentOptions.TopLeft;
-		details.enableWordWrapping = true;
-		var detailsRect = detailsGO.GetComponent<RectTransform>();
-		detailsRect.anchorMin = Vector2.zero;
-		detailsRect.anchorMax = Vector2.one;
-		detailsRect.offsetMin = Vector2.zero;
-		detailsRect.offsetMax = Vector2.zero;
-		picker.detailsText = details;
-		var rightRect = rightColumnGO.GetComponent<RectTransform>();
-		rightRect.anchorMin = new Vector2(0.5f, 0.1f);
-		rightRect.anchorMax = new Vector2(0.95f, 0.85f);
-		rightRect.offsetMin = Vector2.zero;
-		rightRect.offsetMax = Vector2.zero;
-		picker.rightColumn = rightColumnGO.transform;
-
-		// Build step 1
-		picker.step = 1;
-		picker.BuildStep1();
-
-		return picker;
-	}
-
-	private void BuildStep1()
-	{
-		// Clear left column
-		foreach (Transform child in leftColumn)
-		{
-			Destroy(child.gameObject);
-		}
-
-		// Add class buttons
-		Button firstButton = null;
-		foreach (var cls in classes)
-		{
-			var button = AddButton(cls.DisplayName, () => SelectPrimaryClass(cls), () => ShowDetails(cls));
-			if (firstButton == null)
-			{
-				firstButton = button;
-			}
-		}
-
-		// Add Back button
-		AddButton("Back", () => Finish(cancelled), null);
-
-		// Select first button and show details
-		if (firstButton != null)
-		{
-			firstButton.Select();
-			ShowDetails(classes[0]);
-		}
-	}
-
-	private void BuildStep2()
-	{
-		// Clear left column
-		foreach (Transform child in leftColumn)
-		{
-			Destroy(child.gameObject);
-		}
-
-		// Add "No secondary class" button
-		var noSecondaryButton = AddButton("No secondary class",
-			() => Finish(() => confirmed?.Invoke(primaryClass, null)),
-			() => ShowNoSecondaryDetails());
-
-		// Add class buttons (except primary)
-		foreach (var cls in classes)
-		{
-			if (cls.Id != primaryClass.Id)
-			{
-				AddButton(cls.DisplayName,
-					() => Finish(() => confirmed?.Invoke(primaryClass, cls)),
-					() => ShowDetailsAsSecondary(cls));
-			}
-		}
-
-		// Add Back button
-		AddButton("Back", () => GoBackToStep1(), null);
-
-		// Select first button (No secondary class) and show its details
-		noSecondaryButton.Select();
-		ShowNoSecondaryDetails();
-	}
-
-	private void SelectPrimaryClass(ClassDefinition cls)
-	{
-		primaryClass = cls;
-		step = 2;
-		BuildStep2();
-		// Update title for step 2
-		var titleGO = leftColumn.parent.Find("Title");
-		if (titleGO != null)
-		{
-			var titleText = titleGO.GetComponent<TextMeshProUGUI>();
-			if (titleText != null)
-			{
-				titleText.text = "Choose a secondary class (optional)";
-			}
-		}
-	}
-
-	private void GoBackToStep1()
-	{
-		step = 1;
-		BuildStep1();
-		// Update title for step 1
-		var titleGO = leftColumn.parent.Find("Title");
-		if (titleGO != null)
-		{
-			var titleText = titleGO.GetComponent<TextMeshProUGUI>();
-			if (titleText != null)
-			{
-				titleText.text = "Choose your class";
-			}
-		}
-	}
-
-	private void ShowDetails(ClassDefinition cls)
-	{
-		if (cls == null || detailsText == null)
-			return;
-
-		var skillsList = (cls.Skills ?? new List<ClassSkillEntryData>())
-			.Where(entry => entry != null && entry.Skill != null && entry.Tier == 1)
-			.Select(entry => entry.Skill.SkillName)
-			.ToList();
-
-		var skillsText = skillsList.Count > 0 ? string.Join(", ", skillsList) : "none yet";
-		var weaponsText = cls.AllowedWeapons != null && cls.AllowedWeapons.Count > 0
-			? string.Join(", ", cls.AllowedWeapons)
-			: "none";
-
-		detailsText.text = $"{cls.DisplayName}\n{cls.Role}\nWeapons: {weaponsText}\nTier 1 skills: {skillsText}";
-	}
-
-	private void ShowDetailsAsSecondary(ClassDefinition cls)
-	{
-		if (cls == null || detailsText == null)
-			return;
-
-		var skillsList = (cls.Skills ?? new List<ClassSkillEntryData>())
-			.Where(entry => entry != null && entry.Skill != null && entry.Tier == 1)
-			.Select(entry => entry.Skill.SkillName)
-			.ToList();
-
-		var skillsText = skillsList.Count > 0 ? string.Join(", ", skillsList) : "none yet";
-		var weaponsText = cls.AllowedWeapons != null && cls.AllowedWeapons.Count > 0
-			? string.Join(", ", cls.AllowedWeapons)
-			: "none";
-
-		detailsText.text = $"{cls.DisplayName}\n{cls.Role}\nWeapons: {weaponsText}\nTier 1 skills: {skillsText}\nAs secondary: tier 1-2 skills only, rank 3 max.";
-	}
-
-	private void ShowNoSecondaryDetails()
-	{
-		if (detailsText == null)
-			return;
-
-		detailsText.text = "Single class: full access to all tiers and ranks.";
-	}
-
-	private Button AddButton(string label, Action onClick, Action onFocus)
-	{
-		var buttonGO = new GameObject(label, typeof(RectTransform));
-		buttonGO.transform.SetParent(leftColumn, false);
-
-		var image = buttonGO.AddComponent<Image>();
-		image.color = new Color(0.2f, 0.2f, 0.25f, 1);
-
-		var button = buttonGO.AddComponent<Button>();
-		if (onClick != null)
-		{
-			button.onClick.AddListener(() => onClick?.Invoke());
-		}
-
-		var layoutElement = buttonGO.AddComponent<LayoutElement>();
-		layoutElement.preferredHeight = 56;
-
-		// Add FocusRelay
-		if (onFocus != null)
-		{
-			var relay = buttonGO.AddComponent<FocusRelay>();
-			relay.Focused += onFocus;
-		}
-
-		// Add text child
-		var textGO = new GameObject("Text", typeof(RectTransform));
-		textGO.transform.SetParent(buttonGO.transform, false);
-		var textMesh = textGO.AddComponent<TextMeshProUGUI>();
-		textMesh.text = label;
-		textMesh.fontSize = 30;
-		textMesh.alignment = TextAlignmentOptions.Center;
-		var textRect = textGO.GetComponent<RectTransform>();
-		textRect.anchorMin = Vector2.zero;
-		textRect.anchorMax = Vector2.one;
-		textRect.offsetMin = Vector2.zero;
-		textRect.offsetMax = Vector2.zero;
-
-		return button;
-	}
-
-	private void Finish(Action callback)
-	{
-		if (finished)
-			return;
-
-		finished = true;
-		Destroy(gameObject);
-		callback?.Invoke();
-	}
-
-	private class FocusRelay : MonoBehaviour, ISelectHandler, IPointerEnterHandler
-	{
-		public Action Focused;
-
-		public void OnSelect(BaseEventData eventData)
-		{
-			Focused?.Invoke();
-		}
-
-		public void OnPointerEnter(PointerEventData eventData)
-		{
-			Focused?.Invoke();
-		}
-	}
+    private void OnDestroy() => MenuUIInputModule.Active?.PopDialog(this);
 }

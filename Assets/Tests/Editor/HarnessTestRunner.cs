@@ -24,6 +24,15 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run PlayMode")]
     public static void RunPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation")]
+    public static void RunPresentation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignPresentationTests", "EternalEnigma.Tests.MenuSelectionTests",
+        "EternalEnigma.Tests.CampaignTravelTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run ButtonStyles")]
+    public static void RunButtonStyles() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignPresentationTests", "EternalEnigma.Tests.MenuSelectionTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Skills")]
     public static void RunSkills() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.InventorySkillTargetingTests", "EternalEnigma.Tests.SkillRankRegressionTests", "EternalEnigma.Tests.CombatFoundationTests", "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.AllyAiClassPartyTests", "EternalEnigma.Tests.ClassSkillSmokeTests");

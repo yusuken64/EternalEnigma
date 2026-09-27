@@ -26,6 +26,7 @@ public class TownPlayer : MonoBehaviour
 	public List<TownAlly> RecruitedAllies;
 	public List<Vector3Int> WalkPositionHistory;
 	private TownMenuManager townMenuManager;
+	private CampaignHUD campaignHUD;
 	private bool initialied = false;
 	private int allyIndex;
 
@@ -90,6 +91,9 @@ public class TownPlayer : MonoBehaviour
 
 	private void DeterminePlayerAction()
 	{
+		if (campaignHUD == null && Common.Instance.CampaignContext != null)
+			campaignHUD = FindFirstObjectByType<CampaignHUD>();
+		if (campaignHUD != null && campaignHUD.IsPartyOpen) return;
 		var inputHandler = PlayerInputHandler.Instance;
 
 		if (inputHandler == null || _busy)

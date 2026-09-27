@@ -625,8 +625,8 @@ public sealed class AutoplayRunner : MonoBehaviour
             GUILayout.BeginArea(new Rect((Screen.width-360)/2f,(Screen.height-180)/2f,360,180),GUI.skin.box);
             GUILayout.Label("Return to main menu?");
             GUILayout.Label("Your saved game is unchanged.");
-            if (GUILayout.Button("Return to main menu (Enter / A)")) ConfirmReturn(true);
-            if (GUILayout.Button("Keep watching (Esc / B)")) ConfirmReturn(false);
+            if (GameUISkin.LegacyButton("Return to main menu (Enter / A)")) ConfirmReturn(true);
+            if (GameUISkin.LegacyButton("Keep watching (Esc / B)")) ConfirmReturn(false);
             GUILayout.EndArea(); return;
         }
         GUILayout.BeginArea(PlaybackPanel, GUI.skin.box);
@@ -642,14 +642,14 @@ public sealed class AutoplayRunner : MonoBehaviour
             {
                 bool previousEnabled = GUI.enabled;
                 GUI.enabled = previousEnabled && !Mathf.Approximately(Options.Speed, speed);
-                if (GUILayout.Button(speed.ToString("0.#") + "x")) SetSpeed(speed);
+                if (GameUISkin.LegacyButton(speed.ToString("0.#") + "x")) SetSpeed(speed);
                 GUI.enabled = previousEnabled;
             }
             GUILayout.EndHorizontal();
-            if (GUILayout.Button(Paused ? "Resume" : "Pause")) SetPaused(!Paused);
+            if (GameUISkin.LegacyButton(Paused ? "Resume" : "Pause")) SetPaused(!Paused);
         }
-        if (!appSession && Running && GUILayout.Button("Stop and report")) Stop();
-        if (appSession && GUILayout.Button("Return to main menu")) RequestReturn();
+        if (!appSession && Running && GameUISkin.LegacyButton("Stop and report")) Stop();
+        if (appSession && GameUISkin.LegacyButton("Return to main menu")) RequestReturn();
         if (appSession) GUILayout.Label("Input outside playback controls: return to main menu");
         if (!Running) GUILayout.Label(appSession ? "Playthrough report saved." : "Report saved: " + DirectoryPath);
         GUILayout.EndArea();

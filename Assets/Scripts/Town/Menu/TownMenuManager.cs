@@ -12,10 +12,13 @@ public class TownMenuManager : MonoBehaviour
     public bool Opened => dialogs.Opened;
     public Stack<Dialog> DialogStack => dialogs.Stack;
     public Dialog CurrentDialog => dialogs.Current;
+    private CampaignHUD campaignHUD;
 
 	private void Update()
 	{
 		if (AutoplayRunner.Active != null) return;
+		if (campaignHUD == null && Common.Instance.CampaignContext != null) campaignHUD = FindFirstObjectByType<CampaignHUD>();
+		if (campaignHUD != null && campaignHUD.IsPartyOpen) return;
 		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
 		if (Opened && Common.Instance.MenuInputHandler.OptionInput && !Common.Instance.MenuInputHandler.CancelMenuInput)
 		{

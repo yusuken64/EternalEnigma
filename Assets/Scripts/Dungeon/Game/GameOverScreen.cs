@@ -11,20 +11,51 @@ public class GameOverScreen : Dialog
 {
 	public TextMeshProUGUI MessageText;
 	public Button OkButton;
+	private Image messageBackdrop;
 	private PlayerController _playerController;
 	private bool _victory;
 	private string _defaultButtonText;
 
+	private void OnEnable()
+	{
+		// The result is a full-screen dialog above the runtime HUD canvases.
+		var canvas = GetComponent<Canvas>() ?? gameObject.AddComponent<Canvas>();
+		canvas.overrideSorting = true;
+		canvas.sortingOrder = 100;
+		if (GetComponent<GraphicRaycaster>() == null) gameObject.AddComponent<GraphicRaycaster>();
+	}
+
+	private void PreparePresentation()
+	{
+		var textRect = MessageText.rectTransform;
+		textRect.anchorMin = new Vector2(.17f, .34f);
+		textRect.anchorMax = new Vector2(.83f, .75f);
+		textRect.offsetMin = textRect.offsetMax = Vector2.zero;
+		MessageText.alignment = TextAlignmentOptions.Center;
+		MessageText.enableAutoSizing = true;
+		MessageText.fontSizeMin = 28;
+		MessageText.fontSizeMax = 42;
+		MessageText.fontSize = 42;
+		if (messageBackdrop == null)
+		{
+			var panel = GameUISkin.Rect("Result message backdrop", transform,
+				new Vector2(.15f, .32f), new Vector2(.85f, .77f));
+			panel.SetSiblingIndex(textRect.GetSiblingIndex());
+			messageBackdrop = panel.gameObject.AddComponent<Image>();
+			messageBackdrop.color = new Color(.08f, .10f, .09f, .82f);
+			messageBackdrop.raycastTarget = false;
+		}
+		MessageText.color = GameUITheme.LightInk;
+	}
+
 	internal void Setup(PlayerController playerController, bool victory = false)
 	{
+		PreparePresentation();
 		_playerController = playerController;
 		_victory = victory;
 		CloseAction = victory ? () => { Common.Instance.Travel.ReturnToMenu(); } : null;
-		MessageText.text = victory ? $@"Victory!
-Final dungeon cleared
-with {playerController.Gold} Treasure" : $@"Player Perished
-On floor {playerController.Floor}
-with {playerController.Gold} Treasure";
+		MessageText.text = victory ? $"Victory!\nFinal dungeon cleared\nTreasure: {playerController.Gold:N0}" :
+			$"Player Perished\nOn floor {playerController.Floor}\nTreasure: {playerController.Gold:N0}";
 		var label = OkButton.GetComponentInChildren<TMP_Text>();
 		if (label != null)
 		{

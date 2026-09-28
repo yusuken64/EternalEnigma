@@ -49,6 +49,11 @@ public sealed class BiomeDungeonTests
                 Assert.Equal(count - blocked.Count, GridSearch.VisitOrder(f.Start, p => BiomeDungeonGenerator.Neighbors(layer, p, blocked)).Count);
                 blocked.UnionWith(f.Scenery.Where(p => p.Kind == DungeonSceneryKind.Hazard).Select(p => p.Cell));
                 Assert.Contains(f.Stairs, GridSearch.VisitOrder(f.Start, p => BiomeDungeonGenerator.Neighbors(layer, p, blocked)));
+                var exitRoute = GatheringPlacement.RequiredPath(layer, f.Start, f.Stairs).ToHashSet();
+                Assert.DoesNotContain(f.Enemies, enemy => exitRoute.Contains(enemy.Cell));
+                Assert.DoesNotContain(f.Items, item => exitRoute.Contains(item.Cell));
+                Assert.DoesNotContain(f.Gold, gold => exitRoute.Contains(gold.Cell));
+                Assert.DoesNotContain(f.Scenery, prop => prop.Kind != DungeonSceneryKind.Hazard && exitRoute.Contains(prop.Cell));
                 Assert.All(f.Scenery, p => Assert.True(Math.Max(Math.Abs(p.Cell.X-f.Start.X),Math.Abs(p.Cell.Y-f.Start.Y)) > 3));
                 Assert.DoesNotContain(f.Scenery.GroupBy(p => p.Cell), g => g.Count() > 1);
                 if (role != DungeonFloorRole.Regular) { Assert.Empty(f.Enemies); Assert.Empty(f.Scenery); Assert.InRange(f.Width,16,24); }

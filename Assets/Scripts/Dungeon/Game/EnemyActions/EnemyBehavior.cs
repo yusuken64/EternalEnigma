@@ -48,6 +48,8 @@ public sealed class EnemyBehavior : MonoBehaviour
 
     internal void Tick() { if (cooldown > 0) cooldown--; }
 
+    internal void RevealIfMoved() { if (Disguised) Provoke(); }
+
     internal void Provoke()
     {
         if (owner == null) owner = GetComponent<Enemy>();

@@ -133,12 +133,17 @@ public class Enemy : Character
 
 	public override IEnumerable<GameAction> GetResponseTo(GameAction action)
 	{
+		WakeFrom(action);
+		return GetActionResponses(action);
+	}
+
+	internal void WakeFrom(GameAction action)
+	{
 		if (IsDormant)
 		{
 			if (action is TakeDamageAction damage && damage.Target == this) Provoke();
 			else if (GetComponent<EnemyBehavior>()?.OnlyWakesWhenAttacked != true && action is MovementAction move && EnemyAwareness.ProximityWakes(this, move.Character)) Provoke();
 		}
-		return GetActionResponses(action);
 	}
 
 	public override IEnumerator ExecuteActionRoutine(GameAction action)
@@ -182,8 +187,9 @@ public class Enemy : Character
 		?? AnimationStates("IdleNormal").FirstOrDefault(); // Worm has no locomotion clip.
 	private void PlayState(string state)
 	{
+		if (GetComponent<EnemyBehavior>()?.Disguised == true) return;
 		if (state == null) throw new InvalidOperationException($"Enemy '{name}' has no matching animation state.");
-		Animator.Play(state, 0, 0f);
+		Animator.Play(UnityEngine.Animator.StringToHash($"{Animator.GetLayerName(0)}.{state}"), 0, 0f);
 		Animator.Update(0f);
 	}
 	internal override void PlayWalkAnimation()
@@ -192,7 +198,8 @@ public class Enemy : Character
 	}
 	internal bool HasAnimation(Animator animator, string animationNameToCheck)
 	{
-		return animator != null && animator.HasState(0, Animator.StringToHash(animationNameToCheck));
+		return animator != null && animator.HasState(0,
+			UnityEngine.Animator.StringToHash($"{animator.GetLayerName(0)}.{animationNameToCheck}"));
 	}
 	internal override void PlayIdleAnimation()
 	{

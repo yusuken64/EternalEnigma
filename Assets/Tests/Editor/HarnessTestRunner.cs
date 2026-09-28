@@ -70,8 +70,21 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Controls")]
     public static void RunDungeonControls() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonControlTests", "EternalEnigma.Tests.DungeonHudPortraitTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Movement Regression")]
+    public static void RunMovementRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "MovementRegressionTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Entry Visuals")]
+    public static void RunDungeonEntryVisuals() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignTravelTests.TownToDungeonRemovesTransferredHeroPositionCircles");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Enemy Behaviors")]
     public static void RunEnemyBehaviors() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnemyBehaviorTests", "EternalEnigma.Tests.EnemyPrefabTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Enemy Animation States")]
+    public static void RunEnemyAnimationStates() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EnemyAnimationStateTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Floor Message")]
+    public static void RunFloorMessage() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "FloorMessageTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Roster Additions")]
     public static void RunRosterAdditions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnemyBehaviorTests.SilverDevilActsTwiceAndGoopiRootsUntilKilled", "EternalEnigma.Tests.EnemyBehaviorTests.StatueAndMetalSlimeUseStaticAndRecoloredModels");

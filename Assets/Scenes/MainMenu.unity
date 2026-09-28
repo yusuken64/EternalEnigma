@@ -212,8 +212,8 @@ Transform:
   m_GameObject: {fileID: 4430863}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.1736482, z: -0, w: 0.9848078}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.7984188, y: 3.7984185, z: 3.7984188}
+  m_LocalPosition: {x: -0.13605, y: -1.867, z: -0.076054}
+  m_LocalScale: {x: 4.8391857, y: 4.839185, z: 4.8391857}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 606519075}
@@ -237,7 +237,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -358,8 +358,8 @@ Transform:
   m_GameObject: {fileID: 6248880}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.8241262, z: -0, w: 0.56640625}
-  m_LocalPosition: {x: -56.646366, y: 9, z: -67.89489}
-  m_LocalScale: {x: 52.573124, y: 52.573124, z: 52.573124}
+  m_LocalPosition: {x: -91.695, y: 12.7, z: -70.18}
+  m_LocalScale: {x: 85.10012, y: 85.10012, z: 85.10012}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2077818343}
@@ -1266,7 +1266,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 7400000, guid: 69e0ea8030b04251b15582ac5a29fa6f, type: 3}
   Animator: {fileID: 42224194}
@@ -1961,15 +1961,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 42224192}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.1736482, z: -0, w: 0.9848078}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0.3924117, z: -0, w: 0.91978973}
+  m_LocalPosition: {x: 1.7424784, y: 4.13, z: 0.6038151}
   m_LocalScale: {x: 1.8435416, y: 1.8435415, z: 1.8435416}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1797624537}
   - {fileID: 312263420}
   m_Father: {fileID: 24871367}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -46.209, z: 0}
 --- !u!95 &42224194
 Animator:
   serializedVersion: 7
@@ -1987,7 +1987,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -6622,7 +6622,7 @@ GameObject:
   - component: {fileID: 131607158}
   - component: {fileID: 131607161}
   - component: {fileID: 131607160}
-  - component: {fileID: 131607159}
+  - component: {fileID: 131607162}
   m_Layer: 5
   m_Name: Debug Autoplay
   m_TagString: Untagged
@@ -6647,10 +6647,10 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125.899994, y: -267.7}
+  m_AnchoredPosition: {x: 302, y: -267.7}
   m_SizeDelta: {x: 224.03, y: 36.8}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &131607159
+--- !u!114 &131607160
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6659,9 +6659,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 131607157}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: d92f6e1b48f3b6e459c59828f42868bd, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 4
+--- !u!222 &131607161
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131607157}
+  m_CullTransparentMesh: 1
+--- !u!114 &131607162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131607157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -6700,50 +6738,12 @@ MonoBehaviour:
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &131607160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 131607157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d92f6e1b48f3b6e459c59828f42868bd, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
---- !u!222 &131607161
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 131607157}
-  m_CullTransparentMesh: 1
 --- !u!1 &134015851
 GameObject:
   m_ObjectHideFlags: 0
@@ -8217,8 +8217,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 158605742}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.104528464, z: -0, w: 0.9945219}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.0063836323, y: -0.108567625, z: -0.0051693637, w: 0.99405515}
+  m_LocalPosition: {x: -0.84, y: -0.26, z: 3.27}
   m_LocalScale: {x: 1.9154352, y: 1.9154353, z: 1.9154352}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8247,7 +8247,7 @@ Transform:
   - {fileID: 1500774617}
   - {fileID: 1806304997}
   m_Father: {fileID: 932973946}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -0.791, y: -12.462, z: -0.509}
 --- !u!95 &158605744
 Animator:
   serializedVersion: 7
@@ -8265,7 +8265,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -8900,8 +8900,8 @@ Transform:
   m_GameObject: {fileID: 180983602}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.601815, z: -0, w: 0.79863554}
-  m_LocalPosition: {x: -38.4282, y: 5.5, z: -62.230675}
-  m_LocalScale: {x: 37.239296, y: 37.239296, z: 37.239296}
+  m_LocalPosition: {x: -62.204, y: 7.0345, z: -61.011}
+  m_LocalScale: {x: 60.27925, y: 60.27925, z: 60.27925}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2077818343}
@@ -18374,7 +18374,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -19312,7 +19312,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value:
+      value: 
       objectReference: {fileID: 1656518432}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -20758,7 +20758,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -26600,7 +26600,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
   m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
@@ -26617,7 +26617,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
@@ -27120,14 +27120,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 464281075}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.7621164, y: 0.15307608, z: -6.75324}
+  m_LocalRotation: {x: -0, y: 0.09072879, z: -0, w: 0.99587566}
+  m_LocalPosition: {x: -10.110217, y: 5.81, z: -6.733575}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1594001389}
   m_Father: {fileID: 1953451854}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 10.411, z: 0}
 --- !u!114 &464281077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27138,7 +27138,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 7400000, guid: 69e0ea8030b04251b15582ac5a29fa6f, type: 3}
   Animator: {fileID: 1594001390}
@@ -27232,7 +27232,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -27319,8 +27319,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 0
     m_Right: 0
@@ -28255,7 +28255,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -31941,7 +31941,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 7400000, guid: 60144acb13c74df0901f6219d41d0988, type: 3}
   Animator: {fileID: 2037575881}
@@ -34287,6 +34287,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1637903783}
+  - {fileID: 1858870137}
   m_Father: {fileID: 1953451854}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &601988615
@@ -34299,7 +34300,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 1827226128182048838, guid: cb23c5f21cab46e3affd1ea0e5d56aec, type: 3}
   Animator: {fileID: 1637903784}
@@ -38546,7 +38547,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -43285,8 +43286,8 @@ Transform:
   m_GameObject: {fileID: 780440328}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.31730464, z: -0, w: 0.94832367}
-  m_LocalPosition: {x: 20.254332, y: 9, z: -55.552876}
-  m_LocalScale: {x: 52.573124, y: 52.573124, z: 52.573124}
+  m_LocalPosition: {x: 32.786, y: 12.7, z: -50.201}
+  m_LocalScale: {x: 85.10012, y: 85.10012, z: 85.10012}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2077818343}
@@ -44393,7 +44394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value:
+      value: 
       objectReference: {fileID: 1656518432}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -46843,7 +46844,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 1827226128182048838, guid: 5158385ed872430e9a701b358b1fd1d0, type: 3}
   Animator: {fileID: 4430865}
@@ -47258,7 +47259,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -48918,7 +48919,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 1827226128182048838, guid: 02f821ae69a045f9b39d9d6a4ecaf0e5, type: 3}
   Animator: {fileID: 158605744}
@@ -51595,8 +51596,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 988962074}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.15643448, z: -0, w: 0.98768836}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0.22269629, z: -0, w: 0.9748879}
+  m_LocalPosition: {x: 0.2, y: -0.18, z: 0.21}
   m_LocalScale: {x: 2.2654393, y: 2.265439, z: 2.2654393}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -51625,7 +51626,7 @@ Transform:
   - {fileID: 452173390}
   - {fileID: 757086342}
   m_Father: {fileID: 1521251393}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -25.735, z: 0}
 --- !u!95 &988962076
 Animator:
   serializedVersion: 7
@@ -51643,7 +51644,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -54438,7 +54439,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 7400000, guid: 51ddf1d3665742f2ab3456633ee9a8ed, type: 3}
   Animator: {fileID: 2007734044}
@@ -57189,8 +57190,8 @@ Transform:
   m_GameObject: {fileID: 1092135186}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.8241262, z: -0, w: 0.56640625}
-  m_LocalPosition: {x: 57.13313, y: 9, z: -66.62683}
-  m_LocalScale: {x: 52.573124, y: 52.573124, z: 52.573124}
+  m_LocalPosition: {x: 92.482, y: 12.7, z: -68.127}
+  m_LocalScale: {x: 85.10012, y: 85.10012, z: 85.10012}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2077818343}
@@ -58573,7 +58574,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -58688,7 +58689,7 @@ Transform:
   m_GameObject: {fileID: 1127991442}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.25881907, z: -0, w: 0.9659259}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3.82, y: -1.7, z: -2.21}
   m_LocalScale: {x: 5.4917116, y: 5.491711, z: 5.4917116}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -58713,7 +58714,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -59698,7 +59699,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -60384,7 +60385,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -61769,7 +61770,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125.9, y: -208}
+  m_AnchoredPosition: {x: 302, y: -208}
   m_SizeDelta: {x: 224.03, y: 36.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1202014874
@@ -61782,8 +61783,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -61825,7 +61826,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1202014875
@@ -61838,8 +61839,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -62750,7 +62751,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 7400000, guid: 51ddf1d3665742f2ab3456633ee9a8ed, type: 3}
   Animator: {fileID: 900425579}
@@ -63757,7 +63758,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -66174,7 +66175,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 7400000, guid: 1f27c177ef184167a9928fb14fc7f050, type: 3}
   Animator: {fileID: 1127991444}
@@ -66788,8 +66789,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -66887,7 +66888,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
   m_EffectColor: {r: 0.12, g: 0.065, b: 0.025, a: 0.95}
   m_EffectDistance: {x: 2, y: -2}
@@ -71272,7 +71273,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dffc39fcedd756c42925b15f66672b72, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuCameraFraming
   ReferenceAspect: 1.7797619
   VerticalSize: 3.5
@@ -72572,7 +72573,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -76910,7 +76911,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value:
+      value: 
       objectReference: {fileID: 1656518432}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -77081,7 +77082,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 1827226128182048838, guid: cb23c5f21cab46e3affd1ea0e5d56aec, type: 3}
   Animator: {fileID: 988962076}
@@ -79619,6 +79620,79 @@ Transform:
   - {fileID: 657458465}
   m_Father: {fileID: 856192847}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1583156181
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 601988614}
+    m_Modifications:
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5898652
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5898653
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5898652
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.9426453
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.056999993
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.70493436
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99958223
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.028902227
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 3.312
+      objectReference: {fileID: 0}
+    - target: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9162616272119168361, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_Name
+      value: MC06
+      objectReference: {fileID: 0}
+    - target: {fileID: 9162616272119168361, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
 --- !u!1 &1583472624
 GameObject:
   m_ObjectHideFlags: 0
@@ -79923,7 +79997,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -81767,7 +81841,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1637903783
 Transform:
   m_ObjectHideFlags: 0
@@ -81824,7 +81898,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -82264,38 +82338,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0ad28c64d3012e4e9a4974afa021dd8, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   TownConfiguration: {fileID: 11400000, guid: edc105e0daca45398e19fe5055096026, type: 2}
   StartButton: {fileID: 437284388}
   ContinueButton: {fileID: 6967896922278924393}
   TestDungeonButton: {fileID: 1202014874}
   NavigationHandler: {fileID: 1656518435}
   DebugAllies:
-  - AllyId:
+  - AllyId: 
     AllyName: Rowan
-    PrimaryClassId:
-    SecondaryClassId:
+    PrimaryClassId: 
+    SecondaryClassId: 
     Skills:
     - Damage
     - Dot
     Equipment: []
     SkillRanks: []
     HighestLevel: 1
-  - AllyId:
+  - AllyId: 
     AllyName: Alex
-    PrimaryClassId:
-    SecondaryClassId:
+    PrimaryClassId: 
+    SecondaryClassId: 
     Skills:
     - ShieldBash
     - Anger
     Equipment: []
     SkillRanks: []
     HighestLevel: 1
-  - AllyId:
+  - AllyId: 
     AllyName: Reese
-    PrimaryClassId:
-    SecondaryClassId:
+    PrimaryClassId: 
+    SecondaryClassId: 
     Skills:
     - Healing
     - Hot
@@ -82331,8 +82405,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39847c1b36905644dafc1ab79c2db260, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   MainMenuMusic: {fileID: 8300000, guid: 0a2e6afd58359474ab4e28509c74aaf2, type: 3}
 --- !u!114 &1656518435
 MonoBehaviour:
@@ -82344,8 +82418,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f4b30574005a2540af12c1b3b835c3f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   defaultSelectable: {fileID: 437284388}
   selectionArrow: {fileID: 485540312}
   arrowAnchor: 0
@@ -89825,7 +89899,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 61b8e035b6045a5498367145b36ba41f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::MenuSceneMotion
   Clip: {fileID: 7400000, guid: 51ddf1d3665742f2ab3456633ee9a8ed, type: 3}
   Animator: {fileID: 1164853200}
@@ -93042,8 +93116,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_FirstSelected: {fileID: 437284388}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
@@ -93072,8 +93146,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79503e2f1f44c96a51f8fbf2d47a2ac, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.3
   m_MoveRepeatRate: 0.1
@@ -94903,6 +94977,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 480993400}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1858870137 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8386817791768930259, guid: b8e40e519f7643298a6877d0bd23746e, type: 3}
+  m_PrefabInstance: {fileID: 1583156181}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1867063835
 GameObject:
   m_ObjectHideFlags: 0
@@ -100625,8 +100704,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -102327,7 +102406,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -104126,7 +104205,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -104552,8 +104631,8 @@ Transform:
   m_GameObject: {fileID: 2056790463}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.48105538, y: 5.5, z: -54.531284}
-  m_LocalScale: {x: 37.239296, y: 37.239296, z: 37.239296}
+  m_LocalPosition: {x: -0.77869, y: 7.0345, z: -48.548}
+  m_LocalScale: {x: 60.27925, y: 60.27925, z: 60.27925}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2077818343}
@@ -107194,8 +107273,8 @@ Transform:
   m_GameObject: {fileID: 2105617922}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.601815, z: -0, w: 0.79863554}
-  m_LocalPosition: {x: 38.163006, y: 5.5, z: -61.305836}
-  m_LocalScale: {x: 37.239296, y: 37.239296, z: 37.239296}
+  m_LocalPosition: {x: 61.775, y: 7.0345, z: -59.514}
+  m_LocalScale: {x: 60.27925, y: 60.27925, z: 60.27925}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2077818343}
@@ -107802,8 +107881,8 @@ Transform:
   m_GameObject: {fileID: 2118932423}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.31730464, z: -0, w: 0.94832367}
-  m_LocalPosition: {x: -21.339096, y: 9, z: -56.370304}
-  m_LocalScale: {x: 52.573124, y: 52.573124, z: 52.573124}
+  m_LocalPosition: {x: -34.542, y: 12.7, z: -51.525}
+  m_LocalScale: {x: 85.10012, y: 85.10012, z: 85.10012}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2077818343}
@@ -109092,8 +109171,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
   m_BlockingMask:
@@ -109109,8 +109188,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
@@ -109684,7 +109763,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value:
+      value: 
       objectReference: {fileID: 1656518432}
     - target: {fileID: 4523816068086803152, guid: fe4bc225b69c3a045bc2c4f986a528c8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState

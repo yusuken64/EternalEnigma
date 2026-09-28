@@ -555,6 +555,33 @@ internal class AddXPAction : GameAction
 	}
 }
 
+internal sealed class RevealMimicAction : GameAction
+{
+    private readonly Enemy mimic;
+
+    internal RevealMimicAction(Enemy mimic) { this.mimic = mimic; }
+
+    internal override bool IsValid(Character character) => character is Ally && mimic != null &&
+        EnemyBehavior.IsDisguised(mimic) &&
+        TileWorldDungeon.ChevDistance(character.TilemapPosition, mimic.TilemapPosition) == 1;
+
+    internal override List<GameAction> ExecuteImmediate(Character character)
+    {
+        if (!IsValid(character)) return new();
+        TrackAnimationTarget(mimic);
+        mimic.Provoke();
+        mimic.PursuitTarget = character;
+        mimic.PursuitPosition = character.TilemapPosition;
+        mimic.CurrentEnemyState = EnemyState.Pursuit;
+        return new();
+    }
+
+    internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
+    {
+        yield break;
+    }
+}
+
 public class InteractAction : GameAction
 {
 	private Interactable currentInteractable;

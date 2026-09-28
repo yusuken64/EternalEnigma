@@ -37,8 +37,10 @@ public class NewFloorMessage : MonoBehaviour
 			.OnComplete(() => { this.gameObject.SetActive(false); });
 	}
 
-	internal void HideScreen()
+	internal void HideScreen(int destinationFloor)
 	{
+		// Show the destination while its layout is being generated.
+		FloorMessage.text = $"Floor {destinationFloor}";
 		BackgroundColor.CrossFadeAlpha(1, 1.0f, true);
 		this.gameObject.SetActive(true);
 		BackgroundColor.sprite = null;
@@ -49,6 +51,6 @@ public class NewFloorMessage : MonoBehaviour
 	[ContextMenu("Do Floor Message")]
 	public void DoFloorMeesage()
 	{
-		ShowNewFloor(1);
+		ShowNewFloor(Game.Instance != null ? Game.Instance.PlayerController.Floor : 1);
 	}
 }

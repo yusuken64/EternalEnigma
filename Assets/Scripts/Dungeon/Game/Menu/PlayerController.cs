@@ -23,12 +23,17 @@ public class PlayerController : MonoBehaviour
     private bool releaseInput;
     public void FocusCommand(Ally ally)
     {
-        if (ControlledAlly != null) { ControlledAlly.IsWaitingForPlayerInput = false; ControlledAlly.SetToCPU(); }
+        bool changedAlly = ControlledAlly != ally;
+        if (changedAlly && ControlledAlly != null)
+        { ControlledAlly.IsWaitingForPlayerInput = false; ControlledAlly.SetToCPU(); }
         ControlledAlly = ally;
         if (ally == null) return;
-        ally.SetToPlayer();
-        CameraController.SetFollowTarget(ally.CirlcleRenderer.transform);
-        holdTime = 0; menuCooldown = 0; releaseInput = true;
+        if (changedAlly)
+        {
+            ally.SetToPlayer();
+            CameraController.SetFollowTarget(ally.CirlcleRenderer.transform);
+            holdTime = 0; menuCooldown = 0; releaseInput = true;
+        }
         TargetIndicator.gameObject.SetActive(false);
         CurrentControlMode = PlayerControlMode.FollowAlly;
     }
@@ -169,6 +174,11 @@ public class PlayerController : MonoBehaviour
                     if (destinationChar == null)
                     {
                         ControlledAlly.SetAction(new MovementAction(ControlledAlly, originalPosition, newMapPosition));
+                        return;
+                    }
+                    else if (destinationChar is Enemy mimic && EnemyBehavior.IsDisguised(mimic))
+                    {
+                        ControlledAlly.SetAction(new RevealMimicAction(mimic));
                         return;
                     }
                     else if (destinationChar.Team == ControlledAlly.Team &&

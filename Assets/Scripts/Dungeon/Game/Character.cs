@@ -257,6 +257,8 @@ public abstract class Character : MonoBehaviour, Actor
         foreach(var pair in positions)
             if(pair.Key!=null && pair.Key.Vitals.HP>0)
             {
+                if (pair.Key is Enemy movedEnemy && pair.Value != movedEnemy.TilemapPosition)
+                    movedEnemy.GetComponent<EnemyBehavior>()?.RevealIfMoved();
                 effects.AddRange(dungeon.EntryEffects(pair.Key,pair.Value,pair.Key.TilemapPosition));
                 if (pair.Value != pair.Key.TilemapPosition && dungeon.GetInteractable(pair.Key.TilemapPosition) is FantasyTrap trap && trap.CanTrigger(pair.Key))
                     effects.Add(new TrapResolutionAction(trap, pair.Key, pair.Key.TilemapPosition - pair.Value));

@@ -141,8 +141,6 @@ public class Game : SingletonMonoBehaviour<Game>
 			ally.AllyStrategy = AllyStrategy.Aggresive;
 			Allies.Add(ally);
 
-			Destroy(townAlly);
-
             ally.CharacterName = townAlly.Name;
             ally.TownAllyId = townAlly.Id;
             ally.PrimaryClass = townAlly.PrimaryClass;
@@ -169,6 +167,10 @@ public class Game : SingletonMonoBehaviour<Game>
 			var newItem = Instantiate(CharacterStatsDisplayPrefab, CharacterStatsDisplayContainer);
 			newItem.Setup(ally);
 			CharacterStatsDisplays.Add(newItem);
+
+			// InitialzeModel moves the animated model to the dungeon ally. Remove
+			// the remaining town prefab, including its position circle, from Common.
+			Destroy(townAlly.gameObject);
 		}
 
 		PlayerController.TakeControl(Allies[0]);
@@ -207,7 +209,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		
 		StartCoroutine(AdvanceFloorRoutine());
 
-		NewFloorMessage.HideScreen();
+		NewFloorMessage.HideScreen(PlayerController.Floor);
 	}
 
 	private IEnumerator AdvanceFloorRoutine()

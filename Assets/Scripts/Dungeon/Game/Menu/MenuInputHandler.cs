@@ -46,6 +46,7 @@ namespace JuicyChickenGames.Menu
 
         internal void SwitchToPlayerInput()
         {
+            if (PlayerInput.currentActionMap?.name == "Player") return;
             PlayerInput.SwitchCurrentActionMap("Player");
             ClearInputThisFrame();
         }

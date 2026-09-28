@@ -37,6 +37,22 @@ namespace EternalEnigma.Tests
             Object.FindFirstObjectByType<MainMenu>().StartGame();
             yield return WaitTown();
         }
+
+        [UnityTest]
+        public IEnumerator TownToDungeonRemovesTransferredHeroPositionCircles()
+        {
+            yield return StartCampaign();
+            var common = Common.Instance;
+            Assert.That(common.Travel.EnterTownDungeon(Object.FindFirstObjectByType<Town>(), "story-0"), Is.True);
+            yield return harness.WaitUntil(() => SceneManager.GetActiveScene().name == "DungeonScene" &&
+                Game.Instance != null && Game.Instance.Allies.Count > 0, "dungeon hero transfer");
+            yield return null; // Finish deferred destruction of the emptied town prefabs.
+            Assert.That(common.TownAllyParent.childCount, Is.Zero);
+            Assert.That(Object.FindObjectsByType<TownAlly>(FindObjectsSortMode.None), Is.Empty);
+            var targetingRing = Game.Instance.PlayerController.transform.Find("TargetSelectIndicator");
+            Assert.That(targetingRing, Is.Not.Null);
+            Assert.That(targetingRing.gameObject.activeInHierarchy, Is.False);
+        }
         [UnityTest]
         public IEnumerator FinalDungeonVictoryIsSavedOnceAndReturnsToMenu()
         {

@@ -115,15 +115,17 @@ internal static class BiomeDungeonGenerator
         foreach (var p in cells.Where(p => Math.Max(Math.Abs(p.X - start.X), Math.Abs(p.Y - start.Y)) <= 3)) occupied.Add(p);
         double scale = Density(cells.Count);
         int Count(int n, int cap = 64) => Math.Min(cap, (int)Math.Round(n * scale, MidpointRounding.AwayFromZero));
-        List<Placement> Place(int n)
+        List<Placement> Place(int n, bool keepExitRouteClear = false)
         {
             var result = new List<Placement>();
-            foreach (var p in place.Shuffle(cells.Where(p => !occupied.Contains(p))).Take(n))
+            foreach (var p in place.Shuffle(cells.Where(p => !occupied.Contains(p) &&
+                         (!keepExitRouteClear || !reserved.Contains(p)))).Take(n))
             { result.Add(new Placement(p, place.Range(int.MaxValue))); occupied.Add(p); }
             return result;
         }
         bool regular = o.Role == DungeonFloorRole.Regular;
-        var enemies = Place(regular ? Count(o.EnemyCount) : 0);
+        // A dormant/disguised enemy on this route can leave the party unable to reach the exit.
+        var enemies = Place(regular ? Count(o.EnemyCount) : 0, keepExitRouteClear: true);
         var props = new List<DungeonScenery>();
         var blocked = new HashSet<GridPoint>();
         int goldBudget = regular ? Count(o.GoldCount) : 0, itemBudget = regular ? Count(o.ItemCount) : 0;
@@ -150,7 +152,8 @@ internal static class BiomeDungeonGenerator
                 occupied.Add(p); placed++;
             }
         }
-        var gold = Place(goldBudget); var items = Place(itemBudget);
+        var gold = Place(goldBudget, keepExitRouteClear: true);
+        var items = Place(itemBudget, keepExitRouteClear: true);
         var gathering = GatheringPlacement.Place(layer, start, stairs, occupied, o.Seed, regular ? Count(o.GatheringCount, 16) : 0);
         var walls = new bool[w, h]; var accents = new bool[w, h]; var columns = new bool[w, h]; var torches = new bool[w, h];
         var decor = new SeedStream(o.Seed, 1400);

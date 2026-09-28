@@ -53,6 +53,45 @@ public class MovementRegressionTests
     }
 
     [UnityTest]
+    public IEnumerator DungeonHeldDirectionCanMoveAgainAfterACompletedTurn()
+    {
+        yield return harness.LoadDungeon(new TestScenario());
+        var dungeon = harness.Game.CurrentDungeon;
+        var controller = harness.Game.PlayerController;
+        var ally = harness.Ally;
+        var origin = ally.TilemapPosition;
+        var direction = dungeon.GetValidWalkDirections(origin).First(f => {
+            var step = GridMovement.GetFacingOffset(f);
+            return dungeon.CanWalkTo(origin + step, origin + step * 2) &&
+                dungeon.GetCharacterAtPosition(origin + step) == null &&
+                dungeon.GetCharacterAtPosition(origin + step * 2) == null &&
+                dungeon.GetInteractable(origin + step) == null &&
+                dungeon.GetInteractable(origin + step * 2) == null;
+        });
+        var offset = GridMovement.GetFacingOffset(direction);
+        var hold = typeof(PlayerController).GetField("holdTime", BindingFlags.Instance | BindingFlags.NonPublic);
+        var release = typeof(PlayerController).GetField("releaseInput", BindingFlags.Instance | BindingFlags.NonPublic);
+        release.SetValue(controller, false);
+        Input(offset, false);
+        hold.SetValue(controller, 1f);
+        Decide(controller);
+        Input(Vector3Int.zero, false);
+        yield return null;
+        yield return harness.WaitForIdle();
+        Assert.That(ally.TilemapPosition, Is.EqualTo(origin + offset));
+
+        controller.FocusCommand(ally); // The turn system refocuses this same hero.
+        Assert.That(release.GetValue(controller), Is.False, "Refocusing the same hero must not demand a key release.");
+        Input(offset, false);
+        hold.SetValue(controller, 1f);
+        Decide(controller); // The direction is still held.
+        Input(Vector3Int.zero, false);
+        yield return null;
+        yield return harness.WaitForIdle();
+        Assert.That(ally.TilemapPosition, Is.EqualTo(origin + offset * 2));
+    }
+
+    [UnityTest]
     public IEnumerator TownInputStillTurnsInPlaceThenMovesAndRecordsTrail()
     {
         yield return harness.LoadTown(new TestScenario().CreateSave());

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dac764baa80a59c4eb571085d48bd636
+timeCreated: 1494012128
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Muzzleflash/Big/ShadowMuzzleBig.prefab
+  uploadId: 715034

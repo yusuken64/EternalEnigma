@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::BlindStatusEffect
   TurnsLeft: 4
+  VisualProfile: {fileID: 11400000, guid: 603c71a61a671c647824c715ea329f6e, type: 2}
   Family: 0
   Amount: 0.3

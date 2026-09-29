@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 686140ff7c057a24a8a74f8ace1cc738
+timeCreated: 1453557536
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/Missiles/Mega/LightningMegaObj.prefab
+  uploadId: 715034

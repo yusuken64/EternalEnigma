@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e156790911efcce4c8eb965b94c15f1f
+timeCreated: 1453838657
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Slash/WaterSlash.prefab
+  uploadId: 715034

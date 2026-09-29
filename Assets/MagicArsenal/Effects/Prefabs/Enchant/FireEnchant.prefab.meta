@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 799ba3095ff225146bea02318a149f87
+timeCreated: 1453319378
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Enchant/FireEnchant.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1ecb93292269bb6429ad4039af6b0ed4
+timeCreated: 1491660335
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Modular/sphereflat(Modular).mat
+  uploadId: 715034

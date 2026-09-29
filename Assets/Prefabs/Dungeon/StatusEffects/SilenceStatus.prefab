@@ -225,4 +225,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TurnsLeft: 10
+  VisualProfile: {fileID: 11400000, guid: 431308a3b76c138489463ed240e1f70d, type: 2}
   Family: 0

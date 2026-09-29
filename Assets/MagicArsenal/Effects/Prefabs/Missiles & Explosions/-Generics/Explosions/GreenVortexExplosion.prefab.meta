@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0dd4c52b0a3d02e4abff5da76fd7969e
+timeCreated: 1560622932
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Explosions/GreenVortexExplosion.prefab
+  uploadId: 715034

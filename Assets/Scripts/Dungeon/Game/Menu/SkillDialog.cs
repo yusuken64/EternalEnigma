@@ -21,6 +21,7 @@ namespace JuicyChickenGames.Menu
                 return new DynamicActionInfo()
                 {
                     ActionName = SkillLabel(skill),
+                    Icon = skill.Icon,
                     ClickAction = () =>
                     {
                         if (character.CanCast(skill, out string reason))
@@ -67,6 +68,7 @@ namespace JuicyChickenGames.Menu
                 return new DynamicActionInfo()
                 {
                     ActionName = controllingTownAlly.GetRank(skill) > 1 ? $"{skill} R{controllingTownAlly.GetRank(skill)}" : $"{skill}",
+                    Icon = Common.Instance.SkillManager.GetSkillByName(skill)?.Icon,
                     ClickAction = () =>
                     {
                         var definition = Common.Instance.SkillManager.GetSkillByName(skill);

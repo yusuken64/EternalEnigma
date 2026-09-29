@@ -1692,6 +1692,7 @@ GameObject:
   - component: {fileID: 8639548010823113620}
   - component: {fileID: 3119655136135461553}
   - component: {fileID: 990149197522060594}
+  - component: {fileID: 8106247880684903433}
   m_Layer: 8
   m_Name: Enemy_RatAssassin
   m_TagString: Untagged
@@ -1770,17 +1771,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6616f7d00b5ae3743a0956be51d15f71, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::EnemyBehavior
   WaitUntilAttacked: 0
   RangedAttack: 1
   Range: 6
   Steals: 0
+  AlwaysFlees: 0
+  RootsAdjacentTarget: 0
+  Stationary: 0
   StealItems: 1
   StealGold: 1
   Confusion: {fileID: 0}
   Mimic: 0
   ChestVisualPrefab: {fileID: 0}
+--- !u!114 &8106247880684903433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5543747752720980080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d6e29da5e523ef4095d33db907ebee0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::CharacterCombatEffects
+  CastSocket: {fileID: 0}
+  Melee: {fileID: 11400000, guid: dc9fe5d4788120d4f87191d54a442ac1, type: 2}
+  Ranged: {fileID: 11400000, guid: 6380c1e92995bb942aadf3328eea0e62, type: 2}
+  Confusion: {fileID: 11400000, guid: 2b92abebf9d42184d85bddc18a597328, type: 2}
+  Root: {fileID: 11400000, guid: 712257fc9038f5d44aea923b94c4d3b4, type: 2}
+  Steal: {fileID: 11400000, guid: f4f1319a22422314aacd0107e91df48a, type: 2}
 --- !u!1 &5611791104885195343
 GameObject:
   m_ObjectHideFlags: 0

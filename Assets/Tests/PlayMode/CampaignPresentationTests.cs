@@ -95,7 +95,7 @@ namespace EternalEnigma.Tests
             var town = Object.FindFirstObjectByType<Town>();
             var hud = town.GetComponent<CampaignHUD>();
             Assert.That(hud, Is.Not.Null);
-            hud.GetComponentsInChildren<Button>().Single(b => b.name == "Party  [P]").onClick.Invoke();
+            hud.GetComponentsInChildren<Button>().Single(b => b.name == "Party  [P / B]").onClick.Invoke();
             yield return null;
             Assert.That(hud.IsPartyOpen, Is.True);
             Directory.CreateDirectory("Temp/UIValidation");

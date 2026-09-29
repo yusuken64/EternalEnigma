@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 65e8f813c7e77dd40999770d67e7e908
+timeCreated: 1559737934
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Nova/NovaShadow.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 94ea036f70c55fc4abb67cf54a6940d5
+timeCreated: 1461173355
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Cleave/cleave_water.mat
+  uploadId: 715034

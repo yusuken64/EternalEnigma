@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 67811f44562cf6945bcb87977732b74d
+timeCreated: 1559227180
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSimple/AuraSimpleLightning.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b05f27b68c4d75946a01f693676decd6
+timeCreated: 1453573895
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Arcane/ArcaneExplosionMega.prefab
+  uploadId: 715034

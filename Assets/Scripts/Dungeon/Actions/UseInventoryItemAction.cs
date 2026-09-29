@@ -64,6 +64,13 @@ internal class UseInventoryItemAction : GameAction
 		}
 		bool consume = !AutoplayRunner.InfiniteResourcesFor(character) &&
 			!(UnityEngine.Random.value < ClassPassives.ConsumableSaveChance(character));
+        if (item.ItemDefinition.ItemEffectDefinition is SkillItemEffectDefinition skillEffect && skillEffect.EffectSkill != null)
+        {
+            GameMessages.AbilityCast(character, skillEffect.EffectSkill, item.ItemName);
+            var center = definition?.Targeting == SkillTargeting.Missile ? missileHit.Cell : target != null ? target.TilemapPosition : character.TilemapPosition;
+            Visuals.Configure(skillEffect.EffectSkill.VisualProfile, character, center, definition != null ? definition.AreaRadius : 0);
+            if (Visuals.Sequence != null) Visuals.Sequence.SingleFlight = definition?.Targeting == SkillTargeting.Missile;
+        }
 		if (consume && item.HasStacks)
 		{
 			item.Decrement();
@@ -79,6 +86,7 @@ internal class UseInventoryItemAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
+		if (Visuals.Sequence != null) yield break;
 		if (Definition?.Targeting == SkillTargeting.Missile)
 			yield return MissileTargeting.Animate(character, missileHit.Cell, Definition.MissileProjectilePrefab);
 		//TODO get sound from item

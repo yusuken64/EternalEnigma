@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8935885a255033e4a8611c5f97ea838d
+timeCreated: 1453730493
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/Missiles/Mega/EarthMegaObj.prefab
+  uploadId: 715034

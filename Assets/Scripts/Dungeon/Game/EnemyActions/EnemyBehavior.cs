@@ -151,9 +151,10 @@ public sealed class EnemyBehavior : MonoBehaviour
         {
             if (!IsValid(c)) return new();
             AddMetricsModification(c, (s,v) => v.AttacksPerTurnLeft--);
-            behavior.Steal(); return new();
+            Visuals.Configure(c.GetComponent<CharacterCombatEffects>()?.Steal ?? CombatVisualCatalog.Instance?.Steal, c, target.TilemapPosition);
+            behavior.Steal(); Visuals.AddImpact(target, target.TilemapPosition, true); return new();
         }
-        internal override IEnumerator ExecuteRoutine(Character c, bool skipAnimation = false) { if (!skipAnimation) { c.PlayAttackAnimation(); yield return new WaitForSeconds(.25f); c.PlayIdleAnimation(); } }
+        internal override IEnumerator ExecuteRoutine(Character c, bool skipAnimation = false) { if (!skipAnimation && Visuals.Sequence == null) { c.PlayAttackAnimation(); yield return new WaitForSeconds(.25f); c.PlayIdleAnimation(); } }
     }
 
     private sealed class RootAttackAction : GameAction
@@ -165,6 +166,7 @@ public sealed class EnemyBehavior : MonoBehaviour
         {
             if(!IsValid(c)) return new();
             GoopiRootStatusEffect.Hold(source,target);
+            Visuals.Configure(source.GetComponent<CharacterCombatEffects>()?.Root ?? CombatVisualCatalog.Instance?.Root, source, target.TilemapPosition);
             return new() { new AttackAction(source,source.TilemapPosition,target.TilemapPosition) };
         }
         internal override IEnumerator ExecuteRoutine(Character c,bool skipAnimation=false) {yield break;}
@@ -181,6 +183,7 @@ public sealed class EnemyBehavior : MonoBehaviour
             AddMetricsModification(c, (s,v) => v.AttacksPerTurnLeft--);
             c.SetFacingByTargetPosition(target.TilemapPosition);
             behavior.cooldown = confuse ? 4 : 2;
+            Visuals.Configure(confuse ? c.GetComponent<CharacterCombatEffects>()?.Confusion ?? CombatVisualCatalog.Instance?.Confusion : CharacterCombatEffects.Attack(c, true), c, target.TilemapPosition);
             if (confuse)
             {
                 GameMessages.ForCharacter(c, $"{GameMessages.Name(c)} cast Confusion!");
@@ -189,6 +192,6 @@ public sealed class EnemyBehavior : MonoBehaviour
             return new() { new RangedAttackAction(c, target, Mathf.Max(1,c.FinalStats.Strength), null) };
         }
         internal override IEnumerator ExecuteRoutine(Character c, bool skipAnimation = false)
-        { if (!skipAnimation) yield return MissileTargeting.Animate(c, target.TilemapPosition, null); }
+        { if (!skipAnimation && Visuals.Sequence == null) yield return MissileTargeting.Animate(c, target.TilemapPosition, null); }
     }
 }

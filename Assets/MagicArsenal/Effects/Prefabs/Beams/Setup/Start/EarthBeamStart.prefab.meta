@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cf0bdea0aea918340a7a202187457d8c
+timeCreated: 1475095738
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Setup/Start/EarthBeamStart.prefab
+  uploadId: 715034

@@ -379,6 +379,8 @@ public interface Actor
 [System.Serializable]
 public abstract class GameAction
 {
+	[System.NonSerialized] internal CombatVisualReplay Visuals = new();
+	internal IEnumerable<Character> VisualTargets => animationTargets;
 	protected GameAction() { }
 	abstract internal bool IsValid(Character character);
 	abstract internal IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false);

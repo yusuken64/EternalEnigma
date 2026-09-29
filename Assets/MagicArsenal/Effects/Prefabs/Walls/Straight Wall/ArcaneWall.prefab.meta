@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3e131aa0e7d8b43429a09642f5d0bbaf
+timeCreated: 1460899077
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Straight Wall/ArcaneWall.prefab
+  uploadId: 715034

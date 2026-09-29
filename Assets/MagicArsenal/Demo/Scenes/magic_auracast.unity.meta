@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6adf3abefdccfb14588f734a89f3a273
+timeCreated: 1560448122
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scenes/magic_auracast.unity
+  uploadId: 715034

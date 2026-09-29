@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 16827c8f6c4d6c843bbecd6257fc4a21
+timeCreated: 1559140987
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Missiles/GhostMissile.prefab
+  uploadId: 715034

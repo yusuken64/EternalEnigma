@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fe4766ac0a435874a9ad406bfea0ba09
+timeCreated: 1559140235
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Missiles/VoidMissile.prefab
+  uploadId: 715034

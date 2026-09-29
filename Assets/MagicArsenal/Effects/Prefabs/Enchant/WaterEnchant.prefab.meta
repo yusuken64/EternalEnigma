@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8c51d2af51854f148bba24c2904e2e63
+timeCreated: 1453314903
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Enchant/WaterEnchant.prefab
+  uploadId: 715034

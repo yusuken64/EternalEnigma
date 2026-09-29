@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::ResistanceShiftStatusEffect
   TurnsLeft: 5
+  VisualProfile: {fileID: 11400000, guid: afbafcd6017d638499bd976bc66c5c2e, type: 2}
   Family: 0
   FireShift: -1
   IceShift: -1

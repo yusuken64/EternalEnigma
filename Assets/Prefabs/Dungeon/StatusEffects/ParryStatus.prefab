@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::ParryStatusEffect
   TurnsLeft: 2
+  VisualProfile: {fileID: 11400000, guid: a090bc1a1d9ff0a43b164449fd8eb4b7, type: 2}
   Family: 0
   BlockChance: 0.5

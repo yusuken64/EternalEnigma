@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bdaa1cc384b7183478179df9ff7fa89d
+timeCreated: 1453411748
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Shadow/ShadowMissileTiny.prefab
+  uploadId: 715034

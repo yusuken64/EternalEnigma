@@ -80,6 +80,7 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
 
 internal sealed class PropDamageAction : GameAction
 {
+    internal Vector3Int Cell => target != null ? target.Position : default;
     readonly DungeonProp target;
     readonly int damage;
     internal PropDamageAction(DungeonProp target, int damage) { this.target = target; this.damage = damage; }

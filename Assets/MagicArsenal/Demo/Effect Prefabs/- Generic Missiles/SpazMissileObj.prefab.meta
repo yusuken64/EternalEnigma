@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0e332bf8e396ee44fb165015a71b80ff
+timeCreated: 1560608626
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/- Generic Missiles/SpazMissileObj.prefab
+  uploadId: 715034

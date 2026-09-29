@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 27f678a331798d34887cc39800f31171
+timeCreated: 1453308283
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scenes/magic_aura.unity
+  uploadId: 715034

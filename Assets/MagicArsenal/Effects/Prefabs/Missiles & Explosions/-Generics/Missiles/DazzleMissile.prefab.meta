@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ed1e5a2a5bed8a445b628055dc9349d8
+timeCreated: 1559143954
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Missiles/DazzleMissile.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 23c9247fb25ccd1408c231aa729016e0
+timeCreated: 1474567279
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/MeshGlow/WaterMeshGlow.prefab
+  uploadId: 715034

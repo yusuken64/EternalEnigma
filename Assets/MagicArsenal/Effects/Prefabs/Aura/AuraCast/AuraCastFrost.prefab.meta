@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 34931e23c8527334b94ba3448be23599
+timeCreated: 1559221287
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraCast/AuraCastFrost.prefab
+  uploadId: 715034

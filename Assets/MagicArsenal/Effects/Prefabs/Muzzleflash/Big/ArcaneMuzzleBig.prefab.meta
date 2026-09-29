@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 000562015abc24840b54431c2d6e82f8
+timeCreated: 1494010218
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Muzzleflash/Big/ArcaneMuzzleBig.prefab
+  uploadId: 715034

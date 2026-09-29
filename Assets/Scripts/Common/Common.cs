@@ -69,6 +69,28 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 
 public class LoadingSceneIntegration
 {
+    private static AsyncOperation commonLoad;
+    private static bool bootstrapping;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStartupState()
+    {
+        commonLoad = null;
+        bootstrapping = false;
+    }
+
+    public static IEnumerator EnsureCommon()
+    {
+        // The editor's normal bootstrap replaces the original scene; do not race that load.
+        while (bootstrapping) yield return null;
+        if (UnityEngine.Object.FindFirstObjectByType<Common>() != null) yield break;
+        if (commonLoad == null || commonLoad.isDone)
+            commonLoad = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
+        // Unity allows an AsyncOperation to be yielded by only one coroutine.
+        // Menu and music can both wait here, so poll the shared load instead.
+        while (!commonLoad.isDone) yield return null;
+    }
+
 #if UNITY_EDITOR
 	public static int otherScene = -2;
 
@@ -86,12 +108,8 @@ public class LoadingSceneIntegration
 		int sceneIndex = SceneManager.GetActiveScene().buildIndex;
 		// Test Runner and isolated editor scenes own their initialization.
 		if (sceneIndex < 0) return;
-		if (sceneIndex == 0)
-		{
-			otherScene = 1;
-		};
-
-		otherScene = sceneIndex;
+		otherScene = sceneIndex == 0 ? 1 : sceneIndex;
+		bootstrapping = true;
 		//make sure your _preload scene is the first in scene build list
 		AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(0);
 		asyncOperation.completed += AsyncOperation_completed;
@@ -99,6 +117,7 @@ public class LoadingSceneIntegration
 
 	private static void AsyncOperation_completed(AsyncOperation obj)
 	{
+		bootstrapping = false;
 		SceneManager.LoadScene(otherScene);
 	}
 #endif

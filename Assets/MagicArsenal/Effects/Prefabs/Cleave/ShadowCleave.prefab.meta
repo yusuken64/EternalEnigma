@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a3986e25e8c22164ab6dee4098eee2b5
+timeCreated: 1461252710
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Cleave/ShadowCleave.prefab
+  uploadId: 715034

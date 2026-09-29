@@ -45,4 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::StunStatusEffect
   TurnsLeft: 1
+  VisualProfile: {fileID: 11400000, guid: ce6018aa6c4059b459b90f1c9cb78786, type: 2}
   Family: 0

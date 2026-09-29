@@ -36,7 +36,7 @@ internal class SkillAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if (!IsValid(character)) return new();
-        GameMessages.ForCharacter(caster, $"{GameMessages.Name(caster)} used {skill.SkillName}!");
+        GameMessages.AbilityCast(caster, skill);
 		bool inventoryTargeting = skill.Targeting == SkillTargeting.InventoryItem;
 		affected = inventoryTargeting ? new List<Character> { caster } : skill.GetAffectedCharacters(caster, target);
 		if (skill.Targeting == SkillTargeting.Missile)
@@ -67,6 +67,11 @@ internal class SkillAction : GameAction
 				vitals.SP -= skill.SPCost;
 			});
 
+        var center = skill.Targeting == SkillTargeting.Missile ? missileHit.Cell :
+            sceneryTarget != null ? sceneryTarget.Position : target != null ? target.TilemapPosition : caster.TilemapPosition;
+        Visuals.Configure(skill.VisualProfile, caster, center, skill.AreaRadius);
+        if (Visuals.Sequence != null) Visuals.Sequence.SingleFlight = skill.Targeting == SkillTargeting.Missile || skill.AreaRadius > 0;
+
 		return inventoryTargeting ? skill.GetInventoryEffects(caster, inventoryTarget) :
 			affected.SelectMany(recipient => skill.GetEffects(caster, recipient)).Concat(scenery.SelectMany(p => ScenerySkillTargets.Effects(caster,skill,p))).ToList();
 	}
@@ -74,6 +79,7 @@ internal class SkillAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
+		if (Visuals.Sequence != null) yield break;
 		if (skill.Targeting == SkillTargeting.Missile)
 			yield return MissileTargeting.Animate(caster, missileHit.Cell, skill.MissileProjectilePrefab);
 		foreach (var recipient in affected)

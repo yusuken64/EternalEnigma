@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7bb618116510f49ac190f670d4173c, type: 3}
+  m_Name: Protection Direct Area
+  m_EditorClassIdentifier: EternalEnigma.Game::CombatEffectProfile
+  Muzzle:
+    Prefab: {fileID: 7661233789417813127, guid: d9839071f38e6b4479a3578ae7fa6257, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    Scale: 0.6
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  GroundCircle:
+    Prefab: {fileID: 1297703875008057977, guid: c1f1c85e8c2fdcc4aaf86c856d12d279, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: -90, y: 0, z: 0}
+    Scale: 0.45
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 3
+    ReferenceDiameter: 10.000002
+  Projectile:
+    Prefab: {fileID: 0}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    Scale: 1
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  Impact:
+    FitToTarget: 1
+    Prefab: {fileID: 441725790407906295, guid: 22132a0207f071b4e9bf35c6c405a059, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: -90, y: 0, z: 0}
+    Scale: 0.65
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  Area:
+    Prefab: {fileID: 1787641391518461702, guid: 7a7c68029fbf3654ab0b7a86d323db86, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: -90, y: 0, z: 0}
+    Scale: 0.4
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 3
+    ReferenceDiameter: 15.000004
+  CastSeconds: 0.45
+  ImpactSeconds: 0.4
+  ProjectileSpeed: 20
+  FlightSeconds: {x: 0.25, y: 0.75}
+  ScaleAreaToRadius: 1

@@ -8,6 +8,7 @@ public class SkillGridItem : MonoBehaviour
 	public TextMeshProUGUI SkillText;
 	public Button GridButton;
 	public Image ActiveImage;
+	public Image SkillIcon;
 
 	public GameObject CostObject;
 	public TextMeshProUGUI CostText;
@@ -70,6 +71,7 @@ public class SkillGridItem : MonoBehaviour
 	{
 		var offer = _data.Offer;
 		SkillText.text = offer != null ? offer.Label : $"{_data.Skill.SkillName}";
+		SkillIcon = SkillIconView.Bind(SkillIcon, SkillText, _data.Skill.Icon);
 		bool maxed = offer != null ? offer.IsMaxed : _data.Active;
 		if (maxed)
 		{

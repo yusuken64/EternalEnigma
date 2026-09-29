@@ -45,4 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::FearStatusEffect
   TurnsLeft: 3
+  VisualProfile: {fileID: 11400000, guid: 41f829037394bea43ae06df441376821, type: 2}
   Family: 0

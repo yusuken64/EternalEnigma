@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a876c3bd900d99744ba4fe7f5c09aca3
+timeCreated: 1559221542
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraCast/AuraCastLight.prefab
+  uploadId: 715034

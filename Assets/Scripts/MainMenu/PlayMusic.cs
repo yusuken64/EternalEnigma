@@ -7,8 +7,9 @@ public class PlayMusic : MonoBehaviour
     public AudioClip MainMenuMusic;
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
+        yield return LoadingSceneIntegration.EnsureCommon();
         Common.Instance.AudioManager.PlayMusic(MainMenuMusic);
     }
 }

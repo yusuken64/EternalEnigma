@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: be57b0ef44dcb344a983cb4736b1dc00
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraCastSmall/AuraCastSmallLight.prefab
+  uploadId: 715034

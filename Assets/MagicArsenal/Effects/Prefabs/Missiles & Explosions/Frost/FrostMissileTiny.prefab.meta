@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5535b349e6ff989468a2e66903f14be3
+timeCreated: 1453404177
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Frost/FrostMissileTiny.prefab
+  uploadId: 715034

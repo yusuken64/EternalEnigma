@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9c0a783a7ad1dc945a8cfb9a36539226
+timeCreated: 1460829879
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Straight Wall/LifeWall.prefab
+  uploadId: 715034

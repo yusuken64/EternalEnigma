@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1d1ce344336026a4abd564307629e846
+timeCreated: 1453401193
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/Missiles/Tiny/ArcaneTinyObj.prefab
+  uploadId: 715034

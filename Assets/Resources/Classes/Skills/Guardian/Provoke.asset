@@ -40,6 +40,8 @@ MonoBehaviour:
   SkillAnimation:
     Steps:
     - rid: 292415685818318962
+  VisualProfile: {fileID: 11400000, guid: 8b74a6112ec8b6240989a4e8168a1737, type: 2}
+  Icon: {fileID: 21300000, guid: 6ed03ff3ae18f1d4191d1d5711b8d612, type: 3}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0

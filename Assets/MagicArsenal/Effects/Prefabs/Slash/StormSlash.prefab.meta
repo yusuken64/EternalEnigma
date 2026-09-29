@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f27b91ed5152a5745a77f092b78aa6a8
+timeCreated: 1453844422
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Slash/StormSlash.prefab
+  uploadId: 715034

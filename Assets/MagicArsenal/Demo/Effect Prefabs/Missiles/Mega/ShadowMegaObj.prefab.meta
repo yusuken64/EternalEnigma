@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 090a6f230c97fac4694506851289e3aa
+timeCreated: 1453559611
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/Missiles/Mega/ShadowMegaObj.prefab
+  uploadId: 715034

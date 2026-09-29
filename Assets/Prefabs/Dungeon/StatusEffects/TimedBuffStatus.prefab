@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::TimedBuffStatusEffect
   TurnsLeft: 5
+  VisualProfile: {fileID: 11400000, guid: 62e1191da673b074f904a8b631c2c951, type: 2}
   Family: 0
   BuffName: Buff
   Modification:

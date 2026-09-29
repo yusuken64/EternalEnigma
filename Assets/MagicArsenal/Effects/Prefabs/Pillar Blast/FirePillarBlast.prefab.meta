@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3ad7829578f473a4a95c2e75c0f5ef6f
+timeCreated: 1474811200
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Pillar Blast/FirePillarBlast.prefab
+  uploadId: 715034

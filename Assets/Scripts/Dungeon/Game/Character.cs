@@ -249,6 +249,14 @@ public abstract class Character : MonoBehaviour, Actor
 	public abstract void DetermineAction();
     protected List<GameAction> ExecuteWithScenery(GameAction action)
     {
+        action.Visuals.Begin(this);
+        var result = ExecuteWithSceneryCore(action) ?? new List<GameAction>();
+        action.Visuals.End(action, this, result);
+        return result;
+    }
+
+    private List<GameAction> ExecuteWithSceneryCore(GameAction action)
+    {
         var dungeon=Game.Instance?.CurrentDungeon;
         if(dungeon==null || action is TrapResolutionAction) { var result = action.ExecuteImmediate(this); action.RecordOutcome(this); return result; }
         var positions=Game.Instance.AllCharacters.Where(c=>c!=null).ToDictionary(c=>c,c=>c.TilemapPosition);

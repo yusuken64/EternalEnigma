@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ddd33194a637570448b951c1728f1af6
+timeCreated: 1560165977
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Rain/RainLife.prefab
+  uploadId: 715034

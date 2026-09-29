@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bd6288ee530689244ba8a77dae514ff1
+timeCreated: 1559140232
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Missiles/LightningGoldMissile.prefab
+  uploadId: 715034

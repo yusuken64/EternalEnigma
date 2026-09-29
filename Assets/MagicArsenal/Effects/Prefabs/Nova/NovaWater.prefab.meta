@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4a1e0f7cfc5fec345af6291745c4ca2e
+timeCreated: 1559738901
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Nova/NovaWater.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: af82839cea9b35c42a7ad215c8a1c783
+timeCreated: 1461095884
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraRing/AuraRingStorm.prefab
+  uploadId: 715034

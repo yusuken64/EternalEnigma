@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cc9af0e16354a3c4aaa2860db34ca4a0
+timeCreated: 1475021015
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Setup/Beam/Water Beam.prefab
+  uploadId: 715034

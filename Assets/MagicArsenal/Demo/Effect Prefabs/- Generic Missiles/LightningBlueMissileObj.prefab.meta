@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8cc19696cb7aa724c9b4a253e5704006
+timeCreated: 1560608623
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/- Generic Missiles/LightningBlueMissileObj.prefab
+  uploadId: 715034

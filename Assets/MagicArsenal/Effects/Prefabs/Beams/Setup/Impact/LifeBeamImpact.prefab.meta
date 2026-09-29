@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 192a807de5bc83c498bf94f94e6f6b75
+timeCreated: 1474929215
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Setup/Impact/LifeBeamImpact.prefab
+  uploadId: 715034

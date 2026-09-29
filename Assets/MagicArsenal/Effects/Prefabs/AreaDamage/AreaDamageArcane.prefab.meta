@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: acf73c3a674c73c4499b54885458bf6b
+timeCreated: 1559336401
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/AreaDamage/AreaDamageArcane.prefab
+  uploadId: 715034

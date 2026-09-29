@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: be9c49d40577af94fa21cbb1dc0dc38d
+timeCreated: 1453922708
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Charge/StormCharge.prefab
+  uploadId: 715034

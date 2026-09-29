@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8566b76fc79149a4585d983f807c09ba
+timeCreated: 1560608624
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/- Generic Missiles/RiftMissileObj.prefab
+  uploadId: 715034

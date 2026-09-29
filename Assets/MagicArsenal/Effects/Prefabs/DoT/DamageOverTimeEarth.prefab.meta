@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 322ecf64f3623d64eb0aa6b607d46471
+timeCreated: 1464552901
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/DoT/DamageOverTimeEarth.prefab
+  uploadId: 715034

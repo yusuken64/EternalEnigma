@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2901f81cc2d774d4cb95b9381ce2d16f
+timeCreated: 1453400921
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Missiles/Trails/watertrail.mat
+  uploadId: 715034

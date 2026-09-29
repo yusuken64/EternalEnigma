@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 502bc141da8b3ea4da84b810979194fc
+timeCreated: 1453259443
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scenes/magic_shields.unity
+  uploadId: 715034

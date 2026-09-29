@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a2ef40c57590c044db81abe35bb49875
+timeCreated: 1460830540
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Straight Wall/FrostWall.prefab
+  uploadId: 715034

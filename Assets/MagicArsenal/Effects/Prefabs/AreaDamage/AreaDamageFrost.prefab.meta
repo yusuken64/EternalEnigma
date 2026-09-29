@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 31e4e62d6e55fcf479e96ada0f19996e
+timeCreated: 1559404084
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/AreaDamage/AreaDamageFrost.prefab
+  uploadId: 715034

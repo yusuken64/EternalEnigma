@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5e7118baf7cb6144f85239775d427443
+timeCreated: 1560708380
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Explosions/FluffExplosion.prefab
+  uploadId: 715034

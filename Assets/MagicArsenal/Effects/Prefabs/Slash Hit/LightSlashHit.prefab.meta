@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 79885226978b938489ab94d515f1acc7
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Slash Hit/LightSlashHit.prefab
+  uploadId: 715034

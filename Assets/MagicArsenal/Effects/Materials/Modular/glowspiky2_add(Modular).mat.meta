@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e55fa30149d52324694606003b8c5cef
+timeCreated: 1561135438
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Modular/glowspiky2_add(Modular).mat
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e08a222b2cbace24c9fae6c7cd048fce
+timeCreated: 1461259173
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scenes/magic_cleave.unity
+  uploadId: 715034

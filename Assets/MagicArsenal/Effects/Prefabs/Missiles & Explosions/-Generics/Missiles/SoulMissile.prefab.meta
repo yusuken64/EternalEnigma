@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7f6c3af47c50be749bbc9f7398cedf30
+timeCreated: 1559140227
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Missiles/SoulMissile.prefab
+  uploadId: 715034

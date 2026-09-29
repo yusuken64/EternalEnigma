@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e6b99df4d65f88a418b28a7447d53580
+timeCreated: 1461068761
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraRing/AuraRingFrost.prefab
+  uploadId: 715034

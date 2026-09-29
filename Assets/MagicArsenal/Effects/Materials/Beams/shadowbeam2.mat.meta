@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c8a91193407f24146897b08eba9908e5
+timeCreated: 1475164015
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Beams/shadowbeam2.mat
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 51e6dfc2ec9381647a7b3c25f6f6f626
+timeCreated: 1453665580
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Shadow/ShadowExplosionMega.prefab
+  uploadId: 715034

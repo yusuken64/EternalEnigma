@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 409db732aa2a79f4faffaa7f46e4b13f
+timeCreated: 1493856310
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/SphereBlast/ShadowSphereBlast.prefab
+  uploadId: 715034

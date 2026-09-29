@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c31764a88d139614d9981caf67cd0017
+timeCreated: 1559140229
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Missiles/MesmerizeMissile.prefab
+  uploadId: 715034

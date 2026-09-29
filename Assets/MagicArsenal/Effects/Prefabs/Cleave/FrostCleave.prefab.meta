@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1ac0c12c0c24262419eedd1aad6c59b3
+timeCreated: 1461173553
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Cleave/FrostCleave.prefab
+  uploadId: 715034

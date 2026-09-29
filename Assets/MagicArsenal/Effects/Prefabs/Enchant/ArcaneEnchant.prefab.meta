@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 165414722706add4fa2ac35a47c471ff
+timeCreated: 1453314900
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Enchant/ArcaneEnchant.prefab
+  uploadId: 715034

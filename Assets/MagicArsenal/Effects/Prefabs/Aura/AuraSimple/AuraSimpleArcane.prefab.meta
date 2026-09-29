@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d6801d2307601be478ab6faa301964bf
+timeCreated: 1559226903
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSimple/AuraSimpleArcane.prefab
+  uploadId: 715034

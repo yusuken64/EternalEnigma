@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::ParalysisStatusEffect
   TurnsLeft: 4
+  VisualProfile: {fileID: 11400000, guid: f38faa7044c2bd8479d832d63ada07a1, type: 2}
   Family: 0
   SkipChance: 0.5

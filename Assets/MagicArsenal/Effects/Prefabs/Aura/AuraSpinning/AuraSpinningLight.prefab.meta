@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7583765d5e4482a48b2d2ec3649a9264
+timeCreated: 1453303153
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSpinning/AuraSpinningLight.prefab
+  uploadId: 715034

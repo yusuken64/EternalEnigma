@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6c818baf35b183c4791d14868ee4d991
+timeCreated: 1559419717
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/AreaDamage/AreaDamageWater.prefab
+  uploadId: 715034

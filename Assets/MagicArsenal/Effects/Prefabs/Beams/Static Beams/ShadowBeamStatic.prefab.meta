@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2756680bebe4c504889abcb53a10e470
+timeCreated: 1559575974
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Static Beams/ShadowBeamStatic.prefab
+  uploadId: 715034

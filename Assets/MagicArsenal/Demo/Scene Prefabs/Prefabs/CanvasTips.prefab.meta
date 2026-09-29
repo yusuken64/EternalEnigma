@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f1aeee136da6851489f6c4006c37c616
+timeCreated: 1560594339
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scene Prefabs/Prefabs/CanvasTips.prefab
+  uploadId: 715034

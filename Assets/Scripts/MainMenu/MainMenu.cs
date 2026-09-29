@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -14,9 +15,17 @@ public class MainMenu : MonoBehaviour
 	public NavigationHandler NavigationHandler;
 
 	private ProtagonistHeroPicker heroPicker;
+    public bool IsReady { get; private set; }
 
-	private void Start()
+	private IEnumerator Start()
 	{
+        IsReady = false;
+        var buttons = GetComponentsInChildren<Button>(true);
+        var interactable = buttons.Select(button => button.interactable).ToArray();
+        foreach (var button in buttons) button.interactable = false;
+        yield return LoadingSceneIntegration.EnsureCommon();
+        for (int i = 0; i < buttons.Length; i++) if (buttons[i] != null) buttons[i].interactable = interactable[i];
+        IsReady = true;
         Common.Instance.EndSandbox();
         Common.Instance.Travel.SceneReady();
 		var save = Common.Instance.GameSaveData;
@@ -34,12 +43,14 @@ public class MainMenu : MonoBehaviour
 
 	public void Continue_Clicked()
 	{
+        if (!IsReady) return;
         Common.Instance.Travel.Continue();
 	}
 
 
 	public void StartGame_Clicked()
 	{
+        if (!IsReady) return;
 		if (Common.Instance.Travel.IsTransitioning || heroPicker != null) return;
 		var configuration = TownConfiguration ?? TownSceneLoader.Default;
 		configuration.Validate();
@@ -51,6 +62,7 @@ public class MainMenu : MonoBehaviour
 
 	public void StartGame(TownAlly hero = null)
 	{
+        if (!IsReady) return;
 		if (Common.Instance.Travel.IsTransitioning) return;
 		Common.Instance.GameSaveData = CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue), hero);
 		Common.Instance.Travel.NewCampaign(Common.Instance.GameSaveData.TownSaveData.TownSeed);
@@ -92,6 +104,7 @@ public class MainMenu : MonoBehaviour
 
 	public void Options_Clicked()
 	{
+        if (!IsReady) return;
 		NavigationHandler.gameObject.SetActive(false);
 		Common.Instance.GlobalSettings.ShowDialog();
 		Common.Instance.GlobalSettings.CloseAction = () =>
@@ -109,6 +122,7 @@ public class MainMenu : MonoBehaviour
 	public List<TownAlly> DebugAllyPrefabs;
 	public void TestDungeon_Clicked()
 	{
+        if (!IsReady) return;
 		// DungeonScene consumes live town allies, normally prepared in town.
 		if (DebugAllies == null || DebugAllies.Count == 0 || DebugAllies.Any(data =>
 			data == null || DebugAllyPrefabs == null ||

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 74a78a3428e8aee4b9148fb659d178e4
+timeCreated: 1475341143
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scene Prefabs/Models/Materials/SwordGlowYellow.mat
+  uploadId: 715034

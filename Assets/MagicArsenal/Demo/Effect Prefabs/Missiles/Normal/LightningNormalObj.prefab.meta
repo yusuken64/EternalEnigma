@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9b122eea2bbda3040b51f93893de32f7
+timeCreated: 1461069882
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/Missiles/Normal/LightningNormalObj.prefab
+  uploadId: 715034

@@ -95,6 +95,13 @@ public sealed class GameTestHarness
         yield return LoadScene("MainMenu");
     }
 
+    public IEnumerator LoadMainMenuDirect()
+    {
+        Begin(new TestScenario().CreateSave());
+        yield return LoadScene("MainMenu");
+        yield return WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true, "direct main menu startup");
+    }
+
     private void Begin(GameSaveData save)
     {
         if (started) throw new InvalidOperationException("Use a fresh harness for each scenario, after Cleanup.");

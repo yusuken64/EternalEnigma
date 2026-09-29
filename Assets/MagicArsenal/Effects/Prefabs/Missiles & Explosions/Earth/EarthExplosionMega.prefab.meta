@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6bc2e172492149640a2926574ed89f4f
+timeCreated: 1453731647
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Earth/EarthExplosionMega.prefab
+  uploadId: 715034

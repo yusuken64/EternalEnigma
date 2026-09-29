@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e4c8210590d6e3f47b5c7265958561b3
+timeCreated: 1461067190
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Circular Wall/WaterWallCircle.prefab
+  uploadId: 715034

@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::CurseStatusEffect
   TurnsLeft: 4
+  VisualProfile: {fileID: 11400000, guid: fb080f5ec20739b44bab4de8bb58b71c, type: 2}
   Family: 0
   ReflectFraction: 0.5

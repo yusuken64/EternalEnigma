@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 661fccf75b4fb6b46bbb67fe443d907c
+timeCreated: 1461262226
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Sprays/LightningSpray.prefab
+  uploadId: 715034

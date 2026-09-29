@@ -21,6 +21,30 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Main Menu Startup")]
+    public static void RunMainMenuStartup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.MainMenuStartupTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Controller Flows")]
+    public static void RunControllerFlows() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControllerFlowTests", "EternalEnigma.Tests.MenuSelectionTests",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.SettingsKeepCategoryFocusAndBackReturnsToGameplay",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Controller Combat")]
+    public static void RunControllerCombat() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Combat Effects")]
+    public static void RunCombatEffects() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CombatEffectPlaybackTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Combat Effects EditMode")]
+    public static void RunCombatEffectsEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "CombatEffectAssignmentTests", "PresentationActionTests", "StatusEffectTests", "CombatMathTests", "ClassContentTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Combat Effects Regression")]
+    public static void RunCombatEffectsRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests", "EternalEnigma.Tests.CombatFoundationTests", "SightPlaybackTests", "EternalEnigma.Tests.SkillMovementTests", "EternalEnigma.Tests.SongCommandTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Town And Prop Visuals")]
     public static void RunTownAndPropVisuals() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests");
 

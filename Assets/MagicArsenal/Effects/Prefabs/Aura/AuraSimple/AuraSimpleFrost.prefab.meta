@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 99094c67e41de524fa73b5df484241b0
+timeCreated: 1559227105
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSimple/AuraSimpleFrost.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3b44f00d62229884a99c8bd5c5a1a247
+timeCreated: 1475083385
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Setup/Start/LifeBeamStart.prefab
+  uploadId: 715034

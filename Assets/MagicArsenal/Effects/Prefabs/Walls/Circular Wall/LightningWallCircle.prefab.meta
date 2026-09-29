@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2bac504b1465b6b4d8c3abff57fc3248
+timeCreated: 1460995534
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Circular Wall/LightningWallCircle.prefab
+  uploadId: 715034

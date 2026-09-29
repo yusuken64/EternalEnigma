@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2fd60fc6cecd16345b3a8205e1b4b00a
+timeCreated: 1559699702
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Nova/NovaLightning.prefab
+  uploadId: 715034

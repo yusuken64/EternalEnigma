@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1ae0f5f2147b3a145bfdd1f561f55835
+timeCreated: 1461178319
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Cleave/cleave_light.mat
+  uploadId: 715034

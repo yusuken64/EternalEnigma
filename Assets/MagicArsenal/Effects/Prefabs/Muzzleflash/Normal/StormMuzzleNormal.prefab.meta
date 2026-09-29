@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4f01e09274ab093448d46ac4916288cf
+timeCreated: 1494165966
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Muzzleflash/Normal/StormMuzzleNormal.prefab
+  uploadId: 715034

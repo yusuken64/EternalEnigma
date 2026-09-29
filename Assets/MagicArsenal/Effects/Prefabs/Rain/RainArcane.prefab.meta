@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b1cf113e0e89057409525a93a0a71158
+timeCreated: 1560098573
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Rain/RainArcane.prefab
+  uploadId: 715034

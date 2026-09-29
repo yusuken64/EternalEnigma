@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 137cc3422a61fa24bad35f139396a313
+timeCreated: 1453469615
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/Missiles/Tiny/WaterTinyObj.prefab
+  uploadId: 715034

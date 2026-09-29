@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: da75e1557d91cdd4baf654b25d102076
+timeCreated: 1560606265
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Explosions/GhostExplosion.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7484de48c7f720b449b0afaf518695f1
+timeCreated: 1464394833
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/DoT/DamageOverTimeFire.prefab
+  uploadId: 715034

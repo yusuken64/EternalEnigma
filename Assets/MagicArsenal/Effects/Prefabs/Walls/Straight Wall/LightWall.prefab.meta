@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cdc52f261c0a7824e8b42a627c2a2913
+timeCreated: 1460854339
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Straight Wall/LightWall.prefab
+  uploadId: 715034

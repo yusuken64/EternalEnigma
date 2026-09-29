@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0e562b29961264543ac43c2135ce199a
+timeCreated: 1494011938
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Muzzleflash/Big/LifeMuzzleBig.prefab
+  uploadId: 715034

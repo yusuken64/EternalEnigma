@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 714e217e5f981894799cb68d6c4ec887
+timeCreated: 1453408133
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Light/LightMissileTiny.prefab
+  uploadId: 715034

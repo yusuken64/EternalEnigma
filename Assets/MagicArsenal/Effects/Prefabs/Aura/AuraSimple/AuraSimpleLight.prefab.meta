@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6dc06d4e9e293c6499c48966ed17a768
+timeCreated: 1559227160
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSimple/AuraSimpleLight.prefab
+  uploadId: 715034

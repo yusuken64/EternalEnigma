@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 65ccfa097d79dac4389db6b496dc920e
+timeCreated: 1453837580
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Slash/LightningSlash.prefab
+  uploadId: 715034

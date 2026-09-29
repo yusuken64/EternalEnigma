@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1bb809aaabd434843b3210254dc3b58d
+timeCreated: 1560608626
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/- Generic Missiles/SnowballMissileObj.prefab
+  uploadId: 715034

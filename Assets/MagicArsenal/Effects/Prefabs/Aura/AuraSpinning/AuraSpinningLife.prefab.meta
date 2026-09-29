@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bbaeceb8d66eba7419195ff1742b5454
+timeCreated: 1453303147
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSpinning/AuraSpinningLife.prefab
+  uploadId: 715034

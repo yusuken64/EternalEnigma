@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7cb0087b12b33cf489ea09a2c88f14f4
+timeCreated: 1453303033
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSpinning/AuraSpinningEarth.prefab
+  uploadId: 715034

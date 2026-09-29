@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b480a66a3ad9e0c45a70d0ad77f2d8ad
+timeCreated: 1560888037
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scenes/Extra Scenes/magic_beam_comp.unity
+  uploadId: 715034

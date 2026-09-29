@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 887fc254e5b40474e9591de0ae156bd8
+timeCreated: 1474982925
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Setup/Impact/EarthBeamImpact.prefab
+  uploadId: 715034

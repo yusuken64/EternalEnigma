@@ -10,6 +10,7 @@ public class BallistaPurchaseDialog : Dialog
 
     public TextMeshProUGUI TitleText;
     public TextMeshProUGUI DescriptionText;
+    public Image SkillIcon;
 
 	public Action PurcahseCallBack { get; internal set; }
 
@@ -57,6 +58,7 @@ public class BallistaPurchaseDialog : Dialog
             ? $"Learn {skill.SkillName} ({cost}g)?"
             : $"Train {skill.SkillName} to rank {nextRank} ({cost}g)?";
         DescriptionText.text = skill.Description;
+        SkillIcon = SkillIconView.Bind(SkillIcon, TitleText, skill.Icon);
         SetNavigation();
 	}
 

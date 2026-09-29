@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8396fce600232da4dbbf9a8c440e40ba
+timeCreated: 1475009436
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Setup/Start/ArcaneBeamStart.prefab
+  uploadId: 715034

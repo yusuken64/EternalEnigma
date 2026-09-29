@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 01455581ef3749d4b98d8ddabe5d3005
+timeCreated: 1474896134
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Pillar Blast/LifePillarBlast.prefab
+  uploadId: 715034

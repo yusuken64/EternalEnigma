@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cb24f83e2d4ba3341a709b96968ea801
+timeCreated: 1461069892
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Lightning/LightningMissileNormal.prefab
+  uploadId: 715034

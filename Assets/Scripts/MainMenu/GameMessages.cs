@@ -52,6 +52,13 @@ public sealed class GameMessages : MonoBehaviour
         if (Visible(character)) Post(message);
     }
 
+    public static void AbilityCast(Character caster, Skill skill, string itemName = null)
+    {
+        if (skill == null) return;
+        string source = string.IsNullOrEmpty(itemName) ? "" : $" using {itemName}";
+        ForCharacter(caster, $"[Cast] {Name(caster)} casts {skill.SkillName}{source}.");
+    }
+
     public static void Post(string message, bool coalesce = false)
     {
         if (!Application.isPlaying || string.IsNullOrWhiteSpace(message)) return;

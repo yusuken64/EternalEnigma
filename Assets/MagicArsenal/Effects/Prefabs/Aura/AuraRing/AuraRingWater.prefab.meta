@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4b04e2b7526deed47be4f17dd96b9aa9
+timeCreated: 1461096109
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraRing/AuraRingWater.prefab
+  uploadId: 715034

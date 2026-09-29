@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5762132fb29d14d4e9347bf410f1489f
+timeCreated: 1559519782
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Modular/lightning_new_arcs_2x2(Modular).mat
+  uploadId: 715034

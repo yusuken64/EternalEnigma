@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 325422360e5730141adac507f0c6a393
+timeCreated: 1474983585
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Setup/Impact/StormBeamImpact.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bef819092e2298147a53ee851803de44
+timeCreated: 1494010698
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Muzzleflash/Big/FrostMuzzleBig.prefab
+  uploadId: 715034

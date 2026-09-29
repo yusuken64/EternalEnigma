@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d1a8b20e50417f44098c78bdbb02d4b2
+timeCreated: 1453827889
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Slash/magicslash_glow_spritesheet.mat
+  uploadId: 715034

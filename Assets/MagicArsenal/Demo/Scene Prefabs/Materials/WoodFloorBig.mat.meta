@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b5a9be52804ebd947bb66dfc80172121
+timeCreated: 1560264281
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scene Prefabs/Materials/WoodFloorBig.mat
+  uploadId: 715034

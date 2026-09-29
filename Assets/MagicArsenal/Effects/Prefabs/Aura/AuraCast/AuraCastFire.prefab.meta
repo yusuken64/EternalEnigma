@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7cfa7c8111349fe44b06a87d64ab1dea
+timeCreated: 1559221213
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraCast/AuraCastFire.prefab
+  uploadId: 715034

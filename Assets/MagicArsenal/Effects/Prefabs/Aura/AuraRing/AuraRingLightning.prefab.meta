@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3ad6bfa98890e2f428a6d97d2453b26c
+timeCreated: 1461069447
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraRing/AuraRingLightning.prefab
+  uploadId: 715034

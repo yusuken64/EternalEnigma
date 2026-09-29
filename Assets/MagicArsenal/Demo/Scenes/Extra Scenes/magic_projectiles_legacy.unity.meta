@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d66666cc03422784fbafcda3d9ad0218
+timeCreated: 1453401163
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scenes/Extra Scenes/magic_projectiles_legacy.unity
+  uploadId: 715034

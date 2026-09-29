@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a75f39c5bb6711049a1d5d5cbe4cd515
+timeCreated: 1453413823
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Storm/StormMissileTiny.prefab
+  uploadId: 715034

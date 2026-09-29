@@ -41,7 +41,7 @@ public sealed class CampaignHUD : MonoBehaviour
         actions = GameUISkin.Rect("Travel actions", bar.transform, new Vector2(.7f, .12f), new Vector2(.98f, .88f));
         if (Town != null)
         {
-            var partyButton = GameUISkin.Button(actions, "Party  [P]", Vector2.zero, Vector2.one, () => SetPartyOpen(!IsPartyOpen));
+            var partyButton = GameUISkin.Button(actions, "Party  [P / B]", Vector2.zero, Vector2.one, () => SetPartyOpen(!IsPartyOpen));
             partyButton.navigation = new Navigation { mode = Navigation.Mode.None };
             rosterPanel = GameUISkin.Panel(canvas.transform, new Vector2(.02f, .18f), new Vector2(.33f, .82f)).gameObject;
             GameUISkin.Label(rosterPanel.transform, "YOUR COMPANIONS", new Vector2(.06f, .88f), new Vector2(.94f, .97f), 28);
@@ -96,7 +96,10 @@ public sealed class CampaignHUD : MonoBehaviour
             ready &= Town.IsReady && common.CampaignContext != null && (townMenus == null || !townMenus.Opened);
             message.transform.parent.gameObject.SetActive(ready);
             if (!ready) { if (IsPartyOpen) SetPartyOpen(false); return; }
-            if (UnityEngine.InputSystem.Keyboard.current?.pKey.wasPressedThisFrame == true)
+            // B opens the party from town; once open, the dialog owns B as Back.
+            if (MenuUIInputModule.Active?.InputConsumed != true &&
+                (UnityEngine.InputSystem.Keyboard.current?.pKey.wasPressedThisFrame == true ||
+                 (!IsPartyOpen && common.MenuInputHandler.PlayerInput.actions["Plan"].WasPressedThisFrame())))
                 SetPartyOpen(!IsPartyOpen);
             var context = common.CampaignContext;
             message.text = context.CanLeaveTown(Town.Configuration.Id)

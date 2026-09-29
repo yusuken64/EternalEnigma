@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 39062704a091e5444bd6d8ef80fb9a56
+timeCreated: 1453409496
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/Missiles/Tiny/LightningTinyObj.prefab
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 93d2b7fb4d2aa7b41996315e463dc2ba
+timeCreated: 1560624899
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Explosions/LightningGoldExplosion.prefab
+  uploadId: 715034

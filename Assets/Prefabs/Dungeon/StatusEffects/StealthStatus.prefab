@@ -45,4 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::StealthStatusEffect
   TurnsLeft: 5
+  VisualProfile: {fileID: 11400000, guid: fbdb7f66cfdbed24aaf0ea3a0f5b936f, type: 2}
   Family: 0

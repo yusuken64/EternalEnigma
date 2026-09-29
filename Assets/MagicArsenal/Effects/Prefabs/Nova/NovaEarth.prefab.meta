@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 174a50a11521acd4e98ba5467a278f01
+timeCreated: 1559762150
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Nova/NovaEarth.prefab
+  uploadId: 715034

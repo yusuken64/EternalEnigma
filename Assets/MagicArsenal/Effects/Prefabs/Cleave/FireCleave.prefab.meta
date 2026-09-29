@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8dd7c451920fbdd4081719f217906a98
+timeCreated: 1461163945
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Cleave/FireCleave.prefab
+  uploadId: 715034

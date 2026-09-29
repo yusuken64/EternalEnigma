@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0c900609b41d1364abae8a160b34c3f0
+timeCreated: 1453312658
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scenes/magic_enchant.unity
+  uploadId: 715034

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a862ba583d75a834da6fe74054b4328b
+timeCreated: 1453921418
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Charge/ShadowCharge.prefab
+  uploadId: 715034

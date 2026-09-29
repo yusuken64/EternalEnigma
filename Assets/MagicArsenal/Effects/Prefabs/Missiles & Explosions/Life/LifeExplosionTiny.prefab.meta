@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a09f02425a8307640b16f6427069403a
+timeCreated: 1453405791
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Life/LifeExplosionTiny.prefab
+  uploadId: 715034

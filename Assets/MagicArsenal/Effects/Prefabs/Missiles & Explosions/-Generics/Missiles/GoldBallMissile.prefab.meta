@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 836bfc2dd57243c44bdc92e8e604c342
+timeCreated: 1559141091
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Missiles/GoldBallMissile.prefab
+  uploadId: 715034

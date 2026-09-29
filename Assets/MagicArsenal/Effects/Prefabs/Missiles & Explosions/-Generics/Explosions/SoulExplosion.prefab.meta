@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 06a2915cf1027f640ab9cdcab7694c98
+timeCreated: 1560637780
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/-Generics/Explosions/SoulExplosion.prefab
+  uploadId: 715034

@@ -19,7 +19,8 @@ public class GameOverScreen : Dialog
 	private void OnEnable()
 	{
 		// The result is a full-screen dialog above the runtime HUD canvases.
-		var canvas = GetComponent<Canvas>() ?? gameObject.AddComponent<Canvas>();
+		var canvas = GetComponent<Canvas>();
+		if (canvas == null) canvas = gameObject.AddComponent<Canvas>();
 		canvas.overrideSorting = true;
 		canvas.sortingOrder = 100;
 		if (GetComponent<GraphicRaycaster>() == null) gameObject.AddComponent<GraphicRaycaster>();

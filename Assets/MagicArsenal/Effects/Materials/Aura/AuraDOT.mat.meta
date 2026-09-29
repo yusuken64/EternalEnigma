@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f0599ba31f7488d42b1efd752c8cb8cf
+timeCreated: 1464352110
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Aura/AuraDOT.mat
+  uploadId: 715034

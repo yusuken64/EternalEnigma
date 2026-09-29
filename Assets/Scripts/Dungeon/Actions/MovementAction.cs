@@ -114,6 +114,7 @@ internal class AttackAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		var target = Game.Instance.CurrentDungeon.OverlapsAnyOtherCharacter(attacker, Character.ToBounds(attackPosition));
+        if (Visuals.Sequence == null) Visuals.Configure(CharacterCombatEffects.Attack(attacker, false), attacker, attackPosition);
 
 		if (target == null)
         {
@@ -170,6 +171,7 @@ internal class AttackAction : GameAction
 		}
 		//TODO play sound based on implementation
 		AudioManager.Instance.SoundEffects.Slash.PlayAsSound();
+		if (Visuals.Sequence != null) yield break;
 		character.PlayAttackAnimation();
 
 		yield return new WaitForSecondsRealtime(0.5f);

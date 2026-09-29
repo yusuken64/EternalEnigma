@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: eb1e7265f93dd7842acac70e858320d3
+timeCreated: 1453513629
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/Missiles/Mega/FrostMegaObj.prefab
+  uploadId: 715034

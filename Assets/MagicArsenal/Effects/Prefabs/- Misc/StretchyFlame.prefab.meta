@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ea6e1faa88d267249a47e4ff80f562d2
+timeCreated: 1560353338
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/- Misc/StretchyFlame.prefab
+  uploadId: 715034

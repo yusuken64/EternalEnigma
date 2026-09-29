@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: eac34ba5412fff4478d1012f5c63549c
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Curse/CurseLightning.prefab
+  uploadId: 715034

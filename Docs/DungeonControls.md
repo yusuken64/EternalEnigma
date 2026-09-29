@@ -1,5 +1,30 @@
 # Dungeon controls and event log
 
+## Controller controls
+
+| Action | Xbox / PlayStation |
+| --- | --- |
+| Move in town/combat; navigate menus and targets | D-pad or left stick |
+| Confirm; attack/interact in gameplay | A / Cross |
+| Back in menus; hero commands in combat; party panel in campaign town | B / Circle |
+| Inventory | X / Square |
+| Skills | LB / L1 |
+| Hold position while choosing facing | Y / Triangle |
+| Switch controlled hero | RB / R1 |
+| Wait a combat turn | Right-stick press |
+| Minimap | View / Share |
+| Settings | Menu / Options |
+
+The shared Common scene owns the single `PlayerInput`. DungeonScene must not add another:
+multiple active `PlayerInput` components disable Unity's automatic control-scheme switching,
+which can leave gameplay on keyboard even while controller menu navigation works.
+
+Controller regressions: **Tools > Eternal Enigma > Tests > Run Controller Flows**.
+These use virtual gamepad events through Unity's Input System and production scenes.
+Physical hardware connection and platform-specific button labels still need a device check.
+
+## Gameplay settings
+
 Options > Gameplay stores Full Control and animation mode across sessions.
 
 - **Full Control:** choose each living party hero's action in order. Additional actions prompt again. Summons remain autonomous; forced status actions still resolve automatically. The party leader is restored before enemies act. Toggle changes apply on the next round.

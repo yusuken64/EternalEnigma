@@ -40,6 +40,8 @@ MonoBehaviour:
   SkillAnimation:
     Steps:
     - rid: 3678569417729900613
+  VisualProfile: {fileID: 11400000, guid: 409233a7fe6327d4fb61c86fd6383812, type: 2}
+  Icon: {fileID: 21300000, guid: 69c75029972e0924b927a0f528d2cf66, type: 3}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0
@@ -130,6 +132,8 @@ MonoBehaviour:
   SkillAnimation:
     Steps:
     - rid: 3678569417729900613
+  VisualProfile: {fileID: 0}
+  Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0
@@ -184,6 +188,10 @@ MonoBehaviour:
     consume the selected item. Use spends one scroll, no SP. Cancel spends nothing.
   ItemEffectDefinition: {fileID: 0}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -223,6 +231,10 @@ MonoBehaviour:
     the selected weapon. Use spends one scroll, no SP. Cancel spends nothing.
   ItemEffectDefinition: {fileID: 0}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -275,6 +287,10 @@ MonoBehaviour:
     Cancel spends nothing.
   ItemEffectDefinition: {fileID: -3472550292180710157}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -323,6 +339,10 @@ MonoBehaviour:
     scroll, no SP. Cancel spends nothing.
   ItemEffectDefinition: {fileID: 3163525555380041772}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -358,6 +378,10 @@ MonoBehaviour:
     SP. Cancel spends nothing.
   ItemEffectDefinition: {fileID: 718196461677307367}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -393,6 +417,10 @@ MonoBehaviour:
     Use spends one scroll, no SP. Cancel spends nothing.
   ItemEffectDefinition: {fileID: -4159740513227030897}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -450,6 +478,8 @@ MonoBehaviour:
   - rid: 3678569255368130626
   SkillAnimation:
     Steps: []
+  VisualProfile: {fileID: 0}
+  Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0
@@ -482,6 +512,7 @@ MonoBehaviour:
         doDamageAnimation: 0
         Element: 0
         RollToHit: 0
+        Environmental: 0
         ResponseDepth: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -558,6 +589,8 @@ MonoBehaviour:
   SkillAnimation:
     Steps:
     - rid: 3678569417729900614
+  VisualProfile: {fileID: 0}
+  Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0
@@ -589,6 +622,7 @@ MonoBehaviour:
         doDamageAnimation: 0
         Element: 0
         RollToHit: 0
+        Environmental: 0
         ResponseDepth: 0
     - rid: 3678569417729900614
       type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
@@ -628,6 +662,10 @@ MonoBehaviour:
     targeting. It can also be equipped.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
@@ -674,6 +712,10 @@ MonoBehaviour:
     nothing.
   ItemEffectDefinition: {fileID: -4937013768755952714}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -732,6 +774,8 @@ MonoBehaviour:
   SkillAnimation:
     Steps:
     - rid: 3678569417729900614
+  VisualProfile: {fileID: 0}
+  Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0
@@ -763,6 +807,7 @@ MonoBehaviour:
         doDamageAnimation: 0
         Element: 0
         RollToHit: 0
+        Environmental: 0
         ResponseDepth: 0
     - rid: 3678569417729900614
       type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
@@ -825,6 +870,8 @@ MonoBehaviour:
   SkillAnimation:
     Steps:
     - rid: 3678569417729900614
+  VisualProfile: {fileID: 0}
+  Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0
@@ -856,6 +903,7 @@ MonoBehaviour:
         doDamageAnimation: 0
         Element: 0
         RollToHit: 0
+        Environmental: 0
         ResponseDepth: 0
     - rid: 3678569417729900614
       type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
@@ -917,6 +965,8 @@ MonoBehaviour:
   - rid: 3678569255368130636
   SkillAnimation:
     Steps: []
+  VisualProfile: {fileID: 0}
+  Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0
@@ -984,6 +1034,8 @@ MonoBehaviour:
   - rid: 292415574222307398
   SkillAnimation:
     Steps: []
+  VisualProfile: {fileID: 0}
+  Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0
@@ -1042,6 +1094,10 @@ MonoBehaviour:
     SP. Cancel spends nothing.
   ItemEffectDefinition: {fileID: 6702725309827704848}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -1077,6 +1133,10 @@ MonoBehaviour:
     one scroll, no SP. Cancel spends nothing.
   ItemEffectDefinition: {fileID: 4387666134115303020}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 99
@@ -1134,6 +1194,8 @@ MonoBehaviour:
   - rid: 292415574222307399
   SkillAnimation:
     Steps: []
+  VisualProfile: {fileID: 0}
+  Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
     SPMax: 0

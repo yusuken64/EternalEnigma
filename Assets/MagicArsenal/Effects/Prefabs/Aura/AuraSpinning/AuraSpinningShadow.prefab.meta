@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f0ae9903b00e5314c809306f337baea5
+timeCreated: 1453303185
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSpinning/AuraSpinningShadow.prefab
+  uploadId: 715034

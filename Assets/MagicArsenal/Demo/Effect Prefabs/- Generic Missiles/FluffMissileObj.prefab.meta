@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8a56566cdc1f575439ddf9941b05c44a
+timeCreated: 1560608618
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/- Generic Missiles/FluffMissileObj.prefab
+  uploadId: 715034

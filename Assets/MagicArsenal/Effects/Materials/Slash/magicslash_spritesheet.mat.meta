@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cebdb9855ef64e04db43073e790e9a29
+timeCreated: 1453827947
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Slash/magicslash_spritesheet.mat
+  uploadId: 715034

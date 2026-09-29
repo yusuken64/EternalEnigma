@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 615aecb8e91bc294ab5f68dbadc6947d
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraCircling/AuraCirclingLight.prefab
+  uploadId: 715034

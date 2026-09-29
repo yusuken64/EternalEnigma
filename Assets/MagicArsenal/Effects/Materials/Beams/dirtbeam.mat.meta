@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3fd1ba4d9316fac47972f6350ea9ea8a
+timeCreated: 1475096555
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Beams/dirtbeam.mat
+  uploadId: 715034

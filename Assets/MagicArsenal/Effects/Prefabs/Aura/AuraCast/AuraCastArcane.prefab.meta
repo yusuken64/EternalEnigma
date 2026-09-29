@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 18ca0b65eadca7c46b9b94e7d23cab44
+timeCreated: 1559219145
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraCast/AuraCastArcane.prefab
+  uploadId: 715034

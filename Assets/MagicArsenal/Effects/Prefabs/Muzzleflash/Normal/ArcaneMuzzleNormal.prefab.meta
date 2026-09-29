@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e50c699406fc10a4783f72816b25468f
+timeCreated: 1494162232
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Muzzleflash/Normal/ArcaneMuzzleNormal.prefab
+  uploadId: 715034

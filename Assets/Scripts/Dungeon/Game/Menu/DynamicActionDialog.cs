@@ -57,6 +57,7 @@ namespace JuicyChickenGames.Menu
 
 	public class DynamicActionInfo
 	{
+		public Sprite Icon;
 		public string ActionName;
 		public Action ClickAction;
 

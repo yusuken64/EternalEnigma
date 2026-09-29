@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1a149275422f99147b666b345e5aa38e
+timeCreated: 1453830070
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Slash/FrostSlash.prefab
+  uploadId: 715034

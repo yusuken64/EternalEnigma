@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8239596006564655916}
   - component: {fileID: 2307167615619215408}
   - component: {fileID: 8669051643142028373}
+  - component: {fileID: 5278210303527593742}
   m_Layer: 8
   m_Name: Ally
   m_TagString: Untagged
@@ -63,11 +64,21 @@ MonoBehaviour:
     DropRate: 0
     ActionsPerTurnMax: 1
     AttacksPerTurnMax: 1
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
   FootPrint: 0
   StatusEffects: []
   Equipment: {fileID: 8669051643142028373}
   PursuitTarget: {fileID: 0}
   Skills: []
+  TownAllyId: 
+  Portrait: {fileID: 0}
+  PrimaryClass: {fileID: 0}
+  SecondaryClass: {fileID: 0}
   HeroAnimator: {fileID: 3890444182482089279}
   AllyStrategy: 0
   CirlcleRenderer: {fileID: 8959743426064059013}
@@ -91,6 +102,24 @@ MonoBehaviour:
     ItemDefinition: {fileID: 0}
   EquippedAccessory:
     ItemDefinition: {fileID: 0}
+--- !u!114 &5278210303527593742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312521571073843250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d6e29da5e523ef4095d33db907ebee0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::CharacterCombatEffects
+  CastSocket: {fileID: 0}
+  Melee: {fileID: 11400000, guid: dc9fe5d4788120d4f87191d54a442ac1, type: 2}
+  Ranged: {fileID: 11400000, guid: 519e4abc4a2529f4a9f4e9926beeb64b, type: 2}
+  Confusion: {fileID: 11400000, guid: 2b92abebf9d42184d85bddc18a597328, type: 2}
+  Root: {fileID: 11400000, guid: 712257fc9038f5d44aea923b94c4d3b4, type: 2}
+  Steal: {fileID: 11400000, guid: f4f1319a22422314aacd0107e91df48a, type: 2}
 --- !u!1 &878550475739156372
 GameObject:
   m_ObjectHideFlags: 0
@@ -176,6 +205,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -197,6 +228,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1177225405
   m_SortingLayer: 1
   m_SortingOrder: 0

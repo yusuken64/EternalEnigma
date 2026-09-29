@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6faa3eed7e2c129489adbf91a75040ee
+timeCreated: 1461095659
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraRing/AuraRingShadow.prefab
+  uploadId: 715034

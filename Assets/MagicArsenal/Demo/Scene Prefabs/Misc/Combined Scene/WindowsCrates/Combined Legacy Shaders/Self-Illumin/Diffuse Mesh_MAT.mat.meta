@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 3c2be92e084bb5d4b8088b17bcf28aec
+timeCreated: 1464024859
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scene Prefabs/Misc/Combined Scene/WindowsCrates/Combined
+    Legacy Shaders/Self-Illumin/Diffuse Mesh_MAT.mat
+  uploadId: 715034

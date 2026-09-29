@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b86687caa80bc2a4e99edb2f920eaacc
+timeCreated: 1559528648
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Shield/ShieldWater2.mat
+  uploadId: 715034

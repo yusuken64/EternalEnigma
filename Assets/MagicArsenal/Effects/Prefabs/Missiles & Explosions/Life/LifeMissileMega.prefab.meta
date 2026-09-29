@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a2595f31d848a4b45949d2faf4360980
+timeCreated: 1453556217
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Life/LifeMissileMega.prefab
+  uploadId: 715034

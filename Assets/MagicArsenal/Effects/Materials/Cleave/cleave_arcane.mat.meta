@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c6724d73f4c8d394dacce9f124f055a4
+timeCreated: 1461173909
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Cleave/cleave_arcane.mat
+  uploadId: 715034

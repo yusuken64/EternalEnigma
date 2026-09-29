@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ba021ca937d0b804ab115f688fa0294e
+timeCreated: 1453741370
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scenes/Extra Scenes/magic_darktest.unity
+  uploadId: 715034

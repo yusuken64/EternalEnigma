@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: de07493b52a2cb94eab1c6a4bd7bdd0a
+timeCreated: 1460993881
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Circular Wall/EarthWallCircle.prefab
+  uploadId: 715034

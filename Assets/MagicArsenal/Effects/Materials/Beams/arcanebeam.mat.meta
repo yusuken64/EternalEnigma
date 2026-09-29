@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6b27fba9c4dfa454caf8f3aa92c28a87
+timeCreated: 1475018181
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Beams/arcanebeam.mat
+  uploadId: 715034

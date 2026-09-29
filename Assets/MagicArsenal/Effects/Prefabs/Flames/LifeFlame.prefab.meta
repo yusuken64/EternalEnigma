@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 89b16e1fbf903cb469f1c968eb195a75
+timeCreated: 1558832606
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Flames/LifeFlame.prefab
+  uploadId: 715034

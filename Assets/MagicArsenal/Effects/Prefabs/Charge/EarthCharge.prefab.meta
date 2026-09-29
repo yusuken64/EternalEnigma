@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a583915a301f96547af39944bc1ec634
+timeCreated: 1453923226
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Charge/EarthCharge.prefab
+  uploadId: 715034

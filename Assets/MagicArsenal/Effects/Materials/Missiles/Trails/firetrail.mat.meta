@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3306e5d4e88596746af85f4d4a10fe6b
+timeCreated: 1453400920
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Missiles/Trails/firetrail.mat
+  uploadId: 715034

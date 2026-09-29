@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f88ce55e982ee5748943d4648ac3a785
+timeCreated: 1460829425
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Straight Wall/FireWall.prefab
+  uploadId: 715034

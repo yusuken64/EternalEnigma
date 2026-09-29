@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d59fb75f8c3c18040903bc802beec898
+timeCreated: 1453586236
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Fire/FireExplosionMega.prefab
+  uploadId: 715034

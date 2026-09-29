@@ -45,4 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::ArmBindStatusEffect
   TurnsLeft: 3
+  VisualProfile: {fileID: 11400000, guid: 6e3c103119b622c40868389a570874eb, type: 2}
   Family: 0

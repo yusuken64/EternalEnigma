@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a8a745e1e257c8c42abf49038756605c
+timeCreated: 1493833714
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/SphereBlast/LightningSphereBlast.prefab
+  uploadId: 715034

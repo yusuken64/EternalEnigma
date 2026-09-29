@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dac1597adb1b04c4ba792f21f63062e5
+timeCreated: 1560264646
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scene Prefabs/Materials/CobbleFloorBig.mat
+  uploadId: 715034

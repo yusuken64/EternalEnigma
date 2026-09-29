@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 1710e64ef911d744bafa17f5e56ea689
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Orbital/LightningOrbitSphere.prefab
+  uploadId: 715034

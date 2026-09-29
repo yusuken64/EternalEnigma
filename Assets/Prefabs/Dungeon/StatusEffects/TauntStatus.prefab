@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::TauntStatusEffect
   TurnsLeft: 3
+  VisualProfile: {fileID: 11400000, guid: 29d60b8813ff0f841b6dd227c3609ccb, type: 2}
   Family: 0
   Taunter: {fileID: 0}

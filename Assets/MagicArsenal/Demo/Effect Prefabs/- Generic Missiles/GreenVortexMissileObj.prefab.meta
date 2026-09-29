@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 691f17ad737ee4842acf6317ad06352c
+timeCreated: 1560608623
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/- Generic Missiles/GreenVortexMissileObj.prefab
+  uploadId: 715034

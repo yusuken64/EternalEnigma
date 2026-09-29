@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cd0553407ca6bc54f97c4580fec21af8
+timeCreated: 1559668184
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Nova/NovaLight.prefab
+  uploadId: 715034

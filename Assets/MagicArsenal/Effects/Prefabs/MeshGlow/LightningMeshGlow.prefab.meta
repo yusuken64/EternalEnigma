@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 887a687bea57db842a539b112608b6af
+timeCreated: 1474564140
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/MeshGlow/LightningMeshGlow.prefab
+  uploadId: 715034

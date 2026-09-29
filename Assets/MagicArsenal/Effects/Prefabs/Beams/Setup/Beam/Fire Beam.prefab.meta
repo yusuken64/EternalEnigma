@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8fe4893f4372fc84fb0c43a1c8860725
+timeCreated: 1475021010
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Beams/Setup/Beam/Fire Beam.prefab
+  uploadId: 715034

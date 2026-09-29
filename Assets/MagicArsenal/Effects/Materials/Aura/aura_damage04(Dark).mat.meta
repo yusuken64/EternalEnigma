@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a7f71f7d1bf0f2d43afbf05f4146fa41
+timeCreated: 1559416796
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Aura/aura_damage04(Dark).mat
+  uploadId: 715034

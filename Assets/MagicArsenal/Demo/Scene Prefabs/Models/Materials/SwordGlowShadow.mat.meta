@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b947a59f964fb76498e3844cf7450b51
+timeCreated: 1475340886
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scene Prefabs/Models/Materials/SwordGlowShadow.mat
+  uploadId: 715034

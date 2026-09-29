@@ -212,7 +212,7 @@ public class Ally : Character
 	{
 		if (this == null) { yield break; }
 
-		yield return action.ExecuteRoutine(this, !action.ShouldAnimate(this));
+		yield return action.Visuals.Play(action, this, !action.ShouldAnimate(this));
 		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None && Vitals.HP > 0) PlayIdleAnimation();
 		action.UpdateDisplayedStats();
 	}

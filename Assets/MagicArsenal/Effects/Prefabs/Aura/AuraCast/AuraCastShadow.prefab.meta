@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 66711d9d22ce7e24c99890181fbf47ea
+timeCreated: 1559223730
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraCast/AuraCastShadow.prefab
+  uploadId: 715034

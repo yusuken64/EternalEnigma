@@ -9,6 +9,7 @@ public class ApplyStatusEffectAction : GameAction
 	private readonly StatusEffect statusEffectPrefab;
 	private readonly Character caster;
 	private StatusEffect statusInstance;
+    internal Character VisualAppliedTarget;
 	// Extra turns granted by the casting skill's rank (0 when unranked).
 	private int durationDelta;
 
@@ -42,6 +43,7 @@ public class ApplyStatusEffectAction : GameAction
 	{
 		TrackAnimationTarget(target);
 		statusInstance = target.ApplyStatusEffect(statusEffectPrefab);
+        VisualAppliedTarget = statusEffectPrefab != null && !ClassPassives.IsImmune(target, statusEffectPrefab) && target.StatusEffects.Any(s => s != null && s.StackKey == statusEffectPrefab.StackKey) ? target : null;
         if (statusInstance != null) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)}: {statusEffectPrefab.GetEffectName()}!");
 		//if (durationDelta != 0)
 		//{

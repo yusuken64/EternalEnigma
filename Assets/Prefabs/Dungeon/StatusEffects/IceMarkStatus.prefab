@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::FollowUpMarkStatusEffect
   TurnsLeft: 3
+  VisualProfile: {fileID: 11400000, guid: 4dd9a8856c3c6fb4c81be4eaf69c5df7, type: 2}
   Family: 0
   Element: 2
   DamagePercent: 0.5

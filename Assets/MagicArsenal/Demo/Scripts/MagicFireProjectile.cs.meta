@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 3312d60fb8e28004e9946a80a5627cbf
+timeCreated: 1493903241
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scripts/MagicFireProjectile.cs
+  uploadId: 715034

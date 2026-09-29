@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0cf8b69f523437349a65357a1b490b5b
+timeCreated: 1559227366
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Aura/AuraSimple/AuraSimpleWater.prefab
+  uploadId: 715034

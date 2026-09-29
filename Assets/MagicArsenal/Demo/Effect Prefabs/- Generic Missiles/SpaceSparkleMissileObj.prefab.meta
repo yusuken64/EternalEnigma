@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dcffc93aad531544d9e13e3372a47eab
+timeCreated: 1560608626
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Effect Prefabs/- Generic Missiles/SpaceSparkleMissileObj.prefab
+  uploadId: 715034

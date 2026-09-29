@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 421574077a747b146a6a5aba20f8f839
+timeCreated: 1461171313
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Cleave/cleave_fire.mat
+  uploadId: 715034

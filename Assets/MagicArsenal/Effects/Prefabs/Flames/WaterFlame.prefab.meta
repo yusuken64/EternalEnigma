@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e7c225f94b382a645872dd276110a117
+timeCreated: 1559263540
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Flames/WaterFlame.prefab
+  uploadId: 715034

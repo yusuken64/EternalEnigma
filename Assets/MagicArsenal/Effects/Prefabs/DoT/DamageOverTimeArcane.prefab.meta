@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1e43cd275d966934cbcec6fe045de7ab
+timeCreated: 1464358784
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/DoT/DamageOverTimeArcane.prefab
+  uploadId: 715034

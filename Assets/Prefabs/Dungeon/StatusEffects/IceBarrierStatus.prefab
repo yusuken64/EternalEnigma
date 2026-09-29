@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::BarrierStatusEffect
   TurnsLeft: 1
+  VisualProfile: {fileID: 11400000, guid: 6efaf6152e430044a9f83077688e2be7, type: 2}
   Family: 3
   BuffName: Ice Barrier
   Modification:

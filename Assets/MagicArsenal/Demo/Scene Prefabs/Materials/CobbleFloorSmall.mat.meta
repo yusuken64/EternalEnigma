@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8c2dc11e276ac00449559c12dade0d72
+timeCreated: 1560296445
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Demo/Scene Prefabs/Materials/CobbleFloorSmall.mat
+  uploadId: 715034

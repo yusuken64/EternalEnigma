@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 96723158895624c4785f6ee445bb715e
+timeCreated: 1461173355
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Materials/Cleave/cleave_frost.mat
+  uploadId: 715034

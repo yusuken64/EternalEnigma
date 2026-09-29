@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4016dcb540ea2da469c212ee1f27f43a
+timeCreated: 1453916419
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Charge/FrostCharge.prefab
+  uploadId: 715034

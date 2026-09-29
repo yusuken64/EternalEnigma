@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::BurnStatusEffect
   TurnsLeft: 3
+  VisualProfile: {fileID: 11400000, guid: 4d013adb1f2f8c14e96efca43315b2e7, type: 2}
   Family: 0
   TickDamage: 3

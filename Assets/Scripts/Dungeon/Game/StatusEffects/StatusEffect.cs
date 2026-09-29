@@ -6,6 +6,7 @@ using UnityEngine;
 public abstract class StatusEffect : MonoBehaviour
 {
 	public int TurnsLeft;
+	public StatusVisualProfile VisualProfile;
 
 	// Prevents walking and displacement without preventing attacks or item use.
 	internal virtual bool BlocksMovement => false;

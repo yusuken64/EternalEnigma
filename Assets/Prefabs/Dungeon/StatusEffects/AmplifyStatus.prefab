@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::AmplifyStatusEffect
   TurnsLeft: 5
+  VisualProfile: {fileID: 11400000, guid: de773c3bafbf5494eb3759c065c11443, type: 2}
   Family: 0
   Bonus: 0.5

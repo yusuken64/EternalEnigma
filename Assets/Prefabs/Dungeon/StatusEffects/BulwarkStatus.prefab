@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DamageReductionStatusEffect
   TurnsLeft: 1
+  VisualProfile: {fileID: 11400000, guid: d94cd9da10414b64d855bb619e76507e, type: 2}
   Family: 0
   Reduction: 0.5

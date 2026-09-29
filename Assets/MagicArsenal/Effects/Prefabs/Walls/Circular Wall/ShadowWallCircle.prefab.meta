@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2c40b4d69be226542915bc29b4699416
+timeCreated: 1461066886
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Walls/Circular Wall/ShadowWallCircle.prefab
+  uploadId: 715034

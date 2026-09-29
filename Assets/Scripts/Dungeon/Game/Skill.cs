@@ -34,6 +34,8 @@ public class Skill : ScriptableObject
 	public List<GameAction> ActionEffects;
 
 	public SkillAnimation SkillAnimation;
+	public CombatEffectProfile VisualProfile;
+	public Sprite Icon;
 
 	private void OnEnable()
 	{
@@ -46,7 +48,7 @@ public class Skill : ScriptableObject
 	internal List<GameAction> GetEffects(Character caster, Character target)
 	{
 		return
-			ActionEffects.Select(x => x.AsTargetedSkill(caster, target, RankContext))
+			ActionEffects.Select(x => { var bound = x.AsTargetedSkill(caster, target, RankContext); bound.Visuals.BoundTarget = target; return bound; })
 			.ToList();
 	}
 
@@ -69,7 +71,7 @@ public class Skill : ScriptableObject
 	}
 
 	internal List<GameAction> GetInventoryEffects(Character caster, InventoryItem item) =>
-		ActionEffects.Cast<InventorySkillEffect>().Select(effect => effect.Bind(caster, item)).ToList();
+		ActionEffects.Cast<InventorySkillEffect>().Select(effect => { var bound = effect.Bind(caster, item); bound.Visuals.BoundTarget = caster; return bound; }).ToList();
 
 	internal List<Vector3Int> GetTargets(Character caster) => GetTargetCharacters(caster).Select(c => c.TilemapPosition).Distinct().ToList();
 

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d74ebc75b860ca341a2c8b99d74519de
+timeCreated: 1453409451
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20869
+  packageName: Magic Arsenal
+  packageVersion: 2.75
+  assetPath: Assets/MagicArsenal/Effects/Prefabs/Missiles & Explosions/Lightning/LightningMissileTiny.prefab
+  uploadId: 715034

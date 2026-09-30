@@ -10,9 +10,8 @@ namespace EternalEnigma.Core.Generation;
 /// Generates deterministic procedural towns with buildings, roads, trees, allies, and shop interiors.
 /// Uses a 32-attempt retry/diagnostics pattern to ensure valid generation.
 /// </summary>
-public static class TownPlanGenerator
+public static partial class TownPlanGenerator
 {
-    private const int SpineX = 10;
     private const int MaxAttempts = 32;
 
     public static TownPlan Generate(TownPlanOptions options)
@@ -64,8 +63,21 @@ public static class TownPlanGenerator
             { TownLayers.Walkable, new bool[W, H] }
         };
 
+        // Detailed towns add road-class and prop layers and give every building its own footprint.
+        List<BuildingFootprint>? footprints = null;
+        bool[,]? mainRoad = null;
+        if (options.Detailed)
+        {
+            foreach (var name in TownLayers.Detail) layers[name] = new bool[W, H];
+            mainRoad = MainRoadMask(options);
+        }
+
         // Step 1: Generate building plots
-        var (acceptedDoors, acceptedBodies) = GeneratePlots(options, layers, plots, W, H);
+        List<GridPoint> acceptedDoors;
+        if (options.Detailed)
+            (acceptedDoors, footprints) = GenerateDetailedPlots(options, layers, plots, new SeedStream(seed, 1300u + (uint)attempt), mainRoad!);
+        else
+            acceptedDoors = GeneratePlots(options, layers, plots, W, H).doors;
 
         // Step 2: Slots and shops
         // Rebuild Buildings layer to ensure doors are only those we actually accepted
@@ -87,7 +99,9 @@ public static class TownPlanGenerator
         var shopFlagsInScanOrder = doorsInScanOrder
             .Select(door => { int slotIndex = buildingSlots.IndexOf(door); return slotIndex >= 0 && slotIndex < options.ShopFlags.Count && options.ShopFlags[slotIndex]; })
             .ToList();
-        var rooms = ShopInteriors.ComputeRooms(buildingsLayer, null, shopFlagsInScanOrder, W, H);
+        var rooms = footprints != null
+            ? RoomsFromFootprints(footprints, doorsInScanOrder, shopFlagsInScanOrder)
+            : ShopInteriors.ComputeRooms(buildingsLayer, null, shopFlagsInScanOrder, W, H);
 
         // Clear Houses and set shop layers for each room
         foreach (var room in rooms)
@@ -111,7 +125,10 @@ public static class TownPlanGenerator
         }
 
         // Step 3: Generate roads
-        GenerateRoads(layers, acceptedDoors, W, H);
+        if (footprints != null)
+            GenerateDetailedRoads(layers, acceptedDoors, footprints, mainRoad!, options, new SeedStream(seed, 1400u + (uint)attempt));
+        else
+            GenerateRoads(layers, acceptedDoors, W, H, options.SpineX);
 
         // Step 4: Trees and parks
         GenerateTreesAndParks(layers, scenery, W, H, options);
@@ -119,8 +136,12 @@ public static class TownPlanGenerator
         // Step 5: Generate allies
         var allySlots = GenerateAllies(layers, allies, W, H, options);
 
+        // Props fill what is left, so they never change where buildings, roads, trees or allies go.
+        if (footprints != null)
+            GenerateProps(layers, new SeedStream(seed, 1500u + (uint)attempt), options);
+
         // Step 6: Set remaining layers
-        layers[TownLayers.Dungeon][SpineX, H - 2] = true;
+        layers[TownLayers.Dungeon][options.SpineX, H - 2] = true;
         Array.Copy(layers[TownLayers.Houses], layers[TownLayers.Roofs], layers[TownLayers.Houses].Length);
 
         // Compute Walkable layer: !(Houses || Trees || ShopWalls)
@@ -151,7 +172,9 @@ public static class TownPlanGenerator
             rooms,
             options.PartySpawn,
             options.Exit,
-            new GridPoint(SpineX, H - 2)
+            new GridPoint(options.SpineX, H - 2),
+            options.SpineX,
+            footprints?.OrderBy(f => f.Door.Y).ThenBy(f => f.Door.X)
         );
 
         // Validate
@@ -188,7 +211,7 @@ public static class TownPlanGenerator
                     continue;
 
                 // Check if door is reserved or equals PartySpawn/Exit
-                if (TownPlan.IsReservedCorridor(door, H))
+                if (TownPlan.IsReservedCorridor(door, H, options.SpineX))
                     continue;
                 if (door.Equals(options.PartySpawn) || door.Equals(options.Exit))
                     continue;
@@ -197,7 +220,7 @@ public static class TownPlanGenerator
                 bool bodyReserved = false;
                 foreach (var cell in body.Cells())
                 {
-                    if (TownPlan.IsReservedCorridor(cell, H))
+                    if (TownPlan.IsReservedCorridor(cell, H, options.SpineX))
                     {
                         bodyReserved = true;
                         break;
@@ -210,7 +233,7 @@ public static class TownPlanGenerator
                 bool bodyOnSpine = false;
                 foreach (var cell in body.Cells())
                 {
-                    if (cell.X == SpineX)
+                    if (cell.X == options.SpineX)
                     {
                         bodyOnSpine = true;
                         break;
@@ -353,12 +376,12 @@ public static class TownPlanGenerator
         return slots;
     }
 
-    private static void GenerateRoads(Dictionary<string, bool[,]> layers, List<GridPoint> doors, int W, int H)
+    private static void GenerateRoads(Dictionary<string, bool[,]> layers, List<GridPoint> doors, int W, int H, int spineX)
     {
         // Set spine vertical line
         for (int y = 0; y < H; y++)
         {
-            layers[TownLayers.Roads][SpineX, y] = true;
+            layers[TownLayers.Roads][spineX, y] = true;
         }
 
         // For each door, find path to first road cell
@@ -433,7 +456,7 @@ public static class TownPlanGenerator
                     layers[TownLayers.Buildings][x, y])
                     continue;
 
-                if (TownPlan.IsReservedCorridor(new GridPoint(x, y), H))
+                if (TownPlan.IsReservedCorridor(new GridPoint(x, y), H, options.SpineX))
                     continue;
 
                 if (new GridPoint(x, y).Equals(options.PartySpawn) || new GridPoint(x, y).Equals(options.Exit))
@@ -486,7 +509,7 @@ public static class TownPlanGenerator
                     break;
                 }
 
-                if (TownPlan.IsReservedCorridor(cell, H))
+                if (TownPlan.IsReservedCorridor(cell, H, options.SpineX))
                 {
                     valid = false;
                     break;
@@ -518,11 +541,11 @@ public static class TownPlanGenerator
                     layers[TownLayers.Buildings][x, y] || layers[TownLayers.ShopFloor][x, y])
                     continue;
 
-                if (TownPlan.IsReservedCorridor(cell, H))
+                if (TownPlan.IsReservedCorridor(cell, H, options.SpineX))
                     continue;
 
                 if (cell.Equals(options.PartySpawn) || cell.Equals(options.Exit) ||
-                    cell.Equals(new GridPoint(10, H - 2)))
+                    cell.Equals(new GridPoint(options.SpineX, H - 2)))
                     continue;
 
                 // Check not 4-adjacent to a door

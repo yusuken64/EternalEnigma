@@ -174,7 +174,7 @@ public sealed class ExplorerInteriorTests
             for (int x = 0; x < town.Width; x++)
             {
                 var p = new GridPoint(x, y);
-                if (!town.IsWalkable(p) && (x < TownPlan.CorridorMinX || x > TownPlan.CorridorMaxX))
+                if (!town.IsWalkable(p) && !town.IsReserved(p))
                     return p;
             }
         throw new InvalidOperationException("No blocked town cell found outside the corridor.");

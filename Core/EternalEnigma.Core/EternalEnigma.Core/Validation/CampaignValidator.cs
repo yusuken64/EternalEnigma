@@ -127,6 +127,19 @@ public static class CampaignValidator
         foreach (var region in campaign.Regions)
             Check(campaign.Locations.Any(l => l.Kind == LocationKind.Town && l.RegionId == region.Id),
                 $"towns.biome: {region.Id} needs at least one town.");
+        foreach (var location in campaign.Locations)
+        {
+            if (location.Kind != LocationKind.Town)
+            {
+                Check(location.Services.Count == 0, $"towns.services: {location.Id} is not a town but lists services.");
+                continue;
+            }
+            Check(location.Services.Distinct().Count() == location.Services.Count, $"towns.services: {location.Id} lists a service twice.");
+            foreach (var kind in new[] { TownServiceKind.Bakery, TownServiceKind.Consumables, TownServiceKind.Items })
+                Check(location.Services.Any(s => s.Kind == kind), $"towns.services: {location.Id} needs a {kind} shop.");
+            foreach (var classId in TownServiceCatalog.ClassIds)
+                Check(location.Services.Any(s => s.Kind == TownServiceKind.Trainer && s.ClassId == classId), $"towns.trainers: {location.Id} needs a {classId} trainer.");
+        }
         Check(campaign.Locations.Count(l => l.Kind == LocationKind.StoryDungeon) == 4 && campaign.Locations.Count(l => l.Kind == LocationKind.FinalDungeon) == 1,
             "dungeons.story: Expected four story dungeons and one final dungeon.");
         foreach (var entry in campaign.Manifest)

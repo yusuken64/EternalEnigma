@@ -6,7 +6,7 @@ namespace EternalEnigma.Core.Generation;
 
 public static class CampaignGenerator
 {
-    public const int Version = 7;
+    public const int Version = 8;
     public const int TierCount = 5;
 
     public static Campaign Generate(int seed)
@@ -51,7 +51,8 @@ public static class CampaignGenerator
         var sources = new List<CapabilitySource>();
         var companions = new List<CampaignCompanion>();
         void Location(string id, int tier, LocationKind kind, bool required = false, string? region = null, int? stage = null, string? parentTownId = null) =>
-            locations.Add(new CampaignLocation(id, region ?? $"region-{Math.Min(5, stage ?? tierAnchor[tier])}", tier, kind, required, stage ?? tierAnchor[tier], parentTownId));
+            locations.Add(new CampaignLocation(id, region ?? $"region-{Math.Min(5, stage ?? tierAnchor[tier])}", tier, kind, required, stage ?? tierAnchor[tier], parentTownId,
+                kind == LocationKind.Town ? TownServiceCatalog.ServicesFor(tier, stage ?? tierAnchor[tier]) : null));
         void Connect(string from, string to, Requirement? requirement = null, LockForm form = LockForm.None, bool required = false, bool boundary = false) =>
             routes.Add(new CampaignRoute($"route-{routes.Count:D3}", from, to, requirement ?? Requirement.Open, form, required, boundary));
 

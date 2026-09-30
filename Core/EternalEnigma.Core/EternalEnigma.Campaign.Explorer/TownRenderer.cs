@@ -6,6 +6,17 @@ public static class TownRenderer
 {
     public const string Legend = "@ you  X exit  D dungeon  0-9 buildings  v vendor  a ally  _ shop floor  + shop wall  H house  T tree  : road  \" park";
 
+    /// <summary>The base legend followed by the visit's service rows, if any.</summary>
+    public static string[] LegendFor(TownVisit? visit)
+    {
+        var services = TownServiceGlyphs.LegendLines(visit);
+        // A town with services labels its doors by letter instead of slot number.
+        string legend = services.Length == 0 ? Legend : Legend.Replace("0-9 buildings", "letter service door");
+        if (visit != null && visit.Plan.Layers.ContainsKey(TownLayers.MainRoads))
+            legend = legend.Replace(": road", "= main road  : artery  - alley") + "  p prop";
+        return new[] { legend }.Concat(services).ToArray();
+    }
+
     public static string[] Render(TownVisit visit, int width, int height)
     {
         var plan = visit.Plan;
@@ -32,6 +43,8 @@ public static class TownRenderer
         return rows;
     }
 
+    private static bool HasDetail(TownPlan plan, string layer, GridPoint p) => plan.Layers.TryGetValue(layer, out var cells) && cells.At(p);
+
     private static char Glyph(TownVisit visit, GridPoint p)
     {
         // Glyph priority:
@@ -47,9 +60,13 @@ public static class TownRenderer
         if (p.Equals(visit.Plan.DungeonEntrance))
             return 'D';
 
-        // 0-9 building slot index (index >= 10 → B)
+        // Service glyph for towns with services (* for the entrance/statue); otherwise 0-9 slot index (index >= 10 → B)
         if (visit.Plan.BuildingIndexAt(p) is int buildingIdx)
+        {
+            if (visit.SlotServices != null)
+                return visit.ServiceAt(p) is { } service ? TownServiceGlyphs.Glyph(service) : TownServiceGlyphs.OtherBuilding;
             return buildingIdx < 10 ? (char)('0' + buildingIdx) : 'B';
+        }
 
         // v a ShopRoom.VendorAnchor
         if (visit.Plan.ShopRooms.Any(room => p.Equals(room.VendorAnchor)))
@@ -75,9 +92,17 @@ public static class TownRenderer
         if (visit.Plan.Layers[TownLayers.Trees].At(p))
             return 'T';
 
-        // : Roads
+        // = main road, - back alley (detailed towns), : other roads
+        if (HasDetail(visit.Plan, TownLayers.MainRoads, p))
+            return '=';
+        if (HasDetail(visit.Plan, TownLayers.Alleys, p))
+            return '-';
         if (visit.Plan.Layers[TownLayers.Roads].At(p))
             return ':';
+
+        // p decoration prop
+        if (HasDetail(visit.Plan, TownLayers.Props, p))
+            return 'p';
 
         // " Parks
         if (visit.Plan.Layers[TownLayers.Parks].At(p))

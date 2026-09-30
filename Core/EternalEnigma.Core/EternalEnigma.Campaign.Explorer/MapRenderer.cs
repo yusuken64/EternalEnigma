@@ -51,22 +51,27 @@ public sealed class MapRenderer
     private char InteriorGlyph(GridPoint p)
     {
         if (p.Equals(session.InteriorPosition)) return '@';
-        if (session.Town is { } town) return TownGlyph(town.Plan, p);
+        if (session.Town is { } town) return TownGlyph(town, p);
         if (session.Dungeon is { } dungeon) return DungeonGlyph(dungeon.Current, p);
         return ' ';
     }
 
-    private static char TownGlyph(Core.World.TownPlan town, GridPoint p)
+    private static char TownGlyph(TownVisit visit, GridPoint p)
     {
+        var town = visit.Plan;
         if (p.Equals(town.Exit)) return 'X';
         if (p.Equals(town.DungeonEntrance)) return 'D';
-        if (town.BuildingIndexAt(p) != null) return '+';
+        if (town.BuildingIndexAt(p) != null)
+            return visit.SlotServices == null ? '+'
+                : visit.ServiceAt(p) is { } service ? TownServiceGlyphs.Glyph(service) : TownServiceGlyphs.OtherBuilding;
+        if (town.ShopRooms.Any(room => room.VendorAnchor.Equals(p))) return 'v';
         if (town.Layers[TownLayers.ShopFloor].At(p)) return '=';
         if (town.Layers[TownLayers.ShopWalls].At(p) || town.Layers[TownLayers.Houses].At(p)) return '#';
         if (town.AllySlots.Any(a => a.Cell.Equals(p))) return 'A';
         if (town.Layers[TownLayers.Trees].At(p)) return '"';
         if (town.Layers[TownLayers.Parks].At(p)) return ',';
         if (town.Layers[TownLayers.Roads].At(p)) return ':';
+        if (town.Layers.TryGetValue(TownLayers.Props, out var props) && props.At(p)) return 'p';
         return town.IsWalkable(p) ? '.' : '#';
     }
 

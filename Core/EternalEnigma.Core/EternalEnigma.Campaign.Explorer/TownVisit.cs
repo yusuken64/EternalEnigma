@@ -11,15 +11,24 @@ public sealed class TownVisit
     public GridPoint Position { get; internal set; }
     public string Message { get; private set; } = "";
 
-    public TownVisit(string townId, TownPlan plan)
+    /// <summary>Service for each building slot (null = entrance or statue); null for a town without services.</summary>
+    public IReadOnlyList<TownService?>? SlotServices { get; }
+
+    public TownVisit(string townId, TownPlan plan, IReadOnlyList<TownService?>? slotServices = null)
     {
         TownId = townId;
         Plan = plan;
+        SlotServices = slotServices;
         Position = plan.PartySpawn;
     }
 
-    public static TownVisit Create(int campaignSeed, string townId) =>
-        new(townId, TownPlanGenerator.Generate(new TownPlanOptions(CampaignContext.LocationSeed(campaignSeed, townId))));
+    public static TownVisit Create(int campaignSeed, CampaignLocation town) =>
+        new(town.Id, TownPlanGenerator.Generate(TownLayout.OptionsFor(campaignSeed, town)),
+            TownLayout.ForLocation(campaignSeed, town)?.SlotServices);
+
+    /// <summary>The service whose door is at this cell, or null.</summary>
+    public TownService? ServiceAt(GridPoint door) =>
+        SlotServices != null && Plan.BuildingIndexAt(door) is int slot && slot < SlotServices.Count ? SlotServices[slot] : null;
 
     /// <summary>Corner-cutting movement over Plan.Walkable. Sets Message to "Blocked." on failure, or a context hint on success.</summary>
     public bool Move(int dx, int dy)

@@ -16,6 +16,57 @@ public sealed class TownPlanValidationResult
 /// </summary>
 public static class TownPlanValidator
 {
+    /// <summary>Checks that only detailed towns need: road classes, props and building footprints.</summary>
+    private static void ValidateDetail(TownPlan plan, TownPlanOptions options, Action<bool, string> check)
+    {
+        foreach (var name in TownLayers.Detail)
+        {
+            if (!plan.Layers.ContainsKey(name)) { check(false, $"detail.layers: Missing layer '{name}'."); return; }
+        }
+        var roads = plan.Layers[TownLayers.Roads];
+        var main = plan.Layers[TownLayers.MainRoads];
+        var alleys = plan.Layers[TownLayers.Alleys];
+        var props = plan.Layers[TownLayers.Props];
+        var solid = new[] { TownLayers.Houses, TownLayers.Trees, TownLayers.ShopWalls, TownLayers.ShopFloor, TownLayers.Buildings, TownLayers.Allies, TownLayers.Dungeon }
+            .Select(n => plan.Layers[n]).ToArray();
+
+        for (int x = 0; x < plan.Width; x++)
+        {
+            for (int y = 0; y < plan.Height; y++)
+            {
+                var cell = new GridPoint(x, y);
+                if (main[x, y]) check(roads[x, y], $"detail.mainRoads: Main road at {cell} is not a road.");
+                if (alleys[x, y])
+                {
+                    check(roads[x, y], $"detail.alleys: Alley at {cell} is not a road.");
+                    check(!main[x, y], $"detail.alleys: Alley at {cell} is also a main road.");
+                }
+                if (props[x, y])
+                {
+                    check(!roads[x, y] && !solid.Any(layer => layer[x, y]), $"detail.props: Prop at {cell} is on a road or occupied cell.");
+                    check(!plan.IsReserved(cell) && !cell.Equals(plan.PartySpawn) && !cell.Equals(plan.Exit), $"detail.props: Prop at {cell} blocks the entrance.");
+                }
+            }
+        }
+
+        // The spine is a main road along its whole length, so the exit and dungeon entrance sit on it.
+        for (int y = 0; y < plan.Height; y++)
+            check(main[plan.SpineX, y], $"detail.spine: Spine cell ({plan.SpineX},{y}) is not a main road.");
+
+        check(plan.Footprints.Count == plan.BuildingSlots.Count, "detail.footprints: Footprint count does not match the building slots.");
+        var seen = new HashSet<GridPoint>();
+        for (int i = 0; i < plan.Footprints.Count && i < plan.BuildingSlots.Count; i++)
+        {
+            var footprint = plan.Footprints[i];
+            check(footprint.Door.Equals(plan.BuildingSlots[i]), $"detail.footprints[{i}]: Footprint door is not slot {i}.");
+            foreach (var cell in footprint.Cells)
+            {
+                check(seen.Add(cell), $"detail.footprints[{i}]: Cell {cell} belongs to two buildings.");
+                check(!roads[cell.X, cell.Y], $"detail.footprints[{i}]: Cell {cell} is on a road.");
+            }
+        }
+    }
+
     public static TownPlanValidationResult Validate(TownPlan? plan, TownPlanOptions? options)
     {
         var errors = new List<string>();
@@ -84,7 +135,7 @@ public static class TownPlanValidator
             for (int y = 0; y < plan.Height; y++)
             {
                 var cell = new GridPoint(x, y);
-                if (TownPlan.IsReservedCorridor(cell, plan.Height))
+                if (plan.IsReserved(cell))
                 {
                     Check(walkableLayer[x, y], $"corridor.walkable: Reserved corridor at ({x},{y}) is not walkable.");
                     Check(!housesLayer[x, y], $"corridor.houses: Reserved corridor at ({x},{y}) contains a house.");
@@ -332,6 +383,8 @@ public static class TownPlanValidator
         {
             Check(false, $"reachability: Unreachable targets: {string.Join(", ", unreachableTargets)}.");
         }
+
+        if (options.Detailed) ValidateDetail(plan, options, Check);
 
         return new TownPlanValidationResult(errors);
     }

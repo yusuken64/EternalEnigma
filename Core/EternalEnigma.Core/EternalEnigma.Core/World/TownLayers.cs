@@ -15,4 +15,13 @@ public static class TownLayers
     public const string ShopWalls = "ShopWalls";
     public const string Walkable = "Walkable";
     public static readonly IReadOnlyList<string> All = Array.AsReadOnly(new[] { Roads, Houses, Trees, Parks, Roofs, Buildings, Allies, Dungeon, ShopFloor, ShopWalls, Walkable });
+
+    // Layers of detailed towns. They refine the layers above and are empty otherwise, so they are not in All.
+    /// <summary>Wide main roads (subset of Roads).</summary>
+    public const string MainRoads = "MainRoads";
+    /// <summary>Single-cell back alleys behind buildings, and the links that join them to the network (subset of Roads).</summary>
+    public const string Alleys = "Alleys";
+    /// <summary>Non-blocking decoration cells for the town biome; never on roads, buildings, doors or the entrance corridor.</summary>
+    public const string Props = "Props";
+    public static readonly IReadOnlyList<string> Detail = Array.AsReadOnly(new[] { MainRoads, Alleys, Props });
 }

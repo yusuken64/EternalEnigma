@@ -36,10 +36,10 @@ try
     {
         var location = campaign.Locations.FirstOrDefault(l => l.Id == townId && l.Kind == LocationKind.Town);
         if (location == null) { Console.Error.WriteLine("Unknown town: " + townId); return 1; }
-        var visit = TownVisit.Create(seed, townId);
+        var visit = TownVisit.Create(seed, location);
         Console.WriteLine($"Campaign seed {seed} | Town {townId}");
-        foreach (string row in TownRenderer.Render(visit, 79, 25)) Console.WriteLine(row);
-        Console.WriteLine(TownRenderer.Legend);
+        foreach (string row in TownRenderer.Render(visit, 79, visit.Plan.Height)) Console.WriteLine(row);
+        foreach (string line in TownRenderer.LegendFor(visit)) Console.WriteLine(line);
         return 0;
     }
     if (dungeonId != null)
@@ -134,7 +134,10 @@ static void Run(ExplorerSession session, MapRenderer renderer)
                         ? $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | Dungeon {session.Dungeon!.Location.Id} floor {session.Dungeon.Floor}/{session.Dungeon.Floors.End}"
                         : $"ETERNAL ENIGMA | seed {session.Campaign.Seed} | {session.Position} | {session.Location?.Id ?? "Overworld"}";
             var lines = new List<string> { header + (session.NoClip ? " | NO-CLIP" : "") };
-            int mapHeight = Math.Max(1, height - 10);
+            // Town views add a row or two of service legend below the map.
+            int legendRows = session.Town != null && (session.InInterior || session.View == ExplorerView.Town)
+                ? TownServiceGlyphs.LegendLines(session.Town).Length : 0;
+            int mapHeight = Math.Max(1, height - 10 - legendRows);
             if (menu == null)
             {
                 if (session.InInterior) lines.AddRange(renderer.Render(width, mapHeight));
@@ -161,13 +164,14 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             {
                 lines.Add("Enter: interact | I/Esc: leave | N: no-clip (debug)");
                 lines.Add(session.Town != null
-                    ? "@ you  + door  = shop  # wall  A ally  \" tree  , park  : road  X exit  D dungeon door"
+                    ? "@ you  + door  = room floor  v vendor/trainer  # wall  A ally  \" tree  , park  : road  p prop  X exit  D dungeon door"
                     : "@ you  < entrance  > stairs  # wall  e enemy  ^ trap  $ gold  i item  I pillar  * torch");
+                if (session.Town != null) lines.AddRange(TownServiceGlyphs.LegendLines(session.Town));
             }
             else if (session.View == ExplorerView.Town)
             {
                 lines.Add("Enter: enter dungeon/leave town | R: claim rewards | Esc: leave town | N: no-clip (debug)");
-                lines.Add(TownRenderer.Legend);
+                lines.AddRange(TownRenderer.LegendFor(session.Town));
             }
             else if (session.View == ExplorerView.Dungeon)
             {

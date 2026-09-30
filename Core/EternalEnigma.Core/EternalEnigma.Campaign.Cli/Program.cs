@@ -51,7 +51,9 @@ try
         {
             // Town export
             int townSeed = CampaignContext.LocationSeed(seed, town, 0);
-            var townPlan = TownPlanGenerator.Generate(new TownPlanOptions(townSeed));
+            var townLocation = campaign.Locations.FirstOrDefault(l => l.Id == town && l.Kind == LocationKind.Town)
+                ?? throw new ArgumentException("Unknown town: " + town);
+            var townPlan = TownPlanGenerator.Generate(TownLayout.OptionsFor(seed, townLocation));
 
             // Build JSON object
             var layers = new Dictionary<string, string[]>();

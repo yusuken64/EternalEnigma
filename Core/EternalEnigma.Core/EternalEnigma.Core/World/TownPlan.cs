@@ -5,11 +5,20 @@ namespace EternalEnigma.Core.World;
 public sealed class TownPlan
 {
     public const int GenerationVersion = 1;
-    public const int CorridorMinX = 8, CorridorMaxX = 12;
+    /// Spine column of the original 15x15 town; larger towns centre the spine instead.
+    public const int DefaultSpineX = 10;
+    public const int CorridorHalfWidth = 2;
+    public const int CorridorMinX = DefaultSpineX - CorridorHalfWidth, CorridorMaxX = DefaultSpineX + CorridorHalfWidth;
 
-    /// Port of Unity CampaignTownCorridor.IsReserved: the southern entrance corridor that must stay open.
-    public static bool IsReservedCorridor(GridPoint cell, int height) =>
-        cell.X >= CorridorMinX && cell.X <= CorridorMaxX && cell.Y >= 0 && cell.Y <= height / 2;
+    /// Port of Unity CampaignTownCorridor.IsReserved for the default spine: the southern entrance corridor that must stay open.
+    public static bool IsReservedCorridor(GridPoint cell, int height) => IsReservedCorridor(cell, height, DefaultSpineX);
+
+    public static bool IsReservedCorridor(GridPoint cell, int height, int spineX) =>
+        Math.Abs(cell.X - spineX) <= CorridorHalfWidth && cell.Y >= 0 && cell.Y <= height / 2;
+
+    /// The column of the central road, dungeon entrance and entrance corridor.
+    public int SpineX { get; }
+    public bool IsReserved(GridPoint cell) => IsReservedCorridor(cell, Height, SpineX);
 
     public int Width { get; }
     public int Height { get; }
@@ -18,6 +27,8 @@ public sealed class TownPlan
     public IReadOnlyList<GridPoint> BuildingSlots { get; }
     public IReadOnlyList<Placement> AllySlots { get; }
     public IReadOnlyList<ShopRoom> ShopRooms { get; }
+    /// <summary>Per-building footprints in building slot order; empty unless the town varies its buildings.</summary>
+    public IReadOnlyList<BuildingFootprint> Footprints { get; }
     public GridPoint PartySpawn { get; }
     public GridPoint Exit { get; }
     public GridPoint DungeonEntrance { get; }
@@ -30,7 +41,9 @@ public sealed class TownPlan
         IEnumerable<ShopRoom> shopRooms,
         GridPoint partySpawn,
         GridPoint exit,
-        GridPoint dungeonEntrance)
+        GridPoint dungeonEntrance,
+        int spineX = DefaultSpineX,
+        IEnumerable<BuildingFootprint>? footprints = null)
     {
         // Validate that Walkable layer exists and get dimensions from it
         if (!layers.ContainsKey(TownLayers.Walkable))
@@ -123,6 +136,8 @@ public sealed class TownPlan
 
         // Store properties
         Seed = seed;
+        SpineX = spineX;
+        Footprints = Array.AsReadOnly((footprints ?? Array.Empty<BuildingFootprint>()).ToArray());
         Layers = new ReadOnlyDictionary<string, GridLayer>(new Dictionary<string, GridLayer>(layers, StringComparer.Ordinal));
         BuildingSlots = Array.AsReadOnly(buildingArray);
         AllySlots = Array.AsReadOnly(allyArray);

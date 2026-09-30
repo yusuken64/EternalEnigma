@@ -33,6 +33,10 @@ internal static class GridPreview
         Draw(TownLayers.Allies, "#39734b");
         Draw(TownLayers.Dungeon, "#ea5d60");
         Draw(TownLayers.Walkable, "#99bb99");
+        // Detailed towns only; drawn on top so the road classes and props stay visible.
+        Draw(TownLayers.MainRoads, "#b5a97a");
+        Draw(TownLayers.Alleys, "#ece6cf");
+        Draw(TownLayers.Props, "#3f8f5a");
 
         // Draw markers for special locations
         svg.Append($"<circle cx=\"{(town.PartySpawn.X + 0.5) * 8}\" cy=\"{(town.Height - town.PartySpawn.Y - 0.5) * 8}\" r=\"3\" fill=\"#38ff93\"><title>Party Spawn</title></circle>");

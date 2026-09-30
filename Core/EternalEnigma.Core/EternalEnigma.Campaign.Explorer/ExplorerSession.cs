@@ -62,7 +62,7 @@ public sealed class ExplorerSession
     public bool NoClip { get; private set; }
     public void ToggleNoClip() { NoClip = !NoClip; Message = NoClip ? "No-clip enabled: ignoring gates, water and terrain." : "No-clip disabled."; }
 
-    private readonly Dictionary<string, TownPlan> townInteriors = new();
+    private readonly Dictionary<string, TownVisit> townInteriors = new();
     private readonly Dictionary<string, HashSet<GridPoint>> clearedInteriorCells = new();
     public bool InInterior { get; private set; }
     public TownVisit? Town { get; private set; }
@@ -81,9 +81,10 @@ public sealed class ExplorerSession
         int seed = LocationSeed(Campaign.Seed, location.Id);
         if (location.Kind == LocationKind.Town)
         {
-            if (!townInteriors.TryGetValue(location.Id, out var plan))
-                townInteriors[location.Id] = plan = TownPlanGenerator.Generate(new TownPlanOptions(seed));
-            Town = new TownVisit(location.Id, plan);
+            // The cached visit supplies the generated plan and services; each entry starts at the party spawn.
+            if (!townInteriors.TryGetValue(location.Id, out var generated))
+                townInteriors[location.Id] = generated = TownVisit.Create(Campaign.Seed, location);
+            Town = new TownVisit(location.Id, generated.Plan, generated.SlotServices);
             InInterior = true;
             Message = $"Entered {location.Id}. Walk to the south road to leave, or press I.";
             return true;
@@ -122,7 +123,7 @@ public sealed class ExplorerSession
             if (location == null) return false;
             if (location.Kind == LocationKind.Town)
             {
-                Town = TownVisit.Create(Campaign.Seed, location.Id);
+                Town = TownVisit.Create(Campaign.Seed, location);
                 View = ExplorerView.Town;
                 return true;
             }

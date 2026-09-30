@@ -195,7 +195,7 @@ public sealed class CampaignContextTests
     {
         var context = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
         var town = context.Town("town-0");
-        var directGeneration = TownPlanGenerator.Generate(new TownPlanOptions(context.LocationSeed("town-0")));
+        var directGeneration = TownPlanGenerator.Generate(context.TownLayout("town-0").Options);
         Assert.Equal(town.Seed, directGeneration.Seed);
         Assert.Equal(town.Width, directGeneration.Width);
         Assert.Equal(town.Height, directGeneration.Height);

@@ -28,8 +28,10 @@ public sealed class CampaignLocation
     public int Stage { get; }
     /// <summary>Town containing this dungeon's entrance; null for an overworld destination.</summary>
     public string? ParentTownId { get; }
-    public CampaignLocation(string id, string regionId, int tier, LocationKind kind, bool required = false, int stage = 0, string? parentTownId = null)
-    { Id = id; RegionId = regionId; Tier = tier; Kind = kind; Required = required; Stage = stage; ParentTownId = parentTownId; }
+    /// <summary>Shops and trainers a town offers; empty for every other kind.</summary>
+    public IReadOnlyList<TownService> Services { get; }
+    public CampaignLocation(string id, string regionId, int tier, LocationKind kind, bool required = false, int stage = 0, string? parentTownId = null, IEnumerable<TownService>? services = null)
+    { Id = id; RegionId = regionId; Tier = tier; Kind = kind; Required = required; Stage = stage; ParentTownId = parentTownId; Services = Array.AsReadOnly((services ?? Array.Empty<TownService>()).ToArray()); }
 }
 
 /// <summary>Bidirectional abstract route. Area gates remain conditional; other locks latch open.</summary>

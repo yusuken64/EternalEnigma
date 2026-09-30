@@ -194,6 +194,17 @@ public HashSet<string> Completed { get; }
         var location = Campaign.Locations.FirstOrDefault(l => l.Id == locationId) ?? throw new ArgumentException("Unknown location.", nameof(locationId));
         return DungeonFloorGenerator.Generate(DungeonFloorOptionsFor(State.Seed, locationId, floor, location.Tier, OverworldGridGenerator.BiomeForRegion(Campaign, location.RegionId), 1));
     }
+    /// <summary>Buildings every town has that are not services: the dungeon entrance and the statue.</summary>
+    public const int AuthoredTownBuildings = 2;
+    /// <summary>Sizes the town for its services and assigns each one to a building slot.</summary>
+    public TownLayout TownLayout(string townId, int allyCount = 3)
+    {
+        var location = Campaign.Locations.FirstOrDefault(l => l.Id == townId && l.Kind == LocationKind.Town) ?? throw new ArgumentException("Unknown town.", nameof(townId));
+        return Generation.TownLayout.Create(this.LocationSeed(townId), location.Services, AuthoredTownBuildings, allyCount);
+    }
+    /// <summary>Generates the town's plan; explicit <paramref name="shopFlags"/> bypass the service layout.</summary>
     public TownPlan Town(string townId, IReadOnlyList<bool>? shopFlags = null, int allyCount = 3) =>
-        TownPlanGenerator.Generate(new TownPlanOptions(this.LocationSeed(townId), shopFlags: shopFlags, allyCount: allyCount));
+        TownPlanGenerator.Generate(shopFlags != null
+            ? new TownPlanOptions(this.LocationSeed(townId), shopFlags: shopFlags, allyCount: allyCount)
+            : TownLayout(townId, allyCount).Options);
 }

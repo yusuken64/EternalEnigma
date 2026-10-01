@@ -22,9 +22,9 @@ public static class CampaignFingerprint
         }
         Row("campaign", campaign.GeneratorVersion, campaign.Seed, campaign.StartLocationId, campaign.FinalLocationId);
         foreach (var c in campaign.Manifest.OrderBy(c => c.Id)) Row("capability", c.Id, c.Role, c.Tier);
-        foreach (var r in campaign.Regions.OrderBy(r => r.Id, StringComparer.Ordinal)) Row("region", r.Id, r.Theme, r.Tier, r.ProgressionOrder);
+        foreach (var r in campaign.Regions.OrderBy(r => r.Id, StringComparer.Ordinal)) Row("region", r.Id, r.Theme, r.Tier, r.ProgressionOrder, r.Name);
         foreach (var l in campaign.Locations.OrderBy(l => l.Id, StringComparer.Ordinal)) Row("location", l.Id, l.RegionId, l.Tier, l.Kind, l.Required, l.Stage, l.ParentTownId, string.Join(",", l.Services.Select(s => s.Id)));
-        foreach (var r in campaign.Routes.OrderBy(r => r.Id, StringComparer.Ordinal)) Row("route", r.Id, r.From, r.To, r.Requirement, r.Form, r.Required, r.IsProgressionBoundary, r.ShortcutKind, r.UnlockingEndpoint, r.KeyId, r.KeyLocationId, r.IsWarp, r.KeyCondition, r.IsTownExit);
+        foreach (var r in campaign.Routes.OrderBy(r => r.Id, StringComparer.Ordinal)) Row("route", r.Id, r.From, r.To, r.Requirement, r.Form, r.Required, r.IsProgressionBoundary, r.ShortcutKind, r.UnlockingEndpoint, r.KeyId, r.KeyLocationId, r.IsWarp, r.KeyCondition, r.IsTownExit, r.SkinId, r.LockText, r.KeyName);
         foreach (var s in campaign.Sources.OrderBy(s => s.Id, StringComparer.Ordinal)) Row("source", s.Id, s.LocationId, s.Capability, s.CompanionId, s.Guaranteed, s.Prerequisites);
         foreach (var c in campaign.Companions.OrderBy(c => c.Id, StringComparer.Ordinal)) Row("companion", c.Id, c.Capability);
         foreach (var r in campaign.ReturnObjectives.OrderBy(r => r.DestinationIds[0], StringComparer.Ordinal))

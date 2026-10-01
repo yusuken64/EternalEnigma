@@ -14,8 +14,12 @@ public sealed class CampaignRegion
     public int Tier { get; }
     public int ProgressionOrder { get; }
     public string Label => ProgressionOrder >= 0 ? ((char)('A' + ProgressionOrder)).ToString() : Id;
-    public CampaignRegion(string id, string theme, int tier, int progressionOrder = -1)
-    { Id = id; Theme = theme; Tier = tier; ProgressionOrder = progressionOrder; }
+    /// <summary>The land's name as the player knows it, such as "the Greyfell Highlands"; null for hand-built regions.</summary>
+    public string? Name { get; }
+    /// <summary>What to show the player: the generated name, or "Biome A" when there is none.</summary>
+    public string DisplayName => Name ?? "Biome " + Label;
+    public CampaignRegion(string id, string theme, int tier, int progressionOrder = -1, string? name = null)
+    { Id = id; Theme = theme; Tier = tier; ProgressionOrder = progressionOrder; Name = name; }
 }
 
 public sealed class CampaignLocation
@@ -53,11 +57,21 @@ public sealed class CampaignRoute
     public bool IsWarp { get; }
     /// <summary>A gate enforced by leaving the town scene, rather than by an overworld tile.</summary>
     public bool IsTownExit { get; }
-    public string GateHint => ShortcutKind == ShortcutKind.Keyed ? "Requires: " + KeyId :
-        ShortcutKind == ShortcutKind.FarSide ? "Open shortcut at the far endpoint." : "Requires: " + Requirement;
+    /// <summary>Id of the authored lock skin chosen at generation time; null when the route has no narrative.</summary>
+    public string? SkinId { get; }
+    /// <summary>What the player sees at the gate: fiction, never a capability name.</summary>
+    public string? LockText { get; }
+    /// <summary>Display name of the key. <see cref="KeyId"/> stays the stable identity used by saves and unlock state.</summary>
+    public string? KeyName { get; }
+    public string? KeyLabel => KeyName ?? KeyId;
+    public string GateHint => LockText ?? (ShortcutKind == ShortcutKind.Keyed ? "Requires: " + KeyId :
+        ShortcutKind == ShortcutKind.FarSide ? "Open shortcut at the far endpoint." : "Requires: " + Requirement);
     public bool HasGate => !Requirement.IsOpen || ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed;
-    public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false, ShortcutKind shortcutKind = ShortcutKind.None, string? unlockingEndpoint = null, string? keyId = null, string? keyLocationId = null, bool isWarp = false, KeyAcquisition keyCondition = KeyAcquisition.AtLocation, bool isTownExit = false)
-    { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; ShortcutKind = shortcutKind; UnlockingEndpoint = unlockingEndpoint; KeyId = keyId; KeyLocationId = keyLocationId; IsWarp = isWarp; KeyCondition = keyCondition; IsTownExit = isTownExit; }
+    public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false, ShortcutKind shortcutKind = ShortcutKind.None, string? unlockingEndpoint = null, string? keyId = null, string? keyLocationId = null, bool isWarp = false, KeyAcquisition keyCondition = KeyAcquisition.AtLocation, bool isTownExit = false, string? skinId = null, string? lockText = null, string? keyName = null)
+    { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; ShortcutKind = shortcutKind; UnlockingEndpoint = unlockingEndpoint; KeyId = keyId; KeyLocationId = keyLocationId; IsWarp = isWarp; KeyCondition = keyCondition; IsTownExit = isTownExit; SkinId = skinId; LockText = lockText; KeyName = keyName; }
+    /// <summary>Copy of this route carrying its generated fiction. Routes are otherwise immutable.</summary>
+    public CampaignRoute WithFiction(string skinId, string lockText, string? keyName = null) =>
+        new(Id, From, To, Requirement, Form, Required, IsProgressionBoundary, ShortcutKind, UnlockingEndpoint, KeyId, KeyLocationId, IsWarp, KeyCondition, IsTownExit, skinId, lockText, keyName);
     public string? Other(string location) => location == From ? To : location == To ? From : null;
     public bool CanTraverse(CapabilitySet held, ISet<string> resolved) =>
         (ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed) ? resolved.Contains(Id) :
@@ -129,6 +143,8 @@ public sealed class Campaign
     public IReadOnlyList<CapabilitySource> Sources { get; }
     public IReadOnlyList<CampaignCompanion> Companions { get; }
     public IReadOnlyList<ReturnObjective> ReturnObjectives { get; }
+    /// <summary>What the player calls a key. <paramref name="keyId"/> is its stable identity.</summary>
+    public string KeyLabel(string keyId) => Routes.FirstOrDefault(r => r.KeyId == keyId)?.KeyLabel ?? keyId;
     public Campaign(int seed, int generatorVersion, string startLocationId, string finalLocationId,
         IEnumerable<ActivatedCapability> manifest, IEnumerable<CampaignRegion> regions,
         IEnumerable<CampaignLocation> locations, IEnumerable<CampaignRoute> routes,

@@ -28,6 +28,10 @@ public static class CapabilityCatalog
         capability == Capability.Climb || capability == Capability.Icewalk || capability == Capability.DeepDive ||
         capability == Capability.PhaseShift || capability == Capability.HazardWard;
 
+    /// <summary>The ability's name as words, such as "Waystone Step". Players know their own abilities by name; locks never use it.</summary>
+    public static string DisplayName(this Capability capability) =>
+        System.Text.RegularExpressions.Regex.Replace(capability.ToString(), "([a-z])([A-Z])", "$1 $2");
+
     public static bool IsNarrative(this Capability capability) =>
         capability == Capability.Remedy || capability == Capability.Diplomacy || capability == Capability.SacredRite;
 }

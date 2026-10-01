@@ -37,8 +37,22 @@ public sealed class OverworldGates
     public bool NeedsOpening(CampaignRoute route) => !opened.Contains(route.Id) && !resolved.Contains(route.Id);
     public string Hint(CampaignRoute route, CapabilitySet held) => NeedsOpening(route) &&
         (route.ShortcutKind == ShortcutKind.Keyed ? HasKey(route) : route.CanTraverse(held, resolved))
-        ? "Enter / A: Use " + (route.KeyId ?? route.Requirement.ToString()) + " to open " + route.Id
+        ? route.LockText == null
+            ? "Enter / A: Use " + (route.KeyId ?? route.Requirement.ToString()) + " to open " + route.Id
+            : "Enter / A: Use " + UsedLabel(route, held) + " — " + route.LockText
         : route.GateHint;
+
+    /// <summary>What the party opens a gate with: the key's name, or the cheapest satisfied way through.</summary>
+    public static string UsedLabel(CampaignRoute route, CapabilitySet held)
+    {
+        if (route.ShortcutKind == ShortcutKind.Keyed) return route.KeyLabel ?? route.Id;
+        var used = route.Requirement.Alternatives.Where(held.ContainsAll).OrderBy(a => a.Count).FirstOrDefault();
+        return route.Requirement.IsOpen || used.Count == 0 ? route.Id : string.Join(" + ", used.Values.Select(c => c.DisplayName()));
+    }
+
+    /// <summary>Message after a gate opens. The fiction leads; the ability or key used follows.</summary>
+    public static string OpenedMessage(CampaignRoute route, CapabilitySet held) =>
+        "Opened gate: " + (route.LockText ?? route.Id + ".") + " Used " + UsedLabel(route, held) + ".";
 
     public bool TryOpen(string routeId, GridPoint position, CapabilitySet held)
     {

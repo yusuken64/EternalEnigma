@@ -163,7 +163,7 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             lines.Add("Held: " + (session.Held.Count == 0 ? "none" : session.Held.ToString()));
             lines.Add(session.Message);
             lines.Add(session.RequiredReturn);
-            lines.Add("Keys: " + string.Join(", ", session.CollectedKeys));
+            lines.Add("Keys: " + string.Join(", ", session.CollectedKeys.Select(session.Campaign.KeyLabel)));
             lines.Add(session.InInterior || session.View != ExplorerView.Overworld
                 ? "Move: arrows/WASD | Diagonal: QEZC/numpad | Esc: return to overworld"
                 : "Move: arrows/WASD | Diagonal: QEZC/numpad | Esc: quit");

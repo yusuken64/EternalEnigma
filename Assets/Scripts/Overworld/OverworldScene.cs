@@ -206,7 +206,7 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
             if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) Message += " | " + GateDescription(id);
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
-            Message += " | Enter / A: Collect " + route.KeyId;
+            Message += " | Enter / A: Collect " + route.KeyLabel;
         foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
         walkHistory.Add(Position);
         if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
@@ -270,7 +270,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         string destination = Map.CurrentGrid.Locations[route.From].Equals(Position) ? route.To : route.From;
         string region = Campaign.Locations.First(l => l.Id == destination).RegionId;
-        return "Warp to biome " + Campaign.Regions.First(r => r.Id == region).Label +
+        return "Warp to " + Campaign.Regions.First(r => r.Id == region).DisplayName +
             (route.CanTraverse(Held, resolved) ? "" : " | " + gates.Hint(route, Held));
     }
 
@@ -304,7 +304,7 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (var route in gates.Nearby(Position))
             if ((routeId == null || route.Id == routeId) && gates.TryOpen(route.Id, Position, Held))
             {
-                Message = "Opened gate: " + route.Id + ". Used " + (route.KeyId ?? route.Requirement.ToString()) + ".";
+                Message = OverworldGates.OpenedMessage(route, Held);
                 RefreshGates();
                 SaveProgress();
                 if (route.ShortcutKind == ShortcutKind.Keyed && !string.IsNullOrEmpty(route.KeyId))
@@ -325,7 +325,7 @@ public sealed class OverworldScene : MonoBehaviour
     private void AnnounceMissingKey(CampaignRoute route)
     {
         if (route.ShortcutKind == ShortcutKind.Keyed && gates.NeedsOpening(route) && !gates.HasKey(route))
-            Common.Instance.Travel.ShowMissingKey(route.KeyId);
+            Common.Instance.Travel.ShowMissingKey(route.KeyId, route.LockText);
     }
 
     public bool OpenShortcut()
@@ -355,7 +355,7 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (var route in Campaign.Routes)
             if (gates.CollectKey(route, location.Id))
             {
-                rewards.Add(route.KeyId + " (use it at the gate)");
+                rewards.Add(route.KeyLabel + " (use it at the gate)");
                 acquiredKeys.Add(route.KeyId);
             }
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == location.Id && !claimed.Contains(s.Id)))
@@ -460,14 +460,14 @@ public sealed class OverworldScene : MonoBehaviour
                 (Held.Contains(Capability.Boat) ? " | Boat acquired" : " | Water requires Boat"));
             if (Context.State.Finished) GUILayout.Label("Campaign complete!");
             GUILayout.Label("Capabilities: " + Held);
-            GUILayout.Label("Keys: " + string.Join(", ", CollectedKeys));
+            GUILayout.Label("Keys: " + string.Join(", ", CollectedKeys.Select(Campaign.KeyLabel)));
             foreach (var route in gates.Nearby(Position).Where(gates.NeedsOpening))
                 if (GameUISkin.LegacyButton(gates.Hint(route, Held))) OpenGate(route.Id);
             foreach (var route in Map.CurrentGrid.WarpsAt(Position))
                 if (GameUISkin.LegacyButton(WarpLabel(route))) Warp(route.Id);
-            GUILayout.Label("Biomes: " + string.Join(" | ", Campaign.Regions.Select(r => r.Label + " " + Map.CurrentGrid.RegionBiomes[r.Id])));
+            GUILayout.Label("Biomes: " + string.Join(" | ", Campaign.Regions.Select(r => r.DisplayName + " " + Map.CurrentGrid.RegionBiomes[r.Id])));
             foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
-                if (GameUISkin.LegacyButton("Collect " + route.KeyId)) ClaimRewards();
+                if (GameUISkin.LegacyButton("Collect " + route.KeyLabel)) ClaimRewards();
             foreach (var objective in Campaign.ReturnObjectives.Where(o => o.Required))
                 GUILayout.Label("Required return: " + objective.RegionId + " | Requires " + objective.EnablingCapability + " | Reward " + objective.RewardCapability);
             foreach (var route in Campaign.Routes.Where(r => r.UnlockingEndpoint != null && Map.CurrentGrid.Locations[r.UnlockingEndpoint].Equals(Position) && !resolved.Contains(r.Id)))

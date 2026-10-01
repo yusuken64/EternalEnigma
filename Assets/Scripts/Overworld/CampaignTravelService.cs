@@ -132,14 +132,14 @@ public sealed class CampaignTravelService
             : "Permanently available for matching overworld obstacles and routes.");
 
     private static string CapabilityName(EternalEnigma.Core.Capabilities.Capability capability) =>
-        System.Text.RegularExpressions.Regex.Replace(capability.ToString(), "([a-z])([A-Z])", "$1 $2");
+        EternalEnigma.Core.Capabilities.CapabilityCatalog.DisplayName(capability);
 
     private IEnumerator ShowKeyRewards(string[] keys, Action continueTravel, bool inDungeon = true, string[] capabilityRewards = null)
     {
         var rewards = keys.Select(key =>
         {
             bool townGate = Context.Campaign.Routes.Any(route => route.KeyId == key && route.IsTownExit);
-            return $"<b>{key}</b>\n" + (townGate && inDungeon
+            return $"<b>{Context.Campaign.KeyLabel(key)}</b>\n" + (townGate && inDungeon
                 ? "The town gate is now open. You can leave for the overworld!"
                 : "Unlocks its matching locked gate on the overworld.");
         });
@@ -157,17 +157,21 @@ public sealed class CampaignTravelService
     {
         if (transitioning) return;
         transitioning = true;
-        common.StartCoroutine(ShowKeyMessage($"<b>GATE UNLOCKED!</b>\n\nYou used <b>{key}</b>.\n\nThe way is now open!",
+        common.StartCoroutine(ShowKeyMessage($"<b>GATE UNLOCKED!</b>\n\nYou used <b>{KeyLabel(key)}</b>.\n\nThe way is now open!",
             () => transitioning = false, false));
     }
 
-    public void ShowMissingKey(string key)
+    /// <summary>Keys are identified by id in saves and shown by name. <paramref name="lockText"/> is the gate's own fiction, which names the key.</summary>
+    public void ShowMissingKey(string key, string lockText = null)
     {
         if (transitioning) return;
         transitioning = true;
-        common.StartCoroutine(ShowKeyMessage($"<b>GATE LOCKED!</b>\n\nYou need <b>{key}</b> to open this gate.\n\nFind the key and return here.",
+        string need = string.IsNullOrEmpty(lockText) ? $"You need <b>{KeyLabel(key)}</b> to open this gate." : lockText;
+        common.StartCoroutine(ShowKeyMessage($"<b>GATE LOCKED!</b>\n\n{need}\n\nFind the key and return here.",
             () => transitioning = false, false));
     }
+
+    private string KeyLabel(string key) => Context?.Campaign.KeyLabel(key) ?? key;
 
     public void ShowCapabilityUsed(Requirement requirement, EternalEnigma.Core.Capabilities.CapabilitySet held)
     {

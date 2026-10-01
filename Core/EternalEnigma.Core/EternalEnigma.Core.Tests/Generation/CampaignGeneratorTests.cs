@@ -47,9 +47,9 @@ public sealed class CampaignGeneratorTests
     }
 
     [Fact]
-    public void VersionEightSeed42HasStableGoldenFingerprint()
+    public void VersionNineSeed42HasStableGoldenFingerprint()
     {
-        Assert.Equal("7f23067671608230f6c61435cea971a80c749d46c3343eb2895ea91fae0eba78",
+        Assert.Equal("d6e39457d3b30daebf9489d43e97c03b291a82c08dd4b0e999e506f51b8bd356",
             CampaignFingerprint.Compute(CampaignGenerator.Generate(42)));
     }
 

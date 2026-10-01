@@ -34,7 +34,7 @@ public sealed class ExplorerSession
     public bool IsActive(string id) => active.Contains(id);
     public bool IsWalkable(GridPoint point) => gates.IsWalkable(point, Held);
     public IReadOnlyList<CampaignRoute> WarpsHere => Grid.WarpsAt(Position).ToArray();
-    public string WarpLabel(CampaignRoute route) => "Warp to biome " + Campaign.Regions.Single(r => r.Id == Campaign.Locations.Single(l => l.Id == route.Other(Location!.Id)).RegionId).Label +
+    public string WarpLabel(CampaignRoute route) => "Warp to " + Campaign.Regions.Single(r => r.Id == Campaign.Locations.Single(l => l.Id == route.Other(Location!.Id)).RegionId).DisplayName +
         (route.CanTraverse(Held, resolved) ? "" : " | " + gates.Hint(route, Held));
     public bool Warp(string routeId)
     {
@@ -323,7 +323,7 @@ public sealed class ExplorerSession
         if (Campaign.Routes.Any(r => r.UnlockingEndpoint == Location?.Id && !resolved.Contains(r.Id))) Message += " | Enter: Open shortcut";
         foreach (var warp in WarpsHere) Message += " | V: " + WarpLabel(warp);
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && r.KeyLocationId == Location?.Id && !gates.HasKey(r)))
-            Message += " | Enter: Collect " + route.KeyId;
+            Message += " | Enter: Collect " + route.KeyLabel;
         return true;
     }
 
@@ -333,7 +333,7 @@ public sealed class ExplorerSession
     {
         foreach (var route in gates.Nearby(Position))
             if ((routeId == null || route.Id == routeId) && gates.TryOpen(route.Id, Position, Held))
-            { Message = "Opened gate: " + route.Id + ". Used " + (route.KeyId ?? route.Requirement.ToString()) + "."; return true; }
+            { Message = OverworldGates.OpenedMessage(route, Held); return true; }
         return false;
     }
 
@@ -346,7 +346,7 @@ public sealed class ExplorerSession
         if (rewardLocation?.Kind == LocationKind.StoryDungeon || rewardLocation?.Kind == LocationKind.RepeatableDungeon || rewardLocation?.Kind == LocationKind.FinalDungeon) completed.Add(rewardLocation.Id);
         var rewards = new List<string>();
         foreach (var route in Campaign.Routes)
-            if (gates.CollectKey(route, rewardLocation?.Id ?? "")) rewards.Add(route.KeyId + " (use it at the gate)");
+            if (gates.CollectKey(route, rewardLocation?.Id ?? "")) rewards.Add(route.KeyLabel + " (use it at the gate)");
         foreach (var route in Campaign.Routes.Where(r => r.IsTownExit && gates.HasKey(r))) resolved.Add(route.Id);
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == rewardLocation?.Id && !claimed.Contains(s.Id)))
         {

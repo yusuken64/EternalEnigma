@@ -155,11 +155,17 @@ public sealed class OverworldGridTests
     [InlineData(-1, 12)]
     [InlineData(int.MinValue, 6)]
     [InlineData(int.MaxValue, 6)]
+    // Seeds 2 and 7 once exhausted every embedding attempt; 3, 8 and -2 once let a town wall seal a pass approach.
+    [InlineData(2, 6)]
+    [InlineData(7, 6)]
+    [InlineData(3, 6)]
+    [InlineData(8, 6)]
+    [InlineData(-2, 6)]
     public void TerritoriesHaveBroadInteriorsSeparatedDestinationsAndShortPasses(int seed, int variation)
     {
         var campaign = CampaignGenerator.Generate(seed);
         var grid = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: variation));
-        Assert.Equal(11, OverworldGrid.GenerationVersion);
+        Assert.Equal(12, OverworldGrid.GenerationVersion);
         Assert.Equal(CampaignFingerprint.Compute(campaign), grid.CampaignFingerprint);
         foreach (var a in grid.Locations.Where(p => campaign.Locations.Single(l => l.Id == p.Key).ParentTownId == null))
         foreach (var b in grid.Locations.Where(b => campaign.Locations.Single(l => l.Id == b.Key).ParentTownId == null && StringComparer.Ordinal.Compare(a.Key,b.Key)<0))
@@ -209,7 +215,9 @@ public sealed class OverworldGridTests
         foreach(var route in campaign.Routes.Where(r=>r.IsProgressionBoundary))
         {
             var gate=grid.Locks.Single(g=>g.RouteId==route.Id);
-            Assert.True(gate.Cells.Count<=6, "Consecutive stages must share a short pass.");
+            // Boat-only Area gates are carved into wide sea crossings by design (see the pass loop above).
+            bool seaCrossing = route.Form == LockForm.Area && route.Requirement.Alternatives.All(alt => alt.Contains(Capability.Boat));
+            Assert.True(seaCrossing || gate.Cells.Count<=6, "Consecutive stages must share a short pass.");
         }
     }
 

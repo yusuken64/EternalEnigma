@@ -1,4 +1,5 @@
 using EternalEnigma.Core.Capabilities;
+using EternalEnigma.Core.Generation;
 using EternalEnigma.Core.Progression;
 
 namespace EternalEnigma.Core.Validation;
@@ -296,6 +297,35 @@ public static class CampaignValidator
         }
         Check(campaign.Routes.Count(r => r.Other(campaign.FinalLocationId) != null) == 1,
             "final.endpoint: Final dungeon must have one entrance and no onward route.");
+        // Narrative checks come last so they never hide a structural error.
+        if (campaign.GeneratorVersion >= 9)
+        {
+            // Every gate presents as fiction: a stored skin, no unresolved template and no capability name.
+            foreach (var route in campaign.Routes)
+            {
+                bool gated = route.ShortcutKind == ShortcutKind.Keyed || (route.ShortcutKind == ShortcutKind.None && !route.Requirement.IsOpen);
+                if (!gated)
+                {
+                    Check(route.SkinId == null && route.LockText == null && route.KeyName == null, $"lock.fiction: {route.Id} is not a gate but carries fiction.");
+                    continue;
+                }
+                bool text = !string.IsNullOrWhiteSpace(route.SkinId) && !string.IsNullOrWhiteSpace(route.LockText);
+                Check(text && LockSkinCatalog.IsKnown(route.SkinId!), $"lock.skin: {route.Id} needs a known skin and lock text.");
+                if (text)
+                {
+                    Check(!route.LockText!.Contains('{') && !route.LockText.Contains('}'), $"lock.template: {route.Id} has unresolved template text.");
+                    var leaked = LockSkinCatalog.LeakedCapability(route.LockText);
+                    Check(leaked == null, $"lock.leak: {route.Id} text names the capability {leaked}.");
+                }
+                Check(route.ShortcutKind == ShortcutKind.Keyed ? !string.IsNullOrWhiteSpace(route.KeyName) : route.KeyName == null,
+                    $"lock.keyName: {route.Id} has an invalid key name.");
+            }
+            var regionNames = campaign.Regions.Select(r => r.Name ?? "").ToArray();
+            Check(regionNames.All(n => !string.IsNullOrWhiteSpace(n)) && regionNames.Distinct(StringComparer.Ordinal).Count() == regionNames.Length,
+                "region.names: Every region needs a distinct name.");
+            var keyNames = campaign.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed).Select(r => r.KeyName ?? "").ToArray();
+            Check(keyNames.Distinct(StringComparer.Ordinal).Count() == keyNames.Length, "lock.keyNames: Key names must be distinct.");
+        }
         return new CampaignValidationResult(errors, guaranteed);
     }
 }

@@ -1,6 +1,18 @@
 # Lock-and-key narrative generation: audit and implementation plan
 
-Status: audit complete; no code changes made. Written 2026-09-25.
+Status: first pass implemented (generation version 9). Audit written 2026-09-25;
+the sections below describe the state at audit time unless marked **Built**.
+
+**Built (version 9):** the lock table (`Generation/LockSkinCatalog.cs`, skins for
+every capability by form and theme, plus themed place and key-name pools), the
+skin-selection stage (`Generation/LockNarrator.cs`, stage 9, its own seed stream),
+`SkinId`/`LockText`/`KeyName` on `CampaignRoute`, fingerprint coverage, validator
+rules (`lock.skin`, `lock.template`, `lock.leak`, `lock.fiction`, `lock.keyName`,
+`lock.keyNames`), and player-facing text in `OverworldGates`, the console explorer
+and the Unity overworld and key popups. Tests: `LockFictionTests`.
+
+**Still open:** legibility tiers, wrong-capability failure feedback (G32/G33/G36/G44),
+local-terrain skins and multiplicity, and any chronicle-keyed selection (spec §21).
 
 ## Intended outcome
 

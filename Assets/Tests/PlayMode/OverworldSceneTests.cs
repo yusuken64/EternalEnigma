@@ -194,7 +194,8 @@ namespace EternalEnigma.Tests
             Assert.That(world.TryMove(blockedGate.Value.X - world.Position.X, blockedGate.Value.Y - world.Position.Y), Is.False);
             Assert.That(world.Position, Is.EqualTo(approach.Value));
             var blockedRoute = world.Campaign.Routes.Single(r => r.Id == world.Map.CurrentGrid.LockAt(blockedGate.Value).RouteId);
-            Assert.That(world.Message, blockedRoute.ShortcutKind == ShortcutKind.FarSide ? Does.Contain("Open shortcut") : Does.Contain("Requires:"));
+            // Generated gates present as fiction; hand-built ones still fall back to "Requires:".
+            Assert.That(world.Message, blockedRoute.ShortcutKind == ShortcutKind.FarSide ? Does.Contain("Open shortcut") : Does.Contain(blockedRoute.GateHint));
         }
 
         [UnityTest] public IEnumerator RequiredReturnTripSeedZero() => RequiredReturnTrip(0);
@@ -302,7 +303,7 @@ namespace EternalEnigma.Tests
                     Assert.That(shortcut.IsWarp, Is.True);
                     Assert.That(grid.Locks.Any(g => g.RouteId == shortcut.Id), Is.False);
                     Assert.That(world.Warp(shortcut.Id), Is.False);
-                    Assert.That(world.Message, Does.Contain(shortcut.KeyId));
+                    Assert.That(world.Message, Does.Contain(shortcut.KeyLabel));
                     Assert.That(world.OpenShortcut(), Is.False);
                     yield return WalkTo(world, grid.Locations[shortcut.KeyLocationId]); world.ClaimRewards(); yield return AcknowledgeKeyAnnouncement();
                     Assert.That(world.CollectedKeys, Does.Contain(shortcut.KeyId));

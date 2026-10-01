@@ -22,7 +22,9 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     public int AllyCount = 3;              // authored knob; not derived from configuration
     public int PartySpawnX = 10, PartySpawnY = 2;
     public int ExitX = 10, ExitY = 0;
+#if UNITY_EDITOR
     [NonSerialized] private TWCGUILayout guiLayout;
+#endif
 
     public CoreTownLayerGenerator() { }
 
@@ -38,7 +40,11 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         ExitY = ExitY
     };
 
+#if UNITY_EDITOR
     public float GetGUIHeight() => guiLayout != null ? guiLayout.height : 18 * 8;
+#else
+    public float GetGUIHeight() => 18 * 8;
+#endif
 
     public TownPlanOptions Options(TileWorldCreator twc)
     {

@@ -12,7 +12,7 @@ namespace EternalEnigma.Tests.CoreIntegration
         {
             var campaign = CampaignGenerator.Generate(42);
             Assert.That(CampaignFingerprint.Compute(campaign),
-                Is.EqualTo("e509265e3acab6e0684c79da680ca483667fad439f7406e72a3e4fff153da77b"));
+                Is.EqualTo("d6e39457d3b30daebf9489d43e97c03b291a82c08dd4b0e999e506f51b8bd356"));
             var validation = CampaignValidator.Validate(campaign);
             Assert.That(validation.IsValid, Is.True, string.Join("\n", validation.Errors));
             Assert.That(validation.GuaranteedCriticalPath.ReachableLocations, Does.Contain(campaign.FinalLocationId));

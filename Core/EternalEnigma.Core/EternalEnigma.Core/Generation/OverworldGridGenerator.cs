@@ -33,13 +33,18 @@ public static class OverworldGridGenerator
         if (options.Width < 248 || options.Height < 248)
             throw new ArgumentException("Continuous territory embedding needs at least 248x248 tiles.", nameof(options));
         var diagnostics = new List<string>();
-        for (int attempt = 0; attempt < 64; attempt++)
+        for (int attempt = 0; attempt < TotalAttempts; attempt++)
         {
             try { return Embed(campaign, options, attempt); }
             catch (InvalidOperationException error) { diagnostics.Add($"Attempt {attempt}: {error.Message}"); }
         }
-        throw new InvalidOperationException($"Seed {campaign.Seed}: no valid embedding in 64 attempts.\n" + string.Join("\n", diagnostics));
+        throw new InvalidOperationException($"Seed {campaign.Seed}: no valid embedding in {TotalAttempts} attempts.\n" + string.Join("\n", diagnostics));
     }
+
+    /// <summary>Attempts at the original 70% footprint. A seed that embeds within these is never affected by later fallbacks.</summary>
+    private const int StandardAttempts = 64;
+    /// <summary>Standard attempts plus extra attempts with a larger landmass, tried only after every standard attempt has failed.</summary>
+    private const int TotalAttempts = StandardAttempts * 2;
 
     private static readonly GridPoint[] Directions = { new GridPoint(1, 0), new GridPoint(0, 1), new GridPoint(-1, 0), new GridPoint(0, -1) };
 
@@ -47,7 +52,11 @@ public static class OverworldGridGenerator
     {
         int w = options.Width, h = options.Height;
         // Preserve square-ish geography on wide/tall map options; surplus space becomes ocean.
-        int landWidth = Math.Min(w, h * 4 / 3) * 7 / 10, landHeight = Math.Min(h, w * 4 / 3) * 7 / 10;
+        // Dense campaigns can leave a corner territory too small for its sealed pockets. Once every standard
+        // attempt has failed, further attempts get more land. Seeds that embed in the standard attempts are
+        // unchanged; only seeds that used to throw can reach the larger footprints.
+        int landTenths = attempt < StandardAttempts ? 7 : attempt < StandardAttempts * 3 / 2 ? 8 : 9;
+        int landWidth = Math.Min(w, h * 4 / 3) * landTenths / 10, landHeight = Math.Min(h, w * 4 / 3) * landTenths / 10;
         var random = new SeedStream(campaign.Seed, (uint)(110 + attempt));
         var palette = SelectBiomes(campaign);
         var stages = campaign.Locations.ToDictionary(l => l.Id, l => l.Stage);
@@ -355,6 +364,20 @@ public static class OverworldGridGenerator
         // Reserve settlements before routing: the existing location coordinate becomes the sole
         // gateway. Roads route around the blocked miniature rather than through its walls.
         var towns = new List<GridTown>();
+        // A pass must meet broad ground on both approaches: a 3x3 patch of ground this far beyond each end. Town
+        // walls on that patch would seal the approach, and the 1-tile halo below only protects the gate cells.
+        // Widened sea crossings (over 4 cells) are carved water, not passes, so they have no approach patch.
+        const int ApproachDistance = 3;
+        var approachLane = new bool[w, h];
+        foreach (var gate in locks.Where(g => g.Cells.Count >= 2 && g.Cells.Count <= 4))
+        {
+            var first = gate.Cells[0]; var last = gate.Cells[gate.Cells.Count - 1];
+            int dx = Math.Sign(last.X - first.X), dy = Math.Sign(last.Y - first.Y);
+            foreach (var center in new[] { new GridPoint(first.X - dx * ApproachDistance, first.Y - dy * ApproachDistance),
+                                           new GridPoint(last.X + dx * ApproachDistance, last.Y + dy * ApproachDistance) })
+                for (int oy = -1; oy <= 1; oy++) for (int ox = -1; ox <= 1; ox++)
+                    if (Inside(center.X + ox, center.Y + oy)) approachLane[center.X + ox, center.Y + oy] = true;
+        }
         foreach (var location in campaign.Locations.Where(l => l.Kind == LocationKind.Town && l.ParentTownId == null).OrderBy(l => l.Id, StringComparer.Ordinal))
         {
             var entrance = positions[location.Id];
@@ -366,6 +389,8 @@ public static class OverworldGridGenerator
             {
                 var candidate = orientations[(i + offset) % orientations.Length];
                 bool fits = true;
+                foreach (var cell in candidate.Cells)
+                    if (!cell.Equals(entrance) && Inside(cell.X, cell.Y) && approachLane[cell.X, cell.Y]) fits = false;
                 // A ground halo prevents the new walls from pinching a gate or territory boundary.
                 foreach (var cell in candidate.Cells)
                 for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++)

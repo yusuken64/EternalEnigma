@@ -141,7 +141,7 @@ internal static class GridPreview
         foreach (var route in campaign.Routes.Where(r => r.KeyLocationId != null))
         {
             var point = grid.Locations[route.KeyLocationId!];
-            svg.Append($"<circle cx=\"{point.X + .5}\" cy=\"{grid.Height - point.Y - .5}\" r=\"1.8\" fill=\"#ffff00\"><title>{route.KeyId}</title></circle>");
+            svg.Append($"<circle cx=\"{point.X + .5}\" cy=\"{grid.Height - point.Y - .5}\" r=\"1.8\" fill=\"#ffff00\"><title>{route.KeyLabel}</title></circle>");
         }
         foreach (var objective in campaign.ReturnObjectives)
         foreach (string gateId in objective.GateIds)

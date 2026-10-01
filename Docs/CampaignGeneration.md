@@ -42,6 +42,29 @@ The spine topology is deliberately bounded. Seeds vary capabilities, roles, thei
 order, alternatives, source placement and themes. The grid supports the generated district topology and keyed inter-biome loops, rather than arbitrary nonplanar graphs. Specialist providers number 6â€“8; a complete authored
 eight-person combat roster is separate from this capability-provider model.
 
+## Lock and key fiction (version 9)
+
+Generation stage 9 (`LockNarrator`) dresses every gate after topology is final. It has
+its own seed stream, so it cannot change which routes, requirements or sources exist.
+Each capability gate stores a `SkinId` and rendered `LockText` from the lock table in
+`LockSkinCatalog` (capability x lock form x region theme), with a generated place name
+filling `{place}`. Keyed gates also store a `KeyName`. `KeyId` is unchanged and remains
+the identity used by saves and unlock state; `KeyName` is only what the player reads.
+
+- A skin is eligible when it matches the capability and lock form, and its themes (if any)
+  include the theme of the region the player stands in. Skins and places not yet used in
+  the campaign are preferred, so a repeat appears only when a pool is exhausted.
+- Lock text never names a capability. The validator rejects leaked names, unresolved
+  `{templates}`, unknown skin ids, missing fiction, fiction on open routes and duplicate key names.
+- Players still see the ability they hold by name when they use it ("Used Climb"); only the
+  lock itself is fiction.
+- The table is append-only per capability and form, because skin ids are fingerprinted.
+- Not yet implemented from the narrative plan: legibility tiers, wrong-capability failure
+  feedback, and local-terrain skins. See `LockAndKeyNarrativeGenerationPlan.md`.
+
+Version 9 bumps `CampaignGenerator.Version`, so saves made on version 8 are rejected
+by `CampaignContext` and fingerprints intentionally change.
+
 ## Return objectives and shortcuts
 
 Every campaign contains one required return objective and three optional return

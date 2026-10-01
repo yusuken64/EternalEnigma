@@ -6,7 +6,7 @@ namespace EternalEnigma.Core.Generation;
 
 public static class CampaignGenerator
 {
-    public const int Version = 8;
+    public const int Version = 9;
     public const int TierCount = 5;
 
     public static Campaign Generate(int seed)
@@ -198,6 +198,9 @@ public static class CampaignGenerator
                 keyId: $"Biome {label} key", keyLocationId: $"region-{later}-landmark", isWarp: true));
         }
 
+        // Stage 9 only dresses routes that already exist, so it cannot change topology or progression.
+        regions = LockNarrator.NameRegions(seed, regions);
+        routes = LockNarrator.Apply(seed, routes, locations, regions, manifest);
         var campaign = new Campaign(seed, Version, "town-0", "final-dungeon", manifest, regions, locations, routes, sources, companions, returns);
         var validation = CampaignValidator.Validate(campaign);
         if (!validation.IsValid) throw new InvalidOperationException($"Campaign {seed} failed validation:\n{string.Join("\n", validation.Errors)}");
@@ -211,6 +214,6 @@ public static class CampaignGenerator
         chosen.AddRange(random.Shuffle(pool.Where(c => !chosen.Contains(c))).Take(count - 1));
         return chosen;
     }
-    private static LockForm Form(Capability capability) => capability.HasAreaForm() ? LockForm.Area :
+    internal static LockForm Form(Capability capability) => capability.HasAreaForm() ? LockForm.Area :
         capability.Kind() == CapabilityKind.Utility ? LockForm.Interaction : LockForm.Obstacle;
 }

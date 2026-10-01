@@ -22,11 +22,17 @@ public sealed class CoreDungeonLayerGenerator : TWCBlueprintAction, ITWCAction
     public DungeonFloorRole Role;
     public int GatheringCount = 3;
     public int EnemyCount = 10, GoldCount = 5, ItemCount = 5, TrapCount = 5;
+#if UNITY_EDITOR
     [NonSerialized] private TWCGUILayout guiLayout;
+#endif
 
     public CoreDungeonLayerGenerator() { }
     public ITWCAction Clone() => new CoreDungeonLayerGenerator { LayerName = LayerName, Throne = Throne, LayoutVersion = LayoutVersion, Tier = Tier, Biome = Biome, Role = Role, GatheringCount = GatheringCount, EnemyCount = EnemyCount, GoldCount = GoldCount, ItemCount = ItemCount, TrapCount = TrapCount };
+#if UNITY_EDITOR
     public float GetGUIHeight() => guiLayout != null ? guiLayout.height : 18 * 6;
+#else
+    public float GetGUIHeight() => 18 * 6;
+#endif
 
     public DungeonFloorOptions Options(TileWorldCreator twc) =>
         Throne && LayoutVersion == 0 ? DungeonFloorOptions.Throne(twc.currentSeed)

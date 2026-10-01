@@ -132,14 +132,13 @@ namespace EternalEnigma.Tests
             int index = offers.FindIndex(o => o.CanLearn && o.CurrentRank == 0);
             Assert.That(index, Is.GreaterThanOrEqualTo(0), "The starting hero's class offers a learnable skill.");
             var skill = offers[index].Skill;
-            int cost = offers[index].NextCost;
             trainer.SkillGridItems[index].ToggleOn_Clicked();
             yield return null;
             trainer.BallistaPurchaseDialog.Purchase_Clicked();
             Assert.That(Manager.CurrentDialog, Is.SameAs(trainer));
             var save = SaveSystem.LoadData().TownSaveData;
             Assert.That(save.RecruitedAlliesData[0].Skills, Does.Contain(skill.SkillName));
-            Assert.That(save.Gold, Is.EqualTo(10000 - cost));
+            Assert.That(save.Gold, Is.EqualTo(10000), "Skills cost points, not gold.");
             Assert.That(World.Services.Learn(ally, skill, out _), Is.False, "Rank 2 needs a higher level (or the skill is single-rank).");
             Assert.That(World.TownPlayer.Gold, Is.EqualTo(save.Gold));
         }

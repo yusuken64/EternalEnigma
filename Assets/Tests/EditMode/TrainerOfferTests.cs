@@ -169,9 +169,10 @@ public class TrainerOfferTests
         // T Novice.CanLearn
         Assert.IsTrue(offers[0].CanLearn);
 
-        // T Strike.CanLearn && NextCost == 50 && Label == "T Strike 0/5"
+        // T Strike.CanLearn && NextCost == 1 skill point && Label == "T Strike 0/5"
         Assert.IsTrue(offers[1].CanLearn);
-        Assert.AreEqual(50, offers[1].NextCost);
+        Assert.IsTrue(offers[1].UsesPoints);
+        Assert.AreEqual(1, offers[1].NextCost);
         Assert.AreEqual("T Strike 0/5", offers[1].Label);
 
         // T Cleave.CanLearn == false, LockReason non-empty, Label == "T Cleave 0/5 (T2)"
@@ -192,9 +193,9 @@ public class TrainerOfferTests
         var offers = TrainerOffers.Build(ally, MakeTown());
         var strikeOffer = offers.First(o => o.Skill.SkillName == "T Strike");
 
-        // Strike offer: CurrentRank == 1, NextCost == 100, CanLearn == false (rank 2 needs level 4)
+        // Strike offer: CurrentRank == 1, NextCost == 2 points, CanLearn == false (rank 2 needs level 4)
         Assert.AreEqual(1, strikeOffer.CurrentRank);
-        Assert.AreEqual(100, strikeOffer.NextCost);
+        Assert.AreEqual(2, strikeOffer.NextCost);
         Assert.IsFalse(strikeOffer.CanLearn);
 
         // Set HighestLevel = 4, rebuild → CanLearn == true
@@ -202,6 +203,30 @@ public class TrainerOfferTests
         offers = TrainerOffers.Build(ally, MakeTown());
         strikeOffer = offers.First(o => o.Skill.SkillName == "T Strike");
         Assert.IsTrue(strikeOffer.CanLearn);
+    }
+
+    [Test]
+    public void SkillPointsLimitLearningAndForgettingRefundsThem()
+    {
+        var ally = MakeAlly();
+        ally.PrimaryClass = MakeClass();
+        ally.HighestLevel = 4; // 8 points
+        ally.EnsureStartingSkills();
+        Assert.AreEqual(8, TrainerOffers.AvailablePoints(ally)); // Novice Training is free
+
+        ally.SetRank("T Strike", 3); // 1 + 2 + 3
+        Assert.AreEqual(2, TrainerOffers.AvailablePoints(ally));
+        var offers = TrainerOffers.Build(ally, MakeTown());
+        var strike = offers.First(o => o.Skill.SkillName == "T Strike");
+        Assert.AreEqual(4, strike.NextCost);
+        Assert.IsFalse(strike.CanLearn);
+        StringAssert.Contains("skill points", strike.LockReason);
+
+        // Forgetting clears everything but the starting skill: all points are back.
+        ally.ForgetAllSkills();
+        Assert.AreEqual(8, TrainerOffers.AvailablePoints(ally));
+        Assert.AreEqual(1, ally.GetRank("T Novice"));
+        Assert.AreEqual(0, ally.GetRank("T Strike"));
     }
 
     [Test]

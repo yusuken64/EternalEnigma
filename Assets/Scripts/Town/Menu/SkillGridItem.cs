@@ -48,7 +48,7 @@ public class SkillGridItem : MonoBehaviour
 			FindFirstObjectByType<TownMenuManager>().Open(messageDialog);
 			return;
 		}
-		BallistaPurchaseDialog.Setup(offer.Skill, offer.CurrentRank + 1, offer.NextCost);
+		BallistaPurchaseDialog.Setup(offer.Skill, offer.CurrentRank + 1, offer.NextCost, offer.UsesPoints);
 		BallistaPurchaseDialog.PurcahseCallBack = () =>
 		{
 			var town = FindFirstObjectByType<Town>();
@@ -63,6 +63,7 @@ public class SkillGridItem : MonoBehaviour
 
 	private bool CanAfford()
 	{
+		if (_data.Offer != null && _data.Offer.UsesPoints) return true; // CanLearn already covers skill points
 		var town = FindFirstObjectByType<Town>();
 		return _data.Offer != null ? _data.Offer.NextCost <= town.TownPlayer.Gold : _data.Skill.LearnCost <= town.TownPlayer.Gold;
 	}
@@ -82,7 +83,7 @@ public class SkillGridItem : MonoBehaviour
 		{
 			bool locked = offer != null && !offer.CanLearn;
 			ActiveImage.color = locked ? Color.gray : (_data.Active ? Color.cyan : Color.white);
-			CostText.text = $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)}";
+			CostText.text = offer != null && offer.UsesPoints ? $"{offer.NextCost} pt" : $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)}";
 			CostObject.gameObject.SetActive(true);
 		}
 	}

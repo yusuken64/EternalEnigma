@@ -9,10 +9,11 @@ public sealed class TrainerOffer
     public int Tier = 1;
     public int CurrentRank;          // 0 = not learned
     public int MaxRank = 1;
-    public int NextCost;             // gold for the next rank
-    public bool CanLearn;            // rules allow the next rank (gold is checked separately)
+    public int NextCost;             // skill points for the next rank (gold for the classless fallback)
+    public bool CanLearn;            // rules allow the next rank (class heroes: points included; fallback: gold is checked separately)
     public string LockReason = "";   // player-readable; "" when CanLearn or IsMaxed
     public bool HasClass;            // false = classless fallback
+    public bool UsesPoints => HasClass;
     public ClassSource Source = ClassSource.Primary;
     public bool IsMaxed => CurrentRank >= MaxRank;
     public string Label => !HasClass ? Skill.SkillName
@@ -25,6 +26,13 @@ public static class TrainerOffers
     {
         if (ally == null || configuration == null) return new List<TrainerOffer>();
         return ally.PrimaryClass == null ? BuildFallback(ally, configuration) : BuildForClass(ally, configuration);
+    }
+
+    // Unspent skill points: earned from HighestLevel, minus what the learned ranks cost. 0 without a class.
+    public static int AvailablePoints(TownAlly ally)
+    {
+        if (ally == null || ally.PrimaryClass == null) return 0;
+        return SkillLearningRules.AvailablePoints(HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass), ally.ToLearnedSkills(), ally.HighestLevel);
     }
 
     public static TrainerOffer Find(TownAlly ally, TownConfiguration configuration, Skill skill) =>
@@ -53,6 +61,7 @@ public static class TrainerOffers
     {
         var kit = HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass);
         var learned = ally.ToLearnedSkills();
+        int points = SkillLearningRules.AvailablePoints(kit, learned, ally.HighestLevel);
         var allow = configuration.LearnableSkills.Where(s => s != null).Select(s => s.SkillName).ToHashSet();
         var rows = new List<(int order, TrainerOffer offer)>();
         int order = 0;
@@ -61,7 +70,7 @@ public static class TrainerOffers
             var skill = Resolve(offer.Source == ClassSource.Primary ? ally.PrimaryClass : ally.SecondaryClass, offer.SkillId);
             if (skill == null) continue;
             if (allow.Count > 0 && !allow.Contains(skill.SkillName)) continue;
-            var check = SkillLearningRules.CheckNextRank(kit, learned, ally.HighestLevel, offer.SkillId, skill.LearnCost);
+            var check = SkillLearningRules.CheckNextRank(kit, learned, ally.HighestLevel, offer.SkillId, skill.LearnCost, points);
             int current = ally.GetRank(offer.SkillId);
             rows.Add((order++, new TrainerOffer
             {

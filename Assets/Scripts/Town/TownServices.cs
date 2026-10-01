@@ -68,9 +68,13 @@ public sealed class TownServices
         if (offer == null) return false;
         if (offer.IsMaxed) { reason = offer.MaxRank <= 1 ? "Already learned." : "Already at max rank."; return false; }
         if (!offer.CanLearn) { reason = string.IsNullOrEmpty(offer.LockReason) ? "This skill cannot be learned." : offer.LockReason; return false; }
-        reason = "Not enough gold.";
-        if (offer.NextCost < 0 || Player.Gold < offer.NextCost) return false;
-        Player.Gold -= offer.NextCost;
+        // Class heroes pay in skill points, which are derived from the learned ranks (nothing to deduct).
+        if (!offer.UsesPoints)
+        {
+            reason = "Not enough gold.";
+            if (offer.NextCost < 0 || Player.Gold < offer.NextCost) return false;
+            Player.Gold -= offer.NextCost;
+        }
         ally.SetRank(offer.Skill.SkillName, offer.CurrentRank + 1);
         town.SaveProgress();
         reason = null;

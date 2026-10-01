@@ -355,6 +355,60 @@ public sealed class SkillLearningRulesTests
         Assert.True(checkTrapSense.Allowed);
     }
 
+    [Theory]
+    [InlineData(1, 2)]
+    [InlineData(10, 20)]
+    [InlineData(0, 2)]
+    public void EarnedPointsScaleWithLevel(int level, int expected)
+    {
+        Assert.Equal(expected, SkillLearningRules.EarnedPoints(level));
+    }
+
+    [Fact]
+    public void StartingSkillIsFreeAtRankOne()
+    {
+        var kit = new ClassKit(Warrior());
+        Assert.Equal(0, SkillLearningRules.SpentPoints(kit, new[] { L("Novice Training") }));
+        Assert.Equal(2, SkillLearningRules.SpentPoints(kit, new[] { L("Novice Training", 2) }));
+    }
+
+    [Fact]
+    public void SpentPointsSumRankCosts()
+    {
+        var kit = new ClassKit(Warrior());
+        var learned = new[] { L("Novice Training"), L("Double Strike", 3), L("Vanguard", 1) };
+        Assert.Equal(6 + 1, SkillLearningRules.SpentPoints(kit, learned));
+        Assert.Equal(20 - 7, SkillLearningRules.AvailablePoints(kit, learned, level: 10));
+    }
+
+    [Fact]
+    public void PointModeChargesRankAndRefusesWhenShort()
+    {
+        var kit = new ClassKit(Warrior());
+        var learned = new[] { L("Novice Training"), L("Double Strike", 1) };
+
+        var affordable = SkillLearningRules.CheckNextRank(kit, learned, 13, "Double Strike", 999, availablePoints: 2);
+        Assert.True(affordable.Allowed);
+        Assert.Equal(2, affordable.Cost);
+
+        var broke = SkillLearningRules.CheckNextRank(kit, learned, 13, "Double Strike", 999, availablePoints: 1);
+        Assert.Equal(LearnRefusal.NotEnoughPoints, broke.Refusal);
+    }
+
+    [Fact]
+    public void SkillsOutsideTheKitCostNothing()
+    {
+        var kit = new ClassKit(Warrior());
+        Assert.Equal(0, SkillLearningRules.SpentPoints(kit, new[] { L("Healing", 5) }));
+    }
+
+    [Fact]
+    public void AvailablePointsNeverNegative()
+    {
+        var kit = new ClassKit(Warrior());
+        Assert.Equal(0, SkillLearningRules.AvailablePoints(kit, new[] { L("Double Strike", 5) }, level: 1));
+    }
+
     [Fact]
     public void ArgumentsAreValidated()
     {

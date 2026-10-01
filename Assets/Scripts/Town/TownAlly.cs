@@ -65,6 +65,14 @@ public class TownAlly : TownCharacter
 		foreach (var name in StartingSkillNames(PrimaryClass, SecondaryClass))
 			if (GetRank(name) == 0) SetRank(name, 1);
 	}
+	// Respec: drops every learned skill except the free starting ones. Skill points are derived from ranks, so this refunds them all.
+	public void ForgetAllSkills()
+	{
+		Skills = new();
+		SkillRanks = new();
+		EnsureStartingSkills();
+	}
+
 	private void Awake()
 	{
 		if (HeroAnimator?.Animator != null) HeroAnimator.Animator.applyRootMotion = false;

@@ -59,7 +59,7 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator RankUpChargesPerRankAndPersists()
+        public IEnumerator RankUpChargesSkillPointsPerRankAndPersists()
         {
             yield return harness.LoadTown(new TestScenario { Gold = 10000 }.CreateSave());
 
@@ -77,15 +77,17 @@ namespace EternalEnigma.Tests
 
                 Assert.That(World.Services.Learn(hero, strikeSkill, out _), Is.True);
                 Assert.That(hero.GetRank("T Strike"), Is.EqualTo(1));
-                Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000 - 50));
+                int points = SkillLearningRules.EarnedPoints(20);
+                Assert.That(TrainerOffers.AvailablePoints(hero), Is.EqualTo(points - 1));
 
                 Assert.That(World.Services.Learn(hero, strikeSkill, out _), Is.True);
                 Assert.That(hero.GetRank("T Strike"), Is.EqualTo(2));
-                Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000 - 50 - 100));
+                Assert.That(TrainerOffers.AvailablePoints(hero), Is.EqualTo(points - 1 - 2));
 
                 Assert.That(World.Services.Learn(hero, strikeSkill, out _), Is.True);
                 Assert.That(hero.GetRank("T Strike"), Is.EqualTo(3));
-                Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000 - 50 - 100 - 150));
+                Assert.That(TrainerOffers.AvailablePoints(hero), Is.EqualTo(points - 1 - 2 - 3));
+                Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000), "Skills cost points, not gold.");
 
                 var saved = SaveSystem.LoadData().TownSaveData;
                 Assert.That(saved.RecruitedAlliesData[0].SkillRanks.Any(sr => sr.SkillName == "T Strike" && sr.Rank == 3), Is.True);

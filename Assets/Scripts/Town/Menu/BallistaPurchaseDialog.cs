@@ -50,13 +50,14 @@ public class BallistaPurchaseDialog : Dialog
 		Setup(skill, 1, skill.LearnCost);
 	}
 
-	internal void Setup(Skill skill, int nextRank, int cost)
+	internal void Setup(Skill skill, int nextRank, int cost, bool usesPoints = false)
 	{
         FindFirstObjectByType<TownMenuManager>().Open(this);
 
+        string price = usesPoints ? $"{cost} pts" : $"{cost}g";
         TitleText.text = nextRank <= 1
-            ? $"Learn {skill.SkillName} ({cost}g)?"
-            : $"Train {skill.SkillName} to rank {nextRank} ({cost}g)?";
+            ? $"Learn {skill.SkillName} ({price})?"
+            : $"Train {skill.SkillName} to rank {nextRank} ({price})?";
         DescriptionText.text = skill.Description;
         SkillIcon = SkillIconView.Bind(SkillIcon, TitleText, skill.Icon);
         SetNavigation();

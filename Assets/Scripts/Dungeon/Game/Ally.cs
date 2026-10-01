@@ -16,6 +16,8 @@ public class Ally : Character
 	public AllyStrategy AllyStrategy;
 	// True while this ally is in Game.DownedAllies (0 HP, not destroyed). Set by PartyRules.
 	public bool IsDowned { get; internal set; }
+	// Set by ForgetSkillsAction; DungeonReturnService then clears the hero's saved skills.
+	internal bool SkillsForgotten;
     private AllyAttackPolicy AllyAttackPolicy;
 	private AllyRangedPositioningPolicy AllyRangedPositioningPolicy;
 	private AllyPursuitPolicy PursuitPolicy;

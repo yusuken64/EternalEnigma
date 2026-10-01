@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
+  m_Name: Potion_ForgetSkills
+  m_EditorClassIdentifier: 
+  ItemName: Oblivion Draught
+  Description: Forget every learned skill and get all skill points back (applied in town).
+  ItemEffectDefinition: {fileID: 11400000, guid: 065b237bc41f4b52925dd81af2ca835e, type: 2}
+  ApplyToThrownTarget: 0
+  StackStartMin: 1
+  StackStartMax: 1
+  StackMax: 0
+  DroppedItemVisual: 4

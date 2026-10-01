@@ -61,7 +61,7 @@ public class BallistaDialog : Dialog
 	{
 		var active = SkillGridItems.Count(x => x.IsSkillActive());
 		var classLabel = Character != null ? HeroClass.Label(Character.PrimaryClass, Character.SecondaryClass) : "";
-		SkillsText.text = string.IsNullOrEmpty(classLabel) ? $"Skills ({active})" : $"{classLabel} - Skills ({active})";
+		SkillsText.text = string.IsNullOrEmpty(classLabel) ? $"Skills ({active})" : $"{classLabel} - Skills ({active}) - {TrainerOffers.AvailablePoints(Character)} pts";
 	}
 
 	public void Close_Clicked()

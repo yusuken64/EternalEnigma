@@ -49,3 +49,7 @@ MonoBehaviour:
     Price: 275
     Quantity: 2
     StackCount: 1
+  - Item: {fileID: 11400000, guid: 88b73c917e684fdaa54ddc642e7646a8, type: 2}
+    Price: 1000
+    Quantity: 1
+    StackCount: 1

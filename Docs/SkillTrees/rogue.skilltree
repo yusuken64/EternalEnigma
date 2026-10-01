@@ -1,0 +1,29 @@
+skilltree 1
+class rogue
+name Rogue
+
+tier 1
+  mastery   | Rogue Novice Training
+  gathering | Foraging
+  skill     | Shadow Step | 5
+  skill     | Smoke Bomb | 5
+  skill     | Evasion | 5
+  skill     | Hamstring | 5
+
+tier 2
+  mastery   | Rogue Adept Training
+  skill     | Swiftness | 5
+  skill     | Clone | 3
+  skill     | Vanish | 5
+  skill     | Ambush | 5
+  skill     | Caltrops | 5
+  skill     | Ember Scroll | 5
+  skill     | Throat Strike | 5
+
+tier 3
+  mastery   | Rogue Master Training
+  skill     | Shadow Dance | 5
+  single    | Twin Shadows
+  skill     | Assassinate | 5
+  single    | Escape Artist
+  skill     | Blinding Flash | 5

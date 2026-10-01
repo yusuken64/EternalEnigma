@@ -1,0 +1,29 @@
+skilltree 1
+class elementalist
+name Elementalist
+
+tier 1
+  mastery   | Elementalist Novice Training
+  gathering | Harvesting
+  skill     | Fire Bolt | 5
+  skill     | Ice Bolt | 5
+  skill     | Lightning Bolt | 5
+  skill     | SP Up | 5
+  skill     | Focus | 5
+
+tier 2
+  mastery   | Elementalist Adept Training
+  skill     | Fireball | 5
+  skill     | Blizzard | 5
+  skill     | Thunderclap | 5
+  skill     | Expose | 5
+  skill     | Amplify | 1
+  skill     | Mana Flow | 5
+
+tier 3
+  mastery   | Elementalist Master Training
+  skill     | Inferno | 5
+  skill     | Glacier | 5
+  skill     | Tempest | 5
+  skill     | Elemental Mastery | 5
+  skill     | Spell Echo | 5

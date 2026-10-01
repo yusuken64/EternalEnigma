@@ -1,9 +1,11 @@
 using EternalEnigma.ConsoleExplorer;
+using EternalEnigma.Core.Classes;
 using EternalEnigma.Core.Generation;
 using EternalEnigma.Core.Progression;
 
 int seed = 42;
 bool snapshot = false;
+string? skillTreePath = null;
 string? townId = null;
 string? dungeonId = null;
 int? floor = null;
@@ -11,17 +13,19 @@ for (int i = 0; i < args.Length; i++)
 {
     if (args[i] is "--help" or "-h")
     {
-        Console.WriteLine("Campaign Explorer [--seed <integer>] [--snapshot] [--town <id>] [--dungeon <id> [--floor <n>]]\nOn start, choose a view: W: world, T: town, D: dungeon.\nArrows/WASD: move; Q/E/Z/C: diagonals; Enter: enter town/dungeon; R: claim rewards; P: party; T: travel; N: no-clip; Esc: quit (or leave town/dungeon).\nRewards simulate encounter completion. Progress is not saved. --snapshot prints a static preview; --town/--dungeon print a static preview of that location and imply --snapshot.\nNo-clip is a debug flight mode that ignores gates, water and terrain; it stands in for the future airship.");
+        Console.WriteLine("Campaign Explorer [--seed <integer>] [--snapshot] [--town <id>] [--dungeon <id> [--floor <n>]] [--skilltree <file|dir>]\nOn start, choose a view: W: world, T: town, D: dungeon, K: skill trees.\nSkill trees (.skilltree files, default Docs/SkillTrees) open in an editor; --skilltree opens a file or folder directly, or prints it when there is no terminal. Edits are saved only with S.\nArrows/WASD: move; Q/E/Z/C: diagonals; Enter: enter town/dungeon; R: claim rewards; P: party; T: travel; N: no-clip; Esc: quit (or leave town/dungeon).\nRewards simulate encounter completion. Progress is not saved. --snapshot prints a static preview; --town/--dungeon print a static preview of that location and imply --snapshot.\nNo-clip is a debug flight mode that ignores gates, water and terrain; it stands in for the future airship.");
         return 0;
     }
     if (args[i] == "--snapshot") { snapshot = true; continue; }
     if (args[i] == "--seed" && i + 1 < args.Length && int.TryParse(args[++i], out seed)) continue;
+    if (args[i] == "--skilltree" && i + 1 < args.Length) { skillTreePath = args[++i]; continue; }
     if (args[i] == "--town" && i + 1 < args.Length) { townId = args[++i]; snapshot = true; continue; }
     if (args[i] == "--dungeon" && i + 1 < args.Length) { dungeonId = args[++i]; snapshot = true; continue; }
     if (args[i] == "--floor" && i + 1 < args.Length && int.TryParse(args[++i], out int f)) { floor = f; continue; }
     Console.Error.WriteLine("Invalid arguments. Use --help.");
     return 1;
 }
+if (skillTreePath != null) return RunSkillTrees(skillTreePath, snapshot);
 if (!snapshot && (Console.IsInputRedirected || Console.IsOutputRedirected))
 {
     Console.Error.WriteLine("Interactive exploration requires a terminal. Run with --snapshot for a static preview.");
@@ -66,6 +70,7 @@ try
     }
     var view = ChooseStartView();
     if (view == StartView.Quit) return 0;
+    if (view == StartView.SkillTrees) return RunSkillTrees(null, false);
     if (view != StartView.World)
     {
         var target = campaign.Locations.FirstOrDefault(l => l.ParentTownId == null && Matches(l.Kind, view));
@@ -94,6 +99,7 @@ static StartView ChooseStartView()
     Console.WriteLine("  W: World (overworld)");
     Console.WriteLine("  T: Town");
     Console.WriteLine("  D: Dungeon");
+    Console.WriteLine("  K: Skill trees (view and edit)");
     Console.WriteLine();
     Console.WriteLine("Press a key, or Esc to quit.");
     while (true)
@@ -103,6 +109,7 @@ static StartView ChooseStartView()
             case ConsoleKey.W: return StartView.World;
             case ConsoleKey.T: return StartView.Town;
             case ConsoleKey.D: return StartView.Dungeon;
+            case ConsoleKey.K: return StartView.SkillTrees;
             case ConsoleKey.Escape: return StartView.Quit;
         }
     }
@@ -238,4 +245,31 @@ static void Run(ExplorerSession session, MapRenderer renderer)
     finally { Console.CursorVisible = cursorVisible; Console.Clear(); }
 }
 
-enum StartView { World, Town, Dungeon, Quit }
+// Opens a skill tree file or folder (default: Docs/SkillTrees). Without a terminal it prints a static view.
+static int RunSkillTrees(string? path, bool snapshot)
+{
+    path ??= SkillTreeBook.FindDefaultDirectory();
+    if (path == null)
+    {
+        Console.Error.WriteLine("No Docs/SkillTrees folder found. Use --skilltree <file|dir>.");
+        return 1;
+    }
+    try
+    {
+        var book = SkillTreeBook.Open(path);
+        if (snapshot || Console.IsInputRedirected || Console.IsOutputRedirected)
+        {
+            foreach (string line in SkillTreeScreen.Snapshot(book)) Console.WriteLine(line);
+            return 0;
+        }
+        SkillTreeScreen.Run(book);
+        return 0;
+    }
+    catch (Exception ex) when (ex is SkillTreeFormatException or IOException)
+    {
+        Console.Error.WriteLine("Skill tree failed: " + ex.Message);
+        return 1;
+    }
+}
+
+enum StartView { World, Town, Dungeon, SkillTrees, Quit }

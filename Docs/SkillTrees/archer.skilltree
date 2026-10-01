@@ -1,0 +1,29 @@
+skilltree 1
+class archer
+name Archer
+
+tier 1
+  mastery   | Archer Novice Training
+  gathering | Foraging
+  skill     | Aimed Shot | 5
+  skill     | Pinning Shot | 5
+  skill     | Disarming Shot | 5
+  skill     | Stunning Shot | 5
+  skill     | Keen Eye | 5
+
+tier 2
+  mastery   | Archer Adept Training
+  skill     | Longshot | 5
+  skill     | Volley | 5
+  skill     | Multishot | 5
+  skill     | Venom Arrow | 5
+  skill     | Sleep Arrow | 5
+  skill     | Retreat Shot | 5
+  skill     | Deadeye | 5
+
+tier 3
+  mastery   | Archer Master Training
+  skill     | Rain of Arrows | 5
+  skill     | Piercing Arrow | 5
+  skill     | Double Shot | 5
+  skill     | Arrow Recovery | 5

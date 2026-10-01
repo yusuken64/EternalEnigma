@@ -1,0 +1,29 @@
+skilltree 1
+class guardian
+name Guardian
+
+tier 1
+  mastery   | Guardian Novice Training
+  gathering | Mining
+  skill     | HP Up | 5
+  skill     | Provoke | 5
+  skill     | Shield Smite | 5
+  skill     | Defense Boost | 5
+  skill     | Rally | 1
+
+tier 2
+  mastery   | Guardian Adept Training
+  skill     | HP Regen | 3
+  skill     | Last Stand | 5
+  skill     | Cover | 5
+  skill     | Shield Bash | 5
+  skill     | Flame Barrier | 5
+  skill     | Frost Barrier | 5
+  skill     | Storm Barrier | 5
+
+tier 3
+  mastery   | Guardian Master Training
+  skill     | Parry Stance | 5
+  skill     | Bulwark | 5
+  skill     | Sanctuary Wall | 5
+  single    | Aegis

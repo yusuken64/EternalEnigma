@@ -49,7 +49,6 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         picker.pageLabel.alignment = TextAlignmentOptions.Center;
         picker.next = GameUISkin.Button(canvas.transform, "Next", new Vector2(.67f, .11f), new Vector2(.8f, .18f), () => picker.ChangePage(1));
         GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back);
-        GameUISkin.Button(canvas.transform, "Begin journey", new Vector2(.76f, .025f), new Vector2(.95f, .087f), picker.Confirm);
         picker.Select(roster[0]);
         picker.BuildChoices();
         MenuUIInputModule.Active?.PushDialog(picker, canvas.transform, EventSystem.current?.currentSelectedGameObject, picker.Back);
@@ -65,8 +64,8 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         {
             var hero = visible[i];
             float x = (i % 2) * .51f, top = 1 - (i / 2) / 4f;
-            var button = GameUISkin.Button(choices, hero.Name + "  •  " + hero.PrimaryClass.DisplayName,
-                new Vector2(x, top - .88f / 4f), new Vector2(x + .49f, top), () => Select(hero));
+            var button = ToSelectToActivate(GameUISkin.Button(choices, hero.Name + "  •  " + hero.PrimaryClass.DisplayName,
+                new Vector2(x, top - .88f / 4f), new Vector2(x + .49f, top), () => Begin(hero)));
             var focus = button.gameObject.AddComponent<ClassPickerFocus>();
             focus.Focused = () => Select(hero);
             first ??= button;
@@ -95,7 +94,25 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         details.text = $"<size=29>{hero.Name}</size>\n{classes}\n{hero.PrimaryClass.Role}";
     }
 
-    private void Confirm() => Finish(() => confirmed?.Invoke(selected));
+    private void Begin(TownAlly hero) => Finish(() => confirmed?.Invoke(hero));
+
+    /// <summary>Swaps the skin's plain button for one that needs a select before it activates.</summary>
+    private static Button ToSelectToActivate(Button plain)
+    {
+        var go = plain.gameObject;
+        var graphic = plain.targetGraphic;
+        var colors = plain.colors;
+        var transition = plain.transition;
+        var sprites = plain.spriteState;
+        var navigation = plain.navigation;
+        var onClick = plain.onClick;
+        DestroyImmediate(plain);
+        var button = go.AddComponent<SelectToActivateButton>();
+        button.targetGraphic = graphic; button.transition = transition;
+        button.colors = colors; button.spriteState = sprites; button.navigation = navigation;
+        button.onClick = onClick;
+        return button;
+    }
     private void Back() => Finish(cancelled);
 
     private void Finish(Action callback)

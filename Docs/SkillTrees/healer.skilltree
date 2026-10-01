@@ -1,0 +1,29 @@
+skilltree 1
+class healer
+name Healer
+
+tier 1
+  mastery   | Healer Novice Training
+  gathering | Harvesting
+  skill     | Heal | 5
+  skill     | Healing Touch | 5
+  skill     | Cure | 1
+  skill     | Unbind | 1
+
+tier 2
+  mastery   | Healer Adept Training
+  skill     | Group Heal | 5
+  skill     | Revive | 1
+  skill     | Renew | 5
+  skill     | Triage | 5
+  skill     | Field Medicine | 5
+  skill     | Heavy Strike | 5
+
+tier 3
+  mastery   | Healer Master Training
+  skill     | Full Heal | 5
+  skill     | Mass Cure | 1
+  single    | Second Wind
+  skill     | Mass Revive | 1
+  skill     | Meditation | 5
+  skill     | Vitality | 5

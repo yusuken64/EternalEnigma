@@ -1,0 +1,29 @@
+skilltree 1
+class warrior
+name Warrior
+
+tier 1
+  mastery   | Warrior Novice Training
+  gathering | Mining
+  skill     | Double Strike | 5
+  skill     | Vanguard | 5
+  skill     | Power Boost | 5
+  skill     | Iron Skin | 5
+
+tier 2
+  mastery   | Warrior Adept Training
+  skill     | Cleave | 5
+  skill     | Piercing Thrust | 5
+  single    | Initiative
+  skill     | Sunder | 5
+  skill     | Rattle | 5
+  skill     | Flame Follow-up | 5
+  skill     | Frost Follow-up | 5
+  skill     | Shock Follow-up | 5
+
+tier 3
+  mastery   | Warrior Master Training
+  skill     | Whirlwind | 5
+  skill     | Lunge | 5
+  single    | Improved Follow-ups
+  single    | Follow-up Mastery

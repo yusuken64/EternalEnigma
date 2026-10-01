@@ -1,0 +1,29 @@
+skilltree 1
+class scout
+name Scout
+
+tier 1
+  mastery   | Scout Novice Training
+  gathering | Survey
+  skill     | Trap Sense | 5
+  skill     | Disarm | 5
+  skill     | Pathfinder | 5
+  skill     | Floor Sense | 1
+
+tier 2
+  mastery   | Scout Adept Training
+  single    | Soft Step
+  skill     | Resourceful | 5
+  skill     | Throwing Arm | 5
+  skill     | Retreat | 1
+  single    | Take Point
+  skill     | Safe Passage | 5
+
+tier 3
+  mastery   | Scout Master Training
+  skill     | Grapple Line | 1
+  single    | Treasure Hunter
+  skill     | Scavenger | 5
+  skill     | Field Kitchen | 3
+  skill     | Farsight | 3
+  skill     | Vigor | 5

@@ -1,0 +1,29 @@
+skilltree 1
+class commander
+name Commander
+
+tier 1
+  mastery   | Commander Novice Training
+  gathering | Mining
+  skill     | 'Command: Attack' | 3
+  skill     | 'Command: Guard' | 3
+  skill     | Blazing Arms | 3
+  skill     | Frost Arms | 3
+  skill     | Storm Arms | 3
+
+tier 2
+  mastery   | Commander Adept Training
+  single    | Reinforce
+  skill     | Rally Cry | 1
+  skill     | Inspire | 5
+  skill     | 'Command: Endure' | 3
+  skill     | Aura of Command | 5
+  skill     | 'Command: Advance' | 1
+
+tier 3
+  mastery   | Commander Master Training
+  skill     | Decisive Order | 1
+  single    | Leadership
+  skill     | 'Command: Hold' | 3
+  skill     | Royal Bearing | 5
+  skill     | Vigor | 5

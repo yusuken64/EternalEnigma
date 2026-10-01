@@ -1,0 +1,29 @@
+skilltree 1
+class bard
+name Bard
+
+tier 1
+  mastery   | Bard Novice Training
+  gathering | Foraging
+  skill     | Battle Hymn | 3
+  skill     | Ballad of Stone | 3
+  skill     | Soothing Melody | 3
+  skill     | Nimble | 5
+
+tier 2
+  mastery   | Bard Adept Training
+  skill     | Evasive Rhythm | 3
+  skill     | Quickstep | 1
+  skill     | Encore | 3
+  skill     | Blade Dance | 5
+  skill     | Discord | 1
+  skill     | War Drums | 5
+
+tier 3
+  mastery   | Bard Master Training
+  skill     | Grand Finale | 3
+  single    | Crescendo
+  single    | Harmony
+  skill     | Rousing Chorus | 5
+  single    | Stage Presence
+  skill     | Vigor | 5

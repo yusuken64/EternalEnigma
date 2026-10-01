@@ -1,0 +1,29 @@
+skilltree 1
+class occultist
+name Occultist
+
+tier 1
+  mastery   | Occultist Novice Training
+  gathering | Harvesting
+  skill     | Venom Hex | 5
+  skill     | Paralysis Hex | 5
+  skill     | Slumber Hex | 5
+  skill     | Enfeeble | 5
+
+tier 2
+  mastery   | Occultist Adept Training
+  skill     | Curse | 5
+  skill     | Terror | 5
+  skill     | Silence Hex | 5
+  skill     | Malice | 5
+  single    | Lingering Hex
+  skill     | Blinding Mist | 5
+  skill     | Exploit | 5
+
+tier 3
+  mastery   | Occultist Master Training
+  skill     | Plague | 1
+  skill     | Dominate | 1
+  skill     | Siphon | 5
+  skill     | SP Up | 5
+  skill     | Grim Harvest | 5

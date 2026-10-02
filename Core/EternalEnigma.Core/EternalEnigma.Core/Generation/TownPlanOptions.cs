@@ -6,7 +6,7 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
 {
     public const int MaxBuildings = 24;
     /// <summary>Area per building (body, shop room, margins, roads and scenery) used to size towns.</summary>
-    private const int CellsPerBuilding = 70;
+    private const int CellsPerBuilding = 250;
 
     /// <summary>Smallest square side that comfortably fits the buildings; never below the legacy 15x15.</summary>
     public static int SizeFor(int buildingCount) =>

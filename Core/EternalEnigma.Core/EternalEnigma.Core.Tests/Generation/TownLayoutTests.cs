@@ -18,8 +18,8 @@ public class TownLayoutTests
             foreach (var town in campaign.Locations.Where(l => l.Kind == LocationKind.Town))
                 Assert.Equal(TownServiceCatalog.All.Select(s => s.Id), town.Services.Select(s => s.Id));
         }
-        Assert.Equal(14, TownServiceCatalog.All.Count);
-        Assert.Equal(10, TownServiceCatalog.All.Count(s => s.Kind == TownServiceKind.Trainer));
+        Assert.Equal(5, TownServiceCatalog.All.Count);
+        Assert.Equal(1, TownServiceCatalog.All.Count(s => s.Kind == TownServiceKind.Trainer));
     }
 
     [Fact]
@@ -34,11 +34,11 @@ public class TownLayoutTests
     {
         var campaign = CampaignGenerator.Generate(42);
         var locations = campaign.Locations.Select(l => l.Id == "town-0"
-            ? new CampaignLocation(l.Id, l.RegionId, l.Tier, l.Kind, l.Required, l.Stage, l.ParentTownId, l.Services.Where(s => s.ClassId != "healer"))
+            ? new CampaignLocation(l.Id, l.RegionId, l.Tier, l.Kind, l.Required, l.Stage, l.ParentTownId, l.Services.Where(s => s.Kind != TownServiceKind.Trainer))
             : l).ToArray();
         var broken = new Campaign(campaign.Seed, campaign.GeneratorVersion, campaign.StartLocationId, campaign.FinalLocationId,
             campaign.Manifest, campaign.Regions, locations, campaign.Routes, campaign.Sources, campaign.Companions, campaign.ReturnObjectives);
-        Assert.Contains(CampaignValidator.Validate(broken).Errors, e => e.StartsWith("towns.trainers:") && e.Contains("healer"));
+        Assert.Contains(CampaignValidator.Validate(broken).Errors, e => e.StartsWith("towns.services:") && e.Contains("Trainer"));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class TownLayoutTests
     [Fact]
     public void TownsGrowWithTheirBuildingCount()
     {
-        Assert.Equal(15, TownPlanOptions.SizeFor(4) <= 17 ? 15 : 0); // a four-building town stays close to the legacy size
+        Assert.True(TownPlanOptions.SizeFor(4) >= 15);
         Assert.True(TownPlanOptions.SizeFor(15) >= 30);
         Assert.True(TownPlanOptions.SizeFor(TownPlanOptions.MaxBuildings) <= 64);
     }
@@ -151,7 +151,7 @@ public class TownLayoutTests
             var layout = context.TownLayout(town.Id);
             var plan = context.Town(town.Id);
             Assert.Equal(layout.Options.Width, plan.Width);
-            Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings, plan.BuildingSlots.Count);
+            Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings, plan.BuildingSlots.Count);
         }
     }
 

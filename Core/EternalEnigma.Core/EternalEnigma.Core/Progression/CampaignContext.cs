@@ -196,11 +196,13 @@ public HashSet<string> Completed { get; }
     }
     /// <summary>Buildings every town has that are not services: the dungeon entrance and the statue.</summary>
     public const int AuthoredTownBuildings = 2;
+    /// <summary>Extra houses with no service, so a town reads as a settlement; about as many as it has services and authored buildings.</summary>
+    public const int ResidentialTownBuildings = 7;
     /// <summary>Sizes the town for its services and assigns each one to a building slot.</summary>
     public TownLayout TownLayout(string townId, int allyCount = 3)
     {
         var location = Campaign.Locations.FirstOrDefault(l => l.Id == townId && l.Kind == LocationKind.Town) ?? throw new ArgumentException("Unknown town.", nameof(townId));
-        return Generation.TownLayout.Create(this.LocationSeed(townId), location.Services, AuthoredTownBuildings, allyCount);
+        return Generation.TownLayout.Create(this.LocationSeed(townId), location.Services, AuthoredTownBuildings, allyCount, ResidentialTownBuildings);
     }
     /// <summary>Generates the town's plan; explicit <paramref name="shopFlags"/> bypass the service layout.</summary>
     public TownPlan Town(string townId, IReadOnlyList<bool>? shopFlags = null, int allyCount = 3) =>

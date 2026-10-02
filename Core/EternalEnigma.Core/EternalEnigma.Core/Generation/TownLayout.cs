@@ -9,7 +9,7 @@ namespace EternalEnigma.Core.Generation;
 public sealed class TownLayout
 {
     public TownPlanOptions Options { get; }
-    /// <summary>Service for each building slot, by slot index; null for a slot reserved for an authored non-service building.</summary>
+    /// <summary>Service for each building slot, by slot index; null for a slot reserved for an authored non-service building or a house.</summary>
     public IReadOnlyList<TownService?> SlotServices { get; }
 
     private TownLayout(TownPlanOptions options, IReadOnlyList<TownService?> slotServices) { Options = options; SlotServices = slotServices; }
@@ -25,14 +25,16 @@ public sealed class TownLayout
     public static TownLayout? ForLocation(int campaignSeed, CampaignLocation town, int allyCount = 3) =>
         town.Services.Count == 0
             ? null
-            : Create(CampaignContext.LocationSeed(campaignSeed, town.Id), town.Services, CampaignContext.AuthoredTownBuildings, allyCount);
+            : Create(CampaignContext.LocationSeed(campaignSeed, town.Id), town.Services, CampaignContext.AuthoredTownBuildings, allyCount, CampaignContext.ResidentialTownBuildings);
 
     /// <param name="otherBuildings">Authored buildings that are not services (for example the dungeon entrance and statue).</param>
-    public static TownLayout Create(int seed, IReadOnlyList<TownService> services, int otherBuildings = 0, int allyCount = 3)
+    /// <param name="residentialBuildings">Extra houses without a service or interior.</param>
+    public static TownLayout Create(int seed, IReadOnlyList<TownService> services, int otherBuildings = 0, int allyCount = 3, int residentialBuildings = 0)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (otherBuildings < 0) throw new ArgumentOutOfRangeException(nameof(otherBuildings));
-        int count = services.Count + otherBuildings;
+        if (residentialBuildings < 0) throw new ArgumentOutOfRangeException(nameof(residentialBuildings));
+        int count = services.Count + otherBuildings + residentialBuildings;
         var slots = new TownService?[count];
         var order = new SeedStream(seed, 1200).Shuffle(Enumerable.Range(0, count));
         for (int i = 0; i < services.Count; i++) slots[order[i]] = services[i];

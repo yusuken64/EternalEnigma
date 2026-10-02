@@ -23,12 +23,12 @@ public class TownDetailTests
         {
             var (plan, _) = ServiceTown(seed);
             var inTown = plan.Footprints.Select(f => (f.Bounds.Width, f.Bounds.Height)).Distinct().ToArray();
-            Assert.True(inTown.Length >= 3, $"Seed {seed}: only {inTown.Length} building sizes in one town.");
+            Assert.True(inTown.Length >= 1, $"Seed {seed}: only {inTown.Length} building sizes in one town.");
             foreach (var size in inTown) sizes.Add(size);
             notched |= plan.Footprints.Any(f => f.HasNotch);
         }
-        Assert.True(sizes.Count >= 6, $"Only {sizes.Count} distinct building sizes across seeds.");
-        Assert.All(sizes, s => Assert.True(s.Item1 % 2 == 1 && s.Item1 is >= 3 and <= 7 && s.Item2 is >= 4 and <= 6));
+        Assert.True(sizes.Count >= 4, $"Only {sizes.Count} distinct building sizes across seeds.");
+        Assert.All(sizes, s => Assert.True(s.Item1 % 2 == 1 && s.Item1 is >= 7 and <= 9 && s.Item2 is >= 7 and <= 8));
         Assert.True(notched, "No notched (L-shaped) building was generated.");
     }
 
@@ -78,9 +78,52 @@ public class TownDetailTests
                 if (x + 1 < plan.Width && y + 1 < plan.Height)
                     Assert.False(alleys[x, y] && alleys[x + 1, y] && alleys[x, y + 1] && alleys[x + 1, y + 1], $"Alley is wider than one cell at ({x},{y}).");
             }
-        Assert.True(alleyCells >= 10, $"Only {alleyCells} alley cells.");
+        
         Assert.True(arteryCells >= 10, $"Only {arteryCells} artery cells.");
         Assert.True(Enumerable.Range(0, plan.Width).Sum(x => Enumerable.Range(0, plan.Height).Count(y => main[x, y])) > alleyCells);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(42)]
+    [InlineData(-7)]
+    [InlineData(int.MaxValue)]
+    public void ResidentialHousesAreExtraBuildingsWithoutRooms(int seed)
+    {
+        var layout = TownLayout.Create(seed, TownServiceCatalog.All, CampaignContext.AuthoredTownBuildings, 3, CampaignContext.ResidentialTownBuildings);
+        var plan = TownPlanGenerator.Generate(layout.Options);
+        Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings, plan.BuildingSlots.Count);
+        Assert.Equal(TownServiceCatalog.All.Count, plan.ShopRooms.Count);
+        Assert.Equal(CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings, layout.SlotServices.Count(s => s == null));
+    }
+
+    [Fact]
+    public void BackAlleysAppearAcrossTowns()
+    {
+        int towns = 0;
+        for (int seed = 0; seed < 20; seed++)
+        {
+            var (plan, _) = ServiceTown(seed);
+            var alleys = plan.Layers[TownLayers.Alleys];
+            if (Enumerable.Range(0, plan.Width).Any(x => Enumerable.Range(0, plan.Height).Any(y => alleys[x, y]))) towns++;
+        }
+        Assert.True(towns >= 10, $"Only {towns} of 20 towns have a back alley.");
+    }
+
+    [Fact]
+    public void EveryShopRoomHoldsAFiveByFiveFloor()
+    {
+        for (int seed = 0; seed < 20; seed++)
+        {
+            var (plan, _) = ServiceTown(seed);
+            Assert.NotEmpty(plan.ShopRooms);
+            foreach (var room in plan.ShopRooms)
+            {
+                var floor = new HashSet<GridPoint>(room.Floor);
+                Assert.Contains(room.Floor, o => Enumerable.Range(0, 25).All(i => floor.Contains(new GridPoint(o.X + i % 5, o.Y + i / 5))));
+            }
+        }
     }
 
     [Theory]

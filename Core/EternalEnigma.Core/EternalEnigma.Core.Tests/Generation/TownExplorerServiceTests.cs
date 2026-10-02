@@ -17,7 +17,7 @@ public sealed class TownExplorerServiceTests
         var map = string.Concat(TownRenderer.Render(visit, visit.Plan.Width, visit.Plan.Height));
         foreach (var service in TownServiceCatalog.All)
             Assert.Equal(1, map.Count(c => c == TownServiceGlyphs.Glyph(service)));
-        Assert.Equal(CampaignContext.AuthoredTownBuildings, map.Count(c => c == TownServiceGlyphs.OtherBuilding));
+        Assert.Equal(CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings, map.Count(c => c == TownServiceGlyphs.OtherBuilding));
     }
 
     [Fact]
@@ -68,6 +68,6 @@ public sealed class TownExplorerServiceTests
         session.JumpTo("town-0");
         Assert.True(session.EnterLocation());
         Assert.NotNull(session.Town!.SlotServices);
-        Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings, session.Town.SlotServices!.Count);
+        Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings, session.Town.SlotServices!.Count);
     }
 }

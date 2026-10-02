@@ -5,11 +5,12 @@ namespace EternalEnigma.Core.Generation;
 /// <summary>Picks a footprint for a building door. Every shape returned can hold a shop room.</summary>
 internal static class BuildingShapes
 {
-    public const int MinHalf = 1, MaxHalf = 3;      // widths 3, 5 and 7
-    public const int MinDepth = 4, MaxDepth = 6;
+    public const int MinHalf = 3, MaxHalf = 4;      // widths 7 and 9
+    public const int MinDepth = 7, MaxDepth = 8;    // a 5x5 floor needs front wall + 5 rows + back wall
+    public const int MinRoomSide = 5;
     private const int NotchPercent = 40;
 
-    /// <summary>The original 3x4 block.</summary>
+    /// <summary>The smallest block: 7x7, holding a 5x5 room.</summary>
     public static BuildingFootprint Default(GridPoint door) => BuildingFootprint.Rectangle(door, MinHalf, MinDepth);
 
     public static BuildingFootprint Random(SeedStream random, GridPoint door)
@@ -26,9 +27,25 @@ internal static class BuildingShapes
         if (wantsNotch && notchWidth > 0)
         {
             var notched = BuildingFootprint.Notched(door, half, depth, left, notchWidth, notchDepth);
-            if (notched.TryBuildRoom() != null) return notched;
+            if (HasOpenArea(notched.TryBuildRoom())) return notched;
         }
         var rectangle = BuildingFootprint.Rectangle(door, half, depth);
-        return rectangle.TryBuildRoom() != null ? rectangle : Default(door);
+        return HasOpenArea(rectangle.TryBuildRoom()) ? rectangle : Default(door);
+    }
+
+    /// <summary>True when the room's floor holds a square of at least MinRoomSide x MinRoomSide cells.</summary>
+    private static bool HasOpenArea(ShopRoom? room)
+    {
+        if (room == null) return false;
+        var floor = new HashSet<GridPoint>(room.Floor);
+        foreach (var origin in room.Floor)
+        {
+            bool open = true;
+            for (int dx = 0; dx < MinRoomSide && open; dx++)
+                for (int dy = 0; dy < MinRoomSide; dy++)
+                    if (!floor.Contains(new GridPoint(origin.X + dx, origin.Y + dy))) { open = false; break; }
+            if (open) return true;
+        }
+        return false;
     }
 }

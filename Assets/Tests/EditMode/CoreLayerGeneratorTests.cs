@@ -171,7 +171,7 @@ namespace EternalEnigma.Tests.CoreIntegration
                 .AllyCount;
 
             var shopFlags = config.Buildings
-                .Select(b => b != null && b.ShopCatalog != null && b.ShopCatalog.Count > 0)
+                .Select(b => b != null && b.HasInterior)
                 .ToArray();
 
             var expectedOptions = new TownPlanOptions(99, 15, 15, shopFlags, allyCount,

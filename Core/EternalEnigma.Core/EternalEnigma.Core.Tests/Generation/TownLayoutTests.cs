@@ -18,7 +18,7 @@ public class TownLayoutTests
             foreach (var town in campaign.Locations.Where(l => l.Kind == LocationKind.Town))
                 Assert.Equal(TownServiceCatalog.All.Select(s => s.Id), town.Services.Select(s => s.Id));
         }
-        Assert.Equal(13, TownServiceCatalog.All.Count);
+        Assert.Equal(14, TownServiceCatalog.All.Count);
         Assert.Equal(10, TownServiceCatalog.All.Count(s => s.Kind == TownServiceKind.Trainer));
     }
 
@@ -73,7 +73,7 @@ public class TownLayoutTests
         var plan = TownPlanGenerator.Generate(layout.Options);
 
         Assert.True(TownPlanValidator.Validate(plan, layout.Options).IsValid);
-        Assert.Equal(15, plan.BuildingSlots.Count);
+        Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings, plan.BuildingSlots.Count);
         Assert.Equal(layout.Options.Width, plan.Width);
         Assert.Equal(TownServiceCatalog.All.Count, layout.SlotServices.Count(s => s != null));
         Assert.Equal(CampaignContext.AuthoredTownBuildings, layout.SlotServices.Count(s => s == null));

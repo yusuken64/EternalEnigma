@@ -6,7 +6,7 @@ namespace EternalEnigma.Core.Generation;
 
 public static class CampaignGenerator
 {
-    public const int Version = 9;
+    public const int Version = 10;
     public const int TierCount = 5;
 
     public static Campaign Generate(int seed)

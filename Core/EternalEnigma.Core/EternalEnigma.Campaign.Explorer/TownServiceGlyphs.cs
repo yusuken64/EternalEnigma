@@ -20,6 +20,7 @@ public static class TownServiceGlyphs
         TownServiceKind.Bakery => 'b',
         TownServiceKind.Consumables => 'c',
         TownServiceKind.Items => 'i',
+        TownServiceKind.Inn => 'n',
         _ => ClassGlyphs.TryGetValue(service.ClassId ?? "", out var glyph) ? glyph : '?',
     };
 

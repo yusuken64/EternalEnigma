@@ -17,6 +17,9 @@ public class TownBuildingDefinition : ScriptableObject
     public List<TownShopOffer> ShopCatalog = new();
     [Tooltip("Optional vendor to spawn inside this shop's carved interior. Falls back to a shared placeholder when unset.")]
     public ShopVendor VendorPrefab;
+    [Tooltip("Gives a catalog-less building (e.g. the inn) a walk-in room with a vendor; shops get one automatically.")]
+    public bool ServiceInterior;
+    public bool HasInterior => ServiceInterior || (ShopCatalog != null && ShopCatalog.Count > 0);
 
     public void Validate()
     {

@@ -81,7 +81,8 @@ public class Town : MonoBehaviour
                 SkillRanks = (ally.SkillRanks ?? new List<SkillRankSaveData>())
                     .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                     .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList(),
-                HighestLevel = Mathf.Max(1, ally.HighestLevel)
+                HighestLevel = Mathf.Max(1, ally.HighestLevel),
+                Hp = ally.Hp, Sp = ally.Sp
             })).ToList();
         CampaignParty.Capture(Common.Instance);
     }
@@ -132,6 +133,7 @@ public class Town : MonoBehaviour
                 .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                 .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList();
             allyInstance.HighestLevel = Mathf.Max(1, allyData.HighestLevel);
+            allyInstance.Hp = allyData.Hp; allyInstance.Sp = allyData.Sp;
             allyInstance.RecruitCost = Configuration.Recruits.FirstOrDefault(r => r.Ally == prefab)?.Cost ?? 0;
             foreach (var item in allyData.Equipment ?? new())
                 if (item.Restore(Common.Instance.ItemManager) is EquipableInventoryItem equipment)
@@ -185,7 +187,7 @@ public class Town : MonoBehaviour
         foreach (var building in TownBuildings)
         {
             building.HasInterior = false;
-            if (building.Definition.ShopCatalog.Count == 0) continue;
+            if (!building.Definition.HasInterior) continue;
             if (!Plan.TryGetVendorAnchor(building.TilemapPosition.ToGridPoint(), out var anchor)) continue;
             var anchorCell = anchor.ToCell();
 

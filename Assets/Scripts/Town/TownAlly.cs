@@ -18,6 +18,9 @@ public class TownAlly : TownCharacter
 	public List<SkillRankSaveData> SkillRanks = new();
 	// Highest dungeon level reached; the trainer's level gate.
 	[Min(1)] public int HighestLevel = 1;
+	// Vitals carried between dungeon runs; -1 means full.
+	public int Hp = -1;
+	public int Sp = -1;
 
 	// Fixed per hero prefab (assigned in Phase 7). The protagonist's instance is overwritten from the save.
 	public ClassDefinition PrimaryClass;

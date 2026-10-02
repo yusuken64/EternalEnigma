@@ -81,6 +81,30 @@ public sealed class TownServices
         return true;
     }
 
+    /// <summary>True when any party member is carrying damage from a previous run.</summary>
+    public bool NeedsRest => Player.RecruitedAllies.Any(a => a.Hp >= 0 || a.Sp >= 0);
+
+    /// <summary>Free rest: clears carried damage so the whole party starts the next run at full HP/SP.</summary>
+    public bool Rest(out string reason)
+    {
+        reason = "Everyone is already fully rested.";
+        if (!NeedsRest) return false;
+        foreach (var ally in Player.RecruitedAllies) { ally.Hp = -1; ally.Sp = -1; }
+        town.SaveProgress();
+        reason = null;
+        return true;
+    }
+
+    /// <summary>Explicit save at the inn: also records the checkpoint a defeat restores.</summary>
+    public bool SaveGame(out string reason)
+    {
+        town.WriteSaveData();
+        InnCheckpoint.Create(Common.Instance);
+        town.SaveProgress();
+        reason = null;
+        return true;
+    }
+
     public int Donate(int requested)
     {
         int amount = Math.Min(Math.Max(0, requested), Math.Min(Player.Gold, int.MaxValue - Save.DonationTotal));

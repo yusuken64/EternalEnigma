@@ -62,6 +62,7 @@ public static class CampaignParty
                 .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                 .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList();
             ally.HighestLevel = Mathf.Max(1, data.HighestLevel);
+            ally.Hp = data.Hp; ally.Sp = data.Sp;
             HeroClassBinding.Apply(ally, data, common.GameSaveData);
             foreach (var item in data.Equipment)
                 if (item.Restore(common.ItemManager) is EquipableInventoryItem equipment) ally.Equipment.Equip(equipment);

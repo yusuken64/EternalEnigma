@@ -73,6 +73,8 @@ public class GameOverScreen : Dialog
 	public void TryAgain_Clicked()
 	{
 		if (_victory) { Common.Instance.Travel.ReturnToMenu(); return; }
+		// A defeat rewinds to the last inn save when there is one.
+		if (InnCheckpoint.TryRestore(Common.Instance)) return;
 		GoBackToTown(false, _playerController);
 	}
 

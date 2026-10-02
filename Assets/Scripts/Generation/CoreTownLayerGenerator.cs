@@ -68,7 +68,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     public static void Configure(TileWorldCreatorAsset asset, TownConfiguration configuration)
     {
         int count = configuration.Buildings.Count;
-        string flags = string.Concat(configuration.Buildings.Select(b => b != null && b.ShopCatalog != null && b.ShopCatalog.Count > 0 ? '1' : '0'));
+        string flags = string.Concat(configuration.Buildings.Select(b => b != null && b.HasInterior ? '1' : '0'));
         var spawn = configuration.PartySpawn;
         foreach (var layer in asset.mapBlueprintLayers)
             foreach (var stack in layer.stack)

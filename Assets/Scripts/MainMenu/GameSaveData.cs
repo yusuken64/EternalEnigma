@@ -11,6 +11,8 @@ public class GameSaveData
     public List<TownAllyData> Roster = new();
     public string ProtagonistId;
     public string PreRunTownJson;
+    // Full copy of this save as of the last inn save; a defeat restores it. Never nested.
+    public string InnSaveJson;
 	public TownSaveData TownSaveData = new();
 	public DungeonSaveData DungeonSaveData = new();
 }
@@ -60,6 +62,9 @@ public class TownAllyData
 	public List<SkillRankSaveData> SkillRanks = new();
 	// Highest dungeon level this hero has reached; gates trainer ranks and tiers.
 	public int HighestLevel = 1;
+	// Persisted vitals carried between dungeon runs; -1 means full (never set, or restored by the inn).
+	public int Hp = -1;
+	public int Sp = -1;
 }
 
 [Serializable]

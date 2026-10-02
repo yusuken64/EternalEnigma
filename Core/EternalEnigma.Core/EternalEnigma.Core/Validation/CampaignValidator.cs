@@ -136,7 +136,7 @@ public static class CampaignValidator
                 continue;
             }
             Check(location.Services.Distinct().Count() == location.Services.Count, $"towns.services: {location.Id} lists a service twice.");
-            foreach (var kind in new[] { TownServiceKind.Bakery, TownServiceKind.Consumables, TownServiceKind.Items })
+            foreach (var kind in new[] { TownServiceKind.Bakery, TownServiceKind.Consumables, TownServiceKind.Items, TownServiceKind.Inn })
                 Check(location.Services.Any(s => s.Kind == kind), $"towns.services: {location.Id} needs a {kind} shop.");
             foreach (var classId in TownServiceCatalog.ClassIds)
                 Check(location.Services.Any(s => s.Kind == TownServiceKind.Trainer && s.ClassId == classId), $"towns.trainers: {location.Id} needs a {classId} trainer.");

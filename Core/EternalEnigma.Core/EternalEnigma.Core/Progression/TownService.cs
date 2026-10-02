@@ -1,6 +1,6 @@
 namespace EternalEnigma.Core.Progression;
 
-public enum TownServiceKind { Bakery, Consumables, Items, Trainer }
+public enum TownServiceKind { Bakery, Consumables, Items, Inn, Trainer }
 
 /// <summary>One building-sized service a town offers. Trainers are split by class.</summary>
 public sealed class TownService : IEquatable<TownService>
@@ -41,7 +41,7 @@ public static class TownServiceCatalog
     });
 
     public static readonly IReadOnlyList<TownService> All = Array.AsReadOnly(
-        new[] { TownService.Shop(TownServiceKind.Bakery), TownService.Shop(TownServiceKind.Consumables), TownService.Shop(TownServiceKind.Items) }
+        new[] { TownService.Shop(TownServiceKind.Bakery), TownService.Shop(TownServiceKind.Consumables), TownService.Shop(TownServiceKind.Items), TownService.Shop(TownServiceKind.Inn) }
             .Concat(ClassIds.Select(TownService.Trainer)).ToArray());
 
     /// <summary>Extension point for per-town variety: tier and stage are available for later rules.</summary>

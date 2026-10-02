@@ -10,6 +10,11 @@ public class PlayerController : MonoBehaviour
     private float holdTime = 0f;
     private float menuCooldown = 0f;
     private float repeatTime = 0.1f;
+    private const float DiagonalReleaseGrace = 0.12f;
+    private float lastDiagonalInputTime = float.NegativeInfinity;
+
+    private static bool IsDiagonal(Facing facing) =>
+        facing == Facing.UpLeft || facing == Facing.UpRight || facing == Facing.DownLeft || facing == Facing.DownRight;
 
     // === Dependencies ===
     private CheatConsole _cheatConsole;
@@ -140,22 +145,34 @@ public class PlayerController : MonoBehaviour
             // Normalize the input so diagonal directions are consistent
             move.Normalize();
 
+            Facing? desired = null;
             if (move.x < -0.5f && move.y > 0.5f)
-                ControlledAlly.SetFacing(Facing.UpLeft);
+                desired = Facing.UpLeft;
             else if (move.x > 0.5f && move.y > 0.5f)
-                ControlledAlly.SetFacing(Facing.UpRight);
+                desired = Facing.UpRight;
             else if (move.x < -0.5f && move.y < -0.5f)
-                ControlledAlly.SetFacing(Facing.DownLeft);
+                desired = Facing.DownLeft;
             else if (move.x > 0.5f && move.y < -0.5f)
-                ControlledAlly.SetFacing(Facing.DownRight);
+                desired = Facing.DownRight;
             else if (move.y > 0.5f)
-                ControlledAlly.SetFacing(Facing.Up);
+                desired = Facing.Up;
             else if (move.x < -0.5f)
-                ControlledAlly.SetFacing(Facing.Left);
+                desired = Facing.Left;
             else if (move.y < -0.5f)
-                ControlledAlly.SetFacing(Facing.Down);
+                desired = Facing.Down;
             else if (move.x > 0.5f)
-                ControlledAlly.SetFacing(Facing.Right);
+                desired = Facing.Right;
+
+            if (desired.HasValue)
+            {
+                bool diagonalDesired = IsDiagonal(desired.Value);
+                // Keys are rarely released on the same frame; keep the diagonal briefly so
+                // letting go of one key doesn't snap the facing to a cardinal direction.
+                bool releasingDiagonal = !diagonalDesired && IsDiagonal(ControlledAlly.CurrentFacing) &&
+                    Time.unscaledTime - lastDiagonalInputTime < DiagonalReleaseGrace;
+                if (diagonalDesired) lastDiagonalInputTime = Time.unscaledTime;
+                if (!releasingDiagonal) ControlledAlly.SetFacing(desired.Value);
+            }
         }
 
         if (!PlayerInputHandler.Instance.holdPosition)

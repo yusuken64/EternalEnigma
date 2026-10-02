@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: Spell_Warp
   m_EditorClassIdentifier: 
-  ItemName: Spell_Warp
+  ItemName: Warp Spell
   Description: Warp to another location
   ItemEffectDefinition: {fileID: 11400000, guid: f90873ade55c2a845b858a5bf53d2fd2, type: 2}
   ApplyToThrownTarget: 0

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: Spell_Explosion
   m_EditorClassIdentifier: 
-  ItemName: Spell_Explosion
+  ItemName: Explosion Spell
   Description: Cause a large explosion
   ItemEffectDefinition: {fileID: 11400000, guid: dcd471b28467691419fcf17be1e43592, type: 2}
   ApplyToThrownTarget: 0

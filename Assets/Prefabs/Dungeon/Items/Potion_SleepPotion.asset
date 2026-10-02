@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: Potion_SleepPotion
   m_EditorClassIdentifier: 
-  ItemName: SleepPotion
+  ItemName: Sleep Potion
   Description: Become sleepy
   ItemEffectDefinition: {fileID: 11400000, guid: 0f03abec0f2a4924197509ae75f005c4, type: 2}
   ApplyToThrownTarget: 1

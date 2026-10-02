@@ -25,7 +25,12 @@ internal class DropItemAction : GameAction
 		Game game = Game.Instance;
 		if (!inventory.InventoryItems.Contains(item)) return new();
 		dropped = DungeonPlacement.TryDrop(game.CurrentDungeon, dropPosition, item, out _);
-		if (dropped) inventory.Remove(item);
+		if (!dropped) return new();
+
+		// Equipped items are listed in the inventory too; dropping one must not leave it equipped.
+		if (item is EquipableInventoryItem equipable && character.Equipment.IsEquipped(equipable))
+			character.Equipment.UnEquip(equipable);
+		inventory.Remove(item);
 
 		return new();
 	}

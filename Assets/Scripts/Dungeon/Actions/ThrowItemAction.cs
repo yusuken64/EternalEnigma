@@ -6,6 +6,7 @@ using UnityEngine;
 
 internal class ThrowItemAction : GameAction
 {
+	private const float ProjectileSpeed = 20f; // world units per second, same as RangedAttackAction
     private readonly Inventory inventory;
     private Character thrower;
 	private InventoryItem item;
@@ -29,7 +30,7 @@ internal class ThrowItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		var game = Game.Instance;
-		inventory.InventoryItems.Remove(item);
+		GameMessages.ForCharacter(thrower, $"{GameMessages.Name(thrower)} threw {item.ItemName}.");
 
 		var ret = new List<GameAction>();
 		if (thrower.Equipment.IsEquipped(item))
@@ -46,13 +47,28 @@ internal class ThrowItemAction : GameAction
 				40,
 				Dungeon.StopArrow);
 
-		Character rangedAttackTarget = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == rangedAttackTargetPosition);
+		// Allies are passed over by the projectile, and a wall right in front leaves the landing cell on the thrower.
+		Character rangedAttackTarget = game.AllCharacters.FirstOrDefault(x =>
+			x != thrower && x.Team != thrower.Team && x.TilemapPosition == rangedAttackTargetPosition);
+
+		var weapon = item is EquipableInventoryItem equipable &&
+			(equipable.EquipmentSlot == EquipmentSlot.MainHand || equipable.EquipmentSlot == EquipmentSlot.TwoHand)
+			? equipable : null;
 
 		if (rangedAttackTarget != null)
 		{
 			if (item.ItemDefinition.ApplyToThrownTarget)
 			{
 				ret.AddRange(item.GetGameActions(thrower, rangedAttackTarget, inventory, item));
+			}
+			else if (weapon != null)
+			{
+				// A thrown weapon lands like a swing of that weapon, whether or not it was the one equipped.
+				AttackAction.GetAttackDamage(thrower, rangedAttackTarget, WeaponStrength(weapon), out bool hit, out int damage, out bool critical);
+				if (hit && damage > 0 && !AutoplayRunner.GodmodeFor(thrower))
+					damage = Mathf.Max(1, Mathf.RoundToInt(damage * ClassPassives.DamageMultiplier(
+						new OutgoingDamage(thrower, rangedAttackTarget, DamageCategory.Weapon, DamageElement.Physical, false))));
+				ret.Add(new TakeDamageAction(thrower, rangedAttackTarget, damage, true, !hit) { Critical = critical });
 			}
 			else
 			{
@@ -63,10 +79,28 @@ internal class ThrowItemAction : GameAction
 		}
 		else
 		{
+			if (game.CurrentDungeon.PropAt(rangedAttackTargetPosition) is DungeonProp prop && prop.Alive)
+			{
+				int propDamage = weapon != null
+					? Mathf.Max(1, Mathf.FloorToInt(WeaponStrength(weapon) * UnityEngine.Random.Range(112, 143) / 128f))
+					: Mathf.RoundToInt(5 * ClassPassives.ThrowDamageMultiplier(thrower));
+				ret.Add(prop.Damage(thrower, propDamage));
+			}
 			ret.Add(new FallToGroundAction(rangedAttackTargetPosition, item));
 		}
 
+		inventory.InventoryItems.Remove(item);
 		return ret;
+	}
+
+	// Thrower's strength with the thrown weapon's bonus standing in for whatever weapon is currently equipped.
+	private int WeaponStrength(EquipableInventoryItem weapon)
+	{
+		int strength = thrower.FinalStats.Strength;
+		var equipped = thrower.Equipment.EquippedWeapon;
+		if (equipped != null && equipped != weapon) strength -= equipped.GetEquipmentStatModification().Strength;
+		if (equipped != weapon) strength += weapon.GetEquipmentStatModification().Strength;
+		return strength;
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
@@ -74,11 +108,12 @@ internal class ThrowItemAction : GameAction
 		if (skipAnimation) yield break;
 		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
 			.WaitForCompletion();
+		if (projectilePrefab == null) yield break;
 
 		var game = Game.Instance;
 		var projectile = UnityEngine.Object.Instantiate(projectilePrefab, null);
-		projectile.transform.position = character.VisualParent.transform.position;
-		var attackerWorldPosition = game.CurrentDungeon.CellToWorld(character.TilemapPosition);
+		Vector3 startPosition = character.VisualParent.transform.position;
+		projectile.transform.position = startPosition;
 		var targetWorldPosition = game.CurrentDungeon.CellToWorld(rangedAttackTargetPosition);
 
 		Vector3 offset = Vector3.zero;
@@ -87,7 +122,9 @@ internal class ThrowItemAction : GameAction
 			offset = new Vector3(1.25f, 1.25f, 0);
 			projectile.transform.LookAt(targetWorldPosition + offset);
 		}
-		yield return projectile.transform.DOMove(targetWorldPosition + offset, 0.5f)
+		float duration = Vector3.Distance(startPosition, targetWorldPosition + offset) / ProjectileSpeed;
+		yield return projectile.transform.DOMove(targetWorldPosition + offset, duration)
+			.SetEase(Ease.Linear)
 			.WaitForCompletion();
 
 		UnityEngine.Object.Destroy(projectile.gameObject);
@@ -103,13 +140,6 @@ internal class ThrowItemAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		Game game = Game.Instance;
-
-		if (!inventory.InventoryItems.Contains(item))
-		{
-			return false;
-		}
-
-		return true;
+		return inventory.InventoryItems.Contains(item);
 	}
 }

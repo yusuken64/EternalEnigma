@@ -9,6 +9,7 @@ internal class MovementAction : GameAction
 {
 	private Vector3Int originalPosition;
 	internal Vector3Int newMapPosition;
+	private bool blocked;
 
 	public Character Character { get; }
 	public MovementAction() { }
@@ -21,7 +22,7 @@ internal class MovementAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		if ((character != null && character.IsMovementBlocked)) { newMapPosition=originalPosition; return new(); }
+		if ((character != null && character.IsMovementBlocked)) { blocked = true; newMapPosition=originalPosition; return new(); }
 		bool excludeAllies = false;
 
 		var overlapTarget = Game.Instance.CurrentDungeon
@@ -34,6 +35,11 @@ internal class MovementAction : GameAction
 
 		character.TilemapPosition = newMapPosition;
 		return new();
+	}
+
+	internal override void RecordOutcome(Character character)
+	{
+		if (blocked) GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} can't move!");
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
@@ -67,7 +73,7 @@ internal class MovementAction : GameAction
 	internal override bool IsValid(Character character)
 	{
 		var canWalk = Game.Instance.CurrentDungeon.CanWalkTo(originalPosition, newMapPosition);
-		if ((character != null && character.IsMovementBlocked)) return false;
+		// A blocked mover (rooted/stuck) is still a valid command: ExecuteImmediate cancels the step and the turn is spent.
 
 		bool excludeAllies = true;
 		var overlapTarget = Game.Instance.CurrentDungeon
@@ -150,12 +156,16 @@ internal class AttackAction : GameAction
 	public static void GetAttackDamage(Character attacker, Character target, out bool hit, out int damage) =>
 		GetAttackDamage(attacker, target, out hit, out damage, out _);
 
-	public static void GetAttackDamage(Character attacker, Character target, out bool hit, out int damage, out bool critical)
+	public static void GetAttackDamage(Character attacker, Character target, out bool hit, out int damage, out bool critical) =>
+		GetAttackDamage(attacker, target, attacker.FinalStats.Strength, out hit, out damage, out critical);
+
+	/// <summary>Same swing formula, with the attacker's strength supplied (e.g. swapping in a different weapon's bonus).</summary>
+	public static void GetAttackDamage(Character attacker, Character target, int strength, out bool hit, out int damage, out bool critical)
 	{
 		// Resolve infinite strength as lethal damage, avoiding overflowing integer stats or saved equipment.
 		if (AutoplayRunner.GodmodeFor(attacker)) { hit = true; damage = Math.Max(0, target.Vitals.HP); critical = false; return; }
 		hit = CombatMath.RollHit(attacker, target);
-		var baseDamage = attacker.FinalStats.Strength * MathF.Pow((15f / 16f), target.FinalStats.Defense);
+		var baseDamage = strength * MathF.Pow((15f / 16f), target.FinalStats.Defense);
 		float n = (float)UnityEngine.Random.Range(112, 143);
 		damage = (int)MathF.Floor(baseDamage * (n / 128f));
 		critical = hit && CombatMath.RollCrit(attacker);

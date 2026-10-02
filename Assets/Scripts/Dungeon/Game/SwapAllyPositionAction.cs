@@ -32,6 +32,11 @@ internal class SwapAllyPositionAction : GameAction
 		return new();
 	}
 
+	internal override void RecordOutcome(Character character)
+	{
+		if (blocked) GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} can't move!");
+	}
+
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
         if(blocked) yield break;

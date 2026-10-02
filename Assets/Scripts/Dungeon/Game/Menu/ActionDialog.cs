@@ -36,14 +36,11 @@ namespace JuicyChickenGames.Menu
 
 		public void Throw_Clicked()
 		{
-			var droppedItemPrefab = Game.Instance.CurrentDungeon.DroppedItemPrefabs
-				.FirstOrDefault(x => x.DroppedItemVisual == _data.ItemDefinition.DroppedItemVisual)
-				.gameObject;
-
-			if (droppedItemPrefab == null)
-			{
-				droppedItemPrefab = Game.Instance.ThrownItemProjectilePrefab;
-			}
+			var droppedItem = Game.Instance.CurrentDungeon.DroppedItemPrefabs
+				.FirstOrDefault(x => x.DroppedItemVisual == _data.ItemDefinition.DroppedItemVisual);
+			var droppedItemPrefab = droppedItem != null
+				? droppedItem.gameObject
+				: Game.Instance.ThrownItemProjectilePrefab;
 			_character.SetAction(new ThrowItemAction(Game.Instance.PlayerController.Inventory, _character, _data, droppedItemPrefab)
 			{
 				LookAt = false

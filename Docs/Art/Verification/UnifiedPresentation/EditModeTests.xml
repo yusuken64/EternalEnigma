@@ -1,0 +1,1702 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="211" result="Failed(Child)" total="211" passed="201" failed="10" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-03 23:00:51Z" end-time="2026-10-03 23:02:36Z" duration="104.5262262">
+  <test-suite type="TestSuite" id="1000" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="211" result="Failed" site="Child" start-time="2026-10-03 23:00:51Z" end-time="2026-10-03 23:02:36Z" duration="104.526226" total="211" passed="201" failed="10" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1262" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="211" result="Failed" site="Child" start-time="2026-10-03 23:00:51Z" end-time="2026-10-03 23:02:36Z" duration="104.414924" total="211" passed="201" failed="10" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="31704" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestFixture" id="1002" name="CombatEffectAssignmentTests" fullname="CombatEffectAssignmentTests" classname="CombatEffectAssignmentTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-03 23:00:51Z" end-time="2026-10-03 23:00:54Z" duration="3.010590" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1006" name="CirclesAndAurasCoverAtLeastThreeTilesAndFlatParticlesUseTheDungeonPlane" fullname="CombatEffectAssignmentTests.CirclesAndAurasCoverAtLeastThreeTilesAndFlatParticlesUseTheDungeonPlane" methodname="CirclesAndAurasCoverAtLeastThreeTilesAndFlatParticlesUseTheDungeonPlane" classname="CombatEffectAssignmentTests" runstate="Runnable" seed="1994996454" result="Passed" start-time="2026-10-03 23:00:51Z" end-time="2026-10-03 23:00:53Z" duration="1.352390" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1003" name="EverySkillHasAnExplicitProfileAndRpgPackIcon" fullname="CombatEffectAssignmentTests.EverySkillHasAnExplicitProfileAndRpgPackIcon" methodname="EverySkillHasAnExplicitProfileAndRpgPackIcon" classname="CombatEffectAssignmentTests" runstate="Runnable" seed="717339387" result="Passed" start-time="2026-10-03 23:00:53Z" end-time="2026-10-03 23:00:53Z" duration="0.157709" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1004" name="EveryStatusTypeAndCharacterPrefabHasAssignments" fullname="CombatEffectAssignmentTests.EveryStatusTypeAndCharacterPrefabHasAssignments" methodname="EveryStatusTypeAndCharacterPrefabHasAssignments" classname="CombatEffectAssignmentTests" runstate="Runnable" seed="579757187" result="Passed" start-time="2026-10-03 23:00:53Z" end-time="2026-10-03 23:00:54Z" duration="1.355335" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="ProfilesUseBothPacksAndSafeOwnedPrefabs" fullname="CombatEffectAssignmentTests.ProfilesUseBothPacksAndSafeOwnedPrefabs" methodname="ProfilesUseBothPacksAndSafeOwnedPrefabs" classname="CombatEffectAssignmentTests" runstate="Runnable" seed="2101277676" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.034068" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1007" name="CombatMathTests" fullname="CombatMathTests" classname="CombatMathTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.227922" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1020" name="CritMultipliesByOneAndAHalf" fullname="CombatMathTests.CritMultipliesByOneAndAHalf" methodname="CritMultipliesByOneAndAHalf" classname="CombatMathTests" runstate="Runnable" seed="763939906" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.001201" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1014" name="ElementMultiplierSteps" fullname="CombatMathTests.ElementMultiplierSteps" classname="CombatMathTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.207083" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1008" name="ElementMultiplierSteps(-3,1.5f)" fullname="CombatMathTests.ElementMultiplierSteps(-3,1.5f)" methodname="ElementMultiplierSteps" classname="CombatMathTests" runstate="Runnable" seed="1336754216" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.001030" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1009" name="ElementMultiplierSteps(-1,1.5f)" fullname="CombatMathTests.ElementMultiplierSteps(-1,1.5f)" methodname="ElementMultiplierSteps" classname="CombatMathTests" runstate="Runnable" seed="812536007" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.000148" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1010" name="ElementMultiplierSteps(0,1.0f)" fullname="CombatMathTests.ElementMultiplierSteps(0,1.0f)" methodname="ElementMultiplierSteps" classname="CombatMathTests" runstate="Runnable" seed="1163379753" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.000130" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1011" name="ElementMultiplierSteps(1,0.5f)" fullname="CombatMathTests.ElementMultiplierSteps(1,0.5f)" methodname="ElementMultiplierSteps" classname="CombatMathTests" runstate="Runnable" seed="518934941" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.000146" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1012" name="ElementMultiplierSteps(2,0.0f)" fullname="CombatMathTests.ElementMultiplierSteps(2,0.0f)" methodname="ElementMultiplierSteps" classname="CombatMathTests" runstate="Runnable" seed="1872497989" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.000275" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1013" name="ElementMultiplierSteps(4,0.0f)" fullname="CombatMathTests.ElementMultiplierSteps(4,0.0f)" methodname="ElementMultiplierSteps" classname="CombatMathTests" runstate="Runnable" seed="1470952599" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.000186" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1015" name="EveryElementReadsItsOwnResistance" fullname="CombatMathTests.EveryElementReadsItsOwnResistance" methodname="EveryElementReadsItsOwnResistance" classname="CombatMathTests" runstate="Runnable" seed="1463697528" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.001029" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1019" name="HitChanceIsClamped" fullname="CombatMathTests.HitChanceIsClamped" methodname="HitChanceIsClamped" classname="CombatMathTests" runstate="Runnable" seed="1834488125" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.000690" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1017" name="StatModificationCopiesSPMaxAndNewFields" fullname="CombatMathTests.StatModificationCopiesSPMaxAndNewFields" methodname="StatModificationCopiesSPMaxAndNewFields" classname="CombatMathTests" runstate="Runnable" seed="877359537" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.000800" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1016" name="StatsPlusModificationAddsEveryField" fullname="CombatMathTests.StatsPlusModificationAddsEveryField" methodname="StatsPlusModificationAddsEveryField" classname="CombatMathTests" runstate="Runnable" seed="1448709231" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.009027" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1018" name="SyncAndHashIncludeNewFields" fullname="CombatMathTests.SyncAndHashIncludeNewFields" methodname="SyncAndHashIncludeNewFields" classname="CombatMathTests" runstate="Runnable" seed="474256844" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.001037" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1021" name="EquipmentRegressionTests" fullname="EquipmentRegressionTests" classname="EquipmentRegressionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:55Z" duration="0.120186" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1022" name="OffhandPreviewAndEquipHandleSerializedEmptySlots" fullname="EquipmentRegressionTests.OffhandPreviewAndEquipHandleSerializedEmptySlots" methodname="OffhandPreviewAndEquipHandleSerializedEmptySlots" classname="EquipmentRegressionTests" runstate="Runnable" seed="1894218752" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:54Z" duration="0.010388" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1027" name="ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement" fullname="EquipmentRegressionTests.ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement" classname="EquipmentRegressionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-03 23:00:54Z" end-time="2026-10-03 23:00:55Z" duration="0.093618" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1024" name="ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement(MainHand)" fullname="EquipmentRegressionTests.ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement(MainHand)" methodname="ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement" classname="EquipmentRegressionTests" runstate="Runnable" seed="805982334" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.002718" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1025" name="ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement(OffHand)" fullname="EquipmentRegressionTests.ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement(OffHand)" methodname="ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement" classname="EquipmentRegressionTests" runstate="Runnable" seed="559868977" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000476" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1026" name="ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement(Accessory)" fullname="EquipmentRegressionTests.ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement(Accessory)" methodname="ReplacementNotifiesOnceAndStaleUnequipDoesNotRemoveReplacement" classname="EquipmentRegressionTests" runstate="Runnable" seed="2048621210" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000483" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1023" name="SerializedEquipmentRetainsDefinitionSlotAndStats" fullname="EquipmentRegressionTests.SerializedEquipmentRetainsDefinitionSlotAndStats" methodname="SerializedEquipmentRetainsDefinitionSlotAndStats" classname="EquipmentRegressionTests" runstate="Runnable" seed="1595245438" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.002488" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestSuite" id="1263" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="128" result="Failed" site="Child" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:02:35Z" duration="100.037093" total="128" passed="123" failed="5" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1264" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="128" result="Failed" site="Child" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:02:35Z" duration="99.945869" total="128" passed="123" failed="5" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1100" name="AllySkillIntentTests" fullname="EternalEnigma.Tests.AllySkillIntentTests" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" testcasecount="16" result="Failed" site="Child" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.127325" total="16" passed="15" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1113" name="ArrowsAllowKeepsThree" fullname="EternalEnigma.Tests.AllySkillIntentTests.ArrowsAllowKeepsThree" methodname="ArrowsAllowKeepsThree" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="1620243616" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000501" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1112" name="CanAffordRespectsReserve" fullname="EternalEnigma.Tests.AllySkillIntentTests.CanAffordRespectsReserve" methodname="CanAffordRespectsReserve" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="1209584586" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.002319" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1109" name="CureEffectIsCure" fullname="EternalEnigma.Tests.AllySkillIntentTests.CureEffectIsCure" methodname="CureEffectIsCure" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="214187269" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000315" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1116" name="CureMatchesConfiguredGroups" fullname="EternalEnigma.Tests.AllySkillIntentTests.CureMatchesConfiguredGroups" methodname="CureMatchesConfiguredGroups" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="1600681633" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.012370" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1101" name="DamageOnEnemiesIsDamage" fullname="EternalEnigma.Tests.AllySkillIntentTests.DamageOnEnemiesIsDamage" methodname="DamageOnEnemiesIsDamage" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="627011532" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000376" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1115" name="DangerScoreDoublesForBosses" fullname="EternalEnigma.Tests.AllySkillIntentTests.DangerScoreDoublesForBosses" methodname="DangerScoreDoublesForBosses" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="888714079" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000451" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1108" name="DashStrikeIsDamageAndMovement" fullname="EternalEnigma.Tests.AllySkillIntentTests.DashStrikeIsDamageAndMovement" methodname="DashStrikeIsDamageAndMovement" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="1095147548" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000241" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1104" name="DotOnEnemiesIsDebuff" fullname="EternalEnigma.Tests.AllySkillIntentTests.DotOnEnemiesIsDebuff" methodname="DotOnEnemiesIsDebuff" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="783193731" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000469" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1114" name="EmergencyBelowThirtyPercent" fullname="EternalEnigma.Tests.AllySkillIntentTests.EmergencyBelowThirtyPercent" methodname="EmergencyBelowThirtyPercent" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="503433726" result="Failed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.002391" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: False
+  But was:  True
+]]></message>
+                <stack-trace><![CDATA[at EternalEnigma.Tests.AllySkillIntentTests.EmergencyBelowThirtyPercent () [0x00015] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\AllySkillIntentTests.cs:230
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1102" name="HealIsHealAndReserveSkill" fullname="EternalEnigma.Tests.AllySkillIntentTests.HealIsHealAndReserveSkill" methodname="HealIsHealAndReserveSkill" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="1829516733" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000262" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1110" name="PassiveOrInventoryOrNullIsNone" fullname="EternalEnigma.Tests.AllySkillIntentTests.PassiveOrInventoryOrNullIsNone" methodname="PassiveOrInventoryOrNullIsNone" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="1157876170" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000484" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1106" name="RetreatIsNever" fullname="EternalEnigma.Tests.AllySkillIntentTests.RetreatIsNever" methodname="RetreatIsNever" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="1174532614" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000221" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1107" name="ReviveIsRevive" fullname="EternalEnigma.Tests.AllySkillIntentTests.ReviveIsRevive" methodname="ReviveIsRevive" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="724584367" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000225" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1103" name="SleepOnEnemiesIsCrowdControl" fullname="EternalEnigma.Tests.AllySkillIntentTests.SleepOnEnemiesIsCrowdControl" methodname="SleepOnEnemiesIsCrowdControl" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="923284289" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000436" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1111" name="SpReserveIsHighestHealCostAndHalvedWhenAggressive" fullname="EternalEnigma.Tests.AllySkillIntentTests.SpReserveIsHighestHealCostAndHalvedWhenAggressive" methodname="SpReserveIsHighestHealCostAndHalvedWhenAggressive" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="850294046" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.002375" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1105" name="StrengthOnSelfIsBuff" fullname="EternalEnigma.Tests.AllySkillIntentTests.StrengthOnSelfIsBuff" methodname="StrengthOnSelfIsBuff" classname="EternalEnigma.Tests.AllySkillIntentTests" runstate="Runnable" seed="716915415" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000347" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1117" name="AutoplayControlPreferenceTests" fullname="EternalEnigma.Tests.AutoplayControlPreferenceTests" classname="EternalEnigma.Tests.AutoplayControlPreferenceTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.181610" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1124" name="OwnershipWinsWithoutChangingStoredValues" fullname="EternalEnigma.Tests.AutoplayControlPreferenceTests.OwnershipWinsWithoutChangingStoredValues" classname="EternalEnigma.Tests.AutoplayControlPreferenceTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.108363" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1118" name="OwnershipWinsWithoutChangingStoredValues(0,null)" fullname="EternalEnigma.Tests.AutoplayControlPreferenceTests.OwnershipWinsWithoutChangingStoredValues(0,null)" methodname="OwnershipWinsWithoutChangingStoredValues" classname="EternalEnigma.Tests.AutoplayControlPreferenceTests" runstate="Runnable" seed="1971448878" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.006444" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1119" name="OwnershipWinsWithoutChangingStoredValues(1,null)" fullname="EternalEnigma.Tests.AutoplayControlPreferenceTests.OwnershipWinsWithoutChangingStoredValues(1,null)" methodname="OwnershipWinsWithoutChangingStoredValues" classname="EternalEnigma.Tests.AutoplayControlPreferenceTests" runstate="Runnable" seed="847921134" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000430" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1120" name="OwnershipWinsWithoutChangingStoredValues(0,True)" fullname="EternalEnigma.Tests.AutoplayControlPreferenceTests.OwnershipWinsWithoutChangingStoredValues(0,True)" methodname="OwnershipWinsWithoutChangingStoredValues" classname="EternalEnigma.Tests.AutoplayControlPreferenceTests" runstate="Runnable" seed="1476455689" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000519" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1121" name="OwnershipWinsWithoutChangingStoredValues(1,True)" fullname="EternalEnigma.Tests.AutoplayControlPreferenceTests.OwnershipWinsWithoutChangingStoredValues(1,True)" methodname="OwnershipWinsWithoutChangingStoredValues" classname="EternalEnigma.Tests.AutoplayControlPreferenceTests" runstate="Runnable" seed="1721152825" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000498" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1122" name="OwnershipWinsWithoutChangingStoredValues(0,False)" fullname="EternalEnigma.Tests.AutoplayControlPreferenceTests.OwnershipWinsWithoutChangingStoredValues(0,False)" methodname="OwnershipWinsWithoutChangingStoredValues" classname="EternalEnigma.Tests.AutoplayControlPreferenceTests" runstate="Runnable" seed="49585929" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000499" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1123" name="OwnershipWinsWithoutChangingStoredValues(1,False)" fullname="EternalEnigma.Tests.AutoplayControlPreferenceTests.OwnershipWinsWithoutChangingStoredValues(1,False)" methodname="OwnershipWinsWithoutChangingStoredValues" classname="EternalEnigma.Tests.AutoplayControlPreferenceTests" runstate="Runnable" seed="1201899918" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000359" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1125" name="AutoplayRouteTests" fullname="EternalEnigma.Tests.AutoplayRouteTests" classname="EternalEnigma.Tests.AutoplayRouteTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:01:01Z" duration="5.997103" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1127" name="FollowsSharedAStarRouteAndReplansAroundNewObstruction" fullname="EternalEnigma.Tests.AutoplayRouteTests.FollowsSharedAStarRouteAndReplansAroundNewObstruction" methodname="FollowsSharedAStarRouteAndReplansAroundNewObstruction" classname="EternalEnigma.Tests.AutoplayRouteTests" runstate="Runnable" seed="1997519873" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.007014" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1128" name="UsesTheScenesDiagonalRulesAndDoesNotInventUnreachablePaths" fullname="EternalEnigma.Tests.AutoplayRouteTests.UsesTheScenesDiagonalRulesAndDoesNotInventUnreachablePaths" methodname="UsesTheScenesDiagonalRulesAndDoesNotInventUnreachablePaths" classname="EternalEnigma.Tests.AutoplayRouteTests" runstate="Runnable" seed="924486056" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:00:55Z" duration="0.000686" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1126" name="WaterCrossingsAreNotGateOpeningObjectives" fullname="EternalEnigma.Tests.AutoplayRouteTests.WaterCrossingsAreNotGateOpeningObjectives" methodname="WaterCrossingsAreNotGateOpeningObjectives" classname="EternalEnigma.Tests.AutoplayRouteTests" runstate="Runnable" seed="1728434293" result="Passed" start-time="2026-10-03 23:00:55Z" end-time="2026-10-03 23:01:01Z" duration="5.898506" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1129" name="ClassContentTests" fullname="EternalEnigma.Tests.ClassContentTests" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" testcasecount="9" result="Failed" site="Child" start-time="2026-10-03 23:01:01Z" end-time="2026-10-03 23:01:02Z" duration="0.699413" total="9" passed="8" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1134" name="ArrowSkillsNeedABow" fullname="EternalEnigma.Tests.ClassContentTests.ArrowSkillsNeedABow" methodname="ArrowSkillsNeedABow" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="1921258998" result="Passed" start-time="2026-10-03 23:01:01Z" end-time="2026-10-03 23:01:01Z" duration="0.144325" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1138" name="BossesAndResistancesAreAuthored" fullname="EternalEnigma.Tests.ClassContentTests.BossesAndResistancesAreAuthored" methodname="BossesAndResistancesAreAuthored" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="314759956" result="Failed" start-time="2026-10-03 23:01:01Z" end-time="2026-10-03 23:01:01Z" duration="0.002483" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Dragon should be marked as boss
+  Expected: True
+  But was:  False
+]]></message>
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassContentTests.BossesAndResistancesAreAuthored () [0x00027] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\ClassContentTests.cs:340
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1130" name="CatalogHasTheTenClasses" fullname="EternalEnigma.Tests.ClassContentTests.CatalogHasTheTenClasses" methodname="CatalogHasTheTenClasses" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="2047860993" result="Passed" start-time="2026-10-03 23:01:01Z" end-time="2026-10-03 23:01:01Z" duration="0.004039" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1131" name="EachClassKitMatchesTheDesign" fullname="EternalEnigma.Tests.ClassContentTests.EachClassKitMatchesTheDesign" methodname="EachClassKitMatchesTheDesign" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="494092533" result="Passed" start-time="2026-10-03 23:01:01Z" end-time="2026-10-03 23:01:01Z" duration="0.011833" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1136" name="EveryHeroHasItsFixedClass" fullname="EternalEnigma.Tests.ClassContentTests.EveryHeroHasItsFixedClass" methodname="EveryHeroHasItsFixedClass" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="1878462249" result="Passed" start-time="2026-10-03 23:01:01Z" end-time="2026-10-03 23:01:02Z" duration="0.410983" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1132" name="SkillAssetsAreWellFormed" fullname="EternalEnigma.Tests.ClassContentTests.SkillAssetsAreWellFormed" methodname="SkillAssetsAreWellFormed" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="217520545" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:02Z" duration="0.006721" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1135" name="SkillNamesResolveToOneAsset" fullname="EternalEnigma.Tests.ClassContentTests.SkillNamesResolveToOneAsset" methodname="SkillNamesResolveToOneAsset" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="1977939244" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:02Z" duration="0.005842" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1133" name="StatusEffectsAreWired" fullname="EternalEnigma.Tests.ClassContentTests.StatusEffectsAreWired" methodname="StatusEffectsAreWired" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="926194427" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:02Z" duration="0.001805" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1137" name="TownsHaveNoLegacyTrainerList" fullname="EternalEnigma.Tests.ClassContentTests.TownsHaveNoLegacyTrainerList" methodname="TownsHaveNoLegacyTrainerList" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="1852394061" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:02Z" duration="0.105978" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestSuite" id="1265" name="CoreIntegration" fullname="EternalEnigma.Tests.CoreIntegration" runstate="Runnable" testcasecount="92" result="Failed" site="Child" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:02:34Z" duration="92.729572" total="92" passed="89" failed="3" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1142" name="BiomeDecorationTests" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:35Z" duration="33.148388" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1143" name="CatalogIsCompleteBoundedAndNonInteractive" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.CatalogIsCompleteBoundedAndNonInteractive" methodname="CatalogIsCompleteBoundedAndNonInteractive" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1837327755" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:02Z" duration="0.032963" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1149" name="DerivedTownMasksUseTheSameLayoutContract" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.DerivedTownMasksUseTheSameLayoutContract" methodname="DerivedTownMasksUseTheSameLayoutContract" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="276886268" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:02Z" duration="0.085659" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1145" name="GraphRejectsDiagonalWarpAndImmediateReverseAndCollapsesJunctions" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.GraphRejectsDiagonalWarpAndImmediateReverseAndCollapsesJunctions" methodname="GraphRejectsDiagonalWarpAndImmediateReverseAndCollapsesJunctions" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="952212670" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:02Z" duration="0.017745" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1153" name="LegacyReplacementPreservesCompleteBuildRandomState" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.LegacyReplacementPreservesCompleteBuildRandomState" methodname="LegacyReplacementPreservesCompleteBuildRandomState" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1484946438" result="Passed" start-time="2026-10-03 23:01:02Z" end-time="2026-10-03 23:01:10Z" duration="7.772558" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1146" name="RealWorldSignsAreDeterministicSupportedAndReachRealTowns" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.RealWorldSignsAreDeterministicSupportedAndReachRealTowns" methodname="RealWorldSignsAreDeterministicSupportedAndReachRealTowns" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1291124684" result="Passed" start-time="2026-10-03 23:01:10Z" end-time="2026-10-03 23:01:15Z" duration="5.246583" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1150" name="RegularDungeonCombinations" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.RegularDungeonCombinations" methodname="RegularDungeonCombinations" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1539527555" result="Passed" start-time="2026-10-03 23:01:15Z" end-time="2026-10-03 23:01:27Z" duration="11.798427" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1147" name="RoadSearchHandlesBendsLoopsAndDisconnectedTowns" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.RoadSearchHandlesBendsLoopsAndDisconnectedTowns" methodname="RoadSearchHandlesBendsLoopsAndDisconnectedTowns" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1235622948" result="Passed" start-time="2026-10-03 23:01:27Z" end-time="2026-10-03 23:01:27Z" duration="0.000660" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1144" name="SpacingCrossesChunkBoundariesAndDoesNotConsumeRandom" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.SpacingCrossesChunkBoundariesAndDoesNotConsumeRandom" methodname="SpacingCrossesChunkBoundariesAndDoesNotConsumeRandom" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1859300506" result="Passed" start-time="2026-10-03 23:01:27Z" end-time="2026-10-03 23:01:27Z" duration="0.015361" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1151" name="ThroneDungeonCombinations" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.ThroneDungeonCombinations" methodname="ThroneDungeonCombinations" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="372476639" result="Passed" start-time="2026-10-03 23:01:27Z" end-time="2026-10-03 23:01:31Z" duration="4.528665" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1152" name="TownNamesRoundTripThroughUnitySaveSerialization" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.TownNamesRoundTripThroughUnitySaveSerialization" methodname="TownNamesRoundTripThroughUnitySaveSerialization" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="439605103" result="Passed" start-time="2026-10-03 23:01:31Z" end-time="2026-10-03 23:01:33Z" duration="2.055034" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1148" name="TownRoadVergesRespectClearance" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.TownRoadVergesRespectClearance" methodname="TownRoadVergesRespectClearance" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="872667719" result="Passed" start-time="2026-10-03 23:01:33Z" end-time="2026-10-03 23:01:35Z" duration="1.490980" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1154" name="BiomeLayoutIntegrationTests" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:01:35Z" end-time="2026-10-03 23:01:36Z" duration="0.666683" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1156" name="EveryLayerUsesSameProfileAndReskinPreservesResult" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.EveryLayerUsesSameProfileAndReskinPreservesResult" methodname="EveryLayerUsesSameProfileAndReskinPreservesResult" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="1670151147" result="Passed" start-time="2026-10-03 23:01:35Z" end-time="2026-10-03 23:01:36Z" duration="0.658804" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1155" name="LayoutChoiceAndGrasslandPresentationAreIndependent" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LayoutChoiceAndGrasslandPresentationAreIndependent" methodname="LayoutChoiceAndGrasslandPresentationAreIndependent" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="1021601651" result="Passed" start-time="2026-10-03 23:01:36Z" end-time="2026-10-03 23:01:36Z" duration="0.000581" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1157" name="BiomePreviewTests" fullname="EternalEnigma.Tests.CoreIntegration.BiomePreviewTests" classname="EternalEnigma.Tests.CoreIntegration.BiomePreviewTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-03 23:01:36Z" end-time="2026-10-03 23:01:43Z" duration="7.335871" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1158" name="ExportAllBiomesAndRolesWithCosts" fullname="EternalEnigma.Tests.CoreIntegration.BiomePreviewTests.ExportAllBiomesAndRolesWithCosts" methodname="ExportAllBiomesAndRolesWithCosts" classname="EternalEnigma.Tests.CoreIntegration.BiomePreviewTests" runstate="Runnable" seed="1440582587" result="Passed" start-time="2026-10-03 23:01:36Z" end-time="2026-10-03 23:01:43Z" duration="7.333826" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1159" name="CampaignGenerationTests" fullname="EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests" classname="EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests" runstate="Runnable" testcasecount="1" result="Failed" site="Child" start-time="2026-10-03 23:01:43Z" end-time="2026-10-03 23:01:44Z" duration="0.954916" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1160" name="ImportedDllMatchesHeadlessCampaignAndStartsASession" fullname="EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests.ImportedDllMatchesHeadlessCampaignAndStartsASession" methodname="ImportedDllMatchesHeadlessCampaignAndStartsASession" classname="EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests" runstate="Runnable" seed="907956208" result="Failed" start-time="2026-10-03 23:01:43Z" end-time="2026-10-03 23:01:44Z" duration="0.952563" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  String lengths are both 64. Strings differ at index 0.
+  Expected: "d6e39457d3b30daebf9489d43e97c03b291a82c08dd4b0e999e506f51b8bd356"
+  But was:  "16460fa9b4ac88f34f1765b09173b4e66be779c6deabbd4f6a285270434b2b8f"
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests.ImportedDllMatchesHeadlessCampaignAndStartsASession () [0x00009] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\CampaignGenerationTests.cs:14
+]]></stack-trace>
+                </failure>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1161" name="CampaignOverworldTests" fullname="EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests" classname="EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests" runstate="Runnable" testcasecount="3" result="Failed" site="Child" start-time="2026-10-03 23:01:44Z" end-time="2026-10-03 23:02:01Z" duration="17.108822" total="3" passed="2" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1162" name="AdapterPreservesTemplateAndCreatesBothKindsOfTWCWorldMap" fullname="EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests.AdapterPreservesTemplateAndCreatesBothKindsOfTWCWorldMap" methodname="AdapterPreservesTemplateAndCreatesBothKindsOfTWCWorldMap" classname="EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests" runstate="Runnable" seed="869310811" result="Passed" start-time="2026-10-03 23:01:44Z" end-time="2026-10-03 23:01:50Z" duration="6.043729" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1163" name="InvalidBindingDoesNotReplaceTheCreatorAsset" fullname="EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests.InvalidBindingDoesNotReplaceTheCreatorAsset" methodname="InvalidBindingDoesNotReplaceTheCreatorAsset" classname="EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests" runstate="Runnable" seed="1955514709" result="Passed" start-time="2026-10-03 23:01:50Z" end-time="2026-10-03 23:01:54Z" duration="4.258587" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1164" name="RealTWCObjectBuildLayerPlacesTownPrefabsFromImportedMask" fullname="EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests.RealTWCObjectBuildLayerPlacesTownPrefabsFromImportedMask" methodname="RealTWCObjectBuildLayerPlacesTownPrefabsFromImportedMask" classname="EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests" runstate="Runnable" seed="850676382" result="Failed" start-time="2026-10-03 23:01:54Z" end-time="2026-10-03 23:02:01Z" duration="6.801851" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[Unhandled log message: '[Error] Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                  <stack-trace><![CDATA[
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+Instantiating material due to calling renderer.material during edit mode. This will leak materials into the scene. You most likely want to use renderer.sharedMaterial instead.
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1165" name="CampaignSaveTests" fullname="EternalEnigma.Tests.CoreIntegration.CampaignSaveTests" classname="EternalEnigma.Tests.CoreIntegration.CampaignSaveTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-03 23:02:01Z" end-time="2026-10-03 23:02:10Z" duration="8.842517" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1167" name="CampaignSurvivesUnityJsonAndRestoresPhysicalGateState" fullname="EternalEnigma.Tests.CoreIntegration.CampaignSaveTests.CampaignSurvivesUnityJsonAndRestoresPhysicalGateState" methodname="CampaignSurvivesUnityJsonAndRestoresPhysicalGateState" classname="EternalEnigma.Tests.CoreIntegration.CampaignSaveTests" runstate="Runnable" seed="1649829336" result="Passed" start-time="2026-10-03 23:02:01Z" end-time="2026-10-03 23:02:10Z" duration="8.743202" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1168" name="SandboxSaveCannotWriteEvenWithoutALiveCommon" fullname="EternalEnigma.Tests.CoreIntegration.CampaignSaveTests.SandboxSaveCannotWriteEvenWithoutALiveCommon" methodname="SandboxSaveCannotWriteEvenWithoutALiveCommon" classname="EternalEnigma.Tests.CoreIntegration.CampaignSaveTests" runstate="Runnable" seed="578683270" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.000318" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1166" name="StandaloneRunRoundTripsWithoutBecomingACampaign" fullname="EternalEnigma.Tests.CoreIntegration.CampaignSaveTests.StandaloneRunRoundTripsWithoutBecomingACampaign" methodname="StandaloneRunRoundTripsWithoutBecomingACampaign" classname="EternalEnigma.Tests.CoreIntegration.CampaignSaveTests" runstate="Runnable" seed="194643627" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.000325" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1169" name="CoreLayerGeneratorTests" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.348317" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1173" name="AssetsAreCoreBackedAndBuildLayerGuidsResolve" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests.AssetsAreCoreBackedAndBuildLayerGuidsResolve" methodname="AssetsAreCoreBackedAndBuildLayerGuidsResolve" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" seed="1194180039" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.000882" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1174" name="DungeonAssetExecutesToCoreLayersOnce" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests.DungeonAssetExecutesToCoreLayersOnce" methodname="DungeonAssetExecutesToCoreLayersOnce" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" seed="2124250545" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.087069" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1172" name="RuntimeFloorRecoversAfterScriptReload" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests.RuntimeFloorRecoversAfterScriptReload" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.094382" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1170" name="RuntimeFloorRecoversAfterScriptReload(False)" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests.RuntimeFloorRecoversAfterScriptReload(False)" methodname="RuntimeFloorRecoversAfterScriptReload" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" seed="2096574098" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.071326" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1171" name="RuntimeFloorRecoversAfterScriptReload(True)" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests.RuntimeFloorRecoversAfterScriptReload(True)" methodname="RuntimeFloorRecoversAfterScriptReload" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" seed="755582225" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.011679" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1176" name="SameSeedSameMasksDifferentSeedDiffers" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests.SameSeedSameMasksDifferentSeedDiffers" methodname="SameSeedSameMasksDifferentSeedDiffers" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" seed="231586664" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.117450" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1175" name="ThroneAssetIsTwelveByTwelveThrone" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests.ThroneAssetIsTwelveByTwelveThrone" methodname="ThroneAssetIsTwelveByTwelveThrone" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" seed="364459176" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.009807" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1177" name="TownAssetConfiguredFromDefaultTownMatchesCorePlan" fullname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests.TownAssetConfiguredFromDefaultTownMatchesCorePlan" methodname="TownAssetConfiguredFromDefaultTownMatchesCorePlan" classname="EternalEnigma.Tests.CoreIntegration.CoreLayerGeneratorTests" runstate="Runnable" seed="1045855804" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:10Z" duration="0.034374" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1178" name="DungeonThemeTests" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:14Z" duration="4.187071" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="ParameterizedMethod" id="1185" name="AllThemesPreserveMasksSpawnsAndTemplates" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:11Z" duration="0.865397" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1183" name="AllThemesPreserveMasksSpawnsAndTemplates(False)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates(False)" methodname="AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="106231294" result="Passed" start-time="2026-10-03 23:02:10Z" end-time="2026-10-03 23:02:11Z" duration="0.605282" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1184" name="AllThemesPreserveMasksSpawnsAndTemplates(True)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates(True)" methodname="AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="1338197357" result="Passed" start-time="2026-10-03 23:02:11Z" end-time="2026-10-03 23:02:11Z" duration="0.159508" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1186" name="NewTilesRespectBudgetsAndDecorationClearance" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.NewTilesRespectBudgetsAndDecorationClearance" methodname="NewTilesRespectBudgetsAndDecorationClearance" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="2137138411" result="Passed" start-time="2026-10-03 23:02:11Z" end-time="2026-10-03 23:02:11Z" duration="0.020893" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1187" name="RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" methodname="RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="40623950" result="Passed" start-time="2026-10-03 23:02:11Z" end-time="2026-10-03 23:02:13Z" duration="2.158341" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1182" name="SelectionRoundTripsWithoutOverworldGeneration" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.SelectionRoundTripsWithoutOverworldGeneration" methodname="SelectionRoundTripsWithoutOverworldGeneration" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="185024418" result="Passed" start-time="2026-10-03 23:02:13Z" end-time="2026-10-03 23:02:14Z" duration="1.026331" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1181" name="ThemedGroundIgnoresLegacyRaisedMapRoot" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:14Z" end-time="2026-10-03 23:02:14Z" duration="0.112966" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1179" name="ThemedGroundIgnoresLegacyRaisedMapRoot(False)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot(False)" methodname="ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="1955759858" result="Passed" start-time="2026-10-03 23:02:14Z" end-time="2026-10-03 23:02:14Z" duration="0.085342" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1180" name="ThemedGroundIgnoresLegacyRaisedMapRoot(True)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot(True)" methodname="ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="1143282018" result="Passed" start-time="2026-10-03 23:02:14Z" end-time="2026-10-03 23:02:14Z" duration="0.024992" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestFixture" id="1188" name="EnvironmentKitTests" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-03 23:02:14Z" end-time="2026-10-03 23:02:29Z" duration="15.080384" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="ParameterizedMethod" id="1194" name="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:14Z" end-time="2026-10-03 23:02:29Z" duration="14.407362" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1192" name="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells(42)" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells(42)" methodname="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="1739106253" result="Passed" start-time="2026-10-03 23:02:14Z" end-time="2026-10-03 23:02:21Z" duration="6.399866" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1193" name="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells(123)" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells(123)" methodname="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="481879337" result="Passed" start-time="2026-10-03 23:02:21Z" end-time="2026-10-03 23:02:29Z" duration="7.907156" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1189" name="ImportedModelsMeetBudgetsAndShareEightPalettes" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.ImportedModelsMeetBudgetsAndShareEightPalettes" methodname="ImportedModelsMeetBudgetsAndShareEightPalettes" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="1659873749" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.009711" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1198" name="MountainRulePiecesMeetAtMatchingHeights" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.MountainRulePiecesMeetAtMatchingHeights" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.149057" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1196" name="MountainRulePiecesMeetAtMatchingHeights(&quot;Smart/Mountains Base&quot;)" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.MountainRulePiecesMeetAtMatchingHeights(&quot;Smart/Mountains Base&quot;)" methodname="MountainRulePiecesMeetAtMatchingHeights" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="185252781" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.129749" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1197" name="MountainRulePiecesMeetAtMatchingHeights(&quot;Smart/Mountain Tops Noise&quot;)" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.MountainRulePiecesMeetAtMatchingHeights(&quot;Smart/Mountain Tops Noise&quot;)" methodname="MountainRulePiecesMeetAtMatchingHeights" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="1339155579" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.016464" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1191" name="SavedTownContainsCurrentSmartHousePreviewInsteadOfLegacyClusters" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.SavedTownContainsCurrentSmartHousePreviewInsteadOfLegacyClusters" methodname="SavedTownContainsCurrentSmartHousePreviewInsteadOfLegacyClusters" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="790315540" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.416743" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1199" name="SummitNoiseIsRepeatableClippedAndFormsSmallDensePatches" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.SummitNoiseIsRepeatableClippedAndFormsSmallDensePatches" methodname="SummitNoiseIsRepeatableClippedAndFormsSmallDensePatches" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="1083446086" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.038526" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1190" name="TreePickerUsesBiomeSpecificSinglesAndGroupsWithoutGameplayRandom" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.TreePickerUsesBiomeSpecificSinglesAndGroupsWithoutGameplayRandom" methodname="TreePickerUsesBiomeSpecificSinglesAndGroupsWithoutGameplayRandom" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="1798202281" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.051819" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1195" name="WallGeometryConnectsForAllSixteenNeighborPatterns" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.WallGeometryConnectsForAllSixteenNeighborPatterns" methodname="WallGeometryConnectsForAllSixteenNeighborPatterns" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="755326254" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.003341" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1200" name="EquipmentTransferTests" fullname="EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests" classname="EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.006250" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1202" name="ResourceStateUsesActualCapacityAndNeverInventsTownLimit" fullname="EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests.ResourceStateUsesActualCapacityAndNeverInventsTownLimit" methodname="ResourceStateUsesActualCapacityAndNeverInventsTownLimit" classname="EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests" runstate="Runnable" seed="1495603014" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.001022" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1201" name="TwoHandConflictsReturnBothInstancesAndUnequipPreservesIdentity" fullname="EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests.TwoHandConflictsReturnBothInstancesAndUnequipPreservesIdentity" methodname="TwoHandConflictsReturnBothInstancesAndUnequipPreservesIdentity" classname="EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests" runstate="Runnable" seed="1990641086" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:29Z" duration="0.002300" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1203" name="FantasyTrapTests" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" testcasecount="36" result="Passed" start-time="2026-10-03 23:02:29Z" end-time="2026-10-03 23:02:30Z" duration="1.071449" total="36" passed="36" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1204" name="CatalogueContainsDistinctHiddenModelsAndProjectiles" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.CatalogueContainsDistinctHiddenModelsAndProjectiles" methodname="CatalogueContainsDistinctHiddenModelsAndProjectiles" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1105713625" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.056424" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1217" name="DamageAndSkippedPlaybackResolveExactlyOnce" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.DamageAndSkippedPlaybackResolveExactlyOnce" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.144046" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1211" name="DamageAndSkippedPlaybackResolveExactlyOnce(Arrow,90)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.DamageAndSkippedPlaybackResolveExactlyOnce(Arrow,90)" methodname="DamageAndSkippedPlaybackResolveExactlyOnce" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1106100856" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.028826" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1212" name="DamageAndSkippedPlaybackResolveExactlyOnce(IronArrow,85)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.DamageAndSkippedPlaybackResolveExactlyOnce(IronArrow,85)" methodname="DamageAndSkippedPlaybackResolveExactlyOnce" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="404301334" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010715" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1213" name="DamageAndSkippedPlaybackResolveExactlyOnce(FallingRock,85)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.DamageAndSkippedPlaybackResolveExactlyOnce(FallingRock,85)" methodname="DamageAndSkippedPlaybackResolveExactlyOnce" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1964463135" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010579" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1214" name="DamageAndSkippedPlaybackResolveExactlyOnce(RollingLog,90)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.DamageAndSkippedPlaybackResolveExactlyOnce(RollingLog,90)" methodname="DamageAndSkippedPlaybackResolveExactlyOnce" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1796013632" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.016163" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1215" name="DamageAndSkippedPlaybackResolveExactlyOnce(Bomb,85)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.DamageAndSkippedPlaybackResolveExactlyOnce(Bomb,85)" methodname="DamageAndSkippedPlaybackResolveExactlyOnce" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1835274191" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010377" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1216" name="DamageAndSkippedPlaybackResolveExactlyOnce(Pitfall,90)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.DamageAndSkippedPlaybackResolveExactlyOnce(Pitfall,90)" methodname="DamageAndSkippedPlaybackResolveExactlyOnce" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1378610875" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.022595" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1231" name="DisarmDropsTheActualEquipmentInstance" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.DisarmDropsTheActualEquipmentInstance" methodname="DisarmDropsTheActualEquipmentInstance" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="27635321" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.024345" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1241" name="EnemiesIgnoreEveryHiddenTrapWithoutRevealingRollingOrEvents" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.EnemiesIgnoreEveryHiddenTrapWithoutRevealingRollingOrEvents" methodname="EnemiesIgnoreEveryHiddenTrapWithoutRevealingRollingOrEvents" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="557074898" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.012519" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1218" name="EnemyCanTriggerDamageAndBombHitsBothTeams" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.EnemyCanTriggerDamageAndBombHitsBothTeams" methodname="EnemyCanTriggerDamageAndBombHitsBothTeams" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1809074790" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010847" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1242" name="EnemySlidingOverHiddenTrapOnlyTriggersItAfterRevelation" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.EnemySlidingOverHiddenTrapOnlyTriggersItAfterRevelation" methodname="EnemySlidingOverHiddenTrapOnlyTriggersItAfterRevelation" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1597464831" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.012339" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1210" name="EveryKindCanBeEvadedAndRevealsWithoutEffects" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.EveryKindCanBeEvadedAndRevealsWithoutEffects" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.035638" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1208" name="EveryKindCanBeEvadedAndRevealsWithoutEffects(False)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.EveryKindCanBeEvadedAndRevealsWithoutEffects(False)" methodname="EveryKindCanBeEvadedAndRevealsWithoutEffects" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="630222229" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.017422" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1209" name="EveryKindCanBeEvadedAndRevealsWithoutEffects(True)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.EveryKindCanBeEvadedAndRevealsWithoutEffects(True)" methodname="EveryKindCanBeEvadedAndRevealsWithoutEffects" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="2137209576" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.016223" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1237" name="FatalLogStopsDisplacementAndDoesNotAwardVictimExperience" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.FatalLogStopsDisplacementAndDoesNotAwardVictimExperience" methodname="FatalLogStopsDisplacementAndDoesNotAwardVictimExperience" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="435393987" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.023427" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1234" name="FoodChangesOnlyOneUnitAndRemainsConsumable" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.FoodChangesOnlyOneUnitAndRemainsConsumable" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.078340" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1232" name="FoodChangesOnlyOneUnitAndRemainsConsumable(Blight,&quot;Spoiled Bread&quot;,13)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.FoodChangesOnlyOneUnitAndRemainsConsumable(Blight,&quot;Spoiled Bread&quot;,13)" methodname="FoodChangesOnlyOneUnitAndRemainsConsumable" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1236680865" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.025482" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1233" name="FoodChangesOnlyOneUnitAndRemainsConsumable(Scorch,&quot;Charred Bread&quot;,25)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.FoodChangesOnlyOneUnitAndRemainsConsumable(Scorch,&quot;Charred Bread&quot;,25)" methodname="FoodChangesOnlyOneUnitAndRemainsConsumable" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1387913213" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010837" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="ParameterizedMethod" id="1222" name="ForcedMovementStopsBeforeWalls" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.ForcedMovementStopsBeforeWalls" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.087090" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1220" name="ForcedMovementStopsBeforeWalls(Updraft)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.ForcedMovementStopsBeforeWalls(Updraft)" methodname="ForcedMovementStopsBeforeWalls" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="935761258" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.012078" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1221" name="ForcedMovementStopsBeforeWalls(IceSlick)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.ForcedMovementStopsBeforeWalls(IceSlick)" methodname="ForcedMovementStopsBeforeWalls" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1306427815" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010989" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1239" name="FullBagFoodStackSplitsOnlyOneUnitOntoFloor" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.FullBagFoodStackSplitsOnlyOneUnitOntoFloor" methodname="FullBagFoodStackSplitsOnlyOneUnitOntoFloor" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="544194863" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.022328" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1245" name="ItemTrapsSafelyHandleEnemiesWithoutEquipmentOrInventory" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.ItemTrapsSafelyHandleEnemiesWithoutEquipmentOrInventory" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.077477" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1243" name="ItemTrapsSafelyHandleEnemiesWithoutEquipmentOrInventory(Disarm)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.ItemTrapsSafelyHandleEnemiesWithoutEquipmentOrInventory(Disarm)" methodname="ItemTrapsSafelyHandleEnemiesWithoutEquipmentOrInventory" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1131819438" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.012047" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1244" name="ItemTrapsSafelyHandleEnemiesWithoutEquipmentOrInventory(ClumsyJinx)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.ItemTrapsSafelyHandleEnemiesWithoutEquipmentOrInventory(ClumsyJinx)" methodname="ItemTrapsSafelyHandleEnemiesWithoutEquipmentOrInventory" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1007306814" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010884" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1230" name="JinxPreservesExactItemsAndEnemyDoesNotTouchPartyBag" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.JinxPreservesExactItemsAndEnemyDoesNotTouchPartyBag" methodname="JinxPreservesExactItemsAndEnemyDoesNotTouchPartyBag" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="333161156" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.056824" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1240" name="LargeFootprintsCannotCutDiagonalWallCorners" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.LargeFootprintsCannotCutDiagonalWallCorners" methodname="LargeFootprintsCannotCutDiagonalWallCorners" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="26291947" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.011417" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1205" name="ModelsRenderAsDistinctThreeDimensionalTraps" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.ModelsRenderAsDistinctThreeDimensionalTraps" methodname="ModelsRenderAsDistinctThreeDimensionalTraps" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="904675283" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.066936" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1207" name="MovementEntersOnceStandingDoesNotAndReentryCanTriggerAgain" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.MovementEntersOnceStandingDoesNotAndReentryCanTriggerAgain" methodname="MovementEntersOnceStandingDoesNotAndReentryCanTriggerAgain" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="223972702" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.022167" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1236" name="NoSpaceDoesNotLoseItemsOrMoveIntoWalls" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.NoSpaceDoesNotLoseItemsOrMoveIntoWalls" methodname="NoSpaceDoesNotLoseItemsOrMoveIntoWalls" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="627044315" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.012158" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1246" name="PlayerCaltropsStillIgnorePartyAndBindOneEnemy" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.PlayerCaltropsStillIgnorePartyAndBindOneEnemy" methodname="PlayerCaltropsStillIgnorePartyAndBindOneEnemy" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="2101648896" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.016211" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1219" name="SlidingChainsIntoBindAndStopsAtOccupiedCells" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.SlidingChainsIntoBindAndStopsAtOccupiedCells" methodname="SlidingChainsIntoBindAndStopsAtOccupiedCells" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="2105236795" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.013365" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1229" name="StatusTrapsApplyAuthoredDurations" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.StatusTrapsApplyAuthoredDurations" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.034182" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1226" name="StatusTrapsApplyAuthoredDurations(Hallucination,1)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.StatusTrapsApplyAuthoredDurations(Hallucination,1)" methodname="StatusTrapsApplyAuthoredDurations" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1667952600" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.011037" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1227" name="StatusTrapsApplyAuthoredDurations(WitheringHex,2)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.StatusTrapsApplyAuthoredDurations(WitheringHex,2)" methodname="StatusTrapsApplyAuthoredDurations" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1937604933" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010901" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1228" name="StatusTrapsApplyAuthoredDurations(ShadowBind,1)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.StatusTrapsApplyAuthoredDurations(ShadowBind,1)" methodname="StatusTrapsApplyAuthoredDurations" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1763965416" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.010380" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1206" name="SummoningAndTransformationUseFreeCellsAndReturnExactItem" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.SummoningAndTransformationUseFreeCellsAndReturnExactItem" methodname="SummoningAndTransformationUseFreeCellsAndReturnExactItem" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1050636290" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.065629" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1225" name="TeleportStaysOnFreeReachableFloor" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.TeleportStaysOnFreeReachableFloor" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.039248" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1223" name="TeleportStaysOnFreeReachableFloor(Warp)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.TeleportStaysOnFreeReachableFloor(Warp)" methodname="TeleportStaysOnFreeReachableFloor" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="1645622912" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.018444" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1224" name="TeleportStaysOnFreeReachableFloor(Pitfall)" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.TeleportStaysOnFreeReachableFloor(Pitfall)" methodname="TeleportStaysOnFreeReachableFloor" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="117930183" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.019056" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1238" name="TrapChainsAreBoundedAtEightAttempts" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.TrapChainsAreBoundedAtEightAttempts" methodname="TrapChainsAreBoundedAtEightAttempts" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="906456432" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.012211" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1235" name="WallRecoveryPreservesUnitsItemsAndLargeFootprints" fullname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.WallRecoveryPreservesUnitsItemsAndLargeFootprints" methodname="WallRecoveryPreservesUnitsItemsAndLargeFootprints" classname="EternalEnigma.Tests.CoreIntegration.FantasyTrapTests" runstate="Runnable" seed="700846036" result="Passed" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:30Z" duration="0.034033" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1247" name="PaintedEnvironmentTests" fullname="EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests" classname="EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests" runstate="Runnable" testcasecount="3" result="Failed" site="Child" start-time="2026-10-03 23:02:30Z" end-time="2026-10-03 23:02:31Z" duration="0.462118" total="3" passed="2" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1249" name="AdjacentRotatedSurfaceModulesShareUvCoordinatesAndMaterial" fullname="EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests.AdjacentRotatedSurfaceModulesShareUvCoordinatesAndMaterial" methodname="AdjacentRotatedSurfaceModulesShareUvCoordinatesAndMaterial" classname="EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests" runstate="Runnable" seed="684014431" result="Failed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.004623" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+                  <stack-trace><![CDATA[at EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests.AdjacentRotatedSurfaceModulesShareUvCoordinatesAndMaterial () [0x000b2] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\PaintedEnvironmentTests.cs:47
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1248" name="PaintedTexturesHaveMipmapsFilteringAndPaddedAtlasUvs" fullname="EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests.PaintedTexturesHaveMipmapsFilteringAndPaddedAtlasUvs" methodname="PaintedTexturesHaveMipmapsFilteringAndPaddedAtlasUvs" classname="EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests" runstate="Runnable" seed="573045654" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.021068" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1250" name="TiledSourceImagesHaveMatchingOppositeBorders" fullname="EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests.TiledSourceImagesHaveMatchingOppositeBorders" methodname="TiledSourceImagesHaveMatchingOppositeBorders" classname="EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests" runstate="Runnable" seed="203772297" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.420998" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1251" name="TownAndPropVisualTests" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.234090" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1252" name="FloorObjectsTouchGroundWithoutMovingTheirLogicalRoot" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.FloorObjectsTouchGroundWithoutMovingTheirLogicalRoot" methodname="FloorObjectsTouchGroundWithoutMovingTheirLogicalRoot" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="1046193238" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.018569" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1256" name="ImportedPropsFitCellsAndRender" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.ImportedPropsFitCellsAndRender" methodname="ImportedPropsFitCellsAndRender" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="1495476596" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.055658" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1257" name="TownHasExpandedEnclosureAndReachableGate" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.TownHasExpandedEnclosureAndReachableGate" methodname="TownHasExpandedEnclosureAndReachableGate" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="1274804150" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.149722" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1255" name="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.006935" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1253" name="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(&quot;DamageTrap&quot;,&quot;SpikeTrap&quot;)" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(&quot;DamageTrap&quot;,&quot;SpikeTrap&quot;)" methodname="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="500348317" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.004640" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1254" name="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(&quot;BumpTrap&quot;,&quot;BumpTrap&quot;)" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(&quot;BumpTrap&quot;,&quot;BumpTrap&quot;)" methodname="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="1726754114" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:31Z" duration="0.000230" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestFixture" id="1258" name="TownLayoutIntegrationTests" fullname="EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests" classname="EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:34Z" duration="3.275251" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="ParameterizedMethod" id="1261" name="CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions" fullname="EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests.CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions" classname="EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:34Z" duration="3.180315" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1259" name="CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions(42)" fullname="EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests.CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions(42)" methodname="CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions" classname="EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests" runstate="Runnable" seed="1442583723" result="Passed" start-time="2026-10-03 23:02:31Z" end-time="2026-10-03 23:02:33Z" duration="1.698719" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1260" name="CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions(77)" fullname="EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests.CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions(77)" methodname="CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions" classname="EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests" runstate="Runnable" seed="1458745164" result="Passed" start-time="2026-10-03 23:02:33Z" end-time="2026-10-03 23:02:34Z" duration="1.381320" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1139" name="HeroPortraitTests" fullname="EternalEnigma.Tests.HeroPortraitTests" classname="EternalEnigma.Tests.HeroPortraitTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:34Z" end-time="2026-10-03 23:02:35Z" duration="0.109149" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1140" name="EveryHeroHasItsOwnSavedPortraitAndStudioCycles" fullname="EternalEnigma.Tests.HeroPortraitTests.EveryHeroHasItsOwnSavedPortraitAndStudioCycles" methodname="EveryHeroHasItsOwnSavedPortraitAndStudioCycles" classname="EternalEnigma.Tests.HeroPortraitTests" runstate="Runnable" seed="442374855" result="Passed" start-time="2026-10-03 23:02:34Z" end-time="2026-10-03 23:02:35Z" duration="0.104100" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1141" name="PortraitDisplayUsesSavedImageWithoutChangingModelLayers" fullname="EternalEnigma.Tests.HeroPortraitTests.PortraitDisplayUsesSavedImageWithoutChangingModelLayers" methodname="PortraitDisplayUsesSavedImageWithoutChangingModelLayers" classname="EternalEnigma.Tests.HeroPortraitTests" runstate="Runnable" seed="14724162" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.002481" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+      <test-suite type="TestFixture" id="1028" name="FogVisibilityTests" fullname="FogVisibilityTests" classname="FogVisibilityTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.006167" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1029" name="ExploredTerrainRemainsDimWhileLiveObjectsDisappearAndReappear" fullname="FogVisibilityTests.ExploredTerrainRemainsDimWhileLiveObjectsDisappearAndReappear" methodname="ExploredTerrainRemainsDimWhileLiveObjectsDisappearAndReappear" classname="FogVisibilityTests" runstate="Runnable" seed="519326412" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.003998" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1030" name="GridMovementTests" fullname="GridMovementTests" classname="GridMovementTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.201338" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1036" name="BoundsMissingTerrainAndInvalidStepsAreRejected" fullname="GridMovementTests.BoundsMissingTerrainAndInvalidStepsAreRejected" methodname="BoundsMissingTerrainAndInvalidStepsAreRejected" classname="GridMovementTests" runstate="Runnable" seed="1886771605" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001452" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1035" name="DiagonalPolicyPreservesEachMode" fullname="GridMovementTests.DiagonalPolicyPreservesEachMode" classname="GridMovementTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.099485" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1031" name="DiagonalPolicyPreservesEachMode(False,False)" fullname="GridMovementTests.DiagonalPolicyPreservesEachMode(False,False)" methodname="DiagonalPolicyPreservesEachMode" classname="GridMovementTests" runstate="Runnable" seed="2049876313" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000744" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1032" name="DiagonalPolicyPreservesEachMode(True,False)" fullname="GridMovementTests.DiagonalPolicyPreservesEachMode(True,False)" methodname="DiagonalPolicyPreservesEachMode" classname="GridMovementTests" runstate="Runnable" seed="22638606" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000089" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1033" name="DiagonalPolicyPreservesEachMode(False,True)" fullname="GridMovementTests.DiagonalPolicyPreservesEachMode(False,True)" methodname="DiagonalPolicyPreservesEachMode" classname="GridMovementTests" runstate="Runnable" seed="1059581715" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000082" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1034" name="DiagonalPolicyPreservesEachMode(True,True)" fullname="GridMovementTests.DiagonalPolicyPreservesEachMode(True,True)" methodname="DiagonalPolicyPreservesEachMode" classname="GridMovementTests" runstate="Runnable" seed="773483881" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000150" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1040" name="FacingOffsetsAndCellScaleMatchExistingControls" fullname="GridMovementTests.FacingOffsetsAndCellScaleMatchExistingControls" methodname="FacingOffsetsAndCellScaleMatchExistingControls" classname="GridMovementTests" runstate="Runnable" seed="293519410" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001002" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1039" name="ReusingSearchGridsResetsPreviousSearchStateAndAvoidsExpensiveTiles" fullname="GridMovementTests.ReusingSearchGridsResetsPreviousSearchStateAndAvoidsExpensiveTiles" methodname="ReusingSearchGridsResetsPreviousSearchStateAndAvoidsExpensiveTiles" classname="GridMovementTests" runstate="Runnable" seed="816591038" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001236" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1038" name="SearchesUseTheSuppliedGridAndAgreeOnBlockedCorners" fullname="GridMovementTests.SearchesUseTheSuppliedGridAndAgreeOnBlockedCorners" methodname="SearchesUseTheSuppliedGridAndAgreeOnBlockedCorners" classname="GridMovementTests" runstate="Runnable" seed="81948334" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000786" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1037" name="TownAdapterPreservesCornerCuttingAndRejectsUninitializedMap" fullname="GridMovementTests.TownAdapterPreservesCornerCuttingAndRejectsUninitializedMap" methodname="TownAdapterPreservesCornerCuttingAndRejectsUninitializedMap" classname="GridMovementTests" runstate="Runnable" seed="235010701" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000600" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1041" name="HeroClassTests" fullname="HeroClassTests" classname="HeroClassTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.115889" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1049" name="BindingProtagonistWithoutSavedClassKeepsPrefabClass" fullname="HeroClassTests.BindingProtagonistWithoutSavedClassKeepsPrefabClass" methodname="BindingProtagonistWithoutSavedClassKeepsPrefabClass" classname="HeroClassTests" runstate="Runnable" seed="1039082447" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.003337" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1048" name="BindingRecruitKeepsPrefabClass" fullname="HeroClassTests.BindingRecruitKeepsPrefabClass" methodname="BindingRecruitKeepsPrefabClass" classname="HeroClassTests" runstate="Runnable" seed="1301351053" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.002986" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saved class for 'hero' (scout/) differs from its prefab; using the prefab.
+]]></output>
+        </test-case>
+        <test-case id="1043" name="CatalogGetIsOrdinalAndValidateReportsProblems" fullname="HeroClassTests.CatalogGetIsOrdinalAndValidateReportsProblems" methodname="CatalogGetIsOrdinalAndValidateReportsProblems" classname="HeroClassTests" runstate="Runnable" seed="852959220" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001186" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1045" name="CombinationUnionsWeaponsAndAccessoriesAreUnrestricted" fullname="HeroClassTests.CombinationUnionsWeaponsAndAccessoriesAreUnrestricted" methodname="CombinationUnionsWeaponsAndAccessoriesAreUnrestricted" classname="HeroClassTests" runstate="Runnable" seed="188294251" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001978" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1046" name="GrowthUsesPrimaryClass" fullname="HeroClassTests.GrowthUsesPrimaryClass" methodname="GrowthUsesPrimaryClass" classname="HeroClassTests" runstate="Runnable" seed="384493425" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000616" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1050" name="IsProtagonistFallsBackToFirstRecruitedEntry" fullname="HeroClassTests.IsProtagonistFallsBackToFirstRecruitedEntry" methodname="IsProtagonistFallsBackToFirstRecruitedEntry" classname="HeroClassTests" runstate="Runnable" seed="1724900081" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001065" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1044" name="NoClassAllowsEverythingAndKeepsDefaultGrowth" fullname="HeroClassTests.NoClassAllowsEverythingAndKeepsDefaultGrowth" methodname="NoClassAllowsEverythingAndKeepsDefaultGrowth" classname="HeroClassTests" runstate="Runnable" seed="1428183877" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000459" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1051" name="SaveJsonRoundTripsClassIds" fullname="HeroClassTests.SaveJsonRoundTripsClassIds" methodname="SaveJsonRoundTripsClassIds" classname="HeroClassTests" runstate="Runnable" seed="2002866896" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000529" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1047" name="ToKitBuildsCombinationAndIgnoresDuplicateSecondary" fullname="HeroClassTests.ToKitBuildsCombinationAndIgnoresDuplicateSecondary" methodname="ToKitBuildsCombinationAndIgnoresDuplicateSecondary" classname="HeroClassTests" runstate="Runnable" seed="1061435935" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000635" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1042" name="ToSkillTableSkipsEmptyEntriesAndCopiesTierRankKind" fullname="HeroClassTests.ToSkillTableSkipsEmptyEntriesAndCopiesTierRankKind" methodname="ToSkillTableSkipsEmptyEntriesAndCopiesTierRankKind" classname="HeroClassTests" runstate="Runnable" seed="371479580" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001086" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1052" name="PresentationActionTests" fullname="PresentationActionTests" classname="PresentationActionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.079860" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1053" name="UnseenPresentationActionsDoNotWaitOrInstantiateEffects" fullname="PresentationActionTests.UnseenPresentationActionsDoNotWaitOrInstantiateEffects" methodname="UnseenPresentationActionsDoNotWaitOrInstantiateEffects" classname="PresentationActionTests" runstate="Runnable" seed="1709140756" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.002840" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1054" name="SaveStoreTests" fullname="SaveStoreTests" classname="SaveStoreTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.101109" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1055" name="CurrentSchemaPreservesStockAndDoesNotWriteFormatMetadata" fullname="SaveStoreTests.CurrentSchemaPreservesStockAndDoesNotWriteFormatMetadata" methodname="CurrentSchemaPreservesStockAndDoesNotWriteFormatMetadata" classname="SaveStoreTests" runstate="Runnable" seed="1161034406" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.002375" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1056" name="SaveRoundTripUsesOnlyScopedStoreAndReturnsIndependentData" fullname="SaveStoreTests.SaveRoundTripUsesOnlyScopedStoreAndReturnsIndependentData" methodname="SaveRoundTripUsesOnlyScopedStoreAndReturnsIndependentData" classname="SaveStoreTests" runstate="Runnable" seed="1903712381" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.002572" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[No save data found. Creating new save.
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1057" name="SkillRankTests" fullname="SkillRankTests" classname="SkillRankTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.112713" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1064" name="PassiveModificationScalesIntegerStatsByRank" fullname="SkillRankTests.PassiveModificationScalesIntegerStatsByRank" methodname="PassiveModificationScalesIntegerStatsByRank" classname="SkillRankTests" runstate="Runnable" seed="1215741714" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000942" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1062" name="RankContextClampsRankAndDefaultsScaling" fullname="SkillRankTests.RankContextClampsRankAndDefaultsScaling" methodname="RankContextClampsRankAndDefaultsScaling" classname="SkillRankTests" runstate="Runnable" seed="1023757410" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000425" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1063" name="RankedSkillScalesDamageAndHealingEffects" fullname="SkillRankTests.RankedSkillScalesDamageAndHealingEffects" methodname="RankedSkillScalesDamageAndHealingEffects" classname="SkillRankTests" runstate="Runnable" seed="1400151915" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.011143" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1059" name="ScaleBuffAddsOneStepPerRankKeepingSign" fullname="SkillRankTests.ScaleBuffAddsOneStepPerRankKeepingSign" methodname="ScaleBuffAddsOneStepPerRankKeepingSign" classname="SkillRankTests" runstate="Runnable" seed="615253991" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000489" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1061" name="ScaleChanceAddsPointsAndClamps" fullname="SkillRankTests.ScaleChanceAddsPointsAndClamps" methodname="ScaleChanceAddsPointsAndClamps" classname="SkillRankTests" runstate="Runnable" seed="701962141" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000496" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1060" name="ScaleDurationAddsTurnsAtRanksThreeAndFive" fullname="SkillRankTests.ScaleDurationAddsTurnsAtRanksThreeAndFive" methodname="ScaleDurationAddsTurnsAtRanksThreeAndFive" classname="SkillRankTests" runstate="Runnable" seed="1327170965" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000409" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1058" name="ScalePowerAddsFifteenPercentPerRankRoundingAwayFromZero" fullname="SkillRankTests.ScalePowerAddsFifteenPercentPerRankRoundingAwayFromZero" methodname="ScalePowerAddsFifteenPercentPerRankRoundingAwayFromZero" classname="SkillRankTests" runstate="Runnable" seed="1939125981" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000234" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1065" name="SkillRanksAndHighestLevelRoundTripThroughSave" fullname="SkillRankTests.SkillRanksAndHighestLevelRoundTripThroughSave" methodname="SkillRanksAndHighestLevelRoundTripThroughSave" classname="SkillRankTests" runstate="Runnable" seed="1770233681" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001782" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1066" name="StatusEffectTests" fullname="StatusEffectTests" classname="StatusEffectTests" runstate="Runnable" testcasecount="12" result="Failed" site="Child" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.109494" total="12" passed="11" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-case id="1067" name="ArmBindBlocksAttacksAndWeaponSkills" fullname="StatusEffectTests.ArmBindBlocksAttacksAndWeaponSkills" methodname="ArmBindBlocksAttacksAndWeaponSkills" classname="StatusEffectTests" runstate="Runnable" seed="1327583425" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.011502" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1077" name="BarrierReducesMatchingElementForOwnerOnly" fullname="StatusEffectTests.BarrierReducesMatchingElementForOwnerOnly" methodname="BarrierReducesMatchingElementForOwnerOnly" classname="StatusEffectTests" runstate="Runnable" seed="1675217557" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000870" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1070" name="BurnTicksFireDamage" fullname="StatusEffectTests.BurnTicksFireDamage" methodname="BurnTicksFireDamage" classname="StatusEffectTests" runstate="Runnable" seed="170042600" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000961" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1071" name="CurseReflectsOnlyPrimaryHitsByOwner" fullname="StatusEffectTests.CurseReflectsOnlyPrimaryHitsByOwner" methodname="CurseReflectsOnlyPrimaryHitsByOwner" classname="StatusEffectTests" runstate="Runnable" seed="1010995279" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001475" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1072" name="DebuffStatMods" fullname="StatusEffectTests.DebuffStatMods" methodname="DebuffStatMods" classname="StatusEffectTests" runstate="Runnable" seed="1655064572" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001043" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1075" name="FearBlocksAttacksForAllies" fullname="StatusEffectTests.FearBlocksAttacksForAllies" methodname="FearBlocksAttacksForAllies" classname="StatusEffectTests" runstate="Runnable" seed="1742578088" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001582" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1069" name="ParalysisRespectsChance" fullname="StatusEffectTests.ParalysisRespectsChance" methodname="ParalysisRespectsChance" classname="StatusEffectTests" runstate="Runnable" seed="553594171" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000950" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1078" name="SilenceStatusEffectDefaultStackKey" fullname="StatusEffectTests.SilenceStatusEffectDefaultStackKey" methodname="SilenceStatusEffectDefaultStackKey" classname="StatusEffectTests" runstate="Runnable" seed="2129713331" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000318" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1074" name="StealthEndsWhenOwnerAttacks" fullname="StatusEffectTests.StealthEndsWhenOwnerAttacks" methodname="StealthEndsWhenOwnerAttacks" classname="StatusEffectTests" runstate="Runnable" seed="1612872084" result="Failed" label="Error" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.002672" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+            <stack-trace><![CDATA[  at StealthStatusEffect.GetResponseTo (Character owner, GameAction action) [0x00001] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\StatusEffects\StealthStatusEffect.cs:24 
+  at StatusEffectTests.StealthEndsWhenOwnerAttacks () [0x00022] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\StatusEffectTests.cs:213 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1068" name="StunSkipsActionAndMenu" fullname="StatusEffectTests.StunSkipsActionAndMenu" methodname="StunSkipsActionAndMenu" classname="StatusEffectTests" runstate="Runnable" seed="1886376496" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000807" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1073" name="TauntRecordsSource" fullname="StatusEffectTests.TauntRecordsSource" methodname="TauntRecordsSource" classname="StatusEffectTests" runstate="Runnable" seed="1882924579" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000539" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1076" name="TimedBuffStackKeysAndStrongerWins" fullname="StatusEffectTests.TimedBuffStackKeysAndStrongerWins" methodname="TimedBuffStackKeysAndStrongerWins" classname="StatusEffectTests" runstate="Runnable" seed="643936917" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001744" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1079" name="TargetingAndArrowTests" fullname="TargetingAndArrowTests" classname="TargetingAndArrowTests" runstate="Runnable" testcasecount="9" result="Failed" site="Child" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.083633" total="9" passed="5" failed="4" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-case id="1084" name="ArrowsCountedByNameOnly" fullname="TargetingAndArrowTests.ArrowsCountedByNameOnly" methodname="ArrowsCountedByNameOnly" classname="TargetingAndArrowTests" runstate="Runnable" seed="1660909791" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001897" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1085" name="ConsumeRemovesEmptyStacks" fullname="TargetingAndArrowTests.ConsumeRemovesEmptyStacks" methodname="ConsumeRemovesEmptyStacks" classname="TargetingAndArrowTests" runstate="Runnable" seed="961738897" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001200" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1082" name="ExpiredTauntIgnored" fullname="TargetingAndArrowTests.ExpiredTauntIgnored" methodname="ExpiredTauntIgnored" classname="TargetingAndArrowTests" runstate="Runnable" seed="1110880343" result="Failed" label="Error" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000634" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
+  at TargetingAndArrowTests.ExpiredTauntIgnored () [0x00008] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:120 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1088" name="HasBowChecksWeaponType" fullname="TargetingAndArrowTests.HasBowChecksWeaponType" methodname="HasBowChecksWeaponType" classname="TargetingAndArrowTests" runstate="Runnable" seed="1786526031" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000886" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1080" name="NearestFirstWithoutTaunt" fullname="TargetingAndArrowTests.NearestFirstWithoutTaunt" methodname="NearestFirstWithoutTaunt" classname="TargetingAndArrowTests" runstate="Runnable" seed="1883770267" result="Failed" label="Error" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000460" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
+  at TargetingAndArrowTests.NearestFirstWithoutTaunt () [0x00008] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:66 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1086" name="RecoveryKeepsArrows" fullname="TargetingAndArrowTests.RecoveryKeepsArrows" methodname="RecoveryKeepsArrows" classname="TargetingAndArrowTests" runstate="Runnable" seed="1002498565" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000423" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1087" name="RequiredToCastByMode" fullname="TargetingAndArrowTests.RequiredToCastByMode" methodname="RequiredToCastByMode" classname="TargetingAndArrowTests" runstate="Runnable" seed="465744985" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000512" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1083" name="StealthedAndDeadAreSkipped" fullname="TargetingAndArrowTests.StealthedAndDeadAreSkipped" methodname="StealthedAndDeadAreSkipped" classname="TargetingAndArrowTests" runstate="Runnable" seed="1896197029" result="Failed" label="Error" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.001771" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
+  at TargetingAndArrowTests.StealthedAndDeadAreSkipped () [0x00008] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:147 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1081" name="TauntPullsToTaunterWhenVisible" fullname="TargetingAndArrowTests.TauntPullsToTaunterWhenVisible" methodname="TauntPullsToTaunterWhenVisible" classname="TargetingAndArrowTests" runstate="Runnable" seed="1520731266" result="Failed" label="Error" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:35Z" duration="0.000585" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
+  at TargetingAndArrowTests.TauntPullsToTaunterWhenVisible () [0x00008] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:87 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
+          </failure>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1089" name="TrainerOfferTests" fullname="TrainerOfferTests" classname="TrainerOfferTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:36Z" duration="0.116968" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1096" name="AdeptTrainingNeedsLevelTenAndThreeTierOneSkills" fullname="TrainerOfferTests.AdeptTrainingNeedsLevelTenAndThreeTierOneSkills" methodname="AdeptTrainingNeedsLevelTenAndThreeTierOneSkills" classname="TrainerOfferTests" runstate="Runnable" seed="306776297" result="Passed" start-time="2026-10-03 23:02:35Z" end-time="2026-10-03 23:02:36Z" duration="0.016090" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1093" name="ClassOffersAreGroupedByTierWithLocks" fullname="TrainerOfferTests.ClassOffersAreGroupedByTierWithLocks" methodname="ClassOffersAreGroupedByTierWithLocks" classname="TrainerOfferTests" runstate="Runnable" seed="609035843" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.001470" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1091" name="EnsureStartingSkillsGrantsTierOneMasteryOnce" fullname="TrainerOfferTests.EnsureStartingSkillsGrantsTierOneMasteryOnce" methodname="EnsureStartingSkillsGrantsTierOneMasteryOnce" classname="TrainerOfferTests" runstate="Runnable" seed="552083481" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.000920" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1092" name="FallbackOffersFollowTownListWithOneRank" fullname="TrainerOfferTests.FallbackOffersFollowTownListWithOneRank" methodname="FallbackOffersFollowTownListWithOneRank" classname="TrainerOfferTests" runstate="Runnable" seed="552322087" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.000918" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1099" name="FindMatchesBySkillName" fullname="TrainerOfferTests.FindMatchesBySkillName" methodname="FindMatchesBySkillName" classname="TrainerOfferTests" runstate="Runnable" seed="1622818601" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.001085" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1094" name="NextRankCostAndLevelGate" fullname="TrainerOfferTests.NextRankCostAndLevelGate" methodname="NextRankCostAndLevelGate" classname="TrainerOfferTests" runstate="Runnable" seed="966345312" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.001003" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1090" name="RankHelpersTrackLearnedSkills" fullname="TrainerOfferTests.RankHelpersTrackLearnedSkills" methodname="RankHelpersTrackLearnedSkills" classname="TrainerOfferTests" runstate="Runnable" seed="1776103371" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.001044" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1098" name="SecondaryOffersExcludeMasteriesHighTiersAndDuplicatesAndCapRank" fullname="TrainerOfferTests.SecondaryOffersExcludeMasteriesHighTiersAndDuplicatesAndCapRank" methodname="SecondaryOffersExcludeMasteriesHighTiersAndDuplicatesAndCapRank" classname="TrainerOfferTests" runstate="Runnable" seed="727669731" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.001430" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1095" name="SkillPointsLimitLearningAndForgettingRefundsThem" fullname="TrainerOfferTests.SkillPointsLimitLearningAndForgettingRefundsThem" methodname="SkillPointsLimitLearningAndForgettingRefundsThem" classname="TrainerOfferTests" runstate="Runnable" seed="2090749491" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.001207" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1097" name="TownAllowlistDoesNotFilterClassOffers" fullname="TrainerOfferTests.TownAllowlistDoesNotFilterClassOffers" methodname="TownAllowlistDoesNotFilterClassOffers" classname="TrainerOfferTests" runstate="Runnable" seed="2024660664" result="Passed" start-time="2026-10-03 23:02:36Z" end-time="2026-10-03 23:02:36Z" duration="0.000836" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: Temp/HarnessResults/EditMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

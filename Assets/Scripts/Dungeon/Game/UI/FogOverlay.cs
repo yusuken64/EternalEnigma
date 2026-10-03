@@ -39,6 +39,8 @@ public class FogOverlay : MonoBehaviour
 
     private Material fogMaterial;
     private Texture2D fogTexture;
+    internal Texture2D VisibilityTexture => fogTexture;
+    internal Vector4 ShadowBounds => new(worldOrigin.x,worldOrigin.y,worldSize.x*cellSize,worldSize.y*cellSize);
 
     internal void Initialize(TileWorldDungeon currentDungeon)
     {

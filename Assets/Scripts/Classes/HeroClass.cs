@@ -3,6 +3,13 @@ using EternalEnigma.Core.Classes;
 // Rules that combine a hero's primary and optional secondary class.
 public static class HeroClass
 {
+    public static void ApplyLevelGrowth(Stats stats, ClassDefinition primary, int levels)
+    {
+        var growth=Growth(primary);
+        levels=System.Math.Max(0,levels);
+        stats.HPMax+=growth.HPMax*levels;stats.SPMax+=growth.SPMax*levels;stats.HungerMax+=growth.HungerMax*levels;
+        stats.Strength+=growth.Strength*levels;stats.Defense+=growth.Defense*levels;
+    }
 	// Null when the hero has no class yet (unassigned prefab).
 	public static ClassKit ToKit(ClassDefinition primary, ClassDefinition secondary)
 	{

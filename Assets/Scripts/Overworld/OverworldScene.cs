@@ -75,6 +75,9 @@ public sealed class OverworldScene : MonoBehaviour
         var common = Common.Instance;
         if (common.CampaignContext == null) common.BeginSandbox(OverworldLaunch.TakeSeed(Map.Seed));
         Context = common.CampaignContext;
+        gameObject.AddComponent<OverworldMenuManager>();
+        ResourceHUD.Ensure(this);
+        ScenePresentation.Ensure(this);
         if (!Context.IsSandbox) gameObject.AddComponent<CampaignHUD>().Overworld = this;
         Campaign = Context.Campaign;
         Map.Seed = Campaign.Seed;
@@ -128,7 +131,8 @@ public sealed class OverworldScene : MonoBehaviour
             }
             gateVisuals.Add(gate.RouteId, markers);
         }
-        Player = Instantiate(PlayerPrefab, CellToWorld(Position), Quaternion.identity, transform);
+        var protagonist = Context.IsSandbox ? PlayerPrefab : CampaignParty.Resolve(Common.Instance.GameSaveData.ProtagonistId,TownSceneLoader.Default) ?? PlayerPrefab;
+        Player = Instantiate(protagonist, CellToWorld(Position), Quaternion.identity, transform);
         foreach (var endpoint in Map.CurrentGrid.Warps.SelectMany(r => new[] { r.From, r.To }).Distinct())
         {
             var pad = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -152,6 +156,12 @@ public sealed class OverworldScene : MonoBehaviour
         Common.Instance.Travel.SceneReady();
         Common.Instance.ScreenTransition.DoOpen();
         RebuildFollowers();
+        ScenePresentation.RegisterWorld(creator.worldObject.transform);
+        foreach (var data in Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData)
+        {
+            var live = data.AllyId == Common.Instance.GameSaveData.ProtagonistId ? Player : followers.FirstOrDefault(h => h.Id == data.AllyId);
+            if (live != null) OverworldPartyMenuContext.RestoreHero(live, data);
+        }
         RefreshGates();
         Message = "Enter / A: claim location rewards or use a key at a gate.";
         FollowCamera();
@@ -165,6 +175,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         if (AutoplayRunner.BlocksPlayerInput) return;
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
+        if (Common.Instance.GlobalSettings.IsOpen || MenuUIInputModule.Active?.HasDialog == true || MenuUIInputModule.Active?.InputConsumed == true) return;
         var keyboard = Keyboard.current;
         var pad = Gamepad.current;
         if (keyboard?.enterKey.wasPressedThisFrame == true || pad?.buttonSouth.wasPressedThisFrame == true) ClaimRewards();

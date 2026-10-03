@@ -10,6 +10,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 {
 	public EventSystem EventSystem;
 	public InventoryMenu InventoryMenu;
+    public PartyMenu PartyMenu { get; private set; }
 	public ActionDialog ActionDialog;
 	public AllyActionDialog AllyActionDialog;
 	public SkillDialog SkillDialog;
@@ -22,6 +23,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
     public Stack<Dialog> DialogStack => dialogs.Stack;
 
 	public GameObject TargetArrow;
+    private void Start()=>PartyMenuLauncher.Create(transform,()=>Game.Instance!=null&&Game.Instance.PlayerController.CanOpenMenu(),tab=>OpenPartyMenu(tab));
 
 	protected override void Initialize()
 	{
@@ -42,40 +44,13 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			Common.Instance.GlobalSettings.ShowDialog();
 			return;
 		}
-		if (Common.Instance.MenuInputHandler.MenuOpenClosedInput)
-		{
-			if (!Opened)
-			{
-				bool canOpenMenu = Game.Instance.PlayerController.CanOpenMenu();
-				if (canOpenMenu)
-				{
-					OpenMenu();
-					return;
-				}
-			}
-			else
-			{
-				CloseAllMenus();
-				return;
-			}
-		}
-		else if (Common.Instance.MenuInputHandler.OpenSkillMenuInput)
-		{
-			if (!Opened)
-			{
-				bool canOpenMenu = Game.Instance.PlayerController.CanOpenMenu();
-				if (canOpenMenu)
-				{
-					OpenSkillsMenu(Game.Instance.PlayerController.ControlledAlly);
-					return;
-				}
-			}
-			else
-			{
-				CloseAllMenus();
-				return;
-			}
-		}
+        if (Common.Instance.MenuInputHandler.MenuOpenClosedInput || Common.Instance.MenuInputHandler.OpenSkillMenuInput)
+        {
+            var tab = Common.Instance.MenuInputHandler.MenuOpenClosedInput ? PartyMenuTab.Inventory : PartyMenuTab.Skills;
+            if (PartyMenu != null && CurrentDialog == PartyMenu) PartyMenu.Shortcut(tab);
+            else if (!Opened && Game.Instance.PlayerController.CanOpenMenu()) OpenPartyMenu(tab);
+            return;
+        }
 
 		// UI buttons receive Submit once through EventSystem. Only world-target
 		// selection needs a manual confirm path.
@@ -97,50 +72,15 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
     internal void CloseAllMenus() => dialogs.CloseAll();
 
-	private void OpenMenu()
-	{
-		Common.Instance.MenuInputHandler.SwitchToUIInput();
-		MenuManager.Open(InventoryMenu);
-		var equippedItems = Game.Instance.PlayerController.ControlledAlly.Equipment.GetEquippedItems();
-		var items = Game.Instance.PlayerController.Inventory.InventoryItems;
-		var allItems = equippedItems.Concat(items)
-			.Where(x => x != null)
-			.ToList();
-
-		InventoryMenu.Setup(allItems, Game.Instance.PlayerController.ControlledAlly);
-		InventoryMenu.SetNavigation();
-
-		InventoryMenu.CloseAction = () =>
-		{
-			InventoryMenu.Close();
-		};
-		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
-
-		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
-		Common.Instance.MenuInputHandler.ClearInputThisFrame();
-	}
-
-	public void OpenInventoryAs(Ally ally)
+    private void OpenMenu() => OpenPartyMenu(PartyMenuTab.Inventory);
+    public void OpenPartyMenu(PartyMenuTab tab, Ally hero = null)
     {
-        MenuManager.Open(InventoryMenu);
-		var equippedItems = ally.Equipment.GetEquippedItems();
-		var items = Game.Instance.PlayerController.Inventory.InventoryItems;
-		var allItems = equippedItems.Concat(items)
-			.Where(x => x != null)
-			.ToList();
-
-        InventoryMenu.Setup(allItems, ally);
-        InventoryMenu.SetNavigation();
-
-        InventoryMenu.CloseAction = () =>
-        {
-            InventoryMenu.Close();
-        };
-        AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
-
-		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
-		Common.Instance.MenuInputHandler.ClearInputThisFrame();
-	}
+        if (PartyMenu == null) PartyMenu = global::PartyMenu.Create(transform);
+        PartyMenu.Setup(new DungeonPartyMenuContext(Game.Instance), tab,
+            (hero ?? Game.Instance.PlayerController.ControlledAlly)?.TownAllyId);
+        Open(PartyMenu);
+    }
+    public void OpenInventoryAs(Ally ally) => OpenPartyMenu(PartyMenuTab.Inventory, ally);
 
 	public void OpenAllyMenu(Ally ally)
 	{
@@ -160,23 +100,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
 	}
 
-	public void OpenSkillsMenu(Character character)
-	{
-		Common.Instance.MenuInputHandler.SwitchToUIInput();
-		this.gameObject.SetActive(true);
-		MenuManager.Open(SkillDialog);
-		SkillDialog.Setup(character);
-
-		SkillDialog.CloseAction = () =>
-		{
-			SkillDialog.Close();
-		};
-		SkillDialog.SetNavigation();
-		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
-
-		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
-		Common.Instance.MenuInputHandler.ClearInputThisFrame();
-	}
+    public void OpenSkillsMenu(Character character) => OpenPartyMenu(PartyMenuTab.Skills, character as Ally);
 
 	public void OpenInventoryTargetingMenu(Character character, Skill skill)
 	{
@@ -189,6 +113,17 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	private void OpenInventoryPicker(Character character, List<InventoryItem> targets,
 		Func<InventoryItem, GameAction> createAction, string prompt)
 	{
+        if (PartyMenu != null && DialogStack.Contains(PartyMenu))
+        {
+            PartyMenu.Pick(prompt, targets.Select(item => (item.ItemName + (item.HasStacks ? $" x{item.StackStock}" : "") +
+                (character.Equipment.IsEquipped(item) ? " [Equipped]" : ""), (Action)(() =>
+            {
+                var action = createAction(item);
+                if (!action.IsValid(character)) { PartyMenu.Complete("That item can no longer be targeted."); return; }
+                CloseAllMenus(); character.SetAction(action);
+            }))).ToList());
+            return;
+        }
 		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		// Item use can open a second inventory picker over the original inventory.
 		// Keep its rows/callbacks separate so Back restores the original item menu.
@@ -296,7 +231,14 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	}
 
     public Action LateAction { get => dialogs.LateAction; set => dialogs.LateAction = value; }
-    private void LateUpdate() => dialogs.Tick();
+    private void LateUpdate()
+    {
+        bool targeting=CurrentDialog==TargetDialog;
+        foreach(var dialog in DialogStack)
+            if(dialog is PartyMenu || dialog is PartyMenuPicker)
+                dialog.GetComponent<Canvas>().enabled=!targeting;
+        dialogs.Tick();
+    }
 
     public static void Open(Dialog dialog) => Instance.dialogs.Open(dialog);
 

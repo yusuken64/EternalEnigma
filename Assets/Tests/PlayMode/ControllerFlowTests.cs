@@ -104,10 +104,10 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.East);
             Assert.That(menus.Opened, Is.False);
             yield return Press(GamepadButton.LeftShoulder);
-            Assert.That(menus.CurrentDialog, Is.TypeOf<SkillDialog>());
+            Assert.That(menus.CurrentDialog, Is.TypeOf<PartyMenu>());
+            Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Skills));
             yield return Press(GamepadButton.South);
-            Assert.That(menus.DialogStack.Count, Is.EqualTo(2), "Skill details must open through confirm.");
-            yield return Press(GamepadButton.East);
+            Assert.That(menus.DialogStack.Count, Is.EqualTo(1), "Unsupported town skills remain inspectable without a Cast action.");
             yield return Press(GamepadButton.East);
             Assert.That(menus.Opened, Is.False);
             yield return Press(GamepadButton.Start);
@@ -150,6 +150,9 @@ namespace EternalEnigma.Tests
             yield return null; yield return null;
             first = EventSystem.current.currentSelectedGameObject;
             yield return Press(GamepadButton.DpadRight);
+            Assert.That(EventSystem.current.currentSelectedGameObject,Is.EqualTo(trainer.Layout.PreviewControl.gameObject));
+            yield return Press(GamepadButton.DpadLeft);
+            yield return Press(GamepadButton.DpadDown);
             row = EventSystem.current.currentSelectedGameObject;
             Assert.That(row, Is.Not.EqualTo(first));
             Assert.That(row.GetComponentInParent<SkillGridItem>(), Is.Not.Null);
@@ -229,26 +232,30 @@ namespace EternalEnigma.Tests
             Assert.That(target.Vitals.HP,Is.LessThan(hp),"Holding target must attack the adjacent cell, not two cells away.");
             Assert.That(hero.TilemapPosition,Is.EqualTo(aimedOrigin),"An aimed attack must not move the hero.");
             yield return Press(GamepadButton.LeftShoulder);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<SkillDialog>());
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenu>());
             var damage = hero.Skills.Single(s => s.SkillName == "Damage");
             Assert.That(hero.CanCast(damage, out var reason), Is.True,
                 $"{reason}; hero={hero.TilemapPosition}, target={target.TilemapPosition}, hp={target.Vitals.HP}, " +
                 $"visible={harness.Game.CurrentDungeon.CanSee(hero, target)}, enemies={harness.Game.Enemies.Count}");
-            var skillMenu = MenuManager.Instance.SkillDialog;
-            var damageButton = skillMenu.Buttons.Single(b => b.ActionText.text.StartsWith("Damage("));
-            for (int i = 0; i < skillMenu.Buttons.Count && EventSystem.current.currentSelectedGameObject != damageButton.Button.gameObject; i++)
+            var skillMenu = MenuManager.Instance.PartyMenu;
+            var damageButton = skillMenu.EntryButtons.Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text.StartsWith("Damage  "));
+            for (int i = 0; i < skillMenu.EntryButtons.Count && EventSystem.current.currentSelectedGameObject != damageButton.gameObject; i++)
                 yield return Press(GamepadButton.DpadDown);
-            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(damageButton.Button.gameObject));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(damageButton.gameObject));
+            yield return Press(GamepadButton.South);
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenuPicker>());
             yield return Press(GamepadButton.South);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<TargetDialog>());
             int mana = hero.Vitals.SP;
+            Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.False,"World targets must remain visible.");
             yield return Press(GamepadButton.Start);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True);
             yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<TargetDialog>());
             yield return Press(GamepadButton.East);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<SkillDialog>());
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenuPicker>());
             Assert.That(hero.Vitals.SP, Is.EqualTo(mana), "Cancel must not cast.");
+            Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.True);
             yield return Press(GamepadButton.South);
             hp = target.Vitals.HP;
             yield return Press(GamepadButton.South);
@@ -259,10 +266,11 @@ namespace EternalEnigma.Tests
 
             // Missile abilities aim at cells instead of cycling character targets.
             yield return Press(GamepadButton.LeftShoulder);
-            var boltButton = skillMenu.Buttons.Single(b => b.ActionText.text.StartsWith("Fire Bolt("));
-            for (int i = 0; i < skillMenu.Buttons.Count && EventSystem.current.currentSelectedGameObject != boltButton.Button.gameObject; i++)
+            var boltButton = skillMenu.EntryButtons.Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text.StartsWith("Fire Bolt  "));
+            for (int i = 0; i < skillMenu.EntryButtons.Count && EventSystem.current.currentSelectedGameObject != boltButton.gameObject; i++)
                 yield return Press(GamepadButton.DpadDown);
-            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(boltButton.Button.gameObject));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(boltButton.gameObject));
+            yield return Press(GamepadButton.South);
             yield return Press(GamepadButton.South);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<TargetDialog>());
             yield return Send(new GamepadState { leftStick = Vector2.right });

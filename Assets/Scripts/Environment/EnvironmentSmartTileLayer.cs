@@ -71,7 +71,8 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                         Buildings?DecorationSurface.Facade:wall?DecorationSurface.BuiltWall:DecorationSurface.NaturalWall,size,Buildings?(town?.Footprints.FirstOrDefault(f=>f.Cells.Contains(new GridPoint(x,y)))?.Door.ToString()??x+","+y):null);
                 batch.Add(mesh, SurfaceMaterial != null ? SurfaceMaterial : Road ? (alley ? Kit.Paving : Kit.Road) : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
                     new Vector3((tile.position.x + .5f) * unit, (tile.position.z + .5f) * unit, -Elevation * size),
-                    new Vector3(unit, unit, unit * HeightScale), angle);
+                    new Vector3(unit, unit, unit * HeightScale), angle,
+                    Road ? SilhouetteRole.Receiver : Buildings || wall ? SilhouetteRole.Caster : (SilhouetteRole?)null);
             }
             batch.Finish();
         }

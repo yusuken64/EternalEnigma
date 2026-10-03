@@ -54,6 +54,22 @@ Inventory/equipment persist only as `ItemSaveData`; no name-only compatibility l
 migration remains. Item identity still uses names, so definitions sharing a name are ambiguous.
 Skills/ranks, highest level and carried vitals live in each `TownAllyData` record.
 
+## Inventory and recovery
+
+The shared Inventory/Skills window uses the controls in [Dungeon controls](DungeonControls.md).
+Town supports equipment changes, material selling, positive HP/SP recovery, and compatible
+inventory inspection. `TownUtilityService` validates the complete effect list, living
+beneficiaries, item-instance ownership, and SP costs before committing once through
+`Town.SaveProgress`. Cancelling a picker changes nothing. Successful actions keep the
+window open and display their result.
+
+Recovery skills use learned rank, class healing/consumable passives, and persisted
+`HighestLevel`. Saved -1 vitals mean full health/SP. Recovery clamps to calculated maxima;
+full targets, insufficient SP, revival, food, damage, movement, status changes, buffs,
+permanent stat changes, and mixed unsupported effects cannot be used. Inventory utilities
+honor their filters and equipped-item eligibility. Normal transactions preserve both the
+inn checkpoint and dungeon rollback snapshot.
+
 ## Maintenance and checks
 
 Edit committed TWC assets through Unity's inspector; their Odin data should not be hand-edited.

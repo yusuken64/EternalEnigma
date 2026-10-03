@@ -13,7 +13,7 @@ public class EquipableInventoryItem : InventoryItem
 	public StatModification GetEquipmentStatModification()
 	{
 		if (EquipmentItemDefinition == null) { return new(); }
-		return EquipmentItemDefinition.GetEquipmentStatModification();
+		return EquipmentItemDefinition.GetEquipmentStatModification() ?? new StatModification();
 	}
 
 	internal override bool ShouldRemoveAfterUse()

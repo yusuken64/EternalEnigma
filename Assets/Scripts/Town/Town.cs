@@ -34,6 +34,8 @@ public class Town : MonoBehaviour
         TownAllyManager.Configure(Configuration);
         FindFirstObjectByType<TownMenu>().ValidateBindings(Configuration);
         Services = new TownServices(this);
+        ResourceHUD.Ensure(this);
+        ScenePresentation.Ensure(this);
         LoadSaveData();
         if (Common.Instance.CampaignContext != null)
         {
@@ -251,6 +253,7 @@ public class Town : MonoBehaviour
             yield return null;
         camera.SnapToFollowTarget();
         IsReady = true;
+        ScenePresentation.RegisterWorld(WalkableMap.TileWorldCreator.worldObject.transform);
 
         Debug.Log("Town done");
         Common.Instance.ScreenTransition.DoOpen();

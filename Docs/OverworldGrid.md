@@ -26,6 +26,14 @@ travel action after unlocking. Party changes require a town. The overworld has n
 
 ## Unity
 
+Inventory and Skills use the same window and shortcuts as town/dungeon. Overworld actions
+are limited to equipping/unequipping compatible items. `EquipmentTransferService` preserves
+individual item instances and returns displaced equipment to the shared bag. The context
+commits active-party equipment, roster records, and inventory through campaign persistence
+without replacing inn or dungeon rollback snapshots. Items and skills remain inspectable;
+consumption, casting, and selling are unavailable. Open dialogs consume movement/interact
+input. Hero browsing changes inspection only.
+
 `CampaignOverworld` imports Core masks into a cloned TileWorldCreator template.
 `OverworldBiomeRenderer` draws broad terrain. Project TWC layers draw smart terrain features,
 roads, houses, walls, coastline/ocean and bounded cosmetics. Markers and gate state are separate.

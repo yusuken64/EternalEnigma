@@ -13,6 +13,12 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public static MenuUIInputModule Active { get; private set; }
     public DungeonControls.UIActions UI => controls.UI;
     public bool InputConsumed => consumedFrame == Time.frameCount;
+    public bool HasDialog => scopes.Count > 0;
+    public InputAction NextHero { get; private set; }
+    public InputAction PreviousHero { get; private set; }
+    public bool UsingGamepad { get; private set; }
+    private Gamepad lastHintPad;
+    private Vector2 lastHintStick,lastHintDpad;
     private DungeonControls controls;
     private int consumedFrame = -1;
     private GameObject rememberedSelection;
@@ -34,6 +40,11 @@ public class MenuUIInputModule : InputSystemUIInputModule
     {
         base.Awake();
         controls = new DungeonControls();
+        var uiMap = controls.asset.FindActionMap("UI");
+        NextHero = uiMap.AddAction("InspectNextHero", InputActionType.Button);
+        NextHero.AddBinding("<Keyboard>/tab"); NextHero.AddBinding("<Gamepad>/rightShoulder");
+        PreviousHero = uiMap.AddAction("InspectPreviousHero", InputActionType.Button);
+        PreviousHero.AddBinding("<Gamepad>/leftTrigger");
         actionsAsset = controls.asset;
         point = Reference(UI.Point);
         move = Reference(UI.Navigate);
@@ -157,6 +168,20 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public override void Process()
     {
+        var pad = Gamepad.current;
+        if(pad!=lastHintPad){lastHintStick=lastHintDpad=Vector2.zero;lastHintPad=pad;}
+        if(pad!=null)
+        {
+            var stick=pad.leftStick.ReadValue();var dpad=pad.dpad.ReadValue();
+            if(pad.buttonSouth.wasPressedThisFrame || pad.buttonEast.wasPressedThisFrame || pad.buttonWest.wasPressedThisFrame ||
+                pad.startButton.wasPressedThisFrame || pad.leftShoulder.wasPressedThisFrame || pad.rightShoulder.wasPressedThisFrame ||
+                pad.leftTrigger.wasPressedThisFrame ||
+                stick.sqrMagnitude>.12f && (stick-lastHintStick).sqrMagnitude>.02f ||
+                dpad.sqrMagnitude>.12f && (dpad-lastHintDpad).sqrMagnitude>.02f)UsingGamepad=true;
+            lastHintStick=stick;lastHintDpad=dpad;
+        }
+        if (Keyboard.current?.anyKey.wasPressedThisFrame == true || Mouse.current?.delta.ReadValue().sqrMagnitude >= 1 ||
+            Mouse.current?.scroll.ReadValue().sqrMagnitude > 0 || Mouse.current?.leftButton.wasPressedThisFrame == true) UsingGamepad = false;
         if (AutoplayRunner.BlocksPlayerInput) { consumedFrame = Time.frameCount; return; }
         scopes.RemoveAll(s => s.Owner == null || s.Root == null || !s.Root.gameObject.activeInHierarchy);
         // World targets use directional/confirm input in TargetDialog and MenuManager.

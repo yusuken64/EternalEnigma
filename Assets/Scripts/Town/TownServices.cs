@@ -167,25 +167,10 @@ public sealed class TownServices
 
     public bool ToggleEquipment(TownAlly ally, InventoryItem item, out string reason)
     {
-        reason = null;
-        if (!Player.RecruitedAllies.Contains(ally) || item is not EquipableInventoryItem equipment) return false;
-        if (ally.Equipment.IsEquipped(item))
-        {
-            ally.Equipment.UnEquip(equipment);
-            Player.Inventory.Add(item);
-        }
-        else
-        {
-            if (!HeroClass.AllowsItem(ally.PrimaryClass, ally.SecondaryClass, equipment))
-            {
-                reason = $"{ally.Name} ({HeroClass.Label(ally.PrimaryClass, ally.SecondaryClass)}) can't equip {item.ItemName}.";
-                return false;
-            }
-            if (!Player.Inventory.Remove(item)) return false;
-            var previous = ally.Equipment.GetEquippedItems().ToArray();
-            ally.Equipment.Equip(equipment);
-            Player.Inventory.AddRange(previous.Where(p => !ally.Equipment.IsEquipped(p)));
-        }
+        reason = "This hero is not in the party.";
+        if (!Player.RecruitedAllies.Contains(ally)) return false;
+        if (!EquipmentTransferService.Toggle(ally.Equipment, Player.Inventory, item,
+            ally.PrimaryClass, ally.SecondaryClass, out reason)) return false;
         ally.RefreshEquipmentVisuals();
         town.SaveProgress();
         return true;

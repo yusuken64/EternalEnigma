@@ -25,7 +25,8 @@ public sealed class OverworldCosmeticLayer : TWCBuildLayer
             var batch = new EnvironmentBatch(root.transform); float size = creator.twcAsset.cellSize;
             foreach (var p in OverworldCosmetics.Plan(grid, Kit,TreeModels))
                 batch.Add(Kit.Mesh(p.Model), Kit.Material(p.Biome), new Vector3(p.X + .5f, p.Y + .5f, -p.Height) * size,
-                    Vector3.one * (size * p.Scale), p.Rotation);
+                    Vector3.one * (size * p.Scale), p.Rotation,
+                    p.Model.Contains("Bridge")?SilhouetteRole.Receiver:(SilhouetteRole?)null);
             batch.Finish();
         }
         finally { creator.executedBuildLayersCount += 1; }

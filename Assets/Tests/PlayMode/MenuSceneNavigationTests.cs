@@ -20,11 +20,14 @@ namespace EternalEnigma.Tests
         private Gamepad pad;
         private Keyboard keyboard;
         private TestInputScope inputScope;
+        private DungeonAnimationMode? previousAnimation;
 
         [UnitySetUp]
         public IEnumerator SetUp()
         {
             inputScope = new TestInputScope();
+            previousAnimation=DungeonPreferences.AnimationOverride;
+            DungeonPreferences.AnimationOverride=DungeonAnimationMode.None;
             harness = new GameTestHarness();
             yield return null;
         }
@@ -36,6 +39,7 @@ namespace EternalEnigma.Tests
             if (pad != null) InputSystem.RemoveDevice(pad);
             if (keyboard != null) InputSystem.RemoveDevice(keyboard);
             yield return harness.Cleanup();
+            DungeonPreferences.AnimationOverride=previousAnimation;
             inputScope.Dispose();
         }
 
@@ -273,7 +277,7 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.West);
             Assert.That(MenuManager.Instance.Opened, Is.True);
             var inventorySelection = EventSystem.current.currentSelectedGameObject;
-            Assert.That(inventorySelection.GetComponent<InventoryMenuItem>(), Is.Not.Null);
+            Assert.That(inventorySelection.GetComponent<PartyMenuRow>(), Is.Not.Null);
             yield return Press(GamepadButton.Start);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True);
             yield return Press(GamepadButton.Start);

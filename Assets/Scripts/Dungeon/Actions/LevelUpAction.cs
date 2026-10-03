@@ -16,11 +16,7 @@ internal class LevelUpAction : GameAction
 				character,
 				(stats, vitals) =>
 				{
-					stats.HPMax += growth.HPMax;
-					stats.SPMax += growth.SPMax;
-					stats.HungerMax += growth.HungerMax;
-					stats.Strength += growth.Strength;
-					stats.Defense += growth.Defense;
+					HeroClass.ApplyLevelGrowth(stats, character is Ally hero ? hero.PrimaryClass : null, 1);
 					vitals.HP += growth.HPMax;
 					vitals.SP += growth.SPMax;
 				},

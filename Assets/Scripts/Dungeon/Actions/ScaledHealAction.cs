@@ -29,14 +29,7 @@ public class ScaledHealAction : GameAction
 			return new List<GameAction>();
 		}
 
-		int heal = Mathf.FloorToInt(BaseHeal + PerLevel * Math.Max(1, caster.Vitals.Level));
-
-		if (rank.Scaling != null)
-		{
-			heal = rank.Scaling.ScalePower(heal, rank.Rank);
-		}
-
-		heal = Math.Max(1, Mathf.RoundToInt(heal * ClassPassives.HealingMultiplier(caster, target)));
+		int heal = RecoveryMath.Heal(BaseHeal, PerLevel, caster.Vitals.Level, rank, ClassPassives.HealingMultiplier(caster, target));
 
 		return new List<GameAction> { new TakeHealAction(caster, target, heal) };
 	}

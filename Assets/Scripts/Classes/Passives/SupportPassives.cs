@@ -6,11 +6,12 @@ using UnityEngine;
 public class HealingBonus : ClassPassive {
 	public float Percent = 10f;
 	public float PercentPerRank = 0f;
+	internal float MultiplierAt(int rank) => 1f + (Percent + PercentPerRank * (rank - 1)) / 100f;
 
 	internal override float HealingMultiplier(Character owner, Skill skill, Character target) {
 		if (owner == null) return 1f;
 		int r = RankOf(skill);
-		return 1f + (Percent + PercentPerRank * (r - 1)) / 100f;
+		return MultiplierAt(r);
 	}
 }
 
@@ -19,14 +20,12 @@ public class TriagePassive : ClassPassive {
 	public float Threshold = 0.3f;
 	public float Multiplier = 1.5f;
 	public float MultiplierPerRank = 0.1f;
+	internal float MultiplierAt(int rank, int hp, int maximum) => hp <= Threshold * maximum ? Multiplier + MultiplierPerRank * (rank - 1) : 1f;
 
 	internal override float HealingMultiplier(Character owner, Skill skill, Character target) {
 		if (owner == null) return 1f;
 		int r = RankOf(skill);
-		if (target != null && target.Vitals != null && target.Vitals.HP <= Threshold * target.FinalStats.HPMax) {
-			return Multiplier + MultiplierPerRank * (r - 1);
-		}
-		return 1f;
+		return target != null && target.Vitals != null ? MultiplierAt(r, target.Vitals.HP, target.FinalStats.HPMax) : 1f;
 	}
 }
 
@@ -108,11 +107,12 @@ public class ConditionalStatPassive : ClassPassive {
 public class ResourcefulPassive : ClassPassive {
 	public float Chance = 0.25f;
 	public float ChancePerRank = 0.05f;
+	internal float ChanceAt(int rank) => Chance + ChancePerRank * (rank - 1);
 
 	internal override float ConsumableSaveChance(Character owner, Skill skill) {
 		if (owner == null) return 0f;
 		int r = RankOf(skill);
-		return Chance + ChancePerRank * (r - 1);
+		return ChanceAt(r);
 	}
 }
 

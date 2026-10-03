@@ -7,7 +7,7 @@ public sealed class DungeonHud : MonoBehaviour
 {
     public Transform PartyRoot { get; private set; }
     private Game game;
-    private TMP_Text header, supplies, target;
+    private TMP_Text header, target;
     private Button control;
     private float detailUntil;
     public static DungeonHud Ensure(Game game)
@@ -23,8 +23,8 @@ public sealed class DungeonHud : MonoBehaviour
         PartyRoot = GameUISkin.Rect("Party", canvas.transform,new Vector2(.012f,.255f),new Vector2(.30f,.985f));
         header = GameUISkin.Label(canvas.transform,"",new Vector2(.81f,.018f),new Vector2(.985f,.12f),46);
         header.alignment = TextAlignmentOptions.BottomRight; WorldLabel(header);
-        supplies = GameUISkin.Label(canvas.transform,"",new Vector2(.018f,.09f),new Vector2(.23f,.20f),29);
-        WorldLabel(supplies);
+        ResourceHUD.Ensure(owner);
+        ScenePresentation.Ensure(owner);
         var options = GameUISkin.Button(canvas.transform,"Options",new Vector2(.87f,.935f),new Vector2(.985f,.985f),()=>Common.Instance.GlobalSettings.ShowDialog());
         options.navigation = new Navigation { mode = Navigation.Mode.None };
         control = GameUISkin.Button(canvas.transform,"",new Vector2(.012f,.022f),new Vector2(.22f,.072f),()=>DungeonPreferences.FullControl=!DungeonPreferences.FullControl);
@@ -50,11 +50,7 @@ public sealed class DungeonHud : MonoBehaviour
         if (game == null || !game.IsReady || game.PlayerController.ControlledAlly == null) return;
         var player = game.PlayerController;
         var turns = game.TurnManager;
-        var count = player.Inventory.InventoryItems.Count;
-        string bag = $"Bag {count}/{player.Inventory.MaxItems}";
-        if (count >= player.Inventory.MaxItems-1) bag = "<color=#963B20>" + bag + "</color>";
         header.text = $"{player.Floor}F";
-        supplies.text = $"{bag}\n{player.Gold} gold";
         control.GetComponentInChildren<TMP_Text>().text = "Full Control: " + (DungeonPreferences.FullControl ? "On" : "Off") +
             (turns.IsProcessingTurn && turns.FullControlThisRound != DungeonPreferences.FullControl ? " (next round)" : "");
         var ally = player.ControlledAlly;
@@ -95,7 +91,7 @@ public sealed class DungeonPartyCard : MonoBehaviour
         rect.pivot = new Vector2(.5f,1); rect.offsetMin = rect.offsetMax = Vector2.zero;
         var card = display.gameObject.AddComponent<DungeonPartyCard>(); card.display=display;
         card.panel=GameUISkin.Panel(display.transform,Vector2.zero,Vector2.one);
-        card.panel.color = new Color(.09f,.21f,.20f,.32f);
+        card.panel.color = new Color(.09f,.17f,.17f,.88f);
         card.portraitHighlight = GameUISkin.Panel(card.panel.transform,new Vector2(0,.105f),new Vector2(.36f,1));
         card.portraitHighlight.name = "Turn highlight";
         if (highlightBorder == null)

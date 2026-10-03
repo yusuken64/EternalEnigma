@@ -28,6 +28,18 @@ const transport = new StdioClientTransport({
 });
 try {
     await client.connect(transport);
+    // The package initializes its Editor connection asynchronously after MCP initialization.
+    // Retry only this pre-dispatch error; retrying timeouts could repeat a mutation.
+    const callUnity = async (...args) => {
+        let result;
+        for (let attempt = 0; attempt < 20; attempt++) {
+            result = await client.callTool(...args);
+            if (!result.isError || !result.content?.some(c => c.type === 'text' && c.text.includes('Not started - call start() first')))
+                return result;
+            await new Promise(resolve => setTimeout(resolve, 250));
+        }
+        return result;
+    };
     const name = process.argv[2] ?? 'get_scene_info';
     if (name === 'harness') {
         const mode = process.argv[3] ?? 'EditMode';
@@ -37,7 +49,7 @@ try {
             try { return JSON.parse(readFileSync(resultPath, 'utf8')); } catch { return null; }
         };
         const previousRun = readSummary()?.runId;
-        const started = await client.callTool({ name: 'execute_menu_item',
+        const started = await callUnity({ name: 'execute_menu_item',
             arguments: { menuPath: `Tools/Eternal Enigma/Tests/Run ${mode}` } });
         if (started.isError) throw Error(JSON.stringify(started));
         const deadline = Date.now() + 600000;
@@ -55,7 +67,7 @@ try {
     const argument = process.argv[3] ?? '{}';
     const json = argument.startsWith('@') ? readFileSync(resolve(argument.slice(1)), 'utf8') : argument;
     const result = name === 'list' ? await client.listTools() :
-        await client.callTool({ name, arguments: JSON.parse(json) }, undefined, { timeout: 600000 });
+        await callUnity({ name, arguments: JSON.parse(json) }, undefined, { timeout: 600000 });
     console.log(JSON.stringify(result, null, 2));
     if (result.isError) process.exitCode = 1;
     if (name === 'run_tests') {

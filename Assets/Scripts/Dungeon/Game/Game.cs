@@ -320,6 +320,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		Game.Instance.PlayerController.StartTurn();
 		UpdateMiniMap();
 		IsReady = true;
+        ScenePresentation.RegisterWorld(CurrentDungeon.transform);
+        ScenePresentation.RegisterWorld(DungeonGenerator.transform);
 	}
 
     internal readonly HashSet<Vector3Int> PartyVisibleTiles = new();
@@ -374,11 +376,6 @@ public class Game : SingletonMonoBehaviour<Game>
 		FloorText.text = $"{PlayerController.Floor}F";
 		CharacterStatsDisplays.ForEach(x => x.UpdateUI());
 
-		var inventoryText = 
-			@$"Gold {PlayerController.Gold}g
-Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventory.MaxItems}";
-
-		InventoryText.text = inventoryText;
 	}
 	
 	[ContextMenu("AdvanceFloor")]

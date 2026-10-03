@@ -1,0 +1,3 @@
+seed=12345; same town/camera; Editor frame samples (not player GPU timings)
+silhouettes=False; median_ms=7.371
+silhouettes=True; median_ms=8.164

@@ -209,6 +209,7 @@ public abstract class Character : MonoBehaviour, Actor
 
 	private void Awake()
 	{
+        SilhouetteParticipant.Register(transform,SilhouetteRole.Caster,true);
 		BaseStats = new();
 		if (Equipment != null)
 		{

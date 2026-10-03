@@ -13,6 +13,12 @@ public class TownMenuManager : MonoBehaviour
     public Stack<Dialog> DialogStack => dialogs.Stack;
     public Dialog CurrentDialog => dialogs.Current;
     private CampaignHUD campaignHUD;
+    public PartyMenu PartyMenu { get; private set; }
+    private void Start()
+    {
+        var town=FindFirstObjectByType<Town>();
+        PartyMenuLauncher.Create(transform,()=>town!=null&&town.IsReady,OpenPartyMenu);
+    }
 
 	private void Update()
 	{
@@ -25,68 +31,20 @@ public class TownMenuManager : MonoBehaviour
 			Common.Instance.GlobalSettings.ShowDialog();
 			return;
 		}
-		if (Common.Instance.MenuInputHandler.MenuOpenClosedInput)
-		{
-			if (!Opened)
-			{
-				bool canOpenMenu = DialogStack.Count == 0 && FindFirstObjectByType<Town>().IsReady;
-				if (canOpenMenu)
-				{
-					OpenMenu();
-					return;
-				}
-			}
-			else
-			{
-				CloseAllMenus();
-				return;
-			}
-		}
-		else if (Common.Instance.MenuInputHandler.OpenSkillMenuInput)
-		{
-			if (!Opened)
-			{
-				bool canOpenMenu = DialogStack.Count == 0 && FindFirstObjectByType<Town>().IsReady;
-				if (canOpenMenu)
-				{
-					OpenSkills();
-					return;
-				}
-			}
-			else
-			{
-				CloseAllMenus();
-				return;
-			}
-		}
-
-	}
-
-	private void OpenMenu()
-	{
-		var townMenu = FindFirstObjectByType<TownMenu>();
-		var townPlayer = FindFirstObjectByType<TownPlayer>();
-
-		Open(townMenu.InventoryMenu);
-		List<InventoryItem> inventoryItems = townPlayer.ControllingTownAlly.Equipment.GetEquippedItems().Cast<InventoryItem>().Concat(townPlayer.Inventory).ToList();
-		townMenu.InventoryMenu.SetupTown(inventoryItems, townPlayer.ControllingTownAlly);
-		townMenu.InventoryMenu.SetNavigation();
-		townMenu.InventoryMenu.CloseAction = () =>
-		{
-			townMenu.InventoryMenu.Close();
-		};
-	}
-
-	private void OpenSkills ()
-	{
-		var townMenu = FindFirstObjectByType<TownMenu>();
-		var townPlayer = FindFirstObjectByType<TownPlayer>();
-
-		Open(townMenu.SkillDialog);
-		townMenu.SkillDialog.gameObject.SetActive(true);
-		townMenu.SkillDialog.SetupTown(townPlayer.ControllingTownAlly);
-		townMenu.SkillDialog.SetNavigation();
-	}
+        if (Common.Instance.MenuInputHandler.MenuOpenClosedInput || Common.Instance.MenuInputHandler.OpenSkillMenuInput)
+        {
+            var tab = Common.Instance.MenuInputHandler.MenuOpenClosedInput ? PartyMenuTab.Inventory : PartyMenuTab.Skills;
+            if (PartyMenu != null && CurrentDialog == PartyMenu) PartyMenu.Shortcut(tab);
+            else if (!Opened && FindFirstObjectByType<Town>().IsReady) OpenPartyMenu(tab);
+        }
+    }
+    public void OpenPartyMenu(PartyMenuTab tab)
+    {
+        var town = FindFirstObjectByType<Town>();
+        if (PartyMenu == null) PartyMenu = global::PartyMenu.Create(transform);
+        PartyMenu.Setup(new TownPartyMenuContext(town), tab, town.TownPlayer.ControllingTownAlly?.Id);
+        Open(PartyMenu);
+    }
 
 	internal void CloseMenu()
 	{

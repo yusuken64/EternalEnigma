@@ -8,6 +8,8 @@ using UnityEngine.UI;
 public class ShopMenuDialog : Dialog
 {
     private TownInteractionContext context;
+    private string selectedItemName;
+    private int selectedIndex;
     public override void PrepareTown(TownInteractionContext value)
     {
         context = value;
@@ -32,6 +34,7 @@ public class ShopMenuDialog : Dialog
 
 	public void Setup()
 	{
+        float position=scrollView!=null && ShopItems?.Count>0?scrollView.verticalNormalizedPosition:1;
         var stock = context.Services.Shop(context.Building);
         ShopItemDatas = context.Building.ShopCatalog.Select(o => new ShopItemData(o.Item.ItemName, o.Price) {
             Remaining = stock.Stock.FirstOrDefault(s => s.ItemName == o.Item.ItemName)?.Remaining ?? 0
@@ -39,6 +42,7 @@ public class ShopMenuDialog : Dialog
 		Action<ShopMenuItem, ShopItemData> action = (view, data) =>
 		{
 			view.Setup(data);
+            if(view.BuyButton.GetComponent<PartyMenuRow>()==null)view.BuyButton.gameObject.AddComponent<PartyMenuRow>();
 			Button button = view.GetComponent<Button>();
 			button.onClick.RemoveAllListeners();
 			button.onClick.AddListener(() =>
@@ -53,10 +57,21 @@ public class ShopMenuDialog : Dialog
 
 			view.SelectCallBack = () =>
 			{
+				selectedItemName=data.ItemName;
+				selectedIndex=Mathf.Max(0,ShopItemDatas.IndexOf(data));
 				ScrollToSelected(view.gameObject);
 			};
 		};
 		ShopItems = Container.RePopulateObjects(ShopItemPrefab, ShopItemDatas, action);
+        int remembered=ShopItemDatas.FindIndex(i=>i.ItemName==selectedItemName);
+        selectedIndex=remembered>=0?remembered:Mathf.Clamp(selectedIndex,0,Mathf.Max(0,ShopItems.Count-1));
+        Canvas.ForceUpdateCanvases();
+        if(scrollView!=null)scrollView.verticalNormalizedPosition=position;
+        if(GetComponentInChildren<MenuControlHints>(true)==null)
+        {
+            var label=GameUISkin.Label(transform,"",new Vector2(.1f,.08f),new Vector2(.8f,.12f),20);
+            MenuControlHints.Bind(label);
+        }
 	}
 
 	private void BuyItem(ShopMenuItem view, ShopItemData item)
@@ -68,8 +83,9 @@ public class ShopMenuDialog : Dialog
 	internal override void SetFirstSelect()
 	{
 		if (ShopItems.IsNullOrEmpty()) { return; }
-		ShopItems[0].BuyButton.Select();
-		ScrollToSelected(ShopItems[0].BuyButton.gameObject);
+		var row=ShopItems[Mathf.Clamp(selectedIndex,0,ShopItems.Count-1)];
+		row.BuyButton.Select();
+		ScrollToSelected(row.BuyButton.gameObject);
 	}
 
 	public void Cancel_Clicked()

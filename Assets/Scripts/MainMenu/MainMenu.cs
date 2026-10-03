@@ -26,6 +26,7 @@ public class MainMenu : MonoBehaviour
         yield return LoadingSceneIntegration.EnsureCommon();
         for (int i = 0; i < buttons.Length; i++) if (buttons[i] != null) buttons[i].interactable = interactable[i];
         IsReady = true;
+        MainMenuPolish.Apply(this);
         Common.Instance.EndSandbox();
         Common.Instance.Travel.SceneReady();
 		var save = Common.Instance.GameSaveData;

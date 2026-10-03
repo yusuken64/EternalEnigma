@@ -31,6 +31,8 @@ public sealed class EnvironmentKit : ScriptableObject
         obj.AddComponent<MeshFilter>().sharedMesh = Mesh(id);
         var renderer = obj.AddComponent<MeshRenderer>(); renderer.sharedMaterial = Surface(id,biome);
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        obj.AddComponent<SilhouetteParticipant>().Role = id.Contains("Water") || id.Contains("Shore") ? SilhouetteRole.None :
+            id.Contains("Bridge") || id.Contains("Paving") || id.Contains("Road") ? SilhouetteRole.Receiver : SilhouetteRole.Caster;
         return obj;
     }
 }

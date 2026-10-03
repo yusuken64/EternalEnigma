@@ -68,7 +68,7 @@ public sealed class CampaignHUD : MonoBehaviour
         bool ready = common != null && !common.Travel.IsTransitioning && !AutoplayRunner.BlocksPlayerInput && !common.GlobalSettings.IsOpen;
         if (Overworld != null)
         {
-            ready &= Overworld.IsReady;
+            ready &= Overworld.IsReady && MenuUIInputModule.Active?.HasDialog != true;
             message.transform.parent.gameObject.SetActive(ready);
             if (!ready) return;
             message.text = Overworld.Context.State.Finished ? "Campaign complete!" :

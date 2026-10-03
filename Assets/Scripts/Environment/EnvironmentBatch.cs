@@ -5,17 +5,33 @@ public sealed class EnvironmentBatch
 {
     private readonly Transform parent;
     private readonly EnvironmentMeshOwner owner;
-    private readonly Dictionary<(int, int, Material), List<CombineInstance>> groups = new();
+    private readonly Dictionary<(int, int, Material, SilhouetteRole), List<CombineInstance>> groups = new();
+    private readonly Dictionary<(Material,int),Material> variants = new();
     public EnvironmentBatch(Transform parent)
     {
         this.parent = parent;
         owner = parent.gameObject.AddComponent<EnvironmentMeshOwner>();
     }
-    public void Add(Mesh mesh, Material material, Vector3 position, Vector3 scale, float rotation = 0)
-        => Add(mesh,material,position,scale,Quaternion.Euler(0,0,rotation));
-    public void Add(Mesh mesh, Material material, Vector3 position, Vector3 scale, Quaternion rotation)
+    public void Add(Mesh mesh, Material material, Vector3 position, Vector3 scale, float rotation = 0, SilhouetteRole? role = null)
+        => Add(mesh,material,position,scale,Quaternion.Euler(0,0,rotation),role);
+    public void Add(Mesh mesh, Material material, Vector3 position, Vector3 scale, Quaternion rotation, SilhouetteRole? role = null)
     {
-        var key = (Mathf.FloorToInt(position.x / 64), Mathf.FloorToInt(position.y / 64), material);
+        var resolved = role ?? (mesh.bounds.size.z * scale.z < .12f ? SilhouetteRole.Receiver : SilhouetteRole.Caster);
+        if(resolved==SilhouetteRole.Receiver && material.HasProperty("_MainTex") && material.GetTag("EnvironmentProjection",false,"")=="Planar")
+        {
+            uint hash=DungeonPresentation.Hash(15401,Mathf.FloorToInt(position.x),Mathf.FloorToInt(position.y));
+            int variant=(int)(hash%3);
+            if(!variants.TryGetValue((material,variant),out var surface))
+            {
+                surface=new Material(material){name=material.name+" surface "+variant,hideFlags=HideFlags.DontSave};
+                // Keep the painted road/floor pattern continuous across module joins.
+                surface.mainTextureOffset=material.mainTextureOffset;
+                if(surface.HasProperty("_Color"))surface.color=material.color*(variant==0?1:variant==1?.975f:1.015f);
+                variants.Add((material,variant),surface);owner.Materials.Add(surface);
+            }
+            material=surface;
+        }
+        var key = (Mathf.FloorToInt(position.x / 64), Mathf.FloorToInt(position.y / 64), material, resolved);
         if (!groups.TryGetValue(key, out var list)) groups[key] = list = new List<CombineInstance>();
         list.Add(new CombineInstance { mesh = mesh, transform = Matrix4x4.TRS(position, rotation, scale) });
         owner.PropCount++; owner.TriangleCount += (int)mesh.GetIndexCount(0) / 3;
@@ -46,6 +62,7 @@ public sealed class EnvironmentBatch
             var renderer = obj.AddComponent<MeshRenderer>(); renderer.sharedMaterial = pair.Key.Item3;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             renderer.receiveShadows = false;
+            obj.AddComponent<SilhouetteParticipant>().Role = pair.Key.Item4;
         }
     }
 }

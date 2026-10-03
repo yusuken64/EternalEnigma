@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="21" result="Failed(Child)" total="21" passed="20" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-03 23:13:17Z" end-time="2026-10-03 23:13:53Z" duration="36.2068353">
+  <test-suite type="TestSuite" id="1306" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="252" result="Failed" site="Child" start-time="2026-10-03 23:13:17Z" end-time="2026-10-03 23:13:53Z" duration="36.206835" total="21" passed="20" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1300" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="252" result="Failed" site="Child" start-time="2026-10-03 23:13:17Z" end-time="2026-10-03 23:13:53Z" duration="36.162841" total="21" passed="20" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="31704" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1301" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="233" result="Failed" site="Child" start-time="2026-10-03 23:13:17Z" end-time="2026-10-03 23:13:53Z" duration="36.153736" total="21" passed="20" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1302" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="233" result="Failed" site="Child" start-time="2026-10-03 23:13:17Z" end-time="2026-10-03 23:13:53Z" duration="36.145576" total="21" passed="20" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1111" name="ControllerFlowTests" fullname="EternalEnigma.Tests.ControllerFlowTests" classname="EternalEnigma.Tests.ControllerFlowTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-03 23:13:17Z" end-time="2026-10-03 23:13:47Z" duration="29.873986" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1116" name="CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly" fullname="EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly" methodname="CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly" classname="EternalEnigma.Tests.ControllerFlowTests" runstate="Runnable" seed="1878200321" result="Passed" start-time="2026-10-03 23:13:17Z" end-time="2026-10-03 23:13:32Z" duration="15.306723" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Control scheme changed to: Gamepad
+Control scheme changed to: Gamepad
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1115" name="ControllerCanOpenAndCloseCampaignPartyInTown" fullname="EternalEnigma.Tests.ControllerFlowTests.ControllerCanOpenAndCloseCampaignPartyInTown" methodname="ControllerCanOpenAndCloseCampaignPartyInTown" classname="EternalEnigma.Tests.ControllerFlowTests" runstate="Runnable" seed="1492073575" result="Passed" start-time="2026-10-03 23:13:32Z" end-time="2026-10-03 23:13:38Z" duration="5.639444" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+No save data found. Creating new save.
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 922377919
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Control scheme changed to: Gamepad
+Control scheme changed to: Gamepad
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1112" name="MainMenuHeroPickerAndBackUseControllerOnly" fullname="EternalEnigma.Tests.ControllerFlowTests.MainMenuHeroPickerAndBackUseControllerOnly" methodname="MainMenuHeroPickerAndBackUseControllerOnly" classname="EternalEnigma.Tests.ControllerFlowTests" runstate="Runnable" seed="249293790" result="Passed" start-time="2026-10-03 23:13:38Z" end-time="2026-10-03 23:13:40Z" duration="2.027543" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+No save data found. Creating new save.
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Control scheme changed to: Gamepad
+Control scheme changed to: Gamepad
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1113" name="TownMovementInventorySkillsAndSettingsUseControllerOnly" fullname="EternalEnigma.Tests.ControllerFlowTests.TownMovementInventorySkillsAndSettingsUseControllerOnly" methodname="TownMovementInventorySkillsAndSettingsUseControllerOnly" classname="EternalEnigma.Tests.ControllerFlowTests" runstate="Runnable" seed="1720523108" result="Passed" start-time="2026-10-03 23:13:40Z" end-time="2026-10-03 23:13:43Z" duration="3.473643" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 12345
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Control scheme changed to: Gamepad
+Control scheme changed to: Gamepad
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1114" name="TownShopAndTrainerSupportNavigationConfirmAndBack" fullname="EternalEnigma.Tests.ControllerFlowTests.TownShopAndTrainerSupportNavigationConfirmAndBack" methodname="TownShopAndTrainerSupportNavigationConfirmAndBack" classname="EternalEnigma.Tests.ControllerFlowTests" runstate="Runnable" seed="1478597666" result="Passed" start-time="2026-10-03 23:13:43Z" end-time="2026-10-03 23:13:47Z" duration="3.388841" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 12345
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Control scheme changed to: Gamepad
+Control scheme changed to: Gamepad
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1183" name="MenuSceneNavigationTests" fullname="EternalEnigma.Tests.MenuSceneNavigationTests" classname="EternalEnigma.Tests.MenuSceneNavigationTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-03 23:13:47Z" end-time="2026-10-03 23:13:52Z" duration="4.996804" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1192" name="InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection" fullname="EternalEnigma.Tests.MenuSceneNavigationTests.InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection" methodname="InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection" classname="EternalEnigma.Tests.MenuSceneNavigationTests" runstate="Runnable" seed="1183965162" result="Passed" start-time="2026-10-03 23:13:47Z" end-time="2026-10-03 23:13:50Z" duration="3.153601" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Control scheme changed to: Gamepad
+Control scheme changed to: Keyboard&Mouse
+Control scheme changed to: Keyboard&Mouse
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1191" name="SettingsKeepCategoryFocusAndBackReturnsToGameplay" fullname="EternalEnigma.Tests.MenuSceneNavigationTests.SettingsKeepCategoryFocusAndBackReturnsToGameplay" methodname="SettingsKeepCategoryFocusAndBackReturnsToGameplay" classname="EternalEnigma.Tests.MenuSceneNavigationTests" runstate="Runnable" seed="805378951" result="Passed" start-time="2026-10-03 23:13:50Z" end-time="2026-10-03 23:13:52Z" duration="1.831133" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 12345
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Control scheme changed to: Gamepad
+Control scheme changed to: Gamepad
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1193" name="MenuSelectionTests" fullname="EternalEnigma.Tests.MenuSelectionTests" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" testcasecount="14" result="Failed" site="Child" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:53Z" duration="1.266028" total="14" passed="13" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1207" name="AutoScrollLeavesVisibleRowsStillAndRevealsOnlyClippedRows" fullname="EternalEnigma.Tests.MenuSelectionTests.AutoScrollLeavesVisibleRowsStillAndRevealsOnlyClippedRows" methodname="AutoScrollLeavesVisibleRowsStillAndRevealsOnlyClippedRows" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="488153711" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.347815" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1203" name="BackClosesOneDialogPerPressAndRestoresFocusWhilePaused" fullname="EternalEnigma.Tests.MenuSelectionTests.BackClosesOneDialogPerPressAndRestoresFocusWhilePaused" methodname="BackClosesOneDialogPerPressAndRestoresFocusWhilePaused" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="2070835312" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.056034" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1199" name="DisabledButtonsCannotActivateByClickOrSubmit" fullname="EternalEnigma.Tests.MenuSelectionTests.DisabledButtonsCannotActivateByClickOrSubmit" methodname="DisabledButtonsCannotActivateByClickOrSubmit" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="2022526037" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.063390" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1202" name="DisabledRememberedButtonFallsBackInsideDialog" fullname="EternalEnigma.Tests.MenuSelectionTests.DisabledRememberedButtonFallsBackInsideDialog" methodname="DisabledRememberedButtonFallsBackInsideDialog" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="1751210550" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.046893" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1196" name="DpadMovesHighlightAndConfirmActivatesExactlyOnce" fullname="EternalEnigma.Tests.MenuSelectionTests.DpadMovesHighlightAndConfirmActivatesExactlyOnce" methodname="DpadMovesHighlightAndConfirmActivatesExactlyOnce" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="268181514" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.072613" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1194" name="FirstClickSelectsSecondClickActivatesThroughInputModule" fullname="EternalEnigma.Tests.MenuSelectionTests.FirstClickSelectsSecondClickActivatesThroughInputModule" methodname="FirstClickSelectsSecondClickActivatesThroughInputModule" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="1341811897" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.059762" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1195" name="HoverDoesNotSelectOrArmAnotherButton" fullname="EternalEnigma.Tests.MenuSelectionTests.HoverDoesNotSelectOrArmAnotherButton" methodname="HoverDoesNotSelectOrArmAnotherButton" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="1170827388" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.052784" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1204" name="ModalBlocksClicksOnUnderlyingButtons" fullname="EternalEnigma.Tests.MenuSelectionTests.ModalBlocksClicksOnUnderlyingButtons" methodname="ModalBlocksClicksOnUnderlyingButtons" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="1800810992" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.068670" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1205" name="MouseWinsSimultaneousInputAndControllerNoiseDoesNotStealIt" fullname="EternalEnigma.Tests.MenuSelectionTests.MouseWinsSimultaneousInputAndControllerNoiseDoesNotStealIt" methodname="MouseWinsSimultaneousInputAndControllerNoiseDoesNotStealIt" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="2119499019" result="Failed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.055876" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: False
+  But was:  True
+]]></message>
+                <stack-trace><![CDATA[at EternalEnigma.Tests.MenuSelectionTests+<MouseWinsSimultaneousInputAndControllerNoiseDoesNotStealIt>d__30.MoveNext () [0x000d9] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\MenuSelectionTests.cs:240
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1200" name="ReleasingOnAnotherButtonDoesNotActivateEither" fullname="EternalEnigma.Tests.MenuSelectionTests.ReleasingOnAnotherButtonDoesNotActivateEither" methodname="ReleasingOnAnotherButtonDoesNotActivateEither" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="1947560730" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:52Z" duration="0.044363" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1206" name="SelectionArrowArrivesWhileTimeScaleIsZero" fullname="EternalEnigma.Tests.MenuSelectionTests.SelectionArrowArrivesWhileTimeScaleIsZero" methodname="SelectionArrowArrivesWhileTimeScaleIsZero" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="1672933167" result="Passed" start-time="2026-10-03 23:13:52Z" end-time="2026-10-03 23:13:53Z" duration="0.201321" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1201" name="StickRecoversLostFocusWithoutMovingPastRememberedButton" fullname="EternalEnigma.Tests.MenuSelectionTests.StickRecoversLostFocusWithoutMovingPastRememberedButton" methodname="StickRecoversLostFocusWithoutMovingPastRememberedButton" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="529577439" result="Passed" start-time="2026-10-03 23:13:53Z" end-time="2026-10-03 23:13:53Z" duration="0.060805" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1197" name="StickSelectionCanBeActivatedByOneMouseClick" fullname="EternalEnigma.Tests.MenuSelectionTests.StickSelectionCanBeActivatedByOneMouseClick" methodname="StickSelectionCanBeActivatedByOneMouseClick" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="1328210406" result="Passed" start-time="2026-10-03 23:13:53Z" end-time="2026-10-03 23:13:53Z" duration="0.054763" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1198" name="SwitchingButtonsRequiresSelectingTheNewButtonFirst" fullname="EternalEnigma.Tests.MenuSelectionTests.SwitchingButtonsRequiresSelectingTheNewButtonFirst" methodname="SwitchingButtonsRequiresSelectingTheNewButtonFirst" classname="EternalEnigma.Tests.MenuSelectionTests" runstate="Runnable" seed="2105814623" result="Passed" start-time="2026-10-03 23:13:53Z" end-time="2026-10-03 23:13:53Z" duration="0.066164" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: Temp/HarnessResults/PlayMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -97,7 +97,7 @@ public sealed class GameMessages : MonoBehaviour
     private void Render()
     {
         var entries = !expanded && inDungeonTurn ? turnEvents : history;
-        int start = inDungeonTurn || expanded ? 0 : Mathf.Max(0,entries.Count-5);
+        int start = expanded ? 0 : Mathf.Max(0,entries.Count-3);
         text.text = string.Join("\n", entries.GetRange(start, entries.Count-start));
         Canvas.ForceUpdateCanvases();
         text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,

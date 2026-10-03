@@ -20,6 +20,14 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Unified Presentation")]
+    public static void RunUnifiedPresentation() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.UnifiedPartyMenuTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Rendering")]
+    public static void RunPresentationRendering() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.UnifiedPartyMenuTests.SilhouettesProjectGeometryWithoutDarkeningOverlapsOrHiddenCasters");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Main Menu")]
+    public static void RunPresentationMainMenu() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.UnifiedPartyMenuTests.MainMenuCompositionKeepsDeveloperControlsClosed");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation EditMode")]
+    public static void RunPresentationEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode","EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests","EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Painted Environment EditMode")]
     public static void RunPaintedEnvironmentEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode",
         "EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests","EternalEnigma.Tests.CoreIntegration.DungeonThemeTests",

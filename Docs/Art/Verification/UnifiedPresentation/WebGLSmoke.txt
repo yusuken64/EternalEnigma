@@ -1,0 +1,3 @@
+Town ready; Q/R menu captures saved. Headless Edge / software WebGL.
+Errors: 1
+log: ERROR: Shader 

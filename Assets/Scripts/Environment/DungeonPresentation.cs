@@ -54,7 +54,12 @@ public static class DungeonPresentation
         // Baked scene meshes are not assets. Shared imported/persistent meshes must survive.
         var owned=new HashSet<Mesh>(root.GetComponentsInChildren<EnvironmentMeshOwner>(true).SelectMany(o=>o.Meshes));
         foreach(var mesh in owned) if(mesh!=null) Release(mesh);
-        foreach(var owner in root.GetComponentsInChildren<EnvironmentMeshOwner>(true)) owner.Meshes.Clear();
+        foreach(var owner in root.GetComponentsInChildren<EnvironmentMeshOwner>(true))
+        {
+            owner.Meshes.Clear();
+            foreach(var material in owner.Materials)if(material!=null)Release(material);
+            owner.Materials.Clear();
+        }
         foreach(var mesh in root.GetComponentsInChildren<MeshFilter>(true).Select(f=>f.sharedMesh).Where(m=>m!=null).Distinct())
         {
             if(owned.Contains(mesh)) continue;

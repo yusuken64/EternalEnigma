@@ -61,6 +61,8 @@ public class BallistaDialog : Dialog
         var navigation = GetComponent<NavigationHandler>();
         if (navigation != null) navigation.selectionArrow = null;
         Layout = Instantiate(Resources.Load<TrainerLayout>("UI/TrainerLayout"), transform, false);
+        var hints=Layout.GetComponentsInChildren<TMP_Text>().FirstOrDefault(t=>t.text.StartsWith("Select to preview."));
+        if(hints!=null)MenuControlHints.Bind(hints);
         BallistaPurchaseDialog.transform.SetAsLastSibling();
         SkillsText = Layout.Balance;
         SkillGridContainer = Layout.ListScroll.content;
@@ -110,6 +112,7 @@ public class BallistaDialog : Dialog
                 row.SkillToggledCallback = Refresh;
                 row.SelectedCallback = Preview;
                 row.GridButton.onClick.AddListener(row.ToggleOn_Clicked);
+                if(row.GridButton.GetComponent<PartyMenuRow>()==null)row.GridButton.gameObject.AddComponent<PartyMenuRow>();
                 row.gameObject.SetActive(true);
                 SkillGridItems.Add(row);
             }

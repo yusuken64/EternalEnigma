@@ -42,12 +42,15 @@ namespace EternalEnigma.Tests.CoreIntegration
                 batch.Add(kit.Mesh("Paving"),kit.Paving,Vector3.zero,Vector3.one*2.5f);
                 batch.Add(kit.Mesh("Paving"),kit.Paving,new Vector3(2.5f,0,0),Vector3.one*2.5f,90);
                 batch.Finish();
-                var renderer=root.GetComponentInChildren<MeshRenderer>();
-                // Unity may recreate a managed wrapper for the same native asset after reimport.
-                Assert.That(renderer.sharedMaterial==kit.Paving,Is.True);
-                var mesh=renderer.GetComponent<MeshFilter>().sharedMesh;
-                Assert.That(mesh.triangles.Length,Is.EqualTo(12));
-                var v=mesh.vertices;var uv=mesh.uv;int pairs=0;
+                var renderers=root.GetComponentsInChildren<MeshRenderer>();
+                foreach(var renderer in renderers)
+                {
+                    Assert.That(renderer.sharedMaterial.mainTexture,Is.EqualTo(kit.Paving.mainTexture));
+                    Assert.That(renderer.sharedMaterial.mainTextureOffset,Is.EqualTo(kit.Paving.mainTextureOffset));
+                }
+                var meshes=renderers.Select(r=>r.GetComponent<MeshFilter>().sharedMesh).ToArray();
+                Assert.That(meshes.Sum(m=>m.triangles.Length),Is.EqualTo(12));
+                var v=meshes.SelectMany(m=>m.vertices).ToArray();var uv=meshes.SelectMany(m=>m.uv).ToArray();int pairs=0;
                 for(int i=0;i<v.Length;i++)for(int j=i+1;j<v.Length;j++)if((v[i]-v[j]).sqrMagnitude<.00001f)
                 { Assert.That((uv[i]-uv[j]).sqrMagnitude,Is.LessThan(.00001f));pairs++; }
                 Assert.That(pairs,Is.GreaterThanOrEqualTo(2));

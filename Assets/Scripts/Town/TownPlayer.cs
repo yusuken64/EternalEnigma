@@ -86,7 +86,7 @@ public class TownPlayer : MonoBehaviour
 
 	private void UpdateUI()
 	{
-		UIText.text = $@"{Gold}";
+		if (UIText != null && UIText.gameObject.activeSelf) UIText.gameObject.SetActive(false);
 	}
 
 	private void DeterminePlayerAction()

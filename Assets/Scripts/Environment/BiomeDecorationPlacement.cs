@@ -30,7 +30,8 @@ public static class BiomeDecorationPlacement
         => Add(batch,root,catalog,asset,position,scale,Quaternion.Euler(0,0,angle),effects,floorCell,preview);
     public static void Add(EnvironmentBatch batch,Transform root,BiomeDecorationCatalog catalog,BiomeDecorationAsset asset,Vector3 position,float scale,Quaternion rotation,bool effects=true,Vector3? floorCell=null,bool preview=false)
     {
-        batch.Add(asset.Mesh,catalog.Material,position,Vector3.one*scale,rotation);
+        batch.Add(asset.Mesh,catalog.Material,position,Vector3.one*scale,rotation,
+            asset.Mesh.bounds.size.z*scale>.5f?SilhouetteRole.Caster:SilhouetteRole.None);
         if(asset.Effect==null || !effects)return;
         var effect=UnityEngine.Object.Instantiate(asset.Effect,root);
         effect.transform.localPosition=position+rotation*asset.EffectOffset*scale;

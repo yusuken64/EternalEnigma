@@ -51,7 +51,7 @@ public class Ally : Character
     {
         var game = Game.Instance;
         if (game == null || !game.IsReady || CirlcleRenderer == null) return;
-        if (turnRing == null) BuildTurnRing();
+        if (turnRing == null) { SelectionRing.Apply(CirlcleRenderer); AllyColor=new Color(.23f,.69f,.58f,.9f);PlayerColor=new Color(.12f,.87f,.76f,.95f);BuildTurnRing(); }
         bool controlled = game.PlayerController.ControlledAlly == this;
         bool downed = DisplayedVitals.HP <= 0;
         var color = controlled ? PlayerColor : AllyColor;
@@ -319,6 +319,7 @@ public class Ally : Character
 		this.HeroAnimator.Animator.applyRootMotion = false;
 
 		ReplaceChildGameObject(this.gameObject, "GameObject/RPGHeroHP", townAlly.AnimatedModel);
+        SilhouetteParticipant.Register(transform,SilhouetteRole.Caster,true);
 	}
 
 	private void ReplaceChildGameObject(GameObject gameObject, string childPath, GameObject animatedModel)
@@ -365,6 +366,7 @@ public class Ally : Character
 		HeroAnimator?.SetWeapon(
 			Equipment.EquippedWeapon?.ItemDefinition as EquipmentItemDefinition,
 			Equipment.EquippedShield?.ItemDefinition as EquipmentItemDefinition);
+        SilhouetteParticipant.Register(transform,SilhouetteRole.Caster,true);
 	}
 
 	internal bool IsRangedAttack(out GameObject projectilePrefab)

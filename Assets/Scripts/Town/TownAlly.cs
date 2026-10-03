@@ -78,13 +78,19 @@ public class TownAlly : TownCharacter
 
 	private void Awake()
 	{
+        SelectionRing.Apply(CirlcleRenderer);
+        AllyColor=new Color(.23f,.69f,.58f,.9f);PlayerColor=new Color(.12f,.87f,.76f,.95f);
+        SilhouetteParticipant.Register(transform,SilhouetteRole.Caster,true);
 		if (HeroAnimator?.Animator != null) HeroAnimator.Animator.applyRootMotion = false;
 		Skills ??= new();
 		SkillRanks ??= new();
 		if (HighestLevel < 1) HighestLevel = 1;
 	}
-	public void RefreshEquipmentVisuals() => HeroAnimator?.SetWeapon(
-		Equipment.EquippedWeapon?.EquipmentItemDefinition, Equipment.EquippedShield?.EquipmentItemDefinition);
+	public void RefreshEquipmentVisuals()
+    {
+        HeroAnimator?.SetWeapon(Equipment.EquippedWeapon?.EquipmentItemDefinition, Equipment.EquippedShield?.EquipmentItemDefinition);
+        SilhouetteParticipant.Register(transform,SilhouetteRole.Caster,true);
+    }
 
 	public SpriteRenderer CirlcleRenderer;
 	public Color AllyColor;

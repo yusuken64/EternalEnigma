@@ -66,9 +66,9 @@ public class AuditRegressionTests
         var save = new TestScenario { Items = new[] { definition.ItemName, definition.ItemName } }.CreateSave();
         yield return harness.LoadTown(save);
         var world = Object.FindFirstObjectByType<Town>();
-        Assert.That(world.TownPlayer.Inventory.Select(x => x.ItemName), Is.EqualTo(save.TownSaveData.Inventory));
+        Assert.That(world.TownPlayer.Inventory.Select(x => x.ItemName), Is.EqualTo(save.TownSaveData.InventoryItems.Select(i => i.ItemName)));
         world.WriteSaveData();
-        Assert.That(Common.Instance.GameSaveData.TownSaveData.Inventory, Is.EqualTo(save.TownSaveData.Inventory));
+        Assert.That(Common.Instance.GameSaveData.TownSaveData.InventoryItems.Select(i => i.ItemName), Is.EqualTo(save.TownSaveData.InventoryItems.Select(i => i.ItemName)));
     }
 
     [UnityTest]
@@ -87,7 +87,7 @@ public class AuditRegressionTests
         var saved = SaveSystem.LoadData().TownSaveData;
         Assert.That(saved.Gold, Is.EqualTo(37));
         Assert.That(saved.DonationTotal, Is.EqualTo(63));
-        Assert.That(saved.Inventory, Does.Contain(item.ItemName));
+        Assert.That(saved.InventoryItems.Select(i => i.ItemName), Does.Contain(item.ItemName));
         Assert.That(saved.RecruitedAlliesData[0].Skills, Does.Contain("regression-snapshot"));
     }
 

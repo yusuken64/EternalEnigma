@@ -25,7 +25,8 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             if (previous != null) { if (Application.isPlaying) UnityEngine.Object.Destroy(previous); else UnityEngine.Object.DestroyImmediate(previous); }
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
             var batch = new EnvironmentBatch(root.transform); float size = creator.twcAsset.cellSize;
-            bool innPlaced = false;
+            var propCounts = new Dictionary<(int, int), int>();
+            int propTriangles = 0;
             for (int y = 0; y < plan.Height; y++) for (int x = 0; x < plan.Width; x++)
             {
                 var position = new Vector3(x + .5f, y + .5f, 0) * size;
@@ -37,10 +38,24 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                     string model=picker!=null?picker.Pick(biome,hash):"Tree";
                     batch.Add(Kit.Mesh(model),Kit.Material(biome),position,Vector3.one*size*(.85f+(hash>>8)%16*.01f),(hash>>16)%360);
                 }
-                if (!innPlaced && plan.Layers[TownLayers.Houses][x,y] && (y == 0 || !plan.Layers[TownLayers.Houses][x,y-1]))
+                if (plan.Layers.TryGetValue(TownLayers.Props, out var props) && props[x,y])
                 {
-                    batch.Add(Kit.Mesh("InnSign"), Kit.Material(biome), new Vector3(x+.65f,y+.08f,0)*size, Vector3.one*size);
-                    innPlaced = true;
+                    uint hash = OverworldCosmetics.Hash(creator.currentSeed ^ 18013, x, y);
+                    var chunk = (x / 32, y / 32);
+                    propCounts.TryGetValue(chunk, out int count);
+                    string model = biome switch {
+                        OverworldBiome.Desert => "Cactus", OverworldBiome.Tundra => "SnowRock",
+                        OverworldBiome.Marsh => "Mushrooms", OverworldBiome.Water => "Reeds",
+                        OverworldBiome.Volcanic => "Basalt", OverworldBiome.Mountain => "Rock",
+                        _ => hash % 2 == 0 ? "Flowers" : "Mushrooms"
+                    };
+                    int triangles = Kit.Triangles(model);
+                    if (count < 48 && propTriangles + triangles <= 120000)
+                    {
+                        batch.Add(Kit.Mesh(model), Kit.Material(biome), position, Vector3.one * size * .45f, (hash >> 16) % 360);
+                        propCounts[chunk] = count + 1;
+                        propTriangles += triangles;
+                    }
                 }
             }
             // Expand the TWC scenery beyond the playable grid. Out-of-bounds cells are

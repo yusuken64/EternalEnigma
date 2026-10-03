@@ -1,4 +1,7 @@
-﻿# Bamao game UI theme
+# Bamao game UI theme
+
+The hero picker and runtime inn dialog use the same GameUISkin helpers and authored button
+prefab; scene/prefab styling remains reusable maintenance tooling.
 
 All game scenes and UI prefabs use the shared theme at `Assets/Resources/UI/BamaoTheme.asset`, referencing the original assets in `Assets/Bamao/BamaoUIPack`.
 

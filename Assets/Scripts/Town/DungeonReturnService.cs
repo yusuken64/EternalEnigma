@@ -13,8 +13,6 @@ public static class DungeonReturnService
         if (loot || configuration.KeepGoldOnDefeat) town.Gold += gold;
         bool keepItems = loot || !configuration.LoseItemsOnDefeat;
         town.InventoryItems = keepItems ? ItemSaveData.Capture(bag) : new();
-        town.InventoryFormatVersion = 1;
-        town.Inventory = town.InventoryItems.Select(i => i.ItemName).ToList();
         foreach (var member in town.RecruitedAlliesData)
         {
             var ally = allies.FirstOrDefault(a => a != null && (!string.IsNullOrEmpty(member.AllyId)
@@ -36,7 +34,7 @@ public static class DungeonReturnService
             string tier = $"{configuration.Id}/{save.DungeonSaveData.StartFloor}-{save.DungeonSaveData.EndFloor}";
             if (!town.CompletedTiers.Contains(tier)) town.CompletedTiers.Add(tier);
         }
-        town.RestockVersion++;
+        town.RestockCycle++;
         save.DungeonSaveData.ReturnCommitted = true;
     }
 }

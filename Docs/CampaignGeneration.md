@@ -1,218 +1,72 @@
 # Core campaign generation
 
-`CampaignGenerator.Generate(int seed)` produces an immutable logical campaign and
-validates it before returning. Generation version 7 uses explicit seeded streams
-for activation, topology and identity. It does not use Unity, global random state,
-time, hash-table iteration order or runtime-dependent `System.Random` sequences.
-
-```csharp
-using EternalEnigma.Core.Generation;
-using EternalEnigma.Core.Progression;
-using EternalEnigma.Core.Validation;
-
-var campaign = CampaignGenerator.Generate(42);
-var fingerprint = CampaignFingerprint.Compute(campaign);
-var session = new CampaignSession(campaign);
-// Render campaign.Locations/Routes; use session methods for logical interactions.
-```
-
-Rebuild/import the DLL using **Tools > Eternal Enigma > Core > Build and Import
-DLL** after changing core code. The current Unity hub is not automatically replaced
-by this campaign; this is the core model and traversal API for that integration.
+`CampaignGenerator.Generate(seed)` returns an immutable logical campaign after validation.
+Independent seeded streams control activation, topology, identities and lock narration.
+Core does not depend on Unity or global random state. Current generator metadata is defined
+by `CampaignGenerator.Version` (10); grid metadata is `OverworldGrid.GenerationVersion` (12).
+These identify generated content and diagnostics, not a player-save schema.
 
 ## Generated content
 
-Version 6 retains the guarantee of Boat in every campaign, with two converter-site providers
-requiring Engineering. This supports navigable water in the biome grid while
-keeping acquisition on the original land route network. Earlier fingerprints intentionally change; biome assignment belongs to grid generation version 10.
+Six ordered semantic regions A-F have distinct themes and landmarks. Five progression tiers
+contain four story dungeons, the final dungeon, repeatable locations and towns. Interior
+dungeons have `ParentTownId`; their grid projection shares the town tile. Towns provide the
+five service kinds: bakery, consumables, items, inn and one trainer. `TownLayout` assigns them
+to seeded slots with authored entrance/statue buildings and residential plots.
 
-| Component | Version 7 behavior |
-|---|---|
-| Manifest | Closed 21-capability vocabulary; activates 3â€“4 personal, 2â€“3 vehicle and 4â€“5 utility capabilities, with required area/water/narrative coverage. |
-| Roles | 5â€“7 critical and 4â€“6 exploratory, partitioning the active set; Engineering critical, 1â€“2 personal critical, at least one vehicle critical. Three active vehicles always include an exploratory one. |
-| Progression | Five tiers, with 5â€“7 gated stages along a spine. Every boundary includes a critical solution. The required return reward has a sole-solution boundary; other boundaries retain exploratory alternatives. |
-| Regions | Six ordered semantic regions A through F, unique themes, and one designated landmark each. Physical coordinates use grid version 10. Later logical stages can occupy earlier regions. |
-| Towns | At least one roster/fast-travel town in each of the six biomes (6-7 towns total). A town separates same-tier personal gates when needed to preserve the one-specialist required route. |
-| Dungeons | Four story locations, a final dungeon, and source-free repeatable locations covering every tier, plus one in the extra town. These are dungeon interfaces, not floor layouts. |
-| Sources | Two guaranteed providers per capability, respecting source tiers. Personal abilities have two distinct companion providers; utility/vehicle abilities latch permanently. |
-| Payoffs | Every active capability is used by at least two locks and has a sole-solution optional payoff. Exploratory capabilities also appear as required-route alternates. |
-| Converters | Vehicle sources are converter sites requiring Engineering. Claiming a reward consumes no permanent capability. Component items/recipes are not implemented yet. |
+The 21-capability vocabulary activates a seed-dependent subset of personal, vehicle and utility
+abilities. Roles partition active abilities into critical and exploratory uses. Required
+routes retain critical solutions; exploratory abilities supply alternatives and optional payoffs.
+Two guaranteed providers protect capability access. Personal providers recruit companions;
+utility/vehicle sources permanently latch capabilities. Vehicle converter sites require
+Engineering, without consuming it; component crafting recipes are not implemented.
 
-The spine topology is deliberately bounded. Seeds vary capabilities, roles, their
-order, alternatives, source placement and themes. The grid supports the generated district topology and keyed inter-biome loops, rather than arbitrary nonplanar graphs. Specialist providers number 6â€“8; a complete authored
-eight-person combat roster is separate from this capability-provider model.
+The opening requires two separate completions: story-0 unlocks the town exit, repeatable-0
+supplies the key for the physical starter-exit. Ordinary location reward claims award neither.
+One required return objective and three optional return secrets reuse earlier regions.
+Keyed B-D, B-E and B-F warps reduce later return travel. Actual water still requires Boat.
 
-## Lock and key fiction (version 9)
+## Lock fiction
 
-Generation stage 9 (`LockNarrator`) dresses every gate after topology is final. It has
-its own seed stream, so it cannot change which routes, requirements or sources exist.
-Each capability gate stores a `SkinId` and rendered `LockText` from the lock table in
-`LockSkinCatalog` (capability x lock form x region theme), with a generated place name
-filling `{place}`. Keyed gates also store a `KeyName`. `KeyId` is unchanged and remains
-the identity used by saves and unlock state; `KeyName` is only what the player reads.
+`LockNarrator` runs after topology, using `LockSkinCatalog` keyed by capability/form/theme.
+Routes store `SkinId`, `LockText` and displayed `KeyName`. `KeyId` remains mechanical identity.
+The validator rejects unknown skins, leaked capability names, unresolved templates, missing
+fiction and duplicate key names. Narration does not alter route requirements.
 
-- A skin is eligible when it matches the capability and lock form, and its themes (if any)
-  include the theme of the region the player stands in. Skins and places not yet used in
-  the campaign are preferred, so a repeat appears only when a pool is exhausted.
-- Lock text never names a capability. The validator rejects leaked names, unresolved
-  `{templates}`, unknown skin ids, missing fiction, fiction on open routes and duplicate key names.
-- Players still see the ability they hold by name when they use it ("Used Climb"); only the
-  lock itself is fiction.
-- The table is append-only per capability and form, because skin ids are fingerprinted.
-- Not yet implemented from the narrative plan: legibility tiers, wrong-capability failure
-  feedback, and local-terrain skins. See `LockAndKeyNarrativeGenerationPlan.md`.
+Legibility tiers, graded wrong-capability feedback, finer local-terrain selection and
+chronicle/faction-aware narration remain unimplemented. The completed first-pass narrative
+plan has been removed; these limitations remain here.
 
-Version 9 bumps `CampaignGenerator.Version`, so saves made on version 8 are rejected
-by `CampaignContext` and fingerprints intentionally change.
+## Runtime and validation
 
-## Return objectives and shortcuts
+`CampaignSession` is the abstract graph traversal model. `CampaignContext` hosts Unity's
+position, party, scene travel, dungeon completion, interrupted-run recovery and snapshot capture.
+The protagonist has up to three active companions; changing them requires a town. Personal
+capabilities depend on the active party. Obstacle/interaction resolutions and acquired keys
+persist; area locks recheck capabilities. Unity combat determines when completion is awarded.
 
-Every campaign contains one required return objective and three optional return
-secrets. `ReturnObjectives` records each earlier region, destination and gate IDs,
-enabling capability, its acquisition stage, required flag and optional critical
-reward. The three secrets reuse existing capability payoffs. Their sole capability
-first becomes obtainable at least one stage after the initial biome visit.
+`CampaignValidator` checks references, manifest composition, source redundancy, prerequisite
+cycles, gate alternatives, progression cuts, required returns, shortcut bypasses and reachability.
+Its closure considers party choices at towns and companion exclusion. It assumes reachable
+encounters can be completed; it does not prove combat balance. `OverworldGridValidator`
+separately checks physical realization, components and sealed gate contacts. Floor/town
+validators check their own layouts; Unity fixtures verify adapters and scene gameplay.
 
-Both providers of the required reward move behind separate gates in the same
-earlier biome. The reward is critical and is never Engineering. Its enabler is
-obtained elsewhere after the opening stage. A subsequent progression boundary
-requires the reward without alternatives. Source counts and Engineering
-prerequisites remain intact. The earlier gate entrances are available before the
-enabler; inspecting them is optional. Optional return secrets can all be omitted.
+`CampaignFingerprint` hashes canonical logical content, including services and fiction.
+Collection order and culture do not change it. Current-schema campaign restores check this
+fingerprint against regenerated content. No historical schema migration or version gate remains.
 
-Six ordered regions form the biome chain A–B–C–D–E–F. Three keyed warps join
-B–D, B–E and B–F. Each key is collected at the corresponding later biome's
-landmark, reached through normal progression first. Keys are permanent and
-nonconsumable; collecting one unlocks its warp in both directions. With all keys,
-every pair of biomes is at most two transitions apart. Extra progression stages
-remain inside F. Region `ProgressionOrder`, route `ShortcutKind`, `KeyId`,
-`KeyLocationId` and `IsWarp` are included in fingerprints and diagnostic exports.
-
-`CampaignRoute.TryCollectKey` and `CampaignSession.TryCollectShortcutKey` share
-the resolved-route state used by permanent locks. Collecting at any other site
-fails; a shortcut cannot be opened by interacting at its endpoint. Legacy far-side
-and capability route support remains available in the core. Water requires Boat
-regardless of key ownership.
-
-Validation checks return metadata, provider exclusivity, sealed entrances,
-circular dependencies, completion without optional secrets, and failure to
-complete without the required reward. The explorer simulates reachable unlocking
-actions. Grid validation checks all closed components and gate contacts, including
-loops, diagonal sealing, compactness and shortcut savings. Fingerprints include
-all return and shortcut metadata; earlier fingerprints intentionally change.
-
-## Runtime rules
-
-`CampaignSession` keeps mutable progression separate from the immutable campaign:
-
-- `TryClaimSource(id)` requires the source's location and prerequisites. The host
-  must call it **after** completing the encounter/quest; this layer does not fight
-  a boss or verify quest completion. A source can be claimed only once.
-- Personal rewards recruit to the permanent roster, not directly into the active
-  party. `TrySetParty(ids)` works only in towns, allows up to three recruited
-  companions alongside the implicit protagonist, and rejects duplicates.
-- `TryMove(routeId)` traverses a connected bidirectional route using held
-  capabilities. Obstacle/interaction locks stay resolved. Area gates always check
-  current capabilities. A new recruit cannot become active in the field.
-- `TryCollectShortcutKey(routeId)` requires the route's key location and permanently
-  opens that keyed passage. Keys persist through defeat and reset with the session.
-- `TryFastTravel(townId)` reaches visited towns only, from any location.
-- `ReturnAfterDefeat()` returns to the starting town and preserves all campaign
-  progression. Combat gold/consumable penalties belong to the host.
-- `IsAtFinalDungeon` means the final dungeon is **reachable and currently entered**;
-  it is not a claim that its boss has been defeated.
-
-Public collections are read-only snapshots. Persistent utility and vehicle
-capabilities never depend on the currently active companions. This is an in-memory
-session model; save serialization/migration and existing Unity save integration
-remain separate work.
-
-## Validation and its limits
-
-`CampaignValidator.Validate` returns actionable errors and a guaranteed-critical
-exploration report. It checks IDs/references, manifest composition, role counts,
-source tiers and providers, converter requirements, repeatable-source exclusion,
-payoffs, required destinations and companion independence.
-
-Declared progression boundaries define cuts between stages. Every route crossing
-a cut must imply its intended DNF requirement, except keyed shortcuts, which use
-reachable key acquisition instead. Validation removes each progression boundary
-and simulates all reachable key collections; no later checkpoint may become
-reachable through a shortcut or chain of shortcuts. It also verifies that all key
-sites remain reachable with shortcuts excluded. The boundary route itself supplies the intended alternatives, making the
-effective graph requirement equivalent. A free bypass is rejected even though it
-makes completion easier. This checks the **logical graph**, not physical terrain.
-
-Exploration repeats legal excursions from visited towns, considering available
-personal-capability subsets without switching party mid-route. It shares the
-runtime DNF and route-legality rules. It checks all locations with up to three
-specialists, then required locations with guaranteed critical sources only and
-at most one specialist per excursion. It repeats the required-content check with
-each companion excluded. Tests separately traverse generated worlds through the
-actual `CampaignSession` API.
-
-The monotone closure is valid for this restricted graph model: all routes are
-bidirectional, acquired progression and resolved locks never disappear, parties
-change only in towns, and visited towns permit unconditional fast travel. Source
-completion is assumed possible. If future mechanics introduce one-way travel,
-consumed prerequisites, inaccessible roster changes or mutually exclusive rewards,
-this explorer must be revised before claiming equivalent guarantees.
-
-Acquisition witnesses record the source, starting town, active personal
-capabilities and a route found during exploration. They are diagnostics, not a
-globally shortest spoiler itinerary or an independently replayable action log.
-
-The separate [overworld grid generator](OverworldGrid.md) now realizes this graph
-as a walkable grid and validates graph/tile connectivity under sealing corner rules.
-
-Not validated by campaign generation: combat victory, dungeon floors/exits, deterministic dungeon
-visits, full geographical perimeters, docking, skins,
-visibility, rumours, travel-time budgets, acquisition pacing or physical towns.
-The output therefore establishes logical campaign completion under the stated
-assumptions, not all 64 v5 guarantees.
-
-## Reproducibility and checks
-
-`CampaignFingerprint` hashes all logical fields in canonical order. The test suite
-pins seed 42 for generation version 7. An intentional generation change requires
-a version and fixture update; a shared seed should always include that version.
-CLI JSON contains both versioned campaign content and its fingerprint, but is not
-a supported restore format.
+## Commands
 
 From `Core/`:
 
 ```powershell
 dotnet test EternalEnigma.Core/EternalEnigma.Core.slnx --configuration Release
 dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --output ../Temp/CampaignPreview
-dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed -500 --count 1000
+dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --grid --output ../Temp/OverworldPreview
 ```
 
-The tests cover signed/boundary seeds, a 128-seed sweep, culture/order stability,
-AND/OR requirements, circular sources, invalid references, missing final routes,
-ungated bypasses, repeatable-dungeon rewards, field recruitment, composed area
-gates, permanent resolutions, converters, defeat and actual session traversal.
-Unity's EditMode `EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests`
-also checks the imported DLL's seed-42 fingerprint against the headless golden
-value and starts a session using that DLL.
-
-The `Core checks` CI workflow builds all three .NET projects, runs the core tests,
-and validates campaign/grid pairs for seeds -500 through 499. It uploads test results and the seed-sweep
-log. The Unity integration check runs with the existing EditMode harness.
-
-## Starting enclosure and completion keys
-
-Version 6 adds `Campaign.StarterLocations` and a physical `starter-exit` route.
-`KeyAcquisition.DungeonCompletion` gates the two opening steps separately:
-`story-0` unlocks the town exit, then `repeatable-0` awards the key for the
-physical `starter-exit` out of the town area. Location-only collection leaves
-both keys unavailable. The area gate requires a cardinal-adjacent interaction. The graph explorer assumes reachable
-story encounters can be completed; gameplay calls the production completion API.
-The validator rejects extra starting locations, bypasses of either opening gate,
-and warp bypasses. Town exits are enforced by scene travel and map departure;
-only the outer area gate has an overworld lock footprint.
-Grid version 10 places the starting story dungeon inside town-0. Interior
-dungeon nodes share their parent town position; distinct overworld destinations
-use eleven-tile minimum spacing (six for the opening town/outdoor dungeon pair). See campaign flow for interior entry
-and return behavior.
-
-See [campaign flow](CampaignFlow.md) for launch modes, persistence and travel.
+CLI JSON/SVG are diagnostic exports, not player save files. The console explorer supports
+interactive world/town/dungeon inspection and skill-tree editing. Core CI builds/tests and
+runs campaign/grid seed sweeps. Rebuild/import the Core DLL after code changes before Unity
+tests. See [Core](../Core/README.md), [campaign flow](CampaignFlow.md) and [overworld](OverworldGrid.md).

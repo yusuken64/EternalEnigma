@@ -47,19 +47,18 @@ namespace EternalEnigma.Tests.CoreIntegration
             finally { DungeonPresentation.ClearOutput(root);UnityEngine.Object.DestroyImmediate(root);UnityEngine.Object.DestroyImmediate(host);DungeonPresentation.ReleaseTemplate(clone); }
         }
         [Test]
-        public void SelectionMigratesAndRoundTripsWithoutOverworldGeneration()
+        public void SelectionRoundTripsWithoutOverworldGeneration()
         {
             var context=new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign,42));
             var location=context.Campaign.Locations.Last();context.State.PendingDungeon=location.Id;
-            var legacy=JsonUtility.FromJson<DungeonSaveData>("{\"StartFloor\":1,\"EndFloor\":5}");
-            var selected=DungeonVisualSelection.ResolveRun(legacy,context);
+            var selected=DungeonVisualSelection.Resolve(context);
             Assert.That(selected.Biome,Is.EqualTo(OverworldGridGenerator.BiomeForRegion(context.Campaign,location.RegionId)));
             Assert.That(selected.Environment,Is.EqualTo(DungeonEnvironmentKind.Interior));
             Assert.That(context.IsGridGenerated,Is.False);
             var outdoor=new DungeonSaveData();
-            DungeonVisualSelection.ResolveRun(outdoor,context,new DungeonEncounterVisualSettings {OverrideBiome=true,Biome=OverworldBiome.Water,Environment=DungeonEnvironmentKind.Outdoor});
+            outdoor.VisualSelection = DungeonVisualSelection.Resolve(context,new DungeonEncounterVisualSettings {OverrideBiome=true,Biome=OverworldBiome.Water,Environment=DungeonEnvironmentKind.Outdoor});
             var resumed=JsonUtility.FromJson<DungeonSaveData>(JsonUtility.ToJson(outdoor));
-            Assert.That(DungeonVisualSelection.ResolveRun(resumed,null).Biome,Is.EqualTo(OverworldBiome.Water));
+            Assert.That(resumed.VisualSelection.Biome,Is.EqualTo(OverworldBiome.Water));
             Assert.That(resumed.VisualSelection.Environment,Is.EqualTo(DungeonEnvironmentKind.Outdoor));
             Assert.That(DungeonVisualSelection.Resolve(null).IsLegacy,Is.True);
         }

@@ -1,5 +1,8 @@
 # Dungeon enemy behaviors
 
+The listed behaviors are runtime components on committed enemy prefabs. Completed roster,
+behavior and statue construction scripts are removed; tune the prefab data directly.
+
 Names and models follow the existing assignments in `Assets/Data/MonsterData.txt`.
 
 | Reference enemy | Existing prefab | Added behavior |

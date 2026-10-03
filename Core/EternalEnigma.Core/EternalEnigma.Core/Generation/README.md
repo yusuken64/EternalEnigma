@@ -1,6 +1,7 @@
 # Generation
 
-Home for seeded generation, stable stage streams and generated world descriptions.
-Accept seeds and configuration explicitly; do not read clocks, global random state,
-Unity assets or scene objects. `CampaignGenerator.Generate(seed)` returns a validated
-logical world. `CampaignFingerprint` supplies canonical content and a SHA-256 digest.
+Deterministic campaign, overworld, town and dungeon generation, seeded streams,
+biome profiles, service-sized detailed town layouts, lock narration and canonical fingerprints.
+Generators validate returned data. Unity presentation consumes copies of their masks.
+
+See [Core overview](../../../README.md) for commands and the Unity boundary.

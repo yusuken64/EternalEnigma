@@ -39,7 +39,7 @@ public sealed class GameTestHarness
         yield return LoadScene("Common");
         var common = Common.Instance;
         if (scenario.IncludeStartingItems)
-            common.GameSaveData.TownSaveData.Inventory.AddRange(common.ItemManager.StartingItems.Select(i => i.ItemName));
+            common.GameSaveData.TownSaveData.InventoryItems.AddRange(ItemSaveData.Capture(common.ItemManager.StartingItems.Select(i => i.AsInventoryItem(null))));
         foreach (var item in scenario.Items) RequireItem(item);
 
         foreach (var allyName in new[] { scenario.AllyName }.Concat(scenario.AdditionalAllies))

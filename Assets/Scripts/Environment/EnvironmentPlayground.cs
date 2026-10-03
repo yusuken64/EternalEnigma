@@ -26,6 +26,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
     public int View;
     private bool townBuilt, worldBuilt, townBuilding, worldBuilding, overview;
     private TileWorldCreatorAsset townAsset;
+    private TownConfiguration townConfiguration;
     private Transform worldMarkers, townMarkers;
     private GameObject worldRoot, townRoot;
 
@@ -63,11 +64,19 @@ public sealed class EnvironmentPlayground : MonoBehaviour
             TownCreator.twcAsset = townAsset;
             townRoot = TownCreator.worldObject;
             var style = TownCreator.GetComponent<TownBiomeStyle>(); style.OverrideBiome = true; style.Biome = TownBiome;
-            CoreTownLayerGenerator.Configure(townAsset, TownConfiguration);
+            if (townConfiguration != null) Release(townConfiguration);
+            townConfiguration = Instantiate(TownConfiguration);
+            CampaignTownLayout.Configure(townConfiguration, EternalEnigma.Core.Generation.TownLayout.Create(Seed,
+                EternalEnigma.Core.Progression.TownServiceCatalog.All,
+                EternalEnigma.Core.Progression.CampaignContext.AuthoredTownBuildings,
+                residentialBuildings: EternalEnigma.Core.Progression.CampaignContext.ResidentialTownBuildings));
+            CoreTownLayerGenerator.Configure(townAsset, townConfiguration);
             TownCreator.SetCustomRandomSeed(Seed); CoreLayoutCache.Clear(TownCreator);
             TownCreator.ExecuteAllBlueprintLayers();
         }
-        Visibility(); Frame(new Vector3(15, 15, 0), 18);
+        Visibility();
+        if (townAsset != null) Frame(new Vector3(townAsset.mapWidth, townAsset.mapHeight, 0) * townAsset.cellSize * .5f,
+            Mathf.Max(townAsset.mapWidth, townAsset.mapHeight) * townAsset.cellSize * .6f);
     }
     public void NextSeed() { if (worldBuilding || townBuilding || DungeonExplorer?.IsBuilding == true) return; Seed++; worldBuilt = townBuilt = false; Rebuild(); }
     public void ShowDungeon()
@@ -100,10 +109,12 @@ public sealed class EnvironmentPlayground : MonoBehaviour
         townMarkers = new GameObject("Town service models").transform;
         townMarkers.SetParent(creator.worldObject.transform, false);
         if (CoreLayoutCache.TryGetTown(creator, out var plan))
-            for (int i = 0; i < plan.BuildingSlots.Count && i < TownConfiguration.Buildings.Count; i++)
+            for (int i = 0; i < plan.BuildingSlots.Count; i++)
             {
-                string id = TownConfiguration.Buildings[i].Id;
-                string model = id == "shop" ? "Shop" : id == "trainer" ? "Trainer" : id == "statue" ? "Shrine" : "DungeonPortal";
+                var definition = townConfiguration.SlotBuildings[i];
+                if (definition == null) continue;
+                string id = definition.Id;
+                string model = definition.DialogId == "shop" ? "Shop" : id == "inn" ? "InnSign" : id == "trainer" ? "Trainer" : id == "statue" ? "Shrine" : "DungeonPortal";
                 var p = plan.BuildingSlots[i]; Kit.Create(model, TownBiome, townMarkers, new Vector3(p.X + .5f, p.Y + .5f, 0) * creator.twcAsset.cellSize, creator.twcAsset.cellSize * .8f);
             }
         Visibility();
@@ -177,6 +188,6 @@ public sealed class EnvironmentPlayground : MonoBehaviour
         if (Mouse.current != null) ViewCamera.orthographicSize = Mathf.Clamp(ViewCamera.orthographicSize - Mouse.current.scroll.ReadValue().y * .025f, 3, 300);
     }
     private static void Release(UnityEngine.Object obj) { if (Application.isPlaying) Destroy(obj); else DestroyImmediate(obj); }
-    private void OnDestroy() { if (townAsset != null) Release(townAsset); }
+    private void OnDestroy() { if (townAsset != null) Release(townAsset); if (townConfiguration != null) Release(townConfiguration); }
 }
 

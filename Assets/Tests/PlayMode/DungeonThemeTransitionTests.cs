@@ -30,7 +30,7 @@ namespace EternalEnigma.Tests
             foreach(var choice in choices)
             {
                 var old=GameObject.Find("TileWorldCreator_Map").GetComponentsInChildren<EnvironmentMeshOwner>().SelectMany(o=>o.Meshes).ToArray();
-                var save=Common.Instance.GameSaveData.DungeonSaveData;save.VisualSelectionVersion=1;save.VisualSelection=choice;
+                var save=Common.Instance.GameSaveData.DungeonSaveData;save.VisualSelection=choice;
                 Game.Instance.AdvanceFloor();
                 yield return harness.WaitForIdle();yield return null;
                 Assert.That(generator.CurrentVisuals.Biome,Is.EqualTo(choice.Biome));

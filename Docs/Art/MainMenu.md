@@ -24,11 +24,10 @@ through a perspective lens to match the reference's looming slime and receding
 walls. `MenuCameraFraming` widens the vertical field of view on narrower displays,
 including 16:10, preserving the horizontal composition without stretching models.
 
-`Tools > Eternal Enigma > Main Menu > Build Scene` rebuilds the stage from project
-assets; save the scene first. This replaces manual stage edits. `Capture Scene`
-exports reference-size, 16:9, and 16:10 scenery previews into `Temp/MainMenuValidation`.
-It does not modify the UI. Use Game view or the presentation test's screenshot to
-inspect the original overlay title and buttons together with the animated scene.
+The stage is edited directly in `Assets/Scenes/MainMenu.unity`; its completed builder is
+removed. **Tools > Eternal Enigma > Main Menu > Capture Scene** remains and exports aspect-ratio
+scenery previews to `Temp/MainMenuValidation`. Use Game view to inspect the overlay UI together
+with the stage.
 
 Autoplay forces the effective `DungeonPreferences.FullControl` value off while
 `AutoplayRunner.BlocksPlayerInput` is true. Saved preferences and the nullable

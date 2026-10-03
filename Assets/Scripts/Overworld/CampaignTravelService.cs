@@ -29,7 +29,7 @@ public sealed class CampaignTravelService
     {
         if (transitioning) return;
         var save = common.GameSaveData;
-        if (save.CampaignFormatVersion == 0 || save.Campaign == null) { common.CampaignContext = null; transitioning = true; TownSceneLoader.Load(TownSceneLoader.ResolveSaved()); return; }
+        if (!save.HasCampaign) { common.CampaignContext = null; transitioning = true; TownSceneLoader.Load(TownSceneLoader.ResolveSaved()); return; }
         if (save.Campaign.Finished) return;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
         if (Context.RecoverInterruptedRun())
@@ -70,9 +70,9 @@ public sealed class CampaignTravelService
         var floors = CampaignContext.Floors(location.Tier);
         common.GameSaveData.PreRunTownJson = JsonUtility.ToJson(common.GameSaveData.TownSaveData);
         common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = floors.Start, EndFloor = floors.End };
-        DungeonVisualSelection.ResolveRun(common.GameSaveData.DungeonSaveData, Context, visuals);
+        common.GameSaveData.DungeonSaveData.VisualSelection = DungeonVisualSelection.Resolve(Context, visuals);
         var run = common.GameSaveData.DungeonSaveData;
-        run.LayoutVersion = EternalEnigma.Core.Generation.DungeonLayoutProfile.IsStarter(location.Id) ? 0 : 1;
+        run.UseBiomeLayout = !EternalEnigma.Core.Generation.DungeonLayoutProfile.IsStarter(location.Id);
         run.LayoutTier = location.Tier;
         run.LayoutBiome = EternalEnigma.Core.Generation.OverworldGridGenerator.BiomeForRegion(Context.Campaign, location.RegionId);
         CampaignParty.BuildDungeonParty(common);
@@ -246,7 +246,7 @@ public sealed class CampaignTravelService
     {
         var configuration = UnityEngine.Object.Instantiate(TownSceneLoader.Default);
         configuration.name = "Campaign " + id; configuration.Id = id;
-        configuration.PartySpawn = new Vector3Int(10, 2, 0);
+        CampaignTownLayout.Configure(configuration, Context.TownLayout(id));
         configuration.MaxPartySize = 4;
         common.GameSaveData.TownSaveData.TownSeed = Context.LocationSeed(id);
         CampaignParty.PrepareActive(common, configuration);

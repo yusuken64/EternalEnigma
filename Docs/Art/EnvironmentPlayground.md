@@ -1,4 +1,4 @@
-﻿# Environment playground
+# Environment playground
 
 Open `Assets/Scenes/EnvironmentPlayground.unity` and enter Play Mode. This isolated scene does not load Common, create a campaign save, or appear in the shipping scene list. Buttons, sprites, labels, and persistent click bindings are authored in the scene.
 
@@ -20,7 +20,7 @@ The saved `Town.unity` preview has also been regenerated: legacy house/roof/tree
 
 ## Tree model picker
 
-Both production TWC templates expose **Tree model picker / Weighted tree models** on their environment/cosmetic build layer. The shared asset is `Assets/Art/EnvironmentKit/TreeModels.asset`. Each entry has a prefab, weight, and allowed biome list; zero weight disables an entry. The installer preserves existing picker edits. Choices, rotation, and scale are coordinate-seeded, so identical seeds rebuild identically without consuming gameplay RNG. The overworld's protection and triangle budgets still apply.
+Both production TWC templates expose **Tree model picker / Weighted tree models** on their environment/cosmetic build layer. The shared asset is `Assets/Art/EnvironmentKit/TreeModels.asset`. Each entry has a prefab, weight, and allowed biome list; zero weight disables an entry. Choices, rotation, and scale are coordinate-seeded, so identical seeds rebuild identically without consuming gameplay RNG. The overworld's protection and triangle budgets still apply.
 
 | Biome | Tree choices |
 |---|---|
@@ -37,7 +37,7 @@ The picker models use 28–120 triangles and fit within one cell. The gallery in
 ## TWC integration
 
 - `Assets/Overworld/CampaignTerrain.asset`: biome cosmetics, three mountain tiers and summit noise, house footprints, connected walls, bordered roads, surrounding water, ocean noise, and smart coastline.
-- `Assets/TileWorldCreator/VillageLSystemAsset.asset`: biome ground and plants, smart house footprints, connected shop walls, and bordered roads including shop floors. Existing service prefabs retain gameplay scripts while using the new shop, trainer lodge, shrine, and entrance meshes. A hanging bed sign identifies an inn facade; it does not add an inn gameplay service.
+- `Assets/TileWorldCreator/VillageLSystemAsset.asset`: biome ground and plants, smart house footprints, connected shop walls, and bordered roads including shop floors. Existing service prefabs retain gameplay scripts while using the new shop, trainer lodge, shrine, and entrance meshes. The inn service has its own bed sign and offers rest/checkpoint actions in the production town.
 - `Assets/Art/EnvironmentKit/SmartTiles/RuleExamples.asset`: native Paint blueprint layers for deliberate edge cases. Edit these in the TWC inspector and rebuild the rule view.
 - `SmartTiles/Mountain.asset`, `Summit.asset`, `House.asset`, `Road.asset`, and `Shoreline.asset` are native `TileWorldCreator4TilesPreset` assets. `Wall.asset` is a native six-tile preset. Their prefab children convert the authored XY meshes to TWC's canonical XZ orientation, so they are inspectable as normal TWC presets.
 - `EnvironmentSmartTileLayer` consumes TWC's generated quarter-tile classifications and rotations directly, combining the authored pieces into chunks instead of instantiating thousands of temporary objects. Walls use TWC's six canonical connection orientations.
@@ -67,9 +67,15 @@ The initial audit is in `EnvironmentAudit.md`; measured imported counts are in `
 
 ## Source and reimport
 
-`ArtSource/Environment/EnvironmentKit.blend` contains all 68 meshes. `manifest.json` records Blender counts. The source scripts are `build_kit.py`, `build_smart_tiles.py`, `build_tree_variants.py`, `build_building_textures.py`, and `build_ocean_textures.py`; the first creates the original kit in a fresh Blender scene, and the others extend it. Run the building-texture script after the smart-tile script to apply the detailed facade UVs. FBX exports live in `Assets/Art/EnvironmentKit/Models`.
+`ArtSource/Environment/EnvironmentKit.blend` retains the editable mesh source;
+`manifest.json` records source counts. FBX exports and runtime mesh/preset assets live under
+`Assets/Art/EnvironmentKit`. Completed Python construction scripts and the destructive kit
+installer are removed. Edit the source models and committed Unity meshes/materials/presets
+directly, preserving asset GUIDs and CPU readability needed by mesh combining.
 
-After exporting from Blender, use **Tools → Eternal Enigma → Art → Import and Integrate Environment Kit**. It imports meshes, updates materials and native presets, preserves mesh asset GUIDs, patches production art references, and recreates the playground. Recreating the playground replaces its authored layout, so preserve intentional scene edits before using this maintenance command.
+The Town view now uses Core's detailed service layout at the selected seed, including
+centered spawn/exit, residential plots, road hierarchy and biome prop cells. The camera frames
+the generated dimensions. Service markers follow the same seeded slot order as production.
 
 The sample inspection is in `TWCSampleAudit.md`. CliffIsland, ramps, and mixed-tileset scenes were inspected through Unity. The cached TWC package has no separately named river scene; its water, sand, cliff, and bridge layers supplied the relevant examples. Restored vendor demo files remain under the project's existing ignored Demo folder and are not required by the environment kit.
 
@@ -80,5 +86,3 @@ Targeted editor tests cover model budgets, all 16 wall neighborhoods against act
 Test outcomes and any unrelated regression failures are recorded in `EnvironmentValidation.md`.
 
 Saved Unity renders: [town wall detail](Previews/TownFacade.png), [smart mountain tops](Previews/MountainTops.png), [shoreline](Previews/Shoreline.png), [rule examples](Previews/SmartRules.png), and [biome palettes](Previews/BiomePalette.png).
-
-

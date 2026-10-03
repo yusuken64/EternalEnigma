@@ -16,4 +16,5 @@ MonoBehaviour:
   DisplayName: Skill Trainer
   Prefab: {fileID: 8572792459999504171, guid: 862192807c702154b9909d9a337c6840, type: 3}
   DialogId: trainer
+  ServiceInterior: 1
   ShopCatalog: []

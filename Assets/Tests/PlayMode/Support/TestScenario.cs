@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 [Serializable]
 public sealed class TestScenario
@@ -24,7 +25,7 @@ public sealed class TestScenario
             DungeonSaveData = new DungeonSaveData { StartFloor = StartFloor, EndFloor = EndFloor },
             TownSaveData = new TownSaveData {
                 Gold = Gold, TownSeed = Seed,
-                Inventory = new List<string>(Items),
+                InventoryItems = Items.Select(name => new ItemSaveData { ItemName = name }).ToList(),
                 RecruitedAlliesData = new List<TownAllyData> {
                     new TownAllyData { AllyName = AllyName, Skills = new List<string>(Skills) }
                 }

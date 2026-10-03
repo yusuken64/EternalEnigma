@@ -11,7 +11,6 @@ public static class InnCheckpoint
         if (save == null || save.IsSandbox || common.CampaignContext?.IsSandbox == true) return;
         save.InnSaveJson = null; // never nest the previous checkpoint
         if (common.CampaignContext != null) save.Campaign = common.CampaignContext.Capture();
-        if (!string.IsNullOrEmpty(save.Campaign?.Fingerprint)) save.CampaignFormatVersion = 1;
         save.InnSaveJson = JsonUtility.ToJson(save);
     }
 

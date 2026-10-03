@@ -14,20 +14,21 @@ namespace EternalEnigma.Tests.CoreIntegration
             public void Clear() => Json = null;
         }
         [Test]
-        public void LegacySaveIsNotMistakenForAMaterializedEmptyCampaign()
+        public void StandaloneRunRoundTripsWithoutBecomingACampaign()
         {
-            var store = new Store { Json = "{\"TownSaveData\":{\"TownSeed\":123},\"DungeonSaveData\":{}}" };
+            var data = new GameSaveData();
+            data.TownSaveData.TownSeed = 123;
+            var store = new Store { Json = UnityEngine.JsonUtility.ToJson(data) };
             using (SaveSystem.UseStore(store))
             {
                 var save = SaveSystem.LoadData();
-                Assert.That(save.CampaignFormatVersion, Is.Zero);
-                Assert.That(save.Campaign, Is.Null);
+                Assert.That(save.HasCampaign, Is.False);
                 Assert.That(save.TownSaveData.TownSeed, Is.EqualTo(123));
                 Assert.That(store.Writes, Is.Zero);
             }
         }
         [Test]
-        public void VersionedCampaignSurvivesUnityJsonAndRestoresPhysicalGateState()
+        public void CampaignSurvivesUnityJsonAndRestoresPhysicalGateState()
         {
             var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
             context.Position = context.Grid.Locations["story-0"];
@@ -37,7 +38,10 @@ namespace EternalEnigma.Tests.CoreIntegration
             {
                 SaveSystem.SaveData(new GameSaveData { Campaign = context.Capture() });
                 var save = SaveSystem.LoadData();
-                Assert.That(save.CampaignFormatVersion, Is.EqualTo(1));
+                Assert.That(save.HasCampaign, Is.True);
+                Assert.That(store.Json, Does.Not.Contain("\"Version\":"));
+                Assert.That(store.Json, Does.Not.Contain("GeneratorVersion"));
+                Assert.That(store.Json, Does.Not.Contain("GridVersion"));
                 var restored = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
                 Assert.That(restored.Keys, Contains.Item("Town gate key"));
                 Assert.That(restored.Resolved, Does.Not.Contain("starter-exit"));

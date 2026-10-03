@@ -11,13 +11,11 @@ namespace EternalEnigma.Tests.CoreIntegration
     public sealed class BiomeLayoutIntegrationTests
     {
         [Test]
-        public void SaveVersionsAndGrasslandPresentationAreIndependent()
+        public void LayoutChoiceAndGrasslandPresentationAreIndependent()
         {
-            var old = JsonUtility.FromJson<DungeonSaveData>("{\"StartFloor\":1,\"EndFloor\":5}");
-            Assert.That(old.LayoutVersion,Is.Zero);
-            var save = new DungeonSaveData { LayoutVersion=1,LayoutTier=4,LayoutBiome=OverworldBiome.Marsh };
+            var save = new DungeonSaveData { UseBiomeLayout=true,LayoutTier=4,LayoutBiome=OverworldBiome.Marsh };
             var copy = JsonUtility.FromJson<DungeonSaveData>(JsonUtility.ToJson(save));
-            Assert.That(copy.LayoutVersion,Is.EqualTo(1)); Assert.That(copy.LayoutTier,Is.EqualTo(4)); Assert.That(copy.LayoutBiome,Is.EqualTo(OverworldBiome.Marsh));
+            Assert.That(copy.UseBiomeLayout,Is.True); Assert.That(copy.LayoutTier,Is.EqualTo(4)); Assert.That(copy.LayoutBiome,Is.EqualTo(OverworldBiome.Marsh));
             Assert.That(new DungeonVisualSelection { Biome=OverworldBiome.Grassland,UseBiomePresentation=true }.IsLegacy,Is.False);
         }
 

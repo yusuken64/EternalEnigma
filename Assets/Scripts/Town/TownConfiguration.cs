@@ -21,6 +21,8 @@ public class TownConfiguration : ScriptableObject
     public List<Skill> LearnableSkills = new();
     public bool LoseItemsOnDefeat = true;
     public bool KeepGoldOnDefeat = true;
+    [NonSerialized] public EternalEnigma.Core.Generation.TownLayout Layout;
+    [NonSerialized] public IReadOnlyList<TownBuildingDefinition> SlotBuildings;
 
     public void Validate()
     {

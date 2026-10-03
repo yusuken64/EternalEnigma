@@ -2,7 +2,7 @@
 
 Audit date: 2026-09-22. Use this document when generating heroes, equipment, pickups, terrain, and environment props for this project.
 
-For the TWC demo review, visual-only overworld layering plan, and prioritized model requests, see [OverworldVisualDetailAndModels.md](OverworldVisualDetailAndModels.md).
+For the current overworld renderer and retained TWC integration work, see [OverworldVisualDetailAndModels.md](OverworldVisualDetailAndModels.md).
 
 ## Art direction
 

@@ -1,5 +1,8 @@
 # Ability test scene
 
+The lab uses committed skill/effect assets and remains a reusable diagnostic scene.
+Its refresh/capture tools are retained; completed production asset installers are removed.
+
 In Unity, choose **Tools > Eternal Enigma > Combat Effects > Play Ability Test Scene**.
 Alternatively open `Assets/Scenes/AbilityTestLab.unity` and press Play. This is an Editor playground; it loads the real Common and Dungeon scenes at runtime.
 

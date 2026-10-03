@@ -1,5 +1,8 @@
 # Combat effects and ability icons
 
+Assignment, preview and validation tools remain for ongoing content editing. The save cleanup
+does not change combat effect profiles, playback ordering or current-schema item snapshots.
+
 Each `Skill` owns an explicit `VisualProfile` and `Icon` reference. Profiles are shared ScriptableObjects; editing one changes all skills using it. All 202 existing skill assets, including passives, have icons from `Assets/RPG_skills_and_abilities`. Passive profiles are available for authoring; passive training does not automatically play a cast animation.
 
 ## Authoring

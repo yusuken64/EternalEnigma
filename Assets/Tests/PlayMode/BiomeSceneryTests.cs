@@ -66,7 +66,7 @@ namespace EternalEnigma.Tests
             Assert.That(effect.damage,Is.EqualTo(Mathf.CeilToInt(ally.FinalStats.HPMax*.1f)));
             Assert.That(effect.Environmental,Is.True);
             var save=Common.Instance.GameSaveData.DungeonSaveData;
-            save.LayoutVersion=1;save.LayoutTier=4;save.LayoutBiome=OverworldBiome.Volcanic;
+            save.UseBiomeLayout=true;save.LayoutTier=4;save.LayoutBiome=OverworldBiome.Volcanic;
             harness.Game.AdvanceFloor();yield return harness.WaitForIdle();
             Assert.That(harness.Game.CurrentDungeon.Floor.Width,Is.InRange(52,56));
             Assert.That(harness.Game.CurrentDungeon.Interactables.OfType<DungeonProp>().Any(),Is.True);

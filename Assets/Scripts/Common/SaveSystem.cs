@@ -24,13 +24,7 @@ public static class SaveSystem
             return null;
         }
 
-        // Migrate the original public JSON keys without changing item/ally names.
-        json = json.Replace("\"OverworldSaveData\":", "\"TownSaveData\":")
-            .Replace("\"OverworldSeed\":", "\"TownSeed\":");
-        GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
-        if (data.CampaignFormatVersion == 0) data.Campaign = null;
-        if (data.CampaignFormatVersion > 1) throw new InvalidOperationException("Unsupported campaign save format.");
-        return data;
+        return JsonUtility.FromJson<GameSaveData>(json);
     }
 
     public static void SaveData(GameSaveData data)
@@ -40,7 +34,6 @@ public static class SaveSystem
         if (common != null && common.CampaignContext?.IsSandbox == true) return;
         if (common != null && ReferenceEquals(common.GameSaveData, data) && common.CampaignContext != null)
             data.Campaign = common.CampaignContext.Capture();
-        if (!string.IsNullOrEmpty(data.Campaign?.Fingerprint)) data.CampaignFormatVersion = 1;
         string json = JsonUtility.ToJson(data);
         store.Write(json);
     }

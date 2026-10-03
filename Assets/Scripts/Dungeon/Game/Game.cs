@@ -95,8 +95,8 @@ public class Game : SingletonMonoBehaviour<Game>
 			DungeonSaveData = new DungeonSaveData { StartFloor = 1, EndFloor = 5 }
 		};
 		common.GameSaveData.TownSaveData.ConfigurationId = configuration.Id;
-		common.GameSaveData.TownSaveData.Inventory = common.ItemManager.StartingItems
-			.Select(item => item.ItemName).ToList();
+		common.GameSaveData.TownSaveData.InventoryItems = ItemSaveData.Capture(common.ItemManager.StartingItems
+			.Select(item => item.AsInventoryItem(null)));
 		common.InstantiatedTownAllies.Clear();
 		foreach (var prefab in configuration.StartingParty)
 		{
@@ -183,9 +183,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		PlayerController.Inventory.Clear();
         var townSave = Common.Instance.GameSaveData.TownSaveData;
-        var items = townSave.InventoryFormatVersion >= 1
-            ? townSave.InventoryItems.Select(i => i.Restore(Common.Instance.ItemManager))
-            : townSave.Inventory.Select(n => Common.Instance.ItemManager.GetAsInventoryItemByName(n));
+        var items = townSave.InventoryItems.Select(i => i.Restore(Common.Instance.ItemManager));
         items.ToList().ForEach(x => PlayerController.Inventory.Add(x));
 		demoLoadout = Common.Instance.PendingDemoLoadout;
 		Common.Instance.PendingDemoLoadout = null;
@@ -391,7 +389,7 @@ Bag {PlayerController.Inventory.InventoryItems.Count}/{PlayerController.Inventor
 
 	private void SpawnGatheringPoints(Vector3Int startPosition)
 	{
-        if(Common.Instance.GameSaveData.DungeonSaveData.LayoutVersion > 0)
+        if(Common.Instance.GameSaveData.DungeonSaveData.UseBiomeLayout)
         {
             foreach(var site in CurrentDungeon.Floor.GatheringSites)
                 GatheringPoint.Spawn(CurrentDungeon,site.Cell.ToCell(),site.Kind,site.Roll);

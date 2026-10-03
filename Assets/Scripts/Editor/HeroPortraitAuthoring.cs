@@ -9,42 +9,6 @@ using UnityEngine.SceneManagement;
 
 public static class HeroPortraitAuthoring
 {
-    [MenuItem("Tools/Eternal Enigma/Portraits/Bind Dungeon HUD")]
-    public static void BindDungeonHud()
-    {
-        const string path = "Assets/Prefabs/Dungeon/StatDisplay/CharacterStatsDisplay.prefab";
-        var root = PrefabUtility.LoadPrefabContents(path);
-        try
-        {
-            var frame = root.transform.Find("Avatar/Image (1)");
-            var mask = frame.Find("Portrait Mask");
-            if (mask == null)
-            {
-                mask = new GameObject("Portrait Mask", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.Mask)).transform;
-                mask.SetParent(frame, false);
-            }
-            var rect = (RectTransform)mask;
-            rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.one * 5; rect.offsetMax = Vector2.one * -5;
-            mask.GetComponent<UnityEngine.UI.Image>().sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Bamao/BamaoUIPack/Sprites/MAP/avatar_mask.png");
-            mask.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
-            mask.GetComponent<UnityEngine.UI.Mask>().showMaskGraphic = false;
-            var portrait = mask.Find("Portrait")?.GetComponent<UnityEngine.UI.Image>();
-            if (portrait == null)
-            {
-                portrait = new GameObject("Portrait", typeof(RectTransform), typeof(UnityEngine.UI.Image)).GetComponent<UnityEngine.UI.Image>();
-                portrait.transform.SetParent(mask, false);
-            }
-            portrait.rectTransform.anchorMin = new Vector2(0, -.125f);
-            portrait.rectTransform.anchorMax = new Vector2(1, 1.125f);
-            portrait.rectTransform.offsetMin = portrait.rectTransform.offsetMax = Vector2.zero;
-            portrait.raycastTarget = false;
-            root.GetComponent<CharacterStatsDisplay>().PortraitImage = portrait;
-            PrefabUtility.SaveAsPrefabAsset(root, path);
-        }
-        finally { PrefabUtility.UnloadPrefabContents(root); }
-    }
-
     const string Folder = "Assets/Art/HeroPortraits";
     const string ScenePath = "Assets/Scenes/HeroPortraitStudio.unity";
 

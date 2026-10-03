@@ -1,34 +1,22 @@
 # Campaign presentation
 
-The new-game picker renders the starting protagonist's existing animated model.
-Choosing a class changes that hero's combat build, not their appearance or the
-world seed. The first starting-party member receives the selected primary and
-optional secondary class; other starting allies retain their configured classes.
+New Journey uses `ProtagonistHeroPicker`: a paged roster of authored heroes with their
+animated model and fixed class combination. Begin Journey creates a save with that hero as
+the sole starting protagonist; companions are recruited later. Class choice does not alter
+campaign topology, and the normal menu no longer offers an arbitrary class picker.
 
-- Primary class supplies starting stat bonuses, growth each level, weapon access,
-  and its full skill tree (up to rank 5).
-- Secondary class adds its weapon access and non-mastery skills through tier 2,
-  capped at rank 3. Primary progression remains available.
-- A new hero learns the primary class's tier 1 mastery. Other skills shown in the
-  picker are training options, not automatically learned starting skills.
-- Campaign layout, story gates, keys, boats, and companion capability rewards are
-  determined by campaign generation and progression, not this class selection.
+Hero class definitions supply starting bonuses, growth, weapon access and ranked skill trees.
+Secondary classes add eligible non-mastery skills through tier 2 and rank 3. New heroes
+receive starting mastery skills. Training uses skill points, not gold, for class heroes.
 
-Button sprites, tint states and label colors are saved directly in the gameplay
-scenes and their prefabs. The editor-only command **Tools > Eternal Enigma > UI >
-Bake Button Styles** applies the theme explicitly; there is no runtime scan or
-button styling component. **Validate Saved Button Styles** checks saved assets
-outside Play Mode. Dynamically populated menus instantiate the already styled
-`Resources/UI/GameButton.prefab`, setting only labels, layout, callbacks and data.
-Autoplay/sandbox IMGUI controls use the serialized `Resources/UI/GameSkin.guiskin`.
-Artwork in Resources/UI comes from the project's existing Bamao UI pack.
-CampaignHUD supplies normal-play travel messages, interaction/warp buttons and
-town companion management (P). Seed, key inventory, route requirements and biome
-summaries remain in the overworld sandbox only. The southern town gate still
-uses the normal movement interaction.
+Buttons and UI references are stored directly in scenes/prefabs. **UI > Bake Button Styles**
+is a reusable maintenance tool; **Validate Saved Button Styles** checks authored assets.
+Generated menus instantiate `Resources/UI/GameButton.prefab`. Autoplay/sandbox IMGUI uses
+`Resources/UI/GameSkin.guiskin`. Both reference the Bamao theme.
 
-Validation: `node Tools/unity-mcp.mjs harness Presentation` runs picker lifecycle,
-button skin, menu input and campaign travel regression tests. Picker screenshots
-are written to `Temp/UIValidation`.
+`CampaignHUD` supplies normal travel messages, interactions, warp buttons and town companion
+management. Diagnostic seed/gate/biome controls belong to the sandbox. The town exit uses
+normal movement interaction. [Animated main menu](Art/MainMenu.md) describes the saved stage.
 
-Button styling checks: `node Tools/unity-mcp.mjs harness ButtonStyles`.
+Checks: `node Tools/unity-mcp.mjs harness Presentation` and `harness ButtonStyles`.
+See [campaign flow](CampaignFlow.md) for saves and [classes](Classes.md) for learning rules.

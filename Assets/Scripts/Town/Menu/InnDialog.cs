@@ -1,6 +1,7 @@
 using JuicyChickenGames.Menu;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine;
 
 /// <summary>Free inn: rest to restore the party's HP/SP (damage persists between runs) or save the game.</summary>
 public class InnDialog : Dialog
@@ -11,6 +12,20 @@ public class InnDialog : Dialog
     public Button CancelButton;
 
     private TownServices services;
+
+    public static InnDialog Create(Transform parent)
+    {
+        var panel = GameUISkin.Panel(parent, new Vector2(.25f, .25f), new Vector2(.75f, .75f));
+        panel.name = "Inn";
+        var dialog = panel.gameObject.AddComponent<InnDialog>();
+        GameUISkin.Label(panel.transform, "Inn", new Vector2(.08f, .78f), new Vector2(.92f, .94f), 34);
+        dialog.StatusText = GameUISkin.Label(panel.transform, "", new Vector2(.08f, .57f), new Vector2(.92f, .77f));
+        dialog.RestButton = GameUISkin.Button(panel.transform, "Rest (free)", new Vector2(.1f, .39f), new Vector2(.9f, .53f), dialog.Rest_Clicked);
+        dialog.SaveButton = GameUISkin.Button(panel.transform, "Save checkpoint", new Vector2(.1f, .22f), new Vector2(.9f, .36f), dialog.Save_Clicked);
+        dialog.CancelButton = GameUISkin.Button(panel.transform, "Back", new Vector2(.1f, .05f), new Vector2(.9f, .19f), dialog.Cancel_Clicked);
+        panel.gameObject.SetActive(false);
+        return dialog;
+    }
 
     public override void PrepareTown(TownInteractionContext context)
     {

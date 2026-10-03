@@ -1,5 +1,8 @@
 # TWC sample inspection
 
+This is retained vendor-sample reference material, not a description of production scene
+layouts. Production uses the committed EnvironmentKit and detailed Core town adapter.
+
 Read from the installed TileWorldCreator 3 package. Missing local demos were restored from the already-cached package, without replacing existing files. No separately named river demo is present in this package; CliffIsland provides water/sand/cliff transitions.
 
 ## Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity

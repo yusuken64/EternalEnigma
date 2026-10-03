@@ -40,6 +40,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             foreach (var old in root.GetComponents<EnvironmentMeshOwner>()) Release(old);
             var batch = new EnvironmentBatch(root.transform);
             var grid = creator.GetComponent<CampaignOverworld>()?.CurrentGrid;
+            CoreLayoutCache.TryGetTown(creator, out var town);
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
             float size = creator.twcAsset.cellSize;
             foreach (var tile in map.clusters.Values.SelectMany(c => c.Values))
@@ -62,7 +63,8 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 if (prefab == null) continue; // Edge-only presets deliberately omit their interior fill.
                 // Authored preset child rotates the XY mesh into TWC's canonical XZ plane.
                 var mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
-                batch.Add(mesh, SurfaceMaterial != null ? SurfaceMaterial : Road ? Kit.Road : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
+                bool alley = Road && town != null && town.Layers.TryGetValue(TownLayers.Alleys, out var alleys) && alleys[x,y];
+                batch.Add(mesh, SurfaceMaterial != null ? SurfaceMaterial : Road ? (alley ? Kit.Paving : Kit.Road) : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
                     new Vector3((tile.position.x + .5f) * unit, (tile.position.z + .5f) * unit, -Elevation * size),
                     new Vector3(unit, unit, unit * HeightScale), angle);
             }

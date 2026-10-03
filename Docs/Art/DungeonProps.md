@@ -5,7 +5,7 @@ Crate, Urn, CrystalOre, HazardPool, Herbs, Mushrooms, Caltrops, SpikeTrap and Bu
 source is `ArtSource/DungeonProps/DungeonProps.blend`; FBX exports live in
 `Assets/Art/EternalEnigma/Props/Dungeon`. No downloaded assets are required.
 
-To rebuild, run `Tools/Art/generate_dungeon_props.py` in Blender, then use Unity's
+Edit the retained Blender source and export its meshes, then use Unity's
 **Tools > Eternal Enigma > Art > Import Dungeon Props**. The importer preserves
 asset GUIDs, merges all material submeshes, and converts models to XY ground with
 negative-Z height. A shared palette material retains the modeled wood, iron,

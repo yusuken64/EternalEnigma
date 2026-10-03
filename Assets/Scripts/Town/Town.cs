@@ -55,9 +55,7 @@ public class Town : MonoBehaviour
         var save = Common.Instance.GameSaveData.TownSaveData;
         TownPlayer.Gold = save.Gold;
         TownPlayer.Inventory.Clear();
-        TownPlayer.Inventory.AddRange(save.InventoryFormatVersion >= 1
-            ? save.InventoryItems.Select(i => i.Restore(Common.Instance.ItemManager))
-            : save.Inventory.Select(n => Common.Instance.ItemManager.GetAsInventoryItemByName(n)));
+        TownPlayer.Inventory.AddRange(save.InventoryItems.Select(i => i.Restore(Common.Instance.ItemManager)));
 
         Debug.Log($"Town seed {Common.Instance.GameSaveData.TownSaveData.TownSeed}");
     }
@@ -70,10 +68,6 @@ public class Town : MonoBehaviour
 		TownSaveData townSaveData = Common.Instance.GameSaveData.TownSaveData;
 		townSaveData.Gold = TownPlayer.Gold;
         townSaveData.InventoryItems = ItemSaveData.Capture(TownPlayer.Inventory);
-        townSaveData.InventoryFormatVersion = 1;
-		townSaveData.Inventory = TownPlayer.Inventory
-            .Select(x => x.ItemName)
-            .ToList();
 		townSaveData.RecruitedAlliesData = TownPlayer.RecruitedAllies
             .Select(ally => HeroClassBinding.FromPrefab(ally, new TownAllyData {
                 AllyId = ally.Id, AllyName = ally.Name, Skills = new List<string>(ally.Skills),
@@ -188,7 +182,12 @@ public class Town : MonoBehaviour
         {
             building.HasInterior = false;
             if (!building.Definition.HasInterior) continue;
-            if (!Plan.TryGetVendorAnchor(building.TilemapPosition.ToGridPoint(), out var anchor)) continue;
+            if (!Plan.TryGetVendorAnchor(building.TilemapPosition.ToGridPoint(), out var anchor))
+            {
+                if (Configuration.Layout != null)
+                    throw new InvalidOperationException($"Service '{building.Definition.Id}' has no generated interior.");
+                continue;
+            }
             var anchorCell = anchor.ToCell();
 
             var vendor = building.Definition.VendorPrefab != null
@@ -232,7 +231,7 @@ public class Town : MonoBehaviour
     private IEnumerator FinishGeneration()
     {
         if (!CoreLayoutCache.TryGetTown(WalkableMap.TileWorldCreator, out var plan))
-            throw new InvalidOperationException("The town TWC asset has no Core Town Layer actions; run Tools/Eternal Enigma/Core Layers/Rewrite Town Asset.");
+            throw new InvalidOperationException("The town TWC template requires Core Town Layer actions.");
         Plan = plan;
 
         Debug.Log("Generate Buildings");

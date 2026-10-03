@@ -15,9 +15,6 @@ public sealed class OverworldLaunchOptions
 [Serializable]
 public sealed class CampaignSnapshot
 {
-    public int Version = 1;
-    public int GeneratorVersion = CampaignGenerator.Version;
-    public int GridVersion = OverworldGrid.GenerationVersion;
     public int Seed;
     public string Identity = "";
     public string Fingerprint = "";
@@ -85,8 +82,6 @@ public HashSet<string> Completed { get; }
     {
         Mode = options.Mode;
         State = snapshot ?? new CampaignSnapshot { Seed = options.Seed, Identity = Guid.NewGuid().ToString("N") };
-        if (State.Version != 1 || State.GeneratorVersion != CampaignGenerator.Version || State.GridVersion != OverworldGrid.GenerationVersion)
-            throw new InvalidOperationException("Unsupported campaign save version.");
         Campaign = CampaignGenerator.Generate(State.Seed);
         var fingerprint = CampaignFingerprint.Compute(Campaign);
         if (snapshot != null && State.Fingerprint != fingerprint) throw new InvalidOperationException("Campaign save fingerprint mismatch.");

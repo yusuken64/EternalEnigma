@@ -36,7 +36,7 @@ Units (including downed allies) and dropped items found in walls are moved to ra
 ## Asset workflow
 
 - Source: `ArtSource/FantasyTraps/FantasyTraps.blend`, created through Blender MCP.
-- Rebuild: execute `Tools/Art/generate_fantasy_traps.py` through Blender MCP. It creates an isolated scene and preserves existing scenes.
+- Edit the retained Blender source and export meshes; the completed construction script is removed.
 - Unity: run **Tools / Eternal Enigma / Art / Import Fantasy Traps**. This imports meshes, generates 18 prefab definitions and four status prefabs, and registers food variants.
 - Models and the separate log/arrow projectile meshes use the shared dungeon palette, XY floor orientation, and negative-Z height. They have no gameplay colliders.
 - Trap kind integer values define seeded generation order; do not reorder them.

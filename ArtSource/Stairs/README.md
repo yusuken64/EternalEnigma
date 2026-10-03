@@ -13,11 +13,10 @@ Five broad stone treads, chamfered edges, stepped side walls, and a warm landing
 - Unity visual wrapper: local rotation (-90, 0, 0), unit scale, zero position under the existing (1.25, 1.25, 0) offset. This maps height towards game -Z.
 - Existing prefab GUID, root interaction component, and three collider objects are retained. Original cube MeshFilters and MeshRenderers are removed.
 
-Regenerate by running `Tools/Art/generate_stairs.py` inside Blender. Then run Unity menu
-`Tools > Eternal Enigma > Art > Install Stone Stairs`, or invoke
-`-batchmode -nographics -executeMethod InstallStoneStairs.Install -quit` for this project.
-The explicit importer validates mesh budget, scale, ground contact, collider count,
-and interaction component before saving. `unity-validation.json` records the Unity measurements.
+Edit the retained `.blend` source and export the FBX with the settings above. The completed
+construction script and obsolete installer instructions are removed. Preserve the existing
+prefab interaction component, colliders and GUID. `unity-validation.json` records the original
+import measurements; revalidate bounds and interaction after editing.
 
 `preview.png` is a Blender studio render, not a gameplay screenshot. Live gameplay
 camera, fog, and interaction behavior have not been play-tested as part of this visual replacement.

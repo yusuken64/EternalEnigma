@@ -36,11 +36,4 @@ public struct DungeonVisualSelection
             Environment = settings?.Environment ?? DungeonEnvironmentKind.Interior };
     }
 
-    public static DungeonVisualSelection ResolveRun(DungeonSaveData save, CampaignContext context, DungeonEncounterVisualSettings settings = null)
-    {
-        if (save != null && save.VisualSelectionVersion > 0) return save.VisualSelection;
-        var selection = Resolve(context, settings);
-        if (save != null) { save.VisualSelection = selection; save.VisualSelectionVersion = 1; }
-        return selection;
-    }
 }

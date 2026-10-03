@@ -1,5 +1,9 @@
 # Unity WaveFunctionCollapse
 
+Project integration: this is vendored reference code. Eternal Enigma currently generates
+its playable layouts through EternalEnigma.Core and TileWorldCreator. The upstream usage
+guide below is retained for the package, not the current game generation pipeline.
+
 A fork of [https://github.com/mxgmn/WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse) with tools for the Unity Game engine.
 
 # Installation

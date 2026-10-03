@@ -1,5 +1,8 @@
 # Skill trees (`.skilltree`)
 
+Class training uses skill points derived from highest level and learned ranks. The `skilltree 1`
+header versions this authoring text format; it is not player-save versioning.
+
 One text file per class: its skills laid out in tiers 1-3. The files here are exported from the
 `ClassDefinition` assets in `Assets/Resources/Classes/Definitions`.
 

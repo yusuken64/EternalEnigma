@@ -4,7 +4,7 @@ Run `node Tools/unity-mcp.mjs harness Enemies`, or use **Tools > Eternal Enigma 
 The PlayMode check discovers every prefab in `Assets/Prefabs/Dungeon/Enemies` and loads them in a production dungeon.
 It checks team, positive attack stats and turn budgets, player targeting, eventual melee selection despite special-policy rolls,
 damage target/amount, attack budget consumption, and movement/attack/hit/death animation playback.
-It includes the large slime's wider footprint. The current audit passes all 33 prefabs.
+It includes the large slime's wider footprint. The fixture discovers the current roster dynamically; earlier pass counts are historical.
 
 Corrections:
 

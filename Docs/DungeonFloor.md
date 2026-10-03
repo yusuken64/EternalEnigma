@@ -1,213 +1,62 @@
-# Dungeon floors and town interiors
+# Dungeon floors and town plans
 
-The core generates a single dungeon floor or town interior as an immutable,
-validated grid of named boolean layers, mirroring the overworld's model (see
-[overworld grids](OverworldGrid.md)) but at building/room scale.
-`EternalEnigma.Core.Generation.DungeonFloorGenerator.Generate(DungeonFloorOptions)`
-returns a `DungeonFloor`; `EternalEnigma.Core.Generation.TownPlanGenerator.Generate(TownPlanOptions)`
-returns a `TownPlan`. Both retry generation up to 32 times with independent
-seed streams per attempt and validate the result
-(`DungeonFloorValidator`/`TownPlanValidator`) before returning it.
+Core `DungeonFloorGenerator.Generate(DungeonFloorOptions)` and
+`TownPlanGenerator.Generate(TownPlanOptions)` return immutable, validated grid data.
+Unity adapters copy named layers into TWC; gameplay reads the Core floor/walkable masks.
 
-```csharp
-using EternalEnigma.Core.Generation;
-using EternalEnigma.Core.World;
+## Dungeon profiles
 
-var floor = DungeonFloorGenerator.Generate(new DungeonFloorOptions(seed: 42, enemyCount: 10, goldCount: 5));
-bool[,] floorMask = floor.Layers[DungeonLayers.Floor].ToArray();
-GridPoint start = floor.Start;
+The two campaign starter dungeons use original 32x32 BSP regular floors and the fixed 12x12
+throne template. Other campaign locations use [biome profiles](BiomeDungeons.md), with larger
+tier-scaled dimensions and entry/regular/exit roles. Core's layout selector remains part of
+generation options/cache identity; the save stores `UseBiomeLayout`, not a schema version.
 
-var town = TownPlanGenerator.Generate(new TownPlanOptions(seed: 42));
-bool[,] walkable = town.Layers[TownLayers.Walkable].ToArray();
-```
+Dungeon layers are Floor, Dungeon, Carpet, Columns, Torchlights, Start and Stairs.
+Dungeon is the inverse floor mask; stairs are reachable. Seeded placement records contain
+cell/roll pairs for enemies, gold, items, traps and gathering. Biome profiles also supply
+containers, destructibles and hazards with safe placement and reward-budget constraints.
+Entry/exit rooms omit normal encounters and blocking scenery.
 
-## Versioned biome layouts
+`CampaignContext.LocationSeed` hashes campaign seed, location and floor. Tier floor ranges
+are 1-5, 5-10, 10-20, 20-30 and 30-40. Revisiting the same campaign/location/floor uses the
+same generation inputs. Combat progress and exact floor state are not persisted.
 
-[Biome dungeons](BiomeDungeons.md) documents the version-1 profiles, run compatibility,
-interactive scenery, preview controls and current verification results. The generator
-and throne descriptions below describe the retained version-0 path unless stated otherwise.
-The Core DLL has been rebuilt and imported with the biome implementation.
+## Town plans
 
-## Layers
+Base layers are Roads, Houses, Trees, Parks, Roofs, Buildings, Allies, Dungeon, ShopFloor,
+ShopWalls and Walkable. `Walkable == !(Houses | Trees | ShopWalls)`. Detailed plans additionally
+provide MainRoads, Alleys and Props. `BuildingSlots`, `Footprints`, `ShopRooms`, vendor anchors,
+PartySpawn and Exit describe placement and interaction independently of art.
 
-### `DungeonLayers`
+`TownLayout` sizes campaign towns and assigns five service kinds, two authored buildings and
+seven residential plots in stable seeded order. Unity's `CampaignTownLayout` maps that order
+to authored definitions. Residential slots render through the house mask and have no dialog.
+All services have walk-in rooms. The spine, party spawn and exit are centered on the generated
+map. Custom noncampaign configurations retain explicit building/spawn options.
 
-| Layer | Meaning |
-|---|---|
-| `Floor` | Walkable cells; the only layer Unity gameplay reads directly for movement. |
-| `Dungeon` | Wall mass; always the exact inverse of `Floor` (`Dungeon == !Floor`) for every cell. |
-| `Carpet` | Decorative floor accent, a subset of `Floor` (twice-eroded room interior). |
-| `Columns` | Subset of `Dungeon`, placed at the four corners of rooms at least 5x5. |
-| `Torchlights` | Subset of `Dungeon`, placed periodically along room wall edges. |
-| `Start` | Single-cell marker; always on `Floor`. |
-| `Stairs` | Single-cell marker; always on `Floor`, always reachable from `Start`. |
+Dungeon movement requires both diagonal side cells open. Town movement permits corner cutting.
+Occupancy, turn actions and party following remain Unity gameplay responsibilities.
 
-### `TownLayers`
+## TWC integration and maintenance
 
-| Layer | Meaning |
-|---|---|
-| `Roads` | The vertical spine plus paths from every building door and a horizontal avenue. |
-| `Houses` | Building footprints (3x4 bodies north of each door), minus any carved shop interior. |
-| `Trees` | Scenery blockers scattered outside roads/buildings/the reserved corridor. |
-| `Parks` | Decorative open-area rectangles; never overlap roads, houses, trees or shops. |
-| `Roofs` | Copy of `Houses`, for build-layer rendering above the floor. |
-| `Buildings` | One-cell door markers, in the same raster order as `TownPlan.BuildingSlots`. |
-| `Allies` | One-cell ally spawn markers, in the same raster order as `TownPlan.AllySlots`. |
-| `Dungeon` | Single-cell dungeon-entrance marker at the bottom of the road spine. |
-| `ShopFloor` | Interior floor of carved shop rooms. |
-| `ShopWalls` | Interior walls of carved shop rooms. |
-| `Walkable` | Derived: `Walkable == !(Houses | Trees | ShopWalls)`. Unity's `WalkableMap` reads this directly. |
+`CoreDungeonLayerGenerator` and `CoreTownLayerGenerator` share cached Core results per creator.
+`CoreLayoutCache` keys results by complete options. Campaign town configuration sets dimensions,
+spine, detailed mode, flags, spawn/exit and ally count consistently on every Core layer; missing
+detail layers are added to the runtime clone. Blueprint GUIDs used by authored build layers survive.
 
-## Placements and rolls
+The committed dungeon/throne/village assets are already Core-backed. Completed asset rewrite
+menus are removed. **Tools > Eternal Enigma > Core Layers > Verify Assets** remains for checks.
+Edit Odin assets through Unity, and rebuild/import the DLL after Core changes with
+**Core > Build and Import DLL**. Saved preview rebuilding uses the same detailed town options.
 
-`DungeonFloor.Enemies`, `.Gold`, `.Items` and `.Traps` are lists of `Placement`
-(a cell plus an `int Roll` drawn from the same seeded stream as the position).
-Unity picks which prefab to instantiate at a placement with `roll % count`
-against its own prefab list, so the same seed always picks the same prefab as
-long as the prefab list doesn't change order. `DungeonFloor.GatheringSites` is
-placed afterward from its own seed stream (`900 + attempt`) so it never shifts
-the other placements. `TownPlan.AllySlots` placements work the same way for
-ally prefab selection.
-
-## Throne floors
-
-A floor is a throne floor when it is the first or last floor of its tier's
-range (`CampaignContext.Floors(tier)`, e.g. tier 0 is floors 1..5, so floor 1
-and floor 5 are both throne floors). Throne floors skip normal generation
-entirely and use the fixed `ThroneRoomTemplate`: a 12x12 room (`GridRect(1, 1, 10, 10)`)
-with `Start` at `(6, 4)` and `Stairs` at `(6, 9)`, no enemies/gold/items/traps.
-`DungeonFloorOptions.Throne(seed)` produces the matching fixed `12x12`,
-zero-placement options; the constructor throws if a throne floor's dimensions
-or placement counts are anything else.
-
-## Seeding
-
-`CampaignContext.LocationSeed(campaignSeed, locationId, floor = 0)` hashes the
-campaign seed, location id and floor number (FNV-1a over their string
-concatenation) into a single deterministic `int` seed. The instance method
-`CampaignContext.LocationSeed(location, floor)` uses the context's own campaign
-seed. `CampaignContext.DungeonFloorOptionsFor(campaignSeed, locationId, floor, tier)`
-combines that seed with the tier's throne-floor check to build the right
-`DungeonFloorOptions`. `CampaignContext.DungeonFloor(locationId, floor)` and
-`CampaignContext.Town(townId, shopFlags, allyCount)` are the campaign-aware
-entry points that wrap `DungeonFloorGenerator.Generate`/`TownPlanGenerator.Generate`
-with these seeds.
-
-## Movement rules
-
-`DungeonFloor.CanStep`/`.Neighbors` use `GridSteps` with `DiagonalRule.RequireOpenSides`:
-a diagonal step is only legal when both orthogonal cells next to it are also
-open, matching dungeon corridors that shouldn't let the player cut through a
-wall corner. `TownPlan.CanStep` uses `DiagonalRule.AllowCornerCutting` instead,
-matching open town squares where corner-cutting is fine. `WalkableMap.CanWalkTo`
-(Unity) calls the equivalent `GridMovement.CanStep(..., DiagonalMovement.AllowCornerCutting)`
-against the cached `TownPlan.Layers[TownLayers.Walkable]` mask.
-
-## TWC integration
-
-Two Unity classes generate a full core result and slice out one layer per TWC
-blueprint action:
-
-- `CoreDungeonLayerGenerator` (`Assets/Scripts/Generation/CoreDungeonLayerGenerator.cs`):
-  one per dungeon blueprint layer, configured with `LayerName` (a `DungeonLayers`
-  constant), `Throne`, and `EnemyCount`/`GoldCount`/`ItemCount`/`TrapCount`. Its
-  `Execute` calls `CoreLayoutCache.GetDungeon(twc, Options(twc))` and merges
-  that layer's cells into the TWC map, throwing if the layer's dimensions don't
-  match the asset (a throne asset must be exactly 12x12).
-- `CoreTownLayerGenerator` (`Assets/Scripts/Generation/CoreTownLayerGenerator.cs`):
-  one per town blueprint layer, configured with `LayerName` (a `TownLayers`
-  constant), `BuildingCount`, `ShopFlags`, `AllyCount`, and the party
-  spawn/exit cells. Its `Execute` calls `CoreLayoutCache.GetTown(twc, Options(twc))`
-  the same way. `CoreTownLayerGenerator.Configure(asset, TownConfiguration)`
-  pushes the configuration's building count, per-building shop flags and party
-  spawn onto every action in the asset, leaving `AllyCount` as authored.
-
-`CoreLayoutCache` (`Assets/Scripts/Generation/CoreLayoutCache.cs`) caches one
-generation result per `TileWorldCreator` instance (a `ConditionalWeakTable`
-slot keyed by the component), regenerating only when the `DungeonFloorOptions`/`TownPlanOptions`
-change — so every `CoreDungeonLayerGenerator`/`CoreTownLayerGenerator` action on
-the same asset shares a single generation rather than re-running per layer.
-`CoreLayoutCache.ClearResultFlags(asset)` clears the `mapResultFailed`/`resultFailed`
-flags TWC sets on an all-false layer (a legitimately empty `Carpet` or
-`ShopFloor` is not a failure) after `ExecuteAllBlueprintLayers` runs. There are
-two separate dungeon TWC assets/`TileWorldCreator`s — a normal-floor one and a
-throne one (`TileWorldDungeonGenerator.ThroneTileWorldCreator`) — because a
-throne floor's fixed 12x12 size differs from a normal floor's configurable
-size; `CoreDungeonLayerGenerator.Throne` distinguishes which template to use
-per asset.
-
-### Rewrite and verify menus
-
-`Assets/Scripts/Editor/CoreLayerAuthoring.cs` provides three menu items under
-**Tools/Eternal Enigma/Core Layers**:
-
-- **Rewrite Dungeon Assets** rewrites every core dungeon layer in
-  `Assets/Prefabs/Dungeon/DungeonAsset.asset` (`Throne = false`) and
-  `Assets/Prefabs/Dungeon/DungeonThroneAsset.asset` (`Throne = true`) to a
-  single `CoreDungeonLayerGenerator` action, preserving blueprint layer GUIDs.
-- **Rewrite Town Asset** does the same for
-  `Assets/TileWorldCreator/VillageLSystemAsset.asset` with `CoreTownLayerGenerator`,
-  and adds any of `ShopFloor`/`ShopWalls`/`Walkable` the asset is missing.
-- **Verify Assets** checks all three assets: exactly one action per core
-  layer, of the right type, with `LayerName` matching the blueprint layer's
-  own name; every core action in an asset sharing the same options (enemy/gold/item/trap
-  counts for dungeons, building/shop/ally/spawn/exit for towns); throne assets
-  (`mapWidth == 12`) having `Throne = true`; and every build layer's
-  `assignedGenerationLayerGuid` matching a real blueprint layer GUID. It logs
-  `"OK"` when clean, or one line per issue otherwise.
-
-These three `.asset` files are Odin-serialized; never hand-edit their YAML —
-always go through these menu items. See the **Status** section above: as of
-this writing, none of the three assets have actually had these menu items run
-against them yet.
-
-### DLL re-import
-
-Because `CoreDungeonLayerGenerator`/`CoreTownLayerGenerator` call into
-`EternalEnigma.Core.Generation`/`.World` types, any core code change needs the
-imported DLL refreshed before Unity picks it up: **Tools > Eternal Enigma >
-Core > Build and Import DLL** (see `Core/README.md`'s "Import into Unity"
-section). Repeat imports preserve the `.meta` GUID; there is no automatic
-build on every script refresh.
-
-## Console explorer usage
-
-From the repository root:
+## Headless inspection
 
 ```powershell
 dotnet run --project Core/EternalEnigma.Core/EternalEnigma.Campaign.Explorer -- --seed 42 --town town-0
-dotnet run --project Core/EternalEnigma.Core/EternalEnigma.Campaign.Explorer -- --seed 42 --dungeon story-0 --floor 2
+dotnet run --project Core/EternalEnigma.Core/EternalEnigma.Campaign.Cli -- --seed 42 --dungeon story-0 --floor 2 --output Temp/DungeonPreview
 ```
 
-Both print a static preview and imply `--snapshot`; `--dungeon` accepts an
-optional `--floor <n>` (defaults to the dungeon's current floor) and fails if
-the floor is outside the location's tier range. In interactive mode (no
-`--town`/`--dungeon`/`--snapshot`, run from an actual terminal), choosing T or D
-at startup or pressing Enter on an overworld town/dungeon marker switches to
-the same `TownRenderer`/`DungeonRenderer` views; Enter opens a door/descends
-stairs, R claims rewards, Esc returns to the overworld.
-
-## CLI export
-
-From `Core`:
-
-```powershell
-dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --town town-0 --output ../Temp/TownPreview
-dotnet run --project EternalEnigma.Core/EternalEnigma.Campaign.Cli --configuration Release -- --seed 42 --dungeon story-0 --floor 1 --output ../Temp/DungeonPreview
-```
-
-Both require `--output` and write a `.json` (layers as rows of `0`/`1`
-strings, plus rooms/placements/slot metadata) and an `.svg` preview per
-location, alongside the campaign-sweep/`--grid` export described in
-`Core/README.md`. `--dungeon`'s `--floor` defaults to 1.
-
-## Determinism note
-
-Dungeon floors and town plans are never saved — only the campaign seed,
-location id and floor number are. Every visit regenerates the same layout
-from `CampaignContext.LocationSeed`, so nothing needs to persist the grid
-itself. Changing `DungeonFloorGenerator`/`TownPlanGenerator` (or the BSP/plot
-parameters they use) changes the layout that an existing save's seed produces
-on the next visit, but nothing breaks: there is no stored grid to invalidate,
-and placements/rooms/slots are always recomputed from the current generator
-against the current seed.
+Core tests cover layouts and validation. Unity `TownLayoutIntegrationTests` compares every
+layer/options against Core and `CampaignTownServiceTests` covers production services/inn restore.
+Layouts are regenerated, so changes to generation can change future visits; old save schemas
+are unsupported. See [town gameplay](Town.md), [Core](../Core/README.md) and [themes](DungeonThemes.md).

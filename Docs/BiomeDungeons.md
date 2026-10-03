@@ -1,6 +1,9 @@
-# Versioned biome dungeons
+# Biome dungeons
 
-New campaign runs outside `repeatable-0` and `story-0` use layout version 1. The two starters and saves with no `LayoutVersion` keep the original BSP generator, placements, 32×32 regular floors and 12×12 throne template. The original constructor defaults and `DungeonFloor.GenerationVersion` remain unchanged; layout version is an additional cache discriminator.
+Campaign runs outside `repeatable-0` and `story-0` use biome layouts. The two starters
+use the original BSP/throne layouts. `DungeonSaveData.UseBiomeLayout` records that gameplay
+choice; old save schemas are not migrated. Core layout options still distinguish the two
+generation algorithms for deterministic caching.
 
 `DungeonLayoutProfile.Options` is the shared Core entry point. It chooses each regular axis independently: 32, 34–38, 38–42, 44–48, then 52–56. Entry/exit floors use 16, 18, 20, 22, then 24 tiles. Tile scale and campaign floor ranges are unchanged. Entry/exit roles retain throne-floor gameplay behavior and have no encounters, hazards, or blocking scenery.
 
@@ -43,10 +46,6 @@ Core sweeps cover 24 seeds × eight biomes × five tiers × three roles, generat
 
 [Preview images and measured costs](Art/Previews/BiomeLayouts/README.md) include 56×56 regular floors and tier-4 entry/exit floors for every biome. Measurements are editor CPU timings on this workstation, not player frame-time guarantees. The geometry timing includes blueprint generation, mesh building and scenery creation. Forest currently has substantially more triangles than the other themes because of its existing tile assets.
 
-The full Core suite has three pre-existing overworld failures, reproduced against an archived, unmodified `HEAD`: `BiomesAreSampledFromTheWholePoolWithAGrasslandStart`, `SeedSweepFitsDefaultDimensionsAndPreservesTopology`, and `TerritoriesHaveBroadInteriorsSeparatedDestinationsAndShortPasses(42,6)`.
-
-The full Unity EditMode run recorded 127 passes and seven failures outside the biome tests: `EmergencyBelowThirtyPercent`, `BossesAndResistancesAreAuthored`, `StealthEndsWhenOwnerAttacks`, and four `TargetingAndArrowTests` (`ExpiredTauntIgnored`, `NearestFirstWithoutTaunt`, `StealthedAndDeadAreSkipped`, `TauntPullsToTaunterWhenVisible`). The latter five fail in existing status/vitals code. These Unity failures have not been baseline-tested in a separate Unity checkout; they are not reported as passing.
-
-The broader PlayMode selection recorded 26 passes and six failures, all in existing `SkillMovementTests`: `GrappleLineStopsBeforeCharacter`, `RetreatShotStepsAwayUnlessBlocked`, `ShadowDanceStrikesEachNearbyEnemyOnce`, and the three `ShadowStep` scenarios. The scenery integration, skill regression, inventory targeting, and dungeon-theme transition/explorer tests passed. These movement failures require separate investigation; no claim of a clean full Unity regression is made.
-
-Final focused Core result: **39 passed**, including the 2,880-profile sweep. Full Core result: **233 passed, 3 baseline failures**. New Unity layout/persistence/cache/preview checks: **3 passed**. The gameplay scenery test passed independently and in the broader run.
+Current Core audit: **340 passed, 0 failed**. Earlier failure counts are superseded.
+Unity validation uses the current save schema, explicit visual selection, and profile/cache
+agreement. See [test harness](../Assets/Tests/README.md) for current results and commands.

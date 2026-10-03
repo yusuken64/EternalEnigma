@@ -19,11 +19,11 @@ public sealed class TownServices
             shop = new TownShopSaveData { Key = key };
             Save.Shops.Add(shop);
         }
-        if (shop.RestockVersion != Save.RestockVersion)
+        if (shop.RestockCycle != Save.RestockCycle)
         {
             shop.Stock = building.ShopCatalog.Select(o => new TownStockSaveData {
                 ItemName = o.Item.ItemName, Remaining = o.Quantity }).ToList();
-            shop.RestockVersion = Save.RestockVersion;
+            shop.RestockCycle = Save.RestockCycle;
         }
         return shop;
     }

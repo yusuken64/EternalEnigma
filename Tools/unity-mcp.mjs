@@ -5,9 +5,14 @@ import { pathToFileURL } from 'node:url';
 
 const root = resolve(import.meta.dirname, '..');
 const cache = join(root, 'Library/PackageCache');
-const pkg = readdirSync(cache).find(n => n.startsWith('com.gamelovers.mcp-unity@'));
+const resolutionPath = join(root, 'Library/PackageManager/projectResolution.json');
+const resolvedPackage = existsSync(resolutionPath)
+    ? Object.values(JSON.parse(readFileSync(resolutionPath, 'utf8')).outputs)
+        .find(p => p.name === 'com.gamelovers.mcp-unity')?.resolvedPath : null;
+const pkg = resolvedPackage ?? readdirSync(cache).filter(n => n.startsWith('com.gamelovers.mcp-unity@'))
+    .map(n => join(cache, n))[0];
 if (!pkg) throw Error('Open this project in Unity first to install its MCP package.');
-const server = join(cache, pkg, 'Server~');
+const server = join(pkg, 'Server~');
 const sdk = join(server, 'node_modules/@modelcontextprotocol/sdk/dist/esm/client');
 if (!existsSync(sdk)) throw Error('The Unity MCP server dependencies are not installed yet.');
 const { Client } = await import(pathToFileURL(join(sdk, 'index.js')));

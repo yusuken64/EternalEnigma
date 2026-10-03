@@ -5,7 +5,7 @@ on the main menu. It starts seed 42 at 1x with godmode, infinite strength and in
 resources enabled; playback controls remain available during the run.
 
 The same runtime engine is available in a built app. The playback
-overlay offers **0.5x, 1x, 2x, 4x, and 8x**, plus **Pause/Resume**. Speed changes
+overlay offers **0.5x, 1x, 2x, 4x, 8x, 16x and 32x**, plus **Pause/Resume**. Speed changes
 apply to game time and bot pacing; changing speed while paused keeps it paused.
 Use **Hide panel** or **F8** to collapse the debug panel; the small **Autoplay [F8]** button reopens it without pausing playback.
 Move the pointer freely to reach the controls. Keyboard/controller input and mouse

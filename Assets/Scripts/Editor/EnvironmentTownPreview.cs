@@ -31,7 +31,10 @@ public static class EnvironmentTownPreview
         creator.twcAsset=working;
         try
         {
-            CoreTownLayerGenerator.Configure(working,TownSceneLoader.Default);
+            CoreTownLayerGenerator.Configure(working, EternalEnigma.Core.Generation.TownLayout.Create(42,
+                EternalEnigma.Core.Progression.TownServiceCatalog.All,
+                EternalEnigma.Core.Progression.CampaignContext.AuthoredTownBuildings,
+                residentialBuildings: EternalEnigma.Core.Progression.CampaignContext.ResidentialTownBuildings).Options);
             working.useRandomSeed=true;working.randomSeed=42;
             CoreLayoutCache.Clear(creator);creator.ExecuteAllBlueprintLayers();
             CoreLayoutCache.ClearResultFlags(working);creator.ExecuteAllBuildLayers(true);

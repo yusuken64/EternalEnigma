@@ -247,7 +247,7 @@ namespace EternalEnigma.Tests
                 Assert.That(saved.TownSaveData.InventoryItems[0].Stock, Is.EqualTo(2));
                 Assert.That(saved.TownSaveData.RecruitedAlliesData[0].Equipment[0].ItemName, Is.EqualTo(weapon.ItemName));
             }
-            Assert.That(saved.TownSaveData.RestockVersion, Is.EqualTo(1));
+            Assert.That(saved.TownSaveData.RestockCycle, Is.EqualTo(1));
             Assert.That(saved.TownSaveData.CompletedTiers.Count, Is.EqualTo(victory ? 1 : 0));
             DungeonReturnService.Commit(saved, configuration, victory, 70, new InventoryItem[0], new Ally[0]);
             Assert.That(saved.TownSaveData.Gold, Is.EqualTo(320), "Return must commit only once.");

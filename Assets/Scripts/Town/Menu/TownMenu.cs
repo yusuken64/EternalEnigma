@@ -29,6 +29,9 @@ public class TownMenu : MonoBehaviour
 
     public void ValidateBindings(TownConfiguration configuration)
     {
+        if (configuration.Buildings.Any(b => b.DialogId == "inn" && b.DialogPrefab == null) &&
+            !BuildingDialogs.Any(b => b.Id == "inn"))
+            BuildingDialogs.Add(new TownDialogBinding { Id = "inn", Dialog = InnDialog.Create(transform) });
         if (BuildingDialogs.Any(b => b == null || b.Dialog == null) ||
             BuildingDialogs.Select(b => b.Id).Distinct().Count() != BuildingDialogs.Count)
             throw new InvalidOperationException("Town has missing or duplicate dialog bindings.");

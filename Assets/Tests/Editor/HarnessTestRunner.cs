@@ -215,6 +215,7 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Town")]
     public static void RunTown() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignTownServiceTests",
         "EternalEnigma.Tests.TownGameplayTests",
         "EternalEnigma.Tests.TownTrainerRankTests",
         "EternalEnigma.Tests.MenuSceneNavigationTests.InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection",
@@ -222,6 +223,12 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
         "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady",
         "HarnessSmokeTests.TownScenarioLoadsSuppliedGoldAndAlly");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town Generation")]
+    public static void RunTownGeneration() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignTownServiceTests",
+        "EternalEnigma.Tests.CampaignTravelTests",
+        "EternalEnigma.Tests.EnvironmentPlaygroundTests");
 
     private static void Run(TestMode mode, string filter, params string[] testFilters)
     {

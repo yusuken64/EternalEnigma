@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 [Serializable]
 public class GameSaveData
 {
     [NonSerialized] public bool IsSandbox;
-    // JsonUtility materializes missing nested classes, so null is not a migration discriminator.
-    public int CampaignFormatVersion;
     public EternalEnigma.Core.Progression.CampaignSnapshot Campaign;
+    // JsonUtility can materialize an empty snapshot for standalone test runs.
+    public bool HasCampaign => !string.IsNullOrEmpty(Campaign?.Fingerprint);
     public List<TownAllyData> Roster = new();
     public string ProtagonistId;
     public string PreRunTownJson;
@@ -20,10 +20,9 @@ public class GameSaveData
 [Serializable]
 public class DungeonSaveData
 {
-    public int LayoutVersion;
+    public bool UseBiomeLayout;
     public int LayoutTier;
     public EternalEnigma.Core.World.OverworldBiome LayoutBiome;
-    public int VisualSelectionVersion;
     public DungeonVisualSelection VisualSelection;
 	public bool ReturnCommitted;
 	public int StartFloor;
@@ -34,16 +33,13 @@ public class DungeonSaveData
 public class TownSaveData
 {
 	public string ConfigurationId;
-	public int RestockVersion;
+	public int RestockCycle;
 	public List<TownShopSaveData> Shops = new();
 	public List<string> CompletedTiers = new();
-	// JsonUtility turns missing lists into empty lists, so migration requires an explicit format flag.
-	public int InventoryFormatVersion;
-	public List<ItemSaveData> InventoryItems;
+	public List<ItemSaveData> InventoryItems = new();
 	public int TownSeed = 0; //0 means uninitialzed;
 	public int Gold = 100;
 	public int DonationTotal;
-	public List<string> Inventory = new();
 	public List<TownAllyData> RecruitedAlliesData = new();
 }
 

@@ -135,8 +135,7 @@ and are mutually exclusive with the campaign-sweep/`--grid` export above.
 Library entry points are `CampaignGenerator.Generate(seed)`,
 `CampaignValidator.Validate(campaign)` and `new CampaignSession(campaign)`.
 See [campaign generation](../Docs/CampaignGeneration.md) for the implemented
-contract, examples and the boundary between logical validation and future terrain
-or combat validation.
+contract, examples and the boundary between logical, grid and Unity combat validation.
 
 `OverworldGridGenerator.Generate(campaign)` returns a validated grid with boolean
 layers and placement metadata. `CampaignOverworld` imports these into TWC through
@@ -149,13 +148,12 @@ a single dungeon floor or town interior. `CampaignContext.DungeonFloor(locationI
 and `CampaignContext.Town(townId, shopFlags, allyCount)` wrap them with the
 campaign's per-location seed. See [dungeon floors](../Docs/DungeonFloor.md) for
 layer definitions, throne floors, TWC integration and the console/CLI usage above,
-including the **Status** note there on what is still unverified inside Unity.
+including current Unity adapter and verification details.
 
 ## Shared Unity campaign and sandbox
 
-See [Campaign flow](../Docs/CampaignFlow.md). Campaign generation v6 / grid v9
-include the sealed starting enclosure. Complete story-0 and then use its key at
-the physical starter-exit. The console explorer's Enter command simulates dungeon
-completion; the Unity sandbox has a separate victory button. Ordinary location
-claims cannot award a completion-conditioned key. New Game and Continue use the
-same Overworld scene with the persistent CampaignContext owned by Common.
+See [Campaign flow](../Docs/CampaignFlow.md). New Journey selects an authored hero and
+starts in town-0. Story-0 unlocks the town exit; repeatable-0 awards the separate starter-area
+key. Unity campaign towns now consume detailed Core service-slot layouts. Saves use only
+the current schema, without version fields or migrations. Generated-world identifiers and
+fingerprints remain for reproducibility and integrity. The full Core audit passed 340 tests.

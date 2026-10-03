@@ -1,5 +1,8 @@
 # Dungeon controls and event log
 
+Controls apply to the current fixed-hero campaign flow and the isolated test modes.
+The town inn uses normal dialog confirmation/Back handling.
+
 ## Controller controls
 
 | Action | Xbox / PlayStation |

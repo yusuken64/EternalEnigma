@@ -1,6 +1,7 @@
 # Capabilities
 
-Home for capability IDs, activation manifests and capability sets. Keep permanent
-capabilities distinct from those supplied by the active party. No Unity types or
-presentation assets belong here. `CapabilityCatalog` defines the closed vocabulary;
-`CapabilitySet` is a value type; `ActivatedCapability` stores a seed's role and tier.
+Closed capability vocabulary, manifest roles, catalog and immutable capability sets.
+Personal abilities depend on active companions; utility/vehicle unlocks persist.
+These are traversal capabilities, separate from Unity combat classes.
+
+See [Core overview](../../../README.md) for commands and the Unity boundary.

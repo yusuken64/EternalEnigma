@@ -10,7 +10,7 @@ Open `Assets/Scenes/EnvironmentPlayground.unity`, enter Play Mode, and select **
 - **Frame dungeon** restores the overview; WASD and the mouse wheel pan and zoom.
 - The other playground tabs hide the dungeon and restore playground lighting. The explorer never loads Common or reads/writes campaign saves.
 
-In edit mode, select the `Dungeon theme explorer` object and use **Show / rebuild dungeon**. The menu **Tools → Eternal Enigma → Art → Preview Dungeon Themes** opens the same view. The controls are authored in the playground scene; `DungeonThemeExplorerAuthoring` can reinstall them without rebuilding the gallery.
+In edit mode, select the `Dungeon theme explorer` object and use **Show / rebuild dungeon**. The menu **Tools → Eternal Enigma → Art → Preview Dungeon Themes** opens the same view. The controls are authored in the playground scene. The completed explorer installer has been removed; the inspector and preview command remain.
 
 `DungeonScene` also has an editor-only selector on **DungeonGenerator**. Choose biome, environment, seed, and layout, then **Build theme preview**. **Restore authored Grassland preview** restores the original baked output. Preview geometry and cloned assets are not saved over the scene's authored preview.
 
@@ -31,11 +31,14 @@ common.Travel.EnterLocation(new DungeonEncounterVisualSettings
 
 `EnterTownDungeon` accepts the same optional settings. No current encounter has been reassigned. The generator's encounter settings also support standalone/new unsaved runs.
 
-`DungeonSaveData.VisualSelectionVersion` distinguishes old saves from a resolved selection. The biome and environment are persisted together and retained across floors. Old saves resolve their campaign biome and Interior. Existing interrupted-run recovery still returns to town; this change does not introduce mid-floor combat-state saving.
+`CampaignTravelService` resolves biome/environment at run creation and stores the selection
+directly in `DungeonSaveData.VisualSelection`. Floors reuse it. There is no selection-format
+version or migration. Standalone runs default to Grassland Interior. Interrupted-run recovery
+returns to the entrance; it does not restore mid-floor combat.
 
 ## Presentation and ownership
 
-The catalog is `Assets/Resources/DungeonThemes/Catalog.asset`. Each entry contains regular/throne boundary presets, floor/accent presets, materials, decoration choices, and lighting. Grassland Interior bypasses presentation replacement and uses the original templates, models, materials, and lighting.
+The catalog is `Assets/Resources/DungeonThemes/Catalog.asset`. Each entry contains regular/throne boundary presets, floor/accent presets, materials, decoration choices, and lighting. Starter-layout Grassland Interior uses the original presentation. Biome-layout Grassland enables the themed presentation like other biome profiles.
 
 The other themes replace only build presentation on cloned TWC assets. `DungeonThemeTileLayer` consumes TWC's existing edge, outer-corner, inner-corner, and fill classifications and exclusions. Blueprint stacks, masks, generation dimensions, seeds, placements, navigation, sight, and minimap data remain unchanged.
 
@@ -43,7 +46,9 @@ Output belongs to the existing dungeon output root. Floor changes clear both cre
 
 Decorations use a local integer hash, the existing biome tree picker, and shared materials. There are at most 16 placements in each 32×32-cell chunk. Rotated, centered mesh bounds fit entirely inside blocked cells, including thin throne-room boundaries. Props have no colliders. Water/lava are opaque cosmetic surfaces outside walkways.
 
-New themes use their authored vertical scale; Grassland retains the legacy 3.35 depth scale. With the existing gameplay output position, all new terrain and props stay behind the fog plane at Z = -3.35. No emissive lights or transparent effects bypass fog.
+Themed map roots use unit scale at the origin; ground is offset to Z=0.05 beneath
+unit feet. The original starter presentation retains its depth compensation. Fog and
+visibility remain controlled by gameplay, including skipped offscreen effect playback.
 
 ## Art
 
@@ -54,18 +59,13 @@ Blender MCP produced the crypt quarter-tiles, root mesh, and shared 64×64 mason
 - Reused terrain tiles remain below 300 triangles; selected props are checked against the 120-triangle limit.
 - Existing Grassland dungeon assets are preserved and are exempt from the new-asset triangle limit.
 
-Use **Tools → Eternal Enigma → Dungeon Themes → Install Catalog** to regenerate derived assets from these sources. The catalog and preset assets can also be edited directly. **Capture All Themes** writes all 32 fixed-seed previews.
+Edit the committed catalog and presets directly; the completed installer is removed. **Capture All Themes** remains available.
 
 ## Verification
 
-- CoreIntegration Edit Mode suite: **26 passed**, including five dungeon-theme tests.
-- Dungeon transition and playground explorer Play Mode tests: **2 passed**.
-- Existing environment playground regression tests: **2 passed**, including production town rendering and all previous playground views.
-- The restored authored Grassland screenshot is byte-identical to the pre-integration baseline. Original dungeon templates and tile/preset assets have no changes.
-- All 16 themes were generated in both regular and throne layouts at seed 12345 and visually reviewed, including corners, corridors, and outer boundaries.
-- Tests compare every gameplay mask and all start/stairs/enemy/item/trap/gold placements across themes, verify unchanged source preset references, migration and JSON round-tripping, and resolution without overworld generation.
-- Repeated builds check mesh disposal, one cosmetics root, decoration counts, transformed vertex clearance, and unchanged gameplay random state during presentation builds.
-- In-game transitions cover Interior → Outdoor → Interior, regular → throne, persistent selection, and renderer bounds behind fog.
-- The playground test builds all 32 combinations, checks seed entry, tab visibility, and absence of Common/save access.
+`DungeonThemeTests` checks transformed ground, unchanged gameplay masks, explicit selection
+round-trips and lazy biome lookup. Transition/explorer tests cover repeated builds, output
+ownership, tab/seed controls and isolated playground state. Historical screenshots below
+are reference captures, not a fresh target-device performance certification.
 
 Review images: [regular layouts](Art/Previews/DungeonThemes/ContactSheet_Regular.png), [throne layouts](Art/Previews/DungeonThemes/ContactSheet_Throne.png), and [playground explorer](Art/Previews/DungeonThemes/PlaygroundExplorer.png). Individual theme and gameplay captures are in the same directory. This is functional and visual verification, not a target-device frame-time benchmark.

@@ -1,5 +1,11 @@
 # Game test harness
 
+Current audit: the full Core suite passes 340 tests. Save fixtures now cover only the current
+schema, item stock and campaign state; no migration cases remain. Town layout integration
+compares complete Core options/layers, and campaign service tests exercise vendors and inn
+checkpoint restore. The MCP dependency uses the committed metadata-fixed archive documented
+in [Packages/McpUnityPatch.md](../../Packages/McpUnityPatch.md).
+
 The EditMode assembly also includes `EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests`.
 It generates seed 42 through the imported core DLL, checks its fingerprint against
 the headless golden value, validates the result and starts a campaign session.

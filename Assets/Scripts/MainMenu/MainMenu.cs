@@ -29,7 +29,7 @@ public class MainMenu : MonoBehaviour
         Common.Instance.EndSandbox();
         Common.Instance.Travel.SceneReady();
 		var save = Common.Instance.GameSaveData;
-		if (save != null && !(save.CampaignFormatVersion != 0 && save.Campaign != null && save.Campaign.Finished))
+		if (save != null && !(save.HasCampaign && save.Campaign.Finished))
 		{
 			ContinueButton.gameObject.SetActive(true);
 			ContinueButton.GetComponent<Button>().Select();
@@ -86,9 +86,7 @@ public class MainMenu : MonoBehaviour
 		gameSaveData.TownSaveData.TownSeed = seed;
 
         var supplies = Common.Instance.ItemManager.StartingItems.Select(i => i.AsInventoryItem(null)).ToList();
-        gameSaveData.TownSaveData.Inventory = supplies.Select(i => i.ItemName).ToList();
         gameSaveData.TownSaveData.InventoryItems = ItemSaveData.Capture(supplies);
-        gameSaveData.TownSaveData.InventoryFormatVersion = 1;
 
         var catalog = ClassCatalog.Load();
         if (catalog != null)

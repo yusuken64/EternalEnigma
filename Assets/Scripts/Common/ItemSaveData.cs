@@ -21,7 +21,7 @@ public class ItemSaveData
 public class TownShopSaveData
 {
     public string Key;
-    public int RestockVersion = -1;
+    public int RestockCycle = -1;
     public List<TownStockSaveData> Stock = new();
 }
 

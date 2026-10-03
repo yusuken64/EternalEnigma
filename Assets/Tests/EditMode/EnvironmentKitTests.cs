@@ -24,8 +24,10 @@ namespace EternalEnigma.Tests.CoreIntegration
                 Assert.That(model.Mesh.bounds.max.z, Is.LessThan(.01f), model.Id);
             }
             Assert.That(kit.Palettes.Select(p => p.Props).Distinct().Count(), Is.EqualTo(8));
-            Assert.That(kit.Palettes.All(p => p.Props.mainTexture.width == 64 && p.Ground != null), Is.True);
-            Assert.That(kit.Palettes.All(p => p.Buildings.mainTexture.width == 256), Is.True);
+            Assert.That(kit.Palettes.All(p => p.Props.mainTexture.width == 2048 && p.Ground != null), Is.True);
+            Assert.That(kit.Palettes.All(p => p.Buildings.mainTexture.width == 2048), Is.True);
+            Assert.That(kit.Palettes.All(p => p.Props.mainTexture == p.Buildings.mainTexture), Is.True,
+                "Compatible building/prop families share the same atlas in memory");
             Assert.That(kit.Mesh("SmartHouseEdge").uv.Distinct().Count(),Is.GreaterThan(8),"Facades need projected texture UVs, not point palette UVs");
         }
 
@@ -61,7 +63,9 @@ namespace EternalEnigma.Tests.CoreIntegration
                 Assert.That(creator.worldObject.GetComponentsInChildren<ClusterIdentifier>(),Is.Empty,"Legacy baked TWC clusters must be removed from the scene");
                 var renderers=creator.worldObject.GetComponentsInChildren<MeshRenderer>();
                 Assert.That(renderers.Any(r=>r.sharedMaterial==EnvironmentKit.Load().BuildingMaterial(EternalEnigma.Core.World.OverworldBiome.Grassland)),Is.True);
-                Assert.That(creator.worldObject.GetComponentsInChildren<MeshFilter>().All(f=>AssetDatabase.GetAssetPath(f.sharedMesh).StartsWith("Assets/Art/EnvironmentKit/TownPreview/")),Is.True);
+                // TMP regenerates sign-label meshes on enable; only environment geometry is baked.
+                Assert.That(creator.worldObject.GetComponentsInChildren<MeshFilter>().Where(f=>f.GetComponent("TextMeshPro")==null)
+                    .All(f=>AssetDatabase.GetAssetPath(f.sharedMesh).StartsWith("Assets/Art/EnvironmentKit/TownPreview/")),Is.True);
             }
             finally {UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene,true);}
         }

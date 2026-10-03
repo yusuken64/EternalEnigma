@@ -1,0 +1,222 @@
+{
+  "views": 54,
+  "differences": {},
+  "textureBytes": {
+    "Dungeon_Grassland_Interior_Regular": {
+      "before": 36648,
+      "after": 39151584
+    },
+    "Dungeon_Grassland_Interior_Throne": {
+      "before": 35632,
+      "after": 27965824
+    },
+    "Dungeon_Grassland_Outdoor_Regular": {
+      "before": 39720,
+      "after": 36354432
+    },
+    "Dungeon_Grassland_Outdoor_Throne": {
+      "before": 30640,
+      "after": 27965824
+    },
+    "Dungeon_Desert_Interior_Regular": {
+      "before": 36648,
+      "after": 39151584
+    },
+    "Dungeon_Desert_Interior_Throne": {
+      "before": 35632,
+      "after": 27965824
+    },
+    "Dungeon_Desert_Outdoor_Regular": {
+      "before": 39720,
+      "after": 36354432
+    },
+    "Dungeon_Desert_Outdoor_Throne": {
+      "before": 30640,
+      "after": 27965824
+    },
+    "Dungeon_Water_Interior_Regular": {
+      "before": 36648,
+      "after": 39151584
+    },
+    "Dungeon_Water_Interior_Throne": {
+      "before": 35632,
+      "after": 27965824
+    },
+    "Dungeon_Water_Outdoor_Regular": {
+      "before": 39720,
+      "after": 36354432
+    },
+    "Dungeon_Water_Outdoor_Throne": {
+      "before": 30640,
+      "after": 27965824
+    },
+    "Dungeon_Mountain_Interior_Regular": {
+      "before": 36648,
+      "after": 39151584
+    },
+    "Dungeon_Mountain_Interior_Throne": {
+      "before": 35632,
+      "after": 27965824
+    },
+    "Dungeon_Mountain_Outdoor_Regular": {
+      "before": 39720,
+      "after": 36354432
+    },
+    "Dungeon_Mountain_Outdoor_Throne": {
+      "before": 38704,
+      "after": 27965824
+    },
+    "Dungeon_Forest_Interior_Regular": {
+      "before": 36648,
+      "after": 39151584
+    },
+    "Dungeon_Forest_Interior_Throne": {
+      "before": 35632,
+      "after": 27965824
+    },
+    "Dungeon_Forest_Outdoor_Regular": {
+      "before": 39720,
+      "after": 36354432
+    },
+    "Dungeon_Forest_Outdoor_Throne": {
+      "before": 38704,
+      "after": 27965824
+    },
+    "Dungeon_Tundra_Interior_Regular": {
+      "before": 41640,
+      "after": 39151584
+    },
+    "Dungeon_Tundra_Interior_Throne": {
+      "before": 35632,
+      "after": 27965824
+    },
+    "Dungeon_Tundra_Outdoor_Regular": {
+      "before": 39720,
+      "after": 36354432
+    },
+    "Dungeon_Tundra_Outdoor_Throne": {
+      "before": 30640,
+      "after": 27965824
+    },
+    "Dungeon_Marsh_Interior_Regular": {
+      "before": 41640,
+      "after": 39151584
+    },
+    "Dungeon_Marsh_Interior_Throne": {
+      "before": 40624,
+      "after": 27965824
+    },
+    "Dungeon_Marsh_Outdoor_Regular": {
+      "before": 39720,
+      "after": 36354432
+    },
+    "Dungeon_Marsh_Outdoor_Throne": {
+      "before": 38704,
+      "after": 27965824
+    },
+    "Dungeon_Volcanic_Interior_Regular": {
+      "before": 41640,
+      "after": 39151584
+    },
+    "Dungeon_Volcanic_Interior_Throne": {
+      "before": 40624,
+      "after": 27965824
+    },
+    "Dungeon_Volcanic_Outdoor_Regular": {
+      "before": 44712,
+      "after": 36354432
+    },
+    "Dungeon_Volcanic_Outdoor_Throne": {
+      "before": 43696,
+      "after": 27965824
+    },
+    "Town_Grassland": {
+      "before": 3056937,
+      "after": 32861024
+    },
+    "Town_Desert": {
+      "before": 3056937,
+      "after": 32861024
+    },
+    "Town_Water": {
+      "before": 3056937,
+      "after": 32861024
+    },
+    "Town_Mountain": {
+      "before": 3056937,
+      "after": 32861024
+    },
+    "Town_Forest": {
+      "before": 3056937,
+      "after": 32861024
+    },
+    "Town_Tundra": {
+      "before": 3056937,
+      "after": 32861024
+    },
+    "Town_Marsh": {
+      "before": 3056937,
+      "after": 32861024
+    },
+    "Town_Volcanic": {
+      "before": 3056937,
+      "after": 32861024
+    },
+    "Overworld": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Grassland": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Desert": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Water": {
+      "before": 6413339,
+      "after": 86146483
+    },
+    "Overworld_Mountain": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Forest": {
+      "before": 6413339,
+      "after": 86146483
+    },
+    "Overworld_Tundra": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Marsh": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Volcanic": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Coast": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Bridge": {
+      "before": 6413339,
+      "after": 86146483
+    },
+    "Overworld_Settlement": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Mountains": {
+      "before": 6442907,
+      "after": 97332243
+    },
+    "Overworld_Road": {
+      "before": 6442907,
+      "after": 97332243
+    }
+  }
+}

@@ -55,13 +55,13 @@ The initial audit is in `EnvironmentAudit.md`; measured imported counts are in `
 - Base buildings: 188–292 triangles. Static, one submesh/material, no bones or colliders.
 - Mountain quarter pieces: 2 triangles for fill, 8 for faceted edges/corners. Three tiers; broad exposed faces with dark rock facets.
 - Summit smart quarters: 8 triangles each. Edge, outer corner, inner corner, and fill form joined rocky spikes with low saddles. Old standalone peak/ridge/spire meshes remain available in the gallery; production generation uses the smart summit layer.
-- Building textures: eight 256x256 biome atlases with plaster panels, diagonal timber framing, wood grain, stone plinths, and roof courses. One material per model; texture detail adds no triangles.
+- Building textures: eight 2048x2048 painted biome atlases with padded plaster, timber, stone, roof and foliage regions. Environment props share these textures through their existing materials. One material per model; texture detail adds no triangles.
 - Smart house quarters: 8–108 triangles, including timber facades and windows.
 - Bordered road quarters: 4–23 triangles. Raised curbs appear on exposed borders, with open joins through intersections. One cobble/curb atlas and one material.
 - Connected wall pieces: 24–120 triangles. Isolated post, end, straight, corner, T, and cross.
 - Shore pieces: 2 triangles. Interior fill is deliberately omitted.
 - Surrounding ocean: 8 triangles for water and 8 for the noise overlay, plus the coastline tiles. Default margin: 128 cells.
-- Biome prop palettes: eight 64×64 textures. Paving, road atlas, waves, and macro-noise: 128×128 each. Built-in render pipeline shaders.
+- Painted paving, roads, biome ground, masonry and water surfaces are 1024×1024 with mipmaps and trilinear filtering. The animated ocean/shore shaders and macro-noise masks are retained. See [painted environment surfaces](PaintedEnvironment.md) for source art, UV mapping, capture protocol and verification.
 - Cosmetics are capped at 48 props per 32-cell chunk and 120,000 triangles across the map. Summit geometry is a separate smart layer with 32 triangles per occupied cell. Paths, bridges, towns, locks, start cells, and location entrances are protected. Coordinate hashes keep decoration deterministic without consuming gameplay RNG.
 - Meshes remain CPU-readable for combining. Result meshes are grouped by 32-cell area and shared material. Triangle budgets are not an FPS guarantee; profile target hardware at the intended zoom.
 

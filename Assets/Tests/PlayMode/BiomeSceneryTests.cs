@@ -13,8 +13,9 @@ namespace EternalEnigma.Tests
     public sealed class BiomeSceneryTests
     {
         GameTestHarness harness;
-        [UnitySetUp] public IEnumerator Setup() { harness=new GameTestHarness();yield return harness.LoadDungeon(new TestScenario()); }
-        [UnityTearDown] public IEnumerator Cleanup() => harness.Cleanup();
+        bool? previousControl;
+        [UnitySetUp] public IEnumerator Setup() { previousControl=DungeonPreferences.FullControlOverride;DungeonPreferences.FullControlOverride=false;harness=new GameTestHarness();yield return harness.LoadDungeon(new TestScenario()); }
+        [UnityTearDown] public IEnumerator Cleanup() {yield return harness.Cleanup();DungeonPreferences.FullControlOverride=previousControl;}
 
         [UnityTest]
         public IEnumerator DamageOpeningHazardsAndTransitions()

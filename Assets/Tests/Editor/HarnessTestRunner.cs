@@ -20,6 +20,20 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Painted Environment EditMode")]
+    public static void RunPaintedEnvironmentEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests","EternalEnigma.Tests.CoreIntegration.DungeonThemeTests",
+        "EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests","EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests",
+        "EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests","EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests",
+        "EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests","EternalEnigma.Tests.CoreIntegration.BiomePreviewTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Painted Environment PlayMode")]
+    public static void RunPaintedEnvironmentPlayMode() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonThemeTransitionTests","EternalEnigma.Tests.DungeonThemeExplorerTests","EternalEnigma.Tests.EnvironmentPlaygroundTests",
+        "EternalEnigma.Tests.BiomeDecorationVisibilityTests","EternalEnigma.Tests.BiomeSceneryTests","EternalEnigma.Tests.CampaignTravelTests","EternalEnigma.Tests.OverworldSceneTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Painted Environment Regression")]
+    public static void RunPaintedEnvironmentRegression() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.EnvironmentPlaygroundTests.ProductionTownUsesDetailedSmartHousesWithoutLegacyClusters",
+        "EternalEnigma.Tests.BiomeSceneryTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Trainer EditMode")]
     public static void RunTrainerEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "TrainerOfferTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Trainer PlayMode")]

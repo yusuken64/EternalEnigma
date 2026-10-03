@@ -8,8 +8,9 @@ source is `ArtSource/DungeonProps/DungeonProps.blend`; FBX exports live in
 Edit the retained Blender source and export its meshes, then use Unity's
 **Tools > Eternal Enigma > Art > Import Dungeon Props**. The importer preserves
 asset GUIDs, merges all material submeshes, and converts models to XY ground with
-negative-Z height. A shared palette material retains the modeled wood, iron,
-stone, crystal and foliage colors. Runtime models fit within their cells without
+negative-Z height. Run **Painted Environment > Integrate** after this legacy importer
+to restore the painted atlas and projected UVs. The shared material retains the modeled wood, iron,
+stone, crystal and foliage colors with painted surface detail. Runtime models fit within their cells without
 adding physics colliders; the existing grid rules still control interaction,
 blocking, damage, drops and hazards.
 

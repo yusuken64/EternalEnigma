@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using EternalEnigma.Core.World;
 using UnityEngine;
 
-// Small, owned palette-mapped meshes; no collider or imported-asset mutation.
+// Small, owned meshes mapped to the environment atlas; no collider or imported-asset mutation.
 internal static class DungeonSceneryGeometry
 {
     internal static Mesh Build(DungeonSceneryKind kind, OverworldBiome biome)
@@ -11,7 +11,16 @@ internal static class DungeonSceneryGeometry
         void Quad(Vector3 a,Vector3 b,Vector3 c,Vector3 d,Vector2 color)
         {
             int n=vertices.Count;vertices.AddRange(new[]{a,b,c,d});
-            uv.AddRange(new[]{color,color,color,color});triangles.AddRange(new[]{n,n+1,n+2,n,n+2,n+3});
+            var normal=Vector3.Cross(b-a,c-a);
+            int cx=Mathf.Clamp((int)(color.x*4),0,3),cy=Mathf.Clamp((int)(color.y*4),0,3);
+            foreach(var p in new[]{a,b,c,d})
+            {
+                Vector2 projected=Mathf.Abs(normal.z)>=Mathf.Max(Mathf.Abs(normal.x),Mathf.Abs(normal.y))
+                    ?new Vector2(p.x,p.y):Mathf.Abs(normal.x)>Mathf.Abs(normal.y)?new Vector2(p.y,-p.z):new Vector2(p.x,-p.z);
+                projected=(projected+Vector2.one)*.5f;
+                uv.Add(new Vector2((cx+.065f+Mathf.Clamp01(projected.x)*.87f)/4,(cy+.065f+Mathf.Clamp01(projected.y)*.87f)/4));
+            }
+            triangles.AddRange(new[]{n,n+1,n+2,n,n+2,n+3});
         }
         void Box(Vector3 center,Vector3 size,Vector2 color)
         {

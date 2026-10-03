@@ -1,0 +1,20 @@
+{
+    "runId": "fa62e5aeb4ef4ee483a2d8ef08898ad0",
+    "mode": "EditMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.EditMode",
+    "testFilters": [
+        "EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests",
+        "EternalEnigma.Tests.CoreIntegration.DungeonThemeTests",
+        "EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests",
+        "EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests",
+        "EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests",
+        "EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests",
+        "EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests",
+        "EternalEnigma.Tests.CoreIntegration.BiomePreviewTests"
+    ],
+    "passed": 40,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/EditMode.xml"
+}

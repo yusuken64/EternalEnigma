@@ -97,11 +97,11 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
                     uv.Add(new Vector2(x*size/8,y*size/8));uv.Add(new Vector2((x+1)*size/8,y*size/8));
                     uv.Add(new Vector2((x+1)*size/8,(y+1)*size/8));uv.Add(new Vector2(x*size/8,(y+1)*size/8));
                 }
-                else {uv.Add(new Vector2(0, 0)); uv.Add(new Vector2(1, 0)); uv.Add(new Vector2(1, 1)); uv.Add(new Vector2(0, 1));}
+                else {uv.Add(new Vector2(x, y)); uv.Add(new Vector2(x+1, y)); uv.Add(new Vector2(x+1, y+1)); uv.Add(new Vector2(x, y+1));}
                 if (raised)
                 {
                     vertices.Add(new Vector3(x * size, y * size, z - size * .22f));
-                    uv.Add(new Vector2(.5f, .5f));
+                    uv.Add(new Vector2(x+.5f, y+.5f));
                     triangles.AddRange(new[] { first,first+4,first+1, first+1,first+4,first+2,
                         first+2,first+4,first+3, first+3,first+4,first });
                 }

@@ -8,13 +8,15 @@ internal static class OverworldTownVisuals
     public static void Build(OverworldGrid grid, Transform parent, float cellSize,
         Material stone, Material paving, List<Mesh> ownedMeshes)
     {
+        var kit=EnvironmentKit.Load();
         foreach (var town in grid.TownFootprints)
         {
+            var biome=grid.BiomeAt(town.Entrance)??OverworldBiome.Grassland;
             var root = new GameObject("Town " + town.LocationId);
             root.transform.SetParent(parent, false);
             root.transform.localPosition = new Vector3(town.Entrance.X, town.Entrance.Y, 0) * cellSize;
-            var walls = new Geometry(town, cellSize, grid.BiomeAt(town.Entrance)??OverworldBiome.Grassland);
-            var roofs = new Geometry(town, cellSize);
+            var walls = new Geometry(town, cellSize, biome, kit!=null?3:-1);
+            var roofs = new Geometry(town, cellSize, biome, kit!=null?4:-1);
             var floor = new Geometry(town, cellSize);
             floor.Box(-2.5f, 2.5f, -.5f, 4.5f, .012f, .03f);
 
@@ -47,9 +49,9 @@ internal static class OverworldTownVisuals
                 walls.Box(house.x - .48f, house.x + .48f, house.y - .45f, house.y + .45f, .03f, .65f);
                 roofs.Roof(house.x, house.y, .58f, .55f, .65f, 1.05f);
             }
-            floor.Render("Courtyard", root.transform, paving != null ? paving : stone, new Color(.73f, .66f, .49f), ownedMeshes);
-            walls.Render("Walls and houses", root.transform, stone, new Color(.66f, .65f, .58f), ownedMeshes);
-            roofs.Render("Roofs", root.transform, stone, new Color(.18f, .48f, .3f), ownedMeshes);
+            floor.Render("Courtyard", root.transform, paving != null ? paving : stone, new Color(.90f, .87f, .80f), ownedMeshes);
+            walls.Render("Walls and houses", root.transform, kit!=null?kit.BuildingMaterial(biome):stone, Color.white, ownedMeshes);
+            roofs.Render("Roofs", root.transform, kit!=null?kit.BuildingMaterial(biome):stone, Color.white, ownedMeshes);
         }
     }
 
@@ -58,19 +60,31 @@ internal static class OverworldTownVisuals
         private readonly GridTown town;
         private readonly float size;
         private readonly OverworldBiome biome;
+        private readonly int atlasRegion;
         private readonly List<Vector3> vertices = new();
         private readonly List<int> triangles = new();
         private readonly List<Vector2> uv = new();
-        public Geometry(GridTown town, float size, OverworldBiome biome=OverworldBiome.Grassland) { this.town = town; this.size = size; this.biome=biome; }
+        public Geometry(GridTown town, float size, OverworldBiome biome=OverworldBiome.Grassland,int atlasRegion=-1) { this.town = town; this.size = size; this.biome=biome; this.atlasRegion=atlasRegion; }
 
         private void Face(params Vector3[] points)
         {
             int first = vertices.Count;
+            var normal=Vector3.Cross(points[1]-points[0],points[2]-points[0]);
+            Vector2 Project(Vector3 p)=>Mathf.Abs(normal.z)>=Mathf.Max(Mathf.Abs(normal.x),Mathf.Abs(normal.y))?new Vector2(p.x,p.y):Mathf.Abs(normal.x)>Mathf.Abs(normal.y)?new Vector2(p.y,p.z):new Vector2(p.x,p.z);
+            var min=Project(points[0]);var max=min;
+            foreach(var point in points) {min=Vector2.Min(min,Project(point));max=Vector2.Max(max,Project(point));}
             foreach (var p in points)
             {
                 vertices.Add(new Vector3(-town.Inward.Y * p.x + town.Inward.X * p.y,
                     town.Inward.X * p.x + town.Inward.Y * p.y, -p.z) * size);
-                uv.Add(new Vector2(p.x + p.y, p.z));
+                var projected=Project(p);
+                if(atlasRegion>=0)
+                {
+                    var span=max-min;
+                    projected=new Vector2((projected.x-min.x)/Mathf.Max(span.x,.001f),(projected.y-min.y)/Mathf.Max(span.y,.001f));
+                    projected=new Vector2((atlasRegion%4+.065f+projected.x*.87f)/4,(atlasRegion/4+.065f+projected.y*.87f)/4);
+                }
+                uv.Add(projected);
             }
             // Side/depth/height -> game XY/-Z has positive determinant.
             for (int i = 1; i < points.Length - 1; i++)

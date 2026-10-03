@@ -1,0 +1,8 @@
+{
+  "suite": "EternalEnigma.Core.Tests",
+  "passed": 343,
+  "failed": 0,
+  "skipped": 0,
+  "duration": "2m33s",
+  "command": "dotnet test Core/EternalEnigma.Core/EternalEnigma.Core.Tests/EternalEnigma.Core.Tests.csproj --verbosity quiet"
+}

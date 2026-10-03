@@ -1,0 +1,18 @@
+{
+  "Environment": {
+    "objects": 69,
+    "positionsPolygonsTransformsUnchanged": true
+  },
+  "DungeonProps": {
+    "objects": 10,
+    "positionsPolygonsTransformsUnchanged": true
+  },
+  "BiomeDecorations": {
+    "objects": 49,
+    "positionsPolygonsTransformsUnchanged": true
+  },
+  "FantasyTraps": {
+    "objects": 21,
+    "positionsPolygonsTransformsUnchanged": true
+  }
+}

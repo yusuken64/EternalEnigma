@@ -52,7 +52,7 @@ visibility remain controlled by gameplay, including skipped offscreen effect pla
 
 ## Art
 
-Blender MCP produced the crypt quarter-tiles, root mesh, and shared 64×64 masonry, moss, ice, and ember textures. Exported mesh data is retained in `Assets/Art/DungeonThemes/Source/Modules.json`; Unity MCP ran the installer that authored Unity meshes, materials, prefabs, and presets.
+Blender MCP produced the crypt quarter-tiles and root mesh. The [painted environment pass](Art/PaintedEnvironment.md) replaces the former 64×64 surface patterns with 1024×1024 painted stone and terrain, separates quiet floor slabs from wall masonry, and shares compatible 2048×2048 atlases with towns and the overworld. Exported mesh data and updated crypt UVs are retained in `Assets/Art/DungeonThemes/Source/Modules.json`; existing catalog and preset references remain stable.
 
 - Crypt edge/outer/inner: 8 triangles; fill: 2.
 - Root prop: 48 triangles; root-covered tiles: at most 56.

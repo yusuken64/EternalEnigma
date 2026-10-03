@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-03 21:45:20Z" end-time="2026-10-03 21:45:36Z" duration="16.8368614">
+  <test-suite type="TestSuite" id="1296" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="243" result="Passed" start-time="2026-10-03 21:45:20Z" end-time="2026-10-03 21:45:36Z" duration="16.836861" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1290" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="243" result="Passed" start-time="2026-10-03 21:45:20Z" end-time="2026-10-03 21:45:36Z" duration="16.804911" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="31704" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1291" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="224" result="Passed" start-time="2026-10-03 21:45:20Z" end-time="2026-10-03 21:45:36Z" duration="16.796221" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1292" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="224" result="Passed" start-time="2026-10-03 21:45:20Z" end-time="2026-10-03 21:45:36Z" duration="16.788602" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1057" name="BiomeSceneryTests" fullname="EternalEnigma.Tests.BiomeSceneryTests" classname="EternalEnigma.Tests.BiomeSceneryTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-03 21:45:20Z" end-time="2026-10-03 21:45:33Z" duration="13.856374" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1058" name="DamageOpeningHazardsAndTransitions" fullname="EternalEnigma.Tests.BiomeSceneryTests.DamageOpeningHazardsAndTransitions" methodname="DamageOpeningHazardsAndTransitions" classname="EternalEnigma.Tests.BiomeSceneryTests" runstate="Runnable" seed="1766705400" result="Passed" start-time="2026-10-03 21:45:20Z" end-time="2026-10-03 21:45:33Z" duration="13.828662" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1152" name="EnvironmentPlaygroundTests" fullname="EternalEnigma.Tests.EnvironmentPlaygroundTests" classname="EternalEnigma.Tests.EnvironmentPlaygroundTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-03 21:45:33Z" end-time="2026-10-03 21:45:36Z" duration="2.925144" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1153" name="ProductionTownUsesDetailedSmartHousesWithoutLegacyClusters" fullname="EternalEnigma.Tests.EnvironmentPlaygroundTests.ProductionTownUsesDetailedSmartHousesWithoutLegacyClusters" methodname="ProductionTownUsesDetailedSmartHousesWithoutLegacyClusters" classname="EternalEnigma.Tests.EnvironmentPlaygroundTests" runstate="Runnable" seed="680403177" result="Passed" start-time="2026-10-03 21:45:33Z" end-time="2026-10-03 21:45:36Z" duration="2.915047" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 12345
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Saving results to: Temp/HarnessResults/PlayMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -26,6 +26,20 @@ public sealed class EnvironmentBatch
         {
             var mesh = new Mesh { name = "Environment chunk", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
             mesh.CombineMeshes(pair.Value.ToArray(), true, true, false); mesh.RecalculateBounds();
+            // Project after combining so adjacent/rotated modules share a continuous surface.
+            // Atlas props retain authored UVs; only explicitly tagged painted surfaces opt in.
+            string projection = pair.Key.Item3.GetTag("EnvironmentProjection", false, "");
+            if (projection.Length != 0)
+            {
+                var vertices = mesh.vertices; var normals = mesh.normals; var uv = new Vector2[vertices.Length];
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    var p = vertices[i] / 2.5f; var n = normals[i];
+                    uv[i] = projection == "Planar" || Mathf.Abs(n.z) >= Mathf.Max(Mathf.Abs(n.x), Mathf.Abs(n.y))
+                        ? new Vector2(p.x, p.y) : Mathf.Abs(n.x) > Mathf.Abs(n.y) ? new Vector2(p.y, -p.z) : new Vector2(p.x, -p.z);
+                }
+                mesh.uv = uv;
+            }
             owner.Meshes.Add(mesh);
             var obj = new GameObject($"Cosmetic {pair.Key.Item1},{pair.Key.Item2} {pair.Key.Item3.name}");
             obj.transform.SetParent(parent, false); obj.AddComponent<MeshFilter>().sharedMesh = mesh;

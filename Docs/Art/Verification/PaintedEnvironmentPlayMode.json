@@ -1,0 +1,19 @@
+{
+    "runId": "ba6f372d0c4f42db9051f3be9d691810",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [
+        "EternalEnigma.Tests.DungeonThemeTransitionTests",
+        "EternalEnigma.Tests.DungeonThemeExplorerTests",
+        "EternalEnigma.Tests.EnvironmentPlaygroundTests",
+        "EternalEnigma.Tests.BiomeDecorationVisibilityTests",
+        "EternalEnigma.Tests.BiomeSceneryTests",
+        "EternalEnigma.Tests.CampaignTravelTests",
+        "EternalEnigma.Tests.OverworldSceneTests"
+    ],
+    "passed": 12,
+    "failed": 6,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/PlayMode.xml"
+}

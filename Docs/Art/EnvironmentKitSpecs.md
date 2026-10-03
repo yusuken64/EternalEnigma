@@ -3,7 +3,7 @@
 The table records imported mesh measurements retained with the committed kit. Core-sized
 towns reuse these assets; changed town dimensions affect instance counts, not per-mesh budgets.
 
-Blender-generated assets; Unity mesh counts after import. XY ground, negative-Z height, base-centered pivot. Static, no bones, no colliders. Palette UVs; shared materials. CPU read access is retained for TWC chunk combining.
+Blender-generated assets; Unity mesh counts after import. XY ground, negative-Z height, base-centered pivot. Static, no bones, no colliders. Painted atlas UVs; shared materials. CPU read access is retained for TWC chunk combining. The [painted surface pass](PaintedEnvironment.md) preserves every recorded mesh budget below.
 
 | Model | Triangles | Vertices | Unity bounds |
 |---|---:|---:|---|

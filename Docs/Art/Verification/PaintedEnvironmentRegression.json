@@ -1,0 +1,14 @@
+{
+    "runId": "f2c642ee80274478b5a7839c525d2850",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [
+        "EternalEnigma.Tests.EnvironmentPlaygroundTests.ProductionTownUsesDetailedSmartHousesWithoutLegacyClusters",
+        "EternalEnigma.Tests.BiomeSceneryTests"
+    ],
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/PlayMode.xml"
+}

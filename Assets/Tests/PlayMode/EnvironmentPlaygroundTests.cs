@@ -31,7 +31,7 @@ namespace EternalEnigma.Tests
             Assert.That(owner.PropCount,Is.GreaterThan(0));
             var material=EnvironmentKit.Load().BuildingMaterial(creator.GetComponent<TownBiomeStyle>().Current);
             Assert.That(owner.GetComponentsInChildren<MeshRenderer>().All(r=>r.sharedMaterial==material),Is.True);
-            Assert.That(material.mainTexture.width,Is.EqualTo(256));
+            Assert.That(material.mainTexture.width,Is.EqualTo(2048));
         }
         [UnityTest]
         public IEnumerator AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates()

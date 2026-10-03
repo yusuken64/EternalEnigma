@@ -100,7 +100,8 @@ public static class DungeonPresentation
         foreach(var definition in floor.Scenery)
         {
             var prop=DungeonProp.Create(dungeon,definition,theme);
-            prop.GetComponent<FogHiddenVisual>().enabled=false;
+            var fog = prop.GetComponent<FogHiddenVisual>();
+            if (fog != null) fog.enabled = false;
         }
     }
     public static void Decorate(TileWorldCreator creator,DungeonFloor floor,DungeonTheme theme)

@@ -210,11 +210,13 @@ public class TrainerOfferTests
     {
         var ally = MakeAlly();
         ally.PrimaryClass = MakeClass();
-        ally.HighestLevel = 4; // 8 points
+        ally.HighestLevel = 10; // Rank four is level-eligible; test the point gate independently.
         ally.EnsureStartingSkills();
-        Assert.AreEqual(8, TrainerOffers.AvailablePoints(ally)); // Novice Training is free
+        Assert.AreEqual(20, TrainerOffers.AvailablePoints(ally)); // Novice Training is free
 
         ally.SetRank("T Strike", 3); // 1 + 2 + 3
+        ally.SetRank("T Guard", 3);
+        ally.SetRank("T Parry", 3);
         Assert.AreEqual(2, TrainerOffers.AvailablePoints(ally));
         var offers = TrainerOffers.Build(ally, MakeTown());
         var strike = offers.First(o => o.Skill.SkillName == "T Strike");
@@ -224,7 +226,7 @@ public class TrainerOfferTests
 
         // Forgetting clears everything but the starting skill: all points are back.
         ally.ForgetAllSkills();
-        Assert.AreEqual(8, TrainerOffers.AvailablePoints(ally));
+        Assert.AreEqual(20, TrainerOffers.AvailablePoints(ally));
         Assert.AreEqual(1, ally.GetRank("T Novice"));
         Assert.AreEqual(0, ally.GetRank("T Strike"));
     }
@@ -259,7 +261,7 @@ public class TrainerOfferTests
     }
 
     [Test]
-    public void AllowlistFiltersClassOffers()
+    public void TownAllowlistDoesNotFilterClassOffers()
     {
         var ally = MakeAlly();
         var cls = MakeClass();
@@ -269,9 +271,28 @@ public class TrainerOfferTests
         var strikeSkill = cls.Skills.First(s => s.Skill.SkillName == "T Strike").Skill;
         var offers = TrainerOffers.Build(ally, MakeTown(strikeSkill));
 
-        // Build returns exactly one offer, T Strike
-        Assert.AreEqual(1, offers.Count);
-        Assert.AreEqual("T Strike", offers[0].Skill.SkillName);
+        Assert.AreEqual(cls.Skills.Count, offers.Count);
+        Assert.AreEqual(SkillKind.Mastery, offers[0].Kind);
+        var adept = offers.First(o => o.Skill.SkillName == "T Adept");
+        Assert.AreEqual(10, adept.TierRequiredLevel);
+        Assert.AreEqual(10, adept.NextRequiredLevel);
+    }
+
+    [Test]
+    public void SecondaryOffersExcludeMasteriesHighTiersAndDuplicatesAndCapRank()
+    {
+        var ally = MakeAlly();
+        ally.PrimaryClass = MakeClass();
+        ally.SecondaryClass = MakeClass();
+        ally.SecondaryClass.Id = "secondary";
+        foreach (var entry in ally.SecondaryClass.Skills) entry.Skill.SkillName = "Secondary " + entry.Skill.SkillName;
+        ally.SecondaryClass.Skills.Add(ally.PrimaryClass.Skills[1]);
+        var offers = TrainerOffers.Build(ally, MakeTown(MakeSkill("Unrelated")));
+        var secondary = offers.Where(o => o.Source == ClassSource.Secondary).ToList();
+        Assert.AreEqual(4, secondary.Count);
+        Assert.IsTrue(secondary.All(o => o.Tier <= 2 && o.Kind != SkillKind.Mastery && o.MaxRank == 3));
+        Assert.AreEqual(1, offers.Count(o => o.Skill.SkillName == "T Strike"));
+        Assert.AreEqual(ClassSource.Primary, offers.First(o => o.Skill.SkillName == "T Strike").Source);
     }
 
     [Test]

@@ -142,7 +142,13 @@ public sealed class AutoplayRunner : MonoBehaviour
         Report = new AutoplayReport { Options = options, EligibleForBalance = !options.DebugPlaythrough,
             InfiniteStrength = options.DebugPlaythrough && options.Godmode,
             StartedUtc = DateTime.UtcNow.ToString("O"), GameVersion = Application.version,
-            BuildId = typeof(Game).Assembly.ManifestModule.ModuleVersionId.ToString(), UnityVersion = Application.unityVersion };
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // Assembly.ManifestModule is unsupported in the WebGL IL2CPP runtime.
+            BuildId = Application.buildGUID,
+#else
+            BuildId = typeof(Game).Assembly.ManifestModule.ModuleVersionId.ToString(),
+#endif
+            UnityVersion = Application.unityVersion };
         Application.logMessageReceived += OnLog;
         AllySkillPolicy.Cast += RecordSkillCast;
         Time.timeScale = Options.Speed;

@@ -2,8 +2,9 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class SkillGridItem : MonoBehaviour
+public class SkillGridItem : MonoBehaviour, ISelectHandler
 {
 	public TextMeshProUGUI SkillText;
 	public Button GridButton;
@@ -18,6 +19,9 @@ public class SkillGridItem : MonoBehaviour
 	private float clickCooldownSeconds;
 
 	public Action SkillToggledCallback { get; internal set; }
+    public Action<SkillGridItem> SelectedCallback { get; internal set; }
+    public TrainerOffer Offer => _data?.Offer;
+    public void OnSelect(BaseEventData eventData) => SelectedCallback?.Invoke(this);
 	public BallistaPurchaseDialog BallistaPurchaseDialog { get; internal set; }
 
 	private void Update()
@@ -34,7 +38,12 @@ public class SkillGridItem : MonoBehaviour
 
 		clickCooldownSeconds = 0.4f;
 		var offer = _data.Offer;
-		if (offer == null || offer.IsMaxed) return;
+        if (offer == null) return;
+        if (offer.IsMaxed)
+        {
+            TownMenu.ShowMessage("Already at maximum rank.");
+            return;
+        }
 		if (!offer.CanLearn)
 		{
 			TownMenu.ShowMessage(string.IsNullOrEmpty(offer.LockReason) ? "This skill cannot be learned." : offer.LockReason);
@@ -49,6 +58,7 @@ public class SkillGridItem : MonoBehaviour
 			return;
 		}
 		BallistaPurchaseDialog.Setup(offer.Skill, offer.CurrentRank + 1, offer.NextCost, offer.UsesPoints);
+        BallistaPurchaseDialog.CloseAction = () => SkillToggledCallback?.Invoke();
 		BallistaPurchaseDialog.PurcahseCallBack = () =>
 		{
 			var town = FindFirstObjectByType<Town>();
@@ -57,7 +67,7 @@ public class SkillGridItem : MonoBehaviour
 				TownMenu.ShowMessage(reason);
 				return;
 			}
-			SkillToggledCallback?.Invoke();
+            SkillToggledCallback?.Invoke();
 		};
 	}
 

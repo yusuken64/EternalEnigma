@@ -20,6 +20,11 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Trainer EditMode")]
+    public static void RunTrainerEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "TrainerOfferTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Trainer PlayMode")]
+    public static void RunTrainerPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownTrainerRankTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Floor Fix EditMode")]
     public static void RunDungeonFloorFixEditMode()=>Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode",
         "EternalEnigma.Tests.CoreIntegration.DungeonThemeTests","EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests");

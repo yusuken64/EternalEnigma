@@ -7,6 +7,10 @@ public sealed class TrainerOffer
 {
     public Skill Skill;
     public int Tier = 1;
+    public SkillKind Kind;
+    public int TierRequiredLevel = 1;
+    public int NextRequiredLevel;
+    public string Prerequisites = "";
     public int CurrentRank;          // 0 = not learned
     public int MaxRank = 1;
     public int NextCost;             // skill points for the next rank (gold for the classless fallback)
@@ -24,7 +28,7 @@ public static class TrainerOffers
 {
     public static List<TrainerOffer> Build(TownAlly ally, TownConfiguration configuration)
     {
-        if (ally == null || configuration == null) return new List<TrainerOffer>();
+        if (ally == null || (ally.PrimaryClass == null && configuration == null)) return new List<TrainerOffer>();
         return ally.PrimaryClass == null ? BuildFallback(ally, configuration) : BuildForClass(ally, configuration);
     }
 
@@ -62,19 +66,20 @@ public static class TrainerOffers
         var kit = HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass);
         var learned = ally.ToLearnedSkills();
         int points = SkillLearningRules.AvailablePoints(kit, learned, ally.HighestLevel);
-        var allow = configuration.LearnableSkills.Where(s => s != null).Select(s => s.SkillName).ToHashSet();
         var rows = new List<(int order, TrainerOffer offer)>();
         int order = 0;
         foreach (var offer in SkillLearningRules.Offers(kit))
         {
             var skill = Resolve(offer.Source == ClassSource.Primary ? ally.PrimaryClass : ally.SecondaryClass, offer.SkillId);
             if (skill == null) continue;
-            if (allow.Count > 0 && !allow.Contains(skill.SkillName)) continue;
             var check = SkillLearningRules.CheckNextRank(kit, learned, ally.HighestLevel, offer.SkillId, skill.LearnCost, points);
             int current = ally.GetRank(offer.SkillId);
             rows.Add((order++, new TrainerOffer
             {
                 Skill = skill, Tier = offer.Tier, CurrentRank = current, MaxRank = offer.MaxRank,
+                Kind = offer.Kind, TierRequiredLevel = SkillLearningRules.TierUnlockLevel(offer.Tier),
+                NextRequiredLevel = current >= offer.MaxRank ? 0 : SkillLearningRules.RequiredLevel(offer.Tier, current + 1),
+                Prerequisites = Prerequisites(kit, offer),
                 NextCost = check.Cost, CanLearn = check.Allowed,
                 LockReason = check.Allowed || current >= offer.MaxRank ? "" : check.Reason,
                 HasClass = true, Source = offer.Source,
@@ -86,4 +91,14 @@ public static class TrainerOffers
 
     private static Skill Resolve(ClassDefinition definition, string skillId) =>
         definition?.Skills?.FirstOrDefault(e => e != null && e.Skill != null && e.Skill.SkillName == skillId)?.Skill;
+
+    private static string Prerequisites(ClassKit kit, SkillOffer offer)
+    {
+        if (offer.Tier <= 1) return "No tier prerequisites.";
+        var mastery = kit.Primary.MasteryForTier(offer.Kind == SkillKind.Mastery ? offer.Tier - 1 : offer.Tier);
+        string text = mastery == null ? "" : $"Requires {mastery.SkillId}.";
+        if (offer.Kind == SkillKind.Mastery)
+            text += $" Requires {SkillLearningRules.SkillsRequiredPerTier} tier {offer.Tier - 1} non-mastery skills.";
+        return text.Trim();
+    }
 }

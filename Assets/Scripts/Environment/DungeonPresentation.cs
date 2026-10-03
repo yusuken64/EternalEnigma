@@ -7,7 +7,16 @@ using UnityEngine;
 
 public static class DungeonPresentation
 {
-    public const float GroundPlaneZ = .05f;
+    public const float GroundPlaneZ = .001f;
+    public static void GroundFloorObject(Transform root)
+    {
+        // Keep the logical cell/root fixed; authored pickup and stair meshes live below it.
+        var renderers = root.GetComponentsInChildren<MeshRenderer>(true);
+        if (renderers.Length == 0) return;
+        float bottom = renderers.Max(renderer => renderer.bounds.max.z);
+        var shift = Vector3.forward * (GroundPlaneZ - bottom);
+        foreach (Transform child in root) child.position += shift;
+    }
     public static void PrepareMapRoot(Transform root, bool legacy)
     {
         // Configure before building: moving this root afterwards shifts the ground into units.

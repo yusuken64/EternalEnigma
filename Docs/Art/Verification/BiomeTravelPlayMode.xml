@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:53:58Z" duration="73.2896489">
+  <test-suite type="TestSuite" id="1554" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="239" result="Passed" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:53:58Z" duration="73.289649" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1548" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="239" result="Passed" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:53:58Z" duration="73.280763" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="31704" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1549" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="221" result="Passed" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:53:58Z" duration="73.273817" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1550" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="221" result="Passed" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:53:58Z" duration="73.266565" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1316" name="BiomeDecorationVisibilityTests" fullname="EternalEnigma.Tests.BiomeDecorationVisibilityTests" classname="EternalEnigma.Tests.BiomeDecorationVisibilityTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:52:45Z" duration="0.099929" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1317" name="AnimationBudgetVisibilityAndCacheActivationAreBounded" fullname="EternalEnigma.Tests.BiomeDecorationVisibilityTests.AnimationBudgetVisibilityAndCacheActivationAreBounded" methodname="AnimationBudgetVisibilityAndCacheActivationAreBounded" classname="EternalEnigma.Tests.BiomeDecorationVisibilityTests" runstate="Runnable" seed="126646539" result="Passed" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:52:45Z" duration="0.093791" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1327" name="CampaignTravelTests" fullname="EternalEnigma.Tests.CampaignTravelTests" classname="EternalEnigma.Tests.CampaignTravelTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:53:58Z" duration="73.160729" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1330" name="OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel" fullname="EternalEnigma.Tests.CampaignTravelTests.OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel" methodname="OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel" classname="EternalEnigma.Tests.CampaignTravelTests" runstate="Runnable" seed="1847287936" result="Passed" start-time="2026-10-03 18:52:45Z" end-time="2026-10-03 18:53:19Z" duration="33.652765" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+No save data found. Creating new save.
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 922377919
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Load Save Data
+Town seed 922377919
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Dungeon created
+Dungeon destroyed
+Dungeon created
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1331" name="TownEntranceVictoryAndDuplicateCallbacksPersistKeyAndReturnInsideTown" fullname="EternalEnigma.Tests.CampaignTravelTests.TownEntranceVictoryAndDuplicateCallbacksPersistKeyAndReturnInsideTown" methodname="TownEntranceVictoryAndDuplicateCallbacksPersistKeyAndReturnInsideTown" classname="EternalEnigma.Tests.CampaignTravelTests" runstate="Runnable" seed="1111686801" result="Passed" start-time="2026-10-03 18:53:19Z" end-time="2026-10-03 18:53:58Z" duration="39.497390" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Control scheme changed to: Keyboard&Mouse
+No save data found. Creating new save.
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 922377919
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Dungeon created
+Dungeon destroyed
+Dungeon created
+Stairs Created
+Dungeon destroyed
+Load Save Data
+Town seed 922377919
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Dungeon created
+Dungeon destroyed
+Dungeon created
+Stairs Created
+Dungeon destroyed
+Saving results to: Temp/HarnessResults/PlayMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

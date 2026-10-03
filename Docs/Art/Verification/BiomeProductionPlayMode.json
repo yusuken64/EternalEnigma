@@ -1,0 +1,16 @@
+{
+    "runId":  "17a37419c8184d81a0bda673b7d00406",
+    "mode":  "PlayMode",
+    "state":  "Completed",
+    "filter":  "EternalEnigma.Tests.PlayMode",
+    "testFilters":  [
+                        "EternalEnigma.Tests.BiomeDecorationVisibilityTests",
+                        "EternalEnigma.Tests.DungeonThemeTransitionTests",
+                        "EternalEnigma.Tests.EnvironmentPlaygroundTests",
+                        "EternalEnigma.Tests.CampaignTravelTests"
+                    ],
+    "passed":  11,
+    "failed":  0,
+    "skipped":  0,
+    "xml":  "Docs/Art/Verification/BiomeProductionPlayMode.xml"
+}

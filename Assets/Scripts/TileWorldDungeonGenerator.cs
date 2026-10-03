@@ -83,8 +83,8 @@ public class TileWorldDungeonGenerator : MonoBehaviour
     {
         var common=Common.Instance;
         CurrentVisuals=common.GameSaveData?.DungeonSaveData?.VisualSelection ?? DungeonVisualSelection.Resolve(common.CampaignContext,EncounterVisuals);
-        var run = common.GameSaveData?.DungeonSaveData;
-        var visuals = CurrentVisuals; visuals.UseBiomePresentation = run != null && run.UseBiomeLayout; CurrentVisuals = visuals;
+        // Presentation is independent of the saved layout version, including old saves.
+        var visuals = CurrentVisuals; visuals.UseBiomePresentation = true; CurrentVisuals = visuals;
         if(ThemeCatalog==null) ThemeCatalog=Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
         if(!CurrentVisuals.IsLegacy && ThemeCatalog==null) throw new InvalidOperationException("Dungeon theme catalog is missing.");
         TileWorldCreator.StopAllCoroutines();ThroneTileWorldCreator.StopAllCoroutines();
@@ -132,6 +132,7 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 		CurrentFloor = floor;
         if(!CurrentVisuals.IsLegacy) DungeonPresentation.Decorate(_twc, floor, ThemeCatalog.Get(CurrentVisuals));
         else DungeonPresentation.TrackLegacyMeshes(_twc.worldObject);
+        BiomeDecorations.Dungeon(_twc,floor,CurrentVisuals);
 		var newDungeon = Instantiate(TileWorldDungeonPrefab);
 		newDungeon.Setup(_twc, floor);
 		GeneratedDungeon = newDungeon;

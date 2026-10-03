@@ -25,6 +25,7 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             if (previous != null) { if (Application.isPlaying) UnityEngine.Object.Destroy(previous); else UnityEngine.Object.DestroyImmediate(previous); }
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
             var batch = new EnvironmentBatch(root.transform); float size = creator.twcAsset.cellSize;
+            var faces=root.GetComponent<BiomeDecorationSurfaceSet>() ?? root.AddComponent<BiomeDecorationSurfaceSet>();faces.Faces.Clear();
             var propCounts = new Dictionary<(int, int), int>();
             int propTriangles = 0;
             for (int y = 0; y < plan.Height; y++) for (int x = 0; x < plan.Width; x++)
@@ -74,6 +75,7 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                     batch.Add(Kit.Mesh("Paving"), Kit.Road, position, Vector3.one * size);
                 else if (inner)
                 {
+                    faces.Add(Kit.Mesh("Wall"),Matrix4x4.TRS(position,Quaternion.Euler(0,0,x==-1||x==plan.Width?90:0),Vector3.one*size),biome,DecorationSurface.BuiltWall,size);
                     batch.Add(Kit.Mesh("Wall"), Kit.Material(biome), position, Vector3.one * size,
                         x == -1 || x == plan.Width ? 90 : 0);
                     if ((x == -1 || x == plan.Width) && (y == -1 || y == plan.Height))

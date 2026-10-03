@@ -60,7 +60,7 @@ namespace EternalEnigma.Tests.CoreIntegration
             var resumed=JsonUtility.FromJson<DungeonSaveData>(JsonUtility.ToJson(outdoor));
             Assert.That(resumed.VisualSelection.Biome,Is.EqualTo(OverworldBiome.Water));
             Assert.That(resumed.VisualSelection.Environment,Is.EqualTo(DungeonEnvironmentKind.Outdoor));
-            Assert.That(DungeonVisualSelection.Resolve(null).IsLegacy,Is.True);
+            Assert.That(DungeonVisualSelection.Resolve(null).IsLegacy,Is.False);
         }
 
         [TestCase(false)] [TestCase(true)]

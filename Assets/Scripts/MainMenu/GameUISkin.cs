@@ -8,6 +8,7 @@ public static class GameUISkin
 {
     private static GUISkin legacySkin;
     private static Button buttonPrefab;
+    private static Image panelPrefab;
     private static GUIStyle legacyButtonLabel;
     public static Color Ink => GameUITheme.Ink;
 
@@ -80,10 +81,17 @@ public static class GameUISkin
 
     public static Image Panel(Transform parent, Vector2 min, Vector2 max)
     {
-        var image = Rect("Panel", parent, min, max).gameObject.AddComponent<Image>();
-        GameUITheme.Current.Surface(image, GameUITheme.Current.Panel, 24);
+        if (panelPrefab == null) panelPrefab = Resources.Load<Image>("UI/GamePanelBackground");
+        var image = UnityEngine.Object.Instantiate(panelPrefab, parent, false);
+        image.name = "Panel";
+        image.rectTransform.anchorMin = min; image.rectTransform.anchorMax = max;
+        image.rectTransform.offsetMin = image.rectTransform.offsetMax = Vector2.zero;
         return image;
     }
+
+    // Authored containers retain their original disabled Image for reference compatibility.
+    public static Image PanelGraphic(Transform container) =>
+        container.Find("GamePanelBackground")?.GetComponent<Image>() ?? container.GetComponent<Image>();
 
     public static TextMeshProUGUI Label(Transform parent, string text, Vector2 min, Vector2 max, float size = 26)
     {

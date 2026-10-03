@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 344879134}
   - component: {fileID: 344879133}
   - component: {fileID: 344879137}
+  - component: {fileID: 344879138}
   m_Layer: 0
   m_Name: Campaign Overworld
   m_TagString: Untagged
@@ -245,6 +246,20 @@ MonoBehaviour:
   RoadMaterial: {fileID: 2100000, guid: 0996179f3546df94fbed7e389e38ffbd, type: 2}
   BridgeMaterial: {fileID: 2100000, guid: c4730ca8bfe7adc4f96e6396d9013cdb, type: 2}
   BarrierMaterial: {fileID: 2100000, guid: 2e9c16c55e3baed44a3b13fb8900e7bf, type: 2}
+--- !u!114 &344879138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344879132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 764053c4f6bb0414a8a57e0221952ffa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::BiomeDecorationBinding
+  Catalog: {fileID: 11400000, guid: a7b5abbdc90ecdc4fac75af13f6738af, type: 2}
+  DecorationsEnabled: 1
 --- !u!1 &1117176238
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,14 @@
+{
+    "runId": "b1c48d6776844a8ebfe72ecf089c3de5",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly",
+        "EternalEnigma.Tests.DungeonThemeTransitionTests"
+    ],
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/PlayMode.xml"
+}

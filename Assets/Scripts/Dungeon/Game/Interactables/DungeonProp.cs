@@ -67,7 +67,12 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
         {
             var model=Instantiate(visualPrefab,go.transform,false);
             float cellSize=dungeon.CellToWorld(Vector3Int.right).x-dungeon.CellToWorld(Vector3Int.zero).x;
-            model.transform.localPosition=new Vector3(cellSize*.5f,cellSize*.5f,-.1f);
+            model.transform.localPosition=new Vector3(cellSize*.5f,cellSize*.5f,0);
+            var renderers=model.GetComponentsInChildren<Renderer>();
+            if(renderers.Length>0) {
+                float bottom=renderers.Max(r=>r.bounds.max.z);
+                model.transform.position+=Vector3.forward*(DungeonPresentation.GroundPlaneZ-bottom);
+            }
             dungeon.Interactables.Add(prop);
             return prop;
         }

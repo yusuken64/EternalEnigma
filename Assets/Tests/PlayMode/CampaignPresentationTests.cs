@@ -1,10 +1,12 @@
 #if UNITY_EDITOR
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
@@ -67,6 +69,16 @@ namespace EternalEnigma.Tests
         [UnityTest]
         public IEnumerator SceneAndInstantiatedPrefabButtonsHaveSerializedStyles()
         {
+            void CheckBackground(Button button)
+            {
+                var image = button.targetGraphic as Image;
+                Assert.That(image, Is.Not.Null, button.name);
+                Assert.That(image.sprite, Is.EqualTo(GameUITheme.Current.Button), button.name);
+                Assert.That(image.type, Is.EqualTo(Image.Type.Sliced), button.name);
+                Assert.That(image.pixelsPerUnitMultiplier, Is.EqualTo(1), button.name);
+                Assert.That(image.enabled && image.raycastTarget, Is.True, button.name);
+                Assert.That(image.transform.IsChildOf(button.transform), Is.True, button.name);
+            }
             yield return null;
             Canvas.ForceUpdateCanvases();
             Directory.CreateDirectory("Temp/UIValidation");
@@ -74,15 +86,48 @@ namespace EternalEnigma.Tests
             yield return new WaitForSecondsRealtime(.3f);
             foreach (var button in Object.FindObjectsByType<Button>(FindObjectsSortMode.None))
             {
-                Assert.That((button.targetGraphic as Image)?.sprite, Is.EqualTo(GameUITheme.Current.Button), button.name);
+                CheckBackground(button);
             }
             var prefab = Resources.Load<Button>("UI/GameButton");
-            Assert.That((prefab.targetGraphic as Image)?.sprite, Is.EqualTo(GameUITheme.Current.Button));
-            var dynamicButton = GameUISkin.Button(Object.FindFirstObjectByType<Canvas>().transform,
-                "Dynamic test button", Vector2.zero, Vector2.one, null);
+            CheckBackground(prefab);
+            int clicks = 0;
+            var testCanvas = GameUISkin.Canvas("Shared background interaction test", null, 10000);
+            var dynamicButton = GameUISkin.Button(testCanvas.transform,
+                "Dynamic test button", new Vector2(.25f, .25f), new Vector2(.75f, .75f), () => clicks++);
+            CheckBackground(dynamicButton);
             Assert.That((dynamicButton.targetGraphic as Image)?.sprite, Is.EqualTo((prefab.targetGraphic as Image)?.sprite));
             Assert.That(dynamicButton.colors, Is.EqualTo(prefab.colors));
+            Canvas.ForceUpdateCanvases();
+            yield return null;
+            var pointer = new PointerEventData(EventSystem.current)
+            {
+                position = RectTransformUtility.WorldToScreenPoint(null, dynamicButton.transform.position),
+                button = PointerEventData.InputButton.Left
+            };
+            var hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, hits);
+            Assert.That(hits.Any(hit => hit.gameObject == dynamicButton.targetGraphic.gameObject), Is.True,
+                "The nested background must remain a pointer target.");
+            ExecuteEvents.ExecuteHierarchy(dynamicButton.targetGraphic.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+            Assert.That(clicks, Is.EqualTo(1));
             Object.Destroy(dynamicButton.gameObject);
+
+            var panel = GameUISkin.Panel(testCanvas.transform, new Vector2(.1f, .1f), new Vector2(.9f, .9f));
+            Assert.That(panel.sprite, Is.EqualTo(GameUITheme.Current.Panel));
+            Assert.That(panel.type, Is.EqualTo(Image.Type.Sliced));
+            Assert.That(panel.pixelsPerUnitMultiplier, Is.EqualTo(1));
+            Assert.That(panel.rectTransform.anchorMin, Is.EqualTo(new Vector2(.1f, .1f)));
+            Assert.That(panel.rectTransform.anchorMax, Is.EqualTo(new Vector2(.9f, .9f)));
+            panel.color = Color.gray;
+            Assert.That(Resources.Load<Image>("UI/GamePanelBackground").color, Is.EqualTo(Color.white),
+                "A runtime panel tint must not change the shared prefab.");
+            Object.Destroy(testCanvas.gameObject);
+            Common.Instance.GlobalSettings.ShowDialog();
+            yield return null;
+            Canvas.ForceUpdateCanvases();
+            ScreenCapture.CaptureScreenshot("Temp/UIValidation/shared-settings-panel.png");
+            yield return new WaitForSecondsRealtime(.3f);
+            Common.Instance.GlobalSettings.Exit_Clicked();
         }
 
         [UnityTest]

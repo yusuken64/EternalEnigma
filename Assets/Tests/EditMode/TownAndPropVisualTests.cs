@@ -10,6 +10,30 @@ namespace EternalEnigma.Tests.CoreIntegration
 {
     public sealed class TownAndPropVisualTests
     {
+        [Test]
+        public void FloorObjectsTouchGroundWithoutMovingTheirLogicalRoot()
+        {
+            var paths = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Dungeon/DroppedItems" })
+                .Select(AssetDatabase.GUIDToAssetPath).Concat(new[] {
+                    "Assets/Prefabs/Dungeon/Interactables/Gold.prefab",
+                    "Assets/Prefabs/Dungeon/Interactables/Stairs.prefab",
+                    "Assets/Prefabs/Dungeon/Traps/DamageTrap.prefab",
+                    "Assets/Prefabs/Dungeon/Traps/BumpTrap.prefab" });
+            foreach (var path in paths)
+            {
+                var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+                try
+                {
+                    instance.transform.position = new Vector3(14, 22, 0);
+                    DungeonPresentation.GroundFloorObject(instance.transform);
+                    Assert.That(instance.transform.position, Is.EqualTo(new Vector3(14, 22, 0)), path);
+                    Assert.That(instance.GetComponentsInChildren<MeshRenderer>(true).Max(r => r.bounds.max.z),
+                        Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.0001f), path);
+                }
+                finally { Object.DestroyImmediate(instance); }
+            }
+        }
+
         [TestCase("DamageTrap", "SpikeTrap")]
         [TestCase("BumpTrap", "BumpTrap")]
         public void TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(string prefab, string model)
@@ -45,7 +69,7 @@ namespace EternalEnigma.Tests.CoreIntegration
                     var bounds = model.GetComponent<Renderer>().bounds;
                     Assert.That(bounds.size.x, Is.LessThanOrEqualTo(1.45f));
                     Assert.That(bounds.size.y, Is.LessThanOrEqualTo(1.45f));
-                    Assert.That(bounds.max.z, Is.LessThan(0));
+                    Assert.That(bounds.max.z, Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.0001f),"Prop base must touch the rendered floor.");
                     Assert.That(model.GetComponentsInChildren<Collider>(), Is.Empty);
                 }
                 Capture(root, new Vector3(4.75f, 4, 0), 10.5f, "DungeonProps");

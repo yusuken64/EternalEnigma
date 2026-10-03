@@ -14,6 +14,49 @@ public class SightPlaybackTests
     [UnityTearDown] public IEnumerator TearDown() => harness.Cleanup();
 
     [UnityTest]
+    public IEnumerator BigSlimeAnimatesWhenOnlyItsLeadingEdgeEntersSight()
+    {
+        yield return harness.LoadDungeon(new TestScenario());
+        var game = harness.Game;
+        var dungeon = game.CurrentDungeon;
+        // Keep the actor outside party sight; provide one visible playback cell.
+        var origin = new Vector3Int(dungeon.dungeonWidth + 10, dungeon.dungeonHeight + 10, 0);
+        var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<Enemy>(
+            "Assets/Prefabs/Dungeon/Enemies/Enemy_Slime_Big.prefab");
+        var enemy = Object.Instantiate(prefab, game.transform);
+        enemy.SetPosition(origin);
+        Assert.That(enemy.FootPrint, Is.EqualTo(FootPrint.Size3x3));
+        var destination = origin + Vector3Int.right;
+        var leadingEdge = destination + Vector3Int.right;
+        var move = new MovementAction(enemy, origin, destination);
+        move.SetPlaybackContext(DungeonAnimationMode.Current, false, harness.Ally, enemy);
+        var camera = game.PlayerController.CameraController.Camera;
+        var cameraPosition = camera.transform.position;
+        var cameraRotation = camera.transform.rotation;
+        try
+        {
+            camera.transform.position = dungeon.CellToWorld(leadingEdge) + Vector3.back * 10;
+            camera.transform.rotation = Quaternion.identity;
+            game.PlaybackVisibleTiles.Clear();
+            Assert.That(move.ShouldAnimate(enemy), Is.False, "Fully hidden movement should still be skipped.");
+            game.PlaybackVisibleTiles.Add(leadingEdge);
+            Assert.That(move.AnimationCells(enemy), Does.Contain(leadingEdge));
+            Assert.That(move.ShouldAnimate(enemy), Is.True,
+                "The entering edge is visible even though both center tiles remain hidden.");
+            enemy.FootPrint = FootPrint.Size1x1;
+            Assert.That(move.ShouldAnimate(enemy), Is.False,
+                "A single-cell actor must not gain visibility from a neighboring cell.");
+        }
+        finally
+        {
+            game.PlaybackVisibleTiles.Clear();
+            camera.transform.position = cameraPosition;
+            camera.transform.rotation = cameraRotation;
+            Object.DestroyImmediate(enemy.gameObject);
+        }
+    }
+
+    [UnityTest]
     public IEnumerator SightTracksPlaybackAndOffscreenActionsStillApplyResults()
     {
         yield return harness.LoadDungeon(new TestScenario());

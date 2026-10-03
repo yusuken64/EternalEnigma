@@ -245,7 +245,7 @@ public sealed class CampaignTravelService
     private void PrepareTown(string id)
     {
         var configuration = UnityEngine.Object.Instantiate(TownSceneLoader.Default);
-        configuration.name = "Campaign " + id; configuration.Id = id;
+        configuration.name = Context.GetTownDisplayName(id); configuration.Id = id;
         CampaignTownLayout.Configure(configuration, Context.TownLayout(id));
         configuration.MaxPartySize = 4;
         common.GameSaveData.TownSaveData.TownSeed = Context.LocationSeed(id);
@@ -257,6 +257,7 @@ public sealed class CampaignTravelService
         if (transitioning) return;
         transitioning = true; Context.State.Scene = scene;
         SaveSystem.SaveData(common.GameSaveData);
+        if(scene=="Town")destinationTitle=Context.GetTownDisplayName(Context.State.LocationId);
         common.ScreenTransition.DoTransition(() => SceneManager.LoadScene(scene), autoOpen: false, destinationTitle: destinationTitle);
     }
 }

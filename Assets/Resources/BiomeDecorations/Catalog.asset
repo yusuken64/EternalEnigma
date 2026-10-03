@@ -1,0 +1,600 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52667574711ad64d8b9ce115d8bcd2c, type: 3}
+  m_Name: Catalog
+  m_EditorClassIdentifier: EternalEnigma.Game::BiomeDecorationCatalog
+  Material: {fileID: 2100000, guid: 970612dcadb905f47bcb39ea981236b8, type: 2}
+  Assets:
+  - Biome: 0
+    Kind: 0
+    Mesh: {fileID: 4300000, guid: 06cbd3b6bde81124eae64bfbf424913b, type: 2}
+    Prefab: {fileID: 5580344711709176117, guid: 65e86a8ed1a53ab43af4e6ac19124f14, type: 3}
+    Effect: {fileID: 8940831611883966855, guid: 94b7dab55705b064b8c680c73410b239, type: 3}
+    MountOffset: {x: -0, y: -0.07500008, z: 0.27499998}
+    EffectOffset: {x: 0, y: -0.24, z: -0.22}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 0
+    Kind: 1
+    Mesh: {fileID: 4300000, guid: 4c793b42ed3a3de4a9341e34c94d6d78, type: 2}
+    Prefab: {fileID: 6583624211717523058, guid: b4242a47084cd7c42acbc818bada732b, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.03500007, z: 0.23749994}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 0
+    Kind: 2
+    Mesh: {fileID: 4300000, guid: 6c02f76067f0f0c4db56ca95a66142f1, type: 2}
+    Prefab: {fileID: 2992354609179324232, guid: b169bc240d3994b4fabc92640e9c6168, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: 0.065, y: -0.018000081, z: 0.23986895}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 7
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 0
+    Kind: 3
+    Mesh: {fileID: 4300000, guid: dfcb7e26cc3c4e64e8f9cfea4e4be52f, type: 2}
+    Prefab: {fileID: 1886750456356006219, guid: 04aeb1623b1861d46aac2aa489c0d07b, type: 3}
+    Effect: {fileID: 8940831611883966855, guid: 94b7dab55705b064b8c680c73410b239, type: 3}
+    MountOffset: {x: -0, y: -0.13999999, z: 0.65749985}
+    EffectOffset: {x: 0, y: -0.24, z: -1.02}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 0
+    Kind: 4
+    Mesh: {fileID: 4300000, guid: 224b23667294cca4eb8137b598d2310d, type: 2}
+    Prefab: {fileID: 8983606271557513901, guid: ba98f4dd5c2a4ed4d86b06449d05c665, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.13999999, z: 0.5999999}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 0
+    Kind: 5
+    Mesh: {fileID: 4300000, guid: ae06d6ec24900734bab88a635a888bdb, type: 2}
+    Prefab: {fileID: 540559020484487350, guid: 6eee3be007809fa409d17894413a27c9, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.00500001, y: -0.035000008, z: -0}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 1
+    Kind: 0
+    Mesh: {fileID: 4300000, guid: e0eaef48f51f2b84d8926d5585918cb9, type: 2}
+    Prefab: {fileID: 7976674984179315796, guid: c8790ec14baa7c2419e0818410fd6e1a, type: 3}
+    Effect: {fileID: 7248582284886482624, guid: d118360035968a64cacd558d0d29d118, type: 3}
+    MountOffset: {x: -0, y: -0.07500008, z: 0.28749996}
+    EffectOffset: {x: 0, y: -0.24, z: -0.22}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 1
+    Kind: 1
+    Mesh: {fileID: 4300000, guid: a79179c4595503d4da59f93b3304f4f0, type: 2}
+    Prefab: {fileID: 1315444493754151515, guid: 2aef439862bdc7845a99a557e7be506b, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.03500007, z: 0.23749994}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 1
+    Kind: 2
+    Mesh: {fileID: 4300000, guid: a59f735a81284484a82a9b5698b505de, type: 2}
+    Prefab: {fileID: 6947756586682843087, guid: cf8b962eb27bc0243a24c3e2fb2747af, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.035000056, z: 0.23999995}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 7
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 1
+    Kind: 3
+    Mesh: {fileID: 4300000, guid: 355f8b32a1f173a42acf4d5af6381650, type: 2}
+    Prefab: {fileID: 8361858371842073088, guid: aea2ef491b4c56344b3a44a74ae1bd5e, type: 3}
+    Effect: {fileID: 7248582284886482624, guid: d118360035968a64cacd558d0d29d118, type: 3}
+    MountOffset: {x: -0, y: -0.14, z: 0.65749985}
+    EffectOffset: {x: 0, y: -0.24, z: -1.02}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 1
+    Kind: 4
+    Mesh: {fileID: 4300000, guid: 9a8bf3ff8bb9d2445925917da6f14748, type: 2}
+    Prefab: {fileID: 2144746141772665359, guid: 4f8b286cba372bf45b60c8f1d2391fd5, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.13999999, z: 0.5999999}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 1
+    Kind: 5
+    Mesh: {fileID: 4300000, guid: e1b795dc83a2385478ca2aa889e3a5f2, type: 2}
+    Prefab: {fileID: 8163180391823518712, guid: a6987d5085653244b8fcde47840199a8, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.00500001, y: -0.035000008, z: -0}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 2
+    Kind: 0
+    Mesh: {fileID: 4300000, guid: 2956d5e5fff74bb4d977b092cfe11f33, type: 2}
+    Prefab: {fileID: 4201205292009873126, guid: d90a382dd0ccbf942be9a3984226cd34, type: 3}
+    Effect: {fileID: 9215182787184292889, guid: f1ca7863df40caf449ef97e35dfe1b88, type: 3}
+    MountOffset: {x: -0, y: -0.07500008, z: 0.2769421}
+    EffectOffset: {x: 0, y: -0.24, z: -0.22}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 2
+    Kind: 1
+    Mesh: {fileID: 4300000, guid: 3b39031e5893c1a43aae064bdf3cb558, type: 2}
+    Prefab: {fileID: 8686044088484405934, guid: 98718e3c0bc5dfb468784046723b3d42, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.022659943, z: 0.24164154}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 2
+    Kind: 2
+    Mesh: {fileID: 4300000, guid: 93746c47264a82d47922c96c506e2380, type: 2}
+    Prefab: {fileID: 2332085074494563623, guid: cf5c5d6604080524181701f144b24e78, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.021088809, y: -0.034917057, z: 0.16086}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 7
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 2
+    Kind: 3
+    Mesh: {fileID: 4300000, guid: cd4ab3c0c5c2f5846b68c0cef604527c, type: 2}
+    Prefab: {fileID: 233554413529561525, guid: d163063abd0ad7949ae761e97c523d5e, type: 3}
+    Effect: {fileID: 9215182787184292889, guid: f1ca7863df40caf449ef97e35dfe1b88, type: 3}
+    MountOffset: {x: -0, y: -0.13999997, z: 0.65749985}
+    EffectOffset: {x: 0, y: -0.24, z: -1.02}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 2
+    Kind: 4
+    Mesh: {fileID: 4300000, guid: dbfb0c259ac8c9840a77882e1440cd86, type: 2}
+    Prefab: {fileID: 1650423960826378272, guid: 481daa070c126a0498003661e72c1c27, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: 0.025200307, y: -0.13999999, z: 0.5999999}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 2
+    Kind: 5
+    Mesh: {fileID: 4300000, guid: 7e31081654d7aa14380e951967acc548, type: 2}
+    Prefab: {fileID: 8492059044938097027, guid: 90b40e6a41f188e47a720bba4060216b, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.00500001, y: -0.035000004, z: -0}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 3
+    Kind: 0
+    Mesh: {fileID: 4300000, guid: 94b0b56761a7fa74a99f451112e85f3d, type: 2}
+    Prefab: {fileID: 1673040001093589925, guid: 3e87dc51fb526294ab17263ec1b766d5, type: 3}
+    Effect: {fileID: 3557393932303030560, guid: 4f8c73f2679ea694ea3f3529ea6d5954, type: 3}
+    MountOffset: {x: -0, y: -0.07500008, z: 0.265}
+    EffectOffset: {x: 0, y: -0.24, z: -0.22}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 3
+    Kind: 1
+    Mesh: {fileID: 4300000, guid: 6d4909b7f63ebe14494e3e77318c4986, type: 2}
+    Prefab: {fileID: 6329914359142522069, guid: d3e8efb802c2d3840bc0e3c91bb274bc, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.035000075, z: 0.24999997}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 3
+    Kind: 2
+    Mesh: {fileID: 4300000, guid: aaab79298bde4cf40acbf9747987a7dc, type: 2}
+    Prefab: {fileID: 8091391252385444885, guid: 6004a962365d7b94dbd2c74265bc46a4, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.03500004, z: 0.19999997}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 7
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 3
+    Kind: 3
+    Mesh: {fileID: 4300000, guid: e491ed0cf8dd13c4a8edf5f8a47a06ca, type: 2}
+    Prefab: {fileID: 1946107417574046855, guid: 8e95d5455909a2d4d8d24c3beb35ac4a, type: 3}
+    Effect: {fileID: 3557393932303030560, guid: 4f8c73f2679ea694ea3f3529ea6d5954, type: 3}
+    MountOffset: {x: -0, y: -0.13999999, z: 0.65749985}
+    EffectOffset: {x: 0, y: -0.24, z: -1.02}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 3
+    Kind: 4
+    Mesh: {fileID: 4300000, guid: 49efb008122aeb14398f35ccb692d650, type: 2}
+    Prefab: {fileID: 7812248372261064421, guid: 14d9da7c24695614e87e65b8dcf9d17b, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.13999999, z: 0.5999999}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 3
+    Kind: 5
+    Mesh: {fileID: 4300000, guid: b531348c5ab14764fbfe6c9c67d2e8a1, type: 2}
+    Prefab: {fileID: 4439718660115218117, guid: 215416de5f4a2f34795fee445447fad2, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.00500001, y: -0.035000008, z: -0}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 4
+    Kind: 0
+    Mesh: {fileID: 4300000, guid: b679bcd7a7b87554298050e352fe5e76, type: 2}
+    Prefab: {fileID: 4811808657657540167, guid: 7a2e92ede48a2c34aa44b89f57de4a10, type: 3}
+    Effect: {fileID: 8062865745819062950, guid: e7dd7e478ccc28e4599d3d98fa63e3bb, type: 3}
+    MountOffset: {x: -0.03414362, y: -0.07500008, z: 0.26375672}
+    EffectOffset: {x: 0, y: -0.24, z: -0.22}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 4
+    Kind: 1
+    Mesh: {fileID: 4300000, guid: 2f6fcbc0e23ac484ea4b4e7a3d4c42f3, type: 2}
+    Prefab: {fileID: 1502651481855949273, guid: ca027ac72d90a7f44a638e5032e10059, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.030000027, z: 0.2611075}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 4
+    Kind: 2
+    Mesh: {fileID: 4300000, guid: 31745d3b72f6389449fc0955e31c332e, type: 2}
+    Prefab: {fileID: 1599506740316838506, guid: 3daa4d6c9466fb34fa091e6b6e976ab0, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: 0.041844726, y: -0.04412684, z: 0.23767778}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 7
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 4
+    Kind: 3
+    Mesh: {fileID: 4300000, guid: 821fc98a59d4c514581c9286ffe0be24, type: 2}
+    Prefab: {fileID: 2132142847470969008, guid: 21469f5c6c33f2d4a8e6f01026124465, type: 3}
+    Effect: {fileID: 8062865745819062950, guid: e7dd7e478ccc28e4599d3d98fa63e3bb, type: 3}
+    MountOffset: {x: -0.04507745, y: -0.13999999, z: 0.6534148}
+    EffectOffset: {x: 0, y: -0.24, z: -1.02}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 4
+    Kind: 4
+    Mesh: {fileID: 4300000, guid: 3920dcb9bb4a35747b1c45325f514161, type: 2}
+    Prefab: {fileID: 5276151298302896912, guid: 231c109038ae7ed42ae59bb8cd81dcd6, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.070933826, y: -0.13999999, z: 0.5999999}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 4
+    Kind: 5
+    Mesh: {fileID: 4300000, guid: d952330e23b99fb40b46724f29892875, type: 2}
+    Prefab: {fileID: 9021782766872874353, guid: 793b056722398204e8cfb44dfe1a6cce, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.06999997, z: -0.01082531}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 5
+    Kind: 0
+    Mesh: {fileID: 4300000, guid: 08c96a0bb06a45248ac2e27c00342abf, type: 2}
+    Prefab: {fileID: 7091166199043710185, guid: 00e0f638fb9139242b24d03f1b77ca60, type: 3}
+    Effect: {fileID: 2788921968011586369, guid: 8e428035be491e749b9eee7d12291d1e, type: 3}
+    MountOffset: {x: -0, y: -0.07500008, z: 0.24249999}
+    EffectOffset: {x: 0, y: -0.24, z: -0.22}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 5
+    Kind: 1
+    Mesh: {fileID: 4300000, guid: 0d71ae44881d94c488599547a38ac63d, type: 2}
+    Prefab: {fileID: 1173910275088569184, guid: c71388afbed4ced4baedf3731c2fbdbf, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.03500008, z: 0.21749994}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 5
+    Kind: 2
+    Mesh: {fileID: 4300000, guid: 812e338b484911143bfddc0e2d389e85, type: 2}
+    Prefab: {fileID: 2410162778649296356, guid: 7fe6acd940502a441a7fcf0497c916ee, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.044934466, z: 0.2667256}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 7
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 5
+    Kind: 3
+    Mesh: {fileID: 4300000, guid: 8547e5fd7b2bd8a48891b21df86e5f54, type: 2}
+    Prefab: {fileID: 4804695022511671056, guid: 73d5331ad9ff64142a00f68ea994db7f, type: 3}
+    Effect: {fileID: 2788921968011586369, guid: 8e428035be491e749b9eee7d12291d1e, type: 3}
+    MountOffset: {x: -0, y: -0.13999997, z: 0.65749985}
+    EffectOffset: {x: 0, y: -0.24, z: -1.02}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 5
+    Kind: 4
+    Mesh: {fileID: 4300000, guid: fd593a32244d7014cbb93d5f12efcdfc, type: 2}
+    Prefab: {fileID: 3328146335474661571, guid: fa1f68986d1d4264c90b8901f2ea2971, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.13999999, z: 0.5999999}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 5
+    Kind: 5
+    Mesh: {fileID: 4300000, guid: 4b8057a602ac16a4797425c0c64c2bf6, type: 2}
+    Prefab: {fileID: 4287533036159938126, guid: ee0c4dd3fffe37942bd5568abde210da, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.00500001, y: -0.035000008, z: -0}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 6
+    Kind: 0
+    Mesh: {fileID: 4300000, guid: d71b42ff870009945946e56a813162b9, type: 2}
+    Prefab: {fileID: 4398303496939351384, guid: 93accef2ecc8a19408bbbef9a743fa01, type: 3}
+    Effect: {fileID: 4557774083006337747, guid: 98fb02c4a5e63084b84a575b686a49b8, type: 3}
+    MountOffset: {x: -0, y: -0.07500008, z: 0.2813438}
+    EffectOffset: {x: 0, y: -0.24, z: -0.22}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 6
+    Kind: 1
+    Mesh: {fileID: 4300000, guid: 6386ba5d1eab75e44a4123733219677e, type: 2}
+    Prefab: {fileID: 8919425355462520024, guid: 28ae72296161b4a42a791d040a6d3c57, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.02100008, z: 0.25068006}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 6
+    Kind: 2
+    Mesh: {fileID: 4300000, guid: 43d141d374870394eba2ffcb0e54d41b, type: 2}
+    Prefab: {fileID: 804960793415960413, guid: 3aac8dfa97c14e841a8e44f8873255fd, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: 0.024999999, y: -0.025000066, z: 0.2536272}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 7
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 6
+    Kind: 3
+    Mesh: {fileID: 4300000, guid: 5d486531bca0dbf43bf812b759dc36da, type: 2}
+    Prefab: {fileID: 8148316253237419497, guid: 4c93ca44b8b69a14d8efc3ef7e3bd2f4, type: 3}
+    Effect: {fileID: 4557774083006337747, guid: 98fb02c4a5e63084b84a575b686a49b8, type: 3}
+    MountOffset: {x: -0, y: -0.13999997, z: 0.65320456}
+    EffectOffset: {x: 0, y: -0.24, z: -1.02}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 6
+    Kind: 4
+    Mesh: {fileID: 4300000, guid: 39b20fa80022722468577c77e440ac1a, type: 2}
+    Prefab: {fileID: 4453484640820579456, guid: 7062503460e17db4b906b64c5d399d0f, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.0008122772, y: -0.13999999, z: 0.60407865}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 6
+    Kind: 5
+    Mesh: {fileID: 4300000, guid: 4918e369119c2c34689d83c5f4ace7e4, type: 2}
+    Prefab: {fileID: 3853162360287691247, guid: ac7fd1535c793d54fb6c568eaffe1c73, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.00500001, y: -0.035000004, z: 0.000000007450581}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 7
+    Kind: 0
+    Mesh: {fileID: 4300000, guid: 8516a8e98713a694592a63a6b8b6fa90, type: 2}
+    Prefab: {fileID: 7868373165598618450, guid: 4e08803c764cd6942a11372ddf56b2a4, type: 3}
+    Effect: {fileID: 8047568317486463945, guid: 366e197c58bfff340ac6e34dc58382aa, type: 3}
+    MountOffset: {x: 0.000000014901161, y: -0.07500008, z: 0.23249999}
+    EffectOffset: {x: 0, y: -0.24, z: -0.22}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 7
+    Kind: 1
+    Mesh: {fileID: 4300000, guid: 4dbdfb7ce672bfa4f85cd3fdcd4688fb, type: 2}
+    Prefab: {fileID: 4221512844824766827, guid: 4e85598bc9e9ad54594e2472f1e8dcab, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.02800008, z: 0.2416572}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 5
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 7
+    Kind: 2
+    Mesh: {fileID: 4300000, guid: 42e3f05ce1e8dac4f9400dd391a1b7de, type: 2}
+    Prefab: {fileID: 3882888479498100882, guid: 37f2533d6e8209346bf72dfcdd0e798d, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.07500002, z: 0.19999997}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 7
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 7
+    Kind: 3
+    Mesh: {fileID: 4300000, guid: e07d16bb88893c54d8a7da97f98eeb68, type: 2}
+    Prefab: {fileID: 524269908223330200, guid: 3dee9cce27c0ce943b87e96961313107, type: 3}
+    Effect: {fileID: 8047568317486463945, guid: 366e197c58bfff340ac6e34dc58382aa, type: 3}
+    MountOffset: {x: 0.000000014901161, y: -0.15, z: 0.60749984}
+    EffectOffset: {x: 0, y: -0.24, z: -1.02}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 7
+    Kind: 4
+    Mesh: {fileID: 4300000, guid: 1dbff5310fce9904084acd63e87d4c00, type: 2}
+    Prefab: {fileID: 8379757060558963230, guid: 40fa25f710b918744bc43781673bc242, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0, y: -0.14999999, z: 0.5499999}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  - Biome: 7
+    Kind: 5
+    Mesh: {fileID: 4300000, guid: 0bee6c619432830489afcf2b250c4d3a, type: 2}
+    Prefab: {fileID: 8209146402255283790, guid: 078e02e4fe064af41bc1fc100522412d, type: 3}
+    Effect: {fileID: 0}
+    MountOffset: {x: -0.00500001, y: -0.03500001, z: -0}
+    EffectOffset: {x: 0, y: 0, z: 0}
+    Surfaces: 8
+    TownScale: 0.8
+    OverworldScale: 0.45
+    DungeonScale: 0.7
+  Facades:
+  - Model: SmartHouseEdge
+    Exclusions:
+    - m_Center: {x: 0.14, y: 0.52, z: -0.36}
+      m_Extent: {x: 0.135, y: 0.04, z: 0.13}
+    - m_Center: {x: 0, y: 0.5, z: -0.65}
+      m_Extent: {x: 0.55, y: 0.075, z: 0.075}
+    Sockets:
+    - Center: {x: -0.2, y: 0.505, z: -0.36}
+      Normal: {x: 0, y: 1, z: 0}
+      Width: 0.32
+      Height: 0.34
+      Kind: 0
+    - Center: {x: 0.37, y: 0.505, z: -0.36}
+      Normal: {x: 0, y: 1, z: 0}
+      Width: 0.16
+      Height: 0.32
+      Kind: 1
+  - Model: SmartHouseOuter
+    Exclusions:
+    - m_Center: {x: 0.14, y: 0.52, z: -0.36}
+      m_Extent: {x: 0.135, y: 0.04, z: 0.13}
+    - m_Center: {x: 0, y: 0.5, z: -0.65}
+      m_Extent: {x: 0.55, y: 0.075, z: 0.075}
+    Sockets:
+    - Center: {x: -0.2, y: 0.505, z: -0.36}
+      Normal: {x: 0, y: 1, z: 0}
+      Width: 0.32
+      Height: 0.34
+      Kind: 0
+    - Center: {x: 0.505, y: -0.12, z: -0.36}
+      Normal: {x: 1, y: 0, z: 0}
+      Width: 0.45
+      Height: 0.34
+      Kind: 1
+  - Model: House
+    Exclusions:
+    - m_Center: {x: 0.1, y: -0.4, z: -0.275}
+      m_Extent: {x: 0.12, y: 0.05, z: 0.175}
+    - m_Center: {x: -0.23, y: -0.4, z: -0.45}
+      m_Extent: {x: 0.09, y: 0.05, z: 0.1}
+    - m_Center: {x: 0.29, y: -0.4, z: -0.45}
+      m_Extent: {x: 0.09, y: 0.05, z: 0.1}
+    - m_Center: {x: 0, y: 0, z: -0.85}
+      m_Extent: {x: 0.55, y: 0.5, z: 0.2}
+    Sockets:
+    - Center: {x: -0.21, y: 0.36, z: -0.4}
+      Normal: {x: 0, y: 1, z: 0}
+      Width: 0.32
+      Height: 0.34
+      Kind: 0
+    - Center: {x: 0.21, y: 0.36, z: -0.4}
+      Normal: {x: 0, y: 1, z: 0}
+      Width: 0.32
+      Height: 0.34
+      Kind: 1

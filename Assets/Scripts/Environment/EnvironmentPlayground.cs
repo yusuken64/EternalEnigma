@@ -12,6 +12,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
 {
     public EnvironmentKit Kit;
     public Transform Gallery;
+    public Transform DecorationGallery;
     public CampaignOverworld Overworld;
     public TileWorldCreator TownCreator;
     public TileWorldCreatorAsset TownTemplate;
@@ -44,6 +45,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
 
     [ContextMenu("Show Asset Gallery")]
     public void ShowGallery() { View = 0; Visibility(); float height=Mathf.Max(24, ((Kit.Models.Length-1)/5)*4); Frame(new Vector3(13,height*.5f,0),height*.5f+5); }
+    public void ShowDecorations() { View=5;Visibility();Frame(new Vector3(7,10,-.5f),13); }
     [ContextMenu("Generate Overworld")]
     public void ShowOverworld()
     {
@@ -158,6 +160,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
     private void Visibility()
     {
         if (Gallery != null) Gallery.gameObject.SetActive(View == 0);
+        if (DecorationGallery != null) DecorationGallery.gameObject.SetActive(View == 5);
         if (worldRoot != null) worldRoot.SetActive(View == 1);
         var surface = Overworld.GetComponent<OverworldBiomeRenderer>().RenderedSurfaces;
         if (surface != null) surface.SetActive(View == 1);
@@ -165,7 +168,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
         if (RulePreview != null && RulePreview.WorldRoot != null) RulePreview.WorldRoot.SetActive(View == 3);
         if (RuleLabels != null) RuleLabels.SetActive(View == 3);
         if (DungeonExplorer != null) DungeonExplorer.SetVisible(View == 4);
-        if (Status != null) Status.text = $"Seed {Seed}   |   1 Gallery / 2 World / 3 Town / 4 Rules / 5 Dungeon / B Biome / R Rebuild\nWASD pans · Mouse wheel zooms";
+        if (Status != null) Status.text = $"Seed {Seed}   |   1 Gallery / 2 World / 3 Town / 4 Rules / 5 Dungeon / 6 Decorations / B Biome / R Rebuild\nWASD pans · Mouse wheel zooms";
     }
     private void Update()
     {
@@ -179,6 +182,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
             if (keyboard.digit3Key.wasPressedThisFrame) ShowTown();
             if (keyboard.digit4Key.wasPressedThisFrame) ShowRules();
             if (keyboard.digit5Key.wasPressedThisFrame) ShowDungeon();
+            if (keyboard.digit6Key.wasPressedThisFrame) ShowDecorations();
             if (keyboard.rKey.wasPressedThisFrame) Rebuild();
             if (keyboard.bKey.wasPressedThisFrame) NextBiome();
             var move = new Vector3((keyboard.dKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed ? 1 : 0),

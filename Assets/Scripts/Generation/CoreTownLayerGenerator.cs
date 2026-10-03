@@ -118,6 +118,14 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
             layer.randomSeedOverride = false;
             layer.previewTextureMap = null;
         }
+        // Smart rendering layers can also contain Core actions (roads and shop boundaries).
+        // Keep their derived stacks, but give every source action the same town contract.
+        foreach(var generator in asset.mapBlueprintLayers.SelectMany(l=>l.stack).Select(s=>s.action).OfType<CoreTownLayerGenerator>())
+        {
+            generator.BuildingCount=options.BuildingCount;generator.ShopFlags=string.Concat(options.ShopFlags.Select(f=>f?'1':'0'));
+            generator.AllyCount=options.AllyCount;generator.PartySpawnX=options.PartySpawn.X;generator.PartySpawnY=options.PartySpawn.Y;
+            generator.ExitX=options.Exit.X;generator.ExitY=options.Exit.Y;generator.SpineX=options.SpineX;generator.Detailed=options.Detailed;
+        }
     }
 
 #if UNITY_EDITOR

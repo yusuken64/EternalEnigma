@@ -328,6 +328,7 @@ public class TileWorldDungeon : MonoBehaviour
 	{
 		var itemInstance = Instantiate(GoldPrefab, this.transform);
 		itemInstance.transform.position = CellToWorld(treasurePosition);
+		DungeonPresentation.GroundFloorObject(itemInstance.transform);
 		itemInstance.Setup(treasurePosition);
         if(seededRoll.HasValue) itemInstance.SeededAmount = 5 + 4*(Mathf.Clamp(Game.Instance.PlayerController.Floor,1,30)-1) + (int)((uint)seededRoll.Value%4);
 		Interactables.Add(itemInstance);
@@ -337,6 +338,7 @@ public class TileWorldDungeon : MonoBehaviour
     {
         var gold = Instantiate(GoldPrefab, transform);
         gold.transform.position = CellToWorld(position);
+        DungeonPresentation.GroundFloorObject(gold.transform);
         gold.Setup(position); gold.SeededAmount = amount;
         Interactables.Add(gold);
     }
@@ -346,6 +348,7 @@ public class TileWorldDungeon : MonoBehaviour
 		var droppedItemPrefab = DroppedItemPrefabs.First(x => x.DroppedItemVisual == item.DroppedItemVisual);
 		var itemInstance = Instantiate(droppedItemPrefab, this.transform);
 		itemInstance.transform.position = CellToWorld(position);
+		DungeonPresentation.GroundFloorObject(itemInstance.transform);
 		itemInstance.Position = position;
 		itemInstance.InventoryItem = item.AsInventoryItem(stackStock);
 		Interactables.Add(itemInstance);
@@ -357,6 +360,7 @@ public class TileWorldDungeon : MonoBehaviour
 		var trapPrefab = trap != null ? trap : FantasyTrap.PrefabFor(UnityEngine.Random.Range(0, FantasyTrap.KindCount));
 		var trapInstance = Instantiate(trapPrefab, this.transform);
 		trapInstance.transform.position = CellToWorld(position);
+		DungeonPresentation.GroundFloorObject(trapInstance.transform);
 		trapInstance.Position = position;
 		trapInstance.VisualObject.gameObject.SetActive(false);
 		Interactables.Add(trapInstance);
@@ -367,6 +371,7 @@ public class TileWorldDungeon : MonoBehaviour
 		var trapPrefab = FantasyTrap.PrefabFor(roll);
 		var trapInstance = Instantiate(trapPrefab, this.transform);
 		trapInstance.transform.position = CellToWorld(position);
+		DungeonPresentation.GroundFloorObject(trapInstance.transform);
 		trapInstance.Position = position;
 		trapInstance.VisualObject.gameObject.SetActive(false);
 		Interactables.Add(trapInstance);
@@ -376,6 +381,7 @@ public class TileWorldDungeon : MonoBehaviour
 	{
 		var itemInstance = Instantiate(StairsPrefab, this.transform);
 		itemInstance.transform.position = CellToWorld(stairPosition);
+		DungeonPresentation.GroundFloorObject(itemInstance.transform);
 		itemInstance.Position = stairPosition;
 		Interactables.Add(itemInstance);
 	}

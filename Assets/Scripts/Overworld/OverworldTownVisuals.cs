@@ -13,7 +13,7 @@ internal static class OverworldTownVisuals
             var root = new GameObject("Town " + town.LocationId);
             root.transform.SetParent(parent, false);
             root.transform.localPosition = new Vector3(town.Entrance.X, town.Entrance.Y, 0) * cellSize;
-            var walls = new Geometry(town, cellSize);
+            var walls = new Geometry(town, cellSize, grid.BiomeAt(town.Entrance)??OverworldBiome.Grassland);
             var roofs = new Geometry(town, cellSize);
             var floor = new Geometry(town, cellSize);
             floor.Box(-2.5f, 2.5f, -.5f, 4.5f, .012f, .03f);
@@ -57,10 +57,11 @@ internal static class OverworldTownVisuals
     {
         private readonly GridTown town;
         private readonly float size;
+        private readonly OverworldBiome biome;
         private readonly List<Vector3> vertices = new();
         private readonly List<int> triangles = new();
         private readonly List<Vector2> uv = new();
-        public Geometry(GridTown town, float size) { this.town = town; this.size = size; }
+        public Geometry(GridTown town, float size, OverworldBiome biome=OverworldBiome.Grassland) { this.town = town; this.size = size; this.biome=biome; }
 
         private void Face(params Vector3[] points)
         {
@@ -101,6 +102,10 @@ internal static class OverworldTownVisuals
             var mesh = new Mesh { name = "Town " + name, hideFlags = HideFlags.DontSave };
             mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetTriangles(triangles, 0);
             mesh.RecalculateNormals(); mesh.RecalculateBounds(); ownedMeshes.Add(mesh);
+            if(name=="Walls and houses") {
+                var faces=parent.GetComponent<BiomeDecorationSurfaceSet>()??parent.gameObject.AddComponent<BiomeDecorationSurfaceSet>();
+                faces.Add(mesh,Matrix4x4.identity,biome,DecorationSurface.BuiltWall,size);
+            }
             var obj = new GameObject(name); obj.transform.SetParent(parent, false);
             obj.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = obj.AddComponent<MeshRenderer>(); renderer.sharedMaterial = material;

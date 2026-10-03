@@ -461,8 +461,12 @@ public abstract class GameAction
         for (int i = 0; i <= steps; i++)
         {
             float t = steps == 0 ? 0 : (float)i / steps;
-            yield return new Vector3Int(Mathf.RoundToInt(Mathf.Lerp(origin.x, destination.x, t)),
+            var center = new Vector3Int(Mathf.RoundToInt(Mathf.Lerp(origin.x, destination.x, t)),
                 Mathf.RoundToInt(Mathf.Lerp(origin.y, destination.y, t)), 0);
+            // Fog reveals large actors when any occupied cell enters sight. Playback
+            // must check the same footprint along the entire path, including arrival.
+            foreach (var cell in Character.ToBounds(actor.FootPrint, center).allPositionsWithin)
+                yield return cell;
         }
     }
 

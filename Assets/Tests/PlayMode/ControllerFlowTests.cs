@@ -223,6 +223,11 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.South);
             yield return harness.WaitForIdle();
             Assert.That(target.Vitals.HP, Is.LessThan(hp), "South must attack in gameplay.");
+            hp=target.Vitals.HP;var aimedOrigin=hero.TilemapPosition;
+            yield return Send(new GamepadState().WithButton(GamepadButton.North).WithButton(GamepadButton.South));
+            yield return harness.WaitForIdle();
+            Assert.That(target.Vitals.HP,Is.LessThan(hp),"Holding target must attack the adjacent cell, not two cells away.");
+            Assert.That(hero.TilemapPosition,Is.EqualTo(aimedOrigin),"An aimed attack must not move the hero.");
             yield return Press(GamepadButton.LeftShoulder);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<SkillDialog>());
             var damage = hero.Skills.Single(s => s.SkillName == "Damage");

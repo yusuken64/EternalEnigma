@@ -33,7 +33,7 @@ public struct DungeonVisualSelection
             if (location != null) biome = OverworldGridGenerator.BiomeForRegion(context.Campaign, location.RegionId);
         }
         return new DungeonVisualSelection { Biome = settings?.OverrideBiome == true ? settings.Biome : biome,
-            Environment = settings?.Environment ?? DungeonEnvironmentKind.Interior };
+            Environment = settings?.Environment ?? DungeonEnvironmentKind.Interior, UseBiomePresentation = true };
     }
 
 }

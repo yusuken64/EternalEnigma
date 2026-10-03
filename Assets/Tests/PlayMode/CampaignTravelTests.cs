@@ -16,8 +16,9 @@ namespace EternalEnigma.Tests
     public sealed class CampaignTravelTests
     {
         private GameTestHarness harness;
-        [UnitySetUp] public IEnumerator Setup() { harness = new GameTestHarness { TimeoutSeconds = 100 }; yield return null; }
-        [UnityTearDown] public IEnumerator Cleanup() => harness.Cleanup();
+        private bool? previousControl;
+        [UnitySetUp] public IEnumerator Setup() { previousControl=DungeonPreferences.FullControlOverride;DungeonPreferences.FullControlOverride=false;harness = new GameTestHarness { TimeoutSeconds = 100 }; yield return null; }
+        [UnityTearDown] public IEnumerator Cleanup() { yield return harness.Cleanup();DungeonPreferences.FullControlOverride=previousControl; }
         private IEnumerator WaitTown() => harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "campaign town");
         private IEnumerator WaitWorld() => harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true, "shared overworld");
         private IEnumerator AcknowledgeKey(string key)
@@ -25,7 +26,7 @@ namespace EternalEnigma.Tests
             var common = Common.Instance;
             yield return harness.WaitUntil(() => common.MessageDialog.gameObject.activeSelf, "key reward popup");
             Assert.That(common.MessageDialog.PromptText.text, Does.Contain("KEY ACQUIRED!").Or.Contain("REWARDS ACQUIRED!"));
-            Assert.That(common.MessageDialog.PromptText.text, Does.Contain(key));
+            Assert.That(common.MessageDialog.PromptText.text, Does.Contain(common.CampaignContext.Campaign.KeyLabel(key)));
             Assert.That(common.Travel.IsTransitioning, Is.True);
             Assert.That(SaveSystem.LoadData().Campaign.Keys, Contains.Item(key), "Save the reward before acknowledgement.");
             common.MessageDialog.Ok_Clicked();
@@ -91,9 +92,11 @@ namespace EternalEnigma.Tests
         public IEnumerator OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel()
         {
             yield return StartCampaign();
+            yield return BiomeDecorationCapture.Audit(Object.FindFirstObjectByType<Town>().WalkableMap.TileWorldCreator.worldObject,"Town");
             var common = Common.Instance;
             var context = common.CampaignContext;
             Assert.That(context.IsGridGenerated, Is.False);
+            Assert.That(Object.FindFirstObjectByType<Town>().Configuration.name,Is.EqualTo(context.GetTownDisplayName(context.State.LocationId)));
             Assert.That(common.OverworldTerrain.IsBuilt, Is.False);
             Assert.That(context.BeginTownDungeon("story-0"), Is.True);
             Assert.That(context.CompleteDungeon(true), Is.True);
@@ -102,7 +105,11 @@ namespace EternalEnigma.Tests
             yield return WaitWorld();
             var cache = common.OverworldTerrain;
             var root = cache.Root;
+            yield return BiomeDecorationCapture.Audit(root,"Overworld");
+            var decorations=root.GetComponentsInChildren<Transform>().Single(t=>t.name=="Biome decorations");
+            var decorationMeshes=decorations.GetComponentsInChildren<EnvironmentMeshOwner>().SelectMany(o=>o.Meshes).ToArray();
             var grid = context.Grid;
+            Assert.That(SaveSystem.LoadData().Campaign.TownNames.Select(t=>t.Name),Is.EqualTo(context.State.TownNames.Select(t=>t.Name)));
             var biomeMesh = root.GetComponentsInChildren<MeshFilter>().First(m => m.sharedMesh.name.EndsWith(" floor")).sharedMesh;
             Assert.That(cache.BuildCount, Is.EqualTo(1));
             Assert.That(common.Travel.EnterLocation(), Is.True);
@@ -114,6 +121,8 @@ namespace EternalEnigma.Tests
             Assert.That(cache.Root, Is.SameAs(root));
             Assert.That(root.activeSelf, Is.True);
             Assert.That(context.Grid, Is.SameAs(grid));
+            Assert.That(root.GetComponentsInChildren<Transform>().Single(t=>t.name=="Biome decorations"),Is.SameAs(decorations));
+            Assert.That(decorationMeshes.All(m=>m!=null),Is.True);
             Assert.That(cache.BuildCount, Is.EqualTo(1));
             Assert.That(root.GetComponentsInChildren<MeshFilter>().Any(m => m.sharedMesh == biomeMesh), Is.True);
             context.Position = grid.Locations["repeatable-0"];
@@ -129,7 +138,7 @@ namespace EternalEnigma.Tests
             var world = Object.FindFirstObjectByType<OverworldScene>();
             Assert.That(world.Context.Gates, Is.SameAs(context.Gates));
             Assert.That(common.Travel.ReturnToMenu(), Is.True);
-            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>() != null, "menu before changing campaigns");
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true && !common.ScreenTransition.BlockScreen.activeSelf, "menu before changing campaigns");
             common.BeginSandbox(99);
             Assert.That(cache.IsBuilt, Is.False);
             yield return null;
@@ -146,9 +155,10 @@ namespace EternalEnigma.Tests
             var town = Object.FindFirstObjectByType<Town>();
             Assert.That(context.IsSandbox, Is.False);
             Assert.That(town.Configuration.Id, Is.EqualTo("town-0"));
-            Assert.That(town.TownPlayer.ControllingTownAlly.TilemapPosition, Is.EqualTo(new Vector3Int(10, 2, 0)));
+            var spawn=town.Configuration.PartySpawn;
+            Assert.That(town.TownPlayer.ControllingTownAlly.TilemapPosition, Is.EqualTo(spawn));
             for (int y = 0; y < town.WalkableMap.TileWorldCreator.twcAsset.mapHeight / 2; y++)
-                Assert.That(town.WalkableMap.CanWalkTo(new Vector3Int(10, y, 0), new Vector3Int(10, y + 1, 0)), Is.True);
+                Assert.That(town.WalkableMap.CanWalkTo(new Vector3Int(spawn.x, y, 0), new Vector3Int(spawn.x, y + 1, 0)), Is.True);
             Assert.That(common.Travel.ExitTown(town), Is.False);
             Common.Instance.MessageDialog.CloseDialog();
             var target = context.Grid.Locations["town-0"];

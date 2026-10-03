@@ -1,0 +1,3 @@
+enabled,samples,median_camera_render_ms,decoration_triangles,decoration_meshes
+False,30,0.309,0,0
+True,30,0.294,10850,12

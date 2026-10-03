@@ -20,6 +20,22 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Floor Fix EditMode")]
+    public static void RunDungeonFloorFixEditMode()=>Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.CoreIntegration.DungeonThemeTests","EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Floor Fix PlayMode")]
+    public static void RunDungeonFloorFixPlayMode()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly",
+        "EternalEnigma.Tests.DungeonThemeTransitionTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Biome Decorations")]
+    public static void RunBiomeDecorations() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.BiomeDecorationVisibilityTests","EternalEnigma.Tests.DungeonThemeTransitionTests",
+        "EternalEnigma.Tests.EnvironmentPlaygroundTests","EternalEnigma.Tests.CampaignTravelTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Biome Travel")]
+    public static void RunBiomeTravel() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.BiomeDecorationVisibilityTests",
+        "EternalEnigma.Tests.CampaignTravelTests.OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel",
+        "EternalEnigma.Tests.CampaignTravelTests.TownEntranceVictoryAndDuplicateCallbacksPersistKeyAndReturnInsideTown");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Main Menu Startup")]
     public static void RunMainMenuStartup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.MainMenuStartupTests");
@@ -149,6 +165,13 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run ButtonStyles")]
     public static void RunButtonStyles() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.CampaignPresentationTests", "EternalEnigma.Tests.MenuSelectionTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Shared UI Backgrounds")]
+    public static void RunSharedUIBackgrounds() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignPresentationTests.SceneAndInstantiatedPrefabButtonsHaveSerializedStyles",
+        "EternalEnigma.Tests.CampaignPresentationTests.CampaignUsesTravelHudAndPartyCanCloseBeforeLeavingTown",
+        "EternalEnigma.Tests.DungeonControlTests.FullControlPromptsForEachActionAndRestoresLeader",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.SettingsKeepCategoryFocusAndBackReturnsToGameplay");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Skills")]
     public static void RunSkills() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

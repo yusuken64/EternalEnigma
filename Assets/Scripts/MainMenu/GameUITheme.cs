@@ -22,16 +22,9 @@ public sealed class GameUITheme : ScriptableObject
     }
     public void StyleButton(Button button)
     {
-        var image = button.targetGraphic as Image;
-        bool labelled = button.GetComponentInChildren<TMP_Text>(true) != null || button.GetComponentInChildren<Text>(true) != null;
-        if (image == null || (!labelled && image.name != "Button frame"))
-        {
-            var frame = button.transform.Find("Button frame");
-            image = frame != null ? frame.GetComponent<Image>() : GameUISkin.Rect("Button frame", button.transform, Vector2.zero, Vector2.one).gameObject.AddComponent<Image>();
-            image.transform.SetAsFirstSibling(); image.raycastTarget = false;
-        }
-        Surface(image, Button);
-        button.targetGraphic = image; button.transition = Selectable.Transition.ColorTint;
+        // Backgrounds inherit their sprite and slicing from GameButtonBackground.prefab.
+        // Do not stamp Image properties here: that would break prefab inheritance.
+        button.transition = Selectable.Transition.ColorTint;
         button.colors = new ColorBlock { normalColor = Color.white, highlightedColor = new Color(1,.96f,.80f),
             selectedColor = Selected, pressedColor = new Color(.77f,.67f,.52f), disabledColor = new Color(.65f,.65f,.65f,.65f),
             colorMultiplier = 1, fadeDuration = .1f };

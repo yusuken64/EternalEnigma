@@ -61,8 +61,12 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
         if (!smart) Draw(grid, OverworldLayers.Roads, RoadMaterial, .005f, excludeWater: true);
         Draw(grid, OverworldLayers.Bridges, BridgeMaterial, -.005f);
         if (GetComponent<CampaignOverworld>().CosmeticKit == null)
+        {
             OverworldTownVisuals.Build(grid, surfaces.transform, creator.twcAsset.cellSize,
                 BarrierMaterial, RoadMaterial, meshes);
+            var catalog=BiomeDecorationCatalog.Load();
+            if(catalog!=null&&BiomeDecorations.Enabled){var root=BiomeDecorationPlacement.Reset(surfaces.transform);BiomeDecorationPlacement.Walls(surfaces.transform,root,catalog,grid.CampaignSeed,"overworld",creator.twcAsset.cellSize);}
+        }
         hiddenRenderers = System.Array.FindAll(creator.worldObject.GetComponentsInChildren<Renderer>(),
             r => r.GetComponentInParent<EnvironmentMeshOwner>() == null);
         foreach (var renderer in hiddenRenderers) renderer.enabled = false;

@@ -12,10 +12,12 @@ public sealed class EnvironmentBatch
         owner = parent.gameObject.AddComponent<EnvironmentMeshOwner>();
     }
     public void Add(Mesh mesh, Material material, Vector3 position, Vector3 scale, float rotation = 0)
+        => Add(mesh,material,position,scale,Quaternion.Euler(0,0,rotation));
+    public void Add(Mesh mesh, Material material, Vector3 position, Vector3 scale, Quaternion rotation)
     {
         var key = (Mathf.FloorToInt(position.x / 64), Mathf.FloorToInt(position.y / 64), material);
         if (!groups.TryGetValue(key, out var list)) groups[key] = list = new List<CombineInstance>();
-        list.Add(new CombineInstance { mesh = mesh, transform = Matrix4x4.TRS(position, Quaternion.Euler(0, 0, rotation), scale) });
+        list.Add(new CombineInstance { mesh = mesh, transform = Matrix4x4.TRS(position, rotation, scale) });
         owner.PropCount++; owner.TriangleCount += (int)mesh.GetIndexCount(0) / 3;
     }
     public void Finish()

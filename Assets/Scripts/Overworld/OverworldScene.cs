@@ -202,7 +202,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
         SaveProgress();
         RefreshGates();
-        Message = locations.TryGetValue(Position, out var location) ? location.Id + " — " + location.Kind + " | Enter / A: interact" : "";
+        Message = locations.TryGetValue(Position, out var location) ? (location.Kind == LocationKind.Town ? Context.GetTownDisplayName(location.Id) : location.Id) + " — " + location.Kind + " | Enter / A: interact" : "";
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
             if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) Message += " | " + GateDescription(id);
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
@@ -269,8 +269,9 @@ public sealed class OverworldScene : MonoBehaviour
     public string WarpLabel(CampaignRoute route)
     {
         string destination = Map.CurrentGrid.Locations[route.From].Equals(Position) ? route.To : route.From;
-        string region = Campaign.Locations.First(l => l.Id == destination).RegionId;
-        return "Warp to " + Campaign.Regions.First(r => r.Id == region).DisplayName +
+        var target = Campaign.Locations.First(l => l.Id == destination);
+        string region = target.RegionId;
+        return "Warp to " + (target.Kind==LocationKind.Town?Context.GetTownDisplayName(destination):Campaign.Regions.First(r => r.Id == region).DisplayName) +
             (route.CanTraverse(Held, resolved) ? "" : " | " + gates.Hint(route, Held));
     }
 

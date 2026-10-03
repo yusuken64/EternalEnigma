@@ -17,14 +17,16 @@ public static class GameUIButtonAuthoring
     [MenuItem("Tools/Eternal Enigma/UI/Validate Saved Button Styles")]
     public static void Validate()
     {
-        if (EditorApplication.isPlaying) throw new InvalidOperationException("Validate outside Play Mode.");
+        GameUIButtonBackgroundAuthoring.RequireSavedScenes();
         var sprite = GameUITheme.Current.Button;
         int count = 0;
         void Check(Button button, string path)
         {
             if (!(button.targetGraphic is Image image) || image.sprite != sprite ||
-                image.type != Image.Type.Sliced || button.transition != Selectable.Transition.ColorTint)
+                image.type != Image.Type.Sliced || image.pixelsPerUnitMultiplier != 1 ||
+                button.transition != Selectable.Transition.ColorTint)
                 throw new InvalidOperationException($"Missing serialized style: {path} / {button.name}");
+            GameUIButtonBackgroundAuthoring.ValidateBackground(image, path);
             count++;
         }
         foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs", "Assets/Resources" }))
@@ -43,16 +45,14 @@ public static class GameUIButtonAuthoring
             }
         }
         finally { EditorSceneManager.RestoreSceneManagerSetup(setup); }
-        File.WriteAllText("Temp/UIValidation/saved-button-validation.txt", $"PASS: {count} saved scene/prefab buttons have serialized styles outside Play Mode.");
+        Directory.CreateDirectory("Temp/UIValidation");
+        File.WriteAllText("Temp/UIValidation/saved-button-validation.txt", $"PASS: {count} saved scene/prefab buttons inherit sliced backgrounds with multiplier 1 outside Play Mode.");
     }
 
     [MenuItem("Tools/Eternal Enigma/UI/Bake Button Styles")]
     public static void Bake()
     {
-        if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode before baking UI assets.");
-        for (int i = 0; i < SceneManager.sceneCount; i++)
-            if (SceneManager.GetSceneAt(i).isDirty)
-                throw new InvalidOperationException("Save the open scene edits before baking button styles.");
+        GameUIButtonBackgroundAuthoring.RequireSavedScenes();
         CreateTheme();
         CreateButtonPrefab();
         CreateLegacySkin();
@@ -63,6 +63,9 @@ public static class GameUIButtonAuthoring
             .Distinct().OrderBy(p => p).ToArray();
         foreach (string path in prefabs)
         {
+            // These assets define the artwork; the generic hierarchy pass must not restyle them.
+            if (path == GameUIButtonBackgroundAuthoring.BackgroundPath ||
+                path == GameUIPanelBackgroundAuthoring.BackgroundPath) continue;
             var root = PrefabUtility.LoadPrefabContents(path);
             try
             {
@@ -97,7 +100,11 @@ public static class GameUIButtonAuthoring
         Debug.Log($"Baked styles into {sceneButtons} scene buttons and {prefabButtons} prefab buttons.");
     }
 
-    private static void Style(Button button) => GameUITheme.Current.StyleButton(button);
+    private static void Style(Button button)
+    {
+        GameUIButtonBackgroundAuthoring.EnsureBackground(button);
+        GameUITheme.Current.StyleButton(button);
+    }
 
     private static void StyleHierarchy(GameObject root)
     {
@@ -105,6 +112,8 @@ public static class GameUIButtonAuthoring
         var images = root.GetComponentsInChildren<Image>(true);
         foreach (var image in images)
         {
+            if (!image.enabled || GameUIPanelBackgroundAuthoring.IsShared(image) ||
+                GameUIButtonBackgroundAuthoring.IsShared(image)) continue;
             string name = image.name.ToLowerInvariant();
             if (image.GetComponentInParent<Button>() != null || image.GetComponentInParent<Slider>() != null ||
                 image.GetComponentInParent<Toggle>() != null || image.GetComponentInParent<Scrollbar>() != null ||
@@ -115,6 +124,7 @@ public static class GameUIButtonAuthoring
             if (plain || name.Contains("background") || name.Contains("panel") || name.Contains("frame"))
                 theme.Surface(image, theme.Panel, 24);
         }
+        GameUIPanelBackgroundAuthoring.MigrateHierarchy(root);
         foreach (var label in root.GetComponentsInChildren<TMP_Text>(true))
         {
             // World labels and floating combat text keep their contrast against the world.

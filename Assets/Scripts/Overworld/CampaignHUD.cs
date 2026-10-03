@@ -102,9 +102,9 @@ public sealed class CampaignHUD : MonoBehaviour
                  (!IsPartyOpen && common.MenuInputHandler.PlayerInput.actions["Plan"].WasPressedThisFrame())))
                 SetPartyOpen(!IsPartyOpen);
             var context = common.CampaignContext;
-            message.text = context.CanLeaveTown(Town.Configuration.Id)
+            message.text = context.GetTownDisplayName(Town.Configuration.Id)+"\n"+(context.CanLeaveTown(Town.Configuration.Id)
                 ? "Town gate open\nFollow the south corridor to leave town."
-                : "Town gate closed\nClear the dungeon inside town to open the way.";
+                : "Town gate closed\nClear the dungeon inside town to open the way.");
             string key = string.Join("|", context.Roster.OrderBy(id => id)) + "/" + string.Join("|", context.Active.OrderBy(id => id));
             if (key == rosterKey) return;
             rosterKey = key;

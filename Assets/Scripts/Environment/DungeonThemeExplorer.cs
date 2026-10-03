@@ -86,6 +86,7 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
         Floor=floor;
         if(!selection.IsLegacy) DungeonPresentation.Decorate(creator,floor,Catalog.Get(selection));
         else DungeonPresentation.TrackLegacyMeshes(WorldRoot);
+        BiomeDecorations.Dungeon(creator,floor,selection,true);
         DungeonPresentation.PreviewScenery(creator,floor,Catalog.Get(selection));
         IsBuilding=false;IsReady=true;WorldRoot.SetActive(visible);
         if(visible) {ApplyLighting();Frame();}UpdateControls();

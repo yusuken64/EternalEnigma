@@ -29,6 +29,8 @@ public sealed class DungeonThemeCatalog : ScriptableObject
     // Only build presentation changes. Blueprint stacks, masks, dimensions and seed remain untouched.
     public void Apply(TileWorldCreatorAsset clone, DungeonVisualSelection selection, bool throne)
     {
+        // Preserve the legacy renderer's random stream. Its torch output is retired at
+        // generation completion before the replacement decoration root becomes visible.
         if (selection.IsLegacy) return;
         var theme = Get(selection);
         for (int i=0;i<clone.mapBuildLayers.Count;i++)
@@ -42,7 +44,7 @@ public sealed class DungeonThemeCatalog : ScriptableObject
                 // Reserve the flat accent material for the throne's actual carpet.
                 var preset = role.Contains("carpet") ? (throne ? theme.Accent : theme.Floor) : role.Contains("floor") || role.Contains("ground") ? theme.Floor : throne ? theme.ThroneBoundary : theme.RegularBoundary;
                 clone.mapBuildLayers[i] = new DungeonThemeTileLayer { guid=layer.guid, assignedGenerationLayerGuid=layer.assignedGenerationLayerGuid,
-                    layerName=layer.layerName, active=layer.active, Preset=preset, Offset=tiles.globalPositionOffset + (role.Contains("carpet") && throne ? new Vector3(0,0,-.015f) : Vector3.zero),
+                    layerName=layer.layerName, active=layer.active, Preset=preset, Offset=tiles.globalPositionOffset + (role.Contains("carpet") && throne ? new Vector3(0,0,-.0005f) : Vector3.zero),
                     IgnoreLayers=tiles.ignoreLayers.ToArray() };
             }
             else layer.active = false; // Legacy torches/gates/columns are replaced by bounded cosmetics.

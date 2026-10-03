@@ -15,6 +15,8 @@ public sealed class OverworldLaunchOptions
 [Serializable]
 public sealed class CampaignSnapshot
 {
+    public int NamingVersion;
+    public TownDisplayName[] TownNames = Array.Empty<TownDisplayName>();
     public int Seed;
     public string Identity = "";
     public string Fingerprint = "";
@@ -28,6 +30,13 @@ public sealed class CampaignSnapshot
         Claimed = Array.Empty<string>(), Roster = Array.Empty<string>(), Active = Array.Empty<string>(),
         Towns = Array.Empty<string>(), Completed = Array.Empty<string>();
     public Capability[] Permanent = Array.Empty<Capability>();
+}
+
+[Serializable]
+public sealed class TownDisplayName
+{
+    public string TownId = "";
+    public string Name = "";
 }
 
 /// <summary>The single mutable progression authority for either launch mode.</summary>
@@ -86,6 +95,7 @@ public HashSet<string> Completed { get; }
         var fingerprint = CampaignFingerprint.Compute(Campaign);
         if (snapshot != null && State.Fingerprint != fingerprint) throw new InvalidOperationException("Campaign save fingerprint mismatch.");
         State.Fingerprint = fingerprint;
+        BackfillTownNames();
         positionInitialized = snapshot != null && State.Scene != "Town" &&
             !Campaign.Locations.Any(l => l.Id == State.PendingDungeon && l.ParentTownId != null);
         Keys = new(State.Keys); Opened = new(State.Opened); Resolved = new(State.Resolved); Claimed = new(State.Claimed);
@@ -100,6 +110,20 @@ public HashSet<string> Completed { get; }
         State.Towns = Towns.OrderBy(x => x).ToArray(); State.Completed = Completed.OrderBy(x => x).ToArray(); State.Permanent = Permanent.Values.ToArray();
         return State;
     }
+    private void BackfillTownNames()
+    {
+        var names = (State.TownNames ?? Array.Empty<TownDisplayName>()).Where(n => n != null &&
+            !string.IsNullOrWhiteSpace(n.TownId) && !string.IsNullOrWhiteSpace(n.Name)).ToList();
+        var reserved = new HashSet<string>(names.Select(n => n.Name), StringComparer.OrdinalIgnoreCase);
+        foreach (var town in Campaign.Locations.Where(l => l.Kind == LocationKind.Town).OrderBy(l => l.Id, StringComparer.Ordinal))
+            if (!names.Any(n => n.TownId == town.Id)) names.Add(new TownDisplayName { TownId = town.Id,
+                Name = TownNameGenerator.Generate(State.Seed, town.Id,
+                    OverworldGridGenerator.BiomeForRegion(Campaign, town.RegionId), reserved) });
+        State.TownNames = names.ToArray();
+        if (State.NamingVersion == 0) State.NamingVersion = TownNameGenerator.Version;
+    }
+    public string GetTownDisplayName(string townId) => State.TownNames.FirstOrDefault(n => n.TownId == townId)?.Name
+        ?? throw new ArgumentException("Unknown town.", nameof(townId));
     public bool Claim(string sourceId)
     {
         var source = Campaign.Sources.FirstOrDefault(s => s.Id == sourceId);

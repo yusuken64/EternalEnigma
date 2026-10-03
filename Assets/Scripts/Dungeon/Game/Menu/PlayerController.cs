@@ -260,8 +260,9 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                newMapPosition += offset;
-                ControlledAlly.SetAction(new AttackAction(ControlledAlly, originalPosition, newMapPosition));
+                // Targeting has already offset its preview. Attacks always originate at
+                // the actor's cell, so holding aim must not double their reach.
+                ControlledAlly.SetAction(new AttackAction(ControlledAlly, originalPosition, originalPosition + offset));
             }
             return;
         }

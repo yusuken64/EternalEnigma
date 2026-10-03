@@ -1,0 +1,15 @@
+{
+    "runId":  "9811e63823a24bbdaf713fcce7de0040",
+    "mode":  "PlayMode",
+    "state":  "Completed",
+    "filter":  "EternalEnigma.Tests.PlayMode",
+    "testFilters":  [
+                        "EternalEnigma.Tests.BiomeDecorationVisibilityTests",
+                        "EternalEnigma.Tests.CampaignTravelTests.OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel",
+                        "EternalEnigma.Tests.CampaignTravelTests.TownEntranceVictoryAndDuplicateCallbacksPersistKeyAndReturnInsideTown"
+                    ],
+    "passed":  3,
+    "failed":  0,
+    "skipped":  0,
+    "xml":  "Docs/Art/Verification/BiomeTravelPlayMode.xml"
+}

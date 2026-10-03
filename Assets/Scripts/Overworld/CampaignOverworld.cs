@@ -162,6 +162,7 @@ public sealed class CampaignOverworld : MonoBehaviour
     private void BuildFinished(TileWorldCreator creator)
     {
         building = false; creator.OnBuildLayersComplete -= BuildFinished;
+        BiomeDecorations.World(creator,CurrentGrid);
         TerrainBuilt?.Invoke(creator);
     }
 

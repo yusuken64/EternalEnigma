@@ -26,7 +26,7 @@ public static class DungeonPropModels
         scale = Mathf.Min(scale, cellSize * .65f / Mathf.Max(.01f, bounds.size.z));
         visual.transform.localScale = Vector3.one * scale;
         visual.transform.localPosition = new Vector3(cellSize * .5f - bounds.center.x * scale,
-            cellSize * .5f - bounds.center.y * scale, -.03f - bounds.max.z * scale);
+            cellSize * .5f - bounds.center.y * scale, DungeonPresentation.GroundPlaneZ - bounds.max.z * scale);
         visual.AddComponent<MeshFilter>().sharedMesh = mesh;
         visual.AddComponent<MeshRenderer>().sharedMaterial = material;
         return visual;

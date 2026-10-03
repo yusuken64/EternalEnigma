@@ -24,6 +24,7 @@ public sealed class DungeonThemeTileLayer : TWCBuildLayer
             root.transform.localPosition=Offset;
             DungeonPresentation.SetGroundHeight(root.transform, Offset.z);
             var batch=new EnvironmentBatch(root.transform);
+            var faces=root.GetComponent<BiomeDecorationSurfaceSet>() ?? root.AddComponent<BiomeDecorationSurfaceSet>();faces.Faces.Clear();
             float unit=creator.twcAsset.cellSize*.5f;
             foreach(var tile in map.clusters.Values.SelectMany(c=>c.Values))
             {
@@ -33,6 +34,9 @@ public sealed class DungeonThemeTileLayer : TWCBuildLayer
                     TileData.TileType.interiorCorner=>Preset.interiorCornerTile, _=>Preset.fillTile };
                 if(prefab==null) continue;
                 var filter=prefab.GetComponentInChildren<MeshFilter>();
+                if(tile.tileType==TileData.TileType.edge && filter.sharedMesh.bounds.size.z>.2f)
+                    faces.Add(filter.sharedMesh,Matrix4x4.TRS(new Vector3((tile.position.x+.5f)*unit,(tile.position.z+.5f)*unit,0),Quaternion.Euler(0,0,-tile.yRotation),Vector3.one*unit),
+                        EternalEnigma.Core.World.OverworldBiome.Grassland,DecorationSurface.BuiltWall,creator.twcAsset.cellSize);
                 batch.Add(filter.sharedMesh,filter.GetComponent<MeshRenderer>().sharedMaterial,
                     new Vector3((tile.position.x+.5f)*unit,(tile.position.z+.5f)*unit,0),Vector3.one*unit,-tile.yRotation);
             }

@@ -32,7 +32,7 @@ public class MessageDialog : Dialog
         foreach (Transform child in transform)
         {
             if (child == panel) continue;
-            var backdrop = child.GetComponent<Image>();
+            var backdrop = GameUISkin.PanelGraphic(child);
             if (backdrop == null) continue;
             backdrop.sprite = null;
             backdrop.color = new Color(0, 0, 0, .65f);

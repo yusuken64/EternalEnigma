@@ -50,6 +50,8 @@ namespace EternalEnigma.Tests
             yield return null;
             var owner = p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Single(o => o.name == "Medieval streets, houses and parks_layer");
             int triangles = owner.TriangleCount;
+            var originalOwners=p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Where(o=>o.name!="Biome decorations").Select(o=>o.name).OrderBy(n=>n).ToArray();
+            Assert.That(originalOwners.Distinct().Count(),Is.EqualTo(originalOwners.Length),"One owner per terrain layer");
             Assert.That(triangles, Is.GreaterThan(100));
             Assert.That(p.TownCreator.worldObject.GetComponentsInChildren<Collider>(), Is.Empty);
             for (int i = 0; i < 8; i++)
@@ -62,7 +64,8 @@ namespace EternalEnigma.Tests
             Assert.That(p.TownBiome, Is.EqualTo(OverworldBiome.Grassland));
             Assert.That(owner.TriangleCount, Is.EqualTo(triangles));
             p.Rebuild(); yield return Until(() => builds == 10); yield return null;
-            Assert.That(p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Length, Is.EqualTo(4));
+            Assert.That(p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Where(o=>o.name!="Biome decorations").Select(o=>o.name).OrderBy(n=>n), Is.EqualTo(originalOwners));
+            Assert.That(p.TownCreator.worldObject.transform.Find("Biome decorations"),Is.Not.Null);
             bool worldDone = false; p.Overworld.TerrainBuilt += _ => worldDone = true;
             p.ShowOverworld(); yield return Until(() => worldDone); yield return null;
             var wc = p.Overworld.GetComponent<TileWorldCreator>();

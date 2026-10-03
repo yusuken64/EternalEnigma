@@ -39,6 +39,8 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             foreach (var child in root.transform.Cast<Transform>().ToArray()) Release(child.gameObject);
             foreach (var old in root.GetComponents<EnvironmentMeshOwner>()) Release(old);
             var batch = new EnvironmentBatch(root.transform);
+            var decorationFaces=root.GetComponent<BiomeDecorationSurfaceSet>() ?? root.AddComponent<BiomeDecorationSurfaceSet>();
+            decorationFaces.Faces.Clear();
             var grid = creator.GetComponent<CampaignOverworld>()?.CurrentGrid;
             CoreLayoutCache.TryGetTown(creator, out var town);
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
@@ -64,6 +66,9 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 // Authored preset child rotates the XY mesh into TWC's canonical XZ plane.
                 var mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
                 bool alley = Road && town != null && town.Layers.TryGetValue(TownLayers.Alleys, out var alleys) && alleys[x,y];
+                if(!Road && (wall || tile.tileType==TileData.TileType.edge) && (Buildings || wall || mesh.bounds.size.z*HeightScale>.25f))
+                    decorationFaces.Add(mesh,Matrix4x4.TRS(new Vector3((tile.position.x+.5f)*unit,(tile.position.z+.5f)*unit,-Elevation*size),Quaternion.Euler(0,0,angle),new Vector3(unit,unit,unit*HeightScale)),palette,
+                        Buildings?DecorationSurface.Facade:wall?DecorationSurface.BuiltWall:DecorationSurface.NaturalWall,size,Buildings?(town?.Footprints.FirstOrDefault(f=>f.Cells.Contains(new GridPoint(x,y)))?.Door.ToString()??x+","+y):null);
                 batch.Add(mesh, SurfaceMaterial != null ? SurfaceMaterial : Road ? (alley ? Kit.Paving : Kit.Road) : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
                     new Vector3((tile.position.x + .5f) * unit, (tile.position.z + .5f) * unit, -Elevation * size),
                     new Vector3(unit, unit, unit * HeightScale), angle);

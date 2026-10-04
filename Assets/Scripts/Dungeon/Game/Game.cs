@@ -54,11 +54,6 @@ public class Game : SingletonMonoBehaviour<Game>
 	}
 	
 	public List<Character> DeadUnits; //dead units are added to this, destroy at end turn;
-
-	public TextMeshProUGUI SkilText;
-	public TextMeshProUGUI FloorText;
-	public TextMeshProUGUI InventoryText;
-
 	public Transform CharacterStatsDisplayContainer;
 	public CharacterStatsDisplay CharacterStatsDisplayPrefab;
 	public List<CharacterStatsDisplay> CharacterStatsDisplays;
@@ -377,9 +372,7 @@ public class Game : SingletonMonoBehaviour<Game>
 	public void UpdateUI()
 	{
 		if (PlayerController == null) { return; }
-		FloorText.text = $"{PlayerController.Floor}F";
 		CharacterStatsDisplays.ForEach(x => x.UpdateUI());
-
 	}
 	
 	[ContextMenu("AdvanceFloor")]

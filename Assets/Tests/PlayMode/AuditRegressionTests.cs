@@ -96,13 +96,11 @@ public class AuditRegressionTests
     {
         yield return harness.LoadDungeon(new TestScenario { StartFloor = 4, EndFloor = 5 });
         Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(4));
-        Assert.That(harness.Game.FloorText.text, Is.EqualTo("4F"));
         Assert.That(harness.Game.NewFloorMessage.FloorMessage.text, Is.EqualTo("Floor 4"));
         Assert.That(harness.Game.CurrentDungeon.IsExitFloor, Is.False);
         harness.Game.AdvanceFloor();
         yield return harness.WaitForIdle();
         Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(5));
-        Assert.That(harness.Game.FloorText.text, Is.EqualTo("5F"));
         Assert.That(harness.Game.CurrentDungeon.IsExitFloor, Is.True);
         Assert.That(harness.Game.NewFloorMessage.FloorMessage.text, Is.EqualTo("Floor 5"));
         harness.Game.GameOverScreen.Setup(harness.Game.PlayerController);

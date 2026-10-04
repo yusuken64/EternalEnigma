@@ -43,7 +43,6 @@ public sealed class DungeonHud : MonoBehaviour
         target.color = GameUITheme.LightInk;
         var shadow = target.gameObject.AddComponent<Shadow>();
         shadow.effectColor = new Color(0,0,0,.9f); shadow.effectDistance = new Vector2(1,-1);
-        game.FloorText.gameObject.SetActive(false); game.InventoryText.gameObject.SetActive(false);
     }
 #endif
     #if UNITY_EDITOR

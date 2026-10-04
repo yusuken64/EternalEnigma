@@ -12,7 +12,6 @@ public class Minimap : MonoBehaviour
     public Image Frame;
     public Color OverlapMapColor;
     public Color FullMapColor;
-    public GameObject background;
 
     public Color VisibleGroundColor;
     public Color ExploredGroundColor;
@@ -198,17 +197,14 @@ public class Minimap : MonoBehaviour
         {
             case MinimapMode.Hidden:
                 minimapImage.gameObject.SetActive(false);
-                background.gameObject.SetActive(false);
                 break;
             case MinimapMode.Overlay:
                 minimapImage.color = OverlapMapColor;
                 minimapImage.gameObject.SetActive(true);
-                background.gameObject.SetActive(false);
                 break;
             case MinimapMode.Full:
                 minimapImage.color = FullMapColor;
                 minimapImage.gameObject.SetActive(true);
-                background.gameObject.SetActive(true);
                 break;
         }
     }

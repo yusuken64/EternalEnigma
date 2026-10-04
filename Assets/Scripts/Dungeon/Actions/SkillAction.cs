@@ -13,6 +13,7 @@ internal class SkillAction : GameAction
 	private Vector3Int direction;
 	private MissileTargeting.Hit missileHit;
 	private List<Character> affected = new();
+	private bool castSucceeded;
 
 	internal Skill Skill => skill;
 
@@ -36,6 +37,7 @@ internal class SkillAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if (!IsValid(character)) return new();
+		castSucceeded = true;
         GameMessages.AbilityCast(caster, skill);
 		bool inventoryTargeting = skill.Targeting == SkillTargeting.InventoryItem;
 		affected = inventoryTargeting ? new List<Character> { caster } : skill.GetAffectedCharacters(caster, target);
@@ -84,6 +86,13 @@ internal class SkillAction : GameAction
 			yield return MissileTargeting.Animate(caster, missileHit.Cell, skill.MissileProjectilePrefab);
 		foreach (var recipient in affected)
 			if (recipient != null) yield return skill.ExecuteRoutine(caster, recipient);
+	}
+
+	internal void PlayCastSound()
+	{
+		if (!castSucceeded) return;
+		var audio = AudioManager.Instance;
+		audio?.PlaySoundEffect(skill.CastSound != null ? skill.CastSound : audio.SoundEffects?.AbilityCast);
 	}
 
     internal override IEnumerable<Vector3Int> AnimationCells(Character actor)

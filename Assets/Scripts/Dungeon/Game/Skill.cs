@@ -35,6 +35,8 @@ public class Skill : ScriptableObject
 
 	public SkillAnimation SkillAnimation;
 	public CombatEffectProfile VisualProfile;
+	[Tooltip("Played once when a successful active skill begins, through the effects mixer.")]
+	public AudioClip CastSound;
 	public Sprite Icon;
 
 	private void OnEnable()

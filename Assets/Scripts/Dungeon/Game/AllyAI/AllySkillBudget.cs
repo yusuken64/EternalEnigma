@@ -30,7 +30,7 @@ public static class AllySkillBudget
 
 	public static bool ArrowsAllow(int available, int required) => required <= 0 || available - required >= ArrowReserve;
 
-	public static bool IsEmergency(int hp, int hpMax) => hpMax > 0 && hp > 0 && hp < hpMax * EmergencyHpFraction;
+	public static bool IsEmergency(int hp, int hpMax) => hpMax > 0 && hp > 0 && (long)hp * 10 < (long)hpMax * 3;
 
 	public static float DangerScore(int strength, int hp, int hpMax, bool isBoss)
 	{

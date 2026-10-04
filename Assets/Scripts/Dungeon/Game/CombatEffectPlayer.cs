@@ -85,6 +85,10 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         else
         {
             var go = Instantiate(stage.Prefab, transform);
+            var effectsGroup = AudioManager.Instance?.EffectAudioMixerGroup;
+            if (effectsGroup != null)
+                foreach (var source in go.GetComponentsInChildren<AudioSource>(true))
+                    source.outputAudioMixerGroup = effectsGroup;
             item = new Instance { Object = go, Prefab = stage.Prefab,
                 Particles = go.GetComponentsInChildren<ParticleSystem>(true), Renderers = go.GetComponentsInChildren<Renderer>(true) };
         }

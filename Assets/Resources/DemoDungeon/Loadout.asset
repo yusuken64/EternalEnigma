@@ -41,6 +41,7 @@ MonoBehaviour:
     Steps:
     - rid: 3678569417729900613
   VisualProfile: {fileID: 11400000, guid: 409233a7fe6327d4fb61c86fd6383812, type: 2}
+  CastSound: {fileID: 8300000, guid: cfce0cea076109f478783201b2a9f57f, type: 3}
   Icon: {fileID: 21300000, guid: 69c75029972e0924b927a0f528d2cf66, type: 3}
   PassiveStatModification:
     HPMax: 0
@@ -133,6 +134,7 @@ MonoBehaviour:
     Steps:
     - rid: 3678569417729900613
   VisualProfile: {fileID: 0}
+  CastSound: {fileID: 8300000, guid: cfce0cea076109f478783201b2a9f57f, type: 3}
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
@@ -479,6 +481,7 @@ MonoBehaviour:
   SkillAnimation:
     Steps: []
   VisualProfile: {fileID: 0}
+  CastSound: {fileID: 8300000, guid: 323e15cfe809e114ab92c9f4b25e8bc2, type: 3}
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
@@ -590,6 +593,7 @@ MonoBehaviour:
     Steps:
     - rid: 3678569417729900614
   VisualProfile: {fileID: 0}
+  CastSound: {fileID: 8300000, guid: d1afd3f4d23c24f418ffc315afb04965, type: 3}
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
@@ -775,6 +779,7 @@ MonoBehaviour:
     Steps:
     - rid: 3678569417729900614
   VisualProfile: {fileID: 0}
+  CastSound: {fileID: 8300000, guid: d1afd3f4d23c24f418ffc315afb04965, type: 3}
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
@@ -871,6 +876,7 @@ MonoBehaviour:
     Steps:
     - rid: 3678569417729900614
   VisualProfile: {fileID: 0}
+  CastSound: {fileID: 8300000, guid: 88b1cbe3caa3fee4b8b103b5edd7aba9, type: 3}
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
@@ -966,6 +972,7 @@ MonoBehaviour:
   SkillAnimation:
     Steps: []
   VisualProfile: {fileID: 0}
+  CastSound: {fileID: 8300000, guid: b0e62ed71b1538648b719821f4f63b4c, type: 3}
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
@@ -1035,6 +1042,7 @@ MonoBehaviour:
   SkillAnimation:
     Steps: []
   VisualProfile: {fileID: 0}
+  CastSound: {fileID: 8300000, guid: d1afd3f4d23c24f418ffc315afb04965, type: 3}
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
@@ -1195,6 +1203,7 @@ MonoBehaviour:
   SkillAnimation:
     Steps: []
   VisualProfile: {fileID: 0}
+  CastSound: {fileID: 8300000, guid: d1afd3f4d23c24f418ffc315afb04965, type: 3}
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0

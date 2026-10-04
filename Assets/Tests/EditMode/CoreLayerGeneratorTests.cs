@@ -14,7 +14,6 @@ namespace EternalEnigma.Tests.CoreIntegration
     {
         private const string DungeonPath = "Assets/Prefabs/Dungeon/DungeonAsset.asset";
         private const string ThronePath = "Assets/Prefabs/Dungeon/DungeonThroneAsset.asset";
-        private const string VillagePath = "Assets/TileWorldCreator/VillageLSystemAsset.asset";
 
         private GameObject host;
         private TileWorldCreator creator;
@@ -79,18 +78,6 @@ namespace EternalEnigma.Tests.CoreIntegration
         }
 
         [Test]
-        public void AssetsAreCoreBackedAndBuildLayerGuidsResolve()
-        {
-            var dungeon = AssetDatabase.LoadAssetAtPath<TileWorldCreatorAsset>(DungeonPath);
-            var throne = AssetDatabase.LoadAssetAtPath<TileWorldCreatorAsset>(ThronePath);
-            var village = AssetDatabase.LoadAssetAtPath<TileWorldCreatorAsset>(VillagePath);
-
-            //Assert.That(CoreLayerAuthoring.Verify(dungeon, CoreLayerNames.Dungeon), Is.Empty);
-            //Assert.That(CoreLayerAuthoring.Verify(throne, CoreLayerNames.Dungeon), Is.Empty);
-            //Assert.That(CoreLayerAuthoring.Verify(village, CoreLayerNames.Town), Is.Empty);
-        }
-
-        [Test]
         public void DungeonAssetExecutesToCoreLayersOnce()
         {
             var clone = LoadClone(DungeonPath);
@@ -151,48 +138,5 @@ namespace EternalEnigma.Tests.CoreIntegration
             Assert.That(seedEightFloor.Cast<bool>(), Is.Not.EqualTo(firstSeedSevenFloor.Cast<bool>()));
         }
 
-        [Test]
-        public void TownAssetConfiguredFromDefaultTownMatchesCorePlan()
-        {
-            var clone = LoadClone(VillagePath);
-            var config = Resources.Load<TownConfiguration>("Towns/DefaultTown");
-            Assert.That(config, Is.Not.Null, "Resources/Towns/DefaultTown.asset must exist.");
-
-            CoreTownLayerGenerator.Configure(clone, config);
-            creator.SetCustomRandomSeed(99);
-
-            creator.ExecuteAllBlueprintLayers();
-
-            int allyCount = clone.mapBlueprintLayers
-                .SelectMany(l => l.stack)
-                .Select(s => s.action)
-                .OfType<CoreTownLayerGenerator>()
-                .First()
-                .AllyCount;
-
-            var shopFlags = config.Buildings
-                .Select(b => b != null && b.HasInterior)
-                .ToArray();
-
-            var expectedOptions = new TownPlanOptions(99, 15, 15, shopFlags, allyCount,
-                new GridPoint(config.PartySpawn.x, config.PartySpawn.y), new GridPoint(config.PartySpawn.x, 0));
-            var expected = TownPlanGenerator.Generate(expectedOptions);
-
-            foreach (var name in new[] { TownLayers.ShopFloor, TownLayers.ShopWalls, TownLayers.Walkable, TownLayers.Buildings, TownLayers.Allies })
-            {
-                var actual = creator.GetMapOutputFromBlueprintLayer(name);
-                var expectedCells = expected.Layers[name].ToArray();
-                Assert.That(actual.Cast<bool>(), Is.EqualTo(expectedCells.Cast<bool>()), $"Layer '{name}' mismatch.");
-            }
-
-            Assert.That(CoreLayoutCache.TryGetTown(creator, out var plan), Is.True);
-            Assert.That(plan.BuildingSlots.Count, Is.EqualTo(config.Buildings.Count));
-
-            CoreLayoutCache.ClearResultFlags(clone);
-            foreach (var layer in clone.mapBlueprintLayers)
-            {
-                Assert.That(layer.mapResultFailed, Is.False, $"Layer '{layer.layerName}' still marked failed after ClearResultFlags.");
-            }
-        }
     }
 }

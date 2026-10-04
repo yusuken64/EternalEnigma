@@ -6591,6 +6591,9 @@ MonoBehaviour:
   Pause: {fileID: 8300000, guid: b83bf8726a7fac349a54389f0c57cda6, type: 3}
   Unpause: {fileID: 8300000, guid: e58d8bd078f188a4ba314e933b98528b, type: 3}
   Sleep: {fileID: 8300000, guid: aa967a280457c054bb646d57611f5bd0, type: 3}
+  Debuff: {fileID: 8300000, guid: acbcb75601b0082458fda8807f67c813, type: 3}
+  Teleport: {fileID: 8300000, guid: 8ff2a2d7e79f81c40ac447512f879374, type: 3}
+  AbilityCast: {fileID: 8300000, guid: d1afd3f4d23c24f418ffc315afb04965, type: 3}
   LevelUp: {fileID: 8300000, guid: 6cf9c85b5a3b88c468b21b9d21250adf, type: 3}
 --- !u!1 &1186547748
 GameObject:

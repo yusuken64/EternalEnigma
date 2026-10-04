@@ -41,6 +41,7 @@ MonoBehaviour:
     Steps:
     - rid: 292415685818319179
   VisualProfile: {fileID: 11400000, guid: d1d37990aaaf7c74da62aecacd0569ba, type: 2}
+  CastSound: {fileID: 8300000, guid: 00e4eb96f4f6cc249a632e4027644cad, type: 3}
   Icon: {fileID: 21300000, guid: 30b2db7a42ea1cb4688163c32bb1bc5d, type: 3}
   PassiveStatModification:
     HPMax: 0

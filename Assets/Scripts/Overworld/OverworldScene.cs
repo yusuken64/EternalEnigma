@@ -15,6 +15,7 @@ public sealed class OverworldScene : MonoBehaviour
     public CampaignOverworld Map;
     public TownAlly PlayerPrefab;
     public Camera ViewCamera;
+    public AudioClip OverworldMusic;
     public GameObject TownMarker;
     public GameObject DungeonMarker;
     public GameObject LandmarkMarker;
@@ -73,6 +74,7 @@ public sealed class OverworldScene : MonoBehaviour
         }
         creator = Map.GetComponent<TileWorldCreator>();
         var common = Common.Instance;
+        if (OverworldMusic != null) common.AudioManager?.PlayMusic(OverworldMusic);
         if (common.CampaignContext == null) common.BeginSandbox(OverworldLaunch.TakeSeed(Map.Seed));
         Context = common.CampaignContext;
         gameObject.AddComponent<OverworldMenuManager>();

@@ -31,6 +31,9 @@ public class TargetingAndArrowTests
         var go = new GameObject();
         gameObjects.Add(go);
         var ally = go.AddComponent<Ally>();
+        ally.Vitals = new Vitals();
+        ally.Vitals.LinkedStats = () => new Stats { HPMax = 10 };
+        ally.Vitals.HP = 10;
         return ally;
     }
 
@@ -63,15 +66,12 @@ public class TargetingAndArrowTests
     public void NearestFirstWithoutTaunt()
     {
         var enemy = CreateAlly();
-        enemy.Vitals = new Vitals { HP = 10 };
         enemy.StatusEffects = new List<StatusEffect>();
 
         var candidateA = CreateAlly();
-        candidateA.Vitals = new Vitals { HP = 10 };
         candidateA.StatusEffects = new List<StatusEffect>();
 
         var candidateB = CreateAlly();
-        candidateB.Vitals = new Vitals { HP = 10 };
         candidateB.StatusEffects = new List<StatusEffect>();
 
         var candidates = new List<Character> { candidateA, candidateB };
@@ -84,15 +84,12 @@ public class TargetingAndArrowTests
     public void TauntPullsToTaunterWhenVisible()
     {
         var enemy = CreateAlly();
-        enemy.Vitals = new Vitals { HP = 10 };
         enemy.StatusEffects = new List<StatusEffect>();
 
         var candidateA = CreateAlly();
-        candidateA.Vitals = new Vitals { HP = 10 };
         candidateA.StatusEffects = new List<StatusEffect>();
 
         var candidateB = CreateAlly();
-        candidateB.Vitals = new Vitals { HP = 10 };
         candidateB.StatusEffects = new List<StatusEffect>();
 
         // Add Taunt to enemy with B as taunter
@@ -117,15 +114,12 @@ public class TargetingAndArrowTests
     public void ExpiredTauntIgnored()
     {
         var enemy = CreateAlly();
-        enemy.Vitals = new Vitals { HP = 10 };
         enemy.StatusEffects = new List<StatusEffect>();
 
         var candidateA = CreateAlly();
-        candidateA.Vitals = new Vitals { HP = 10 };
         candidateA.StatusEffects = new List<StatusEffect>();
 
         var candidateB = CreateAlly();
-        candidateB.Vitals = new Vitals { HP = 10 };
         candidateB.StatusEffects = new List<StatusEffect>();
 
         // Add expired Taunt to enemy
@@ -144,15 +138,12 @@ public class TargetingAndArrowTests
     public void StealthedAndDeadAreSkipped()
     {
         var enemy = CreateAlly();
-        enemy.Vitals = new Vitals { HP = 10 };
         enemy.StatusEffects = new List<StatusEffect>();
 
         var candidateA = CreateAlly();
-        candidateA.Vitals = new Vitals { HP = 10 };
         candidateA.StatusEffects = new List<StatusEffect>();
 
         var candidateB = CreateAlly();
-        candidateB.Vitals = new Vitals { HP = 10 };
         candidateB.StatusEffects = new List<StatusEffect>();
 
         // Test 1: A is stealthed, B should be selected
@@ -169,13 +160,13 @@ public class TargetingAndArrowTests
         candidateA.StatusEffects.Clear();
 
         // Test 2: A has HP 0, B should be selected
-        candidateA.Vitals = new Vitals { HP = 0 };
+        candidateA.Vitals.HP = 0;
 
         target = EnemyTargeting.SelectTarget(enemy, candidates);
         Assert.That(target, Is.SameAs(candidateB), "Dead candidate A is skipped, B is selected");
 
         // Test 3: All candidates excluded, null is returned
-        candidateB.Vitals = new Vitals { HP = 0 };
+        candidateB.Vitals.HP = 0;
         var stealth2 = candidateA.gameObject.AddComponent<StealthStatusEffect>();
         stealth2.TurnsLeft = 5;
         candidateA.StatusEffects.Add(stealth2);

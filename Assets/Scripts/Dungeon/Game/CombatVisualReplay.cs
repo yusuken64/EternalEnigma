@@ -115,6 +115,7 @@ internal sealed class CombatVisualReplay
     internal IEnumerator Play(GameAction action, Character actor, bool skip)
     {
         var player = CombatEffectPlayer.Get();
+        if (!skip && action is SkillAction skillAction) skillAction.PlayCastSound();
         if (!skip && player != null && Sequence != null)
         {
             if (Cast) yield return player.Cast(Sequence);

@@ -12,6 +12,7 @@ internal class CastTeleportPolicy : PolicyBase
 		{
 			new CastSpellAction()
 			{
+				CastSound = AudioManager.Instance?.SoundEffects.Teleport,
 				GetActionsFunc = () =>
 				{
 					return new()

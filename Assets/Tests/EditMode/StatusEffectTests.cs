@@ -207,6 +207,9 @@ public class StatusEffectTests
 		var stealth = Status<StealthStatusEffect>();
 		var owner = Actor();
 		var other = Actor();
+		other.Vitals = new Vitals();
+		other.Vitals.LinkedStats = () => new Stats { HPMax = 10 };
+		other.Vitals.HP = 10;
 
 		// When owner attacks other, Stealth should return RemoveStatusEffectAction
 		var attackAction = new TakeDamageAction(owner, other, 1, false, false, DamageElement.Physical);

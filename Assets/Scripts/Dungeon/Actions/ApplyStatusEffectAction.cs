@@ -63,8 +63,6 @@ public class ApplyStatusEffectAction : GameAction
 		if (skipAnimation) { yield break; }
 
 		DungeonFloatingText.Show(Game.Instance, statusEffectPrefab.GetEffectName(), Color.white, target);
-		//TODO get sound from status
-		AudioManager.Instance.SoundEffects.Sleep.PlayAsSound();
 		yield return null;
 	}
 

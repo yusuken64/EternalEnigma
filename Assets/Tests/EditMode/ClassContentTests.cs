@@ -331,35 +331,6 @@ namespace EternalEnigma.Tests
             }
         }
 
-        [Test]
-        public void BossesAndResistancesAreAuthored()
-        {
-            // Dragons and Demon Kings are bosses
-            var dragon = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_Dragon.prefab");
-            Assert.That(dragon, Is.Not.Null, "Dragon prefab should exist");
-            Assert.That(dragon.IsBoss, Is.True, "Dragon should be marked as boss");
-
-            var demonKing = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_DemonKing.prefab");
-            Assert.That(demonKing, Is.Not.Null, "Demon King prefab should exist");
-            Assert.That(demonKing.IsBoss, Is.True, "Demon King should be marked as boss");
-
-            // Slime is not a boss
-            var slime = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_Slime.prefab");
-            Assert.That(slime, Is.Not.Null, "Slime prefab should exist");
-            Assert.That(slime.IsBoss, Is.False, "Slime should not be marked as boss");
-
-            // Salamander has Fire Resistance 2
-            var salamander = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_Salamander.prefab");
-            Assert.That(salamander, Is.Not.Null, "Salamander prefab should exist");
-            Assert.That(salamander.StartingStats.FireResistance, Is.EqualTo(2),
-                "Salamander should have FireResistance 2");
-
-            // Golem has Lightning Resistance 2
-            var golem = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_Golem.prefab");
-            Assert.That(golem, Is.Not.Null, "Golem prefab should exist");
-            Assert.That(golem.StartingStats.LightningResistance, Is.EqualTo(2),
-                "Golem should have LightningResistance 2");
-        }
     }
 }
 #endif

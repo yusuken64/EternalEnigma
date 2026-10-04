@@ -33,5 +33,8 @@ public class SoundEffects : MonoBehaviour
 	//Atk_Magic_SFX
 	//Buffs_Heals_SFX
 	public AudioClip Sleep;
+	public AudioClip Debuff;
+	public AudioClip Teleport;
+	public AudioClip AbilityCast;
 	public AudioClip LevelUp;
 }

@@ -15,6 +15,7 @@ internal class CastFrailPolicy : PolicyBase
 		{
 			new CastSpellAction()
 			{
+				CastSound = AudioManager.Instance?.SoundEffects.Debuff,
 				GetActionsFunc = () =>
 				{
 					character.SetFacingByTargetPosition(game.PlayerController.TilemapPosition);

@@ -108,11 +108,30 @@ namespace EternalEnigma.Tests.CoreIntegration
             renderedWorld = creator.worldObject;
             bool complete = false;
             creator.OnBuildLayersComplete += _ => complete = true;
-            adapter.BuildMeshes();
-            double deadline = UnityEditor.EditorApplication.timeSinceStartup + 20;
-            while (!complete && UnityEditor.EditorApplication.timeSinceStartup < deadline) yield return null;
-            Assert.That(complete, Is.True, "TWC did not finish its object build.");
-            Assert.That(renderedWorld.GetComponentsInChildren<Transform>().Count(t => t.name == "CampaignTownMarker(Clone)"), Is.EqualTo(6));
+            var unexpectedErrors = new List<string>();
+            void CaptureLog(string message, string stackTrace, LogType type)
+            {
+                if ((type == LogType.Error || type == LogType.Exception || type == LogType.Assert) &&
+                    !message.StartsWith("Instantiating material due to calling renderer.material during edit mode."))
+                    unexpectedErrors.Add(message);
+            }
+            var previousIgnore = LogAssert.ignoreFailingMessages;
+            Application.logMessageReceived += CaptureLog;
+            LogAssert.ignoreFailingMessages = true;
+            try
+            {
+                adapter.BuildMeshes();
+                double deadline = UnityEditor.EditorApplication.timeSinceStartup + 20;
+                while (!complete && UnityEditor.EditorApplication.timeSinceStartup < deadline) yield return null;
+                Assert.That(complete, Is.True, "TWC did not finish its object build.");
+                Assert.That(unexpectedErrors, Is.Empty);
+                Assert.That(renderedWorld.GetComponentsInChildren<Transform>().Count(t => t.name == "CampaignTownMarker(Clone)"), Is.EqualTo(6));
+            }
+            finally
+            {
+                LogAssert.ignoreFailingMessages = previousIgnore;
+                Application.logMessageReceived -= CaptureLog;
+            }
         }
     }
 }

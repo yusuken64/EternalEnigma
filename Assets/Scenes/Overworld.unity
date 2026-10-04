@@ -262,6 +262,7 @@ MonoBehaviour:
   Map: {fileID: 344879134}
   PlayerPrefab: {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
   ViewCamera: {fileID: 1216682244}
+  OverworldMusic: {fileID: 8300000, guid: 3d35c887b8c4d124c91afc1f749b2316, type: 3}
   TownMarker: {fileID: 8558893673760508206, guid: fbe6fe74e127ce64ebfc2b05414a27c4, type: 3}
   DungeonMarker: {fileID: 6971330757350476272, guid: 3ad375cf66e494b4699c3e3fe0bd05ae, type: 3}
   LandmarkMarker: {fileID: 427689351167209922, guid: f1e8150e498418f4bb01525081268e11, type: 3}

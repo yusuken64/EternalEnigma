@@ -15,6 +15,7 @@ internal class CastSleepPolicy : PolicyBase
 		{
 			new CastSpellAction()
 			{
+				CastSound = AudioManager.Instance?.SoundEffects.Sleep,
 				GetActionsFunc = () =>
 				{
 					character.SetFacingByTargetPosition(game.PlayerController.TilemapPosition);

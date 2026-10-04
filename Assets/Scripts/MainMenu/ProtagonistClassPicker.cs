@@ -12,16 +12,31 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
     private Action<ClassDefinition, ClassDefinition> confirmed;
     private Action cancelled;
     private ClassDefinition primaryClass;
-    private Transform choices;
-    private TextMeshProUGUI title;
-    private TextMeshProUGUI details;
+    [SerializeField] private Transform choices;
+    [SerializeField] private TextMeshProUGUI title;
+    [SerializeField] private TextMeshProUGUI details;
+    public AuthoredButton ChoiceTemplate;
+    public ProtagonistPreview Preview;
+    public RawImage Portrait;
+    public Button BackButton;
     private bool secondaryStep;
     private bool finished;
 
-    public static ProtagonistClassPicker Show(IReadOnlyList<ClassDefinition> classes,
+    public static ProtagonistClassPicker Show(IReadOnlyList<ClassDefinition> classes,Action<ClassDefinition,ClassDefinition> confirmed,Action cancelled)
+    {
+        if(classes==null || classes.Count==0){confirmed?.Invoke(null,null);return null;}
+        var picker=AuthoredUI.Require<ProtagonistClassPicker>();picker.classes=classes;picker.confirmed=confirmed;picker.cancelled=cancelled;
+        picker.finished=false;picker.secondaryStep=false;picker.primaryClass=null;picker.gameObject.SetActive(true);
+        picker.BackButton.onClick.RemoveAllListeners();picker.BackButton.onClick.AddListener(picker.Back);
+        var configuration=UnityEngine.Object.FindFirstObjectByType<MainMenu>()?.TownConfiguration ?? TownSceneLoader.Default;
+        picker.Preview.Show(configuration?.StartingParty.FirstOrDefault(),picker.Portrait);
+        picker.BuildChoices();MenuUIInputModule.Active?.PushDialog(picker,picker.transform,EventSystem.current?.currentSelectedGameObject,picker.Back);return picker;
+    }
+#if UNITY_EDITOR
+    public static ProtagonistClassPicker AuthorLayout(IReadOnlyList<ClassDefinition> classes,
         Action<ClassDefinition, ClassDefinition> confirmed, Action cancelled)
     {
-        if (classes == null || classes.Count == 0) { confirmed?.Invoke(null, null); return null; }
+
         var canvas = GameUISkin.Canvas("ProtagonistClassPicker", null, 1000);
         var picker = canvas.gameObject.AddComponent<ProtagonistClassPicker>();
         picker.classes = classes; picker.confirmed = confirmed; picker.cancelled = cancelled;
@@ -31,9 +46,9 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
         var portrait = GameUISkin.Panel(canvas.transform, new Vector2(.05f, .21f), new Vector2(.34f, .81f));
         var raw = GameUISkin.Rect("Protagonist", portrait.transform, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
         raw.raycastTarget = false;
-        var preview = raw.gameObject.AddComponent<ProtagonistPreview>();
+        var preview = picker.Preview = raw.gameObject.AddComponent<ProtagonistPreview>();picker.Portrait=raw;
         var configuration = UnityEngine.Object.FindFirstObjectByType<MainMenu>()?.TownConfiguration ?? TownSceneLoader.Default;
-        preview.Show(configuration?.StartingParty.FirstOrDefault(), raw);
+
         GameUISkin.Label(canvas.transform, "YOUR PROTAGONIST", new Vector2(.07f, .22f), new Vector2(.32f, .27f), 22).alignment = TextAlignmentOptions.Center;
         picker.details = GameUISkin.Label(canvas.transform, "", new Vector2(.38f, .51f), new Vector2(.94f, .81f), 26);
         picker.details.enableAutoSizing = true; picker.details.fontSizeMin = 20; picker.details.fontSizeMax = 28;
@@ -41,11 +56,10 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
         GameUISkin.Label(canvas.transform,
             "Your choice shapes the protagonist's combat style. Explore the same campaign, recruit companions, and unlock routes through their abilities and your discoveries.",
             new Vector2(.05f, .095f), new Vector2(.72f, .18f), 24);
-        GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back);
-        picker.BuildChoices();
-        MenuUIInputModule.Active?.PushDialog(picker, canvas.transform, EventSystem.current?.currentSelectedGameObject, picker.Back);
+        picker.BackButton=GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back);
         return picker;
     }
+#endif
 
     private void BuildChoices()
     {
@@ -53,22 +67,12 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
         title.text = secondaryStep ? "Choose a secondary class" : "Choose your primary class";
         var available = classes.Where(c => !secondaryStep || c.Id != primaryClass.Id).ToList();
         int count = available.Count + (secondaryStep ? 1 : 0);
-        int rows = Mathf.CeilToInt(count / 2f);
         Button first = null;
         for (int i = 0; i < count; i++)
         {
             var cls = secondaryStep && i == 0 ? null : available[i - (secondaryStep ? 1 : 0)];
-            float x = (i % 2) * .51f, top = 1 - (i / 2) / (float)rows;
-            var button = GameUISkin.Button(choices, cls == null ? "Begin with primary only" : cls.DisplayName,
-                new Vector2(x, top - .88f / rows), new Vector2(x + .49f, top), () => Choose(cls));
-            var relay = button.gameObject.AddComponent<ClassPickerFocus>();
-            relay.Focused = () => ShowDetails(cls);
-            if (cls != null)
-            {
-                var icon = GameUISkin.Rect("Class emblem", button.transform, new Vector2(.045f, .16f), new Vector2(.17f, .84f)).gameObject.AddComponent<Image>();
-                icon.sprite = Resources.Load<Sprite>("UI/" + cls.DisplayName); icon.preserveAspect = true; icon.raycastTarget = false;
-                button.GetComponentInChildren<TMP_Text>().rectTransform.anchorMin = new Vector2(.2f, .12f);
-            }
+            var row=ChoiceTemplate.Spawn(choices,cls==null?"Begin with primary only":cls.DisplayName,()=>Choose(cls),cls==null?null:Resources.Load<Sprite>("UI/"+cls.DisplayName));
+            var button=row.Button;button.GetComponent<ClassPickerFocus>().Focused=()=>ShowDetails(cls);
             first ??= button;
         }
         first?.Select();
@@ -109,7 +113,7 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
     {
         if (finished) return;
         finished = true; MenuUIInputModule.Active?.PopDialog(this);
-        gameObject.SetActive(false); Destroy(gameObject); callback?.Invoke();
+        gameObject.SetActive(false); callback?.Invoke();
     }
 
     private void OnDestroy() => MenuUIInputModule.Active?.PopDialog(this);

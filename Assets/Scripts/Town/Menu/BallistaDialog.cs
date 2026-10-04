@@ -14,7 +14,8 @@ public class BallistaDialog : Dialog
     public List<SkillGridItem> SkillGridItems { get; private set; } = new();
     public TownAlly Character { get; internal set; }
     public BallistaPurchaseDialog BallistaPurchaseDialog;
-    public TrainerLayout Layout { get; private set; }
+    public TrainerLayout Layout;
+    private bool layoutBound;
     private ClassSource source;
     private readonly string[] selectedSkills = new string[2];
     private readonly float[] listPositions = { 1, 1 };
@@ -53,14 +54,15 @@ public class BallistaDialog : Dialog
         BuildList();
     }
 
-    private void EnsureLayout()
+    #if UNITY_EDITOR
+    public void AuthorLayout()
     {
         if (Layout != null) return;
         foreach (Transform child in transform)
             if (child != BallistaPurchaseDialog.transform) child.gameObject.SetActive(false);
         var navigation = GetComponent<NavigationHandler>();
         if (navigation != null) navigation.selectionArrow = null;
-        Layout = Instantiate(Resources.Load<TrainerLayout>("UI/TrainerLayout"), transform, false);
+        Layout = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(Resources.Load<TrainerLayout>("UI/TrainerLayout").gameObject, transform)).GetComponent<TrainerLayout>();
         var hints=Layout.GetComponentsInChildren<TMP_Text>().FirstOrDefault(t=>t.text.StartsWith("Select to preview."));
         if(hints!=null)MenuControlHints.Bind(hints);
         BallistaPurchaseDialog.transform.SetAsLastSibling();
@@ -72,7 +74,17 @@ public class BallistaDialog : Dialog
         Layout.SecondaryTab.onClick.AddListener(() => ChangeTab(ClassSource.Secondary));
         Layout.Close.onClick.AddListener(Close_Clicked);
     }
+#endif
 
+    private void EnsureLayout()
+    {
+        if(layoutBound)return;
+        if(Layout==null)throw new System.InvalidOperationException("Trainer layout must be authored in its scene or prefab.");
+        layoutBound=true;
+        Layout.PrimaryTab.onClick.AddListener(()=>ChangeTab(ClassSource.Primary));
+        Layout.SecondaryTab.onClick.AddListener(()=>ChangeTab(ClassSource.Secondary));
+        Layout.Close.onClick.AddListener(Close_Clicked);
+    }
     public void ChangeTab(ClassSource next)
     {
         if (next == ClassSource.Secondary && !Layout.SecondaryTab.gameObject.activeSelf) return;

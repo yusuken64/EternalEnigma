@@ -69,8 +69,13 @@ public static class TownRenderer
         }
 
         // v a ShopRoom.VendorAnchor
-        if (visit.Plan.ShopRooms.Any(room => p.Equals(room.VendorAnchor)))
+        if (visit.Plan.ShopRooms.Any(room => p.Equals(room.VendorAnchor) &&
+            (visit.Plan.Interiors.Count==0 || visit.Plan.Interiors.Any(i=>i.Door.Equals(room.Door)&&i.Spec.HasVendor))))
             return 'v';
+
+        if (HasDetail(visit.Plan,TownLayers.Counters,p)) return '#';
+        if (HasDetail(visit.Plan,TownLayers.Furniture,p)) return 'f';
+        if (HasDetail(visit.Plan,TownLayers.Carpet,p)) return '~';
 
         // a ally slot
         if (visit.Plan.AllySlots.Any(ally => p.Equals(ally.Cell)))

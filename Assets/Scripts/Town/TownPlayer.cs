@@ -154,8 +154,7 @@ public class TownPlayer : MonoBehaviour
 			if (!PlayerInputHandler.Instance.holdPosition)
 			{
 				if (WalkableMap.CanWalkTo(originalPosition, newMapPosition) &&
-					!FindFirstObjectByType<Town>().ShopVendors.Any(v => v.TilemapPosition == newMapPosition) &&
-                    !FindObjectsByType<HomeBed>(FindObjectsSortMode.None).Any(b => b.Tile == newMapPosition))
+					FindFirstObjectByType<Town>().CanEnter(newMapPosition))
 				{
 					SetAction(new TownMovement(this, originalPosition, newMapPosition));
 					holdTime = 0f;
@@ -176,6 +175,8 @@ public class TownPlayer : MonoBehaviour
 			var originalPosition = ControllingTownAlly.TilemapPosition;
 			var targetMapPosition = originalPosition + offset;
 
+            var npc = FindFirstObjectByType<Town>().Townsfolk.FirstOrDefault(n=>n.Cell==targetMapPosition);
+            if(npc!=null){npc.Greet(originalPosition);return;}
             var bed = FindObjectsByType<HomeBed>(FindObjectsSortMode.None).FirstOrDefault(b => b.Tile == targetMapPosition);
             if (bed != null) { bed.Interact(); return; }
 			var targetingAlly = RecruitedAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
@@ -201,7 +202,9 @@ public class TownPlayer : MonoBehaviour
 				{
 					_menuBusy = true;
 					var townMenu = FindFirstObjectByType<TownMenu>();
-					var dialog = townMenu.OpenBuilding(vendor.Building, this, null);
+					vendor.SetFacing(new TownMovement(this,originalPosition,targetMapPosition).GetFacing(originalPosition-targetMapPosition));
+                    vendor.GetComponentInChildren<Animator>()?.SetTrigger("Greeting");
+                    var dialog = townMenu.OpenBuilding(vendor.Building, this, null);
 					dialog.CloseAction = () => StartCoroutine(Wait(() => { _menuBusy = false; }));
 				}
 			}

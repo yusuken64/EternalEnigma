@@ -1,0 +1,21 @@
+{
+    "runId": "1bb4b0f4a8a24658b602894ecdf222fb",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [
+        "EternalEnigma.Tests.TownAmbientGameplayTests",
+        "EternalEnigma.Tests.CampaignTownServiceTests",
+        "EternalEnigma.Tests.TownGameplayTests",
+        "EternalEnigma.Tests.TownTrainerRankTests",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.SettingsKeepCategoryFocusAndBackReturnsToGameplay",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady",
+        "HarnessSmokeTests.TownScenarioLoadsSuppliedGoldAndAlly"
+    ],
+    "passed": 13,
+    "failed": 11,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/PlayMode.xml"
+}

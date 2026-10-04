@@ -24,6 +24,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     public int ExitX = 10, ExitY = 0;
     public int SpineX = TownPlan.DefaultSpineX;
     public bool Detailed;
+    public string InteriorKinds = "", ShopThemes = "";
 #if UNITY_EDITOR
     [NonSerialized] private TWCGUILayout guiLayout;
 #endif
@@ -41,7 +42,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         ExitX = ExitX,
         ExitY = ExitY,
         SpineX = SpineX,
-        Detailed = Detailed
+        Detailed = Detailed, InteriorKinds = InteriorKinds, ShopThemes = ShopThemes
     };
 
 #if UNITY_EDITOR
@@ -55,7 +56,8 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         var flags = new bool[Mathf.Max(1, BuildingCount)];
         for (int i = 0; i < flags.Length; i++) flags[i] = i < ShopFlags.Length && ShopFlags[i] == '1';
         return new TownPlanOptions(twc.currentSeed, twc.twcAsset.mapWidth, twc.twcAsset.mapHeight, flags, AllyCount,
-            new GridPoint(PartySpawnX, PartySpawnY), new GridPoint(ExitX, ExitY), SpineX, Detailed);
+            new GridPoint(PartySpawnX, PartySpawnY), new GridPoint(ExitX, ExitY), SpineX, Detailed,
+            InteriorKinds.Length == flags.Length ? Enumerable.Range(0,flags.Length).Select(i=>new TownInteriorSpec((TownInteriorKind)(InteriorKinds[i]-'0'),i<ShopThemes.Length?(TownShopTheme)(ShopThemes[i]-'0'):TownShopTheme.General)).ToArray() : null);
     }
 
     public bool[,] Execute(bool[,] map, TileWorldCreator twc)
@@ -75,11 +77,21 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         {
             var options = configuration.Layout.Options;
             var interiorFlags = configuration.SlotBuildings.Select(b => b != null && b.HasInterior).ToArray();
+            var interiors = options.Interiors.ToArray();
+            for(int i=0;i<interiors.Length;i++) if(configuration.SlotBuildings[i]?.Id=="home") interiors[i]=new TownInteriorSpec(TownInteriorKind.Residential);
             Configure(asset, new TownPlanOptions(options.Seed, options.Width, options.Height, interiorFlags, options.AllyCount,
-                options.PartySpawn, options.Exit, options.SpineX, options.Detailed));
+                options.PartySpawn, options.Exit, options.SpineX, options.Detailed, interiors));
             return;
         }
         int count = configuration.Buildings.Count;
+        if(configuration.FurnishInteriors)
+        {
+            int side=Math.Max(52,TownPlanOptions.SizeFor(count));
+            var specs=configuration.Buildings.Select(b=>new TownInteriorSpec(b.HasInterior?(b.InteriorKind==TownInteriorKind.None?TownInteriorKind.Shop:b.InteriorKind):TownInteriorKind.None,b.ShopTheme)).ToArray();
+            configuration.PartySpawn=new Vector3Int(side/2,2,0);
+            Configure(asset,new TownPlanOptions(0,side,side,specs.Select(s=>s.Kind!=TownInteriorKind.None).ToArray(),spineX:side/2,detailed:true,interiors:specs));
+            return;
+        }
         string flags = string.Concat(configuration.Buildings.Select(b => b != null && b.HasInterior ? '1' : '0'));
         var spawn = configuration.PartySpawn;
         foreach (var layer in asset.mapBlueprintLayers)
@@ -93,7 +105,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
                     g.ExitX = spawn.x;
                     g.ExitY = 0;
                     g.SpineX = TownPlan.DefaultSpineX;
-                    g.Detailed = false;
+                    g.Detailed = false;g.InteriorKinds="";g.ShopThemes="";
                 }
     }
 
@@ -102,7 +114,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     {
         asset.mapWidth = options.Width;
         asset.mapHeight = options.Height;
-        foreach (string name in TownLayers.All.Concat(TownLayers.Detail))
+        foreach (string name in TownLayers.All.Concat(TownLayers.Detail).Concat(TownLayers.InteriorLayers))
         {
             var layer = asset.mapBlueprintLayers.FirstOrDefault(l => l.layerName == name);
             if (layer == null)
@@ -115,7 +127,8 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
                     LayerName = name, BuildingCount = options.BuildingCount,
                     ShopFlags = string.Concat(options.ShopFlags.Select(f => f ? '1' : '0')),
                     AllyCount = options.AllyCount, PartySpawnX = options.PartySpawn.X, PartySpawnY = options.PartySpawn.Y,
-                    ExitX = options.Exit.X, ExitY = options.Exit.Y, SpineX = options.SpineX, Detailed = options.Detailed
+                    ExitX = options.Exit.X, ExitY = options.Exit.Y, SpineX = options.SpineX, Detailed = options.Detailed,
+                    InteriorKinds=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Kind))),ShopThemes=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Theme)))
                 })
             };
             layer.randomSeedOverride = false;
@@ -128,7 +141,9 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
             generator.BuildingCount=options.BuildingCount;generator.ShopFlags=string.Concat(options.ShopFlags.Select(f=>f?'1':'0'));
             generator.AllyCount=options.AllyCount;generator.PartySpawnX=options.PartySpawn.X;generator.PartySpawnY=options.PartySpawn.Y;
             generator.ExitX=options.Exit.X;generator.ExitY=options.Exit.Y;generator.SpineX=options.SpineX;generator.Detailed=options.Detailed;
+            generator.InteriorKinds=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Kind)));generator.ShopThemes=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Theme)));
         }
+        TownInteriorRendering.Configure(asset);
     }
 
 #if UNITY_EDITOR
@@ -150,6 +165,8 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
             guiLayout.Add(); ExitY = EditorGUI.IntField(guiLayout.rect, "exit y", ExitY);
             guiLayout.Add(); SpineX = EditorGUI.IntField(guiLayout.rect, "road spine x", SpineX);
             guiLayout.Add(); Detailed = EditorGUI.Toggle(guiLayout.rect, "detailed layout", Detailed);
+            guiLayout.Add(); InteriorKinds = EditorGUI.TextField(guiLayout.rect, "interior kinds (0–4)", InteriorKinds);
+            guiLayout.Add(); ShopThemes = EditorGUI.TextField(guiLayout.rect, "shop themes (0–3)", ShopThemes);
         }
     }
 #endif

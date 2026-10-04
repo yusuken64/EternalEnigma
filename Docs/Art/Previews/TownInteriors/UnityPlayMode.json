@@ -1,0 +1,18 @@
+{
+    "runId": "4773738b70264dbe81004518c132b564",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [
+        "EternalEnigma.Tests.TownAmbientGameplayTests",
+        "EternalEnigma.Tests.CampaignTownServiceTests",
+        "EternalEnigma.Tests.TownGameplayTests.PartyWithoutAnimationComponentCanWalk",
+        "EternalEnigma.Tests.TownTrainerRankTests.ConfirmationRevalidatesPointsAndClasslessStillPaysGold",
+        "EternalEnigma.Tests.TownTrainerRankTests.RestoredHeroKeepsRanksAndHighestLevel",
+        "EternalEnigma.Tests.TownTrainerRankTests.TrainerDialogShowsRanksAndRefreshesAfterPurchase"
+    ],
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/PlayMode.xml"
+}

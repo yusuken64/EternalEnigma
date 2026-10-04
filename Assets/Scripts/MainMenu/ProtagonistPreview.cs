@@ -44,11 +44,13 @@ public sealed class ProtagonistPreview : MonoBehaviour
         light.transform.rotation = Quaternion.Euler(35, 150, 0);
     }
 
-    private void OnDisable() { if (stage != null) stage.SetActive(false); }
-    private void OnDestroy()
+    private void OnDisable() => Release();
+    private void OnDestroy() => Release();
+    private void Release()
     {
         if (view != null) view.targetTexture = null;
         if (texture != null) { texture.Release(); Destroy(texture); }
         if (stage != null) Destroy(stage);
+        stage=null;texture=null;view=null;
     }
 }

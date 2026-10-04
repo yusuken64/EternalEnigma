@@ -8,6 +8,7 @@ public sealed class BiomeDecorationEffect : MonoBehaviour
     private static readonly List<BiomeDecorationEffect> visible = new();
     private static int lastFrame = -1;
     public bool FloorVisible = true;
+    public bool AllowAccentLight = true;
     private Renderer visual;
     private Vector3 original;
     private bool initialized;
@@ -42,7 +43,7 @@ public sealed class BiomeDecorationEffect : MonoBehaviour
             var e=visible[i]; e.visual.enabled=true;
             float phase=e.transform.position.x*.73f+e.transform.position.y*.39f;
             e.transform.localScale=e.original*(.92f+.08f*Mathf.Sin(Time.time*2.3f+phase));
-            if(i<accents.Length)
+            if(i<accents.Length && e.AllowAccentLight)
             {
                 if(accents[i]==null)
                 {

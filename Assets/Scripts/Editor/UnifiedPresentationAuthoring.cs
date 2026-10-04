@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class UnifiedPresentationAuthoring
 {
-    [MenuItem("Tools/Eternal Enigma/UI/Build Unified Presentation Prefabs")]
+    [MenuItem("Tools/Eternal Enigma/UI/Refresh Presentation Icons")]
     public static void Build()
     {
         if(EditorApplication.isPlaying)throw new InvalidOperationException("Exit Play Mode before authoring prefabs.");
@@ -24,12 +24,8 @@ public static class UnifiedPresentationAuthoring
                 profile.ItemIcons[(int)prefab.DroppedItemVisual]=RenderIcon(prefab.gameObject,prefab.DroppedItemVisual.ToString(),true);
         }
         EditorUtility.SetDirty(profile);AssetDatabase.SaveAssets();
-        var menu=PartyMenu.Build(null);
-        PrefabUtility.SaveAsPrefabAsset(menu.gameObject,"Assets/Resources/UI/PartyMenu.prefab");UnityEngine.Object.DestroyImmediate(menu.gameObject);
-        var hud=ResourceHUD.Build(null);
-        PrefabUtility.SaveAsPrefabAsset(hud.gameObject,"Assets/Resources/UI/ResourceHUD.prefab");UnityEngine.Object.DestroyImmediate(hud.gameObject);
         AssetDatabase.SaveAssets();
-        Debug.Log("Authored shared PartyMenu and ResourceHUD prefabs.");
+        Debug.Log("Updated presentation icons. UI layouts remain authored in prefabs.");
     }
 
     private static Sprite RenderIcon(GameObject prefab,string name,bool xy)

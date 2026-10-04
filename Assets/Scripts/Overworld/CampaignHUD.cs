@@ -8,10 +8,12 @@ public sealed class CampaignHUD : MonoBehaviour
 {
     public OverworldScene Overworld;
     public Town Town;
-    private TextMeshProUGUI message;
-    private Transform actions;
-    private GameObject rosterPanel;
-    private Transform rosterContent;
+    [SerializeField] private TextMeshProUGUI message;
+    [SerializeField] private Transform actions;
+    [SerializeField] private GameObject rosterPanel;
+    [SerializeField] private Transform rosterContent;
+    public Button ActionTemplate, CompanionTemplate, PartyButton, DoneButton;
+    public TMP_Text EmptyRoster;
     private string actionKey;
     private string rosterKey;
     private TownMenuManager townMenus;
@@ -31,7 +33,8 @@ public sealed class CampaignHUD : MonoBehaviour
 
     private void OnDestroy() => MenuUIInputModule.Active?.PopDialog(this);
 
-    private void Start()
+    #if UNITY_EDITOR
+    public void AuthorLayout()
     {
         if (Town != null) townMenus = FindFirstObjectByType<TownMenuManager>();
         var canvas = GameUISkin.Canvas("Campaign HUD", transform, 50);
@@ -41,7 +44,7 @@ public sealed class CampaignHUD : MonoBehaviour
         actions = GameUISkin.Rect("Travel actions", bar.transform, new Vector2(.7f, .12f), new Vector2(.98f, .88f));
         if (Town != null)
         {
-            var partyButton = GameUISkin.Button(actions, "Party  [P / B]", Vector2.zero, Vector2.one, () => SetPartyOpen(!IsPartyOpen));
+            var partyButton = PartyButton = GameUISkin.Button(actions, "Party  [P / B]", Vector2.zero, Vector2.one, () => SetPartyOpen(!IsPartyOpen));
             partyButton.navigation = new Navigation { mode = Navigation.Mode.None };
             rosterPanel = GameUISkin.Panel(canvas.transform, new Vector2(.02f, .18f), new Vector2(.33f, .82f)).gameObject;
             GameUISkin.Label(rosterPanel.transform, "YOUR COMPANIONS", new Vector2(.06f, .88f), new Vector2(.94f, .97f), 28);
@@ -56,11 +59,26 @@ public sealed class CampaignHUD : MonoBehaviour
             rosterContent.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             scroll.viewport = viewport; scroll.content = (RectTransform)rosterContent; scroll.horizontal = false;
             scroll.movementType = ScrollRect.MovementType.Clamped;
-            GameUISkin.Button(rosterPanel.transform, "Done", new Vector2(.2f, .025f), new Vector2(.8f, .11f), () => SetPartyOpen(false));
+            DoneButton=GameUISkin.Button(rosterPanel.transform, "Done", new Vector2(.2f, .025f), new Vector2(.8f, .11f), () => SetPartyOpen(false));
             rosterPanel.SetActive(false);
         }
     }
+#endif
 
+    private void Start()
+    {
+        if(Town!=null)
+        {
+            townMenus=FindFirstObjectByType<TownMenuManager>();
+            PartyButton.onClick.AddListener(()=>SetPartyOpen(!IsPartyOpen));
+            DoneButton.onClick.AddListener(()=>SetPartyOpen(false));
+        }
+    }
+    private Button Action(string label, System.Action callback)
+    {
+        var button=Instantiate(ActionTemplate,actions);button.gameObject.SetActive(true);
+        button.GetComponentInChildren<TMP_Text>().text=label;button.onClick.AddListener(()=>callback());return button;
+    }
     private void Update()
     {
         if (message == null) return;
@@ -79,12 +97,11 @@ public sealed class CampaignHUD : MonoBehaviour
             {
                 actionKey = key;
                 foreach (Transform child in actions) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
-                int count = warps.Length + 1;
-                GameUISkin.Button(actions, "Interact", Vector2.zero, new Vector2(1, 1f / count), Overworld.ClaimRewards);
+                Action("Interact", Overworld.ClaimRewards);
                 for (int i = 0; i < warps.Length; i++)
                 {
                     var route = warps[i];
-                    GameUISkin.Button(actions, Overworld.WarpLabel(route), new Vector2(0, (i + 1f) / count), new Vector2(1, (i + 2f) / count), () => Overworld.Warp(route.Id));
+                    Action(Overworld.WarpLabel(route), () => Overworld.Warp(route.Id));
                 }
                 // Directional/submit input belongs to overworld movement and interaction.
                 foreach (var button in actions.GetComponentsInChildren<Button>())
@@ -108,24 +125,22 @@ public sealed class CampaignHUD : MonoBehaviour
             string key = string.Join("|", context.Roster.OrderBy(id => id)) + "/" + string.Join("|", context.Active.OrderBy(id => id));
             if (key == rosterKey) return;
             rosterKey = key;
-            foreach (Transform child in rosterContent) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
+            foreach (Transform child in rosterContent) { if(child==EmptyRoster.transform)continue; child.gameObject.SetActive(false); Destroy(child.gameObject); }
             foreach (string id in context.Roster.OrderBy(id => id))
             {
                 bool selected = context.Active.Contains(id);
                 string name = CampaignParty.Resolve(id, Town.Configuration)?.Name ?? "Companion";
-                var button = GameUISkin.Button(rosterContent, (selected ? "Travelling: " : "Invite: ") + name, Vector2.zero, Vector2.one, () => {
+                var button=Instantiate(CompanionTemplate,rosterContent);button.gameObject.SetActive(true);
+                button.GetComponentInChildren<TMP_Text>().text=(selected ? "Travelling: " : "Invite: ")+name;
+                button.onClick.AddListener(()=> {
                     Town.WriteSaveData();
                     var ids = selected ? context.Active.Where(x => x != id).ToArray() : context.Active.Concat(new[] { id }).ToArray();
                     if (context.SetParty(ids)) { Town.RefreshCampaignParty(); GameMessages.Post($"{name} {(selected ? "left the travelling party" : "joined the party")}."); }
                 });
-                button.gameObject.AddComponent<LayoutElement>().preferredHeight = 60;
+
                 button.interactable = selected || context.Active.Count < 3;
             }
-            if (context.Roster.Count == 0)
-            {
-                var empty = GameUISkin.Label(rosterContent, "Meet companions as you explore the campaign.", Vector2.zero, Vector2.one, 24);
-                empty.gameObject.AddComponent<LayoutElement>().preferredHeight = 100;
-            }
+            EmptyRoster.gameObject.SetActive(context.Roster.Count==0);
         }
     }
 }

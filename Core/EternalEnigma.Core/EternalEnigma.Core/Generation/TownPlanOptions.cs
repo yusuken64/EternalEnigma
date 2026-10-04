@@ -24,10 +24,12 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
     public int SpineX { get; }
     /// <summary>Varied building footprints, a main/artery/alley road hierarchy and prop cells. False keeps the original simple layout.</summary>
     public bool Detailed { get; }
+    public IReadOnlyList<TownInteriorSpec> Interiors { get; }
+    public bool Furnished => Interiors.Count > 0;
 
     public TownPlanOptions(int seed, int width = 15, int height = 15, IReadOnlyList<bool>? shopFlags = null,
         int allyCount = 3, GridPoint? partySpawn = null, GridPoint? exit = null, int spineX = TownPlan.DefaultSpineX,
-        bool detailed = false)
+        bool detailed = false, IReadOnlyList<TownInteriorSpec>? interiors = null)
     {
         if (width < 15 || width > 64)
             throw new ArgumentException("Width must be between 15 and 64.");
@@ -51,12 +53,15 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
         if (!IsValidCorridorPoint(exit.Value, width, height, spineX))
             throw new ArgumentException("Exit must be within bounds and in the reserved corridor (X within 2 of the spine, Y in 0..height/2).");
 
+        if (interiors != null && (interiors.Count != shopFlags.Count || !detailed))
+            throw new ArgumentException("Interior metadata requires detailed slots of matching length.");
+        Interiors = Array.AsReadOnly((interiors ?? Array.Empty<TownInteriorSpec>()).ToArray());
         SpineX = spineX;
         Detailed = detailed;
         Seed = seed;
         Width = width;
         Height = height;
-        ShopFlags = new List<bool>(shopFlags).AsReadOnly();
+        ShopFlags = new List<bool>(Interiors.Count > 0 ? Interiors.Select(i => i.Kind != TownInteriorKind.None) : shopFlags).AsReadOnly();
         AllyCount = allyCount;
         PartySpawn = partySpawn.Value;
         Exit = exit.Value;
@@ -81,7 +86,7 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
         Detailed == other.Detailed &&
         PartySpawn.Equals(other.PartySpawn) &&
         Exit.Equals(other.Exit) &&
-        ShopFlags.SequenceEqual(other.ShopFlags);
+        ShopFlags.SequenceEqual(other.ShopFlags) && Interiors.SequenceEqual(other.Interiors);
 
     public override bool Equals(object? obj) => Equals(obj as TownPlanOptions);
 
@@ -93,6 +98,7 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
                        PartySpawn.GetHashCode() * 397 ^ Exit.GetHashCode() * 397;
             foreach (var flag in ShopFlags)
                 hash = hash * 397 ^ flag.GetHashCode();
+            foreach (var interior in Interiors) hash = hash * 397 ^ interior.GetHashCode();
             return hash;
         }
     }

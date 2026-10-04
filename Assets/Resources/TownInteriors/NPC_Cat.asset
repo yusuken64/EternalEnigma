@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aecca9cd407f33740891df7e8061f22a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::TownNpcDefinition
+  Id: Cat
+  DisplayName: Mochi the Traveler
+  Greeting: Every road has a story. This town smells like a good one!
+  Prefab: {fileID: 8117372756656315288, guid: 6ada7068448102645bd371887c2dc0b3, type: 3}
+  Portrait: {fileID: 21300000, guid: 8197c392e37daa34fa18fc5a08d4227b, type: 3}

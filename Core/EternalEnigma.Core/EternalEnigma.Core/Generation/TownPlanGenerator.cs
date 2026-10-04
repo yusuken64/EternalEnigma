@@ -63,6 +63,8 @@ public static partial class TownPlanGenerator
             { TownLayers.Walkable, new bool[W, H] }
         };
 
+        foreach (var name in TownLayers.InteriorLayers) layers[name] = new bool[W,H];
+
         // Detailed towns add road-class and prop layers and give every building its own footprint.
         List<BuildingFootprint>? footprints = null;
         bool[,]? mainRoad = null;
@@ -124,6 +126,18 @@ public static partial class TownPlanGenerator
             }
         }
 
+        var interiors = new List<TownInterior>();
+        if (options.Furnished)
+            foreach (var room in rooms)
+            {
+                int slot = buildingSlots.IndexOf(room.Door);
+                var interior = TownInteriorGenerator.Generate(seed, slot, room, options.Interiors[slot]);
+                interiors.Add(interior);
+                foreach (var cell in interior.Occupied) layers[TownLayers.Furniture][cell.X,cell.Y] = true;
+                foreach (var cell in interior.Carpet) layers[TownLayers.Carpet][cell.X,cell.Y] = true;
+                foreach (var cell in interior.Counters) layers[TownLayers.Counters][cell.X,cell.Y] = true;
+            }
+
         // Step 3: Generate roads
         if (footprints != null)
             GenerateDetailedRoads(layers, acceptedDoors, footprints, mainRoad!, options, new SeedStream(seed, 1400u + (uint)attempt));
@@ -151,7 +165,7 @@ public static partial class TownPlanGenerator
             {
                 bool blocked = layers[TownLayers.Houses][x, y] ||
                               layers[TownLayers.Trees][x, y] ||
-                              layers[TownLayers.ShopWalls][x, y];
+                              layers[TownLayers.ShopWalls][x, y] || layers[TownLayers.Furniture][x,y];
                 layers[TownLayers.Walkable][x, y] = !blocked;
             }
         }
@@ -174,7 +188,7 @@ public static partial class TownPlanGenerator
             options.Exit,
             new GridPoint(options.SpineX, H - 2),
             options.SpineX,
-            footprints?.OrderBy(f => f.Door.Y).ThenBy(f => f.Door.X)
+            footprints?.OrderBy(f => f.Door.Y).ThenBy(f => f.Door.X), interiors
         );
 
         // Validate

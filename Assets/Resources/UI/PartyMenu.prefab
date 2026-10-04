@@ -1201,6 +1201,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4048610935492368050}
+  - component: {fileID: 3463492126372690067}
   m_Layer: 0
   m_Name: Heroes
   m_TagString: Untagged
@@ -1227,6 +1228,29 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3463492126372690067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5458318986649994173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c4dd7807740af048b25f42ec1666c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::ResponsiveGridLayout
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  Columns: 4
+  SingleRow: 1
+  HorizontalInset: 0.003
+  ColumnGap: 0.006
+  RowFill: 1
 --- !u!1 &5459619045310987812
 GameObject:
   m_ObjectHideFlags: 0
@@ -1419,6 +1443,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::PartyMenu
   scrollView: {fileID: 3758590435107946091}
+  HeroTemplate: {fileID: 8234356810449206326, guid: 5b2f455360a7c244680aaa21775cee2c, type: 3}
+  EntryTemplate: {fileID: 76573384594444130, guid: 595e54828b5fbbe4abbb150369f119b7, type: 3}
+  PlainEntryTemplate: {fileID: 8314295186879738607, guid: 8cba330a88b8c384aa4b746ad0b0a46a, type: 3}
+  HeadingTemplate: {fileID: 8759363170826015969, guid: 7a0e481bf9c7d594fa935767ada93d5c, type: 3}
+  EmptyTemplate: {fileID: 7306844766524458739, guid: 440dcefab65a3e54ea27b9cb0d1b773a, type: 3}
   Panel: {fileID: 1393817799845392293}
   HeroesRoot: {fileID: 4048610935492368050}
   RowsRoot: {fileID: 3051129345042256830}

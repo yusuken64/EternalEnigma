@@ -64,7 +64,9 @@ public sealed class MapRenderer
         if (town.BuildingIndexAt(p) != null)
             return visit.SlotServices == null ? '+'
                 : visit.ServiceAt(p) is { } service ? TownServiceGlyphs.Glyph(service) : TownServiceGlyphs.OtherBuilding;
-        if (town.ShopRooms.Any(room => room.VendorAnchor.Equals(p))) return 'v';
+        if (town.ShopRooms.Any(room => room.VendorAnchor.Equals(p) &&
+            (town.Interiors.Count==0 || town.Interiors.Any(i=>i.Door.Equals(room.Door)&&i.Spec.HasVendor)))) return 'v';
+        if(town.Layers.TryGetValue(TownLayers.Furniture,out var furniture)&&furniture.At(p))return 'f';
         if (town.Layers[TownLayers.ShopFloor].At(p)) return '=';
         if (town.Layers[TownLayers.ShopWalls].At(p) || town.Layers[TownLayers.Houses].At(p)) return '#';
         if (town.AllySlots.Any(a => a.Cell.Equals(p))) return 'A';

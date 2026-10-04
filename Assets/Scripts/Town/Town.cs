@@ -18,6 +18,9 @@ public class Town : MonoBehaviour
     public TownBuildingManager TownBuildingManager;
     public List<TownBuilding> TownBuildings;
     public List<ShopVendor> ShopVendors = new();
+    public readonly List<TownNpc> Townsfolk = new();
+    public bool IsOccupied(Vector3Int cell) => ShopVendors.Any(v=>v!=null && v.TilemapPosition==cell) || Townsfolk.Any(n=>n!=null && n.Cell==cell) || GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell);
+    public bool CanEnter(Vector3Int cell) => Plan != null && Plan.IsWalkable(cell.ToGridPoint()) && !IsOccupied(cell);
     private readonly List<GameObject> shopWalls = new();
     public bool IsReady { get; private set; }
     private string arrivalHeroId;
@@ -124,16 +127,14 @@ public class Town : MonoBehaviour
         foreach(var direction in new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up})
         {
             var cell=startPosition+direction;
-            if(GridMovement.CanStep(startPosition,cell,c => Plan.Layers[TownLayers.Walkable].At(c.ToGridPoint())) && !ShopVendors.Any(v=>v.TilemapPosition==cell) &&
-                !GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell)) formation.Add(cell);
+            if(GridMovement.CanStep(startPosition,cell,c => Plan.Layers[TownLayers.Walkable].At(c.ToGridPoint())) && !IsOccupied(cell)) formation.Add(cell);
         }
         // Extend along walkable adjacent cells until a four-member arrival fits.
         for(int i=0;i<formation.Count && formation.Count<4;i++)
             foreach(var direction in new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up})
             {
                 var cell=formation[i]+direction;
-                if(!formation.Contains(cell) && GridMovement.CanStep(formation[i],cell,c => Plan.Layers[TownLayers.Walkable].At(c.ToGridPoint())) && !ShopVendors.Any(v=>v.TilemapPosition==cell) &&
-                    !GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell)) formation.Add(cell);
+                if(!formation.Contains(cell) && GridMovement.CanStep(formation[i],cell,c => Plan.Layers[TownLayers.Walkable].At(c.ToGridPoint())) && !IsOccupied(cell)) formation.Add(cell);
                 if(formation.Count>=4) break;
             }
         TownPlayer.WalkPositionHistory = formation.Take(4).Reverse().ToList();
@@ -186,6 +187,7 @@ public class Town : MonoBehaviour
 	[ContextMenu("Generate Entrance")]
     public void GenerateInteractableBuildings()
     {
+        foreach(var old in TownBuildings ?? new List<TownBuilding>()) if(old!=null){old.gameObject.SetActive(false);Destroy(old.gameObject);}
         TownBuildings = TownBuildingManager.Spawn(Configuration, Plan.BuildingSlots.ToCells(), WalkableMap);
     }
 
@@ -194,7 +196,8 @@ public class Town : MonoBehaviour
     {
         foreach (var wall in shopWalls) if (wall != null) Destroy(wall);
         shopWalls.Clear();
-        foreach (var vendor in ShopVendors) if (vendor != null) Destroy(vendor.gameObject);
+        foreach (var vendor in ShopVendors) if (vendor != null) {vendor.gameObject.SetActive(false);Destroy(vendor.gameObject);}
+        foreach(var bed in GetComponentsInChildren<HomeBed>()){bed.gameObject.SetActive(false);Destroy(bed.gameObject);}
         ShopVendors.Clear();
 
         var wallLayer = Plan.Layers[TownLayers.ShopWalls];
@@ -235,6 +238,11 @@ public class Town : MonoBehaviour
             vendor.Building = building.Definition;
             vendor.TilemapPosition = anchorCell;
             vendor.transform.position = WalkableMap.CellToWorld(anchorCell);
+            if(building.Definition.Npc!=null)
+            {
+                float size=WalkableMap.TileWorldCreator.twcAsset.cellSize;
+                vendor.VisualParent.transform.localPosition=new Vector3(.5f,.5f,0)*size;vendor.VisualParent.transform.localScale=Vector3.one*size;
+            }
             vendor.SetFacing(Facing.Down);
             ShopVendors.Add(vendor);
             building.HasInterior = true;
@@ -269,6 +277,13 @@ public class Town : MonoBehaviour
 
     private IEnumerator FinishGeneration()
     {
+        if(IsReady)
+        {
+            WriteSaveData();
+            foreach(var ally in TownPlayer.RecruitedAllies.Concat(TownAllies).Distinct().ToArray())
+                if(ally!=null){ally.gameObject.SetActive(false);Destroy(ally.gameObject);}
+            TownPlayer.RecruitedAllies.Clear();TownAllies.Clear();TownPlayer.ControllingTownAlly=null;IsReady=false;
+        }
         if (!CoreLayoutCache.TryGetTown(WalkableMap.TileWorldCreator, out var plan))
             throw new InvalidOperationException("The town TWC template requires Core Town Layer actions.");
         Plan = plan;
@@ -276,6 +291,7 @@ public class Town : MonoBehaviour
         Debug.Log("Generate Buildings");
         GenerateInteractableBuildings();
         GenerateShopInteriors();
+        TownInteriorRendering.SpawnTownsfolk(this);
 
         Debug.Log("Generate Allies");
         GenerateAllies();
@@ -302,5 +318,6 @@ public class Town : MonoBehaviour
 
         Debug.Log("Town done");
         Common.Instance.ScreenTransition.DoOpen();
+        finishingGeneration=false;
     }
 }

@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public sealed class PartyMenu : Dialog
 {
+    public AuthoredButton HeroTemplate, EntryTemplate, PlainEntryTemplate;
+    public TMP_Text HeadingTemplate, EmptyTemplate;
     public RectTransform Panel;
     public Transform HeroesRoot, RowsRoot;
     public TMP_Text Details, Hints, HeroText;
@@ -27,61 +29,9 @@ public sealed class PartyMenu : Dialog
 
     public static PartyMenu Create(Transform parent)
     {
-        var prefab = Resources.Load<PartyMenu>("UI/PartyMenu");
-        var menu = prefab != null ? Instantiate(prefab, parent) : Build(parent);
-        menu.gameObject.SetActive(false);
-        return menu;
+        return AuthoredUI.Require<PartyMenu>(parent);
     }
 
-    // Used by the prefab authoring command and as a development fallback before import.
-    public static PartyMenu Build(Transform parent)
-    {
-        var canvas = GameUISkin.Canvas("PartyMenu", parent, 100);
-        var menu = canvas.gameObject.AddComponent<PartyMenu>();
-        GameUISkin.Rect("Input shield",canvas.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>().color=Color.clear;
-        var safe = GameUISkin.Rect("Safe area", canvas.transform, Vector2.zero, Vector2.one);
-        safe.gameObject.AddComponent<SafeAreaPanel>();
-        menu.Panel = GameUISkin.Panel(safe, new Vector2(.08f,.12f), new Vector2(.82f,.86f)).rectTransform;
-        menu.HeroesRoot = GameUISkin.Rect("Heroes", menu.Panel, new Vector2(.025f,.82f), new Vector2(.975f,.975f));
-        menu.HeroText = GameUISkin.Label(menu.Panel, "", new Vector2(.49f,.66f), new Vector2(.97f,.79f), 23);
-        menu.InventoryTab = GameUISkin.Button(menu.Panel, "Inventory", new Vector2(.025f,.72f), new Vector2(.235f,.80f), null);
-        menu.SkillsTab = GameUISkin.Button(menu.Panel, "Skills", new Vector2(.245f,.72f), new Vector2(.455f,.80f), null);
-        var viewport = GameUISkin.Rect("List viewport", menu.Panel, new Vector2(.025f,.14f), new Vector2(.455f,.70f));
-        viewport.gameObject.AddComponent<Image>().color = new Color(.15f,.20f,.19f,.08f);
-        viewport.gameObject.AddComponent<RectMask2D>();
-        menu.scrollView = viewport.gameObject.AddComponent<ScrollRect>();
-        menu.RowsRoot = GameUISkin.Rect("Entries", viewport, new Vector2(0,1), Vector2.one);
-        ((RectTransform)menu.RowsRoot).pivot = new Vector2(.5f,1);
-        var layout = menu.RowsRoot.gameObject.AddComponent<VerticalLayoutGroup>();
-        layout.spacing = 8; layout.padding = new RectOffset(4,4,4,4);
-        layout.childControlHeight = true; layout.childForceExpandHeight = false;
-        layout.childControlWidth = true; layout.childForceExpandWidth = true;
-        menu.RowsRoot.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        menu.scrollView.viewport = viewport; menu.scrollView.content = (RectTransform)menu.RowsRoot;
-        menu.scrollView.horizontal = false; menu.scrollView.movementType = ScrollRect.MovementType.Clamped;
-        menu.scrollView.scrollSensitivity = 32;
-        var detailViewport = GameUISkin.Rect("Details viewport", menu.Panel, new Vector2(.49f,.14f), new Vector2(.97f,.64f));
-        detailViewport.gameObject.AddComponent<RectMask2D>();
-        var detailBackground=detailViewport.gameObject.AddComponent<Image>();detailBackground.color = new Color(.8f,.7f,.5f,.08f);
-        var detailScroll = detailViewport.gameObject.AddComponent<ScrollRect>();
-        menu.DetailsControl=detailViewport.gameObject.AddComponent<TrainerPreviewScroll>();
-        menu.DetailsControl.Scroll=detailScroll;menu.DetailsControl.targetGraphic=detailBackground;
-        menu.Details = GameUISkin.Label(detailViewport, "", new Vector2(0,1), Vector2.one, 26);
-        menu.Details.rectTransform.pivot = new Vector2(.5f,1);
-        menu.Details.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        detailScroll.viewport = detailViewport; detailScroll.content = menu.Details.rectTransform;
-        detailScroll.horizontal = false; detailScroll.movementType = ScrollRect.MovementType.Clamped;
-        detailScroll.scrollSensitivity = 32;
-        menu.Hints = GameUISkin.Label(menu.Panel, "", new Vector2(.025f,.015f), new Vector2(.80f,.12f), 21);
-        MenuControlHints.Bind(menu.Hints,true);
-        menu.BackButton = GameUISkin.Button(menu.Panel, "Back", new Vector2(.82f,.03f), new Vector2(.97f,.11f), null);
-        return menu;
-    }
-
-    private void Awake()
-    {
-        // Serialized prefab buttons bind here; runtime-built buttons bind in Setup.
-    }
     public void Setup(IPartyMenuContext source, PartyMenuTab tab, string heroId = null)
     {
         if (context != source) { context?.Dispose(); context = source; states.Clear(); }
@@ -131,15 +81,8 @@ public sealed class PartyMenu : Dialog
         for (int i = 0; i < context.Heroes.Count; i++)
         {
             int slot = i;
-            var hero = context.Heroes[i]; float width = 1f / Math.Max(4, context.Heroes.Count);
-            var button = GameUISkin.Button(HeroesRoot, hero.Name, new Vector2(i*width+.003f,0), new Vector2((i+1)*width-.003f,1), () => BrowseHero(slot-heroIndex));
-            var label = button.GetComponentInChildren<TMP_Text>(); label.fontSize = 23;
-            label.rectTransform.anchorMin = new Vector2(.35f,0);
-            var backing=GameUISkin.Panel(button.transform,new Vector2(.015f,.06f),new Vector2(.34f,.94f));
-            backing.color=new Color(.09f,.17f,.17f,.88f);backing.raycastTarget=false;
-            var portrait = GameUISkin.Rect("Portrait", button.transform, new Vector2(.015f,.06f), new Vector2(.34f,.94f)).gameObject.AddComponent<Image>();
-            portrait.sprite = hero.Portrait; portrait.preserveAspect = true; portrait.raycastTarget = false;
-            if (i == heroIndex) label.text = "> " + hero.Name;
+            var hero=context.Heroes[i];
+            var row=HeroTemplate.Spawn(HeroesRoot, i==heroIndex ? "> "+hero.Name : hero.Name,()=>BrowseHero(slot-heroIndex),hero.Portrait);
         }
         InventoryTab.GetComponentInChildren<TMP_Text>().text = Tab == PartyMenuTab.Inventory ? "> Inventory" : "Inventory";
         SkillsTab.GetComponentInChildren<TMP_Text>().text = Tab == PartyMenuTab.Skills ? "> Skills" : "Skills";
@@ -155,22 +98,14 @@ public sealed class PartyMenu : Dialog
             if (section != entry.Section)
             {
                 section = entry.Section;
-                GameUISkin.Label(RowsRoot, section, Vector2.zero, Vector2.one, 22).gameObject.AddComponent<LayoutElement>().preferredHeight = 32;
+                var heading=Instantiate(HeadingTemplate,RowsRoot);heading.text=section;heading.gameObject.SetActive(true);
             }
-            var button = GameUISkin.Button(RowsRoot, entry.Title, Vector2.zero, Vector2.one, () => OpenActions(index));
-            button.gameObject.AddComponent<LayoutElement>().preferredHeight = 66;
-            var label = button.GetComponentInChildren<TMP_Text>(); label.fontSize = 24;
-            label.enableAutoSizing = true; label.fontSizeMin = 19; label.fontSizeMax = 24;
-            if (entry.Icon != null)
-            {
-                var icon = GameUISkin.Rect("Icon", button.transform, new Vector2(.015f,.1f), new Vector2(.13f,.9f)).gameObject.AddComponent<Image>();
-                icon.sprite = entry.Icon; icon.preserveAspect = true; icon.raycastTarget = false;
-                label.rectTransform.anchorMin = new Vector2(.15f,0);
-            }
-            button.gameObject.AddComponent<PartyMenuRow>().Selected = () => { selectedIndex = index; ShowDetails(); ScrollToSelected(button.gameObject); };
+            var row=(entry.Icon!=null?EntryTemplate:PlainEntryTemplate).Spawn(RowsRoot,entry.Title,()=>OpenActions(index),entry.Icon);
+            var button=row.Button;
+            button.GetComponent<PartyMenuRow>().Selected = () => { selectedIndex = index; ShowDetails(); ScrollToSelected(button.gameObject); };
             rows.Add(button);
         }
-        if (entries.Count == 0) GameUISkin.Label(RowsRoot, Tab == PartyMenuTab.Inventory ? "The bag is empty." : "No learned skills.", Vector2.zero,Vector2.one,25).gameObject.AddComponent<LayoutElement>().preferredHeight=90;
+        if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=Tab==PartyMenuTab.Inventory?"The bag is empty.":"No learned skills.";empty.gameObject.SetActive(true);}
         Canvas.ForceUpdateCanvases(); scrollView.verticalNormalizedPosition = state?.Scroll ?? 1;
         WireNavigation();
         ShowDetails();
@@ -215,7 +150,7 @@ public sealed class PartyMenu : Dialog
     public void Pick(string title, List<(string Label, Action Execute)> options,bool closeOnChoose=true)
     {
         var picker = PartyMenuPicker.Build(transform.parent, title, options,closeOnChoose);
-        picker.CloseAction = () => Destroy(picker.gameObject);
+        picker.CloseAction = null;
         Owner.Open(picker);
     }
     public void Complete(string message)
@@ -237,44 +172,4 @@ public sealed class PartyMenu : Dialog
         }
     }
     private void OnDestroy() => context?.Dispose();
-}
-
-public sealed class PartyMenuPicker : Dialog
-{
-    private Button first;
-    private bool committed;
-    public static PartyMenuPicker Build(Transform parent, string title, List<(string Label, Action Execute)> choices,bool closeOnChoose=true)
-    {
-        var canvas = GameUISkin.Canvas("Party picker", parent, 120);
-        GameUISkin.Rect("Input shield",canvas.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>().color=new Color(0,0,0,.12f);
-        var picker = canvas.gameObject.AddComponent<PartyMenuPicker>();
-        var panel = GameUISkin.Panel(canvas.transform,new Vector2(.2f,.2f),new Vector2(.7f,.78f));
-        GameUISkin.Label(panel.transform,title,new Vector2(.05f,.85f),new Vector2(.95f,.98f),30);
-        var viewport = GameUISkin.Rect("Choices",panel.transform,new Vector2(.05f,.2f),new Vector2(.95f,.84f));
-        viewport.gameObject.AddComponent<RectMask2D>();
-        viewport.gameObject.AddComponent<Image>().color = Color.clear;
-        picker.scrollView = viewport.gameObject.AddComponent<ScrollRect>();
-        var content = GameUISkin.Rect("Rows",viewport,new Vector2(0,1),Vector2.one); content.pivot = new Vector2(.5f,1);
-        var layout=content.gameObject.AddComponent<VerticalLayoutGroup>(); layout.spacing=8; layout.childControlHeight=true; layout.childForceExpandHeight=false;
-        layout.childControlWidth=true;layout.childForceExpandWidth=true;
-        content.gameObject.AddComponent<ContentSizeFitter>().verticalFit=ContentSizeFitter.FitMode.PreferredSize;
-        picker.scrollView.content=content; picker.scrollView.viewport=viewport; picker.scrollView.horizontal=false;
-        foreach (var choice in choices)
-        {
-            var button=GameUISkin.Button(content,choice.Label,Vector2.zero,Vector2.one,()=>
-            {
-                if (picker.committed || picker.Owner?.Current != picker) return;
-                picker.committed=closeOnChoose;
-                if(closeOnChoose)picker.CloseDialog();
-                Common.Instance.MenuInputHandler.ClearInputThisFrame();choice.Execute();
-            });
-            button.gameObject.AddComponent<LayoutElement>().preferredHeight=64;
-            button.gameObject.AddComponent<PartyMenuRow>().Selected=()=>picker.ScrollToSelected(button.gameObject);
-            if(picker.first==null)picker.first=button;
-        }
-        var back=GameUISkin.Button(panel.transform,"Back",new Vector2(.3f,.035f),new Vector2(.7f,.16f),picker.CloseDialog);
-        if(picker.first==null)picker.first=back;
-        return picker;
-    }
-    internal override void SetFirstSelect()=>first.Select();
 }

@@ -17,7 +17,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 
 	internal void Setup(Character character)
 	{
-		DungeonPartyCard.Build(this);
+		GetComponent<DungeonPartyCard>().Bind(this);
 		Character = character;
 		if (PortraitImage != null)
 		{

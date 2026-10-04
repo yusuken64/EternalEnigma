@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DefaultTown
   m_EditorClassIdentifier: 
   Id: DefaultTown
-  PartySpawn: {x: 10, y: 4, z: 0}
+  PartySpawn: {x: 26, y: 2, z: 0}
   BuildingLayer: Buildings
   AllyLayer: Allies
   MaxPartySize: 4
@@ -105,5 +105,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f7fc0a1cbc44d2642a65d7c1bb78a948, type: 2}
   - {fileID: 11400000, guid: 7358319ba19e56b41a11d02dabaf325d, type: 2}
   LearnableSkills: []
+  FurnishInteriors: 1
   LoseItemsOnDefeat: 1
   KeepGoldOnDefeat: 1

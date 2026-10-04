@@ -1,0 +1,1064 @@
+{
+  "palette": [
+    "442937",
+    "713e35",
+    "a35c3d",
+    "d49a50",
+    "f5ddb0",
+    "fff2cc",
+    "267c81",
+    "55b6a6",
+    "79529a",
+    "b38cc5",
+    "629747",
+    "b6cf68",
+    "3e4358",
+    "7376ac",
+    "a1aae0",
+    "bd434b",
+    "e77949",
+    "ffd33f",
+    "428cc0",
+    "9cccea",
+    "e16ba1",
+    "edaec2",
+    "805a3e",
+    "b89b69",
+    "aaa68c",
+    "e9e3d1",
+    "c4ad80",
+    "dbb954",
+    "3d332d",
+    "9fb8a1",
+    "edab72",
+    "f4cfa6"
+  ],
+  "assets": [
+    {
+      "name": "Cat",
+      "triangles": 4966,
+      "materials": 1,
+      "animated": true,
+      "bird": false,
+      "bounds": [
+        [
+          -0.6699314713478088,
+          -0.40004226065180615,
+          0.0
+        ],
+        [
+          0.45,
+          0.4,
+          1.9000000000000001
+        ]
+      ]
+    },
+    {
+      "name": "Dog",
+      "triangles": 4874,
+      "materials": 1,
+      "animated": true,
+      "bird": false,
+      "bounds": [
+        [
+          -0.45,
+          -0.45999999999999996,
+          0.0
+        ],
+        [
+          0.45,
+          0.38424479961395264,
+          1.83
+        ]
+      ]
+    },
+    {
+      "name": "Bear",
+      "triangles": 5192,
+      "materials": 1,
+      "animated": true,
+      "bird": false,
+      "bounds": [
+        [
+          -0.45,
+          -0.40004226065180615,
+          0.0
+        ],
+        [
+          0.45,
+          0.27499999999999997,
+          1.67
+        ]
+      ]
+    },
+    {
+      "name": "Sheep",
+      "triangles": 5688,
+      "materials": 1,
+      "animated": true,
+      "bird": false,
+      "bounds": [
+        [
+          -0.49,
+          -0.40004226065180615,
+          0.0
+        ],
+        [
+          0.49,
+          0.27499999999999997,
+          1.73
+        ]
+      ]
+    },
+    {
+      "name": "Bunny",
+      "triangles": 5664,
+      "materials": 1,
+      "animated": true,
+      "bird": false,
+      "bounds": [
+        [
+          -0.45,
+          -0.40004226065180615,
+          0.0
+        ],
+        [
+          0.45,
+          0.27499999999999997,
+          2.07
+        ]
+      ]
+    },
+    {
+      "name": "GuineaPig",
+      "triangles": 5078,
+      "materials": 1,
+      "animated": true,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5370820393249937,
+          -0.43,
+          0.0
+        ],
+        [
+          0.45,
+          0.43,
+          2.0
+        ]
+      ]
+    },
+    {
+      "name": "Merchant",
+      "triangles": 4918,
+      "materials": 1,
+      "animated": true,
+      "bird": false,
+      "bounds": [
+        [
+          -0.45,
+          -0.40004226065180615,
+          0.0
+        ],
+        [
+          0.5764763355255127,
+          0.40335921554035226,
+          1.83
+        ]
+      ]
+    },
+    {
+      "name": "BirdBlue",
+      "triangles": 1076,
+      "materials": 1,
+      "animated": true,
+      "bird": true,
+      "bounds": [
+        [
+          -0.3305950864665638,
+          -0.3,
+          0.0019212840124964714
+        ],
+        [
+          0.3305950864665638,
+          0.215,
+          0.6248399615287781
+        ]
+      ]
+    },
+    {
+      "name": "BirdRed",
+      "triangles": 1020,
+      "materials": 1,
+      "animated": true,
+      "bird": true,
+      "bounds": [
+        [
+          -0.3305950864665638,
+          -0.3,
+          0.0019212840124964714
+        ],
+        [
+          0.3305950864665638,
+          0.215,
+          0.5938531756401062
+        ]
+      ]
+    },
+    {
+      "name": "BirdYellow",
+      "triangles": 1184,
+      "materials": 1,
+      "animated": true,
+      "bird": true,
+      "bounds": [
+        [
+          -0.3305950864665638,
+          -0.3,
+          0.0019212840124964714
+        ],
+        [
+          0.3305950864665638,
+          0.215,
+          0.54
+        ]
+      ]
+    },
+    {
+      "name": "Table",
+      "triangles": 168,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.41,
+          -0.39,
+          0.0
+        ],
+        [
+          0.41,
+          0.39,
+          0.6675
+        ]
+      ]
+    },
+    {
+      "name": "Chair",
+      "triangles": 224,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.41,
+          -0.39,
+          0.0
+        ],
+        [
+          0.41,
+          0.39,
+          0.975
+        ]
+      ]
+    },
+    {
+      "name": "Stool",
+      "triangles": 168,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.41,
+          -0.39,
+          0.0
+        ],
+        [
+          0.41,
+          0.39,
+          0.4675
+        ]
+      ]
+    },
+    {
+      "name": "Bench",
+      "triangles": 168,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.41,
+          -0.39,
+          0.0
+        ],
+        [
+          0.41,
+          0.39,
+          0.4675
+        ]
+      ]
+    },
+    {
+      "name": "Cupboard",
+      "triangles": 224,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.415,
+          -0.24000000000000002,
+          0.0
+        ],
+        [
+          0.415,
+          0.24,
+          1.295
+        ]
+      ]
+    },
+    {
+      "name": "Shelf",
+      "triangles": 196,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.415,
+          -0.24,
+          0.0
+        ],
+        [
+          0.415,
+          0.24,
+          1.295
+        ]
+      ]
+    },
+    {
+      "name": "Chest",
+      "triangles": 204,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.36,
+          -0.3537764129073789,
+          0.009999999999999953
+        ],
+        [
+          0.36,
+          0.325,
+          0.625
+        ]
+      ]
+    },
+    {
+      "name": "Crate",
+      "triangles": 140,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.36,
+          -0.3375,
+          0.009999999999999953
+        ],
+        [
+          0.36,
+          0.325,
+          0.625
+        ]
+      ]
+    },
+    {
+      "name": "Barrel",
+      "triangles": 144,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.32,
+          -0.30433808521444916,
+          0.05
+        ],
+        [
+          0.32,
+          0.30433808521444916,
+          0.6100000000000001
+        ]
+      ]
+    },
+    {
+      "name": "Bed",
+      "triangles": 280,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.42,
+          -0.4775,
+          0.0
+        ],
+        [
+          0.42,
+          0.4775,
+          0.775
+        ]
+      ]
+    },
+    {
+      "name": "Bedside",
+      "triangles": 260,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.41,
+          -0.39,
+          0.0
+        ],
+        [
+          0.41,
+          0.39,
+          0.6675
+        ]
+      ]
+    },
+    {
+      "name": "Hearth",
+      "triangles": 176,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.415,
+          -0.355,
+          0.0
+        ],
+        [
+          0.415,
+          0.29500000000000004,
+          1.1
+        ]
+      ]
+    },
+    {
+      "name": "Cookware",
+      "triangles": 468,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.2774927912181824,
+          -0.09272115437985527,
+          0.010000000000000009
+        ],
+        [
+          0.2974927912181824,
+          0.09272115437985527,
+          0.29000000000000004
+        ]
+      ]
+    },
+    {
+      "name": "Plant",
+      "triangles": 572,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.28,
+          -0.26629582456264306,
+          0
+        ],
+        [
+          0.28,
+          0.26629582456264306,
+          0.84
+        ]
+      ]
+    },
+    {
+      "name": "ShopDisplay",
+      "triangles": 196,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.415,
+          -0.24,
+          0.0
+        ],
+        [
+          0.415,
+          0.24,
+          1.295
+        ]
+      ]
+    },
+    {
+      "name": "Basket",
+      "triangles": 432,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.32,
+          -0.30433808521444916,
+          0.05
+        ],
+        [
+          0.32,
+          0.30433808521444916,
+          0.6699999999999999
+        ]
+      ]
+    },
+    {
+      "name": "Potions",
+      "triangles": 468,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.2774927912181824,
+          -0.09272115437985527,
+          0.010000000000000009
+        ],
+        [
+          0.2974927912181824,
+          0.09272115437985527,
+          0.29000000000000004
+        ]
+      ]
+    },
+    {
+      "name": "Equipment",
+      "triangles": 84,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.2,
+          -0.3,
+          0.015000000000000003
+        ],
+        [
+          0.2,
+          0.3,
+          0.145
+        ]
+      ]
+    },
+    {
+      "name": "Sack",
+      "triangles": 144,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.32,
+          -0.30433808521444916,
+          0.05
+        ],
+        [
+          0.32,
+          0.30433808521444916,
+          0.6100000000000001
+        ]
+      ]
+    },
+    {
+      "name": "KeyBoard",
+      "triangles": 424,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.415,
+          -0.25,
+          0.0
+        ],
+        [
+          0.415,
+          0.24,
+          0.9450000000000001
+        ]
+      ]
+    },
+    {
+      "name": "Luggage",
+      "triangles": 204,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.36,
+          -0.3537764129073789,
+          0.009999999999999953
+        ],
+        [
+          0.36,
+          0.325,
+          0.625
+        ]
+      ]
+    },
+    {
+      "name": "Tableware",
+      "triangles": 108,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.28,
+          -0.09510565162951537,
+          0
+        ],
+        [
+          0.30000000000000004,
+          0.09510565162951537,
+          0.13
+        ]
+      ]
+    },
+    {
+      "name": "Dummy",
+      "triangles": 676,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.365,
+          -0.2853169548885461,
+          0.02
+        ],
+        [
+          0.365,
+          0.2853169548885461,
+          1.2899999999999998
+        ]
+      ]
+    },
+    {
+      "name": "Target",
+      "triangles": 968,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.32,
+          -0.2853169548885461,
+          0.02
+        ],
+        [
+          0.32,
+          0.2853169548885461,
+          1.23
+        ]
+      ]
+    },
+    {
+      "name": "Rack",
+      "triangles": 424,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.415,
+          -0.25,
+          0.0
+        ],
+        [
+          0.415,
+          0.24,
+          1.295
+        ]
+      ]
+    },
+    {
+      "name": "Bookcase",
+      "triangles": 616,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.415,
+          -0.24,
+          0.0
+        ],
+        [
+          0.415,
+          0.24,
+          1.295
+        ]
+      ]
+    },
+    {
+      "name": "Lectern",
+      "triangles": 224,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.41,
+          -0.39,
+          0.0
+        ],
+        [
+          0.41,
+          0.39,
+          0.8825
+        ]
+      ]
+    },
+    {
+      "name": "ArcanePedestal",
+      "triangles": 154,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.3,
+          -0.2853169548885461,
+          0.02
+        ],
+        [
+          0.3,
+          0.2853169548885461,
+          1.08
+        ]
+      ]
+    },
+    {
+      "name": "Window",
+      "triangles": 168,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.47,
+          -0.315,
+          0.1725
+        ],
+        [
+          0.47,
+          0.05,
+          1.07
+        ]
+      ]
+    },
+    {
+      "name": "Banner",
+      "triangles": 92,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.31,
+          -0.08258845726811989,
+          0.23000000000000004
+        ],
+        [
+          0.31,
+          0.03,
+          1.05
+        ]
+      ]
+    },
+    {
+      "name": "Frame",
+      "triangles": 92,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.31,
+          -0.08258845726811989,
+          0.23000000000000004
+        ],
+        [
+          0.31,
+          0.03,
+          1.05
+        ]
+      ]
+    },
+    {
+      "name": "Sconce",
+      "triangles": 112,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.15,
+          -0.27,
+          0.175
+        ],
+        [
+          0.15,
+          0.1,
+          0.825
+        ]
+      ]
+    },
+    {
+      "name": "Lantern",
+      "triangles": 112,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.15,
+          -0.27,
+          0.175
+        ],
+        [
+          0.15,
+          0.1,
+          0.825
+        ]
+      ]
+    },
+    {
+      "name": "Candles",
+      "triangles": 162,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.22499999999999998,
+          -0.042797543233281915,
+          0
+        ],
+        [
+          0.245,
+          0.042797543233281915,
+          0.315
+        ]
+      ]
+    },
+    {
+      "name": "Books",
+      "triangles": 84,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.185,
+          -0.225,
+          0.017499999999999998
+        ],
+        [
+          0.185,
+          0.225,
+          0.20249999999999999
+        ]
+      ]
+    },
+    {
+      "name": "PerchSign",
+      "triangles": 168,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.42,
+          -0.22,
+          0.0
+        ],
+        [
+          0.42,
+          0.22,
+          0.9600000000000001
+        ]
+      ]
+    },
+    {
+      "name": "Carpet_Fill",
+      "triangles": 12,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.012
+        ]
+      ]
+    },
+    {
+      "name": "Carpet_Edge",
+      "triangles": 24,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.024
+        ]
+      ]
+    },
+    {
+      "name": "Carpet_Inner",
+      "triangles": 24,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.024
+        ]
+      ]
+    },
+    {
+      "name": "Carpet_Outer",
+      "triangles": 36,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.024
+        ]
+      ]
+    },
+    {
+      "name": "Counter_Fill",
+      "triangles": 24,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.72
+        ]
+      ]
+    },
+    {
+      "name": "Counter_Edge",
+      "triangles": 36,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.72
+        ]
+      ]
+    },
+    {
+      "name": "Counter_Inner",
+      "triangles": 36,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.72
+        ]
+      ]
+    },
+    {
+      "name": "Counter_Outer",
+      "triangles": 48,
+      "materials": 1,
+      "animated": false,
+      "bird": false,
+      "bounds": [
+        [
+          -0.5,
+          -0.5,
+          0.0
+        ],
+        [
+          0.5,
+          0.5,
+          0.72
+        ]
+      ]
+    }
+  ]
+}

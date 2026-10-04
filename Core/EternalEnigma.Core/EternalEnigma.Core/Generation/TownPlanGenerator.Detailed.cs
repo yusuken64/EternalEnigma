@@ -73,12 +73,12 @@ public static partial class TownPlanGenerator
             BuildingFootprint? placed = null;
             for (int attempt = 0; attempt < 3 && placed == null; attempt++)
             {
-                var shape = BuildingShapes.Random(shapes, door);
+                var shape = options.Furnished ? BuildingFootprint.Rectangle(door,4,9) : BuildingShapes.Random(shapes, door);
                 if (Fits(shape)) placed = shape;
             }
             if (placed == null)
             {
-                var fallback = BuildingShapes.Default(door);
+                var fallback = options.Furnished ? BuildingFootprint.Rectangle(door,4,9) : BuildingShapes.Default(door);
                 if (Fits(fallback)) placed = fallback;
             }
             if (placed == null) continue;
@@ -94,7 +94,7 @@ public static partial class TownPlanGenerator
         }
 
         // Same fallback as the simple layout: a door with no body is better than a missing building.
-        if (doors.Count < options.BuildingCount)
+        if (doors.Count < options.BuildingCount && !options.Furnished)
         {
             var walkableSoFar = new bool[W, H];
             for (int x = 0; x < W; x++)

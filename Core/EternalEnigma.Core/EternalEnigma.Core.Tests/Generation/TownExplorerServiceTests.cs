@@ -55,8 +55,8 @@ public sealed class TownExplorerServiceTests
         Assert.True(session.EnterLocation());
         var plan = session.Town!.Plan;
         var map = string.Concat(new MapRenderer(session).Render(plan.Width, plan.Height));
-        Assert.Equal(TownServiceCatalog.All.Count, plan.ShopRooms.Count);
-        Assert.Equal(plan.ShopRooms.Count, map.Count(c => c == 'v'));
+        Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.ResidentialTownBuildings, plan.ShopRooms.Count);
+        Assert.Equal(TownServiceCatalog.All.Count, map.Count(c => c == 'v'));
         Assert.All(TownServiceCatalog.All, s => Assert.Equal(1, map.Count(c => c == TownServiceGlyphs.Glyph(s))));
     }
 

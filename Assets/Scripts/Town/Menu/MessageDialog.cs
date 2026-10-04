@@ -14,7 +14,8 @@ public class MessageDialog : Dialog
 		this.gameObject.SetActive(false);
 	}
 
-    private void OnEnable()
+    #if UNITY_EDITOR
+    public void AuthorLayout()
     {
         var panel = (RectTransform)PromptText.transform.parent;
         Fit(panel, new Vector2(.12f, .18f), new Vector2(.88f, .82f));
@@ -39,6 +40,7 @@ public class MessageDialog : Dialog
             backdrop.raycastTarget = true;
         }
     }
+#endif
 
     private static void Fit(RectTransform rect, Vector2 min, Vector2 max)
     {

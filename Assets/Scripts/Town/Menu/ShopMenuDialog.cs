@@ -67,11 +67,7 @@ public class ShopMenuDialog : Dialog
         selectedIndex=remembered>=0?remembered:Mathf.Clamp(selectedIndex,0,Mathf.Max(0,ShopItems.Count-1));
         Canvas.ForceUpdateCanvases();
         if(scrollView!=null)scrollView.verticalNormalizedPosition=position;
-        if(GetComponentInChildren<MenuControlHints>(true)==null)
-        {
-            var label=GameUISkin.Label(transform,"",new Vector2(.1f,.08f),new Vector2(.8f,.12f),20);
-            MenuControlHints.Bind(label);
-        }
+
 	}
 
 	private void BuyItem(ShopMenuItem view, ShopItemData item)

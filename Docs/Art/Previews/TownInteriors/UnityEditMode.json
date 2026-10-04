@@ -1,0 +1,13 @@
+{
+    "runId": "08c78c0e4ad14e4793f87ac7c1e66353",
+    "mode": "EditMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.EditMode",
+    "testFilters": [
+        "EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests"
+    ],
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/EditMode.xml"
+}

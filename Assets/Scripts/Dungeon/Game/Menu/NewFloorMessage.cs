@@ -9,7 +9,8 @@ public class NewFloorMessage : MonoBehaviour
 	public Image BackgroundColor;
 	public TextMeshProUGUI FloorMessage;
 
-    private void OnEnable()
+    #if UNITY_EDITOR
+    public void AuthorLayout()
     {
         // A separate canvas keeps the fade above HUD canvases created at runtime.
         var canvas = GetComponent<Canvas>();
@@ -18,6 +19,7 @@ public class NewFloorMessage : MonoBehaviour
         canvas.sortingOrder = ScreenTransition.FloorOverlayOrder;
         if (GetComponent<GraphicRaycaster>() == null) gameObject.AddComponent<GraphicRaycaster>();
     }
+#endif
 
 	public void ShowNewFloor(int floor)
 	{

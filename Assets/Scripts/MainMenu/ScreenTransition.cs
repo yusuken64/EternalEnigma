@@ -15,13 +15,10 @@ public class ScreenTransition : MonoBehaviour
 
     public float TransitionTimeSeconds;
     public float OpenDelayTimeSeconds;
-    private TMP_Text destinationLabel;
+    [SerializeField] private TMP_Text destinationLabel;
 
     private void Awake()
     {
-        var canvas = ShutterScreen.GetComponentInParent<Canvas>();
-        canvas.overrideSorting = true;
-        canvas.sortingOrder = SceneOverlayOrder;
         ShutterScreen.gameObject.SetActive(false);
         BlockScreen.gameObject.SetActive(false);
     }
@@ -46,14 +43,6 @@ public class ScreenTransition : MonoBehaviour
         {
             if (destinationLabel != null) destinationLabel.gameObject.SetActive(false);
             return;
-        }
-        if (destinationLabel == null)
-        {
-            destinationLabel = GameUISkin.Label(ShutterScreen.transform, title,
-                new Vector2(.1f, .4f), new Vector2(.9f, .6f), 36);
-            destinationLabel.name = "Destination title";
-            destinationLabel.alignment = TextAlignmentOptions.Center;
-            destinationLabel.color = GameUITheme.LightInk;
         }
         destinationLabel.text = title;
         destinationLabel.alpha = 0;

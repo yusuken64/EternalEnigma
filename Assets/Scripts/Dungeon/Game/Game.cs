@@ -127,10 +127,8 @@ public class Game : SingletonMonoBehaviour<Game>
 	{
 		DownedAllies.Clear();
 
-		foreach (Transform child in CharacterStatsDisplayContainer)
-		{
-			Destroy(child.gameObject);
-		}
+        var hud = DungeonHud.Ensure(this);
+        foreach(var slot in hud.PartySlots) slot.gameObject.SetActive(false);
 		CharacterStatsDisplays.Clear();
 
 		foreach (Transform townAllyTransform in Common.Instance.TownAllyParent)
@@ -172,7 +170,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 			ally.SyncDisplayedStats();
 
-			var newItem = Instantiate(CharacterStatsDisplayPrefab, CharacterStatsDisplayContainer);
+			var newItem = hud.PartySlots[CharacterStatsDisplays.Count];
+            newItem.gameObject.SetActive(true);
 			newItem.Setup(ally);
 			CharacterStatsDisplays.Add(newItem);
 

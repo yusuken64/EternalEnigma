@@ -21,7 +21,8 @@ public class TownDetailTests
         bool notched = false;
         for (int seed = 0; seed < 20; seed++)
         {
-            var (plan, _) = ServiceTown(seed);
+            // Explicit legacy detailed configurations retain their varied 5x5 shapes.
+            var plan = TownPlanGenerator.Generate(new TownPlanOptions(seed,52,52,new[]{true,true,true,true,true,false,false},spineX:26,detailed:true));
             var inTown = plan.Footprints.Select(f => (f.Bounds.Width, f.Bounds.Height)).Distinct().ToArray();
             Assert.True(inTown.Length >= 1, $"Seed {seed}: only {inTown.Length} building sizes in one town.");
             foreach (var size in inTown) sizes.Add(size);
@@ -89,12 +90,13 @@ public class TownDetailTests
     [InlineData(42)]
     [InlineData(-7)]
     [InlineData(int.MaxValue)]
-    public void ResidentialHousesAreExtraBuildingsWithoutRooms(int seed)
+    public void ResidentialHousesHaveRoomsWithoutServiceVendors(int seed)
     {
         var layout = TownLayout.Create(seed, TownServiceCatalog.All, CampaignContext.AuthoredTownBuildings, 3, CampaignContext.ResidentialTownBuildings);
         var plan = TownPlanGenerator.Generate(layout.Options);
         Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings, plan.BuildingSlots.Count);
-        Assert.Equal(TownServiceCatalog.All.Count, plan.ShopRooms.Count);
+        Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.ResidentialTownBuildings, plan.ShopRooms.Count);
+        Assert.Equal(CampaignContext.ResidentialTownBuildings, plan.Interiors.Count(i=>i.Spec.Kind==TownInteriorKind.Residential));
         Assert.Equal(CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings, layout.SlotServices.Count(s => s == null));
     }
 

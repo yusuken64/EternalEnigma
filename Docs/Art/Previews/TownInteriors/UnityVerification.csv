@@ -1,0 +1,9 @@
+biome,rooms,props,birds,wall_mounts,npcs,walkability,cleanup
+Grassland,12,95,3,24,2,pass,pass
+Desert,12,95,3,24,2,pass,pass
+Water,12,95,3,24,2,pass,pass
+Mountain,12,95,3,24,2,pass,pass
+Forest,12,95,3,24,2,pass,pass
+Tundra,12,95,3,24,2,pass,pass
+Marsh,12,95,3,24,2,pass,pass
+Volcanic,12,95,3,24,2,pass,pass

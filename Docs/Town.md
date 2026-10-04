@@ -25,14 +25,59 @@ and deterministic rolls drive gameplay. Smart environment layers render houses, 
 plants and the exterior enclosure. The loading transition remains closed until generation and
 party/camera setup finish.
 
-Core also has detailed service-sized towns through `TownLayout`, but Unity does not yet bind
-`SlotServices` or all detailed road/prop layers. The current service vocabulary is bakery,
-consumables, items, inn and one trainer, not ten class-specific trainers. See the remaining
-[integration plan](TownServicesUnityPlan.md).
+Campaign towns bind `TownLayout.SlotServices` to bakery, consumables, items, inn and one
+class-aware trainer. Service-sized detailed layouts include seven residential slots. The
+default standalone town also enables furnishings; explicit legacy configurations can keep
+`FurnishInteriors` disabled.
+
+## Furnished interiors (generation version 2)
+
+`TownInteriorSpec` carries the interior kind and shop theme through Core options, cache
+equality and every Unity blueprint generator. Residential rooms never imply a vendor.
+Campaign service IDs, stock, inn functions, training and save schema are unchanged.
+Furnished towns grow to at least 52 cells and at most 64 cells per side. Rooms provide at
+least 5×5 usable floor (7×7 for inns/trainers); required service rooms fail generation rather
+than disappearing. Explicit legacy layouts retain their existing geometry.
+
+`TownInteriorGenerator` has an independent seed stream, three arrangements per kind and
+mirrored variants. It reserves the entrance, central aisle, vendor anchor and adjacent
+interaction cells before placing props. A flood fill validates every free floor cell; it
+retries arrangements and then a compact recipe. The immutable result publishes props,
+carpet/counter masks, occupied cells and reservations. `Furniture` includes counter cells;
+Core `Walkable` and Unity's published mask both exclude this occupancy. Furniture has no
+physics colliders. Carpets remain walkable and sit slightly above the paving.
+
+`TownInteriorRendering` builds native TWC four-tile carpet and counter presets through
+`EnvironmentSmartTileLayer`. Separate layer GUIDs keep their generated chunks independent.
+Counter cabinets and tops support straight, L, U and island masks. Goods use the counter's
+authored .72-cell support height. Eight furniture materials share the same geometry and
+palette atlas. Bounded wall decorations use verified interior-facing timber panels,
+exclude doors and occupied floor, and share the existing effect budget without point lights.
+Rebuilding releases owned meshes, effects and ambient actors.
+
+Seven `TownNpcDefinition` assets preserve identity, portrait, greeting and prefab. The cat
+and shepherd dog use deterministic, reachable public anchors; service characters use the
+existing `ShopVendor` contract (bear innkeeper, sheep baker, bunny consumables, guinea pig
+trainer and hooded equipment merchant). Greetings turn toward the player and open the
+existing message dialog. `Town.IsOccupied` is shared by player and party movement. Ambient
+NPCs have no combat components, equipment, recruitment or persistent state.
+
+Each normal furnished town selects blue, red and yellow spherical birds. Two prefer
+supported sign perches on the exterior enclosure; one uses an interior shelf/cupboard.
+Perches stay outside movement and service interaction space, are separated deterministically,
+and are omitted if unavailable. Fixed roots, varied animation phases, no colliders, no
+interaction and no audio keep them ambient. Character and bird colors stay fixed in all biomes.
+
+See the [authoring instructions](../ArtSource/TownInteriors/README.md) and
+[local visual gallery](Art/Previews/TownInteriors/index.html). Verification covers 100 seeds
+in Core and Unity, geometry/skinning/dependencies, owned-mesh cleanup, all eight biome
+captures, four interior types, vendor behavior, greetings, movement and revisit flows.
 
 ## Gameplay rules
 
-- Purchases, training, donations, recruitment, dismissal and equipment changes save immediately.
+- Purchases, training, donations, recruitment, dismissal and equipment changes update captured
+  live state. Explicit home/inn save actions write the checkpoint; `SaveSystem.Capture` itself
+  does not write storage.
 - Shops keep stock per town/building and refresh after a committed dungeon return. `RestockCycle`
   is a gameplay counter, not a schema version.
 - Class heroes train with skill points derived from highest level and learned ranks. The shared

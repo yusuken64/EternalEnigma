@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aecca9cd407f33740891df7e8061f22a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::TownNpcDefinition
+  Id: Dog
+  DisplayName: Rowan the Shepherd
+  Greeting: The flock is settled. Take a moment to enjoy the town.
+  Prefab: {fileID: 7812168593237593571, guid: 912e50f211da0c6458a67ea97bb0564a, type: 3}
+  Portrait: {fileID: 21300000, guid: b072b15d18f6adf4d8af2cb88bff96d5, type: 3}

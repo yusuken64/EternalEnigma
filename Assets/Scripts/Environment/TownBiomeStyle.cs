@@ -5,8 +5,9 @@ using UnityEngine;
 [ExecuteAlways]
 public sealed class TownBiomeStyle : MonoBehaviour
 {
-    private void OnEnable(){var creator=GetComponent<TWC.TileWorldCreator>();if(creator!=null)creator.OnBuildLayersComplete+=BiomeDecorations.Town;}
-    private void OnDisable(){var creator=GetComponent<TWC.TileWorldCreator>();if(creator!=null)creator.OnBuildLayersComplete-=BiomeDecorations.Town;}
+    private void OnEnable(){var creator=GetComponent<TWC.TileWorldCreator>();if(creator!=null)creator.OnBuildLayersComplete+=BuildDecorations;}
+    private void OnDisable(){var creator=GetComponent<TWC.TileWorldCreator>();if(creator!=null)creator.OnBuildLayersComplete-=BuildDecorations;}
+    private void BuildDecorations(TWC.TileWorldCreator creator) { BiomeDecorations.Town(creator); TownInteriorRendering.Build(creator); }
     public EnvironmentKit Kit;
     public bool OverrideBiome;
     public OverworldBiome Biome;

@@ -117,7 +117,8 @@ public static class TownPlanValidator
             for (int y = 0; y < plan.Height; y++)
             {
                 bool walkable = walkableLayer[x, y];
-                bool blocked = housesLayer[x, y] || treesLayer[x, y] || shopsWallsLayer[x, y];
+                bool blocked = housesLayer[x, y] || treesLayer[x, y] || shopsWallsLayer[x, y] ||
+                    (layers.TryGetValue(TownLayers.Furniture, out var furniture) && furniture[x,y]);
                 bool expectedWalkable = !blocked;
 
                 if (walkable != expectedWalkable)
@@ -260,7 +261,7 @@ public static class TownPlanValidator
             foreach (var cell in room.Floor)
             {
                 Check(shopFloorLayer[cell.X, cell.Y], $"shopRoom[{i}]: Floor cell {cell} is not true in ShopFloor layer.");
-                Check(walkableLayer[cell.X, cell.Y], $"shopRoom[{i}]: Floor cell {cell} is not walkable.");
+                Check(walkableLayer[cell.X, cell.Y] || (layers.TryGetValue(TownLayers.Furniture, out var furniture) && furniture.At(cell)), $"shopRoom[{i}]: Floor cell {cell} is neither walkable nor furnished.");
             }
 
             // Every Wall cell must be true in ShopWalls
@@ -359,7 +360,7 @@ public static class TownPlanValidator
         {
             foreach (var cell in room.Floor)
             {
-                if (!reachableSet.Contains(cell))
+                if (plan.IsWalkable(cell) && !reachableSet.Contains(cell))
                 {
                     unreachableTargets.Add($"shop floor {cell}");
                     break; // Only report once per room

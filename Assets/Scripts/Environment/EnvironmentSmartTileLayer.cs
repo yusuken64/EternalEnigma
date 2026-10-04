@@ -23,10 +23,11 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
     public bool PerimeterOnly;
     public bool SkipMapBoundary;
     public Material SurfaceMaterial;
+    public bool TownPalette;
     public override TWCBuildLayer Clone() => new EnvironmentSmartTileLayer { guid = guid, layerName = layerName,
         assignedGenerationLayerGuid = assignedGenerationLayerGuid, active = active, Kit = Kit,
         QuarterTiles = QuarterTiles, WallTiles = WallTiles, Road = Road, Buildings = Buildings, Elevation = Elevation, HeightScale = HeightScale,
-        PerimeterOnly=PerimeterOnly,SkipMapBoundary=SkipMapBoundary,SurfaceMaterial=SurfaceMaterial };
+        PerimeterOnly=PerimeterOnly,SkipMapBoundary=SkipMapBoundary,SurfaceMaterial=SurfaceMaterial,TownPalette=TownPalette };
 
     public override void Execute(TileWorldCreator creator, bool force)
     {
@@ -44,6 +45,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             var grid = creator.GetComponent<CampaignOverworld>()?.CurrentGrid;
             CoreLayoutCache.TryGetTown(creator, out var town);
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
+            var townCatalog = TownPalette ? TownInteriorCatalog.Load() : null;
             float size = creator.twcAsset.cellSize;
             foreach (var tile in map.clusters.Values.SelectMany(c => c.Values))
             {
@@ -68,8 +70,8 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 bool alley = Road && town != null && town.Layers.TryGetValue(TownLayers.Alleys, out var alleys) && alleys[x,y];
                 if(!Road && (wall || tile.tileType==TileData.TileType.edge) && (Buildings || wall || mesh.bounds.size.z*HeightScale>.25f))
                     decorationFaces.Add(mesh,Matrix4x4.TRS(new Vector3((tile.position.x+.5f)*unit,(tile.position.z+.5f)*unit,-Elevation*size),Quaternion.Euler(0,0,angle),new Vector3(unit,unit,unit*HeightScale)),palette,
-                        Buildings?DecorationSurface.Facade:wall?DecorationSurface.BuiltWall:DecorationSurface.NaturalWall,size,Buildings?(town?.Footprints.FirstOrDefault(f=>f.Cells.Contains(new GridPoint(x,y)))?.Door.ToString()??x+","+y):null);
-                batch.Add(mesh, SurfaceMaterial != null ? SurfaceMaterial : Road ? (alley ? Kit.Paving : Kit.Road) : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
+                        Buildings && town!=null && town.Layers[TownLayers.ShopWalls].At(new GridPoint(x,y)) ? DecorationSurface.BuiltWall : Buildings?DecorationSurface.Facade:wall?DecorationSurface.BuiltWall:DecorationSurface.NaturalWall,size,Buildings?(town?.Footprints.FirstOrDefault(f=>f.Cells.Contains(new GridPoint(x,y)))?.Door.ToString()??x+","+y):null,splitPanels:wall && town!=null && town.Interiors.Count>0);
+                batch.Add(mesh, townCatalog != null ? townCatalog.Material(palette) : SurfaceMaterial != null ? SurfaceMaterial : Road ? (alley ? Kit.Paving : Kit.Road) : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
                     new Vector3((tile.position.x + .5f) * unit, (tile.position.z + .5f) * unit, -Elevation * size),
                     new Vector3(unit, unit, unit * HeightScale), angle,
                     Road ? SilhouetteRole.Receiver : Buildings || wall ? SilhouetteRole.Caster : (SilhouetteRole?)null);

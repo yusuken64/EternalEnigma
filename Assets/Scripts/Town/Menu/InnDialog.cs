@@ -13,7 +13,8 @@ public class InnDialog : Dialog
 
     private TownServices services;
 
-    public static InnDialog Create(Transform parent)
+    #if UNITY_EDITOR
+    public static InnDialog AuthorLayout(Transform parent)
     {
         var panel = GameUISkin.Panel(parent, new Vector2(.25f, .25f), new Vector2(.75f, .75f));
         panel.name = "Inn";
@@ -26,7 +27,13 @@ public class InnDialog : Dialog
         panel.gameObject.SetActive(false);
         return dialog;
     }
+#endif
 
+    public static InnDialog Create(Transform parent)=>AuthoredUI.Require<InnDialog>(parent);
+    private void Awake()
+    {
+        RestButton.onClick.AddListener(Rest_Clicked);SaveButton.onClick.AddListener(Save_Clicked);CancelButton.onClick.AddListener(Cancel_Clicked);
+    }
     public override void PrepareTown(TownInteractionContext context)
     {
         services = context.Services;

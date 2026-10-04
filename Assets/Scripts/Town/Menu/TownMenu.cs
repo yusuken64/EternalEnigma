@@ -19,11 +19,7 @@ public class TownMenu : MonoBehaviour
         AllyRecruitDialog.gameObject.SetActive(false);
         InventoryMenu.gameObject.SetActive(false);
         SkillDialog.gameObject.SetActive(false);
-        if (ItemActionDialog == null)
-        {
-            // Reuse the dungeon's action-menu prefab with context-specific actions.
-            ItemActionDialog = Instantiate(Resources.Load<ActionDialog>("TownItemActions"), transform);
-        }
+        if(ItemActionDialog==null)throw new InvalidOperationException("Town item actions must be authored in the scene.");
         ItemActionDialog.gameObject.SetActive(false);
     }
 

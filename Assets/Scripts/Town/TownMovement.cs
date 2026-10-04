@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +20,9 @@ internal class TownMovement : TownAction
 
 	internal override List<TownAction> ExecuteImmediate()
 	{
-		// Move the currently controlled ally
+		var town=UnityEngine.Object.FindFirstObjectByType<Town>();
+        if(town!=null && !town.CanEnter(newMapPosition))return new();
+        // Move the currently controlled ally
 		townPlayer.ControllingTownAlly.TilemapPosition = newMapPosition;
 		townPlayer.RecordWalkPosition();
 
@@ -31,7 +33,8 @@ internal class TownMovement : TownAction
 				continue;
 
 			// Move following ally to previous position of their leader
-			ally.TilemapPosition = townPlayer.GetNthFromLastPosition(trailIndex);
+			var target=townPlayer.GetNthFromLastPosition(trailIndex);
+            if(town==null||town.CanEnter(target))ally.TilemapPosition = target;
 			trailIndex++;
 		}
 
@@ -50,7 +53,7 @@ internal class TownMovement : TownAction
 		for (int i = 0; i < orderedAllies.Count; i++)
 		{
 			var ally = orderedAllies[i];
-			var targetTile = townPlayer.GetNthFromLastPosition(i);
+			var targetTile = ally.TilemapPosition;
 			Vector3 targetWorld = townPlayer.WalkableMap.CellToWorld(targetTile);
 
 			// Calculate facing based on current world position (not TilemapPosition)

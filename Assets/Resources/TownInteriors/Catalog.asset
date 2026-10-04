@@ -1,0 +1,197 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9079382ab54624c4286b3be53c7fdf5b, type: 3}
+  m_Name: Catalog
+  m_EditorClassIdentifier: EternalEnigma.Game::TownInteriorCatalog
+  Assets:
+  - Id: ArcanePedestal
+    Mesh: {fileID: 4300000, guid: 5026afe3af9c64d4bae2eb9ae34d8654, type: 2}
+    Prefab: {fileID: 840737096648597951, guid: f5452bfa58c657d458d0ca4a0b913e85, type: 3}
+  - Id: Banner
+    Mesh: {fileID: 4300000, guid: 023c42d4864d4ac4ca35d8c9fee00c97, type: 2}
+    Prefab: {fileID: 2092091414922111653, guid: 0fb02a61895ba66458d2a203b1d9a956, type: 3}
+  - Id: Barrel
+    Mesh: {fileID: 4300000, guid: c6b4368068d70d8448557e8ec4669a12, type: 2}
+    Prefab: {fileID: 2350064163043088512, guid: c2af02020c78a89459e32a4e7d85f5b4, type: 3}
+  - Id: Basket
+    Mesh: {fileID: 4300000, guid: 8f0853881b2dfac49a1aa5951eee52bb, type: 2}
+    Prefab: {fileID: 2301395855206769190, guid: 2f3e6523ed19bb24c9fce114f552a4fb, type: 3}
+  - Id: Bear
+    Mesh: {fileID: 4300000, guid: a2dc2c799790ae641b7888b5f128a0e1, type: 2}
+    Prefab: {fileID: 2515445904298505494, guid: 2bc15b26897e946419f7c8d46504be02, type: 3}
+  - Id: Bed
+    Mesh: {fileID: 4300000, guid: d59d3215a87743c4c840ac9eec470379, type: 2}
+    Prefab: {fileID: 2366537657400860974, guid: 7d6dc7591b87b0c4db32f3015bfecc8f, type: 3}
+  - Id: Bedside
+    Mesh: {fileID: 4300000, guid: 515c32f4e7780584e85586946185b837, type: 2}
+    Prefab: {fileID: 8711617993309647783, guid: ced06202a6316f144b2282ab037552e9, type: 3}
+  - Id: Bench
+    Mesh: {fileID: 4300000, guid: 9b7e85adf5a163b489e25c26f249b977, type: 2}
+    Prefab: {fileID: 6320159342021708927, guid: 4e4a90ba91bcea74ea8213da0ea5cb5f, type: 3}
+  - Id: BirdBlue
+    Mesh: {fileID: 4300000, guid: b2a5a204c3d2d1c48b29dcaf43a593da, type: 2}
+    Prefab: {fileID: 6304994008661132981, guid: dc7426f37ffb29443860b7c31c93db29, type: 3}
+  - Id: BirdRed
+    Mesh: {fileID: 4300000, guid: 9b8731a792995cd4ebacfced6aa4e5c3, type: 2}
+    Prefab: {fileID: 5092510536366356790, guid: b8f8f6e30536e5f44a024cad14bbfa62, type: 3}
+  - Id: BirdYellow
+    Mesh: {fileID: 4300000, guid: e9c679ff5820d7e4aa992c364224e0eb, type: 2}
+    Prefab: {fileID: 2051232191149221654, guid: c32d6c7c73baf9b4388392a91cf694f9, type: 3}
+  - Id: Bookcase
+    Mesh: {fileID: 4300000, guid: 6310ddf8f290ef047988e42eeedc18f1, type: 2}
+    Prefab: {fileID: 1494051709115618729, guid: c191aa158c1b0ca44b4dfd1c62ce6d9a, type: 3}
+  - Id: Books
+    Mesh: {fileID: 4300000, guid: 8d87bb95b57f7a24aab500d10961cf85, type: 2}
+    Prefab: {fileID: 4664861771989102751, guid: 5c04e58b6de789443992fa7b7652f2c4, type: 3}
+  - Id: Bunny
+    Mesh: {fileID: 4300000, guid: 7a713ac507a1e7d4c9f9cf5b7bdbda09, type: 2}
+    Prefab: {fileID: 7787456132152918568, guid: 760412b91c1790743a04a78e1c1318c6, type: 3}
+  - Id: Candles
+    Mesh: {fileID: 4300000, guid: 54bd79fb50279d14fb501d650607b360, type: 2}
+    Prefab: {fileID: 1948880590010990933, guid: d8753037f7f21b241a2c5d63666aac22, type: 3}
+  - Id: Carpet_Edge
+    Mesh: {fileID: 4300000, guid: 41b287e951692a34789754aa4b583313, type: 2}
+    Prefab: {fileID: 5557439469459119172, guid: 19e0e0866647a7f4a90583312632249e, type: 3}
+  - Id: Carpet_Fill
+    Mesh: {fileID: 4300000, guid: 7e90cbd348daff544a76b95070970a7e, type: 2}
+    Prefab: {fileID: 5140175107899337442, guid: 6cbe29db2a7306d46b32d16f5848516a, type: 3}
+  - Id: Carpet_Inner
+    Mesh: {fileID: 4300000, guid: 6d0872f18d4293540a7d620f1ff2a415, type: 2}
+    Prefab: {fileID: 6181671596952722668, guid: bd897bb04b96cdd4999e72f07c9e6790, type: 3}
+  - Id: Carpet_Outer
+    Mesh: {fileID: 4300000, guid: 21c6c1e7a0a3914438a42f560956d81b, type: 2}
+    Prefab: {fileID: 7285461421945804350, guid: c098279a83212684c9626f37be7b45b0, type: 3}
+  - Id: Cat
+    Mesh: {fileID: 4300000, guid: 28f4114c5d2816a49a54a860100f10f1, type: 2}
+    Prefab: {fileID: 8117372756656315288, guid: 6ada7068448102645bd371887c2dc0b3, type: 3}
+  - Id: Chair
+    Mesh: {fileID: 4300000, guid: ba30fc0e11e95644aa5ec363921671cc, type: 2}
+    Prefab: {fileID: 7663727926048529276, guid: dc0b3b8ca7e2acd4285755a087efc904, type: 3}
+  - Id: Chest
+    Mesh: {fileID: 4300000, guid: 1b719a803c78eef4c95a7f19f2cd45ac, type: 2}
+    Prefab: {fileID: 6113460960345724577, guid: 653c4c8d33bf51c439be2f3ff50ae44b, type: 3}
+  - Id: Cookware
+    Mesh: {fileID: 4300000, guid: 7fe4c7bd9811b2f409dfacd395f7b12a, type: 2}
+    Prefab: {fileID: 5644704550660261487, guid: 1d2c939b6cafc5f4dbb856ceb57393c5, type: 3}
+  - Id: Counter_Edge
+    Mesh: {fileID: 4300000, guid: 8071e8ff3b900dd47875e50fb8a51fa1, type: 2}
+    Prefab: {fileID: 2506200295631744955, guid: 23e8440f890a0dc43ad63839ffb63392, type: 3}
+  - Id: Counter_Fill
+    Mesh: {fileID: 4300000, guid: c77491dfe605e0c40ba945791331a3cf, type: 2}
+    Prefab: {fileID: 5245203351447725114, guid: 3150bbe6cfa803e4ea58ef1ff13b8dbd, type: 3}
+  - Id: Counter_Inner
+    Mesh: {fileID: 4300000, guid: 2970d6f9a53ed49428f5a53d5c8d4191, type: 2}
+    Prefab: {fileID: 8850712512332162712, guid: f052aa8211f875b4387c7882291fa54d, type: 3}
+  - Id: Counter_Outer
+    Mesh: {fileID: 4300000, guid: 513dc046fd92892498d6c9988df47102, type: 2}
+    Prefab: {fileID: 1047992771743861895, guid: a1dfd19a15b35774db43bcba890ac3a0, type: 3}
+  - Id: Crate
+    Mesh: {fileID: 4300000, guid: 30088b541c065814b858edfd0aa7b9dd, type: 2}
+    Prefab: {fileID: 4103083878585538734, guid: 96223c9bb4837d54bbc94c6fb201808d, type: 3}
+  - Id: Cupboard
+    Mesh: {fileID: 4300000, guid: 0bae6fec5602e06478ada542013bb307, type: 2}
+    Prefab: {fileID: 7213907406528271570, guid: 423e6c9ee03bbc841a6976a89a361d23, type: 3}
+  - Id: Dog
+    Mesh: {fileID: 4300000, guid: 0ce7bdfefbdeb25438976d46e909fab6, type: 2}
+    Prefab: {fileID: 7812168593237593571, guid: 912e50f211da0c6458a67ea97bb0564a, type: 3}
+  - Id: Dummy
+    Mesh: {fileID: 4300000, guid: 53252f44a98419f4695d98ff04b7cac7, type: 2}
+    Prefab: {fileID: 251834608869334194, guid: 89a746f00c24b0b4daf1aee0f847733a, type: 3}
+  - Id: Equipment
+    Mesh: {fileID: 4300000, guid: e2124b8f6f7747941b9e99b0b69377ff, type: 2}
+    Prefab: {fileID: 3191779994243542969, guid: cee4c15ab3177d548858b4d0c206331a, type: 3}
+  - Id: Frame
+    Mesh: {fileID: 4300000, guid: 65d8987ef3b1b7346abee7a67ff8ab3c, type: 2}
+    Prefab: {fileID: 3663551288846835465, guid: 3e17ec72b773a4745a3fa5532cd2fe41, type: 3}
+  - Id: GuineaPig
+    Mesh: {fileID: 4300000, guid: f4db78747be9eae478224a68c14f589b, type: 2}
+    Prefab: {fileID: 4429364641378770237, guid: e0f412250c983c64197ba02561a12f13, type: 3}
+  - Id: Hearth
+    Mesh: {fileID: 4300000, guid: 0dc255ef6b833614bb36f43fe25ca68f, type: 2}
+    Prefab: {fileID: 3829192693157383940, guid: 0f4f53f9e379bd64cb2538a73fd9b354, type: 3}
+  - Id: KeyBoard
+    Mesh: {fileID: 4300000, guid: d3da8f438d6f3d7468c4e713a3aa6eda, type: 2}
+    Prefab: {fileID: 4375516411677749307, guid: 28dc709ca1d466d4db4d1ab4cc53721b, type: 3}
+  - Id: Lantern
+    Mesh: {fileID: 4300000, guid: 41a4de1ffe18a5642b1bd61512ddb2bb, type: 2}
+    Prefab: {fileID: 6753710096766416969, guid: 34a537cd06cda8e419c03f186e10db81, type: 3}
+  - Id: Lectern
+    Mesh: {fileID: 4300000, guid: 6b133d4fba3519b4897690cd75c79472, type: 2}
+    Prefab: {fileID: 5254229685453784797, guid: ccced3ee31dd49b4f8294e3e9100f25d, type: 3}
+  - Id: Luggage
+    Mesh: {fileID: 4300000, guid: 728d32e11bae75848beddcd96851f170, type: 2}
+    Prefab: {fileID: 6078675543748788560, guid: 7df608829b904894baa1303ee59d8bb7, type: 3}
+  - Id: Merchant
+    Mesh: {fileID: 4300000, guid: e35cf3338a8486c4898b208f48b8af4b, type: 2}
+    Prefab: {fileID: 9194060377892215543, guid: 00df13632223c18438b36ac8fcb575fd, type: 3}
+  - Id: PerchSign
+    Mesh: {fileID: 4300000, guid: 7597e8dc883687d4fa76cb44e2112f46, type: 2}
+    Prefab: {fileID: 4569264026862484561, guid: 7a0869b43ee30c44d90bf34d90053790, type: 3}
+  - Id: Plant
+    Mesh: {fileID: 4300000, guid: 002991289b1ef8243b94b41c4ab670ec, type: 2}
+    Prefab: {fileID: 9199118520013478018, guid: 0b2a216f256921b40bb871d7d7dd09d2, type: 3}
+  - Id: Potions
+    Mesh: {fileID: 4300000, guid: 5a731a8a123c43542beffa35c004911b, type: 2}
+    Prefab: {fileID: 4190384429740026672, guid: e25f855c2fbd4e6429b7936c081f12e8, type: 3}
+  - Id: Rack
+    Mesh: {fileID: 4300000, guid: d91ecdab09a49f54e9daf4e6123715a9, type: 2}
+    Prefab: {fileID: 6360667012132953904, guid: 225fe3257c0db2e46b64bfaa725e24e8, type: 3}
+  - Id: Sack
+    Mesh: {fileID: 4300000, guid: c4b2254aa8efc9c408d38d694646198f, type: 2}
+    Prefab: {fileID: 2235830803390348324, guid: 0a443ed1d04e27942b13a4ca71473909, type: 3}
+  - Id: Sconce
+    Mesh: {fileID: 4300000, guid: e43baef23337338439997f4e56f6b198, type: 2}
+    Prefab: {fileID: 3676179181549529398, guid: 4d1a379ed65969348a764068428c45b5, type: 3}
+  - Id: Sheep
+    Mesh: {fileID: 4300000, guid: fee830fc84cef3b40aec3d29664a528e, type: 2}
+    Prefab: {fileID: 5313839748067842271, guid: 51dffe39b5d6bb243aff671a4d0a8453, type: 3}
+  - Id: Shelf
+    Mesh: {fileID: 4300000, guid: 8c2212f53d49ac64d893d27e7d942cdb, type: 2}
+    Prefab: {fileID: 7261137663885899780, guid: c2287cb6416774844b3e9ed8adf85015, type: 3}
+  - Id: ShopDisplay
+    Mesh: {fileID: 4300000, guid: 4916b28505af9a747baae77f0d4eb91b, type: 2}
+    Prefab: {fileID: 6557628877427100007, guid: 237aa60840167e048b378fa346047e41, type: 3}
+  - Id: Stool
+    Mesh: {fileID: 4300000, guid: 8cd84227d8f697c44907eee44709c341, type: 2}
+    Prefab: {fileID: 5019490695248007058, guid: 04dbb4aaf2359cb4b88cbcb3b2d56037, type: 3}
+  - Id: Table
+    Mesh: {fileID: 4300000, guid: 281907a91dce7ab4dad58955bf34850d, type: 2}
+    Prefab: {fileID: 518196811440129406, guid: 2b605531c5128b14c9527d71f857bf84, type: 3}
+  - Id: Tableware
+    Mesh: {fileID: 4300000, guid: 8b0629c16c82fad49b0b9984358b87c7, type: 2}
+    Prefab: {fileID: 8702579184817942507, guid: fc07940465fbf704eb30db9235b9c2e1, type: 3}
+  - Id: Target
+    Mesh: {fileID: 4300000, guid: d2992e8c689baed4a9d9040360800168, type: 2}
+    Prefab: {fileID: 91837408953029971, guid: b06ed566caed2814192ab998bfb415ad, type: 3}
+  - Id: Window
+    Mesh: {fileID: 4300000, guid: 1ff63f03d79b7f94eb68e1d43c5fecfd, type: 2}
+    Prefab: {fileID: 3494926691041993844, guid: 1043ebeec69f67d48bf9478c529a8ee2, type: 3}
+  BiomeMaterials:
+  - {fileID: 2100000, guid: 337bc1668a3a4684c93282a0ef13246e, type: 2}
+  - {fileID: 2100000, guid: 8b6fa07cbe25fdf42907e64eb6ab3c3d, type: 2}
+  - {fileID: 2100000, guid: 111373119ee31fc4b9b7d448600ba167, type: 2}
+  - {fileID: 2100000, guid: 1af023ff9d882a3409e86d4b3e10837a, type: 2}
+  - {fileID: 2100000, guid: 1638d2ca2e3e4584492500a47c22f90e, type: 2}
+  - {fileID: 2100000, guid: 51ce8b23fb16c20438044a9fb65869f3, type: 2}
+  - {fileID: 2100000, guid: e63825f6644e82a498171469d781f6ab, type: 2}
+  - {fileID: 2100000, guid: efbae77bd4784484996d4b6146d724d3, type: 2}
+  CharacterMaterial: {fileID: 2100000, guid: f81db87ebb09e1b49a01966f6dc2edde, type: 2}
+  Carpet: {fileID: 11400000, guid: 9f2eace421a4b2341bee06f6211fc261, type: 2}
+  Counter: {fileID: 11400000, guid: eeb3d9828ac5d2f43921871e01f1596e, type: 2}
+  Characters:
+  - {fileID: 11400000, guid: 1d4364c4545297a42956fa062a6e318d, type: 2}
+  - {fileID: 11400000, guid: b95d24b3f78045040a3c84b892dfafa5, type: 2}
+  - {fileID: 11400000, guid: d75403cc26eaf5345ab1f711e51834c0, type: 2}
+  - {fileID: 11400000, guid: a73d55c471e58f245b1e57e04682aa9b, type: 2}
+  - {fileID: 11400000, guid: 9822ea7cf34868445ab5a9f6e6dd8eaa, type: 2}
+  - {fileID: 11400000, guid: 697fc5a17794143459d8555d3821bfcf, type: 2}
+  - {fileID: 11400000, guid: eae90439a4491f449b38667b57e17ae5, type: 2}

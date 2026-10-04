@@ -21,7 +21,7 @@ public sealed class BiomeDecorationSurfaceSet : MonoBehaviour
 {
     public List<BiomeDecorationFace> Faces = new();
     // Pull only vertical planar faces. Sloping roofs and flat biome seams cannot qualify.
-    public void Add(Mesh mesh, Matrix4x4 matrix, OverworldBiome biome, DecorationSurface surface, float cellSize, string houseId=null)
+    public void Add(Mesh mesh, Matrix4x4 matrix, OverworldBiome biome, DecorationSurface surface, float cellSize, string houseId=null, bool splitPanels=false)
     {
         if(surface==DecorationSurface.Facade) {
             var catalog=BiomeDecorationCatalog.Load();if(catalog==null)return;
@@ -54,7 +54,11 @@ public sealed class BiomeDecorationSurfaceSet : MonoBehaviour
             float plane=Mathf.Abs(n.x)>.99f?a.x:a.y;
             // Include height band to avoid bridging door/window holes in fragmented facades.
             var min=Vector3.Min(a,Vector3.Min(b,c));var max=Vector3.Max(a,Vector3.Max(b,c));
-            var key=(side,Mathf.RoundToInt(plane/cellSize*1000),Mathf.RoundToInt(min.z/cellSize*1000),Mathf.FloorToInt((min.x+max.x)*.5f/cellSize),Mathf.FloorToInt((min.y+max.y)*.5f/cellSize));
+            // Timber posts divide a wall into separate inset panels. Keep those rectangles
+            // separate so their combined bounds cannot bridge the unsupported post recess.
+            var key=(side,Mathf.RoundToInt(plane/cellSize*1000),Mathf.RoundToInt(min.z/cellSize*1000),
+                splitPanels?Mathf.RoundToInt((min.x+max.x)*500/cellSize):Mathf.FloorToInt((min.x+max.x)*.5f/cellSize),
+                splitPanels?Mathf.RoundToInt((min.y+max.y)*500/cellSize):Mathf.FloorToInt((min.y+max.y)*.5f/cellSize));
             if(!groups.TryGetValue(key,out var points))groups[key]=points=new();
             points.Add(a);points.Add(b);points.Add(c);
             areas.TryGetValue(key,out float area);areas[key]=area+Vector3.Cross(b-a,c-a).magnitude*.5f;

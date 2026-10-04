@@ -19,6 +19,9 @@ public class TownBuildingDefinition : ScriptableObject
     public ShopVendor VendorPrefab;
     [Tooltip("Gives a catalog-less building (e.g. the inn) a walk-in room with a vendor; shops get one automatically.")]
     public bool ServiceInterior;
+    public TownNpcDefinition Npc;
+    public EternalEnigma.Core.World.TownInteriorKind InteriorKind;
+    public EternalEnigma.Core.World.TownShopTheme ShopTheme;
     public bool HasInterior => ServiceInterior || (ShopCatalog != null && ShopCatalog.Count > 0);
 
     public void Validate()

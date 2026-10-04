@@ -5,27 +5,35 @@ using UnityEngine.UI;
 
 public sealed class DungeonHud : MonoBehaviour
 {
-    public Transform PartyRoot { get; private set; }
+    public Transform PartyRoot;
+    public CharacterStatsDisplay[] PartySlots;
+    [SerializeField] private Button options;
     private Game game;
-    private TMP_Text header, target;
-    private Button control;
+    [SerializeField] private TMP_Text header, target;
+    [SerializeField] private Button control;
     private float detailUntil;
     public static DungeonHud Ensure(Game game)
     {
-        var hud = game.GetComponent<DungeonHud>();
-        if (hud == null) { hud = game.gameObject.AddComponent<DungeonHud>(); hud.Build(game); }
+        var hud=AuthoredUI.Require<DungeonHud>(game.transform);
+        if(hud.game==null)
+        {
+            hud.game=game;
+            hud.options.onClick.AddListener(()=>Common.Instance.GlobalSettings.ShowDialog());
+            hud.control.onClick.AddListener(()=>DungeonPreferences.FullControl=!DungeonPreferences.FullControl);
+            ResourceHUD.Ensure(game); ScenePresentation.Ensure(game);
+        }
         return hud;
     }
-    private void Build(Game owner)
+    #if UNITY_EDITOR
+    public void AuthorLayout(Game owner)
     {
         game = owner;
         var canvas = GameUISkin.Canvas("Dungeon HUD", transform, 1);
         PartyRoot = GameUISkin.Rect("Party", canvas.transform,new Vector2(.012f,.255f),new Vector2(.30f,.985f));
         header = GameUISkin.Label(canvas.transform,"",new Vector2(.81f,.018f),new Vector2(.985f,.12f),46);
         header.alignment = TextAlignmentOptions.BottomRight; WorldLabel(header);
-        ResourceHUD.Ensure(owner);
-        ScenePresentation.Ensure(owner);
-        var options = GameUISkin.Button(canvas.transform,"Options",new Vector2(.87f,.935f),new Vector2(.985f,.985f),()=>Common.Instance.GlobalSettings.ShowDialog());
+
+        options = GameUISkin.Button(canvas.transform,"Options",new Vector2(.87f,.935f),new Vector2(.985f,.985f),()=>Common.Instance.GlobalSettings.ShowDialog());
         options.navigation = new Navigation { mode = Navigation.Mode.None };
         control = GameUISkin.Button(canvas.transform,"",new Vector2(.012f,.022f),new Vector2(.22f,.072f),()=>DungeonPreferences.FullControl=!DungeonPreferences.FullControl);
         control.navigation = new Navigation { mode = Navigation.Mode.None };
@@ -36,12 +44,15 @@ public sealed class DungeonHud : MonoBehaviour
         shadow.effectColor = new Color(0,0,0,.9f); shadow.effectDistance = new Vector2(1,-1);
         game.FloorText.gameObject.SetActive(false); game.InventoryText.gameObject.SetActive(false);
     }
+#endif
+    #if UNITY_EDITOR
     internal static void WorldLabel(TMP_Text text)
     {
         text.color = GameUITheme.LightInk;
         var shadow = text.gameObject.GetComponent<Shadow>() ?? text.gameObject.AddComponent<Shadow>();
         shadow.effectColor = new Color(0,0,0,.9f); shadow.effectDistance = new Vector2(1.5f,-1.5f);
     }
+#endif
     public void Inspect(string text) { target.text = text; detailUntil = Time.unscaledTime + 6; }
     public static string StatusSummary(Character c) => string.Join(", ", c.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).Select(s=>
         s is GoopiRootStatusEffect ? "Rooted: defeat the holder" : $"{s.GetEffectName()} ({s.TurnsLeft})"));
@@ -64,92 +75,5 @@ public sealed class DungeonHud : MonoBehaviour
         var targeting = MenuManager.Instance.TargetDialog;
         if (player.CurrentControlMode == PlayerControlMode.TargetSelecting && !string.IsNullOrEmpty(targeting.RangeLabel))
             target.text += "\n" + targeting.RangeLabel;
-    }
-}
-
-public sealed class DungeonPartyCard : MonoBehaviour
-{
-    private CharacterStatsDisplay display;
-    private Image panel;
-    private Image portraitHighlight;
-    private static Sprite highlightBorder;
-    private TMP_Text order;
-    private Transform statuses;
-    private string statusKey;
-    public static void Build(CharacterStatsDisplay display)
-    {
-        if (display.GetComponent<DungeonPartyCard>() != null) return;
-        var hud = DungeonHud.Ensure(Game.Instance);
-        foreach (Transform child in display.transform) child.gameObject.SetActive(false);
-        var oldBackground = display.GetComponent<Image>();
-        if (oldBackground != null) oldBackground.enabled = false;
-        display.transform.SetParent(hud.PartyRoot,false);
-        var rect = (RectTransform)display.transform;
-        rect.localScale = Vector3.one; rect.localRotation = Quaternion.identity;
-        int slot = hud.PartyRoot.childCount-1;
-        rect.anchorMin = new Vector2(0,1-(slot+1)*.25f+.008f); rect.anchorMax = new Vector2(1,1-slot*.25f);
-        rect.pivot = new Vector2(.5f,1); rect.offsetMin = rect.offsetMax = Vector2.zero;
-        var card = display.gameObject.AddComponent<DungeonPartyCard>(); card.display=display;
-        card.panel=GameUISkin.Panel(display.transform,Vector2.zero,Vector2.one);
-        card.panel.color = new Color(.09f,.17f,.17f,.88f);
-        card.portraitHighlight = GameUISkin.Panel(card.panel.transform,new Vector2(0,.105f),new Vector2(.36f,1));
-        card.portraitHighlight.name = "Turn highlight";
-        if (highlightBorder == null)
-        {
-            var white = Texture2D.whiteTexture;
-            highlightBorder = Sprite.Create(white,new Rect(0,0,white.width,white.height),
-                new Vector2(.5f,.5f),100,0,SpriteMeshType.FullRect,new Vector4(1,1,1,1));
-            highlightBorder.hideFlags = HideFlags.HideAndDontSave;
-        }
-        card.portraitHighlight.sprite = highlightBorder;
-        card.portraitHighlight.type = Image.Type.Sliced;
-        card.portraitHighlight.fillCenter = false;
-        card.portraitHighlight.pixelsPerUnitMultiplier = .5f;
-        card.portraitHighlight.raycastTarget = false;
-        card.portraitHighlight.enabled = false;
-        display.PortraitImage = GameUISkin.Rect("Portrait",card.panel.transform,new Vector2(.005f,.12f),new Vector2(.35f,.99f)).gameObject.AddComponent<Image>();
-        display.PortraitImage.preserveAspect=true; display.PortraitImage.raycastTarget=false;
-        display.NameText=GameUISkin.Label(card.panel.transform,"",new Vector2(.37f,.79f),new Vector2(.99f,.99f),26);
-        DungeonHud.WorldLabel(display.NameText);
-        display.HpDisplay=Bar(card.panel.transform,.49f,new Color(.37f,.80f,.20f));
-        display.SpDisplay=Bar(card.panel.transform,.31f,new Color(.19f,.53f,.86f));
-        display.HungerDisplay=Bar(card.panel.transform,.13f,new Color(.92f,.61f,.14f));
-        display.LevelDisplay=Bar(card.panel.transform,.02f,new Color(.63f,.49f,.28f),.06f);
-        display.LevelDisplay.ValueText.gameObject.SetActive(false);
-        card.order=GameUISkin.Label(card.panel.transform,"",new Vector2(.37f,.66f),new Vector2(.99f,.80f),18);
-        DungeonHud.WorldLabel(card.order);
-        card.statuses=GameUISkin.Rect("Statuses",card.panel.transform,new Vector2(.01f,.01f),new Vector2(.34f,.17f));
-    }
-    private static StatsDisplay Bar(Transform parent,float y,Color color,float height=.16f)
-    {
-        var background=GameUISkin.Panel(parent,new Vector2(.37f,y),new Vector2(.99f,y+height));
-        GameUITheme.Current.Surface(background, GameUITheme.Current.Track);
-        var fill=GameUISkin.Panel(background.transform,Vector2.zero,Vector2.one);GameUITheme.Current.Surface(fill, GameUITheme.Current.Field);fill.color=color;
-        var slider=background.gameObject.AddComponent<Slider>();slider.minValue=0;slider.maxValue=1;slider.fillRect=fill.rectTransform;slider.interactable=false;
-        var data=background.gameObject.AddComponent<StatsDisplay>();data.StatValueSlider=slider;
-        data.ValueText=GameUISkin.Label(background.transform,"",new Vector2(.04f,0),new Vector2(.96f,1),22);
-        data.ValueText.color=GameUITheme.LightInk; data.ValueText.alignment=TextAlignmentOptions.Midline;
-        return data;
-    }
-    private void Update()
-    {
-        if (display.Character is not Ally ally || Game.Instance == null) return;
-        portraitHighlight.enabled = ally.IsTurnHighlighted;
-        portraitHighlight.color = ally.TurnHighlightColor;
-        order.text = ally == Game.Instance.PlayerController.PartyLeader ? "Leader" :
-            ally.AllyStrategy.ToString().Replace("Aggresive","Aggressive").Replace("HoldPosition","Hold");
-        string key=DungeonHud.StatusSummary(ally);
-        if (key==statusKey) return; statusKey=key;
-        foreach (Transform child in statuses) Destroy(child.gameObject);
-        var effects=ally.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).ToArray();
-        for(int i=0;i<Mathf.Min(4,effects.Length);i++)
-        {
-            var effect=effects[i];string name=effect.GetEffectName();
-            string badge=i==3&&effects.Length>4 ? "+"+(effects.Length-3) : new string(name.Where(char.IsUpper).Take(2).ToArray());
-            if (badge.Length<2) badge=name.Substring(0,Mathf.Min(2,name.Length));
-            var button=GameUISkin.Button(statuses,badge,new Vector2(i*.25f,0),new Vector2((i+1)*.25f-.01f,1),()=>DungeonHud.Ensure(Game.Instance).Inspect(ally.CharacterName+"\n"+DungeonHud.StatusSummary(ally)));
-            button.GetComponentInChildren<TMP_Text>().fontSize=17;
-            button.navigation=new Navigation {mode=Navigation.Mode.None};
-        }
     }
 }

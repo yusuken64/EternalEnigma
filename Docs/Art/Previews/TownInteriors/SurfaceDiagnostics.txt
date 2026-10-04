@@ -1,0 +1,26 @@
+Smart/Roads: elevation=0 heightScale=1
+Smart/Walls: elevation=0 heightScale=1
+Houses: elevation=0 heightScale=2
+Town interior Carpet: elevation=0.065 heightScale=1
+Town interior Counters: elevation=0 heightScale=2
+BuiltWall: count=1922 width=0.7199993..2 height=0.9599998..1.12
+Facade: count=256 width=0.16..0.32 height=0.32..0.34
+NaturalWall: count=256 width=1..1 height=1.38..1.38
+Medieval streets, houses and parks_layer p=(-0.75, -1.00, -0.48) n=(1.00, 0.00, 0.00) local=(-0.75, -1.00, -0.48) size=2
+Medieval streets, houses and parks_layer p=(-1.25, -1.00, -0.48) n=(-1.00, 0.00, 0.00) local=(-1.25, -1.00, -0.48) size=2
+Medieval streets, houses and parks_layer p=(1.00, -1.25, -0.48) n=(0.00, -1.00, 0.00) local=(1.00, -1.25, -0.48) size=2
+Medieval streets, houses and parks_layer p=(1.00, -0.75, -0.48) n=(0.00, 1.00, 0.00) local=(1.00, -0.75, -0.48) size=2
+Medieval streets, houses and parks_layer p=(3.00, -1.25, -0.48) n=(0.00, -1.00, 0.00) local=(3.00, -1.25, -0.48) size=2
+Medieval streets, houses and parks_layer p=(3.00, -0.75, -0.48) n=(0.00, 1.00, 0.00) local=(3.00, -0.75, -0.48) size=2
+Medieval streets, houses and parks_layer p=(5.00, -1.25, -0.48) n=(0.00, -1.00, 0.00) local=(5.00, -1.25, -0.48) size=2
+Medieval streets, houses and parks_layer p=(5.00, -0.75, -0.48) n=(0.00, 1.00, 0.00) local=(5.00, -0.75, -0.48) size=2
+Smart/Walls_layer p=(3.64, 14.74, -0.56) n=(0.00, -1.00, 0.00) local=(3.64, 14.74, -0.56) size=2
+Smart/Walls_layer p=(3.64, 15.26, -0.56) n=(0.00, 1.00, 0.00) local=(3.64, 15.26, -0.56) size=2
+Smart/Walls_layer p=(2.74, 15.64, -0.56) n=(-1.00, 0.00, 0.00) local=(2.74, 15.64, -0.56) size=2
+Smart/Walls_layer p=(3.26, 15.64, -0.56) n=(1.00, 0.00, 0.00) local=(3.26, 15.64, -0.56) size=2
+Smart/Walls_layer p=(3.26, 17.64, -0.56) n=(1.00, 0.00, 0.00) local=(3.26, 17.64, -0.56) size=2
+Smart/Walls_layer p=(2.74, 17.64, -0.56) n=(-1.00, 0.00, 0.00) local=(2.74, 17.64, -0.56) size=2
+Smart/Walls_layer p=(3.26, 16.36, -0.56) n=(1.00, 0.00, 0.00) local=(3.26, 16.36, -0.56) size=2
+Smart/Walls_layer p=(2.74, 16.36, -0.56) n=(-1.00, 0.00, 0.00) local=(2.74, 16.36, -0.56) size=2
+
+Supporting faces: 161, interior facing: 31, mounted: 24

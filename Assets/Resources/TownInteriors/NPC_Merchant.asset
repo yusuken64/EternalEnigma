@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aecca9cd407f33740891df7e8061f22a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::TownNpcDefinition
+  Id: Merchant
+  DisplayName: Vesper the Merchant
+  Greeting: A sturdy buckle, a sharp blade... what does your journey need?
+  Prefab: {fileID: 9194060377892215543, guid: 00df13632223c18438b36ac8fcb575fd, type: 3}
+  Portrait: {fileID: 21300000, guid: 06113257895c12346a0245fb14cca4bd, type: 3}

@@ -78,7 +78,10 @@ public sealed class OverworldScene : MonoBehaviour
         gameObject.AddComponent<OverworldMenuManager>();
         ResourceHUD.Ensure(this);
         ScenePresentation.Ensure(this);
-        if (!Context.IsSandbox) gameObject.AddComponent<CampaignHUD>().Overworld = this;
+        var campaignHud = AuthoredUI.Require<CampaignHUD>(transform);
+        campaignHud.Overworld=this;
+        campaignHud.enabled=!Context.IsSandbox;
+        transform.Find("Campaign HUD").gameObject.SetActive(!Context.IsSandbox);
         Campaign = Context.Campaign;
         Map.Seed = Campaign.Seed;
         var grid = Context.Grid;

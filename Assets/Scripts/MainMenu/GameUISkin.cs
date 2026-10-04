@@ -58,6 +58,11 @@ public static class GameUISkin
         GUI.Label(rect, content, legacyButtonLabel);
         return clicked;
     }
+    // Authored containers retain their original disabled Image for reference compatibility.
+    public static Image PanelGraphic(Transform container) =>
+        container.Find("GamePanelBackground")?.GetComponent<Image>() ?? container.GetComponent<Image>();
+
+#if UNITY_EDITOR
     public static RectTransform Rect(string name, Transform parent, Vector2 min, Vector2 max)
     {
         var rect = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
@@ -82,16 +87,18 @@ public static class GameUISkin
     public static Image Panel(Transform parent, Vector2 min, Vector2 max)
     {
         if (panelPrefab == null) panelPrefab = Resources.Load<Image>("UI/GamePanelBackground");
-        var image = UnityEngine.Object.Instantiate(panelPrefab, parent, false);
+        Image image;
+#if UNITY_EDITOR
+        if (!Application.isPlaying) image = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(panelPrefab.gameObject, parent)).GetComponent<Image>();
+        else
+#endif
+        image = UnityEngine.Object.Instantiate(panelPrefab, parent, false);
         image.name = "Panel";
         image.rectTransform.anchorMin = min; image.rectTransform.anchorMax = max;
         image.rectTransform.offsetMin = image.rectTransform.offsetMax = Vector2.zero;
         return image;
     }
 
-    // Authored containers retain their original disabled Image for reference compatibility.
-    public static Image PanelGraphic(Transform container) =>
-        container.Find("GamePanelBackground")?.GetComponent<Image>() ?? container.GetComponent<Image>();
 
     public static TextMeshProUGUI Label(Transform parent, string text, Vector2 min, Vector2 max, float size = 26)
     {
@@ -104,7 +111,12 @@ public static class GameUISkin
     public static Button Button(Transform parent, string text, Vector2 min, Vector2 max, Action clicked)
     {
         if (buttonPrefab == null) buttonPrefab = Resources.Load<Button>("UI/GameButton");
-        var button = UnityEngine.Object.Instantiate(buttonPrefab, parent, false);
+        Button button;
+#if UNITY_EDITOR
+        if (!Application.isPlaying) button = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(buttonPrefab.gameObject, parent)).GetComponent<Button>();
+        else
+#endif
+        button = UnityEngine.Object.Instantiate(buttonPrefab, parent, false);
         button.name = text;
         var rect = (RectTransform)button.transform;
         rect.anchorMin = min; rect.anchorMax = max;
@@ -113,4 +125,5 @@ public static class GameUISkin
         button.onClick.AddListener(() => clicked?.Invoke());
         return button;
     }
+#endif
 }

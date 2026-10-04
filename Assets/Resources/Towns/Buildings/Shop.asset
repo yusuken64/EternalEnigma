@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: Shop
   Prefab: {fileID: 7142182611612574415, guid: 55e58d3af7033d447b21c703f4b80440, type: 3}
   DialogId: shop
+  DialogPrefab: {fileID: 0}
   ShopCatalog:
   - Item: {fileID: 11400000, guid: 116376209b212d04fa1596427673ff74, type: 2}
     Price: 100
@@ -53,3 +54,8 @@ MonoBehaviour:
     Price: 1000
     Quantity: 1
     StackCount: 1
+  VendorPrefab: {fileID: 3597991658242453545, guid: cebac3115480f5c45a0733fb1e94af5b, type: 3}
+  ServiceInterior: 0
+  Npc: {fileID: 11400000, guid: eae90439a4491f449b38667b57e17ae5, type: 2}
+  InteriorKind: 2
+  ShopTheme: 3

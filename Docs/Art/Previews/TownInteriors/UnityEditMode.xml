@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:41:15Z" duration="53.4987421">
+  <test-suite type="TestSuite" id="1282" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="220" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:41:15Z" duration="53.498742" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1273" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="220" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:41:15Z" duration="53.490735" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="31704" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1274" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="132" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:41:15Z" duration="53.488470" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1275" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="132" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:41:15Z" duration="53.486114" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1276" name="CoreIntegration" fullname="EternalEnigma.Tests.CoreIntegration" runstate="Runnable" testcasecount="96" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:41:15Z" duration="53.484090" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1264" name="TownInteriorIntegrationTests" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:41:15Z" duration="53.482969" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1266" name="BirdLoopsKeepFeetAboveSupportAndRootsFixed" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests.BirdLoopsKeepFeetAboveSupportAndRootsFixed" methodname="BirdLoopsKeepFeetAboveSupportAndRootsFixed" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" seed="356714200" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:40:22Z" duration="0.261509" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1265" name="CatalogHasDistinctCharactersBirdsAndCompleteDependencies" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests.CatalogHasDistinctCharactersBirdsAndCompleteDependencies" methodname="CatalogHasDistinctCharactersBirdsAndCompleteDependencies" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" seed="1931793274" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:40:22Z" duration="0.450535" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1267" name="HundredSeedsPublishCoreOccupancyToUnityAndPreserveCacheIdentity" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests.HundredSeedsPublishCoreOccupancyToUnityAndPreserveCacheIdentity" methodname="HundredSeedsPublishCoreOccupancyToUnityAndPreserveCacheIdentity" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" seed="1675154085" result="Passed" start-time="2026-10-04 01:40:22Z" end-time="2026-10-04 01:41:15Z" duration="52.314760" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1268" name="RebuildReleasesOwnedMeshesAndKeepsThreeSupportedSilentBirds" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests.RebuildReleasesOwnedMeshesAndKeepsThreeSupportedSilentBirds" methodname="RebuildReleasesOwnedMeshesAndKeepsThreeSupportedSilentBirds" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" seed="1572232378" result="Passed" start-time="2026-10-04 01:41:15Z" end-time="2026-10-04 01:41:15Z" duration="0.453680" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: Temp/HarnessResults/EditMode.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

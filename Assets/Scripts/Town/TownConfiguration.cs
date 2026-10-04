@@ -19,6 +19,7 @@ public class TownConfiguration : ScriptableObject
     public List<TownAlly> StartingParty = new();
     public List<DungeonTierData> DungeonTiers = new();
     public List<Skill> LearnableSkills = new();
+    public bool FurnishInteriors;
     public bool LoseItemsOnDefeat = true;
     public bool KeepGoldOnDefeat = true;
     [NonSerialized] public EternalEnigma.Core.Generation.TownLayout Layout;

@@ -7,6 +7,6 @@ public sealed class CampaignTownControls : MonoBehaviour
     private void Start()
     {
         // TownPlayer handles interacting with the south gate using normal movement input.
-        gameObject.AddComponent<CampaignHUD>().Town = Town;
+        AuthoredUI.Require<CampaignHUD>(transform).Town = Town;
     }
 }

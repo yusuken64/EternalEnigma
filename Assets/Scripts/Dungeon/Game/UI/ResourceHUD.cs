@@ -25,41 +25,12 @@ public sealed class ResourceHUD : MonoBehaviour
 
     public static ResourceHUD Ensure(MonoBehaviour owner)
     {
-        var hud=owner.GetComponentInChildren<ResourceHUD>(true);
-        if(hud!=null)return hud;
-        var prefab=Resources.Load<ResourceHUD>("UI/ResourceHUD");
-        hud=prefab!=null?Instantiate(prefab,owner.transform):Build(owner.transform);
-        hud.town=owner as Town;hud.game=owner as Game;hud.world=owner as OverworldScene;
+        var hud = AuthoredUI.Require<ResourceHUD>(owner.transform);
+        hud.town=owner as Town; hud.game=owner as Game; hud.world=owner as OverworldScene;
         hud.canvas=hud.GetComponent<Canvas>();
         return hud;
     }
-    public static ResourceHUD Build(Transform parent)
-    {
-        var canvas=GameUISkin.Canvas("ResourceHUD",parent,90);
-        var hud=canvas.gameObject.AddComponent<ResourceHUD>();
-        var safe=GameUISkin.Rect("Safe area",canvas.transform,Vector2.zero,Vector2.one);safe.gameObject.AddComponent<SafeAreaPanel>();
-        var panel=GameUISkin.Panel(safe,Vector2.one,Vector2.one).rectTransform;
-        panel.pivot=Vector2.one;panel.anchoredPosition=new Vector2(-24,-100);panel.sizeDelta=new Vector2(280,96);
-        hud.CoinIcon=Icon(panel,new Vector2(12,-12));hud.BagIcon=Icon(panel,new Vector2(12,-52));
-        hud.GoldText=Label(panel,-12);hud.BagText=Label(panel,-52);
-        var profile=GamePresentationProfile.Current;
-        hud.CoinIcon.sprite=profile?.CoinIcon;hud.BagIcon.sprite=profile?.BagIcon;
-        foreach(var graphic in canvas.GetComponentsInChildren<Graphic>())graphic.raycastTarget=false;
-        DestroyImmediate(canvas.GetComponent<GraphicRaycaster>());
-        return hud;
-    }
-    private static Image Icon(Transform parent,Vector2 position)
-    {
-        var rect=GameUISkin.Rect("Icon",parent,new Vector2(0,1),new Vector2(0,1));
-        rect.pivot=new Vector2(0,1);rect.anchoredPosition=position;rect.sizeDelta=new Vector2(32,32);
-        var image=rect.gameObject.AddComponent<Image>();image.preserveAspect=true;return image;
-    }
-    private static TMP_Text Label(Transform parent,float y)
-    {
-        var text=GameUISkin.Label(parent,"",new Vector2(0,1),new Vector2(0,1),23);
-        text.rectTransform.pivot=new Vector2(0,1);text.rectTransform.anchoredPosition=new Vector2(52,y);text.rectTransform.sizeDelta=new Vector2(216,32);
-        text.alignment=TextAlignmentOptions.MidlineLeft;text.enableAutoSizing=true;text.fontSizeMin=18;text.fontSizeMax=23;return text;
-    }
+
     private void LateUpdate()
     {
         var common=Common.Instance;

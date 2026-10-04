@@ -14,6 +14,8 @@ public static class TownLayers
     public const string ShopFloor = "ShopFloor";
     public const string ShopWalls = "ShopWalls";
     public const string Walkable = "Walkable";
+    public const string Furniture = "Furniture", Carpet = "Carpet", Counters = "Counters";
+    public static readonly IReadOnlyList<string> InteriorLayers = Array.AsReadOnly(new[] { Furniture, Carpet, Counters });
     public static readonly IReadOnlyList<string> All = Array.AsReadOnly(new[] { Roads, Houses, Trees, Parks, Roofs, Buildings, Allies, Dungeon, ShopFloor, ShopWalls, Walkable });
 
     // Layers of detailed towns. They refine the layers above and are empty otherwise, so they are not in All.

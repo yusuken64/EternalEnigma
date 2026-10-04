@@ -269,8 +269,20 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
         "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutOverwritingExistingSave");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town Interiors EditMode")]
+    public static void RunTownInteriorsEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode","EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town Interiors PlayMode")]
+    public static void RunTownInteriorsPlayMode() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownAmbientGameplayTests","EternalEnigma.Tests.CampaignTownServiceTests",
+        "EternalEnigma.Tests.TownGameplayTests.PartyWithoutAnimationComponentCanWalk",
+        "EternalEnigma.Tests.TownTrainerRankTests.ConfirmationRevalidatesPointsAndClasslessStillPaysGold",
+        "EternalEnigma.Tests.TownTrainerRankTests.RestoredHeroKeepsRanksAndHighestLevel",
+        "EternalEnigma.Tests.TownTrainerRankTests.TrainerDialogShowsRanksAndRefreshesAfterPurchase");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Town")]
     public static void RunTown() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownAmbientGameplayTests",
         "EternalEnigma.Tests.CampaignTownServiceTests",
         "EternalEnigma.Tests.TownGameplayTests",
         "EternalEnigma.Tests.TownTrainerRankTests",

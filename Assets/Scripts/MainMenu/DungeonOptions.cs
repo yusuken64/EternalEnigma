@@ -4,11 +4,12 @@ using UnityEngine.UI;
 
 public sealed class DungeonOptions : MonoBehaviour
 {
-    private Button control;
-    private Button speed;
-    private TMP_Text explanation;
+    [SerializeField] private Button control;
+    [SerializeField] private Button speed;
+    [SerializeField] private TMP_Text explanation;
     private bool autoplayOwnsInput;
-    public static void AddTo(GlobalSettings settings)
+    #if UNITY_EDITOR
+    public static void AuthorLayout(GlobalSettings settings)
     {
         if (settings.GetComponent<DungeonOptions>() != null || settings.TabGroup.TabContents.Count == 0) return;
         var script = settings.gameObject.AddComponent<DungeonOptions>();
@@ -28,7 +29,17 @@ public sealed class DungeonOptions : MonoBehaviour
         script.explanation = GameUISkin.Label(panel.transform,"",new Vector2(.06f,.10f),new Vector2(.94f,.37f),24);
         GameUISkin.Button(panel.transform,"Event history",new Vector2(.06f,.01f),new Vector2(.94f,.09f),() => { settings.Exit_Clicked(); GameMessages.ShowHistory(); });
         settings.TabGroup.AddTab(new TabContent { TabButton = button, Content = panel.gameObject });
-        script.Refresh();
+        // Data is bound at runtime.
+    }
+#endif
+    public static void AddTo(GlobalSettings settings)
+    {
+        var view=settings.GetComponent<DungeonOptions>();
+        if(view==null)throw new System.InvalidOperationException("Settings requires authored Gameplay options.");
+        view.control.onClick.RemoveAllListeners(); view.speed.onClick.RemoveAllListeners();
+        view.control.onClick.AddListener(()=> { if(!AutoplayRunner.BlocksPlayerInput)DungeonPreferences.FullControl=!DungeonPreferences.FullControl;view.Refresh(); });
+        view.speed.onClick.AddListener(()=> { if(!AutoplayRunner.BlocksPlayerInput)DungeonPreferences.AnimationMode=(DungeonAnimationMode)(((int)DungeonPreferences.AnimationMode+1)%4);view.Refresh(); });
+        view.Refresh();
     }
     private void Refresh()
     {

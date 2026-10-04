@@ -11,12 +11,13 @@ public class GameOverScreen : Dialog
 {
 	public TextMeshProUGUI MessageText;
 	public Button OkButton;
-	private Image messageBackdrop;
+	[SerializeField] private Image messageBackdrop;
 	private PlayerController _playerController;
 	private bool _victory;
 	private string _defaultButtonText;
 
-	private void OnEnable()
+	#if UNITY_EDITOR
+    public void AuthorCanvas()
 	{
 		// The result is a full-screen dialog above the runtime HUD canvases.
 		var canvas = GetComponent<Canvas>();
@@ -25,8 +26,10 @@ public class GameOverScreen : Dialog
 		canvas.sortingOrder = 100;
 		if (GetComponent<GraphicRaycaster>() == null) gameObject.AddComponent<GraphicRaycaster>();
 	}
+#endif
 
-	private void PreparePresentation()
+	#if UNITY_EDITOR
+    public void AuthorLayout()
 	{
 		var textRect = MessageText.rectTransform;
 		textRect.anchorMin = new Vector2(.17f, .34f);
@@ -48,10 +51,11 @@ public class GameOverScreen : Dialog
 		}
 		MessageText.color = GameUITheme.LightInk;
 	}
+#endif
 
 	internal void Setup(PlayerController playerController, bool victory = false)
 	{
-		PreparePresentation();
+
 		_playerController = playerController;
 		_victory = victory;
 		CloseAction = victory ? () => { Common.Instance.Travel.ReturnToMenu(); } : null;
@@ -67,8 +71,6 @@ public class GameOverScreen : Dialog
 		var nav = OkButton.navigation;
 		nav.mode = Navigation.Mode.None;
 		OkButton.navigation = nav;
-        if (transform.Find("Campaign main menu") == null)
-        { var back = GameUISkin.Button(transform,"Main menu",new Vector2(.35f,.08f),new Vector2(.65f,.16f),Quit_Clicked); back.name = "Campaign main menu"; }
         OkButton.navigation = new Navigation { mode = Navigation.Mode.Automatic };
 		OkButton.Select();
 	}

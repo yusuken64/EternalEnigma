@@ -4,7 +4,7 @@ namespace EternalEnigma.Core.World;
 
 public sealed class TownPlan
 {
-    public const int GenerationVersion = 1;
+    public const int GenerationVersion = 2;
     /// Spine column of the original 15x15 town; larger towns centre the spine instead.
     public const int DefaultSpineX = 10;
     public const int CorridorHalfWidth = 2;
@@ -23,6 +23,7 @@ public sealed class TownPlan
     public int Width { get; }
     public int Height { get; }
     public int Seed { get; }
+    public IReadOnlyList<TownInterior> Interiors { get; }
     public IReadOnlyDictionary<string, GridLayer> Layers { get; }
     public IReadOnlyList<GridPoint> BuildingSlots { get; }
     public IReadOnlyList<Placement> AllySlots { get; }
@@ -43,7 +44,7 @@ public sealed class TownPlan
         GridPoint exit,
         GridPoint dungeonEntrance,
         int spineX = DefaultSpineX,
-        IEnumerable<BuildingFootprint>? footprints = null)
+        IEnumerable<BuildingFootprint>? footprints = null, IEnumerable<TownInterior>? interiors = null)
     {
         // Validate that Walkable layer exists and get dimensions from it
         if (!layers.ContainsKey(TownLayers.Walkable))
@@ -77,7 +78,8 @@ public sealed class TownPlan
             for (int y = 0; y < Height; y++)
             {
                 bool cellWalkable = walkableLayer[x, y];
-                bool cellBlocked = housesLayer[x, y] || treesLayer[x, y] || shopWallsLayer[x, y];
+                bool cellBlocked = housesLayer[x, y] || treesLayer[x, y] || shopWallsLayer[x, y] ||
+                    (layers.TryGetValue(TownLayers.Furniture, out var furniture) && furniture[x,y]);
                 bool expectedWalkable = !cellBlocked;
 
                 if (cellWalkable != expectedWalkable)
@@ -135,6 +137,7 @@ public sealed class TownPlan
             throw new ArgumentException("DungeonEntrance is out of bounds.", nameof(dungeonEntrance));
 
         // Store properties
+        Interiors = Array.AsReadOnly((interiors ?? Array.Empty<TownInterior>()).ToArray());
         Seed = seed;
         SpineX = spineX;
         Footprints = Array.AsReadOnly((footprints ?? Array.Empty<BuildingFootprint>()).ToArray());

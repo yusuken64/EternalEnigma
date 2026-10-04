@@ -8,17 +8,19 @@ public sealed class GameMessages : MonoBehaviour
 {
     private static GameMessages instance;
     private readonly List<string> history = new();
-    private TextMeshProUGUI text;
-    private CanvasGroup group;
+    [SerializeField] private TextMeshProUGUI text;
+    [SerializeField] private CanvasGroup group;
     private float lastMessage;
     private readonly List<string> turnEvents = new();
-    private ScrollRect scroll;
+    [SerializeField] private ScrollRect scroll;
+    [SerializeField] private Button historyButton;
     private bool expanded;
     private bool inDungeonTurn;
+    private bool hasMessage;
     public IReadOnlyList<string> TurnEvents => turnEvents;
     public static void BeginTurn()
     {
-        if (instance == null) instance = new GameObject("Game messages").AddComponent<GameMessages>();
+        if (instance == null) instance = Resolve();
         instance.inDungeonTurn = true; instance.turnEvents.Clear(); instance.Render();
     }
     public static void FinishAction() { if (instance != null) instance.Render(); }
@@ -26,7 +28,7 @@ public sealed class GameMessages : MonoBehaviour
 
     public static void ShowHistory()
     {
-        if (instance == null) instance = new GameObject("Game messages").AddComponent<GameMessages>();
+        if (instance == null) instance = Resolve();
         instance.expanded = true;
         instance.Render();
     }
@@ -62,15 +64,16 @@ public sealed class GameMessages : MonoBehaviour
     public static void Post(string message, bool coalesce = false)
     {
         if (!Application.isPlaying || string.IsNullOrWhiteSpace(message)) return;
-        if (instance == null) instance = new GameObject("Game messages").AddComponent<GameMessages>();
+        if (instance == null) instance = Resolve();
         instance.Add(message, coalesce);
     }
 
-    private void Awake()
+    #if UNITY_EDITOR
+    public void AuthorLayout(bool dungeon)
     {
         instance = this;
         var canvas = GameUISkin.Canvas("Message display", transform, 2);
-        bool dungeon = Game.Instance != null;
+
         var panel = GameUISkin.Panel(canvas.transform, dungeon ? new Vector2(.24f,.008f) : new Vector2(.69f,.16f),
             dungeon ? new Vector2(.79f,.168f) : new Vector2(.99f,.45f));
         if (dungeon) panel.color = new Color(.12f,.32f,.29f,.80f);
@@ -78,6 +81,7 @@ public sealed class GameMessages : MonoBehaviour
         group = panel.gameObject.AddComponent<CanvasGroup>();
         group.blocksRaycasts = true; group.interactable = true;
         var button = GameUISkin.Button(panel.transform, "Events / History", new Vector2(.71f,.80f), new Vector2(.98f,.98f), ToggleHistory);
+        historyButton=button;
         button.GetComponentInChildren<TMP_Text>().fontSize = 22;
         var viewport = GameUISkin.Rect("Event viewport", panel.transform, new Vector2(.035f,.03f), new Vector2(.965f,.80f));
         viewport.gameObject.AddComponent<RectMask2D>();
@@ -93,9 +97,21 @@ public sealed class GameMessages : MonoBehaviour
         scroll.horizontal = false; scroll.vertical = true; scroll.scrollSensitivity = 35;
         scroll.movementType = ScrollRect.MovementType.Clamped;
     }
+#endif
 
+    private static GameMessages Resolve()
+    {
+        var owner = Game.Instance != null ? Game.Instance.transform : Object.FindFirstObjectByType<Town>()?.transform ?? Object.FindFirstObjectByType<OverworldScene>()?.transform;
+        return AuthoredUI.Require<GameMessages>(owner);
+    }
+    private void Awake()
+    {
+        instance=this; group.alpha=0; group.blocksRaycasts=false; group.interactable=false;
+        historyButton.onClick.AddListener(ToggleHistory);
+    }
     private void Render()
     {
+        hasMessage=true; group.blocksRaycasts=true; group.interactable=true;
         var entries = !expanded && inDungeonTurn ? turnEvents : history;
         int start = expanded ? 0 : Mathf.Max(0,entries.Count-3);
         text.text = string.Join("\n", entries.GetRange(start, entries.Count-start));
@@ -116,6 +132,11 @@ public sealed class GameMessages : MonoBehaviour
         Render();
     }
 
-    private void Update() { if (!inDungeonTurn && !expanded) group.alpha = 1 - Mathf.Clamp01((Time.unscaledTime - lastMessage - 9f) / 2f); }
+    private void Update()
+    {
+        if (!hasMessage) return;
+        if (!inDungeonTurn && !expanded) group.alpha = 1 - Mathf.Clamp01((Time.unscaledTime - lastMessage - 9f) / 2f);
+        group.blocksRaycasts=group.interactable=group.alpha>0;
+    }
     private void OnDestroy() { if (instance == this) instance = null; }
 }

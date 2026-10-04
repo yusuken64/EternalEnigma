@@ -13,23 +13,34 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
     private IReadOnlyList<TownAlly> heroes;
     private Action<TownAlly> confirmed;
     private Action cancelled;
-    private Transform choices;
-    private TextMeshProUGUI details;
-    private TextMeshProUGUI pageLabel;
-    private RawImage portrait;
-    private Button previous;
-    private Button next;
-    private ProtagonistPreview preview;
+    [SerializeField] private Transform choices;
+    [SerializeField] private TextMeshProUGUI details;
+    [SerializeField] private TextMeshProUGUI pageLabel;
+    [SerializeField] private RawImage portrait;
+    [SerializeField] private Button previous;
+    [SerializeField] private Button next;
+    [SerializeField] private ProtagonistPreview preview;
+    public Button[] ChoiceButtons;
+    public Button BackButton;
     private TownAlly selected;
     private int page;
     private bool finished;
 
-    public static ProtagonistHeroPicker Show(IReadOnlyList<TownAlly> roster, Action<TownAlly> confirmed, Action cancelled)
+    public static ProtagonistHeroPicker Show(IReadOnlyList<TownAlly> roster,Action<TownAlly> confirmed,Action cancelled)
     {
-        if (roster == null || roster.Count == 0) throw new ArgumentException("The hero roster is empty.", nameof(roster));
-        if (roster.Any(hero => hero == null || hero.PrimaryClass == null))
-            throw new ArgumentException("Each selectable hero needs a fixed primary class.", nameof(roster));
-
+        if(roster==null || roster.Count==0 || roster.Any(h=>h==null || h.PrimaryClass==null))throw new ArgumentException("Each selectable hero needs a fixed primary class.");
+        var picker=AuthoredUI.Require<ProtagonistHeroPicker>();
+        picker.heroes=roster;picker.confirmed=confirmed;picker.cancelled=cancelled;picker.finished=false;picker.page=0;picker.selected=null;
+        picker.gameObject.SetActive(true);
+        picker.previous.onClick.RemoveAllListeners();picker.next.onClick.RemoveAllListeners();picker.BackButton.onClick.RemoveAllListeners();
+        picker.previous.onClick.AddListener(()=>picker.ChangePage(-1));picker.next.onClick.AddListener(()=>picker.ChangePage(1));picker.BackButton.onClick.AddListener(picker.Back);
+        picker.Select(roster[0]);picker.BuildChoices();
+        MenuUIInputModule.Active?.PushDialog(picker,picker.transform,EventSystem.current?.currentSelectedGameObject,picker.Back);
+        return picker;
+    }
+#if UNITY_EDITOR
+    public static ProtagonistHeroPicker AuthorLayout(IReadOnlyList<TownAlly> roster, Action<TownAlly> confirmed, Action cancelled)
+    {
         var canvas = GameUISkin.Canvas("ProtagonistHeroPicker", null, 1000);
         var picker = canvas.gameObject.AddComponent<ProtagonistHeroPicker>();
         picker.heroes = roster; picker.confirmed = confirmed; picker.cancelled = cancelled;
@@ -48,32 +59,25 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         picker.pageLabel = GameUISkin.Label(canvas.transform, "", new Vector2(.53f, .11f), new Vector2(.66f, .18f), 22);
         picker.pageLabel.alignment = TextAlignmentOptions.Center;
         picker.next = GameUISkin.Button(canvas.transform, "Next", new Vector2(.67f, .11f), new Vector2(.8f, .18f), () => picker.ChangePage(1));
-        GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back);
-        picker.Select(roster[0]);
-        picker.BuildChoices();
-        MenuUIInputModule.Active?.PushDialog(picker, canvas.transform, EventSystem.current?.currentSelectedGameObject, picker.Back);
+        picker.BackButton=GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back);
         return picker;
     }
+#endif
 
     private void BuildChoices()
     {
-        foreach (Transform child in choices) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
-        var visible = heroes.Skip(page * PageSize).Take(PageSize).ToArray();
-        Button first = null;
-        for (int i = 0; i < visible.Length; i++)
+        var visible=heroes.Skip(page*PageSize).Take(PageSize).ToArray();
+        for(int i=0;i<ChoiceButtons.Length;i++)
         {
-            var hero = visible[i];
-            float x = (i % 2) * .51f, top = 1 - (i / 2) / 4f;
-            var button = ToSelectToActivate(GameUISkin.Button(choices, hero.Name + "  •  " + hero.PrimaryClass.DisplayName,
-                new Vector2(x, top - .88f / 4f), new Vector2(x + .49f, top), () => Begin(hero)));
-            var focus = button.gameObject.AddComponent<ClassPickerFocus>();
-            focus.Focused = () => Select(hero);
-            first ??= button;
+            var button=ChoiceButtons[i];button.onClick.RemoveAllListeners();button.gameObject.SetActive(i<visible.Length);
+            if(i>=visible.Length)continue;
+            var hero=visible[i];button.name=hero.Name+"  â€¢  "+hero.PrimaryClass.DisplayName;
+            button.GetComponentInChildren<TMP_Text>().text=button.name;
+            button.onClick.AddListener(()=>Begin(hero));button.GetComponent<ClassPickerFocus>().Focused=()=>Select(hero);
         }
-        pageLabel.text = $"{page + 1} / {Mathf.CeilToInt(heroes.Count / (float)PageSize)}";
-        previous.interactable = page > 0;
-        next.interactable = (page + 1) * PageSize < heroes.Count;
-        first?.Select();
+        pageLabel.text=$"{page+1} / {Mathf.CeilToInt(heroes.Count/(float)PageSize)}";
+        previous.interactable=page>0;next.interactable=(page+1)*PageSize<heroes.Count;
+        ChoiceButtons[0].Select();
     }
 
     private void ChangePage(int direction)
@@ -97,22 +101,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
     private void Begin(TownAlly hero) => Finish(() => confirmed?.Invoke(hero));
 
     /// <summary>Swaps the skin's plain button for one that needs a select before it activates.</summary>
-    private static Button ToSelectToActivate(Button plain)
-    {
-        var go = plain.gameObject;
-        var graphic = plain.targetGraphic;
-        var colors = plain.colors;
-        var transition = plain.transition;
-        var sprites = plain.spriteState;
-        var navigation = plain.navigation;
-        var onClick = plain.onClick;
-        DestroyImmediate(plain);
-        var button = go.AddComponent<SelectToActivateButton>();
-        button.targetGraphic = graphic; button.transition = transition;
-        button.colors = colors; button.spriteState = sprites; button.navigation = navigation;
-        button.onClick = onClick;
-        return button;
-    }
+
     private void Back() => Finish(cancelled);
 
     private void Finish(Action callback)
@@ -121,7 +110,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         finished = true;
         MenuUIInputModule.Active?.PopDialog(this);
         gameObject.SetActive(false);
-        Destroy(gameObject);
+
         callback?.Invoke();
     }
 

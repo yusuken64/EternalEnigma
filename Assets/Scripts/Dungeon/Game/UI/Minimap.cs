@@ -31,16 +31,11 @@ public class Minimap : MonoBehaviour
         if (minimapTexture != null)
             Destroy(minimapTexture);
 
-        var frame = (RectTransform)transform;
-        frame.anchorMin = new Vector2(.80f,.22f); frame.anchorMax = new Vector2(.985f,.48f);
-        frame.offsetMin = frame.offsetMax = Vector2.zero;
         _currentDungeon = currentDungeon;
         minimapTexture = new Texture2D(_currentDungeon.dungeonWidth * 3, _currentDungeon.dungeonHeight * 3);
         minimapTexture.wrapMode = TextureWrapMode.Clamp;
         minimapTexture.filterMode = FilterMode.Point;
         minimapImage.texture = minimapTexture;
-        var border = minimapImage.GetComponent<Outline>() ?? minimapImage.gameObject.AddComponent<Outline>();
-        border.effectColor = new Color(.7f,.53f,.25f,.9f); border.effectDistance = new Vector2(2,-2);
 
         dungeonMap = new MinimapTileData[_currentDungeon.dungeonWidth, _currentDungeon.dungeonHeight];
 

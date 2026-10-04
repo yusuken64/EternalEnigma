@@ -17,6 +17,8 @@ public class GlobalSettings : MonoBehaviour
     public bool IsOpen => SettingsCanvas != null && SettingsCanvas.activeInHierarchy;
     private bool returnToGameplay;
 
+    public void ShowEventHistory() { Exit_Clicked(); GameMessages.ShowHistory(); }
+
     private void Start()
     {
         DungeonOptions.AddTo(this);

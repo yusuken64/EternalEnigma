@@ -74,20 +74,20 @@ public sealed class GameMessages : MonoBehaviour
         instance = this;
         var canvas = GameUISkin.Canvas("Message display", transform, 2);
 
-        var panel = GameUISkin.Panel(canvas.transform, dungeon ? new Vector2(.24f,.008f) : new Vector2(.69f,.16f),
-            dungeon ? new Vector2(.79f,.168f) : new Vector2(.99f,.45f));
-        if (dungeon) panel.color = new Color(.12f,.32f,.29f,.80f);
+        var panel = GameUISkin.Panel(canvas.transform, dungeon ? new Vector2(.24f,.016f) : new Vector2(.69f,.16f),
+            dungeon ? new Vector2(.79f,.20f) : new Vector2(.99f,.45f));
+        if (dungeon) panel.color = new Color(1,1,1,.94f);
         panel.raycastTarget = false;
         group = panel.gameObject.AddComponent<CanvasGroup>();
         group.blocksRaycasts = true; group.interactable = true;
-        var button = GameUISkin.Button(panel.transform, "Events / History", new Vector2(.71f,.80f), new Vector2(.98f,.98f), ToggleHistory);
+        var button = GameUISkin.Button(panel.transform, "Events / History", new Vector2(dungeon ? .70f : .71f,dungeon ? .72f : .80f), new Vector2(dungeon ? .975f : .98f,.98f), ToggleHistory);
         historyButton=button;
-        button.GetComponentInChildren<TMP_Text>().fontSize = 22;
-        var viewport = GameUISkin.Rect("Event viewport", panel.transform, new Vector2(.035f,.03f), new Vector2(.965f,.80f));
+        button.GetComponentInChildren<TMP_Text>().fontSize = dungeon ? 24 : 22;
+        var viewport = GameUISkin.Rect("Event viewport", panel.transform, new Vector2(.035f,.03f), new Vector2(.965f,dungeon ? .70f : .80f));
         viewport.gameObject.AddComponent<RectMask2D>();
         var hitArea = viewport.gameObject.AddComponent<Image>(); hitArea.color = new Color(0,0,0,.001f);
         text = GameUISkin.Label(viewport, "", new Vector2(0,1), Vector2.one, dungeon ? 30 : 23);
-        if (dungeon) DungeonHud.WorldLabel(text);
+        if (dungeon) text.color = GameUITheme.Ink;
         text.rectTransform.pivot = new Vector2(.5f,1);
         text.richText = false;
         text.overflowMode = TextOverflowModes.Overflow;

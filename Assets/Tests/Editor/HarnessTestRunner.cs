@@ -8,6 +8,10 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon UI Audit")]
+    public static void RunDungeonUIAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonVisualAuditTests", "EternalEnigma.Tests.DungeonHudPortraitTests",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Settings Interactions")]
     public static void RunSettingsInteractions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.SettingsInteractionTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Settings EditMode")]

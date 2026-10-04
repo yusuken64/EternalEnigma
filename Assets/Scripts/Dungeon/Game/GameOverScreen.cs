@@ -46,10 +46,10 @@ public class GameOverScreen : Dialog
 				new Vector2(.15f, .32f), new Vector2(.85f, .77f));
 			panel.SetSiblingIndex(textRect.GetSiblingIndex());
 			messageBackdrop = panel.gameObject.AddComponent<Image>();
-			messageBackdrop.color = new Color(.08f, .10f, .09f, .82f);
+			GameUITheme.Current.Surface(messageBackdrop, GameUITheme.Current.Panel);
 			messageBackdrop.raycastTarget = false;
 		}
-		MessageText.color = GameUITheme.LightInk;
+		MessageText.color = GameUITheme.Ink;
 	}
 #endif
 

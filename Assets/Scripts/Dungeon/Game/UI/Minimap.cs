@@ -9,6 +9,7 @@ public class Minimap : MonoBehaviour
 
     public Texture2D minimapTexture;
     public RawImage minimapImage;
+    public Image Frame;
     public Color OverlapMapColor;
     public Color FullMapColor;
     public GameObject background;
@@ -192,6 +193,7 @@ public class Minimap : MonoBehaviour
     private void UpdateMinimapMode()
     {
         foreach (var panel in GetComponentsInChildren<Image>(true)) panel.enabled = currentMode == MinimapMode.Full;
+        if (Frame != null) Frame.enabled = currentMode != MinimapMode.Hidden;
         switch (currentMode)
         {
             case MinimapMode.Hidden:

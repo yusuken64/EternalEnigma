@@ -252,6 +252,10 @@ namespace EternalEnigma.Tests
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True);
             yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<TargetDialog>());
+            Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True, "Back first focuses Resume.");
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(Common.Instance.GlobalSettings.ResumeButton.gameObject));
+            yield return Press(GamepadButton.East);
+            Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False);
             yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenuPicker>());
             Assert.That(hero.Vitals.SP, Is.EqualTo(mana), "Cancel must not cast.");

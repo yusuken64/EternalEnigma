@@ -8,6 +8,7 @@ public class NewFloorMessage : MonoBehaviour
 {
 	public Image BackgroundColor;
 	public TextMeshProUGUI FloorMessage;
+    [SerializeField] private Image decorativeFrame;
 
     #if UNITY_EDITOR
     public void AuthorLayout()
@@ -35,7 +36,10 @@ public class NewFloorMessage : MonoBehaviour
 		FloorMessage.text = $"Floor {floor}";
 
 		BackgroundColor.CrossFadeAlpha(0, 3f, true);
+        if (decorativeFrame != null) decorativeFrame.CrossFadeAlpha(0, 3f, true);
+		FloorMessage.transform.DOKill();
 		FloorMessage.transform.DOBlendablePunchRotation(Vector3.one * 3, 3f)
+			.SetUpdate(true)
 			.OnComplete(() => { this.gameObject.SetActive(false); });
 	}
 
@@ -43,11 +47,14 @@ public class NewFloorMessage : MonoBehaviour
 	{
 		// Show the destination while its layout is being generated.
 		FloorMessage.text = $"Floor {destinationFloor}";
-		BackgroundColor.CrossFadeAlpha(1, 1.0f, true);
+		FloorMessage.transform.DOKill();
+		FloorMessage.transform.localRotation = Quaternion.identity;
 		this.gameObject.SetActive(true);
+		BackgroundColor.CrossFadeAlpha(1, 1.0f, true);
 		BackgroundColor.sprite = null;
 		BackgroundColor.color = Color.black;
         FloorMessage.color = GameUITheme.LightInk;
+        if (decorativeFrame != null) decorativeFrame.CrossFadeAlpha(1, 0, true);
 	}
 
 	[ContextMenu("Do Floor Message")]

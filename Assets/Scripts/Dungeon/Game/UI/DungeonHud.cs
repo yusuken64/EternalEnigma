@@ -10,6 +10,7 @@ public sealed class DungeonHud : MonoBehaviour
     [SerializeField] private Button options;
     private Game game;
     [SerializeField] private TMP_Text header, target;
+    [SerializeField] private GameObject targetBackdrop;
     [SerializeField] private Button control;
     private float detailUntil;
     public static DungeonHud Ensure(Game game)
@@ -53,7 +54,12 @@ public sealed class DungeonHud : MonoBehaviour
         shadow.effectColor = new Color(0,0,0,.9f); shadow.effectDistance = new Vector2(1.5f,-1.5f);
     }
 #endif
-    public void Inspect(string text) { target.text = text; detailUntil = Time.unscaledTime + 6; }
+    public void Inspect(string text)
+    {
+        target.text = text;
+        if (targetBackdrop != null) targetBackdrop.SetActive(!string.IsNullOrWhiteSpace(text));
+        detailUntil = Time.unscaledTime + 6;
+    }
     public static string StatusSummary(Character c) => string.Join(", ", c.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).Select(s=>
         s is GoopiRootStatusEffect ? "Rooted: defeat the holder" : $"{s.GetEffectName()} ({s.TurnsLeft})"));
     private void Update()
@@ -75,5 +81,6 @@ public sealed class DungeonHud : MonoBehaviour
         var targeting = MenuManager.Instance.TargetDialog;
         if (player.CurrentControlMode == PlayerControlMode.TargetSelecting && !string.IsNullOrEmpty(targeting.RangeLabel))
             target.text += "\n" + targeting.RangeLabel;
+        if (targetBackdrop != null) targetBackdrop.SetActive(!string.IsNullOrWhiteSpace(target.text));
     }
 }

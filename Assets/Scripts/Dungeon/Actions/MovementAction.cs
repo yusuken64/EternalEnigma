@@ -300,6 +300,7 @@ public class TakeDamageAction : GameAction
 		{
 			target.PlayTakeDamageAnimation();
 			yield return new WaitForSecondsRealtime(0.3f);
+			if (target.Vitals.HP > 0) target.PlayIdleAnimation();
 		}
 	}
 

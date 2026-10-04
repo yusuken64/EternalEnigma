@@ -54,6 +54,47 @@ public class TownDetailTests
     }
 
     [Theory]
+    [InlineData(0)]
+    [InlineData(42)]
+    [InlineData(99)]
+    public void RoofMaskCoversEachDetailedBuildingIncludingItsRoom(int seed)
+    {
+        var (plan, _) = ServiceTown(seed);
+        var roofs = plan.Layers[TownLayers.Roofs];
+        Assert.Equal(plan.BuildingSlots, plan.Footprints.Select(f => f.Door));
+        foreach (var footprint in plan.Footprints)
+        {
+            var cells = footprint.Cells.Count > 0 ? footprint.Cells : new[] { footprint.Door };
+            Assert.All(cells, cell => Assert.True(roofs.At(cell), $"Missing roof at {cell} for {footprint.Door}"));
+            var room = plan.ShopRoomAt(footprint.Door);
+            if (room != null)
+                Assert.All(room.Floor, cell => Assert.True(roofs.At(cell), $"Unroofed interior {cell}"));
+        }
+        for (int x = 0; x < plan.Width; x++)
+            for (int y = 0; y < plan.Height; y++)
+            {
+                var cell = new GridPoint(x, y);
+                if (!roofs[x, y]) continue;
+                Assert.Equal(1, plan.Footprints.Count(f =>
+                    (f.Cells.Count == 0 && f.Door.Equals(cell)) || f.Cells.Contains(cell)));
+            }
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(42)]
+    public void SimpleTownRoofsKeepTheWholeBodyAfterRoomCarving(int seed)
+    {
+        var plan = TownPlanGenerator.Generate(new TownPlanOptions(seed));
+        var roofs = plan.Layers[TownLayers.Roofs];
+        foreach (var door in plan.BuildingSlots)
+            for (int x = door.X - 1; x <= door.X + 1; x++)
+                for (int y = door.Y + 1; y <= door.Y + 4; y++)
+                    Assert.True(roofs[x, y], $"Missing roof at ({x},{y}) for {door}");
+        Assert.All(plan.ShopRooms, room => Assert.All(room.Floor, cell => Assert.True(roofs.At(cell))));
+    }
+
+    [Theory]
     [InlineData(1)]
     [InlineData(42)]
     [InlineData(99)]

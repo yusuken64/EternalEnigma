@@ -24,8 +24,20 @@ namespace EternalEnigma.Tests
             common.Travel.NewCampaign(42);
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "detailed campaign town");
             var town = Object.FindFirstObjectByType<Town>();
+            Assert.That(town.Roofs.Count, Is.EqualTo(town.Plan.BuildingSlots.Count));
+            Assert.That(town.Roofs.Select(r => r.Door), Is.EquivalentTo(town.Plan.BuildingSlots));
             Assert.That(town.Plan.Width, Is.EqualTo(common.CampaignContext.TownLayout("town-0").Options.Width));
             Assert.That(town.TownPlayer.ControllingTownAlly.TilemapPosition, Is.EqualTo(Object.FindFirstObjectByType<HomeBed>().Tile - Vector3Int.up));
+            foreach (var building in town.TownBuildings)
+            {
+                var door = building.TilemapPosition;
+                var footprint = town.Plan.Footprints.Single(f => f.Door.Equals(door.ToGridPoint()));
+                var visualCell = door + (footprint.Cells.Count > 0 ? Vector3Int.up : Vector3Int.zero);
+                Assert.That(building.transform.position, Is.EqualTo(town.WalkableMap.CellToWorld(visualCell)), building.Definition.Id);
+                Assert.That(town.Plan.IsWalkable(door.ToGridPoint()), Is.True, building.Definition.Id);
+                if (footprint.Cells.Count > 0 && !building.Definition.HasInterior)
+                    Assert.That(town.Plan.IsWalkable(visualCell.ToGridPoint()), Is.False, building.Definition.Id);
+            }
             foreach (var service in TownServiceCatalog.All)
             {
                 var building = town.TownBuildings.Single(b => b.Definition.Id == service.Id);
@@ -50,7 +62,10 @@ namespace EternalEnigma.Tests
             town.TownPlayer.Gold = 1; town.SaveProgress();
             Assert.That(InnCheckpoint.TryRestore(common), Is.True);
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>() != town && Object.FindFirstObjectByType<Town>()?.IsReady == true, "inn checkpoint town");
-            Assert.That(Object.FindFirstObjectByType<Town>().TownPlayer.Gold, Is.EqualTo(345));
+            var restored = Object.FindFirstObjectByType<Town>();
+            Assert.That(restored.TownPlayer.Gold, Is.EqualTo(345));
+            Assert.That(restored.Roofs.Count, Is.EqualTo(restored.Plan.BuildingSlots.Count));
+            Assert.That(restored.Roofs.All(r => r != null), Is.True);
             Assert.That(common.CampaignContext.IsGridGenerated, Is.False);
         }
     }

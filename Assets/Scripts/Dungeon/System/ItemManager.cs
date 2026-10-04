@@ -16,6 +16,11 @@ public class ItemManager : MonoBehaviour
 	internal InventoryItem GetAsInventoryItemByName(string itemName, int? stock = null)
 	{
 		var itemDefinition = ItemDefinitions.FirstOrDefault(x => x.ItemName == itemName) ??
+			StartingItems?.FirstOrDefault(x => x.ItemName == itemName) ??
+			Resources.LoadAll<TownBuildingDefinition>("Towns/Buildings")
+				.SelectMany(building => building.ShopCatalog)
+				.Select(offer => offer.Item)
+				.FirstOrDefault(item => item != null && item.ItemName == itemName) ??
 			DemoDungeonLoadout.Load()?.Items.FirstOrDefault(x => x.ItemName == itemName) ??
 			(ItemDefinition)MaterialCatalog.Find(itemName) ??
 			Resources.LoadAll<ItemDefinition>("TrapFood").FirstOrDefault(x => x.ItemName == itemName);

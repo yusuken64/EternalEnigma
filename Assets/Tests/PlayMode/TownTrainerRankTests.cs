@@ -260,6 +260,21 @@ namespace EternalEnigma.Tests
             Assert.That(dialog.SkillGridItems.Count, Is.EqualTo(7));
             var es = EventSystem.current;
             var first = dialog.SkillGridItems[0];
+            Canvas.ForceUpdateCanvases();
+            Assert.That(view.ListScroll.content.rect.height, Is.GreaterThan(view.ListScroll.viewport.rect.height));
+            dialog.SkillGridItems.Last().GridButton.Select();
+            view.ListScroll.verticalNormalizedPosition = .5f;
+            var wheel = new PointerEventData(es) { scrollDelta = new Vector2(0, -1) };
+            ExecuteEvents.ExecuteHierarchy(first.gameObject, wheel, ExecuteEvents.scrollHandler);
+            float wheelPosition = view.ListScroll.verticalNormalizedPosition;
+            Assert.That(wheelPosition, Is.LessThan(.5f));
+            var hover = new PointerEventData(es) { pointerId = -1 };
+            ExecuteEvents.Execute(first.gameObject, hover, ExecuteEvents.pointerEnterHandler);
+            yield return new WaitForSecondsRealtime(.12f);
+            Assert.That(es.currentSelectedGameObject, Is.SameAs(first.gameObject));
+            Assert.That(view.ListScroll.verticalNormalizedPosition, Is.EqualTo(wheelPosition).Within(.01f),
+                "Hovering a skill must not pull the list away from manual scrolling.");
+            dialog.SkillGridItems.Last().GridButton.Select();
             foreach (var row in dialog.SkillGridItems)
             {
                 Assert.That(row.GridButton, Is.TypeOf<SelectToActivateButton>());

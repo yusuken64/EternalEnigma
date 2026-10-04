@@ -8503,7 +8503,7 @@ Transform:
   m_GameObject: {fileID: 158605742}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0063836323, y: -0.108567625, z: -0.0051693637, w: 0.99405515}
-  m_LocalPosition: {x: -0.84, y: -0.26, z: 3.27}
+  m_LocalPosition: {x: -0.83, y: -0.26, z: 3.27}
   m_LocalScale: {x: 1.9154352, y: 1.9154353, z: 1.9154352}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -49201,7 +49201,7 @@ Transform:
   m_GameObject: {fileID: 888710054}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.780791, y: 0.06789158, z: -15.847056}
+  m_LocalPosition: {x: 5.3, y: 0.6, z: -15.847056}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -75398,7 +75398,7 @@ Transform:
   m_GameObject: {fileID: 1373154635}
   serializedVersion: 2
   m_LocalRotation: {x: 0.0000000057054814, y: 0.9914449, z: 0.1305262, w: -0.000000043337433}
-  m_LocalPosition: {x: 0, y: 0.65, z: 10}
+  m_LocalPosition: {x: 1.26, y: 1.09, z: 8.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -87549,6 +87549,9 @@ MonoBehaviour:
   arrowAnchor: 0
   arrowOffset: {x: -192.4, y: 0, z: 0}
   arrowMoveDuration: 0.08
+  FocusRoot: {fileID: 0}
+  FocusOwner: {fileID: 0}
+  edgeSpacing: 0
 --- !u!114 &1656518436
 MonoBehaviour:
   m_ObjectHideFlags: 0

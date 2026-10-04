@@ -180,6 +180,24 @@ namespace EternalEnigma.Tests
 		}
 
 		[UnityTest]
+		public IEnumerator DefeatDoesNotRestoreActionsToDownedLeader()
+		{
+			foreach (var ally in new[] { reese, sage })
+			{
+				ally.Vitals.HP = 0;
+				ally.DisplayedVitals.HP = 0;
+				PartyRules.MarkDowned(harness.Game, ally);
+			}
+			var skill = MakeSkill("Test Self Down", SkillTargeting.Self, TargetTeam.Self, TargetArea.Self,
+				new TakeDamageAction { damage = 9999 });
+			yield return harness.ExecuteAction(new SkillAction(caster, skill, null));
+			Assert.That(harness.Game.GameOverScreen.gameObject.activeSelf, Is.True);
+			Assert.That(caster.Vitals.HP, Is.Zero);
+			Assert.That(caster.Vitals.ActionsPerTurnLeft, Is.EqualTo(caster.DisplayedVitals.ActionsPerTurnLeft));
+			Assert.That(caster.Vitals.ActionsPerTurnLeft, Is.Zero);
+		}
+
+		[UnityTest]
 		public IEnumerator ClonesDoNotPreventDefeat()
 		{
 			// Add a SummonedUnit (Kind Clone) component to a freshly instantiated copy of an ally

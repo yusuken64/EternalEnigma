@@ -90,6 +90,26 @@ namespace EternalEnigma.Tests
         public IEnumerator TestDungeonStartsWithoutASave() => CheckTestDungeon(null);
 
         [UnityTest]
+        public IEnumerator DeveloperButtonTogglesDebugControls()
+        {
+            yield return harness.LoadMainMenu(null);
+            var developer = Object.FindFirstObjectByType<MainMenuDeveloperControls>();
+            Assert.That(developer, Is.Not.Null);
+            Assert.That(developer.Toggle.gameObject.activeSelf, Is.True);
+            Assert.That(developer.Controls, Is.Not.Empty);
+            Assert.That(developer.Controls.All(control => !control.activeSelf), Is.True);
+
+            developer.Toggle.onClick.Invoke();
+            Assert.That(developer.Controls.All(control => control.activeSelf), Is.True);
+            developer.Toggle.onClick.Invoke();
+            Assert.That(developer.Controls.All(control => !control.activeSelf), Is.True);
+
+            developer.Initialize();
+            developer.Toggle.onClick.Invoke();
+            Assert.That(developer.Controls.All(control => control.activeSelf), Is.True);
+        }
+
+        [UnityTest]
         public IEnumerator DirectDungeonStartCreatesPartyWithoutASave() => CheckDirectDungeonStart(null);
 
         [UnityTest]

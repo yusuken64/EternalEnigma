@@ -22,6 +22,10 @@ public class Town : MonoBehaviour
     public bool IsOccupied(Vector3Int cell) => ShopVendors.Any(v=>v!=null && v.TilemapPosition==cell) || Townsfolk.Any(n=>n!=null && n.Cell==cell) || GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell);
     public bool CanEnter(Vector3Int cell) => Plan != null && Plan.IsWalkable(cell.ToGridPoint()) && !IsOccupied(cell);
     private readonly List<GameObject> shopWalls = new();
+    private readonly List<TownRoofVisual> roofs = new();
+    public IReadOnlyList<TownRoofVisual> Roofs => roofs;
+    private TownAlly roofAlly;
+    private Vector3Int roofCell;
     public bool IsReady { get; private set; }
     private string arrivalHeroId;
     public TownPlan Plan { get; private set; }
@@ -100,6 +104,7 @@ public class Town : MonoBehaviour
         TownPlayer.RecruitedAllies.Clear(); TownAllies.Clear();
         CampaignParty.PrepareActive(Common.Instance, Configuration);
         GenerateAllies(); TownPlayer.ControllingTownAlly = null; TownPlayer.EnsureControlledAlly();
+        RefreshRoofs();
         SaveProgress();
     }
 
@@ -188,7 +193,7 @@ public class Town : MonoBehaviour
     public void GenerateInteractableBuildings()
     {
         foreach(var old in TownBuildings ?? new List<TownBuilding>()) if(old!=null){old.gameObject.SetActive(false);Destroy(old.gameObject);}
-        TownBuildings = TownBuildingManager.Spawn(Configuration, Plan.BuildingSlots.ToCells(), WalkableMap);
+        TownBuildings = TownBuildingManager.Spawn(Configuration, Plan.BuildingSlots.ToCells(), WalkableMap, Plan);
     }
 
     /// <summary>Spawns the carved rooms' wall visuals and a vendor per shop whose room actually exists this generation.</summary>
@@ -249,6 +254,59 @@ public class Town : MonoBehaviour
         }
     }
 
+    private void GenerateRoofs()
+    {
+        foreach (var roof in roofs)
+            if (roof != null) { roof.gameObject.SetActive(false); Destroy(roof.gameObject); }
+        roofs.Clear();
+        roofAlly = null;
+        var kit = EnvironmentKit.Load();
+        if (kit == null || WalkableMap.TileWorldCreator.worldObject == null) return;
+        var biome = WalkableMap.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
+        var parent = WalkableMap.TileWorldCreator.worldObject.transform;
+        float size = WalkableMap.TileWorldCreator.twcAsset.cellSize;
+        foreach (var door in Plan.BuildingSlots)
+        {
+            var footprint = Plan.Footprints.FirstOrDefault(f => f.Door.Equals(door));
+            IReadOnlyCollection<GridPoint> cells;
+            if (footprint != null)
+                cells = footprint.Cells.Count > 0 ? footprint.Cells : new[] { door };
+            else
+            {
+                // Simple towns use the original three-by-four body north of each door.
+                var body = new List<GridPoint>();
+                for (int y = door.Y + 1; y <= door.Y + 4; y++)
+                    for (int x = door.X - 1; x <= door.X + 1; x++)
+                        if (Plan.Layers[TownLayers.Roofs].At(new GridPoint(x, y)))
+                            body.Add(new GridPoint(x, y));
+                cells = body.Count > 0 ? body : new[] { door };
+            }
+            var obj = new GameObject("Roof " + door);
+            obj.transform.SetParent(parent, false);
+            var roof = obj.AddComponent<TownRoofVisual>();
+            roof.Initialize(door, Plan.ShopRoomAt(door), cells, size, kit.BuildingMaterial(biome));
+            roofs.Add(roof);
+        }
+        RefreshRoofs();
+    }
+
+    public void RefreshRoofs()
+    {
+        var ally = TownPlayer != null ? TownPlayer.ControllingTownAlly : null;
+        roofAlly = ally;
+        roofCell = ally != null ? ally.TilemapPosition : default;
+        var cell = roofCell.ToGridPoint();
+        foreach (var roof in roofs)
+            if (roof != null)
+                roof.gameObject.SetActive(ally == null || roof.Room == null || !roof.Room.Floor.Contains(cell));
+    }
+
+    private void Update()
+    {
+        var ally = TownPlayer != null ? TownPlayer.ControllingTownAlly : null;
+        if (ally != roofAlly || (ally != null && ally.TilemapPosition != roofCell)) RefreshRoofs();
+    }
+
     private void Awake()
 	{
         WalkableMap.TileWorldCreator.OnBlueprintLayersComplete += blueprintLayersComplete;
@@ -291,6 +349,7 @@ public class Town : MonoBehaviour
         Debug.Log("Generate Buildings");
         GenerateInteractableBuildings();
         GenerateShopInteriors();
+        GenerateRoofs();
         TownInteriorRendering.SpawnTownsfolk(this);
 
         Debug.Log("Generate Allies");
@@ -299,6 +358,7 @@ public class Town : MonoBehaviour
         Debug.Log("Initialize Player");
         TownPlayer.Initialize();
         TownPlayer.SelectAlly(arrivalHeroId ?? Common.Instance.GameSaveData.ProtagonistId);
+        RefreshRoofs();
 
         // Let newly spawned actors finish Start before placing the camera.
         yield return null;

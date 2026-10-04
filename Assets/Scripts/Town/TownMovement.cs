@@ -7,6 +7,7 @@ using UnityEngine;
 
 internal class TownMovement : TownAction
 {
+	private const float WalkDuration = 0.1f;
 	private TownPlayer townPlayer;
 	private Vector3Int originalPosition;
 	private Vector3Int newMapPosition;
@@ -25,6 +26,7 @@ internal class TownMovement : TownAction
         // Move the currently controlled ally
 		townPlayer.ControllingTownAlly.TilemapPosition = newMapPosition;
 		townPlayer.RecordWalkPosition();
+		town?.RefreshRoofs();
 
 		int trailIndex = 1;
 		foreach (var ally in townPlayer.RecruitedAllies)
@@ -70,7 +72,7 @@ internal class TownMovement : TownAction
 			}
 
 			ally.HeroAnimator?.PlayWalkAnimation();
-			var tween = ally.transform.DOMove(targetWorld, 0.2f);
+			var tween = ally.transform.DOMove(targetWorld, WalkDuration);
 			tweens.Add(tween);
 		}
 		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)

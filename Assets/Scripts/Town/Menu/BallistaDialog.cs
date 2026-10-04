@@ -132,7 +132,7 @@ public class BallistaDialog : Dialog
         selected = SkillGridItems.FirstOrDefault(i => i.GetSkill().SkillName == selectedSkills[(int)source]) ?? SkillGridItems.FirstOrDefault();
         WireNavigation();
         UpdateBalance();
-        if (selected != null) Preview(selected);
+        if (selected != null) Preview(selected, null);
         else Layout.Preview.text = "No skills in this tree.";
         StopAutoScroll();
         Canvas.ForceUpdateCanvases();
@@ -159,7 +159,7 @@ public class BallistaDialog : Dialog
         control.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnUp = up,
             selectOnDown = down, selectOnLeft = left, selectOnRight = right };
 
-    private void Preview(SkillGridItem row)
+    private void Preview(SkillGridItem row, UnityEngine.EventSystems.BaseEventData eventData)
     {
         bool changed = selectedSkills[(int)source] != row.GetSkill().SkillName;
         selected = row;
@@ -172,7 +172,8 @@ public class BallistaDialog : Dialog
         Layout.Preview.text = $"<b>{o.Skill.SkillName}</b>\n{requirements}\n\n{status}\n{o.Prerequisites}\n\n{o.Skill.Description}";
         if (changed) Layout.PreviewScroll.verticalNormalizedPosition = 1;
         WireNavigation();
-        ScrollToSelected(row.gameObject);
+        if (eventData is UnityEngine.EventSystems.PointerEventData) StopAutoScroll();
+        else ScrollToSelected(row.gameObject);
     }
 
     public void Refresh()
@@ -182,7 +183,7 @@ public class BallistaDialog : Dialog
             if (offers.TryGetValue(row.GetSkill().SkillName, out var offer))
                 row.Setup(new TogglableSkillGridItem { Skill = offer.Skill, Offer = offer, Active = offer.CurrentRank > 0 });
         UpdateBalance();
-        if (selected != null) Preview(selected);
+        if (selected != null) Preview(selected, null);
     }
 
     private void UpdateBalance() => SkillsText.text = Character.PrimaryClass == null ? "Skill training - Gold purchases" :

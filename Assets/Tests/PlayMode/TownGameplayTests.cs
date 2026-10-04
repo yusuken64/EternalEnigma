@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using EternalEnigma.Core.World;
 using JuicyChickenGames.Menu;
 using NUnit.Framework;
 using UnityEngine;
@@ -47,6 +48,37 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator EnteringAndLeavingARoomOnlyChangesItsRoof()
+        {
+            yield return harness.LoadTown(new TestScenario().CreateSave());
+            var town = World;
+            Assert.That(town.Roofs.Count, Is.EqualTo(town.Plan.BuildingSlots.Count));
+            Assert.That(town.Roofs.All(r => r.GetComponent<MeshCollider>() == null &&
+                r.GetComponent<Collider>() == null && r.GetComponent<MeshRenderer>() != null), Is.True);
+            var roomRoof = town.Roofs.First(r => r.Room != null);
+            var otherRoofs = town.Roofs.Where(r => r != roomRoof).ToArray();
+            var hero = town.TownPlayer.ControllingTownAlly;
+            var door = roomRoof.Door.ToCell();
+            var inside = roomRoof.Room.Floor.First().ToCell();
+            hero.TilemapPosition = door;
+            hero.transform.position = town.WalkableMap.CellToWorld(door);
+            town.RefreshRoofs();
+            Assert.That(town.Roofs.All(r => r.gameObject.activeSelf), Is.True);
+            town.TownPlayer.SetAction(new TownMovement(town.TownPlayer, door, inside));
+            yield return harness.WaitUntil(() => !town.TownPlayer.IsBusy, "enter room");
+            Assert.That(roomRoof.gameObject.activeSelf, Is.False);
+            Assert.That(otherRoofs.All(r => r.gameObject.activeSelf), Is.True);
+            town.TownPlayer.SetAction(new TownMovement(town.TownPlayer, inside, door));
+            yield return harness.WaitUntil(() => !town.TownPlayer.IsBusy, "leave room");
+            Assert.That(town.Roofs.All(r => r.gameObject.activeSelf), Is.True);
+            // A spawn or leader change already inside the room uses the same occupancy rule.
+            hero.TilemapPosition = inside;
+            town.RefreshRoofs();
+            Assert.That(roomRoof.gameObject.activeSelf, Is.False);
+            Assert.That(otherRoofs.All(r => r.gameObject.activeSelf), Is.True);
+        }
+
+        [UnityTest]
         public IEnumerator CallerControlsBuildingsAndRecruitsAndShopsHaveIndependentStock()
         {
             var configuration = Object.Instantiate(TownSceneLoader.Default);
@@ -72,7 +104,18 @@ namespace EternalEnigma.Tests
             Assert.That(World.Configuration, Is.SameAs(configuration));
             Assert.That(World.TownBuildings.Select(b => b.Definition), Is.EqualTo(configuration.Buildings));
             Assert.That(World.TownAllies.Select(a => a.Id), Is.EqualTo(new[] { recruit.Ally.Id }));
-            World.TownBuildings[2].Interact(World.TownPlayer, null);
+            var customBuilding = World.TownBuildings[2];
+            var door = customBuilding.TilemapPosition;
+            var front = door + Vector3Int.up;
+            var hasBody = World.Plan.Layers[TownLayers.Houses].At(front.ToGridPoint());
+            Assert.That(customBuilding.transform.position, Is.EqualTo(World.WalkableMap.CellToWorld(hasBody ? front : door)));
+            if (hasBody) Assert.That(World.Plan.IsWalkable(front.ToGridPoint()), Is.False);
+            var hero = World.TownPlayer.ControllingTownAlly;
+            var approach = door + Vector3Int.down;
+            hero.TilemapPosition = approach;
+            hero.transform.position = World.WalkableMap.CellToWorld(approach);
+            World.TownPlayer.SetAction(new TownMovement(World.TownPlayer, approach, door));
+            yield return harness.WaitUntil(() => Manager.CurrentDialog is TestTownDialog, "non-interior door interaction");
             Assert.That(((TestTownDialog)Manager.CurrentDialog).Context.Building, Is.SameAs(custom));
             Manager.CurrentDialog.CloseDialog();
             var offer = first.ShopCatalog[0];
@@ -86,6 +129,20 @@ namespace EternalEnigma.Tests
             yield return harness.WaitUntil(() => World != null && World.IsReady, "configured town return");
             Assert.That(World.Configuration, Is.SameAs(configuration));
             Assert.That(World.Services.Shop(first).Stock[0].Remaining, Is.EqualTo(offer.Quantity - 1));
+        }
+
+        [UnityTest]
+        public IEnumerator ShopItemsRestoreFromSavedNames()
+        {
+            yield return harness.LoadTown(new TestScenario().CreateSave());
+            var items = Resources.LoadAll<TownBuildingDefinition>("Towns/Buildings")
+                .SelectMany(b => b.ShopCatalog).Select(o => o.Item).ToList();
+            Assert.That(items.Any(item => item.ItemName == "Wooden Buckler"), Is.True);
+            foreach (var item in items)
+            {
+                var saved = ItemSaveData.From(item.AsInventoryItem(null));
+                Assert.That(saved.Restore(Common.Instance.ItemManager).ItemDefinition, Is.SameAs(item), item.ItemName);
+            }
         }
 
         [UnityTest]

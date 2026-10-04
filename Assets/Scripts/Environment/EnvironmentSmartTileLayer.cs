@@ -47,6 +47,12 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
             var townCatalog = TownPalette ? TownInteriorCatalog.Load() : null;
             float size = creator.twcAsset.cellSize;
+            // Solid houses retain their blocked front wall in the Core plan. Omit
+            // only the facade panels in front of the entrance art to make a recess.
+            var solidEntrances = Buildings && town != null
+                ? town.BuildingSlots.Select(d => new GridPoint(d.X, d.Y + 1))
+                    .Where(c => town.Layers[TownLayers.Houses].At(c)).ToHashSet()
+                : null;
             foreach (var tile in map.clusters.Values.SelectMany(c => c.Values))
             {
                 if(PerimeterOnly && tile.position.x!=0 && tile.position.z!=0 && tile.position.x!=creator.twcAsset.mapWidth*2-1 && tile.position.z!=creator.twcAsset.mapHeight*2-1) continue;
@@ -54,6 +60,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 bool wall = WallTiles != null;
                 float unit = wall ? size : size * .5f;
                 int x = (int)tile.position.x / (wall ? 1 : 2), y = (int)tile.position.z / (wall ? 1 : 2);
+                if (solidEntrances != null && solidEntrances.Contains(new GridPoint(x, y))) continue;
                 var palette = grid == null ? biome : OverworldCosmetics.Biome(grid, x, y);
                 GameObject prefab; float angle;
                 if (wall) (prefab, angle) = SelectWall(WallTiles, tile.neighboursLocation);
@@ -76,6 +83,10 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                     new Vector3(unit, unit, unit * HeightScale), angle,
                     Road ? SilhouetteRole.Receiver : Buildings || wall ? SilhouetteRole.Caster : (SilhouetteRole?)null);
             }
+            if (solidEntrances != null)
+                foreach (var cell in solidEntrances)
+                    batch.Add(Kit.Mesh("Wall"), Kit.BuildingMaterial(biome),
+                        new Vector3(cell.X + .5f, cell.Y + .8f, 0) * size, Vector3.one * size);
             batch.Finish();
         }
         finally { creator.executedBuildLayersCount += 1; }

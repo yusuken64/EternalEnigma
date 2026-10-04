@@ -314,17 +314,22 @@ public static class TownPlanValidator
                 $"dungeon: Dungeon cell {dungeonCell} does not equal DungeonEntrance {plan.DungeonEntrance}.");
         }
 
-        // Check 9: Roofs == Houses everywhere
+        // Check 9: Every original building cell keeps its roof after room carving.
+        var detailedRoofCells = plan.Footprints.Count > 0
+            ? new HashSet<GridPoint>(plan.Footprints.SelectMany(f => f.Cells.Count > 0 ? f.Cells : new[] { f.Door }))
+            : null;
         for (int x = 0; x < plan.Width; x++)
         {
             for (int y = 0; y < plan.Height; y++)
             {
                 bool roofValue = roofLayer[x, y];
-                bool houseValue = housesLayer[x, y];
+                bool houseValue = detailedRoofCells != null
+                    ? detailedRoofCells.Contains(new GridPoint(x, y))
+                    : housesLayer[x, y] || shopFloorLayer[x, y] || shopsWallsLayer[x, y];
 
                 if (roofValue != houseValue)
                 {
-                    Check(false, $"roofs: Roofs layer does not equal Houses layer at ({x},{y}).");
+                    Check(false, $"roofs: Roofs layer does not equal building coverage at ({x},{y}).");
                     break;
                 }
             }

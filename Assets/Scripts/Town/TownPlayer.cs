@@ -253,6 +253,7 @@ public class TownPlayer : MonoBehaviour
 
 		ControllingTownAlly = newAlly;
 		CameraController.SetFollowTarget(newAlly.CirlcleRenderer.transform);
+		FindFirstObjectByType<Town>()?.RefreshRoofs();
 	}
 
 	internal void SetAction(TownAction townAction)

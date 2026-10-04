@@ -227,7 +227,8 @@ public class TurnManager : MonoBehaviour
 			game.FloorReveal.EnemiesRevealedTurns--;
 
 		// Defeat only when no non-summon party member is standing; a downed protagonist does not end the run.
-		if (PartyRules.IsPartyDefeated(game))
+		bool defeated = PartyRules.IsPartyDefeated(game);
+		if (defeated)
 		{
 			game.ShowGameOver();
 		}
@@ -241,6 +242,11 @@ public class TurnManager : MonoBehaviour
 			Destroy(deadUnit.gameObject);
 		}
 		Game.Instance.DeadUnits.Clear();
+		if (defeated)
+		{
+			CheckStats();
+			yield break;
+		}
 
         if (FullControlThisRound) game.PlayerController.RestoreLeader();
 		Game.Instance.PlayerController.StartTurn();

@@ -11,12 +11,13 @@ public sealed class MainMenuDeveloperControls : MonoBehaviour
         open = false;
         Toggle.gameObject.SetActive(true);
         foreach (var control in Controls) control.SetActive(false);
-//#if UNITY_EDITOR || DEVELOPMENT_BUILD
-//        Toggle.gameObject.SetActive(true);
-//        Toggle.onClick.RemoveAllListeners();
-//        Toggle.onClick.AddListener(() => { open=!open; foreach(var control in Controls)control.SetActive(open); });
-//#else
-//        Toggle.gameObject.SetActive(false);
-//#endif
+        Toggle.onClick.RemoveListener(ToggleControls);
+        Toggle.onClick.AddListener(ToggleControls);
+    }
+
+    private void ToggleControls()
+    {
+        open = !open;
+        foreach (var control in Controls) control.SetActive(open);
     }
 }

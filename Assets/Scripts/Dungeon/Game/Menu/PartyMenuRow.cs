@@ -10,7 +10,9 @@ public sealed class PartyMenuRow : MonoBehaviour, ISelectHandler, IPointerEnterH
     public void OnSelect(BaseEventData data) => Selected?.Invoke();
     public void OnPointerEnter(PointerEventData data)
     {
-        if (MenuUIInputModule.Active == null || MenuUIInputModule.Active.Allows(gameObject))
-            GetComponent<Button>().Select();
+        var button = GetComponent<Button>();
+        if (button != null && button.IsActive() && button.IsInteractable() &&
+            (MenuUIInputModule.Active == null || MenuUIInputModule.Active.Allows(gameObject)))
+            EventSystem.current.SetSelectedGameObject(gameObject, data);
     }
 }

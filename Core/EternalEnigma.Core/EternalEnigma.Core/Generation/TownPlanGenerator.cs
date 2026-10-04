@@ -81,6 +81,13 @@ public static partial class TownPlanGenerator
         else
             acceptedDoors = GeneratePlots(options, layers, plots, W, H).doors;
 
+        // Preserve the complete building bodies before walk-in floors and walls are
+        // carved out of Houses. Roofs are visual and must cover those cells too.
+        Array.Copy(layers[TownLayers.Houses], layers[TownLayers.Roofs], layers[TownLayers.Houses].Length);
+        if (footprints != null)
+            foreach (var footprint in footprints.Where(f => f.Cells.Count == 0))
+                layers[TownLayers.Roofs][footprint.Door.X, footprint.Door.Y] = true;
+
         // Step 2: Slots and shops
         // Rebuild Buildings layer to ensure doors are only those we actually accepted
         var buildingsArrayForRooms = new bool[W, H];
@@ -156,7 +163,6 @@ public static partial class TownPlanGenerator
 
         // Step 6: Set remaining layers
         layers[TownLayers.Dungeon][options.SpineX, H - 2] = true;
-        Array.Copy(layers[TownLayers.Houses], layers[TownLayers.Roofs], layers[TownLayers.Houses].Length);
 
         // Compute Walkable layer: !(Houses || Trees || ShopWalls)
         for (int x = 0; x < W; x++)

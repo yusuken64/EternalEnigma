@@ -19,9 +19,9 @@ public class SkillGridItem : MonoBehaviour, ISelectHandler
 	private float clickCooldownSeconds;
 
 	public Action SkillToggledCallback { get; internal set; }
-    public Action<SkillGridItem> SelectedCallback { get; internal set; }
+    public Action<SkillGridItem, BaseEventData> SelectedCallback { get; internal set; }
     public TrainerOffer Offer => _data?.Offer;
-    public void OnSelect(BaseEventData eventData) => SelectedCallback?.Invoke(this);
+    public void OnSelect(BaseEventData eventData) => SelectedCallback?.Invoke(this, eventData);
 	public BallistaPurchaseDialog BallistaPurchaseDialog { get; internal set; }
 
 	private void Update()

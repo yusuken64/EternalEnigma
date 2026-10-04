@@ -8,6 +8,17 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Held Walking")]
+    public static void RunHeldWalking() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "HeldWalkingTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Held Walking Regression")]
+    public static void RunHeldWalkingRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "MovementRegressionTests", "EternalEnigma.Tests.DungeonControlTests", "EternalEnigma.Tests.SkillMovementTests",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests", "EnemyAnimationStateTests", "EternalEnigma.Tests.OverworldSceneTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Held Walking EditMode")]
+    public static void RunHeldWalkingEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "DungeonCombatAnimationLoopTests", "GridMovementTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon UI Audit")]
     public static void RunDungeonUIAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.DungeonVisualAuditTests", "EternalEnigma.Tests.DungeonHudPortraitTests",

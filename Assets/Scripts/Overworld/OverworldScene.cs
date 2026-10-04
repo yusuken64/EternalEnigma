@@ -215,33 +215,59 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void Update()
     {
-        if (AutoplayRunner.BlocksPlayerInput) return;
-        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
-        if (Common.Instance.GlobalSettings.IsOpen || MenuUIInputModule.Active?.HasDialog == true || MenuUIInputModule.Active?.InputConsumed == true) return;
+        // Sample while interpolating too, so a release is latched before arrival.
+        if (BlocksWalkInput()) { StopHeldWalk(); return; }
+        Vector2 move = ReadWalkInput();
+        if (move.sqrMagnitude < .1f) StopHeldWalk();
+        if (moving) return;
         var keyboard = Keyboard.current;
         var pad = Gamepad.current;
-        if (keyboard?.enterKey.wasPressedThisFrame == true || pad?.buttonSouth.wasPressedThisFrame == true) ClaimRewards();
+        if (keyboard?.enterKey.wasPressedThisFrame == true || pad?.buttonSouth.wasPressedThisFrame == true)
+        { ClaimRewards(); return; }
+        if (move.sqrMagnitude < .1f || Time.time < nextMove) return;
+        nextMove = Time.time + .16f;
+        TryMoveStep(Mathf.Abs(move.x) > .3f ? System.Math.Sign(move.x) : 0, Mathf.Abs(move.y) > .3f ? System.Math.Sign(move.y) : 0, true);
+    }
+
+    private bool heldWalk;
+    private bool BlocksWalkInput() => !isActiveAndEnabled || !IsReady || AutoplayRunner.BlocksPlayerInput ||
+        Common.Instance.Travel.IsTransitioning || Common.Instance.GlobalSettings.IsOpen ||
+        MenuUIInputModule.Active?.HasDialog == true || MenuUIInputModule.Active?.InputConsumed == true;
+
+    private static Vector2 ReadWalkInput()
+    {
+        var keyboard = Keyboard.current;
+        var pad = Gamepad.current;
         Vector2 move = pad == null ? Vector2.zero : pad.dpad.ReadValue() + pad.leftStick.ReadValue();
         if (keyboard != null)
         {
             move.x += (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed ? 1 : 0);
             move.y += (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed ? 1 : 0) - (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed ? 1 : 0);
         }
-        if (move.sqrMagnitude < .1f || Time.time < nextMove) return;
-        nextMove = Time.time + .16f;
-        TryMove(Mathf.Abs(move.x) > .3f ? System.Math.Sign(move.x) : 0, Mathf.Abs(move.y) > .3f ? System.Math.Sign(move.y) : 0);
+        return move;
+    }
+
+    private void StopHeldWalk()
+    {
+        heldWalk = false;
+        Player?.HeroAnimator?.StopWalkContinuation();
+        foreach (var ally in followers) ally?.HeroAnimator?.StopWalkContinuation();
     }
 
     public bool CanStep(GridPoint from, GridPoint to) => IsReady && Map.CurrentGrid.CanStep(from, to, Held, resolved) && OverworldMovement.CanStep(from, to, cell => gates.IsWalkable(cell, Held));
 
-    public bool TryMove(int dx, int dy)
+    public bool TryMove(int dx, int dy) => TryMoveStep(dx, dy, false);
+
+    private bool TryMoveStep(int dx, int dy, bool manual)
     {
+        if (!manual) StopHeldWalk();
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
         if (Context.Location?.Kind == LocationKind.Town && !Context.CanLeaveTown(Context.Location.Id))
-        { Message = "Clear the dungeon inside town to unlock the town gate."; return false; }
+        { StopHeldWalk(); Message = "Clear the dungeon inside town to unlock the town gate."; return false; }
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
         if (!CanStep(Position, next))
         {
+            StopHeldWalk();
             var gate = Map.CurrentGrid.LockAt(next);
             Message = Map.CurrentGrid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires: Boat to sail." :
                 gate == null ? "Blocked." : GateDescription(gate.RouteId);
@@ -264,6 +290,7 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
         walkHistory.Add(Position);
         if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
+        heldWalk = manual;
         StartCoroutine(Walk());
         return true;
     }
@@ -283,8 +310,9 @@ public sealed class OverworldScene : MonoBehaviour
             {
                 party[i].SetFacing(Character.GetFacing(new Vector3Int(
                     System.Math.Sign(direction.x), System.Math.Sign(direction.y), 0)));
-                party[i].HeroAnimator?.PlayWalkAnimation();
+                party[i].HeroAnimator?.BeginWalk(heldWalk);
             }
+            else party[i].HeroAnimator?.StopWalkContinuation();
             party[i].TilemapPosition = new Vector3Int(cell.X, cell.Y, 0);
         }
         RefreshLocationMarkers();
@@ -301,15 +329,17 @@ public sealed class OverworldScene : MonoBehaviour
         float elapsed = 0;
         while (elapsed < .15f)
         {
+            if (heldWalk && (BlocksWalkInput() || ReadWalkInput().sqrMagnitude < .1f)) StopHeldWalk();
             elapsed += Time.deltaTime;
             for (int i = 0; i < party.Length; i++)
                 party[i].transform.position = Vector3.Lerp(from[i], to[i], Mathf.Clamp01(elapsed / .15f));
             yield return null;
         }
+        if (heldWalk && (BlocksWalkInput() || ReadWalkInput().sqrMagnitude < .1f)) StopHeldWalk();
         for (int i = 0; i < party.Length; i++)
         {
             party[i].transform.position = to[i];
-            party[i].HeroAnimator?.PlayIdleAnimation();
+            party[i].HeroAnimator?.CompleteWalk(heldWalk);
         }
         moving = false;
     }
@@ -331,6 +361,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     public bool Warp(string routeId)
     {
+        StopHeldWalk();
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
         if (!Map.CurrentGrid.TryWarp(routeId, Position, Held, resolved, out var destination))
         {
@@ -356,6 +387,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     public bool OpenGate(string routeId = null, bool announceLocked = true)
     {
+        StopHeldWalk();
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
         foreach (var route in gates.Nearby(Position))
             if ((routeId == null || route.Id == routeId) && gates.TryOpen(route.Id, Position, Held))
@@ -396,6 +428,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     public void ClaimRewards(bool announceLocked)
     {
+        StopHeldWalk();
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
         if (OpenGate(announceLocked: false) || Common.Instance.Travel.IsTransitioning) return;
         if (!locations.TryGetValue(Position, out var location))
@@ -533,6 +566,6 @@ public sealed class OverworldScene : MonoBehaviour
         GUI.enabled = previousEnabled;
     }
 
-    private void OnDisable() { terrainCache?.Hide(this); }
+    private void OnDisable() { StopHeldWalk(); terrainCache?.Hide(this); }
     private void OnDestroy() { if (Map != null) Map.TerrainBuilt -= TerrainReady; }
 }

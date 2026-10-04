@@ -7,6 +7,7 @@ internal class SwapAllyPositionAction : GameAction
 {
 	private Ally ally;
 	private Ally swapAlly;
+    internal Ally SwappedAlly => swapAlly;
     private bool blocked;
 
 	private Vector3Int originalPosition;
@@ -39,7 +40,12 @@ internal class SwapAllyPositionAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-        if(blocked) yield break;
+        if(blocked)
+        {
+            ally?.HeroAnimator?.StopWalkContinuation();
+            swapAlly?.HeroAnimator?.StopWalkContinuation();
+            yield break;
+        }
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 		var worldPosition2 = Game.Instance.CurrentDungeon.CellToWorld(originalPosition);
 
@@ -51,17 +57,22 @@ internal class SwapAllyPositionAction : GameAction
             swapAlly.PlayIdleAnimation();
             yield break;
         }
-		character.PlayWalkAnimation();
-		swapAlly.PlayWalkAnimation();
+		bool continuous = Game.Instance.PlayerController?.CanContinueHeldWalk == true;
+		MovementAction.BeginWalk(character, continuous);
+		MovementAction.BeginWalk(swapAlly, continuous);
 
 		Sequence moveSequence = DOTween.Sequence();
-		moveSequence.Join(character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax));
-		moveSequence.Join(swapAlly.transform.DOMove(worldPosition2, 0.1f / character.FinalStats.ActionsPerTurnMax));
+		var first = character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax);
+		var second = swapAlly.transform.DOMove(worldPosition2, 0.1f / character.FinalStats.ActionsPerTurnMax);
+		if (continuous) { first.SetEase(Ease.Linear); second.SetEase(Ease.Linear); }
+		moveSequence.Join(first);
+		moveSequence.Join(second);
 
 		yield return moveSequence.WaitForCompletion();
 
-		character.PlayIdleAnimation();
-		swapAlly.PlayIdleAnimation();
+		bool retain = continuous && Game.Instance.PlayerController?.CanContinueHeldWalk == true;
+		MovementAction.CompleteWalk(character, retain);
+		MovementAction.CompleteWalk(swapAlly, retain);
 	}
 
     internal override void AddDestinationSight(HashSet<Vector3Int> tiles)

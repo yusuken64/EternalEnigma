@@ -26,9 +26,25 @@ public class PlayerController : MonoBehaviour
     public Ally ControlledAlly { get; private set; }
     public Ally PartyLeader { get; private set; }
     private bool releaseInput;
+    private bool heldWalk;
+    internal bool CanContinueHeldWalk => heldWalk && isActiveAndEnabled && !releaseInput &&
+        CurrentControlMode == PlayerControlMode.FollowAlly && !ShouldBlockInput() &&
+        MenuManager.Instance?.Opened != true && Common.Instance.Travel.IsTransitioning != true &&
+        PlayerInputHandler.Instance != null && PlayerInputHandler.Instance.isMoving &&
+        !PlayerInputHandler.Instance.holdPosition;
+
+    internal void StopHeldWalk()
+    {
+        heldWalk = false;
+        if (Game.Instance != null)
+            foreach (var ally in Game.Instance.Allies) ally?.HeroAnimator?.StopWalkContinuation();
+    }
+
+    private void OnDisable() => StopHeldWalk();
     public void FocusCommand(Ally ally)
     {
         bool changedAlly = ControlledAlly != ally;
+        if (changedAlly) StopHeldWalk();
         if (changedAlly && ControlledAlly != null)
         { ControlledAlly.IsWaitingForPlayerInput = false; ControlledAlly.SetToCPU(); }
         ControlledAlly = ally;
@@ -65,6 +81,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (!CanContinueHeldWalk) StopHeldWalk();
         if (ShouldBlockInput()) return;
 
         if (releaseInput)
@@ -93,7 +110,7 @@ public class PlayerController : MonoBehaviour
             return true;
 		}
 
-        if (_cheatConsole.ScreenObject.activeSelf)
+        if (_cheatConsole != null && _cheatConsole.ScreenObject.activeSelf)
             return true;
 
         return false;
@@ -137,7 +154,7 @@ public class PlayerController : MonoBehaviour
         var originalPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
         var newMapPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
 
-        if (PlayerInputHandler.Instance.waitPressed) { ControlledAlly.SetAction(new WaitAction()); return; }
+        if (PlayerInputHandler.Instance.waitPressed) { StopHeldWalk(); ControlledAlly.SetAction(new WaitAction()); return; }
         Vector2 move = PlayerInputHandler.Instance.moveInput;
 
         if (move.sqrMagnitude >= 0.01f)
@@ -178,7 +195,7 @@ public class PlayerController : MonoBehaviour
         if (!PlayerInputHandler.Instance.holdPosition)
         {
             TargetIndicator.gameObject.SetActive(false);
-            if (holdTime > repeatTime)
+            if (move.sqrMagnitude >= .01f && holdTime > repeatTime)
             {
                 holdTime = 0f;
                 var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
@@ -190,7 +207,8 @@ public class PlayerController : MonoBehaviour
 
                     if (destinationChar == null)
                     {
-                        ControlledAlly.SetAction(new MovementAction(ControlledAlly, originalPosition, newMapPosition));
+                        heldWalk = true;
+                        ControlledAlly.SetAction(new MovementAction(ControlledAlly, originalPosition, newMapPosition) { ManualWalkCommand = true });
                         return;
                     }
                     else if (destinationChar is Enemy mimic && EnemyBehavior.IsDisguised(mimic))
@@ -201,12 +219,14 @@ public class PlayerController : MonoBehaviour
                     else if (destinationChar.Team == ControlledAlly.Team &&
                         destinationChar.CanMove())
                     {
-                        ControlledAlly.SetAction(new SwapAllyPositionAction(ControlledAlly, destinationChar));
+                        heldWalk = true;
+                        ControlledAlly.SetAction(new SwapAllyPositionAction(ControlledAlly, destinationChar) { ManualWalkCommand = true });
                         return;
                     }
 
                     //else you can't move
                 }
+                StopHeldWalk();
             }
         }
 		else
@@ -219,6 +239,7 @@ public class PlayerController : MonoBehaviour
 
         if (PlayerInputHandler.Instance.attackPressed)
         {
+            StopHeldWalk();
             var prop = Game.Instance.CurrentDungeon.PropAt(ControlledAlly.TilemapPosition + Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing));
             if (prop != null && prop.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Container && !PlayerInputHandler.Instance.holdPosition)
             { ControlledAlly.SetAction(new InteractAction(prop)); return; }
@@ -274,11 +295,13 @@ public class PlayerController : MonoBehaviour
 
         if (PlayerInputHandler.Instance.planPressed)
 		{
+            StopHeldWalk();
             MenuManager.Instance.OpenAllyMenu(ControlledAlly);
         }
 
         if (PlayerInputHandler.Instance.optionsPressed)
         {
+            StopHeldWalk();
             Common.Instance.GlobalSettings.ShowDialog();
         }
     }
@@ -393,6 +416,7 @@ public class PlayerController : MonoBehaviour
 
     private void ShowStairPrompt(Stairs stairs)
     {
+        StopHeldWalk();
         if (!Game.Instance.CurrentDungeon.IsExitFloor)
         {
             MenuManager.Instance.ShowYesNoDialog(
@@ -412,6 +436,7 @@ public class PlayerController : MonoBehaviour
     public void TakeControl(Ally newAlly)
     {
         if (Game.Instance?.TurnManager?.IsProcessingTurn == true) return;
+        StopHeldWalk();
         PartyLeader = newAlly;
         var oldAlly = ControlledAlly;
         if (oldAlly != null)

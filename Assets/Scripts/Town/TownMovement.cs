@@ -11,9 +11,11 @@ internal class TownMovement : TownAction
 	private TownPlayer townPlayer;
 	private Vector3Int originalPosition;
 	private Vector3Int newMapPosition;
+	private readonly bool heldMovement;
 
-	public TownMovement(TownPlayer townPlayer, Vector3Int originalPosition, Vector3Int newMapPosition)
+	public TownMovement(TownPlayer townPlayer, Vector3Int originalPosition, Vector3Int newMapPosition, bool heldMovement = false)
 	{
+		this.heldMovement = heldMovement;
 		this.townPlayer = townPlayer;
 		this.originalPosition = originalPosition;
 		this.newMapPosition = newMapPosition;
@@ -60,6 +62,11 @@ internal class TownMovement : TownAction
 
 			// Calculate facing based on current world position (not TilemapPosition)
 			Vector3 offsetWorld = targetWorld - ally.transform.position;
+			if (offsetWorld.sqrMagnitude < .0001f)
+			{
+				ally.HeroAnimator?.StopWalkContinuation();
+				continue;
+			}
 			var direction = new Vector3Int((int)Mathf.Clamp(offsetWorld.x, -1, 1),
 					  (int)Mathf.Clamp(offsetWorld.y, -1, 1),
 					  (int)offsetWorld.z);
@@ -71,8 +78,9 @@ internal class TownMovement : TownAction
 				continue;
 			}
 
-			ally.HeroAnimator?.PlayWalkAnimation();
+			ally.HeroAnimator?.BeginWalk(heldMovement && townPlayer.CanContinueHeldWalk);
 			var tween = ally.transform.DOMove(targetWorld, WalkDuration);
+			if (heldMovement) tween.SetEase(Ease.Linear);
 			tweens.Add(tween);
 		}
 		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
@@ -87,10 +95,10 @@ internal class TownMovement : TownAction
 			yield return tween.WaitForCompletion();
 		}
 
-		// Play idle for everyone
+		// Retain only the walk cycles started by this manual movement sequence.
 		foreach (var ally in orderedAllies)
 		{
-			ally.HeroAnimator?.PlayIdleAnimation();
+			ally.HeroAnimator?.CompleteWalk(heldMovement && townPlayer.CanContinueHeldWalk);
 		}
 		townPlayer.CameraController?.SnapToFollowTarget();
 	}

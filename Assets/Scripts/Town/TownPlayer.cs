@@ -32,6 +32,22 @@ public class TownPlayer : MonoBehaviour
 	private int allyIndex;
 
 	public bool ControllerHeld { get; internal set; }
+	internal bool CanContinueHeldWalk => isActiveAndEnabled && !CutsceneLocked && !_menuBusy &&
+		!AutoplayRunner.BlocksPlayerInput && Common.Instance != null &&
+		!Common.Instance.Travel.IsTransitioning && !Common.Instance.GlobalSettings.IsOpen &&
+		MenuUIInputModule.Active?.InputConsumed != true && MenuUIInputModule.Active?.HasDialog != true &&
+		(townMenuManager == null || townMenuManager.DialogStack.Count == 0) &&
+		(campaignHUD == null || !campaignHUD.IsPartyOpen) &&
+		PlayerInputHandler.Instance != null && PlayerInputHandler.Instance.moveInput.magnitude > .1f &&
+		!PlayerInputHandler.Instance.holdPosition;
+
+	internal void StopHeldWalk()
+	{
+		if (RecruitedAllies != null)
+			foreach (var ally in RecruitedAllies) ally?.HeroAnimator?.StopWalkContinuation();
+	}
+
+	private void OnDisable() => StopHeldWalk();
 
 	public void Initialize()
 	{
@@ -66,6 +82,7 @@ public class TownPlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (!CanContinueHeldWalk) StopHeldWalk();
 		if (CutsceneLocked) return;
         if (AutoplayRunner.BlocksPlayerInput) { UpdateUI(); return; }
 		if (Common.Instance.Travel.IsTransitioning || MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
@@ -156,13 +173,14 @@ public class TownPlayer : MonoBehaviour
 				if (WalkableMap.CanWalkTo(originalPosition, newMapPosition) &&
 					FindFirstObjectByType<Town>().CanEnter(newMapPosition))
 				{
-					SetAction(new TownMovement(this, originalPosition, newMapPosition));
+					SetAction(new TownMovement(this, originalPosition, newMapPosition, true));
 					holdTime = 0f;
 					return;
 				}
 			}
 		}
 
+		StopHeldWalk();
 		if (inputHandler.swapAllyPressed)
 		{
 			CycleAlly();
@@ -239,6 +257,7 @@ public class TownPlayer : MonoBehaviour
     }
 	private void CycleAlly()
 	{
+		StopHeldWalk();
 		if (RecruitedAllies == null || RecruitedAllies.Count == 0)
 		{
 			return;
@@ -278,15 +297,17 @@ public class TownPlayer : MonoBehaviour
 
 		var town = FindFirstObjectByType<Town>();
 		if (Common.Instance.CampaignContext != null && ControllingTownAlly.TilemapPosition == town.Plan.Exit.ToCell())
-        { Common.Instance.Travel.ExitTown(town); _busy = false; yield break; }
+        { StopHeldWalk(); Common.Instance.Travel.ExitTown(town); _busy = false; yield break; }
 		var overlappingBuilding = town.TownBuildings.FirstOrDefault(x =>
 			x.TilemapPosition == this.ControllingTownAlly.TilemapPosition && !x.HasInterior);
 		if (overlappingBuilding != null)
 		{
+			StopHeldWalk();
 			overlappingBuilding.Interact(this, reverse);
 		}
 		else if (town.TownAllies.Any(x => x.TilemapPosition == this.ControllingTownAlly.TilemapPosition))
 		{
+			StopHeldWalk();
 			var ally = town.TownAllies.First(x => x.TilemapPosition == this.ControllingTownAlly.TilemapPosition);
 			var townMenu = FindFirstObjectByType<TownMenu>();
 			townMenuManager.Open(townMenu.AllyRecruitDialog);

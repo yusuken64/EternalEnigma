@@ -18,6 +18,42 @@ public class HeroAnimator : MonoBehaviour
 	public Stance CurrentStance;
 
 	public List<StanceAnimators> StanceAnimators; //used in setanimations
+	private bool walking;
+	private bool walkStep;
+	private bool continueWalk;
+	private Stance walkStance;
+
+	internal void BeginWalk(bool continuous)
+	{
+		if (!continuous || !walking || !continueWalk || walkStance != CurrentStance)
+			PlayWalkAnimation();
+		walking = true;
+		walkStep = true;
+		continueWalk = continuous;
+		walkStance = CurrentStance;
+	}
+
+	internal void CompleteWalk(bool retain)
+	{
+		walkStep = false;
+		if (walking && (!retain || !continueWalk)) PlayIdleAnimation();
+	}
+
+	// Cancellation during a step finishes the square. Only retained walking may
+	// be idled here; a hit, attack or death has already cleared this state.
+	internal void StopWalkContinuation()
+	{
+		continueWalk = false;
+		if (walking && !walkStep) PlayIdleAnimation();
+	}
+
+	internal void StopRetainedWalk()
+	{
+		// A concurrent swap can still be moving this hero during their wait.
+		if (!walkStep) StopWalkContinuation();
+	}
+
+	private void OnDisable() => walking = walkStep = continueWalk = false;
 
 	internal void PlayIdleAnimation()
 	{
@@ -46,6 +82,7 @@ public class HeroAnimator : MonoBehaviour
 
 	public void PlayAnimation(AnimatedAction animatedAction)
 	{
+		walking = walkStep = continueWalk = false;
 		StanceAnimation stanceAnimation = StanceAnimations.First(x => x.Stance == CurrentStance);
 		NamedAnimation namedAnimation = stanceAnimation.NamedAnimations.First(x => x.AnimationAction == animatedAction);
 		AnimationClip animationClip = namedAnimation.Animations.Sample();
@@ -55,6 +92,7 @@ public class HeroAnimator : MonoBehaviour
 
 	internal void SetWeapon(EquipmentItemDefinition mainHandItemDefinition, EquipmentItemDefinition offHandItemDefinition)
 	{
+		StopWalkContinuation();
 		// The bow model is equipped in the left hand in the shipped item catalog.
 		if (mainHandItemDefinition?.WeaponType == WeaponType.BowAndArrow ||
 			offHandItemDefinition?.WeaponType == WeaponType.BowAndArrow)

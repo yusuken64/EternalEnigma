@@ -45,6 +45,11 @@ internal class MovementAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
+		if (blocked || originalPosition == newMapPosition)
+		{
+			(character as Ally)?.HeroAnimator?.StopWalkContinuation();
+			yield break;
+		}
 		if (skipAnimation)
 		{
 			character.PlayIdleAnimation();
@@ -52,11 +57,24 @@ internal class MovementAction : GameAction
 			yield break;
 		}
 
-		character.PlayWalkAnimation();
-		yield return character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax)
-			.WaitForCompletion();
+		bool continuous = character is Ally && Game.Instance.PlayerController?.CanContinueHeldWalk == true;
+		BeginWalk(character, continuous);
+		var tween = character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax);
+		if (continuous) tween.SetEase(Ease.Linear);
+		yield return tween.WaitForCompletion();
+		CompleteWalk(character, continuous && Game.Instance.PlayerController?.CanContinueHeldWalk == true);
+	}
 
-		character.PlayIdleAnimation();
+	internal static void BeginWalk(Character character, bool continuous)
+	{
+		if (character is Ally ally) ally.HeroAnimator?.BeginWalk(continuous);
+		else character.PlayWalkAnimation();
+	}
+
+	internal static void CompleteWalk(Character character, bool retain)
+	{
+		if (character is Ally ally) ally.HeroAnimator?.CompleteWalk(retain);
+		else character.PlayIdleAnimation();
 	}
 
     internal override void AddDestinationSight(HashSet<Vector3Int> tiles)
@@ -392,6 +410,7 @@ public class TakeHealAction : GameAction
 
 public class ModifyStatAction : GameAction
 {
+	internal override bool InterruptsWalking => doDamageAnimation;
 	private readonly Character attacker;
 	private readonly Character target;
 	private readonly Action<Stats, Vitals> modifyAction;

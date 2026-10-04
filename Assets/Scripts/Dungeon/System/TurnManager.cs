@@ -19,7 +19,8 @@ public class TurnManager : MonoBehaviour
         var player = Game.Instance.PlayerController;
         if (IsProcessingTurn && (!AwaitingCommand || actor != ActiveActor)) return false;
         if (UsesFullControl && actor != player.ControlledAlly) return false;
-        if (!action.IsValid(actor)) return false;
+        if (actor == player.ControlledAlly && !action.ManualWalkCommand) player.StopHeldWalk();
+        if (!action.IsValid(actor)) { player.StopHeldWalk(); return false; }
         actor._forcedAction = action;
         if (actor != player.ControlledAlly) return true;
         actor.IsWaitingForPlayerInput = false;
@@ -285,6 +286,18 @@ public class TurnManager : MonoBehaviour
 			var simultaneousEffects = GetSimultaneousActions(action, actionReplays);
 			actionReplays.RemoveAll(simultaneousEffects.Contains);
 
+            // End retained walks before combat starts, never after it has posed a
+            // hit/death. Bookkeeping effects in a movement chain are not pauses.
+            if (simultaneousEffects.Any(x => x.Action.InterruptsWalking &&
+                x.Action is not MovementAction && x.Action is not SwapAllyPositionAction && x.Action is not WaitAction))
+                Game.Instance.PlayerController.StopHeldWalk();
+            var movers = new HashSet<Actor>(simultaneousEffects
+                .Where(x => x.Action is MovementAction || x.Action is SwapAllyPositionAction).Select(x => x.Actor));
+            foreach (var swap in simultaneousEffects.Select(x => x.Action).OfType<SwapAllyPositionAction>())
+                movers.Add(swap.SwappedAlly);
+            foreach (var waiting in simultaneousEffects.Where(x => x.Action is WaitAction && !movers.Contains(x.Actor)))
+                (waiting.Actor as Ally)?.HeroAnimator?.StopWalkContinuation();
+
             Game.Instance.RefreshSight();
             Game.Instance.PlaybackVisibleTiles.Clear();
             Game.Instance.PlaybackVisibleTiles.UnionWith(Game.Instance.PartyVisibleTiles);
@@ -315,6 +328,7 @@ public class TurnManager : MonoBehaviour
 
     private IEnumerator ReplayAction(ActorAction replay)
     {
+        if (replay.Action is WaitAction) (replay.Actor as Ally)?.HeroAnimator?.StopRetainedWalk();
         yield return replay.Actor.ExecuteActionRoutine(replay.Action);
         // Simulation can finish a whole round before playback begins.
         if (replay.ConsumesAllyAction && replay.Actor is Ally ally && ally != null)
@@ -323,6 +337,7 @@ public class TurnManager : MonoBehaviour
 
 	internal void InteruptTurn()
 	{
+		Game.Instance.PlayerController.StopHeldWalk();
 		interuptTurn = true;
         AwaitingCommand = false;
         foreach (var hero in Game.Instance.Allies) { hero._forcedAction = null; hero.IsWaitingForPlayerInput = false; }
@@ -398,6 +413,8 @@ public interface Actor
 [System.Serializable]
 public abstract class GameAction
 {
+	[System.NonSerialized] internal bool ManualWalkCommand;
+	internal virtual bool InterruptsWalking => true;
 	[System.NonSerialized] internal CombatVisualReplay Visuals = new();
 	internal IEnumerable<Character> VisualTargets => animationTargets;
 	protected GameAction() { }

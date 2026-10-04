@@ -28,13 +28,22 @@ public static class PaintedEnvironmentAuthoring
     [MenuItem("Tools/Eternal Enigma/Painted Environment/Update Ground")]
     public static void UpdateGround()
     {
-        foreach(string biome in Biomes)
-        {
-            var texture=Read(Source+"Ground_"+biome+".png");
-            try {WriteSurface(texture,new Rect(0,0,1,1),Output+"Ground_"+biome+".png",Color.white);}
-            finally {UnityEngine.Object.DestroyImmediate(texture);}
-        }
+        foreach(string biome in Biomes) WriteGround(biome);
         AssetDatabase.SaveAssets();
+    }
+
+    [MenuItem("Tools/Eternal Enigma/Painted Environment/Update Grassland Ground")]
+    public static void UpdateGrasslandGround()
+    {
+        WriteGround("Grassland");
+        AssetDatabase.SaveAssets();
+    }
+
+    static void WriteGround(string biome)
+    {
+        var texture=Read(Source+"Ground_"+biome+".png");
+        try {WriteSurface(texture,new Rect(0,0,1,1),Output+"Ground_"+biome+".png",Color.white);}
+        finally {UnityEngine.Object.DestroyImmediate(texture);}
     }
 
     [MenuItem("Tools/Eternal Enigma/Painted Environment/Update Atlases")]

@@ -1,3 +1,4 @@
+using EternalEnigma.Core.World;
 using UnityEngine;
 
 /// <summary>Session-only daylight phase; no clocks or catch-up on resume.</summary>
@@ -10,6 +11,9 @@ public sealed class ScenePresentation : MonoBehaviour
     private Game game;
     private Town town;
     private OverworldScene world;
+    private Camera viewCamera;
+    private Color originalBackground;
+    private static readonly Color GrasslandSky = new Color32(0x65, 0xBD, 0xF2, 0xFF);
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetPhase(){Phase=0;advancedFrame=-1;SilhouetteParticipant.Active.Clear();}
     public static void Ensure(MonoBehaviour owner)
@@ -37,8 +41,12 @@ public sealed class ScenePresentation : MonoBehaviour
     }
     private void Start()
     {
-        var camera=Camera.main;
-        if(camera!=null)silhouettes=camera.GetComponent<SilhouetteRenderer>()??camera.gameObject.AddComponent<SilhouetteRenderer>();
+        viewCamera=world!=null && world.ViewCamera!=null?world.ViewCamera:Camera.main;
+        if(viewCamera!=null)
+        {
+            originalBackground=viewCamera.backgroundColor;
+            silhouettes=viewCamera.GetComponent<SilhouetteRenderer>()??viewCamera.gameObject.AddComponent<SilhouetteRenderer>();
+        }
         sun=RenderSettings.sun;
         if(sun==null)foreach(var light in FindObjectsByType<Light>(FindObjectsSortMode.None))if(light.type==LightType.Directional){sun=light;break;}
         if(sun!=null)sun.shadows=LightShadows.None;
@@ -46,12 +54,23 @@ public sealed class ScenePresentation : MonoBehaviour
     }
     private void Update()
     {
-        bool outdoor=game==null || game.DungeonGenerator.CurrentVisuals.Environment==DungeonEnvironmentKind.Outdoor;
+        bool outdoor=game==null || game.DungeonGenerator!=null &&
+            game.DungeonGenerator.CurrentVisuals.Environment==DungeonEnvironmentKind.Outdoor;
         if(town?.Plan!=null && town.TownPlayer?.ControllingTownAlly!=null)
         {
             var cell=town.TownPlayer.ControllingTownAlly.TilemapPosition;
             var interior=town.Plan.Layers[EternalEnigma.Core.World.TownLayers.ShopFloor];
             if(cell.x>=0 && cell.y>=0 && cell.x<interior.Width && cell.y<interior.Height && interior[cell.x,cell.y])outdoor=false;
+        }
+        if(viewCamera!=null)
+        {
+            bool grassland=game!=null
+                ? game.DungeonGenerator!=null && game.DungeonGenerator.CurrentVisuals.Biome==OverworldBiome.Grassland
+                : town!=null
+                    ? town.WalkableMap!=null &&
+                      (town.WalkableMap.TileWorldCreator?.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland)==OverworldBiome.Grassland
+                    : world!=null && world.IsReady && world.Map.CurrentGrid.BiomeAt(world.Position)==OverworldBiome.Grassland;
+            viewCamera.backgroundColor=outdoor && grassland?GrasslandSky:originalBackground;
         }
         var common=Common.Instance;
         bool ready=game!=null?game.IsReady:town!=null?town.IsReady:world!=null&&world.IsReady;
@@ -66,5 +85,9 @@ public sealed class ScenePresentation : MonoBehaviour
         var direction=new Vector3(Mathf.Cos(angle)*Mathf.Cos(elevation),Mathf.Sin(angle)*Mathf.Cos(elevation),Mathf.Sin(elevation));
         if(silhouettes!=null)silhouettes.Direction=direction;
         if(sun!=null)sun.transform.rotation=Quaternion.LookRotation(direction,Vector3.up);
+    }
+    private void OnDestroy()
+    {
+        if(viewCamera!=null)viewCamera.backgroundColor=originalBackground;
     }
 }

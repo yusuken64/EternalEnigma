@@ -10,7 +10,22 @@ public static class TownGateVisuals
         var root = new GameObject(label);
         root.transform.SetParent(parent, false);
         root.transform.localPosition = new Vector3(cell.X + .5f, cell.Y + .5f, 0) * size;
-        kit.Create(dungeon ? "DungeonPortal" : "Gate", biome, root.transform, Vector3.zero, size);
+        var gate = kit.Create(dungeon ? "DungeonPortal" : "Gate", biome, root.transform, Vector3.zero, size);
+        if (!dungeon)
+        {
+            // Span the three-cell approach while keeping the gate on the exit
+            // marker. Extend the gate leaves while preserving pillar widths.
+            var gateMesh = Object.Instantiate(kit.Mesh("Gate"));
+            gateMesh.name = "Town gate spanning exit";
+            var vertices = gateMesh.vertices;
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i].x += Mathf.Clamp(vertices[i].x / .3f, -1f, 1f);
+            gateMesh.vertices = vertices;
+            gateMesh.RecalculateNormals();
+            gateMesh.RecalculateBounds();
+            gate.GetComponent<MeshFilter>().sharedMesh = gateMesh;
+            gate.AddComponent<EnvironmentMeshOwner>().Meshes.Add(gateMesh);
+        }
         var marker = new GameObject("Gate direction indicator");
         marker.transform.SetParent(root.transform, false);
         float direction = dungeon ? 1 : -1;

@@ -103,6 +103,8 @@ namespace EternalEnigma.Tests
                 Color32[] Capture() {camera.Render();RenderTexture.active=target;image.ReadPixels(new Rect(0,0,96,96),0,0);image.Apply();return image.GetPixels32();}
                 var first=Capture();yield return new WaitForSecondsRealtime(1.1f);var second=Capture();
                 Assert.That(first.Where((c,i)=>!c.Equals(second[i])).Count(),Is.GreaterThan(50),"Ocean shader must visibly animate.");
+                Assert.That(first.Average(c => (float)c.b), Is.GreaterThan(first.Average(c => (float)c.r) * 1.15f),
+                    "Painted water must retain its blue color rather than sampling only its red channel.");
             }
             finally
             {

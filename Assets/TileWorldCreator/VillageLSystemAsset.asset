@@ -822,6 +822,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -1621,6 +1633,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -2420,6 +2444,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -3219,6 +3255,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -4018,6 +4066,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -4817,6 +4877,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -5616,6 +5688,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6415,6 +6499,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6527,6 +6623,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6639,6 +6747,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6751,6 +6871,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6863,6 +6995,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -6914,6 +7058,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -7026,6 +7182,18 @@ MonoBehaviour:
     - Name: ExitY
       Entry: 3
       Data: 0
+    - Name: SpineX
+      Entry: 3
+      Data: 0
+    - Name: Detailed
+      Entry: 5
+      Data: false
+    - Name: InteriorKinds
+      Entry: 6
+      Data: 
+    - Name: ShopThemes
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -8031,6 +8199,9 @@ MonoBehaviour:
     - Name: SurfaceMaterial
       Entry: 6
       Data: 
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -8082,6 +8253,9 @@ MonoBehaviour:
     - Name: SurfaceMaterial
       Entry: 6
       Data: 
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -8133,6 +8307,9 @@ MonoBehaviour:
     - Name: SurfaceMaterial
       Entry: 6
       Data: 
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class GlobalSettings : MonoBehaviour
 {
@@ -30,6 +31,7 @@ public class GlobalSettings : MonoBehaviour
 
     private void Awake()
     {
+        EnsureMasterVolume();
         TabGroup.PreviewOnFocus = true;
         NavigationHandler.FocusRoot = SettingsCanvas.transform;
         NavigationHandler.FocusOwner = this;
@@ -40,6 +42,28 @@ public class GlobalSettings : MonoBehaviour
             var category = tab.TabButton.GetComponent<CancelFocusScope>() ?? tab.TabButton.gameObject.AddComponent<CancelFocusScope>();
             category.ReturnTarget = ResumeButton.gameObject;
         }
+    }
+    private void EnsureMasterVolume()
+    {
+        var volumes = GetComponentsInChildren<VolumeSlider>(true);
+        if (volumes.Any(v => v.VolumeParameterName == "MasterVolume")) return;
+        var music = volumes.FirstOrDefault(v => v.VolumeParameterName == "MusicVolume");
+        if (music == null) return;
+        var master = Instantiate(music, music.transform.parent);
+        master.name = "Master_VolumeSlider";
+        master.VolumeParameterName = "MasterVolume";
+        master.transform.SetSiblingIndex(music.transform.GetSiblingIndex());
+        var title = master.GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(t => t != master.VolumeValueText);
+        if (title != null) title.text = "Master";
+        foreach (var volume in GetComponentsInChildren<VolumeSlider>(true))
+        {
+            int row = volume.VolumeParameterName switch { "MasterVolume" => 0, "MusicVolume" => 1, "EffectVolume" => 2, _ => 3 };
+            var rect = (RectTransform)volume.transform;
+            rect.anchorMin = new Vector2(.09f, .76f - row * .20f);
+            rect.anchorMax = new Vector2(.91f, .92f - row * .20f);
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+        }
+        master.Refresh();
     }
     private void OnEnable()
     {

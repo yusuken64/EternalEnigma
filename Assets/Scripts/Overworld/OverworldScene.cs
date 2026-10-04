@@ -12,10 +12,12 @@ using UnityEngine.InputSystem;
 /// <summary>Shared campaign and sandbox scene; all progression is owned by Common.</summary>
 public sealed class OverworldScene : MonoBehaviour
 {
+    [System.Serializable] public sealed class BiomeMusicEntry { public OverworldBiome Biome; public AudioClip Clip; }
     public CampaignOverworld Map;
     public TownAlly PlayerPrefab;
     public Camera ViewCamera;
     public AudioClip OverworldMusic;
+    public BiomeMusicEntry[] BiomeMusic = System.Array.Empty<BiomeMusicEntry>();
     public GameObject TownMarker;
     public GameObject DungeonMarker;
     public GameObject LandmarkMarker;
@@ -63,6 +65,16 @@ public sealed class OverworldScene : MonoBehaviour
     private bool restoredTerrain;
     private bool moving;
     private float nextMove;
+    private OverworldBiome? playingBiome;
+
+    private void RefreshBiomeMusic()
+    {
+        var biome = Map.CurrentGrid?.BiomeAt(Position) ?? OverworldBiome.Grassland;
+        if (playingBiome == biome) return;
+        playingBiome = biome;
+        var clip = BiomeMusic.FirstOrDefault(entry => entry.Biome == biome)?.Clip ?? OverworldMusic;
+        if (clip != null) Common.Instance.AudioManager?.PlayMusic(clip);
+    }
 
     private void Start()
     {
@@ -74,7 +86,6 @@ public sealed class OverworldScene : MonoBehaviour
         }
         creator = Map.GetComponent<TileWorldCreator>();
         var common = Common.Instance;
-        if (OverworldMusic != null) common.AudioManager?.PlayMusic(OverworldMusic);
         if (common.CampaignContext == null) common.BeginSandbox(OverworldLaunch.TakeSeed(Map.Seed));
         Context = common.CampaignContext;
         gameObject.AddComponent<OverworldMenuManager>();
@@ -102,6 +113,7 @@ public sealed class OverworldScene : MonoBehaviour
     private void TerrainReady(TileWorldCreator _)
     {
         Map.TerrainBuilt -= TerrainReady;
+        RefreshBiomeMusic();
         if (!restoredTerrain) terrainCache.Store(Context, Map, this);
         foreach (var location in Campaign.Locations.Where(l => l.ParentTownId == null))
         {
@@ -111,6 +123,7 @@ public sealed class OverworldScene : MonoBehaviour
             var marker = Instantiate(prefab, CellCenterToWorld(Map.CurrentGrid.Locations[location.Id]), Quaternion.identity, transform);
             marker.name = location.Id;
             var cell = Map.CurrentGrid.Locations[location.Id];
+            if (location.Kind != LocationKind.Town) BuildLocationFootprint(marker, location.Kind, cell);
             BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
             locationVisuals.Add(cell, marker);
             marker.SetActive(!cell.Equals(Position));
@@ -172,6 +185,30 @@ public sealed class OverworldScene : MonoBehaviour
         FollowCamera();
     }
 
+    private void BuildLocationFootprint(GameObject marker, LocationKind kind, GridPoint cell)
+    {
+        float size = creator.twcAsset.cellSize;
+        var kit = EnvironmentKit.Load();
+        var material = kit != null ? kit.BuildingMaterial(OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y)) : null;
+        var baseObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        baseObject.name = "Point of interest plaza";
+        baseObject.transform.SetParent(marker.transform, false);
+        baseObject.transform.localPosition = new Vector3(0, 0, .07f * size);
+        baseObject.transform.localScale = new Vector3(3.5f * size, 3.5f * size, .12f * size);
+        Destroy(baseObject.GetComponent<Collider>());
+        if (material != null) baseObject.GetComponent<Renderer>().sharedMaterial = material;
+        foreach (var offset in new[] { new Vector2(-1.5f, -1.5f), new Vector2(1.5f, -1.5f), new Vector2(-1.5f, 1.5f), new Vector2(1.5f, 1.5f) })
+        {
+            var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            post.name = kind + " perimeter post";
+            post.transform.SetParent(marker.transform, false);
+            post.transform.localPosition = new Vector3(offset.x, offset.y, -.25f) * size;
+            post.transform.localScale = new Vector3(.34f, .34f, .65f) * size;
+            Destroy(post.GetComponent<Collider>());
+            if (material != null) post.GetComponent<Renderer>().sharedMaterial = material;
+        }
+    }
+
     public Vector3 CellToWorld(GridPoint point) => Map.transform.position + new Vector3(point.X, point.Y, 0) * creator.twcAsset.cellSize;
     public Vector3 CellCenterToWorld(GridPoint point) => CellToWorld(point) + CellVisualOffset;
     private Vector3 CellVisualOffset => new Vector3(.5f, .5f, 0) * creator.twcAsset.cellSize;
@@ -213,6 +250,7 @@ public sealed class OverworldScene : MonoBehaviour
         }
         if (locationVisuals.TryGetValue(Position, out var previousMarker)) previousMarker.SetActive(true);
         Position = next;
+        RefreshBiomeMusic();
         if (locationVisuals.TryGetValue(Position, out var occupiedMarker)) occupiedMarker.SetActive(false);
         var crossed = Map.CurrentGrid.LockAt(next);
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
@@ -303,6 +341,7 @@ public sealed class OverworldScene : MonoBehaviour
         }
         if (locationVisuals.TryGetValue(Position, out var previous)) previous.SetActive(true);
         Position = destination;
+        RefreshBiomeMusic();
         if (locationVisuals.TryGetValue(Position, out var current)) current.SetActive(false);
         Player.transform.position = CellToWorld(Position);
         Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);

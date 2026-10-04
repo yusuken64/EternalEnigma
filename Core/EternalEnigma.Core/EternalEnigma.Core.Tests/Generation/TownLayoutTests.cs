@@ -98,7 +98,7 @@ public class TownLayoutTests
         for (int i = 0; i < plan.BuildingSlots.Count; i++)
         {
             bool hasRoom = plan.TryGetVendorAnchor(plan.BuildingSlots[i], out _);
-            Assert.Equal(layout.SlotServices[i] != null, hasRoom); // services (trainers included) have a room; entrance and statue do not
+            Assert.Equal(layout.SlotServices[i] != null, hasRoom); // services have a room; the entrance does not
         }
     }
 

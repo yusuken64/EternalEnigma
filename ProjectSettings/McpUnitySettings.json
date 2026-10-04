@@ -3,7 +3,7 @@
     "RequestTimeoutSeconds": 30,
     "AutoStartServer": true,
     "AllowBatchModeServer": false,
-    "EnableInfoLogs": false,
+    "EnableInfoLogs": true,
     "NpmExecutablePath": "",
     "AllowRemoteConnections": false,
     "AllowPackageInstallation": false

@@ -24,6 +24,7 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
         AudioPreferences.Restore(MusicAudioMixerGroup, "MusicVolume");
         AudioPreferences.Restore(EffectAudioMixerGroup, "EffectVolume");
         AudioPreferences.Restore(UIAudioMixerGroup, "UIVolume", AudioPreferences.Read(EffectAudioMixerGroup, "EffectVolume"));
+        AudioPreferences.Restore(MusicAudioMixerGroup, "MasterVolume");
     }
 
     public void PlayUISound(AudioClip soundClip)

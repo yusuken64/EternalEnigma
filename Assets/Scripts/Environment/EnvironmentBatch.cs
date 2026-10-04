@@ -5,6 +5,7 @@ public sealed class EnvironmentBatch
 {
     private readonly Transform parent;
     private readonly EnvironmentMeshOwner owner;
+    public EnvironmentMeshOwner Owner => owner;
     private readonly Dictionary<(int, int, Material, SilhouetteRole), List<CombineInstance>> groups = new();
     private readonly Dictionary<(Material,int),Material> variants = new();
     public EnvironmentBatch(Transform parent)

@@ -9,9 +9,9 @@ public static class CampaignTownLayout
 {
     public static void Configure(TownConfiguration configuration, TownLayout layout)
     {
-        var authored = configuration.Buildings.Where(b => b.DialogId == "entrance" || b.DialogId == "statue").ToArray();
+        var authored = configuration.Buildings.Where(b => b.DialogId == "entrance").ToArray();
         if (authored.Length != CampaignContext.AuthoredTownBuildings)
-            throw new InvalidOperationException("Campaign towns require an entrance and a statue definition.");
+            throw new InvalidOperationException("Campaign towns require an entrance definition.");
         var definitions = Resources.LoadAll<TownBuildingDefinition>("Towns/Buildings");
         var slots = new TownBuildingDefinition[layout.SlotServices.Count];
         int nextAuthored = 0;

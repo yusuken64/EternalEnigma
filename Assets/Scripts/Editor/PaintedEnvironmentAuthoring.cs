@@ -235,6 +235,8 @@ public static class PaintedEnvironmentAuthoring
                 // Already textured building regions retain their semantic mapping.
                 if(buildings) {int cx=Mathf.Clamp((int)(old[i].x*4),0,3),cy=Mathf.Clamp((int)(old[i].y*4),0,3);uv[i]=new Vector2(Mathf.Clamp(old[i].x,(cx+.055f)/4,(cx+.945f)/4),Mathf.Clamp(old[i].y,(cy+.055f)/4,(cy+.945f)/4));continue;}
                 int x=Mathf.Clamp((int)(old[i].x*4),0,3),y=Mathf.Clamp((int)(old[i].y*4),0,3);
+                // Legacy wall caps used the plaster swatch. Match the stone body.
+                if ((model.Id == "Wall" || model.Id.StartsWith("SmartWall") || model.Id == "Gate") && x == 2 && y == 0) x = 3;
                 Vector2 p=Project(v[i],normals[i],mesh.bounds);
                 uv[i]=new Vector2((x+.065f+p.x*.87f)/4,(y+.065f+p.y*.87f)/4);
             }

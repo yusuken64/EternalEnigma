@@ -59,6 +59,8 @@ public static class DungeonPresentation
             owner.Meshes.Clear();
             foreach(var material in owner.Materials)if(material!=null)Release(material);
             owner.Materials.Clear();
+            foreach(var texture in owner.Textures)if(texture!=null)Release(texture);
+            owner.Textures.Clear();
         }
         foreach(var mesh in root.GetComponentsInChildren<MeshFilter>(true).Select(f=>f.sharedMesh).Where(m=>m!=null).Distinct())
         {
@@ -86,6 +88,10 @@ public static class DungeonPresentation
     }
     public static void Release(UnityEngine.Object obj)
     {
+        if(obj==null)return;
+#if UNITY_EDITOR
+        if(UnityEditor.EditorUtility.IsPersistent(obj))return;
+#endif
         if(obj is GameObject go) go.SetActive(false);
         if(Application.isPlaying) UnityEngine.Object.Destroy(obj); else UnityEngine.Object.DestroyImmediate(obj);
     }

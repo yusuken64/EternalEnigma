@@ -28,7 +28,7 @@ public sealed class TownLayout
             ? null
             : Create(CampaignContext.LocationSeed(campaignSeed, town.Id), town.Services, CampaignContext.AuthoredTownBuildings, allyCount, CampaignContext.ResidentialTownBuildings);
 
-    /// <param name="otherBuildings">Authored buildings that are not services (for example the dungeon entrance and statue).</param>
+    /// <param name="otherBuildings">Authored buildings that are not services (for example the dungeon entrance).</param>
     /// <param name="residentialBuildings">Extra houses without a service or interior.</param>
     public static TownInteriorSpec InteriorFor(TownServiceKind kind) => kind switch {
         TownServiceKind.Inn => new(TownInteriorKind.Inn), TownServiceKind.Trainer => new(TownInteriorKind.Trainer),

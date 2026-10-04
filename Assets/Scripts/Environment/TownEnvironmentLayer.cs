@@ -89,6 +89,12 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                         position, Vector3.one * size, (hash >> 16) % 360);
                 }
             }
+            // Join the boundary to the gate on the exit tile, one row inward.
+            // These short returns close the gaps beside its three-cell span.
+            foreach (int side in new[] { -1, 1 })
+                batch.Add(Kit.Mesh("Wall"), Kit.Material(biome),
+                    new Vector3(plan.Exit.X + .5f + side * 1.5f, plan.Exit.Y, 0) * size,
+                    Vector3.one * size, 90);
             batch.Finish();
             TownGateVisuals.Create(Kit, biome, root.transform, plan.Exit, size, "Town gate", false);
         }

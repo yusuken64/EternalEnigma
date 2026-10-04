@@ -36,22 +36,6 @@ public static class TownInteriorRendering
         float size=creator.twcAsset.cellSize;
         var biome=creator.GetComponent<TownBiomeStyle>()?.Current??OverworldBiome.Grassland;
         var batch=new EnvironmentBatch(root);var perches=new List<(Vector3 position,bool inside)>();
-        // Thin walls sit in the centers of blocked cells. Extend the interior paving to
-        // their centerlines so outdoor ground cannot show through the room perimeter.
-        var kit=EnvironmentKit.Load();var boundary=plan.Layers[TownLayers.ShopWalls];
-        var roomFloor=plan.Interiors.SelectMany(i=>plan.ShopRoomAt(i.Door).Floor.Where(c=>c.Y>=i.Door.Y+2)).ToHashSet();
-        for(int x=0;x<plan.Width;x++)for(int y=0;y<plan.Height;y++)
-        {
-            if(!boundary[x,y])continue;
-            foreach(int dx in new[]{-1,1})foreach(int dy in new[]{-1,1})
-            {
-                if(roomFloor.Contains(new GridPoint(x+dx,y))||roomFloor.Contains(new GridPoint(x,y+dy))||roomFloor.Contains(new GridPoint(x+dx,y+dy)))
-                {
-                    float px=roomFloor.Contains(new GridPoint(x+dx,y))?.03f:0,py=roomFloor.Contains(new GridPoint(x,y+dy))?.03f:0;
-                    batch.Add(kit.Mesh("Paving"),kit.Road,new Vector3(x+.5f+dx*(.25f+px/2),y+.5f+dy*(.25f+py/2),-.005f)*size,new Vector3(.5f+px,.5f+py,1)*size);
-                }
-            }
-        }
         foreach(var interior in plan.Interiors)
         foreach(var p in interior.Props)
         {

@@ -30,6 +30,8 @@ public class TownBuildingManager : MonoBehaviour
                 : plan.Layers[TownLayers.Houses].At(front) || plan.Layers[TownLayers.ShopFloor].At(front);
             building.transform.position = map.CellToWorld(positions[i] + (hasBody ? Vector3Int.up : Vector3Int.zero));
             BiomeModel.ApplyAll(building.gameObject, map.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current ?? EternalEnigma.Core.World.OverworldBiome.Grassland);
+            if (hasBody)
+                foreach (var renderer in building.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
             if (definition.Id == "inn")
             {
                 var kit = EnvironmentKit.Load();
@@ -40,7 +42,7 @@ public class TownBuildingManager : MonoBehaviour
                         building.transform, new Vector3(.5f, .5f, 0) * map.TileWorldCreator.twcAsset.cellSize, map.TileWorldCreator.twcAsset.cellSize);
                 }
             }
-            if (definition.DialogId == "entrance")
+            if (definition.DialogId == "entrance" && !hasBody)
             {
                 var kit = EnvironmentKit.Load();
                 if (kit != null)

@@ -30,6 +30,7 @@ public class Town : MonoBehaviour
     private string arrivalHeroId;
     public TownPlan Plan { get; private set; }
     private bool finishingGeneration;
+    private TileWorldCreatorAsset runtimeAsset;
 
     // Start is called before the first frame update
     void Start()
@@ -50,7 +51,9 @@ public class Town : MonoBehaviour
             gameObject.AddComponent<CampaignTownControls>().Town = this;
         }
         var twc = WalkableMap.TileWorldCreator;
-        twc.twcAsset = Instantiate(twc.twcAsset); twc.twcAsset.hideFlags = HideFlags.DontSave;
+        runtimeAsset = Instantiate(twc.twcAsset);
+        runtimeAsset.hideFlags = HideFlags.DontSave;
+        twc.twcAsset = runtimeAsset;
         CoreTownLayerGenerator.Configure(twc.twcAsset, Configuration);
 
         Debug.Log("WalkableMap type: " + (WalkableMap == null ? "NULL" : WalkableMap.GetType().FullName));
@@ -256,37 +259,12 @@ public class Town : MonoBehaviour
 
     private void GenerateRoofs()
     {
-        foreach (var roof in roofs)
-            if (roof != null) { roof.gameObject.SetActive(false); Destroy(roof.gameObject); }
         roofs.Clear();
         roofAlly = null;
-        var kit = EnvironmentKit.Load();
-        if (kit == null || WalkableMap.TileWorldCreator.worldObject == null) return;
-        var biome = WalkableMap.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
-        var parent = WalkableMap.TileWorldCreator.worldObject.transform;
-        float size = WalkableMap.TileWorldCreator.twcAsset.cellSize;
-        foreach (var door in Plan.BuildingSlots)
-        {
-            var footprint = Plan.Footprints.FirstOrDefault(f => f.Door.Equals(door));
-            IReadOnlyCollection<GridPoint> cells;
-            if (footprint != null)
-                cells = footprint.Cells.Count > 0 ? footprint.Cells : new[] { door };
-            else
-            {
-                // Simple towns use the original three-by-four body north of each door.
-                var body = new List<GridPoint>();
-                for (int y = door.Y + 1; y <= door.Y + 4; y++)
-                    for (int x = door.X - 1; x <= door.X + 1; x++)
-                        if (Plan.Layers[TownLayers.Roofs].At(new GridPoint(x, y)))
-                            body.Add(new GridPoint(x, y));
-                cells = body.Count > 0 ? body : new[] { door };
-            }
-            var obj = new GameObject("Roof " + door);
-            obj.transform.SetParent(parent, false);
-            var roof = obj.AddComponent<TownRoofVisual>();
-            roof.Initialize(door, Plan.ShopRoomAt(door), cells, size, kit.BuildingMaterial(biome));
-            roofs.Add(roof);
-        }
+        var world = WalkableMap.TileWorldCreator.worldObject;
+        if (world != null)
+            foreach (var output in world.GetComponentsInChildren<TownRoofTileOutput>(true))
+                roofs.AddRange(output.Roofs.Where(r => r != null));
         RefreshRoofs();
     }
 
@@ -317,7 +295,7 @@ public class Town : MonoBehaviour
     {
         WalkableMap.TileWorldCreator.OnBlueprintLayersComplete -= blueprintLayersComplete;
         WalkableMap.TileWorldCreator.OnBuildLayersComplete -= buildLayersComplete;
-        if (WalkableMap.TileWorldCreator.twcAsset != null) Destroy(WalkableMap.TileWorldCreator.twcAsset);
+        if (runtimeAsset != null) Destroy(runtimeAsset);
     }
 
     private void blueprintLayersComplete(TileWorldCreator _twc)

@@ -20,7 +20,6 @@ MonoBehaviour:
   Buildings:
   - {fileID: 11400000, guid: c421491ac28f47288dd4aa51e7abac2f, type: 2}
   - {fileID: 11400000, guid: 3df8397fb15944f5bacd8d0534bafd71, type: 2}
-  - {fileID: 11400000, guid: 81ae232e17f64536a559bf1b30ed267a, type: 2}
   - {fileID: 11400000, guid: bba2db5e4876423aa2622b81a63a0449, type: 2}
   AllyCatalog:
   - {fileID: 2589701936800338316, guid: d3dd9f4baffd29e43bf87ab29437b30f, type: 3}

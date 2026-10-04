@@ -89,7 +89,7 @@ public class EntranceDialog : Dialog
         if (Common.Instance.CampaignContext != null) return;
         if (!town.Services.CanEnter(data))
         {
-            TownMenu.ShowMessage($"Donate {data.RequiredDonation}g total at the statue to unlock this tier.");
+            TownMenu.ShowMessage("This dungeon tier is unavailable.");
             return;
         }
         town.WriteSaveData();

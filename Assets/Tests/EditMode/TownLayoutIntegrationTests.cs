@@ -47,6 +47,16 @@ namespace EternalEnigma.Tests.CoreIntegration
                     Assert.That(action.Options(creator), Is.EqualTo(layout.Options));
                 Assert.That(CoreLayoutCache.TryGetTown(creator, out var actual), Is.True);
                 var expected = TownPlanGenerator.Generate(layout.Options);
+                var streets = asset.mapBlueprintLayers.Single(l => l.layerName == "Smart/Roads");
+                var houseFloor = asset.mapBlueprintLayers.Single(l => l.layerName == "HouseFloor");
+                foreach (var door in actual.BuildingSlots)
+                    Assert.That(streets.map[door.X, door.Y], Is.True, "Street must reach each door approach.");
+                foreach (var cell in actual.Footprints.SelectMany(f => f.Cells))
+                    Assert.That(houseFloor.map[cell.X, cell.Y], Is.True, "Floor must reach the facade without grass strips.");
+                Assert.That(streets.stack.Select(s => s.action).OfType<CoreTownLayerGenerator>()
+                    .Any(g => g.LayerName == TownLayers.ShopFloor), Is.False, "Indoor floors must not use the street layer.");
+                Assert.That(asset.mapBuildLayers.OfType<TownFloorTileLayer>().Single().Material.mainTexture,
+                    Is.EqualTo(AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Art/PaintedEnvironment/Floor.png")));
                 foreach (string name in TownLayers.All.Concat(TownLayers.Detail))
                     Assert.That(actual.Layers[name].ToArray(), Is.EqualTo(expected.Layers[name].ToArray()), name);
                 foreach (var service in layout.SlotServices.Select((s, i) => (s, i)).Where(p => p.s != null))

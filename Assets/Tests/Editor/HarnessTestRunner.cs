@@ -224,6 +224,10 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Overworld")]
     public static void RunOverworld() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.OverworldSceneTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Six Terrain")]
+    public static void RunSixTerrain() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.EnvironmentPlaygroundTests.AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Enemies")]
     public static void RunEnemies() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnemyPrefabTests");
 

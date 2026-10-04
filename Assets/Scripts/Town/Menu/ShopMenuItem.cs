@@ -25,9 +25,10 @@ public class ShopMenuItem : MonoBehaviour, ISelectHandler
 
 	private void UpdateUI()
 	{
-		var inventoryText = $"{_data.ItemName}";
-		ItemText.text = inventoryText;
-		CostText.text = _data.Remaining > 0 ? $"{_data.Cost}g ({_data.Remaining} left)" : "Sold out";
+		ItemText.text = _data.Remaining > 0
+			? $"{_data.ItemName}\n<size=65%>{_data.Remaining} left</size>"
+			: _data.ItemName;
+		CostText.text = _data.Remaining > 0 ? $"{_data.Cost}g" : "Sold out";
 	}
 
     public void OnSelect(BaseEventData eventData) => SelectCallBack?.Invoke();

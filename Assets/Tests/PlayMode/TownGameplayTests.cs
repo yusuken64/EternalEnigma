@@ -53,8 +53,8 @@ namespace EternalEnigma.Tests
             yield return harness.LoadTown(new TestScenario().CreateSave());
             var town = World;
             Assert.That(town.Roofs.Count, Is.EqualTo(town.Plan.BuildingSlots.Count));
-            Assert.That(town.Roofs.All(r => r.GetComponent<MeshCollider>() == null &&
-                r.GetComponent<Collider>() == null && r.GetComponent<MeshRenderer>() != null), Is.True);
+            Assert.That(town.Roofs.All(r => r.GetComponentsInChildren<Collider>().Length == 0 &&
+                r.GetComponentsInChildren<MeshRenderer>().Length > 0), Is.True);
             var roomRoof = town.Roofs.First(r => r.Room != null);
             var otherRoofs = town.Roofs.Where(r => r != roomRoof).ToArray();
             var hero = town.TownPlayer.ControllingTownAlly;
@@ -201,18 +201,13 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator DonationsUnlockConfiguredTiersAndCannotSpendMoreThanGold()
+        public IEnumerator DungeonTiersAreAvailableWithoutDonations()
         {
             yield return harness.LoadTown(new TestScenario { Gold = 1000 }.CreateSave());
             var tier = World.Configuration.DungeonTiers.First(t => t.RequiredDonation == 1000);
-            Assert.That(World.Services.CanEnter(tier), Is.False);
-            Assert.That(World.Services.Donate(-20), Is.Zero);
-            Assert.That(World.Services.Donate(999), Is.EqualTo(999));
-            Assert.That(World.Services.CanEnter(tier), Is.False);
-            Assert.That(World.Services.Donate(int.MaxValue), Is.EqualTo(1));
             Assert.That(World.Services.CanEnter(tier), Is.True);
-            Assert.That(SaveSystem.LoadData().TownSaveData.DonationTotal, Is.EqualTo(1000));
-            Assert.That(World.TownPlayer.Gold, Is.Zero);
+            Assert.That(World.Configuration.Buildings.Any(b => b.DialogId == "statue"), Is.False);
+            Assert.That(World.TownPlayer.Gold, Is.EqualTo(1000));
         }
 
         [UnityTest]

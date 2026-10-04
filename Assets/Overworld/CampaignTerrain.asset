@@ -20,14 +20,14 @@ MonoBehaviour:
     - {fileID: 11400000, guid: e9a249ce8b3f4e04da9b8c6f0b684105, type: 2}
     - {fileID: 11400000, guid: c7ece03df003cf54480a9af06e8202d6, type: 2}
     - {fileID: 11400000, guid: 567dc25c02b4a064aba62d6ca286ad5a, type: 2}
-    - {fileID: 11400000, guid: d214822f00c5d1f45bc8cba2923f37da, type: 2}
-    - {fileID: 11400000, guid: 420db0660dc5c664297f1d755739d89b, type: 2}
+    - {fileID: 11400000, guid: 429b88590739ba742b93e5206a28c061, type: 2}
+    - {fileID: 2100000, guid: b0cc2b9b399b8fe4491e4c6517453ba0, type: 2}
     - {fileID: 11400000, guid: b5b11edeb54a7d54093c1022510f38d2, type: 2}
     - {fileID: 11400000, guid: b4a862aa3ee66ad4c8ea92d420e08002, type: 2}
     - {fileID: 11400000, guid: 78e6fea4944a5a743ac1ce15ae14bf94, type: 2}
     - {fileID: 2100000, guid: 628859f318a31d946a20dee10ce1f3a0, type: 2}
     - {fileID: 2100000, guid: 1dcd7b0bded49384e8799a1e77c41649, type: 2}
-    - {fileID: 11400000, guid: 3425949d826d01848b09d868d756bb10, type: 2}
+    - {fileID: 11400000, guid: 1770499b8502cf248b221be57c7339a4, type: 2}
     - {fileID: 2100000, guid: 331bea66e3f34b643b9b0711e52b0131, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
@@ -1295,11 +1295,11 @@ MonoBehaviour:
       Entry: 10
       Data: 2
     - Name: QuarterTiles
-      Entry: 10
-      Data: 4
-    - Name: WallTiles
       Entry: 6
       Data: 
+    - Name: WallTiles
+      Entry: 10
+      Data: 4
     - Name: Road
       Entry: 5
       Data: false
@@ -1319,8 +1319,11 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: SurfaceMaterial
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 5
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -1346,11 +1349,11 @@ MonoBehaviour:
       Entry: 10
       Data: 2
     - Name: QuarterTiles
-      Entry: 10
-      Data: 4
-    - Name: WallTiles
       Entry: 6
       Data: 
+    - Name: WallTiles
+      Entry: 10
+      Data: 4
     - Name: Road
       Entry: 5
       Data: false
@@ -1370,8 +1373,11 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: SurfaceMaterial
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 5
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -1397,11 +1403,11 @@ MonoBehaviour:
       Entry: 10
       Data: 2
     - Name: QuarterTiles
-      Entry: 10
-      Data: 4
-    - Name: WallTiles
       Entry: 6
       Data: 
+    - Name: WallTiles
+      Entry: 10
+      Data: 4
     - Name: Road
       Entry: 5
       Data: false
@@ -1421,8 +1427,11 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: SurfaceMaterial
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 5
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -1448,11 +1457,11 @@ MonoBehaviour:
       Entry: 10
       Data: 2
     - Name: QuarterTiles
-      Entry: 10
-      Data: 5
-    - Name: WallTiles
       Entry: 6
       Data: 
+    - Name: WallTiles
+      Entry: 10
+      Data: 4
     - Name: Road
       Entry: 5
       Data: false
@@ -1472,8 +1481,11 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: SurfaceMaterial
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 5
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -1525,6 +1537,9 @@ MonoBehaviour:
     - Name: SurfaceMaterial
       Entry: 6
       Data: 
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -1576,6 +1591,9 @@ MonoBehaviour:
     - Name: SurfaceMaterial
       Entry: 6
       Data: 
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -1627,6 +1645,9 @@ MonoBehaviour:
     - Name: SurfaceMaterial
       Entry: 6
       Data: 
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -1712,11 +1733,11 @@ MonoBehaviour:
       Entry: 10
       Data: 2
     - Name: QuarterTiles
-      Entry: 10
-      Data: 11
-    - Name: WallTiles
       Entry: 6
       Data: 
+    - Name: WallTiles
+      Entry: 10
+      Data: 11
     - Name: Road
       Entry: 5
       Data: false
@@ -1738,6 +1759,9 @@ MonoBehaviour:
     - Name: SurfaceMaterial
       Entry: 10
       Data: 12
+    - Name: TownPalette
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 

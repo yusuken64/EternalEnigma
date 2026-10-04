@@ -2,6 +2,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public sealed class DungeonHud : MonoBehaviour
 {
@@ -64,6 +65,10 @@ public sealed class DungeonHud : MonoBehaviour
     private void Update()
     {
         if (game == null || !game.IsReady || game.PlayerController.ControlledAlly == null) return;
+        if (!AutoplayRunner.BlocksPlayerInput && !Common.Instance.GlobalSettings.IsOpen &&
+            MenuUIInputModule.Active?.HasDialog != true &&
+            (Keyboard.current?.fKey.wasPressedThisFrame == true || Gamepad.current?.rightStickButton.wasPressedThisFrame == true))
+            DungeonPreferences.FullControl = !DungeonPreferences.FullControl;
         var player = game.PlayerController;
         var turns = game.TurnManager;
         header.text = $"{player.Floor}F";

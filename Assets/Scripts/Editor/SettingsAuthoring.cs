@@ -103,6 +103,22 @@ public static class SettingsAuthoring
     }
     private static void Finish(GlobalSettings settings)
     {
+        var volumes = settings.GetComponentsInChildren<VolumeSlider>(true);
+        if (!volumes.Any(v => v.VolumeParameterName == "MasterVolume"))
+        {
+            var music = volumes.Single(v => v.VolumeParameterName == "MusicVolume");
+            var master = Object.Instantiate(music, music.transform.parent);
+            master.name = "Master_VolumeSlider";
+            master.VolumeParameterName = "MasterVolume";
+            master.transform.SetSiblingIndex(music.transform.GetSiblingIndex());
+            master.GetComponentsInChildren<TMP_Text>(true).First(t => t != master.VolumeValueText).text = "Master";
+            volumes = settings.GetComponentsInChildren<VolumeSlider>(true);
+        }
+        foreach (var volume in volumes)
+        {
+            int row = volume.VolumeParameterName switch { "MasterVolume" => 0, "MusicVolume" => 1, "EffectVolume" => 2, _ => 3 };
+            Fit((RectTransform)volume.transform, new Vector2(.09f, .76f - row * .20f), new Vector2(.91f, .92f - row * .20f));
+        }
         settings.NavigationHandler.arrowAnchor = ArrowAnchor.Right;
         settings.NavigationHandler.selectionArrow.localRotation = Quaternion.Euler(0, 0, 180);
         foreach (var tab in settings.TabGroup.TabContents)

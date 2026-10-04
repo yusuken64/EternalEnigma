@@ -805,7 +805,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 0}
-  CameraOffset: {x: 1, y: -7.24, z: -11.02}
+  CameraOffset: {x: 0, y: -10, z: -14}
   _followTarget: {fileID: 0}
 --- !u!1001 &6984751746082051157
 PrefabInstance:

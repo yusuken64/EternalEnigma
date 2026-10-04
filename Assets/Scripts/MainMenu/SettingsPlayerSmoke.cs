@@ -16,7 +16,7 @@ public sealed class SettingsPlayerSmoke : MonoBehaviour
         public int width, height, mode;
     }
     private static readonly string[] Keys = { DisplayPreferences.ModeKey, DisplayPreferences.WidthKey, DisplayPreferences.HeightKey,
-        "Settings.Audio.MusicVolume", "Settings.Audio.EffectVolume", "Settings.Audio.UIVolume" };
+        "Settings.Audio.MasterVolume", "Settings.Audio.MusicVolume", "Settings.Audio.EffectVolume", "Settings.Audio.UIVolume" };
     private string folder;
     private bool read;
     private Saved saved;
@@ -43,6 +43,7 @@ public sealed class SettingsPlayerSmoke : MonoBehaviour
             {
                 saved = JsonUtility.FromJson<Saved>(File.ReadAllText(Path.Combine(folder, "preferences.json")));
                 Require(Screen.fullScreenMode == FullScreenMode.Windowed && Screen.width == 1280 && Screen.height == 720, "Display restored at startup");
+                Require(Mathf.Abs(AudioPreferences.Read(audio.MusicAudioMixerGroup, "MasterVolume") - .61f) < .001f, "Master restored at startup");
                 Require(Mathf.Abs(AudioPreferences.Read(audio.MusicAudioMixerGroup, "MusicVolume") - .23f) < .001f, "Music restored at startup");
                 Require(Mathf.Abs(AudioPreferences.Read(audio.EffectAudioMixerGroup, "EffectVolume") - .47f) < .001f, "Effects restored at startup");
                 Require(AudioPreferences.Read(audio.UIAudioMixerGroup, "UIVolume") == 0, "UI mute restored at startup");
@@ -77,6 +78,7 @@ public sealed class SettingsPlayerSmoke : MonoBehaviour
                     yield return new WaitForSecondsRealtime(.3f);
                     settings.Exit_Clicked();
                 }
+                AudioPreferences.Set(audio.MusicAudioMixerGroup, "MasterVolume", .61f);
                 AudioPreferences.Set(audio.MusicAudioMixerGroup, "MusicVolume", .23f);
                 AudioPreferences.Set(audio.EffectAudioMixerGroup, "EffectVolume", .47f);
                 AudioPreferences.Set(audio.UIAudioMixerGroup, "UIVolume", 0);

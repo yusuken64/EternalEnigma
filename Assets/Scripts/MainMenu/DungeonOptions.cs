@@ -49,7 +49,7 @@ public sealed class DungeonOptions : MonoBehaviour
             ? "Full Control: Off (Autoplay)"
             : "Full Control: " + (DungeonPreferences.FullControl ? "On" : "Off");
         speed.GetComponentInChildren<TMP_Text>().text = "Game Speed: " + DungeonPreferences.SpeedLabel;
-        explanation.text = "Full Control asks for each hero's action. Summons use AI. Changes take effect next round.\n\n" +
+        explanation.text = "Full Control asks for each hero's action. Press F or the controller's right stick to toggle it. Summons use AI. Changes take effect next round.\n\n" +
             (DungeonPreferences.AnimationMode == DungeonAnimationMode.Normal ? "Normal: animate visible actions." :
              DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateAlliedActions ? "Animate allied actions: animate allies and summons, plus enemy actions affecting an ally." :
              DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateControlledHeroActions ? "Animate only controlled hero actions: animate chains started by the hero you control when the action begins." :

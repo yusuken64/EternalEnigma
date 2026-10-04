@@ -113,7 +113,7 @@ public sealed class TownServices
     }
 
     public bool CanEnter(DungeonTierData tier) => tier != null &&
-        town.Configuration.DungeonTiers.Contains(tier) && Save.DonationTotal >= tier.RequiredDonation;
+        town.Configuration.DungeonTiers.Contains(tier);
 
     public bool Recruit(TownAlly ally, out string reason)
     {

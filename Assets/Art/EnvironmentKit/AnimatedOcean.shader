@@ -27,10 +27,11 @@ Shader "EternalEnigma/Animated Ocean"
             }
             fixed4 frag(Output i) : SV_Target
             {
-                float a=tex2D(_MainTex,i.uv+_Time.y*_WaveSpeed.xy).r;
-                float b=tex2D(_MainTex,i.uv*1.37+_Time.y*_WaveSpeed.zw).r;
-                float wave=(a*.65+b*.35-.8)*3;
-                return fixed4(_Color.rgb*(1+wave*_WaveStrength),1);
+                // The authored texture is painted blue water, not a grayscale
+                // height map. Preserve its color while the two wave fields move.
+                float3 a=tex2D(_MainTex,i.uv+_Time.y*_WaveSpeed.xy).rgb;
+                float3 b=tex2D(_MainTex,i.uv*1.37+_Time.y*_WaveSpeed.zw).rgb;
+                return fixed4(lerp(a,b,saturate(_WaveStrength)*.5)*_Color.rgb,1);
             }
             ENDCG
         }

@@ -63,6 +63,20 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     public bool[,] Execute(bool[,] map, TileWorldCreator twc)
     {
         var town = CoreLayoutCache.GetTown(twc, Options(twc));
+        if (LayerName == "HouseFloor")
+        {
+            var floor = town.Layers[TownLayers.Roofs].ToArray();
+            foreach (var footprint in town.Footprints)
+                foreach (var cell in footprint.Cells) floor[cell.X, cell.Y] = true;
+            foreach (var door in town.BuildingSlots)
+            {
+                var room = town.ShopRoomAt(door);
+                if (room == null) continue;
+                foreach (var cell in room.Floor.Concat(room.Wall))
+                    if (cell.Y > door.Y) floor[cell.X, cell.Y] = true;
+            }
+            return TileWorldCreatorUtilities.MergeMap(map, floor);
+        }
         if (!town.Layers.TryGetValue(LayerName, out var layer)) { Debug.LogWarning($"Core town has no layer '{LayerName}'."); return map; }
         var cells = layer.ToArray();
         if (cells.GetLength(0) != map.GetLength(0) || cells.GetLength(1) != map.GetLength(1))
@@ -107,6 +121,8 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
                     g.SpineX = TownPlan.DefaultSpineX;
                     g.Detailed = false;g.InteriorKinds="";g.ShopThemes="";
                 }
+        ConfigureRoofTiles(asset);
+        ConfigureHouseLayers(asset);
     }
 
     /// <summary>Copies the complete Core contract to every layer on a runtime template.</summary>
@@ -144,6 +160,65 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
             generator.InteriorKinds=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Kind)));generator.ShopThemes=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Theme)));
         }
         TownInteriorRendering.Configure(asset);
+        ConfigureRoofTiles(asset);
+        ConfigureHouseLayers(asset);
+    }
+
+    private static void ConfigureHouseLayers(TileWorldCreatorAsset asset)
+    {
+        // The Roofs mask contains the entire building outline, including carved
+        // shop interiors. The old shop wall mesh would cover the new facade.
+        foreach (var layer in asset.mapBuildLayers)
+            if (layer.layerName == "Smart/Walls") layer.active = false;
+
+        var roofs = asset.mapBlueprintLayers.FirstOrDefault(l => l.layerName == TownLayers.Roofs);
+        var source = roofs?.stack.Select(s => s.action).OfType<CoreTownLayerGenerator>().FirstOrDefault();
+        if (source == null) return;
+        // Streets include the approach cell, while indoor paving has its own mask.
+        var streets = asset.mapBlueprintLayers.FirstOrDefault(l => l.layerName == "Smart/Roads");
+        if (streets != null)
+        {
+            streets.stack.RemoveAll(s => s.action is CoreTownLayerGenerator g &&
+                (g.LayerName == TownLayers.ShopFloor || g.LayerName == TownLayers.Buildings));
+            var doors = (CoreTownLayerGenerator)source.Clone();
+            doors.LayerName = TownLayers.Buildings;
+            streets.stack.Add(new TileWorldCreatorAsset.BlueprintLayerData.ActionStack("Door approaches", doors));
+        }
+        var floor = asset.mapBlueprintLayers.FirstOrDefault(l => l.layerName == "HouseFloor");
+        if (floor == null)
+        {
+            floor = new TileWorldCreatorAsset.BlueprintLayerData("HouseFloor", true);
+            asset.mapBlueprintLayers.Add(floor);
+        }
+        var floorSource = (CoreTownLayerGenerator)source.Clone();
+        floorSource.LayerName = "HouseFloor";
+        floor.stack = new System.Collections.Generic.List<TileWorldCreatorAsset.BlueprintLayerData.ActionStack> {
+            new TileWorldCreatorAsset.BlueprintLayerData.ActionStack("Complete house footprint", floorSource)
+        };
+        floor.randomSeedOverride = false;
+        asset.mapBuildLayers.RemoveAll(l => l.layerName == "House floors");
+        asset.mapBuildLayers.Add(new TownFloorTileLayer {
+            layerName = "House floors", guid = new Guid("d71dd1c5-038a-4b6b-bdd6-6023daef1003"),
+            assignedGenerationLayerGuid = floor.guid, active = true,
+            Kit = EnvironmentKit.Load(), Material = Resources.Load<Material>("EnvironmentKit/HouseFloor")
+        });
+    }
+
+    private static void ConfigureRoofTiles(TileWorldCreatorAsset asset)
+    {
+        var blueprint = asset.mapBlueprintLayers.FirstOrDefault(l => l.layerName == TownLayers.Roofs);
+        if (blueprint == null) return;
+        var index = asset.mapBuildLayers.FindIndex(l => l.layerName == "Roofs");
+        var old = index >= 0 ? asset.mapBuildLayers[index] : null;
+        var preset = (old as TWC.Actions.InstantiateTiles)?.tiles?.FirstOrDefault()?.preset ??
+            (old as TownRoofTileLayer)?.Preset;
+        var layer = new TownRoofTileLayer {
+            layerName = "Roofs", assignedGenerationLayerGuid = blueprint.guid,
+            guid = old?.guid ?? new Guid("fe20e151-a26d-4a49-b2b5-9825304a57e0"),
+            active = true, Kit = EnvironmentKit.Load(), Preset = preset
+        };
+        if (index >= 0) asset.mapBuildLayers[index] = layer;
+        else asset.mapBuildLayers.Add(layer);
     }
 
 #if UNITY_EDITOR

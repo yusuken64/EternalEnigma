@@ -263,6 +263,23 @@ MonoBehaviour:
   PlayerPrefab: {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
   ViewCamera: {fileID: 1216682244}
   OverworldMusic: {fileID: 8300000, guid: 3d35c887b8c4d124c91afc1f749b2316, type: 3}
+  BiomeMusic:
+  - Biome: 0
+    Clip: {fileID: 8300000, guid: 3d35c887b8c4d124c91afc1f749b2316, type: 3}
+  - Biome: 1
+    Clip: {fileID: 8300000, guid: e09282939e6b3d847b669b486349e2bb, type: 3}
+  - Biome: 2
+    Clip: {fileID: 8300000, guid: 7816fb8c9d586a046ac48aab5f883230, type: 3}
+  - Biome: 3
+    Clip: {fileID: 8300000, guid: 9425fa341d8a9974eb302b48e3db1f02, type: 3}
+  - Biome: 4
+    Clip: {fileID: 8300000, guid: 44161982ed3f6bb47bdd8e9b3ec166df, type: 3}
+  - Biome: 5
+    Clip: {fileID: 8300000, guid: 9425fa341d8a9974eb302b48e3db1f02, type: 3}
+  - Biome: 6
+    Clip: {fileID: 8300000, guid: 171c69d47c1e3ba4da9363141867484f, type: 3}
+  - Biome: 7
+    Clip: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
   TownMarker: {fileID: 8558893673760508206, guid: fbe6fe74e127ce64ebfc2b05414a27c4, type: 3}
   DungeonMarker: {fileID: 6971330757350476272, guid: 3ad375cf66e494b4699c3e3fe0bd05ae, type: 3}
   LandmarkMarker: {fileID: 427689351167209922, guid: f1e8150e498418f4bb01525081268e11, type: 3}

@@ -213,8 +213,8 @@ public HashSet<string> Completed { get; }
         var location = Campaign.Locations.FirstOrDefault(l => l.Id == locationId) ?? throw new ArgumentException("Unknown location.", nameof(locationId));
         return DungeonFloorGenerator.Generate(DungeonFloorOptionsFor(State.Seed, locationId, floor, location.Tier, OverworldGridGenerator.BiomeForRegion(Campaign, location.RegionId), 1));
     }
-    /// <summary>Buildings every town has that are not services: the dungeon entrance and the statue.</summary>
-    public const int AuthoredTownBuildings = 2;
+    /// <summary>The dungeon entrance is the only non-service building every town requires.</summary>
+    public const int AuthoredTownBuildings = 1;
     /// <summary>Extra houses with no service, so a town reads as a settlement; about as many as it has services and authored buildings.</summary>
     public const int ResidentialTownBuildings = 7;
     /// <summary>Sizes the town for its services and assigns each one to a building slot.</summary>

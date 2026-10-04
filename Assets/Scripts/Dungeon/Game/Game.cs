@@ -412,13 +412,13 @@ public class Game : SingletonMonoBehaviour<Game>
     public void DoFloatingText(string message, Color color, Character subject)
     {
         if (subject == null) return;
-        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.Current)
+        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.Normal)
             DungeonFloatingText.Show(this, message, color, subject);
         GameMessages.ForCharacter(subject, $"{GameMessages.Name(subject)}: {message}");
     }
 	public void DoFloatingText(string message, Color color, Vector3 worldPosition)
 	{
-        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.Current)
+        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.Normal)
             DungeonFloatingText.Show(this, message, color, worldPosition);
         var subject = AllCharacters.Where(c => c != null)
             .OrderBy(c => Vector3.SqrMagnitude((c.VisualParent != null ? c.VisualParent.transform.position : c.transform.position) - worldPosition))

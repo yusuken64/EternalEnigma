@@ -59,7 +59,7 @@ public sealed class AbilityTestLab : MonoBehaviour
         previousFullControl = DungeonPreferences.FullControlOverride;
         previousAnimation = DungeonPreferences.AnimationOverride;
         DungeonPreferences.FullControlOverride = false;
-        DungeonPreferences.AnimationOverride = DungeonAnimationMode.Current;
+        DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
         yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
             "Assets/Scenes/Common.unity", new LoadSceneParameters(LoadSceneMode.Single));
         yield return null;

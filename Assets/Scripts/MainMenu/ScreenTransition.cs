@@ -26,7 +26,7 @@ public class ScreenTransition : MonoBehaviour
     public void DoTransition(Action postTransition, bool autoOpen = true, string destinationTitle = null)
     {
         CancelAnimation();
-        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
         {
             ShutterScreen.gameObject.SetActive(false);
             BlockScreen.gameObject.SetActive(false);
@@ -98,7 +98,7 @@ public class ScreenTransition : MonoBehaviour
     internal void DoOpen()
     {
         CancelAnimation();
-        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
         {
             ShutterScreen.gameObject.SetActive(false);
             BlockScreen.gameObject.SetActive(false);

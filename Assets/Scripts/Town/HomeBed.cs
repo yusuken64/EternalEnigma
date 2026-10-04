@@ -62,7 +62,7 @@ public sealed class HomeBed : MonoBehaviour
         var weapons = animation.RightHandObjects.Concat(animation.LeftHandObjects).Where(w => w != null).Distinct().ToArray();
         var visible = weapons.Select(w => w.activeSelf).ToArray();
         var transition = Common.Instance.ScreenTransition;
-        bool animated = DungeonPreferences.AnimationMode != DungeonAnimationMode.None;
+        bool animated = DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations;
         string error = null;
         var bedEntry = SleepAnchor.position - (hero.VisualParent.transform.position - hero.transform.position);
         try

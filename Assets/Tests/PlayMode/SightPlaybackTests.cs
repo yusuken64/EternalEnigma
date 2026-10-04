@@ -29,7 +29,7 @@ public class SightPlaybackTests
         var destination = origin + Vector3Int.right;
         var leadingEdge = destination + Vector3Int.right;
         var move = new MovementAction(enemy, origin, destination);
-        move.SetPlaybackContext(DungeonAnimationMode.Current, false, harness.Ally, enemy);
+        move.SetPlaybackContext(DungeonAnimationMode.Normal, false, harness.Ally, enemy);
         var camera = game.PlayerController.CameraController.Camera;
         var cameraPosition = camera.transform.position;
         var cameraRotation = camera.transform.rotation;

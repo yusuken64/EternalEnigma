@@ -254,6 +254,19 @@ public class TurnManager : MonoBehaviour
 
     private IEnumerator Replay(List<ActorAction> actionReplays)
     {
+		// Resolve visibility and the mode once for each complete root-action chain.
+		foreach (var chain in actionReplays.Where(x => x.Action.Playback != null)
+		             .GroupBy(x => x.Action.Playback))
+		{
+			Game.Instance.RefreshSight();
+			Game.Instance.PlaybackVisibleTiles.Clear();
+			Game.Instance.PlaybackVisibleTiles.UnionWith(Game.Instance.PartyVisibleTiles);
+			foreach (var replay in chain)
+				replay.Action.AddDestinationSight(Game.Instance.PlaybackVisibleTiles);
+			chain.Key.SetAnimationDecision(chain.Key.AllowsAnimation && chain.Any(x =>
+				x.Actor is Character actor && x.Action.IsVisibleForAnimation(actor)));
+		}
+		Game.Instance.PlaybackVisibleTiles.Clear();
 		while (actionReplays.Any())
 		{
 			var action = actionReplays[0];
@@ -419,6 +432,7 @@ public abstract class GameAction
     }
 
     private DungeonActionPlayback playback;
+    internal DungeonActionPlayback Playback => playback;
     internal void SetPlaybackContext(DungeonActionPlayback context)
     {
         playback = context;
@@ -429,15 +443,22 @@ public abstract class GameAction
 
     internal bool ShouldAnimate(Character actor)
     {
+        if (playback != null) return playback.ShouldAnimate(() => IsVisibleForAnimation(actor));
+        var mode = DungeonPreferences.AnimationMode;
+        var focus = Game.Instance.PlayerController.ControlledAlly;
+        if (mode == DungeonAnimationMode.NoAnimations ||
+            mode == DungeonAnimationMode.AnimateControlledHeroActions && actor != focus ||
+            mode == DungeonAnimationMode.AnimateAlliedActions && actor is not Ally &&
+            !animationTargets.Any(target => target is Ally)) return false;
+        return IsVisibleForAnimation(actor);
+    }
+
+    internal bool IsVisibleForAnimation(Character actor)
+    {
         var game = Game.Instance;
-        var mode = playback?.Mode ?? DungeonPreferences.AnimationMode;
-        if (mode == DungeonAnimationMode.None) return false;
-        var focus = playback != null ? playback.Focus : game.PlayerController.ControlledAlly;
-        if (mode == DungeonAnimationMode.YourActionOnly && playback?.Commanded != true) return false;
-        if (mode == DungeonAnimationMode.ControllingHero && actor != focus && playback?.Origin != focus &&
-            !animationTargets.Contains(focus) && playback?.Targets.Contains(focus) != true) return false;
-        if (actor == game.PlayerController.ControlledAlly ||
-            animationTargets.Contains(game.PlayerController.ControlledAlly)) return true;
+        var focus = playback?.Focus ?? game.PlayerController.ControlledAlly;
+        if (actor == focus || animationTargets.Contains(focus) || playback?.Targets.Contains(focus) == true)
+            return true;
         game.RefreshSight();
         var camera = game.PlayerController.CameraController?.Camera;
         if (camera == null) return true;
@@ -494,14 +515,26 @@ public abstract class GameAction
 }
 
 // One policy snapshot per root action, shared by its complete consequence chain.
-// Capture at playback so changing speed applies at the next action boundary.
+// Capture the mode when the action begins; resolve visibility before replay.
 internal sealed class DungeonActionPlayback
 {
-    private DungeonAnimationMode? mode;
-    internal DungeonAnimationMode Mode => mode ??= DungeonPreferences.AnimationMode;
+    internal readonly DungeonAnimationMode Mode;
     internal readonly bool Commanded;
     internal readonly Character Focus, Origin;
     internal readonly HashSet<Character> Targets = new();
+    private bool? animationDecision;
+    internal bool AllowsAnimation => Mode switch
+    {
+        DungeonAnimationMode.NoAnimations => false,
+        DungeonAnimationMode.AnimateControlledHeroActions => Origin == Focus,
+        DungeonAnimationMode.AnimateAlliedActions => Origin is Ally || Targets.Any(target => target is Ally),
+        _ => true
+    };
+    internal void SetAnimationDecision(bool value) => animationDecision = value;
+    internal bool ShouldAnimate(Func<bool> isVisible)
+    {
+        return animationDecision ?? (AllowsAnimation && isVisible());
+    }
     internal DungeonActionPlayback(bool commanded, Character focus, Character origin, DungeonAnimationMode? mode = null)
-    { Commanded = commanded; Focus = focus; Origin = origin; this.mode = mode; }
+    { Commanded = commanded; Focus = focus; Origin = origin; Mode = mode ?? DungeonPreferences.AnimationMode; }
 }

@@ -250,7 +250,7 @@ public sealed class OverworldScene : MonoBehaviour
             party[i].TilemapPosition = new Vector3Int(cell.X, cell.Y, 0);
         }
         RefreshLocationMarkers();
-        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+        if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
         {
             for (int i = 0; i < party.Length; i++)
             {

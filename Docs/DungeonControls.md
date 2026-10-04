@@ -50,10 +50,12 @@ Physical hardware connection and platform-specific button labels still need a de
 Options > Gameplay stores Full Control and animation mode across sessions.
 
 - **Full Control:** choose each living party hero's action in order. Additional actions prompt again. Summons remain autonomous; forced status actions still resolve automatically. The party leader is restored before enemies act. Toggle changes apply on the next round.
-- **Current:** animate visible actions.
-- **Controlling hero:** animate the selected hero and incoming actions affecting that hero.
-- **Your action only:** animate the player's command and its consequences; other actions resolve without animations. Changes apply at the next action boundary.
-- **No animation:** resolve actions and movement instantly without animated effects or combat callouts. Results and event history remain available.
+- **Normal:** animate visible actions.
+- **Animate allied actions:** animate chains started by allies, including summons, and enemy chains that affect an ally.
+- **Animate only controlled hero actions:** animate chains started by the hero controlled when the action begins.
+- **No animations:** resolve actions and movement instantly without animated effects or combat callouts. Results and event history remain available.
+
+Animation changes apply to the next action chain. Each chain uses one playback decision, while hidden actions remain hidden.
 
 The same animation setting appears in the autoplay panel and applies to dungeon, town, and overworld play. Autoplay supports speeds from 0.5× through 32×.
 

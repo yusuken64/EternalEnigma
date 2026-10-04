@@ -17,7 +17,7 @@ namespace EternalEnigma.Tests
         [UnitySetUp] public IEnumerator Setup()
         {
             previousControl=DungeonPreferences.FullControlOverride; previousSpeed=DungeonPreferences.AnimationOverride;
-            DungeonPreferences.FullControlOverride=false; DungeonPreferences.AnimationOverride=DungeonAnimationMode.Current;
+            DungeonPreferences.FullControlOverride=false; DungeonPreferences.AnimationOverride=DungeonAnimationMode.Normal;
             harness=new GameTestHarness(); yield return harness.LoadDungeon(new TestScenario {AdditionalAllies=new[] {"Avery"}});
             foreach (var enemy in harness.Game.Enemies.ToArray()) Object.Destroy(enemy.gameObject);
             harness.Game.Enemies.Clear(); yield return null;
@@ -132,17 +132,17 @@ namespace EternalEnigma.Tests
                     harness.Game.CurrentDungeon.OverlapsAnyOtherCharacter(hero,Character.ToBounds(p),false) == null);
             GameMessages.BeginTurn();
             var move = new MovementAction(hero,origin,destination);
-            move.SetPlaybackContext(DungeonAnimationMode.YourActionOnly,false,hero,hero);
+            move.SetPlaybackContext(DungeonAnimationMode.NoAnimations,false,hero,hero);
             hero.ExecuteActionImmediate(move);
             Assert.That(move.ShouldAnimate(hero),Is.False);
             yield return hero.ExecuteActionRoutine(move);
             Assert.That(Object.FindFirstObjectByType<GameMessages>().TurnEvents,Is.Empty,"Movement itself must not appear in the event log.");
             var damage = new TakeDamageAction(hero,hero,5,false) { Environmental = true };
-            damage.SetPlaybackContext(DungeonAnimationMode.YourActionOnly,false,hero,hero);
+            damage.SetPlaybackContext(DungeonAnimationMode.NoAnimations,false,hero,hero);
             hero.ExecuteActionImmediate(damage);
             yield return hero.ExecuteActionRoutine(damage);
             var heal = new TakeHealAction(hero,hero,2,false);
-            heal.SetPlaybackContext(DungeonAnimationMode.YourActionOnly,false,hero,hero);
+            heal.SetPlaybackContext(DungeonAnimationMode.NoAnimations,false,hero,hero);
             hero.ExecuteActionImmediate(heal);
             yield return hero.ExecuteActionRoutine(heal);
             GameMessages.FinishAction();
@@ -165,13 +165,97 @@ namespace EternalEnigma.Tests
             var root=new WaitAction(); root.SetPlaybackContext(context);
             var consequence=new TakeDamageAction(other,hero,1,false); consequence.SetPlaybackContext(context);
             hero.ExecuteActionImmediate(consequence);
-            DungeonPreferences.AnimationOverride=DungeonAnimationMode.ControllingHero;
-            Assert.That(root.ShouldAnimate(other),Is.True,"Incoming consequences animate their root action too.");
-            DungeonPreferences.AnimationOverride=DungeonAnimationMode.YourActionOnly;
+            DungeonPreferences.AnimationOverride=DungeonAnimationMode.AnimateAlliedActions;
+            Assert.That(root.ShouldAnimate(other),Is.True,"The mode was captured before the preference changed.");
+            DungeonPreferences.AnimationOverride=DungeonAnimationMode.AnimateControlledHeroActions;
             Assert.That(consequence.ShouldAnimate(other),Is.True,"A running chain keeps its captured speed.");
             var next=new WaitAction();next.SetPlaybackContext(new DungeonActionPlayback(false,hero,other));
             Assert.That(next.ShouldAnimate(other),Is.False);
             yield return null;
+        }
+        [UnityTest] public IEnumerator AnimationModesApplyToWholeAllySummonAndEnemyChains()
+        {
+            var hero = harness.Ally;
+            var ally = harness.Game.Allies.First(a => a != hero);
+            var enemyPrefab = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_Slime.prefab");
+            var enemy = Object.Instantiate(enemyPrefab, harness.Game.transform);
+            enemy.SetPosition(hero.TilemapPosition + Vector3Int.right);
+            SummonedUnit summon = null;
+            try
+            {
+                foreach (DungeonAnimationMode mode in System.Enum.GetValues(typeof(DungeonAnimationMode)))
+                {
+                    AssertChain(mode, hero, hero, null, mode != DungeonAnimationMode.NoAnimations);
+                    AssertChain(mode, hero, ally, null, mode == DungeonAnimationMode.Normal || mode == DungeonAnimationMode.AnimateAlliedActions);
+                    AssertChain(mode, hero, enemy, null, mode == DungeonAnimationMode.Normal);
+                    AssertChain(mode, hero, enemy, ally, mode == DungeonAnimationMode.Normal || mode == DungeonAnimationMode.AnimateAlliedActions);
+                }
+                summon = ally.gameObject.AddComponent<SummonedUnit>();
+                Assert.That(PartyRules.IsSummon(ally), Is.True);
+                foreach (DungeonAnimationMode mode in System.Enum.GetValues(typeof(DungeonAnimationMode)))
+                {
+                    AssertChain(mode, hero, ally, null, mode == DungeonAnimationMode.Normal || mode == DungeonAnimationMode.AnimateAlliedActions);
+                    AssertChain(mode, hero, enemy, ally, mode == DungeonAnimationMode.Normal || mode == DungeonAnimationMode.AnimateAlliedActions);
+                }
+                yield return null;
+            }
+            finally
+            {
+                if (summon != null) Object.DestroyImmediate(summon);
+                Object.DestroyImmediate(enemy.gameObject);
+            }
+        }
+        private static void AssertChain(DungeonAnimationMode mode, Ally focus, Character origin, Character target, bool expected)
+        {
+            var context = new DungeonActionPlayback(false, focus, origin, mode);
+            var root = new WaitAction(); root.SetPlaybackContext(context);
+            GameAction consequence = null;
+            if (target != null)
+            {
+                consequence = new TakeDamageAction(origin, target, 0, false);
+                consequence.SetPlaybackContext(context);
+                consequence.ExecuteImmediate(origin);
+            }
+            context.SetAnimationDecision(context.AllowsAnimation);
+            Assert.That(root.ShouldAnimate(origin), Is.EqualTo(expected), $"root: {mode}, {origin.name}, {target?.name}");
+            if (consequence != null)
+                Assert.That(consequence.ShouldAnimate(origin), Is.EqualTo(expected), $"consequence: {mode}, {origin.name}");
+        }
+        [Test] public void SavedAnimationModesMigrateOnceAndLabelsMatch()
+        {
+            const string oldKey = "Dungeon.AnimationMode", newKey = "Dungeon.AnimationModeV2";
+            bool hadOld = PlayerPrefs.HasKey(oldKey), hadNew = PlayerPrefs.HasKey(newKey);
+            int oldValue = PlayerPrefs.GetInt(oldKey), newValue = PlayerPrefs.GetInt(newKey);
+            var previousOverride = DungeonPreferences.AnimationOverride;
+            try
+            {
+                DungeonPreferences.AnimationOverride = null;
+                var expected = new[] { DungeonAnimationMode.Normal, DungeonAnimationMode.AnimateControlledHeroActions,
+                    DungeonAnimationMode.AnimateControlledHeroActions, DungeonAnimationMode.NoAnimations };
+                for (int old = 0; old < expected.Length; old++)
+                {
+                    PlayerPrefs.DeleteKey(newKey);
+                    PlayerPrefs.SetInt(oldKey, old);
+                    Assert.That(DungeonPreferences.AnimationMode, Is.EqualTo(expected[old]));
+                    Assert.That(PlayerPrefs.GetInt(newKey), Is.EqualTo((int)expected[old]));
+                    PlayerPrefs.SetInt(oldKey, 3 - old);
+                    Assert.That(DungeonPreferences.AnimationMode, Is.EqualTo(expected[old]), "Migration only runs once.");
+                }
+                string[] labels = { "Normal", "Animate allied actions", "Animate only controlled hero actions", "No animations" };
+                for (int value = 0; value < labels.Length; value++)
+                {
+                    DungeonPreferences.AnimationMode = (DungeonAnimationMode)value;
+                    Assert.That(DungeonPreferences.SpeedLabel, Is.EqualTo(labels[value]));
+                    Assert.That(PlayerPrefs.GetInt(newKey), Is.EqualTo(value));
+                }
+            }
+            finally
+            {
+                DungeonPreferences.AnimationOverride = previousOverride;
+                if (hadOld) PlayerPrefs.SetInt(oldKey, oldValue); else PlayerPrefs.DeleteKey(oldKey);
+                if (hadNew) PlayerPrefs.SetInt(newKey, newValue); else PlayerPrefs.DeleteKey(newKey);
+                PlayerPrefs.Save();
+            }
         }
         [UnityTest] public IEnumerator AnimationModesKeepOutcomesAndInstantEvents()
         {
@@ -180,17 +264,17 @@ namespace EternalEnigma.Tests
             var hp=leader.Vitals.HP;
             foreach (DungeonAnimationMode mode in System.Enum.GetValues(typeof(DungeonAnimationMode)))
             {
-                hit=new TakeDamageAction(other,leader,1,false);
+                hit=new TakeDamageAction(other,leader,1,false) { Environmental = true };
                 hit.SetPlaybackContext(mode,false,leader,other);
                 leader.ExecuteActionImmediate(hit);
-                Assert.That(hit.ShouldAnimate(other),Is.EqualTo(mode!=DungeonAnimationMode.YourActionOnly && mode!=DungeonAnimationMode.None));
+                Assert.That(hit.ShouldAnimate(other),Is.EqualTo(mode!=DungeonAnimationMode.AnimateControlledHeroActions && mode!=DungeonAnimationMode.NoAnimations));
                 yield return leader.ExecuteActionRoutine(hit);
             }
-            Assert.That(leader.Vitals.HP,Is.EqualTo(hp-3));
+            Assert.That(leader.Vitals.HP,Is.EqualTo(hp-4));
             Assert.That(leader.DisplayedVitals.HP,Is.EqualTo(leader.Vitals.HP));
-            var consequence=new WaitAction();consequence.SetPlaybackContext(DungeonAnimationMode.YourActionOnly,true,leader,leader);
+            var consequence=new WaitAction();consequence.SetPlaybackContext(DungeonAnimationMode.AnimateControlledHeroActions,true,leader,leader);
             Assert.That(consequence.ShouldAnimate(leader),Is.True);
-            var otherAction=new WaitAction();otherAction.SetPlaybackContext(DungeonAnimationMode.ControllingHero,false,leader,other);
+            var otherAction=new WaitAction();otherAction.SetPlaybackContext(DungeonAnimationMode.AnimateControlledHeroActions,false,leader,other);
             Assert.That(otherAction.ShouldAnimate(other),Is.False);
             GameMessages.BeginTurn();
             for(int i=0;i<120;i++) GameMessages.Post("Instant event "+i);

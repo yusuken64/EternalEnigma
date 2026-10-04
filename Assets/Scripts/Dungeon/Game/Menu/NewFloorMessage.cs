@@ -24,7 +24,7 @@ public class NewFloorMessage : MonoBehaviour
 
 	public void ShowNewFloor(int floor)
 	{
-		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
 		{
 			gameObject.SetActive(false);
 			return;

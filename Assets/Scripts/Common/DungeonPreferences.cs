@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum DungeonAnimationMode { Current, ControllingHero, YourActionOnly, None }
+public enum DungeonAnimationMode { Normal, AnimateAlliedActions, AnimateControlledHeroActions, NoAnimations }
 
 public static class DungeonPreferences
 {
@@ -14,14 +14,28 @@ public static class DungeonPreferences
     }
     public static DungeonAnimationMode AnimationMode
     {
-        get => AnimationOverride ?? (DungeonAnimationMode)Mathf.Clamp(PlayerPrefs.GetInt("Dungeon.AnimationMode", 0), 0, 3);
-        set { PlayerPrefs.SetInt("Dungeon.AnimationMode", (int)value); PlayerPrefs.Save(); }
+        get => AnimationOverride ?? SavedAnimationMode;
+        set { PlayerPrefs.SetInt("Dungeon.AnimationModeV2", (int)value); PlayerPrefs.Save(); }
+    }
+    private static DungeonAnimationMode SavedAnimationMode
+    {
+        get
+        {
+            if (PlayerPrefs.HasKey("Dungeon.AnimationModeV2"))
+                return (DungeonAnimationMode)Mathf.Clamp(PlayerPrefs.GetInt("Dungeon.AnimationModeV2"), 0, 3);
+            int old = Mathf.Clamp(PlayerPrefs.GetInt("Dungeon.AnimationMode", 0), 0, 3);
+            var migrated = old == 0 ? DungeonAnimationMode.Normal :
+                old == 3 ? DungeonAnimationMode.NoAnimations : DungeonAnimationMode.AnimateControlledHeroActions;
+            PlayerPrefs.SetInt("Dungeon.AnimationModeV2", (int)migrated);
+            PlayerPrefs.Save();
+            return migrated;
+        }
     }
     public static string SpeedLabel => AnimationMode switch
     {
-        DungeonAnimationMode.ControllingHero => "Controlling hero",
-        DungeonAnimationMode.YourActionOnly => "Your action only",
-        DungeonAnimationMode.None => "No animation",
-        _ => "Current"
+        DungeonAnimationMode.AnimateAlliedActions => "Animate allied actions",
+        DungeonAnimationMode.AnimateControlledHeroActions => "Animate only controlled hero actions",
+        DungeonAnimationMode.NoAnimations => "No animations",
+        _ => "Normal"
     };
 }

@@ -29,7 +29,7 @@ namespace EternalEnigma.Tests
             previousTimeScale = Time.timeScale;
             gameView=UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
             previousViewSize=(int)gameView.GetType().GetProperty("selectedSizeIndex",ViewFlags).GetValue(gameView);
-            DungeonPreferences.AnimationOverride = DungeonAnimationMode.None;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;
             harness = new GameTestHarness();
             yield return harness.LoadDungeon(new TestScenario {
                 AdditionalAllies = new[] { "Avery", "Reese", "Sage" },
@@ -151,7 +151,7 @@ namespace EternalEnigma.Tests
 
         [UnityTest] public IEnumerator FloorBorderCoversHudFitsNarrowScreensAndFadesWithBlackout()
         {
-            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Current;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
             var message = harness.Game.NewFloorMessage;
             message.HideScreen(12);
             yield return new WaitForSecondsRealtime(1.1f);

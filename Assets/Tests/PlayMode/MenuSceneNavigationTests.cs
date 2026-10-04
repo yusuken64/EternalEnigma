@@ -27,7 +27,7 @@ namespace EternalEnigma.Tests
         {
             inputScope = new TestInputScope();
             previousAnimation=DungeonPreferences.AnimationOverride;
-            DungeonPreferences.AnimationOverride=DungeonAnimationMode.None;
+            DungeonPreferences.AnimationOverride=DungeonAnimationMode.NoAnimations;
             harness = new GameTestHarness();
             yield return null;
         }

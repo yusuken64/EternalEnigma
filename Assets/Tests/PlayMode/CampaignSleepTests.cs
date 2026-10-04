@@ -30,7 +30,7 @@ namespace EternalEnigma.Tests
             Assert.That(SaveSystem.LoadData().SavePointId,Is.EqualTo("town-0/home"));
             hero.Hp=1;hero.Sp=0;hero.Level=4;hero.Experience=77;town.TownPlayer.Gold=321;hero.SetFacing(Facing.Left);
             var position=hero.TilemapPosition;var world=hero.transform.position;int writes=harness.Store.Writes;
-            DungeonPreferences.AnimationOverride=DungeonAnimationMode.Current;
+            DungeonPreferences.AnimationOverride=DungeonAnimationMode.Normal;
             bed.SleepAndSave();bed.SleepAndSave();Assert.That(town.TownPlayer.CutsceneLocked,Is.True);
             yield return harness.WaitUntil(()=>!bed.IsSleeping,"sleep and wake");
             Assert.That(harness.Store.Writes,Is.EqualTo(writes+1));Assert.That(hero.transform.position,Is.EqualTo(world));Assert.That(hero.CurrentFacing,Is.EqualTo(Facing.Left));
@@ -44,13 +44,13 @@ namespace EternalEnigma.Tests
             town=Object.FindFirstObjectByType<Town>();hero=town.TownPlayer.ControllingTownAlly;
             Assert.That(hero.Level,Is.EqualTo(4));Assert.That(hero.Experience,Is.EqualTo(77));Assert.That(hero.TilemapPosition,Is.EqualTo(position));
             Assert.That(Object.FindFirstObjectByType<HomeBed>().IsSleeping,Is.False);
-            DungeonPreferences.AnimationOverride=DungeonAnimationMode.None;writes=harness.Store.Writes;
+            DungeonPreferences.AnimationOverride=DungeonAnimationMode.NoAnimations;writes=harness.Store.Writes;
             Object.FindFirstObjectByType<HomeBed>().SleepAndSave();
             Object.FindFirstObjectByType<HomeBed>().SleepAndSave();
             Assert.That(harness.Store.Writes,Is.EqualTo(writes+1));Assert.That(town.TownPlayer.CutsceneLocked,Is.False);
             common.MessageDialog.Ok_Clicked();yield return null;
             string previous=harness.Store.Json;harness.Store.FailWrites=true;
-            DungeonPreferences.AnimationOverride=DungeonAnimationMode.Current;
+            DungeonPreferences.AnimationOverride=DungeonAnimationMode.Normal;
             bed=Object.FindFirstObjectByType<HomeBed>();bed.SleepAndSave();
             yield return harness.WaitUntil(()=>!bed.IsSleeping,"failed save wake");
             Assert.That(harness.Store.Json,Is.EqualTo(previous));Assert.That(town.TownPlayer.CutsceneLocked,Is.False);
@@ -68,7 +68,7 @@ namespace EternalEnigma.Tests
 
         [UnityTest] public IEnumerator ThreeSeedsHaveAccessibleHomesAndSlotBrowserPreservesCanceledReplacement()
         {
-            DungeonPreferences.AnimationOverride=DungeonAnimationMode.None;
+            DungeonPreferences.AnimationOverride=DungeonAnimationMode.NoAnimations;
             yield return harness.LoadMainMenu(null);
             var common=Common.Instance;
             for(int slot=0;slot<3;slot++)

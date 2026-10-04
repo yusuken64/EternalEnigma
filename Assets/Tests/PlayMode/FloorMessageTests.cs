@@ -49,7 +49,7 @@ public sealed class FloorMessageTests
         message.FloorMessage = label.GetComponent<TextMeshProUGUI>();
         try
         {
-            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Current;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
             message.ShowNewFloor(1);
             Assert.That(message.FloorMessage.text, Is.EqualTo("Floor 1"));
             message.HideScreen(2);
@@ -57,7 +57,7 @@ public sealed class FloorMessageTests
             message.ShowNewFloor(2);
             Assert.That(message.FloorMessage.text, Is.EqualTo("Floor 2"));
 
-            DungeonPreferences.AnimationOverride = DungeonAnimationMode.None;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;
             message.HideScreen(3);
             Assert.That(message.gameObject.activeSelf, Is.True);
             Assert.That(message.FloorMessage.text, Is.EqualTo("Floor 3"));

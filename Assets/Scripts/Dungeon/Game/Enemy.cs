@@ -150,7 +150,7 @@ public class Enemy : Character
 	{
 		if (this == null) { yield break; }
 		yield return action.Visuals.Play(action, this, !action.ShouldAnimate(this));
-		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None && Vitals.HP > 0) PlayIdleAnimation();
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations && Vitals.HP > 0) PlayIdleAnimation();
 
 		action.UpdateDisplayedStats();
 	}

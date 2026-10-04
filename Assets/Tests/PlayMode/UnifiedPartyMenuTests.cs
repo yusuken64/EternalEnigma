@@ -19,7 +19,7 @@ namespace EternalEnigma.Tests
         private bool? fullControl;
         private DungeonAnimationMode? animation;
         private TestInputScope inputScope;
-        [UnitySetUp]public IEnumerator Setup(){inputScope=new TestInputScope();fullControl=DungeonPreferences.FullControlOverride;animation=DungeonPreferences.AnimationOverride;DungeonPreferences.FullControlOverride=false;DungeonPreferences.AnimationOverride=DungeonAnimationMode.None;harness=new GameTestHarness();yield return null;}
+        [UnitySetUp]public IEnumerator Setup(){inputScope=new TestInputScope();fullControl=DungeonPreferences.FullControlOverride;animation=DungeonPreferences.AnimationOverride;DungeonPreferences.FullControlOverride=false;DungeonPreferences.AnimationOverride=DungeonAnimationMode.NoAnimations;harness=new GameTestHarness();yield return null;}
         [UnityTearDown]public IEnumerator Cleanup(){yield return harness.Cleanup();DungeonPreferences.FullControlOverride=fullControl;DungeonPreferences.AnimationOverride=animation;inputScope.Dispose();foreach(var asset in owned)if(asset!=null)Object.DestroyImmediate(asset);owned.Clear();}
         private T Asset<T>() where T:ScriptableObject {var asset=ScriptableObject.CreateInstance<T>();owned.Add(asset);return asset;}
 

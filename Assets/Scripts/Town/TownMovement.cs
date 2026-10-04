@@ -62,7 +62,7 @@ internal class TownMovement : TownAction
 					  (int)Mathf.Clamp(offsetWorld.y, -1, 1),
 					  (int)offsetWorld.z);
 			ally.SetFacing(GetFacing(direction));
-			if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+			if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
 			{
 				ally.transform.position = targetWorld;
 				ally.HeroAnimator?.PlayIdleAnimation();
@@ -73,7 +73,7 @@ internal class TownMovement : TownAction
 			var tween = ally.transform.DOMove(targetWorld, 0.2f);
 			tweens.Add(tween);
 		}
-		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.None)
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
 		{
 			townPlayer.CameraController?.SnapToFollowTarget();
 			yield break;

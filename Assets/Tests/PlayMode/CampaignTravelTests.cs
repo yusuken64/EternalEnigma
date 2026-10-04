@@ -28,7 +28,8 @@ namespace EternalEnigma.Tests
             Assert.That(common.MessageDialog.PromptText.text, Does.Contain("KEY ACQUIRED!").Or.Contain("REWARDS ACQUIRED!"));
             Assert.That(common.MessageDialog.PromptText.text, Does.Contain(common.CampaignContext.Campaign.KeyLabel(key)));
             Assert.That(common.Travel.IsTransitioning, Is.True);
-            Assert.That(SaveSystem.LoadData().Campaign.Keys, Contains.Item(key), "Save the reward before acknowledgement.");
+            Assert.That(common.GameSaveData.Campaign.Keys, Contains.Item(key), "Capture the reward before acknowledgement.");
+            Assert.That(SaveSystem.LoadData().Campaign.Keys, Does.Not.Contain(key), "Victory must not overwrite the explicit save.");
             common.MessageDialog.Ok_Clicked();
             yield return null;
         }
@@ -74,7 +75,8 @@ namespace EternalEnigma.Tests
             Assert.That(game.IsReady, Is.False);
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("DungeonScene"));
             Assert.That(common.Travel.FinishDungeon(true, game.PlayerController), Is.False);
-            var saved = SaveSystem.LoadData();
+            Assert.That(SaveSystem.LoadData().Campaign.Finished, Is.False);
+            var saved = common.GameSaveData;
             Assert.That(saved.Campaign.Finished, Is.True);
             Assert.That(saved.Campaign.PendingDungeon, Is.Empty);
             Assert.That(saved.Campaign.Completed, Contains.Item(context.Campaign.FinalLocationId));
@@ -82,7 +84,7 @@ namespace EternalEnigma.Tests
             game.GameOverScreen.TryAgain_Clicked();
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>() != null, "victory menu");
             yield return null;
-            Assert.That(Object.FindFirstObjectByType<MainMenu>().ContinueButton.activeSelf, Is.False);
+            Assert.That(Object.FindFirstObjectByType<MainMenu>().ContinueButton.activeSelf, Is.True);
             common.Travel.Continue();
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("MainMenu"));
             Assert.That(SaveSystem.LoadData().Campaign.Finished, Is.True);
@@ -155,7 +157,7 @@ namespace EternalEnigma.Tests
             var town = Object.FindFirstObjectByType<Town>();
             Assert.That(context.IsSandbox, Is.False);
             Assert.That(town.Configuration.Id, Is.EqualTo("town-0"));
-            var spawn=town.Configuration.PartySpawn;
+            var spawn=Object.FindFirstObjectByType<HomeBed>().Tile-Vector3Int.up;
             Assert.That(town.TownPlayer.ControllingTownAlly.TilemapPosition, Is.EqualTo(spawn));
             for (int y = 0; y < town.WalkableMap.TileWorldCreator.twcAsset.mapHeight / 2; y++)
                 Assert.That(town.WalkableMap.CanWalkTo(new Vector3Int(spawn.x, y, 0), new Vector3Int(spawn.x, y + 1, 0)), Is.True);
@@ -187,7 +189,8 @@ namespace EternalEnigma.Tests
             Assert.That(context.State.Scene, Is.EqualTo("Town"));
             Assert.That(context.Keys, Contains.Item("Town gate key"));
             Assert.That(context.Resolved, Does.Not.Contain("starter-exit"));
-            var saved = SaveSystem.LoadData();
+            Assert.That(SaveSystem.LoadData().Campaign.Keys, Is.Empty);
+            var saved = common.GameSaveData;
             Assert.That(saved.Campaign.Keys, Contains.Item("Town gate key"));
             Assert.That(saved.TownSaveData.Gold, Is.EqualTo(223));
             var restored = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), saved.Campaign);
@@ -206,12 +209,12 @@ namespace EternalEnigma.Tests
             Assert.That(context.State.Scene, Is.EqualTo("Overworld"));
         }
         [UnityTest]
-        public IEnumerator InterruptedDungeonRestoresEntranceAndPreRunInventoryWhileAbandonmentUsesLossRules()
+        public IEnumerator InterruptedDungeonRestoresExplicitSaveWithoutLossRules()
         {
             yield return StartCampaign();
             var common = Common.Instance; var context = common.CampaignContext;
             common.Travel.EnterTownDungeon(Object.FindFirstObjectByType<Town>(), "story-0"); yield return harness.WaitForIdle();
-            string before = common.GameSaveData.PreRunTownJson;
+            string before = JsonUtility.ToJson(SaveSystem.LoadData().TownSaveData);
             var generator = Game.Instance.DungeonGenerator;
             var layout = generator.TileWorldCreator.GetMapOutputFromBlueprintLayer(generator.FloorLayerName).Cast<bool>().ToArray();
             common.GameSaveData = SaveSystem.LoadData(); // Simulate process restart using disk snapshot.
@@ -222,8 +225,9 @@ namespace EternalEnigma.Tests
             Assert.That(common.Travel.EnterTownDungeon(Object.FindFirstObjectByType<Town>(), "story-0"), Is.True); yield return harness.WaitForIdle();
             generator = Game.Instance.DungeonGenerator;
             Assert.That(generator.TileWorldCreator.GetMapOutputFromBlueprintLayer(generator.FloorLayerName).Cast<bool>(), Is.EqualTo(layout));
-            GameOverScreen.CommitAbandonedRun(Game.Instance.PlayerController);
-            Assert.That(common.GameSaveData.TownSaveData.InventoryItems, Is.Empty);
+            common.GameSaveData = SaveSystem.LoadData();
+            common.Travel.Continue(); yield return WaitTown();
+            Assert.That(JsonUtility.ToJson(common.GameSaveData.TownSaveData), Is.EqualTo(before));
             Assert.That(common.CampaignContext.State.Scene, Is.EqualTo("Town"));
             Assert.That(common.CampaignContext.State.LocationId, Is.EqualTo("town-0"));
             Assert.That(common.CampaignContext.Keys, Is.Empty);
@@ -259,7 +263,8 @@ namespace EternalEnigma.Tests
             Assert.That(common.GameSaveData.TownSaveData.TownSeed, Is.EqualTo(seed));
             Assert.That(town.WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayer("Houses").Cast<bool>(), Is.EqualTo(floor));
             Assert.That(town.TownPlayer.RecruitedAllies.Select(a => a.Id), Contains.Item(id));
-            Assert.That(SaveSystem.LoadData().Roster.Single(a => a.AllyId == id).Skills, Contains.Item("Persistent bench record"));
+            Assert.That(common.GameSaveData.Roster.Single(a => a.AllyId == id).Skills, Contains.Item("Persistent bench record"));
+            Assert.That(SaveSystem.LoadData().Roster.Any(a => a.AllyId == id), Is.False);
         }
         [UnityTest]
         public IEnumerator SandboxClaimsCompletionAndExitNeverWriteThePlayerSave()

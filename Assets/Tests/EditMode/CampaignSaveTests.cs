@@ -9,9 +9,9 @@ namespace EternalEnigma.Tests.CoreIntegration
         {
             public string Json;
             public int Writes;
-            public string Read() => Json;
-            public void Write(string json) { Json = json; Writes++; }
-            public void Clear() => Json = null;
+            public string Read(int slot) => Json;
+            public void Write(int slot, string json) { Json = json; Writes++; }
+            public void Clear(int slot) => Json = null;
         }
         [Test]
         public void StandaloneRunRoundTripsWithoutBecomingACampaign()

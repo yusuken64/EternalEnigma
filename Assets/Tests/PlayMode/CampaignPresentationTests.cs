@@ -24,7 +24,7 @@ namespace EternalEnigma.Tests
         public IEnumerator HeroPickerUsesRealArtworkAndBackDoesNotStartCampaign()
         {
             var menu = Object.FindFirstObjectByType<MainMenu>();
-            menu.StartGame_Clicked();
+            menu.ChooseHero();
             yield return null;
             var picker = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
             Assert.That(picker, Is.Not.Null);

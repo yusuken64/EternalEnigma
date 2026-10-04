@@ -73,7 +73,10 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     {
         if (configuration.Layout != null)
         {
-            Configure(asset, configuration.Layout.Options);
+            var options = configuration.Layout.Options;
+            var interiorFlags = configuration.SlotBuildings.Select(b => b != null && b.HasInterior).ToArray();
+            Configure(asset, new TownPlanOptions(options.Seed, options.Width, options.Height, interiorFlags, options.AllyCount,
+                options.PartySpawn, options.Exit, options.SpineX, options.Detailed));
             return;
         }
         int count = configuration.Buildings.Count;

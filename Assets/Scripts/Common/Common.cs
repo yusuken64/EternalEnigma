@@ -23,17 +23,18 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
     private void OnDestroy() { overworldTerrain?.Clear(); }
     public CampaignTravelService Travel { get; private set; }
     private GameSaveData playerSave;
+    private int playerSlot;
     public void BeginSandbox(int seed)
     {
         EndSandbox();
-        playerSave = GameSaveData;
+        playerSave = GameSaveData; playerSlot = SaveSystem.ActiveSlot;
         GameSaveData = new GameSaveData { IsSandbox = true };
         CampaignContext = new(new(EternalEnigma.Core.Progression.OverworldLaunchMode.Sandbox, seed));
     }
     public void EndSandbox()
     {
         if (CampaignContext?.IsSandbox != true) return;
-        GameSaveData = playerSave; playerSave = null; CampaignContext = null;
+        GameSaveData = playerSave; playerSave = null; SaveSystem.ActiveSlot = playerSlot; CampaignContext = null;
     }
 	internal DemoDungeonLoadout PendingDemoLoadout;
 	public TownConfiguration CurrentTownConfiguration { get; internal set; }
@@ -54,6 +55,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	protected override void Initialize()
 	{
 		LoadData();
+        gameObject.AddComponent<CampaignPlaytime>();
         Travel = new CampaignTravelService(this);
 #if !UNITY_EDITOR
 		SceneManager.LoadScene(1);
@@ -62,7 +64,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 
 	private void LoadData()
 	{
-		GameSaveData = SaveSystem.LoadData();
+		GameSaveData = SaveSystem.Inspect(SaveSystem.ActiveSlot, out _);
         Travel = new CampaignTravelService(this);
 	}
 }

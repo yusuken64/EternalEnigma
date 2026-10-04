@@ -40,9 +40,9 @@ public sealed class AbilityTestLab : MonoBehaviour
 
     sealed class LabSaveStore : ISaveStore
     {
-        public string Read() => null;
-        public void Write(string json) { }
-        public void Clear() { }
+        public string Read(int slot) => null;
+        public void Write(int slot, string json) { }
+        public void Clear(int slot) { }
     }
 
     IEnumerator Start()

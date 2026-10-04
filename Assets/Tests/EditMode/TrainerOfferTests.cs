@@ -63,7 +63,7 @@ public class TrainerOfferTests
         var ally = go.AddComponent<TownAlly>();
         ally.Skills = new List<string>();
         ally.SkillRanks = new List<SkillRankSaveData>();
-        ally.HighestLevel = 1;
+        ally.Level = 1;
         return ally;
     }
 
@@ -158,7 +158,7 @@ public class TrainerOfferTests
         var ally = MakeAlly();
         var cls = MakeClass();
         ally.PrimaryClass = cls;
-        ally.HighestLevel = 1;
+        ally.Level = 1;
 
         var offers = TrainerOffers.Build(ally, MakeTown());
 
@@ -188,7 +188,7 @@ public class TrainerOfferTests
         var ally = MakeAlly();
         ally.PrimaryClass = MakeClass();
         ally.SetRank("T Strike", 1);
-        ally.HighestLevel = 1;
+        ally.Level = 1;
 
         var offers = TrainerOffers.Build(ally, MakeTown());
         var strikeOffer = offers.First(o => o.Skill.SkillName == "T Strike");
@@ -199,7 +199,7 @@ public class TrainerOfferTests
         Assert.IsFalse(strikeOffer.CanLearn);
 
         // Set HighestLevel = 4, rebuild → CanLearn == true
-        ally.HighestLevel = 4;
+        ally.Level = 4;
         offers = TrainerOffers.Build(ally, MakeTown());
         strikeOffer = offers.First(o => o.Skill.SkillName == "T Strike");
         Assert.IsTrue(strikeOffer.CanLearn);
@@ -210,7 +210,7 @@ public class TrainerOfferTests
     {
         var ally = MakeAlly();
         ally.PrimaryClass = MakeClass();
-        ally.HighestLevel = 10; // Rank four is level-eligible; test the point gate independently.
+        ally.Level = 10; // Rank four is level-eligible; test the point gate independently.
         ally.EnsureStartingSkills();
         Assert.AreEqual(20, TrainerOffers.AvailablePoints(ally)); // Novice Training is free
 
@@ -236,7 +236,7 @@ public class TrainerOfferTests
     {
         var ally = MakeAlly();
         ally.PrimaryClass = MakeClass();
-        ally.HighestLevel = 10;
+        ally.Level = 10;
         ally.SetRank("T Novice", 1);
         ally.SetRank("T Strike", 1);
         ally.SetRank("T Guard", 1);
@@ -254,7 +254,7 @@ public class TrainerOfferTests
         Assert.IsTrue(adeptOffer.CanLearn);
 
         // With 4 skills but HighestLevel = 9 → false
-        ally.HighestLevel = 9;
+        ally.Level = 9;
         offers = TrainerOffers.Build(ally, MakeTown());
         adeptOffer = offers.First(o => o.Skill.SkillName == "T Adept");
         Assert.IsFalse(adeptOffer.CanLearn);

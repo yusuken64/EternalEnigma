@@ -160,7 +160,12 @@ public class Game : SingletonMonoBehaviour<Game>
 			ally.InvalidateCachedStats();
 
 			ally.InitialzeVitalsFromStats();
-			ally.Vitals.Level = 1;
+			ally.Vitals.Level = Mathf.Max(1, townAlly.Level);
+            ally.Vitals.Exp = townAlly.Experience;
+            HeroClass.ApplyLevelGrowth(ally.BaseStats, ally.PrimaryClass, ally.Vitals.Level - 1);
+            ally.InvalidateCachedStats();
+            ally.Vitals.HP = ally.FinalStats.HPMax;
+            ally.Vitals.SP = ally.FinalStats.SPMax;
 			// Damage carries over between runs; the inn resets it. -1 (never hurt) and downed allies start at a sane value.
 			if (townAlly.Hp >= 0) ally.Vitals.HP = Mathf.Max(1, townAlly.Hp);
 			if (townAlly.Sp >= 0) ally.Vitals.SP = townAlly.Sp;

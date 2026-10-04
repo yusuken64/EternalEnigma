@@ -2,7 +2,8 @@
 
 `Common` owns `CampaignContext`; `CampaignTravelService` validates travel, captures state
 before transitions and blocks duplicate callbacks until the destination reports ready.
-New Journey chooses an authored hero with fixed classes and starts inside town-0.
+New Journey chooses a slot and authored hero, then starts at the bed in town-0.
+See [campaign saves and artwork](CampaignSaves.md) for the explicit-save contract.
 
 ## Campaign travel
 
@@ -17,39 +18,20 @@ Interior dungeons have `ParentTownId`, share their parent town's overworld tile,
 inside that town. Other victories return to the dungeon marker; ordinary defeats return
 to the last town. Floor ranges by tier are 1-5, 5-10, 10-20, 20-30 and 30-40.
 
-`StartDungeon` captures pre-run town state and explicitly selects visuals, biome, tier and
-whether the run uses biome layouts. The two starter locations use BSP/throne layouts.
-Other campaign runs use biome profiles. Seeds derive from campaign seed/location/floor.
+`StartDungeon` captures live town state in memory and selects the run's biome, tier and visuals.
+The two starter locations use BSP/throne layouts. Seeds derive from campaign seed/location/floor.
+Completion commits rewards to memory once per run. Final victory offers an explicit
+**Save completed campaign** action. Retreat retains loot and progression in memory.
 
-Completion commits once per run. Final victory saves `Finished`, shows the victory screen
-and disables Continue for that campaign. Retreat keeps loot without claiming victory.
+## Save schema
 
-## Current save schema
-
-`SaveSystem` serializes `GameSaveData` directly with Unity `JsonUtility` into the `SaveData`
-PlayerPrefs entry. `ISaveStore` supports isolated tests; nested scopes dispose in reverse order.
-There are no schema versions, older-key rewrites, name-only inventory fallbacks or migrations.
-Incompatible old saves require a new game.
-
-| Data | Contents |
-|---|---|
-| `CampaignSnapshot` | Seed, identity, content fingerprint, scene/location/position, pending run, keys, gate resolutions, rewards, capabilities, party and completion |
-| `TownSaveData` | Configuration/seed, gold, donations, item snapshots, active hero records, shops and restock cycle |
-| `TownAllyData` | Stable ID, name, class IDs, learned skills/ranks, equipment, highest level, carried HP/SP |
-| `DungeonSaveData` | Floor range, biome-layout choice, tier/biome, resolved visual selection, return-commit flag |
-| `GameSaveData.Roster` | Full roster including benched heroes |
-| `PreRunTownJson` | Town state used to recover an interrupted run |
-| `InnSaveJson` | Non-nested full checkpoint taken at the inn |
-
-`HasCampaign` checks for an actual fingerprint because JsonUtility can materialize an empty
-nested snapshot for standalone test runs. Restoring a campaign regenerates its logical content
-and verifies the fingerprint. Generator identifiers remain diagnostic metadata in generated
-worlds, not fields in the save snapshot.
-
-Continue recovers a pending run at its town/overworld entrance and restores pre-run town data
-without granting victory or applying defeat losses. It does not restore floor combat state.
-The defeat recovery button restores `InnSaveJson` when one exists; otherwise ordinary return
-rules apply. Resting and explicitly saving at the inn are separate actions.
+Three new PlayerPrefs keys contain independent campaign snapshots, roster progression,
+active party, possessions, shops, playtime, save-point identity, awake arrival position and
+precomputed visual summaries. The legacy key is untouched and unavailable for Continue.
+Initial creation and explicit home/inn/completion saves are the only persistent writes.
+Quit and defeat restore the selected slot without applying penalties. No nested checkpoint
+or pre-run recovery JSON is stored. Campaign generation/fingerprint validation occurs on
+Continue, never during slot browsing; overworld terrain remains lazy.
 
 ## Party and isolation
 

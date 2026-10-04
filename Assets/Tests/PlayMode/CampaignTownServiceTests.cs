@@ -25,7 +25,7 @@ namespace EternalEnigma.Tests
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "detailed campaign town");
             var town = Object.FindFirstObjectByType<Town>();
             Assert.That(town.Plan.Width, Is.EqualTo(common.CampaignContext.TownLayout("town-0").Options.Width));
-            Assert.That(town.TownPlayer.ControllingTownAlly.TilemapPosition, Is.EqualTo(town.Plan.PartySpawn.ToCell()));
+            Assert.That(town.TownPlayer.ControllingTownAlly.TilemapPosition, Is.EqualTo(Object.FindFirstObjectByType<HomeBed>().Tile - Vector3Int.up));
             foreach (var service in TownServiceCatalog.All)
             {
                 var building = town.TownBuildings.Single(b => b.Definition.Id == service.Id);

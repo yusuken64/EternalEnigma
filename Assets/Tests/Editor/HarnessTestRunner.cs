@@ -221,7 +221,13 @@ public static class HarnessTestRunner
     public static void RunClasses() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.ClassAssignmentTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign")]
-    public static void RunCampaign() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CampaignTravelTests");
+    public static void RunCampaign() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CampaignTravelTests", "EternalEnigma.Tests.CampaignSleepTests", "EternalEnigma.Tests.CampaignTownServiceTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign Slot UI")]
+    public static void RunCampaignSlotUI() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.CampaignSleepTests.ThreeSeedsHaveAccessibleHomesAndSlotBrowserPreservesCanceledReplacement");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign Sleep")]
+    public static void RunCampaignSleep() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.CampaignSleepTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign Saves EditMode")]
+    public static void RunCampaignSavesEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode","CampaignSlotStoreTests","SaveStoreTests","EternalEnigma.Tests.CoreIntegration.CampaignSaveTests","TrainerOfferTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay")]
     public static void RunAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

@@ -1,30 +1,22 @@
-using UnityEngine;
-
-/// <summary>The inn's save point: a full copy of the save taken at the inn, restored when the party is defeated.</summary>
+// Compatibility facade for callers: the selected slot is the only recovery source.
 public static class InnCheckpoint
 {
-    public static bool Exists(GameSaveData save) => save != null && !string.IsNullOrEmpty(save.InnSaveJson);
-
-    public static void Create(Common common)
-    {
-        var save = common.GameSaveData;
-        if (save == null || save.IsSandbox || common.CampaignContext?.IsSandbox == true) return;
-        save.InnSaveJson = null; // never nest the previous checkpoint
-        if (common.CampaignContext != null) save.Campaign = common.CampaignContext.Capture();
-        save.InnSaveJson = JsonUtility.ToJson(save);
-    }
-
-    /// <summary>Replaces the live save with the checkpoint and reloads the town it was taken in. False when there is none.</summary>
+    public static bool Exists(GameSaveData save) => SaveSystem.Inspect(SaveSystem.ActiveSlot, out _)?.HasCampaign == true;
     public static bool TryRestore(Common common)
     {
-        var current = common.GameSaveData;
-        if (!Exists(current) || current.IsSandbox || common.CampaignContext?.IsSandbox == true) return false;
-        string json = current.InnSaveJson;
-        var restored = JsonUtility.FromJson<GameSaveData>(json);
-        restored.InnSaveJson = json; // later deaths return here too
-        common.GameSaveData = restored;
-        SaveSystem.SaveData(restored);
-        common.Travel.Continue();
-        return true;
+        if (common.GameSaveData?.IsSandbox == true || common.CampaignContext?.IsSandbox == true) return false;
+        var restored = SaveSystem.Inspect(SaveSystem.ActiveSlot, out var error);
+        if (restored == null || !restored.HasCampaign || restored.Campaign.Finished) return false;
+        var previous = common.GameSaveData;
+        try
+        {
+            // Validate the complete logical context before replacing live objects.
+            _ = new EternalEnigma.Core.Progression.CampaignContext(new(EternalEnigma.Core.Progression.OverworldLaunchMode.Campaign), restored.Campaign);
+            common.GameSaveData = restored;
+            common.Travel.SceneReady();
+            common.Travel.Continue();
+            return true;
+        }
+        catch (System.Exception) { common.GameSaveData = previous; return false; }
     }
 }

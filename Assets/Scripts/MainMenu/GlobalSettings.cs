@@ -107,12 +107,12 @@ public class GlobalSettings : MonoBehaviour
     {
         if (AutoplayRunner.Active != null && AutoplayRunner.Active.PlayerControlled) { Exit_Clicked(); AutoplayRunner.Active.ExitDemo(); return; }
         if (Common.Instance.CampaignContext != null)
-        { Exit_Clicked(); Common.Instance.Travel.ReturnToMenu(); return; }
+        { CampaignChoice.Show("Return to the main menu? Unsaved progress will be lost.", "Quit without saving", () => { Exit_Clicked(); Common.Instance.Travel.ReturnToMenu(); }); return; }
         var town = FindFirstObjectByType<Town>();
         if (town != null)
         {
             town.WriteSaveData();
-            SaveSystem.SaveData(Common.Instance.GameSaveData);
+            SaveSystem.Capture(Common.Instance);
         }
         else
         {

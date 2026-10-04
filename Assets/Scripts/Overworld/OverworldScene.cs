@@ -407,7 +407,7 @@ public sealed class OverworldScene : MonoBehaviour
     }
     private void SaveProgress()
     {
-        if (!Context.IsSandbox) SaveSystem.SaveData(Common.Instance.GameSaveData);
+        if (!Context.IsSandbox) SaveSystem.Capture(Common.Instance);
     }
     public bool SimulateDungeonVictory()
     {

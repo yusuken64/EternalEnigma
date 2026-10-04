@@ -857,8 +857,8 @@ public sealed class AutoplayRunner : MonoBehaviour
     {
         private string json; private readonly string path;
         public AutoplayStore(string directory) { path = Path.Combine(directory,"save.json"); }
-        public string Read() => json;
-        public void Write(string value) { json = value; File.WriteAllText(path,value); }
-        public void Clear() { json = null; }
+        public string Read(int slot) => json;
+        public void Write(int slot, string value) { json = value; File.WriteAllText(path,value); }
+        public void Clear(int slot) { json = null; }
     }
 }

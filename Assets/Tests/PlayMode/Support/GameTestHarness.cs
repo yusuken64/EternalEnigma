@@ -260,10 +260,13 @@ public sealed class GameTestHarness
 
 public sealed class MemorySaveStore : ISaveStore
 {
-    public string Json { get; private set; }
-    public string Read() => Json;
-    public void Write(string json) => Json = json;
-    public void Clear() => Json = null;
+    private readonly string[] slots = new string[SaveSystem.SlotCount];
+    public string Json => slots[SaveSystem.ActiveSlot];
+    public int Writes { get; private set; }
+    public bool FailWrites;
+    public string Read(int slot = 0) => slots[slot];
+    public void Write(int slot, string json) { if(FailWrites) throw new System.IO.IOException("Injected save failure"); slots[slot] = json; Writes++; }
+    public void Clear(int slot) => slots[slot] = null;
 }
 
 // Synthetic keyboard/mouse events must reach Play Mode even when the Test Runner has focus.

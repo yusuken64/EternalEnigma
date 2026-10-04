@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ef5c743f03ca3448a551bd2d5169da, type: 3}
+  m_Name: CampaignBackgrounds
+  m_EditorClassIdentifier: EternalEnigma.Game::BiomeBackgroundCatalog
+  Neutral: {fileID: 2800000, guid: 01a2dceaef316a245ae43108e26923e6, type: 3}
+  Backgrounds:
+  - Biome: 0
+    Texture: {fileID: 2800000, guid: ddf81c3898de173458feb7377cbd623d, type: 3}
+  - Biome: 1
+    Texture: {fileID: 2800000, guid: 017128ac3aa1e5043a4a11e0e93a385d, type: 3}
+  - Biome: 2
+    Texture: {fileID: 2800000, guid: 586f2791ea6ab4a44b65619ebb5714f1, type: 3}
+  - Biome: 3
+    Texture: {fileID: 2800000, guid: 0948a649351e61c40bc4ad4b86967c96, type: 3}
+  - Biome: 4
+    Texture: {fileID: 2800000, guid: fd1c9c24a3f519143a07b0494e302e0a, type: 3}
+  - Biome: 5
+    Texture: {fileID: 2800000, guid: c2282a809d3eb8942abdd4621ef0c345, type: 3}
+  - Biome: 6
+    Texture: {fileID: 2800000, guid: aaba749bd59c3d849bcf2e9f545aaf66, type: 3}
+  - Biome: 7
+    Texture: {fileID: 2800000, guid: ef741822babc7e74e8c59f68d3390bc4, type: 3}

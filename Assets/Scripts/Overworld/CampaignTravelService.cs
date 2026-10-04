@@ -23,21 +23,17 @@ public sealed class CampaignTravelService
         save.Roster = save.TownSaveData.RecruitedAlliesData.ToList();
         Context.Roster.UnionWith(save.Roster.Skip(1).Select(a => a.AllyId));
         Context.SetParty(save.Roster.Skip(1).Select(a => a.AllyId).ToArray());
+        save.NeedsInitialSave = true;
         EnterLocation();
     }
     public void Continue()
     {
         if (transitioning) return;
         var save = common.GameSaveData;
+        if (save == null) return;
         if (!save.HasCampaign) { common.CampaignContext = null; transitioning = true; TownSceneLoader.Load(TownSceneLoader.ResolveSaved()); return; }
         if (save.Campaign.Finished) return;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
-        if (Context.RecoverInterruptedRun())
-        {
-            if (!string.IsNullOrEmpty(save.PreRunTownJson)) save.TownSaveData = JsonUtility.FromJson<TownSaveData>(save.PreRunTownJson);
-            save.PreRunTownJson = null;
-            save.DungeonSaveData.ReturnCommitted = true;
-        }
         CampaignParty.ClearLiveParty(common);
         if (Context.State.Scene == "Town") PrepareTown(Context.State.LocationId);
         Load(Context.State.Scene);
@@ -68,7 +64,6 @@ public sealed class CampaignTravelService
     private void StartDungeon(CampaignLocation location, DungeonEncounterVisualSettings visuals)
     {
         var floors = CampaignContext.Floors(location.Tier);
-        common.GameSaveData.PreRunTownJson = JsonUtility.ToJson(common.GameSaveData.TownSaveData);
         common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = floors.Start, EndFloor = floors.End };
         common.GameSaveData.DungeonSaveData.VisualSelection = DungeonVisualSelection.Resolve(Context, visuals);
         var run = common.GameSaveData.DungeonSaveData;
@@ -98,9 +93,8 @@ public sealed class CampaignTravelService
             .Select(DescribeCapabilityReward).ToArray();
         CampaignParty.ClearLiveParty(common);
         CampaignParty.Capture(common);
-        common.GameSaveData.PreRunTownJson = null;
         if (Context.State.Scene == "Town") PrepareTown(Context.State.LocationId);
-        SaveSystem.SaveData(common.GameSaveData);
+        SaveSystem.Capture(common);
         if (travel)
         {
             void ContinueTravel()
@@ -227,15 +221,7 @@ public sealed class CampaignTravelService
         if (AutoplayRunner.Active != null && AutoplayRunner.Active.PlayerControlled) { AutoplayRunner.Active.ExitDemo(); return true; }
         if (transitioning || Context == null) return false;
         if (Context.IsSandbox) common.EndSandbox();
-        else
-        {
-            var dungeon = UnityEngine.Object.FindFirstObjectByType<Game>();
-            if (Context.State.PendingDungeon.Length != 0 && dungeon != null)
-                FinishDungeon(false, dungeon.PlayerController, false);
-            var town = UnityEngine.Object.FindFirstObjectByType<Town>();
-            if (town != null) town.WriteSaveData();
-            SaveSystem.SaveData(common.GameSaveData);
-        }
+        else { common.GameSaveData = SaveSystem.Inspect(SaveSystem.ActiveSlot, out _); common.CampaignContext = null; }
         CampaignParty.ClearLiveParty(common);
         transitioning = true;
         common.ScreenTransition.DoTransition(() => SceneManager.LoadScene("MainMenu"));
@@ -256,7 +242,7 @@ public sealed class CampaignTravelService
     {
         if (transitioning) return;
         transitioning = true; Context.State.Scene = scene;
-        SaveSystem.SaveData(common.GameSaveData);
+        SaveSystem.Capture(common);
         if(scene=="Town")destinationTitle=Context.GetTownDisplayName(Context.State.LocationId);
         common.ScreenTransition.DoTransition(() => SceneManager.LoadScene(scene), autoOpen: false, destinationTitle: destinationTitle);
     }

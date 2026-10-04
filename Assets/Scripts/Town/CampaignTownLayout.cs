@@ -28,6 +28,14 @@ public static class CampaignTownLayout
                 throw new InvalidOperationException($"Town service '{service.Id}' requires one authored interior definition.");
             slots[i] = matches[0];
         }
+        if (configuration.Id == "town-0")
+        {
+            int home = Array.FindIndex(slots, d => d == null);
+            if (home < 0) throw new InvalidOperationException("Starting town requires a residential home.");
+            var definition = UnityEngine.Object.Instantiate(definitions.Single(d => d.Id == "inn"));
+            definition.Id = "home"; definition.DisplayName = "Home"; definition.DialogId = "home";
+            slots[home] = definition;
+        }
         configuration.Layout = layout;
         configuration.SlotBuildings = slots;
         configuration.Buildings = slots.Where(d => d != null).ToList();

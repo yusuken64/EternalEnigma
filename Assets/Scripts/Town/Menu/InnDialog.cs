@@ -21,7 +21,7 @@ public class InnDialog : Dialog
         GameUISkin.Label(panel.transform, "Inn", new Vector2(.08f, .78f), new Vector2(.92f, .94f), 34);
         dialog.StatusText = GameUISkin.Label(panel.transform, "", new Vector2(.08f, .57f), new Vector2(.92f, .77f));
         dialog.RestButton = GameUISkin.Button(panel.transform, "Rest (free)", new Vector2(.1f, .39f), new Vector2(.9f, .53f), dialog.Rest_Clicked);
-        dialog.SaveButton = GameUISkin.Button(panel.transform, "Save checkpoint", new Vector2(.1f, .22f), new Vector2(.9f, .36f), dialog.Save_Clicked);
+        dialog.SaveButton = GameUISkin.Button(panel.transform, "Save game", new Vector2(.1f, .22f), new Vector2(.9f, .36f), dialog.Save_Clicked);
         dialog.CancelButton = GameUISkin.Button(panel.transform, "Back", new Vector2(.1f, .05f), new Vector2(.9f, .19f), dialog.Cancel_Clicked);
         panel.gameObject.SetActive(false);
         return dialog;
@@ -44,9 +44,9 @@ public class InnDialog : Dialog
 
     public void Save_Clicked()
     {
-        services.SaveGame(out _);
+        bool saved = services.SaveGame(out var error);
         CloseDialog();
-        TownMenu.ShowMessage("Game saved.");
+        TownMenu.ShowMessage(saved ? "Game saved." : error);
     }
 
     public void Cancel_Clicked() => CloseDialog();

@@ -20,6 +20,7 @@ public class Town : MonoBehaviour
     public List<ShopVendor> ShopVendors = new();
     private readonly List<GameObject> shopWalls = new();
     public bool IsReady { get; private set; }
+    private string arrivalHeroId;
     public TownPlan Plan { get; private set; }
     private bool finishingGeneration;
 
@@ -77,7 +78,7 @@ public class Town : MonoBehaviour
                 SkillRanks = (ally.SkillRanks ?? new List<SkillRankSaveData>())
                     .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                     .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList(),
-                HighestLevel = Mathf.Max(1, ally.HighestLevel),
+                HighestLevel = Mathf.Max(1, ally.HighestLevel), Level = ally.Level, Experience = ally.Experience,
                 Hp = ally.Hp, Sp = ally.Sp
             })).ToList();
         CampaignParty.Capture(Common.Instance);
@@ -86,7 +87,7 @@ public class Town : MonoBehaviour
     public void SaveProgress()
     {
         WriteSaveData();
-        SaveSystem.SaveData(Common.Instance.GameSaveData);
+        SaveSystem.Capture(Common.Instance);
     }
 
     public void RefreshCampaignParty()
@@ -107,9 +108,36 @@ public class Town : MonoBehaviour
             Destroy(child.gameObject);
 		}
 
+        arrivalHeroId = null;
         //restore allies
         var startPosition = Configuration.PartySpawn;
-        TownPlayer.WalkPositionHistory = new() { startPosition };
+        Facing arrivalFacing = Facing.Down;
+        var campaignSave = Common.Instance.GameSaveData;
+        if (campaignSave.NeedsInitialSave && Configuration.Id == "town-0") startPosition = GetComponentInChildren<HomeBed>().Tile - Vector3Int.up;
+        else if (campaignSave.HasArrival && campaignSave.ArrivalTownId == Configuration.Id)
+        {
+            startPosition = new Vector3Int(campaignSave.ArrivalX, campaignSave.ArrivalY, 0);
+            arrivalFacing = campaignSave.ArrivalFacing; arrivalHeroId = campaignSave.ArrivalHeroId;
+            campaignSave.HasArrival = false;
+        }
+        var formation = new List<Vector3Int> { startPosition };
+        foreach(var direction in new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up})
+        {
+            var cell=startPosition+direction;
+            if(GridMovement.CanStep(startPosition,cell,c => Plan.Layers[TownLayers.Walkable].At(c.ToGridPoint())) && !ShopVendors.Any(v=>v.TilemapPosition==cell) &&
+                !GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell)) formation.Add(cell);
+        }
+        // Extend along walkable adjacent cells until a four-member arrival fits.
+        for(int i=0;i<formation.Count && formation.Count<4;i++)
+            foreach(var direction in new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up})
+            {
+                var cell=formation[i]+direction;
+                if(!formation.Contains(cell) && GridMovement.CanStep(formation[i],cell,c => Plan.Layers[TownLayers.Walkable].At(c.ToGridPoint())) && !ShopVendors.Any(v=>v.TilemapPosition==cell) &&
+                    !GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell)) formation.Add(cell);
+                if(formation.Count>=4) break;
+            }
+        TownPlayer.WalkPositionHistory = formation.Take(4).Reverse().ToList();
+        int formationIndex = 1;
         var previousAllies = Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData;
         if (previousAllies.Count == 0)
             previousAllies.AddRange(Configuration.StartingParty.Select(a => HeroClassBinding.FromPrefab(a,
@@ -122,13 +150,16 @@ public class Town : MonoBehaviour
             if (Common.Instance.CampaignContext != null) allyInstance.Id = allyData.AllyId;
             HeroClassBinding.Apply(allyInstance, allyData, Common.Instance.GameSaveData);
             AllyRecruitDialog.Recruit(this, allyInstance);
-            allyInstance.TilemapPosition = startPosition;
+            bool leader = allyData.AllyId == (arrivalHeroId ?? campaignSave.ProtagonistId) || previousAllies.Count == 1;
+            allyInstance.TilemapPosition = leader ? startPosition : formation[Mathf.Min(formationIndex++,formation.Count-1)];
+            allyInstance.SetFacing(arrivalFacing);
             allyInstance.transform.position = WalkableMap.CellToWorld(allyInstance.TilemapPosition);
             allyInstance.Skills = allyData.Skills != null ? new List<string>(allyData.Skills) : new();
             allyInstance.SkillRanks = (allyData.SkillRanks ?? new List<SkillRankSaveData>())
                 .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                 .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList();
             allyInstance.HighestLevel = Mathf.Max(1, allyData.HighestLevel);
+            allyInstance.Level = Mathf.Max(1, allyData.Level); allyInstance.Experience = allyData.Experience;
             allyInstance.Hp = allyData.Hp; allyInstance.Sp = allyData.Sp;
             allyInstance.RecruitCost = Configuration.Recruits.FirstOrDefault(r => r.Ally == prefab)?.Cost ?? 0;
             foreach (var item in allyData.Equipment ?? new())
@@ -191,6 +222,12 @@ public class Town : MonoBehaviour
                 continue;
             }
             var anchorCell = anchor.ToCell();
+            if (building.Definition.Id == "home")
+            {
+                HomeBed.Create(this, anchorCell);
+                building.HasInterior = true;
+                continue;
+            }
 
             var vendor = building.Definition.VendorPrefab != null
                 ? Instantiate(building.Definition.VendorPrefab, transform)
@@ -245,6 +282,7 @@ public class Town : MonoBehaviour
 
         Debug.Log("Initialize Player");
         TownPlayer.Initialize();
+        TownPlayer.SelectAlly(arrivalHeroId ?? Common.Instance.GameSaveData.ProtagonistId);
 
         // Let newly spawned actors finish Start before placing the camera.
         yield return null;
@@ -253,6 +291,13 @@ public class Town : MonoBehaviour
             yield return null;
         camera.SnapToFollowTarget();
         IsReady = true;
+        if (Common.Instance.GameSaveData.NeedsInitialSave)
+        {
+            WriteSaveData();
+            var hero = TownPlayer.ControllingTownAlly;
+            if (!CampaignSaving.Commit(Common.Instance, "town-0/home", hero.TilemapPosition, hero.CurrentFacing, out var error))
+                TownMenu.ShowMessage(error);
+        }
         ScenePresentation.RegisterWorld(WalkableMap.TileWorldCreator.worldObject.transform);
 
         Debug.Log("Town done");

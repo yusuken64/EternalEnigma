@@ -36,7 +36,7 @@ public static class TrainerOffers
     public static int AvailablePoints(TownAlly ally)
     {
         if (ally == null || ally.PrimaryClass == null) return 0;
-        return SkillLearningRules.AvailablePoints(HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass), ally.ToLearnedSkills(), ally.HighestLevel);
+        return SkillLearningRules.AvailablePoints(HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass), ally.ToLearnedSkills(), ally.Level);
     }
 
     public static TrainerOffer Find(TownAlly ally, TownConfiguration configuration, Skill skill) =>
@@ -65,14 +65,14 @@ public static class TrainerOffers
     {
         var kit = HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass);
         var learned = ally.ToLearnedSkills();
-        int points = SkillLearningRules.AvailablePoints(kit, learned, ally.HighestLevel);
+        int points = SkillLearningRules.AvailablePoints(kit, learned, ally.Level);
         var rows = new List<(int order, TrainerOffer offer)>();
         int order = 0;
         foreach (var offer in SkillLearningRules.Offers(kit))
         {
             var skill = Resolve(offer.Source == ClassSource.Primary ? ally.PrimaryClass : ally.SecondaryClass, offer.SkillId);
             if (skill == null) continue;
-            var check = SkillLearningRules.CheckNextRank(kit, learned, ally.HighestLevel, offer.SkillId, skill.LearnCost, points);
+            var check = SkillLearningRules.CheckNextRank(kit, learned, ally.Level, offer.SkillId, skill.LearnCost, points);
             int current = ally.GetRank(offer.SkillId);
             rows.Add((order++, new TrainerOffer
             {

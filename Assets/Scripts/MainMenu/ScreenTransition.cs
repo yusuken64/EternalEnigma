@@ -130,6 +130,20 @@ public class ScreenTransition : MonoBehaviour
         BlockScreen.gameObject.SetActive(false);
     }
 
+    public IEnumerator FadeTo(float alpha, float seconds)
+    {
+        SetDestinationTitle(null);
+        BlockScreen.SetActive(true); ShutterScreen.gameObject.SetActive(true);
+        float start = ShutterScreen.color.a;
+        for (float elapsed=0; elapsed<seconds; elapsed+=Time.unscaledDeltaTime)
+        { ShutterScreen.color = new Color(0,0,0,Mathf.Lerp(start,alpha,elapsed/seconds)); yield return null; }
+        ShutterScreen.color = new Color(0,0,0,alpha);
+    }
+    public void ReleaseFade()
+    {
+        ShutterScreen.color = Color.clear;
+        ShutterScreen.gameObject.SetActive(false); BlockScreen.SetActive(false);
+    }
     [ContextMenu("Test Transition")]
     public void TestTransition()
     {

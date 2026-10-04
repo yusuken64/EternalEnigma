@@ -53,13 +53,12 @@ namespace EternalEnigma.Tests
             var definition=Asset<UsableItemDefinition>();definition.ItemName="Recovery test";definition.ItemEffectDefinition=effect;
             var first=definition.AsInventoryItem(null);var duplicate=definition.AsInventoryItem(null);
             town.TownPlayer.Inventory.Add(first);town.TownPlayer.Inventory.Add(duplicate);
-            Common.Instance.GameSaveData.InnSaveJson="checkpoint-marker";Common.Instance.GameSaveData.PreRunTownJson="rollback-marker";
+            var checkpoint = JsonUtility.ToJson(SaveSystem.LoadData());
             var service=new TownUtilityService(town.TownPlayer.RecruitedAllies,town.TownPlayer.Inventory,town.SaveProgress);
             Assert.That(service.Execute(caster,null,duplicate,caster,null,out _),Is.True);
             Assert.That(caster.Hp,Is.EqualTo(6));Assert.That(town.TownPlayer.Inventory.Contains(first),Is.True);Assert.That(town.TownPlayer.Inventory.Contains(duplicate),Is.False);
             Assert.That(service.Execute(caster,null,duplicate,caster,null,out _),Is.False);
-            Assert.That(Common.Instance.GameSaveData.InnSaveJson,Is.EqualTo("checkpoint-marker"));
-            Assert.That(Common.Instance.GameSaveData.PreRunTownJson,Is.EqualTo("rollback-marker"));
+            Assert.That(JsonUtility.ToJson(SaveSystem.LoadData()),Is.EqualTo(checkpoint));
             effect.VitalModification.Hunger=1;Assert.That(service.Describe(caster,null,first,out _,out _),Is.False);
             effect.VitalModification.Hunger=0;caster.Hp=-1;Assert.That(service.Describe(caster,null,first,out _,out _),Is.False);
 
@@ -74,7 +73,7 @@ namespace EternalEnigma.Tests
             var town=Object.FindFirstObjectByType<Town>();var caster=town.TownPlayer.RecruitedAllies[0];
             var skill=Asset<Skill>();skill.SkillName="Town test heal";skill.SPCost=2;skill.Targeting=SkillTargeting.Self;
             skill.TargetSelector=new TargetSelector{Team=TargetTeam.Self,Area=TargetArea.Self};skill.ActionEffects=new(){new ScaledHealAction{BaseHeal=3,PerLevel=1}};
-            caster.SetRank(skill.SkillName,3);caster.Hp=1;caster.Sp=0;caster.HighestLevel=5;
+            caster.SetRank(skill.SkillName,3);caster.Hp=1;caster.Sp=0;caster.Level=5;
             int saves=0;var service=new TownUtilityService(town.TownPlayer.RecruitedAllies,town.TownPlayer.Inventory,()=>saves++);
             Assert.That(service.Execute(caster,skill,null,caster,null,out _),Is.False);Assert.That(caster.Hp,Is.EqualTo(1));Assert.That(saves,Is.Zero);
             caster.Sp=-1;skill.ActionEffects.Add(new RestoreSPAction{Amount=-1});
@@ -139,7 +138,7 @@ namespace EternalEnigma.Tests
                 .First(d=>HeroClass.AllowsItem(hero.PrimaryClass,hero.SecondaryClass,new EquipableInventoryItem(d)));
             var first=authored.AsInventoryItem(null);var second=authored.AsInventoryItem(null);
             town.TownPlayer.Inventory.Add(first);town.TownPlayer.Inventory.Add(second);town.SaveProgress();
-            common.GameSaveData.InnSaveJson="checkpoint";common.GameSaveData.PreRunTownJson="rollback";
+            var checkpoint = JsonUtility.ToJson(SaveSystem.LoadData());
             var context=common.CampaignContext;Assert.That(context.BeginTownDungeon("story-0"),Is.True);Assert.That(context.CompleteDungeon(true),Is.True);
             Assert.That(common.Travel.ExitTown(town),Is.True);
             yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<OverworldScene>()?.IsReady==true,"overworld");
@@ -151,10 +150,10 @@ namespace EternalEnigma.Tests
             manager.PartyMenu.Setup(adapter,PartyMenuTab.Inventory,inspected.Id);
             adapter.Actions(inspected,copies[1]).Single().Execute(manager.PartyMenu);
             Assert.That(inspected.Equipment.IsEquipped(copies[1].Item),Is.True);Assert.That(inspected.Equipment.IsEquipped(copies[0].Item),Is.False);
-            var saved=SaveSystem.LoadData();Assert.That(saved.TownSaveData.InventoryItems.Count(i=>i.ItemName==authored.ItemName),Is.EqualTo(1));
+            var saved=common.GameSaveData;Assert.That(saved.TownSaveData.InventoryItems.Count(i=>i.ItemName==authored.ItemName),Is.EqualTo(1));
             Assert.That(saved.TownSaveData.RecruitedAlliesData[0].Equipment.Count(i=>i.ItemName==authored.ItemName),Is.EqualTo(1));
             Assert.That(saved.Roster.Single(r=>r.AllyId==inspected.Id).Equipment.Count(i=>i.ItemName==authored.ItemName),Is.EqualTo(1));
-            Assert.That(saved.InnSaveJson,Is.EqualTo("checkpoint"));Assert.That(saved.PreRunTownJson,Is.EqualTo("rollback"));
+            Assert.That(JsonUtility.ToJson(SaveSystem.LoadData()),Is.EqualTo(checkpoint));
             manager.PartyMenu.CloseDialog();adapter.Dispose();
             common.GameSaveData=saved;
             var reloaded=new OverworldPartyMenuContext(world);Assert.That(reloaded.Heroes[0].Equipment.GetEquippedItems().Single().ItemName,Is.EqualTo(authored.ItemName));

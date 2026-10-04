@@ -61,20 +61,28 @@ public class GameOverScreen : Dialog
 		if (label != null)
 		{
 			_defaultButtonText ??= label.text;
-			label.text = victory ? "Main Menu" : _defaultButtonText;
+			label.text = victory ? "Save completed campaign" : "Load last save";
 		}
 
 		var nav = OkButton.navigation;
 		nav.mode = Navigation.Mode.None;
 		OkButton.navigation = nav;
+        if (transform.Find("Campaign main menu") == null)
+        { var back = GameUISkin.Button(transform,"Main menu",new Vector2(.35f,.08f),new Vector2(.65f,.16f),Quit_Clicked); back.name = "Campaign main menu"; }
+        OkButton.navigation = new Navigation { mode = Navigation.Mode.Automatic };
 		OkButton.Select();
 	}
 
 	public void TryAgain_Clicked()
 	{
-		if (_victory) { Common.Instance.Travel.ReturnToMenu(); return; }
+		if (_victory) {
+            if (CampaignSaving.Commit(Common.Instance, "completed", null, Facing.Down, out var error)) Common.Instance.Travel.ReturnToMenu();
+            else MessageText.text = error;
+            return;
+        }
 		// A defeat rewinds to the last inn save when there is one.
 		if (InnCheckpoint.TryRestore(Common.Instance)) return;
+        if (Common.Instance.CampaignContext != null) { MessageText.text = "Last save could not be loaded. Return to the main menu."; return; }
 		GoBackToTown(false, _playerController);
 	}
 
@@ -85,7 +93,7 @@ public class GameOverScreen : Dialog
         var configuration = TownSceneLoader.ResolveSaved();
         DungeonReturnService.Commit(common.GameSaveData, configuration, isWin,
             playerController.Gold, playerController.Inventory.InventoryItems, PartyRules.PartyMembers(Game.Instance));
-        SaveSystem.SaveData(common.GameSaveData);
+        SaveSystem.Capture(common);
         TownSceneLoader.Load(configuration);
 	}
 
@@ -97,7 +105,7 @@ public class GameOverScreen : Dialog
 		var configuration = TownSceneLoader.ResolveSaved();
 		DungeonReturnService.Commit(common.GameSaveData, configuration, false,
 			playerController.Gold, playerController.Inventory.InventoryItems, Game.Instance.Allies, keepLoot: true);
-		SaveSystem.SaveData(common.GameSaveData);
+		SaveSystem.Capture(common);
 		TownSceneLoader.Load(configuration);
 	}
 
@@ -115,10 +123,10 @@ public class GameOverScreen : Dialog
     public static void CommitAbandonedRun(PlayerController player)
     {
         var common = Common.Instance;
-        if (common.CampaignContext != null) { common.Travel.FinishDungeon(false, player, false); return; }
+        if (common.CampaignContext != null) { common.GameSaveData = SaveSystem.LoadData(); common.CampaignContext = null; return; }
         DungeonReturnService.Commit(common.GameSaveData, TownSceneLoader.ResolveSaved(), false,
             player.Gold, player.Inventory.InventoryItems, PartyRules.PartyMembers(Game.Instance));
-        SaveSystem.SaveData(common.GameSaveData);
+        SaveSystem.Capture(common);
     }
 
 	internal override void SetFirstSelect()

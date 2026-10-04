@@ -161,8 +161,8 @@ public class SkillRankTests
     private sealed class Store : ISaveStore
     {
         public string Json;
-        public string Read() => Json;
-        public void Write(string json) => Json = json;
-        public void Clear() => Json = null;
+        public string Read(int slot) => Json;
+        public void Write(int slot, string json) => Json = json;
+        public void Clear(int slot) => Json = null;
     }
 }

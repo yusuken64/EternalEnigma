@@ -10,9 +10,17 @@ public class GameSaveData
     public bool HasCampaign => !string.IsNullOrEmpty(Campaign?.Fingerprint);
     public List<TownAllyData> Roster = new();
     public string ProtagonistId;
-    public string PreRunTownJson;
-    // Full copy of this save as of the last inn save; a defeat restores it. Never nested.
-    public string InnSaveJson;
+    public double PlaytimeSeconds;
+    public string SavedUtc;
+    public string SavePointId;
+    public string ArrivalTownId;
+    public string ArrivalHeroId;
+    public bool HasArrival;
+    public int ArrivalX, ArrivalY;
+    public Facing ArrivalFacing;
+    public List<string> VisitedRegions = new();
+    public CampaignSaveSummary Summary;
+    [NonSerialized] public bool NeedsInitialSave;
 	public TownSaveData TownSaveData = new();
 	public DungeonSaveData DungeonSaveData = new();
 }
@@ -58,6 +66,8 @@ public class TownAllyData
 	public List<SkillRankSaveData> SkillRanks = new();
 	// Highest dungeon level this hero has reached; gates trainer ranks and tiers.
 	public int HighestLevel = 1;
+    public int Level = 1;
+    public int Experience;
 	// Persisted vitals carried between dungeon runs; -1 means full (never set, or restored by the inn).
 	public int Hp = -1;
 	public int Sp = -1;

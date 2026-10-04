@@ -93,7 +93,7 @@ public sealed class CampaignHUD : MonoBehaviour
         }
         else if (Town != null)
         {
-            ready &= Town.IsReady && common.CampaignContext != null && (townMenus == null || !townMenus.Opened);
+            ready &= Town.IsReady && !Town.TownPlayer.CutsceneLocked && common.CampaignContext != null && (townMenus == null || !townMenus.Opened);
             message.transform.parent.gameObject.SetActive(ready);
             if (!ready) { if (IsPartyOpen) SetPartyOpen(false); return; }
             // B opens the party from town; once open, the dialog owns B as Back.

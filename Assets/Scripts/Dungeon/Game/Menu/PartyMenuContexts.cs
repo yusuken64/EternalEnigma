@@ -115,7 +115,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
     }
     public static void RestoreHero(TownAlly live,TownAllyData data)
     {
-        live.Id=data.AllyId;live.Name=data.AllyName;live.Hp=data.Hp;live.Sp=data.Sp;live.HighestLevel=data.HighestLevel;
+        live.Id=data.AllyId;live.Name=data.AllyName;live.Hp=data.Hp;live.Sp=data.Sp;live.HighestLevel=data.HighestLevel;live.Level=data.Level;live.Experience=data.Experience;
         live.Skills=data.Skills?.ToList()??new();live.SkillRanks=data.SkillRanks?.Select(r=>new SkillRankSaveData{SkillName=r.SkillName,Rank=r.Rank}).ToList()??new();
         HeroClassBinding.Apply(live,data,Common.Instance.GameSaveData);
         foreach(var previous in live.Equipment.GetEquippedItems().ToArray())live.Equipment.UnEquip(previous);
@@ -139,8 +139,8 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
             data.Equipment=ItemSaveData.Capture(hero.Equipment.GetEquippedItems());
             CampaignParty.Capture(common);
             hero.TownActor.RefreshEquipmentVisuals();
-            SaveSystem.SaveData(save);
-            menu.Complete("Equipment saved.");
+            SaveSystem.Capture(Common.Instance);
+            menu.Complete("Equipment changed.");
         }}};
     }
 }

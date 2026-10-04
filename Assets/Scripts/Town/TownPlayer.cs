@@ -16,6 +16,7 @@ public class TownPlayer : MonoBehaviour
 	private bool _busy;
 	private bool _menuBusy;
 	public bool IsBusy => _busy;
+    public bool CutsceneLocked;
 	public WalkableMap WalkableMap;
 
 	public int Gold;
@@ -65,7 +66,8 @@ public class TownPlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (AutoplayRunner.BlocksPlayerInput) { UpdateUI(); return; }
+		if (CutsceneLocked) return;
+        if (AutoplayRunner.BlocksPlayerInput) { UpdateUI(); return; }
 		if (Common.Instance.Travel.IsTransitioning || MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
 		UpdateUI();
 		if (!initialied) { return; }
@@ -152,7 +154,8 @@ public class TownPlayer : MonoBehaviour
 			if (!PlayerInputHandler.Instance.holdPosition)
 			{
 				if (WalkableMap.CanWalkTo(originalPosition, newMapPosition) &&
-					!FindFirstObjectByType<Town>().ShopVendors.Any(v => v.TilemapPosition == newMapPosition))
+					!FindFirstObjectByType<Town>().ShopVendors.Any(v => v.TilemapPosition == newMapPosition) &&
+                    !FindObjectsByType<HomeBed>(FindObjectsSortMode.None).Any(b => b.Tile == newMapPosition))
 				{
 					SetAction(new TownMovement(this, originalPosition, newMapPosition));
 					holdTime = 0f;
@@ -173,6 +176,8 @@ public class TownPlayer : MonoBehaviour
 			var originalPosition = ControllingTownAlly.TilemapPosition;
 			var targetMapPosition = originalPosition + offset;
 
+            var bed = FindObjectsByType<HomeBed>(FindObjectsSortMode.None).FirstOrDefault(b => b.Tile == targetMapPosition);
+            if (bed != null) { bed.Interact(); return; }
 			var targetingAlly = RecruitedAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
 			if (targetingAlly != null)
 			{
@@ -222,6 +227,13 @@ public class TownPlayer : MonoBehaviour
         if (!RecruitedAllies.Contains(ControllingTownAlly)) CycleAlly();
     }
 
+    internal void SelectAlly(string id)
+    {
+        int index=RecruitedAllies.FindIndex(a=>a.Id==id);
+        if(index<0) index=0;
+        allyIndex=index-1;
+        CycleAlly();
+    }
 	private void CycleAlly()
 	{
 		if (RecruitedAllies == null || RecruitedAllies.Count == 0)

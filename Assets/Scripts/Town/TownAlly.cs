@@ -18,6 +18,8 @@ public class TownAlly : TownCharacter
 	public List<SkillRankSaveData> SkillRanks = new();
 	// Highest dungeon level reached; the trainer's level gate.
 	[Min(1)] public int HighestLevel = 1;
+    public int Level = 1;
+    public int Experience;
 	// Vitals carried between dungeon runs; -1 means full.
 	public int Hp = -1;
 	public int Sp = -1;

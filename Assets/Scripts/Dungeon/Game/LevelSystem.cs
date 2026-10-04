@@ -16,9 +16,10 @@ public class LevelSystem : MonoBehaviour
 	// Returns progress [0..1] toward next level based on current level and EXP
 	public float GetPercentageToNextLevel(Vitals displayedVitals)
 	{
-		int level = displayedVitals.Level;
-		int exp = displayedVitals.Exp;
-
+        return Progress(displayedVitals.Level, displayedVitals.Exp);
+    }
+    public static float Progress(int level, int exp)
+    {
 		// Clamp level to valid range of the table
 		if (level < 1) level = 1;
 		if (level >= expTable.Length) return 1.0f; // Max level reached

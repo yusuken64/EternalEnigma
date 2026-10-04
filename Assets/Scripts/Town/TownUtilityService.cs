@@ -20,7 +20,7 @@ public sealed class TownUtilityService
         if (template != null) stats.FromStartingStats(template.StartingStats);
         else if (hero.BaseStats != null) stats = new Stats(hero.BaseStats);
         stats += hero.PrimaryClass?.StartingStatBonus;
-        HeroClass.ApplyLevelGrowth(stats,hero.PrimaryClass,Math.Max(1,hero.HighestLevel)-1);
+        HeroClass.ApplyLevelGrowth(stats,hero.PrimaryClass,Math.Max(1,hero.Level)-1);
         stats += hero.Equipment.GetEquipmentStatModification();
         foreach (var name in hero.Skills ?? new())
         {
@@ -123,7 +123,7 @@ public sealed class TownUtilityService
         int projectedHp=RecoveryMath.Restore(hp,heal,maximum);
         foreach(var effect in u.Effects ?? Enumerable.Empty<GameAction>())
         {
-            int amount=effect is ScaledHealAction h ? RecoveryMath.Heal(h.BaseHeal,h.PerLevel,caster.HighestLevel,u.Rank,HealingMultiplier(caster,projectedHp,maximum)) :
+            int amount=effect is ScaledHealAction h ? RecoveryMath.Heal(h.BaseHeal,h.PerLevel,caster.Level,u.Rank,HealingMultiplier(caster,projectedHp,maximum)) :
                 effect is TakeHealAction direct ? u.Rank.Scaling.ScalePower(direct.healing,u.Rank.Rank) : 0;
             heal+=amount;projectedHp=RecoveryMath.Restore(projectedHp,amount,maximum);
             if(effect is RestoreSPAction s && !(s.ExcludeCaster && caster==target))restore+=u.Rank.Scaling?.ScalePower(s.Amount,u.Rank.Rank) ?? s.Amount;

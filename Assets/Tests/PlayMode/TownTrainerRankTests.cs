@@ -68,7 +68,7 @@ namespace EternalEnigma.Tests
             var hero = World.TownPlayer.ControllingTownAlly;
             var cls = MakeClass();
             hero.PrimaryClass = cls;
-            hero.HighestLevel = 20;
+            hero.Level = 20;
 
             var original = World.Configuration.LearnableSkills.ToList();
             World.Configuration.LearnableSkills.Clear();
@@ -109,7 +109,7 @@ namespace EternalEnigma.Tests
             var hero = World.TownPlayer.ControllingTownAlly;
             var cls = MakeClass();
             hero.PrimaryClass = cls;
-            hero.HighestLevel = 1;
+            hero.Level = 1;
 
             var original = World.Configuration.LearnableSkills.ToList();
             World.Configuration.LearnableSkills.Clear();
@@ -252,7 +252,7 @@ namespace EternalEnigma.Tests
             hero.SecondaryClass = MakeClass();
             hero.SecondaryClass.Id = "secondary";
             foreach (var e in hero.SecondaryClass.Skills) e.Skill.SkillName = "Secondary " + e.Skill.SkillName;
-            hero.HighestLevel = 20;
+            hero.Level = 20;
             World.TownBuildings.First(b => b.Definition.DialogId == "trainer").Interact(World.TownPlayer, null);
             yield return null;
             var dialog = (BallistaDialog)Manager.CurrentDialog;
@@ -327,7 +327,7 @@ namespace EternalEnigma.Tests
             yield return harness.LoadTown(new TestScenario { Gold = 10000 }.CreateSave());
             var hero = World.TownPlayer.ControllingTownAlly;
             hero.PrimaryClass = MakeClass();
-            hero.HighestLevel = 1;
+            hero.Level = 1;
             World.TownBuildings.First(b => b.Definition.DialogId == "trainer").Interact(World.TownPlayer, null);
             yield return null;
             var dialog = (BallistaDialog)Manager.CurrentDialog;
@@ -363,13 +363,13 @@ namespace EternalEnigma.Tests
             {
                 new SkillRankSaveData { SkillName = "Healing", Rank = 2 }
             };
-            save.TownSaveData.RecruitedAlliesData[0].HighestLevel = 12;
+            save.TownSaveData.RecruitedAlliesData[0].Level = 12;
 
             yield return harness.LoadTown(save);
 
             var hero = World.TownPlayer.ControllingTownAlly;
             Assert.That(hero.GetRank("Healing"), Is.EqualTo(2));
-            Assert.That(hero.HighestLevel, Is.EqualTo(12));
+            Assert.That(hero.Level, Is.EqualTo(12));
         }
     }
 }

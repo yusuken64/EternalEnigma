@@ -99,7 +99,7 @@ public class EntranceDialog : Dialog
 		{
 			Common.Instance.GameSaveData.DungeonSaveData.StartFloor = data.StartFloor;
 			Common.Instance.GameSaveData.DungeonSaveData.EndFloor = data.EndFloor;
-			SaveSystem.SaveData(Common.Instance.GameSaveData);
+			SaveSystem.Capture(Common.Instance);
 			SceneManager.LoadScene("DungeonScene");
 		});
 	}

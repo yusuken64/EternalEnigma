@@ -29,29 +29,24 @@ public class MainMenu : MonoBehaviour
         MainMenuPolish.Apply(this);
         Common.Instance.EndSandbox();
         Common.Instance.Travel.SceneReady();
-		var save = Common.Instance.GameSaveData;
-		if (save != null && !(save.HasCampaign && save.Campaign.Finished))
-		{
-			ContinueButton.gameObject.SetActive(true);
-			ContinueButton.GetComponent<Button>().Select();
-		}
-		else
-		{
-			ContinueButton.gameObject.SetActive(false);
-			StartButton.GetComponent<Button>().Select();
-		}
+        ContinueButton.gameObject.SetActive(true);
+        StartButton.GetComponent<Button>().Select();
 	}
 
 	public void Continue_Clicked()
 	{
         if (!IsReady) return;
-        Common.Instance.Travel.Continue();
+        CampaignSlots.Show(this, false);
 	}
 
 
 	public void StartGame_Clicked()
 	{
         if (!IsReady) return;
+        CampaignSlots.Show(this, true);
+    }
+    public void ChooseHero()
+    {
 		if (Common.Instance.Travel.IsTransitioning || heroPicker != null) return;
 		var configuration = TownConfiguration ?? TownSceneLoader.Default;
 		configuration.Validate();
@@ -133,6 +128,7 @@ public class MainMenu : MonoBehaviour
 
 		var common = Common.Instance;
 		var save = NewSaveData();
+        save.IsSandbox = true;
 		save.DungeonSaveData = new DungeonSaveData { StartFloor = 1, EndFloor = 5 };
 		save.TownSaveData.RecruitedAlliesData = DebugAllies.Select(data => new TownAllyData {
 			AllyName = data.AllyName,

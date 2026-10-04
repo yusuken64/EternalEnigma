@@ -99,10 +99,8 @@ public sealed class TownServices
     public bool SaveGame(out string reason)
     {
         town.WriteSaveData();
-        InnCheckpoint.Create(Common.Instance);
-        town.SaveProgress();
-        reason = null;
-        return true;
+        var hero = Player.ControllingTownAlly;
+        return CampaignSaving.Commit(Common.Instance, town.Configuration.Id + "/inn", hero.TilemapPosition, hero.CurrentFacing, out reason);
     }
 
     public int Donate(int requested)

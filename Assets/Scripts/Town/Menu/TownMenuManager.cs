@@ -17,12 +17,12 @@ public class TownMenuManager : MonoBehaviour
     private void Start()
     {
         var town=FindFirstObjectByType<Town>();
-        PartyMenuLauncher.Create(transform,()=>town!=null&&town.IsReady,OpenPartyMenu);
+        PartyMenuLauncher.Create(transform,()=>town!=null&&town.IsReady&&!town.TownPlayer.CutsceneLocked,OpenPartyMenu);
     }
 
 	private void Update()
 	{
-		if (AutoplayRunner.BlocksPlayerInput) return;
+		if (AutoplayRunner.BlocksPlayerInput || FindFirstObjectByType<Town>()?.TownPlayer.CutsceneLocked == true) return;
 		if (campaignHUD == null && Common.Instance.CampaignContext != null) campaignHUD = FindFirstObjectByType<CampaignHUD>();
 		if (campaignHUD != null && campaignHUD.IsPartyOpen) return;
 		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
@@ -41,6 +41,7 @@ public class TownMenuManager : MonoBehaviour
     public void OpenPartyMenu(PartyMenuTab tab)
     {
         var town = FindFirstObjectByType<Town>();
+        if (town.TownPlayer.CutsceneLocked) return;
         if (PartyMenu == null) PartyMenu = global::PartyMenu.Create(transform);
         PartyMenu.Setup(new TownPartyMenuContext(town), tab, town.TownPlayer.ControllingTownAlly?.Id);
         Open(PartyMenu);

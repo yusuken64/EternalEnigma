@@ -29,6 +29,8 @@ public class TownMenu : MonoBehaviour
 
     public void ValidateBindings(TownConfiguration configuration)
     {
+        if (configuration.Buildings.Any(b => b.DialogId == "home") && !BuildingDialogs.Any(b => b.Id == "home"))
+            BuildingDialogs.Add(new TownDialogBinding { Id = "home", Dialog = HomeBedDialog.Create(transform) });
         if (configuration.Buildings.Any(b => b.DialogId == "inn" && b.DialogPrefab == null) &&
             !BuildingDialogs.Any(b => b.Id == "inn"))
             BuildingDialogs.Add(new TownDialogBinding { Id = "inn", Dialog = InnDialog.Create(transform) });

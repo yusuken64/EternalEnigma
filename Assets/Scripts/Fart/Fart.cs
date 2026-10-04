@@ -22,9 +22,9 @@ public class Fart : MonoBehaviour
 		if (CountDownTime <= countdownStep && countdownStep > 0)
 		{
 			if (countdownStep == 1)
-				Common.Instance.AudioManager.PlaySoundEffect(Short2);
+				Common.Instance.AudioManager.PlayUISound(Short2);
 			else
-				Common.Instance.AudioManager.PlaySoundEffect(Short);
+				Common.Instance.AudioManager.PlayUISound(Short);
 
 			countdownStep--;
 		}
@@ -34,12 +34,12 @@ public class Fart : MonoBehaviour
 			CountDownTime = 0f;
 			if (countdownStep == 0)
 			{
-				Common.Instance.AudioManager.PlaySoundEffect(Long);
+				Common.Instance.AudioManager.PlayUISound(Long);
 				countdownStep = -1; // prevent re-trigger
 			}
 
 			ButtonText.text = $"Starting";
-			Common.Instance.AudioManager.PlaySoundEffect(Long);
+			Common.Instance.AudioManager.PlayUISound(Long);
 			SceneManager.LoadScene("MainMenu");
 		}
 		else

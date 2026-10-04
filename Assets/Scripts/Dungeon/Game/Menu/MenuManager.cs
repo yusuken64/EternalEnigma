@@ -19,7 +19,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public Dialog CurrentDialog => dialogs.Current;
 	public StairConfirm StairDialog;
 
-	private readonly DialogController dialogs = new(() => AudioManager.Instance.SoundEffects.Unpause.PlayAsSound());
+	private readonly DialogController dialogs = new(() => AudioManager.Instance.SoundEffects.Unpause.PlayAsUI());
     public Stack<Dialog> DialogStack => dialogs.Stack;
 
 	public GameObject TargetArrow;
@@ -94,7 +94,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			AllyActionDialog.Close();
 		};
 		AllyActionDialog.SetNavigation();
-		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
+		AudioManager.Instance.SoundEffects.Pause.PlayAsUI();
 
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
@@ -179,7 +179,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			//CloseAllMenus();
 		};
 		TargetDialog.SetNavigation();
-		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
+		AudioManager.Instance.SoundEffects.Pause.PlayAsUI();
 
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
@@ -224,7 +224,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		MenuManager.Open(StairDialog);
 		StairDialog.Setup(prompt, yesAction, noAction);
 
-		AudioManager.Instance.SoundEffects.Pause.PlayAsSound();
+		AudioManager.Instance.SoundEffects.Pause.PlayAsUI();
 
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();

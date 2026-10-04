@@ -219,6 +219,31 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator CancelScopeReturnsFocusOnceAndFallsBackWhenTargetIsUnusable()
+        {
+            int closed = 0;
+            module.PushDialog(first, root.transform, first.gameObject, () => closed++);
+            var scope = first.gameObject.AddComponent<CancelFocusScope>(); scope.ReturnTarget = second.gameObject;
+            yield return null;
+            yield return Pad(new GamepadState().WithButton(GamepadButton.East));
+            Assert.That(events.currentSelectedGameObject, Is.EqualTo(second.gameObject)); Assert.That(closed, Is.Zero);
+            yield return Pad(new GamepadState());
+            first.Select(); second.interactable = false;
+            yield return Pad(new GamepadState().WithButton(GamepadButton.East)); Assert.That(closed, Is.EqualTo(1));
+        }
+
+        [UnityTest]
+        public IEnumerator CancelScopeCannotEscapeTheActiveDialog()
+        {
+            int closed = 0;
+            first.gameObject.AddComponent<CancelFocusScope>().ReturnTarget = second.gameObject;
+            module.PushDialog(first, first.transform, first.gameObject, () => closed++);
+            yield return null;
+            yield return Pad(new GamepadState().WithButton(GamepadButton.East));
+            Assert.That(events.currentSelectedGameObject, Is.EqualTo(first.gameObject)); Assert.That(closed, Is.EqualTo(1));
+        }
+
+        [UnityTest]
         public IEnumerator ModalBlocksClicksOnUnderlyingButtons()
         {
             module.PushDialog(second, second.transform, second.gameObject);

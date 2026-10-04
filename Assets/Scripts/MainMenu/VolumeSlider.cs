@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -7,28 +5,28 @@ using UnityEngine.UI;
 
 public class VolumeSlider : MonoBehaviour
 {
-	public TextMeshProUGUI VolumeValueText;
-	public string VolumeParameterName;
-	public Slider Slider;
-	public UnityEngine.Audio.AudioMixerGroup AudioMixerGroup;
+    public TextMeshProUGUI VolumeValueText;
+    public string VolumeParameterName;
+    public Slider Slider;
+    public AudioMixerGroup AudioMixerGroup;
 
-	private void Start()
-	{
-		SetSliderValue(AudioMixerGroup.audioMixer, VolumeParameterName, Slider);
-	}
-
-	private void SetSliderValue(AudioMixer mixer, string mixerValueName, Slider slider)
-	{
-		mixer.GetFloat(mixerValueName, out float value);
-		float logValue = value / 20;
-		var sliderValue = Mathf.Pow(10, logValue);
-		slider.SetValueWithoutNotify(sliderValue);
-	}
-
-	public void OnSliderChanged(float value)
-	{
-		float volumeValue = Mathf.Log10(value) * 20;
-		UnityEngine.Audio.AudioMixerGroup effectAudioMixerGroup = Common.Instance.AudioManager.EffectAudioMixerGroup;
-		effectAudioMixerGroup.audioMixer.SetFloat(VolumeParameterName, volumeValue);
-	}
+    private void Start() => Refresh();
+    private void OnEnable() => Refresh();
+    public void Refresh()
+    {
+        if (Slider == null || AudioMixerGroup == null) return;
+        Slider.minValue = 0;
+        Slider.maxValue = 1;
+        Slider.SetValueWithoutNotify(AudioPreferences.Read(AudioMixerGroup, VolumeParameterName));
+        UpdateLabel(Slider.value);
+    }
+    private void UpdateLabel(float value)
+    {
+        if (VolumeValueText != null) VolumeValueText.text = Mathf.RoundToInt(value * 100) + "%";
+    }
+    public void OnSliderChanged(float value)
+    {
+        AudioPreferences.Set(AudioMixerGroup, VolumeParameterName, value);
+        UpdateLabel(value);
+    }
 }

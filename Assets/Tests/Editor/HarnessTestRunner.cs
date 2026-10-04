@@ -8,6 +8,15 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Settings Interactions")]
+    public static void RunSettingsInteractions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.SettingsInteractionTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Settings EditMode")]
+    public static void RunSettingsEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.SettingsPreferenceTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Settings PlayMode")]
+    public static void RunSettingsPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.SettingsInteractionTests", "EternalEnigma.Tests.MenuSelectionTests",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.SettingsKeepCategoryFocusAndBackReturnsToGameplay",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.InventoryCanOpenAndCloseImmediatelyAndSettingsRestoreItsSelection");
     private const string SessionKey = "EternalEnigma.Tests.ActiveRun";
     private static readonly TestRunnerApi Api;
 

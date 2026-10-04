@@ -14,6 +14,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public DungeonControls.UIActions UI => controls.UI;
     public bool InputConsumed => consumedFrame == Time.frameCount;
     public bool HasDialog => scopes.Count > 0;
+    public bool OwnsFocus(MonoBehaviour owner) => scopes.Count > 0 && scopes[^1].Owner == owner;
     public InputAction NextHero { get; private set; }
     public InputAction PreviousHero { get; private set; }
     public bool UsingGamepad { get; private set; }
@@ -199,8 +200,13 @@ public class MenuUIInputModule : InputSystemUIInputModule
                 bool collapsedDropdown = selected != null &&
                     ((selected.TryGetComponent<TMP_Dropdown>(out var tmp) && !tmp.IsExpanded) ||
                      selected.GetComponent<Dropdown>() != null);
-                bool handled = !collapsedDropdown && ExecuteEvents.Execute(selected, data, ExecuteEvents.cancelHandler);
-                if (!handled && !data.used) scope.Back?.Invoke();
+                bool handled = Allows(selected) && !collapsedDropdown && ExecuteEvents.Execute(selected, data, ExecuteEvents.cancelHandler);
+                if (!handled && !data.used)
+                {
+                    var destination = CancelFocusScope.Resolve(selected, scope.Root);
+                    if (destination != null) eventSystem.SetSelectedGameObject(destination);
+                    else scope.Back?.Invoke();
+                }
                 ConsumeInput();
             }
             else if (UI.Options.WasPressedThisFrame() && scope.Options != null)

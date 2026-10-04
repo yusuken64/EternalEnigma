@@ -54,6 +54,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 
 	protected override void Initialize()
 	{
+        DisplayPreferences.Current.Restore();
 		LoadData();
         gameObject.AddComponent<CampaignPlaytime>();
         Travel = new CampaignTravelService(this);

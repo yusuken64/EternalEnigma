@@ -253,15 +253,17 @@ namespace EternalEnigma.Tests
             var category = settings.TabGroup.TabContents.First(t =>
                 t.Content.GetComponentsInChildren<Selectable>(true).Any(s => s.interactable));
             category.TabButton.Select();
-            yield return Press(GamepadButton.South);
             Assert.That(settings.TabGroup.SelectedTab, Is.SameAs(category));
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(category.TabButton.gameObject));
-            yield return Press(GamepadButton.DpadRight);
+            yield return Press(GamepadButton.South);
             Assert.That(EventSystem.current.currentSelectedGameObject.transform.IsChildOf(category.Content.transform), Is.True);
             Time.timeScale = 0;
             yield return Press(GamepadButton.East);
             Assert.That(settings.IsOpen, Is.True);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(category.TabButton.gameObject));
+            yield return Press(GamepadButton.East);
+            Assert.That(settings.IsOpen, Is.True);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(settings.ResumeButton.gameObject));
             yield return Press(GamepadButton.East);
             Assert.That(settings.IsOpen, Is.False);
             Assert.That(Common.Instance.MenuInputHandler.PlayerInput.currentActionMap.name, Is.EqualTo("Player"));

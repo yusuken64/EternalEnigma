@@ -18,17 +18,32 @@ public class TabGroup : MonoBehaviour
     public Color NormalTextColor = Color.black;
     public Color SelectedTextColor = Color.black;
 
-    public event Action<TabContent> TabClicked;
+    public event Action<TabContent> TabSelected;
+    public event Action<TabContent> TabActivated;
+    public event Action NavigationChanged;
+    public bool PreviewOnFocus;
+
+    private void Bind(TabContent tab)
+    {
+        tab.TabButton.onClick.AddListener(() => { OnTabSelected(tab); TabActivated?.Invoke(tab); });
+        if (PreviewOnFocus)
+        {
+            var preview = tab.TabButton.GetComponent<TabFocusPreview>() ?? tab.TabButton.gameObject.AddComponent<TabFocusPreview>();
+            preview.Group = this;
+        }
+    }
+    public void Preview(GameObject button)
+    {
+        var tab = TabContents.Find(t => t.TabButton.gameObject == button);
+        if (tab != null) OnTabSelected(tab);
+    }
     public void AddTab(TabContent tab)
     {
         TabContents.Add(tab);
-        if (initialized) tab.TabButton.onClick.AddListener(() => OnTabSelected(tab));
+        if (initialized) Bind(tab);
         tab.Content.SetActive(false);
     }
-    public void NotifyTabClicked(TabContent tab)
-    {
-        TabClicked?.Invoke(tab);
-    }
+    public void RefreshNavigation() => NavigationChanged?.Invoke();
 
     private void Start()
     {
@@ -41,7 +56,7 @@ public class TabGroup : MonoBehaviour
         initialized = true;
         foreach (var tab in TabContents)
         {
-            tab.TabButton.onClick.AddListener(() => OnTabSelected(tab));
+            Bind(tab);
         }
 
         if (TabContents.Any())
@@ -57,6 +72,7 @@ public class TabGroup : MonoBehaviour
 
     private void OnTabSelected(TabContent selectedTab)
     {
+        if (SelectedTab == selectedTab) { RefreshNavigation(); return; }
         SelectedTab = selectedTab;
         foreach (var tab in TabContents)
         {
@@ -67,6 +83,8 @@ public class TabGroup : MonoBehaviour
             var tabText = tab.TabButton.GetComponentInChildren<TextMeshProUGUI>();
             if (tabText != null)
             {
+                if (PreviewOnFocus)
+                    tabText.fontStyle = isSelected ? tabText.fontStyle | FontStyles.Underline : tabText.fontStyle & ~FontStyles.Underline;
                 tabText.DOKill();
                 tabText.DOColor(isSelected ? SelectedTextColor : NormalTextColor, 0.12f).SetUpdate(true);
             }
@@ -77,7 +95,8 @@ public class TabGroup : MonoBehaviour
             tabTransform.DOScale(isSelected ? 1.05f : 1f, 0.12f).SetUpdate(true);
         }
 
-        NotifyTabClicked(selectedTab);
+        TabSelected?.Invoke(selectedTab);
+        RefreshNavigation();
     }
 
     private void SetCanvasGroupState(GameObject content, bool isVisible)

@@ -64,7 +64,7 @@ public sealed class DungeonOptions : MonoBehaviour
         {
             Refresh();
             var settings = GetComponent<GlobalSettings>();
-            if (settings != null) settings.HandleTabClicked(settings.TabGroup.SelectedTab);
+            if (settings != null) settings.TabGroup.RefreshNavigation();
         }
     }
 }

@@ -28,8 +28,29 @@ public class GlobalSettings : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void OnEnable() => TabGroup.TabClicked += HandleTabClicked;
-    private void OnDisable() => TabGroup.TabClicked -= HandleTabClicked;
+    private void Awake()
+    {
+        TabGroup.PreviewOnFocus = true;
+        NavigationHandler.FocusRoot = SettingsCanvas.transform;
+        NavigationHandler.FocusOwner = this;
+        foreach (var tab in TabGroup.TabContents)
+        {
+            var details = tab.Content.GetComponent<CancelFocusScope>() ?? tab.Content.AddComponent<CancelFocusScope>();
+            details.ReturnTarget = tab.TabButton.gameObject;
+            var category = tab.TabButton.GetComponent<CancelFocusScope>() ?? tab.TabButton.gameObject.AddComponent<CancelFocusScope>();
+            category.ReturnTarget = ResumeButton.gameObject;
+        }
+    }
+    private void OnEnable()
+    {
+        TabGroup.TabActivated += EnterTab;
+        TabGroup.NavigationChanged += SetupTabNavigation;
+    }
+    private void OnDisable()
+    {
+        TabGroup.TabActivated -= EnterTab;
+        TabGroup.NavigationChanged -= SetupTabNavigation;
+    }
 
     private void SetupTabNavigation()
     {
@@ -64,10 +85,12 @@ public class GlobalSettings : MonoBehaviour
         }
     }
 
-    public void HandleTabClicked(TabContent tabContent)
+    private void EnterTab(TabContent tab)
     {
-        // Activating a category keeps the highlight on it. Right enters its controls.
         SetupTabNavigation();
+        var first = tab.Content.GetComponentsInChildren<Selectable>().FirstOrDefault(s => MenuUIInputModule.IsUsable(s.gameObject));
+        if (first != null) first.Select();
+        MenuUIInputModule.Active?.ConsumeInput();
     }
 
     public void ShowDialog()
@@ -85,11 +108,9 @@ public class GlobalSettings : MonoBehaviour
 
     private void Back()
     {
-        var tab = TabGroup.SelectedTab;
         var selected = EventSystem.current?.currentSelectedGameObject;
-        if (tab != null && selected != null && selected.transform.IsChildOf(tab.Content.transform))
-            tab.TabButton.Select();
-        else Exit_Clicked();
+        if (selected == ResumeButton.gameObject) Exit_Clicked();
+        else ResumeButton.Select();
     }
 
     public void Exit_Clicked()

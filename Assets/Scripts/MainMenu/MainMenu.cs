@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -60,12 +61,25 @@ public class MainMenu : MonoBehaviour
 	{
         if (!IsReady) return;
 		if (Common.Instance.Travel.IsTransitioning) return;
-		Common.Instance.GameSaveData = CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue), hero);
+		Common.Instance.GameSaveData = CreateNewSave(NewCampaignSeed(), hero);
 		Common.Instance.Travel.NewCampaign(Common.Instance.GameSaveData.TownSaveData.TownSeed);
 	}
 
 	private GameSaveData NewSaveData()
-		=> CreateNewSave(UnityEngine.Random.Range(1, int.MaxValue));
+		=> CreateNewSave(NewCampaignSeed());
+
+	private static int NewCampaignSeed()
+	{
+		using var random = RandomNumberGenerator.Create();
+		var bytes = new byte[sizeof(int)];
+		int seed;
+		do
+		{
+			random.GetBytes(bytes);
+			seed = System.BitConverter.ToInt32(bytes, 0) & int.MaxValue;
+		} while (seed == 0);
+		return seed;
+	}
 
 	public GameSaveData CreateNewSave(int seed, TownAlly hero = null)
 	{

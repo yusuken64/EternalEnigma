@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
@@ -17,7 +18,6 @@ public sealed class CampaignSlots : MonoBehaviour
     private Button[] cards = new Button[SaveSystem.SlotCount];
     [SerializeField] private TMP_Text detail;
     [SerializeField] private Image progress;
-    [SerializeField] private Button proceed;
     public static void Show(MainMenu menu,bool newJourney)
     {
         var view=AuthoredUI.Require<CampaignSlots>(menu.transform);
@@ -34,7 +34,8 @@ public sealed class CampaignSlots : MonoBehaviour
             int slot = i;
             var save = saves[i] = SaveSystem.Inspect(i,out errors[i]);
             var card=cards[i]=Slots[i].Button;
-            card.onClick.RemoveAllListeners();card.onClick.AddListener(()=>Select(slot));
+            Slots[i].Selected = () => Select(slot);
+            card.onClick.RemoveAllListeners();card.onClick.AddListener(()=>Activate(slot));
             Slots[i].Artwork.texture=catalog?.For(save?.Summary);
             foreach(var portrait in Slots[i].Portraits)portrait.gameObject.SetActive(false);
             string text = $"<b>Slot {i+1}</b>\n";
@@ -56,25 +57,27 @@ public sealed class CampaignSlots : MonoBehaviour
             }
             Slots[i].Label.text=text;
         }
-        proceed.GetComponentInChildren<TMP_Text>().text=newJourney?"Choose hero":"Continue";
-        proceed.onClick.RemoveAllListeners();proceed.onClick.AddListener(Proceed);
         BackButton.onClick.RemoveAllListeners();BackButton.onClick.AddListener(Close);
         MenuUIInputModule.Active?.PushDialog(this,transform,cards[selected].gameObject,Close);
         Select(selected);
+        // Keep a keyboard fallback while making the first pointer press select the card.
+        EventSystem.current?.SetSelectedGameObject(null);
     }
     private void Select(int slot)
     {
         selected=slot; var save=saves[slot]; var s=save?.Summary;
-        proceed.interactable=newJourney || (errors[slot]==null && save?.HasCampaign==true && !save.Campaign.Finished);
         for(int i=0;i<cards.Length;i++) cards[i].GetComponent<Image>().color=i==slot ? GameUITheme.Selected : Color.white;
-        detail.text = errors[slot] ?? (s==null ? "Choose an empty slot to begin." :
+        detail.text = errors[slot] ?? (s==null ?
+            (newJourney ? "Choose an empty slot to begin." : "No campaign to continue in this slot.") :
             $"<b>{s.Region}</b>    Regions visited: {s.RegionsVisited} / {s.RegionsTotal}\n"+
             $"Required dungeons cleared: {s.RequiredCleared} / {s.RequiredTotal}\n"+
             string.Join("\n",s.Party.Select(h=>$"<b>{h.Name}</b> · {h.PrimaryClass}{(string.IsNullOrEmpty(h.SecondaryClass) ? "" : " / " + h.SecondaryClass)} · Lv {h.Level}    HP {h.Hp:N0}/{h.MaxHp:N0}    SP {h.Sp:N0}/{h.MaxSp:N0}    Strength {h.Strength:N0}    Defense {h.Defense:N0}    EXP {h.Experience:N0} ({h.ExperienceProgress:P0})")));
         progress.rectTransform.anchorMax = new Vector2(s==null || s.RequiredTotal==0 ? 0 : (float)s.RequiredCleared/s.RequiredTotal,1);
     }
-    private void Proceed()
+    private void Activate(int slot)
     {
+        Select(slot);
+        if (!newJourney && (errors[slot]!=null || saves[slot]?.HasCampaign!=true || saves[slot].Campaign.Finished)) return;
         if (newJourney)
         {
             void Pick() { SaveSystem.ActiveSlot=selected; Close(); menu.ChooseHero(); }

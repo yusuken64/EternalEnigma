@@ -169,7 +169,15 @@ public static class AuthoredUIMigration
         view.Slots=new CampaignSlotView[SaveSystem.SlotCount];
         for(int i=0;i<view.Slots.Length;i++)
         {
-            float left=.025f+i*.325f;var button=GameUISkin.Button(panel.transform,"",new Vector2(left,.55f),new Vector2(left+.30f,.88f),null);button.name="Slot "+(i+1);
+            float left=.025f+i*.325f;
+            var button=((GameObject)PrefabUtility.InstantiatePrefab(
+                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/UI/CampaignSlotButton.prefab"),panel.transform))
+                .GetComponent<SelectToActivateButton>();
+            button.name="Slot "+(i+1);
+            var rect=(RectTransform)button.transform;
+            rect.anchorMin=new Vector2(left,.55f);rect.anchorMax=new Vector2(left+.30f,.88f);
+            rect.offsetMin=rect.offsetMax=Vector2.zero;
+            button.GetComponentInChildren<TMP_Text>().text="";
             var slot=button.gameObject.AddComponent<CampaignSlotView>();slot.Button=button;view.Slots[i]=slot;
             slot.Artwork=GameUISkin.Rect("Biome artwork",button.transform,new Vector2(.015f,.025f),new Vector2(.985f,.975f)).gameObject.AddComponent<RawImage>();slot.Artwork.raycastTarget=false;
             var shade=GameUISkin.Rect("Information shade",button.transform,new Vector2(.015f,.025f),new Vector2(.985f,.975f)).gameObject.AddComponent<Image>();shade.color=new Color(0,0,0,.58f);shade.raycastTarget=false;
@@ -179,7 +187,6 @@ public static class AuthoredUIMigration
         var detail=GameUISkin.Label(panel.transform,"Campaign details",new Vector2(.04f,.16f),new Vector2(.96f,.52f),24);detail.enableAutoSizing=true;detail.fontSizeMin=17;Set(view,"detail",detail);
         var bar=GameUISkin.Rect("Required dungeon progress",panel.transform,new Vector2(.04f,.13f),new Vector2(.96f,.145f)).gameObject.AddComponent<Image>();bar.color=new Color(.2f,.2f,.2f);
         var progress=GameUISkin.Rect("Progress",bar.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>();progress.color=new Color(.8f,.65f,.25f);Set(view,"progress",progress);
-        Set(view,"proceed",GameUISkin.Button(panel.transform,"Continue",new Vector2(.57f,.03f),new Vector2(.96f,.10f),null));
         view.BackButton=GameUISkin.Button(panel.transform,"Back",new Vector2(.04f,.03f),new Vector2(.3f,.10f),null);view.gameObject.SetActive(false);
     }
     static void GameplayScene(Scene scene,string name)

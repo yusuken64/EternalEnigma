@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using Object=UnityEngine.Object;
 namespace EternalEnigma.Tests
@@ -123,16 +124,37 @@ namespace EternalEnigma.Tests
             }
             canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.worldCamera=null;Object.Destroy(camera.gameObject);
 
-            browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Slot 1").onClick.Invoke();
-            browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Choose hero").onClick.Invoke();yield return null;
+            var slotButton=browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Slot 1");
+            Assert.That(browser.Slots.All(slot=>slot.Button is SelectToActivateButton),Is.True);
+            Assert.That(browser.GetComponentsInChildren<UnityEngine.UI.Button>().Any(b=>b.name=="Continue" || b.name=="Choose hero"),Is.False);
+            var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=-1};
+            ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerDownHandler);
+            ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerClickHandler);
+            Assert.That(browser.gameObject.activeSelf,Is.True,"First click selects the save slot.");
+            Assert.That(Object.FindFirstObjectByType<CampaignChoice>(),Is.Null);
+            ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerDownHandler);
+            ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerClickHandler);
+            yield return null;
             Object.FindFirstObjectByType<CampaignChoice>().GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Replace campaign").onClick.Invoke();yield return null;
             Object.FindFirstObjectByType<ProtagonistHeroPicker>().GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Back").onClick.Invoke();yield return null;
             Assert.That(harness.Store.Read(0),Is.EqualTo(original));
             var completed=SaveSystem.LoadData(1);completed.Campaign.Finished=true;SaveSystem.SaveData(1,completed);
             SaveSystem.ActiveSlot=1;main.Continue_Clicked();yield return null;
             browser=Object.FindFirstObjectByType<CampaignSlots>();
-            Assert.That(browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Continue").interactable,Is.False);
+            var completedSlot=browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Slot 2");
+            Assert.That(completedSlot.interactable,Is.True);
+            completedSlot.onClick.Invoke();yield return null;
+            Assert.That(browser.gameObject.activeSelf,Is.True,"Completed campaigns remain inspectable but cannot continue.");
             browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Back").onClick.Invoke();yield return null;
+            SaveSystem.ActiveSlot=0;main.Continue_Clicked();yield return null;
+            browser=Object.FindFirstObjectByType<CampaignSlots>();
+            slotButton=browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Slot 1");
+            ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerDownHandler);
+            ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerClickHandler);
+            Assert.That(browser.gameObject.activeSelf,Is.True,"First Continue click only selects the slot.");
+            ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerDownHandler);
+            ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerClickHandler);
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"continue selected campaign");
         }
     }
 }

@@ -197,6 +197,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	internal void ShowGameOver(bool victory = false)
 	{
+		if (victory && DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
+			foreach (var ally in Allies.Where(a => a != null && a.Vitals.HP > 0)) ally.HeroAnimator?.PlayOneShot(AnimatedAction.Victory);
 		if (victory) { IsReady = false; TurnManager.InteruptTurn(); }
 		GameOverScreen.gameObject.SetActive(true);
 		GameOverScreen.Setup(PlayerController, victory);
@@ -206,6 +208,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void AdvanceFloor()
 	{
+		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
+			foreach (var ally in Allies.Where(a => a != null && a.Vitals.HP > 0)) ally.HeroAnimator?.PlayOneShot(AnimatedAction.Victory);
 		PlayerController.Floor++;
 		IsReady = false;
 		TurnManager.InteruptTurn();
@@ -251,6 +255,9 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
 		CurrentDungeon.IsThroneFloor = throneFloor;
+		var theme = DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals);
+		var music = throneFloor ? theme.BossMusic : theme.Music;
+		AudioManager.Instance?.PlayMusic(music != null ? music : DungeonGenerator.ThemeCatalog.FallbackMusic);
 		CurrentDungeon.IsExitFloor = throneFloor && PlayerController.Floor >= Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
 		CurrentDungeon.InitializeCache();
 		FindFirstObjectByType<FogOverlay>().Initialize(CurrentDungeon);

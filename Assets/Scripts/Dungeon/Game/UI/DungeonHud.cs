@@ -13,6 +13,7 @@ public sealed class DungeonHud : MonoBehaviour
     [SerializeField] private TMP_Text header, target;
     [SerializeField] private GameObject targetBackdrop;
     [SerializeField] private Button control;
+    private Image[] enemyStatusIcons;
     private float detailUntil;
     public static DungeonHud Ensure(Game game)
     {
@@ -62,6 +63,31 @@ public sealed class DungeonHud : MonoBehaviour
     }
     public static string StatusSummary(Character c) => string.Join(", ", c.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).Select(s=>
         s is GoopiRootStatusEffect ? "Rooted: defeat the holder" : $"{s.GetEffectName()} ({s.TurnsLeft})"));
+	private void UpdateEnemyIcons(Enemy enemy)
+	{
+		if (enemyStatusIcons == null)
+		{
+			enemyStatusIcons = new Image[4];
+			for (int i=0;i<enemyStatusIcons.Length;i++)
+			{
+				var go=new GameObject("Enemy status icon",typeof(RectTransform),typeof(Image));
+				go.transform.SetParent(target.transform,false);
+				var rect=(RectTransform)go.transform;
+				rect.anchorMin=new Vector2(.7f+i*.075f,0); rect.anchorMax=new Vector2(.775f+i*.075f,.38f);
+				rect.offsetMin=rect.offsetMax=Vector2.zero;
+				enemyStatusIcons[i]=go.GetComponent<Image>();
+				enemyStatusIcons[i].preserveAspect=true;
+				enemyStatusIcons[i].raycastTarget=false;
+			}
+		}
+		var effects=enemy != null ? enemy.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).ToArray() : System.Array.Empty<StatusEffect>();
+		for (int i=0;i<enemyStatusIcons.Length;i++)
+		{
+			var icon=i<effects.Length ? CombatVisualCatalog.Instance?.ForStatus(effects[i])?.Icon : null;
+			enemyStatusIcons[i].sprite=icon;
+			enemyStatusIcons[i].enabled=icon != null;
+		}
+	}
     private void Update()
     {
         if (game == null || !game.IsReady || game.PlayerController.ControlledAlly == null) return;
@@ -82,6 +108,7 @@ public sealed class DungeonHud : MonoBehaviour
             selected = game.AllCharacters.FirstOrDefault(c=>c!=null && c.OverlapsWith(Character.ToBounds(front)));
         target.text = selected != null && GameMessages.Visible(selected) ?
             EnemyBehavior.IsDisguised(selected) ? "Treasure chest" : $"{GameMessages.Name(selected)}\n{StatusSummary(selected)}" : "";
+		UpdateEnemyIcons(selected is Enemy visible && GameMessages.Visible(visible) && !EnemyBehavior.IsDisguised(visible) ? visible : null);
         var targeting = MenuManager.Instance.TargetDialog;
         if (player.CurrentControlMode == PlayerControlMode.TargetSelecting && !string.IsNullOrEmpty(targeting.RangeLabel))
             target.text += (string.IsNullOrWhiteSpace(target.text) ? "" : "\n") + targeting.RangeLabel;

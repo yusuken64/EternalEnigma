@@ -1,12 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using EternalEnigma.Core.World;
 using TWC;
 using UnityEngine;
 
 public static class DungeonPresentation
 {
+    private static readonly ConditionalWeakTable<DungeonFloor, HashSet<GridPoint>> protectedCells = new();
+    private static HashSet<GridPoint> Protected(DungeonFloor floor)
+    {
+        var cells = new HashSet<GridPoint> { floor.Start, floor.Stairs };
+        foreach (var p in floor.Scenery) cells.Add(p.Cell);
+        foreach (var p in floor.Items) cells.Add(p.Cell);
+        foreach (var p in floor.Gold) cells.Add(p.Cell);
+        foreach (var p in floor.Traps) cells.Add(p.Cell);
+        foreach (var p in floor.Enemies) cells.Add(p.Cell);
+        foreach (var p in floor.Locks) cells.Add(p.Door);
+        return cells;
+    }
     public const float GroundPlaneZ = .001f;
     public static void GroundFloorObject(Transform root)
     {
@@ -98,7 +111,8 @@ public static class DungeonPresentation
     public static bool DecorationAllowed(DungeonFloor floor,int x,int y)
     {
         // The complete rotated prop footprint is fitted inside this blocked cell below.
-        return x>=0 && y>=0 && x<floor.Width && y<floor.Height && !floor.Layers[DungeonLayers.Floor][x,y];
+        if (x<0 || y<0 || x>=floor.Width || y>=floor.Height || floor.Layers[DungeonLayers.Floor][x,y]) return false;
+        return !protectedCells.GetValue(floor, Protected).Contains(new GridPoint(x,y));
     }
     public static uint Hash(int seed,int x,int y)
     { unchecked { uint h=(uint)seed ^ (uint)x*0x9e3779b9u ^ (uint)y*0x85ebca6bu ^ 0x6d2b79f5u; h=(h^(h>>16))*0x7feb352du;return h^(h>>15); } }
@@ -118,6 +132,7 @@ public static class DungeonPresentation
     public static void Decorate(TileWorldCreator creator,DungeonFloor floor,DungeonTheme theme)
     {
         var kit=EnvironmentKit.Load();
+        var interiors=TownInteriorCatalog.Load();
         if(kit==null) return;
         var root=new GameObject("Theme cosmetics"); root.transform.SetParent(creator.worldObject.transform,false);
         SetGroundHeight(root.transform);
@@ -132,9 +147,11 @@ public static class DungeonPresentation
             {
                 string id=theme.UseTrees && (p.hash&1)==0 ? kit.TreeModels.Pick(theme.Biome,p.hash) : theme.Decorations.Length>0 ? theme.Decorations[p.hash%(uint)theme.Decorations.Length] : "Rock";
                 var model=kit.Models.FirstOrDefault(m=>m.Id==id);
-                Mesh mesh=model?.Mesh;
+                var interior=interiors?.Get(id);
+                Mesh mesh=model?.Mesh ?? interior?.Mesh;
                 if(id=="CryptRoots") mesh=Resources.Load<Mesh>("DungeonThemes/CryptRoots");
-                if(mesh==null || mesh.triangles.Length/3>120) continue;
+                int triangleBudget=theme.Environment==DungeonEnvironmentKind.Interior ? 250 : 120;
+                if(mesh==null || mesh.triangles.Length/3>triangleBudget) continue;
                 // Constrain full footprint and height below the fog plane (-3.35).
                 float extent=Mathf.Max(mesh.bounds.size.x,mesh.bounds.size.y);
                 // .6 * sqrt(2) < 1: even a square rotated 45 degrees stays inside its cell.
@@ -142,7 +159,8 @@ public static class DungeonPresentation
                 float baseHeight=theme.Environment==DungeonEnvironmentKind.Outdoor ? .65f : .92f;
                 float angle=p.hash%360;
                 var center=Quaternion.Euler(0,0,angle)*new Vector3(mesh.bounds.center.x,mesh.bounds.center.y,0)*scale;
-                batch.Add(mesh,theme.DecorationMaterial,new Vector3((p.x+.5f)*size-center.x,(p.y+.5f)*size-center.y,-baseHeight-mesh.bounds.max.z*scale),Vector3.one*scale,angle);
+                var material=interior != null && model == null ? interiors.Material(theme.Biome) : theme.DecorationMaterial;
+                batch.Add(mesh,material,new Vector3((p.x+.5f)*size-center.x,(p.y+.5f)*size-center.y,-baseHeight-mesh.bounds.max.z*scale),Vector3.one*scale,angle);
             }
         }
         batch.Finish();

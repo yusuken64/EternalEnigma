@@ -90,7 +90,24 @@ public sealed class DungeonPartyCard : MonoBehaviour
             string badge=i==3&&effects.Length>4 ? "+"+(effects.Length-3) : new string(name.Where(char.IsUpper).Take(2).ToArray());
             if (badge.Length<2) badge=name.Substring(0,Mathf.Min(2,name.Length));
             var button=StatusButtons[i]; button.gameObject.SetActive(true);
-            button.GetComponentInChildren<TMP_Text>().text=badge;
+			var label=button.GetComponentInChildren<TMP_Text>();
+			var icon=button.transform.Find("Status icon")?.GetComponent<Image>();
+			var sprite=CombatVisualCatalog.Instance?.ForStatus(effect)?.Icon;
+			if (sprite != null && icon == null)
+			{
+				var image=new GameObject("Status icon",typeof(RectTransform),typeof(Image));
+				image.transform.SetParent(button.transform,false);
+				var rect=(RectTransform)image.transform; rect.anchorMin=Vector2.zero; rect.anchorMax=Vector2.one;
+				rect.offsetMin=rect.offsetMax=Vector2.zero;
+				icon=image.GetComponent<Image>(); icon.preserveAspect=true; icon.raycastTarget=false;
+				label.transform.SetAsLastSibling();
+			}
+			if (icon != null) { icon.enabled=sprite != null; icon.sprite=sprite; }
+			label.text=sprite != null ? effect.TurnsLeft.ToString() : badge;
+			var labelRect=(RectTransform)label.transform;
+			labelRect.anchorMin=sprite != null ? new Vector2(.52f,0) : Vector2.zero;
+			labelRect.anchorMax=Vector2.one;
+			labelRect.offsetMin=labelRect.offsetMax=Vector2.zero;
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(()=>DungeonHud.Ensure(Game.Instance).Inspect(ally.CharacterName+"\n"+DungeonHud.StatusSummary(ally)));
         }

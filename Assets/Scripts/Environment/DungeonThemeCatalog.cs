@@ -13,6 +13,7 @@ public sealed class DungeonTheme
     public DungeonEnvironmentKind Environment;
     public TileWorldCreator4TilesPreset RegularBoundary, ThroneBoundary, Floor, Accent;
     public Material DecorationMaterial, PoolMaterial;
+    public AudioClip Music, BossMusic;
     public string[] Decorations = Array.Empty<string>();
     public bool UseTrees;
     public Color Ambient = Color.gray;
@@ -24,6 +25,7 @@ public sealed class DungeonTheme
 public sealed class DungeonThemeCatalog : ScriptableObject
 {
     public DungeonTheme[] Themes = Array.Empty<DungeonTheme>();
+    public AudioClip FallbackMusic;
     public DungeonTheme Get(DungeonVisualSelection selection) => Themes.Single(t=>t.Biome==selection.Biome && t.Environment==selection.Environment);
 
     // Only build presentation changes. Blueprint stacks, masks, dimensions and seed remain untouched.

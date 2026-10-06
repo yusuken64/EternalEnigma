@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 #if UNITY_EDITOR
@@ -22,6 +23,8 @@ public class HeroAnimator : MonoBehaviour
 	private bool walkStep;
 	private bool continueWalk;
 	private Stance walkStance;
+	private Coroutine oneShot;
+	private AnimatedAction? statusLoop;
 
 	internal void BeginWalk(bool continuous)
 	{
@@ -53,12 +56,14 @@ public class HeroAnimator : MonoBehaviour
 		if (!walkStep) StopWalkContinuation();
 	}
 
-	private void OnDisable() => walking = walkStep = continueWalk = false;
+	private void OnDisable() { walking = walkStep = continueWalk = false; oneShot = null; }
 
 	internal void PlayIdleAnimation()
 	{
-		PlayAnimation(AnimatedAction.Idle);
+		PlayAnimation(statusLoop.HasValue && HasClip(statusLoop.Value) ? statusLoop.Value : AnimatedAction.Idle);
 	}
+	private bool HasClip(AnimatedAction action) => StanceAnimations?.FirstOrDefault(x => x.Stance == CurrentStance)?
+		.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations?.Count > 0;
 
 	internal void PlayWalkAnimation()
 	{
@@ -72,7 +77,8 @@ public class HeroAnimator : MonoBehaviour
 
 	internal void PlayTakeDamageAnimation()
 	{
-		PlayAnimation(AnimatedAction.GetHit);
+		PlayAnimation(statusLoop == AnimatedAction.Defend && HasClip(AnimatedAction.DefendHit)
+			? AnimatedAction.DefendHit : AnimatedAction.GetHit);
 	}
 
 	internal void PlayDeathAnimation()
@@ -82,12 +88,46 @@ public class HeroAnimator : MonoBehaviour
 
 	public void PlayAnimation(AnimatedAction animatedAction)
 	{
+		if (oneShot != null) { StopCoroutine(oneShot); oneShot = null; }
+		PlayClip(animatedAction, out _);
+	}
+
+	private bool PlayClip(AnimatedAction action, out float duration)
+	{
+		duration = 0;
+		var stance = StanceAnimations?.FirstOrDefault(x => x.Stance == CurrentStance);
+		var clips = stance?.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations;
+		if (Animator == null || stance?.AnimatorController == null || clips == null || clips.Count == 0) return false;
+		var clip = clips.Sample();
+		if (clip == null) return false;
 		walking = walkStep = continueWalk = false;
-		StanceAnimation stanceAnimation = StanceAnimations.First(x => x.Stance == CurrentStance);
-		NamedAnimation namedAnimation = stanceAnimation.NamedAnimations.First(x => x.AnimationAction == animatedAction);
-		AnimationClip animationClip = namedAnimation.Animations.Sample();
-		Animator.runtimeAnimatorController = stanceAnimation.AnimatorController;
-		Animator.Play(animationClip.name, 0);
+		Animator.runtimeAnimatorController = stance.AnimatorController;
+		Animator.Play(clip.name, 0, 0);
+		duration = clip.length;
+		return true;
+	}
+
+	public bool PlayOneShot(AnimatedAction action)
+	{
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations) return false;
+		if (oneShot != null) { StopCoroutine(oneShot); oneShot = null; }
+		if (!PlayClip(action, out var duration)) return false;
+		oneShot = StartCoroutine(RestoreIdleAfter(duration, CurrentStance));
+		return true;
+	}
+
+	public void SetStatusLoop(AnimatedAction? action)
+	{
+		if (statusLoop == action) return;
+		statusLoop = action;
+		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations) PlayIdleAnimation();
+	}
+
+	private IEnumerator RestoreIdleAfter(float duration, Stance stance)
+	{
+		yield return new WaitForSecondsRealtime(duration);
+		oneShot = null;
+		if (CurrentStance == stance) PlayIdleAnimation();
 	}
 
 	internal void SetWeapon(EquipmentItemDefinition mainHandItemDefinition, EquipmentItemDefinition offHandItemDefinition)
@@ -204,15 +244,33 @@ public class HeroAnimator : MonoBehaviour
 		{
 			AnimationClip[] clips = stanceAnimation.AnimatorController.animationClips;
 
-			foreach (var clip in clips)
+			foreach (var clip in clips.Distinct())
 			{
-				var namedAnimation = stanceAnimation.NamedAnimations.FirstOrDefault(x => clip.name.Contains(x.AnimationName));
+				var namedAnimation = stanceAnimation.NamedAnimations.FirstOrDefault(x => MatchesClip(stanceAnimation.Stance, x.AnimationAction, clip.name));
 				if (namedAnimation != null)
 				{
 					namedAnimation.Animations.Add(clip);
 				}
 			}
 		}
+	}
+
+	private static bool MatchesClip(Stance stance, AnimatedAction action, string name)
+	{
+		if (name.IndexOf("Stay", StringComparison.OrdinalIgnoreCase) >= 0 ||
+			name.IndexOf("_Start", StringComparison.OrdinalIgnoreCase) >= 0 ||
+			name.IndexOf("_Maintain", StringComparison.OrdinalIgnoreCase) >= 0) return false;
+		string suffix = stance switch
+		{
+			Stance.NoWeapon => "NoWeapon", Stance.SingleSword => "SingleSword",
+			Stance.SwordAndShield => "SwordAndShield", Stance.Spear => "Spear",
+			Stance.DoubleSwordStance => "DoubleSword", Stance.BowAndArrowStance => "BowAndArrow",
+			Stance.TwoHandSword => "THS", Stance.MagicWand => "MagicWand", _ => ""
+		};
+		if (!name.EndsWith("_" + suffix, StringComparison.OrdinalIgnoreCase) &&
+			!(stance == Stance.SwordAndShield && name.EndsWith("_SwordAndShiled", StringComparison.OrdinalIgnoreCase))) return false;
+		if (action == AnimatedAction.GetHit && name.StartsWith("DefendHit", StringComparison.OrdinalIgnoreCase)) return false;
+		return name.StartsWith(action.ToString(), StringComparison.OrdinalIgnoreCase);
 	}
 #endif
 }
@@ -256,6 +314,9 @@ public enum AnimatedAction
 	GetHit,
 	Die,
 	Dizzy,
+	Sleeping,
+	DrinkPotion,
+	DefendHit,
 }
 
 public enum Stance

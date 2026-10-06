@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7bb618116510f49ac190f670d4173c, type: 3}
+  m_Name: Skill Lunge
+  m_EditorClassIdentifier: EternalEnigma.Game::CombatEffectProfile
+  Muzzle:
+    Prefab: {fileID: 0}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
+    Scale: 1
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  GroundCircle:
+    Prefab: {fileID: 0}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
+    Scale: 1
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  Projectile:
+    Prefab: {fileID: 2802730025511921410, guid: 4010d4ebe13408449a9c0853da3d270a, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
+    Scale: 0.35
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  Impact:
+    Prefab: {fileID: 2110861146045004955, guid: 2bf21a2f2100c2540b2878d5121a7d21, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 1
+    Scale: 0.5
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  Area:
+    Prefab: {fileID: 0}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
+    Scale: 1
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  AreaSound: {fileID: 0}
+  CastSeconds: 0.25
+  ImpactSeconds: 0.4
+  ProjectileSpeed: 20
+  FlightSeconds: {x: 0.25, y: 0.75}
+  ScaleAreaToRadius: 1

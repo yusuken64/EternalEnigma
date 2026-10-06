@@ -16,9 +16,14 @@ MonoBehaviour:
     Prefab: {fileID: 6186542865744639002, guid: 3763df36fc14bcd418c02a53df7a5e05, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
+    FitToTarget: 0
     Scale: 0.3
     Delay: 0
     Lifetime: 2
     MinimumDiameterCells: 3
     ReferenceDiameter: 3.2000008
   Priority: 10
+  HasLoop: 0
+  Loop: 9
+  Icon: {fileID: 21300000, guid: c1979742a4e997c4ab87740e0c390f81, type: 3}
+  Overhead: 0

@@ -15,7 +15,6 @@ public sealed class CombatVisualCatalog : ScriptableObject
     public CombatEffectProfile Melee, Ranged, Confusion, Root, Steal, Heal, Utility;
     public CombatEffectProfile Fire, Ice, Lightning;
     public List<StatusEntry> Statuses = new();
-    public List<GameObject> ImportedEffects = new();
     static CombatVisualCatalog instance;
     public static CombatVisualCatalog Instance => instance != null ? instance : instance = Resources.Load<CombatVisualCatalog>("CombatEffects/Catalog");
     public StatusVisualProfile ForStatus(StatusEffect status) => status.VisualProfile != null ? status.VisualProfile :

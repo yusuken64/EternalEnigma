@@ -155,6 +155,17 @@ internal class SkillAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation || charging || !resolved) yield break;
+		if (caster is Ally hero)
+		{
+			var action = skill.SkillName switch
+			{
+				"Double Strike" or "Whirlwind" => AnimatedAction.Combo,
+				"Lunge" or "Shadow Step" => AnimatedAction.Dash,
+				_ => AnimatedAction.Attack
+			};
+			if (action != AnimatedAction.Attack) hero.HeroAnimator?.PlayOneShot(action);
+			if (action == AnimatedAction.Dash) AudioManager.Instance?.PlayDashSounds();
+		}
         if (castSucceeded && Visuals.Sequence == null) yield return new WaitForSecondsRealtime(.12f);
 		if (Visuals.Sequence != null) yield break;
 		if (skill.Targeting == SkillTargeting.Missile)

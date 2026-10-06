@@ -56,6 +56,14 @@ internal class MovementAction : GameAction
 			character.transform.position = worldPosition;
 			yield break;
 		}
+		if (character == Game.Instance.PlayerController?.PartyLeader)
+		{
+			var theme=Game.Instance.DungeonGenerator.ThemeCatalog.Get(Game.Instance.DungeonGenerator.CurrentVisuals);
+			var effects=AudioManager.Instance?.SoundEffects;
+			var clip=theme.Biome is EternalEnigma.Core.World.OverworldBiome.Water or EternalEnigma.Core.World.OverworldBiome.Marsh
+				? effects?.StepWater : theme.Environment==DungeonEnvironmentKind.Interior ? effects?.StepRock : effects?.StepFor(theme.Biome);
+			AudioManager.Instance?.PlayFootstep(clip,Game.Instance.CurrentDungeon.Floor.Seed,newMapPosition.x,newMapPosition.y);
+		}
 
 		bool continuous = character is Ally && Game.Instance.PlayerController?.CanContinueHeldWalk == true;
 		BeginWalk(character, continuous);
@@ -538,6 +546,10 @@ public class DeathAction : GameAction
         {
             AudioManager.Instance.SoundEffects.Enemy_death.PlayAsSound();
             target.PlayDeathAnimation();
+            if (target is Ally)
+                foreach (var enemy in Game.Instance.Enemies.Where(e => e != null && e.Vitals.HP > 0 &&
+                    TileWorldDungeon.ChevDistance(e.TilemapPosition,target.TilemapPosition) <= 3))
+                    if (enemy is Enemy monster) monster.PlayOneShot("Victory");
             yield return new WaitForSecondsRealtime(0.4f);
         }
 		if (!downed) target.VisualParent.gameObject.SetActive(false);

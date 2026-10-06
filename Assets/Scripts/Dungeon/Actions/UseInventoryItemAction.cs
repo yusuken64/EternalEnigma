@@ -91,6 +91,8 @@ internal class UseInventoryItemAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
+		if (item?.ItemDefinition != null && item.ItemName.IndexOf("Potion", System.StringComparison.OrdinalIgnoreCase) >= 0 && character is Ally hero)
+			hero.HeroAnimator?.PlayOneShot(AnimatedAction.DrinkPotion);
 		if (Visuals.Sequence != null) yield break;
 		if (Definition?.Targeting == SkillTargeting.Missile)
 			yield return MissileTargeting.Animate(character, missileHit.Cell, Definition.MissileProjectilePrefab);

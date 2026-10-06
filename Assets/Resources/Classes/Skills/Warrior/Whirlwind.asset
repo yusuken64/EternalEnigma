@@ -21,11 +21,13 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  CastTime: 1
   SPCost: 3
+  CastTime: 1
+  MissileTargets: 1
   TargetSelector:
     Team: 3
     Area: 4
+    Life: 0
   Targeting: 1
   InventoryTargetSelector:
     ItemType: 0
@@ -41,7 +43,7 @@ MonoBehaviour:
   SkillAnimation:
     Steps:
     - rid: 292415685818318946
-  VisualProfile: {fileID: 11400000, guid: df5fefcd3bdc1f24fbb9cfac5c8046fd, type: 2}
+  VisualProfile: {fileID: 11400000, guid: a47050797d9ad1940bf775f87fad0103, type: 2}
   CastSound: {fileID: 8300000, guid: 88b1cbe3caa3fee4b8b103b5edd7aba9, type: 3}
   Icon: {fileID: 21300000, guid: f93e9c74af5fe954a90ba0994041a189, type: 3}
   PassiveStatModification:

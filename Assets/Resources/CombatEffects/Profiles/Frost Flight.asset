@@ -16,6 +16,7 @@ MonoBehaviour:
     Prefab: {fileID: 9202683132916563837, guid: e7c0d657ea8d4f74bb191fd1fee38616, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
     Scale: 0.6
     Delay: 0
     Lifetime: 2
@@ -25,6 +26,7 @@ MonoBehaviour:
     Prefab: {fileID: 1297703875008057977, guid: c1f1c85e8c2fdcc4aaf86c856d12d279, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
+    FitToTarget: 0
     Scale: 0.45
     Delay: 0
     Lifetime: 2
@@ -34,16 +36,17 @@ MonoBehaviour:
     Prefab: {fileID: 3468471997980058545, guid: af5565f4f73eeb94aa55a20cbf6f78c0, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 180, z: 0}
+    FitToTarget: 0
     Scale: 0.45
     Delay: 0
     Lifetime: 2
     MinimumDiameterCells: 0
     ReferenceDiameter: 1
   Impact:
-    FitToTarget: 1
     Prefab: {fileID: 7964076635304944916, guid: df665355b9fafd04b88a08d7c8c1753f, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
+    FitToTarget: 1
     Scale: 0.65
     Delay: 0
     Lifetime: 2
@@ -53,11 +56,13 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
     Scale: 1
     Delay: 0
     Lifetime: 2
     MinimumDiameterCells: 0
     ReferenceDiameter: 1
+  AreaSound: {fileID: 0}
   CastSeconds: 0.45
   ImpactSeconds: 0.4
   ProjectileSpeed: 20

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EternalEnigma.Core.World;
 
 public class SoundEffects : MonoBehaviour
 {
@@ -30,6 +31,13 @@ public class SoundEffects : MonoBehaviour
 	public AudioClip Unpause;
 
 	//Player_Movement_SFX
+	public AudioClip StepGrass, StepRock, StepWood, StepWater, Jump, Landing, Ambush;
+	public AudioClip StepFor(OverworldBiome biome) => biome switch
+	{
+		OverworldBiome.Water or OverworldBiome.Marsh => StepWater,
+		OverworldBiome.Mountain or OverworldBiome.Volcanic or OverworldBiome.Tundra or OverworldBiome.Desert => StepRock,
+		_ => StepGrass
+	};
 	//Atk_Magic_SFX
 	//Buffs_Heals_SFX
 	public AudioClip Sleep;

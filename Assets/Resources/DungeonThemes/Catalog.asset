@@ -22,8 +22,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: a27c3b2ec69755c40b6ec5f14b4dcdfc, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: 68cab4684c05dd24baf7dc299d7753a4, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: 3d35c887b8c4d124c91afc1f749b2316, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
-    - Rock
+    - Candles
+    - Sconce
+    - Banner
+    - Books
+    - ArcanePedestal
+    - Chest
     UseTrees: 0
     Ambient: {r: 0.5775, g: 0.649, b: 0.4995, a: 1}
     LightColor: {r: 0.87, g: 0.892, b: 0.846, a: 1}
@@ -37,8 +44,14 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 09aaee4d8be8d3644bc54c4f4a5b7cdc, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: 68cab4684c05dd24baf7dc299d7753a4, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: 3d35c887b8c4d124c91afc1f749b2316, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
     - Rock
+    - Flowers
+    - Shrine
+    - DeadTree
+    - Willow
     UseTrees: 1
     Ambient: {r: 0.7075, g: 0.757, b: 0.6535, a: 1}
     LightColor: {r: 0.87, g: 0.892, b: 0.846, a: 1}
@@ -52,8 +65,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 2d8d9b661fcd0fc45844e6eef09ea067, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: e2c963c481c9daf4d9592d747405ce8c, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: e09282939e6b3d847b669b486349e2bb, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
-    - Rock
+    - Candles
+    - Sconce
+    - Banner
+    - Books
+    - ArcanePedestal
+    - Chest
     UseTrees: 0
     Ambient: {r: 0.792, g: 0.6685, b: 0.519, a: 1}
     LightColor: {r: 0.936, g: 0.898, b: 0.852, a: 1}
@@ -67,10 +87,16 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 9836a4fe459d5544b9519edd7b0fcaf6, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: e2c963c481c9daf4d9592d747405ce8c, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: e09282939e6b3d847b669b486349e2bb, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
     - Rock
     - Cactus
     - Palm
+    - Flowers
+    - Shrine
+    - DeadTree
+    - Willow
     UseTrees: 1
     Ambient: {r: 0.856, g: 0.7705, b: 0.667, a: 1}
     LightColor: {r: 0.936, g: 0.898, b: 0.852, a: 1}
@@ -84,9 +110,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: bb4fc271dca44d14190af88ef152cc0c, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: 35f5911d59ab7bc4396e5872943245f4, type: 2}
     PoolMaterial: {fileID: 2100000, guid: e0c39e133f3c9ed4380794fde9386b3c, type: 2}
+    Music: {fileID: 8300000, guid: 7816fb8c9d586a046ac48aab5f883230, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
-    - Reeds
-    - Rock
+    - Candles
+    - Sconce
+    - Banner
+    - Books
+    - ArcanePedestal
+    - Chest
     UseTrees: 0
     Ambient: {r: 0.5905, g: 0.69449997, b: 0.7075, a: 1}
     LightColor: {r: 0.874, g: 0.906, b: 0.91, a: 1}
@@ -100,9 +132,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 71b80f9fdba5b51428911dec03a998fe, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: 35f5911d59ab7bc4396e5872943245f4, type: 2}
     PoolMaterial: {fileID: 2100000, guid: b0376f7866e03fd44bf0f2cf4eee9a60, type: 2}
+    Music: {fileID: 8300000, guid: 7816fb8c9d586a046ac48aab5f883230, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
     - Reeds
     - Rock
+    - Flowers
+    - Shrine
+    - DeadTree
+    - Willow
     UseTrees: 1
     Ambient: {r: 0.7165, g: 0.7885, b: 0.7975, a: 1}
     LightColor: {r: 0.874, g: 0.906, b: 0.91, a: 1}
@@ -116,9 +154,13 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 091307c63d84dbd46ac30c7e95377bbe, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: 6e771ab5424696b4eba2c1388fdd0f3d, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: 9425fa341d8a9974eb302b48e3db1f02, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
-    - Rock
-    - MountainPeak
+    - Barrel
+    - Crate
+    - Sack
+    - Lantern
     UseTrees: 0
     Ambient: {r: 0.6035, g: 0.61, b: 0.6295, a: 1}
     LightColor: {r: 0.878, g: 0.88, b: 0.88600004, a: 1}
@@ -132,9 +174,13 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 00bb8c7b758f0c347b2e06b093e625da, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: 6e771ab5424696b4eba2c1388fdd0f3d, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: 9425fa341d8a9974eb302b48e3db1f02, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
     - Rock
     - MountainPeak
+    - MountainSpires
+    - MountainRidge
     UseTrees: 1
     Ambient: {r: 0.7255, g: 0.73, b: 0.7435, a: 1}
     LightColor: {r: 0.878, g: 0.88, b: 0.88600004, a: 1}
@@ -148,9 +194,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: a234132eb94d38f49b63c9519a1d7c39, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: dedf7d6893721a04abaf253d59b8375f, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: 44161982ed3f6bb47bdd8e9b3ec166df, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
-    - CryptRoots
-    - Mushrooms
+    - Candles
+    - Sconce
+    - Banner
+    - Books
+    - ArcanePedestal
+    - Chest
     UseTrees: 0
     Ambient: {r: 0.532, g: 0.597, b: 0.493, a: 1}
     LightColor: {r: 0.856, g: 0.876, b: 0.844, a: 1}
@@ -164,9 +216,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 3fdf316293c9a114e80eb5628962e547, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: dedf7d6893721a04abaf253d59b8375f, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: 44161982ed3f6bb47bdd8e9b3ec166df, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
     - CryptRoots
     - Mushrooms
+    - Flowers
+    - Shrine
+    - DeadTree
+    - Willow
     UseTrees: 1
     Ambient: {r: 0.676, g: 0.721, b: 0.649, a: 1}
     LightColor: {r: 0.856, g: 0.876, b: 0.844, a: 1}
@@ -180,9 +238,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: b52659b92005c8b45a2ba0e873eaa5f3, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: a234f74d2d98870459f8529d3a9664a8, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: 9425fa341d8a9974eb302b48e3db1f02, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
-    - Rock
-    - SnowPine
+    - Candles
+    - Sconce
+    - Banner
+    - Books
+    - ArcanePedestal
+    - Chest
     UseTrees: 0
     Ambient: {r: 0.792, g: 0.8765, b: 0.909, a: 1}
     LightColor: {r: 0.936, g: 0.962, b: 0.972, a: 1}
@@ -196,9 +260,13 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 047d381183de2f34cb539be4dbd101f6, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: a234f74d2d98870459f8529d3a9664a8, type: 2}
     PoolMaterial: {fileID: 0}
+    Music: {fileID: 8300000, guid: 9425fa341d8a9974eb302b48e3db1f02, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
     - Rock
     - SnowPine
+    - SnowRock
+    - Shrine
     UseTrees: 1
     Ambient: {r: 0.856, g: 0.9145, b: 0.93700004, a: 1}
     LightColor: {r: 0.936, g: 0.962, b: 0.972, a: 1}
@@ -212,10 +280,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: f811f2199066e0949af59dfc9ebab459, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: cc84901d5db68d04db675cec2aefb86f, type: 2}
     PoolMaterial: {fileID: 2100000, guid: 4680c8dbf76191643aa1aa0292eaf213, type: 2}
+    Music: {fileID: 8300000, guid: 171c69d47c1e3ba4da9363141867484f, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
-    - CryptRoots
-    - Mushrooms
-    - Reeds
+    - Candles
+    - Sconce
+    - Banner
+    - Books
+    - ArcanePedestal
+    - Chest
     UseTrees: 0
     Ambient: {r: 0.532, g: 0.571, b: 0.493, a: 1}
     LightColor: {r: 0.856, g: 0.86800003, b: 0.844, a: 1}
@@ -229,10 +302,16 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 69173894a3f54444094001697984c175, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: cc84901d5db68d04db675cec2aefb86f, type: 2}
     PoolMaterial: {fileID: 2100000, guid: a56d2aacad7938340a639126498b2d0f, type: 2}
+    Music: {fileID: 8300000, guid: 171c69d47c1e3ba4da9363141867484f, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
     - CryptRoots
     - Mushrooms
     - Reeds
+    - Flowers
+    - Shrine
+    - DeadTree
+    - Willow
     UseTrees: 1
     Ambient: {r: 0.676, g: 0.703, b: 0.649, a: 1}
     LightColor: {r: 0.856, g: 0.86800003, b: 0.844, a: 1}
@@ -246,9 +325,15 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: ae327463d4061be4a9ff8d74b5860751, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: b7206ac1a46bfd64384ba0070b205552, type: 2}
     PoolMaterial: {fileID: 2100000, guid: a4da3e3195367f74ca484850c42f9efa, type: 2}
+    Music: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
-    - Basalt
-    - CharredTree
+    - Candles
+    - Sconce
+    - Banner
+    - Books
+    - ArcanePedestal
+    - Chest
     UseTrees: 0
     Ambient: {r: 0.47349998, g: 0.4605, b: 0.48, a: 1}
     LightColor: {r: 0.838, g: 0.834, b: 0.84000003, a: 1}
@@ -262,10 +347,17 @@ MonoBehaviour:
     Accent: {fileID: 11400000, guid: 4363f7045df2b404c9f9e0a225840ad2, type: 2}
     DecorationMaterial: {fileID: 2100000, guid: b7206ac1a46bfd64384ba0070b205552, type: 2}
     PoolMaterial: {fileID: 2100000, guid: 6b4f10416176a394f82380aa7516f901, type: 2}
+    Music: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
+    BossMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
     Decorations:
     - Basalt
     - CharredTree
+    - Flowers
+    - Shrine
+    - DeadTree
+    - Willow
     UseTrees: 1
     Ambient: {r: 0.6355, g: 0.6265, b: 0.64, a: 1}
     LightColor: {r: 0.838, g: 0.834, b: 0.84000003, a: 1}
     LightIntensity: 1.1
+  FallbackMusic: {fileID: 8300000, guid: 1bacb8e1ec3231d45b4a19d8d5cd3fbc, type: 3}

@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: DamageShieldStatusEffect
   m_EditorClassIdentifier: EternalEnigma.Game::StatusVisualProfile
   Aura:
-    Prefab: {fileID: 8799607876693252971, guid: b79e0ce52d7402f4f939f4b2473035bf, type: 3}
+    Prefab: {fileID: 2282852803726124617, guid: b99fa524ae2f0c549b3937118f9bcb8c, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
+    FitToTarget: 0
     Scale: 0.3
     Delay: 0
     Lifetime: 2
     MinimumDiameterCells: 3
-    ReferenceDiameter: 17
+    ReferenceDiameter: 14.850003
   Priority: 20
+  HasLoop: 0
+  Loop: 9
+  Icon: {fileID: 21300000, guid: 445d0934d59f9034b994416d4d5732e2, type: 3}
+  Overhead: 0

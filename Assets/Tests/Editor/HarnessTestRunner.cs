@@ -273,6 +273,12 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Themes")]
     public static void RunDungeonThemes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonThemeTransitionTests", "EternalEnigma.Tests.DungeonThemeExplorerTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Feel Validation")]
+    public static void RunFeelValidation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonControlTests.AnimationModesKeepOutcomesAndInstantEvents",
+        "HeldWalkingTests.TownHeldStepsAndDirectionChangesKeepTimeAndReleaseFinishesSquare",
+        "EternalEnigma.Tests.DungeonThemeTransitionTests.InteriorOutdoorTransitionsKeepSelectionFogAndSingleOutput");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Environment")]
     public static void RunEnvironment() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EnvironmentPlaygroundTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Environment Assets")]

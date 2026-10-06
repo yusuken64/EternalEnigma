@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: SongStatusEffect
   m_EditorClassIdentifier: EternalEnigma.Game::StatusVisualProfile
   Aura:
-    Prefab: {fileID: 2357778112202785236, guid: 702264fa79f8dd341a733765bf8f1b8b, type: 3}
+    Prefab: {fileID: 1472202952956458230, guid: 25ca6450315b0264682075e620b332f4, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
+    FitToTarget: 0
     Scale: 0.3
     Delay: 0
     Lifetime: 2
     MinimumDiameterCells: 3
-    ReferenceDiameter: 10.000002
+    ReferenceDiameter: 3
   Priority: 10
+  HasLoop: 0
+  Loop: 9
+  Icon: {fileID: 21300000, guid: 42c7c71f86735fd49805863dfd01f08e, type: 3}
+  Overhead: 0

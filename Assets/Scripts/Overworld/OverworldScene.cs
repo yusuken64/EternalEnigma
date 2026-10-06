@@ -322,6 +322,12 @@ public sealed class OverworldScene : MonoBehaviour
     private IEnumerator Walk()
     {
         moving = true;
+		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
+		{
+			var effects=Common.Instance.AudioManager?.SoundEffects;
+			var biome=Map.CurrentGrid.BiomeAt(Position) ?? OverworldBiome.Grassland;
+			Common.Instance.AudioManager?.PlayFootstep(effects?.StepFor(biome),Campaign.Seed,Position.X,Position.Y);
+		}
         var party = new[] { Player }.Concat(followers).ToArray();
         var from = party.Select(ally => ally.transform.position).ToArray();
         var to = new Vector3[party.Length];

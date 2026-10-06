@@ -16,6 +16,9 @@ public class Enemy : Character
 
 	public EnemyState CurrentEnemyState;
 	public Animator Animator;
+	private AnimatedAction? statusLoop;
+	private Coroutine oneShot;
+	private static readonly HashSet<string> missingStates = new();
 
 	public string Description { get; internal set; }
 
@@ -160,9 +163,11 @@ public class Enemy : Character
 
     internal void Provoke()
     {
+		bool wasDormant = IsDormant;
         var behavior = GetComponent<EnemyBehavior>();
         if (behavior != null) behavior.Provoke();
         else IsDormant = false;
+		if (wasDormant && !IsDormant) PlayOneShot("SenseSomethingStart");
     }
 
 	public override void StartTurn()
@@ -191,9 +196,39 @@ public class Enemy : Character
 	private void PlayState(string state)
 	{
 		if (GetComponent<EnemyBehavior>()?.Disguised == true) return;
-		if (state == null) throw new InvalidOperationException($"Enemy '{name}' has no matching animation state.");
+		if (state == null) return;
 		Animator.Play(UnityEngine.Animator.StringToHash($"{Animator.GetLayerName(0)}.{state}"), 0, 0f);
 		Animator.Update(0f);
+	}
+	private string StateOrIdle(string action)
+	{
+		var state = AnimationStates(action).FirstOrDefault();
+		if (state != null) return state;
+#if UNITY_EDITOR
+		string key = Animator.runtimeAnimatorController.name + ":" + action;
+		if (missingStates.Add(key)) Debug.LogWarning($"Enemy animation '{action}' missing on {Animator.runtimeAnimatorController.name}; using IdleNormal.", this);
+#endif
+		return AnimationStates("IdleNormal").FirstOrDefault();
+	}
+	internal void PlayOneShot(string action)
+	{
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations || Vitals.HP <= 0) return;
+		if (oneShot != null) StopCoroutine(oneShot);
+		var state = StateOrIdle(action);
+		PlayState(state);
+		var clip = Animator.runtimeAnimatorController.animationClips.FirstOrDefault(c => c.name == state || c.name.EndsWith("_" + state, StringComparison.OrdinalIgnoreCase));
+		oneShot = StartCoroutine(RestoreIdle(clip != null ? clip.length : .6f));
+	}
+	private IEnumerator RestoreIdle(float delay)
+	{
+		yield return new WaitForSecondsRealtime(delay);
+		oneShot = null;
+		if (Vitals.HP > 0) PlayIdleAnimation();
+	}
+	internal void SetStatusLoop(AnimatedAction? loop)
+	{
+		statusLoop = loop;
+		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations) PlayIdleAnimation();
 	}
 	internal override void PlayWalkAnimation()
 	{
@@ -206,20 +241,22 @@ public class Enemy : Character
 	}
 	internal override void PlayIdleAnimation()
 	{
-		PlayState(AnimationStates("IdleNormal").FirstOrDefault());
+		PlayState(StateOrIdle(statusLoop == AnimatedAction.Dizzy ? "Dizzy" :
+			!IsDormant && PursuitTarget != null && TileWorldDungeon.ChevDistance(TilemapPosition,PursuitTarget.TilemapPosition) <= 4
+				? "IdleBattle" : "IdleNormal"));
 	}
 	internal override void PlayAttackAnimation()
 	{
 		var states = AnimationStates("Attack");
-		PlayState(states.Length > 0 ? states[UnityEngine.Random.Range(0, states.Length)] : null);
+		PlayState(states.Length > 0 ? states[UnityEngine.Random.Range(0, states.Length)] : StateOrIdle("Attack"));
 	}
 	internal override void PlayTakeDamageAnimation()
 	{
-		PlayState(AnimationStates("GetHit").FirstOrDefault());
+		PlayState(StateOrIdle("GetHit"));
 	}
 	internal override void PlayDeathAnimation()
 	{
-		PlayState(AnimationStates("Die").FirstOrDefault());
+		PlayState(StateOrIdle("Die"));
 	}
 
 	public override List<GameAction> GetTrapSideEffects()

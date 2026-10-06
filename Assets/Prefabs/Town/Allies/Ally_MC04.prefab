@@ -2960,6 +2960,13 @@ MonoBehaviour:
   Skills: []
   SkillRanks: []
   HighestLevel: 1
+  Level: 1
+  Experience: 0
+  Hp: -1
+  Sp: -1
+  HasHunger: 0
+  Hunger: 0
+  HungerAccumulate: 0
   PrimaryClass: {fileID: 11400000, guid: 6e89077100147874abcc34d7fdd4a3ed, type: 2}
   SecondaryClass: {fileID: 11400000, guid: f6f4a7a332340c94c98a7b37f045f370, type: 2}
   CirlcleRenderer: {fileID: 8103258936086618030}
@@ -2987,9 +2994,7 @@ MonoBehaviour:
       AnimationAction: 0
       Animations:
       - {fileID: 1827226128182048838, guid: 1bafb601ddcb4addba45960480a5aeb2, type: 3}
-      - {fileID: 1827226128182048838, guid: 1bafb601ddcb4addba45960480a5aeb2, type: 3}
       - {fileID: 1827226128182048838, guid: cb23c5f21cab46e3affd1ea0e5d56aec, type: 3}
-      - {fileID: 1827226128182048838, guid: 1bafb601ddcb4addba45960480a5aeb2, type: 3}
     - AnimationName: Attack
       AnimationAction: 1
       Animations:
@@ -3049,12 +3054,22 @@ MonoBehaviour:
       AnimationAction: 11
       Animations:
       - {fileID: 1827226128182048838, guid: cfaabfb1cacb404d929d26a65fb6b39b, type: 3}
-      - {fileID: 1827226128182048838, guid: 74880a48514a4e568f76b534d5d6fd83, type: 3}
       - {fileID: 1827226128182048838, guid: 79a165862b184052b3c7d1e742eebec7, type: 3}
     - AnimationName: Dizzy
       AnimationAction: 12
       Animations:
       - {fileID: 1827226128182048838, guid: 13258af6c60c4eb889492ad6ee0a1f13, type: 3}
+    - AnimationName: Sleeping
+      AnimationAction: 13
+      Animations:
+      - {fileID: 1827226128182048838, guid: 8eb00baf75b047369b05198ebfea4e7a, type: 3}
+    - AnimationName: DrinkPotion
+      AnimationAction: 14
+      Animations:
+      - {fileID: 1827226128182048838, guid: e7182222bae74c0eaf3b9761cb05ee00, type: 3}
+    - AnimationName: DefendHit
+      AnimationAction: 15
+      Animations: []
   - StanceName: SingleSword
     Stance: 1
     AnimatorController: {fileID: 9100000, guid: 60c1598b6e33483e9637b7c471af3633, type: 2}
@@ -3062,10 +3077,8 @@ MonoBehaviour:
     - AnimationName: Idle
       AnimationAction: 0
       Animations:
-      - {fileID: 1827226128182048838, guid: 45b5dff191024707bfc9b322461ae1d9, type: 3}
       - {fileID: 1827226128182048838, guid: 7c26a442c7b34c8ea78b6b741e9a1467, type: 3}
       - {fileID: 1827226128182048838, guid: f090967491af4ae0bfd0efe9afa579df, type: 3}
-      - {fileID: 1827226128182048838, guid: 7c26a442c7b34c8ea78b6b741e9a1467, type: 3}
     - AnimationName: Attack
       AnimationAction: 1
       Animations:
@@ -3124,12 +3137,20 @@ MonoBehaviour:
       AnimationAction: 11
       Animations:
       - {fileID: 1827226128182048838, guid: 5206da5d8b5941c2a702e97c6835e11f, type: 3}
-      - {fileID: 1827226128182048838, guid: e4b00b43f4b945e99749bc6badf38dd0, type: 3}
       - {fileID: 1827226128182048838, guid: eb09d9206e3f4263a1a98329d696aece, type: 3}
     - AnimationName: Dizzy
       AnimationAction: 12
       Animations:
       - {fileID: 1827226128182048838, guid: a55d88403c3a42babd725593586753e2, type: 3}
+    - AnimationName: Sleeping
+      AnimationAction: 13
+      Animations: []
+    - AnimationName: DrinkPotion
+      AnimationAction: 14
+      Animations: []
+    - AnimationName: DefendHit
+      AnimationAction: 15
+      Animations: []
   - StanceName: SwordAndShield
     Stance: 2
     AnimatorController: {fileID: 9100000, guid: 460f8a3bb5d64cdb84825bb816d5cc0e, type: 2}
@@ -3138,9 +3159,7 @@ MonoBehaviour:
       AnimationAction: 0
       Animations:
       - {fileID: 1827226128182048838, guid: d9b155d656a64f02adc39213c8d11c86, type: 3}
-      - {fileID: 1827226128182048838, guid: d9b155d656a64f02adc39213c8d11c86, type: 3}
       - {fileID: 1827226128182048838, guid: 02f821ae69a045f9b39d9d6a4ecaf0e5, type: 3}
-      - {fileID: 1827226128182048838, guid: d9b155d656a64f02adc39213c8d11c86, type: 3}
     - AnimationName: Attack
       AnimationAction: 1
       Animations:
@@ -3199,12 +3218,20 @@ MonoBehaviour:
       AnimationAction: 11
       Animations:
       - {fileID: 1827226128182048838, guid: 756ddf9c459e4a6b9c95d886fe4a888e, type: 3}
-      - {fileID: 1827226128182048838, guid: 6ce35619c8de4874862673cb5e7c1404, type: 3}
       - {fileID: 1827226128182048838, guid: e4f488d49560434ba0df0432cafcd7fb, type: 3}
     - AnimationName: Dizzy
       AnimationAction: 12
       Animations:
       - {fileID: 1827226128182048838, guid: b393be36f8ca43579b5d815bc9107be6, type: 3}
+    - AnimationName: Sleeping
+      AnimationAction: 13
+      Animations: []
+    - AnimationName: DrinkPotion
+      AnimationAction: 14
+      Animations: []
+    - AnimationName: DefendHit
+      AnimationAction: 15
+      Animations: []
   - StanceName: Spear
     Stance: 3
     AnimatorController: {fileID: 9100000, guid: 31f200a8502146c1903e2e9f490c79b4, type: 2}
@@ -3213,9 +3240,7 @@ MonoBehaviour:
       AnimationAction: 0
       Animations:
       - {fileID: 1827226128182048838, guid: c15f65c28edd49cf946d10fa9a3449d6, type: 3}
-      - {fileID: 1827226128182048838, guid: c15f65c28edd49cf946d10fa9a3449d6, type: 3}
       - {fileID: 1827226128182048838, guid: 1046c7e6e73a4b2484e80eed33505885, type: 3}
-      - {fileID: 1827226128182048838, guid: c15f65c28edd49cf946d10fa9a3449d6, type: 3}
     - AnimationName: Attack
       AnimationAction: 1
       Animations:
@@ -3274,12 +3299,20 @@ MonoBehaviour:
       AnimationAction: 11
       Animations:
       - {fileID: 1827226128182048838, guid: 763af1dfc97544bab231b8a2b6844b9e, type: 3}
-      - {fileID: 1827226128182048838, guid: 900e0711afbf4ebd99d0b1bd63cf7198, type: 3}
       - {fileID: 1827226128182048838, guid: b564eed1ae114b02900301ab2957adec, type: 3}
     - AnimationName: Dizzy
       AnimationAction: 12
       Animations:
       - {fileID: 1827226128182048838, guid: 94b9c8db09c44b44a9c38f171ce0595b, type: 3}
+    - AnimationName: Sleeping
+      AnimationAction: 13
+      Animations: []
+    - AnimationName: DrinkPotion
+      AnimationAction: 14
+      Animations: []
+    - AnimationName: DefendHit
+      AnimationAction: 15
+      Animations: []
   - StanceName: DoubleSwordStance
     Stance: 4
     AnimatorController: {fileID: 9100000, guid: 0115ead1a74c4fb1ac5ea9f489447a03, type: 2}
@@ -3288,9 +3321,7 @@ MonoBehaviour:
       AnimationAction: 0
       Animations:
       - {fileID: 1827226128182048838, guid: 45b5dff191024707bfc9b322461ae1d9, type: 3}
-      - {fileID: 1827226128182048838, guid: 45b5dff191024707bfc9b322461ae1d9, type: 3}
       - {fileID: 1827226128182048838, guid: 21ad13564c094ca68b84a30fb231fe8c, type: 3}
-      - {fileID: 1827226128182048838, guid: 45b5dff191024707bfc9b322461ae1d9, type: 3}
     - AnimationName: Attack
       AnimationAction: 1
       Animations:
@@ -3349,12 +3380,20 @@ MonoBehaviour:
       AnimationAction: 11
       Animations:
       - {fileID: 1827226128182048838, guid: 3a8397592f6742088616ccb6c952f774, type: 3}
-      - {fileID: 1827226128182048838, guid: 06185c0abdca4fe78d4a32ea2ea8b834, type: 3}
       - {fileID: 1827226128182048838, guid: a75a1b45bc6148039575078a8b230097, type: 3}
     - AnimationName: Dizzy
       AnimationAction: 12
       Animations:
       - {fileID: 1827226128182048838, guid: 6073ad2d7a1740c1ba566a2226727f07, type: 3}
+    - AnimationName: Sleeping
+      AnimationAction: 13
+      Animations: []
+    - AnimationName: DrinkPotion
+      AnimationAction: 14
+      Animations: []
+    - AnimationName: DefendHit
+      AnimationAction: 15
+      Animations: []
   - StanceName: BowAndArrowStance
     Stance: 5
     AnimatorController: {fileID: 9100000, guid: 72782fb16fb047dbb82a01f6680fd5f8, type: 2}
@@ -3363,9 +3402,7 @@ MonoBehaviour:
       AnimationAction: 0
       Animations:
       - {fileID: 1827226128182048838, guid: 53ed3e93487a4d8aba967ddc43693a39, type: 3}
-      - {fileID: 1827226128182048838, guid: 53ed3e93487a4d8aba967ddc43693a39, type: 3}
       - {fileID: 1827226128182048838, guid: 44cfd85782d046a2b3eef4269f648bab, type: 3}
-      - {fileID: 1827226128182048838, guid: 53ed3e93487a4d8aba967ddc43693a39, type: 3}
     - AnimationName: Attack
       AnimationAction: 1
       Animations:
@@ -3424,12 +3461,20 @@ MonoBehaviour:
       AnimationAction: 11
       Animations:
       - {fileID: 1827226128182048838, guid: 3ee1ea431dc04a279f16005f1394c922, type: 3}
-      - {fileID: 1827226128182048838, guid: 13030b065a6e46a3a4231684580110ab, type: 3}
       - {fileID: 1827226128182048838, guid: d436de99efa44241a612bd0b0ba1b101, type: 3}
     - AnimationName: Dizzy
       AnimationAction: 12
       Animations:
       - {fileID: 1827226128182048838, guid: 8e488496a27241c6abcec003a6c1e619, type: 3}
+    - AnimationName: Sleeping
+      AnimationAction: 13
+      Animations: []
+    - AnimationName: DrinkPotion
+      AnimationAction: 14
+      Animations: []
+    - AnimationName: DefendHit
+      AnimationAction: 15
+      Animations: []
   - StanceName: TwoHandSword
     Stance: 6
     AnimatorController: {fileID: 9100000, guid: 02e5eecee0504ce987c3aa6f7cd04eec, type: 2}
@@ -3438,9 +3483,7 @@ MonoBehaviour:
       AnimationAction: 0
       Animations:
       - {fileID: 1827226128182048838, guid: 25b70948d609494db0e8f43e4f2080ae, type: 3}
-      - {fileID: 1827226128182048838, guid: 25b70948d609494db0e8f43e4f2080ae, type: 3}
       - {fileID: 1827226128182048838, guid: 11182471c91f41beb36c1fb7a83be4e7, type: 3}
-      - {fileID: 1827226128182048838, guid: 25b70948d609494db0e8f43e4f2080ae, type: 3}
     - AnimationName: Attack
       AnimationAction: 1
       Animations:
@@ -3499,12 +3542,20 @@ MonoBehaviour:
       AnimationAction: 11
       Animations:
       - {fileID: 1827226128182048838, guid: 8a905c10261843b0a05f9366d4313a03, type: 3}
-      - {fileID: 1827226128182048838, guid: 128203ec348c41309767dc272cb41260, type: 3}
       - {fileID: 1827226128182048838, guid: bff5dc4deb554964babd615abcb9b4de, type: 3}
     - AnimationName: Dizzy
       AnimationAction: 12
       Animations:
       - {fileID: 1827226128182048838, guid: 82e44c6a5a274baf8b916219d2d5a967, type: 3}
+    - AnimationName: Sleeping
+      AnimationAction: 13
+      Animations: []
+    - AnimationName: DrinkPotion
+      AnimationAction: 14
+      Animations: []
+    - AnimationName: DefendHit
+      AnimationAction: 15
+      Animations: []
   - StanceName: MagicWand
     Stance: 7
     AnimatorController: {fileID: 9100000, guid: e8892ed92f9a4079a3a789e7863095e6, type: 2}
@@ -3513,16 +3564,12 @@ MonoBehaviour:
       AnimationAction: 0
       Animations:
       - {fileID: 1827226128182048838, guid: 194df4c7cc8346e4b4534e4a280a9449, type: 3}
-      - {fileID: 1827226128182048838, guid: 194df4c7cc8346e4b4534e4a280a9449, type: 3}
       - {fileID: 1827226128182048838, guid: 04f3bd7b0e26407e8b0a909e843645c8, type: 3}
-      - {fileID: 1827226128182048838, guid: 194df4c7cc8346e4b4534e4a280a9449, type: 3}
     - AnimationName: Attack
       AnimationAction: 1
       Animations:
       - {fileID: 1827226128182048838, guid: 63445bd85bbc45f4bd5b960da7a0d271, type: 3}
       - {fileID: 1827226128182048838, guid: 7229119cf0b24e88a7bf5cea143adc84, type: 3}
-      - {fileID: 1827226128182048838, guid: de44b1f09e7f4f93aa7a4a9306ed2441, type: 3}
-      - {fileID: 1827226128182048838, guid: d1bc4a5c4d5e4f138779dee61b3ae81e, type: 3}
       - {fileID: 1827226128182048838, guid: 7ef0e54f634744baa99071ee64b2510d, type: 3}
     - AnimationName: Combo
       AnimationAction: 2
@@ -3575,12 +3622,20 @@ MonoBehaviour:
       AnimationAction: 11
       Animations:
       - {fileID: 1827226128182048838, guid: d5f8ca858e184045a77d001b6f01800b, type: 3}
-      - {fileID: 1827226128182048838, guid: 5edb52b622b746dc992b1e91a8c9db70, type: 3}
       - {fileID: 1827226128182048838, guid: e421ef685c48439195d34d4e26cf530e, type: 3}
     - AnimationName: Dizzy
       AnimationAction: 12
       Animations:
       - {fileID: 1827226128182048838, guid: f393b37a82f74243a8e61ff1a0c248e9, type: 3}
+    - AnimationName: Sleeping
+      AnimationAction: 13
+      Animations: []
+    - AnimationName: DrinkPotion
+      AnimationAction: 14
+      Animations: []
+    - AnimationName: DefendHit
+      AnimationAction: 15
+      Animations: []
   RightHandObjects:
   - {fileID: 3565226088052014338}
   - {fileID: 3781876875164986526}

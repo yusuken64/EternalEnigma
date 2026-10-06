@@ -190,7 +190,15 @@ public static class PaintedEnvironmentAuthoring
             bool outdoor=parts[1]=="Outdoor",boundary=parts[2]=="Boundary",accent=parts[2]=="Accent";
             Color tint=StoneTints[biome];
             if(accent) tint=Color.Lerp(StoneTints[biome],new Color(.64f,.49f,.39f),.35f);
-            Set(m,Texture(outdoor&&!accent?"Ground_"+parts[0]:boundary?"Wall":"Floor"),outdoor&&!accent?Color.white:tint,boundary?1: .5f);
+            string masonry = parts[0] switch
+            {
+                "Forest" or "Marsh" => "MossMasonry", "Tundra" => "IceMasonry",
+                "Volcanic" => "BasaltEmbers", _ => "Masonry"
+            };
+            var surface = boundary && !outdoor
+                ? AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Art/DungeonThemes/Source/" + masonry + ".png")
+                : Texture(outdoor&&!accent?"Ground_"+parts[0]:boundary?"Wall":"Floor");
+            Set(m,surface,outdoor&&!accent?Color.white:tint,boundary?1: .5f);
             m.SetOverrideTag("EnvironmentProjection",boundary?"Box":"Planar");
         }
         for(int b=0;b<Biomes.Length;b++)

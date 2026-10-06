@@ -34,6 +34,7 @@ internal class LevelUpAction : GameAction
 	{
 		character = recipient != null ? recipient : character;
 		if (skipAnimation) yield break;
+		(character as Ally)?.HeroAnimator?.PlayOneShot(AnimatedAction.LevelUp);
 		AudioManager.Instance.SoundEffects.LevelUp.PlayAsSound();
         DungeonFloatingText.Show(Game.Instance, "Level Up", new Color(.84f,.76f,1f), character, true);
 

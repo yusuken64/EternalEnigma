@@ -20,6 +20,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     readonly Dictionary<GameObject, Stack<Instance>> pool = new();
     readonly Dictionary<Character, Dictionary<string, StatusVisualProfile>> statuses = new();
     readonly Dictionary<Character, Dictionary<StatusVisualProfile, GameObject>> auras = new();
+    readonly Dictionary<Character, AnimatedAction?> loops = new();
     readonly Dictionary<Character, GameObject> casting = new();
     internal void ClearCasting(Character c)
     {
@@ -219,12 +220,25 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     internal void SetStatuses(Character character, Dictionary<string, StatusVisualProfile> snapshot)
     {
         if (character == null) return;
+        bool taunt = character is Enemy && snapshot.ContainsKey(typeof(TauntStatusEffect).FullName) &&
+            (!statuses.TryGetValue(character, out var old) || !old.ContainsKey(typeof(TauntStatusEffect).FullName));
         statuses[character] = snapshot;
         Reconcile(character);
+        if (taunt && DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
+            ((Enemy)character).PlayOneShot("Taunt");
     }
 
     void Reconcile(Character character)
     {
+        AnimatedAction? loop = statuses[character].Values.Where(p => p != null && p.HasLoop)
+            .OrderByDescending(p => p.Loop == AnimatedAction.Sleeping ? 4 : p.Loop == AnimatedAction.Dizzy ? 3 : p.Loop == AnimatedAction.Defend ? 2 : 1)
+            .ThenByDescending(p => p.Priority).Select(p => (AnimatedAction?)p.Loop).FirstOrDefault();
+        if (!loops.TryGetValue(character, out var previous) || previous != loop)
+        {
+            loops[character] = loop;
+            if (character is Ally ally) ally.HeroAnimator?.SetStatusLoop(loop);
+            else if (character is Enemy enemy) enemy.SetStatusLoop(loop);
+        }
         if (!auras.TryGetValue(character, out var existing)) auras[character] = existing = new();
         var desired = statuses[character].Values.Where(p => p != null).Distinct()
             .OrderByDescending(p => p.Priority).ThenBy(p => p.name).Take(3).ToList();
@@ -234,7 +248,9 @@ public sealed class CombatEffectPlayer : MonoBehaviour
             if (!existing.ContainsKey(profile))
             {
                 var anchor = character.VisualParent != null ? character.VisualParent.transform : character.transform;
-                existing[profile] = Rent(profile.Aura, Ground(Body(character, Game.Instance.CurrentDungeon.WorldToCell(character.transform.position))), Quaternion.identity, true, follow: anchor);
+                var body = Body(character, Game.Instance.CurrentDungeon.WorldToCell(character.transform.position));
+                var point = profile.Overhead ? body + Vector3.up * 1.1f : Ground(body);
+                existing[profile] = Rent(profile.Aura, point, Quaternion.identity, true, follow: anchor);
             }
     }
 
@@ -264,7 +280,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         StopAllCoroutines();
         foreach (var item in active) if (item.Object != null) Destroy(item.Object);
         foreach (var stack in pool.Values) foreach (var item in stack) if (item.Object != null) Destroy(item.Object);
-        active.Clear(); pool.Clear(); statuses.Clear(); auras.Clear(); casting.Clear();
+        active.Clear(); pool.Clear(); statuses.Clear(); auras.Clear(); casting.Clear(); loops.Clear();
     }
     void OnDisable() => Clear();
 }

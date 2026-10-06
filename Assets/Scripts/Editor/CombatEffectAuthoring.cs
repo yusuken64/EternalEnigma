@@ -13,6 +13,67 @@ public static class CombatEffectAuthoring
     static readonly Dictionary<string, string> icons = new();
     static Dictionary<string, string> prefabs;
 
+    [MenuItem("Tools/Eternal Enigma/Combat Effects/Refresh Status Presentation")]
+    public static void RefreshStatusPresentation()
+    {
+        Initialize();
+        var catalog = AssetDatabase.LoadAssetAtPath<CombatVisualCatalog>(Root + "/Catalog.asset");
+        var used = new HashSet<Sprite>(AssetDatabase.FindAssets("t:Skill").Select(g =>
+            AssetDatabase.LoadAssetAtPath<Skill>(AssetDatabase.GUIDToAssetPath(g))?.Icon).Where(s => s != null));
+        var icons = Directory.GetFiles("Assets/RPG_skills_and_abilities/red", "*.png")
+            .OrderBy(p => p, StringComparer.Ordinal).Select(p => AssetDatabase.LoadAssetAtPath<Sprite>(p.Replace('\\', '/')))
+            .Where(s => s != null && !used.Contains(s)).ToArray();
+        int index = 0;
+        foreach (var entry in catalog.Statuses.OrderBy(e => e.TypeName, StringComparer.Ordinal))
+        {
+            var profile = entry.Profile;
+            if (profile == null) continue;
+            if (index >= icons.Length) throw new InvalidOperationException("Not enough unused status icons.");
+            profile.Icon = icons[index++];
+            string name = entry.TypeName;
+            profile.HasLoop = name.Contains("Sleep") || name.Contains("Stun") || name.Contains("Paralysis") ||
+                name.Contains("Confusion") || name.Contains("Parry") || name.Contains("DamageReduction") || name.Contains("Barrier");
+            profile.Loop = name.Contains("Sleep") ? AnimatedAction.Sleeping :
+                name.Contains("Stun") || name.Contains("Paralysis") || name.Contains("Confusion") ? AnimatedAction.Dizzy : AnimatedAction.Defend;
+            string effect = name.Contains("Curse") || name.Contains("Weaken") || name.Contains("Frailty") ? "CurseShadow" :
+                name.Contains("Burn") ? "DamageOverTimeFire" : name.Contains("Dot") ? "DamageOverTimeShadow" :
+                name.Contains("Barrier") || name.Contains("DamageShield") ? "LightDome" :
+                name.Contains("Song") ? "LightOrbitSphere" :
+                name.Contains("Sleep") || name.Contains("Stun") || name.Contains("Confusion") ? "ArcaneOrbitSphere" : null;
+            profile.Overhead = name.Contains("Sleep") || name.Contains("Stun") || name.Contains("Confusion");
+            if (effect != null) profile.Aura = Stage(effect, .3f, !profile.Overhead);
+            EditorUtility.SetDirty(profile);
+        }
+        EditorUtility.SetDirty(catalog);
+        foreach (var guid in AssetDatabase.FindAssets("t:Skill"))
+        {
+            var skill = AssetDatabase.LoadAssetAtPath<Skill>(AssetDatabase.GUIDToAssetPath(guid));
+            if (skill?.VisualProfile == null) continue;
+            string effect = skill.SkillName switch
+            {
+                "Sanctuary Wall" => "LightWallCircle", "Flame Barrier" => "FireWallCircle",
+                "Thunderclap" => "LightningPillarBlast", "Tempest" => "StormPillarBlast",
+                "Siphon" => "Shadow Beam", "Double Strike" or "Whirlwind" or "Lunge" => "ArcaneSlash",
+                _ => null
+            };
+            if (effect == null) continue;
+            string path = Root + "/Profiles/Skill " + skill.SkillName.Replace(':', '-') + ".asset";
+            var profile = AssetDatabase.LoadAssetAtPath<CombatEffectProfile>(path);
+            if (profile == null)
+            {
+                profile = UnityEngine.Object.Instantiate(skill.VisualProfile);
+                AssetDatabase.CreateAsset(profile, path);
+            }
+            profile.Impact = Stage(effect, .5f, effect.Contains("Wall") || effect.Contains("Pillar"));
+            profile.Impact.FitToTarget = true;
+            if (effect.Contains("Wall")) profile.Area = Stage(effect, .4f, true);
+            skill.VisualProfile = profile;
+            EditorUtility.SetDirty(profile); EditorUtility.SetDirty(skill);
+        }
+        NormalizeGroundStages();
+        AssetDatabase.SaveAssets();
+    }
+
     static void Group(string family, string names) { foreach (var n in names.Split('|')) families[n] = family; }
     static void Icons(string folder, string pairs)
     {
@@ -61,7 +122,6 @@ public static class CombatEffectAuthoring
         catalog.Heal ??= Profile("Life", false, false);
         catalog.Utility ??= Profile("Utility", false, false);
         catalog.Fire ??= Profile("Fire", false, false); catalog.Ice ??= Profile("Frost", false, false); catalog.Lightning ??= Profile("Lightning", false, false);
-        catalog.ImportedEffects = prefabs.Values.Select(AssetDatabase.LoadAssetAtPath<GameObject>).ToList();
         foreach (var type in TypeCache.GetTypesDerivedFrom<StatusEffect>().Where(t => !t.IsAbstract))
         {
             if (catalog.Statuses.Any(e => e.TypeName == type.FullName)) continue;
@@ -191,6 +251,7 @@ public static class CombatEffectAuthoring
                     if (script != null && script.GetType().Name != "csAnimationSpin" && script.GetType().Name != "MagicRotation") Object.DestroyImmediate(script);
                 foreach (var collider in go.GetComponentsInChildren<Collider>(true)) Object.DestroyImmediate(collider);
                 foreach (var light in go.GetComponentsInChildren<Light>(true)) Object.DestroyImmediate(light);
+                foreach (var audio in go.GetComponentsInChildren<AudioSource>(true)) Object.DestroyImmediate(audio);
                 foreach (var ps in go.GetComponentsInChildren<ParticleSystem>(true)) { var main = ps.main; main.stopAction = ParticleSystemStopAction.None; main.playOnAwake = false; main.scalingMode = ParticleSystemScalingMode.Hierarchy; }
                 ConvertHorizontalBillboards(go);
                 asset = PrefabUtility.SaveAsPrefabAsset(go, path);

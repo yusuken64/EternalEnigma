@@ -94,10 +94,35 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
     }
 
 	private int effectClipIndex;
+	private float nextFootstep;
+	internal void PlayFootstep(AudioClip clip, int seed, int x, int y)
+	{
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations || clip == null ||
+			Time.unscaledTime < nextFootstep || EffectAudioSources.Count == 0) return;
+		nextFootstep = Time.unscaledTime + .075f;
+		var source = EffectAudioSources[effectClipIndex++ % EffectAudioSources.Count];
+		if (source == null || source.isPlaying) return;
+		uint hash = DungeonPresentation.Hash(seed, x, y);
+		source.outputAudioMixerGroup = EffectAudioMixerGroup;
+		source.pitch = .94f + (hash % 13) * .01f;
+		source.PlayOneShot(clip, .45f);
+	}
+	internal void PlayDashSounds()
+	{
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations) return;
+		PlaySoundEffect(SoundEffects?.Jump);
+		StartCoroutine(CompleteDashSound());
+	}
+	private IEnumerator CompleteDashSound()
+	{
+		yield return new WaitForSecondsRealtime(.15f);
+		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations) PlaySoundEffect(SoundEffects?.Landing);
+	}
 
 	internal void PlaySoundEffect(AudioClip soundClip)
 	{
         if (soundClip == null || EffectAudioSources.Count == 0) return;
+        foreach (var source in EffectAudioSources) if (source != null && !source.isPlaying) source.pitch = 1;
         PlayFromPool(EffectAudioSources, ref effectClipIndex, soundClip, EffectAudioMixerGroup);
 	}
 }

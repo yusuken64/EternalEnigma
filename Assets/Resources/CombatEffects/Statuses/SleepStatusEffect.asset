@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: SleepStatusEffect
   m_EditorClassIdentifier: EternalEnigma.Game::StatusVisualProfile
   Aura:
-    Prefab: {fileID: 7883041189684471704, guid: cbaac0f7eeddb804b962ad42286841dc, type: 3}
+    Prefab: {fileID: 9200856029119781036, guid: 805526dee4c0d5b4fa24a933c5f1cb8c, type: 3}
     Offset: {x: 0, y: 0, z: 0}
-    Rotation: {x: -90, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
     Scale: 0.3
     Delay: 0
     Lifetime: 2
     MinimumDiameterCells: 3
-    ReferenceDiameter: 6.5000014
+    ReferenceDiameter: 2
   Priority: 30
+  HasLoop: 1
+  Loop: 13
+  Icon: {fileID: 21300000, guid: 033f6d314ccca12458da9355b5af99aa, type: 3}
+  Overhead: 1

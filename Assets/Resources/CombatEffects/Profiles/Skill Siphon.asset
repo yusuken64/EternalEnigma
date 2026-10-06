@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7bb618116510f49ac190f670d4173c, type: 3}
+  m_Name: Skill Siphon
+  m_EditorClassIdentifier: EternalEnigma.Game::CombatEffectProfile
+  Muzzle:
+    Prefab: {fileID: 5789572683903295993, guid: b3e467c46b53b7641844c666f7a918f8, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
+    Scale: 0.6
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  GroundCircle:
+    Prefab: {fileID: 1297703875008057977, guid: c1f1c85e8c2fdcc4aaf86c856d12d279, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: -90, y: 0, z: 0}
+    FitToTarget: 0
+    Scale: 0.45
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 3
+    ReferenceDiameter: 10.000002
+  Projectile:
+    Prefab: {fileID: 3568085918002212986, guid: 5ff612b175bcc3746aa2883d78d370b3, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 180, z: 0}
+    FitToTarget: 0
+    Scale: 0.45
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  Impact:
+    Prefab: {fileID: 7246062213820401422, guid: 362062a06a02c2940b1ff5a6bba8e7e0, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 1
+    Scale: 0.5
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  Area:
+    Prefab: {fileID: 0}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+    FitToTarget: 0
+    Scale: 1
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 1
+  AreaSound: {fileID: 0}
+  CastSeconds: 0.45
+  ImpactSeconds: 0.4
+  ProjectileSpeed: 20
+  FlightSeconds: {x: 0.25, y: 0.75}
+  ScaleAreaToRadius: 1

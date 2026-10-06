@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using EternalEnigma.Core.World;
 
 internal class TownMovement : TownAction
 {
@@ -87,6 +88,15 @@ internal class TownMovement : TownAction
 		{
 			townPlayer.CameraController?.SnapToFollowTarget();
 			yield break;
+		}
+		var plan=UnityEngine.Object.FindFirstObjectByType<Town>()?.Plan;
+		if (plan != null && newMapPosition != originalPosition)
+		{
+			var cell=newMapPosition.ToGridPoint();
+			var effects=AudioManager.Instance?.SoundEffects;
+			var clip=plan.Layers[TownLayers.ShopFloor].At(cell) ? effects?.StepWood :
+				plan.Layers[TownLayers.Parks].At(cell) ? effects?.StepGrass : effects?.StepRock;
+			AudioManager.Instance?.PlayFootstep(clip,plan.Seed,newMapPosition.x,newMapPosition.y);
 		}
 
 		// All party tweens start together. Yield once per frame for the group;

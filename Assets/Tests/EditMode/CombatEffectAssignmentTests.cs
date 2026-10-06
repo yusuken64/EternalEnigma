@@ -70,7 +70,8 @@ public sealed class CombatEffectAssignmentTests
     {
         var catalog = CombatVisualCatalog.Instance;
         var profiles = AssetDatabase.FindAssets("t:CombatEffectProfile").Select(g => AssetDatabase.LoadAssetAtPath<CombatEffectProfile>(AssetDatabase.GUIDToAssetPath(g)));
-        var ground = profiles.SelectMany(p => new[] { p.GroundCircle, p.Area }).Concat(catalog.Statuses.Select(s => s.Profile.Aura));
+        var ground = profiles.SelectMany(p => new[] { p.GroundCircle, p.Area })
+            .Concat(catalog.Statuses.Where(s => !s.Profile.Overhead).Select(s => s.Profile.Aura));
         foreach (var stage in ground.Where(s => s.Prefab != null))
         {
             Assert.That(stage.MinimumDiameterCells, Is.GreaterThanOrEqualTo(3), stage.Prefab.name);

@@ -13,12 +13,17 @@ MonoBehaviour:
   m_Name: WeakenStatusEffect
   m_EditorClassIdentifier: EternalEnigma.Game::StatusVisualProfile
   Aura:
-    Prefab: {fileID: 7883041189684471704, guid: cbaac0f7eeddb804b962ad42286841dc, type: 3}
+    Prefab: {fileID: 2560817092882466654, guid: b6010458ad087d04c921c97e04a728ba, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
+    FitToTarget: 0
     Scale: 0.3
     Delay: 0
     Lifetime: 2
     MinimumDiameterCells: 3
-    ReferenceDiameter: 6.5000014
+    ReferenceDiameter: 9.500002
   Priority: 30
+  HasLoop: 0
+  Loop: 9
+  Icon: {fileID: 21300000, guid: 948bae6247200d143b1a3dee5a0a0736, type: 3}
+  Overhead: 0

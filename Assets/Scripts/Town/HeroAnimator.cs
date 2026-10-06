@@ -103,7 +103,7 @@ public class HeroAnimator : MonoBehaviour
 		{
 			CurrentStance = Stance.SwordAndShield;
 		}
-		else if (offHandItemDefinition?.WeaponType == WeaponType.OffhandSword)
+		else if (offHandItemDefinition?.IsOffhandMeleeWeapon == true)
 		{
 			CurrentStance = Stance.DoubleSwordStance;
 		}

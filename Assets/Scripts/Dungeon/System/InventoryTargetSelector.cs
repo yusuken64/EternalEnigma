@@ -28,7 +28,7 @@ public class InventoryTargetSelector
         if (ItemType == InventoryTargetType.Equipment) return true;
         return ItemType == InventoryTargetType.Weapon &&
             (equipment.EquipmentSlot == EquipmentSlot.MainHand || equipment.EquipmentSlot == EquipmentSlot.TwoHand ||
-             (equipment.EquipmentSlot == EquipmentSlot.OffHand && equipment.EquipmentItemDefinition.WeaponType == WeaponType.OffhandSword));
+             equipment.EquipmentItemDefinition.IsOffhandMeleeWeapon);
     }
 }
 

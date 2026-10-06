@@ -123,6 +123,16 @@ namespace EternalEnigma.Tests
             Assert.That(skill.GetInventoryTargets(caster), Is.EquivalentTo(new[] { sword, twoHand, offhandSword, shield, accessory }));
             skill.InventoryTargetSelector.ItemType = InventoryTargetType.Weapon;
             Assert.That(skill.GetInventoryTargets(caster), Is.EquivalentTo(new[] { sword, twoHand, offhandSword }));
+            foreach (var type in new[] { WeaponType.SimpleWeapon, WeaponType.Axe, WeaponType.Hammer })
+            {
+                var offhand = AddEquipment(EquipmentSlot.OffHand, type);
+                Assert.That(skill.GetInventoryTargets(caster), Has.Member(offhand));
+                caster.Equipment.Equip(offhand);
+                bag.Remove(offhand);
+                skill.InventoryTargetSelector.IncludeEquipped = true;
+                Assert.That(skill.GetInventoryTargets(caster), Has.Member(offhand));
+                skill.InventoryTargetSelector.IncludeEquipped = false;
+            }
             caster.Equipment.Equip(sword);
             bag.Remove(sword);
             Assert.That(skill.GetInventoryTargets(caster), Has.No.Member(sword));

@@ -103,7 +103,7 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
         }
         string weapons = string.Join(", ", cls.AllowedWeapons);
         string tierOne = string.Join(", ", cls.Skills.Where(s => s != null && s.Skill != null && s.Tier == 1).Select(s => s.Skill.SkillName));
-        details.text = $"<size=36>{cls.DisplayName}</size>  <color=#765535>{cls.Role}</color>\nWeapons: {weapons}\n" +
+        details.text = $"<size=36>{cls.DisplayName}</size>  <color=#765535>{cls.Role}</color>\nWeapons: {weapons}\nSticks and needles: no proficiency required\n" +
             (secondaryStep ? "Secondary: tiers 1-2, rank 3 maximum; no secondary masteries.\nPrimary keeps full progression.\n" :
             "Sets starting stat bonuses and growth each level.\nPrimary skills: all tiers, up to rank 5.\n") +
             $"Start with: {start}\n<size=22>Tier 1 training: {tierOne}</size>";

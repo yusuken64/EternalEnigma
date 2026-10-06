@@ -20,5 +20,5 @@ public class ClassDefinition : ScriptableObject
 			.Where(entry => entry != null && entry.Skill != null)
 			.Select(entry => new ClassSkillEntry(entry.Skill.SkillName, entry.Tier, entry.MaxRank, entry.Kind)));
 
-	public bool AllowsWeapon(WeaponType type) => AllowedWeapons != null && AllowedWeapons.Contains(type);
+	public bool AllowsWeapon(WeaponType type) => type == WeaponType.SimpleWeapon || (AllowedWeapons != null && AllowedWeapons.Contains(type));
 }

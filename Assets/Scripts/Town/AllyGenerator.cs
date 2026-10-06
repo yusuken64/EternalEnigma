@@ -159,6 +159,13 @@ public class AllyGenerator : MonoBehaviour
 
 	private static WeaponType GetWeaponType(string name, bool mainhand)
 	{
+        // These models also contain OHS, so classify them before the sword fallback.
+        if (name.Contains("Stick", System.StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Needle", System.StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Niddle", System.StringComparison.OrdinalIgnoreCase)) return WeaponType.SimpleWeapon;
+        if (name.Contains("Axe", System.StringComparison.OrdinalIgnoreCase)) return WeaponType.Axe;
+        if (name.Contains("Hammer", System.StringComparison.OrdinalIgnoreCase) ||
+            name.Contains("Mallet", System.StringComparison.OrdinalIgnoreCase)) return WeaponType.Hammer;
         if (mainhand)
 		{
             if (name.Contains("OHS", System.StringComparison.InvariantCultureIgnoreCase))

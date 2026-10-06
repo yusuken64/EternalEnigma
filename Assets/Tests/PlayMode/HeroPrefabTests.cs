@@ -35,7 +35,7 @@ namespace EternalEnigma.Tests
             var heroes = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Town/Allies" })
                 .Select(g => AssetDatabase.LoadAssetAtPath<TownAlly>(AssetDatabase.GUIDToAssetPath(g)))
                 .Where(p => p != null && p.name.StartsWith("Ally_MC", StringComparison.Ordinal)).OrderBy(p => p.name).ToArray();
-            Assert.That(heroes.Length, Is.GreaterThan(0));
+            Assert.That(heroes.Length, Is.EqualTo(24));
             Assert.That(heroes.Select(h => h.Id).Distinct().Count(), Is.EqualTo(heroes.Length));
             Assert.That(TownSceneLoader.Default.AllyCatalog.All(heroes.Contains), Is.True,
                 "Every recruitable hero must be included in the audit; TownAlly is an authoring template.");
@@ -70,6 +70,8 @@ namespace EternalEnigma.Tests
                     var models = offhand ? animation.LeftHandObjects : animation.RightHandObjects;
                     Assert.That(models.Count(model => model.activeSelf && model.name == weapon.WeaponModelName),
                         Is.EqualTo(1), label + " " + weapon.ItemName + " model " + weapon.WeaponModelName);
+                    if (weapon.WeaponType == WeaponType.SimpleWeapon || weapon.WeaponType == WeaponType.Axe || weapon.WeaponType == WeaponType.Hammer)
+                        Assert.That(animation.CurrentStance, Is.EqualTo(offhand ? Stance.DoubleSwordStance : Stance.SingleSword), label + " " + weapon.ItemName);
                     if (weapon.WeaponType == WeaponType.BowAndArrow)
                         Assert.That(animation.CurrentStance, Is.EqualTo(Stance.BowAndArrowStance), label + " bow stance");
                 }
@@ -123,6 +125,9 @@ namespace EternalEnigma.Tests
             var heroes = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Town/Allies" })
                 .Select(g => AssetDatabase.LoadAssetAtPath<TownAlly>(AssetDatabase.GUIDToAssetPath(g)))
                 .Where(p => p != null && p.name.StartsWith("Ally_MC", StringComparison.Ordinal)).ToArray();
+            Assert.That(heroes.Length, Is.EqualTo(24));
+            foreach (WeaponType type in Enum.GetValues(typeof(WeaponType)))
+                Assert.That(heroes.Any(h => HeroClass.AllowsWeapon(h.PrimaryClass, h.SecondaryClass, type)), Is.True, type + " needs an eligible hero");
             foreach (var hero in heroes.Where(h => h.PrimaryClass != null))
             {
                 string label = hero.name + " (" + hero.Name + ")";

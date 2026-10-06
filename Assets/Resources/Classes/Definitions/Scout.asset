@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: scout
   DisplayName: Scout
   Role: Utility and exploration
-  AllowedWeapons: 0200000000000000
+  AllowedWeapons: 020000000000000008000000
   GrowthPerLevel:
     HPMax: 5
     SPMax: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: healer
   DisplayName: Healer
   Role: Healing and support
-  AllowedWeapons: 0400000000000000
+  AllowedWeapons: 0400000009000000
   GrowthPerLevel:
     HPMax: 4
     SPMax: 2

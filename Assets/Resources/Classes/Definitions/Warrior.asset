@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: warrior
   DisplayName: Warrior
   Role: Front-line physical attacker
-  AllowedWeapons: 000000000300000005000000
+  AllowedWeapons: 0000000003000000050000000800000009000000
   GrowthPerLevel:
     HPMax: 5
     SPMax: 0

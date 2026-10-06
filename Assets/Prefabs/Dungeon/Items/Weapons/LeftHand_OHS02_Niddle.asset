@@ -41,6 +41,6 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS02_Niddle
-  WeaponType: 5
+  WeaponType: 7
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

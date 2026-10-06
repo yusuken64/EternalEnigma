@@ -22,6 +22,25 @@ public class EquipmentRegressionTests
         return new EquipableInventoryItem(definition);
     }
 
+    [TestCase(WeaponType.SimpleWeapon)]
+    [TestCase(WeaponType.Axe)]
+    [TestCase(WeaponType.Hammer)]
+    public void ReclassifiedOffhandsAreWeaponTargetsAndReplaceTwoHanders(WeaponType type)
+    {
+        var offhand = Item(EquipmentSlot.OffHand);
+        offhand.EquipmentItemDefinition.WeaponType = type;
+        var twoHand = Item(EquipmentSlot.TwoHand);
+        var selector = new InventoryTargetSelector { ItemType = InventoryTargetType.Weapon };
+        Assert.That(selector.Matches(offhand), Is.True);
+        equipment.Equip(twoHand);
+        equipment.Equip(offhand);
+        Assert.That(equipment.EquippedWeapon, Is.Null);
+        Assert.That(equipment.EquippedShield, Is.SameAs(offhand));
+        equipment.Equip(twoHand);
+        Assert.That(equipment.EquippedShield, Is.Null);
+        Assert.That(equipment.EquippedWeapon, Is.SameAs(twoHand));
+    }
+
     [Test]
     public void OffhandPreviewAndEquipHandleSerializedEmptySlots()
     {

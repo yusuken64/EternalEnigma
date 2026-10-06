@@ -41,6 +41,6 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS10_Axe
-  WeaponType: 5
+  WeaponType: 8
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

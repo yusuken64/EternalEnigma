@@ -56,6 +56,70 @@ public class HeroClassTests
     }
 
     [Test]
+    public void ShippedSimpleAxeAndHammerAssetsHaveIndependentCategories()
+    {
+        var weapons = UnityEditor.AssetDatabase.FindAssets("t:EquipmentItemDefinition", new[] { "Assets/Prefabs/Dungeon/Items/Weapons" })
+            .Select(g => UnityEditor.AssetDatabase.LoadAssetAtPath<EquipmentItemDefinition>(UnityEditor.AssetDatabase.GUIDToAssetPath(g))).ToArray();
+        foreach (var type in new[] { WeaponType.SimpleWeapon, WeaponType.Axe, WeaponType.Hammer })
+        {
+            var matching = weapons.Where(w => w.WeaponType == type).ToArray();
+            Assert.That(matching.Length, Is.EqualTo(4), type.ToString());
+            Assert.That(matching.Count(w => w.EquipmentSlot == EquipmentSlot.MainHand), Is.EqualTo(2));
+            Assert.That(matching.Count(w => w.EquipmentSlot == EquipmentSlot.OffHand), Is.EqualTo(2));
+            foreach (var weapon in matching)
+            {
+                string model = weapon.WeaponModelName;
+                Assert.That(type == WeaponType.SimpleWeapon ? model.Contains("Stick") || model.Contains("Niddle") :
+                    type == WeaponType.Axe ? model.Contains("Axe") : model.Contains("Hammer"), Is.True, weapon.name);
+                Assert.That(new InventoryTargetSelector { ItemType = InventoryTargetType.Weapon }.Matches(new EquipableInventoryItem(weapon)), Is.True);
+            }
+        }
+        Assert.That((int)WeaponType.SingleSword, Is.EqualTo(0));
+        Assert.That((int)WeaponType.OffhandShield, Is.EqualTo(6));
+        Assert.That((int)WeaponType.SimpleWeapon, Is.EqualTo(7));
+    }
+
+    [Test]
+    public void ShippedProficienciesApplyInEitherHandAndThroughEitherClass()
+    {
+        var classes = ClassCatalog.Load().Classes;
+        foreach (var cls in classes)
+        foreach (var slot in new[] { EquipmentSlot.MainHand, EquipmentSlot.OffHand })
+        {
+            Assert.That(HeroClass.AllowsItem(cls, null, Item(slot, WeaponType.SimpleWeapon)), Is.True, cls.Id);
+            foreach (var type in new[] { WeaponType.Axe, WeaponType.Hammer })
+            {
+                bool expected = type == WeaponType.Axe ? new[] { "warrior", "scout" }.Contains(cls.Id) :
+                    new[] { "warrior", "guardian", "healer" }.Contains(cls.Id);
+                var item = Item(slot, type);
+                Assert.That(HeroClass.AllowsItem(cls, null, item), Is.EqualTo(expected), cls.Id + " " + type);
+                Assert.That(HeroClass.AllowsItem(Class("none"), cls, item), Is.EqualTo(expected), "secondary " + cls.Id);
+                if (!expected) Assert.That(HeroClass.EquipmentRestriction(cls, null, item), Does.Contain(type + " proficiency"));
+            }
+        }
+        var healer = classes.Single(c => c.Id == "healer");
+        Assert.That(healer.AllowsWeapon(WeaponType.MagicWand), Is.True);
+        Assert.That(healer.AllowsWeapon(WeaponType.SingleSword), Is.False);
+        Assert.That(healer.AllowsWeapon(WeaponType.OffhandSword), Is.False);
+        Assert.That(HeroClass.AllowsWeapon(healer, classes.Single(c => c.Id == "warrior"), WeaponType.SingleSword), Is.True);
+        var swords = Class("swords", WeaponType.SingleSword, WeaponType.OffhandSword);
+        Assert.That(HeroClass.AllowsWeapon(swords, null, WeaponType.Axe), Is.False);
+        Assert.That(HeroClass.AllowsWeapon(swords, null, WeaponType.Hammer), Is.False);
+    }
+
+    [Test]
+    public void WeaponGenerationRecognizesSpecificModelsBeforeSwordNames()
+    {
+        var method = typeof(AllyGenerator).GetMethod("GetWeaponType", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        foreach (bool mainhand in new[] { true, false })
+        foreach (var name in new[] { "OHS01_Stick", "OHS02_Niddle", "OHS02_Needle", "OHS10_Axe", "OHS11_Hammer", "OHS11_Mallet" })
+        {
+            var expected = name.Contains("Axe") ? WeaponType.Axe : name.Contains("Hammer") || name.Contains("Mallet") ? WeaponType.Hammer : WeaponType.SimpleWeapon;
+            Assert.That(method.Invoke(null, new object[] { name, mainhand }), Is.EqualTo(expected), name);
+        }
+    }
+
+    [Test]
     public void ToSkillTableSkipsEmptyEntriesAndCopiesTierRankKind()
     {
         var skill = ScriptableObject.CreateInstance<Skill>();

@@ -8,6 +8,11 @@ public class EquipmentItemDefinition : ItemDefinition
 	public string WeaponModelName;
 	public WeaponType WeaponType;
 
+	// Shared by offhand animation and weapon-targeting effects.
+	public bool IsOffhandMeleeWeapon => EquipmentSlot == EquipmentSlot.OffHand &&
+		(WeaponType == WeaponType.OffhandSword || WeaponType == WeaponType.SimpleWeapon ||
+		 WeaponType == WeaponType.Axe || WeaponType == WeaponType.Hammer);
+
 	public bool IsRangedAttack;
 	public GameObject ProjectilePrefab;
 
@@ -53,4 +58,7 @@ public enum WeaponType
 	MagicWand,
 	OffhandSword,
 	OffhandShield,
+	SimpleWeapon,
+	Axe,
+	Hammer,
 }

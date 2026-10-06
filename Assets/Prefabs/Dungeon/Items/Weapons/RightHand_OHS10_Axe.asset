@@ -35,6 +35,6 @@ MonoBehaviour:
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
   WeaponModelName: OHS10_Axe
-  WeaponType: 0
+  WeaponType: 8
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

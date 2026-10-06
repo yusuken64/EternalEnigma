@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: guardian
   DisplayName: Guardian
   Role: Tank / defender
-  AllowedWeapons: 000000000100000006000000
+  AllowedWeapons: 00000000010000000600000009000000
   GrowthPerLevel:
     HPMax: 7
     SPMax: 0

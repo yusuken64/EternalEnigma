@@ -35,6 +35,6 @@ MonoBehaviour:
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
   WeaponModelName: OHS14_Hammer
-  WeaponType: 0
+  WeaponType: 9
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

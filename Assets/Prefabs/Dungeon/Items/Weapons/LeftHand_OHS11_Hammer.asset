@@ -41,6 +41,6 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS11_Hammer
-  WeaponType: 5
+  WeaponType: 9
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

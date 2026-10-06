@@ -25,6 +25,18 @@ explains import/export. Effects and numbers are authored in the referenced Skill
 Primary class determines growth and mastery progression. Secondary classes add weapon access
 and non-mastery skills through tier 2, capped at rank 3. Duplicate skills use the primary cap.
 
+## Weapon proficiency
+
+Sticks and needles: no proficiency required, including their offhand versions.
+Primary and secondary class proficiencies combine. Axes are available to Warriors and
+Scouts; hammers to Warriors, Guardians and Healers. Each of these proficiencies permits
+both main-hand and offhand versions, subject to the item's existing equipment slot.
+Healers retain wands and need a secondary class for sword proficiency. Sword proficiency
+alone does not grant axes or hammers. Other class proficiencies are unchanged.
+
+Existing saved items resolve to their updated asset definitions. Equipment is not
+removed or replaced on load; subsequent equip attempts use these rules.
+
 ## Training
 
 Core `SkillLearningRules` is shared by Unity trainer offers and the console editor.

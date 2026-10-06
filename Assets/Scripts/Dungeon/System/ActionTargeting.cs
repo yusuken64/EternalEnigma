@@ -15,12 +15,12 @@ internal readonly struct ActionTargeting
         Mode = mode; Characters = characters; Items = items; Radius = radius; MissileRange = missileRange;
     }
 
-    internal bool IsConfigured => Mode == SkillTargeting.InventoryItem ? Items != null :
+    internal bool IsConfigured => Mode == SkillTargeting.InventoryItem ? Items != null : Mode == SkillTargeting.LockedDoor ? MissileRange > 0 :
         Characters != null && Radius >= 0 && (Mode != SkillTargeting.Missile || MissileRange > 0);
     internal bool RequiresSelection => Mode == SkillTargeting.SelectedTarget &&
         Characters.Team != TargetTeam.Self && Characters.Area != TargetArea.Self;
     internal List<Character> GetCharacters(Character caster) =>
-        Mode == SkillTargeting.InventoryItem ? new() : Characters.GetCharacters(caster);
+        Mode == SkillTargeting.InventoryItem || Mode == SkillTargeting.LockedDoor ? new() : Characters.GetCharacters(caster);
     internal List<Character> GetAffected(Character caster, Character selected)
     {
         var candidates = GetCharacters(caster);

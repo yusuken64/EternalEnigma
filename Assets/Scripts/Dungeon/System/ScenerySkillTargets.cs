@@ -7,6 +7,12 @@ internal static class ScenerySkillTargets
     internal static bool Damaging(Skill skill) => skill.ActionEffects.Any(a => a is ScaledDamageAction || a is DashStrikeAction || a is TeleportBehindAction || a is SongCountStrikeAction || a is TakeDamageAction d && d.damage > 0);
     internal static List<DungeonProp> Candidates(Character caster, Skill skill)
     {
+        if (skill.Targeting == SkillTargeting.LockedDoor)
+        {
+            var sight = Game.Instance.CurrentDungeon.GetVisibleTiles(caster, caster.TilemapPosition);
+            return Game.Instance.CurrentDungeon.Interactables.OfType<DungeonProp>().Where(p => p.IsClosedDoor && sight.Contains(p.Position) &&
+                TileWorldDungeon.ChevDistance(p.Position, caster.TilemapPosition) <= skill.MissileRange).ToList();
+        }
         if (!Damaging(skill) || skill.Targeting == SkillTargeting.InventoryItem || skill.TargetSelector == null ||
             skill.TargetSelector.Team == TargetTeam.Allies || skill.TargetSelector.Team == TargetTeam.Self) return new();
         var dungeon = Game.Instance.CurrentDungeon;
@@ -19,6 +25,7 @@ internal static class ScenerySkillTargets
     internal static List<DungeonProp> Affected(Character caster, Skill skill, Character selected, DungeonProp prop, Vector3Int missileCell)
     {
         var candidates = Candidates(caster, skill);
+        if (skill.Targeting == SkillTargeting.LockedDoor) return candidates.Where(p => p == prop).ToList();
         if (skill.Targeting == SkillTargeting.AllTargets) return candidates;
         if (skill.Targeting == SkillTargeting.Missile) return candidates.Where(p => p.Position == missileCell).ToList();
         var center = skill.Targeting == SkillTargeting.Self ? caster.TilemapPosition : prop != null ? prop.Position : selected != null ? selected.TilemapPosition : caster.TilemapPosition;
@@ -28,6 +35,7 @@ internal static class ScenerySkillTargets
     {
         foreach (var effect in skill.ActionEffects)
         {
+            if (effect is UnlockDoorAction unlock && prop.IsClosedDoor) yield return unlock.For(prop);
             if (effect is TakeDamageAction damage && damage.damage > 0)
                 yield return prop.Damage(caster, skill.RankScaling.ScalePower(damage.damage, skill.Rank));
             float percent = effect is DashStrikeAction dash ? dash.DamagePercent : effect is TeleportBehindAction teleport ? teleport.DamagePercent : effect is SongCountStrikeAction song ? song.PercentPerHit : 0;

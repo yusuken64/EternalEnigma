@@ -299,6 +299,11 @@ public class Game : SingletonMonoBehaviour<Game>
 
             foreach (var definition in floor.Scenery)
                 DungeonProp.Create(CurrentDungeon, definition, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
+            foreach (var floorLock in floor.Locks)
+                DungeonProp.Create(CurrentDungeon, new EternalEnigma.Core.World.DungeonScenery(floorLock.Door,
+                    EternalEnigma.Core.World.DungeonSceneryKind.Door, floorLock.HitPoints, 0, EternalEnigma.Core.World.SceneryReward.None),
+                    DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
+            CurrentDungeon.DoorsChanged();
 			SpawnGatheringPoints(startPosition);
             if (PlayerController.Floor <= 3) EarlyDungeonStatue.Place(CurrentDungeon, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
 		}

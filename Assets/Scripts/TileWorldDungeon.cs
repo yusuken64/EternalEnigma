@@ -13,6 +13,8 @@ public class TileWorldDungeon : MonoBehaviour
 	public List<DroppedItem> DroppedItemPrefabs;
 	public Stairs StairsPrefab;
 	public List<Trap> TrapPrefabs;
+	public GameObject SmallKeyPrefab;
+	public GameObject LockedDoorPrefab;
 
 	internal int dungeonWidth => Floor.Width;
 	internal int dungeonHeight => Floor.Height;
@@ -120,11 +122,26 @@ public class TileWorldDungeon : MonoBehaviour
         var key = (origin, radius);
         if (!sightCache.TryGetValue(key, out var tiles))
         {
-            tiles = Floor.VisibleTiles(origin.ToGridPoint(), radius).ToCellSet();
+            tiles = GridSight.VisibleTiles(SightLayer, origin.ToGridPoint(), radius).ToCellSet();
             sightCache[key] = tiles;
         }
         return tiles;
     }
+
+    // Closed doors are walls to sight: the door itself is visible, the vault behind it is not.
+    private GridLayer sightLayer;
+    private GridLayer SightLayer
+    {
+        get
+        {
+            if (sightLayer != null) return sightLayer;
+            var mask = (bool[,])floorMask.Clone();
+            foreach (var door in Interactables.OfType<DungeonProp>().Where(p => p.IsClosedDoor)) mask[door.Position.x, door.Position.y] = false;
+            return sightLayer = new GridLayer(mask);
+        }
+    }
+
+    internal void DoorsChanged() { sightLayer = null; sightCache.Clear(); }
 
     internal bool CanSee(Character observer, Character target)
     {
@@ -375,6 +392,12 @@ public class TileWorldDungeon : MonoBehaviour
 		trapInstance.Position = position;
 		trapInstance.VisualObject.gameObject.SetActive(false);
 		Interactables.Add(trapInstance);
+	}
+
+	internal void SetSmallKey(Vector3Int position)
+	{
+		var key = SmallKey.Create(this, position);
+		Interactables.Add(key);
 	}
 
 	internal void SetStairs(Vector3Int stairPosition)

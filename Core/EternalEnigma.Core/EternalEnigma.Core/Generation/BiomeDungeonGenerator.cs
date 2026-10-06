@@ -113,6 +113,22 @@ internal static class BiomeDungeonGenerator
             if (layer.At(new GridPoint(p.X + dx, p.Y + dy))) reserved.Add(new GridPoint(p.X + dx, p.Y + dy));
         var occupied = new HashSet<GridPoint> { start, stairs };
         foreach (var p in cells.Where(p => Math.Max(Math.Abs(p.X - start.X), Math.Abs(p.Y - start.Y)) <= 3)) occupied.Add(p);
+        // Stream 1500 belongs to soft locks; floors that get none keep their placements.
+        var lockRandom = new SeedStream(o.Seed, 1500);
+        (GridPoint Door, HashSet<GridPoint> Cells)? vault = null;
+        if (o.Role == DungeonFloorRole.Regular && lockRandom.Range(100) < LockChance)
+        {
+            vault = FindVault(layer, cells, start, stairs, reserved, occupied, lockRandom);
+            // Looping biomes rarely have a one-door side room, so carve one into solid wall. Stairs are already fixed.
+            if (vault == null && CarveVault(mask, cells, start, lockRandom))
+            {
+                layer = new GridLayer(mask);
+                cells.Clear();
+                for (int x = 1; x < w - 1; x++) for (int y = 1; y < h - 1; y++) if (mask[x, y]) cells.Add(new GridPoint(x, y));
+                vault = FindVault(layer, cells, start, stairs, reserved, occupied, lockRandom);
+            }
+        }
+        if (vault != null) occupied.Add(vault.Value.Door);
         double scale = Density(cells.Count);
         int Count(int n, int cap = 64) => Math.Min(cap, (int)Math.Round(n * scale, MidpointRounding.AwayFromZero));
         List<Placement> Place(int n, bool keepExitRouteClear = false)
@@ -129,6 +145,22 @@ internal static class BiomeDungeonGenerator
         var props = new List<DungeonScenery>();
         var blocked = new HashSet<GridPoint>();
         int goldBudget = regular ? Count(o.GoldCount) : 0, itemBudget = regular ? Count(o.ItemCount) : 0;
+        DungeonScenery? chest = null;
+        if (vault != null)
+        {
+            // The vault's chest is paid from the floor budget, so total loot is unchanged.
+            foreach (var p in lockRandom.Shuffle(vault.Value.Cells.Where(p => !occupied.Contains(p))).OrderBy(p => GridSight.IsRoom(layer, p) ? 0 : 1))
+            {
+                if (itemBudget == 0 && goldBudget == 0) break;
+                blocked.Add(p);
+                if (GridSearch.VisitOrder(start, q => Neighbors(layer, q, blocked)).Count != cells.Count - blocked.Count) { blocked.Remove(p); continue; }
+                var reward = itemBudget > 0 ? SceneryReward.Item : SceneryReward.Gold;
+                if (itemBudget > 0) itemBudget--; else goldBudget--;
+                chest = new DungeonScenery(p, DungeonSceneryKind.Container, 0, lockRandom.Range(int.MaxValue), reward);
+                props.Add(chest); occupied.Add(p);
+                break;
+            }
+        }
         foreach (var kind in new[] { DungeonSceneryKind.Container, DungeonSceneryKind.Destructible, DungeonSceneryKind.Hazard })
         {
             int target = regular ? Count(kind == DungeonSceneryKind.Container ? 2 : kind == DungeonSceneryKind.Destructible ? 6 : 3) : 0;
@@ -152,6 +184,21 @@ internal static class BiomeDungeonGenerator
                 occupied.Add(p); placed++;
             }
         }
+        var locks = new List<DungeonLock>();
+        if (chest != null)
+        {
+            // The key hides in a prop the party can reach with the door still closed.
+            var closed = new HashSet<GridPoint>(blocked) { vault!.Value.Door };
+            var outside = GridSearch.VisitOrder(start, q => Neighbors(layer, q, closed)).ToHashSet();
+            var holders = Enumerable.Range(0, props.Count).Where(i => props[i] != chest && props[i].Kind != DungeonSceneryKind.Hazard &&
+                Orthogonal(props[i].Cell).Any(outside.Contains)).ToList();
+            if (holders.Count > 0)
+            {
+                int holder = holders[lockRandom.Range(holders.Count)];
+                props[holder] = props[holder].WithKey();
+                locks.Add(new DungeonLock(vault.Value.Door, 40 + 20 * o.Tier, vault.Value.Cells.OrderBy(p => p.X).ThenBy(p => p.Y)));
+            }
+        }
         var gold = Place(goldBudget, keepExitRouteClear: true);
         var items = Place(itemBudget, keepExitRouteClear: true);
         var gathering = GatheringPlacement.Place(layer, start, stairs, occupied, o.Seed, regular ? Count(o.GatheringCount, 16) : 0);
@@ -170,10 +217,83 @@ internal static class BiomeDungeonGenerator
             [DungeonLayers.Floor] = layer, [DungeonLayers.Dungeon] = new GridLayer(walls),
             [DungeonLayers.Carpet] = new GridLayer(accents), [DungeonLayers.Columns] = new GridLayer(columns),
             [DungeonLayers.Torchlights] = new GridLayer(torches)
-        }, rooms, start, stairs, enemies, gold, items, Array.Empty<Placement>(), gathering, props);
+        }, rooms, start, stairs, enemies, gold, items, Array.Empty<Placement>(), gathering, props, locks);
         var validation = EternalEnigma.Core.Validation.DungeonFloorValidator.Validate(result,o);
         if(!validation.IsValid) throw new InvalidOperationException(string.Join("\n",validation.Errors));
         return result;
+    }
+
+    internal const int MinimumVault = 6;
+    /// <summary>Percent of regular floors that try for a locked side room.</summary>
+    internal const int LockChance = 70;
+
+    /// <summary>A doorway off an existing floor cell into a 3-wide vault, with solid wall all around both.</summary>
+    static bool CarveVault(bool[,] mask, List<GridPoint> cells, GridPoint start, SeedStream random)
+    {
+        int w = mask.GetLength(0), h = mask.GetLength(1);
+        bool Wall(int x, int y) => x >= 0 && y >= 0 && x < w && y < h && !mask[x, y];
+        bool Interior(int x, int y) => x > 0 && y > 0 && x < w - 1 && y < h - 1;
+        var steps = new[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
+        foreach (int depth in new[] { 3, 2 })
+        {
+            var fits = new List<(GridPoint From, int Dx, int Dy)>();
+            foreach (var from in cells)
+            foreach (var (dx, dy) in steps)
+            {
+                if (Math.Max(Math.Abs(from.X + dx - start.X), Math.Abs(from.Y + dy - start.Y)) <= 3) continue;
+                bool fit = true;
+                // Row 1 is the doorway, rows 2..depth+1 the vault; side and back rows stay wall.
+                for (int row = 1; row <= depth + 2 && fit; row++)
+                for (int side = -2; side <= 2 && fit; side++)
+                {
+                    int x = from.X + dx * row + dy * side, y = from.Y + dy * row + dx * side;
+                    fit = Wall(x, y) && (Interior(x, y) || row == depth + 2 || Math.Abs(side) == 2);
+                }
+                if (fit) fits.Add((from, dx, dy));
+            }
+            if (fits.Count == 0) continue;
+            var (origin, sx, sy) = fits[random.Range(fits.Count)];
+            mask[origin.X + sx, origin.Y + sy] = true;
+            for (int row = 2; row <= depth + 1; row++)
+            for (int side = -1; side <= 1; side++)
+                mask[origin.X + sx * row + sy * side, origin.Y + sy * row + sx * side] = true;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// A one-tile doorway whose closing seals off a side room but not the stairs. The smallest seal per
+    /// side room wins, so the door sits at the room's mouth rather than further down its corridor.
+    /// </summary>
+    static (GridPoint Door, HashSet<GridPoint> Cells)? FindVault(GridLayer layer, List<GridPoint> cells, GridPoint start, GridPoint stairs,
+        ISet<GridPoint> reserved, ISet<GridPoint> occupied, SeedStream random)
+    {
+        bool Open(int x, int y) => layer.At(new GridPoint(x, y));
+        var found = new List<(GridPoint Door, HashSet<GridPoint> Cells)>();
+        foreach (var door in cells)
+        {
+            if (reserved.Contains(door) || occupied.Contains(door)) continue;
+            bool across = !Open(door.X - 1, door.Y) && !Open(door.X + 1, door.Y) && Open(door.X, door.Y - 1) && Open(door.X, door.Y + 1);
+            bool along = !Open(door.X, door.Y - 1) && !Open(door.X, door.Y + 1) && Open(door.X - 1, door.Y) && Open(door.X + 1, door.Y);
+            if (!across && !along) continue;
+            var closed = new HashSet<GridPoint> { door };
+            var outside = GridSearch.VisitOrder(start, p => Neighbors(layer, p, closed)).ToHashSet();
+            int size = cells.Count - 1 - outside.Count;
+            if (!outside.Contains(stairs) || size < MinimumVault || size > cells.Count / 4) continue;
+            var sealedCells = cells.Where(p => !p.Equals(door) && !outside.Contains(p)).ToHashSet();
+            if (sealedCells.Any(p => GridSight.IsRoom(layer, p))) found.Add((door, sealedCells));
+        }
+        var distinct = new List<(GridPoint Door, HashSet<GridPoint> Cells)>();
+        foreach (var candidate in found.OrderBy(f => f.Cells.Count))
+            if (!distinct.Any(d => candidate.Cells.Overlaps(d.Cells))) distinct.Add(candidate);
+        return distinct.Count == 0 ? null : distinct[random.Range(distinct.Count)];
+    }
+
+    internal static IEnumerable<GridPoint> Orthogonal(GridPoint p)
+    {
+        yield return new GridPoint(p.X - 1, p.Y); yield return new GridPoint(p.X + 1, p.Y);
+        yield return new GridPoint(p.X, p.Y - 1); yield return new GridPoint(p.X, p.Y + 1);
     }
 
     internal static IEnumerable<GridPoint> Neighbors(GridLayer floor, GridPoint p, HashSet<GridPoint>? blocked = null)

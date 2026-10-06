@@ -35,6 +35,8 @@ public class DungeonSaveData
 	public bool ReturnCommitted;
 	public int StartFloor;
 	public int EndFloor;
+	// Small keys open any locked door on any floor of this run; a new run starts with none.
+	public int SmallKeys;
 }
 
 [Serializable]

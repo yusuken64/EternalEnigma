@@ -62,3 +62,5 @@ MonoBehaviour:
   TrapPrefabs:
   - {fileID: 4055933014357306187, guid: 070dd59b085f8da47bad5372c106a83d, type: 3}
   - {fileID: 3924132815924267574, guid: 3d28e0f73a711c843b1b0b5eb09d7b88, type: 3}
+  SmallKeyPrefab: {fileID: 1586265210363762, guid: 3563e2c403c291147945b66caa3b1c03, type: 3}
+  LockedDoorPrefab: {fileID: 919132149155446097, guid: fb1af7d0b02f38a439b6c85a151bb83b, type: 3}

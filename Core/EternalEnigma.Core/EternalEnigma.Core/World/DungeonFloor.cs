@@ -20,10 +20,11 @@ public sealed class DungeonFloor
     public IReadOnlyList<Placement> Items { get; }
     public IReadOnlyList<Placement> Traps { get; }
     public IReadOnlyList<GatheringSite> GatheringSites { get; }
+    public IReadOnlyList<DungeonLock> Locks { get; }
 
     internal DungeonFloor(int seed, bool isThroneFloor, IDictionary<string, GridLayer> layers, IEnumerable<GridRect> rooms,
         GridPoint start, GridPoint stairs, IEnumerable<Placement> enemies, IEnumerable<Placement> gold,
-        IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null, IEnumerable<DungeonScenery>? scenery = null)
+        IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null, IEnumerable<DungeonScenery>? scenery = null, IEnumerable<DungeonLock>? locks = null)
     {
         // Validate layers
         if (!layers.ContainsKey(DungeonLayers.Floor))
@@ -92,6 +93,7 @@ public sealed class DungeonFloor
         Items = Array.AsReadOnly(items.ToArray());
         Traps = Array.AsReadOnly(traps.ToArray());
         GatheringSites = Array.AsReadOnly((gatheringSites ?? Enumerable.Empty<GatheringSite>()).ToArray());
+        Locks = Array.AsReadOnly((locks ?? Enumerable.Empty<DungeonLock>()).ToArray());
     }
 
     /// <summary>Checks if a cell is within bounds.</summary>

@@ -229,13 +229,16 @@ public static class DungeonFloorValidator
             var blocked = floor.Scenery.Where(p=>p.Kind!=DungeonSceneryKind.Hazard).Select(p=>p.Cell).ToHashSet();
             Check(GridSearch.VisitOrder(floor.Start,p=>BiomeDungeonGenerator.Neighbors(floorLayer,p,blocked)).Count==area-blocked.Count,"scenery.connectivity: Blocking props disconnect floor.");
             blocked.UnionWith(floor.Scenery.Select(p=>p.Cell));
+            blocked.UnionWith(floor.Locks.Select(l=>l.Door));
             Check(GridSearch.VisitOrder(floor.Start,p=>BiomeDungeonGenerator.Neighbors(floorLayer,p,blocked)).Contains(floor.Stairs),"scenery.hazards: No safe stair route.");
             foreach(var prop in floor.Scenery)
             {
+                Check(prop.Kind!=DungeonSceneryKind.Door,"scenery.door: Doors belong to Locks.");
                 Check(floorLayer.At(prop.Cell) && placementCells.Add(prop.Cell),"scenery.placement: Invalid or overlapping prop.");
                 Check(Math.Max(Math.Abs(prop.Cell.X-floor.Start.X),Math.Abs(prop.Cell.Y-floor.Start.Y))>3,"scenery.spawn: Prop inside spawn clearance.");
             }
-            if(options.Role!=DungeonFloorRole.Regular) Check(floor.Scenery.Count==0 && floor.Enemies.Count==0,"entry: Unsafe entry/exit floor.");
+            ValidateLocks(floor, floorLayer, area, placementCells, Check);
+            if(options.Role!=DungeonFloorRole.Regular) Check(floor.Scenery.Count==0 && floor.Enemies.Count==0 && floor.Locks.Count==0,"entry: Unsafe entry/exit floor.");
             return;
         }
         // Validate counts match options
@@ -247,6 +250,29 @@ public static class DungeonFloorValidator
             $"items.count: Floor has {floor.Items.Count} items, expected {options.ItemCount}.");
         Check(floor.Traps.Count == options.TrapCount,
             $"traps.count: Floor has {floor.Traps.Count} traps, expected {options.TrapCount}.");
+    }
+
+    /// <summary>Soft locks: keys reachable with every door shut, stairs never behind one, vaults exactly what each door seals.</summary>
+    private static void ValidateLocks(DungeonFloor floor, GridLayer floorLayer, int area, HashSet<GridPoint> placementCells, Action<bool, string> Check)
+    {
+        Check(floor.Scenery.Count(p => p.HoldsKey) == floor.Locks.Count, "locks.keys: Each lock needs exactly one key.");
+        var closed = floor.Scenery.Where(p => p.Kind != DungeonSceneryKind.Hazard).Select(p => p.Cell).ToHashSet();
+        closed.UnionWith(floor.Locks.Select(l => l.Door));
+        var outside = GridSearch.VisitOrder(floor.Start, p => BiomeDungeonGenerator.Neighbors(floorLayer, p, closed)).ToHashSet();
+        Check(outside.Contains(floor.Stairs), "locks.route: A door blocks the stair route.");
+        foreach (var key in floor.Scenery.Where(p => p.HoldsKey))
+            Check(key.Kind != DungeonSceneryKind.Hazard && BiomeDungeonGenerator.Orthogonal(key.Cell).Any(outside.Contains),
+                "locks.key: A key is out of reach behind a door.");
+        foreach (var l in floor.Locks)
+        {
+            Check(floorLayer.At(l.Door) && !l.Door.Equals(floor.Start) && !l.Door.Equals(floor.Stairs) && placementCells.Add(l.Door),
+                "locks.door: Invalid or overlapping door.");
+            var shut = new HashSet<GridPoint> { l.Door };
+            var reach = GridSearch.VisitOrder(floor.Start, p => BiomeDungeonGenerator.Neighbors(floorLayer, p, shut)).ToHashSet();
+            Check(l.HitPoints > 0 && l.Vault.Count >= BiomeDungeonGenerator.MinimumVault && !l.Vault.Any(reach.Contains) &&
+                l.Vault.Distinct().Count() == l.Vault.Count && reach.Count + l.Vault.Count == area - 1,
+                "locks.vault: A vault must be exactly the cells its door seals.");
+        }
     }
 
     private static void ValidateGathering(DungeonFloor floor, DungeonFloorOptions options, List<string> errors, HashSet<GridPoint> placementCells)

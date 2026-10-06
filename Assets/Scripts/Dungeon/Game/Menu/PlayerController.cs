@@ -226,6 +226,12 @@ public class PlayerController : MonoBehaviour
 
                     //else you can't move
                 }
+                else if (Game.Instance.CurrentDungeon.PropAt(newMapPosition + offset) is DungeonProp door && door.IsClosedDoor &&
+                    GridMovement.CanStep(newMapPosition, door.Position, cell => cell == door.Position || Game.Instance.CurrentDungeon.IsWalkable(cell)))
+                {
+                    ShowDoorPrompt(door);
+                    return;
+                }
                 StopHeldWalk();
             }
         }
@@ -431,6 +437,20 @@ public class PlayerController : MonoBehaviour
                 () => GameOverScreen.GoBackToTown(true, this),
                 () => { });
         }
+    }
+
+    private void ShowDoorPrompt(DungeonProp door)
+    {
+        StopHeldWalk();
+        if (SmallKeys.Count == 0)
+        {
+            GameMessages.Post("The door is locked. A small key would open it, or it could be broken down.");
+            return;
+        }
+        MenuManager.Instance.ShowYesNoDialog(
+            $"Use a small key to unlock the door? ({SmallKeys.Count} held)",
+            () => ControlledAlly.SetAction(new InteractAction(door)),
+            () => { });
     }
 
     public void TakeControl(Ally newAlly)

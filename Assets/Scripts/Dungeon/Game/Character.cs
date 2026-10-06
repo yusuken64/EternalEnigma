@@ -128,6 +128,9 @@ public abstract class Character : MonoBehaviour, Actor
 			(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any());
         if (!hasTargets && !inventoryTargeting && Game.Instance?.PlayerController?.ControlledAlly == this)
             hasTargets = skill.RequiresTargetSelection ? ScenerySkillTargets.Candidates(this,skill).Any() : ScenerySkillTargets.Affected(this,skill,this,null,default).Any();
+        // Doors are the only targets of door skills, whoever casts them.
+        if (skill.Targeting == SkillTargeting.LockedDoor && Game.Instance?.CurrentDungeon != null)
+            hasTargets = ScenerySkillTargets.Candidates(this,skill).Any();
 		if (!hasTargets)
 		{
 			reason = "No valid targets";

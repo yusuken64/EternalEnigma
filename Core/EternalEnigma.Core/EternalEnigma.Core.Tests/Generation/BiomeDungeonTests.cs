@@ -70,6 +70,41 @@ public sealed class BiomeDungeonTests
         }
     }
 
+    [Theory]
+    [InlineData(OverworldBiome.Grassland)] [InlineData(OverworldBiome.Forest)]
+    [InlineData(OverworldBiome.Desert)] [InlineData(OverworldBiome.Water)]
+    [InlineData(OverworldBiome.Mountain)] [InlineData(OverworldBiome.Tundra)]
+    [InlineData(OverworldBiome.Marsh)] [InlineData(OverworldBiome.Volcanic)]
+    public void LocksAreSoft(OverworldBiome biome)
+    {
+        int floors = 0, locked = 0;
+        for (int tier = 0; tier <= 4; tier++)
+        for (int seed = 0; seed < 24; seed++)
+        {
+            var f = DungeonFloorGenerator.Generate(DungeonLayoutProfile.Options(seed, biome, tier));
+            floors++; locked += f.Locks.Count;
+            Assert.InRange(f.Locks.Count, 0, 1);
+            Assert.Equal(f.Locks.Count, f.Scenery.Count(p => p.HoldsKey));
+            var layer = f.Layers[DungeonLayers.Floor];
+            var exitRoute = GatheringPlacement.RequiredPath(layer, f.Start, f.Stairs).ToHashSet();
+            foreach (var l in f.Locks)
+            {
+                Assert.DoesNotContain(l.Door, exitRoute);
+                var vault = l.Vault.ToHashSet();
+                Assert.DoesNotContain(f.Start, vault); Assert.DoesNotContain(f.Stairs, vault);
+                Assert.Contains(f.Scenery, p => p.Kind == DungeonSceneryKind.Container && vault.Contains(p.Cell));
+                Assert.DoesNotContain(f.Scenery, p => p.HoldsKey && vault.Contains(p.Cell));
+                Assert.DoesNotContain(f.Enemies, e => e.Cell.Equals(l.Door));
+                Assert.DoesNotContain(f.GatheringSites, g => g.Cell.Equals(l.Door));
+            }
+            var again = DungeonFloorGenerator.Generate(DungeonLayoutProfile.Options(seed, biome, tier));
+            Assert.Equal(f.Locks.Select(l => (l.Door, l.HitPoints, l.Vault.Count)), again.Locks.Select(l => (l.Door, l.HitPoints, l.Vault.Count)));
+        }
+        foreach (DungeonFloorRole role in new[] { DungeonFloorRole.Entry, DungeonFloorRole.Exit })
+            Assert.Empty(DungeonFloorGenerator.Generate(DungeonLayoutProfile.Options(1, biome, 2, role)).Locks);
+        output.WriteLine($"{biome}: {locked}/{floors} floors locked");
+    }
+
     [Fact]
     public void StartersAndDefaultsRemainLegacy()
     {

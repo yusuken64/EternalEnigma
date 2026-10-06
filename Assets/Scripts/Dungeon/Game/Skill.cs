@@ -34,7 +34,7 @@ public class Skill : ScriptableObject
 	public bool IsWeaponSkill;
 	public bool UsesArrows => ArrowCost > 0 || ActionEffects?.OfType<RandomHitsAction>().Any(e => e.ArrowPerHit) == true;
 	internal ActionTargeting TargetingRules => new(Targeting, TargetSelector, InventoryTargetSelector, AreaRadius, MissileRange);
-	internal bool RequiresTargetSelection => Targeting == SkillTargeting.Missile || TargetingRules.RequiresSelection;
+	internal bool RequiresTargetSelection => Targeting == SkillTargeting.Missile || Targeting == SkillTargeting.LockedDoor || TargetingRules.RequiresSelection;
 	[SerializeReference]
 	public List<GameAction> ActionEffects;
 
@@ -117,8 +117,9 @@ public enum SkillTargeting
 	Self,           // Cast immediately, centered on the caster.
 	AllTargets,     // Cast immediately on every character allowed by the selector.
 	InventoryItem, // Select one eligible item from the party inventory.
-	Missile,       // Aim in one of eight directions.
-	Tile
+	Missile,       // Aim in one of eight directions; the first character or wall stops the shot.
+	Tile,
+	LockedDoor     // Pick a visible closed door within MissileRange tiles; only door effects (UnlockDoorAction) apply.
 }
 
 public enum ArrowCostMode

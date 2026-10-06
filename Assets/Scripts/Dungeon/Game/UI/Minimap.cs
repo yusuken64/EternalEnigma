@@ -153,7 +153,8 @@ public class Minimap : MonoBehaviour
                     {
                         PaintCell(interactable.Position.x, interactable.Position.y,
                     interactable is Stairs ? new Color(.3f,.9f,1f) :
-                    interactable is DungeonProp scenery && scenery.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard ? new Color(1f,.3f,.12f) : ItemColor);
+                    interactable is DungeonProp scenery && scenery.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard ? new Color(1f,.3f,.12f) :
+                    interactable is DungeonProp doorProp && doorProp.IsDoor ? new Color(.85f,.55f,.2f) : ItemColor);
                 if (interactable is Stairs) PaintPixel(interactable.Position.x*3+1,interactable.Position.y*3+1,Color.white);
                     }
                 }
@@ -164,7 +165,8 @@ public class Minimap : MonoBehaviour
             {
                 PaintCell(interactable.Position.x, interactable.Position.y,
                     interactable is Stairs ? new Color(.3f,.9f,1f) :
-                    interactable is DungeonProp scenery && scenery.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard ? new Color(1f,.3f,.12f) : ItemColor);
+                    interactable is DungeonProp scenery && scenery.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard ? new Color(1f,.3f,.12f) :
+                    interactable is DungeonProp doorProp && doorProp.IsDoor ? new Color(.85f,.55f,.2f) : ItemColor);
                 if (interactable is Stairs) PaintPixel(interactable.Position.x*3+1,interactable.Position.y*3+1,Color.white);
             }
         }

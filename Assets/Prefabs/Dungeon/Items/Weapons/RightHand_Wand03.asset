@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: RightHand_Wand03
   m_EditorClassIdentifier: 
   ItemName: Oak Wand
-  Description: 
+  MaxFloor: 10
+  MinFloor: 1
+  Description: Oak Wand grants 3 strength.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1

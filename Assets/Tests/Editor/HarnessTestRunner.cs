@@ -103,6 +103,9 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Weapon Proficiency EditMode")]
     public static void RunWeaponProficiencyEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
         "HeroClassTests", "EquipmentRegressionTests", "EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests", "EternalEnigma.Tests.ClassContentTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Weapon Catalog")]
+    public static void RunWeaponCatalog() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.WeaponCatalogTests", "EternalEnigma.Tests.EconomyCatalogTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Weapon Proficiency PlayMode")]
     public static void RunWeaponProficiencyPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.HeroPrefabTests", "EternalEnigma.Tests.InventorySkillTargetingTests", "EternalEnigma.Tests.ClassAssignmentTests");

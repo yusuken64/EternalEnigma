@@ -23,6 +23,51 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup() { yield return harness.Cleanup(); if (configuration != null) Object.DestroyImmediate(configuration); }
 
         [UnityTest]
+        public IEnumerator EveryWeaponTypeCanBeBoughtEquippedAndReportsClassRestriction()
+        {
+            yield return harness.LoadMainMenu(null);
+            var common = Common.Instance;
+            common.GameSaveData = Object.FindFirstObjectByType<MainMenu>().CreateNewSave(42);
+            common.Travel.NewCampaign(42);
+            yield return harness.WaitUntil(() => Town != null && Town.IsReady && !common.ScreenTransition.BlockScreen.activeSelf, "campaign town");
+            var town = Town;
+            var originalId = town.Configuration.Id;
+            var hero = town.TownPlayer.ControllingTownAlly;
+            var originalClass = hero.PrimaryClass;
+            var shop = Resources.Load<TownBuildingDefinition>("Towns/Buildings/Shop");
+            var classes = ClassCatalog.Load().Classes;
+            try
+            {
+                town.Configuration.Id = common.CampaignContext.Campaign.Locations
+                    .Where(l => l.Kind == EternalEnigma.Core.Progression.LocationKind.Town)
+                    .OrderByDescending(l => l.Tier).First().Id;
+                Assert.That(TownShopCatalog.Tier(town.Configuration.Id), Is.EqualTo(4));
+                town.TownPlayer.Gold = 100000;
+                foreach (WeaponType type in System.Enum.GetValues(typeof(WeaponType)))
+                {
+                    var offer = TownShopCatalog.Resolve(shop, 4).First(o => o.Item is EquipmentItemDefinition e &&
+                        !e.IsAmmunition && e.WeaponType == type);
+                    hero.PrimaryClass = classes.First(c => c.AllowsWeapon(type));
+                    hero.SecondaryClass = null;
+                    Assert.That(town.Services.Buy(shop, offer.Item.ItemName, out var buyReason), Is.True, buyReason);
+                    var item = town.TownPlayer.Inventory.Last(i => i.ItemDefinition == offer.Item);
+                    Assert.That(town.Services.ToggleEquipment(hero, item, out var equipReason), Is.True, equipReason);
+                    var weapon = (EquipmentItemDefinition)offer.Item;
+                    var objects = weapon.WeaponModelName == "Bows" ? hero.HeroAnimator.LeftHandObjects :
+                        weapon.EquipmentSlot == EquipmentSlot.OffHand ? hero.HeroAnimator.LeftHandObjects : hero.HeroAnimator.RightHandObjects;
+                    Assert.That(objects.Any(o => o.activeSelf && o.name == weapon.WeaponModelName), Is.True, type.ToString());
+                    Assert.That(town.Services.ToggleEquipment(hero, item, out _), Is.True);
+                    var denied = classes.FirstOrDefault(c => !c.AllowsWeapon(type));
+                    if (denied == null) continue;
+                    hero.PrimaryClass = denied;
+                    Assert.That(town.Services.ToggleEquipment(hero, item, out var reason), Is.False);
+                    Assert.That(reason, Does.Contain("proficiency"));
+                }
+            }
+            finally { town.Configuration.Id = originalId; hero.PrimaryClass = originalClass; }
+        }
+
+        [UnityTest]
         public IEnumerator SalesConfirmExactEntriesCancelAndCannotPayTwice()
         {
             yield return harness.LoadTown(new TestScenario { Gold = 10000 }.CreateSave());

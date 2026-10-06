@@ -29,18 +29,23 @@ public class ItemManager : MonoBehaviour
 		return itemDefinition.AsInventoryItem(stock);
 	}
 
-	internal ItemDefinition GetRandomDrop(Character enemy)
-	{
-		var loot = DungeonLoot;
-        if (loot.Count == 0) throw new InvalidOperationException("Dungeon loot is empty.");
-        return loot[UnityEngine.Random.Range(0, loot.Count)];
-	}
+	internal ItemDefinition GetRandomDrop(Character enemy) => GetRandomDrop(enemy, 1);
 
-	/// <summary>Deterministic pick by roll over ItemDefinitions in list order.</summary>
-	internal ItemDefinition GetRandomDrop(int roll)
+	internal ItemDefinition GetRandomDrop(Character enemy, int floor) =>
+		GetRandomDrop(UnityEngine.Random.Range(0, int.MaxValue), floor);
+
+	/// <summary>Deterministic floor-aware pick, retaining list order within each item category.</summary>
+	internal ItemDefinition GetRandomDrop(int roll) => GetRandomDrop(roll, 1);
+
+	internal ItemDefinition GetRandomDrop(int roll, int floor)
 	{
-		var loot = DungeonLoot;
-        if (loot.Count == 0) throw new InvalidOperationException("Dungeon loot is empty.");
-        return loot[(int)((uint)roll % (uint)loot.Count)];
+		var loot = DungeonLoot.Where(i => i.MinFloor <= floor && floor <= i.MaxFloor).ToList();
+		if (loot.Count == 0) throw new InvalidOperationException($"Dungeon loot has no eligible item on floor {floor}.");
+		var consumables = loot.Where(i => i is not EquipmentItemDefinition).ToList();
+		var equipment = loot.Where(i => i is EquipmentItemDefinition).ToList();
+		uint value = (uint)roll;
+		bool chooseConsumable = consumables.Count > 0 && (equipment.Count == 0 || value % 100 < 28);
+		var pool = chooseConsumable ? consumables : equipment;
+		return pool[(int)((value / 100) % (uint)pool.Count)];
 	}
 }

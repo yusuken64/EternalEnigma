@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: LeftHand_OHS10_Axe
   m_EditorClassIdentifier: 
   ItemName: Hand Axe (Off-hand)
-  Description: 
+  MaxFloor: 20
+  MinFloor: 6
+  Description: Hand Axe (Off-hand) grants 10 strength.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1

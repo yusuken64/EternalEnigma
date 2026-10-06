@@ -13,7 +13,7 @@ namespace EternalEnigma.Tests
         {
             var shop=Resources.Load<TownBuildingDefinition>("Towns/Buildings/Shop");
             var offers=shop.ShopCatalog.Where(o=>o.Item is EquipmentItemDefinition { IsAmmunition:true }).OrderBy(o=>o.MinimumTier).ToArray();
-            Assert.That(offers.Length,Is.EqualTo(3));
+            Assert.That(offers.Length,Is.EqualTo(5));
             var go=new GameObject("Ammo save test");
             try
             {
@@ -88,7 +88,7 @@ namespace EternalEnigma.Tests
                 if (offer.Item is EquipmentItemDefinition { IsAmmunition: true }) { Assert.That(offer.Quantity, Is.EqualTo(4)); Assert.That(offer.StackCount, Is.EqualTo(20)); }
                 else if (offer.Item is EquipmentItemDefinition equipment)
                 {
-                    Assert.That(Mathf.Max(equipment.StatModification.Strength, equipment.StatModification.Defense), Is.LessThanOrEqualTo(equipment.WeaponType == WeaponType.BowAndArrow ? 10 : new[] { 0,6,9,12,20 }[offer.MinimumTier]));
+                    Assert.That(Mathf.Max(equipment.StatModification.Strength, equipment.StatModification.Defense), Is.LessThanOrEqualTo(new[] { 0,6,9,12,20 }[offer.MinimumTier]));
                     Assert.That(offer.Quantity, Is.EqualTo(1));
                 }
                 else

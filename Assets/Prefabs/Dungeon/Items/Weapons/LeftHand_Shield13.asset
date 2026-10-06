@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: LeftHand_Shield13
   m_EditorClassIdentifier: 
   ItemName: Gilded Shield
-  Description: 
+  MaxFloor: 2147483647
+  MinFloor: 15
+  Description: Gilded Shield grants 13 defense.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1

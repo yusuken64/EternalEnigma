@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Arrows_WoodenArrows
   m_EditorClassIdentifier: 
   ItemName: Wooden Arrows
+  Description: Wooden arrows for bows.
+  WeaponModelVariant: Arrow01
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   StackStartMin: 4
   StackStartMax: 20

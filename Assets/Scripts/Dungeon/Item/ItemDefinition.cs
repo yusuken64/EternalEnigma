@@ -7,6 +7,8 @@ public abstract class ItemDefinition : ScriptableObject
 	public string Description;
 	public bool ShopOnly;
 	public bool IsProgressionItem;
+	public int MinFloor = 1;
+	public int MaxFloor = int.MaxValue;
 	public ItemEffectDefinition ItemEffectDefinition;
 
 	public bool ApplyToThrownTarget;

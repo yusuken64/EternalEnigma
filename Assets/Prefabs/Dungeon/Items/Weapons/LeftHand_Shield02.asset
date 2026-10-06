@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: LeftHand_Shield02
   m_EditorClassIdentifier: 
   ItemName: Wooden Shield
-  Description: 
+  MaxFloor: 10
+  MinFloor: 1
+  Description: Wooden Shield grants 2 defense.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1

@@ -361,7 +361,7 @@ MonoBehaviour:
     Quantity: 1
     StackCount: 1
   - Item: {fileID: 11400000, guid: 3d6d184e3bc49814fad6ae9ac40c33bb, type: 2}
-    MinimumTier: 3
+    MinimumTier: 2
     Price: 600
     Quantity: 1
     StackCount: 1
@@ -376,22 +376,22 @@ MonoBehaviour:
     Quantity: 1
     StackCount: 1
   - Item: {fileID: 11400000, guid: 486bd7632830045429ac9d1c5cbf7617, type: 2}
-    MinimumTier: 3
+    MinimumTier: 4
     Price: 600
     Quantity: 1
     StackCount: 1
   - Item: {fileID: 11400000, guid: 512d031451ae19549a3b7178e4a05bad, type: 2}
-    MinimumTier: 3
+    MinimumTier: 4
     Price: 600
     Quantity: 1
     StackCount: 1
   - Item: {fileID: 11400000, guid: 237919e4a3299e141b192ee651baba4e, type: 2}
-    MinimumTier: 3
+    MinimumTier: 4
     Price: 600
     Quantity: 1
     StackCount: 1
   - Item: {fileID: 11400000, guid: 41b07d92e02342542acf2a7352e7c2ac, type: 2}
-    MinimumTier: 3
+    MinimumTier: 4
     Price: 600
     Quantity: 1
     StackCount: 1
@@ -443,6 +443,36 @@ MonoBehaviour:
   - Item: {fileID: 11400000, guid: 1ba91f8b50a84ad896d081af98f587a6, type: 2}
     MinimumTier: 2
     Price: 400
+    Quantity: 4
+    StackCount: 20
+  - Item: {fileID: 11400000, guid: f3eb8f75d4734fa88ba1a13bbc85a7a5, type: 2}
+    MinimumTier: 1
+    Price: 1250
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 4627d1c5edeb4faa8aaf6a20b69ff3a3, type: 2}
+    MinimumTier: 2
+    Price: 1750
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 1224a6cf938b4b0a942ee6384a633934, type: 2}
+    MinimumTier: 2
+    Price: 2250
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 1f3c13ec078141b9b7c65dc0dbd13238, type: 2}
+    MinimumTier: 3
+    Price: 2750
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 6cfec8d11e294c2aa3daa35afc7cdd4c, type: 2}
+    MinimumTier: 3
+    Price: 800
+    Quantity: 4
+    StackCount: 20
+  - Item: {fileID: 11400000, guid: 901c296a1949493581962ea569a6773d, type: 2}
+    MinimumTier: 4
+    Price: 1600
     Quantity: 4
     StackCount: 20
   VendorPrefab: {fileID: 3597991658242453545, guid: cebac3115480f5c45a0733fb1e94af5b, type: 3}

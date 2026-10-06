@@ -294,7 +294,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 			foreach (var p in floor.Gold) CurrentDungeon.SetTreasure(p.Cell.ToCell());
 
-			foreach (var p in floor.Items) CurrentDungeon.SetDroppedItem(p.Cell.ToCell(), Common.Instance.ItemManager.GetRandomDrop(p.Roll));
+			foreach (var p in floor.Items) CurrentDungeon.SetDroppedItem(p.Cell.ToCell(), Common.Instance.ItemManager.GetRandomDrop(p.Roll, PlayerController.Floor));
 
 			foreach (var p in floor.Traps) CurrentDungeon.SetTrap(p.Cell.ToCell(), p.Roll);
 

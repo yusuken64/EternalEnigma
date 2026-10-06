@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: RightHand_Wand07
   m_EditorClassIdentifier: 
   ItemName: Sage's Wand
-  Description: 
+  MaxFloor: 20
+  MinFloor: 6
+  Description: Sage's Wand grants 7 strength.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   StackStartMin: 1

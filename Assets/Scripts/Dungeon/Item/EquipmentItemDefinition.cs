@@ -6,6 +6,7 @@ public class EquipmentItemDefinition : ItemDefinition
 	public EquipmentSlot EquipmentSlot;
 	public StatModification StatModification;
 	public string WeaponModelName;
+	public string WeaponModelVariant;
 	public WeaponType WeaponType;
 	public bool IsAmmunition;
 	public float ArrowDamageMultiplier = 1f;

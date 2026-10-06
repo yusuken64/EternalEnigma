@@ -66,14 +66,44 @@ namespace EternalEnigma.Tests
                     .Where(item => !string.IsNullOrEmpty(item.WeaponModelName)))
                 {
                     bool offhand = weapon.EquipmentSlot == EquipmentSlot.OffHand;
-                    animation.SetWeapon(offhand ? null : weapon, offhand ? weapon : null);
-                    var models = offhand ? animation.LeftHandObjects : animation.RightHandObjects;
+                    bool arrow = weapon.IsAmmunition;
+                    bool bow = weapon.WeaponType == WeaponType.BowAndArrow && !arrow;
+                    var equippedBow = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>()
+                        .First(item => item.WeaponModelName == "Bows");
+                    animation.SetWeapon(arrow ? equippedBow : offhand ? null : weapon, arrow ? weapon : offhand ? weapon : null);
+                    var models = arrow ? animation.RightHandObjects : offhand || bow ? animation.LeftHandObjects : animation.RightHandObjects;
                     Assert.That(models.Count(model => model.activeSelf && model.name == weapon.WeaponModelName),
                         Is.EqualTo(1), label + " " + weapon.ItemName + " model " + weapon.WeaponModelName);
+                    if (weapon.WeaponModelName == "Bows" || weapon.WeaponModelName == "Arrows")
+                    {
+                        var root = models.Single(model => model.activeSelf && model.name == weapon.WeaponModelName);
+                        var variant = string.IsNullOrEmpty(weapon.WeaponModelVariant)
+                            ? (weapon.IsAmmunition ? "Arrow01" : "Bow01") : weapon.WeaponModelVariant;
+                        Assert.That(root.transform.Cast<Transform>().Where(child => child.gameObject.activeSelf)
+                            .Select(child => child.name), Is.EqualTo(new[] { variant }), label + " " + weapon.ItemName + " variant");
+                    }
                     if (weapon.WeaponType == WeaponType.SimpleWeapon || weapon.WeaponType == WeaponType.Axe || weapon.WeaponType == WeaponType.Hammer)
                         Assert.That(animation.CurrentStance, Is.EqualTo(offhand ? Stance.DoubleSwordStance : Stance.SingleSword), label + " " + weapon.ItemName);
                     if (weapon.WeaponType == WeaponType.BowAndArrow)
+                    {
                         Assert.That(animation.CurrentStance, Is.EqualTo(Stance.BowAndArrowStance), label + " bow stance");
+                        animation.PlayAttackAnimation();
+                        animation.Animator.Update(0);
+                    }
+                }
+                var bowForArrows = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>()
+                    .First(item => item.WeaponModelName == "Bows");
+                var arrowOffers = Resources.Load<TownBuildingDefinition>("Towns/Buildings/Shop").ShopCatalog
+                    .Select(offer => offer.Item).OfType<EquipmentItemDefinition>().Where(item => item.IsAmmunition);
+                foreach (var arrows in arrowOffers)
+                {
+                    animation.SetWeapon(bowForArrows, arrows);
+                    var root = animation.RightHandObjects.Single(model => model.name == "Arrows");
+                    Assert.That(root.activeSelf, Is.True, label + " " + arrows.ItemName);
+                    Assert.That(root.transform.Cast<Transform>().Where(child => child.gameObject.activeSelf)
+                        .Select(child => child.name), Is.EqualTo(new[] { arrows.WeaponModelVariant }));
+                    Assert.That(animation.CurrentStance, Is.EqualTo(Stance.BowAndArrowStance));
+                    animation.PlayAttackAnimation(); animation.Animator.Update(0);
                 }
                 foreach (Stance stance in Enum.GetValues(typeof(Stance)))
                 {

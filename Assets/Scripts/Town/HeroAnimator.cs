@@ -129,9 +129,24 @@ public class HeroAnimator : MonoBehaviour
 			CurrentStance = Stance.SingleSword;
 		}
 
-		bool bow = mainHandItemDefinition?.WeaponType == WeaponType.BowAndArrow && mainHandItemDefinition.IsAmmunition == false;
-        RightHandObjects.ForEach(x => x.gameObject.SetActive(x.name == (bow ? offHandItemDefinition?.WeaponModelName : mainHandItemDefinition?.WeaponModelName)));
-        LeftHandObjects.ForEach(x => x.gameObject.SetActive(x.name == (bow ? mainHandItemDefinition?.WeaponModelName : offHandItemDefinition?.WeaponModelName)));
+		bool bow = mainHandItemDefinition?.WeaponType == WeaponType.BowAndArrow && !mainHandItemDefinition.IsAmmunition;
+		SetHandModels(RightHandObjects, bow ? offHandItemDefinition : mainHandItemDefinition);
+		SetHandModels(LeftHandObjects, bow ? mainHandItemDefinition : offHandItemDefinition);
+	}
+
+	private static void SetHandModels(List<GameObject> models, EquipmentItemDefinition item)
+	{
+		foreach (var model in models)
+		{
+			bool selected = item != null && model.name == item.WeaponModelName;
+			model.SetActive(selected);
+			if (!selected) continue;
+			string variant = string.IsNullOrEmpty(item.WeaponModelVariant)
+				? (item.IsAmmunition ? "Arrow01" : "Bow01") : item.WeaponModelVariant;
+			if (model.name != "Bows" && model.name != "Arrows") continue;
+			foreach (Transform child in model.transform)
+				child.gameObject.SetActive(child.name == variant);
+		}
 	}
 
 

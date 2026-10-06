@@ -65,7 +65,7 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
         var dungeon = Game.Instance.CurrentDungeon;
         dungeon.Interactables.Remove(this);
         if (Definition.Reward == SceneryReward.Item)
-            dungeon.SetDroppedItem(Position, Common.Instance.ItemManager.GetRandomDrop(Definition.Roll));
+            dungeon.SetDroppedItem(Position, Common.Instance.ItemManager.GetRandomDrop(Definition.Roll, Game.Instance.PlayerController.Floor));
         else if (Definition.Reward == SceneryReward.Gold)
             dungeon.SetTreasure(Position,Definition.Roll);
         if (Definition.HoldsKey)

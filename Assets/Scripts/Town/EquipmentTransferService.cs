@@ -19,7 +19,7 @@ public static class EquipmentTransferService
             if (!bag.Contains(item)) return false;
             if (!HeroClass.AllowsItem(primary, secondary, equipment))
             {
-                reason = $"Requires a compatible class. Current class: {HeroClass.Label(primary, secondary)}.";
+                reason = HeroClass.EquipmentRestriction(primary, secondary, equipment);
                 return false;
             }
             var previous = slots.GetEquippedItems().ToArray();

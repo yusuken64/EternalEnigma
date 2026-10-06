@@ -33,6 +33,10 @@ public static class HeroClass
 		return AllowsWeapon(primary, secondary, definition.WeaponType);
 	}
 
+	public static string EquipmentRestriction(ClassDefinition primary, ClassDefinition secondary, EquipableInventoryItem item) =>
+		AllowsItem(primary, secondary, item) ? null :
+		$"Requires {item.EquipmentItemDefinition.WeaponType} proficiency. Current classes: {Label(primary, secondary)}.";
+
 	// "Warrior", "Warrior / Scout", or "" when there is no class.
 	public static string Label(ClassDefinition primary, ClassDefinition secondary)
 	{

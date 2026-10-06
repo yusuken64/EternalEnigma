@@ -20,9 +20,11 @@ public sealed class HeldWalkingTests
     private bool? previousControl;
     private Keyboard keyboard;
     private Scene overworld;
+    private TestInputScope inputScope;
 
     [UnitySetUp] public IEnumerator Setup()
     {
+        inputScope = new TestInputScope();
         previousMode = DungeonPreferences.AnimationOverride;
         previousControl = DungeonPreferences.FullControlOverride;
         DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
@@ -38,6 +40,7 @@ public sealed class HeldWalkingTests
         yield return harness.Cleanup();
         DungeonPreferences.AnimationOverride = previousMode;
         DungeonPreferences.FullControlOverride = previousControl;
+        inputScope.Dispose();
     }
 
     private static void Field(object target, string name, object value) => target.GetType()
@@ -110,6 +113,8 @@ public sealed class HeldWalkingTests
     {
         var save = new TestScenario().CreateSave();
         save.TownSaveData.RecruitedAlliesData.Add(new TownAllyData { AllyName = "Avery" });
+        save.TownSaveData.RecruitedAlliesData.Add(new TownAllyData { AllyName = "Morgan" });
+        save.TownSaveData.RecruitedAlliesData.Add(new TownAllyData { AllyName = "Alex" });
         yield return harness.LoadTown(save);
         var town = Object.FindFirstObjectByType<Town>();
         var player = town.TownPlayer;
@@ -121,8 +126,12 @@ public sealed class HeldWalkingTests
             .First(d => player.WalkableMap.CanWalkTo(origin, origin + d) && town.CanEnter(origin + d) &&
                 !town.TownBuildings.Any(b => b.TilemapPosition == origin + d) &&
                 !town.TownAllies.Any(a => a.TilemapPosition == origin + d));
-        follower.TilemapPosition = origin;
-        follower.transform.position = leader.transform.position;
+        Assert.That(player.RecruitedAllies.Count, Is.EqualTo(4));
+        foreach (var member in player.RecruitedAllies.Where(a => a != leader))
+        {
+            member.TilemapPosition = origin;
+            member.transform.position = leader.transform.position;
+        }
         player.WalkPositionHistory.Clear();
         player.WalkPositionHistory.Add(origin);
         Input(offset);
@@ -146,7 +155,11 @@ public sealed class HeldWalkingTests
         Decide(player);
         yield return null; // Release during interpolation, not before starting it.
         Input(Vector3Int.zero);
+        yield return harness.WaitUntil(() => player.RecruitedAllies.All(a =>
+            Vector3.Distance(a.transform.position, player.WalkableMap.CellToWorld(a.TilemapPosition)) < .001f), "all four heroes arrived");
+        int arrivedFrame = Time.frameCount;
         yield return harness.WaitUntil(() => !player.IsBusy, "released town step");
+        Assert.That(Time.frameCount - arrivedFrame, Is.LessThanOrEqualTo(1), "Completed followers must not add idle frames.");
         Assert.That(leader.TilemapPosition, Is.EqualTo(origin));
         AssertAction(leader.HeroAnimator, AnimatedAction.Idle);
         AssertAction(follower.HeroAnimator, AnimatedAction.Idle);
@@ -177,7 +190,7 @@ public sealed class HeldWalkingTests
 
     [UnityTest] public IEnumerator DungeonHeldTurnsSwapReleaseAndCombatPreserveCorrectPoses()
     {
-        yield return harness.LoadDungeon(new TestScenario { AdditionalAllies = new[] { "Avery" } });
+        yield return harness.LoadDungeon(new TestScenario { AdditionalAllies = new[] { "Avery", "Morgan", "Alex" } });
         var game = harness.Game;
         foreach (var enemy in game.Enemies.ToArray()) Object.Destroy(enemy.gameObject);
         game.Enemies.Clear();
@@ -186,6 +199,8 @@ public sealed class HeldWalkingTests
         Field(controller, "menuCooldown", -1000f); // Inspect completed turns before issuing the next command.
         var leader = harness.Ally;
         var follower = game.Allies.First(a => a != leader);
+        Assert.That(game.Allies.Count, Is.EqualTo(4));
+        foreach (var member in game.Allies.Where(a => a != leader)) member.AllyStrategy = AllyStrategy.HoldPosition;
         var followerOrigin = follower.TilemapPosition;
         follower.AllyStrategy = AllyStrategy.HoldPosition;
         var origin = leader.TilemapPosition;

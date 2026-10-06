@@ -182,6 +182,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		PlayerController.Inventory.Clear();
         var townSave = Common.Instance.GameSaveData.TownSaveData;
+        PlayerController.Gold = townSave.Gold;
         var items = townSave.InventoryItems.Select(i => i.Restore(Common.Instance.ItemManager));
         items.ToList().ForEach(x => PlayerController.Inventory.Add(x));
 		demoLoadout = Common.Instance.PendingDemoLoadout;
@@ -359,7 +360,7 @@ public class Game : SingletonMonoBehaviour<Game>
             displayedSightOrigins[ally] = origin;
             PartyVisibleTiles.UnionWith(CurrentDungeon.GetVisibleTiles(ally, origin));
         }
-        var minimap = FindFirstObjectByType<Minimap>();
+        var minimap = PlayerController.Minimap;
         minimap.UpdateVision(PartyVisibleTiles);
         minimap.UpdateMinimapWithVisibleTiles(PartyVisibleTiles);
     }

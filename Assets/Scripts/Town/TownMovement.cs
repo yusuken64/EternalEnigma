@@ -89,11 +89,10 @@ internal class TownMovement : TownAction
 			yield break;
 		}
 
-		// Wait for all tweens to complete in parallel
-		foreach (var tween in tweens)
-		{
-			yield return tween.WaitForCompletion();
-		}
+		// All party tweens start together. Yield once per frame for the group;
+		// yielding each completed/killed tween can add a frame per follower.
+		while (tweens.Any(tween => tween.IsActive() && !tween.IsComplete()))
+			yield return null;
 
 		// Retain only the walk cycles started by this manual movement sequence.
 		foreach (var ally in orderedAllies)

@@ -58,15 +58,25 @@ public sealed class CampaignSlots : MonoBehaviour
             Slots[i].Label.text=text;
         }
         BackButton.onClick.RemoveAllListeners();BackButton.onClick.AddListener(Close);
+        for (int i = 0; i < cards.Length; i++)
+            cards[i].navigation = new Navigation { mode = Navigation.Mode.Explicit,
+                selectOnLeft = cards[(i + cards.Length - 1) % cards.Length],
+                selectOnRight = cards[(i + 1) % cards.Length],
+                selectOnDown = BackButton, selectOnUp = BackButton };
         MenuUIInputModule.Active?.PushDialog(this,transform,cards[selected].gameObject,Close);
         Select(selected);
-        // Keep a keyboard fallback while making the first pointer press select the card.
-        EventSystem.current?.SetSelectedGameObject(null);
+        cards[selected].Select();
     }
     private void Select(int slot)
     {
         selected=slot; var save=saves[slot]; var s=save?.Summary;
-        for(int i=0;i<cards.Length;i++) cards[i].GetComponent<Image>().color=i==slot ? GameUITheme.Selected : Color.white;
+        for(int i=0;i<cards.Length;i++)
+        {
+            cards[i].GetComponent<Image>().color=i==slot ? GameUITheme.Selected : Color.white;
+            Slots[i].Label.color = i == slot ? new Color(1f, .86f, .45f) : Color.white;
+        }
+        BackButton.navigation = new Navigation { mode = Navigation.Mode.Explicit,
+            selectOnUp = cards[slot], selectOnDown = cards[slot] };
         detail.text = errors[slot] ?? (s==null ?
             (newJourney ? "Choose an empty slot to begin." : "No campaign to continue in this slot.") :
             $"<b>{s.Region}</b>    Regions visited: {s.RegionsVisited} / {s.RegionsTotal}\n"+

@@ -73,7 +73,7 @@ public sealed class TownPartyMenuContext : PartyMenuContext
     {
         if(entry.Item is EquipableInventoryItem equipment)
         {
-            string reason=!hero.Equipment.IsEquipped(equipment) && !HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment)?"This hero's classes cannot equip this item.":null;
+            string reason=!hero.Equipment.IsEquipped(equipment) && !HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment)?HeroClass.EquipmentRestriction(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment):null;
             return new(){new PartyMenuAction {Label=entry.Equipped?"Unequip":"Equip",UnavailableReason=reason,Execute=menu=>
                 {town.Services.ToggleEquipment(hero.TownActor,entry.Item,out var failure);menu.Complete(failure??"Equipment updated.");}}};
         }
@@ -122,13 +122,14 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         foreach(var serialized in data.Equipment)
             if(serialized.Restore(Common.Instance.ItemManager) is EquipableInventoryItem equipment)live.Equipment.Equip(equipment);
         live.RefreshEquipmentVisuals();
+        live.EnsureStartingSkills();
     }
     public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
         entry.Skill?.ActivationType==ActivationType.Passive?base.Restriction(hero,entry):"Inspect only while travelling. Use items and recovery skills in town, or actions in a dungeon.";
     public override List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry)
     {
         if(entry.Item is not EquipableInventoryItem equipment)return new();
-        string reason=!hero.Equipment.IsEquipped(equipment)&&!HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment)?"This hero's classes cannot equip this item.":null;
+        string reason=!hero.Equipment.IsEquipped(equipment)&&!HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment)?HeroClass.EquipmentRestriction(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment):null;
         return new(){new PartyMenuAction {Label=entry.Equipped?"Unequip":"Equip",UnavailableReason=reason,Execute=menu=>
         {
             if(!EquipmentTransferService.Toggle(hero.Equipment,bag,entry.Item,hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,out var failure))
@@ -172,6 +173,8 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext
                 else {manager.CloseAllMenus();actor.SetAction(new SkillAction(actor,entry.Skill,actor));}
             }}};
         }
+        if (unavailable == null && entry.Item is EquipableInventoryItem equipment && !actor.Equipment.IsEquipped(equipment))
+            unavailable = HeroClass.EquipmentRestriction(actor.PrimaryClass, actor.SecondaryClass, equipment);
         if(unavailable==null && !new UseInventoryItemAction(game.PlayerController.Inventory,actor,entry.Item).CanBegin(actor))unavailable="This item cannot be used now.";
         var actions=new List<PartyMenuAction>{new() {Label=entry.Item is EquipableInventoryItem?(entry.Equipped?"Unequip":"Equip"):"Use",UnavailableReason=unavailable,
             Execute=menu=>{if(Eligibility(hero)==null)MenuManager.Instance.UseInventoryItem(actor,entry.Item);else menu.Complete(Eligibility(hero));}}};

@@ -8,6 +8,12 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Core Bugfixes")]
+    public static void RunCoreBugfixes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "CoreBugfixTests", "HeldWalkingTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Core Bugfix EditMode")]
+    public static void RunCoreBugfixEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "CoreStateRegressionTests", "EquipmentRegressionTests", "HeroClassTests", "SaveStoreTests",
+        "CampaignSlotStoreTests", "FogVisibilityTests", "EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Held Walking")]
     public static void RunHeldWalking() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "HeldWalkingTests");
 

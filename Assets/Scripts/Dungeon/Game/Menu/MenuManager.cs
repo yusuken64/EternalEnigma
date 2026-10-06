@@ -191,7 +191,9 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		UseInventoryItemAction Create() => new(inventory, character, item);
 		if (!Create().CanBegin(character))
 		{
-			Game.Instance.DoFloatingText("That item cannot be used now", Color.yellow, character);
+			var reason = item is EquipableInventoryItem equipment && character is Ally hero
+				? HeroClass.EquipmentRestriction(hero.PrimaryClass, hero.SecondaryClass, equipment) : null;
+			Game.Instance.DoFloatingText(reason ?? "That item cannot be used now", Color.yellow, character);
 			Common.Instance.MenuInputHandler.ClearInputThisFrame();
 			return;
 		}

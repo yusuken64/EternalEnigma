@@ -12,6 +12,7 @@ public class SkillManager : MonoBehaviour
 	{
 		return SkillPrefabs.FirstOrDefault(x => x.SkillName == skillName) ??
 			FindClassSkill(skillName) ??
+			DungeonClearAbilities.Find(skillName) ??
 			DemoDungeonLoadout.Load()?.Skills.FirstOrDefault(x => x.SkillName == skillName);
 	}
 

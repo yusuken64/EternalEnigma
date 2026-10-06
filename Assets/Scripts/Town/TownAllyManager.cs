@@ -24,6 +24,7 @@ public class TownAllyManager : MonoBehaviour
             var offer = candidates[(int)((uint)roll % (uint)candidates.Count)];
             candidates.Remove(offer);
             var ally = Instantiate(offer.Ally, transform); ally.Level = 1; ally.Experience = 0; ally.HighestLevel = 1; ally.RecruitCost = offer.Cost; result.Add(ally);
+            ally.RefreshEquipmentVisuals();
         }
         return result;
     }

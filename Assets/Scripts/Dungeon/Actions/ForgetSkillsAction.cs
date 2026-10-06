@@ -20,6 +20,7 @@ public class ForgetSkillsAction : GameAction
 		if (!IsValid(character)) return new List<GameAction>();
 		var ally = (Ally)target;
 		var keep = TownAlly.StartingSkillNames(ally.PrimaryClass, ally.SecondaryClass).ToHashSet();
+		keep.UnionWith(DungeonClearAbilities.Unlocked.Select(skill => skill.SkillName));
 		ally.Skills.RemoveAll(s => s == null || !keep.Contains(s.SkillName));
 		foreach (var skill in ally.Skills) skill.Rank = 1;
 		ally.SkillsForgotten = true;

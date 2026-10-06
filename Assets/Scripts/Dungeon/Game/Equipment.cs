@@ -112,7 +112,7 @@ public class Equipment : MonoBehaviour
 
 	internal bool CanEquip(EquipableInventoryItem equipableInventoryItem)
 	{
-		return !IsEquipped(equipableInventoryItem) &&
+		return equipableInventoryItem?.EquipmentItemDefinition != null && !IsEquipped(equipableInventoryItem) &&
 			(ClassFilter == null || ClassFilter(equipableInventoryItem));
 	}
 

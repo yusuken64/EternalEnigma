@@ -87,10 +87,17 @@ public sealed class CampaignTravelService
             player.Gold, player.Inventory.InventoryItems, PartyRules.PartyMembers(Game.Instance), keepLoot);
         var previousKeys = Context.Keys.ToArray();
         var previousClaims = Context.Claimed.ToArray();
+        string firstClear = victory && !Context.Completed.Contains(Context.State.PendingDungeon)
+            ? Context.State.PendingDungeon : null;
         Context.CompleteDungeon(victory);
         var newKeys = Context.Keys.Except(previousKeys).OrderBy(key => key).ToArray();
         var capabilities = Context.Campaign.Sources.Where(source => Context.Claimed.Contains(source.Id) && !previousClaims.Contains(source.Id))
             .Select(DescribeCapabilityReward).ToArray();
+        if (firstClear != null)
+        {
+            var ability = DungeonClearAbilities.ForDungeon(firstClear);
+            capabilities = capabilities.Append($"<b>{ability.SkillName}</b>\n{ability.Description}").ToArray();
+        }
         CampaignParty.ClearLiveParty(common);
         CampaignParty.Capture(common);
         if (Context.State.Scene == "Town") PrepareTown(Context.State.LocationId);

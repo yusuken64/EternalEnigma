@@ -39,6 +39,7 @@ public class FogOverlay : MonoBehaviour
 
     private Material fogMaterial;
     private Texture2D fogTexture;
+    private byte[] pixels;
     internal Texture2D VisibilityTexture => fogTexture;
     internal Vector4 ShadowBounds => new(worldOrigin.x,worldOrigin.y,worldSize.x*cellSize,worldSize.y*cellSize);
 
@@ -83,6 +84,7 @@ public class FogOverlay : MonoBehaviour
         visibilityMap = dungeonMap;
         int width = dungeonMap.GetLength(0);
         int height = dungeonMap.GetLength(1);
+        if (pixels == null || pixels.Length != width * height) pixels = new byte[width * height];
 
         for (int y = 0; y < height; y++)
         {
@@ -95,10 +97,11 @@ public class FogOverlay : MonoBehaviour
                     Minimap.MinimapTileVisibility.Explored => 0.5f,
                     _ => 0f
                 };
-                fogTexture.SetPixel(x, y, new Color(1, 1, 1, alpha));
+                pixels[y * width + x] = (byte)Mathf.RoundToInt(alpha * 255);
             }
         }
 
-        fogTexture.Apply();
+        fogTexture.SetPixelData(pixels, 0);
+        fogTexture.Apply(false);
     }
 }

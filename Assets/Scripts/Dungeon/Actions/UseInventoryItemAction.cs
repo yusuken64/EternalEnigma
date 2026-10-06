@@ -35,6 +35,8 @@ internal class UseInventoryItemAction : GameAction
 			(!inventory.InventoryItems.Contains(item) && !character.Equipment.IsEquipped(item)) ||
 			(item.HasStacks && item.StackIsEmpty()) || character.Vitals.HP <= 0 ||
 			character.StatusEffects.Any(s => !s.IsExpired() && (s.PreventsMenu() || s.Interupts(this)))) return false;
+		if (item is EquipableInventoryItem equipment)
+			return character.Equipment.IsEquipped(equipment) || character.Equipment.CanEquip(equipment);
 		var definition = Definition;
 		if (definition == null) return item.ItemDefinition.ItemEffectDefinition != null;
 		if (!definition.TargetingRules.IsConfigured) return false;
@@ -47,6 +49,9 @@ internal class UseInventoryItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if (!IsValid(character)) return new();
+		if (item is EquipableInventoryItem equipment)
+			return new() { character.Equipment.IsEquipped(equipment)
+				? new UnEquipAction(character, equipment) : new EquipAction(character, equipment) };
         GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} used {item.ItemName}.");
 		var definition = Definition;
 		List<GameAction> effects;

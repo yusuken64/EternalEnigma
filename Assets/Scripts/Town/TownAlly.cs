@@ -67,6 +67,7 @@ public class TownAlly : TownCharacter
 	// Learns any missing starting skill at rank 1. Safe to call repeatedly.
 	public void EnsureStartingSkills()
 	{
+		DungeonClearAbilities.Apply(this);
 		foreach (var name in StartingSkillNames(PrimaryClass, SecondaryClass))
 			if (GetRank(name) == 0) SetRank(name, 1);
 	}

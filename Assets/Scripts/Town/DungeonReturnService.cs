@@ -10,7 +10,9 @@ public static class DungeonReturnService
         if (save.DungeonSaveData.ReturnCommitted) return;
         var town = save.TownSaveData;
         bool loot = victory || keepLoot;
-        if (loot || configuration.KeepGoldOnDefeat) town.Gold += gold;
+        // Gold is the carried balance, including the money brought from town.
+        // Losing dungeon loot retains the pre-run balance, as before.
+        if (loot || configuration.KeepGoldOnDefeat) town.Gold = gold;
         bool keepItems = loot || !configuration.LoseItemsOnDefeat;
         town.InventoryItems = keepItems ? ItemSaveData.Capture(bag) : new();
         foreach (var member in town.RecruitedAlliesData)

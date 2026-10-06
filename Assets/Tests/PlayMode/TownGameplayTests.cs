@@ -258,7 +258,7 @@ namespace EternalEnigma.Tests
         public IEnumerator LeavingDungeonThroughSettingsCommitsDefeatRules()
         {
             yield return harness.LoadDungeon(new TestScenario { Gold = 250 });
-            harness.Game.PlayerController.Gold = 70;
+            harness.Game.PlayerController.Gold += 70;
             var item = Common.Instance.ItemManager.ItemDefinitions.First().AsInventoryItem(null);
             harness.Game.PlayerController.Inventory.Add(item);
             Common.Instance.GlobalSettings.MainMenu_Clicked();
@@ -285,7 +285,7 @@ namespace EternalEnigma.Tests
             var carried = harness.Game.PlayerController.Inventory.InventoryItems.Single();
             Assert.That(carried.StackStock, Is.EqualTo(3));
             carried.Decrement();
-            harness.Game.PlayerController.Gold = 70;
+            harness.Game.PlayerController.Gold += 70;
             GameOverScreen.GoBackToTown(victory, harness.Game.PlayerController);
             yield return harness.WaitUntil(() => World != null && World.IsReady, "dungeon return to town");
             Assert.That(World.Configuration, Is.SameAs(configuration));

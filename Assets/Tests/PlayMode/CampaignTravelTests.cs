@@ -65,11 +65,15 @@ namespace EternalEnigma.Tests
             Assert.That(common.Travel.EnterLocation(), Is.True);
             yield return harness.WaitForIdle();
             var game = Game.Instance;
-            game.PlayerController.Gold = 123;
+            game.PlayerController.Gold += 123;
             int gold = common.GameSaveData.TownSaveData.Gold;
             MenuManager.Instance.ShowYesNoDialog("Exit Dungeon?",
                 () => GameOverScreen.GoBackToTown(true, game.PlayerController), () => { });
             MenuManager.Instance.StairDialog.YesClicked();
+            yield return harness.WaitUntil(() => common.MessageDialog.gameObject.activeSelf, "final clear ability");
+            Assert.That(common.MessageDialog.PromptText.text, Does.Contain("Enigma's Legacy"));
+            common.MessageDialog.Ok_Clicked();
+            yield return null;
             Assert.That(game.GameOverScreen.gameObject.activeSelf, Is.True);
             Assert.That(game.GameOverScreen.MessageText.text, Does.Contain("Victory!"));
             Assert.That(game.IsReady, Is.False);
@@ -180,7 +184,7 @@ namespace EternalEnigma.Tests
             Assert.That(common.GameSaveData.DungeonSaveData.StartFloor, Is.EqualTo(1));
             Assert.That(common.GameSaveData.DungeonSaveData.EndFloor, Is.EqualTo(5));
             Assert.That(Game.Instance.Allies.Select(a => a.TownAllyId), Is.EqualTo(common.GameSaveData.TownSaveData.RecruitedAlliesData.Select(a => a.AllyId)));
-            Game.Instance.PlayerController.Gold = 123;
+            Game.Instance.PlayerController.Gold += 123;
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True);
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.False);
             yield return AcknowledgeKey("Town gate key");

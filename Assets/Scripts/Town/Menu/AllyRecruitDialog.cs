@@ -95,6 +95,7 @@ public class AllyRecruitDialog : Dialog
 		town.TownPlayer.RecruitedAllies.Add(ally);
 		Common.Instance.InstantiatedTownAllies.Add(ally);
 		ally.transform.SetParent(Common.Instance.TownAllyParent);
+		ally.RefreshEquipmentVisuals();
 	}
 
 	public static void RemoveAlly(Town town, TownAlly ally)

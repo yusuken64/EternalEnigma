@@ -274,9 +274,14 @@ public sealed class TestInputScope : IDisposable
 {
     private readonly InputSettings previous = InputSystem.settings;
     private readonly InputSettings settings;
+    private readonly InputDevice[] suspendedDevices;
 
     public TestInputScope()
     {
+        // Physical HID reports can replace Gamepad.current between synthetic test events.
+        // Disable only devices that were enabled, and restore them when the fixture ends.
+        suspendedDevices=InputSystem.devices.Where(device=>device.enabled).ToArray();
+        foreach(var device in suspendedDevices)InputSystem.DisableDevice(device);
         settings = Object.Instantiate(previous);
         settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
@@ -286,6 +291,7 @@ public sealed class TestInputScope : IDisposable
     public void Dispose()
     {
         InputSystem.settings = previous;
+        foreach(var device in suspendedDevices)if(device.added)InputSystem.EnableDevice(device);
         Object.DestroyImmediate(settings);
     }
 }

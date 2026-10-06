@@ -8,6 +8,33 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Final")]
+    public static void RunPresentationFinal()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonDockTests","EternalEnigma.Tests.GameMessageTests","EternalEnigma.Tests.MenuSelectionTests",
+        "EternalEnigma.Tests.OverworldSceneTests.AuthoredSceneBuildsCampaignAndMovesHeroWithSealedGates");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Input Followups")]
+    public static void RunPresentationInputFollowups()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MenuSelectionTests.MouseWinsSimultaneousInputAndControllerNoiseDoesNotStealIt",
+        "EternalEnigma.Tests.OverworldSceneTests.AuthoredSceneBuildsCampaignAndMovesHeroWithSealedGates");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dock Followups")]
+    public static void RunDockFollowups()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.InventorySkillTargetingTests",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSelectionTests.MouseWinsSimultaneousInputAndControllerNoiseDoesNotStealIt",
+        "EternalEnigma.Tests.OverworldSceneTests.AuthoredSceneBuildsCampaignAndMovesHeroWithSealedGates");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Authoring")]
+    public static void RunPresentationAuthoring()=>Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.DungeonPresentationAuthoringTests","EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Overworld Presentation")]
+    public static void RunOverworldPresentation()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.OverworldPresentationTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Dock")]
+    public static void RunDungeonDock()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.DungeonDockTests","EternalEnigma.Tests.GameMessageTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dock Regression")]
+    public static void RunDockRegression()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests","EternalEnigma.Tests.InventorySkillTargetingTests",
+        "EternalEnigma.Tests.MenuSelectionTests","EternalEnigma.Tests.MenuSceneNavigationTests","EternalEnigma.Tests.OverworldSceneTests",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Economy")]
     public static void RunEconomy() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EconomyGameplayTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Economy EditMode")]

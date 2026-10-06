@@ -25,7 +25,9 @@ public static class OverworldSixTerrainAuthoring
             stone = new Material(kit.Ground(EternalEnigma.Core.World.OverworldBiome.Mountain));
             AssetDatabase.CreateAsset(stone, materialPath);
         }
-        stone.SetOverrideTag("EnvironmentProjection", "Box");
+        // These pieces are height fields, with no vertical faces. Box projection
+        // switches axes on their slopes and creates square texture discontinuities.
+        stone.SetOverrideTag("EnvironmentProjection", "Planar");
         EditorUtility.SetDirty(stone);
         var mountain = Preset("Mountain", false, stone);
         var shore = Preset("Water", true, kit.Shore);

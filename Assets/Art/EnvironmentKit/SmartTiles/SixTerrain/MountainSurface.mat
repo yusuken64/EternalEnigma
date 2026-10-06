@@ -18,7 +18,7 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap:
-    EnvironmentProjection: Box
+    EnvironmentProjection: Planar
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:

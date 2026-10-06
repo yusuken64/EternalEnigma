@@ -21,3 +21,36 @@ MonoBehaviour:
   Check: {fileID: 21300000, guid: 21f5c6fd22759f644b4a48adf85054a8, type: 3}
   Arrow: {fileID: 21300000, guid: 2e678411f3c77e74baac401a58f20446, type: 3}
   HeadingFont: {fileID: 11400000, guid: 7e3c63f00b766644d9aa34e1de75307c, type: 2}
+  DungeonWood: {fileID: 21300000, guid: 9ee84d0ad5df06041981ea430af968aa, type: 3}
+  DungeonHeading: {fileID: 21300000, guid: c12b25a0327183f44bf03ca054f92217, type: 3}
+  DungeonPaper: {fileID: 21300000, guid: 39e7364523585314cba134531ff2cf2a, type: 3}
+  DungeonWoodButton: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
+  DungeonPrimary: {fileID: 21300000, guid: 1feed5f082e3f674fa1dc13a2135399f, type: 3}
+  DungeonSecondary: {fileID: 21300000, guid: 3cb481e196a1ad54586e28c6a95c3b75, type: 3}
+  DungeonClose: {fileID: 21300000, guid: e26b4f57e8c14bc4d88748aeb91bf70c, type: 3}
+  DungeonIconFrame: {fileID: 21300000, guid: 8b8239a7b228cc94d969f83bdf816e88, type: 3}
+  DungeonSelection: {fileID: 21300000, guid: 905499b3fb7b0be429ba8db5bc933148, type: 3}
+  DungeonTrack: {fileID: 21300000, guid: d1de50b9b2e1d3840ad8bd3b5045b8c1, type: 3}
+  DungeonHP: {fileID: 21300000, guid: c78ca4bfaf96aa34ca0f51e8b9916b25, type: 3}
+  DungeonSP: {fileID: 21300000, guid: 7890fd0707bc1ae4bb2108f4c03ae773, type: 3}
+  DungeonHunger: {fileID: 21300000, guid: f50cb5f7550362349b0cc1f023ad61f0, type: 3}
+  DungeonMenuPrefab: {fileID: 2082147411466713991, guid: 77dc0f6facdbdaa43b52cae4877ed7bb, type: 3}
+  DungeonPickerPrefab: {fileID: 8163759335565579158, guid: 76f73a7dffc774b43ae31f197c0007cb, type: 3}
+  DungeonActionsPrefab: {fileID: 5234868022551203652, guid: 36fd7f8e0eef4584793c9ce25401dcd5, type: 3}
+  DungeonInventoryPrefab: {fileID: 3330408231532898711, guid: de933f70252b586458f2e4d6d7c30510, type: 3}
+  HistoryPrefab: {fileID: 1233396997777928601, guid: 63647a3f630caf747977184be745859b, type: 3}
+  DungeonRolePrefabs:
+  - {fileID: 9104836134585860803, guid: 613aa843e9da37c46aea461c26e425b8, type: 3}
+  - {fileID: 4536964089446128525, guid: 25d944c91c476894b8db4071cb2f39e9, type: 3}
+  - {fileID: 6950017346705474050, guid: 1d9905565b7b92b4bbd2e96eecf3c684, type: 3}
+  - {fileID: 5879795654557247744, guid: b5f9afcded040a542a239f92efadb0e2, type: 3}
+  - {fileID: 7312827894442822268, guid: d98d48fe2df323e4a98e322db0109e68, type: 3}
+  - {fileID: 5222915969654438643, guid: d924a214eec53384fbb4988de5da21be, type: 3}
+  - {fileID: 3226103792972570775, guid: 7c97c62c14b1d584184acb31d2f2185c, type: 3}
+  - {fileID: 2157776130202390158, guid: bfee31ddd8354ce4683463b7cdb4643a, type: 3}
+  - {fileID: 6312495648468907120, guid: 2946419efe9181f4f8cb47861e58e370, type: 3}
+  - {fileID: 680852225846006545, guid: f37787ebeb61edc40887a6f88179c838, type: 3}
+  - {fileID: 5388773091084710235, guid: 7372c681f90f9a3419de6f623739fae4, type: 3}
+  - {fileID: 8127053117873834939, guid: 62d0f1af5b00c2148ae01807ca91cf88, type: 3}
+  - {fileID: 1081691714920531225, guid: 6e338524da452d940a14bbec04e11d06, type: 3}
+  - {fileID: 8699354565928831049, guid: 271a1d2aa8c36c54e9295d18e0eb288f, type: 3}

@@ -37,8 +37,9 @@ public sealed class EnvironmentBatch
         list.Add(new CombineInstance { mesh = mesh, transform = Matrix4x4.TRS(position, rotation, scale) });
         owner.PropCount++; owner.TriangleCount += (int)mesh.GetIndexCount(0) / 3;
     }
-    public void Finish()
+    public void Finish(bool smoothTerrain = false)
     {
+        var terrainMeshes = new List<Mesh>();
         foreach (var pair in groups)
         {
             var mesh = new Mesh { name = "Environment chunk", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
@@ -58,12 +59,37 @@ public sealed class EnvironmentBatch
                 mesh.uv = uv;
             }
             owner.Meshes.Add(mesh);
+            if(smoothTerrain)terrainMeshes.Add(mesh);
             var obj = new GameObject($"Cosmetic {pair.Key.Item1},{pair.Key.Item2} {pair.Key.Item3.name}");
             obj.transform.SetParent(parent, false); obj.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = obj.AddComponent<MeshRenderer>(); renderer.sharedMaterial = pair.Key.Item3;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             renderer.receiveShadows = false;
             obj.AddComponent<SilhouetteParticipant>().Role = pair.Key.Item4;
+        }
+        if(smoothTerrain)SmoothTerrain(terrainMeshes);
+    }
+
+    // Adjacent six-piece height-field quads must share lighting normals, including
+    // chunk edges. Buildings and other deliberately hard-edged props never opt in.
+    public static void SmoothTerrain(List<Mesh> meshes)
+    {
+        var sums=new Dictionary<Vector3Int,Vector3>();
+        Vector3Int Key(Vector3 p)=>Vector3Int.RoundToInt(p*10000);
+        foreach(var mesh in meshes)
+        {
+            var v=mesh.vertices;var triangles=mesh.triangles;
+            for(int i=0;i<triangles.Length;i+=3)
+            {
+                var normal=Vector3.Cross(v[triangles[i+1]]-v[triangles[i]],v[triangles[i+2]]-v[triangles[i]]);
+                for(int j=0;j<3;j++){var key=Key(v[triangles[i+j]]);sums.TryGetValue(key,out var sum);sums[key]=sum+normal;}
+            }
+        }
+        foreach(var mesh in meshes)
+        {
+            var v=mesh.vertices;var normals=new Vector3[v.Length];
+            for(int i=0;i<v.Length;i++)normals[i]=sums[Key(v[i])].normalized;
+            mesh.normals=normals;
         }
     }
 }

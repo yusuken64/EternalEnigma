@@ -24,6 +24,7 @@ namespace JuicyChickenGames.Menu
             dialog.Owner = this;
             dialog.gameObject.SetActive(true);
             Stack.Push(dialog);
+            RefreshPresentation();
             Common.Instance.MenuInputHandler.ClearInputThisFrame();
             Common.Instance.MenuInputHandler.SwitchToUIInput();
             MenuUIInputModule.Active?.PushDialog(dialog, dialog.transform, back: () => Close(dialog));
@@ -36,6 +37,7 @@ namespace JuicyChickenGames.Menu
             closing?.Invoke();
             Stack.Pop();
             Release(dialog);
+            RefreshPresentation();
             if (!Opened) Finish();
             else LateAction = () => Current?.RestoreSelect();
         }
@@ -48,6 +50,14 @@ namespace JuicyChickenGames.Menu
             dialog.CloseAction = null;
             dialog.Owner = null;
             callback?.Invoke();
+        }
+
+        private void RefreshPresentation()
+        {
+            if (Game.Instance == null) return;
+            foreach (var dialog in Stack)
+                foreach (var canvas in dialog.GetComponentsInChildren<Canvas>(true))
+                    canvas.enabled = dialog == Current;
         }
 
         public void CloseAll()

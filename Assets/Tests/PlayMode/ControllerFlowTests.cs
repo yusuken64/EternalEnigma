@@ -287,7 +287,8 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenuPicker>());
             Assert.That(hero.Vitals.SP, Is.EqualTo(mana), "Cancel must not cast.");
-            Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.True);
+            Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.False,"Only the current action picker is visible.");
+            Assert.That(MenuManager.Instance.CurrentDialog.GetComponent<Canvas>().enabled,Is.True);
             yield return Press(GamepadButton.South);
             hp = target.Vitals.HP;
             yield return Press(GamepadButton.South);

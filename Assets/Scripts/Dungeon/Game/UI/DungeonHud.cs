@@ -84,7 +84,7 @@ public sealed class DungeonHud : MonoBehaviour
             EnemyBehavior.IsDisguised(selected) ? "Treasure chest" : $"{GameMessages.Name(selected)}\n{StatusSummary(selected)}" : "";
         var targeting = MenuManager.Instance.TargetDialog;
         if (player.CurrentControlMode == PlayerControlMode.TargetSelecting && !string.IsNullOrEmpty(targeting.RangeLabel))
-            target.text += "\n" + targeting.RangeLabel;
+            target.text += (string.IsNullOrWhiteSpace(target.text) ? "" : "\n") + targeting.RangeLabel;
         if (targetBackdrop != null) targetBackdrop.SetActive(!string.IsNullOrWhiteSpace(target.text));
     }
 }

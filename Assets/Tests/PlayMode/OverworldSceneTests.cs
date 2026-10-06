@@ -19,8 +19,9 @@ namespace EternalEnigma.Tests
     public class OverworldSceneTests
     {
         private GameTestHarness harness;
+        private TestInputScope inputScope;
         [UnitySetUp]
-        public IEnumerator Setup() { harness = new GameTestHarness(); yield return harness.LoadCommon(); }
+        public IEnumerator Setup() { inputScope=new TestInputScope();harness = new GameTestHarness(); yield return harness.LoadCommon(); }
         private Scene scene;
         private Keyboard keyboard;
         private Gamepad pad;
@@ -144,7 +145,7 @@ namespace EternalEnigma.Tests
             Assert.That(biomeRenderer.Biomes.Length, Is.EqualTo(8));
             Assert.That(biomeRenderer.BarrierMaterial, Is.Not.Null);
             Assert.That(biomeRenderer.Biomes.All(b => b.Material != null && b.Material.mainTexture != null), Is.True);
-            Assert.That(biomeRenderer.Biomes.Select(b => b.Material.color).Distinct().Count(), Is.EqualTo(8));
+            Assert.That(biomeRenderer.Biomes.Select(b => b.Material.mainTexture).Distinct().Count(), Is.EqualTo(8),"Painted biomes differ by artwork, not material tint.");
             Assert.That(biomeRenderer.RenderedSurfaces.GetComponentsInChildren<MeshRenderer>().Any(r => r.enabled && r.sharedMaterial == biomeRenderer.Biomes.First(b => b.Biome == OverworldBiome.Water).Material), Is.True);
             var grid = world.Map.CurrentGrid;
             var cosmetic = world.Map.GetComponent<TWC.TileWorldCreator>().worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Single(o => o.name == SmartEnvironmentMasks.Walls + "_layer");
@@ -182,13 +183,14 @@ namespace EternalEnigma.Tests
             yield return new WaitForSeconds(.25f);
             Assert.That(world.Position, Is.EqualTo(gatewayApproach), "Keyboard should leave through the single gateway.");
             pad = InputSystem.AddDevice<Gamepad>();
+            pad.MakeCurrent();
             var inwardButton = stepX > 0 ? GamepadButton.DpadLeft : stepX < 0 ? GamepadButton.DpadRight : stepY > 0 ? GamepadButton.DpadDown : GamepadButton.DpadUp;
             InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(inwardButton));
             inputDeadline = Time.realtimeSinceStartup + 2;
             while (!world.Position.Equals(start) && Time.realtimeSinceStartup < inputDeadline) yield return null;
             InputSystem.QueueStateEvent(pad, new GamepadState());
             yield return new WaitForSeconds(.25f);
-            Assert.That(world.Position, Is.EqualTo(start), "Gamepad should return to the start town.");
+            Assert.That(world.Position, Is.EqualTo(start), $"Gamepad should return to the start town. Current pad: {Gamepad.current==pad}; enabled: {pad.enabled}; dialog: {MenuUIInputModule.Active?.HasDialog}; consumed: {MenuUIInputModule.Active?.InputConsumed}; transitioning: {Common.Instance.Travel.IsTransitioning}");
             world.ClaimRewards(announceLocked: false); yield return AcknowledgeKeyAnnouncement();
             Assert.That(world.Message, Does.Not.Contain("Generating"));
 
@@ -496,6 +498,7 @@ namespace EternalEnigma.Tests
             if (pad != null) InputSystem.RemoveDevice(pad);
             if (scene.IsValid() && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
             yield return harness.Cleanup();
+            inputScope.Dispose();
         }
     }
 }

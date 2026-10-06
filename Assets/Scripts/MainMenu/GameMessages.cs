@@ -14,7 +14,10 @@ public sealed class GameMessages : MonoBehaviour
     private readonly List<string> turnEvents = new();
     [SerializeField] private ScrollRect scroll;
     [SerializeField] private Button historyButton;
-    private bool expanded;
+    private EventHistoryDialog historyDialog;
+    private readonly JuicyChickenGames.Menu.DialogController historyController = new();
+    private Vector2 normalMin, normalMax;
+    private bool docked;
     private bool inDungeonTurn;
     private bool hasMessage;
     public IReadOnlyList<string> TurnEvents => turnEvents;
@@ -24,13 +27,16 @@ public sealed class GameMessages : MonoBehaviour
         instance.inDungeonTurn = true; instance.turnEvents.Clear(); instance.Render();
     }
     public static void FinishAction() { if (instance != null) instance.Render(); }
-    public static void ToggleHistory() { if (instance != null) { instance.expanded = !instance.expanded; instance.Render(); } }
+    public static void ToggleHistory() => ShowHistory();
 
     public static void ShowHistory()
     {
         if (instance == null) instance = Resolve();
-        instance.expanded = true;
-        instance.Render();
+        if (instance.historyDialog != null && instance.historyDialog.Owner != null) return;
+        if (instance.historyDialog == null) instance.historyDialog = Instantiate(GameUITheme.Current.HistoryPrefab, instance.transform);
+        instance.historyDialog.Setup(instance.history, Game.Instance != null);
+        if (Game.Instance != null) MenuManager.Open(instance.historyDialog);
+        else instance.historyController.Open(instance.historyDialog);
     }
 
     public IReadOnlyList<string> History => history;
@@ -107,13 +113,14 @@ public sealed class GameMessages : MonoBehaviour
     private void Awake()
     {
         instance=this; group.alpha=0; group.blocksRaycasts=false; group.interactable=false;
+        var rect = (RectTransform)group.transform; normalMin = rect.anchorMin; normalMax = rect.anchorMax;
         historyButton.onClick.AddListener(ToggleHistory);
     }
     private void Render()
     {
         hasMessage=true; group.blocksRaycasts=true; group.interactable=true;
-        var entries = !expanded && inDungeonTurn ? turnEvents : history;
-        int start = expanded ? 0 : Mathf.Max(0,entries.Count-3);
+        var entries = inDungeonTurn ? turnEvents : history;
+        int start = Mathf.Max(0,entries.Count-3);
         text.text = string.Join("\n", entries.GetRange(start, entries.Count-start));
         Canvas.ForceUpdateCanvases();
         text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
@@ -134,8 +141,18 @@ public sealed class GameMessages : MonoBehaviour
 
     private void Update()
     {
+        historyController.Tick();
+        bool showDock = Game.Instance != null && MenuManager.Instance != null && MenuManager.Instance.Opened && MenuManager.Instance.CurrentDialog != MenuManager.Instance.TargetDialog;
+        if (showDock != docked)
+        {
+            docked = showDock;
+            var rect = (RectTransform)group.transform;
+            rect.anchorMin = docked ? new Vector2(.24f,.016f) : normalMin;
+            rect.anchorMax = docked ? new Vector2(.58f,.20f) : normalMax;
+            if (hasMessage) Render();
+        }
         if (!hasMessage) return;
-        if (!inDungeonTurn && !expanded) group.alpha = 1 - Mathf.Clamp01((Time.unscaledTime - lastMessage - 9f) / 2f);
+        if (!inDungeonTurn) group.alpha = 1 - Mathf.Clamp01((Time.unscaledTime - lastMessage - 9f) / 2f);
         group.blocksRaycasts=group.interactable=group.alpha>0;
     }
     private void OnDestroy() { if (instance == this) instance = null; }

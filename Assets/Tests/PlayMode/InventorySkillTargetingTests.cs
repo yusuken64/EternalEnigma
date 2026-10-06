@@ -154,14 +154,19 @@ namespace EternalEnigma.Tests
             yield return Press(Key.R);
             var skillButton = EventSystem.current.currentSelectedGameObject;
             yield return Press(Key.Enter);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(harness.Game.InventoryMenu));
-            Assert.That(harness.Game.InventoryMenu.InventoryMenuItems.Count, Is.EqualTo(2));
+            var castPicker=MenuManager.Instance.CurrentDialog;
+            yield return Press(Key.Enter);
+            var picker=(PartyMenuPicker)MenuManager.Instance.CurrentDialog;
+            Assert.That(picker.Rows.GetComponentsInChildren<AuthoredButton>().Length, Is.EqualTo(2));
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
             yield return Press(Key.DownArrow);
+            yield return Press(Key.Escape);
+            Assert.That(MenuManager.Instance.CurrentDialog,Is.SameAs(castPicker));
             yield return Press(Key.Escape);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(skillButton));
             Assert.That(caster.Vitals.SP, Is.EqualTo(20));
             Assert.That(effect.Marked, Is.Empty);
+            yield return Press(Key.Enter);
             yield return Press(Key.Enter);
             yield return Press(Key.DownArrow);
             yield return Press(Key.Enter);
@@ -173,7 +178,7 @@ namespace EternalEnigma.Tests
             Assert.That(MenuManager.Instance.Opened, Is.False);
             yield return Press(Key.Q);
             yield return Press(Key.Enter);
-            Assert.That(MenuManager.Instance.DialogStack.Peek(), Is.SameAs(harness.Game.InventoryMenu.ActionDialog));
+            Assert.That(MenuManager.Instance.DialogStack.Peek(), Is.SameAs(MenuManager.Instance.ActionDialog));
             Assert.That(effect.Marked.Count, Is.EqualTo(1), "Ordinary item actions must replace the targeting callback.");
             yield return Press(Key.Q);
         }
@@ -185,12 +190,13 @@ namespace EternalEnigma.Tests
             AddEquipment(EquipmentSlot.OffHand, WeaponType.OffhandShield);
             var sword = AddEquipment(EquipmentSlot.MainHand);
             skill.InventoryTargetSelector.ItemType = InventoryTargetType.Weapon;
-            var pickerCanvas = harness.Game.InventoryMenu.GetComponent<Canvas>();
-            int normalOrder = pickerCanvas.sortingOrder;
             yield return Press(GamepadButton.LeftShoulder);
             yield return Press(GamepadButton.South);
-            Assert.That(harness.Game.InventoryMenu.InventoryMenuItems.Count, Is.EqualTo(1));
-            var row = harness.Game.InventoryMenu.InventoryMenuItems[0];
+            yield return Press(GamepadButton.South);
+            var picker=(PartyMenuPicker)MenuManager.Instance.CurrentDialog;
+            var rows=picker.Rows.GetComponentsInChildren<AuthoredButton>();
+            Assert.That(rows.Length, Is.EqualTo(1));
+            var row = rows[0];
             var canvas = row.GetComponentInParent<Canvas>();
             var position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
                 row.transform.position);
@@ -202,7 +208,6 @@ namespace EternalEnigma.Tests
             Assert.That(effect.Marked, Is.EquivalentTo(new[] { sword }));
             Assert.That(caster.Vitals.SP, Is.EqualTo(18));
             Assert.That(MenuManager.Instance.Opened, Is.False);
-            Assert.That(pickerCanvas.sortingOrder, Is.EqualTo(normalOrder));
         }
 
         [UnityTest]
@@ -223,7 +228,7 @@ namespace EternalEnigma.Tests
             caster.Vitals.SP = 1; caster.SyncDisplayedStats();
             yield return Press(Key.R);
             yield return Press(Key.Enter);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(harness.Game.SkillDialog));
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(MenuManager.Instance.PartyMenu));
             Assert.That(queued.ExecuteImmediate(caster), Is.Empty);
             Assert.That(caster.Vitals.SP, Is.EqualTo(1));
             Assert.That(effect.Marked, Is.Empty);
@@ -248,17 +253,16 @@ namespace EternalEnigma.Tests
             yield return Press(Key.Enter);
             var useButton = EventSystem.current.currentSelectedGameObject;
             yield return Press(Key.Enter);
-            var picker = MenuManager.Instance.CurrentDialog as InventoryMenu;
+            var picker = MenuManager.Instance.CurrentDialog as PartyMenuPicker;
             Assert.That(picker, Is.Not.Null);
-            Assert.That(picker, Is.Not.SameAs(harness.Game.InventoryMenu));
-            Assert.That(picker.InventoryMenuItems.Count, Is.EqualTo(1));
+            Assert.That(picker.Rows.GetComponentsInChildren<AuthoredButton>().Length, Is.EqualTo(1));
             yield return Press(Key.Escape);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(useButton));
             Assert.That(scroll.StackStock, Is.EqualTo(2));
             Assert.That(effect.Marked, Is.Empty);
             yield return Press(Key.Enter);
-            picker = (InventoryMenu)MenuManager.Instance.CurrentDialog;
-            var row = picker.InventoryMenuItems[0];
+            picker = (PartyMenuPicker)MenuManager.Instance.CurrentDialog;
+            var row = picker.Rows.GetComponentsInChildren<AuthoredButton>()[0];
             var canvas = row.GetComponentInParent<Canvas>();
             var position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
                 row.transform.position);
@@ -272,9 +276,9 @@ namespace EternalEnigma.Tests
             Assert.That(caster.Vitals.SP, Is.EqualTo(20));
             Assert.That(MenuManager.Instance.DialogStack, Is.Empty);
             yield return Press(Key.Q);
-            Assert.That(harness.Game.InventoryMenu.InventoryMenuItems.Count, Is.EqualTo(2));
+            Assert.That(MenuManager.Instance.PartyMenu.EntryButtons.Count, Is.EqualTo(2));
             yield return Press(Key.Enter);
-            Assert.That(MenuManager.Instance.DialogStack.Peek(), Is.SameAs(harness.Game.InventoryMenu.ActionDialog));
+            Assert.That(MenuManager.Instance.DialogStack.Peek(), Is.SameAs(MenuManager.Instance.ActionDialog));
             yield return Press(Key.Q);
         }
 

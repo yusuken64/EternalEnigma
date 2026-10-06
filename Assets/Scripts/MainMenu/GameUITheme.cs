@@ -7,6 +7,20 @@ public sealed class GameUITheme : ScriptableObject
 {
     public Sprite Button, Panel, Field, Track, Knob, Toggle, Check, Arrow;
     public TMP_FontAsset HeadingFont;
+    public Sprite DungeonWood, DungeonHeading, DungeonPaper, DungeonWoodButton, DungeonPrimary, DungeonSecondary,
+        DungeonClose, DungeonIconFrame, DungeonSelection, DungeonTrack, DungeonHP, DungeonSP, DungeonHunger;
+    public GameObject DungeonMenuPrefab, DungeonPickerPrefab, DungeonActionsPrefab, DungeonInventoryPrefab;
+    public EventHistoryDialog HistoryPrefab;
+    public GameObject[] DungeonRolePrefabs;
+    public Sprite DungeonSprite(DungeonVisualRole role) => role switch
+    {
+        DungeonVisualRole.Wood => DungeonWood, DungeonVisualRole.Heading => DungeonHeading,
+        DungeonVisualRole.Paper => DungeonPaper, DungeonVisualRole.WoodButton => DungeonWoodButton,
+        DungeonVisualRole.Primary => DungeonPrimary, DungeonVisualRole.Secondary => DungeonSecondary,
+        DungeonVisualRole.Close => DungeonClose, DungeonVisualRole.IconFrame => DungeonIconFrame,
+        DungeonVisualRole.Selection => DungeonSelection, DungeonVisualRole.Track => DungeonTrack,
+            DungeonVisualRole.HP => DungeonHP, DungeonVisualRole.SP => DungeonSP, DungeonVisualRole.InputSurface => null, _ => DungeonHunger
+    };
     private static GameUITheme instance;
     public static GameUITheme Current => instance != null ? instance : instance = Resources.Load<GameUITheme>("UI/BamaoTheme");
     public static readonly Color Ink = new(.23f, .14f, .085f);
@@ -30,6 +44,7 @@ public sealed class GameUITheme : ScriptableObject
             colorMultiplier = 1, fadeDuration = .1f };
         foreach (var label in button.GetComponentsInChildren<TMP_Text>(true)) label.color = Ink;
         foreach (var label in button.GetComponentsInChildren<Text>(true)) label.color = Ink;
+        if (button.targetGraphic != null && button.targetGraphic.TryGetComponent<DungeonUIRole>(out var role)) role.Apply();
     }
     public void StyleSlider(Slider slider)
     {

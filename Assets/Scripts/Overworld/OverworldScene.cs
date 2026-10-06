@@ -126,15 +126,19 @@ public sealed class OverworldScene : MonoBehaviour
             if (location.Kind != LocationKind.Town) BuildLocationFootprint(marker, location.Kind, cell);
             BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
             locationVisuals.Add(cell, marker);
-            marker.SetActive(!cell.Equals(Position));
         }
         foreach (var gate in Map.CurrentGrid.Locks)
         {
             var markers = new List<GameObject>();
-            foreach (var cell in gate.Cells)
+            foreach (var cell in gate.Cells.Where(c => !Map.CurrentGrid.RequiresBoat(c)).Take(1))
             {
                 if (Map.CurrentGrid.RequiresBoat(cell)) continue;
                 var marker = Instantiate(GateMarker, CellCenterToWorld(cell), Quaternion.identity, transform);
+                var dry=gate.Cells.Where(c=>!Map.CurrentGrid.RequiresBoat(c)).ToArray();
+                marker.transform.position=dry.Select(CellCenterToWorld).Aggregate(Vector3.zero,(a,b)=>a+b)/dry.Length;
+                float dx=dry.Max(c=>c.X)-dry.Min(c=>c.X),dy=dry.Max(c=>c.Y)-dry.Min(c=>c.Y);
+                marker.transform.rotation=Quaternion.Euler(0,0,dx>dy?90:0);
+                marker.transform.localScale=Vector3.one*creator.twcAsset.cellSize;
                 BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
                 var route = Campaign.Routes.First(r => r.Id == gate.RouteId);
                 marker.name = (route.ShortcutKind == ShortcutKind.None ? "Gate " : "Shortcut ") + gate.RouteId;
@@ -143,6 +147,7 @@ public sealed class OverworldScene : MonoBehaviour
                     {
                         var properties = new MaterialPropertyBlock(); renderer.GetPropertyBlock(properties);
                         Color color = route.ShortcutKind == ShortcutKind.FarSide || route.ShortcutKind == ShortcutKind.Keyed ? Color.cyan : Color.yellow;
+                        color=Color.Lerp(Color.white,color,.3f);
                         properties.SetColor("_Color", color); properties.SetColor("_BaseColor", color); renderer.SetPropertyBlock(properties);
                     }
                 markers.Add(marker);
@@ -190,13 +195,23 @@ public sealed class OverworldScene : MonoBehaviour
         float size = creator.twcAsset.cellSize;
         var kit = EnvironmentKit.Load();
         var material = kit != null ? kit.BuildingMaterial(OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y)) : null;
+        var meshes=marker.AddComponent<EnvironmentMeshOwner>();
         var baseObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
         baseObject.name = "Point of interest plaza";
         baseObject.transform.SetParent(marker.transform, false);
-        baseObject.transform.localPosition = new Vector3(0, 0, .07f * size);
-        baseObject.transform.localScale = new Vector3(3.5f * size, 3.5f * size, .12f * size);
+        baseObject.transform.localPosition = new Vector3(0, 0, -.025f * size);
+        baseObject.transform.localScale = new Vector3(3.5f * size, 3.5f * size, .04f * size);
         Destroy(baseObject.GetComponent<Collider>());
-        if (material != null) baseObject.GetComponent<Renderer>().sharedMaterial = material;
+        if (kit != null)
+        {
+            baseObject.GetComponent<Renderer>().sharedMaterial = kit.Paving;
+            var filter=baseObject.GetComponent<MeshFilter>();
+            var mesh=Instantiate(filter.sharedMesh);mesh.name="Location paving";
+            // Match the road's world projection instead of stretching a whole atlas over a cube.
+            mesh.uv=mesh.vertices.Select(v=>{var p=baseObject.transform.TransformPoint(v)/2.5f;return new Vector2(p.x,p.y);}).ToArray();
+            filter.sharedMesh=mesh;meshes.Meshes.Add(mesh);
+        }
+        Mesh stonePost=null;
         foreach (var offset in new[] { new Vector2(-1.5f, -1.5f), new Vector2(1.5f, -1.5f), new Vector2(-1.5f, 1.5f), new Vector2(1.5f, 1.5f) })
         {
             var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -205,7 +220,19 @@ public sealed class OverworldScene : MonoBehaviour
             post.transform.localPosition = new Vector3(offset.x, offset.y, -.25f) * size;
             post.transform.localScale = new Vector3(.34f, .34f, .65f) * size;
             Destroy(post.GetComponent<Collider>());
-            if (material != null) post.GetComponent<Renderer>().sharedMaterial = material;
+            if (material != null)
+            {
+                post.GetComponent<Renderer>().sharedMaterial = material;
+                var filter=post.GetComponent<MeshFilter>();
+                if(stonePost==null)
+                {
+                    stonePost=Instantiate(filter.sharedMesh);stonePost.name="Location stone post";
+                    // Cell (3,0) is masonry; pad its edges against atlas filtering bleed.
+                    stonePost.uv=stonePost.uv.Select(uv=>new Vector2((3+.065f+uv.x*.87f)/4,(.065f+uv.y*.87f)/4)).ToArray();
+                    meshes.Meshes.Add(stonePost);
+                }
+                filter.sharedMesh=stonePost;
+            }
         }
     }
 
@@ -273,10 +300,8 @@ public sealed class OverworldScene : MonoBehaviour
                 gate == null ? "Blocked." : GateDescription(gate.RouteId);
             return false;
         }
-        if (locationVisuals.TryGetValue(Position, out var previousMarker)) previousMarker.SetActive(true);
         Position = next;
         RefreshBiomeMusic();
-        if (locationVisuals.TryGetValue(Position, out var occupiedMarker)) occupiedMarker.SetActive(false);
         var crossed = Map.CurrentGrid.LockAt(next);
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
         SaveProgress();
@@ -368,10 +393,8 @@ public sealed class OverworldScene : MonoBehaviour
             Message = blocked != null ? gates.Hint(blocked, Held) : "Stand on a warp gate.";
             return false;
         }
-        if (locationVisuals.TryGetValue(Position, out var previous)) previous.SetActive(true);
         Position = destination;
         RefreshBiomeMusic();
-        if (locationVisuals.TryGetValue(Position, out var current)) current.SetActive(false);
         Player.transform.position = CellToWorld(Position);
         Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);
         walkHistory.Clear();
@@ -509,8 +532,7 @@ public sealed class OverworldScene : MonoBehaviour
     private void RefreshLocationMarkers()
     {
         foreach (var marker in locationVisuals)
-            marker.Value.SetActive(!marker.Key.Equals(Position) && !followers.Any(a =>
-                a.TilemapPosition.x == marker.Key.X && a.TilemapPosition.y == marker.Key.Y));
+            marker.Value.SetActive(true);
     }
 
     private void RefreshGates()

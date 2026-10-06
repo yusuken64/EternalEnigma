@@ -63,6 +63,7 @@ public static class GameUIButtonBackgroundAuthoring
 
     public static bool EnsureBackground(Button button)
     {
+        if (button.targetGraphic != null && button.targetGraphic.GetComponent<DungeonUIRole>() != null) return false;
         var oldImage = button.targetGraphic as Image;
         var background = IsShared(oldImage) ? oldImage : button.GetComponentsInChildren<Image>(true)
             .FirstOrDefault(image => IsShared(image) && image.GetComponentInParent<Button>(true) == button);

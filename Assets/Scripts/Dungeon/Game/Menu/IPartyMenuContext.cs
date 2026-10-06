@@ -38,3 +38,9 @@ public interface IPartyMenuContext : IDisposable
     string HeroDetails(PartyMenuHero hero);
     string Restriction(PartyMenuHero hero, PartyMenuEntry entry);
 }
+
+// Contexts opt into their existing item workflow without adding an extra picker.
+public interface IPartyMenuEntryHandler
+{
+    bool OpenEntry(PartyMenu menu, PartyMenuHero hero, PartyMenuEntry entry);
+}

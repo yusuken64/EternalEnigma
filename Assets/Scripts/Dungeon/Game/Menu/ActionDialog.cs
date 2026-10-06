@@ -24,9 +24,18 @@ namespace JuicyChickenGames.Menu
 		private InventoryMenuItem _view;
         private Character _character;
         private Action contextualUse;
+        public Func<bool> ValidateActor;
+        private bool CanAct => ValidateActor == null || ValidateActor();
+        public void RefreshAvailability()
+        {
+            Buttons[0].interactable = CanAct && new UseInventoryItemAction(Game.Instance.PlayerController.Inventory, _character, _data).CanBegin(_character);
+            Buttons[1].interactable = Buttons[2].interactable = CanAct && !_character.Equipment.IsEquipped(_data);
+            SetNavigation();
+        }
 
 		public void Use_Clicked()
 		{
+            if (!CanAct) return;
             if (contextualUse != null) { contextualUse(); return; }
 			if (_character is Ally ally)
 			{
@@ -36,24 +45,28 @@ namespace JuicyChickenGames.Menu
 
 		public void Throw_Clicked()
 		{
+            if (!CanAct || _character.Equipment.IsEquipped(_data)) return;
 			var droppedItem = Game.Instance.CurrentDungeon.DroppedItemPrefabs
 				.FirstOrDefault(x => x.DroppedItemVisual == _data.ItemDefinition.DroppedItemVisual);
 			var droppedItemPrefab = droppedItem != null
 				? droppedItem.gameObject
 				: Game.Instance.ThrownItemProjectilePrefab;
-			_character.SetAction(new ThrowItemAction(Game.Instance.PlayerController.Inventory, _character, _data, droppedItemPrefab)
+			var action = new ThrowItemAction(Game.Instance.PlayerController.Inventory, _character, _data, droppedItemPrefab)
 			{
 				LookAt = false
-			});
+			};
 
 			MenuManager.Instance.CloseAllMenus();
+            _character.SetAction(action);
 		}
 
 		public void Drop_Clicked()
 		{
-			_character.SetAction(new DropItemAction(Game.Instance.PlayerController.Inventory, _data, _character.TilemapPosition));
+            if (!CanAct || _character.Equipment.IsEquipped(_data)) return;
+			var action = new DropItemAction(Game.Instance.PlayerController.Inventory, _data, _character.TilemapPosition);
 
 			MenuManager.Instance.CloseAllMenus();
+            _character.SetAction(action);
 		}
 		public void Cancel_Clicked()
 		{
@@ -63,7 +76,9 @@ namespace JuicyChickenGames.Menu
 		internal void Setup(InventoryMenuItem view, InventoryItem data, Character character)
 		{
             contextualUse = null;
+            ValidateActor = null;
             foreach (var button in Buttons) button.gameObject.SetActive(true);
+            foreach (var button in Buttons) button.interactable = true;
 			this._data = data;
 			this._view = view;
 			this._character = character;
@@ -89,6 +104,8 @@ namespace JuicyChickenGames.Menu
         public void SetupActions(string title, string actionLabel, Action action)
         {
             _character = null;
+            ValidateActor = null;
+            foreach (var button in Buttons) button.interactable = true;
             contextualUse = action;
             ItemNameText.text = title;
             UseItemText.text = actionLabel;
@@ -100,12 +117,12 @@ namespace JuicyChickenGames.Menu
 
 		internal override void SetFirstSelect()
 		{
-			Buttons[0].Select();
+			Buttons.First(b => b.gameObject.activeSelf && b.interactable).Select();
 		}
 
 		public void SetNavigation()
 		{
-			var active = Buttons.Where(b => b.gameObject.activeSelf).ToList();
+			var active = Buttons.Where(b => b.gameObject.activeSelf && b.interactable).ToList();
             for (int i = 0; i < active.Count; i++)
 			{
 				var item = active[i];

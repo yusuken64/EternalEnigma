@@ -455,6 +455,9 @@ public class PlayerController : MonoBehaviour
     }
 
     public void TakeControlNextAlly()
+        => CycleControlledAlly(1);
+
+    public void CycleControlledAlly(int direction)
     {
         if (Game.Instance.TurnManager.IsProcessingTurn || DungeonPreferences.FullControl) return;
         var allies = Game.Instance.Allies
@@ -473,11 +476,24 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            nextIndex = (index + 1) % allies.Count;
+            nextIndex = (index + (direction<0?-1:1) + allies.Count) % allies.Count;
         }
 
         var nextAlly = allies[nextIndex];
         TakeControl(nextAlly);
+    }
+
+    public bool TryControlFromUI(Ally ally)
+    {
+        var manager=MenuManager.Instance;
+        if(ally==null || !CanOpenMenu() || Game.Instance.TurnManager.IsProcessingTurn || DungeonPreferences.FullControl ||
+            Common.Instance.GlobalSettings.IsOpen || AutoplayRunner.BlocksPlayerInput ||
+            CurrentControlMode!=PlayerControlMode.FollowAlly ||
+            (manager.Opened && manager.CurrentDialog is not PartyMenu) ||
+            !PartyRules.IsStanding(Game.Instance,ally) || PartyRules.IsSummon(ally))return false;
+        TakeControl(ally);
+        Common.Instance.MenuInputHandler.ClearInputThisFrame();
+        return true;
     }
 
     internal void RestoreLeader()

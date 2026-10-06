@@ -33,7 +33,7 @@ public static class GameUIPanelBackgroundAuthoring
         (AssetDatabase.GetAssetPath(image) == BackgroundPath ||
          AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromOriginalSource(image)) == BackgroundPath);
 
-    private static bool IsPanel(Image image) => image != null && !IsShared(image) &&
+    private static bool IsPanel(Image image) => image != null && image.GetComponent<DungeonUIRole>() == null && !IsShared(image) &&
         image.sprite == GameUITheme.Current.Panel && image.GetComponentInParent<Button>(true) == null &&
         image.GetComponent<Mask>() == null && image.GetComponentInParent<ScreenTransition>(true) == null &&
         image.GetComponentInParent<NewFloorMessage>(true) == null;
@@ -121,6 +121,11 @@ public static class GameUIPanelBackgroundAuthoring
 
     private static void Check(Image image, string path)
     {
+        if (image.TryGetComponent<DungeonUIRole>(out var role))
+        {
+            if(!role.IsValid())throw new InvalidOperationException($"Invalid dungeon surface: {path}");
+            return;
+        }
         if (image.sprite != GameUITheme.Current.Panel || image.type != Image.Type.Sliced || image.pixelsPerUnitMultiplier != 1)
             throw new InvalidOperationException($"Invalid panel background: {path} / {image.name}");
         for (var current = image; current != null && AssetDatabase.GetAssetPath(current) != BackgroundPath;

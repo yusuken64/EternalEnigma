@@ -22,6 +22,12 @@ public static class GameUIButtonAuthoring
         int count = 0;
         void Check(Button button, string path)
         {
+            if (button.targetGraphic != null && button.targetGraphic.TryGetComponent<DungeonUIRole>(out var role))
+            {
+                if (!role.IsValid())
+                    throw new InvalidOperationException($"Incorrect dungeon role: {path} / {button.name}");
+                count++; return;
+            }
             if (!(button.targetGraphic is Image image) || image.sprite != sprite ||
                 image.type != Image.Type.Sliced || image.pixelsPerUnitMultiplier != 1 ||
                 button.transition != Selectable.Transition.ColorTint)
@@ -112,7 +118,7 @@ public static class GameUIButtonAuthoring
         var images = root.GetComponentsInChildren<Image>(true);
         foreach (var image in images)
         {
-            if (!image.enabled || GameUIPanelBackgroundAuthoring.IsShared(image) ||
+            if (!image.enabled || image.GetComponent<DungeonUIRole>() != null || GameUIPanelBackgroundAuthoring.IsShared(image) ||
                 GameUIButtonBackgroundAuthoring.IsShared(image)) continue;
             string name = image.name.ToLowerInvariant();
             if (image.GetComponentInParent<Button>() != null || image.GetComponentInParent<Slider>() != null ||
@@ -163,6 +169,8 @@ public static class GameUIButtonAuthoring
             tabs.NormalTextColor = tabs.SelectedTextColor = GameUITheme.Ink;
         }
         StyleWorldLabels(root);
+        foreach (var role in root.GetComponentsInChildren<DungeonUIRole>(true)) role.Apply();
+        foreach (var text in root.GetComponentsInChildren<DungeonTextStyle>(true)) text.Apply();
         foreach (var component in root.GetComponentsInChildren<Component>(true))
         {
             if (component == null) continue;

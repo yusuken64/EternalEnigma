@@ -257,14 +257,19 @@ namespace EternalEnigma.Tests
         [UnityTest]
         public IEnumerator MouseWinsSimultaneousInputAndControllerNoiseDoesNotStealIt()
         {
+            pad.MakeCurrent();mouse.MakeCurrent();
             root.AddComponent<CursorManager>();
             Cursor.visible = true;
             yield return Pad(new GamepadState { leftStick = new Vector2(0.05f, 0) });
             Assert.That(Cursor.visible, Is.True);
             yield return Pad(new GamepadState().WithButton(GamepadButton.South));
+            yield return null; // CursorManager runs after the test coroutine's Update phase.
+            Assert.That(Gamepad.current,Is.SameAs(pad),"The cursor test must read its synthetic gamepad.");
+            Assert.That(pad.buttonSouth.isPressed,Is.True,"Synthetic south press must be delivered.");
             Assert.That(Cursor.visible, Is.False);
             InputSystem.QueueStateEvent(mouse, new MouseState { position = new Vector2(10, 10), delta = new Vector2(5, 0) });
             InputSystem.QueueStateEvent(pad, new GamepadState { leftStick = Vector2.right });
+            yield return null;
             yield return null;
             Assert.That(Cursor.visible, Is.True);
             yield return Pad(new GamepadState { leftStick = Vector2.right });

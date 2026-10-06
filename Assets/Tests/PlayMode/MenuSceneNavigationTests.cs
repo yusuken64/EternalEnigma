@@ -222,7 +222,9 @@ namespace EternalEnigma.Tests
         public IEnumerator ContinueKeepsTownCoveredUntilHeroCameraIsReady()
         {
             yield return harness.LoadMainMenu(new TestScenario().CreateSave());
-            Object.FindFirstObjectByType<MainMenu>().Continue_Clicked();
+            // This fixture is a legacy town save, not a campaign-slot save.
+            // Exercise its supported travel path; campaign-slot activation is covered by CampaignSleepTests.
+            Common.Instance.Travel.Continue();
             yield return CheckTownReveal();
         }
 

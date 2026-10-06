@@ -11,6 +11,7 @@ namespace JuicyChickenGames.Menu
         public ScrollRect scrollView;
         private Selectable savedSelectable;
         private Coroutine scrollAnimation;
+        private readonly System.Collections.Generic.Dictionary<ScrollRect,Vector2> savedScroll = new();
         public Action CloseAction { get; internal set; }
         public DialogController Owner { get; internal set; }
         public void CloseDialog() => Owner?.Close(this);
@@ -23,10 +24,18 @@ namespace JuicyChickenGames.Menu
                 savedSelectable.Select();
             else SetFirstSelect();
             MenuUIInputModule.Active?.RestoreFocus();
+            StopAutoScroll();
+            foreach(var pair in savedScroll)
+                if(pair.Key != null) { pair.Key.StopMovement(); pair.Key.normalizedPosition = pair.Value; }
         }
 
-        internal void SaveSelection() => savedSelectable =
-            EventSystem.current?.currentSelectedGameObject?.GetComponent<Selectable>();
+        internal void SaveSelection()
+        {
+            StopAutoScroll();
+            savedSelectable = EventSystem.current?.currentSelectedGameObject?.GetComponent<Selectable>();
+            savedScroll.Clear();
+            foreach(var scroll in GetComponentsInChildren<ScrollRect>(true))savedScroll[scroll]=scroll.normalizedPosition;
+        }
 
         public void StopAutoScroll()
         {

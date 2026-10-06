@@ -216,7 +216,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             batch.Add(variant.mesh, material, new Vector3(x + .5f, y + .5f, -Elevation) * size,
                 Vector3.one * size, variant.angle, coast ? SilhouetteRole.Receiver : SilhouetteRole.Caster);
         }
-        batch.Finish();
+        batch.Finish(smoothTerrain: !coast);
         return true;
     }
 

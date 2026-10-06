@@ -157,7 +157,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
     }
 }
 
-public sealed class DungeonPartyMenuContext : PartyMenuContext
+public sealed class DungeonPartyMenuContext : PartyMenuContext, IPartyMenuEntryHandler
 {
     private readonly Game game;
     protected override List<InventoryItem> Bag=>game.PlayerController.Inventory.InventoryItems;
@@ -168,6 +168,16 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext
     }
     private string Eligibility(PartyMenuHero hero)=>hero.DungeonActor!=game.PlayerController.ControlledAlly || !game.PlayerController.CanOpenMenu() ?
         "Only the controlled hero awaiting an action can act this turn.":null;
+    public bool OpenEntry(PartyMenu menu, PartyMenuHero hero, PartyMenuEntry entry)
+    {
+        if (entry.Item == null) return false;
+        var dialog = MenuManager.Instance.ActionDialog;
+        dialog.Setup(null, entry.Item, hero.DungeonActor);
+        dialog.ValidateActor = () => Eligibility(hero) == null;
+        dialog.RefreshAvailability();
+        MenuManager.Open(dialog);
+        return true;
+    }
     public override List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry)
     {
         if(entry.Skill?.ActivationType==ActivationType.Passive)return new();
@@ -190,11 +200,8 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext
         var actions=new List<PartyMenuAction>{new() {Label=entry.Item is EquipableInventoryItem?(entry.Equipped?"Unequip":"Equip"):"Use",UnavailableReason=unavailable,
             Execute=menu=>{if(Eligibility(hero)==null)MenuManager.Instance.UseInventoryItem(actor,entry.Item);else menu.Complete(Eligibility(hero));}}};
         // Preserve the dungeon's throw/drop commands and their existing validation/replay.
-        actions.Add(new PartyMenuAction{Label="More item actions",UnavailableReason=Eligibility(hero),Execute=menu=>
-        {
-            var manager=MenuManager.Instance;
-            manager.ActionDialog.Setup(null,entry.Item,actor);manager.ActionDialog.SetNavigation();MenuManager.Open(manager.ActionDialog);
-        }});
+        foreach(string label in new[]{"Throw","Drop"})
+            actions.Add(new PartyMenuAction{Label=label,UnavailableReason=Eligibility(hero) ?? (entry.Equipped?"Unequip this item first.":null),Execute=menu=>OpenEntry(menu,hero,entry)});
         return actions;
     }
 }

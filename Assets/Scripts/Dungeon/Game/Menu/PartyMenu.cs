@@ -77,7 +77,13 @@ public sealed class PartyMenu : Dialog
     public void BrowseHero(int delta)
     {
         if (!IsRoot || context.Heroes.Count == 0) return;
-        Remember(); heroIndex = (heroIndex + delta + context.Heroes.Count) % context.Heroes.Count;
+        Remember();
+        if(context is DungeonPartyMenuContext)
+        {
+            Game.Instance.PlayerController.CycleControlledAlly(delta);
+            heroIndex=Math.Max(0,context.Heroes.ToList().FindIndex(h=>h.DungeonActor==Game.Instance.PlayerController.ControlledAlly));
+        }
+        else heroIndex = (heroIndex + delta + context.Heroes.Count) % context.Heroes.Count;
         result = null; Refresh(); SetFirstSelect();
         Common.Instance.MenuInputHandler.ClearInputThisFrame();
     }
@@ -85,6 +91,11 @@ public sealed class PartyMenu : Dialog
     {
         var input = MenuUIInputModule.Active;
         if (!IsRoot || input == null || input.InputConsumed || Common.Instance.GlobalSettings.IsOpen) return;
+        if(context is DungeonPartyMenuContext && Hero?.DungeonActor!=Game.Instance.PlayerController.ControlledAlly)
+        {
+            Remember();heroIndex=Math.Max(0,context.Heroes.ToList().FindIndex(h=>h.DungeonActor==Game.Instance.PlayerController.ControlledAlly));
+            Refresh();SetFirstSelect();
+        }
         if (input.NextHero.WasPressedThisFrame()) BrowseHero(UnityEngine.InputSystem.Keyboard.current?.shiftKey.isPressed == true ? -1 : 1);
         else if (input.PreviousHero.WasPressedThisFrame()) BrowseHero(-1);
     }
@@ -97,7 +108,7 @@ public sealed class PartyMenu : Dialog
     public void Refresh()
     {
         Clear(HeroesRoot); Clear(RowsRoot); rows.Clear();
-        for (int i = 0; i < context.Heroes.Count; i++)
+        for (int i = 0; context is not DungeonPartyMenuContext && i < context.Heroes.Count; i++)
         {
             int slot = i;
             var hero=context.Heroes[i];
@@ -155,7 +166,12 @@ public sealed class PartyMenu : Dialog
     private void ShowDetails()
     {
         HeroText.text = Hero == null ? "No party members" : context.HeroDetails(Hero);
-        if (entries.Count == 0) { Details.text = "Select a hero or switch tabs."; return; }
+        if (entries.Count == 0)
+        {
+            Details.text = context is DungeonPartyMenuContext ?
+                "No entries for this character. Switch tabs, or click a HUD portrait to change characters." : "Select a hero or switch tabs.";
+            return;
+        }
         var entry = entries[selectedIndex];
         DetailsControl.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=rows[selectedIndex],selectOnRight=BackButton};
         var actions = context.Actions(Hero,entry);
@@ -168,6 +184,7 @@ public sealed class PartyMenu : Dialog
         if (!IsRoot) return;
         selectedIndex=index; Remember(); ShowDetails();
         var entry = entries[index];
+        if (context is IPartyMenuEntryHandler handler && handler.OpenEntry(this, Hero, entry)) return;
         var actions = context.Actions(Hero,entry);
         if (!actions.Any(a=>a.Available)) return;
         Pick(entry.Title, actions.Where(a=>a.Available).Select(a => (a.Label, (Action)(() => a.Execute(this)))).ToList(),false);

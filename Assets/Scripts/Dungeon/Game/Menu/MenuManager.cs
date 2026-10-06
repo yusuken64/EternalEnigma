@@ -77,7 +77,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
     {
         if (PartyMenu == null) PartyMenu = global::PartyMenu.Create(transform);
         PartyMenu.Setup(new DungeonPartyMenuContext(Game.Instance), tab,
-            (hero ?? Game.Instance.PlayerController.ControlledAlly)?.TownAllyId);
+            Game.Instance.PlayerController.ControlledAlly?.TownAllyId);
         Open(PartyMenu);
     }
     public void OpenInventoryAs(Ally ally) => OpenPartyMenu(PartyMenuTab.Inventory, ally);
@@ -235,10 +235,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
     public Action LateAction { get => dialogs.LateAction; set => dialogs.LateAction = value; }
     private void LateUpdate()
     {
-        bool targeting=CurrentDialog==TargetDialog;
-        foreach(var dialog in DialogStack)
-            if(dialog is PartyMenu || dialog is PartyMenuPicker)
-                dialog.GetComponent<Canvas>().enabled=!targeting;
         dialogs.Tick();
     }
 

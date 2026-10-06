@@ -24,17 +24,20 @@ public class InventoryMenu : Dialog
     private GameObject followingObject;
 
     public GameObject SelectionArrow;
+    public bool DungeonDock;
+    public TrainerPreviewScroll DetailsControl;
 
     public void Setup(List<InventoryItem> items, Character character,
         Action<InventoryItem> selectItem = null, string selectionPrompt = null, bool followPortrait = true)
     {
-        SetupView(items, followPortrait ? character.VisualParent : null, character.Equipment.IsEquipped,
+        SetupView(items, followPortrait && !DungeonDock ? character.VisualParent : null, character.Equipment.IsEquipped,
             (view, data) =>
             {
                 if (selectItem != null) { selectItem(data); return; }
                 ActionDialog.Setup(view, data, character);
                 ActionDialog.SetNavigation();
                 MenuManager.Open(ActionDialog);
+                if(DungeonDock)return;
                 Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, view.transform.position);
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     canvas.GetComponent<RectTransform>(), screenPoint,
@@ -140,8 +143,10 @@ public class InventoryMenu : Dialog
             customNav.mode = Navigation.Mode.Explicit;
             customNav.selectOnDown = InventoryMenuItems[(i + 1) % InventoryMenuItems.Count];
             customNav.selectOnUp = InventoryMenuItems[(i - 1 + InventoryMenuItems.Count) % InventoryMenuItems.Count];
+            if(DetailsControl!=null)customNav.selectOnRight=DetailsControl;
             item.navigation = customNav;
         }
+        if(DetailsControl!=null)DetailsControl.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnLeft=InventoryMenuItems.FirstOrDefault()};
     }
 
     internal override void SetFirstSelect()

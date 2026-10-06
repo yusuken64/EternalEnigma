@@ -37,7 +37,7 @@ public class InnDialog : Dialog
     public override void PrepareTown(TownInteractionContext context)
     {
         services = context.Services;
-        StatusText.text = services.NeedsRest ? "Rest to restore your party's HP and SP?" : "Your party is fully rested.";
+        StatusText.text = services.NeedsRest ? "Rest to restore your party's HP, SP and hunger?" : "Your party is fully rested.";
     }
 
     internal override void SetFirstSelect() => (services != null && services.NeedsRest ? RestButton : SaveButton).Select();

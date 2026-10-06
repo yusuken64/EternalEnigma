@@ -71,6 +71,10 @@ public class TownAllyData
 	// Persisted vitals carried between dungeon runs; -1 means full (never set, or restored by the inn).
 	public int Hp = -1;
 	public int Sp = -1;
+    // Explicit presence flag distinguishes old saves from genuine zero hunger.
+    public bool HasHunger;
+    public int Hunger;
+    public int HungerAccumulate;
 }
 
 [Serializable]

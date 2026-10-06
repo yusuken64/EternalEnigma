@@ -1,14 +1,74 @@
 Priority 3: Economy and persistent resources
 
-1. Decide whether hunger persists between dungeon visits.
-   Define town/rest behavior before changing persistence.
-2. Enable selling through shops.
-   Existing inventory selling currently supports materials.
-3. Fix shops failing to restock after each dungeon.
-   Trace the existing restock-cycle mechanism first.
-4. Improve shop stock further into the campaign.
-5. Improve bakery bread with campaign progression.
+Adopted behavior (implemented 2026-10-05)
 
-Verification:
-Check buying/selling balances and inventory, restocking,
-save/load, and stock progression across campaign stages.
+- Hunger and its partial accumulation persist through clears/retreats, town
+  travel, active-party changes and saves. HasHunger distinguishes old saves
+  from saved zero hunger. Free inn/home rest restores HP/SP/hunger and resets
+  accumulation. Only dungeon turns advance hunger.
+- Campaign defeat restores checkpoint stock, vitals and run history.
+  Standalone defeat retains full recovery and does not replenish shops.
+- Shop offers use the town's campaign Tier (otherwise Tier 0). Display,
+  purchase and replenishment share one resolver without mutating shared assets.
+- RestockCycle and ReturnCommitted remain authoritative. Each clear or retreat
+  advances the global cycle once, including repeat clears. All shops apply the
+  new cycle on their next access. First access initializes stock; menus, rest,
+  transactions, travel, progression and saving/loading never replenish it.
+  Depleted saved stock is preserved; new offers wait for the next return.
+- Return audit: real campaign first clear, repeat clear and retreat replenish
+  correctly in regression tests. The original failure to replenish was not
+  reproduced. The confirmed defect was that defeat/abandon also advanced the
+  cycle; those paths now leave it unchanged.
+- Buy/Sell modes require confirmation. Selling removes the exact bag entry
+  with its remaining quantity. TownServices rejects equipped, progression,
+  depleted and already-sold entries. Cancellation and duplicate confirmation
+  cannot pay twice. Sold goods never enter stock. Material prices are unchanged.
+  Ordinary sale value is floor(lowest catalog price / offered quantity *
+  remaining quantity / 4). Uncatalogued unit values default to 100G for
+  consumables or max(100, 50 * (Strength + Defense)) for equipment.
+- Existing equipment offers remain. Other existing equipment is added once
+  at Tiers 1/2/3/4 when max(Strength, Defense) <= 6/9/12/20, one each, priced
+  at max(100, 50 * (Strength + Defense)). The 20HP/125G potion remains.
+  Tiers 1-4 add 40/60/80/100HP potions for 250/375/500/625G, four each.
+- Bakeries stock six pastries and three of each drink, retaining earlier tiers:
+  T0 Bread: 50 hunger / 100G.
+  T1 Slime Jelly Danish: 75 hunger / 150G.
+  T2 Smiling Mushroom & Cheese Croissant: 100 hunger / 200G.
+  T3 Crab Monster Meat Croquette: 125 hunger / 250G.
+  T4 Dragon Sausage & Onion Pastry: 150 hunger / 300G.
+  T0 Cactus Pulp Caramel Coffee / Cactus Pulp Caramel Cloud Latte.
+  T1 Roasted Battle Bee Espresso / Battle Bee Butter Honey Latte.
+  T2 Salamander-Fat Caramel Cold Brew / Salamander-Fat Caramel Latte.
+  T3 Specter Cream Shakerato / Specter Cream Tiramisu Latte.
+  T4 Beholder Eye Jelly Double Espresso / Beholder Eye Cream Pistachio Latte.
+  Coffee SP: 5/10/15/20/25; price: 150/300/450/600/750G.
+  Latte HP: 20/40/60/80/100; SP: 5/10/15/20/25;
+  price: 250/500/750/1000/1250G. Descriptions identify actual monster
+  ingredients; pastry and drink monsters are separate. Recovery caps apply.
+- Specialties are persistent shop-only assets. Restoration searches catalogs
+  without expanding loot eligibility. ItemManager.DungeonLoot filters ShopOnly.
+  Enemy drops (MovementAction), floor items (Game), and chests/props (DungeonProp)
+  all use that pool. Campaign rewards grant keys, capabilities and abilities,
+  not bakery items. Normal Bread stays in Common's loot list. Purchased
+  specialties restore by unique name and work in dungeons. Bread/potion visuals
+  and existing use actions remain; no new art, crafting, harvesting or sizes.
+
+Verification
+
+- Unity compilation: passed.
+- EconomyCatalogTests plus CampaignSaveTests: 14 EditMode tests passed.
+- EconomyGameplayTests: 7 PlayMode tests passed, including actual campaign
+  first/repeat clears, retreat, cross-town lazy replenishment, travel, checkpoint
+  rollback, party changes, zero/partial hunger, inn rest, standalone defeat,
+  purchased-drink restoration/consumption, partial sales, exclusions, cancellation,
+  duplicate confirmation, insufficient gold and sold-out/new-offer migration.
+- Mouse, keyboard and gamepad selection/confirmation passed with InputSystem devices.
+- Existing victory/defeat return regressions: 2 PlayMode tests passed after
+  updating their fixtures for class equipment restrictions and explicit checkpoints.
+  Total verified: 14 EditMode and 9 PlayMode tests, all passed.
+- Selling and the scrolled Tier 4 bakery menu were visually inspected.
+- Re-run via Tools/Eternal Enigma/Tests/Run Economy, Run Economy EditMode,
+  and Run Economy Return Regression.
+  XML: Temp/HarnessResults/{PlayMode,EditMode}.xml.
+  Screenshots: Temp/Economy/shop-sell.png and bakery-tier4.png.
+  Preserved reports: Temp/Economy/EditMode.xml, PlayMode.xml, ReturnRegression.xml.

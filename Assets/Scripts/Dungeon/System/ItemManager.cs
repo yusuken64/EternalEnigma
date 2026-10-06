@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,6 +7,7 @@ public class ItemManager : MonoBehaviour
 {
 	public List<ItemDefinition> ItemDefinitions;
 	public List<ItemDefinition> StartingItems;
+    public List<ItemDefinition> DungeonLoot => ItemDefinitions.Where(i => i != null && !i.ShopOnly && !i.IsProgressionItem).ToList();
 
 	public InventoryItem GetAsInventoryItem(ItemDefinition itemDefinition, int? stock)
 	{
@@ -30,13 +31,16 @@ public class ItemManager : MonoBehaviour
 
 	internal ItemDefinition GetRandomDrop(Character enemy)
 	{
-		return ItemDefinitions[UnityEngine.Random.Range(0, ItemDefinitions.Count())];
+		var loot = DungeonLoot;
+        if (loot.Count == 0) throw new InvalidOperationException("Dungeon loot is empty.");
+        return loot[UnityEngine.Random.Range(0, loot.Count)];
 	}
 
 	/// <summary>Deterministic pick by roll over ItemDefinitions in list order.</summary>
 	internal ItemDefinition GetRandomDrop(int roll)
 	{
-		if (ItemDefinitions.Count == 0) throw new InvalidOperationException("ItemDefinitions is empty.");
-		return ItemDefinitions[(int)((uint)roll % (uint)ItemDefinitions.Count)];
+		var loot = DungeonLoot;
+        if (loot.Count == 0) throw new InvalidOperationException("Dungeon loot is empty.");
+        return loot[(int)((uint)roll % (uint)loot.Count)];
 	}
 }

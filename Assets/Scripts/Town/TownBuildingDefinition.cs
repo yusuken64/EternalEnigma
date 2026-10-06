@@ -26,7 +26,7 @@ public class TownBuildingDefinition : ScriptableObject
 
     public void Validate()
     {
-        if (ShopCatalog.Any(o => o == null || o.Item == null || o.Price < 0 || o.Quantity < 1 || o.StackCount < 1))
+        if (ShopCatalog.Any(o => o == null || o.Item == null || o.Price < 0 || o.Quantity < 1 || o.StackCount < 1 || o.MinimumTier < 0))
             throw new InvalidOperationException($"Building '{Id}' has an invalid shop offer.");
         if (ShopCatalog.Select(o => o.Item).Distinct().Count() != ShopCatalog.Count)
             throw new InvalidOperationException($"Building '{Id}' has duplicate shop items.");
@@ -37,6 +37,7 @@ public class TownBuildingDefinition : ScriptableObject
 public class TownShopOffer
 {
     public ItemDefinition Item;
+    [Min(0)] public int MinimumTier;
     [Min(0)] public int Price = 100;
     [Min(1)] public int Quantity = 1;
     [Min(1)] public int StackCount = 1;

@@ -5,6 +5,8 @@ public abstract class ItemDefinition : ScriptableObject
 {
 	public string ItemName;
 	public string Description;
+	public bool ShopOnly;
+	public bool IsProgressionItem;
 	public ItemEffectDefinition ItemEffectDefinition;
 
 	public bool ApplyToThrownTarget;

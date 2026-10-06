@@ -8,6 +8,14 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Economy")]
+    public static void RunEconomy() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EconomyGameplayTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Economy EditMode")]
+    public static void RunEconomyEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.EconomyCatalogTests", "EternalEnigma.Tests.CoreIntegration.CampaignSaveTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Economy Return Regression")]
+    public static void RunEconomyReturns() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownGameplayTests.VictoryReturnsRemainingStacksAndEquipment",
+        "EternalEnigma.Tests.TownGameplayTests.DefeatLosesItemsButKeepsGold");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Core Bugfixes")]
     public static void RunCoreBugfixes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "CoreBugfixTests", "HeldWalkingTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Core Bugfix EditMode")]

@@ -32,6 +32,9 @@ public static class DungeonReturnService
                 // Damage persists after a successful return; a defeat resets the party to full.
                 member.Hp = loot ? System.Math.Max(1, ally.Vitals.HP) : -1;
                 member.Sp = loot ? ally.Vitals.SP : -1;
+                member.HasHunger = loot;
+                member.Hunger = loot ? ally.Vitals.Hunger : 0;
+                member.HungerAccumulate = loot ? ally.Vitals.HungerAccumulate : 0;
             }
         }
         if (victory)
@@ -39,7 +42,7 @@ public static class DungeonReturnService
             string tier = $"{configuration.Id}/{save.DungeonSaveData.StartFloor}-{save.DungeonSaveData.EndFloor}";
             if (!town.CompletedTiers.Contains(tier)) town.CompletedTiers.Add(tier);
         }
-        town.RestockCycle++;
+        if (loot) town.RestockCycle++;
         save.DungeonSaveData.ReturnCommitted = true;
     }
 }

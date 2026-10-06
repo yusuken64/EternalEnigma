@@ -54,6 +54,391 @@ MonoBehaviour:
     Price: 1000
     Quantity: 1
     StackCount: 1
+  - Item: {fileID: 11400000, guid: 361cd455947d4921887d13b2cc021ff1, type: 2}
+    MinimumTier: 1
+    Price: 250
+    Quantity: 4
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 4ede630ed3b24fcda1126240edcea949, type: 2}
+    MinimumTier: 2
+    Price: 375
+    Quantity: 4
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 003cdbc03e6e4a199b2d256163a20b0f, type: 2}
+    MinimumTier: 3
+    Price: 500
+    Quantity: 4
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 3ef9af34a0754da8a64bfba64cfd1a81, type: 2}
+    MinimumTier: 4
+    Price: 625
+    Quantity: 4
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 0620ff1131cc0eb41a5952f1231e633c, type: 2}
+    MinimumTier: 1
+    Price: 250
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: b4d60360a5f90ac41a1dcdf8da2e4284, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 90cdc752d1ce0994dbceef064dbd85dc, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 8b12e177447e6ba458549ab3f6a4e479, type: 2}
+    MinimumTier: 1
+    Price: 150
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 0530d077586c34c43877711e80fbbf70, type: 2}
+    MinimumTier: 1
+    Price: 200
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 3c6f3bcc109e447479496a7fe0011372, type: 2}
+    MinimumTier: 1
+    Price: 250
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 90327f55d3887f047af394442b16137d, type: 2}
+    MinimumTier: 1
+    Price: 300
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: bd6e22e9ddaa8444b9d25ab06a48d299, type: 2}
+    MinimumTier: 2
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: f6576789da0282c4e9d49844e2b677ea, type: 2}
+    MinimumTier: 2
+    Price: 400
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: b55414b197e0daa479380c57e4983b3f, type: 2}
+    MinimumTier: 2
+    Price: 450
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: b29d878f2fc305e47bacd7ff056e9dda, type: 2}
+    MinimumTier: 3
+    Price: 500
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 0f2a63701aa202243bc7cc0537a99993, type: 2}
+    MinimumTier: 3
+    Price: 550
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 050df431a74a0fc46ad6ce73ca3b5b17, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: fbdaa74a00d1f1b46aabb31b726c2642, type: 2}
+    MinimumTier: 4
+    Price: 650
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: dfeb56ce0615bcf47ac0a2c53e899f7f, type: 2}
+    MinimumTier: 4
+    Price: 700
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: eee4adad13252f24782ad8f6e82dcfd6, type: 2}
+    MinimumTier: 4
+    Price: 750
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: ca1be56bb01bdb44eb3e6a4f6060f784, type: 2}
+    MinimumTier: 4
+    Price: 800
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 50f0012550942184999efba59a1ee37a, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: e9c0f81ac4d6a444796dc601ee3c6354, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 167bbe4ef3c64de41a6f6ea85bc5d590, type: 2}
+    MinimumTier: 1
+    Price: 150
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 9712da6cc8c4fc94da49b4c80bdbb3df, type: 2}
+    MinimumTier: 1
+    Price: 200
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: d68a46469bdc8cf4597f69796f146ebf, type: 2}
+    MinimumTier: 1
+    Price: 250
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 6fd6a637f70ca7d43afcd2adb39b5927, type: 2}
+    MinimumTier: 1
+    Price: 300
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 756abb3b6ad60604da7a84f6977b68c7, type: 2}
+    MinimumTier: 2
+    Price: 350
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 156dcf5907da7604098a4bdf40cac87d, type: 2}
+    MinimumTier: 2
+    Price: 400
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 9f6ef1d8aa593504b86c097a9fb6c259, type: 2}
+    MinimumTier: 2
+    Price: 450
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 7bea52d2b287aba469cdb5abed6b11f8, type: 2}
+    MinimumTier: 3
+    Price: 500
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: cedabe802490e9844931659603370b71, type: 2}
+    MinimumTier: 3
+    Price: 550
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 2060601cc1e57ae46aea04f6b2d4ba6d, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 9f6111fc9db5e134c9248292c21e2380, type: 2}
+    MinimumTier: 4
+    Price: 650
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 9ae0b84c78e3e8645b153d249210914b, type: 2}
+    MinimumTier: 4
+    Price: 700
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: fa26428b626327341a1e2574123a7c7e, type: 2}
+    MinimumTier: 4
+    Price: 750
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 5ee8599b8f869bf4192e4c9b445c8074, type: 2}
+    MinimumTier: 4
+    Price: 800
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 861cef4ba016c2946b504fd1989b57ba, type: 2}
+    MinimumTier: 4
+    Price: 850
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: ad52b0f346f621749bf932ec24ff61d9, type: 2}
+    MinimumTier: 4
+    Price: 900
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: b01f8f351543b464b8f0e756b93e7e10, type: 2}
+    MinimumTier: 4
+    Price: 950
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 83b506a35cffe154aad1290c339c45a2, type: 2}
+    MinimumTier: 4
+    Price: 1000
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: a41aefc2e7a539a4d9316199bbb90e00, type: 2}
+    MinimumTier: 1
+    Price: 250
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: e8fc0d73b0714924f9a0411e83a65747, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: aa3f781a1a5f97845b3c8ed767e1cc5c, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 72c0e4c2cbba9264c93574fdf908f0e2, type: 2}
+    MinimumTier: 1
+    Price: 150
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 1245efad521bea041a74350c4d160d33, type: 2}
+    MinimumTier: 1
+    Price: 200
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 0424eb1efa08f214cac7c2d6f8db0d9c, type: 2}
+    MinimumTier: 1
+    Price: 250
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 625d0ea08143c9849bd09e76767446a8, type: 2}
+    MinimumTier: 1
+    Price: 300
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: ef78e1315adcc0c4e9d9c462069e449d, type: 2}
+    MinimumTier: 2
+    Price: 350
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 64f9ea312e87c4442aa0c51196d7400f, type: 2}
+    MinimumTier: 2
+    Price: 400
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: e9784ee781901a34483fdad10d40f32a, type: 2}
+    MinimumTier: 2
+    Price: 450
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 675e7002780de56499aabff0dda9793b, type: 2}
+    MinimumTier: 3
+    Price: 500
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 8b2a817398e10ec47b7113777342c3ce, type: 2}
+    MinimumTier: 3
+    Price: 550
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: d4727b09c11368342abac0dbb274987e, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 7810b2f251218e24a9ee8cd730c68725, type: 2}
+    MinimumTier: 4
+    Price: 650
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 5dbe23cc48f6a144ba0e83a6bebc5de3, type: 2}
+    MinimumTier: 4
+    Price: 700
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: d950ea5c6121acc448ca06871497bb28, type: 2}
+    MinimumTier: 4
+    Price: 750
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: c53ee79deb29fd04c9a6b87d907ef3c0, type: 2}
+    MinimumTier: 4
+    Price: 800
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: fdcca7588f83fa640a98370dabd49aff, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 55214d29ec67a1b49950818d118dd990, type: 2}
+    MinimumTier: 1
+    Price: 200
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 75717d81750f72445b8c3b178f699a07, type: 2}
+    MinimumTier: 1
+    Price: 300
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: a8e17667e7c419f46b90a00af0957cfe, type: 2}
+    MinimumTier: 2
+    Price: 400
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 1e8497ae94fcbc848afd118264ed04dd, type: 2}
+    MinimumTier: 3
+    Price: 500
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 3d6d184e3bc49814fad6ae9ac40c33bb, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: d254a768b4f854e46a3bd3a21b1f0dba, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 40b2dc4a43f65e54cbaf06c0035def42, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 486bd7632830045429ac9d1c5cbf7617, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 512d031451ae19549a3b7178e4a05bad, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 237919e4a3299e141b192ee651baba4e, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 41b07d92e02342542acf2a7352e7c2ac, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: c6bfd65906630564a9114ee2ddda36d4, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 89d5d5ccb623ebd4fa656cf3010d2dfc, type: 2}
+    MinimumTier: 1
+    Price: 100
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 36161dd8c780aa347886565b648f915f, type: 2}
+    MinimumTier: 1
+    Price: 150
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 789241e8759f86d4e88d65a398a1a2ce, type: 2}
+    MinimumTier: 1
+    Price: 200
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: ac68006079b29ae4595441efb2f10515, type: 2}
+    MinimumTier: 1
+    Price: 250
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: db2c774047b63ca40a5f1b9110534444, type: 2}
+    MinimumTier: 1
+    Price: 300
+    Quantity: 1
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 973ba86e86611ad4cbbd3679d3ecd3dd, type: 2}
+    MinimumTier: 2
+    Price: 350
+    Quantity: 1
+    StackCount: 1
   VendorPrefab: {fileID: 3597991658242453545, guid: cebac3115480f5c45a0733fb1e94af5b, type: 3}
   ServiceInterior: 0
   Npc: {fileID: 11400000, guid: eae90439a4491f449b38667b57e17ae5, type: 2}

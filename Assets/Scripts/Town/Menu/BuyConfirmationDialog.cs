@@ -17,7 +17,7 @@ public class BuyConfirmationDialog : Dialog
 	{
 		this._view = view;
 		this._data = data;
-		PromptText.text = $"Purchase {data.ItemName} ({data.Cost})?";
+		PromptText.text = data.IsSale ? $"Sell {data.ItemName} (quantity {data.Remaining}) for {data.Cost}G?" : $"Purchase {data.ItemName} for {data.Cost}G?";
 	}
 
 	internal override void SetFirstSelect()
@@ -35,8 +35,11 @@ public class BuyConfirmationDialog : Dialog
 
 	public void Cancel_Clicked()
 	{
+		BuyCallBack = null;
 		CloseDialog();
 	}
+
+    private void OnDisable() => BuyCallBack = null;
 
 	internal void SetNavigation()
 	{

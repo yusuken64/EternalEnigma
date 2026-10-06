@@ -273,11 +273,14 @@ namespace EternalEnigma.Tests
         {
             yield return harness.LoadTown(new TestScenario { Gold = 250 }.CreateSave());
             var configuration = World.Configuration;
-            var weapon = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>().First().AsInventoryItem(null);
+            var hero = World.TownPlayer.ControllingTownAlly;
+            var weapon = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>()
+                .Select(d => d.AsInventoryItem(null)).Cast<EquipableInventoryItem>()
+                .First(i => HeroClass.AllowsItem(hero.PrimaryClass, hero.SecondaryClass, i));
             var supply = Common.Instance.ItemManager.ItemDefinitions.First(d => d.StackMax >= 3).AsInventoryItem(3);
             World.TownPlayer.Inventory.Add(weapon);
             World.TownPlayer.Inventory.Add(supply);
-            World.Services.ToggleEquipment(World.TownPlayer.ControllingTownAlly, weapon);
+            Assert.That(World.Services.ToggleEquipment(hero, weapon), Is.True);
             World.TownBuildings.First(b => b.Definition.DialogId == "entrance").Interact(World.TownPlayer, null);
             ((EntranceDialog)Manager.CurrentDialog).DungeonClicked(configuration.DungeonTiers[0]);
             yield return harness.WaitForIdle();
@@ -293,13 +296,14 @@ namespace EternalEnigma.Tests
             Assert.That(World.TownPlayer.Inventory.Count, Is.EqualTo(victory ? 1 : 0));
             Assert.That(World.TownPlayer.ControllingTownAlly.Equipment.GetEquippedItems().Count(), Is.EqualTo(victory ? 1 : 0));
             if (victory) Assert.That(World.TownPlayer.Inventory[0].StackStock, Is.EqualTo(2));
-            var saved = SaveSystem.LoadData();
+            var saved = Common.Instance.GameSaveData;
+            Assert.That(SaveSystem.LoadData().TownSaveData.Gold, Is.EqualTo(250), "Returns must not overwrite the checkpoint.");
             if (victory)
             {
                 Assert.That(saved.TownSaveData.InventoryItems[0].Stock, Is.EqualTo(2));
                 Assert.That(saved.TownSaveData.RecruitedAlliesData[0].Equipment[0].ItemName, Is.EqualTo(weapon.ItemName));
             }
-            Assert.That(saved.TownSaveData.RestockCycle, Is.EqualTo(1));
+            Assert.That(saved.TownSaveData.RestockCycle, Is.EqualTo(victory ? 1 : 0));
             Assert.That(saved.TownSaveData.CompletedTiers.Count, Is.EqualTo(victory ? 1 : 0));
             DungeonReturnService.Commit(saved, configuration, victory, 70, new InventoryItem[0], new Ally[0]);
             Assert.That(saved.TownSaveData.Gold, Is.EqualTo(320), "Return must commit only once.");

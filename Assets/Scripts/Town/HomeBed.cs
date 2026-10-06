@@ -81,7 +81,7 @@ public sealed class HomeBed : MonoBehaviour
                 }
                 yield return fadeOut;
             }
-            foreach (var ally in player.RecruitedAllies) { ally.Hp = -1; ally.Sp = -1; }
+            foreach (var ally in player.RecruitedAllies) { ally.Hp = -1; ally.Sp = -1; ally.HasHunger = false; ally.Hunger = 0; ally.HungerAccumulate = 0; }
             // Tile remains reserved at the awake position for the entire sequence.
             town.WriteSaveData();
             CampaignSaving.Commit(Common.Instance, "town-0/home", tile, facing, out error);

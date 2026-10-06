@@ -22,6 +22,76 @@ MonoBehaviour:
     Price: 100
     Quantity: 6
     StackCount: 1
+  - Item: {fileID: 11400000, guid: 3f937caf3a3d451d8d6782bfd13a7152, type: 2}
+    MinimumTier: 1
+    Price: 150
+    Quantity: 6
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 7b4f1e69473b4bcdadde45a5ee8e0788, type: 2}
+    MinimumTier: 2
+    Price: 200
+    Quantity: 6
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: dbf3ae0ea9ef4dd0bcf598452041a76f, type: 2}
+    MinimumTier: 3
+    Price: 250
+    Quantity: 6
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 0b311c7573c94d5193bea591a8a6efd3, type: 2}
+    MinimumTier: 4
+    Price: 300
+    Quantity: 6
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 3f3e7e53c7244540a57f0c6b297f4d5f, type: 2}
+    MinimumTier: 0
+    Price: 150
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: c1db134a465348ecaad2999727680208, type: 2}
+    MinimumTier: 0
+    Price: 250
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 82a68e27dfed407c8f97957be6eaa4de, type: 2}
+    MinimumTier: 1
+    Price: 300
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 43506eb658a94426bb8280b8c249b000, type: 2}
+    MinimumTier: 1
+    Price: 500
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 25115b9e93e14b20b2a2179f06ef79a3, type: 2}
+    MinimumTier: 2
+    Price: 450
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 6d00e937bd4a47b0b8807854ff3c5345, type: 2}
+    MinimumTier: 2
+    Price: 750
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 30179aac33f34047953d1781a3117d67, type: 2}
+    MinimumTier: 3
+    Price: 600
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: 36517e7b1bdf4b10814a4790545790f1, type: 2}
+    MinimumTier: 3
+    Price: 1000
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: a93c2527862b4874b9795daebd1124bc, type: 2}
+    MinimumTier: 4
+    Price: 750
+    Quantity: 3
+    StackCount: 1
+  - Item: {fileID: 11400000, guid: d52835dfbf96408a8703fb23e18b4f44, type: 2}
+    MinimumTier: 4
+    Price: 1250
+    Quantity: 3
+    StackCount: 1
   VendorPrefab: {fileID: 7549973419130391905, guid: 0ffed89e4856ae948ab1b12db54f71ce, type: 3}
   ServiceInterior: 1
   Npc: {fileID: 11400000, guid: a73d55c471e58f245b1e57e04682aa9b, type: 2}

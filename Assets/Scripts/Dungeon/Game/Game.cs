@@ -162,6 +162,8 @@ public class Game : SingletonMonoBehaviour<Game>
 			// Damage carries over between runs; the inn resets it. -1 (never hurt) and downed allies start at a sane value.
 			if (townAlly.Hp >= 0) ally.Vitals.HP = Mathf.Max(1, townAlly.Hp);
 			if (townAlly.Sp >= 0) ally.Vitals.SP = townAlly.Sp;
+            ally.Vitals.Hunger = townAlly.HasHunger ? Mathf.Clamp(townAlly.Hunger, 0, ally.FinalStats.HungerMax) : ally.FinalStats.HungerMax;
+            ally.Vitals.HungerAccumulate = townAlly.HasHunger ? Mathf.Max(0, townAlly.HungerAccumulate) : 0;
 
 			ally.SyncDisplayedStats();
 

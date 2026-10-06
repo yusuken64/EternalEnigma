@@ -9,6 +9,8 @@ public sealed class TownServices
     private TownPlayer Player => town.TownPlayer;
     private TownSaveData Save => Common.Instance.GameSaveData.TownSaveData;
     public TownServices(Town town) { this.town = town; }
+    public List<TownShopOffer> Catalog(TownBuildingDefinition building) =>
+        TownShopCatalog.Resolve(building, TownShopCatalog.Tier(town.Configuration.Id));
 
     public TownShopSaveData Shop(TownBuildingDefinition building)
     {
@@ -16,12 +18,12 @@ public sealed class TownServices
         var shop = Save.Shops.FirstOrDefault(s => s.Key == key);
         if (shop == null)
         {
-            shop = new TownShopSaveData { Key = key };
+            shop = new TownShopSaveData { Key = key, RestockCycle = -1 };
             Save.Shops.Add(shop);
         }
         if (shop.RestockCycle != Save.RestockCycle)
         {
-            shop.Stock = building.ShopCatalog.Select(o => new TownStockSaveData {
+            shop.Stock = Catalog(building).Select(o => new TownStockSaveData {
                 ItemName = o.Item.ItemName, Remaining = o.Quantity }).ToList();
             shop.RestockCycle = Save.RestockCycle;
         }
@@ -30,7 +32,7 @@ public sealed class TownServices
 
     public bool Buy(TownBuildingDefinition building, string itemName, out string reason)
     {
-        var offer = building.ShopCatalog.FirstOrDefault(o => o.Item.ItemName == itemName);
+        var offer = Catalog(building).FirstOrDefault(o => o.Item.ItemName == itemName);
         var stock = Shop(building).Stock.FirstOrDefault(s => s.ItemName == itemName);
         reason = "This item is sold out.";
         if (offer == null || stock == null || stock.Remaining <= 0) return false;
@@ -45,14 +47,16 @@ public sealed class TownServices
         return true;
     }
 
-    public static int SellPrice(InventoryItem item) =>
-        item?.ItemDefinition is MaterialItemDefinition material ? material.SellValue * System.Math.Max(1, item.StackStock ?? 1) : 0;
+    public static int SellPrice(InventoryItem item) => TownShopCatalog.SellPrice(item);
+
+    public bool CanSell(InventoryItem item) => item != null && Player.Inventory.Contains(item) &&
+        !Player.RecruitedAllies.Any(a => a.Equipment.IsEquipped(item)) && SellPrice(item) > 0;
 
     public bool Sell(InventoryItem item, out string reason)
     {
         reason = "This item cannot be sold.";
         int price = SellPrice(item);
-        if (price <= 0 || !Player.Inventory.Contains(item)) return false;
+        if (!CanSell(item) || Player.Gold > int.MaxValue - price) return false;
         Player.Inventory.Remove(item);
         Player.Gold += price;
         town.SaveProgress();
@@ -81,15 +85,15 @@ public sealed class TownServices
         return true;
     }
 
-    /// <summary>True when any party member is carrying damage from a previous run.</summary>
-    public bool NeedsRest => Player.RecruitedAllies.Any(a => a.Hp >= 0 || a.Sp >= 0);
+    /// <summary>True when any party member has carried vitals to reset.</summary>
+    public bool NeedsRest => Player.RecruitedAllies.Any(a => a.Hp >= 0 || a.Sp >= 0 || a.HasHunger);
 
-    /// <summary>Free rest: clears carried damage so the whole party starts the next run at full HP/SP.</summary>
+    /// <summary>Free rest restores HP, SP and hunger and resets hunger accumulation.</summary>
     public bool Rest(out string reason)
     {
         reason = "Everyone is already fully rested.";
         if (!NeedsRest) return false;
-        foreach (var ally in Player.RecruitedAllies) { ally.Hp = -1; ally.Sp = -1; }
+        foreach (var ally in Player.RecruitedAllies) { ally.Hp = -1; ally.Sp = -1; ally.HasHunger = false; ally.Hunger = 0; ally.HungerAccumulate = 0; }
         town.SaveProgress();
         reason = null;
         return true;

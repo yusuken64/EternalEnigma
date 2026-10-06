@@ -23,6 +23,10 @@ public class TownAlly : TownCharacter
 	// Vitals carried between dungeon runs; -1 means full.
 	public int Hp = -1;
 	public int Sp = -1;
+    // Explicit presence flag distinguishes old saves from genuine zero hunger.
+    public bool HasHunger;
+    public int Hunger;
+    public int HungerAccumulate;
 
 	// Fixed per hero prefab (assigned in Phase 7). The protagonist's instance is overwritten from the save.
 	public ClassDefinition PrimaryClass;

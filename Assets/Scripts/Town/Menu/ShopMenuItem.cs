@@ -25,6 +25,12 @@ public class ShopMenuItem : MonoBehaviour, ISelectHandler
 
 	private void UpdateUI()
 	{
+		if (_data.IsSale)
+		{
+			ItemText.text = $"{_data.ItemName}\n<size=65%>Quantity: {_data.Remaining}</size>";
+			CostText.text = $"{_data.Cost}g";
+			return;
+		}
 		ItemText.text = _data.Remaining > 0
 			? $"{_data.ItemName}\n<size=65%>{_data.Remaining} left</size>"
 			: _data.ItemName;

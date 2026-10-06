@@ -89,7 +89,8 @@ public class Town : MonoBehaviour
                     .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                     .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList(),
                 HighestLevel = Mathf.Max(1, ally.HighestLevel), Level = ally.Level, Experience = ally.Experience,
-                Hp = ally.Hp, Sp = ally.Sp
+                Hp = ally.Hp, Sp = ally.Sp, HasHunger = ally.HasHunger,
+                Hunger = ally.Hunger, HungerAccumulate = ally.HungerAccumulate
             })).ToList();
         CampaignParty.Capture(Common.Instance);
     }
@@ -190,6 +191,7 @@ public class Town : MonoBehaviour
             allyInstance.HighestLevel = Mathf.Max(1, allyData.HighestLevel);
             allyInstance.Level = Mathf.Max(1, allyData.Level); allyInstance.Experience = allyData.Experience;
             allyInstance.Hp = allyData.Hp; allyInstance.Sp = allyData.Sp;
+            allyInstance.HasHunger = allyData.HasHunger; allyInstance.Hunger = allyData.Hunger; allyInstance.HungerAccumulate = allyData.HungerAccumulate;
             allyInstance.RecruitCost = Configuration.Recruits.FirstOrDefault(r => r.Ally == prefab)?.Cost ?? 0;
             foreach (var item in allyData.Equipment ?? new())
                 if (item.Restore(Common.Instance.ItemManager) is EquipableInventoryItem equipment)

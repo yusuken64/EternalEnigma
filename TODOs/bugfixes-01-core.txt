@@ -1,0 +1,15 @@
+Priority 1: State integrity and core playability
+
+1. Fix money resetting when entering a dungeon.
+   Verify returning does not double-credit carried gold.
+2. Fix new party members duplicating equipped items.
+3. Guarantee a new capability on each dungeon's first clear.
+4. Fix incorrectly blocked weapon equipment.
+   Explain legitimate restrictions, such as missing proficiency.
+5. Profile and fix walking hitches with four party members.
+6. Make save slots keyboard-navigable selectable action buttons.
+   Make the selected slot visually distinct.
+
+Verification:
+Check dungeon entry, victory, defeat, recruitment, and save/load.
+Check keyboard navigation and four-member movement.

@@ -1,0 +1,14 @@
+Priority 3: Economy and persistent resources
+
+1. Decide whether hunger persists between dungeon visits.
+   Define town/rest behavior before changing persistence.
+2. Enable selling through shops.
+   Existing inventory selling currently supports materials.
+3. Fix shops failing to restock after each dungeon.
+   Trace the existing restock-cycle mechanism first.
+4. Improve shop stock further into the campaign.
+5. Improve bakery bread with campaign progression.
+
+Verification:
+Check buying/selling balances and inventory, restocking,
+save/load, and stock progression across campaign stages.

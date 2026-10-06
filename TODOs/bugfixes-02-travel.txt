@@ -1,0 +1,15 @@
+Priority 2: Dungeon travel and progression clarity
+
+1. Return the party to the town dungeon entrance after exiting.
+2. Prompt before entering overworld dungeons.
+   Indicate whether the dungeon has already been defeated.
+3. Preserve the original lock message.
+   Prompt to use an available capability to open the lock.
+4. Show capabilities in the overworld menu.
+5. Have townspeople hint at the next lock.
+6. Interact with town allies while adjacent and facing them,
+   consistent with other NPCs.
+
+Verification:
+Check entry confirmation/cancellation, return placement,
+first-clear/repeat-clear labels, and lock interactions.

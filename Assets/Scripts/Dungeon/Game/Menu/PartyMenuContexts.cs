@@ -28,7 +28,7 @@ public abstract class PartyMenuContext : IPartyMenuContext
     {
         if(tab==PartyMenuTab.Skills)return Skills(hero).Where(s=>s!=null).OrderBy(s=>s.ActivationType).Select(s=>new PartyMenuEntry {
             Skill=s,Title=$"{s.SkillName}  R{s.Rank}" + (s.ActivationType==ActivationType.Active?$"  {s.SPCost} SP":"  Passive"),
-            Description=s.Description+(s.UsesArrows?$"\nAmmunition: {(s.ArrowCostMode==ArrowCostMode.PerTarget?"1 per target":s.ArrowCost.ToString())} arrows":""),
+            Description=s.Description+$"\nCharging actions: {(hero.DungeonActor != null ? s.InitialCastTime(hero.DungeonActor) : s.CastTime)}"+(s.UsesArrows?$"\nAmmunition: {(s.ArrowCostMode==ArrowCostMode.PerTarget?"1 per target":s.ArrowCost.ToString())} arrows":""),
             Section=s.ActivationType==ActivationType.Active?"Active skills":"Passive skills",Icon=s.Icon }).ToList();
         return hero.Equipment.GetEquippedItems().Cast<InventoryItem>().Concat(Bag).Where(i=>i?.ItemDefinition!=null).Select(i=>new PartyMenuEntry {
             Item=i,Title=i.ItemName+(i.HasStacks?$"  x{i.StackStock}":"")+(hero.Equipment.IsEquipped(i)?"  [Equipped]":""),
@@ -110,7 +110,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         {
             var live=data.AllyId==save.ProtagonistId?world.Player:world.Followers.FirstOrDefault(h=>h.Id==data.AllyId);
             if(live==null)continue;
-            RestoreHero(live,data);Add(live);
+            RestoreHero(live,data,bag.Add);Add(live);
         }
     }
     public override List<PartyMenuEntry> Entries(PartyMenuHero hero, PartyMenuTab tab)
@@ -124,14 +124,14 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
                 (context.Held.Contains(capability)?"Available":"Unavailable: add the required companion to your travelling party at a town.")
         }).ToList();
     }
-    public static void RestoreHero(TownAlly live,TownAllyData data)
+    public static void RestoreHero(TownAlly live,TownAllyData data, Action<InventoryItem> displaced = null)
     {
         live.Id=data.AllyId;live.Name=data.AllyName;live.Hp=data.Hp;live.Sp=data.Sp;live.HighestLevel=data.HighestLevel;live.Level=data.Level;live.Experience=data.Experience;
         live.Skills=data.Skills?.ToList()??new();live.SkillRanks=data.SkillRanks?.Select(r=>new SkillRankSaveData{SkillName=r.SkillName,Rank=r.Rank}).ToList()??new();
         HeroClassBinding.Apply(live,data,Common.Instance.GameSaveData);
-        foreach(var previous in live.Equipment.GetEquippedItems().ToArray())live.Equipment.UnEquip(previous);
-        foreach(var serialized in data.Equipment)
-            if(serialized.Restore(Common.Instance.ItemManager) is EquipableInventoryItem equipment)live.Equipment.Equip(equipment);
+        live.Equipment.RestoreSaved(data.Equipment, Common.Instance.ItemManager,
+            displaced ?? (item => Common.Instance.GameSaveData.TownSaveData.InventoryItems.Add(ItemSaveData.From(item))));
+        data.Equipment = ItemSaveData.Capture(live.Equipment.GetEquippedItems());
         live.RefreshEquipmentVisuals();
         live.EnsureStartingSkills();
     }

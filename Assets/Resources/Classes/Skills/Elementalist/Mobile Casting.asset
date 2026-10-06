@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: Mobile Casting
+  SkillName: Mobile Casting
+  MaxRank: 1
+  LearnCost: 300
+  ActivationType: 1
+  SPCost: 0
+  TargetSelector:
+    Team: 2
+    Area: 1
+  Targeting: 0
+  AreaRadius: 0
+  MissileRange: 8
+  ActionEffects: []
+  VisualProfile: {fileID: 11400000, guid: 409233a7fe6327d4fb61c86fd6383812, type: 2}
+  CastSound: {fileID: 8300000, guid: d1afd3f4d23c24f418ffc315afb04965, type: 3}
+  Icon: {fileID: 21300000, guid: f4f1163b6dadf8f4b9b914a47b18fa8c, type: 3}
+  Description: Voluntary walking preserves and advances charging. Release uses a stationary action.

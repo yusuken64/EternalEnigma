@@ -189,8 +189,8 @@ public sealed class GameTestHarness
         int index = items.IndexOf(item);
         Assert.That(index, Is.GreaterThanOrEqualTo(0), "Item must be equipped or in the bag.");
         MenuManager.Instance.OpenInventoryAs(Ally);
-        Game.InventoryMenu.InventoryMenuItems[index].onClick.Invoke();
-        var dialog = Game.InventoryMenu.ActionDialog;
+        MenuManager.Instance.PartyMenu.EntryButtons[index].onClick.Invoke();
+        var dialog = MenuManager.Instance.ActionDialog;
         var useButton = dialog.UseItemText.GetComponentInParent<UnityEngine.UI.Button>();
         Assert.That(useButton, Is.Not.Null, "Equip/Use label must belong to a button.");
         useButton.onClick.Invoke(); // Exercise the scene's serialized UnityEvent, not a duplicate equip implementation.

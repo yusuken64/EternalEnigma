@@ -21,6 +21,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
+  CastTime: 1
   SPCost: 1
   TargetSelector:
     Team: 1
@@ -64,7 +65,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Weapon hit with a 30% chance to Stun.
+  Description: 200% weapon damage with a 30% chance to Stun.
   references:
     version: 2
     RefIds:
@@ -73,7 +74,7 @@ MonoBehaviour:
       data:
         Scaling: 0
         Category: 0
-        Percent: 1
+        Percent: 2
         BaseDamage: 8
         PerLevel: 2
         Hits: 1

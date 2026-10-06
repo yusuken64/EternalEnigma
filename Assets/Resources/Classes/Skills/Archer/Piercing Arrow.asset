@@ -23,20 +23,21 @@ MonoBehaviour:
   ActivationType: 0
   SPCost: 2
   TargetSelector:
-    Team: 3
-    Area: 4
-  Targeting: 1
+    Team: 1
+    Area: 1
+  Targeting: 4
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0
   AreaRadius: 0
+  MissileTargets: 0
   MissileRange: 8
   MissileProjectilePrefab: {fileID: 0}
   ArrowCost: 1
   ArrowCostMode: 0
   IsWeaponSkill: 1
   ActionEffects:
-  - rid: 292415685818318980
+  - rid: 292415685818318982
   SkillAnimation:
     Steps:
     - rid: 292415685818318981
@@ -67,13 +68,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 292415685818318980
-      type: {class: PierceLineAction, ns: , asm: EternalEnigma.Game}
-      data:
-        Range: 8
-        MaxTargets: 0
-        Damage:
-          rid: 292415685818318982
     - rid: 292415685818318981
       type: {class: ParticleActionStep, ns: , asm: EternalEnigma.Game}
       data:

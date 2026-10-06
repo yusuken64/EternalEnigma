@@ -1,0 +1,156 @@
+# Overworld encounters and dungeon puzzles
+
+## Summary
+
+Implement both idea files through the existing dungeon scene, generation pipeline, and turn system.
+
+- Every campaign includes all encounter types, with placement and layouts varying by seed.
+- Companions follow normally. Only the controlled character operates puzzle elements.
+- Light puzzles use the selected toggle-pattern rule.
+- Reset Floor is a permanent unlock, usable only on puzzle floors.
+- Prison possessions are confiscated temporarily and recovered.
+- Every enemy family receives a large boss variant; campaigns select bosses by seed.
+
+## Phase 1 — Shared dungeon systems
+
+**Encounter definitions and objectives**
+
+- Add an optional `EncounterDefinition` to campaign locations, describing the encounter type, entry requirements, floor sequence, rewards, and return destination.
+- Introduce `DungeonRunPlan` to separate floor number, combat difficulty, layout, presentation, and completion objective. Short encounters must contain playable floors rather than inheriting the current empty entry/exit rooms.
+- Extend `DungeonFloorOptions` and `DungeonFloor` with objective definitions and typed placements for puzzle objects, objective enemies, recovery stashes, and exits. Include these inputs in deterministic generation, cache keys, fingerprints, and diagnostic exports.
+- Implement shared objectives for reaching an exit, defeating enemies, defeating a boss, positioning objects, matching lights, trapping/guiding an enemy, and recovering possessions.
+- Evaluate objectives through normal movement, interaction, damage, and death actions. Centralize exit checks so stairs, final-exit prompts, travel callbacks, and autoplay cannot bypass unfinished objectives.
+- Track required enemies by stable identity, including reinforcements. Required actors resist permanent conversion and arbitrary despawning so skills cannot strand or accidentally complete their objectives.
+
+**Normal party behavior**
+
+- Keep all encounters in `DungeonScene`, with ordinary party following, character switching, collision, and ally swapping.
+- Give puzzle elements a shared controlled-character interaction requirement. Followers cannot push boulders or toggle lights; designated enemy targets can still activate their matching trap or destination.
+- Use the existing action pipeline for puzzle interactions and movement effects. Avoid a separate puzzle mode or archetype-specific control loops.
+
+**Reset Floor**
+
+- Award Reset Floor alongside the existing first-clear reward from `repeatable-0`, before any Sokoban location becomes accessible. Derive the permanent unlock from saved completion state.
+- Make it a zero-cost party ability, enabled on Sokoban, light-pattern, lure, and herding floors. Sokoban entrances check the unlock.
+- Capture an in-memory floor-entry snapshot containing party state, equipment, inventory, gold, experience, statuses, actors, objects, objective progress, prison escrow state, and relevant random state.
+- Reset restores that snapshot and the same floor, without rerolling loot, duplicating rewards, or repeating floor-start bonuses. Earlier floors remain completed.
+- Disable reset while a transition or completion commit is underway. Keep the existing explicit-save policy.
+
+## Phase 2 — Encounter content
+
+Cities, woods, caves, and prisons use **2, 2, 3, 3, and 4 playable floors** at tiers 0–4. Other new encounters use one floor. Existing dungeon lengths remain unchanged.
+
+| Encounter | Layout and completion |
+|---|---|
+| Overtaken city | Reuse town street/building generation as dungeon terrain, populated with enemies and loot. Clearing each district unlocks its exit. No town services operate there. |
+| Lost woods | Generate a large seeded maze using iterative randomized depth-first carving. Use odd dimensions `49 + 4 × tier`, distant stairs, dead-end rewards, and safe party spawn clearance. |
+| Boulder-blocked cave | Use cavern layouts and an overworld boulder gate. Engineering is the guaranteed solution; Breach is an alternative when active. Place the cave after Engineering is obtainable. |
+| Prison | Escape cells, obtain basic supplies, reach a guarded possessions stash, and escape. Recovery is required before the final exit. |
+| Bridge | Wide causeways and platforms surrounded by water. Reaching the far exit completes the encounter, returns the party to the opposite overworld endpoint, and permanently opens the crossing. |
+| Ambush | Overworld-like terrain with a finite group of enemies surrounding the arrival area. The last defeat latches victory and enables normal departure confirmation. |
+| Boss arena | A spacious arena containing a seeded large boss. Defeating it unlocks the exit. |
+| Sokoban | Push indestructible boulders cardinally onto all marked goals to unlock the exit. No pulling or pushing chains of boulders. |
+| Light pattern | Show the target pattern beside the board. Entering a tile with the controlled character toggles it. Matching the pattern latches completion; revisits are allowed. |
+| Lure into trap | An invulnerable pursuer must enter its visibly marked trap. Only that trap resolves the target. |
+| Guide a fleeing enemy | An invulnerable fleeing enemy must be maneuvered onto its designated destination. Use predictable movement and deterministic tie-breaking. |
+
+**Puzzle generation**
+
+- Generate Sokoban backward from solved configurations using legal inverse pushes and player reachability checks. Use `2 + floor(tier / 2)` boulders.
+- Generate light boards backward through reversible legal state transitions from a solved pattern.
+- Validate lure/herding layouts against their actual movement policy.
+- Store solution witnesses for validation and autoplay. Bound generation attempts and solver work; use verified fallback layouts when generation cannot produce a suitable board.
+- Validate underlying terrain connectivity separately from objective-dependent access. Do not require an unsolved puzzle’s exit to be immediately traversable.
+- Puzzle targets resist ordinary damage, instant death, and conversion. Normal movement skills remain available; exit requirements still apply.
+
+**Prison possessions**
+
+- Escrow carried items and equipped items, preserving owners, instances, stacks, and upgrades. Gold and learned skills remain available.
+- Provide accessible basic escape supplies before required combat.
+- Recovery restores original possessions and equipment atomically. Original possessions take priority over temporary prison loot when capacity is tight; excess temporary loot remains in the stash.
+- Restore confiscated possessions before an aborted run commits its return. Defeat and quit continue to follow the existing last-save restoration rules.
+
+**Large boss catalogue**
+
+Create prefab variants using existing models and animations, with a real 3×3 footprint. Existing Slime size variants share the Slime family profile; include Smiling Mushroom despite its absence from the current normal spawn table.
+
+| Enemy family | Distinct boss ability |
+|---|---|
+| Slime | Leaping splash with knockback |
+| Bat | Sonic pulse that silences |
+| Cactus | Radial needle volley |
+| Fishman | Tidal shove |
+| Crab Monster | Immobilizing pincer strike |
+| Evil Mage | Delayed sleep sigil |
+| Rat Assassin | Poisoned bolt volley |
+| Angry Mushroom | Lingering poison cloud |
+| Smiling Mushroom | Regenerative spore field |
+| Spider | Rooting web patches |
+| Specter | Life-draining beam |
+| Monster Plant | Vine pull and bind |
+| Naga Wizard | Marked arcane displacement |
+| Stingray | Lightning fan |
+| Bishop Knight | Cross-shaped lance strike |
+| Salamander | Rush leaving a fire trail |
+| Werewolf | Bleeding pounce |
+| Metal Slime | Armored ricochet charge followed by an exposed turn |
+| Black Knight | Guard stance and counterstrike |
+| Orc | War cry followed by empowered attacks |
+| Turtle Shell | Spinning knockback attack |
+| Golem | Ground-slam shockwave |
+| Worm Monster | Marked burrow-and-erupt attack |
+| Skeleton | Temporary destructible bone cage |
+| Battle Bee | Poisonous charging sting |
+| Chest Monster | Pull followed by a delayed bite |
+| Cyclops | Marked boulder throw |
+| Beholder | Confusion gaze |
+| Flying Demon | Swooping fire bombardment |
+| Lizard Warrior | Sequenced three-strike combo |
+| Demon King | Delayed eruptions on marked tiles |
+| Dragon | Fire breath cone |
+
+- Build these from reusable attack, movement, status, hazard, and telegraph components.
+- Initial scaling: 5× base HP, 1.25× strength, unchanged defense, and 5× experience. Specials default to one turn of warning and three turns of cooldown; temporary effects last two turns unless the listed mechanic requires otherwise.
+- Validate complete footprints for spawning, navigation, displacement, attacks, and scenery collision.
+- Select bosses from tier-appropriate families using the location seed. Add the large Demon King to the final dungeon’s last combat floor.
+
+## Phase 3 — Campaign and overworld integration
+
+**Placement and progression**
+
+- Assign city, woods, cave, prison, ambush, and boss encounters across the six regional landmarks with seeded ordering and prerequisite constraints.
+- Assign Sokoban, light-pattern, lure, and herding encounters to four distinct capability-payoff locations.
+- Integrate the bridge into an eligible progression crossing. Preserve its existing capability requirements and add encounter completion as an additional condition.
+- Replace every direct key-collection location with completion-gated rewards. Gate any co-located capability rewards behind the same encounter.
+- Separate starter-exit identity from `KeyAcquisition.DungeonCompletion`; the current equivalence would incorrectly classify new completion-gated keys.
+- Preserve existing named dungeon rewards. New encounter IDs must not automatically receive the current generic “Dungeon Mastery” stat bonus.
+- Keep entry deliberate through marked-location confirmation. Prison entry explains confiscation.
+- Replays regenerate the same encounter. Keys and permanent unlocks remain first-clear rewards.
+
+**Overworld appearance**
+
+- Generalize Core footprint metadata beyond towns. Give external dungeons a reserved 5×5 footprint, with 7×7 woodland footprints for Lost Woods.
+- Render occupied cities as settlement miniatures, woods as dense tree clusters, caves within rocky canyon formations, and bridges with two clear approaches.
+- Reserve entrances, roads, gate clearances, and neighboring locations before terrain decoration. Core terrain and movement remain authoritative.
+- Refresh cleared markers and opened crossings without rebuilding cached overworld terrain.
+
+**Pickups and exploration abilities**
+
+- Generate three persistent pickups per region: one weapon and two skill scrolls, drawn deterministically from existing eligible item definitions.
+- Place them on reachable, nonblocking cells outside entrances and gate approaches. Full inventory leaves the pickup available.
+- Add collected pickup IDs to `CampaignSnapshot`; commit collection and inventory changes together through the existing persistence flow.
+- Reuse Scout exploration skills: Floor Sense reveals minimap layout and stairs; Treasure Hunter also reveals items and containers; Farsight reveals all traps alongside its existing temporary enemy reveal. Revealed traps remain known for that floor.
+- Keep these abilities optional aids; every required maze and puzzle remains solvable without a particular class.
+
+## Phase 4 — Validation and delivery defaults
+
+- **Core:** deterministic generation, full encounter coverage, prerequisite reachability, completion-gated keys, bridge sealing, footprint placement, pickup reachability, and unchanged starter progression.
+- **Puzzles:** replay solution witnesses; test deadlocks, blocked pushes, reset after collecting loot or gaining experience, light toggling, and both invulnerable-enemy objectives.
+- **Unity:** verify four-member party following, character switching, follower non-interference, normal movement skills, objective-gated exits, and duplicate completion callbacks.
+- **Prison:** verify equipment identity, stacks/upgrades, full-bag recovery, retreat before recovery, defeat, quit, and transitions after recovery.
+- **Bosses:** cover every family’s large footprint, telegraph, special ability, damage, death, and objective completion.
+- **Integration:** update CLI previews, dungeon explorer, sandbox completion, and autoplay. Autoplay must solve objectives through production actions.
+- Run the full Core suite and generation seed sweep, rebuild/import the Core DLL, then run focused Unity encounter tests and existing campaign, movement, inventory, enemy, and reveal regressions.
+- Visually inspect every encounter type, all boss variants, enlarged markers, and the largest woodland floors.
+
+Defaults: guarantee every **encounter archetype**, not every boss variant, within one campaign. Apply generation changes to new campaigns and follow the repository’s existing fingerprint compatibility policy without deleting or rewriting old save slots. Preserve unrelated working-tree changes.

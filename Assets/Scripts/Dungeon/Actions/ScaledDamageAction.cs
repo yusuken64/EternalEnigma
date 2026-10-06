@@ -12,6 +12,7 @@ public class ScaledDamageAction : GameAction, ISkillCastCondition
 {
 	public DamageScaling Scaling = DamageScaling.Strength;
 	public DamageCategory Category = DamageCategory.Weapon;
+	internal float AmmunitionMultiplier = 1f;
 	public float Percent = 1f;          // Strength modes: multiplier on the Torneko damage
 	public int BaseDamage = 8;          // Magic mode
 	public float PerLevel = 2f;         // Magic mode, per caster level
@@ -108,7 +109,7 @@ public class ScaledDamageAction : GameAction, ISkillCastCondition
 
 		for (int i = 0; i < totalHits; i++)
 		{
-			int damage = RollDamage(out bool critical);
+			int damage = Mathf.RoundToInt(RollDamage(out bool critical) * AmmunitionMultiplier);
 			result.Add(new TakeDamageAction(caster, target, damage, true, false, Element)
 			{
 				RollToHit = RollToHit,

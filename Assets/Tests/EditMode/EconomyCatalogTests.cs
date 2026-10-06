@@ -8,6 +8,32 @@ namespace EternalEnigma.Tests
     public class EconomyCatalogTests
     {
         private TownBuildingDefinition Bakery => Resources.Load<TownBuildingDefinition>("Towns/Buildings/Bakery");
+        [Test]
+        public void AmmunitionPacksHaveExactTiersQuantitiesAndSaveStocks()
+        {
+            var shop=Resources.Load<TownBuildingDefinition>("Towns/Buildings/Shop");
+            var offers=shop.ShopCatalog.Where(o=>o.Item is EquipmentItemDefinition { IsAmmunition:true }).OrderBy(o=>o.MinimumTier).ToArray();
+            Assert.That(offers.Length,Is.EqualTo(3));
+            var go=new GameObject("Ammo save test");
+            try
+            {
+                var manager=go.AddComponent<ItemManager>(); manager.ItemDefinitions=offers.Select(o=>o.Item).ToList(); manager.StartingItems=new();
+                for(int i=0;i<3;i++)
+                {
+                    var offer=offers[i]; var def=(EquipmentItemDefinition)offer.Item;
+                    Assert.That(offer.MinimumTier,Is.EqualTo(i)); Assert.That(offer.Price,Is.EqualTo(new[]{100,200,400}[i]));
+                    Assert.That(offer.Quantity,Is.EqualTo(4)); Assert.That(offer.StackCount,Is.EqualTo(20));
+                    Assert.That(def.StackMax,Is.EqualTo(20)); Assert.That(def.ArrowTargets,Is.EqualTo(i+1));
+                    Assert.That(def.ArrowDamageMultiplier,Is.EqualTo(1+.25f*i)); Assert.That(def.ShopOnly,Is.EqualTo(i>0));
+                    Assert.That(ItemSaveData.From(def.AsInventoryItem(7)).Restore(manager).StackStock,Is.EqualTo(7));
+                }
+                var legacy=new ItemSaveData {ItemName="Arrows"};
+                Assert.That(legacy.Restore(manager).ItemName,Is.EqualTo("Wooden Arrows"));
+                Assert.That(legacy.Restore(manager).StackStock,Is.EqualTo(20));
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
         [TestCase(0)] [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)]
         public void BakeryTiersHaveCumulativeProductsAndExactRecovery(int tier)
         {
@@ -59,9 +85,10 @@ namespace EternalEnigma.Tests
             Assert.That(TownShopCatalog.Resolve(shop, 0).Single(o => o.Item.ItemName == "Potion").Price, Is.EqualTo(125));
             foreach (var offer in shop.ShopCatalog.Where(o => o.MinimumTier > 0))
             {
-                if (offer.Item is EquipmentItemDefinition equipment)
+                if (offer.Item is EquipmentItemDefinition { IsAmmunition: true }) { Assert.That(offer.Quantity, Is.EqualTo(4)); Assert.That(offer.StackCount, Is.EqualTo(20)); }
+                else if (offer.Item is EquipmentItemDefinition equipment)
                 {
-                    Assert.That(Mathf.Max(equipment.StatModification.Strength, equipment.StatModification.Defense), Is.LessThanOrEqualTo(new[] { 0,6,9,12,20 }[offer.MinimumTier]));
+                    Assert.That(Mathf.Max(equipment.StatModification.Strength, equipment.StatModification.Defense), Is.LessThanOrEqualTo(equipment.WeaponType == WeaponType.BowAndArrow ? 10 : new[] { 0,6,9,12,20 }[offer.MinimumTier]));
                     Assert.That(offer.Quantity, Is.EqualTo(1));
                 }
                 else

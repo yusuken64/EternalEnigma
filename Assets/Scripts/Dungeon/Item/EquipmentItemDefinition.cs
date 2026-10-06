@@ -7,6 +7,9 @@ public class EquipmentItemDefinition : ItemDefinition
 	public StatModification StatModification;
 	public string WeaponModelName;
 	public WeaponType WeaponType;
+	public bool IsAmmunition;
+	public float ArrowDamageMultiplier = 1f;
+	public int ArrowTargets = 1;
 
 	// Shared by offhand animation and weapon-targeting effects.
 	public bool IsOffhandMeleeWeapon => EquipmentSlot == EquipmentSlot.OffHand &&

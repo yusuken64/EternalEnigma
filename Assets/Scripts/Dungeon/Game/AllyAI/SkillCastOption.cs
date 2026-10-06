@@ -18,7 +18,7 @@ public sealed class SkillCastOption
 	public Vector3Int? Direction { get; }
 	public IReadOnlyList<Character> Affected { get; }
 
-	public GameAction ToAction(Character caster) => Direction.HasValue
+	public GameAction ToAction(Character caster) => Skill.Targeting == SkillTargeting.Tile && Direction.HasValue ? SkillAction.ForTile(caster, Skill, Direction.Value) : Direction.HasValue
 		? SkillAction.ForMissile(caster, Skill, Direction.Value)
 		: new SkillAction(caster, Skill, Target);
 }
@@ -40,12 +40,21 @@ public static class SkillCastOptions
 		{
 			var result = new List<SkillCastOption>();
 
-			if (skill.Targeting == SkillTargeting.Missile)
+			if (skill.Targeting == SkillTargeting.Tile)
+            {
+                foreach (var cell in skill.GetTargetTiles(caster))
+                {
+                    var affected = skill.GetTargetCharacters(caster).Where(c => TileWorldDungeon.ChevDistance(c.TilemapPosition, cell) <= skill.AreaRadius).ToList();
+                    if (affected.Count > 0) result.Add(new SkillCastOption(skill, null, cell, affected));
+                }
+            }
+            else if (skill.Targeting == SkillTargeting.Missile)
 			{
 				foreach (var dir in Directions)
 				{
-					var hit = MissileTargeting.Trace(caster, dir, skill.MissileRange);
-					var affected = skill.TargetingRules.GetMissileAffected(caster, hit);
+					var line = MissileTargeting.TraceLine(caster, dir, skill.MissileRange + (skill.UsesArrows ? ClassPassives.MissileRangeBonus(caster) : 0), skill.AreaRadius > 0 ? 1 : ArrowSupply.Penetration(caster, skill), skill.AreaRadius > 0);
+                    var hit = new MissileTargeting.Hit(line.Endpoint, line.Encounters.LastOrDefault().Character);
+                    var affected = skill.AreaRadius > 0 ? skill.TargetingRules.GetMissileAffected(caster, hit) : line.Encounters.Select(h => h.Character).Where(c => skill.TargetSelector.Eligible(caster, c)).ToList();
 					if (affected.Any(c => !EnemyBehavior.IsDisguised(c)))
 						result.Add(new SkillCastOption(skill, hit.Character, dir, affected));
 				}

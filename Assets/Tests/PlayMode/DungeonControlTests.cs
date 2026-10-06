@@ -281,7 +281,7 @@ namespace EternalEnigma.Tests
             GameMessages.FinishAction();
             var log=Object.FindFirstObjectByType<GameMessages>();
             Assert.That(log.TurnEvents.Count,Is.EqualTo(120));
-            Assert.That(log.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains("Instant event 0")&&t.text.Contains("Instant event 119")),Is.True);
+            Assert.That(log.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains("Instant event 117")&&t.text.Contains("Instant event 119")),Is.True);
             Common.Instance.GlobalSettings.ShowDialog();yield return null;
             Assert.That(Common.Instance.GlobalSettings.GetComponent<DungeonOptions>(),Is.Not.Null);
             Common.Instance.GlobalSettings.TabGroup.SetToTab(Common.Instance.GlobalSettings.TabGroup.TabContents.Count-1);

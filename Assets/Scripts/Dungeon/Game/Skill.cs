@@ -17,6 +17,11 @@ public class Skill : ScriptableObject
 	public ActivationType ActivationType;
 
 	public int SPCost;
+	[Min(0)] public int CastTime;
+	// Zero denotes unlimited penetration. Existing missiles stop at one encounter.
+	[Min(0)] public int MissileTargets = 1;
+	internal int InitialCastTime(Character caster) => Mathf.Max(0, CastTime -
+		(caster.Skills != null && caster.Skills.Any(s => s != null && s.ActivationType == ActivationType.Passive && s.SkillName == "Quick Casting") ? 1 : 0));
 	public TargetSelector TargetSelector;
 	public SkillTargeting Targeting;
 	public InventoryTargetSelector InventoryTargetSelector = new();
@@ -27,7 +32,7 @@ public class Skill : ScriptableObject
 	public ArrowCostMode ArrowCostMode;
 	// Weapon skills are blocked by Arm bind (arrow skills are always treated as weapon skills).
 	public bool IsWeaponSkill;
-	public bool UsesArrows => ArrowCost > 0;
+	public bool UsesArrows => ArrowCost > 0 || ActionEffects?.OfType<RandomHitsAction>().Any(e => e.ArrowPerHit) == true;
 	internal ActionTargeting TargetingRules => new(Targeting, TargetSelector, InventoryTargetSelector, AreaRadius, MissileRange);
 	internal bool RequiresTargetSelection => Targeting == SkillTargeting.Missile || TargetingRules.RequiresSelection;
 	[SerializeReference]
@@ -75,14 +80,17 @@ public class Skill : ScriptableObject
 	internal List<GameAction> GetInventoryEffects(Character caster, InventoryItem item) =>
 		ActionEffects.Cast<InventorySkillEffect>().Select(effect => { var bound = effect.Bind(caster, item); bound.Visuals.BoundTarget = caster; return bound; }).ToList();
 
-	internal List<Vector3Int> GetTargets(Character caster) => GetTargetCharacters(caster).Select(c => c.TilemapPosition).Distinct().ToList();
+	internal List<Vector3Int> GetTargetTiles(Character caster) => Game.Instance.CurrentDungeon.GetVisibleTiles(caster, caster.TilemapPosition)
+        .Where(cell => Game.Instance.CurrentDungeon.IsFloorCell(cell) && TileWorldDungeon.ChevDistance(cell, caster.TilemapPosition) <= MissileRange).ToList();
+
+    internal List<Vector3Int> GetTargets(Character caster) => GetTargetCharacters(caster).Select(c => c.TilemapPosition).Distinct().ToList();
 
 	internal List<Character> GetTargetCharacters(Character caster) =>
-		TargetingRules.GetCharacters(caster);
+        TargetingRules.GetCharacters(caster).Where(c => !ActionEffects.Any(e => e is ReduceCastAction) || c.PendingCast?.Remaining > 0).ToList();
 
 	internal List<Character> GetAffectedCharacters(Character caster, Character selectedTarget)
 	{
-		return TargetingRules.GetAffected(caster, selectedTarget);
+		return TargetingRules.GetAffected(caster, selectedTarget).Where(c => !ActionEffects.Any(e => e is ReduceCastAction) || c.PendingCast?.Remaining > 0).ToList();
 	}
 
 	public StatModification PassiveStatModification;
@@ -109,7 +117,8 @@ public enum SkillTargeting
 	Self,           // Cast immediately, centered on the caster.
 	AllTargets,     // Cast immediately on every character allowed by the selector.
 	InventoryItem, // Select one eligible item from the party inventory.
-	Missile        // Aim in one of eight directions; the first character or wall stops the shot.
+	Missile,       // Aim in one of eight directions.
+	Tile
 }
 
 public enum ArrowCostMode

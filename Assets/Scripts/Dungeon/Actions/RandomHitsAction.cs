@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +45,7 @@ public class RandomHitsAction : GameAction, ISkillCastCondition
 
 		if (ArrowPerHit && ArrowSupply.Count(caster) < 1)
 		{
-			reason = "No arrows.";
+			reason = "no arrows";
 			return false;
 		}
 
@@ -93,7 +93,8 @@ public class RandomHitsAction : GameAction, ISkillCastCondition
 
 		for (int i = 0; i < hits; i++)
 		{
-			if (ArrowPerHit)
+			float ammo = ArrowPerHit ? ArrowSupply.DamageMultiplier(caster) : 1f;
+            if (ArrowPerHit)
 			{
 				int arrowsFired = ArrowSupply.Consume(caster, 1, ClassPassives.ArrowRecoveryChance(caster));
 				if (arrowsFired < 1)
@@ -103,10 +104,11 @@ public class RandomHitsAction : GameAction, ISkillCastCondition
 			}
 
 			int targetIndex = UnityEngine.Random.Range(0, candidates.Count+props.Count);
-            if(targetIndex>=candidates.Count) {result.Add(props[targetIndex-candidates.Count].Damage(caster,Damage.RawSceneryDamage(caster,rank)));continue;}
+            if(targetIndex>=candidates.Count) {result.Add(props[targetIndex-candidates.Count].Damage(caster,Mathf.RoundToInt(Damage.RawSceneryDamage(caster,rank) * ammo)));continue;}
 			Character target = candidates[targetIndex];
 			var damageAction = Damage.AsTargetedSkill(caster, target, rank);
-			result.Add(damageAction);
+			((ScaledDamageAction)damageAction).AmmunitionMultiplier = ammo;
+            result.Add(damageAction);
 		}
 
 		return result;

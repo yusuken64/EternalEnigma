@@ -38,7 +38,8 @@ public static class PartyRules
 
 	public static void MarkDowned(Game game, Ally ally)
 	{
-		game.Allies.Remove(ally);
+		global::PendingCast.Cancel(ally, "downed");
+        game.Allies.Remove(ally);
 		if (!game.DownedAllies.Contains(ally))
 			game.DownedAllies.Add(ally);
 

@@ -122,6 +122,7 @@ namespace EternalEnigma.Tests
             skill.TargetSelector.Area = TargetArea.All;
             yield return Press(Key.R);
             yield return Press(Key.Enter);
+            yield return Press(Key.Enter);
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.UpArrow, Key.RightArrow));
             yield return null;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
@@ -232,24 +233,19 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator MissileItemUsesChosenDirectionAndConsumesOneArrow()
+        public IEnumerator EquippedWoodenArrowsFireInChosenDirectionAndConsumeOne()
         {
-            var definition = AssetDatabase.LoadAssetAtPath<UsableItemDefinition>("Assets/Prefabs/Dungeon/Items/Arrows_WoodenArrows.asset");
-            Assert.That(definition.Targeting, Is.EqualTo(SkillTargeting.Missile));
-            Assert.That(definition.MissileProjectilePrefab, Is.Not.Null);
+            var definition = AssetDatabase.LoadAssetAtPath<EquipmentItemDefinition>("Assets/Prefabs/Dungeon/Items/Arrows_WoodenArrows.asset");
+            Assert.That(definition.IsAmmunition, Is.True);
             var item = definition.AsInventoryItem(3);
+            caster.Equipment.ClassFilter = null;
+            caster.Equipment.Equip((EquipableInventoryItem)Common.Instance.ItemManager.GetAsInventoryItemByName("Bow"));
             harness.Game.PlayerController.Inventory.Add(item);
-            caster.CurrentFacing = Facing.Left;
-            yield return Press(Key.Q);
-            yield return Press(Key.Enter);
-            yield return Press(Key.Enter);
-            Assert.That(MenuManager.Instance.TargetDialog.Direction, Is.EqualTo(Vector3Int.left));
-            yield return Press(Key.RightArrow);
+            yield return harness.UseItemThroughMenu(item);
+            Assert.That(caster.Equipment.EquippedShield, Is.SameAs(item));
+            caster.SetFacing(Facing.Right);
             friend.SetAction(new WaitAction());
-            yield return Press(Key.Enter);
-            yield return harness.WaitForIdle();
-            Assert.That(first.Vitals.HP, Is.EqualTo(55));
-            Assert.That(friend.Vitals.HP, Is.EqualTo(60));
+            yield return harness.ExecuteAction(new RangedAttackAction(caster,null,5,null));
             Assert.That(item.StackStock, Is.EqualTo(2));
             Assert.That(caster.Vitals.SP, Is.EqualTo(20));
         }
@@ -405,7 +401,8 @@ namespace EternalEnigma.Tests
             Learn("Damage"); Learn("Strength Up");
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
             yield return Press(GamepadButton.LeftShoulder);
-            Assert.That(harness.Game.SkillDialog.Buttons.Count, Is.EqualTo(1), "Passive skills cannot be invoked.");
+            Assert.That(MenuManager.Instance.PartyMenu.EntryButtons.Count, Is.EqualTo(2), "Active and passive abilities remain inspectable.");
+            yield return Press(GamepadButton.South);
             yield return Press(GamepadButton.South);
             var dialog = MenuManager.Instance.TargetDialog;
             Assert.That(dialog.enabled, Is.True);
@@ -442,6 +439,7 @@ namespace EternalEnigma.Tests
             yield return Press(Key.R);
             friend.SetAction(new WaitAction());
             yield return Press(Key.Enter);
+            yield return Press(Key.Enter);
             yield return harness.WaitForIdle();
             Assert.That(caster.StatusEffects.OfType<StrengthStatusEffect>().Count(), Is.EqualTo(1));
             Assert.That(caster.FinalStats.Strength, Is.EqualTo(caster.BaseStats.Strength + 5));
@@ -454,6 +452,7 @@ namespace EternalEnigma.Tests
             yield return Press(Key.R);
             friend.SetAction(new WaitAction());
             yield return Press(Key.Space);
+            yield return Press(Key.Space);
             yield return harness.WaitForIdle();
             Assert.That(harness.Game.Enemies.All(e => e.Vitals.HP == 55), Is.True);
             Assert.That(caster.Vitals.SP, Is.EqualTo(18));
@@ -461,27 +460,32 @@ namespace EternalEnigma.Tests
             damage.Targeting = SkillTargeting.SelectedTarget;
             yield return Press(Key.R);
             yield return Press(Key.Enter);
+            yield return Press(Key.Enter);
             yield return Press(Key.Escape);
             Assert.That(EventSystem.current.enabled, Is.True);
             Assert.That(MenuManager.Instance.Opened, Is.True);
+            yield return Press(Key.Escape);
             yield return Press(Key.R);
             Assert.That(MenuManager.Instance.Opened, Is.False);
         }
 
         [UnityTest]
-        public IEnumerator AllyMenuQueuesSkillForTheChosenAlly()
+        public IEnumerator SkillsCanOnlyBeIssuedForTheControlledAlly()
         {
-            Learn("Healing", friend);
-            MenuManager.Instance.OpenAllyMenu(friend);
-            yield return null;
-            MenuManager.Instance.AllyActionDialog.Skill_Clicked();
-            yield return null;
-            yield return Press(GamepadButton.South);
-            yield return Press(GamepadButton.South);
-            yield return harness.ExecuteAction(new WaitAction());
-            Assert.That(caster.Vitals.HP, Is.EqualTo(70));
-            Assert.That(friend.Vitals.SP, Is.EqualTo(19));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            var original=caster; var skill=Learn("Healing",friend);
+            using (var context=new DungeonPartyMenuContext(harness.Game))
+            {
+                var hero=context.Heroes.Single(h=>h.DungeonActor==friend);
+                var entry=context.Entries(hero,PartyMenuTab.Skills).Single(e=>e.Skill==skill);
+                Assert.That(context.Actions(hero,entry).Single().Available,Is.False);
+            }
+            harness.Game.PlayerController.TakeControl(friend);
+            MenuManager.Instance.OpenSkillsMenu(friend); yield return null;
+            yield return Press(GamepadButton.South); yield return Press(GamepadButton.South);
+            Assert.That(MenuManager.Instance.TargetDialog.CameraTarget,Is.SameAs(original));
+            original.SetAction(new WaitAction()); yield return Press(GamepadButton.South);
+            yield return harness.WaitForIdle();
+            Assert.That(original.Vitals.HP,Is.EqualTo(70)); Assert.That(friend.Vitals.SP,Is.EqualTo(19));
         }
 
         [UnityTest]
@@ -491,11 +495,11 @@ namespace EternalEnigma.Tests
             caster.Vitals.SP = 0; caster.SyncDisplayedStats();
             yield return Press(Key.R);
             yield return Press(Key.Enter);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(harness.Game.SkillDialog));
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(MenuManager.Instance.PartyMenu));
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
             Assert.That(first.Vitals.HP, Is.EqualTo(60));
             caster.Vitals.SP = 20; caster.SyncDisplayedStats();
-            var button = harness.Game.SkillDialog.Buttons[0].Button;
+            var button = MenuManager.Instance.PartyMenu.EntryButtons[0];
             var canvas = button.GetComponentInParent<Canvas>();
             var position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
                 button.transform.position);
@@ -503,6 +507,7 @@ namespace EternalEnigma.Tests
             yield return null;
             InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
             yield return null;
+            yield return Press(Key.Enter);
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.True);
             friend.SetAction(new WaitAction());
             yield return Press(Key.Enter);

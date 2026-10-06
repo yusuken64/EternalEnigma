@@ -17,7 +17,7 @@ internal readonly struct ActionTargeting
 
     internal bool IsConfigured => Mode == SkillTargeting.InventoryItem ? Items != null :
         Characters != null && Radius >= 0 && (Mode != SkillTargeting.Missile || MissileRange > 0);
-    internal bool RequiresSelection => Mode == SkillTargeting.SelectedTarget &&
+    internal bool RequiresSelection => Mode == SkillTargeting.Tile || Mode == SkillTargeting.SelectedTarget &&
         Characters.Team != TargetTeam.Self && Characters.Area != TargetArea.Self;
     internal List<Character> GetCharacters(Character caster) =>
         Mode == SkillTargeting.InventoryItem ? new() : Characters.GetCharacters(caster);
@@ -30,6 +30,11 @@ internal readonly struct ActionTargeting
         int radius = Radius;
         return candidates.Where(c => TileWorldDungeon.ChevDistance(c.TilemapPosition, center.TilemapPosition) <= radius).ToList();
     }
-    internal List<Character> GetMissileAffected(Character caster, MissileTargeting.Hit hit) =>
-        hit.Character != null && GetCharacters(caster).Contains(hit.Character) ? new() { hit.Character } : new();
+    internal List<Character> GetMissileAffected(Character caster, MissileTargeting.Hit hit)
+    {
+        int radius = Radius;
+        var selector = Characters;
+        if (radius > 0) return Game.Instance.AllCharacters.Where(c => selector.Eligible(caster, c) && TileWorldDungeon.ChevDistance(c.TilemapPosition, hit.Cell) <= radius).ToList();
+        return hit.Character != null && Characters.Eligible(caster, hit.Character) ? new List<Character> { hit.Character } : new List<Character>();
+    }
 }

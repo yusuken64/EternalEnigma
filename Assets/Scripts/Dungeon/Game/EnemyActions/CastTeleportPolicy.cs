@@ -8,16 +8,18 @@ internal class CastTeleportPolicy : PolicyBase
 
 	public override List<GameAction> GetActions()
 	{
+        var originalTarget = character.PursuitTarget;
 		return new List<GameAction>()
 		{
 			new CastSpellAction()
 			{
+                SpellName = "Teleport", Target = originalTarget,
 				CastSound = AudioManager.Instance?.SoundEffects.Teleport,
 				GetActionsFunc = () =>
 				{
 					return new()
 					{
-						new WarpAction(character.PursuitTarget)
+						new WarpAction(originalTarget)
 					};
 				}
 			}

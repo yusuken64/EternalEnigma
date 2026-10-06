@@ -480,6 +480,7 @@ public class DeathAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
         TrackAnimationTarget(target);
+        global::PendingCast.Cancel(target, "dead or downed");
 		if (target is Ally ally && !PartyRules.IsSummon(ally))
 		{
 			// Downed, not dead: stays in the scene, leaves the Allies list, restored by Revive or the next floor.

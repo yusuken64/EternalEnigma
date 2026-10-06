@@ -20,7 +20,7 @@ namespace JuicyChickenGames.Menu
             {
                 return new DynamicActionInfo()
                 {
-                    ActionName = SkillLabel(skill),
+                    ActionName = SkillLabel(skill) + $"  [charge {skill.InitialCastTime(character)}]",
                     Icon = skill.Icon,
                     ClickAction = () =>
                     {
@@ -38,7 +38,7 @@ namespace JuicyChickenGames.Menu
                         }
 						else
 						{
-                            Game.Instance.DoFloatingText(reason, Color.yellow, character);
+                            GameMessages.Post(reason, true);
 						}
                     }
                 };

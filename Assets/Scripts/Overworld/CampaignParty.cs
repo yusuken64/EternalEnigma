@@ -66,8 +66,7 @@ public static class CampaignParty
             ally.Hp = data.Hp; ally.Sp = data.Sp;
             ally.HasHunger = data.HasHunger; ally.Hunger = data.Hunger; ally.HungerAccumulate = data.HungerAccumulate;
             HeroClassBinding.Apply(ally, data, common.GameSaveData);
-            foreach (var item in data.Equipment)
-                if (item.Restore(common.ItemManager) is EquipableInventoryItem equipment) ally.Equipment.Equip(equipment);
+            ally.Equipment.RestoreSaved(data.Equipment, common.ItemManager, item => common.GameSaveData.TownSaveData.InventoryItems.Add(ItemSaveData.From(item)));
             ally.EnsureStartingSkills();
             common.InstantiatedTownAllies.Add(ally);
         }

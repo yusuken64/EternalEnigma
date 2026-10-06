@@ -25,43 +25,43 @@ internal class RangedAttackAction : GameAction
 		this.projectilePrefab = projectilePrefab;
 	}
 
-	internal override List<GameAction> ExecuteImmediate(Character character)
-	{
-		var game = Game.Instance;
-		var ret = new List<GameAction>();
-		rangedAttackTargetPosition = target != null ? target.TilemapPosition :
-			game.CurrentDungeon.GetRangedAttackPosition(
-				attacker,
-				attacker.TilemapPosition,
-				attacker.CurrentFacing,
-				40,
-				Dungeon.StopArrow);
-		
-		Character rangedAttackTarget = target != null ? target : Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == rangedAttackTargetPosition);
-        if (Visuals.Sequence == null) Visuals.Configure(CharacterCombatEffects.Attack(attacker, true), attacker, rangedAttackTargetPosition);
-
-		if (rangedAttackTarget != null)
-		{
-            GameMessages.ForCharacter(attacker, $"{GameMessages.Name(attacker)} attacked {GameMessages.VisibleName(rangedAttackTarget)}!");
-			bool godmode = AutoplayRunner.GodmodeFor(attacker);
-			int resolvedDamage = godmode ? Math.Max(0, rangedAttackTarget.Vitals.HP) : damage;
-			bool hit = godmode || CombatMath.RollHit(attacker, rangedAttackTarget);
-			bool critical = !godmode && hit && CombatMath.RollCrit(attacker);
-			if (critical) resolvedDamage = CombatMath.ApplyCrit(resolvedDamage);
-			bool bow = !AutoplayRunner.GodmodeFor(attacker) && ArrowSupply.HasBow(attacker);
-			if (bow && resolvedDamage > 0)
-				resolvedDamage = Mathf.Max(1, Mathf.RoundToInt(resolvedDamage * ClassPassives.DamageMultiplier(
-					new OutgoingDamage(attacker, rangedAttackTarget, DamageCategory.Bow, DamageElement.Physical, false))));
-			ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, resolvedDamage, true, !hit) { Critical = critical });
-			if (bow && UnityEngine.Random.value < ClassPassives.ExtraShotChance(attacker) &&
-				ArrowSupply.Consume(attacker, 1, ClassPassives.ArrowRecoveryChance(attacker)) > 0)
-				ret.Add(new TakeDamageAction(attacker, rangedAttackTarget, resolvedDamage, true, !hit) { Critical = critical });
-		}
-
-        if (rangedAttackTarget == null && game.CurrentDungeon.PropAt(rangedAttackTargetPosition) is DungeonProp prop && prop.Alive)
-            ret.Add(prop.Damage(attacker, damage));
-		return ret;
-	}
+    internal override bool ValidateCommand(Character character, out string reason)
+    {
+        reason = ArrowSupply.HasBow(attacker) && ArrowSupply.Count(attacker) < 1 ? "no arrows" : null;
+        return reason == null;
+    }
+    internal override List<GameAction> ExecuteImmediate(Character character)
+    {
+        var ret = new List<GameAction>();
+        if (!ValidateCommand(character, out _)) return ret;
+        bool bow = ArrowSupply.HasBow(attacker);
+        var direction = target != null ? target.TilemapPosition - attacker.TilemapPosition : Dungeon.GetFacingOffset(attacker.CurrentFacing);
+        direction = new Vector3Int(Math.Sign(direction.x), Math.Sign(direction.y));
+        var line = MissileTargeting.TraceLine(attacker, direction, 10 + ClassPassives.MissileRangeBonus(attacker), bow ? ArrowSupply.Penetration(attacker) : 1);
+        float ammo = bow ? ArrowSupply.DamageMultiplier(attacker) : 1;
+        if (bow) ArrowSupply.Consume(attacker, 1, ClassPassives.ArrowRecoveryChance(attacker));
+        rangedAttackTargetPosition = line.Endpoint;
+        Visuals.Configure(CharacterCombatEffects.Attack(attacker, true), attacker, line.Endpoint);
+        if (Visuals.Sequence != null) { Visuals.Sequence.SingleFlight = true; Visuals.Sequence.ContinuousFlight = true; }
+        foreach (var hit in line.Encounters)
+        {
+            var recipient = hit.Character;
+            GameMessages.ForCharacter(attacker, $"{GameMessages.Name(attacker)} attacked {GameMessages.VisibleName(recipient)}!");
+            bool godmode = AutoplayRunner.GodmodeFor(attacker);
+            bool landed = godmode || CombatMath.RollHit(attacker, recipient);
+            bool critical = !godmode && landed && CombatMath.RollCrit(attacker);
+            int power = godmode ? recipient.Vitals.HP : Mathf.RoundToInt(damage * ammo * (bow ? ClassPassives.DamageMultiplier(
+                new OutgoingDamage(attacker, recipient, DamageCategory.Bow, DamageElement.Physical, false)) : 1));
+            if (critical) power = CombatMath.ApplyCrit(power);
+            ret.Add(new TakeDamageAction(attacker, recipient, power, true, !landed) { Critical = critical });
+        }
+        if (Game.Instance.CurrentDungeon.PropAt(line.Endpoint) is DungeonProp prop && prop.Alive)
+            ret.Add(prop.Damage(attacker, Mathf.RoundToInt(damage * ammo)));
+        if (bow && allowExtra && ArrowSupply.Count(attacker) > 0 && UnityEngine.Random.value < ClassPassives.ExtraShotChance(attacker))
+            ret.Add(new RangedAttackAction(attacker, target, damage, projectilePrefab) { allowExtra = false });
+        return ret;
+    }
+    private bool allowExtra = true;
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
@@ -96,6 +96,6 @@ internal class RangedAttackAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		return true;
+		return ValidateCommand(character, out _);
 	}
 }

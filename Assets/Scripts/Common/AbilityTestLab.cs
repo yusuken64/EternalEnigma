@@ -91,12 +91,12 @@ public sealed class AbilityTestLab : MonoBehaviour
         Friend = Game.Allies.First(a => a != Caster);
         Caster.CharacterName = "Ability tester";
         Friend.CharacterName = "Friendly target";
-        foreach (var source in Abilities.OrderBy(s => s.SkillName))
+        foreach (var source in Abilities.Concat(Resources.LoadAll<Skill>("Classes/Skills")).Distinct().OrderBy(s => s.SkillName))
         {
             var copy = Instantiate(source);
             copy.SPCost = 0; // Unlimited mana only on lab-owned skill instances.
             learned.Add(copy);
-            Caster.Skills.Add(copy);
+            if (copy.SkillName != "Quick Casting") Caster.Skills.Add(copy);
         }
         foreach (var ally in Game.Allies)
         {
@@ -136,6 +136,8 @@ public sealed class AbilityTestLab : MonoBehaviour
 
     public void ResetArena()
     {
+        if (Caster != null) global::PendingCast.Cancel(Caster, "arena reset");
+        if (Friend != null) global::PendingCast.Cancel(Friend, "arena reset");
         if (Busy || Caster == null) return;
         CombatEffectPlayer.Get()?.Clear();
         foreach (var summon in Game.Allies.Where(PartyRules.IsSummon).ToArray())
@@ -161,6 +163,7 @@ public sealed class AbilityTestLab : MonoBehaviour
         var targetCell = center + Vector3Int.right * Mathf.Max(1, actualDistance);
         SpawnDummy(targetCell);
         if (Game.CurrentDungeon.IsWalkable(targetCell + Vector3Int.up)) SpawnDummy(targetCell + Vector3Int.up);
+        for (int i = 1; i <= 3; i++) if (Game.CurrentDungeon.IsWalkable(targetCell + Vector3Int.right * i)) SpawnDummy(targetCell + Vector3Int.right * i);
         Target = dummies[0];
         Caster.SetFacingByTargetPosition(Target.TilemapPosition);
         RefillInventory();
@@ -210,8 +213,15 @@ public sealed class AbilityTestLab : MonoBehaviour
         selected = skill;
         if (resetBeforeCast) ResetArena();
         var weapon = Game.PlayerController.Inventory.InventoryItems.OfType<EquipableInventoryItem>()
-            .FirstOrDefault(i => i.EquipmentItemDefinition.WeaponType == (skill.UsesArrows ? WeaponType.BowAndArrow : WeaponType.SingleSword));
+            .FirstOrDefault(i => !i.EquipmentItemDefinition.IsAmmunition && i.EquipmentItemDefinition.WeaponType == (skill.UsesArrows ? WeaponType.BowAndArrow : WeaponType.SingleSword));
         if (weapon != null) Caster.Equipment.Equip(weapon);
+        if (skill.UsesArrows) Caster.Equipment.Equip((EquipableInventoryItem)Common.Instance.ItemManager.GetAsInventoryItemByName("Steel Arrows", 20));
+        if (skill.ActionEffects.Any(e => e is ReduceCastAction))
+        {
+            var prepared = learned.First(s => s.CastTime >= 3);
+            Friend.PendingCast = new PendingCast(new WaitAction(), prepared.SkillName, 4, prepared);
+            CombatEffectPlayer.Get()?.ShowCasting(Friend, prepared.VisualProfile, true);
+        }
         if (!skill.UsesArrows)
         {
             var shield = Game.PlayerController.Inventory.InventoryItems.OfType<EquipableInventoryItem>()
@@ -238,11 +248,12 @@ public sealed class AbilityTestLab : MonoBehaviour
         else
         {
             var candidates = skill.GetTargetCharacters(Caster);
-            Character recipient = candidates.Contains(Target) ? Target : candidates.Contains(Friend) ? Friend : Caster;
+            Character recipient = candidates.Contains(Target) ? Target : candidates.Contains(Friend) ? Friend : candidates.FirstOrDefault() ?? Caster;
             action = new SkillAction(Caster, skill, recipient);
         }
         if (!action.IsValid(Caster)) { lastResult = "No valid target in range. Set target distance to 1 and reset."; yield break; }
         yield return Resolve(action);
+        if (CastingAll) while (Caster.PendingCast != null) { yield return new WaitForSecondsRealtime(.35f); yield return Resolve(new AdvanceCastAction()); }
         tested.Add(skill);
         lastCastSucceeded = true;
         lastResult = $"Cast {skill.SkillName} (rank {rank}). Target HP: {Target?.Vitals.HP}.";
@@ -411,6 +422,16 @@ public sealed class AbilityTestLab : MonoBehaviour
             resetBeforeCast = GUILayout.Toggle(resetBeforeCast, "Reset arena before each cast");
             GUILayout.Label("Target distance (tiles)");
             distance = GUILayout.Toolbar(distance == 1 ? 0 : distance == 3 ? 1 : 2, new[] { "1", "3", "5" }) switch { 0 => 1, 1 => 3, _ => 5 };
+            var quick = learned.FirstOrDefault(s => s.SkillName == "Quick Casting");
+            bool useQuick = quick != null && Caster.Skills.Contains(quick);
+            bool toggleQuick = GUILayout.Toggle(useQuick, "Enable Quick Casting passive");
+            if (quick != null && toggleQuick != useQuick) { if (toggleQuick) Caster.Skills.Add(quick); else Caster.Skills.Remove(quick); }
+            GUILayout.Label($"Charge time: {selected.InitialCastTime(Caster)} actions");
+            if (Caster.PendingCast != null)
+            {
+                GUILayout.Label(Caster.PendingCast.Remaining == 0 ? "Ready to release" : $"Remaining charge: {Caster.PendingCast.Remaining}");
+                if (GUILayout.Button("Advance casting action")) StartCoroutine(Resolve(new AdvanceCastAction()));
+            }
             if (GUILayout.Button("Cast ability", GUILayout.Height(38))) StartCoroutine(CastAbility(selected.SkillName));
             if (GUILayout.Button("Cast all abilities", GUILayout.Height(32))) StartCoroutine(CastAllAbilities());
             GUI.enabled = CastingAll && !stopCastingAll;
@@ -425,7 +446,7 @@ public sealed class AbilityTestLab : MonoBehaviour
             GUILayout.Space(12);
             GUILayout.Label(Busy ? "Playing ability..." : lastResult, new GUIStyle(GUI.skin.label) { wordWrap = true });
             GUILayout.Label("Friendly target: " + Friend.Vitals.HP + " HP\nEnemy target: " + (Target != null ? Target.Vitals.HP : 0) + " HP");
-            GUILayout.Label("All passives are learned. Turn off automatic reset to test combinations. Inventory skills select an eligible item automatically; revive skills down the friendly target first. Retreat stays in the lab.", new GUIStyle(GUI.skin.label) { wordWrap = true });
+            GUILayout.Label("Other passives are learned. Turn off automatic reset to test combinations. Inventory skills select an eligible item automatically; revive skills down the friendly target first. Retreat stays in the lab.", new GUIStyle(GUI.skin.label) { wordWrap = true });
             GUILayout.EndArea();
         }
         GUI.matrix = oldMatrix;
@@ -457,6 +478,70 @@ public sealed class AbilityTestLab : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    public IEnumerator CaptureCastingShowcase()
+    {
+        if (!Ready || Busy) yield break;
+        System.IO.Directory.CreateDirectory("Logs/CastingShowcase");
+        var audio = AudioManager.Instance;
+        var mixer = audio.EffectAudioMixerGroup.audioMixer;
+        mixer.GetFloat("MasterVolume", out float master);
+        mixer.GetFloat("EffectVolume", out float effects);
+        bool resumeMusic = audio.MusicAudioSource.isPlaying;
+        bool editorMuted = UnityEditor.EditorUtility.audioMasterMute;
+        bool listenerPaused = AudioListener.pause;
+        float listenerVolume = AudioListener.volume;
+        UnityEditor.EditorUtility.audioMasterMute = false;
+        AudioListener.pause = false;
+        AudioListener.volume = 1;
+        audio.MusicAudioSource.Pause();
+        mixer.SetFloat("MasterVolume", 0); mixer.SetFloat("EffectVolume", -12);
+        var report = new List<string> { $"Original audio: editor muted={editorMuted}, listener paused={listenerPaused}, listener volume={listenerVolume}, master={master}, effects={effects}" };
+        try
+        {
+            foreach (string name in new[] { "Fireball", "Heal", "Piercing Arrow", "Casting Chorus" })
+            {
+                var skill = learned.First(s => s.SkillName == name);
+                if (skill.InitialCastTime(Caster) > 0)
+                {
+                    yield return CastAbility(name);
+                    yield return new WaitForSecondsRealtime(.35f);
+                    ScreenCapture.CaptureScreenshot("Logs/CastingShowcase/" + name + "-charging.png");
+                    yield return new WaitForSecondsRealtime(.2f);
+                    while (Caster.PendingCast?.Remaining > 0) yield return Resolve(new AdvanceCastAction());
+                    StartCoroutine(Resolve(new AdvanceCastAction()));
+                }
+                else StartCoroutine(CastAbility(name));
+                float peak = 0, started = Time.realtimeSinceStartup;
+                var samples = new float[1024]; bool flight = false, impact = false;
+                while (Time.realtimeSinceStartup - started < 2.5f)
+                {
+                    AudioListener.GetOutputData(samples, 0);
+                    peak = Mathf.Max(peak, samples.Max(x => Mathf.Abs(x)));
+                    float elapsed = Time.realtimeSinceStartup - started;
+                    if (!flight && elapsed > .35f)
+                    { ScreenCapture.CaptureScreenshot("Logs/CastingShowcase/" + name + "-flight.png"); flight = true; }
+                    if (!impact && elapsed > 1f)
+                    { ScreenCapture.CaptureScreenshot("Logs/CastingShowcase/" + name + "-release.png"); impact = true; }
+                    yield return null;
+                }
+                while (Busy) yield return null;
+                report.Add(name + ": audio peak=" + peak + ", remaining cast=" + (Caster.PendingCast != null) + ", active effects=" + CombatEffectPlayer.Get().ActiveCount);
+            }
+            ResetArena(); yield return null;
+            report.Add("After arena reset: active effects=" + CombatEffectPlayer.Get().ActiveCount);
+            System.IO.File.WriteAllLines("Logs/CastingShowcase/report.txt", report);
+            Debug.Log("Casting showcase captured: " + string.Join("; ", report));
+        }
+        finally
+        {
+            mixer.SetFloat("MasterVolume", master); mixer.SetFloat("EffectVolume", effects);
+            UnityEditor.EditorUtility.audioMasterMute = editorMuted;
+            AudioListener.pause = listenerPaused;
+            AudioListener.volume = listenerVolume;
+            if (resumeMusic) audio.MusicAudioSource.UnPause();
+        }
+    }
+
     public IEnumerator CaptureMeleeImpact()
     {
         if (!Ready || Busy) yield break;

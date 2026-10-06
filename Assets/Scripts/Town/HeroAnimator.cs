@@ -94,8 +94,8 @@ public class HeroAnimator : MonoBehaviour
 	{
 		StopWalkContinuation();
 		// The bow model is equipped in the left hand in the shipped item catalog.
-		if (mainHandItemDefinition?.WeaponType == WeaponType.BowAndArrow ||
-			offHandItemDefinition?.WeaponType == WeaponType.BowAndArrow)
+		if (mainHandItemDefinition?.WeaponType == WeaponType.BowAndArrow && !mainHandItemDefinition.IsAmmunition ||
+			offHandItemDefinition?.WeaponType == WeaponType.BowAndArrow && !offHandItemDefinition.IsAmmunition)
 		{
 			CurrentStance = Stance.BowAndArrowStance;
 		}
@@ -129,8 +129,9 @@ public class HeroAnimator : MonoBehaviour
 			CurrentStance = Stance.SingleSword;
 		}
 
-		RightHandObjects.ForEach(x => x.gameObject.SetActive(x.name == mainHandItemDefinition?.WeaponModelName));
-		LeftHandObjects.ForEach(x => x.gameObject.SetActive(x.name == offHandItemDefinition?.WeaponModelName));
+		bool bow = mainHandItemDefinition?.WeaponType == WeaponType.BowAndArrow && mainHandItemDefinition.IsAmmunition == false;
+        RightHandObjects.ForEach(x => x.gameObject.SetActive(x.name == (bow ? offHandItemDefinition?.WeaponModelName : mainHandItemDefinition?.WeaponModelName)));
+        LeftHandObjects.ForEach(x => x.gameObject.SetActive(x.name == (bow ? mainHandItemDefinition?.WeaponModelName : offHandItemDefinition?.WeaponModelName)));
 	}
 
 

@@ -21,11 +21,13 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
+  CastTime: 5
   SPCost: 3
   TargetSelector:
-    Team: 3
-    Area: 4
-  Targeting: 1
+    Team: 2
+    Area: 2
+    Life: 1
+  Targeting: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0

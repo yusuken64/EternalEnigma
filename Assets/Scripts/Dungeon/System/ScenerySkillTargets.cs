@@ -20,16 +20,17 @@ internal static class ScenerySkillTargets
     {
         var candidates = Candidates(caster, skill);
         if (skill.Targeting == SkillTargeting.AllTargets) return candidates;
-        if (skill.Targeting == SkillTargeting.Missile) return candidates.Where(p => p.Position == missileCell).ToList();
+        if (skill.Targeting == SkillTargeting.Missile) return Game.Instance.CurrentDungeon.Interactables.OfType<DungeonProp>()
+            .Where(p => p.Alive && Damaging(skill) && TileWorldDungeon.ChevDistance(p.Position, missileCell) <= skill.AreaRadius).ToList();
         var center = skill.Targeting == SkillTargeting.Self ? caster.TilemapPosition : prop != null ? prop.Position : selected != null ? selected.TilemapPosition : caster.TilemapPosition;
         return candidates.Where(p => TileWorldDungeon.ChevDistance(p.Position, center) <= skill.AreaRadius).ToList();
     }
-    internal static IEnumerable<GameAction> Effects(Character caster, Skill skill, DungeonProp prop)
+    internal static IEnumerable<GameAction> Effects(Character caster, Skill skill, DungeonProp prop, float multiplier = 1f)
     {
         foreach (var effect in skill.ActionEffects)
         {
             if (effect is TakeDamageAction damage && damage.damage > 0)
-                yield return prop.Damage(caster, skill.RankScaling.ScalePower(damage.damage, skill.Rank));
+                yield return prop.Damage(caster, Mathf.RoundToInt(skill.RankScaling.ScalePower(damage.damage, skill.Rank) * multiplier));
             float percent = effect is DashStrikeAction dash ? dash.DamagePercent : effect is TeleportBehindAction teleport ? teleport.DamagePercent : effect is SongCountStrikeAction song ? song.PercentPerHit : 0;
             if(percent > 0 && (!(effect is TeleportBehindAction behind) || TileWorldDungeon.ChevDistance(caster.TilemapPosition,prop.Position)<=behind.MaxRange))
             {
@@ -38,7 +39,7 @@ internal static class ScenerySkillTargets
                 for(int i=0;i<hits;i++) yield return prop.Damage(caster,strike.RawSceneryDamage(caster,skill.RankContext));
             }
             if (effect is ScaledDamageAction scaled)
-                for (int i = 0; i < scaled.Hits; i++) yield return prop.Damage(caster, scaled.RawSceneryDamage(caster, skill.RankContext));
+                for (int i = 0; i < scaled.Hits; i++) yield return prop.Damage(caster, Mathf.RoundToInt(scaled.RawSceneryDamage(caster, skill.RankContext) * multiplier));
         }
     }
 }

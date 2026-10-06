@@ -21,6 +21,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
+  CastTime: 1
   SPCost: 1
   TargetSelector:
     Team: 1
@@ -30,6 +31,7 @@ MonoBehaviour:
     ItemType: 0
     IncludeEquipped: 0
   AreaRadius: 0
+  MissileTargets: 2
   MissileRange: 8
   MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
   ArrowCost: 0

@@ -193,9 +193,7 @@ public class Town : MonoBehaviour
             allyInstance.Hp = allyData.Hp; allyInstance.Sp = allyData.Sp;
             allyInstance.HasHunger = allyData.HasHunger; allyInstance.Hunger = allyData.Hunger; allyInstance.HungerAccumulate = allyData.HungerAccumulate;
             allyInstance.RecruitCost = Configuration.Recruits.FirstOrDefault(r => r.Ally == prefab)?.Cost ?? 0;
-            foreach (var item in allyData.Equipment ?? new())
-                if (item.Restore(Common.Instance.ItemManager) is EquipableInventoryItem equipment)
-                    allyInstance.Equipment.Equip(equipment);
+            allyInstance.Equipment.RestoreSaved(allyData.Equipment ?? new(), Common.Instance.ItemManager, item => TownPlayer.Inventory.Add(item));
             allyInstance.EnsureStartingSkills();
             allyInstance.RefreshEquipmentVisuals();
         }

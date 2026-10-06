@@ -102,26 +102,18 @@ namespace EternalEnigma.Tests
 		}
 
 		private IEnumerator Down(Ally victim)
-		{
-			var skill = MakeSkill("Test Down", SkillTargeting.SelectedTarget, TargetTeam.All, TargetArea.Visible,
-				new TakeDamageAction { damage = 9999 });
-
-			// If downing the controlled ally, we need to cast from another ally
-			var currentCaster = harness.Game.PlayerController.ControlledAlly;
-			if (victim == currentCaster)
-			{
-				// Find another standing ally to use as caster
-				var otherCaster = harness.Game.Allies.FirstOrDefault(a => a != victim);
-				Assert.That(otherCaster, Is.Not.Null, "No other standing ally to cast from");
-				harness.Game.PlayerController.TakeControl(otherCaster);
-				yield return harness.WaitForIdle();
-				yield return harness.ExecuteAction(new SkillAction(otherCaster, skill, victim));
-			}
-			else
-			{
-				yield return harness.ExecuteAction(new SkillAction(currentCaster, skill, victim));
-			}
-		}
+        {
+            var actions = new Queue<GameAction>();
+            actions.Enqueue(new TakeDamageAction(victim, victim, 9999, false) { Environmental = true });
+            while (actions.Count > 0)
+            {
+                var action = actions.Dequeue();
+                foreach (var child in victim.ExecuteActionImmediate(action)) actions.Enqueue(child);
+                action.UpdateDisplayedStats();
+            }
+            harness.Game.TurnManager.ProcessTurn();
+            yield return harness.WaitForIdle();
+        }
 
 		[UnityTest]
 		public IEnumerator DownedAllyLeavesAlliesButIsNotDestroyed()
@@ -153,11 +145,12 @@ namespace EternalEnigma.Tests
 		[UnityTest]
 		public IEnumerator ControlPassesWhenControlledAllyIsDowned()
 		{
-			yield return Down(caster);
+			var original = caster;
+            yield return Down(original);
 			yield return harness.WaitForIdle();
 
 			var newControlled = harness.Game.PlayerController.ControlledAlly;
-			Assert.That(newControlled, Is.Not.EqualTo(caster));
+			Assert.That(newControlled, Is.Not.EqualTo(original));
 			Assert.That(PartyRules.IsStanding(harness.Game, newControlled), Is.True);
 			Assert.That(harness.Game.GameOverScreen.gameObject.activeSelf, Is.False);
 		}
@@ -203,6 +196,7 @@ namespace EternalEnigma.Tests
 			// Add a SummonedUnit (Kind Clone) component to a freshly instantiated copy of an ally
 			var allyClone = Object.Instantiate(reese.gameObject, harness.Game.transform);
 			var cloneAlly = allyClone.GetComponent<Ally>();
+            cloneAlly.InitialzeVitalsFromStats(); cloneAlly.SyncDisplayedStats();
 			var summonComponent = allyClone.AddComponent<SummonedUnit>();
 			summonComponent.Kind = SummonKind.Clone;
 			harness.Game.Allies.Add(cloneAlly);

@@ -9,7 +9,8 @@ internal sealed class CombatVisualSequence
     internal Character Actor;
     internal Vector3 Origin, Center;
     internal int Radius;
-    internal bool AreaPlayed, SingleFlight, FlightPlayed;
+    internal bool AreaPlayed, SingleFlight, FlightPlayed, ContinuousFlight;
+    internal readonly List<(Vector3 point, bool hit, Bounds? bounds)> FlightImpacts = new();
     internal readonly HashSet<Character> DamageRecipients = new();
 }
 
@@ -21,6 +22,7 @@ internal sealed class CombatVisualReplay
     internal readonly List<(Vector3 point, bool hit, Bounds? bounds)> Impacts = new();
     readonly Dictionary<Character, Dictionary<string, StatusVisualProfile>> before = new(), after = new();
     readonly Dictionary<Character, Vector3Int> positions = new();
+    readonly Dictionary<Character, CombatEffectProfile> castingAfter = new();
     readonly HashSet<Character> changedStatuses = new();
     bool afterMovement;
     Character resolvingActor;
@@ -65,6 +67,7 @@ internal sealed class CombatVisualReplay
         {
             var snapshot = Snapshot(c);
             after[c] = snapshot;
+            castingAfter[c] = c.PendingCast == null ? null : c.PendingCast.Skill?.VisualProfile ?? CombatVisualCatalog.Instance?.Utility;
             if (!before.TryGetValue(c, out var old) || old.Count != snapshot.Count || snapshot.Any(p => !old.TryGetValue(p.Key, out var v) || v != p.Value)) changedStatuses.Add(c);
         }
         foreach (var c in before.Keys.Where(c => c != null && !game.AllCharacters.Contains(c) && !game.DownedAllies.Contains(c as Ally))) after[c] = new();
@@ -109,12 +112,17 @@ internal sealed class CombatVisualReplay
         }
     }
 
-    internal void AddImpact(Character target, Vector3Int cell, bool hit) => Impacts.Add((CombatEffectPlayer.Body(target, cell), hit,
-        Sequence?.Profile.Impact.FitToTarget == true ? CombatEffectPlayer.TargetBounds(target, cell) : null));
+    internal void AddImpact(Character target, Vector3Int cell, bool hit)
+    {
+        var impact = (CombatEffectPlayer.Body(target, cell), hit, Sequence?.Profile.Impact.FitToTarget == true ? CombatEffectPlayer.TargetBounds(target, cell) : null);
+        Impacts.Add(impact);
+        if (Sequence?.ContinuousFlight == true) Sequence.FlightImpacts.Add(impact);
+    }
 
     internal IEnumerator Play(GameAction action, Character actor, bool skip)
     {
         var player = CombatEffectPlayer.Get();
+        if (action is AdvanceCastAction && actor.PendingCast == null) player?.ClearCasting(actor);
         if (!skip && action is SkillAction skillAction) skillAction.PlayCastSound();
         if (!skip && player != null && Sequence != null)
         {
@@ -126,6 +134,11 @@ internal sealed class CombatVisualReplay
         if (!skip && player != null && Sequence != null && afterMovement)
             foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds);
         // Even skipped playback advances the aura ledger; never consult future simulation state here.
-        if (player != null) foreach (var pair in after) player.SetStatuses(pair.Key, pair.Value);
+        if (player != null)
+        {
+            foreach (var pair in after) player.SetStatuses(pair.Key, pair.Value);
+            foreach (var pair in castingAfter)
+                if (skip || pair.Value == null) player.ClearCasting(pair.Key); else player.ShowCasting(pair.Key, pair.Value, true);
+        }
     }
 }

@@ -248,7 +248,7 @@ namespace EternalEnigma.Tests
             Assert.That(World.Services.Dismiss(original, out _), Is.True);
             Assert.That(player.ControllingTownAlly, Is.SameAs(recruit));
             Assert.That(player.RecruitedAllies, Has.Count.EqualTo(1));
-            Assert.That(SaveSystem.LoadData().TownSaveData.RecruitedAlliesData[0].AllyId, Is.EqualTo(recruit.Id));
+            Assert.That(Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData[0].AllyId, Is.EqualTo(recruit.Id));
         }
 
         [UnityTest] public IEnumerator VictoryReturnsRemainingStacksAndEquipment() => DungeonRoundTrip(true);

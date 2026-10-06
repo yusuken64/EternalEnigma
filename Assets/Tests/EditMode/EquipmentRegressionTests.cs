@@ -22,6 +22,33 @@ public class EquipmentRegressionTests
         return new EquipableInventoryItem(definition);
     }
 
+    [Test]
+    public void BowAndShieldConflictsAreSymmetricAndPreviewMatches()
+    {
+        var bow = Item(EquipmentSlot.MainHand); bow.EquipmentItemDefinition.WeaponType = WeaponType.BowAndArrow;
+        bow.EquipmentItemDefinition.StatModification = new StatModification { Strength = 10 };
+        var shield = Item(EquipmentSlot.OffHand); shield.EquipmentItemDefinition.StatModification = new StatModification { Defense = 3 };
+        var bag = new List<InventoryItem> { bow, shield };
+        EquipmentTransferService.Toggle(equipment,bag,shield,null,null,out _);
+        Assert.That(equipment.GetStatsIfEquipped(bow).Defense, Is.Zero);
+        EquipmentTransferService.Toggle(equipment,bag,bow,null,null,out _);
+        Assert.That(equipment.EquippedShield, Is.Null); Assert.That(bag,Does.Contain(shield));
+        Assert.That(equipment.GetStatsIfEquipped(shield).Strength, Is.Zero);
+        EquipmentTransferService.Toggle(equipment,bag,shield,null,null,out _);
+        Assert.That(equipment.EquippedWeapon, Is.Null); Assert.That(bag,Does.Contain(bow));
+        Assert.That(equipment.GetEquipmentStatModification().Defense, Is.EqualTo(3));
+    }
+    [Test]
+    public void BowRetainsArrowStackInEitherEquipOrder()
+    {
+        var bow = Item(EquipmentSlot.MainHand); bow.EquipmentItemDefinition.WeaponType = WeaponType.BowAndArrow;
+        var arrows = Item(EquipmentSlot.OffHand); arrows.EquipmentItemDefinition.IsAmmunition = true; arrows.EquipmentItemDefinition.StackMax = 20; arrows.StackStock = 7;
+        equipment.Equip(arrows); equipment.Equip(bow);
+        Assert.That(equipment.EquippedShield, Is.SameAs(arrows));
+        equipment.UnEquip(arrows); equipment.Equip(arrows);
+        Assert.That(equipment.EquippedWeapon, Is.SameAs(bow)); Assert.That(arrows.StackStock,Is.EqualTo(7));
+    }
+
     [TestCase(WeaponType.SimpleWeapon)]
     [TestCase(WeaponType.Axe)]
     [TestCase(WeaponType.Hammer)]

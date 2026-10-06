@@ -60,6 +60,13 @@ public static class AbilityTestLabAuthoring
         lab.StartCoroutine(lab.SmokeCheck());
     }
 
+    [MenuItem("Tools/Eternal Enigma/Combat Effects/Capture Casting Showcase")]
+    public static void CaptureCasting()
+    {
+        var lab = AbilityTestLab.Active;
+        if (lab != null && lab.Ready && !lab.Busy) lab.StartCoroutine(lab.CaptureCastingShowcase());
+    }
+
     [MenuItem("Tools/Eternal Enigma/Combat Effects/Capture Melee Impact In Test Scene")]
     public static void CaptureMelee()
     {

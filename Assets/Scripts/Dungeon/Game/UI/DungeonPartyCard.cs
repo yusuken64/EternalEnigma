@@ -77,6 +77,9 @@ public sealed class DungeonPartyCard : MonoBehaviour
         portraitHighlight.color = ally.TurnHighlightColor;
         order.text = ally == Game.Instance.PlayerController.PartyLeader ? "Leader" :
             ally.AllyStrategy.ToString().Replace("Aggresive","Aggressive").Replace("HoldPosition","Hold");
+        if (ally.PendingCast != null) order.text = ally.PendingCast.Name + (ally.PendingCast.Remaining == 0 ? " ready" : $" ({ally.PendingCast.Remaining} charge)");
+        if (ArrowSupply.HasBow(ally)) order.text += $"\n{ally.Equipment.EquippedShield?.ItemName ?? "Arrows"} x{ArrowSupply.Count(ally)}";
+        order.enableAutoSizing = true; order.fontSizeMin = 10; order.fontSizeMax = 18;
         string key=DungeonHud.StatusSummary(ally);
         if (key==statusKey) return; statusKey=key;
         foreach(var button in StatusButtons)button.gameObject.SetActive(false);

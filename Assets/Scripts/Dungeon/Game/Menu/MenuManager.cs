@@ -157,7 +157,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	public void OpenTargetingMenu(Character character, Skill skill)
 	{
-		if (!character.CanCast(skill, out _)) return;
+		if (!character.CanCast(skill, out var reason)) { GameMessages.Post(reason, true); return; }
 		OpenWorldTargeting(character, skill.GetTargetCharacters(character),
 			(target, direction) => skill.Targeting == SkillTargeting.Missile ?
 				SkillAction.ForMissile(character, skill, direction) : new SkillAction(character, skill, target),

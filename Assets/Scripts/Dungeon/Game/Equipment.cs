@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,6 +11,19 @@ public class Equipment : MonoBehaviour
 
 	public delegate void EquipmentChangedEventHandler(EquipChangeType equipChangeType, EquipableInventoryItem item);
 	public event EquipmentChangedEventHandler HandleEquipmentChanged;
+
+    internal void RestoreSaved(IEnumerable<ItemSaveData> saved, ItemManager manager, Action<InventoryItem> displaced)
+    {
+        var items = saved.Select(item => item.Restore(manager)).OfType<EquipableInventoryItem>().ToList();
+        EquippedWeapon = EquippedShield = EquippedAccessory = null;
+        foreach (var item in items)
+        {
+            var before = GetEquippedItems().ToArray();
+            Equip(item);
+            foreach (var old in before.Where(old => !IsEquipped(old))) displaced?.Invoke(old);
+        }
+        // Saved equipment replaces prefab defaults; saved conflicts are all returned above.
+    }
 
 	// Optional class restriction used by player-initiated equips (CanEquip). Null allows everything.
 	// Equip() itself never checks it, so restoring saved/starting equipment is unaffected.
@@ -59,8 +72,18 @@ public class Equipment : MonoBehaviour
 	Dictionary<EquipmentSlot, EquipableInventoryItem> slots,
 	EquipableInventoryItem newItem)
 	{
-		switch (newItem.EquipmentSlot)
-		{
+		bool bow = newItem.EquipmentItemDefinition.WeaponType == WeaponType.BowAndArrow && !newItem.EquipmentItemDefinition.IsAmmunition;
+        if (bow)
+        {
+            slots[EquipmentSlot.MainHand] = newItem;
+            if (slots.TryGetValue(EquipmentSlot.OffHand, out var offhand) && !ArrowSupply.IsArrow(offhand)) slots.Remove(EquipmentSlot.OffHand);
+            return;
+        }
+        if (newItem.EquipmentSlot == EquipmentSlot.OffHand && !ArrowSupply.IsArrow(newItem) &&
+            slots.TryGetValue(EquipmentSlot.MainHand, out var main) && main.EquipmentItemDefinition.WeaponType == WeaponType.BowAndArrow)
+            slots.Remove(EquipmentSlot.MainHand);
+        switch (newItem.EquipmentSlot)
+        {
 			case EquipmentSlot.TwoHand:
 				slots[EquipmentSlot.MainHand] = newItem;
 				slots.Remove(EquipmentSlot.OffHand);
@@ -119,7 +142,7 @@ public class Equipment : MonoBehaviour
 	internal void UnEquip(EquipableInventoryItem equipableInventoryItem)
 	{
 		if (!IsEquipped(equipableInventoryItem)) return;
-		UnEquip(equipableInventoryItem.EquipmentSlot);
+		UnEquip(EquippedWeapon == equipableInventoryItem ? EquipmentSlot.MainHand : EquippedShield == equipableInventoryItem ? EquipmentSlot.OffHand : EquipmentSlot.Accessory);
 	}
 
 	private void UnEquip(EquipmentSlot slot)

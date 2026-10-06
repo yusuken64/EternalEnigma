@@ -254,7 +254,7 @@ public class PlayerController : MonoBehaviour
 
             var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
             var targetAlly = Game.Instance.Allies.FirstOrDefault(x => x.TilemapPosition == ControlledAlly.TilemapPosition + offset);
-            if (targetAlly != null)
+            if (targetAlly != null && !ControlledAlly.IsRangedAttack(out _))
 			{
                 //FindObjectOfType<MenuManager>().OpenAllyMenu(targetAlly);
                 return;

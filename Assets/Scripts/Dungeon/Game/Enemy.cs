@@ -77,11 +77,14 @@ public class Enemy : Character
 			.Where(x => x != null);
 		if (actionOverrides.Any())
 		{
-			determinedActions = actionOverrides.ToList();
+			global::PendingCast.Cancel(this, "action disabled");
+            determinedActions = actionOverrides.ToList();
 			return;
 		}
 
-		var game = Game.Instance;
+		global::PendingCast.Validate(this);
+        if (PendingCast != null) { determinedActions = new() { new AdvanceCastAction() }; return; }
+        var game = Game.Instance;
 		PursuitTarget = GetPursuitTarget();
 
 		if (PursuitTarget != null)

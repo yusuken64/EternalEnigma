@@ -38,6 +38,8 @@ namespace EternalEnigma.Tests
             profile.CastSeconds = .01f; profile.ImpactSeconds = .01f; profile.FlightSeconds = new Vector2(.03f, .03f);
             profile.Projectile.Prefab = particle; profile.Impact.Prefab = particle; profile.Area.Prefab = particle;
             aura = ScriptableObject.CreateInstance<StatusVisualProfile>(); aura.Aura.Prefab = particle;
+            var feedObject = new GameObject("Test event feed"); feedObject.SetActive(false); feedObject.transform.SetParent(root.transform);
+            feedObject.AddComponent<GameMessages>().AuthorLayout(true); feedObject.SetActive(true);
         }
         [UnityTearDown] public IEnumerator Cleanup()
         {

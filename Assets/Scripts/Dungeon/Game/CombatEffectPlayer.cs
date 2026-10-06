@@ -20,6 +20,23 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     readonly Dictionary<GameObject, Stack<Instance>> pool = new();
     readonly Dictionary<Character, Dictionary<string, StatusVisualProfile>> statuses = new();
     readonly Dictionary<Character, Dictionary<StatusVisualProfile, GameObject>> auras = new();
+    readonly Dictionary<Character, GameObject> casting = new();
+    internal void ClearCasting(Character c)
+    {
+        if (casting.TryGetValue(c, out var effect)) Release(effect);
+        casting.Remove(c);
+    }
+    internal void ShowCasting(Character c, CombatEffectProfile profile, bool persistent)
+    {
+        if (persistent && casting.ContainsKey(c)) return;
+        ClearCasting(c);
+        profile ??= CombatVisualCatalog.Instance?.Utility;
+        if (c == null || profile == null || DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations) return;
+        var stage = profile.GroundCircle.Prefab != null ? profile.GroundCircle : profile.Muzzle;
+        if (stage?.Prefab == null) stage = CombatVisualCatalog.Instance?.Utility?.GroundCircle;
+        var effect = Rent(stage, Ground(Body(c, c.TilemapPosition)), Quaternion.identity, persistent, follow: c.transform);
+        if (persistent && effect != null) casting[c] = effect;
+    }
     Object dungeon;
     bool hadDungeon;
     public int ActiveCount => active.Count;
@@ -85,6 +102,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         else
         {
             var go = Instantiate(stage.Prefab, transform);
+            foreach (var source in go.GetComponentsInChildren<AudioSource>(true)) { source.playOnAwake = false; source.Stop(); source.enabled = false; }
             var effectsGroup = AudioManager.Instance?.EffectAudioMixerGroup;
             if (effectsGroup != null)
                 foreach (var source in go.GetComponentsInChildren<AudioSource>(true))
@@ -157,6 +175,8 @@ public sealed class CombatEffectPlayer : MonoBehaviour
             var delta = flightDestination - sequence.Origin;
             var rotation = delta.sqrMagnitude > .001f ? Quaternion.LookRotation(delta, Vector3.back) : Quaternion.identity;
             var projectile = Rent(stage, sequence.Origin, rotation, true);
+            int nextImpact = 0;
+            var contacts = sequence.FlightImpacts.OrderBy(i => Vector3.Dot(i.point - sequence.Origin, delta)).ToList();
             float duration = Mathf.Clamp(delta.magnitude / Mathf.Max(.1f, profile.ProjectileSpeed),
                 Mathf.Max(.01f, profile.FlightSeconds.x), Mathf.Max(.01f, profile.FlightSeconds.y));
             try
@@ -164,12 +184,15 @@ public sealed class CombatEffectPlayer : MonoBehaviour
                 for (float elapsed = 0; elapsed < duration && projectile != null; elapsed += Time.unscaledDeltaTime)
                 {
                     projectile.transform.position = Vector3.Lerp(sequence.Origin, flightDestination, elapsed / duration) + stage.Offset;
+                    while (nextImpact < contacts.Count && Vector3.Dot(contacts[nextImpact].point - sequence.Origin, delta) <= delta.sqrMagnitude * elapsed / duration)
+                    { var contact = contacts[nextImpact++]; if (contact.hit) StartCoroutine(Burst(profile.Impact, contact.point, visibilityPosition: contact.point)); }
                     yield return null;
                 }
             }
             finally { Release(projectile); }
+            while (nextImpact < contacts.Count) { var contact = contacts[nextImpact++]; if (contact.hit) StartCoroutine(Burst(profile.Impact, contact.point, visibilityPosition: contact.point)); }
         }
-        if (hit)
+        if (hit && !(sequence.ContinuousFlight && stage?.Prefab != null))
         {
             var point = destination; float size = 1;
             if (profile.Impact.FitToTarget && targetBounds.HasValue)
@@ -187,6 +210,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         if (!sequence.AreaPlayed && profile.Area.Prefab != null)
         {
             sequence.AreaPlayed = true;
+            AudioManager.Instance?.PlaySoundEffect(profile.AreaSound);
             StartCoroutine(Burst(profile.Area, Ground(sequence.Center), profile.ScaleAreaToRadius ? Mathf.Max(1, sequence.Radius * 2 + 1) : 1));
         }
         yield return new WaitForSecondsRealtime(Mathf.Max(profile.ImpactSeconds, Mathf.Max(profile.Impact.Delay, profile.Area.Delay)));
@@ -218,6 +242,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     {
         var current = Game.Instance != null && Game.Instance.CurrentDungeon != null ? Game.Instance.CurrentDungeon : null;
         if (!ReferenceEquals(dungeon, current)) { if (hadDungeon) Clear(); dungeon = current; hadDungeon = current != null; }
+        foreach (var c in casting.Keys.ToArray()) if (c == null || c.Vitals.HP <= 0) ClearCasting(c);
         foreach (var character in statuses.Keys.ToArray())
             if (character == null) { if (auras.TryGetValue(character, out var effects)) foreach (var effect in effects.Values) Release(effect); auras.Remove(character); statuses.Remove(character); }
         foreach (var item in active.ToArray())
@@ -239,7 +264,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         StopAllCoroutines();
         foreach (var item in active) if (item.Object != null) Destroy(item.Object);
         foreach (var stack in pool.Values) foreach (var item in stack) if (item.Object != null) Destroy(item.Object);
-        active.Clear(); pool.Clear(); statuses.Clear(); auras.Clear();
+        active.Clear(); pool.Clear(); statuses.Clear(); auras.Clear(); casting.Clear();
     }
     void OnDisable() => Clear();
 }

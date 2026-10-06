@@ -8,6 +8,18 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Casting")]
+    public static void RunCasting() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CastingAndPiercingTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Casting Regression")]
+    public static void RunCastingRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.SkillRankRegressionTests",
+        "EternalEnigma.Tests.SkillMovementTests", "EternalEnigma.Tests.DungeonControlTests",
+        "EternalEnigma.Tests.DownedAllyTests", "EternalEnigma.Tests.AllySkillPolicyTests",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests", "EternalEnigma.Tests.GameMessageTests", "EternalEnigma.Tests.EconomyGameplayTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Casting EditMode")]
+    public static void RunCastingEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "TargetingAndArrowTests", "EquipmentRegressionTests", "EternalEnigma.Tests.CoreIntegration.EquipmentTransferTests", "SkillRankTests",
+        "EternalEnigma.Tests.EconomyCatalogTests", "SaveStoreTests", "EternalEnigma.Tests.CoreIntegration.CampaignSaveTests", "HeroClassTests", "EternalEnigma.Tests.AllySkillIntentTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Final")]
     public static void RunPresentationFinal()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.DungeonDockTests","EternalEnigma.Tests.GameMessageTests","EternalEnigma.Tests.MenuSelectionTests",

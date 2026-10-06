@@ -20,7 +20,18 @@ public class TurnManager : MonoBehaviour
         if (IsProcessingTurn && (!AwaitingCommand || actor != ActiveActor)) return false;
         if (UsesFullControl && actor != player.ControlledAlly) return false;
         if (actor == player.ControlledAlly && !action.ManualWalkCommand) player.StopHeldWalk();
-        if (!action.IsValid(actor)) { player.StopHeldWalk(); return false; }
+        global::PendingCast.Validate(actor);
+        if (actor.PendingCast != null)
+        {
+            if (actor.PendingCast.Remaining == 0 && actor.PendingCast.Skill?.UsesArrows == true &&
+                (!ArrowSupply.HasBow(actor) || ArrowSupply.Count(actor) < ArrowSupply.RequiredToCast(actor.PendingCast.Skill)))
+            { global::PendingCast.Cancel(actor, "no arrows"); GameMessages.Post("no arrows", true); return false; }
+            if (action is WaitAction) action = new AdvanceCastAction();
+            else if (!global::PendingCast.Mobile(actor) || action is not MovementAction && action is not SwapAllyPositionAction)
+                return false;
+        }
+        if (!action.ValidateCommand(actor, out var reason))
+        { if (!string.IsNullOrEmpty(reason)) GameMessages.Post(reason, true); player.StopHeldWalk(); return false; }
         actor._forcedAction = action;
         if (actor != player.ControlledAlly) return true;
         actor.IsWaitingForPlayerInput = false;
@@ -36,6 +47,13 @@ public class TurnManager : MonoBehaviour
     private void Update()
     {
         var game = Game.Instance;
+        var controlled = game?.PlayerController?.ControlledAlly;
+        if (!IsProcessingTurn && game != null && game.IsReady && controlled?.PendingCast != null && !global::PendingCast.Mobile(controlled) &&
+            !MenuManager.Instance.Opened && !Common.Instance.GlobalSettings.IsOpen)
+        {
+            if (controlled.PrepareManualAction()) { controlled.IsWaitingForPlayerInput = false; ProcessTurn(); }
+            return;
+        }
         if (!IsProcessingTurn && DungeonPreferences.FullControl && game != null && game.IsReady &&
             !AutoplayRunner.BlocksPlayerInput && !MenuManager.Instance.Opened && !Common.Instance.GlobalSettings.IsOpen &&
             game.PlayerController.ControlledAlly != null && game.PlayerController.ControlledAlly.IsWaitingForPlayerInput)
@@ -131,7 +149,13 @@ public class TurnManager : MonoBehaviour
 
 					if (actor == null) { continue; }
                     sideEffectAction.SetPlaybackContext(playback);
-					gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction));
+					bool mobileStep = living.PendingCast != null && global::PendingCast.Mobile(living) &&
+                        (sideEffectAction is MovementAction || sideEffectAction is SwapAllyPositionAction) && consumesAllyAction;
+                    living.VoluntaryCastMovement = mobileStep;
+                    try { gameActions.AddRange(actor.ExecuteActionImmediate(sideEffectAction)); }
+                    finally { living.VoluntaryCastMovement = false; }
+                    if (mobileStep) living.PendingCast?.Reduce();
+                    foreach (var c in Game.Instance.AllCharacters) if (c != null) global::PendingCast.Validate(c);
 					actionReplays.Add(new ActorAction(actor, sideEffectAction, consumesAllyAction));
                     consumesAllyAction = false;
 
@@ -337,6 +361,7 @@ public class TurnManager : MonoBehaviour
 
 	internal void InteruptTurn()
 	{
+        foreach (var c in Game.Instance.AllCharacters) global::PendingCast.Cancel(c, "floor changed");
 		Game.Instance.PlayerController.StopHeldWalk();
 		interuptTurn = true;
         AwaitingCommand = false;
@@ -418,7 +443,8 @@ public abstract class GameAction
 	[System.NonSerialized] internal CombatVisualReplay Visuals = new();
 	internal IEnumerable<Character> VisualTargets => animationTargets;
 	protected GameAction() { }
-	abstract internal bool IsValid(Character character);
+	internal virtual bool ValidateCommand(Character character, out string reason) { reason = null; return IsValid(character); }
+    abstract internal bool IsValid(Character character);
 	abstract internal IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false);
 	abstract internal List<GameAction> ExecuteImmediate(Character character);
     internal virtual void RecordOutcome(Character character) { }

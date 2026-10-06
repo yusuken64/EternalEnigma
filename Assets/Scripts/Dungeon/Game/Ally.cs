@@ -107,10 +107,15 @@ public class Ally : Character
     // Evaluate forced statuses only once per action, including random confusion/paralysis.
     internal bool PrepareManualAction(bool evaluateStatuses = true)
     {
+        global::PendingCast.Validate(this);
+        if (PendingCast?.Remaining == 0 && PendingCast.Skill?.UsesArrows == true && (!ArrowSupply.HasBow(this) || ArrowSupply.Count(this) < ArrowSupply.RequiredToCast(PendingCast.Skill)))
+        { global::PendingCast.Cancel(this, "no arrows"); _forcedAction = null; if (this == Game.Instance.PlayerController.ControlledAlly) GameMessages.Post("no arrows", true); return false; }
         if (IsDowned || Vitals.HP <= 0) { determinedActions = new(); return true; }
         var overrides = evaluateStatuses ? StatusEffects.Where(s => s != null && !s.IsExpired())
             .Select(s => s.GetActionOverride(this)).Where(a => a != null).ToList() : new List<GameAction>();
-        if (overrides.Count > 0) { _forcedAction = null; determinedActions = overrides; return true; }
+        if (overrides.Count > 0) { global::PendingCast.Cancel(this, "action disabled"); _forcedAction = null; determinedActions = overrides; return true; }
+        if (PendingCast != null && (!global::PendingCast.Mobile(this) || this != Game.Instance.PlayerController.ControlledAlly || AutoplayRunner.BlocksPlayerInput))
+        { determinedActions = new() { new AdvanceCastAction() }; _forcedAction = null; return true; }
         if (_forcedAction == null) return false;
         determinedActions = new() { _forcedAction }; _forcedAction = null; return true;
     }
@@ -359,7 +364,7 @@ public class Ally : Character
 				Game.Instance.PlayerController.Inventory.InventoryItems.Remove(item);
 				break;
 			case EquipChangeType.UnEquip:
-				Game.Instance.PlayerController.Inventory.InventoryItems.Add(item);
+				if (!ArrowSupply.IsArrow(item) || !item.StackIsEmpty()) Game.Instance.PlayerController.Inventory.InventoryItems.Add(item);
 				break;
 		}
 
@@ -418,6 +423,7 @@ internal class AllyAttackPolicy : PolicyBase
 	public override bool ShouldRun()
 	{
 		_isRangedAttack = _ally.IsRangedAttack(out _projectilePrefab);
+        if (_isRangedAttack && ArrowSupply.HasBow(_ally) && ArrowSupply.Count(_ally) < 1) return false;
 		if (_isRangedAttack)
 		{
 			var visibleTiles = game.CurrentDungeon.GetVisibleTiles(_ally, _ally.TilemapPosition);
@@ -425,18 +431,13 @@ internal class AllyAttackPolicy : PolicyBase
 			Shuffle(facings);
 			foreach (Facing direction in facings)
 			{
-				Vector3Int pos = Game.Instance.CurrentDungeon.GetRangedAttackPosition(
-					_ally,
-					_ally.TilemapPosition,
-					direction,
-					10, // define this on Ally
-					Dungeon.StopArrow);
+				var line = MissileTargeting.TraceLine(_ally, Dungeon.GetFacingOffset(direction), 10 + ClassPassives.MissileRangeBonus(_ally), ArrowSupply.Penetration(_ally));
+                Vector3Int pos = line.Encounters.FirstOrDefault().Cell;
 
 				if (!visibleTiles.Contains(pos)) { continue; }
 
 				// Find enemy at pos (if any)
-				target = Game.Instance.AllCharacters
-					.FirstOrDefault(x => x.Team != _ally.Team && !EnemyBehavior.IsDisguised(x) && x.TilemapPosition == pos);
+				target = line.Encounters.Select(h => h.Character).FirstOrDefault(x => !EnemyBehavior.IsDisguised(x));
 
 				if (target != null)
 				{

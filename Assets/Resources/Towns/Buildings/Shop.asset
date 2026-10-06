@@ -38,10 +38,6 @@ MonoBehaviour:
     Price: 200
     Quantity: 2
     StackCount: 1
-  - Item: {fileID: 11400000, guid: 700d604e733ad5b40ab647fa891275f3, type: 2}
-    Price: 225
-    Quantity: 2
-    StackCount: 1
   - Item: {fileID: 11400000, guid: 16b1908d966f66e43a043410b7bdb159, type: 2}
     Price: 250
     Quantity: 2
@@ -259,11 +255,6 @@ MonoBehaviour:
     Price: 1000
     Quantity: 1
     StackCount: 1
-  - Item: {fileID: 11400000, guid: a41aefc2e7a539a4d9316199bbb90e00, type: 2}
-    MinimumTier: 1
-    Price: 250
-    Quantity: 1
-    StackCount: 1
   - Item: {fileID: 11400000, guid: e8fc0d73b0714924f9a0411e83a65747, type: 2}
     MinimumTier: 1
     Price: 100
@@ -439,6 +430,21 @@ MonoBehaviour:
     Price: 350
     Quantity: 1
     StackCount: 1
+  - Item: {fileID: 11400000, guid: 700d604e733ad5b40ab647fa891275f3, type: 2}
+    MinimumTier: 0
+    Price: 100
+    Quantity: 4
+    StackCount: 20
+  - Item: {fileID: 11400000, guid: 4341747b073f4a2791dd3c7659ce6917, type: 2}
+    MinimumTier: 1
+    Price: 200
+    Quantity: 4
+    StackCount: 20
+  - Item: {fileID: 11400000, guid: 1ba91f8b50a84ad896d081af98f587a6, type: 2}
+    MinimumTier: 2
+    Price: 400
+    Quantity: 4
+    StackCount: 20
   VendorPrefab: {fileID: 3597991658242453545, guid: cebac3115480f5c45a0733fb1e94af5b, type: 3}
   ServiceInterior: 0
   Npc: {fileID: 11400000, guid: eae90439a4491f449b38667b57e17ae5, type: 2}

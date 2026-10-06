@@ -21,6 +21,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
+  CastTime: 1
   SPCost: 3
   TargetSelector:
     Team: 3
@@ -63,7 +64,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: 4-6 hits at 70% on random enemies within 2 tiles.
+  Description: 4-6 hits at 100% weapon damage on random enemies within 2 tiles.
   references:
     version: 2
     RefIds:
@@ -90,7 +91,7 @@ MonoBehaviour:
       data:
         Scaling: 0
         Category: 0
-        Percent: 0.7
+        Percent: 1
         BaseDamage: 8
         PerLevel: 2
         Hits: 1

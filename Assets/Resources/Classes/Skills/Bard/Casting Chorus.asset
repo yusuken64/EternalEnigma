@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ae110689476da24787134deadf420c0, type: 3}
+  m_Name: Casting Chorus
+  SkillName: Casting Chorus
+  MaxRank: 1
+  LearnCost: 300
+  ActivationType: 0
+  SPCost: 2
+  TargetSelector:
+    Team: 2
+    Area: 1
+  Targeting: 1
+  AreaRadius: 3
+  MissileRange: 8
+  ActionEffects:
+  - rid: 1
+  VisualProfile: {fileID: 11400000, guid: ed4fadfbf01e3934d94a3a598843058d, type: 2}
+  CastSound: {fileID: 8300000, guid: 00e4eb96f4f6cc249a632e4027644cad, type: 3}
+  Icon: {fileID: 21300000, guid: 4bf231698b64bcb4d8769004cf3df75c, type: 3}
+  Description: Reduce allied casts within three visible tiles by one charging action.
+  references:
+    version: 2
+    RefIds:
+    - rid: 1
+      type: {class: ReduceCastAction, ns: , asm: EternalEnigma.Game}
+      data: {}

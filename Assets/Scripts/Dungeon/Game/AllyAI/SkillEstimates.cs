@@ -128,7 +128,7 @@ public static class SkillEstimates
 			}
 		}
 
-		return Math.Max(0f, sum);
+		return Math.Max(0f, sum * (skill.UsesArrows ? ArrowSupply.DamageMultiplier(caster) : 1f));
 	}
 
 	public static float EstimateHealing(Skill skill, Character target)

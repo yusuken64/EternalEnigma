@@ -11,15 +11,17 @@ internal class CastFrailPolicy : PolicyBase
 
 	public override List<GameAction> GetActions()
 	{
+        var originalTarget = game.PlayerController.ControlledAlly;
 		return new List<GameAction>()
 		{
 			new CastSpellAction()
 			{
+                SpellName = "Frailty", Target = originalTarget,
 				CastSound = AudioManager.Instance?.SoundEffects.Debuff,
 				GetActionsFunc = () =>
 				{
-					character.SetFacingByTargetPosition(game.PlayerController.TilemapPosition);
-					return new List<GameAction>() { new ApplyStatusEffectAction(game.PlayerController.ControlledAlly, statusEffectPrefab, character) };
+					character.SetFacingByTargetPosition(originalTarget.TilemapPosition);
+					return new List<GameAction>() { new ApplyStatusEffectAction(originalTarget, statusEffectPrefab, character) };
 				}
 			}
 		};

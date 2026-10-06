@@ -11,15 +11,17 @@ internal class CastSleepPolicy : PolicyBase
 
 	public override List<GameAction> GetActions()
 	{
+        var originalTarget = character.PursuitTarget;
 		return new List<GameAction>()
 		{
 			new CastSpellAction()
 			{
+                SpellName = "Sleep", Target = originalTarget,
 				CastSound = AudioManager.Instance?.SoundEffects.Sleep,
 				GetActionsFunc = () =>
 				{
-					character.SetFacingByTargetPosition(game.PlayerController.TilemapPosition);
-					return new List<GameAction>() { new ApplyStatusEffectAction(character.PursuitTarget, statusEffectPrefab, character) };
+					character.SetFacingByTargetPosition(originalTarget.TilemapPosition);
+					return new List<GameAction>() { new ApplyStatusEffectAction(originalTarget, statusEffectPrefab, character) };
 				}
 			}
 		};

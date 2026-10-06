@@ -16,11 +16,15 @@ public abstract class Character : MonoBehaviour, Actor
 		{
 			if (tilemapPosition != value)
 			{
-				tilemapPosition = value;
+				if (!VoluntaryCastMovement) global::PendingCast.Cancel(this, "displaced");
+                tilemapPosition = value;
 				MovedThisTurn = true;
 			}
 		}
 	}
+
+	internal PendingCast PendingCast;
+    internal bool VoluntaryCastMovement;
 
 	public bool MovedThisTurn { get; internal set; }
 	public Team Team;
@@ -56,7 +60,8 @@ public abstract class Character : MonoBehaviour, Actor
 
 	internal bool CanCast(Skill skill, out string reason)
 	{
-		if (skill == null || !Skills.Contains(skill))
+		if (skill?.UsesArrows == true && (!ArrowSupply.HasBow(this) || ArrowSupply.Count(this) < ArrowSupply.RequiredToCast(skill))) { reason = "no arrows"; return false; }
+        if (skill == null || !Skills.Contains(skill))
 		{
 			reason = "Skill not learned";
 			return false;
@@ -109,17 +114,17 @@ public abstract class Character : MonoBehaviour, Actor
 		{
 			if (!ArrowSupply.HasBow(this))
 			{
-				reason = "Needs a bow";
+				reason = "no arrows";
 				return false;
 			}
 			if (ArrowSupply.Count(this) < ArrowSupply.RequiredToCast(skill))
 			{
-				reason = "Not enough arrows";
+				reason = "no arrows";
 				return false;
 			}
 		}
 
-		bool hasTargets = skill.Targeting == SkillTargeting.Missile || (inventoryTargeting ? skill.GetInventoryTargets(this).Any() :
+		bool hasTargets = skill.Targeting == SkillTargeting.Tile || skill.Targeting == SkillTargeting.Missile || (inventoryTargeting ? skill.GetInventoryTargets(this).Any() :
 			(skill.RequiresTargetSelection ? skill.GetTargetCharacters(this) : skill.GetAffectedCharacters(this, this)).Any());
         if (!hasTargets && !inventoryTargeting && Game.Instance?.PlayerController?.ControlledAlly == this)
             hasTargets = skill.RequiresTargetSelection ? ScenerySkillTargets.Candidates(this,skill).Any() : ScenerySkillTargets.Affected(this,skill,this,null,default).Any();
@@ -219,6 +224,7 @@ public abstract class Character : MonoBehaviour, Actor
 
 	private void OnDestroy()
 	{
+        Game.Instance?.GetComponent<CombatEffectPlayer>()?.ClearCasting(this);
 		BaseStats.OnStatChanged -= BaseStats_OnStatChanged;
 		if (Equipment != null)
 		{
@@ -486,6 +492,7 @@ disp: {displayedVitals}");
 		foreach (var statusEffect in StatusEffects)
 		{
 			statusEffect.Tick();
+            global::PendingCast.Validate(this);
 		}
 	}
 
@@ -522,6 +529,7 @@ disp: {displayedVitals}");
 		if (matchingStatus != null)
 		{
 			matchingStatus.ReApply(newStatusPrefab);
+            global::PendingCast.Validate(this);
 			UpdateCachedStats();
 			DisplayedStats.Sync(FinalStats);
 
@@ -532,6 +540,7 @@ disp: {displayedVitals}");
 			var newStatus = Instantiate(newStatusPrefab, VisualParent.transform);
 			newStatus.Apply();
 			StatusEffects.Add(newStatus);
+            global::PendingCast.Validate(this);
 			UpdateCachedStats();
 			DisplayedStats.Sync(FinalStats);
 

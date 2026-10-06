@@ -16,6 +16,13 @@ public static class HeroClassBinding
 	public static TownAllyData FromPrefab(TownAlly prefab, TownAllyData data)
 	{
 		Capture(prefab, data);
+		if (data.Equipment.Count == 0 && prefab.Equipment != null)
+        {
+            data.Equipment = ItemSaveData.Capture(prefab.Equipment.GetEquippedItems());
+            if (prefab.Equipment.GetEquippedItems().Any(i => !i.EquipmentItemDefinition.IsAmmunition && i.EquipmentItemDefinition.WeaponType == WeaponType.BowAndArrow) &&
+                !data.Equipment.Any(i => i.ItemName == "Wooden Arrows" || i.ItemName == "Arrows"))
+                data.Equipment.Add(new ItemSaveData { ItemName = "Wooden Arrows", HasStock = true, Stock = 20 });
+        }
 		return data;
 	}
 

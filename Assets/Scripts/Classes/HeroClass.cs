@@ -30,7 +30,7 @@ public static class HeroClass
 	{
 		var definition = item?.EquipmentItemDefinition;
 		if (definition == null || definition.EquipmentSlot == EquipmentSlot.Accessory) return true;
-		return AllowsWeapon(primary, secondary, definition.WeaponType);
+		return AllowsWeapon(primary, secondary, definition.IsAmmunition ? WeaponType.BowAndArrow : definition.WeaponType);
 	}
 
 	public static string EquipmentRestriction(ClassDefinition primary, ClassDefinition secondary, EquipableInventoryItem item) =>

@@ -14,6 +14,7 @@ public class ReviveAction : GameAction, ISkillCastCondition
 	[Range(0f, 1f)] public float HpFraction = 0.25f;
 
 	private Character caster;
+    private Ally selected;
 	private float fraction;
 	private readonly List<Ally> revived = new();
 
@@ -25,7 +26,7 @@ public class ReviveAction : GameAction, ISkillCastCondition
 	internal override GameAction AsTargetedSkill(Character caster, Character target, SkillRankContext rank) =>
 		new ReviveAction
 		{
-			Scope = Scope, HpFraction = HpFraction, caster = caster,
+			Scope = Scope, HpFraction = HpFraction, caster = caster, selected = target is Ally ally && ally.Vitals.HP <= 0 ? ally : null,
 			fraction = Mathf.Clamp01(rank.Scaling.ScaleChance(HpFraction, rank.Rank)),
 		};
 
@@ -49,7 +50,7 @@ public class ReviveAction : GameAction, ISkillCastCondition
 	{
 		var game = Game.Instance;
 		revived.Clear();
-		foreach (var ally in Targets(caster))
+		foreach (var ally in selected != null ? new[] { selected }.Where(a => a.Team == caster.Team && game.DownedAllies.Contains(a)) : Targets(caster))
 		{
 			int hp = Mathf.Max(1, Mathf.RoundToInt(ally.FinalStats.HPMax * fraction));
 			PartyRules.MarkStanding(game, ally);

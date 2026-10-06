@@ -21,6 +21,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
+  CastTime: 2
   SPCost: 2
   TargetSelector:
     Team: 3

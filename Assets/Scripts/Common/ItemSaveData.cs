@@ -12,7 +12,7 @@ public class ItemSaveData
     public static ItemSaveData From(InventoryItem item) => new() {
         ItemName = item.ItemName, HasStock = item.StackStock.HasValue, Stock = item.StackStock ?? 0 };
 
-    public InventoryItem Restore(ItemManager manager) => manager.GetAsInventoryItemByName(ItemName, HasStock ? Stock : null);
+    public InventoryItem Restore(ItemManager manager) => manager.GetAsInventoryItemByName(ItemName == "Arrows" ? "Wooden Arrows" : ItemName, ItemName == "Arrows" && !HasStock ? 20 : HasStock ? Stock : null);
     public static List<ItemSaveData> Capture(IEnumerable<InventoryItem> items) =>
         items.Where(i => i?.ItemDefinition != null).Select(From).ToList();
 }

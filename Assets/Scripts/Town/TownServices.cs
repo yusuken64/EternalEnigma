@@ -131,6 +131,8 @@ public sealed class TownServices
         if (context != null) { context.Roster.Add(ally.Id); context.Active.Add(ally.Id); }
         Player.Gold -= ally.RecruitCost;
         ally.EnsureStartingSkills();
+        var loadout = HeroClassBinding.FromPrefab(ally, new TownAllyData());
+        ally.Equipment.RestoreSaved(loadout.Equipment, Common.Instance.ItemManager, Player.Inventory.Add);
         AllyRecruitDialog.Recruit(town, ally);
         GameMessages.Post($"{ally.Name} joined the party.");
         town.SaveProgress();

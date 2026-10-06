@@ -12,6 +12,7 @@ public class StepBackAction : GameAction
 	private Character caster;
 	private Character target;
 	private Vector3Int? destination;
+    internal Vector3Int? ShotDirection;
 
 	public StepBackAction() { }
 
@@ -33,10 +34,10 @@ public class StepBackAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		if (caster == null || target == null)
+		if (caster == null || target == null && !ShotDirection.HasValue)
 			return new();
 
-		var dir = SkillMovement.Step(target.TilemapPosition, caster.TilemapPosition);
+		var dir = ShotDirection.HasValue ? -ShotDirection.Value : SkillMovement.Step(target.TilemapPosition, caster.TilemapPosition);
 		if (dir == Vector3Int.zero)
 			return new();
 

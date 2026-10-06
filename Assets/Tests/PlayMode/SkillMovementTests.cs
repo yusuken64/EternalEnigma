@@ -138,7 +138,7 @@ namespace EternalEnigma.Tests
             skill.Targeting = SkillTargeting.SelectedTarget;
             skill.TargetSelector.Team = TargetTeam.Enemies;
             skill.TargetSelector.Area = TargetArea.Visible;
-            var action = new TeleportBehindAction { MaxRange = 4 };
+            var action = new TeleportBehindAction { MaxRange = 3 };
             skill.ActionEffects.Clear();
             skill.ActionEffects.Add(action);
 
@@ -180,6 +180,7 @@ namespace EternalEnigma.Tests
         {
             // Reset all enemy positions relative to caster
             var origin = caster.TilemapPosition;
+            caster.BaseStats.HitBonus = 1; caster.InvalidateCachedStats(); caster.SyncDisplayedStats();
 
             // Place two enemies within 2 tiles
             first.SetPosition(origin + Vector3Int.right);
@@ -193,8 +194,8 @@ namespace EternalEnigma.Tests
             var initialDistantHP = distant.Vitals.HP;
 
             var skill = Learn("Damage");
-            skill.Targeting = SkillTargeting.AllTargets;
-            skill.TargetSelector.Team = TargetTeam.Enemies;
+            skill.Targeting = SkillTargeting.Self;
+            skill.TargetSelector.Team = TargetTeam.Self;
             var action = new ShadowDanceAction { Radius = 2 };
             skill.ActionEffects.Clear();
             skill.ActionEffects.Add(action);
@@ -208,8 +209,8 @@ namespace EternalEnigma.Tests
             // Far enemy should be unchanged
             Assert.That(distant.Vitals.HP, Is.EqualTo(initialDistantHP), "Distant enemy should be unchanged");
 
-            // Caster should end adjacent to last struck enemy (second)
-            var chebDistance = TileWorldDungeon.ChevDistance(caster.TilemapPosition, second.TilemapPosition);
+            // Caster should end adjacent to last struck enemy (first, after sorting by x)
+            var chebDistance = TileWorldDungeon.ChevDistance(caster.TilemapPosition, first.TilemapPosition);
             Assert.That(chebDistance, Is.EqualTo(1), "Caster should end adjacent to last struck enemy");
         }
 
@@ -298,8 +299,8 @@ namespace EternalEnigma.Tests
             Assert.That(finalCasterPos, Is.EqualTo(expectedPos), "Caster should step back 1 tile away from enemy");
 
             // Now test with wall behind caster
-            caster.SetPosition(origin + Vector3Int.right);
-            enemy.SetPosition(origin + Vector3Int.right * 2);
+            caster.SetPosition(origin);
+            enemy.SetPosition(origin + Vector3Int.right);
             var blockedInitialPos = caster.TilemapPosition;
 
             yield return Cast(skill, enemy);
@@ -328,6 +329,7 @@ namespace EternalEnigma.Tests
             // Create a Self skill with GrappleLineAction
             var skill = Learn("Damage");
             skill.Targeting = SkillTargeting.Self;
+            skill.TargetSelector.Team = TargetTeam.Self;
             var action = new GrappleLineAction { MaxRange = 5 };
             skill.ActionEffects.Clear();
             skill.ActionEffects.Add(action);

@@ -20,12 +20,12 @@ MonoBehaviour:
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 0
-  EquipmentSlot: 2
+  EquipmentSlot: 0
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
-    Strength: 5
+    Strength: 10
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0

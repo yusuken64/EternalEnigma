@@ -63,3 +63,4 @@ MonoBehaviour:
   ProjectileSpeed: 20
   FlightSeconds: {x: 0.25, y: 0.75}
   ScaleAreaToRadius: 1
+  AreaSound: {fileID: 8300000, guid: 922480d80d9c0b94da9c60c75638fdd4, type: 3}

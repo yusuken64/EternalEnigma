@@ -45,11 +45,11 @@ public class ApplyStatusEffectAction : GameAction
 		statusInstance = target.ApplyStatusEffect(statusEffectPrefab);
         VisualAppliedTarget = statusEffectPrefab != null && !ClassPassives.IsImmune(target, statusEffectPrefab) && target.StatusEffects.Any(s => s != null && s.StackKey == statusEffectPrefab.StackKey) ? target : null;
         if (statusInstance != null) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)}: {statusEffectPrefab.GetEffectName()}!");
-		//if (durationDelta != 0)
-		//{
-		//	var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x.GetType() == statusEffectPrefab.GetType());
-		//	if (applied != null) applied.TurnsLeft += durationDelta;
-		//}
+        if (durationDelta != 0 && statusEffectPrefab != null && !ClassPassives.IsImmune(target, statusEffectPrefab))
+        {
+            var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x != null && x.StackKey == statusEffectPrefab.StackKey);
+            if (applied != null) applied.TurnsLeft += durationDelta;
+        }
 		//var applied = statusInstance != null ? statusInstance :
 		//	target.StatusEffects.FirstOrDefault(x => x != null && statusEffectPrefab != null && x.StackKey == statusEffectPrefab.StackKey);
 		//applied?.OnApplied(target, caster);

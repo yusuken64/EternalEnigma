@@ -6,7 +6,7 @@ using System.Linq;
 public enum SkillIntent
 {
 	None = 0, Revive = 1, Heal = 2, Cure = 4, Buff = 8, CrowdControl = 16,
-	Debuff = 32, Damage = 64, Movement = 128, Utility = 256, Never = 512
+	Debuff = 32, Damage = 64, Movement = 128, Utility = 256, Never = 512, CastingSupport = 1024
 }
 
 public static class SkillIntents
@@ -61,7 +61,8 @@ public static class SkillIntents
 		{
 			if (effect == null) continue;
 
-			if (effect is RetreatAction)
+			if (effect is ReduceCastAction) { result |= SkillIntent.CastingSupport; }
+            else if (effect is RetreatAction)
 			{
 				result |= SkillIntent.Never;
 			}

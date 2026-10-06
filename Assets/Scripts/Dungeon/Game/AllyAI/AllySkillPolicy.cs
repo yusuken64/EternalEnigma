@@ -7,7 +7,7 @@ public sealed class AllySkillPolicy : PolicyBase
 {
 	public static IReadOnlyList<IAllySkillEvaluator> CreateDefaultEvaluators() => new IAllySkillEvaluator[]
 	{
-		new ReviveEvaluator(), new EmergencyHealEvaluator(), new CureEvaluator(), new BuffUpkeepEvaluator(),
+		new ReviveEvaluator(), new EmergencyHealEvaluator(), new CureEvaluator(), new CastingSupportEvaluator(), new BuffUpkeepEvaluator(),
 		new CrowdControlEvaluator(), new DamageEvaluator(), new UtilityEvaluator()
 	};
 
@@ -111,7 +111,7 @@ public sealed class AllySkillPolicy : PolicyBase
 
 		// Face the target
 		var option = pending.Option;
-		if (option.Direction.HasValue)
+		if (option.Direction.HasValue && option.Skill.Targeting == SkillTargeting.Missile)
 		{
 			ally.SetFacing(Character.GetFacing(option.Direction.Value));
 		}

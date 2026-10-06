@@ -138,8 +138,8 @@ public class Game : SingletonMonoBehaviour<Game>
             ally.TownAllyId = townAlly.Id;
             ally.PrimaryClass = townAlly.PrimaryClass;
             ally.SecondaryClass = townAlly.SecondaryClass;
-            foreach (var equipment in townAlly.Equipment.GetEquippedItems())
-                ally.Equipment.Equip(equipment);
+            foreach (var equipment in ItemSaveData.Capture(townAlly.Equipment.GetEquippedItems()))
+                ally.Equipment.Equip((EquipableInventoryItem)equipment.Restore(Common.Instance.ItemManager));
             // Player-initiated dungeon equips (EquipAction / EquipEffectDefinition use CanEquip) respect the class.
             var dungeonAlly = ally;
             ally.Equipment.ClassFilter = item => HeroClass.AllowsItem(dungeonAlly.PrimaryClass, dungeonAlly.SecondaryClass, item);

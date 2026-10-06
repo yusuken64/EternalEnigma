@@ -7,6 +7,11 @@ public class TargetSelector
 {
     public TargetTeam Team;
     public TargetArea Area;
+    public TargetLife Life;
+    internal bool Eligible(Character caster, Character target) => target != null &&
+        (Life == TargetLife.Downed ? target is Ally ally && Game.Instance.DownedAllies.Contains(ally) : target.Vitals.HP > 0) &&
+        (Team == TargetTeam.All || Team == TargetTeam.Enemies && target.Team != caster.Team ||
+         Team == TargetTeam.Allies && target.Team == caster.Team || Team == TargetTeam.Self && target == caster);
 
     public TargetSelector() { }
 
@@ -14,6 +19,7 @@ public class TargetSelector
     {
         Team = other.Team;
         Area = other.Area;
+        Life = other.Life;
     }
 
     public List<Vector3Int> GetTargets(Character caster)
@@ -21,7 +27,7 @@ public class TargetSelector
 
     public List<Character> GetCharacters(Character caster)
     {
-        IEnumerable<Character> candidates = Game.Instance.AllCharacters.Where(x => x != null && x.Vitals.HP > 0);
+        IEnumerable<Character> candidates = Game.Instance.AllCharacters.Concat(Game.Instance.DownedAllies).Distinct().Where(x => Eligible(caster, x));
 
         // --- Team filtering ---
         candidates = Team switch
@@ -32,6 +38,8 @@ public class TargetSelector
             TargetTeam.Self => candidates.Where(x => x == caster),
             _ => candidates
         };
+
+        if (Life == TargetLife.Downed && Area == TargetArea.Melee) return candidates.Where(c => TileWorldDungeon.ChevDistance(c.TilemapPosition, caster.TilemapPosition) <= 1).Distinct().ToList();
 
         // --- Area filtering ---
         BoundsInt? bounds = Area switch
@@ -77,3 +85,5 @@ public enum TargetArea
     Custom, // room to plug in something special
     Self
 }
+
+public enum TargetLife { Living, Downed }

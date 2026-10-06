@@ -31,17 +31,20 @@ public class TargetingAndArrowTests
         var go = new GameObject();
         gameObjects.Add(go);
         var ally = go.AddComponent<Ally>();
+        ally.Equipment = go.AddComponent<Equipment>();
         ally.Vitals = new Vitals();
         ally.Vitals.LinkedStats = () => new Stats { HPMax = 10 };
         ally.Vitals.HP = 10;
         return ally;
     }
 
-    private UsableItemDefinition CreateArrowDefinition(string name, int stackMax, int stackStartMin = 1, int stackStartMax = 1)
+    private EquipmentItemDefinition CreateArrowDefinition(string name, int stackMax, int stackStartMin = 1, int stackStartMax = 1)
     {
-        var def = ScriptableObject.CreateInstance<UsableItemDefinition>();
+        var def = ScriptableObject.CreateInstance<EquipmentItemDefinition>();
         scriptableObjects.Add(def);
         def.ItemName = name;
+        def.IsAmmunition = name == "Wooden Arrows";
+        def.EquipmentSlot = EquipmentSlot.OffHand;
         def.StackMax = stackMax;
         def.StackStartMin = stackStartMin;
         def.StackStartMax = stackStartMax;
@@ -176,63 +179,34 @@ public class TargetingAndArrowTests
     }
 
     [Test]
-    public void ArrowsCountedByNameOnly()
+    public void OnlyEquippedAmmunitionCountsRegardlessOfBagStock()
     {
-        var character = CreateAlly();
-        var inventory = CreateInventory(character.gameObject);
-
-        // Create arrow definition
-        var arrowDef = CreateArrowDefinition("Wooden Arrows", stackMax: 10);
-        var arrows = new UsableInventoryItem(arrowDef, 5);
-        inventory.InventoryItems.Add(arrows);
-
-        // Create another stackable item that is NOT an arrow
-        var boltDef = CreateArrowDefinition("Spell: Bolt", stackMax: 10);
-        var bolts = new UsableInventoryItem(boltDef, 3);
-        inventory.InventoryItems.Add(bolts);
-
-        int count = ArrowSupply.Count(inventory);
-        Assert.That(count, Is.EqualTo(5), "Only arrows named 'Wooden Arrows' are counted");
+        var character = CreateAlly(); var inventory = CreateInventory(character.gameObject);
+        var definition = CreateArrowDefinition("Wooden Arrows", 20);
+        var equipped = new EquipableInventoryItem(definition, 5);
+        inventory.InventoryItems.Add(new EquipableInventoryItem(definition,20));
+        Assert.That(ArrowSupply.Count(character), Is.Zero);
+        character.Equipment.Equip(equipped);
+        Assert.That(ArrowSupply.Count(character), Is.EqualTo(5));
     }
-
     [Test]
-    public void ConsumeRemovesEmptyStacks()
+    public void ConsumeRemovesEmptyEquippedStackWithoutRefill()
     {
-        var character = CreateAlly();
-        var inventory = CreateInventory(character.gameObject);
-
-        // Create arrow definition
-        var arrowDef = CreateArrowDefinition("Wooden Arrows", stackMax: 10);
-        var arrows = new UsableInventoryItem(arrowDef, 5);
-        inventory.InventoryItems.Add(arrows);
-
-        // Consume 3 arrows
-        int consumed = ArrowSupply.Consume(inventory, 3);
-        Assert.That(consumed, Is.EqualTo(3), "3 arrows consumed");
-        Assert.That(arrows.StackStock, Is.EqualTo(2), "Stack reduced to 2");
-        Assert.That(inventory.InventoryItems.Contains(arrows), Is.True, "Stack still in inventory");
-
-        // Consume 10 more arrows (only 2 available)
-        consumed = ArrowSupply.Consume(inventory, 10);
-        Assert.That(consumed, Is.EqualTo(2), "2 arrows consumed");
-        Assert.That(inventory.InventoryItems.Contains(arrows), Is.False, "Empty stack removed from inventory");
+        var character = CreateAlly(); var inventory = CreateInventory(character.gameObject);
+        var definition = CreateArrowDefinition("Wooden Arrows",20);
+        var arrows = new EquipableInventoryItem(definition,5);
+        inventory.InventoryItems.Add(new EquipableInventoryItem(definition,20));
+        character.Equipment.Equip(arrows);
+        Assert.That(ArrowSupply.Consume(character,3), Is.EqualTo(3)); Assert.That(arrows.StackStock, Is.EqualTo(2));
+        Assert.That(ArrowSupply.Consume(character,10), Is.EqualTo(2)); Assert.That(character.Equipment.EquippedShield, Is.Null);
+        Assert.That(inventory.InventoryItems[0].StackStock, Is.EqualTo(20));
     }
-
     [Test]
-    public void RecoveryKeepsArrows()
+    public void RecoveryKeepsEquippedArrows()
     {
-        var character = CreateAlly();
-        var inventory = CreateInventory(character.gameObject);
-
-        // Create arrow definition
-        var arrowDef = CreateArrowDefinition("Wooden Arrows", stackMax: 10);
-        var arrows = new UsableInventoryItem(arrowDef, 5);
-        inventory.InventoryItems.Add(arrows);
-
-        // Consume 3 arrows with 100% recovery chance
-        int consumed = ArrowSupply.Consume(inventory, 3, 1f);
-        Assert.That(consumed, Is.EqualTo(3), "3 arrows consumed");
-        Assert.That(arrows.StackStock, Is.EqualTo(5), "Stock unchanged with 100% recovery");
+        var character=CreateAlly(); var arrows=new EquipableInventoryItem(CreateArrowDefinition("Wooden Arrows",20),5);
+        character.Equipment.Equip(arrows);
+        Assert.That(ArrowSupply.Consume(character,3,1f),Is.EqualTo(3)); Assert.That(arrows.StackStock,Is.EqualTo(5));
     }
 
     [Test]

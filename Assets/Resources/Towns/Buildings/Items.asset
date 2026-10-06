@@ -18,10 +18,6 @@ MonoBehaviour:
   DialogId: shop
   DialogPrefab: {fileID: 0}
   ShopCatalog:
-  - Item: {fileID: 11400000, guid: 700d604e733ad5b40ab647fa891275f3, type: 2}
-    Price: 100
-    Quantity: 5
-    StackCount: 10
   - Item: {fileID: 11400000, guid: 0620ff1131cc0eb41a5952f1231e633c, type: 2}
     Price: 275
     Quantity: 2
@@ -30,6 +26,21 @@ MonoBehaviour:
     Price: 250
     Quantity: 2
     StackCount: 1
+  - Item: {fileID: 11400000, guid: 700d604e733ad5b40ab647fa891275f3, type: 2}
+    MinimumTier: 0
+    Price: 100
+    Quantity: 4
+    StackCount: 20
+  - Item: {fileID: 11400000, guid: 4341747b073f4a2791dd3c7659ce6917, type: 2}
+    MinimumTier: 1
+    Price: 200
+    Quantity: 4
+    StackCount: 20
+  - Item: {fileID: 11400000, guid: 1ba91f8b50a84ad896d081af98f587a6, type: 2}
+    MinimumTier: 2
+    Price: 400
+    Quantity: 4
+    StackCount: 20
   VendorPrefab: {fileID: 3597991658242453545, guid: cebac3115480f5c45a0733fb1e94af5b, type: 3}
   ServiceInterior: 1
   Npc: {fileID: 11400000, guid: eae90439a4491f449b38667b57e17ae5, type: 2}

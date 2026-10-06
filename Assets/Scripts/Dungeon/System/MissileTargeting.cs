@@ -1,10 +1,40 @@
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
 internal static class MissileTargeting
 {
+    internal sealed class Line
+    {
+        internal Vector3Int Endpoint;
+        internal readonly List<Hit> Encounters = new();
+    }
+    internal static Line TraceLine(Character caster, Vector3Int direction, int range, int cap = 1, bool splash = false)
+    {
+        var result = new Line { Endpoint = caster.TilemapPosition };
+        if (!IsDirection(direction)) return result;
+        var dungeon = Game.Instance.CurrentDungeon;
+        var seen = new HashSet<Character>();
+        bool Open(Vector3Int cell) => dungeon.IsFloorCell(cell) && dungeon.PropAt(cell)?.Alive != true && dungeon.PropAt(cell)?.BlocksMovement != true;
+        for (int i = 0; i < range; i++)
+        {
+            var cell = result.Endpoint;
+            var next = cell + direction;
+            if (!dungeon.IsFloorCell(next) || direction.x != 0 && direction.y != 0 &&
+                (!Open(cell + new Vector3Int(direction.x, 0)) || !Open(cell + new Vector3Int(0, direction.y)))) break;
+            result.Endpoint = next;
+            if (dungeon.PropAt(next)?.Alive == true || dungeon.PropAt(next)?.BlocksMovement == true) break;
+            var hit = Game.Instance.AllCharacters.FirstOrDefault(c => c != null && c != caster && c.Vitals.HP > 0 && c.OverlapsWith(new BoundsInt(next, Vector3Int.one)));
+            if (hit == null || !seen.Add(hit)) continue;
+            if (splash) { result.Encounters.Add(new Hit(next, hit)); break; }
+            if (hit.Team == caster.Team) continue;
+            result.Encounters.Add(new Hit(next, hit));
+            if (cap > 0 && result.Encounters.Count >= cap) break;
+        }
+        return result;
+    }
     internal readonly struct Hit
     {
         internal readonly Vector3Int Cell;

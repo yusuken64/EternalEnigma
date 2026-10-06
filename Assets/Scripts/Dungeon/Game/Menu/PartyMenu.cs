@@ -14,6 +14,7 @@ public sealed class PartyMenu : Dialog
     public Transform HeroesRoot, RowsRoot;
     public TMP_Text Details, Hints, HeroText;
     public Button InventoryTab, SkillsTab, BackButton;
+    private Button capabilitiesTab;
     public TrainerPreviewScroll DetailsControl;
     public IReadOnlyList<Button> EntryButtons => rows;
     private IPartyMenuContext context;
@@ -37,6 +38,24 @@ public sealed class PartyMenu : Dialog
         if (context != source) { context?.Dispose(); context = source; states.Clear(); }
         heroIndex = Math.Max(0, context.Heroes.ToList().FindIndex(h => h.Id == heroId));
         Tab = tab; result = null;
+        if(source is OverworldPartyMenuContext && capabilitiesTab==null)
+        {
+            capabilitiesTab=Instantiate(SkillsTab,SkillsTab.transform.parent);
+            capabilitiesTab.name="Capabilities tab";
+            var rect=(RectTransform)capabilitiesTab.transform;
+            var inventoryRect=(RectTransform)InventoryTab.transform;
+            var skillsRect=(RectTransform)SkillsTab.transform;
+            float left=inventoryRect.anchorMin.x, right=skillsRect.anchorMax.x;
+            float width=(right-left)/3;
+            inventoryRect.anchorMax=new Vector2(left+width,inventoryRect.anchorMax.y);
+            skillsRect.anchorMin=new Vector2(left+width,skillsRect.anchorMin.y);
+            skillsRect.anchorMax=new Vector2(left+width*2,skillsRect.anchorMax.y);
+            rect.anchorMin=new Vector2(left+width*2,rect.anchorMin.y);
+            rect.anchorMax=new Vector2(right,rect.anchorMax.y);
+            capabilitiesTab.onClick.RemoveAllListeners();
+            capabilitiesTab.onClick.AddListener(()=>SwitchTab(PartyMenuTab.Capabilities));
+        }
+        if(capabilitiesTab!=null)capabilitiesTab.gameObject.SetActive(source is OverworldPartyMenuContext);
         InventoryTab.onClick.RemoveAllListeners(); SkillsTab.onClick.RemoveAllListeners(); BackButton.onClick.RemoveAllListeners();
         InventoryTab.onClick.AddListener(() => SwitchTab(PartyMenuTab.Inventory));
         SkillsTab.onClick.AddListener(() => SwitchTab(PartyMenuTab.Skills));
@@ -51,7 +70,7 @@ public sealed class PartyMenu : Dialog
     }
     public void SwitchTab(PartyMenuTab tab)
     {
-        if (!IsRoot || tab == Tab) return;
+        if (!IsRoot || tab == Tab || (tab == PartyMenuTab.Capabilities && context is not OverworldPartyMenuContext)) return;
         Remember(); Tab = tab; result = null; Refresh(); SetFirstSelect();
         Common.Instance.MenuInputHandler.ClearInputThisFrame();
     }
@@ -86,6 +105,7 @@ public sealed class PartyMenu : Dialog
         }
         InventoryTab.GetComponentInChildren<TMP_Text>().text = Tab == PartyMenuTab.Inventory ? "> Inventory" : "Inventory";
         SkillsTab.GetComponentInChildren<TMP_Text>().text = Tab == PartyMenuTab.Skills ? "> Skills" : "Skills";
+        if(capabilitiesTab!=null)capabilitiesTab.GetComponentInChildren<TMP_Text>().text=Tab==PartyMenuTab.Capabilities?"> Capabilities":"Capabilities";
         entries = Hero == null ? new() : context.Entries(Hero, Tab);
         ViewState state = null;
         if (Hero != null) states.TryGetValue((Hero.Id,Tab), out state);
@@ -105,18 +125,23 @@ public sealed class PartyMenu : Dialog
             button.GetComponent<PartyMenuRow>().Selected = () => { selectedIndex = index; ShowDetails(); ScrollToSelected(button.gameObject); };
             rows.Add(button);
         }
-        if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=Tab==PartyMenuTab.Inventory?"The bag is empty.":"No learned skills.";empty.gameObject.SetActive(true);}
+        if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=Tab==PartyMenuTab.Inventory?"The bag is empty.":Tab==PartyMenuTab.Capabilities?"No acquired capabilities.":"No learned skills.";empty.gameObject.SetActive(true);}
         Canvas.ForceUpdateCanvases(); scrollView.verticalNormalizedPosition = state?.Scroll ?? 1;
         WireNavigation();
         ShowDetails();
     }
     private void WireNavigation()
     {
-        var tab=Tab==PartyMenuTab.Inventory?InventoryTab:SkillsTab;
+        var tab=Tab==PartyMenuTab.Inventory?InventoryTab:Tab==PartyMenuTab.Capabilities?capabilitiesTab:SkillsTab;
         for(int i=0;i<rows.Count;i++)rows[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
             selectOnUp=i>0?rows[i-1]:tab,selectOnDown=i+1<rows.Count?rows[i+1]:BackButton,selectOnRight=DetailsControl};
         InventoryTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnRight=SkillsTab,selectOnDown=rows.Count>0?rows[0]:BackButton};
         SkillsTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=InventoryTab,selectOnRight=DetailsControl,selectOnDown=rows.Count>0?rows[0]:BackButton};
+        if(capabilitiesTab!=null && capabilitiesTab.gameObject.activeSelf)
+        {
+            var nav=SkillsTab.navigation;nav.selectOnRight=capabilitiesTab;SkillsTab.navigation=nav;
+            capabilitiesTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=SkillsTab,selectOnRight=DetailsControl,selectOnDown=rows.Count>0?rows[0]:BackButton};
+        }
         BackButton.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnUp=rows.Count>0?rows[selectedIndex]:tab};
         var heroes=HeroesRoot.GetComponentsInChildren<Button>();
         for(int i=0;i<heroes.Length;i++)heroes[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
@@ -161,7 +186,7 @@ public sealed class PartyMenu : Dialog
     internal override void SetFirstSelect()
     {
         if (rows.Count > 0) rows[Mathf.Clamp(selectedIndex,0,rows.Count-1)].Select();
-        else (Tab == PartyMenuTab.Inventory ? InventoryTab : SkillsTab).Select();
+        else (Tab == PartyMenuTab.Inventory ? InventoryTab : Tab == PartyMenuTab.Capabilities ? capabilitiesTab : SkillsTab).Select();
     }
     private static void Clear(Transform parent)
     {

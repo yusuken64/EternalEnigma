@@ -11,12 +11,20 @@ public sealed class CampaignTravelService
     private readonly Common common;
     private bool transitioning;
     public bool IsTransitioning => transitioning;
+    private string returnArrivalTown;
+    public bool ConsumeDungeonReturn(string townId)
+    {
+        if (returnArrivalTown != townId) return false;
+        returnArrivalTown = null;
+        return true;
+    }
     private CampaignContext Context => common.CampaignContext;
     public CampaignTravelService(Common common) { this.common = common; }
     public void SceneReady() => transitioning = false;
     public void NewCampaign(int seed)
     {
         if (transitioning) return;
+        returnArrivalTown = null;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
         var save = common.GameSaveData;
         save.ProtagonistId = save.TownSaveData.RecruitedAlliesData.First().AllyId;
@@ -31,6 +39,7 @@ public sealed class CampaignTravelService
         if (transitioning) return;
         var save = common.GameSaveData;
         if (save == null) return;
+        returnArrivalTown = null;
         if (!save.HasCampaign) { common.CampaignContext = null; transitioning = true; TownSceneLoader.Load(TownSceneLoader.ResolveSaved()); return; }
         if (save.Campaign.Finished) return;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
@@ -90,6 +99,7 @@ public sealed class CampaignTravelService
         string firstClear = victory && !Context.Completed.Contains(Context.State.PendingDungeon)
             ? Context.State.PendingDungeon : null;
         Context.CompleteDungeon(victory);
+        returnArrivalTown = Context.State.Scene == "Town" ? Context.State.LocationId : null;
         var newKeys = Context.Keys.Except(previousKeys).OrderBy(key => key).ToArray();
         var capabilities = Context.Campaign.Sources.Where(source => Context.Claimed.Contains(source.Id) && !previousClaims.Contains(source.Id))
             .Select(DescribeCapabilityReward).ToArray();

@@ -10,7 +10,10 @@ public sealed class TownNpc : MonoBehaviour
     {
         TurnToward(Visual, player - Cell);
         Visual.GetComponentInChildren<Animator>()?.SetTrigger("Greeting");
-        TownMenu.ShowMessage(Definition.DisplayName + ": " + Definition.Greeting);
+        var context = Common.Instance.CampaignContext;
+        string hint = context == null ? "" : EternalEnigma.Core.Progression.CampaignGuidance.TownHint(context, context.State.LocationId,
+            id => CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? id);
+        TownMenu.ShowMessage(Definition.DisplayName + ": " + Definition.Greeting + (hint.Length == 0 ? "" : "\n\n" + hint));
     }
     public static void TurnToward(Transform visual, Vector3Int direction)
     {

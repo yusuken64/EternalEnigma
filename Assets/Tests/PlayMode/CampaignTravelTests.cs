@@ -41,6 +41,47 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator DungeonEntryApprovalCancellationAndCapabilitiesUseOverworldDialogs()
+        {
+            yield return StartCampaign();
+            var common=Common.Instance;var context=common.CampaignContext;
+            context.Resolved.UnionWith(context.Campaign.Routes.Where(r=>r.IsTownExit).Select(r=>r.Id));
+            Assert.That(common.Travel.ExitTown(Object.FindFirstObjectByType<Town>()),Is.True);
+            yield return WaitWorld();
+            yield return harness.WaitUntil(()=>!common.ScreenTransition.BlockScreen.activeSelf,"overworld reveal");
+            var world=Object.FindFirstObjectByType<OverworldScene>();
+            var menus=world.GetComponent<OverworldMenuManager>();
+            context.Position=context.Grid.Locations["repeatable-0"];
+            var before=JsonUtility.ToJson(context.Capture());
+            Assert.That(menus.ConfirmEntry(),Is.True);
+            yield return null;
+            var picker=menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p=>p.Owner!=null);
+            Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains("Not cleared")),Is.True);
+            picker.BackButton.onClick.Invoke();
+            Assert.That(JsonUtility.ToJson(context.Capture()),Is.EqualTo(before));
+            context.Completed.Add("repeatable-0");
+            Assert.That(menus.ConfirmEntry(),Is.True);
+            yield return null;
+            picker=menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p=>p.Owner!=null);
+            Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains("Cleared")),Is.True);
+            picker.BackButton.onClick.Invoke();
+            context.Roster.UnionWith(context.Campaign.Companions.Select(c=>c.Id));
+            menus.OpenPartyMenu(PartyMenuTab.Capabilities);
+            yield return null;
+            Assert.That(menus.PartyMenu.EntryButtons.Count,Is.EqualTo(CampaignGuidance.Acquired(context).Count()));
+            System.IO.Directory.CreateDirectory("Temp/TravelVerification");
+            ScreenCapture.CaptureScreenshot("Temp/TravelVerification/capabilities.png");
+            yield return null;
+            menus.PartyMenu.CloseDialog();
+            Assert.That(menus.ConfirmEntry(),Is.True);
+            yield return null;
+            picker=menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p=>p.Owner!=null);
+            picker.Rows.GetComponentsInChildren<AuthoredButton>().Single().Button.onClick.Invoke();
+            Assert.That(context.State.PendingDungeon,Is.EqualTo("repeatable-0"));
+            yield return harness.WaitForIdle();
+        }
+
+        [UnityTest]
         public IEnumerator TownToDungeonRemovesTransferredHeroPositionCircles()
         {
             yield return StartCampaign();
@@ -163,11 +204,28 @@ namespace EternalEnigma.Tests
             Assert.That(town.Configuration.Id, Is.EqualTo("town-0"));
             var spawn=Object.FindFirstObjectByType<HomeBed>().Tile-Vector3Int.up;
             Assert.That(town.TownPlayer.ControllingTownAlly.TilemapPosition, Is.EqualTo(spawn));
-            for (int y = 0; y < town.WalkableMap.TileWorldCreator.twcAsset.mapHeight / 2; y++)
-                Assert.That(town.WalkableMap.CanWalkTo(new Vector3Int(spawn.x, y, 0), new Vector3Int(spawn.x, y + 1, 0)), Is.True);
+            // The home can be in any residential slot; verify a route rather than an arbitrary straight column.
+            var reachable=new System.Collections.Generic.HashSet<Vector3Int>{spawn};
+            var frontier=new System.Collections.Generic.Queue<Vector3Int>();frontier.Enqueue(spawn);
+            while(frontier.Count>0)
+            {
+                var cell=frontier.Dequeue();
+                foreach(var direction in new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up})
+                {
+                    var next=cell+direction;
+                    if(!reachable.Contains(next) && town.CanEnter(next) && town.WalkableMap.CanWalkTo(cell,next))
+                    {reachable.Add(next);frontier.Enqueue(next);}
+                }
+            }
+            Assert.That(reachable,Does.Contain(town.Plan.Exit.ToCell()));
             Assert.That(common.Travel.ExitTown(town), Is.False);
             Common.Instance.MessageDialog.CloseDialog();
             var target = context.Grid.Locations["town-0"];
+            var companions=context.Campaign.Companions.Take(3).Select(c=>c.Id).ToArray();
+            context.Roster.UnionWith(companions);
+            Assert.That(context.SetParty(companions),Is.True);
+            town.RefreshCampaignParty();
+            Assert.That(town.TownPlayer.RecruitedAllies.Count,Is.EqualTo(4));
             Assert.That(common.Travel.EnterTownDungeon(town, "story-1"), Is.False);
             town.TownBuildings.First(b => b.Definition.DialogId == "entrance").Interact(town.TownPlayer, null);
             yield return null; // RePopulateObjects retires the legacy rows at the end of the frame.
@@ -189,6 +247,13 @@ namespace EternalEnigma.Tests
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.False);
             yield return AcknowledgeKey("Town gate key");
             yield return WaitTown();
+            var returnedTown=Object.FindFirstObjectByType<Town>();
+            var entranceCell=returnedTown.TownBuildings.Single(b=>b.Definition.DialogId=="entrance").TilemapPosition;
+            var expectedArrival=new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up}.Select(d=>entranceCell+d).First(returnedTown.CanEnter);
+            Assert.That(returnedTown.TownPlayer.ControllingTownAlly.TilemapPosition,Is.EqualTo(expectedArrival));
+            Assert.That(returnedTown.TownPlayer.RecruitedAllies.All(a=>returnedTown.CanEnter(a.TilemapPosition)),Is.True);
+            Assert.That(returnedTown.TownPlayer.RecruitedAllies.Select(a=>a.TilemapPosition).Distinct().Count(),Is.EqualTo(returnedTown.TownPlayer.RecruitedAllies.Count));
+
             Assert.That(context.Position, Is.EqualTo(target));
             Assert.That(context.State.Scene, Is.EqualTo("Town"));
             Assert.That(context.Keys, Contains.Item("Town gate key"));

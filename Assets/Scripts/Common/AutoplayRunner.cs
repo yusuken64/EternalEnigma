@@ -372,12 +372,26 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (c.SetParty(choice)) { triedParties.Add(PartyKey(c, choice)); town.RefreshCampaignParty(); }
     }
 
+    internal static bool TryGateActions(OverworldScene world, string routeId = null)
+    {
+        foreach (var route in world.Context.Gates.Nearby(world.Position).Where(r => routeId == null || r.Id == routeId))
+        {
+            using var session = world.BeginGateInteraction(route.Id);
+            if (session == null) continue;
+            foreach (var key in world.CollectedKeys)
+                if (world.AttemptGate(session, new KeyLockAction(key)) == LockOutcome.Opened) return true;
+            foreach (var capability in world.Held.Values)
+                if (world.AttemptGate(session, new CapabilityLockAction(capability)) == LockOutcome.Opened) return true;
+        }
+        return false;
+    }
+
     private void WorldTick(OverworldScene world, CampaignContext c)
     {
         if (pathWorld != world) { pathWorld = world; worldSteps.Clear(); }
         // This is a probe on every tick, not a player attempt: a missing key must not
         // reopen its modal forever and prevent routing to the key's source.
-        if (world.OpenGate(announceLocked: false) || world.OpenShortcut()) { worldSteps.Clear(); Log("Open gate or shortcut"); return; }
+        if (TryGateActions(world) || world.OpenShortcut()) { worldSteps.Clear(); Log("Open gate or shortcut"); return; }
         var here = c.Location;
         bool Objective(CampaignLocation l) => IsDungeon(l) ? !c.Completed.Contains(l.Id) :
             (l.Kind == LocationKind.Town && (!visited.Contains(l.Id) || c.Campaign.Locations.Any(d => d.ParentTownId == l.Id && !c.Completed.Contains(d.Id)))) ||

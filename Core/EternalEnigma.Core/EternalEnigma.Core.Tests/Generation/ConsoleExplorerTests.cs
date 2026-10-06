@@ -26,7 +26,7 @@ public sealed class ConsoleExplorerTests
         for (int i = 0; i < 6; i++) Assert.True(session.Move(1, 0));
         Assert.False(session.IsWalkable(new GridPoint(7, 0)));
         Assert.False(session.Move(1, 0));
-        Assert.Contains("Use Climb", session.Message);
+        Assert.Contains("Enter / A: Interact", session.Message);
         session.ClaimRewards();
         Assert.Contains("Opened gate", session.Message);
         for (int i = 0; i < 8; i++) Assert.True(session.Move(1, 0));

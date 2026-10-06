@@ -52,6 +52,34 @@ namespace EternalEnigma.Tests
             yield return null; yield return null;
         }
 
+        [UnityTest] public IEnumerator WaitingAlliesBlockMovementAndRecruitFromAdjacentFacingInteraction()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold=10000 }.CreateSave());
+            var town=Object.FindFirstObjectByType<Town>();
+            var player=town.TownPlayer;
+            var recruit=town.TownAllies.First();
+            var from=new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up}.Select(d=>recruit.TilemapPosition+d).First(town.CanEnter);
+            player.ControllingTownAlly.TilemapPosition=from;
+            player.ControllingTownAlly.transform.position=town.WalkableMap.CellToWorld(from);
+            player.ControllingTownAlly.SetFacing(Character.GetFacing(recruit.TilemapPosition-from));
+            Assert.That(town.CanEnter(recruit.TilemapPosition),Is.False);
+            new TownMovement(player,from,recruit.TilemapPosition).ExecuteImmediate();
+            Assert.That(player.ControllingTownAlly.TilemapPosition,Is.EqualTo(from));
+            ConnectPad();
+            yield return Press(GamepadButton.South);
+            var manager=Object.FindFirstObjectByType<TownMenuManager>();
+            var dialog=manager.CurrentDialog as AllyRecruitDialog;
+            Assert.That(dialog,Is.Not.Null);
+            Assert.That(dialog.AllyRecruitDialogMode,Is.EqualTo(AllyRecruitDialogMode.Recruit));
+            yield return Press(GamepadButton.East);
+            Assert.That(player.ControllingTownAlly.TilemapPosition,Is.EqualTo(from));
+            Assert.That(town.Services.Recruit(recruit,out _),Is.True);
+            yield return Press(GamepadButton.South);
+            dialog=manager.CurrentDialog as AllyRecruitDialog;
+            Assert.That(dialog,Is.Not.Null);
+            Assert.That(dialog.AllyRecruitDialogMode,Is.EqualTo(AllyRecruitDialogMode.Talk));
+        }
+
         [UnityTest] public IEnumerator MainMenuHeroPickerAndBackUseControllerOnly()
         {
             yield return harness.LoadMainMenu(null);

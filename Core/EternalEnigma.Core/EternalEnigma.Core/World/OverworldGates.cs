@@ -35,12 +35,26 @@ public sealed class OverworldGates
             !grid.RequiresBoat(c) && Math.Abs(c.X - position.X) + Math.Abs(c.Y - position.Y) == 1)));
 
     public bool NeedsOpening(CampaignRoute route) => !opened.Contains(route.Id) && !resolved.Contains(route.Id);
-    public string Hint(CampaignRoute route, CapabilitySet held) => NeedsOpening(route) &&
-        (route.ShortcutKind == ShortcutKind.Keyed ? HasKey(route) : route.CanTraverse(held, resolved))
-        ? route.LockText == null
-            ? "Enter / A: Use " + (route.KeyId ?? route.Requirement.ToString()) + " to open " + route.Id
-            : "Enter / A: Use " + UsedLabel(route, held) + " — " + route.LockText
-        : route.GateHint;
+    public LockInteractionSession? BeginInteraction(string routeId, Func<GridPoint> position, Func<CapabilitySet> held, Func<bool>? current = null)
+    {
+        if (!routes.TryGetValue(routeId, out var route) || !route.HasGate || route.ShortcutKind == ShortcutKind.FarSide) return null;
+        bool Valid() => (current?.Invoke() ?? true) && NeedsOpening(route) &&
+            Nearby(position()).Any(r => r.Id == routeId) && IsWalkable(position(), held());
+        if (!Valid()) return null;
+        return new LockInteractionSession(route, Valid, action => action switch
+        {
+            CapabilityLockAction capability => held().Contains(capability.Capability),
+            KeyLockAction key => keys.Contains(key.KeyId),
+            _ => false
+        }, () =>
+        {
+            if (!Valid()) return false;
+            if (route.ShortcutKind == ShortcutKind.Keyed || route.Latches) resolved.Add(route.Id);
+            return opened.Add(route.Id);
+        });
+    }
+    public string Hint(CampaignRoute route, CapabilitySet held) => NeedsOpening(route)
+        ? "Enter / A: Interact: " + route.GateHint : route.GateHint;
 
     /// <summary>What the party opens a gate with: the key's name, or the cheapest satisfied way through.</summary>
     public static string UsedLabel(CampaignRoute route, CapabilitySet held)
@@ -54,21 +68,15 @@ public sealed class OverworldGates
     public static string OpenedMessage(CampaignRoute route, CapabilitySet held) =>
         "Opened gate: " + (route.LockText ?? route.Id + ".") + " Used " + UsedLabel(route, held) + ".";
 
+    /// <summary>Compatibility for console callers: submit explicit actions through the same evaluator.</summary>
     public bool TryOpen(string routeId, GridPoint position, CapabilitySet held)
     {
-        if (!routes.TryGetValue(routeId, out var route) || !NeedsOpening(route) ||
-            !Nearby(position).Any(r => r.Id == routeId) || !IsWalkable(position, held)) return false;
-        if (route.ShortcutKind == ShortcutKind.Keyed)
-        {
-            if (!HasKey(route)) return false;
-            resolved.Add(route.Id);
-        }
-        else
-        {
-            if (!route.CanTraverse(held, resolved)) return false;
-            if (route.Latches) resolved.Add(route.Id);
-        }
-        opened.Add(route.Id);
-        return true;
+        using var session = BeginInteraction(routeId, () => position, () => held);
+        if (session == null) return false;
+        foreach (var key in keys)
+            if (session.Attempt(new KeyLockAction(key)) == LockOutcome.Opened) return true;
+        foreach (var capability in held.Values)
+            if (session.Attempt(new CapabilityLockAction(capability)) == LockOutcome.Opened) return true;
+        return false;
     }
 }

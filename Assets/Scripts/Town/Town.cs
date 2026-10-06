@@ -19,7 +19,7 @@ public class Town : MonoBehaviour
     public List<TownBuilding> TownBuildings;
     public List<ShopVendor> ShopVendors = new();
     public readonly List<TownNpc> Townsfolk = new();
-    public bool IsOccupied(Vector3Int cell) => ShopVendors.Any(v=>v!=null && v.TilemapPosition==cell) || Townsfolk.Any(n=>n!=null && n.Cell==cell) || GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell);
+    public bool IsOccupied(Vector3Int cell) => TownAllies.Any(a=>a!=null && a.TilemapPosition==cell) || ShopVendors.Any(v=>v!=null && v.TilemapPosition==cell) || Townsfolk.Any(n=>n!=null && n.Cell==cell) || GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell);
     public bool CanEnter(Vector3Int cell) => Plan != null && Plan.IsWalkable(cell.ToGridPoint()) && !IsOccupied(cell);
     private readonly List<GameObject> shopWalls = new();
     private readonly List<TownRoofVisual> roofs = new();
@@ -119,6 +119,18 @@ public class Town : MonoBehaviour
             Destroy(child.gameObject);
 		}
 
+        var allyPositions = Plan.AllySlots.Select(p => p.Cell.ToCell()).ToList();
+        var rolls = Plan.AllySlots.Select(p => p.Roll).ToList();
+		var allies = TownAllyManager.GenerateRandomAllies(rolls, (Common.Instance.CampaignContext != null ? Common.Instance.CampaignContext.Roster.Append(Common.Instance.GameSaveData.ProtagonistId) : Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData.Select(a => a.AllyId).Concat(Configuration.StartingParty.Select(a => a.Id))));
+		for (int i = 0; i < Mathf.Min(allies.Count, allyPositions.Count); i++)
+		{
+			var ally = allies[i];
+			var worldPosition = WalkableMap.CellToWorld(allyPositions[i]);
+			ally.TilemapPosition = allyPositions[i];
+			ally.transform.position = worldPosition;
+			ally.SetFacing(Facing.Down);
+			TownAllies.Add(ally);
+		}
         arrivalHeroId = null;
         //restore allies
         var startPosition = Configuration.PartySpawn;
@@ -130,6 +142,14 @@ public class Town : MonoBehaviour
             startPosition = new Vector3Int(campaignSave.ArrivalX, campaignSave.ArrivalY, 0);
             arrivalFacing = campaignSave.ArrivalFacing; arrivalHeroId = campaignSave.ArrivalHeroId;
             campaignSave.HasArrival = false;
+        }
+        if (Common.Instance.Travel.ConsumeDungeonReturn(Configuration.Id))
+        {
+            var entrance = TownBuildings.First(b => b.Definition.DialogId == "entrance").TilemapPosition;
+            var arrival = new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up}
+                .Select(direction => entrance + direction).Where(CanEnter).Cast<Vector3Int?>().FirstOrDefault();
+            if (arrival.HasValue) startPosition = arrival.Value;
+            arrivalFacing = Facing.Down;
         }
         var formation = new List<Vector3Int> { startPosition };
         foreach(var direction in new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up})
@@ -178,18 +198,7 @@ public class Town : MonoBehaviour
             allyInstance.RefreshEquipmentVisuals();
         }
 
-        var allyPositions = Plan.AllySlots.Select(p => p.Cell.ToCell()).ToList();
-        var rolls = Plan.AllySlots.Select(p => p.Roll).ToList();
-		var allies = TownAllyManager.GenerateRandomAllies(rolls, (Common.Instance.CampaignContext != null ? Common.Instance.CampaignContext.Roster.Append(Common.Instance.GameSaveData.ProtagonistId) : TownPlayer.RecruitedAllies.Select(a => a.Id)));
-		for (int i = 0; i < Mathf.Min(allies.Count, allyPositions.Count); i++)
-		{
-			var ally = allies[i];
-			var worldPosition = WalkableMap.CellToWorld(allyPositions[i]);
-			ally.TilemapPosition = allyPositions[i];
-			ally.transform.position = worldPosition;
-			ally.SetFacing(Facing.Down);
-			TownAllies.Add(ally);
-		}
+
 	}
 
 	[ContextMenu("Generate Entrance")]

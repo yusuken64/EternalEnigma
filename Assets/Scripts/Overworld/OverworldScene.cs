@@ -261,7 +261,7 @@ public sealed class OverworldScene : MonoBehaviour
     private bool TryMoveStep(int dx, int dy, bool manual)
     {
         if (!manual) StopHeldWalk();
-        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened) return false;
         if (Context.Location?.Kind == LocationKind.Town && !Context.CanLeaveTown(Context.Location.Id))
         { StopHeldWalk(); Message = "Clear the dungeon inside town to unlock the town gate."; return false; }
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
@@ -271,7 +271,6 @@ public sealed class OverworldScene : MonoBehaviour
             var gate = Map.CurrentGrid.LockAt(next);
             Message = Map.CurrentGrid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires: Boat to sail." :
                 gate == null ? "Blocked." : GateDescription(gate.RouteId);
-            if (gate != null) AnnounceMissingKey(Campaign.Routes.First(r => r.Id == gate.RouteId));
             return false;
         }
         if (locationVisuals.TryGetValue(Position, out var previousMarker)) previousMarker.SetActive(true);
@@ -362,12 +361,11 @@ public sealed class OverworldScene : MonoBehaviour
     public bool Warp(string routeId)
     {
         StopHeldWalk();
-        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened) return false;
         if (!Map.CurrentGrid.TryWarp(routeId, Position, Held, resolved, out var destination))
         {
             var blocked = Map.CurrentGrid.WarpsAt(Position).FirstOrDefault(r => r.Id == routeId);
             Message = blocked != null ? gates.Hint(blocked, Held) : "Stand on a warp gate.";
-            if (blocked != null) AnnounceMissingKey(blocked);
             return false;
         }
         if (locationVisuals.TryGetValue(Position, out var previous)) previous.SetActive(true);
@@ -385,40 +383,37 @@ public sealed class OverworldScene : MonoBehaviour
         return true;
     }
 
+    public LockInteractionSession BeginGateInteraction(string routeId)
+    {
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return null;
+        var context = Context;
+        return gates.BeginInteraction(routeId, () => Position, () => Held,
+            () => isActiveAndEnabled && IsReady && Common.Instance.CampaignContext == context && !moving && !Common.Instance.Travel.IsTransitioning);
+    }
+
+    public LockOutcome AttemptGate(LockInteractionSession session, LockAction action)
+    {
+        var outcome = session.Attempt(action);
+        if (outcome == LockOutcome.Opened)
+        {
+            Message = "The way is now open!";
+            RefreshGates();
+            SaveProgress();
+        }
+        return outcome;
+    }
+
     public bool OpenGate(string routeId = null, bool announceLocked = true)
     {
         StopHeldWalk();
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return false;
-        foreach (var route in gates.Nearby(Position))
-            if ((routeId == null || route.Id == routeId) && gates.TryOpen(route.Id, Position, Held))
-            {
-                Message = OverworldGates.OpenedMessage(route, Held);
-                RefreshGates();
-                SaveProgress();
-                if (route.ShortcutKind == ShortcutKind.Keyed && !string.IsNullOrEmpty(route.KeyId))
-                    Common.Instance.Travel.ShowKeyUsed(route.KeyId);
-                else if (!route.Requirement.IsOpen)
-                    Common.Instance.Travel.ShowCapabilityUsed(route.Requirement, Held);
-                return true;
-            }
-        var locked = gates.Nearby(Position).FirstOrDefault(r => (routeId == null || r.Id == routeId) && gates.NeedsOpening(r));
-        if (locked != null)
-        {
-            Message = gates.Hint(locked, Held);
-            if (announceLocked) AnnounceMissingKey(locked);
-        }
-        return false;
-    }
-
-    private void AnnounceMissingKey(CampaignRoute route)
-    {
-        if (route.ShortcutKind == ShortcutKind.Keyed && gates.NeedsOpening(route) && !gates.HasKey(route))
-            Common.Instance.Travel.ShowMissingKey(route.KeyId, route.LockText);
+        var route = gates.Nearby(Position).FirstOrDefault(r => (routeId == null || r.Id == routeId) && gates.NeedsOpening(r) && r.ShortcutKind != ShortcutKind.FarSide);
+        return route != null && GetComponent<OverworldMenuManager>().ChooseGate(route);
     }
 
     public bool OpenShortcut()
     {
-        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !locations.TryGetValue(Position, out var location)) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened || !locations.TryGetValue(Position, out var location)) return false;
         foreach (var route in Campaign.Routes)
             if (route.TryUnlock(location.Id, resolved)) { Message = "Opened shortcut: " + route.Id; RefreshGates(); SaveProgress(); return true; }
         return false;
@@ -430,14 +425,14 @@ public sealed class OverworldScene : MonoBehaviour
     {
         StopHeldWalk();
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
-        if (OpenGate(announceLocked: false) || Common.Instance.Travel.IsTransitioning) return;
+        if (GetComponent<OverworldMenuManager>().Opened) return;
         if (!locations.TryGetValue(Position, out var location))
         {
             if (announceLocked) OpenGate();
             return;
         }
         if (OpenShortcut()) return;
-        if (!Context.IsSandbox && Common.Instance.Travel.EnterLocation()) return;
+        if (!Context.IsSandbox && (announceLocked ? GetComponent<OverworldMenuManager>().ConfirmEntry() : Common.Instance.Travel.EnterLocation())) return;
         var rewards = new List<string>();
         var acquiredKeys = new List<string>();
         var acquiredCapabilities = new List<string>();
@@ -462,7 +457,7 @@ public sealed class OverworldScene : MonoBehaviour
 
     public bool ToggleCompanion(string id)
     {
-        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !Context.IsSandbox || !locations.TryGetValue(Position, out var location) || location.Kind != LocationKind.Town || !recruited.Contains(id)) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened || !Context.IsSandbox || !locations.TryGetValue(Position, out var location) || location.Kind != LocationKind.Town || !recruited.Contains(id)) return false;
         var ids = active.Contains(id) ? active.Where(x => x != id).ToArray() : active.Concat(new[] { id }).ToArray();
         if (!Context.SetParty(ids)) return false;
         GameMessages.Post("Travelling party updated.");
@@ -488,7 +483,7 @@ public sealed class OverworldScene : MonoBehaviour
     }
     public bool SimulateDungeonVictory()
     {
-        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || !Context.IsSandbox) return false;
+        if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened || !Context.IsSandbox) return false;
         var interior = Context.Campaign.Locations.FirstOrDefault(l => l.ParentTownId != null && l.ParentTownId == Context.Location?.Id);
         if (!(interior != null ? Context.BeginTownDungeon(interior.Id) : Context.BeginDungeon())) return false;
         Context.CompleteDungeon(true); RefreshGates();
@@ -535,7 +530,7 @@ public sealed class OverworldScene : MonoBehaviour
     private void OnGUI()
     {
         GameUISkin.UseLegacySkin();
-        if (Context == null || !Context.IsSandbox || !IsReady) return;
+        if (Context == null || !Context.IsSandbox || !IsReady || GetComponent<OverworldMenuManager>().Opened) return;
         bool previousEnabled = GUI.enabled;
         GUI.enabled = previousEnabled && !AutoplayRunner.BlocksPlayerInput;
         GameUISkin.LegacyBeginArea(new Rect(16, 16, 580, 430));

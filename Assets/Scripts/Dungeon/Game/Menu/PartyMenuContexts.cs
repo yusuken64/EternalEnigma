@@ -113,6 +113,17 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
             RestoreHero(live,data);Add(live);
         }
     }
+    public override List<PartyMenuEntry> Entries(PartyMenuHero hero, PartyMenuTab tab)
+    {
+        if(tab!=PartyMenuTab.Capabilities)return base.Entries(hero,tab);
+        var context=world.Context;
+        return EternalEnigma.Core.Progression.CampaignGuidance.Acquired(context).Select(capability=>new PartyMenuEntry {
+            Title=EternalEnigma.Core.Capabilities.CapabilityCatalog.DisplayName(capability), Section="Acquired capabilities",
+            Description="Source: "+EternalEnigma.Core.Progression.CampaignGuidance.CapabilitySource(context,capability,
+                id=>CampaignParty.Resolve(id,TownSceneLoader.Default)?.Name??id)+"\n"+
+                (context.Held.Contains(capability)?"Available":"Unavailable: add the required companion to your travelling party at a town.")
+        }).ToList();
+    }
     public static void RestoreHero(TownAlly live,TownAllyData data)
     {
         live.Id=data.AllyId;live.Name=data.AllyName;live.Hp=data.Hp;live.Sp=data.Sp;live.HighestLevel=data.HighestLevel;live.Level=data.Level;live.Experience=data.Experience;
@@ -124,7 +135,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         live.RefreshEquipmentVisuals();
         live.EnsureStartingSkills();
     }
-    public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
+    public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Item==null && entry.Skill==null?"Choose a capability when interacting with an obstacle.":entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
         entry.Skill?.ActivationType==ActivationType.Passive?base.Restriction(hero,entry):"Inspect only while travelling. Use items and recovery skills in town, or actions in a dungeon.";
     public override List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry)
     {

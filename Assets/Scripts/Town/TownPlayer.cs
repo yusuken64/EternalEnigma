@@ -197,12 +197,13 @@ public class TownPlayer : MonoBehaviour
             if(npc!=null){npc.Greet(originalPosition);return;}
             var bed = FindObjectsByType<HomeBed>(FindObjectsSortMode.None).FirstOrDefault(b => b.Tile == targetMapPosition);
             if (bed != null) { bed.Interact(); return; }
-			var targetingAlly = RecruitedAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
+			var waitingAlly = FindFirstObjectByType<Town>().TownAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
+			var targetingAlly = waitingAlly ?? RecruitedAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
 			if (targetingAlly != null)
 			{
 				_menuBusy = true;
 				var townMenu = FindFirstObjectByType<TownMenu>();
-				townMenu.AllyRecruitDialog.Show(targetingAlly, AllyRecruitDialogMode.Talk);
+				townMenu.AllyRecruitDialog.Show(targetingAlly, waitingAlly != null ? AllyRecruitDialogMode.Recruit : AllyRecruitDialogMode.Talk);
 				townMenu.AllyRecruitDialog.CloseAction = () =>
 				{
 					//Do nothing
@@ -304,18 +305,6 @@ public class TownPlayer : MonoBehaviour
 		{
 			StopHeldWalk();
 			overlappingBuilding.Interact(this, reverse);
-		}
-		else if (town.TownAllies.Any(x => x.TilemapPosition == this.ControllingTownAlly.TilemapPosition))
-		{
-			StopHeldWalk();
-			var ally = town.TownAllies.First(x => x.TilemapPosition == this.ControllingTownAlly.TilemapPosition);
-			var townMenu = FindFirstObjectByType<TownMenu>();
-			townMenuManager.Open(townMenu.AllyRecruitDialog);
-			townMenu.AllyRecruitDialog.Show(ally, AllyRecruitDialogMode.Recruit);
-			townMenu.AllyRecruitDialog.CloseAction = () =>
-			{
-				SetAction(reverse);
-			};
 		}
 		_busy = false;
 		holdTime = 0f;

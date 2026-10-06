@@ -13,6 +13,8 @@ public sealed class PartyMenuPicker : Dialog
     public AuthoredButton RowTemplate;
     private Button first;
     private bool committed;
+    private int submittedFrame = -1;
+    private TMP_Text description;
     #if UNITY_EDITOR
     public static PartyMenuPicker AuthorLayout(Transform parent, string title, List<(string Label, Action Execute)> choices,bool closeOnChoose=true)
     {
@@ -53,21 +55,59 @@ public sealed class PartyMenuPicker : Dialog
     {
         var picker=parent.GetComponentsInChildren<PartyMenuPicker>(true).FirstOrDefault(p=>p.Owner==null);
         if(picker==null)throw new InvalidOperationException("No free authored party picker for this dialog stack.");
-        picker.committed=false;picker.Title.text=title;picker.first=null;
+        picker.committed=false;picker.submittedFrame=-1;picker.Title.text=title;picker.Title.enableAutoSizing=true;picker.Title.fontSizeMin=18;picker.Title.fontSizeMax=30;picker.first=null;picker.description=null;
         foreach(Transform child in picker.Rows){child.gameObject.SetActive(false);Destroy(child.gameObject);}
+        var buttons = new List<Button>();
         foreach(var choice in choices)
         {
             var row=picker.RowTemplate.Spawn(picker.Rows,choice.Label,()=> {
-                if(picker.committed || picker.Owner?.Current!=picker)return;
+                if(picker.committed || picker.Owner?.Current!=picker || picker.submittedFrame==Time.frameCount || choice.Execute==null)return;
+                picker.submittedFrame=Time.frameCount;
                 picker.committed=closeOnChoose;if(closeOnChoose)picker.CloseDialog();
                 Common.Instance.MenuInputHandler.ClearInputThisFrame();choice.Execute();
             });
             row.Button.GetComponent<PartyMenuRow>().Selected=()=>picker.ScrollToSelected(row.gameObject);
-            if(picker.first==null)picker.first=row.Button;
+            row.Button.interactable=choice.Execute!=null;
+            if(row.Button.interactable)buttons.Add(row.Button);
+            if(picker.first==null && row.Button.interactable)picker.first=row.Button;
         }
         picker.BackButton.onClick.RemoveAllListeners();picker.BackButton.onClick.AddListener(picker.CloseDialog);
         if(picker.first==null)picker.first=picker.BackButton;
+        buttons.Add(picker.BackButton);
+        for(int i=0;i<buttons.Count;i++)buttons[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
+            selectOnUp=buttons[(i+buttons.Count-1)%buttons.Count],selectOnDown=buttons[(i+1)%buttons.Count]};
+        picker.scrollView.verticalNormalizedPosition=1;
         return picker;
     }
-    internal override void SetFirstSelect()=>first.Select();
+    public void Description(string text)
+    {
+        var label=description=Instantiate(Title,Rows);
+        label.name="Interaction description";
+        label.text=text+"\n\n<size=18>Up / Down: scroll   |   Right: actions</size>"; label.fontSize=24; label.enableAutoSizing=false;
+        label.textWrappingMode=TextWrappingModes.Normal;
+        label.transform.SetAsFirstSibling();
+        label.gameObject.AddComponent<LayoutElement>();
+        var read=label.gameObject.AddComponent<TrainerPreviewScroll>();
+        read.Scroll=scrollView;
+        read.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=BackButton,selectOnRight=first};
+        foreach(var button in Rows.GetComponentsInChildren<Button>().Append(BackButton).Where(b=>b!=read))
+        {var nav=button.navigation;nav.selectOnLeft=read;button.navigation=nav;}
+        first=read;
+        label.gameObject.SetActive(true);
+    }
+    internal override void SetFirstSelect()
+    {
+        Canvas.ForceUpdateCanvases();
+        float width=Mathf.Max(200,((RectTransform)Rows).rect.width);
+        if(description!=null)description.GetComponent<LayoutElement>().preferredHeight=description.GetPreferredValues(description.text,width,0).y+24;
+        foreach(var row in Rows.GetComponentsInChildren<AuthoredButton>())
+        {
+            var label=row.GetComponentInChildren<TMP_Text>();
+            var layout=row.GetComponent<LayoutElement>();
+            if(layout!=null && label!=null)layout.preferredHeight=Mathf.Max(64,label.GetPreferredValues(label.text,width-40,0).y+24);
+        }
+        Canvas.ForceUpdateCanvases();
+        scrollView.verticalNormalizedPosition=1;
+        first.Select();
+    }
 }

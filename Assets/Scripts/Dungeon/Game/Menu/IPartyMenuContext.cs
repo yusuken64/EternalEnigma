@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PartyMenuTab { Inventory, Skills }
+public enum PartyMenuTab { Inventory, Skills, Capabilities }
 
 public sealed class PartyMenuHero
 {

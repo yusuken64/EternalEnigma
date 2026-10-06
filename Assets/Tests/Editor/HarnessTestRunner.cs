@@ -254,6 +254,25 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Classes")]
     public static void RunClasses() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.ClassAssignmentTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Travel Gate Routes")]
+    public static void RunTravelGateRoutes() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeed42",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeedNegativeOne",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeedZero");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Travel Interactions")]
+    public static void RunTravelInteractions() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignTravelTests",
+        "EternalEnigma.Tests.OverworldSceneTests.CompanionWithoutAnimatorCanWalkAfterCachedTerrainReload",
+        "EternalEnigma.Tests.OverworldSceneTests.LockChooserOffersEveryAcquiredOptionAndCancelsWithoutOpening",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeed42",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeedNegativeOne",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeedZero",
+        "EternalEnigma.Tests.TownAmbientGameplayTests",
+        "EternalEnigma.Tests.TownGameplayTests.PartyWithoutAnimationComponentCanWalk",
+        "EternalEnigma.Tests.TownGameplayTests.EnteringAndLeavingARoomOnlyChangesItsRoof",
+        "EternalEnigma.Tests.ControllerFlowTests.WaitingAlliesBlockMovementAndRecruitFromAdjacentFacingInteraction");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign")]
     public static void RunCampaign() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CampaignTravelTests", "EternalEnigma.Tests.CampaignSleepTests", "EternalEnigma.Tests.CampaignTownServiceTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign Slot UI")]

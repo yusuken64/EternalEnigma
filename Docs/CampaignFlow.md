@@ -23,6 +23,35 @@ The two starter locations use BSP/throne layouts. Seeds derive from campaign see
 Completion commits rewards to memory once per run. Final victory offers an explicit
 **Save completed campaign** action. Retreat retains loot and progression in memory.
 
+## Travel interactions
+
+Overworld dungeon entry first shows a confirmation with campaign clear status. Town entry
+and direct `CampaignTravelService.EnterLocation` calls remain immediate. Returns to town
+place the leader on a free, walkable neighbor of its dungeon entrance (south, west, east,
+then north), using the existing party arrival formation. Overworld victories keep their
+original destination.
+
+Physical locks open a chooser owned by `OverworldMenuManager`'s `DialogController`.
+It displays the obstacle and all acquired capabilities and held keys, without recommending
+a solution. Benched companions' capabilities remain visible and disabled. Description
+focus supports up/down scrolling and right to actions; actions support keyboard/gamepad
+navigation and Cancel/back. Wrong or repeated actions leave the chooser open.
+
+Core's `LockSolutionEvaluator` tracks each alternative independently. A
+`LockInteractionSession` revalidates the target and each typed capability/key action,
+then commits a completed solution once. Partial progress belongs only to that chooser;
+closing it or leaving the scene discards progress. No new save fields or resource costs
+are introduced. Autoplay submits explicit actions through the same session API.
+
+The overworld party menu's Capabilities tab lists learned capabilities, sources and
+availability. Town greetings append the current town exit hint, or the next required
+unopened lock. Hints describe alternative/paired requirements and acquisition locations
+with generated biomes and eight-way geographic bearings. Waiting allies occupy their
+tiles and require an adjacent, facing interaction to recruit.
+
+Run **Tools > Eternal Enigma > Tests > Run Travel Interactions** for the relevant Unity
+regressions; results are written to `Temp/HarnessResults/PlayMode.json` and `.xml`.
+
 ## Save schema
 
 Three new PlayerPrefs keys contain independent campaign snapshots, roster progression,

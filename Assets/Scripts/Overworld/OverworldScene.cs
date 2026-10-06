@@ -51,7 +51,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         if (!messageChanged) return;
         messageChanged = false;
-        GameMessages.Post(message, coalesce: true);
+        GameMessages.Post(InputPrompts.Format(message), coalesce: true);
     }
     private HashSet<string> claimed => Context.Claimed;
     private HashSet<string> recruited => Context.Roster;
@@ -186,7 +186,7 @@ public sealed class OverworldScene : MonoBehaviour
             if (live != null) OverworldPartyMenuContext.RestoreHero(live, data);
         }
         RefreshGates();
-        Message = "Enter / A: claim location rewards or use a key at a gate.";
+        Message = "{Interact}: claim location rewards or use a key at a gate.";
         FollowCamera();
     }
 
@@ -306,11 +306,11 @@ public sealed class OverworldScene : MonoBehaviour
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
         SaveProgress();
         RefreshGates();
-        Message = locations.TryGetValue(Position, out var location) ? (location.Kind == LocationKind.Town ? Context.GetTownDisplayName(location.Id) : location.Id) + " — " + location.Kind + " | Enter / A: interact" : "";
+        Message = locations.TryGetValue(Position, out var location) ? (location.Kind == LocationKind.Town ? Context.GetTownDisplayName(location.Id) : location.Id) + " — " + location.Kind + " | {Interact}: interact" : "";
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
             if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) Message += " | " + GateDescription(id);
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
-            Message += " | Enter / A: Collect " + route.KeyLabel;
+            Message += " | {Interact}: Collect " + route.KeyLabel;
         foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
         walkHistory.Add(Position);
         if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
@@ -557,9 +557,9 @@ public sealed class OverworldScene : MonoBehaviour
         GUI.enabled = previousEnabled && !AutoplayRunner.BlocksPlayerInput;
         GameUISkin.LegacyBeginArea(new Rect(16, 16, 580, 430));
         GUILayout.Label("CAMPAIGN OVERWORLD  |  Seed " + Map.Seed);
-        GUILayout.Label("WASD / arrows / left stick: move   •   Enter / A: interact");
+        GUILayout.Label(InputPrompts.Format("{Move}: move   •   {Interact}: interact"));
         GUILayout.Label("Green: town   Red: dungeon   Gold: landmark   Purple: closed gate");
-        GUILayout.Label(Message);
+        GUILayout.Label(InputPrompts.Format(Message));
         if (IsReady)
         {
             GUILayout.Label("Biome: " + Map.CurrentGrid.BiomeAt(Position) + (Map.CurrentGrid.RequiresBoat(Position) ? " | Sailing" : "") +

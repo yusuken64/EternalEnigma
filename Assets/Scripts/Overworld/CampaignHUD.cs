@@ -44,7 +44,7 @@ public sealed class CampaignHUD : MonoBehaviour
         actions = GameUISkin.Rect("Travel actions", bar.transform, new Vector2(.7f, .12f), new Vector2(.98f, .88f));
         if (Town != null)
         {
-            var partyButton = PartyButton = GameUISkin.Button(actions, "Party  [P / B]", Vector2.zero, Vector2.one, () => SetPartyOpen(!IsPartyOpen));
+            var partyButton = PartyButton = GameUISkin.Button(actions, "Party  [P]", Vector2.zero, Vector2.one, () => SetPartyOpen(!IsPartyOpen));
             partyButton.navigation = new Navigation { mode = Navigation.Mode.None };
             rosterPanel = GameUISkin.Panel(canvas.transform, new Vector2(.02f, .18f), new Vector2(.33f, .82f)).gameObject;
             GameUISkin.Label(rosterPanel.transform, "YOUR COMPANIONS", new Vector2(.06f, .88f), new Vector2(.94f, .97f), 28);
@@ -89,8 +89,8 @@ public sealed class CampaignHUD : MonoBehaviour
             ready &= Overworld.IsReady && MenuUIInputModule.Active?.HasDialog != true;
             message.transform.parent.gameObject.SetActive(ready);
             if (!ready) return;
-            message.text = Overworld.Context.State.Finished ? "Campaign complete!" :
-                string.IsNullOrWhiteSpace(Overworld.Message) ? "Explore the world\nMove: WASD / arrows / left stick   |   Interact: Enter / A" : Overworld.Message;
+            message.text = InputPrompts.Format(Overworld.Context.State.Finished ? "Campaign complete!" :
+                string.IsNullOrWhiteSpace(Overworld.Message) ? "Explore the world\nMove: {Move}   |   Interact: {Interact}" : Overworld.Message);
             var warps = Overworld.Map.CurrentGrid.WarpsAt(Overworld.Position).ToArray();
             string key = string.Join("|", warps.Select(w => w.Id));
             if (key != actionKey)
@@ -110,6 +110,7 @@ public sealed class CampaignHUD : MonoBehaviour
         }
         else if (Town != null)
         {
+            if (PartyButton != null) PartyButton.GetComponentInChildren<TMP_Text>().text = "Party  [" + InputPrompts.Party + "]";
             ready &= Town.IsReady && !Town.TownPlayer.CutsceneLocked && common.CampaignContext != null && (townMenus == null || !townMenus.Opened);
             message.transform.parent.gameObject.SetActive(ready);
             if (!ready) { if (IsPartyOpen) SetPartyOpen(false); return; }

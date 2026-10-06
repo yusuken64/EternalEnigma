@@ -77,17 +77,6 @@ namespace JuicyChickenGames.Menu
         void OnEnable()
         {
             if (moveAction == null) Initialize();
-            PlayerInput.onControlsChanged += OnControlsChanged;
-        }
-
-        void OnDisable()
-        {
-            PlayerInput.onControlsChanged -= OnControlsChanged;
-        }
-
-        private void OnControlsChanged(PlayerInput obj)
-        {
-            Debug.Log("Control scheme changed to: " + obj.currentControlScheme);
         }
     }
 }

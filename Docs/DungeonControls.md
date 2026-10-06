@@ -45,6 +45,16 @@ Controller regressions: **Tools > Eternal Enigma > Tests > Run Controller Flows*
 These use virtual gamepad events through Unity's Input System and production scenes.
 Physical hardware connection and platform-specific button labels still need a device check.
 
+## Control prompts
+
+Visible hints use `InputPrompts` in `Assets/Scripts/Common` for device-specific names. Store
+tokens such as `{Interact}` in messages and call `InputPrompts.Format` when drawing them;
+avoid literal combined hints such as “Enter / A”. `ControlDeviceState` detects deliberate
+gamepad, keyboard, or mouse activity once per frame. The persistent `CursorManager` in the
+Common scene polls it, and `MenuUIInputModule` also polls while a menu is active. Keyboard
+or mouse activity restores keyboard prompts and the visible cursor; gamepad activity hides
+the cursor. An unchanged stick position does not switch devices.
+
 ## Gameplay settings
 
 Options > Gameplay stores Full Control and animation mode across sessions.

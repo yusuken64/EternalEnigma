@@ -756,8 +756,8 @@ public sealed class AutoplayRunner : MonoBehaviour
             GUI.enabled = canInteract && startedCampaign;
             if (GameUISkin.LegacyButton("Take control (T / X)")) TakeControl();
             GUI.enabled = canInteract;
-            if (GameUISkin.LegacyButton("Return to main menu (Enter / A)")) ConfirmReturn(true);
-            if (GameUISkin.LegacyButton("Keep watching (Esc / B)")) ConfirmReturn(false);
+            if (GameUISkin.LegacyButton("Return to main menu (" + InputPrompts.Interact + ")")) ConfirmReturn(true);
+            if (GameUISkin.LegacyButton("Keep watching (" + InputPrompts.Back + ")")) ConfirmReturn(false);
             GUILayout.EndArea(); return;
         }
         if (!PanelVisible)

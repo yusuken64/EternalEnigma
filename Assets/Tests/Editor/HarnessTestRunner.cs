@@ -393,6 +393,16 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Town Interiors EditMode")]
     public static void RunTownInteriorsEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode","EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Control Prompts EditMode")]
+    public static void RunControlPromptsEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.InputPromptsTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Control Prompts PlayMode")]
+    public static void RunControlPromptsPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControlDeviceStateTests",
+        "EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored",
+        "EternalEnigma.Tests.SettingsInteractionTests.GameplayExplanationChangesWhileDialogRemainsOpen");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Town Interiors PlayMode")]
     public static void RunTownInteriorsPlayMode() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.TownAmbientGameplayTests","EternalEnigma.Tests.CampaignTownServiceTests",

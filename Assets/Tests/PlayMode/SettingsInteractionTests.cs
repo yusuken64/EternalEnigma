@@ -55,6 +55,20 @@ namespace EternalEnigma.Tests
             InputSystem.QueueStateEvent(mouse, new MouseState { position = pos }); yield return null;
         }
         private GameObject Selected => EventSystem.current.currentSelectedGameObject;
+        [UnityTest] public IEnumerator GameplayExplanationChangesWhileDialogRemainsOpen()
+        {
+            var gameplay = settings.TabGroup.TabContents.Single(t => t.Content.GetComponent<DungeonOptions>() != null);
+            gameplay.TabButton.Select(); yield return null;
+            var explanation = gameplay.Content.GetComponentsInChildren<TMP_Text>(true)
+                .Single(t => t.text.Contains("Full Control asks"));
+            Assert.That(explanation.text, Does.Contain("Press F"));
+            yield return Press(GamepadButton.South);
+            Assert.That(settings.IsOpen, Is.True);
+            Assert.That(explanation.text, Does.Contain("Press Right stick (press)"));
+            Assert.That(explanation.text, Does.Not.Contain("Press F"));
+            yield return Key(UnityEngine.InputSystem.Key.K);
+            Assert.That(explanation.text, Does.Contain("Press F"));
+        }
         [UnityTest] public IEnumerator PreviewEntryCancelAndReopeningWorkWhilePaused()
         {
             Time.timeScale = 0;

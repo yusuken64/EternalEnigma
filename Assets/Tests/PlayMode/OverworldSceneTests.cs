@@ -27,6 +27,36 @@ namespace EternalEnigma.Tests
         private Gamepad pad;
 
         [UnityTest]
+        public IEnumerator CampaignHintChangesWithDeviceWhileMessageIsStored()
+        {
+            Common.Instance.BeginSandbox(42);
+            keyboard = InputSystem.AddDevice<Keyboard>();
+            pad = InputSystem.AddDevice<Gamepad>();
+            yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+            scene = SceneManager.GetSceneByName("Overworld");
+            var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+            yield return harness.WaitUntil(() => world.IsReady, "overworld control prompts");
+            var hud = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<CampaignHUD>(true)).Single();
+            var message = (TMPro.TMP_Text)typeof(CampaignHUD).GetField("message",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(hud);
+            Assert.That(world.Message, Does.Contain("{Interact}"));
+            Assert.That(message.text, Does.Contain("Enter"));
+
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.South));
+            yield return null;
+            Assert.That(message.text, Does.Contain("A / Cross"));
+            Assert.That(message.text, Does.Not.Contain("Enter"));
+            Assert.That(Cursor.visible, Is.False);
+
+            InputSystem.QueueStateEvent(pad, new GamepadState());
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.K));
+            yield return null;
+            Assert.That(message.text, Does.Contain("Enter"));
+            Assert.That(message.text, Does.Not.Contain("A / Cross"));
+            Assert.That(Cursor.visible, Is.True);
+        }
+
+        [UnityTest]
         public IEnumerator LockChooserOffersEveryAcquiredOptionAndCancelsWithoutOpening()
         {
             Common.Instance.BeginSandbox(42);

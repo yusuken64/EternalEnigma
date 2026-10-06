@@ -35,9 +35,9 @@ public sealed class PartyMenuLauncher : MonoBehaviour
     {
         if(ready==null)return;
         canvas.enabled=ready() && !Common.Instance.GlobalSettings.IsOpen && !Common.Instance.Travel.IsTransitioning && MenuUIInputModule.Active?.HasDialog!=true;
-        bool pad=MenuUIInputModule.Active?.UsingGamepad==true;
+        bool pad=ControlDeviceState.Gamepad;
         if(lastPad==pad)return;lastPad=pad;
-        inventory.text=pad?"Inventory [X / Square]":"Inventory [Q]";
-        skills.text=pad?"Skills [LB / L1]":"Skills [R]";
+        inventory.text="Inventory ["+InputPrompts.Inventory+"]";
+        skills.text="Skills ["+InputPrompts.Skills+"]";
     }
 }

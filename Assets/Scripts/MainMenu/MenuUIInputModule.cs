@@ -17,9 +17,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public bool OwnsFocus(MonoBehaviour owner) => scopes.Count > 0 && scopes[^1].Owner == owner;
     public InputAction NextHero { get; private set; }
     public InputAction PreviousHero { get; private set; }
-    public bool UsingGamepad { get; private set; }
-    private Gamepad lastHintPad;
-    private Vector2 lastHintStick,lastHintDpad;
+    public bool UsingGamepad => ControlDeviceState.Gamepad;
     private DungeonControls controls;
     private int consumedFrame = -1;
     private GameObject rememberedSelection;
@@ -169,20 +167,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public override void Process()
     {
-        var pad = Gamepad.current;
-        if(pad!=lastHintPad){lastHintStick=lastHintDpad=Vector2.zero;lastHintPad=pad;}
-        if(pad!=null)
-        {
-            var stick=pad.leftStick.ReadValue();var dpad=pad.dpad.ReadValue();
-            if(pad.buttonSouth.wasPressedThisFrame || pad.buttonEast.wasPressedThisFrame || pad.buttonWest.wasPressedThisFrame ||
-                pad.startButton.wasPressedThisFrame || pad.leftShoulder.wasPressedThisFrame || pad.rightShoulder.wasPressedThisFrame ||
-                pad.leftTrigger.wasPressedThisFrame ||
-                stick.sqrMagnitude>.12f && (stick-lastHintStick).sqrMagnitude>.02f ||
-                dpad.sqrMagnitude>.12f && (dpad-lastHintDpad).sqrMagnitude>.02f)UsingGamepad=true;
-            lastHintStick=stick;lastHintDpad=dpad;
-        }
-        if (Keyboard.current?.anyKey.wasPressedThisFrame == true || Mouse.current?.delta.ReadValue().sqrMagnitude >= 1 ||
-            Mouse.current?.scroll.ReadValue().sqrMagnitude > 0 || Mouse.current?.leftButton.wasPressedThisFrame == true) UsingGamepad = false;
+        ControlDeviceState.Poll();
         if (AutoplayRunner.BlocksPlayerInput) { consumedFrame = Time.frameCount; return; }
         scopes.RemoveAll(s => s.Owner == null || s.Root == null || !s.Root.gameObject.activeInHierarchy);
         // World targets use directional/confirm input in TargetDialog and MenuManager.

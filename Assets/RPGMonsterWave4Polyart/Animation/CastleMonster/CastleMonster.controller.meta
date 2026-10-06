@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0ee03cf499c7f6c468e3cd60b2c441dc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 357900
+  packageName: RPG Monster Wave 4 Polyart
+  packageVersion: 1.0
+  assetPath: Assets/RPGMonsterWave4Polyart/Animation/CastleMonster/CastleMonster.controller
+  uploadId: 852904

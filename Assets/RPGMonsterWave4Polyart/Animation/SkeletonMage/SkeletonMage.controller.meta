@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2385e953882a0dd4e9e0e48ffccc670a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 357900
+  packageName: RPG Monster Wave 4 Polyart
+  packageVersion: 1.0
+  assetPath: Assets/RPGMonsterWave4Polyart/Animation/SkeletonMage/SkeletonMage.controller
+  uploadId: 852904

@@ -1,0 +1,6 @@
+To test HDRP or URP, you have to do the following steps.
+
+1. Locate SRP folder.
+
+2. Double Click your target package
+

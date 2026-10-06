@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: cb91ece02faf8b74699f9615c6809e4a
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 310526
+  packageName: RPG Tiny Fantasy World 01 Polyart
+  packageVersion: 1.0
+  assetPath: Assets/RPG Tiny Fantasy World 01 PA/Shader/Fire.shadergraph
+  uploadId: 731223

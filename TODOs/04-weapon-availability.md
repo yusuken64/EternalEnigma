@@ -1,79 +1,25 @@
-# TODO: Make unused weapon models equippable
+# Weapon availability
 
-> Audit 2026-10-06: **partial; the baseline below is stale.** Tiered shops now
-> reference the existing non-ammunition weapon definitions. Reconcile Phase 1
-> with the adopted economy catalog/prices instead of adding duplicate offers.
-> Stat fixes, descriptions, floor-banded drops and bow-model variants remain
-> open. See [the source audit](../Docs/TodoAudit-2026-10-06.txt) for evidence and limits.
+Implemented 2026-10-06. The 76 active weapon definitions are sold by the tiered
+general shop and included in dungeon loot. `RightHand_Arrows` is retained as a
+legacy asset and is the sole explicit exclusion from the weapon catalog audit.
 
-## Goal
-Every Tiny Hero weapon model the heroes can display can also be obtained:
-- the starter tiers of every weapon type are bought in town
-- the middle and top tiers drop in floor-appropriate bands
-- weapon stats rise steadily within each line
+- [x] Keep the adopted shop offers, prices, and stock quantities.
+- [x] Set greatswords THS01–07 to Strength 8, 10, 12, 14, 16, 18, 20; set the
+  off-hand Silver Sword to Strength 7 and Defense 0; describe every weapon.
+- [x] Add Bow02–Bow05 at Strength 5, 7, 9, 11, with unique item names. The five
+  ammunition offers use Arrow01–Arrow05 and can be restored by item name.
+- [x] Select the equipped bow and arrow child models, defaulting to Bow01 and
+  Arrow01 when no variant is set. All variants use the bow stance.
+- [x] Pass the current floor at floor-item, prop, and enemy drop sites. The old
+  `GetRandomDrop` overloads enter at floor 1.
+- [x] Band all weapons by minimum shop tier: tiers 0–1 on floors 1–10, tier 2
+  on 6–20, tier 3 on 15–30, and tier 4 on 25–40. Consumables remain eligible
+  throughout, with a 28% selection share.
+- [x] Add catalog, floor-boundary, deterministic-drop, hero-model, and town
+  purchase/equip coverage.
 
-Full audit and rationale: `TODOs/04-weapon-availability-plan.md`.
+Stored dungeon rolls from saves generated before this loot table change can
+resolve to different items when loaded.
 
-## Current state (audited 2026-10-06)
-Existing non-ammunition weapon definitions are represented in tiered shop
-catalogs. `TownShopCatalog.Resolve` filters offers by `MinimumTier`; the adopted
-economy pricing replaces the original starter-shop proposal. The old claim that
-45 definitions are unobtainable is obsolete.
-
-Drops still use an unbanded `ItemManager.DungeonLoot` pool. Weapon data corrections
-and Bow02?05 / Arrow02?05 model selection remain open.
-
-## Phase 1: Verify existing catalog coverage
-- [ ] Add a reachability assertion for every weapon definition across shops,
-  drops and starting items, with an explicit legacy/exclusion list.
-- [ ] Buy/equip one of each weapon type and verify model/stance and proficiency
-  messages. Preserve current tier/pricing rules unless deliberately rebalanced.
-
-## Phase 2: Fix the weapon data
-- [ ] Spread the Strength of `RightHand_THS01_Sword` … `THS07_Sword` across about S8–S20. They are all S12 today.
-- [ ] Change `LeftHand_OHS07_Sword` (Silver Sword (Off-hand)) from S5/D7 to S7/D0.
-- [ ] Write a `Description` for every weapon definition; all are blank today.
-
-## Phase 3: Floor-tiered drops (small code change)
-- [ ] Add `MinFloor` (default 1) and `MaxFloor` (default `int.MaxValue`) to `ItemDefinition`. Existing items keep their current behaviour.
-- [ ] Add `ItemManager.GetRandomDrop(int roll, int floor)`:
-  - filter `ItemDefinitions` by floor band, then pick `roll % filtered.Count`
-  - throw if no item fits the floor
-- [ ] Keep the existing overloads, delegating with floor 1.
-- [ ] Pass the current floor at all three call sites:
-  - [ ] `Assets/Scripts/Dungeon/Game/Game.cs:296` (floor items)
-  - [ ] `Assets/Scripts/Dungeon/Game/Interactables/DungeonProp.cs:53`
-  - [ ] `Assets/Scripts/Dungeon/Actions/MovementAction.cs:526` (enemy drops)
-- [ ] Append the remaining mid-tier definitions to `Common.unity` `ItemDefinitions` (don't reorder existing entries).
-- [ ] Set floor bands on every weapon (starting point; tune to the dungeon's floor count):
-
-  | Strength / Defense | Floors |
-  |---|---|
-  | 3–6 | 1–10 |
-  | 7–10 | 6–20 |
-  | 11+ | 15+ |
-
-- [ ] Move the existing top-tier drops (Legendary Shield, Dragon Spear, …) into their bands.
-- [ ] Keep consumables in every band, so their share of drops stays about where it is today (~28%).
-- [ ] Note in the PR that floors generated before this change and reloaded from a save may roll different items.
-
-## Phase 4 (optional): Bow variants
-- [ ] Add an optional `WeaponModelVariant` to `EquipmentItemDefinition`.
-- [ ] In `SetWeapon`, after switching on the parent (`Bows` or `Arrows`), turn on only the named child (`Bow03`, `Arrow03`) and switch the others off. With no variant set, keep today's Bow01/Arrow01 default.
-- [ ] Add Bow02–05 definitions (ranged, about S6–S12) with matching arrow variants, banded like Phase 3.
-- [ ] Check that `BowAndArrowStance` animates every variant (they share the rig in `BowsSkinnedMesh.fbx`).
-
-## Tests
-- [ ] **New EditMode test:** every `EquipmentItemDefinition` under `Prefabs/Dungeon/Items/Weapons` is reachable from drops, a shop, or `StartingItems`, apart from an explicit exclusion list.
-- [ ] **New test:** for every floor from 1 to max, `GetRandomDrop(roll, floor)` returns an item and never returns one outside its band.
-- [ ] **New test:** the same roll and floor always give the same item.
-- [ ] **Existing tests:** check they still pass:
-  - `HeroPrefabTests` (now covers more weapons)
-  - `AuditRegressionTests`
-  - `MenuSceneNavigationTests`
-  - `ClassSkillSmokeTests`
-  - `TownGameplayTests`
-- [ ] **Runs:** EditMode and PlayMode via `Tools/harness-editmode.json` / `harness-playmode.json` through `Tools/unity-mcp.mjs`, plus `dotnet test` for `Core` if a Core type changes.
-
-## Order
-Phase 1 → 2 → 3 → 4, one commit each with tests green.
+Verification results: see the implementation commit or task report.

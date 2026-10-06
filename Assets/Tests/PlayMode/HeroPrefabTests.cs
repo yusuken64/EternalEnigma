@@ -105,6 +105,26 @@ namespace EternalEnigma.Tests
                     Assert.That(animation.CurrentStance, Is.EqualTo(Stance.BowAndArrowStance));
                     animation.PlayAttackAnimation(); animation.Animator.Update(0);
                 }
+                var defaultBow = Object.Instantiate(bowForArrows);
+                var defaultArrows = Object.Instantiate(arrowOffers.First());
+                try
+                {
+                    defaultBow.WeaponModelVariant = "";
+                    defaultArrows.WeaponModelVariant = "";
+                    animation.SetWeapon(defaultBow, defaultArrows);
+                    foreach (var (models, parent, child) in new[]
+                    {
+                        (animation.LeftHandObjects, "Bows", "Bow01"),
+                        (animation.RightHandObjects, "Arrows", "Arrow01")
+                    })
+                    {
+                        var root = models.Single(model => model.name == parent);
+                        Assert.That(root.transform.Cast<Transform>().Where(t => t.gameObject.activeSelf)
+                            .Select(t => t.name), Is.EqualTo(new[] { child }), label + " default " + parent);
+                    }
+                    Assert.That(animation.CurrentStance, Is.EqualTo(Stance.BowAndArrowStance));
+                }
+                finally { Object.DestroyImmediate(defaultBow); Object.DestroyImmediate(defaultArrows); }
                 foreach (Stance stance in Enum.GetValues(typeof(Stance)))
                 {
                     animation.CurrentStance = stance;

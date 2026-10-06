@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LeftHand_Shield17
   m_EditorClassIdentifier: 
   ItemName: Dragon Shield
-  MaxFloor: 2147483647
-  MinFloor: 15
+  MaxFloor: 40
+  MinFloor: 25
   Description: Dragon Shield grants 17 defense.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0

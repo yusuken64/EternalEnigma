@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS11_Hammer
   m_EditorClassIdentifier: 
   ItemName: Mallet
-  MaxFloor: 2147483647
+  MaxFloor: 30
   MinFloor: 15
   Description: Mallet grants 11 strength.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}

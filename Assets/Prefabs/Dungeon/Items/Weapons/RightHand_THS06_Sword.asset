@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RightHand_THS06_Sword
   m_EditorClassIdentifier: 
   ItemName: Gilded Greatsword
-  MaxFloor: 2147483647
-  MinFloor: 15
+  MaxFloor: 40
+  MinFloor: 25
   Description: Gilded Greatsword grants 18 strength.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0

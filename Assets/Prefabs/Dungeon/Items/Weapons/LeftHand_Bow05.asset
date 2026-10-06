@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_Bow05
   m_EditorClassIdentifier: 
   ItemName: Bow05
-  MaxFloor: 2147483647
+  MaxFloor: 30
   MinFloor: 15
   WeaponModelVariant: Bow05
   Description: Bow05 grants 11 strength.

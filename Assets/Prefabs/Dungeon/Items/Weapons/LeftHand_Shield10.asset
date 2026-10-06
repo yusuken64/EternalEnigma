@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LeftHand_Shield10
   m_EditorClassIdentifier: 
   ItemName: Knight's Shield
-  MaxFloor: 20
-  MinFloor: 6
+  MaxFloor: 30
+  MinFloor: 15
   Description: Knight's Shield grants 10 defense.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0

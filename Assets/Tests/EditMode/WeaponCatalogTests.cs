@@ -10,6 +10,12 @@ namespace EternalEnigma.Tests
 {
     public class WeaponCatalogTests
     {
+        private const string WeaponDirectory = "Assets/Prefabs/Dungeon/Items/Weapons";
+        private static readonly (int Min, int Max)[] TierFloors =
+            { (1, 10), (1, 10), (6, 20), (15, 30), (25, 40) };
+        private static EquipmentItemDefinition[] AllWeaponAssets => AssetDatabase.FindAssets("t:EquipmentItemDefinition", new[] { WeaponDirectory })
+            .Select(g => AssetDatabase.LoadAssetAtPath<EquipmentItemDefinition>(AssetDatabase.GUIDToAssetPath(g)))
+            .Where(i => i != null).ToArray();
         private static EquipmentItemDefinition[] Weapons => AssetDatabase.FindAssets("t:EquipmentItemDefinition", new[] { "Assets/Prefabs/Dungeon/Items/Weapons" })
             .Select(g => AssetDatabase.LoadAssetAtPath<EquipmentItemDefinition>(AssetDatabase.GUIDToAssetPath(g)))
             .Where(i => i != null && i.name != "RightHand_Arrows").ToArray();
@@ -22,6 +28,8 @@ namespace EternalEnigma.Tests
             var scene = File.ReadAllText("Assets/Scenes/Common.unity");
             var loot = Regex.Match(scene, @"  ItemDefinitions:\s*(.*?)  StartingItems:", RegexOptions.Singleline).Groups[1].Value;
             var starting = scene.Substring(scene.IndexOf("  StartingItems:", StringComparison.Ordinal));
+            Assert.That(AllWeaponAssets.Where(w => !Weapons.Contains(w)).Select(w => w.name),
+                Is.EquivalentTo(new[] { "RightHand_Arrows" }), "Only the legacy arrow definition is excluded.");
             foreach (var weapon in Weapons)
             {
                 var path = AssetDatabase.GetAssetPath(weapon);
@@ -29,8 +37,12 @@ namespace EternalEnigma.Tests
                 Assert.That(offered.Contains(weapon) || loot.Contains(guid) || starting.Contains(guid), Is.True, path);
                 Assert.That(weapon.Description, Is.Not.Empty, path);
                 Assert.That(weapon.WeaponModelName, Is.Not.Empty, path);
+                Assert.That(weapon.ItemName, Is.Not.Empty, path);
             }
             Assert.That(Weapons.Length, Is.EqualTo(76));
+            var names = Weapons.Concat(shop.ShopCatalog.Select(o => o.Item).OfType<EquipmentItemDefinition>())
+                .Distinct().GroupBy(w => w.ItemName).Where(g => g.Count() > 1).Select(g => g.Key);
+            Assert.That(names, Is.Empty, "Saved equipment resolves by ItemName.");
         }
 
         [Test]
@@ -54,6 +66,15 @@ namespace EternalEnigma.Tests
             Assert.That(arrows.Select(o => o.MinimumTier), Is.EqualTo(new[] { 0, 1, 2, 3, 4 }));
             Assert.That(arrows.Select(o => ((EquipmentItemDefinition)o.Item).WeaponModelVariant),
                 Is.EqualTo(new[] { "Arrow01", "Arrow02", "Arrow03", "Arrow04", "Arrow05" }));
+            Assert.That(arrows.Select(o => o.Item.ItemName).Distinct().Count(), Is.EqualTo(5));
+            Assert.That(shop.ShopCatalog.Where(o => o.Item is EquipmentItemDefinition { IsAmmunition: false })
+                .Select(o => o.Item), Is.EquivalentTo(Weapons));
+            foreach (var offer in shop.ShopCatalog.Where(o => o.Item is EquipmentItemDefinition { IsAmmunition: false }))
+            {
+                var item = offer.Item;
+                Assert.That(offer.MinimumTier, Is.InRange(0, 4), item.name);
+                Assert.That((item.MinFloor, item.MaxFloor), Is.EqualTo(TierFloors[offer.MinimumTier]), item.name);
+            }
             foreach (var offer in shop.ShopCatalog.Where(o => o.Item is EquipmentItemDefinition { IsAmmunition: false }))
             {
                 var item = (EquipmentItemDefinition)offer.Item;
@@ -75,10 +96,25 @@ namespace EternalEnigma.Tests
                     .Select(m => AssetDatabase.LoadAssetAtPath<ItemDefinition>(AssetDatabase.GUIDToAssetPath(m.Groups[1].Value)))
                     .Where(i => i != null).ToList();
                 manager.StartingItems = new();
+                var shop = Resources.Load<TownBuildingDefinition>("Towns/Buildings/Shop");
+                foreach (var arrows in shop.ShopCatalog.Select(o => o.Item).OfType<EquipmentItemDefinition>()
+                    .Where(i => i.IsAmmunition))
+                    Assert.That(manager.GetAsInventoryItemByName(arrows.ItemName).ItemDefinition,
+                        Is.SameAs(arrows), arrows.ItemName);
+                foreach (var weapon in Weapons)
+                    Assert.That(manager.DungeonLoot, Does.Contain(weapon), weapon.name);
                 for (int floor = 1; floor <= 40; floor++)
                 {
                     var eligible = manager.DungeonLoot.Where(i => i.MinFloor <= floor && floor <= i.MaxFloor).ToArray();
                     Assert.That(eligible, Is.Not.Empty, $"floor {floor}");
+                    var equipment = eligible.OfType<EquipmentItemDefinition>().ToArray();
+                    var food = eligible.Where(i => i is not EquipmentItemDefinition).ToArray();
+                    Assert.That(equipment, Is.Not.Empty, $"floor {floor} equipment");
+                    Assert.That(food, Is.Not.Empty, $"floor {floor} consumables");
+                    foreach (var item in equipment.Select((value, index) => (value, index)))
+                        Assert.That(manager.GetRandomDrop(item.index * 100 + 28, floor), Is.SameAs(item.value));
+                    foreach (var item in food.Select((value, index) => (value, index)))
+                        Assert.That(manager.GetRandomDrop(item.index * 100, floor), Is.SameAs(item.value));
                     int consumables = 0;
                     for (int roll = 0; roll < 1000; roll++)
                     {

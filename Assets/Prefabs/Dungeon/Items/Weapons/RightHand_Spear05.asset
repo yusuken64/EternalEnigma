@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RightHand_Spear05
   m_EditorClassIdentifier: 
   ItemName: Dragon Spear
-  MaxFloor: 20
-  MinFloor: 6
+  MaxFloor: 30
+  MinFloor: 15
   Description: Dragon Spear grants 10 strength.
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0

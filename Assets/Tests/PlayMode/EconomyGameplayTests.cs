@@ -63,6 +63,25 @@ namespace EternalEnigma.Tests
                     Assert.That(town.Services.ToggleEquipment(hero, item, out var reason), Is.False);
                     Assert.That(reason, Does.Contain("proficiency"));
                 }
+                hero.PrimaryClass = classes.First(c => c.AllowsWeapon(WeaponType.BowAndArrow));
+                foreach (var name in new[] { "Bow05", "Royal Arrows" })
+                {
+                    Assert.That(town.Services.Buy(shop, name, out var buyReason), Is.True, buyReason);
+                    var item = town.TownPlayer.Inventory.Last(i => i.ItemName == name);
+                    Assert.That(town.Services.ToggleEquipment(hero, item, out var equipReason), Is.True, equipReason);
+                }
+                Assert.That(hero.HeroAnimator.CurrentStance, Is.EqualTo(Stance.BowAndArrowStance));
+                town.SaveProgress();
+                var restoredSave = JsonUtility.FromJson<GameSaveData>(JsonUtility.ToJson(common.GameSaveData));
+                var savedGear = restoredSave.TownSaveData.RecruitedAlliesData
+                    .Single(a => a.AllyId == hero.Id).Equipment;
+                foreach (var name in new[] { "Bow05", "Royal Arrows" })
+                {
+                    var savedItem = savedGear.Single(i => i.ItemName == name);
+                    var restored = savedItem.Restore(common.ItemManager);
+                    Assert.That(restored.ItemDefinition.ItemName, Is.EqualTo(name));
+                    Assert.That(restored.ItemDefinition, Is.SameAs(shop.ShopCatalog.Single(o => o.Item.ItemName == name).Item));
+                }
             }
             finally { town.Configuration.Id = originalId; hero.PrimaryClass = originalClass; }
         }

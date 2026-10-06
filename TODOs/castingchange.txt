@@ -1,0 +1,45 @@
+currently all abilites are passive which have a persistent effect
+or active which happen at the immediate turn it's chosen
+
+add a concept of abilities with "casting time" which when activated
+the character will enter a casting state. treat it similar to "stunned" status, which prevents takes up the characters turn but also counts down the cast turn.
+when casting is finished, casting the spell will take up the characters turn
+essentially the current abilities have cast time 0.
+
+any movement, forced or otherwise will cancel the cast.
+anything that would prevent casting. armbind/headbind/stun/forced move/death
+
+any skill that targets a character will still target the character at the end of the cast even if they moved as long as the cast started
+  if the targeted character dies or becomes an invalid target, the spell fizzles.
+spells fizzle if a damage spell targets dies or a revive target becomes alive.
+spell fizzling uses up the characters action.
+
+any skill that targets a direction will still target the direction
+any skill that targets a tile will still target that direction
+
+some heavy attacks
+ charge up and do big damage
+
+most offensive mage spells
+aoe with large area or full screen effects
+
+global reveal skills
+
+most heal abilities
+1 cast turn to heal
+3 cast turn to greater heal
+5 turns to revive
+
+support abilities, to passively or actively reduce cast
+ i.e. "dance" or "song" instantly reduce casting left or target/area
+
+have passive abilities that play with the system
+move casting, can move during cast
+
+enemy casts follow the same rule. adapt this to wizard
+
+characters will multiple actions, each action will decrement that cast and use up the action.
+
+visual.
+have a cast aura surround the character while casting.
+

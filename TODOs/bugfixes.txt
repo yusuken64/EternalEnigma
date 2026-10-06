@@ -1,0 +1,45 @@
+money reset when entering dungeon
+need to be able to sell in shops
+hunger doesn't persist (should it?)
+
+make metals slimes rare spawn and chance to warp on hit
+inventory issue new party members duplicate equipped items
+some weapons are not equippable, if they're not supposed to be equippable there should be a message explaining why. (no proficiency etc)
+
+make spike turtle explode on death
+  silence will prevent
+  
+when selecting an active skill don't prompt to cast, just go to the casting flow (target picker)
+separate skill menu from inventory
+
+overworld POC textures are bugged
+when you have a capability show the original message with a prompt to use your capability to open the lock.
+prompt to enter overworld dungeons
+unify the two event history dialogs in overworld
+
+save slot dialog is not navigable by keys. turn them into selectable action buttons.
+save slot should look more distinct when selected.
+
+fix class assignment on heros to match their looks
+give duplicate hero classes secondary to distinguish
+
+match the overworld lock with new models
+don't disable the model when standing on it in the overworld.
+
+clearing a dungeon should always give a new capability the first time.
+indicate if a dungeon has been defeated before entering.
+
+shops should restock after every dungeon
+shops should sell better stuff further into the campaign
+the bread should also advance in the bakery.
+
+the towns people should hint at the next lock.
+change the interaction with town allies to interact with them while adjacent and facing like the other npcs.
+exiting the town dungeon should put you in the dungeon entrance.
+
+wolves should spawn in packs.
+give the nessie monster the root instead of skeletons.
+give rat assassin infinite ranged attacks.
+
+show capabilities in overworld menu
+walking with 4 party member hitches

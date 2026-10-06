@@ -44,6 +44,18 @@ public static class CombatEffectAuthoring
             if (effect != null) profile.Aura = Stage(effect, .3f, !profile.Overhead);
             EditorUtility.SetDirty(profile);
         }
+        StatusVisualProfile Arms(string id, string effect)
+        {
+            var profile = Asset<StatusVisualProfile>(Root + "/Statuses/" + id + ".asset");
+            profile.Aura = Stage(effect, .3f, true);
+            profile.Priority = 25;
+            profile.Icon = icons[index++];
+            EditorUtility.SetDirty(profile);
+            return profile;
+        }
+        catalog.BlazingArms = Arms("BlazingArms", "FireEnchant");
+        catalog.FrostArms = Arms("FrostArms", "FrostEnchant");
+        catalog.StormArms = Arms("StormArms", "StormEnchant");
         EditorUtility.SetDirty(catalog);
         foreach (var guid in AssetDatabase.FindAssets("t:Skill"))
         {
@@ -67,6 +79,13 @@ public static class CombatEffectAuthoring
             profile.Impact = Stage(effect, .5f, effect.Contains("Wall") || effect.Contains("Pillar"));
             profile.Impact.FitToTarget = true;
             if (effect.Contains("Wall")) profile.Area = Stage(effect, .4f, true);
+            string charge = skill.SkillName switch
+            {
+                "Flame Barrier" => "FireCharge", "Thunderclap" => "LightningCharge",
+                "Tempest" => "StormCharge", "Siphon" => "ShadowCharge",
+                "Sanctuary Wall" => "LightCharge", _ => null
+            };
+            if (charge != null) profile.GroundCircle = Stage(charge, .45f, true);
             skill.VisualProfile = profile;
             EditorUtility.SetDirty(profile); EditorUtility.SetDirty(skill);
         }
@@ -310,7 +329,13 @@ public static class CombatEffectAuthoring
         foreach (var guid in AssetDatabase.FindAssets("t:StatusVisualProfile", new[] { Root }))
         {
             var p = AssetDatabase.LoadAssetAtPath<StatusVisualProfile>(AssetDatabase.GUIDToAssetPath(guid));
-            GroundFootprint(p.Aura); EditorUtility.SetDirty(p);
+            if (p.Overhead)
+            {
+                p.Aura.MinimumDiameterCells = 0;
+                p.Aura.ReferenceDiameter = 0;
+            }
+            else GroundFootprint(p.Aura);
+            EditorUtility.SetDirty(p);
         }
         AssetDatabase.SaveAssets();
     }
@@ -335,7 +360,8 @@ public static class CombatEffectAuthoring
         foreach (var guid in AssetDatabase.FindAssets("t:StatusVisualProfile", new[] { Root }))
         {
             var p = AssetDatabase.LoadAssetAtPath<StatusVisualProfile>(AssetDatabase.GUIDToAssetPath(guid));
-            p.Aura.Rotation = new Vector3(-90, 0, 0); EditorUtility.SetDirty(p);
+            if (!p.Overhead) p.Aura.Rotation = new Vector3(-90, 0, 0);
+            EditorUtility.SetDirty(p);
         }
         AssetDatabase.SaveAssets();
     }

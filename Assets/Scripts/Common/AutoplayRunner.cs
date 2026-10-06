@@ -481,6 +481,13 @@ public sealed class AutoplayRunner : MonoBehaviour
         // The focused ally still needs an autoplay command at that point.
         if ((game.TurnManager.IsProcessingTurn && !game.TurnManager.AwaitingCommand) ||
             game.NewFloorMessage.gameObject.activeSelf) return;
+        foreach(var member in PartyRules.PartyMembers(game))
+        {
+            if(member==null)continue;
+            while(member.PendingAttributePoints>0)
+                if(!AttributeSpending.TrySpend(member,member.PrimaryClass?.PreferredAttribute ?? HeroAttribute.Str))break;
+            member.AttributePromptPending=false;
+        }
         if (MenuManager.Instance.CurrentDialog is StairConfirm stairsPrompt) { stairsPrompt.YesClicked(); Log("Confirm stairs/exit"); return; }
         if (MenuManager.Instance.Opened) { Finish("Unsupported", "Unhandled dungeon dialog: " + MenuManager.Instance.CurrentDialog.GetType().Name); return; }
         var player = game.PlayerController; var ally = player.ControlledAlly; var dungeon = game.CurrentDungeon;

@@ -7,6 +7,7 @@ public class StartingStats
 	public int SPMax;
 	public int HungerMax;
 	public int Strength;
+	public int MagicPower;
 	public int Defense;
 	public int EXPOnKill;
 	public int HungerAccumulateThreshold;

@@ -22,6 +22,9 @@ MonoBehaviour:
   Fire: {fileID: 11400000, guid: 57dafb7a2f4c4e84c8d5886147132753, type: 2}
   Ice: {fileID: 11400000, guid: 75974141b481a74468fb48ee0a9ac734, type: 2}
   Lightning: {fileID: 11400000, guid: 305d892d0a4e36c49b9090a5810817d5, type: 2}
+  BlazingArms: {fileID: 11400000, guid: 8e16c682818b3084abe6eef0ea0a7ac0, type: 2}
+  FrostArms: {fileID: 11400000, guid: 23cde5c3c45c1d349a139695ba2f3256, type: 2}
+  StormArms: {fileID: 11400000, guid: 8fc1949486d363147bb273138f3cf2fd, type: 2}
   Statuses:
   - TypeName: DamageShieldStatusEffect
     Profile: {fileID: 11400000, guid: c1cbaa87ff4d7a2448a7aaaa48d42d79, type: 2}

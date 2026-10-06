@@ -12,7 +12,8 @@ public static class SkillEstimates
 	}
 
 	public static float NormalAttackExpected(Character attacker, Character target) =>
-		attacker == null || target == null ? 0f : CombatMath.HitChance(attacker, target) * BaseAttackDamage(attacker, target);
+		attacker == null || target == null ? 0f : CombatMath.HitChance(attacker, target) * BaseAttackDamage(attacker, target) *
+		ClassPassives.DamageMultiplier(new OutgoingDamage(attacker,target,ArrowSupply.HasBow(attacker)?DamageCategory.Bow:DamageCategory.Weapon,DamageElement.Physical,false));
 
 	public static float EstimateDamage(Skill skill, Character caster, Character target)
 	{
@@ -67,11 +68,12 @@ public static class SkillEstimates
 				else if (scaled.Scaling == DamageScaling.Magic)
 				{
 					perHit = (scaled.BaseDamage + scaled.PerLevel * Math.Max(1, caster.Vitals.Level)) *
-						MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaled.Percent;
+						MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaled.Percent * HeroAttributes.MagicMultiplier(caster.FinalStats.MagicPower);
 				}
 				if (skill.RankScaling != null)
 					perHit = skill.RankScaling.ScalePower((int)perHit, rank);
 				perHit = ElementMath.Apply((int)perHit, target.FinalStats, scaled.Element);
+				perHit *= ClassPassives.DamageMultiplier(new OutgoingDamage(caster,target,scaled.Category,scaled.Element,true));
 				if (scaled.RollToHit)
 					perHit *= CombatMath.HitChance(caster, target);
 				sum += perHit * scaled.Hits;
@@ -91,11 +93,12 @@ public static class SkillEstimates
 					else if (scaledDmg.Scaling == DamageScaling.Magic)
 					{
 						perHit = (scaledDmg.BaseDamage + scaledDmg.PerLevel * Math.Max(1, caster.Vitals.Level)) *
-							MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaledDmg.Percent;
+							MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaledDmg.Percent * HeroAttributes.MagicMultiplier(caster.FinalStats.MagicPower);
 					}
 					if (skill.RankScaling != null)
 						perHit = skill.RankScaling.ScalePower((int)perHit, rank);
 					perHit = ElementMath.Apply((int)perHit, target.FinalStats, scaledDmg.Element);
+					perHit *= ClassPassives.DamageMultiplier(new OutgoingDamage(caster,target,scaledDmg.Category,scaledDmg.Element,true));
 					if (scaledDmg.RollToHit)
 						perHit *= CombatMath.HitChance(caster, target);
 					sum += perHit * scaledDmg.Hits;
@@ -116,11 +119,12 @@ public static class SkillEstimates
 					else if (scaledDmg.Scaling == DamageScaling.Magic)
 					{
 						perHit = (scaledDmg.BaseDamage + scaledDmg.PerLevel * Math.Max(1, caster.Vitals.Level)) *
-							MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaledDmg.Percent;
+							MathF.Pow(15f / 16f, target.FinalStats.Defense / 2f) * scaledDmg.Percent * HeroAttributes.MagicMultiplier(caster.FinalStats.MagicPower);
 					}
 					if (skill.RankScaling != null)
 						perHit = skill.RankScaling.ScalePower((int)perHit, rank);
 					perHit = ElementMath.Apply((int)perHit, target.FinalStats, scaledDmg.Element);
+					perHit *= ClassPassives.DamageMultiplier(new OutgoingDamage(caster,target,scaledDmg.Category,scaledDmg.Element,true));
 					if (scaledDmg.RollToHit)
 						perHit *= CombatMath.HitChance(caster, target);
 					sum += perHit * (random.MinHits + random.MaxHits) / 2f;
@@ -131,7 +135,7 @@ public static class SkillEstimates
 		return Math.Max(0f, sum * (skill.UsesArrows ? ArrowSupply.DamageMultiplier(caster) : 1f));
 	}
 
-	public static float EstimateHealing(Skill skill, Character target)
+	public static float EstimateHealing(Skill skill, Character caster, Character target)
 	{
 		if (skill == null || target == null || skill.ActionEffects == null || skill.ActionEffects.Count == 0)
 			return 0f;
@@ -149,12 +153,12 @@ public static class SkillEstimates
 				int healed = skill.RankScaling != null ? skill.RankScaling.ScalePower(h.healing, rank) : h.healing;
 				sum += healed;
 			}
-			// ScaledHealAction case: use caster-independent value (level 1) since no caster parameter available
+			// Scaled healing uses the same Magic Power multiplier as its action.
 			else if (effect is ScaledHealAction scaledHeal)
 			{
-				int healed = scaledHeal.BaseHeal + (int)(scaledHeal.PerLevel * 1);
-				if (skill.RankScaling != null)
-					healed = skill.RankScaling.ScalePower(healed, rank);
+				int healed = RecoveryMath.Heal(scaledHeal.BaseHeal,scaledHeal.PerLevel,caster?.Vitals?.Level ?? 1,
+					skill.RankContext,HeroAttributes.MagicMultiplier(caster?.FinalStats.MagicPower ?? 0) *
+					(caster!=null?ClassPassives.HealingMultiplier(caster,target):1f));
 				sum += healed;
 			}
 		}

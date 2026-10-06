@@ -10,6 +10,7 @@ internal class LevelUpAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		character = recipient != null ? recipient : character;
+		if (character is Ally prompted && !prompted.IsSummon) prompted.AttributePromptPending = true;
 		TrackAnimationTarget(character);
 		// Allies grow by class; enemies and classless heroes keep the flat +2 Strength / +5 HPMax.
 		var growth = HeroClass.Growth(character is Ally ally ? ally.PrimaryClass : null);

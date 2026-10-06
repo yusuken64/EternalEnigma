@@ -17,10 +17,10 @@ MonoBehaviour:
   Role: Front-line physical attacker
   AllowedWeapons: 0000000003000000050000000800000009000000
   GrowthPerLevel:
-    HPMax: 5
+    HPMax: 2
     SPMax: 0
     HungerMax: 0
-    Strength: 3
+    Strength: 2
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0

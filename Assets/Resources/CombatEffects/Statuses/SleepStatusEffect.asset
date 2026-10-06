@@ -20,8 +20,8 @@ MonoBehaviour:
     Scale: 0.3
     Delay: 0
     Lifetime: 2
-    MinimumDiameterCells: 3
-    ReferenceDiameter: 2
+    MinimumDiameterCells: 0
+    ReferenceDiameter: 0
   Priority: 30
   HasLoop: 1
   Loop: 13

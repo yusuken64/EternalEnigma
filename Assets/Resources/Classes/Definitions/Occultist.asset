@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Occultist
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: occultist
+  PreferredAttribute: 1
   DisplayName: Occultist
   Role: Debuff and status specialist
   AllowedWeapons: 0400000000000000
   GrowthPerLevel:
     HPMax: 3
-    SPMax: 2
+    SPMax: 0
     HungerMax: 0
     Strength: 1
     Defense: 0

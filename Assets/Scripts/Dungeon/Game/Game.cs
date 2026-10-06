@@ -138,6 +138,7 @@ public class Game : SingletonMonoBehaviour<Game>
             ally.TownAllyId = townAlly.Id;
             ally.PrimaryClass = townAlly.PrimaryClass;
             ally.SecondaryClass = townAlly.SecondaryClass;
+            ally.Attributes = townAlly.Attributes;
             foreach (var equipment in ItemSaveData.Capture(townAlly.Equipment.GetEquippedItems()))
                 ally.Equipment.Equip((EquipableInventoryItem)equipment.Restore(Common.Instance.ItemManager));
             // Player-initiated dungeon equips (EquipAction / EquipEffectDefinition use CanEquip) respect the class.
@@ -155,7 +156,7 @@ public class Game : SingletonMonoBehaviour<Game>
 			ally.InitialzeVitalsFromStats();
 			ally.Vitals.Level = Mathf.Max(1, townAlly.Level);
             ally.Vitals.Exp = townAlly.Experience;
-            HeroClass.ApplyLevelGrowth(ally.BaseStats, ally.PrimaryClass, ally.Vitals.Level - 1);
+            ally.BaseStats = HeroStatRules.BaseStats(ally.StartingStats, ally.PrimaryClass, ally.Vitals.Level, ally.Attributes);
             ally.InvalidateCachedStats();
             ally.Vitals.HP = ally.FinalStats.HPMax;
             ally.Vitals.SP = ally.FinalStats.SPMax;

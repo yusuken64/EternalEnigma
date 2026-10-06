@@ -16,6 +16,13 @@ public class DamageBonus : ClassPassive {
 }
 
 [Serializable]
+public class AgilityDamageBonus : ClassPassive {
+	public DamageCategory Category = DamageCategory.Weapon;
+	internal override float DamageMultiplier(Character owner, Skill skill, OutgoingDamage hit) =>
+		owner is Ally hero && hit.Category == Category ? 1f + .01f * Math.Max(0, hero.Attributes.Agi) : 1f;
+}
+
+[Serializable]
 public class AmbushBonus : ClassPassive {
 	public float Multiplier = 2f;
 	public float MultiplierPerRank = 0.1f;

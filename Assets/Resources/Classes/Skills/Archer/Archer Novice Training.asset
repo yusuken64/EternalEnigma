@@ -61,7 +61,8 @@ MonoBehaviour:
     HitBonus: 0
   PassiveResponses:
   - rid: 292415685818318983
-  Description: Unlocks tier 1. +5% bow damage.
+  - rid: 292415685818318984
+  Description: Unlocks tier 1. +5% bow damage and +1% bow damage per AGI point.
   references:
     version: 2
     RefIds:
@@ -71,3 +72,7 @@ MonoBehaviour:
         Category: 1
         Percent: 5
         PercentPerRank: 0
+    - rid: 292415685818318984
+      type: {class: AgilityDamageBonus, ns: , asm: EternalEnigma.Game}
+      data:
+        Category: 1

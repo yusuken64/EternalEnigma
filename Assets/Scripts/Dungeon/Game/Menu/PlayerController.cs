@@ -82,6 +82,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         if (!CanContinueHeldWalk) StopHeldWalk();
+        CheckAttributePrompts();
         if (ShouldBlockInput()) return;
 
         if (releaseInput)
@@ -402,6 +403,7 @@ public class PlayerController : MonoBehaviour
         Common.Instance.MenuInputHandler.SwitchToPlayerInput();
 
         ControlledAlly.IsWaitingForPlayerInput = true;
+        CheckAttributePrompts();
         Vitals.ActionsPerTurnLeft = FinalStats.ActionsPerTurnMax;
         Vitals.AttacksPerTurnLeft = FinalStats.AttacksPerTurnMax;
 
@@ -418,6 +420,26 @@ public class PlayerController : MonoBehaviour
         {
             ShowStairPrompt(stairs);
         }
+    }
+
+    private void CheckAttributePrompts()
+    {
+        var game=Game.Instance;
+        if(game==null || !game.IsReady || !CanOpenMenu())return;
+        var pending=PartyRules.PartyMembers(game).Where(h=>h!=null && h.AttributePromptPending && h.PendingAttributePoints>0).ToList();
+        if(pending.Count==0)return;
+        if(AutoplayRunner.BlocksPlayerInput)
+        {
+            foreach(var hero in pending)
+            {
+                while(hero.PendingAttributePoints>0)
+                    if(!AttributeSpending.TrySpend(hero,hero.PrimaryClass?.PreferredAttribute ?? HeroAttribute.Str))break;
+                hero.AttributePromptPending=false;
+            }
+            return;
+        }
+        if(MenuManager.Instance?.Opened==true || Common.Instance.GlobalSettings.IsOpen)return;
+        LevelUpChoiceDialog.Open(pending[0],CheckAttributePrompts);
     }
 
     private void ShowStairPrompt(Stairs stairs)

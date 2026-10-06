@@ -8,6 +8,7 @@ public class Stats
 	private int sPMax;
 	private int hungerMax;
 	private int strength;
+	private int magicPower;
 	private int defense;
 	private int eXPOnKill;
 
@@ -62,6 +63,11 @@ public class Stats
 			strength = value;
 			OnStatChanged?.Invoke();
 		}
+	}
+	public int MagicPower
+	{
+		get => magicPower;
+		set { magicPower = value; OnStatChanged?.Invoke(); }
 	}
 	public int Defense
 	{
@@ -197,6 +203,7 @@ public class Stats
 		SPMax = startingStats.SPMax;
 		HungerMax = startingStats.HungerMax;
 		Strength = startingStats.Strength;
+		MagicPower = startingStats.MagicPower;
 		Defense = startingStats.Defense;
 		EXPOnKill = startingStats.EXPOnKill;
 		HungerAccumulateThreshold = startingStats.HungerAccumulateThreshold;
@@ -236,6 +243,7 @@ public class Stats
 		SPMax = other.SPMax;
 		HungerMax = other.HungerMax;
 		Strength = other.Strength;
+		MagicPower = other.MagicPower;
 		Defense = other.Defense;
 		EXPOnKill = other.EXPOnKill;
 		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
@@ -263,6 +271,7 @@ public class Stats
 		retStats.SPMax += modification.SPMax;
 		retStats.HungerMax += modification.HungerMax;
 		retStats.Strength += modification.Strength;
+		retStats.MagicPower += modification.MagicPower;
 		retStats.Defense += modification.Defense;
 		retStats.EXPOnKill += modification.EXPOnKill;
 		retStats.HungerAccumulateThreshold += modification.HungerAccumulateThreshold;
@@ -287,6 +296,7 @@ public class Stats
 		SPMax = other.SPMax;
 		HungerMax = other.HungerMax;
 		Strength = other.Strength;
+		MagicPower = other.MagicPower;
 		Defense = other.Defense;
 		EXPOnKill = other.EXPOnKill;
 		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
@@ -312,6 +322,7 @@ public class Stats
 			hash = hash * 23 + SPMax.GetHashCode();
 			hash = hash * 23 + HungerMax.GetHashCode();
 			hash = hash * 23 + Strength.GetHashCode();
+			hash = hash * 23 + MagicPower.GetHashCode();
 			hash = hash * 23 + Defense.GetHashCode();
 			hash = hash * 23 + EXPOnKill.GetHashCode();
 			hash = hash * 23 + HungerAccumulateThreshold.GetHashCode();
@@ -336,6 +347,7 @@ public class Stats
 			$"SPMax: {SPMax} " +
 			$"HungerMax: {HungerMax} " +
 			$"Strength: {Strength} " +
+			$"MagicPower: {MagicPower} " +
 			$"Defense: {Defense} " +
 			$"EXPOnKill: {EXPOnKill} " +
 			$"HungerAccumulateThreshold: {HungerAccumulateThreshold} " +

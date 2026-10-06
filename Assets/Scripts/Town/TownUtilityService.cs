@@ -13,20 +13,30 @@ public sealed class TownUtilityService
     public TownUtilityService(IReadOnlyList<TownAlly> party, List<InventoryItem> bag, Action persist)
     { this.party=party; this.bag=bag; this.persist=persist; }
 
-    public static Stats StatsFor(TownAlly hero)
+    public static Stats StatsFor(TownAlly hero) => StatsFor(hero,hero.Equipment.Current());
+    public static Stats StatsFor(TownAlly hero, Loadout loadout)
     {
-        var stats = new Stats();
         var template = GamePresentationProfile.Current?.AllyTemplate;
-        if (template != null) stats.FromStartingStats(template.StartingStats);
-        else if (hero.BaseStats != null) stats = new Stats(hero.BaseStats);
-        stats += hero.PrimaryClass?.StartingStatBonus;
-        HeroClass.ApplyLevelGrowth(stats,hero.PrimaryClass,Math.Max(1,hero.Level)-1);
-        stats += hero.Equipment.GetEquipmentStatModification();
+        var stats = HeroStatRules.BaseStats(template != null ? template.StartingStats : hero.BaseStats == null ? null : new StatModification(hero.BaseStats), hero.PrimaryClass, hero.Level, hero.Attributes);
+        int baseMaximum=stats.HPMax;
+        stats += loadout.Modification;
         foreach (var name in hero.Skills ?? new())
         {
             var skill=Common.Instance.SkillManager.GetSkillByName(name);
             if(skill?.ActivationType == ActivationType.Passive)
+            {
                 stats += StatScaling.Scale(skill.PassiveStatModification,skill.RankScaling,Math.Max(1,hero.GetRank(name)));
+                foreach(var conditional in skill.PassiveResponses?.OfType<ConditionalStatPassive>() ?? Enumerable.Empty<ConditionalStatPassive>())
+                {
+                    bool active=conditional.Condition switch {
+                        StatCondition.ShieldEquipped => loadout.OffHand?.EquipmentItemDefinition?.WeaponType==WeaponType.OffhandShield,
+                        StatCondition.BowEquipped => loadout.Weapon?.EquipmentItemDefinition?.WeaponType==WeaponType.BowAndArrow,
+                        StatCondition.HpBelowFraction => RecoveryMath.SavedVital(hero.Hp,baseMaximum)<=conditional.HpFraction*baseMaximum,
+                        _ => false
+                    };
+                    if(active)stats+=StatScaling.Scale(conditional.Bonus,skill.RankScaling,Math.Max(1,hero.GetRank(name)));
+                }
+            }
         }
         return stats;
     }
@@ -123,7 +133,7 @@ public sealed class TownUtilityService
         int projectedHp=RecoveryMath.Restore(hp,heal,maximum);
         foreach(var effect in u.Effects ?? Enumerable.Empty<GameAction>())
         {
-            int amount=effect is ScaledHealAction h ? RecoveryMath.Heal(h.BaseHeal,h.PerLevel,caster.Level,u.Rank,HealingMultiplier(caster,projectedHp,maximum)) :
+            int amount=effect is ScaledHealAction h ? RecoveryMath.Heal(h.BaseHeal,h.PerLevel,caster.Level,u.Rank,HealingMultiplier(caster,projectedHp,maximum) * HeroAttributes.MagicMultiplier(StatsFor(caster).MagicPower)) :
                 effect is TakeHealAction direct ? u.Rank.Scaling.ScalePower(direct.healing,u.Rank.Rank) : 0;
             heal+=amount;projectedHp=RecoveryMath.Restore(projectedHp,amount,maximum);
             if(effect is RestoreSPAction s && !(s.ExcludeCaster && caster==target))restore+=u.Rank.Scaling?.ScalePower(s.Amount,u.Rank.Rank) ?? s.Amount;

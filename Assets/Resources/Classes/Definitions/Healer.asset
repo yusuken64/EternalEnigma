@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Healer
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: healer
+  PreferredAttribute: 1
   DisplayName: Healer
   Role: Healing and support
   AllowedWeapons: 0400000009000000
   GrowthPerLevel:
     HPMax: 4
-    SPMax: 2
+    SPMax: 0
     HungerMax: 0
     Strength: 1
     Defense: 0

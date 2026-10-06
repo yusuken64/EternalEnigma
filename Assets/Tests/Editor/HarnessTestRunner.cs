@@ -287,6 +287,15 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run PlayMode")]
     public static void RunPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Attributes")]
+    public static void RunAttributes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests", "EternalEnigma.Tests.GameplayCorrectnessTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Attribute Layout")]
+    public static void RunAttributeLayout() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation")]
     public static void RunPresentation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.CampaignPresentationTests", "EternalEnigma.Tests.MenuSelectionTests",

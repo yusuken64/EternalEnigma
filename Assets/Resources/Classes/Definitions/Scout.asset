@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Scout
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: scout
+  PreferredAttribute: 2
   DisplayName: Scout
   Role: Utility and exploration
   AllowedWeapons: 020000000000000008000000

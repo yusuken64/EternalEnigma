@@ -52,6 +52,8 @@ public static class SummonRules
 		clone.IsWaitingForPlayerInput = false;
 		clone.AllyStrategy = AllyStrategy.Aggresive;
 		clone.SetToCPU();
+		clone.Attributes = summoner.Attributes;
+		clone.IsSummon = true;
 
 		// Add SummonedUnit component
 		var unit = clone.gameObject.AddComponent<SummonedUnit>();
@@ -65,6 +67,7 @@ public static class SummonRules
 		clone.BaseStats.Sync(summoner.BaseStats);
 		clone.BaseStats.HPMax = Math.Max(1, (int)Math.Round(summoner.BaseStats.HPMax * statPercent));
 		clone.BaseStats.Strength = Math.Max(0, (int)Math.Round(summoner.BaseStats.Strength * statPercent));
+		clone.BaseStats.MagicPower = Math.Max(0, (int)Math.Round(summoner.BaseStats.MagicPower * statPercent));
 		clone.BaseStats.Defense = Math.Max(0, (int)Math.Round(summoner.BaseStats.Defense * statPercent));
 		clone.InvalidateCachedStats();
 

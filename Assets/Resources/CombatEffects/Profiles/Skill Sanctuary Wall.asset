@@ -23,7 +23,7 @@ MonoBehaviour:
     MinimumDiameterCells: 0
     ReferenceDiameter: 1
   GroundCircle:
-    Prefab: {fileID: 1297703875008057977, guid: c1f1c85e8c2fdcc4aaf86c856d12d279, type: 3}
+    Prefab: {fileID: 7137678877582281660, guid: 1cd8a542f397f7a499c4df141e9e2316, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
     FitToTarget: 0
@@ -31,7 +31,7 @@ MonoBehaviour:
     Delay: 0
     Lifetime: 2
     MinimumDiameterCells: 3
-    ReferenceDiameter: 10.000002
+    ReferenceDiameter: 3.500001
   Projectile:
     Prefab: {fileID: 0}
     Offset: {x: 0, y: 0, z: 0}

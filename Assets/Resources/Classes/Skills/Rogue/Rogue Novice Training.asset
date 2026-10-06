@@ -59,8 +59,13 @@ MonoBehaviour:
     CritChance: 0
     Evasion: 0.05
     HitBonus: 0
-  PassiveResponses: []
-  Description: Unlocks tier 1. +5% evasion.
+  PassiveResponses:
+  - rid: 292415685818318985
+  Description: Unlocks tier 1. +5% evasion and +1% weapon damage per AGI point.
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 292415685818318985
+      type: {class: AgilityDamageBonus, ns: , asm: EternalEnigma.Game}
+      data:
+        Category: 0

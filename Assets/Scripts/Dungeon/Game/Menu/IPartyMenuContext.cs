@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PartyMenuTab { Inventory, Skills, Capabilities }
+public enum PartyMenuTab { Inventory, Skills, Capabilities, Equipment, Stats }
 
 public sealed class PartyMenuHero
 {
@@ -20,7 +20,9 @@ public sealed class PartyMenuEntry
     public string Title, Description, Section;
     public Sprite Icon;
     public bool Equipped;
-    public object Identity => (object)Item ?? Skill;
+    public EquipmentSlot? Slot;
+    public bool SpendAttribute;
+    public object Identity => (object)Item ?? Skill ?? (object)Slot ?? (SpendAttribute ? "spend" : Title);
 }
 
 public sealed class PartyMenuAction

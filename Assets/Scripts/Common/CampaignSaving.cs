@@ -66,10 +66,7 @@ public static class CampaignSaving
         {
             var prefab = CampaignParty.Resolve(hero.AllyId, TownSceneLoader.Default);
             var primary = catalog?.Get(hero.PrimaryClassId);
-            var stats = new Stats();
-            stats.FromStartingStats(GamePresentationProfile.Current.AllyTemplate.StartingStats);
-            stats += primary?.StartingStatBonus;
-            HeroClass.ApplyLevelGrowth(stats, primary, Math.Max(1, hero.Level) - 1);
+            var stats = HeroStatRules.BaseStats(GamePresentationProfile.Current.AllyTemplate.StartingStats, primary, hero.Level, hero.Attributes);
             foreach (var item in hero.Equipment)
                 if (item.Restore(common.ItemManager) is EquipableInventoryItem equipment) stats += equipment.GetEquipmentStatModification();
             foreach (var name in hero.Skills ?? new())

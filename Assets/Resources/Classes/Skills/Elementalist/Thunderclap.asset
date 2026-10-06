@@ -51,6 +51,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0

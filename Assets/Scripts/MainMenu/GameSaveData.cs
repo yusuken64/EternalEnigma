@@ -70,6 +70,7 @@ public class TownAllyData
 	public int HighestLevel = 1;
     public int Level = 1;
     public int Experience;
+	public AttributePoints Attributes;
 	// Persisted vitals carried between dungeon runs; -1 means full (never set, or restored by the inn).
 	public int Hp = -1;
 	public int Sp = -1;

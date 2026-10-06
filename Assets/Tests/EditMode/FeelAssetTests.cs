@@ -34,6 +34,10 @@ namespace EternalEnigma.Tests.EditMode
             var catalog = AssetDatabase.LoadAssetAtPath<CombatVisualCatalog>("Assets/Resources/CombatEffects/Catalog.asset");
             Assert.That(catalog.Statuses.All(s => s.Profile != null && s.Profile.Icon != null));
             Assert.That(catalog.Statuses.Select(s => s.Profile.Icon).Distinct().Count(), Is.EqualTo(catalog.Statuses.Count));
+            var arms = new[] { catalog.BlazingArms, catalog.FrostArms, catalog.StormArms };
+            Assert.That(arms.All(p => p != null && p.Icon != null && p.Aura.Prefab != null));
+            Assert.That(catalog.Statuses.Select(s => s.Profile.Icon).Concat(arms.Select(p => p.Icon)).Distinct().Count(),
+                Is.EqualTo(catalog.Statuses.Count + arms.Length));
             var themes = AssetDatabase.LoadAssetAtPath<DungeonThemeCatalog>("Assets/Resources/DungeonThemes/Catalog.asset");
             Assert.That(themes.FallbackMusic, Is.Not.Null);
             foreach (var theme in themes.Themes)

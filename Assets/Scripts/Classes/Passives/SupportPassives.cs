@@ -76,17 +76,19 @@ public class ConditionalStatPassive : ClassPassive {
 	public StatModification Bonus = new();
 
 	internal override StatModification ConditionalStats(Character owner, Skill skill) {
+		return ConditionalStats(owner, skill, owner?.Equipment != null ? owner.Equipment.Current() : default);
+	}
+	internal override StatModification ConditionalStats(Character owner, Skill skill, Loadout loadout) {
 		if (owner == null) return null;
 
 		bool conditionMet = false;
 
 		switch (Condition) {
 			case StatCondition.ShieldEquipped:
-				conditionMet = owner.Equipment?.EquippedShield?.EquipmentItemDefinition != null &&
-					owner.Equipment.EquippedShield.EquipmentItemDefinition.WeaponType == WeaponType.OffhandShield;
+				conditionMet = loadout.OffHand?.EquipmentItemDefinition?.WeaponType == WeaponType.OffhandShield;
 				break;
 			case StatCondition.BowEquipped:
-				conditionMet = ArrowSupply.HasBow(owner);
+				conditionMet = loadout.Weapon?.EquipmentItemDefinition?.WeaponType == WeaponType.BowAndArrow;
 				break;
 			case StatCondition.HpBelowFraction:
 				conditionMet = owner.Vitals != null && owner.BaseStats != null &&

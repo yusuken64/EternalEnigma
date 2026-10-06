@@ -8,6 +8,10 @@ public class Equipment : MonoBehaviour
 	public EquipableInventoryItem EquippedWeapon;
 	public EquipableInventoryItem EquippedShield;
 	public EquipableInventoryItem EquippedAccessory;
+	public Loadout Current() => new Loadout(
+		EquippedWeapon?.EquipmentItemDefinition != null ? EquippedWeapon : null,
+		EquippedShield?.EquipmentItemDefinition != null ? EquippedShield : null,
+		EquippedAccessory?.EquipmentItemDefinition != null ? EquippedAccessory : null);
 
 	public delegate void EquipmentChangedEventHandler(EquipChangeType equipChangeType, EquipableInventoryItem item);
 	public event EquipmentChangedEventHandler HandleEquipmentChanged;
@@ -112,25 +116,7 @@ public class Equipment : MonoBehaviour
 
 	public StatModification GetStatsIfEquipped(EquipableInventoryItem newItem)
 	{
-		var slots = new Dictionary<EquipmentSlot, EquipableInventoryItem>();
-
-		if (EquippedWeapon?.EquipmentItemDefinition != null)
-			slots[EquipmentSlot.MainHand] = EquippedWeapon;
-		if (EquippedShield?.EquipmentItemDefinition != null)
-			slots[EquipmentSlot.OffHand] = EquippedShield;
-		if (EquippedAccessory?.EquipmentItemDefinition != null)
-			slots[EquipmentSlot.Accessory] = EquippedAccessory;
-
-		ApplyEquipChange(slots, newItem);
-
-		// Now sum up stats from simulated slots
-		StatModification total = new();
-		foreach (var kvp in slots)
-		{
-			total += kvp.Value.GetEquipmentStatModification();
-		}
-
-		return total;
+		return Current().With(newItem).Modification;
 	}
 
 	internal bool CanEquip(EquipableInventoryItem equipableInventoryItem)

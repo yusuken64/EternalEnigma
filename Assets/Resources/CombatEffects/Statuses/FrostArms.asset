@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d59193e1726734abd12127a386c219, type: 3}
+  m_Name: FrostArms
+  m_EditorClassIdentifier: EternalEnigma.Game::StatusVisualProfile
+  Aura:
+    Prefab: {fileID: 7329597108022556709, guid: cbde9c7582c40b040b9fb549da2f5707, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: {x: -90, y: 0, z: 0}
+    FitToTarget: 0
+    Scale: 0.3
+    Delay: 0
+    Lifetime: 2
+    MinimumDiameterCells: 3
+    ReferenceDiameter: 7.000002
+  Priority: 25
+  HasLoop: 0
+  Loop: 0
+  Icon: {fileID: 21300000, guid: da4fc9459923e0243af271e878e5b3e1, type: 3}
+  Overhead: 0

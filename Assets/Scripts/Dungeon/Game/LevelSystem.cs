@@ -36,6 +36,8 @@ public class LevelSystem : MonoBehaviour
 
 		return (float)expIntoLevel / expNeeded;
 	}
+	public static int ExperienceToNext(int level,int exp) => level < 1 ? Math.Max(0,expTable[1]-exp) :
+		level >= expTable.Length ? 0 : Math.Max(0,expTable[level]-exp);
 
 	public List<LevelInfo> GetLevelUps(int currentLevel, int currentExp)
 	{

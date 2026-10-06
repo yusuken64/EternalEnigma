@@ -11,6 +11,7 @@ public sealed class PartyMenuPicker : Dialog
     public TMP_Text Title;
     public Button BackButton;
     public AuthoredButton RowTemplate;
+    public TMP_Text OptionDescription;
     private Button first;
     private bool committed;
     private int submittedFrame = -1;
@@ -52,10 +53,14 @@ public sealed class PartyMenuPicker : Dialog
     }
 #endif
     public static PartyMenuPicker Build(Transform parent,string title,List<(string Label,Action Execute)> choices,bool closeOnChoose=true)
+        => BuildDetailed(parent,title,choices.Select(c=>(c.Label,(string)null,c.Execute)).ToList(),closeOnChoose);
+
+    public static PartyMenuPicker BuildDetailed(Transform parent,string title,List<(string Label,string Description,Action Execute)> choices,bool closeOnChoose=true)
     {
         var picker=parent.GetComponentsInChildren<PartyMenuPicker>(true).FirstOrDefault(p=>p.Owner==null);
         if(picker==null)throw new InvalidOperationException("No free authored party picker for this dialog stack.");
         picker.committed=false;picker.submittedFrame=-1;picker.Title.text=title;picker.Title.enableAutoSizing=true;picker.Title.fontSizeMin=18;picker.Title.fontSizeMax=30;picker.first=null;picker.description=null;
+        if(picker.OptionDescription!=null){picker.OptionDescription.gameObject.SetActive(choices.Any(c=>!string.IsNullOrEmpty(c.Description)));picker.OptionDescription.text="Select an option for its stat preview.";}
         foreach(Transform child in picker.Rows){child.gameObject.SetActive(false);Destroy(child.gameObject);}
         var buttons = new List<Button>();
         foreach(var choice in choices)
@@ -66,7 +71,7 @@ public sealed class PartyMenuPicker : Dialog
                 picker.committed=closeOnChoose;if(closeOnChoose)picker.CloseDialog();
                 Common.Instance.MenuInputHandler.ClearInputThisFrame();choice.Execute();
             });
-            row.Button.GetComponent<PartyMenuRow>().Selected=()=>picker.ScrollToSelected(row.gameObject);
+            row.Button.GetComponent<PartyMenuRow>().Selected=()=>{picker.ScrollToSelected(row.gameObject);if(picker.OptionDescription!=null)picker.OptionDescription.text=choice.Description??"";};
             row.Button.interactable=choice.Execute!=null;
             if(row.Button.interactable)buttons.Add(row.Button);
             if(picker.first==null && row.Button.interactable)picker.first=row.Button;

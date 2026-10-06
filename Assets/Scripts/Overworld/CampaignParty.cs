@@ -62,7 +62,7 @@ public static class CampaignParty
                 .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                 .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList();
             ally.HighestLevel = Mathf.Max(1, data.HighestLevel);
-            ally.Level = Mathf.Max(1, data.Level); ally.Experience = data.Experience;
+            ally.Level = Mathf.Max(1, data.Level); ally.Experience = data.Experience; ally.Attributes = data.Attributes;
             ally.Hp = data.Hp; ally.Sp = data.Sp;
             ally.HasHunger = data.HasHunger; ally.Hunger = data.Hunger; ally.HungerAccumulate = data.HungerAccumulate;
             HeroClassBinding.Apply(ally, data, common.GameSaveData);

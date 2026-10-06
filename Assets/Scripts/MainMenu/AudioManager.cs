@@ -95,6 +95,13 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
 
 	private int effectClipIndex;
 	private float nextFootstep;
+	private float nextAmbushCue;
+	internal void PlayAmbushCue()
+	{
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations || Time.unscaledTime < nextAmbushCue) return;
+		nextAmbushCue = Time.unscaledTime + 3f;
+		PlaySoundEffect(SoundEffects?.Ambush);
+	}
 	internal void PlayFootstep(AudioClip clip, int seed, int x, int y)
 	{
 		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations || clip == null ||

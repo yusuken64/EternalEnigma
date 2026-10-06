@@ -20,6 +20,8 @@ public class TownAlly : TownCharacter
 	[Min(1)] public int HighestLevel = 1;
     public int Level = 1;
     public int Experience;
+	public AttributePoints Attributes;
+	public int PendingAttributePoints => HeroAttributes.Pending(Level, Attributes);
 	// Vitals carried between dungeon runs; -1 means full.
 	public int Hp = -1;
 	public int Sp = -1;

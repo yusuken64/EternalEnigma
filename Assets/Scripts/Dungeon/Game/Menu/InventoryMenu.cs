@@ -54,7 +54,7 @@ public class InventoryMenu : Dialog
                     InventoryItemPreview.Setup(data);
                     StatText.text = selectionPrompt;
                 }
-                else UpdateItemPreview(data, character.BaseStats, character.Equipment);
+                else UpdateItemPreview(data, character);
             });
         if (selectItem != null) StatText.text = selectionPrompt;
     }
@@ -63,7 +63,7 @@ public class InventoryMenu : Dialog
     {
         SetupView(items, character.VisualParent, character.Equipment.IsEquipped,
             (view, item) => FindFirstObjectByType<TownMenu>().OpenItemActions(this, (TownAlly)character, item),
-            item => UpdateItemPreview(item, character.BaseStats, character.Equipment));
+            item => UpdateItemPreview(item, (TownAlly)character));
     }
 
     // Rendering, focus, portrait and scrolling are shared; callers provide the allowed actions.
@@ -96,16 +96,25 @@ public class InventoryMenu : Dialog
         }
     }
 
-    private void UpdateItemPreview(InventoryItem data, Stats stats, Equipment equipment)
+    private void UpdateItemPreview(InventoryItem data, Character character)
     {
         InventoryItemPreview.Setup(data);
-        var current = stats + equipment.GetEquipmentStatModification();
+        var current = character.FinalStats;
         if (data is EquipableInventoryItem item)
         {
-            var simulated = stats + equipment.GetStatsIfEquipped(item);
-            StatText.text = $"Strength: {current.Strength} >> {simulated.Strength}\nDefense: {current.Defense} >> {simulated.Defense}";
+            var simulated = StatPreview.Final(character,character.Equipment.Current().With(item));
+            StatText.text = StatPreview.Diff(current,simulated);
         }
-        else StatText.text = $"Strength: {current.Strength}\nDefense: {current.Defense}";
+        else StatText.text = $"Attack: {current.Strength}\nDefense: {current.Defense}";
+    }
+
+    private void UpdateItemPreview(InventoryItem data, TownAlly character)
+    {
+        InventoryItemPreview.Setup(data);
+        var current=TownUtilityService.StatsFor(character);
+        StatText.text=data is EquipableInventoryItem item ?
+            StatPreview.Diff(current,TownUtilityService.StatsFor(character,character.Equipment.Current().With(item))) :
+            $"Attack: {current.Strength}\nDefense: {current.Defense}";
     }
 
     internal void Close()

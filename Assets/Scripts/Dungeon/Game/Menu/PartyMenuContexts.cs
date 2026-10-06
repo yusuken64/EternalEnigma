@@ -30,20 +30,103 @@ public abstract class PartyMenuContext : IPartyMenuContext
             Skill=s,Title=$"{s.SkillName}  R{s.Rank}" + (s.ActivationType==ActivationType.Active?$"  {s.SPCost} SP":"  Passive"),
             Description=s.Description+$"\nCharging actions: {(hero.DungeonActor != null ? s.InitialCastTime(hero.DungeonActor) : s.CastTime)}"+(s.UsesArrows?$"\nAmmunition: {(s.ArrowCostMode==ArrowCostMode.PerTarget?"1 per target":s.ArrowCost.ToString())} arrows":""),
             Section=s.ActivationType==ActivationType.Active?"Active skills":"Passive skills",Icon=s.Icon }).ToList();
-        return hero.Equipment.GetEquippedItems().Cast<InventoryItem>().Concat(Bag).Where(i=>i?.ItemDefinition!=null).Select(i=>new PartyMenuEntry {
+        if(tab==PartyMenuTab.Stats)return StatEntries(hero);
+        if(tab==PartyMenuTab.Equipment)return EquipmentEntries(hero);
+        return Bag.Where(i=>i?.ItemDefinition!=null).Select(i=>new PartyMenuEntry {
             Item=i,Title=i.ItemName+(i.HasStacks?$"  x{i.StackStock}":"")+(hero.Equipment.IsEquipped(i)?"  [Equipped]":""),
             Equipped=hero.Equipment.IsEquipped(i),Section=hero.Equipment.IsEquipped(i)?"Equipped":"Shared bag",
             Icon=GamePresentationProfile.Current?.ItemIcons.Length>(int)i.ItemDefinition.DroppedItemVisual ? GamePresentationProfile.Current.ItemIcons[(int)i.ItemDefinition.DroppedItemVisual] : null,
-            Description=i.ItemDefinition.Description+(i is EquipableInventoryItem equipment ? "\n"+equipment.EquipmentSlot+"\n"+string.Join("\n",equipment.GetEquipmentStatModification().DescribeEffect()):"") }).ToList();
+            Description=i.ItemDefinition.Description+(i is EquipableInventoryItem equipment ? "\n"+equipment.EquipmentSlot+"\n"+
+                (hero.DungeonActor!=null?StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,hero.Equipment.Current().With(equipment))):
+                    StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,hero.Equipment.Current().With(equipment)))):"") }).ToList();
+    }
+    protected virtual Stats StatsFor(PartyMenuHero hero) => hero.DungeonActor != null ? hero.DungeonActor.FinalStats : TownUtilityService.StatsFor(hero.TownActor);
+    private List<PartyMenuEntry> StatEntries(PartyMenuHero hero)
+    {
+        var actor=hero.DungeonActor;var town=hero.TownActor;var stats=StatsFor(hero);
+        int level=actor?.Vitals.Level ?? town.Level, exp=actor?.Vitals.Exp ?? town.Experience;
+        var points=actor?.Attributes ?? town.Attributes;int pending=actor?.PendingAttributePoints ?? town.PendingAttributePoints;
+        var entries=new List<PartyMenuEntry>();
+        void Add(string section,string title,string detail) => entries.Add(new PartyMenuEntry{Section=section,Title=title,Description=detail});
+        string Sources(string key) => actor!=null?StatBreakdown.Describe(actor,key):StatBreakdown.Describe(town,key);
+        if(pending>0)entries.Add(new PartyMenuEntry{Section="Level",Title=$"Spend attribute point ({pending} available)",Description="Choose STR, INT, or AGI. Spending is free.",SpendAttribute=true});
+        Add("Level",$"Level {level}",$"EXP {exp}. Progress to next level: {LevelSystem.Progress(level,exp)*100:0.#}%.");
+        Add("Level",$"EXP {exp}",$"{LevelSystem.ExperienceToNext(level,exp)} EXP to next level.");
+        Add("Attributes",$"STR {points.Str}","Each point: +1 Attack, +3 maximum HP; +1 Defense every four points.");
+        Add("Attributes",$"INT {points.Int}","Each point: +2 maximum SP, +1 Magic Power, faster SP regeneration.");
+        Add("Attributes",$"AGI {points.Agi}","Each point: +1% Hit, Evasion and Crit, +2 maximum Food. AGI's Evasion and Crit bonuses cap at 25%.");
+        int hp=actor?.Vitals.HP ?? RecoveryMath.SavedVital(town.Hp,stats.HPMax);
+        int sp=actor?.Vitals.SP ?? RecoveryMath.SavedVital(town.Sp,stats.SPMax);
+        int food=actor?.Vitals.Hunger ?? (town.HasHunger?town.Hunger:stats.HungerMax);
+        Add("Vitals",$"HP {hp}/{stats.HPMax}",Sources("HP"));
+        Add("Vitals",$"SP {sp}/{stats.SPMax}",Sources("SP")+$"\nRegeneration threshold: {stats.SPRegenAcccumlateThreshold}.");
+        Add("Vitals",$"Food {food}/{stats.HungerMax}",Sources("Food"));
+        Add("Combat",$"Attack {stats.Strength}",Sources("Attack"));
+        Add("Combat",$"Magic Power {stats.MagicPower}",Sources("Magic Power")+"\nEach point increases magic damage and scaled healing by 5%.");
+        Add("Combat",$"Defense {stats.Defense}",Sources("Defense"));
+        Add("Combat",$"Hit {(Math.Max(.05f,Math.Min(1f,.8f+stats.HitBonus)))*100:0.#}%",Sources("Hit")+"\nBaseline chance against zero Evasion. A target's Evasion reduces this chance.");
+        Add("Combat",$"Evasion {stats.Evasion*100:0.#}%",Sources("Evasion"));
+        Add("Combat",$"Crit {stats.CritChance*100:0.#}%",Sources("Crit"));
+        Add("Combat",$"Attacks / turn {stats.AttacksPerTurnMax}",Sources("Attacks"));
+        Add("Combat",$"Actions / turn {stats.ActionsPerTurnMax}",Sources("Actions"));
+        Add("Resistances",$"Fire {stats.FireResistance}",Sources("Fire"));
+        Add("Resistances",$"Ice {stats.IceResistance}",Sources("Ice"));
+        Add("Resistances",$"Lightning {stats.LightningResistance}",Sources("Lightning"));
+        return entries;
+    }
+    private List<PartyMenuEntry> EquipmentEntries(PartyMenuHero hero)
+    {
+        var loadout=hero.Equipment.Current();
+        var entries=new List<PartyMenuEntry>();
+        void Add(EquipmentSlot slot,string name,EquipableInventoryItem item,bool blocked=false)
+        {
+            var description=blocked?"Blocked by a two-handed weapon.":item==null?"Empty slot.":item.ItemDefinition.Description+"\n"+string.Join(", ",item.GetEquipmentStatModification().DescribeEffect());
+            if(item!=null)description+="\n\nWithout it: "+(hero.DungeonActor!=null?
+                StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,loadout.Without(slot))):
+                StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,loadout.Without(slot))));
+            string own=item==null?"":string.Join(", ",item.GetEquipmentStatModification().DescribeEffect());
+            entries.Add(new PartyMenuEntry{Section="Equipped",Slot=slot,Item=item,Equipped=item!=null,
+                Title=name+"  "+(blocked?"— blocked —":item?.ItemName??"— empty —")+(own.Length>0?"\n"+own:""),Description=description});
+        }
+        Add(EquipmentSlot.MainHand,"Weapon",loadout.Weapon);
+        Add(EquipmentSlot.OffHand,"Off-hand",loadout.OffHand,loadout.Weapon?.EquipmentSlot==EquipmentSlot.TwoHand && loadout.Weapon?.EquipmentItemDefinition?.WeaponType!=WeaponType.BowAndArrow);
+        Add(EquipmentSlot.Accessory,"Accessory",loadout.Accessory);
+        entries.Add(new PartyMenuEntry{Section="Totals",Title="Equipment bonuses",Description=string.Join("\n",loadout.Modification.DescribeEffect())});
+        return entries;
+    }
+    public virtual List<(string Label, InventoryItem Item, string Description, bool Enabled)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)
+    {
+        var current=hero.Equipment.Current();
+        var options=new List<(string Label,InventoryItem Item,string Description,bool Enabled)>();
+        var existing=slot==EquipmentSlot.MainHand?current.Weapon:slot==EquipmentSlot.OffHand?current.OffHand:current.Accessory;
+        if(existing!=null)
+        {
+            var without=current.Without(slot);
+            var preview=hero.DungeonActor!=null?StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,without)):
+                StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,without));
+            options.Add(("Unequip",existing,preview,true));
+        }
+        foreach(var item in Bag.OfType<EquipableInventoryItem>().Where(i=>i.EquipmentSlot==slot || slot==EquipmentSlot.MainHand && i.EquipmentSlot==EquipmentSlot.TwoHand))
+        {
+            bool allowed=hero.DungeonActor!=null?HeroClass.AllowsItem(hero.DungeonActor.PrimaryClass,hero.DungeonActor.SecondaryClass,item):HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,item);
+            string restriction=allowed?null:hero.DungeonActor!=null?HeroClass.EquipmentRestriction(hero.DungeonActor.PrimaryClass,hero.DungeonActor.SecondaryClass,item):HeroClass.EquipmentRestriction(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,item);
+            var after=current.With(item);
+            var warning=string.Join(", ",current.Items.Where(i=>i!=existing && !after.Items.Contains(i)).Select(i=>"removes "+i.ItemName));
+            var preview=hero.DungeonActor!=null?StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,after)):
+                StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,after));
+            options.Add((item.ItemName,item,allowed?preview+(warning.Length>0?"  ⚠ "+warning:""):restriction,allowed));
+        }
+        return options.OrderByDescending(o=>o.Item==existing).ThenByDescending(o=>o.Enabled).ToList();
     }
     public abstract List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry);
+    public virtual bool Spend(PartyMenuHero hero, HeroAttribute attribute) => false;
     public virtual string Restriction(PartyMenuHero hero,PartyMenuEntry entry) => entry.Skill?.ActivationType==ActivationType.Passive?"Passive skill: applied automatically.":"";
     public string HeroDetails(PartyMenuHero hero)
     {
         var stats=hero.DungeonActor!=null?hero.DungeonActor.FinalStats:TownUtilityService.StatsFor(hero.TownActor);
         int hp=hero.DungeonActor!=null?hero.DungeonActor.Vitals.HP:RecoveryMath.SavedVital(hero.TownActor.Hp,stats.HPMax);
         int sp=hero.DungeonActor!=null?hero.DungeonActor.Vitals.SP:RecoveryMath.SavedVital(hero.TownActor.Sp,stats.SPMax);
-        return $"{hero.Name}   HP {hp}/{stats.HPMax}   SP {sp}/{stats.SPMax}\nStrength {stats.Strength}   Defense {stats.Defense}";
+        return $"{hero.Name}   HP {hp}/{stats.HPMax}   SP {sp}/{stats.SPMax}\nAttack {stats.Strength}   Defense {stats.Defense}";
     }
     public virtual void Dispose()
     {
@@ -63,6 +146,11 @@ public sealed class TownPartyMenuContext : PartyMenuContext
         this.town=town;
         foreach(var hero in town.TownPlayer.RecruitedAllies)Add(hero);
         utilities=new TownUtilityService(town.TownPlayer.RecruitedAllies,Bag,town.SaveProgress);
+    }
+    public override bool Spend(PartyMenuHero hero, HeroAttribute attribute)
+    {
+        if(!AttributeSpending.TrySpend(hero.TownActor,attribute))return false;
+        town.SaveProgress();return true;
     }
     public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)
     {
@@ -126,7 +214,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
     }
     public static void RestoreHero(TownAlly live,TownAllyData data, Action<InventoryItem> displaced = null)
     {
-        live.Id=data.AllyId;live.Name=data.AllyName;live.Hp=data.Hp;live.Sp=data.Sp;live.HighestLevel=data.HighestLevel;live.Level=data.Level;live.Experience=data.Experience;
+        live.Id=data.AllyId;live.Name=data.AllyName;live.Hp=data.Hp;live.Sp=data.Sp;live.HighestLevel=data.HighestLevel;live.Level=data.Level;live.Experience=data.Experience;live.Attributes=data.Attributes;
         live.Skills=data.Skills?.ToList()??new();live.SkillRanks=data.SkillRanks?.Select(r=>new SkillRankSaveData{SkillName=r.SkillName,Rank=r.Rank}).ToList()??new();
         HeroClassBinding.Apply(live,data,Common.Instance.GameSaveData);
         live.Equipment.RestoreSaved(data.Equipment, Common.Instance.ItemManager,
@@ -134,6 +222,14 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         data.Equipment = ItemSaveData.Capture(live.Equipment.GetEquippedItems());
         live.RefreshEquipmentVisuals();
         live.EnsureStartingSkills();
+    }
+    public override bool Spend(PartyMenuHero hero, HeroAttribute attribute)
+    {
+        if(!AttributeSpending.TrySpend(hero.TownActor,attribute))return false;
+        var common=Common.Instance;
+        var data=common.GameSaveData.TownSaveData.RecruitedAlliesData.Single(h=>h.AllyId==hero.Id);
+        data.Attributes=hero.TownActor.Attributes;data.Hp=hero.TownActor.Hp;data.Sp=hero.TownActor.Sp;
+        CampaignParty.Capture(common);SaveSystem.Capture(common);return true;
     }
     public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Item==null && entry.Skill==null?"Choose a capability when interacting with an obstacle.":entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
         entry.Skill?.ActivationType==ActivationType.Passive?base.Restriction(hero,entry):"Inspect only while travelling. Use items and recovery skills in town, or actions in a dungeon.";
@@ -166,8 +262,16 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext, IPartyMenuEntryH
         this.game=game;
         foreach(var ally in PartyRules.PartyMembers(game))heroes.Add(new PartyMenuHero {Id=ally.TownAllyId,Name=ally.CharacterName,Portrait=ally.Portrait,DungeonActor=ally});
     }
+    public override bool Spend(PartyMenuHero hero, HeroAttribute attribute) => AttributeSpending.TrySpend(hero.DungeonActor,attribute);
     private string Eligibility(PartyMenuHero hero)=>hero.DungeonActor!=game.PlayerController.ControlledAlly || !game.PlayerController.CanOpenMenu() ?
         "Only the controlled hero awaiting an action can act this turn.":null;
+    public override List<(string Label, InventoryItem Item, string Description, bool Enabled)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)
+    {
+        var options=base.EquipmentOptions(hero,slot);
+        var reason=Eligibility(hero);
+        return options.Select(option=>(option.Label,option.Item,
+            option.Description+(reason==null?"  Uses "+hero.Name+"'s turn.":"  "+reason),option.Enabled && reason==null)).ToList();
+    }
     public bool OpenEntry(PartyMenu menu, PartyMenuHero hero, PartyMenuEntry entry)
     {
         if (entry.Item == null) return false;

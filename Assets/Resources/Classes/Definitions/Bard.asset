@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Bard
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: bard
+  PreferredAttribute: 1
   DisplayName: Bard
   Role: Buff and support fighter
   AllowedWeapons: 0000000005000000
   GrowthPerLevel:
     HPMax: 5
-    SPMax: 1
+    SPMax: 0
     HungerMax: 0
     Strength: 2
     Defense: 0

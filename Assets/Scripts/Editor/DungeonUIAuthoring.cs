@@ -148,7 +148,7 @@ public static class DungeonUIAuthoring
                 if(label.transform.parent==menu.Panel && label!=menu.HeroText && label!=menu.Hints && label!=menu.Details && label.transform!=menu.BackButton.transform)
                 { if(label.rectTransform.anchorMin.y>.8f) label.gameObject.SetActive(false); }
             var ribbon=Surface(menu.Panel,"Heading ribbon",DungeonVisualRole.Heading,.035f,.88f,.88f,.995f);ribbon.transform.SetSiblingIndex(1);
-            var title=GameUISkin.Label(menu.Panel,"Inventory & Skills",new Vector2(.1f,.905f),new Vector2(.83f,.97f),30);title.font=Theme.HeadingFont;title.alignment=TextAlignmentOptions.Center;
+            var title=GameUISkin.Label(menu.Panel,"Party",new Vector2(.1f,.905f),new Vector2(.83f,.97f),30);title.font=Theme.HeadingFont;title.alignment=TextAlignmentOptions.Center;
             title.enableAutoSizing=true;title.fontSizeMin=24;title.fontSizeMax=30;
             CloseButton(menu.Panel,menu);
         });

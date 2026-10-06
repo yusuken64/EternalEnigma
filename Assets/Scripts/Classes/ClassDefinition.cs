@@ -12,6 +12,7 @@ public class ClassDefinition : ScriptableObject
 	public List<WeaponType> AllowedWeapons = new();
 	public StatModification GrowthPerLevel = new();
 	public StatModification StartingStatBonus = new();
+	public HeroAttribute PreferredAttribute;
 	public List<ClassSkillEntryData> Skills = new();
 
 	// Converts to the Core rules form. Entries with no Skill are skipped.

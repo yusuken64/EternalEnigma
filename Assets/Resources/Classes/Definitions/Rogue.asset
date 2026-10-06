@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Rogue
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: rogue
+  PreferredAttribute: 2
   DisplayName: Rogue
   Role: Mobility and disruption
   AllowedWeapons: 0000000005000000

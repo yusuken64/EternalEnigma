@@ -17,10 +17,10 @@ MonoBehaviour:
   Role: Tank / defender
   AllowedWeapons: 00000000010000000600000009000000
   GrowthPerLevel:
-    HPMax: 7
+    HPMax: 4
     SPMax: 0
     HungerMax: 0
-    Strength: 1
+    Strength: 0
     Defense: 1
     EXPOnKill: 0
     HungerAccumulateThreshold: 0

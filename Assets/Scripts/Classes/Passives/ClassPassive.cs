@@ -33,6 +33,7 @@ public abstract class ClassPassive : PassiveResponse
 	internal virtual bool BlocksStatus(Character owner, Skill skill, StatusEffect status) => false;
 	// Must NOT read owner.FinalStats (called from inside Character.UpdateCachedStats). Use BaseStats/Vitals/Equipment.
 	internal virtual StatModification ConditionalStats(Character owner, Skill skill) => null;
+	internal virtual StatModification ConditionalStats(Character owner, Skill skill, Loadout loadout) => ConditionalStats(owner, skill);
 	internal virtual int MissileRangeBonus(Character owner, Skill skill) => 0;
 	internal virtual float ArrowRecoveryChance(Character owner, Skill skill) => 0f;
 	internal virtual float ExtraShotChance(Character owner, Skill skill) => 0f;
@@ -222,12 +223,15 @@ public static class ClassPassives
 	}
 
 	public static StatModification ConditionalStats(Character c)
+		=> ConditionalStats(c, c.Equipment != null ? c.Equipment.Current() : default);
+
+	public static StatModification ConditionalStats(Character c, Loadout loadout)
 	{
 		var result = new StatModification();
 
 		foreach (var (passive, skill) in Of(c))
 		{
-			var conditionalStats = passive.ConditionalStats(c, skill);
+			var conditionalStats = passive.ConditionalStats(c, skill, loadout);
 			if (conditionalStats != null)
 			{
 				result = result + conditionalStats;
@@ -296,6 +300,7 @@ public static class StatScaling
 		result.SPMax = scaling.ScaleBuff(mod.SPMax, rank);
 		result.HungerMax = scaling.ScaleBuff(mod.HungerMax, rank);
 		result.Strength = scaling.ScaleBuff(mod.Strength, rank);
+		result.MagicPower = scaling.ScaleBuff(mod.MagicPower, rank);
 		result.Defense = scaling.ScaleBuff(mod.Defense, rank);
 		result.EXPOnKill = scaling.ScaleBuff(mod.EXPOnKill, rank);
 		result.HungerAccumulateThreshold = scaling.ScaleBuff(mod.HungerAccumulateThreshold, rank);

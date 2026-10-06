@@ -8,7 +8,7 @@ public static class HeroClass
         var growth=Growth(primary);
         levels=System.Math.Max(0,levels);
         stats.HPMax+=growth.HPMax*levels;stats.SPMax+=growth.SPMax*levels;stats.HungerMax+=growth.HungerMax*levels;
-        stats.Strength+=growth.Strength*levels;stats.Defense+=growth.Defense*levels;
+        stats.Strength+=growth.Strength*levels;stats.MagicPower+=growth.MagicPower*levels;stats.Defense+=growth.Defense*levels;
     }
 	// Null when the hero has no class yet (unassigned prefab).
 	public static ClassKit ToKit(ClassDefinition primary, ClassDefinition secondary)

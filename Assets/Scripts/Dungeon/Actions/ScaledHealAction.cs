@@ -29,7 +29,7 @@ public class ScaledHealAction : GameAction
 			return new List<GameAction>();
 		}
 
-		int heal = RecoveryMath.Heal(BaseHeal, PerLevel, caster.Vitals.Level, rank, ClassPassives.HealingMultiplier(caster, target));
+		int heal = RecoveryMath.Heal(BaseHeal, PerLevel, caster.Vitals.Level, rank, ClassPassives.HealingMultiplier(caster, target) * HeroAttributes.MagicMultiplier(caster.FinalStats.MagicPower));
 
 		return new List<GameAction> { new TakeHealAction(caster, target, heal) };
 	}

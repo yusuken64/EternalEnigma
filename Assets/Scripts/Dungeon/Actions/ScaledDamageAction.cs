@@ -143,7 +143,7 @@ public class ScaledDamageAction : GameAction, ISkillCastCondition
     {
         float strength = source.FinalStats.Strength;
         if (Scaling == DamageScaling.ShieldStrength) strength += 2 * (source.Equipment?.EquippedShield?.EquipmentItemDefinition?.StatModification?.Defense ?? 0);
-        float raw = (Scaling == DamageScaling.Magic ? BaseDamage + PerLevel * System.Math.Max(1, source.Vitals.Level) : strength) * Percent * UnityEngine.Random.Range(112,143) / 128f;
+        float raw = (Scaling == DamageScaling.Magic ? (BaseDamage + PerLevel * System.Math.Max(1, source.Vitals.Level)) * HeroAttributes.MagicMultiplier(source.FinalStats.MagicPower) : strength) * Percent * UnityEngine.Random.Range(112,143) / 128f;
         int damage = Mathf.FloorToInt(raw);
         return Mathf.Max(1, context.Scaling != null ? context.Scaling.ScalePower(damage,context.Rank) : damage);
     }
@@ -164,7 +164,7 @@ public class ScaledDamageAction : GameAction, ISkillCastCondition
 		}
 		else // Scaling == DamageScaling.Magic
 		{
-			raw = (BaseDamage + PerLevel * Math.Max(1, caster.Vitals.Level)) * MathF.Pow(15f / 16f, defense / 2f) * n * Percent;
+			raw = (BaseDamage + PerLevel * Math.Max(1, caster.Vitals.Level)) * HeroAttributes.MagicMultiplier(caster.FinalStats.MagicPower) * MathF.Pow(15f / 16f, defense / 2f) * n * Percent;
 		}
 
 		// Apply rank scaling

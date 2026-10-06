@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Archer
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: archer
+  PreferredAttribute: 2
   DisplayName: Archer
   Role: Ranged damage dealer
   AllowedWeapons: 02000000

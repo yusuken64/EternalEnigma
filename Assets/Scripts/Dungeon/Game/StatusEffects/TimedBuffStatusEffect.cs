@@ -45,6 +45,7 @@ public class TimedBuffStatusEffect : StatusEffect
 		result += Math.Abs(Modification.SPMax);
 		result += Math.Abs(Modification.HungerMax);
 		result += Math.Abs(Modification.Strength);
+		result += Math.Abs(Modification.MagicPower);
 		result += Math.Abs(Modification.Defense);
 		result += Math.Abs(Modification.EXPOnKill);
 		result += Math.Abs(Modification.HungerAccumulateThreshold);
@@ -107,6 +108,7 @@ public class TimedBuffStatusEffect : StatusEffect
 		if (Modification.SPMax != 0) names.Add("SPMax");
 		if (Modification.SPRegenAcccumlateThreshold != 0) names.Add("SPRegenAcccumlateThreshold");
 		if (Modification.Strength != 0) names.Add("Strength");
+		if (Modification.MagicPower != 0) names.Add("MagicPower");
 
 		// Already alphabetically sorted by the order we added them
 		return names;

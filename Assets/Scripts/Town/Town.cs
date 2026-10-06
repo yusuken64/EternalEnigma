@@ -88,7 +88,7 @@ public class Town : MonoBehaviour
                 SkillRanks = (ally.SkillRanks ?? new List<SkillRankSaveData>())
                     .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                     .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList(),
-                HighestLevel = Mathf.Max(1, ally.HighestLevel), Level = ally.Level, Experience = ally.Experience,
+                HighestLevel = Mathf.Max(1, ally.HighestLevel), Level = ally.Level, Experience = ally.Experience, Attributes = ally.Attributes,
                 Hp = ally.Hp, Sp = ally.Sp, HasHunger = ally.HasHunger,
                 Hunger = ally.Hunger, HungerAccumulate = ally.HungerAccumulate
             })).ToList();
@@ -189,7 +189,7 @@ public class Town : MonoBehaviour
                 .Where(r => r != null && !string.IsNullOrEmpty(r.SkillName))
                 .Select(r => new SkillRankSaveData { SkillName = r.SkillName, Rank = r.Rank }).ToList();
             allyInstance.HighestLevel = Mathf.Max(1, allyData.HighestLevel);
-            allyInstance.Level = Mathf.Max(1, allyData.Level); allyInstance.Experience = allyData.Experience;
+            allyInstance.Level = Mathf.Max(1, allyData.Level); allyInstance.Experience = allyData.Experience; allyInstance.Attributes = allyData.Attributes;
             allyInstance.Hp = allyData.Hp; allyInstance.Sp = allyData.Sp;
             allyInstance.HasHunger = allyData.HasHunger; allyInstance.Hunger = allyData.Hunger; allyInstance.HungerAccumulate = allyData.HungerAccumulate;
             allyInstance.RecruitCost = Configuration.Recruits.FirstOrDefault(r => r.Ally == prefab)?.Cost ?? 0;

@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Commander
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: commander
+  PreferredAttribute: 1
   DisplayName: Commander
   Role: Party-wide buffs and leadership
   AllowedWeapons: 0000000006000000
   GrowthPerLevel:
     HPMax: 5
-    SPMax: 2
+    SPMax: 0
     HungerMax: 0
     Strength: 1
     Defense: 0

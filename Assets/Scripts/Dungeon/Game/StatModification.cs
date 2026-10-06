@@ -12,6 +12,7 @@ public class StatModification : StartingStats
         SPMax = other.SPMax;
         HungerMax = other.HungerMax;
         Strength = other.Strength;
+        MagicPower = other.MagicPower;
         Defense = other.Defense;
         EXPOnKill = other.EXPOnKill;
         HungerAccumulateThreshold = other.HungerAccumulateThreshold;
@@ -34,6 +35,7 @@ public class StatModification : StartingStats
         HungerMax = stats.HungerMax;
         SPMax = stats.SPMax;
         Strength = stats.Strength;
+        MagicPower = stats.MagicPower;
         Defense = stats.Defense;
         EXPOnKill = stats.EXPOnKill;
         HungerAccumulateThreshold = stats.HungerAccumulateThreshold;
@@ -61,6 +63,7 @@ public class StatModification : StartingStats
         result.HungerMax += b.HungerMax;
         result.SPMax += b.SPMax;
         result.Strength += b.Strength;
+        result.MagicPower += b.MagicPower;
         result.Defense += b.Defense;
         result.EXPOnKill += b.EXPOnKill;
         result.HungerAccumulateThreshold += b.HungerAccumulateThreshold;
@@ -87,6 +90,7 @@ public class StatModification : StartingStats
         if (SPMax != 0) parts.Add($"{(SPMax > 0 ? "+" : "")}{SPMax} SP Max");
         if (HungerMax != 0) parts.Add($"{(HungerMax > 0 ? "+" : "")}{HungerMax} Hunger Max");
         if (Strength != 0) parts.Add($"{(Strength > 0 ? "+" : "")}{Strength} Strength");
+        if (MagicPower != 0) parts.Add($"{(MagicPower > 0 ? "+" : "")}{MagicPower} Magic Power");
         if (Defense != 0) parts.Add($"{(Defense > 0 ? "+" : "")}{Defense} Defense");
         if (EXPOnKill != 0) parts.Add($"{(EXPOnKill > 0 ? "+" : "")}{EXPOnKill} EXP on Kill");
         if (HungerAccumulateThreshold != 0) parts.Add($"{(HungerAccumulateThreshold > 0 ? "+" : "")}{HungerAccumulateThreshold} Hunger Threshold");

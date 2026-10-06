@@ -11,6 +11,10 @@ public class Ally : Character
 	public Sprite Portrait;
 	public ClassDefinition PrimaryClass;
 	public ClassDefinition SecondaryClass;
+	public AttributePoints Attributes;
+	public bool AttributePromptPending;
+	public bool IsSummon;
+	public int PendingAttributePoints => IsSummon ? 0 : HeroAttributes.Pending(Vitals?.Level ?? 1, Attributes);
 	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
 	public AllyStrategy AllyStrategy;

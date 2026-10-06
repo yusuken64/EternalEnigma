@@ -25,6 +25,35 @@ explains import/export. Effects and numbers are authored in the referenced Skill
 Primary class determines growth and mastery progression. Secondary classes add weapon access
 and non-mastery skills through tier 2, capped at rank 3. Duplicate skills use the primary cap.
 
+## Attributes and level growth
+
+Each level grants one attribute point. Unspent points equal `max(0, level - 1 - spent points)`;
+older heroes therefore receive their full allotment when loaded. Spending is free in the Stats
+tab in town, the overworld, or a dungeon. A dungeon level-up offers a one-time choice; Later
+defers it until the next level-up. Autoplay chooses the primary class's preferred attribute.
+
+| Attribute | Each point grants |
+|---|---|
+| STR | +1 Attack, +3 maximum HP, and +1 Defense every four STR points |
+| INT | +2 maximum SP, +1 Magic Power, and 15 less SP regeneration threshold (up to 400 less) |
+| AGI | +1% Hit, +1% Evasion, +1% Crit, and +2 maximum Food; its Evasion and Crit contributions cap at 25% |
+
+Magic Power multiplies magic damage and scaled healing by `max(0, 1 + 0.05 × Magic Power)`.
+Archer bow damage and Rogue weapon damage gain 1% per AGI point. Class starting stat bonuses
+remain in effect; no class starts with spent attribute points.
+
+| Class | HP / level | SP / level | Attack / level | Recommended |
+|---|---:|---:|---:|---|
+| Warrior | 2 | 0 | 2 | STR |
+| Guardian | 4 | 0 | 0 | STR |
+| Archer | 4 | 0 | 3 | AGI |
+| Rogue | 4 | 1 | 2 | AGI |
+| Scout | 5 | 0 | 2 | AGI |
+| Elementalist, Occultist | 3 | 0 | 1 | INT |
+| Healer | 4 | 0 | 1 | INT |
+| Bard | 5 | 0 | 2 | INT |
+| Commander | 5 | 0 | 1 | INT |
+
 ## Weapon proficiency
 
 Sticks and needles: no proficiency required, including their offhand versions.

@@ -57,6 +57,17 @@ namespace EternalEnigma.Tests
             Assert.That(actor.Vitals.Level, Is.EqualTo(10));
             Assert.That(actor.Vitals.Exp, Is.EqualTo(700));
             Assert.That(actor.BaseStats.HPMax, Is.EqualTo(actorHp));
+            Assert.That(recipient.PendingAttributePoints,Is.EqualTo(2));
+            Assert.That(recipient.AttributePromptPending,Is.True);
+            yield return null;
+            Assert.That(MenuManager.Instance.CurrentDialog,Is.TypeOf<LevelUpChoiceDialog>());
+            ((LevelUpChoiceDialog)MenuManager.Instance.CurrentDialog).LaterButton.onClick.Invoke();
+            yield return null;
+            Assert.That(recipient.AttributePromptPending,Is.False);
+            Assert.That(recipient.PendingAttributePoints,Is.EqualTo(2));
+            Assert.That(MenuManager.Instance.CurrentDialog,Is.Not.TypeOf<LevelUpChoiceDialog>());
+            Assert.That(AttributeSpending.TrySpend(recipient,HeroAttribute.Str),Is.True);
+            Assert.That(recipient.PendingAttributePoints,Is.EqualTo(1));
             Resolve(actor, new AddXPAction(null, 30));
         }
 

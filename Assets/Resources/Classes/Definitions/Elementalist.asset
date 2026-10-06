@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Elementalist
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: elementalist
+  PreferredAttribute: 1
   DisplayName: Elementalist
   Role: Elemental mage
   AllowedWeapons: 04000000
   GrowthPerLevel:
     HPMax: 3
-    SPMax: 2
+    SPMax: 0
     HungerMax: 0
     Strength: 1
     Defense: 0

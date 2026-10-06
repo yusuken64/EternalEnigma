@@ -42,6 +42,9 @@ namespace EternalEnigma.Tests
             Assert.That(menu.Panel.anchorMin,Is.EqualTo(new Vector2(.08f,.12f)));
             Assert.That(Object.FindObjectsByType<ResourceHUD>(FindObjectsSortMode.None).Length,Is.EqualTo(1));
             menu.Shortcut(PartyMenuTab.Skills);Assert.That(manager.CurrentDialog,Is.SameAs(menu));Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Skills));
+            menu.Shortcut(PartyMenuTab.Equipment);Assert.That(menu.EntryButtons.Count,Is.GreaterThanOrEqualTo(3));
+            menu.Shortcut(PartyMenuTab.Stats);Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Stats));
+            menu.Shortcut(PartyMenuTab.Skills);
             menu.Pick("Cancel without changes",new(){("Do nothing",()=>{})});yield return null;
             menu.Shortcut(PartyMenuTab.Inventory);Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Skills));
             manager.CurrentDialog.CloseDialog();yield return null;Assert.That(manager.CurrentDialog,Is.SameAs(menu));
@@ -65,6 +68,13 @@ namespace EternalEnigma.Tests
             manager.OpenPartyMenu(PartyMenuTab.Inventory);yield return null;
             Directory.CreateDirectory("Temp/UnifiedPresentation");
             ScreenCapture.CaptureScreenshot("Temp/UnifiedPresentation/town-menu.png");yield return new WaitForSecondsRealtime(.3f);
+            caster.Level=2;
+            menu.Setup(new TownPartyMenuContext(town),PartyMenuTab.Stats,caster.Id);
+            menu.EntryButtons[0].onClick.Invoke();yield return null;
+            Assert.That(manager.CurrentDialog,Is.TypeOf<LevelUpChoiceDialog>());
+            ((LevelUpChoiceDialog)manager.CurrentDialog).StrButton.onClick.Invoke();yield return null;
+            Assert.That(caster.Attributes.Str,Is.EqualTo(1));
+            Assert.That(Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData.First(a=>a.AllyId==caster.Id).Attributes.Str,Is.EqualTo(1));
         }
 
         [UnityTest]public IEnumerator RecoverySkillRejectsMixedEffectsAndCostsNothingOnInvalidTarget()
@@ -118,6 +128,9 @@ namespace EternalEnigma.Tests
             var manager=MenuManager.Instance;var actor=harness.Ally;int actions=actor.Vitals.ActionsPerTurnLeft;
             manager.OpenPartyMenu(PartyMenuTab.Inventory);yield return null;
             var menu=manager.PartyMenu;menu.Shortcut(PartyMenuTab.Skills);yield return null;
+            menu.Shortcut(PartyMenuTab.Equipment);Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Equipment));
+            menu.Shortcut(PartyMenuTab.Stats);Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Stats));
+            menu.Shortcut(PartyMenuTab.Skills);
             Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Skills));Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
             Assert.That(harness.Game.PlayerController.ControlledAlly,Is.SameAs(actor));
             menu.Shortcut(PartyMenuTab.Inventory);yield return null;
@@ -133,6 +146,8 @@ namespace EternalEnigma.Tests
             common.Travel.NewCampaign(12345);
             yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"campaign town");
             var town=Object.FindFirstObjectByType<Town>();var hero=town.TownPlayer.RecruitedAllies[0];
+            hero.Level=3;
+            Assert.That(AttributeSpending.TrySpend(hero,HeroAttribute.Str),Is.True);
             // Use a registered compatible item for a real serialization/reload transaction.
             var authored=common.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>()
                 .First(d=>HeroClass.AllowsItem(hero.PrimaryClass,hero.SecondaryClass,new EquipableInventoryItem(d)));
@@ -144,9 +159,13 @@ namespace EternalEnigma.Tests
             yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<OverworldScene>()?.IsReady==true,"overworld");
             var world=Object.FindFirstObjectByType<OverworldScene>();
             var adapter=new OverworldPartyMenuContext(world);var inspected=adapter.Heroes[0];
+            Assert.That(inspected.TownActor.Attributes.Str,Is.EqualTo(1));
             var copies=adapter.Entries(inspected,PartyMenuTab.Inventory).Where(e=>e.Item.ItemName==authored.ItemName).ToArray();
             Assert.That(copies.Length,Is.EqualTo(2));Assert.That(copies[0].Item,Is.Not.SameAs(copies[1].Item));
             var manager=world.GetComponent<OverworldMenuManager>();manager.OpenPartyMenu(PartyMenuTab.Inventory);yield return null;
+            manager.PartyMenu.Shortcut(PartyMenuTab.Equipment);Assert.That(manager.PartyMenu.Tab,Is.EqualTo(PartyMenuTab.Equipment));
+            manager.PartyMenu.Shortcut(PartyMenuTab.Stats);Assert.That(manager.PartyMenu.Tab,Is.EqualTo(PartyMenuTab.Stats));
+            manager.PartyMenu.Shortcut(PartyMenuTab.Capabilities);Assert.That(manager.PartyMenu.Tab,Is.EqualTo(PartyMenuTab.Capabilities));
             manager.PartyMenu.Setup(adapter,PartyMenuTab.Inventory,inspected.Id);
             adapter.Actions(inspected,copies[1]).Single().Execute(manager.PartyMenu);
             Assert.That(inspected.Equipment.IsEquipped(copies[1].Item),Is.True);Assert.That(inspected.Equipment.IsEquipped(copies[0].Item),Is.False);
@@ -154,9 +173,12 @@ namespace EternalEnigma.Tests
             Assert.That(saved.TownSaveData.RecruitedAlliesData[0].Equipment.Count(i=>i.ItemName==authored.ItemName),Is.EqualTo(1));
             Assert.That(saved.Roster.Single(r=>r.AllyId==inspected.Id).Equipment.Count(i=>i.ItemName==authored.ItemName),Is.EqualTo(1));
             Assert.That(JsonUtility.ToJson(SaveSystem.LoadData()),Is.EqualTo(checkpoint));
+            Assert.That(adapter.Spend(inspected,HeroAttribute.Int),Is.True);
+            Assert.That(saved.TownSaveData.RecruitedAlliesData[0].Attributes.Int,Is.EqualTo(1));
             manager.PartyMenu.CloseDialog();adapter.Dispose();
             common.GameSaveData=saved;
             var reloaded=new OverworldPartyMenuContext(world);Assert.That(reloaded.Heroes[0].Equipment.GetEquippedItems().Single().ItemName,Is.EqualTo(authored.ItemName));
+            Assert.That(reloaded.Heroes[0].TownActor.Attributes.Str,Is.EqualTo(1));
             reloaded.Dispose();
             manager.OpenPartyMenu(PartyMenuTab.Inventory);yield return null;
             ScreenCapture.CaptureScreenshot("Temp/UnifiedPresentation/overworld-menu.png");yield return new WaitForSecondsRealtime(.3f);

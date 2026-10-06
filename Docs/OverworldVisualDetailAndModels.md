@@ -23,4 +23,4 @@ and [model guide](BlenderModelGuide.md). Saved screenshots/cost measurements are
 not target-device performance guarantees.
 
 Full style-profile-driven TWC ownership of broad biome terrain remains unfinished. Its actual
-remaining scope is in [TWC styling integration](TWCBiomeStylingIntegrationPlan.md).
+remaining scope is in [TWC styling integration](../TODOs/08-twc-biome-styling-plan.md).

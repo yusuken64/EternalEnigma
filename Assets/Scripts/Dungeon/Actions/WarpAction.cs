@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 internal class WarpAction : GameAction
@@ -19,9 +20,16 @@ internal class WarpAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		if ((attacker != null && attacker.IsMovementBlocked)) {warpLoccation=attacker.TilemapPosition;return new();}
+		if (attacker == null) return new();
+		warpLoccation = attacker.TilemapPosition;
+		if (attacker.Vitals.HP <= 0 || attacker.IsMovementBlocked) return new();
 		var game = Game.Instance;
-		warpLoccation = game.CurrentDungeon.GetRandomOpenEnemyPosition();
+		var reachable = DungeonPlacement.Reachable(game.CurrentDungeon, attacker.TilemapPosition);
+		var cells = DungeonPlacement.OpenCells(game.CurrentDungeon, attacker)
+			.Where(p => p != attacker.TilemapPosition && reachable.Contains(p)).ToList();
+		if (cells.Count == 0) return new();
+		warpLoccation = cells[Random.Range(0, cells.Count)];
+		TrackAnimationTarget(attacker);
 
 		attacker.TilemapPosition = warpLoccation;
 

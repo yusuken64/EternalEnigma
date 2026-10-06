@@ -1,37 +1,33 @@
 # TODO: Make unused weapon models equippable
 
+> Audit 2026-10-06: **partial; the baseline below is stale.** Tiered shops now
+> reference the existing non-ammunition weapon definitions. Reconcile Phase 1
+> with the adopted economy catalog/prices instead of adding duplicate offers.
+> Stat fixes, descriptions, floor-banded drops and bow-model variants remain
+> open. See [the source audit](../Docs/TodoAudit-2026-10-06.txt) for evidence and limits.
+
 ## Goal
 Every Tiny Hero weapon model the heroes can display can also be obtained:
 - the starter tiers of every weapon type are bought in town
 - the middle and top tiers drop in floor-appropriate bands
 - weapon stats rise steadily within each line
 
-Full audit and rationale: `Docs/WeaponAvailabilityPlan.md`.
+Full audit and rationale: `TODOs/04-weapon-availability-plan.md`.
 
-## Current state
-- **Models:** all weapon models are child objects on every hero prefab. `HeroAnimator.SetWeapon` (`Assets/Scripts/Town/HeroAnimator.cs:100-145`) shows the one named by `EquipmentItemDefinition.WeaponModelName`.
-- **Unobtainable definitions:** 45 definitions in `Assets/Prefabs/Dungeon/Items/Weapons/` are not in drops, shops or starting items:
-  - main-hand OHS03–09
-  - off-hand OHS03–14
-  - Shield02–15
-  - Spear01–03
-  - THS01–04
-  - Wand01–04
-- **Bow variants:** Bow02–05 and Arrow02–05 have no item definitions.
-- **Drops:** `ItemManager.ItemDefinitions` in `Assets/Scenes/Common.unity` has 39 entries (28 weapons). The pick is uniform (`roll % Count`) and ignores the floor (`Assets/Scripts/Dungeon/System/ItemManager.cs:31-41`).
-- **Shops:** the only weapons sold are Wooden Arrows, Bow and Wooden Buckler, all in `Assets/Resources/Towns/Buildings/Items.asset`.
+## Current state (audited 2026-10-06)
+Existing non-ammunition weapon definitions are represented in tiered shop
+catalogs. `TownShopCatalog.Resolve` filters offers by `MinimumTier`; the adopted
+economy pricing replaces the original starter-shop proposal. The old claim that
+45 definitions are unobtainable is obsolete.
 
-## Phase 1: Shops sell the starter tiers (data only)
-- [ ] Append offers to the end of `Items.asset` `ShopCatalog`, keeping the existing order because `TownGameplayTests` reads `[0]` and `[1]`:
-  - Wooden Wand, Apprentice Wand
-  - Wooden Spear, Iron Spear
-  - Short Sword, Iron Sword
-  - Short Sword (Off-hand)
-  - Wooden Shield, Round Shield
-  - Greatsword
-- [ ] Set prices at about 150 + 50 × stat, rounded to 25 (existing prices: Bow 275, Wooden Buckler 250).
-- [ ] Check that `TownBuildingDefinition.Validate` passes: no duplicates, Price ≥ 0, Quantity ≥ 1.
-- [ ] Manual check: buy and equip one weapon of each type in town; the hero shows the right model and stance.
+Drops still use an unbanded `ItemManager.DungeonLoot` pool. Weapon data corrections
+and Bow02?05 / Arrow02?05 model selection remain open.
+
+## Phase 1: Verify existing catalog coverage
+- [ ] Add a reachability assertion for every weapon definition across shops,
+  drops and starting items, with an explicit legacy/exclusion list.
+- [ ] Buy/equip one of each weapon type and verify model/stance and proficiency
+  messages. Preserve current tier/pricing rules unless deliberately rebalanced.
 
 ## Phase 2: Fix the weapon data
 - [ ] Spread the Strength of `RightHand_THS01_Sword` … `THS07_Sword` across about S8–S20. They are all S12 today.

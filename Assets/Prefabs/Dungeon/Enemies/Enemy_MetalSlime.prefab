@@ -464,6 +464,8 @@ MonoBehaviour:
   Confusion: {fileID: 0}
   Mimic: 0
   ChestVisualPrefab: {fileID: 0}
+  SpawnWeight: 1
+  WarpWhenHitChance: 0.25
 --- !u!114 &4696981942131061549
 MonoBehaviour:
   m_ObjectHideFlags: 0

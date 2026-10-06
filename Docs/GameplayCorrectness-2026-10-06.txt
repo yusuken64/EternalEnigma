@@ -1,0 +1,71 @@
+Priority 1 implementation decisions - 2026-10-06
+
+Hero mapping (primary / secondary), based on the authored portraits:
+MC01: warrior / occultist - horned fighter.
+MC02: healer / guardian - unarmored monk.
+MC03: warrior / healer - leaf/heart adventurer.
+MC04: commander / rogue - crested officer with eyepatch.
+MC05: warrior / bard - horned flamboyant fighter.
+MC06: archer / rogue - hooded ranger.
+MC07: elementalist / healer - wizard hat and robes.
+MC08: warrior / guardian - horned warrior helmet.
+MC09: guardian / occultist - dark plate armor.
+MC10: commander / elementalist - ornate commander helmet.
+MC11: bard / rogue - ribbon and performer clothing.
+MC12: rogue / scout - masked woodland rogue.
+MC13: healer / bard - bright support robes.
+MC14: warrior / rogue - horned raider.
+MC15: scout / elementalist - goggles and field hood.
+MC16: guardian / healer - silver knight armor.
+MC17: occultist / elementalist - horns and dark scholarly clothing.
+MC18: rogue / guardian - masked armored assassin.
+MC19: guardian / commander - crested purple heavy armor.
+MC20: guardian / warrior - red heavy plate.
+MC21: commander / bard - red officer robes and helmet.
+MC22: guardian / scout - blue scout knight.
+MC23: archer / warrior - light blue ranger helmet.
+MC24: scout / archer - green field hat and goggles.
+
+Balance:
+TurtleShell: death explosion, 20 physical damage to living units within one
+Chebyshev tile with an open step between them. Hits either team; active Silence
+suppresses damage and the fire burst. Each death resolves once.
+Explosion collateral grants no EXP to the dead turtle.
+MetalSlime: spawn weight 1 versus normal weight 20 on its existing floor range.
+25% warp chance on a positive, nonlethal combat hit (no miss or environmental
+damage). Uses a different reachable, unoccupied cell fitting its footprint.
+Werewolf: packs of up to 3 at floor generation; neighbors must be walkable,
+unoccupied and not reserved for another generated enemy. Crowding reduces size.
+Nessie means the worm emerging from the ground (user clarification):
+WormMonster receives the root attack; Skeleton loses it.
+
+Class assignments are fixed on prefabs; existing protagonist class override
+semantics are retained. Secondary classes must differ from primary, and each
+primary/secondary pair is unique.
+
+Verification (Unity 6000.2.7f2):
+- Gameplay Classes: 24 passed, 0 failed. Fixed hero mappings, distinct pairs,
+  initial equipment compatibility, class rules and equipment regressions.
+- Gameplay Edge Cases: 7 passed, 0 failed on final implementation. Recipient
+  multi-level growth, null EXP recipient, silenced/duplicate deaths, chain
+  explosions, rare weighting, nonlethal-hit warp and movement binds, safe
+  pack placement/crowding, Nessie rooting, direct targeting and cancellation.
+- Extended Gameplay Correctness run: 21 passed, 1 failed before final test
+  isolation. The chain explosion HP assertion included level-up healing;
+  the final run above fixes the setup by using maximum level. The other 15
+  fixtures/cases outside the seven new regressions passed: class persistence,
+  root release on death, controller combat, keyboard/gamepad skill flows,
+  and inventory target cancellation/identity/mouse confirmation.
+- Broader ClassContentTests had two existing data/expectation mismatches:
+  EachClassKitMatchesTheDesign expects 20 elementalist skills, but assets
+  have 22; SkillAssetsAreWellFormed expects Quick Casting to cost 150, but
+  its authored cost is 200. These unrelated content values were not changed.
+- Core DLL was rebuilt from the current Core source (0 errors, 0 warnings)
+  because the imported DLL lacked existing LockInteraction types. Asset
+  refresh imported previously unimported SmallKey/UnlockDoorAction scripts.
+- git diff --check passed for changed gameplay, test and prefab content.
+
+Reproducible Unity menus under Tools > Eternal Enigma > Tests:
+Run Gameplay Correctness / Run Gameplay Edge Cases / Run Gameplay Classes.
+Local XML evidence: Temp/HarnessResults/GameplayCorrectness-final.xml,
+GameplayClasses-final.xml, and GameplayCorrectness-initial.xml.

@@ -122,7 +122,6 @@ namespace EternalEnigma.Tests
             skill.TargetSelector.Area = TargetArea.All;
             yield return Press(Key.R);
             yield return Press(Key.Enter);
-            yield return Press(Key.Enter);
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.UpArrow, Key.RightArrow));
             yield return null;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
@@ -403,7 +402,6 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.LeftShoulder);
             Assert.That(MenuManager.Instance.PartyMenu.EntryButtons.Count, Is.EqualTo(2), "Active and passive abilities remain inspectable.");
             yield return Press(GamepadButton.South);
-            yield return Press(GamepadButton.South);
             var dialog = MenuManager.Instance.TargetDialog;
             Assert.That(dialog.enabled, Is.True);
             Assert.That(dialog.CameraTarget, Is.SameAs(first));
@@ -439,7 +437,6 @@ namespace EternalEnigma.Tests
             yield return Press(Key.R);
             friend.SetAction(new WaitAction());
             yield return Press(Key.Enter);
-            yield return Press(Key.Enter);
             yield return harness.WaitForIdle();
             Assert.That(caster.StatusEffects.OfType<StrengthStatusEffect>().Count(), Is.EqualTo(1));
             Assert.That(caster.FinalStats.Strength, Is.EqualTo(caster.BaseStats.Strength + 5));
@@ -452,7 +449,6 @@ namespace EternalEnigma.Tests
             yield return Press(Key.R);
             friend.SetAction(new WaitAction());
             yield return Press(Key.Space);
-            yield return Press(Key.Space);
             yield return harness.WaitForIdle();
             Assert.That(harness.Game.Enemies.All(e => e.Vitals.HP == 55), Is.True);
             Assert.That(caster.Vitals.SP, Is.EqualTo(18));
@@ -460,11 +456,9 @@ namespace EternalEnigma.Tests
             damage.Targeting = SkillTargeting.SelectedTarget;
             yield return Press(Key.R);
             yield return Press(Key.Enter);
-            yield return Press(Key.Enter);
             yield return Press(Key.Escape);
             Assert.That(EventSystem.current.enabled, Is.True);
             Assert.That(MenuManager.Instance.Opened, Is.True);
-            yield return Press(Key.Escape);
             yield return Press(Key.R);
             Assert.That(MenuManager.Instance.Opened, Is.False);
         }
@@ -507,7 +501,6 @@ namespace EternalEnigma.Tests
             yield return null;
             InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
             yield return null;
-            yield return Press(Key.Enter);
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.True);
             friend.SetAction(new WaitAction());
             yield return Press(Key.Enter);

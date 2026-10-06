@@ -50,7 +50,7 @@ HUD controls differ. Both use the same grid and gate rules.
 
 For a custom scene, add TileWorldCreator plus CampaignOverworld, assign a template and semantic
 layer bindings, then use **Generate And Build Overworld**. Edit presets/materials through Unity.
-See [current rendering](OverworldVisualDetailAndModels.md) and [remaining styling work](TWCBiomeStylingIntegrationPlan.md).
+See [current rendering](OverworldVisualDetailAndModels.md) and [remaining styling work](../TODOs/08-twc-biome-styling-plan.md).
 
 ## Validation and export
 

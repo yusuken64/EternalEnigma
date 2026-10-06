@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-/// <summary>A living Goopi holds the target in place; attacks and items remain available.</summary>
+/// <summary>A living Nessie holds the target in place; attacks and items remain available.</summary>
 public sealed class GoopiRootStatusEffect : StuckStatusEffect
 {
     public Enemy Source;
@@ -12,7 +12,7 @@ public sealed class GoopiRootStatusEffect : StuckStatusEffect
     public static void Hold(Enemy source,Character target)
     {
         if(target.StatusEffects.OfType<GoopiRootStatusEffect>().Any(r=>r.Source==source && r.Holding)) return;
-        var root=new GameObject("Goopi grip").AddComponent<GoopiRootStatusEffect>();
+        var root=new GameObject("Root grip").AddComponent<GoopiRootStatusEffect>();
         root.transform.SetParent(target.VisualParent.transform,false);root.Source=source;root.TurnsLeft=2;
         target.StatusEffects.Add(root);
         GameMessages.ForCharacter(target,$"{GameMessages.Name(target)} is rooted by {GameMessages.Name(source)}! Defeat it to break free.");

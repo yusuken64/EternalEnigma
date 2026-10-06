@@ -31,6 +31,6 @@ complete architecture below.
 6. Validate same-seed determinism, asset isolation, failure cleanup, changing styles, gate state,
    protected approaches and target-device cost in the production overworld and playground.
 
-See [current rendering](OverworldVisualDetailAndModels.md), [playground](Art/EnvironmentPlayground.md)
-and [model guide](BlenderModelGuide.md). Completed construction scripts are removed; the sources,
+See [current rendering](../Docs/OverworldVisualDetailAndModels.md), [playground](../Docs/Art/EnvironmentPlayground.md)
+and [model guide](../Docs/BlenderModelGuide.md). Completed construction scripts are removed; the sources,
 presets, templates and runtime builders remain.

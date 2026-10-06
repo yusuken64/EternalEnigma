@@ -1,0 +1,16 @@
+Priority 2: Verify remaining overworld visual defects
+
+Source-audited 2026-10-06; no fresh visual acceptance pass.
+Audit evidence: Docs/TodoAudit-2026-10-06.txt.
+
+1. Verify the original broken overworld POC textures are resolved.
+   POI platform paving and perimeter-post atlas UV fixes exist and have
+   assertions in OverworldPresentationTests. Capture the affected views
+   before closing the broader report; fix any remaining defects.
+2. Verify overworld locks match the intended new models.
+   GateMarker positioning, orientation and biome styling exist. Lock-specific
+   model selection does not; establish whether that was the intended request.
+
+Verification:
+Inspect matched texture/gate views, route legibility, gate state and cached terrain.
+Raise visual fixes in priority if they obscure routes or locks.

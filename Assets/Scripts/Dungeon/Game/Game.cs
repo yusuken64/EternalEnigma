@@ -284,14 +284,12 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		if (!throneFloor)
 		{
+            var reservedSpawns = new HashSet<Vector3Int>(floor.Enemies.Select(p => p.Cell.ToCell())
+                .Concat(floor.Scenery.Select(p => p.Cell.ToCell())).Concat(floor.Locks.Select(p => p.Door.ToCell())));
+            reservedSpawns.Add(floor.Stairs.ToCell());
 			foreach (var p in floor.Enemies)
 			{
-				var enemy = Instantiate(EnemyManager.GetEnemyPrefab(PlayerController.Floor, p.Roll), this.transform);
-				enemy.UpdateCachedStats();
-				enemy.InitialzeVitalsFromStats();
-				enemy.IsDormant = UnityEngine.Random.value < EnemyAwareness.DormantSpawnChance;
-				enemy.TilemapPosition = p.Cell.ToCell();
-				Enemies.Add(enemy);
+                EnemyManager.SpawnPack(EnemyManager.GetEnemyPrefab(PlayerController.Floor, p.Roll), p.Cell.ToCell(), reservedSpawns);
 			}
 
 			foreach (var p in floor.Gold) CurrentDungeon.SetTreasure(p.Cell.ToCell());

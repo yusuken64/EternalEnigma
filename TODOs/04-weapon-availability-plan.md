@@ -1,6 +1,12 @@
 # Make unused weapon models equippable
 
-## Context
+> Audit 2026-10-06: the original unobtainable-weapon/shop counts below are stale.
+> Existing non-ammunition weapon definitions are now represented in tiered shop
+> catalogs. Keep the stat, description, floor-drop and optional model-variant
+> work; rebase shop proposals on the current economy. See
+> [the source audit](../Docs/TodoAudit-2026-10-06.txt).
+
+## Historical rationale (pre-economy baseline)
 Every Tiny Hero weapon model (`Assets/Art/RPGTinyHeroWavePolyart/Mesh/Weapons`) is already a child object under the weapon bones on every hero prefab (checked on `Prefabs/Town/Allies/Ally_MC01.prefab`). `HeroAnimator.SetWeapon` (`Scripts/Town/HeroAnimator.cs:100-145`) shows the model whose name matches `EquipmentItemDefinition.WeaponModelName`.
 
 Most models already have an item definition in `Prefabs/Dungeon/Items/Weapons/`. The player still can't get most of them, because those definitions are not in any source that hands out items.
@@ -35,19 +41,11 @@ Item definitions already exist for all of these and are wired to a hero model. N
 - **Bow variants:** `Bows` and `Arrows` are single parent objects. Bow01 and Arrow01 are active, and 02–05 are inactive children. `SetWeapon` only switches the direct children of `weapon_r` and `weapon_l`, so the variants need code support before they can become items.
 - **`Resources/DemoDungeon/Loadout.asset`:** "Demo Scroll: Inspect Item" has `WeaponType: BowAndArrow` and `WeaponModelName: Arrows`. This is test data, so leave it unless it causes problems.
 
-## Phase 1: Shops sell the starter tiers (data only, no code)
-Add tier-1/2 definitions to the town shops, so new heroes can buy every stance early:
-- **`Items.asset` (weapons):**
-  - Wooden Wand, Apprentice Wand
-  - Wooden Spear, Iron Spear
-  - Short Sword, Iron Sword (main hand)
-  - Short Sword (Off-hand)
-  - Wooden Shield, Round Shield
-  - Greatsword
-- **Prices:** follow the existing ladder (Bow 275, Wooden Buckler 250). Roughly 150 + 50 × stat, rounded to 25.
-- **Checks:**
-  - `TownBuildingDefinition.Validate`: no duplicates, Price ≥ 0, Quantity ≥ 1.
-  - `TownGameplayTests` reads `ShopCatalog[0]` and `[1]`, so **append** new offers and keep the existing order.
+## Phase 1: Reconcile existing shops
+Tiered equipment offers already cover the existing non-ammunition weapon
+catalog. Do not repeat the original starter-offer additions or overwrite the
+adopted economy pricing. Remaining work is automated reachability coverage and
+buy/equip/model checks; use [the active checklist](04-weapon-availability.md).
 
 ## Phase 2: Floor-tiered drops for the middle tiers (small code change)
 The pick is uniform, so appending 34 more weapons would push weapons from 72% to about 87% of drops and crowd out consumables. Add tiering instead:

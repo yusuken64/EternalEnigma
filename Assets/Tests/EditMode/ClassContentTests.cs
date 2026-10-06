@@ -269,6 +269,7 @@ namespace EternalEnigma.Tests
         {
             var catalog = Catalog();
             var primaryClassesUsed = new HashSet<string>();
+            var pairs = new HashSet<string>();
 
             foreach (var (prefab, primary, secondary) in ClassContentExpectations.Heroes)
             {
@@ -296,6 +297,11 @@ namespace EternalEnigma.Tests
                     Assert.That(ally.SecondaryClass, Is.Null, $"Hero {prefab} should have no secondary class");
                 }
 
+                Assert.That(ally.SecondaryClass, Is.Not.Null);
+                Assert.That(primary, Is.Not.EqualTo(secondary));
+                Assert.That(pairs.Add(primary + "/" + secondary), Is.True, "Duplicate hero class pair");
+                foreach (var item in ally.Equipment.GetEquippedItems())
+                    Assert.That(HeroClass.AllowsItem(ally.PrimaryClass, ally.SecondaryClass, item), Is.True, $"{prefab}: incompatible starting equipment {item.ItemName}");
                 var kit = HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass);
                 if (kit != null)
                 {
@@ -305,12 +311,12 @@ namespace EternalEnigma.Tests
                 }
             }
 
-            // Each class id appears as a primary at least twice
+            // Appearance determines primary class; retain access to every class.
             foreach (var classId in ClassContentExpectations.ClassIds)
             {
                 var count = ClassContentExpectations.Heroes.Count(h => h.Primary == classId);
-                Assert.That(count, Is.GreaterThanOrEqualTo(2),
-                    $"Class {classId} should be assigned as primary class to at least 2 heroes");
+                Assert.That(count, Is.GreaterThanOrEqualTo(1),
+                    $"Class {classId} should be available as a primary class");
             }
         }
 

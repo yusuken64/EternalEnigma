@@ -73,7 +73,7 @@ namespace EternalEnigma.Tests
             enemy.StartTurn(); enemy.DetermineAction(); Assert.That(enemy.PursuitTarget, Is.SameAs(harness.Ally));
         }
 
-        [UnityTest] public IEnumerator SilverDevilActsTwiceAndGoopiRootsUntilKilled()
+        [UnityTest] public IEnumerator SilverDevilActsTwiceAndNessieRootsUntilKilled()
         {
             yield return harness.SpawnEnemy("Enemy_LizardWarrior",center+Vector3Int.right);
             var devil=Last; devil.IsDormant=false;devil.StartTurn();
@@ -86,7 +86,7 @@ namespace EternalEnigma.Tests
             }
             Assert.That(devil.Vitals.ActionsPerTurnLeft,Is.Zero);Assert.That(devil.Vitals.AttacksPerTurnLeft,Is.Zero);
             Object.Destroy(devil.gameObject);harness.Game.Enemies.Remove(devil);yield return null;
-            yield return harness.SpawnEnemy("Enemy_Skeleton",center+Vector3Int.right);
+            yield return harness.SpawnEnemy("Enemy_WormMonster",center+Vector3Int.right);
             var goopi=Last;goopi.IsDormant=false;goopi.StartTurn();goopi.PursuitTarget=harness.Ally;
             Resolve(goopi,goopi.GetComponent<EnemyBehavior>().ChooseAction());
             Assert.That(GoopiRootStatusEffect.IsRooted(harness.Ally),Is.True);
@@ -94,7 +94,7 @@ namespace EternalEnigma.Tests
             for(int i=0;i<20;i++) root.Tick();
             Assert.That(root.IsExpired(),Is.False);Assert.That(root.PreventsMenu(),Is.False);
             var move=new MovementAction(harness.Ally,center,center+Vector3Int.left);
-            Assert.That(move.IsValid(harness.Ally),Is.False);move.ExecuteImmediate(harness.Ally);
+            Assert.That(move.IsValid(harness.Ally),Is.True,"A rooted step spends the command but does not move.");move.ExecuteImmediate(harness.Ally);
             Assert.That(harness.Ally.TilemapPosition,Is.EqualTo(center));
             Assert.That(SkillMovement.CanOccupy(harness.Ally,center+Vector3Int.left),Is.False);
             Resolve(harness.Ally,new TakeDamageAction(harness.Ally,goopi,9999,false));

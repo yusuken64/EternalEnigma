@@ -225,6 +225,7 @@ public class TakeDamageAction : GameAction
 	public DamageElement Element;
 	public bool RollToHit;
     public bool Environmental;
+    internal bool AwardExperience = true;
 	public int ResponseDepth;
 	internal bool Critical;
 	private bool resolved;
@@ -290,9 +291,14 @@ public class TakeDamageAction : GameAction
 		{
 			return new List<GameAction>()
 			{
-				new DeathAction(target, attacker) { AwardExperience = !Environmental }
+				new DeathAction(target, attacker) { AwardExperience = !Environmental && AwardExperience }
 			};
 		}
+
+        if (!miss && damage > 0 && !Environmental && target is Enemy survivor &&
+            survivor.GetComponent<EnemyBehavior>() is { } behavior && behavior.WarpWhenHitChance > 0 &&
+            !survivor.IsMovementBlocked && UnityEngine.Random.value < behavior.WarpWhenHitChance)
+            return new() { new WarpAction(survivor) };
 
 		return new();
 	}
@@ -463,6 +469,7 @@ public class ModifyStatAction : GameAction
 
 public class DeathAction : GameAction
 {
+	private bool resolved;
 	internal bool AwardExperience = true;
 	internal Character target;
 	private Vector3Int dropPosition;
@@ -479,6 +486,8 @@ public class DeathAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+        if (resolved || target == null || Game.Instance.DeadUnits.Contains(target)) return new();
+        resolved = true;
         TrackAnimationTarget(target);
         global::PendingCast.Cancel(target, "dead or downed");
 		if (target is Ally ally && !PartyRules.IsSummon(ally))
@@ -508,7 +517,19 @@ public class DeathAction : GameAction
 
 		dropPosition = Game.Instance.CurrentDungeon.GetDropPosition(target.TilemapPosition);
 
-		return AwardExperience ? new() { gainXP } : new();
+		var effects = new List<GameAction>();
+        if (target is Enemy enemy && enemy.GetComponent<EnemyBehavior>() is { } behavior)
+        {
+            if (behavior.CanExplode(enemy))
+            {
+                Visuals.Configure(CombatVisualCatalog.Instance?.Fire, enemy, enemy.TilemapPosition, 1);
+                Visuals.Cast = false;
+                Visuals.AddImpact(enemy, enemy.TilemapPosition, true);
+            }
+            effects.AddRange(behavior.DeathEffects(enemy));
+        }
+		if (AwardExperience) effects.Add(gainXP);
+		return effects;
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
@@ -549,7 +570,7 @@ internal class AddXPAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		if (PartyRules.IsSummon(this.character)) return new();
+		if (this.character == null || PartyRules.IsSummon(this.character)) return new();
 		this.AddMetricsModification(this.character, ((stats, vitals) =>
 		{
 			vitals.Exp += eXP;
@@ -559,8 +580,8 @@ internal class AddXPAction : GameAction
 		var game = Game.Instance;
 		var levelSystem = game.LevelSystem;
 
-		int currentLevel = character.Vitals.Level;
-		int currentExp = character.Vitals.Exp;
+		int currentLevel = this.character.Vitals.Level;
+		int currentExp = this.character.Vitals.Exp;
 
 		var levelUps = levelSystem.GetLevelUps(currentLevel, currentExp);
 
@@ -571,7 +592,7 @@ internal class AddXPAction : GameAction
 				vitals.Level++;
 			}));
 
-			ret.Add(new LevelUpAction());
+			ret.Add(new LevelUpAction(this.character));
 		}
 
 		return ret;

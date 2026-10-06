@@ -1,5 +1,9 @@
 # Art asset audit (2026-10-06)
 
+> Pending findings and supporting evidence. Checkmark glyphs below mark findings,
+> not completed fixes. Tasks overlapping priorities 03/04/05/09 are tracked there.
+> Revalidate historical dependency counts before asset cleanup.
+
 ## Scope and method
 **Scope:** every third-party and generated art or audio pack under `Assets/`. Read-only; no assets were changed.
 
@@ -9,9 +13,9 @@
 - Spot-checked claims are marked ✔.
 
 **Related plans** (findings already covered there are not repeated):
-- `Docs/Art/DioramaRestylePlan.md`
-- `Docs/WeaponAvailabilityPlan.md`
-- `Docs/InputPromptsTODO.md`
+- `TODOs/09-diorama-restyle-plan.md`
+- `TODOs/04-weapon-availability-plan.md`
+- `TODOs/03-input-prompts.md`
 
 ## Top 10 by value / effort
 

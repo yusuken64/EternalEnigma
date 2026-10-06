@@ -154,19 +154,15 @@ namespace EternalEnigma.Tests
             yield return Press(Key.R);
             var skillButton = EventSystem.current.currentSelectedGameObject;
             yield return Press(Key.Enter);
-            var castPicker=MenuManager.Instance.CurrentDialog;
-            yield return Press(Key.Enter);
             var picker=(PartyMenuPicker)MenuManager.Instance.CurrentDialog;
             Assert.That(picker.Rows.GetComponentsInChildren<AuthoredButton>().Length, Is.EqualTo(2));
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
             yield return Press(Key.DownArrow);
             yield return Press(Key.Escape);
-            Assert.That(MenuManager.Instance.CurrentDialog,Is.SameAs(castPicker));
-            yield return Press(Key.Escape);
+            Assert.That(MenuManager.Instance.CurrentDialog,Is.SameAs(MenuManager.Instance.PartyMenu));
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(skillButton));
             Assert.That(caster.Vitals.SP, Is.EqualTo(20));
             Assert.That(effect.Marked, Is.Empty);
-            yield return Press(Key.Enter);
             yield return Press(Key.Enter);
             yield return Press(Key.DownArrow);
             yield return Press(Key.Enter);
@@ -191,7 +187,6 @@ namespace EternalEnigma.Tests
             var sword = AddEquipment(EquipmentSlot.MainHand);
             skill.InventoryTargetSelector.ItemType = InventoryTargetType.Weapon;
             yield return Press(GamepadButton.LeftShoulder);
-            yield return Press(GamepadButton.South);
             yield return Press(GamepadButton.South);
             var picker=(PartyMenuPicker)MenuManager.Instance.CurrentDialog;
             var rows=picker.Rows.GetComponentsInChildren<AuthoredButton>();

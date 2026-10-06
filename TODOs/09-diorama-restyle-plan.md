@@ -71,7 +71,7 @@ The art references (`ArtRefs/`, Pokémon BDSP style) look like a lit, handcrafte
   - `Clone()` copies every field.
   - `Execute` reads `creator.GetGeneratedBlueprintMap(guid[+"_UNSUBD"])`, emits through `EnvironmentBatch`, and always increments `creator.executedBuildLayersCount` in `finally`.
   - Renderers without an `EnvironmentMeshOwner` are hidden (`OverworldBiomeRenderer.cs:70-72`).
-- **Overworld broad ground bypasses TWC.** `OverworldBiomeRenderer.Draw` (`:75-132`) builds hard-edged per-biome quads after the build completes. Open work in `Docs/TWCBiomeStylingIntegrationPlan.md` already asks to move this into a TWC build action with one rendering owner.
+- **Overworld broad ground bypasses TWC.** `OverworldBiomeRenderer.Draw` (`:75-132`) builds hard-edged per-biome quads after the build completes. Open work in `TODOs/08-twc-biome-styling-plan.md` already asks to move this into a TWC build action with one rendering owner.
 - **Overworld blueprint masks** come from `CampaignOverworld.Apply` (`CampaignOverworld.cs:65-126`) through `CampaignLayerAction` and `SmartEnvironmentMasks.World`.
 - **Town:**
   - Ground comes from `TownEnvironmentLayer.cs:31-34,70` (Paving + `Kit.Ground`).
@@ -152,7 +152,7 @@ The art references (`ArtRefs/`, Pokémon BDSP style) look like a lit, handcrafte
    - **Reuse:** `Resources/TownInteriors` already has Barrel, Crate, Sack, Bench, Basket, Luggage, Lantern, Plant, PerchSign, Banner, Dummy and Target, plus ambient birds. They are XY/−Z, use the shared palette, and are batched by `TownInteriorRendering.cs:38-41`. Place them outdoors through `TownInteriorCatalog` from `TownEnvironmentLayer`, scaled by the Phase 0 ladder.
    - **Author in Blender (missing):** fence segment (straight, corner, post), flower box, mailbox, two-post signboard (if `PerchSign` doesn't read at overworld scale), boulder (S/M/L).
    - **Related:** replace the runtime cube bed in `HomeBed.cs:26-39` (which uses `Shader.Find("Standard")`) with `TownInteriors/Bed.prefab`.
-   - **Optional Adorable markers** (`Docs/Art/ArtAssetAudit.md`): exclamation/question mark over service NPCs; hen, duck and butterfly as ambient critters on Park cells.
+   - **Optional Adorable markers** (`TODOs/10-art-asset-audit.md`): exclamation/question mark over service NPCs; hen, duck and butterfly as ambient critters on Park cells.
 4. **Placement (deterministic hash, protected cells unchanged):**
    - Overworld (`OverworldCosmetics.Plan`):
      - tufts along path edges
@@ -214,7 +214,7 @@ The art references (`ArtRefs/`, Pokémon BDSP style) look like a lit, handcrafte
 2. **Prefabs:**
    - Make one `DroppedItem` prefab per new model in `Prefabs/Dungeon/DroppedItems/`, copying `Bread.prefab`'s setup (model as a child, same pivot and lift, no colliders).
    - Use tinted material variants where one model serves several items.
-   - Use the **`Adorable 3D Item_Atlas`** prefabs (5 shared materials). Today every reference points at the per-texture `Adorable 3D Items` variant (212 materials), which can't batch; see `Docs/Art/ArtAssetAudit.md`. Move the existing 10 dropped items, the bag icon and `Enemy_ChestMonster` over as well.
+   - Use the **`Adorable 3D Item_Atlas`** prefabs (5 shared materials). Today every reference points at the per-texture `Adorable 3D Items` variant (212 materials), which can't batch; see `TODOs/10-art-asset-audit.md`. Move the existing 10 dropped items, the bag icon and `Enemy_ChestMonster` over as well.
    - The pack materials are Unlit/Texture. Make one lit material variant in our own folder, matching the character lighting decision, rather than editing the vendor folder.
 3. **Mapping (starting point; confirm each one in a capture):**
 

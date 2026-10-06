@@ -40,7 +40,8 @@ checkpoint when present; otherwise town return rules apply. Quit/abandon uses or
 return rules. Retreat preserves loot without awarding dungeon completion.
 
 Core's detailed service towns and Unity's configured towns are separate integration paths.
-The full Core service-slot layout is not yet wired into Unity. See [towns](Town.md).
+Campaign towns bind Core service slots to Unity building definitions and detailed
+layout layers. See [towns](Town.md).
 
 ## Saves and development modes
 

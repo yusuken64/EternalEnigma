@@ -271,8 +271,6 @@ namespace EternalEnigma.Tests
                 yield return Press(GamepadButton.DpadDown);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(damageButton.gameObject));
             yield return Press(GamepadButton.South);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenuPicker>());
-            yield return Press(GamepadButton.South);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<TargetDialog>());
             int mana = hero.Vitals.SP;
             Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.False,"World targets must remain visible.");
@@ -285,9 +283,9 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.East);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False);
             yield return Press(GamepadButton.East);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenuPicker>());
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(skillMenu));
             Assert.That(hero.Vitals.SP, Is.EqualTo(mana), "Cancel must not cast.");
-            Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.False,"Only the current action picker is visible.");
+            Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.True,"Cancel returns to the skill list.");
             Assert.That(MenuManager.Instance.CurrentDialog.GetComponent<Canvas>().enabled,Is.True);
             yield return Press(GamepadButton.South);
             hp = target.Vitals.HP;
@@ -303,7 +301,6 @@ namespace EternalEnigma.Tests
             for (int i = 0; i < skillMenu.EntryButtons.Count && EventSystem.current.currentSelectedGameObject != boltButton.gameObject; i++)
                 yield return Press(GamepadButton.DpadDown);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(boltButton.gameObject));
-            yield return Press(GamepadButton.South);
             yield return Press(GamepadButton.South);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<TargetDialog>());
             yield return Send(new GamepadState { leftStick = Vector2.right });

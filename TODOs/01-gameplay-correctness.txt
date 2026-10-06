@@ -1,0 +1,30 @@
+Priority 1: Gameplay correctness and remaining enemy/class requests
+
+Implemented and verified 2026-10-06.
+Decisions, class mapping, and verification: Docs/GameplayCorrectness-2026-10-06.txt.
+The original source audit is retained in Docs/TodoAudit-2026-10-06.txt.
+
+Completed:
+1. EXP thresholds, level growth, messages, and level-up visuals follow the
+   actual EXP recipient, including multiple level gains and null recipients.
+2. Selecting an active skill starts casting/target selection directly.
+   Cancelling returns to the skill list without spending SP or a turn.
+3. All 24 Ally_MC primary classes are mapped to their authored appearances.
+4. All 24 heroes have distinct primary/secondary class pairs.
+5. TurtleShell explodes on death; active Silence suppresses damage and VFX.
+6. MetalSlime uses rare spawn weighting and can warp after surviving a hit.
+7. Root attack moved from Skeleton to WormMonster (Nessie, confirmed by user).
+8. Werewolves spawn in packs of up to three, subject to safe placement.
+
+Design clarification retained from the completed core list:
+Every dungeon's first clear now grants a permanent combat passive. If "new
+capability" meant a new overworld traversal/lock capability, that additional
+design work remains unresolved; the two reward types are not equivalent.
+
+The attribute allocation/UI feature is separately tracked in priority 06.
+
+Verification:
+24 targeted EditMode tests passed. All 7 new gameplay regressions passed.
+15 additional class, root, keyboard/gamepad, and inventory-targeting PlayMode
+tests passed. See the implementation report for run details and two unrelated
+pre-existing expectations that fail in the broader ClassContentTests suite.

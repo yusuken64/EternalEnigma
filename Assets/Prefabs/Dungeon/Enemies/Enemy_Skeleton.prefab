@@ -1176,7 +1176,7 @@ MonoBehaviour:
   Range: 6
   Steals: 0
   AlwaysFlees: 0
-  RootsAdjacentTarget: 1
+  RootsAdjacentTarget: 0
   Stationary: 1
   StealItems: 1
   StealGold: 1

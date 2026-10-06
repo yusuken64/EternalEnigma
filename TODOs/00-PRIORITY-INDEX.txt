@@ -1,0 +1,39 @@
+Pending work, ordered by priority (2026-10-06)
+
+Lower numbers come first. Ordering favors correctness and visible defects,
+then usability/content improvements, then larger optional features.
+Numbers are recommended execution order, not estimates or dependencies.
+
+01-gameplay-correctness.txt
+   Completed 2026-10-06: EXP targeting, direct casting, hero classes and enemies.
+   Retains an unresolved design clarification about overworld capabilities.
+02-overworld-presentation.txt
+   Verify/fix the remaining texture and lock-model reports.
+03-input-prompts.md
+   Shared input-device detection and consistent device-aware hints.
+04-weapon-availability.md + 04-weapon-availability-plan.md
+   Remaining weapon data, floor-drop bands and optional model variants.
+05-feel-improvements.md
+   Animation correctness, feedback, status VFX/icons, sound and decoration.
+06-level-up-attributes-plan.md
+   Attribute allocation, stats/equipment views and balance; EXP bug fixed in 01.
+07-overworld-encounters-plan.txt
+   Consolidated encounter/puzzle proposal, bosses and exploration pickups.
+08-twc-biome-styling-plan.md
+   General style bindings, rendering ownership, cache and validation work.
+09-diorama-restyle-plan.md
+   Broader ground/foliage/building/item visual restyle.
+10-art-asset-audit.md
+   Supporting asset findings and remaining cleanup opportunities. Findings
+   already assigned to 03/04/05/09 belong to those tasks, not a second backlog.
+11-terminal-mode.md
+   Optional full-game terminal rendering and menus.
+
+Completed core, travel, economy, casting and town-service TODO files were
+removed. Original bugfixes, overworld ideas and puzzle notes were removed as
+superseded; their unresolved scope is retained above. Completed items were
+removed from mixed gameplay/presentation lists.
+
+The historical source audit is retained in Docs/TodoAudit-2026-10-06.txt.
+Its old filenames and test results describe the pre-cleanup audit baseline.
+No Unity tests were rerun for this documentation-only organization.

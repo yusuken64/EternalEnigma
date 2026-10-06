@@ -3,7 +3,7 @@
 ## Goal
 Use animations, VFX, audio, icons and props that are already in the project but never shown or played, so combat, movement and dungeons feel more alive. No purchases are needed.
 
-Source: `Docs/Art/ArtAssetAudit.md`. The town dressing item lives in `Docs/Art/DioramaRestylePlan.md` Phase 3 (see the last section).
+Source: `TODOs/10-art-asset-audit.md`. The town dressing item lives in `TODOs/09-diorama-restyle-plan.md` Phase 3 (see the last section).
 
 **Rule for every phase:**
 - Existing gameplay timing must not change.
@@ -104,7 +104,7 @@ The overworld chooses music per biome (`OverworldScene.cs:75-76`). The dungeon u
 - [ ] Tests: decoration count and triangles per chunk stay within budget, the same seed gives the same layout, and no decoration lands on a protected cell.
 
 ## Town dressing (tracked in the Diorama plan)
-- [ ] See `Docs/Art/DioramaRestylePlan.md` Phase 3 step 3, which is now "reuse first". Place the TownInteriors Barrel, Crate, Sack, Bench, Basket, Lantern, Plant, PerchSign and Banner outdoors through `TownEnvironmentLayer`. Author only the fence, flower box, mailbox and boulders. Replace the `HomeBed.cs` cube bed with `TownInteriors/Bed.prefab`.
+- [ ] See `TODOs/09-diorama-restyle-plan.md` Phase 3 step 3, which is now "reuse first". Place the TownInteriors Barrel, Crate, Sack, Bench, Basket, Lantern, Plant, PerchSign and Banner outdoors through `TownEnvironmentLayer`. Author only the fence, flower box, mailbox and boulders. Replace the `HomeBed.cs` cube bed with `TownInteriors/Bed.prefab`.
 
 ## Order
 Phase 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7, one commit each, with EditMode and PlayMode suites green (`Tools/harness-*.json` via `Tools/unity-mcp.mjs`). Phases 4–7 depend on nothing earlier and can be done in parallel.

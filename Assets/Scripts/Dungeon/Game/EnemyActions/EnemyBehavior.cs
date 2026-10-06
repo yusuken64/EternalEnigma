@@ -14,6 +14,11 @@ public sealed class EnemyBehavior : MonoBehaviour
     public bool AlwaysFlees;
     public bool RootsAdjacentTarget;
     public bool Stationary;
+    public bool ExplodesOnDeath;
+    [Min(1)] public int ExplosionDamage = 20;
+    [Range(0, 1)] public float WarpWhenHitChance;
+    [Min(1)] public int SpawnWeight = 20;
+    [Min(1)] public int PackSize = 1;
     public bool StealItems = true;
     public bool StealGold = true;
     public ConfusionStatusEffect Confusion;
@@ -47,6 +52,19 @@ public sealed class EnemyBehavior : MonoBehaviour
     }
 
     internal void Tick() { if (cooldown > 0) cooldown--; }
+
+    internal List<GameAction> DeathEffects(Enemy enemy)
+    {
+        if (!CanExplode(enemy)) return new();
+        GameMessages.ForCharacter(enemy, $"{GameMessages.Name(enemy)} exploded!");
+        return Game.Instance.AllCharacters.Where(c => c != null && c != enemy && c.Vitals.HP > 0 &&
+                TileWorldDungeon.ChevDistance(c.TilemapPosition, enemy.TilemapPosition) <= 1 &&
+                Game.Instance.CurrentDungeon.CanWalkTo(enemy.TilemapPosition, c.TilemapPosition))
+            .Select(c => (GameAction)new TakeDamageAction(enemy, c, ExplosionDamage) { AwardExperience = false }).ToList();
+    }
+
+    internal bool CanExplode(Enemy enemy) => ExplodesOnDeath &&
+        !enemy.StatusEffects.Any(s => s is SilenceStatusEffect && !s.IsExpired());
 
     internal void RevealIfMoved() { if (Disguised) Provoke(); }
 

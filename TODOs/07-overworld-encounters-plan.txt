@@ -2,7 +2,7 @@
 
 ## Summary
 
-Implement both idea files through the existing dungeon scene, generation pipeline, and turn system.
+Implement the consolidated overworld and puzzle ideas below through the existing dungeon scene, generation pipeline, and turn system. The original idea files were removed after consolidation.
 
 - Every campaign includes all encounter types, with placement and layouts varying by seed.
 - Companions follow normally. Only the controlled character operates puzzle elements.

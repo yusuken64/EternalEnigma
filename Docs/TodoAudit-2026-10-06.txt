@@ -1,0 +1,234 @@
+Historical audit: filenames below describe the pre-cleanup baseline.
+Completed/superseded TODOs were subsequently removed at user request.
+The current backlog and ordering are in TODOs/00-PRIORITY-INDEX.txt.
+
+TODO audit - 2026-10-06
+Baseline: 656e0dba (working tree clean before this audit).
+
+Scope and confidence
+Reviewed all 10 files in TODOs, the named TODO/Plan files in Docs, and the
+related runtime code, serialized assets and test sources. This is a source
+audit, not a new Unity test run or visual acceptance pass. "Implemented"
+means the relevant path exists; test names below describe available coverage,
+not freshly passing results. Historical Temp/CoreBugfix and Temp/Economy XML
+reports cited by the old lists were not found in this checkout.
+
+Disposition
+- Close the travel checklist and casting proposal as implemented, retaining
+  their regression coverage and current behavior documentation.
+- Keep the core/economy completion records. Do not treat the unmarked original
+  bugfixes.txt as a second backlog.
+- Retire the old claim that Unity does not consume Core town service slots.
+- Keep gameplay items 2-6, 8-9 open; item 1 is implemented as separate tabs,
+  and item 7 is already implemented if "unlimited" means no ammunition limit.
+- Keep input prompts, terminal mode, level-up attributes, encounters/puzzles,
+  feel improvements and the broader diorama/style architecture as open work.
+- Rewrite weapon availability around the remaining work: most existing
+  definitions are already sold through tiered shops.
+
+TODOs/bugfixes-01-core.txt - IMPLEMENTED, with qualification
+1. Gold entry/return: implemented in CampaignTravelService and
+   DungeonReturnService; CoreBugfixTests covers carried gold and return paths.
+2. Duplicate recruit equipment: HeroClassBinding.FromPrefab and equipment
+   refresh/capture paths exist; CoreBugfixTests has a recruitment/reload case.
+3. First-clear reward: implemented as a permanent combat passive per dungeon
+   through DungeonClearAbilities. This is NOT a new overworld lock capability
+   for every dungeon. Close under the adopted passive-reward interpretation;
+   retain a design question if the original meant a traversal capability.
+4. Equipment restrictions: implemented in HeroClass/EquipmentTransferService
+   and menus; tests cover missing proficiency and effect-free equipment.
+5. Four-member walking: optimization and focused profile are recorded in the
+   list; CoreBugfixTests retains the sight/profile regression. Do not extend
+   the old editor timing claim to whole-frame or target-device performance.
+6. Save-slot navigation: implemented; SaveSlotsSupportKeyboardSelectionAndSubmit
+   provides focused regression coverage.
+The old 9 legacy failures remain historical evidence, not current results.
+
+TODOs/bugfixes-02-travel.txt - IMPLEMENTED
+1. Return at town dungeon entrance: CampaignTravelService.ConsumeDungeonReturn
+   is consumed by Town.cs, which selects a walkable cell beside the entrance
+   and builds the returning party formation.
+2. Confirm overworld entry and show cleared state: OverworldMenuManager.
+   ConfirmEntry opens Enter/Back with Cleared/Not cleared and validates the
+   location again before travel. CampaignTravelTests covers cancellation,
+   both labels and actual entry.
+3. Original lock text plus capability choices: ChooseGate displays
+   route.LockText (GateHint fallback), acquired capabilities and held keys.
+4. Capabilities menu: OverworldPartyMenuContext and PartyMenuTab.Capabilities;
+   the same CampaignTravelTests test checks its entries.
+5. NPC hints: TownNpc.Greet calls Core CampaignGuidance.TownHint.
+6. Adjacent/facing allies: TownPlayer targets originalPosition + facing offset,
+   checks waiting/recruited allies and opens Recruit/Talk as appropriate.
+
+TODOs/bugfixes-03-economy.txt - IMPLEMENTED
+The adopted scope has corresponding code/assets: persisted hunger, checkpoint
+rollback, return-controlled restocking, tier filtering, buy/sell confirmation,
+quantity-aware sale prices, tiered equipment/potions/bakery products, and
+ShopOnly exclusion from DungeonLoot.
+Evidence: TownShopCatalog, TownServices, DungeonReturnService, InnCheckpoint,
+ItemManager; EconomyCatalogTests, EconomyGameplayTests and CampaignSaveTests.
+The list's old counts are retained as historical claims only. Current ammo
+catalog tests also cover tiered ammunition added after the original write-up.
+
+TODOs/bugfixes-04-gameplay.txt - MIXED
+1. IMPLEMENTED as distinct Inventory/Skills tabs and shortcuts in PartyMenu
+   and menu managers. A wholly separate window would be additional scope.
+2. OPEN: PartyMenu.OpenActions still builds a picker for a skill's "Cast"
+   action. DungeonPartyMenuContext.OpenEntry handles items only, so skill
+   selection does not bypass that extra confirmation.
+3. OPEN / DESIGN REVIEW: primary classes are assigned, but correspondence to
+   appearance needs a concrete reviewed mapping. Presence of a class is not
+   evidence that this visual/design request is complete.
+4. PARTIAL: 20 of 24 Ally_MC prefabs still have a null SecondaryClass. Primary
+   duplicates therefore are not generally distinguished by secondary classes.
+5. OPEN: no turtle-specific death explosion/silence suppression hook found.
+   The existing ExplosionAction is an item effect, not this enemy behavior.
+6. OPEN: MetalSlime exists and flees, but EnemyManager selects uniformly among
+   eligible spawn definitions; no metal-slime hit-triggered warp was found.
+7. IMPLEMENTED for unlimited ammunition: EnemyBehavior.EnemyAbilityAction
+   creates RangedAttackAction without consuming inventory ammunition or SP.
+   It retains a two-turn cooldown. Removing cooldown/range would be new scope.
+8. OPEN: rooting remains assigned to Enemy_Skeleton (Goopi), not Nessie.
+9. OPEN: current floor enemy selection/spawning has no wolf-pack grouping.
+Evidence: PartyMenu.cs, PartyMenuContexts.cs, Ally_MC*.prefab, EnemyManager.cs,
+EnemyBehavior.cs, EnemyBehaviorTests, Docs/EnemyBehaviors.md.
+
+TODOs/bugfixes-05-presentation.txt - MIXED / VISUAL FOLLOW-UP
+1. PARTIAL / VERIFY: POI platform paving and perimeter-post atlas UV fixes are
+   present; OverworldPresentationTests asserts both. The original "POC
+   textures" wording is too broad to close all visual defects without captures.
+2. PARTIAL / VERIFY: OverworldScene instantiates GateMarker, centers/orients it
+   across dry gate cells, and applies biome styling. It still uses one generic
+   marker rather than selecting a model from each lock's fiction/type. Verify
+   the intended "new models" before closing this item.
+3. IMPLEMENTED: RefreshMarkers keeps location models active even when occupied;
+   FixedSeedsAndRestoredTerrainKeepRoutesAndLocationsVisible asserts this.
+4. IMPLEMENTED: GlobalSettings.ShowEventHistory, DungeonOptions and the event
+   button route to GameMessages.ShowHistory / the shared EventHistoryDialog.
+
+TODOs/bugfixes.txt - SUPERSEDED INDEX
+All entries are represented by bugfixes-01 through -05. Keep as original
+request history; use the dispositions above rather than implement twice.
+
+TODOs/castingchange.txt - IMPLEMENTED
+PendingCast/AdvanceCastAction and SkillAction/CastSpellAction implement charge
+actions and release, retained targets, interruption and fizzle behavior.
+CastTime values are authored on skills (including Revive = 5); Quick Casting,
+Mobile Casting, Casting Dance/Chorus and enemy cast policies are present.
+CombatEffectPlayer owns casting presentation. CastingAndPiercingTests covers
+forced movement, competing revive, mobile casting and support AI, among others.
+Current authoritative description: Docs/AbilityTestLab.md and casting code.
+The original "all movement cancels" sentence has the requested Mobile Casting
+exception: walking/initiating swaps can charge; release is stationary.
+
+TODOs/ideas_overworld.txt and TODOs/puzzle.txt - SUPERSEDED BY OPEN PLAN
+TODOs/overworld_encounters_plan.txt - OPEN, NOT IMPLEMENTED AS A SYSTEM
+No EncounterDefinition, DungeonRunPlan, Sokoban/light-pattern generation,
+prison escrow, puzzle Reset Floor ability, or shared objective framework found.
+Existing dungeon presentation settings, scenery/traps, enemy fleeing/rooting,
+exploration skills and campaign travel are reusable foundations, not completion
+of the planned encounters, bosses, puzzles, pickups or footprints.
+ClassPassive.ResetFloorState is passive bookkeeping, not the proposed reset.
+Use the consolidated plan as the backlog; the two idea files are provenance.
+
+Docs/TownServicesUnityPlan.md - CORE BRIDGE IMPLEMENTED; OLD PREMISE STALE
+CampaignTravelService.PrepareTown calls CampaignTownLayout.Configure with
+Context.TownLayout. Configure consumes SlotServices, preserves the entrance,
+retains residential slots, resolves interior services and takes the plan spawn.
+CoreTownLayerGenerator uses complete options/detail layers. Coverage:
+TownLayoutIntegrationTests.CampaignServicesUseCoreSlotOrderAndEveryLayerUsesCompleteOptions
+and CampaignTownServiceTests.DetailedTownExposesServicesAndInnRestoresItsCheckpoint.
+The intentional first-start home spawn and dungeon-return entrance placement
+override the ordinary plan spawn. Remaining work is regression/visual/autoplay
+validation, not implementing the missing bridge claimed by the document.
+
+Docs/WeaponAvailabilityTODO.md and Docs/WeaponAvailabilityPlan.md - PARTIAL / STALE
+The "45 unobtainable definitions / only three shop weapons" baseline is stale.
+A GUID scan of all 74 .asset files in the weapon folder found shop references
+for 72; the exceptions are EquipEffectDefinition (not a weapon) and legacy
+RightHand_Arrows. Existing non-ammunition weapon definitions are thus already
+represented in shop catalogs. TownShopCatalog.Resolve gates them by MinimumTier.
+This is static catalog reachability, not a buy/equip playthrough of every item.
+Phase 1: superseded in large part by the economy's tiered equipment offers and
+pricing. Do not append duplicate offers or replace adopted prices blindly.
+Phase 2: OPEN. THS01-07 still all have Strength 12; left OHS07 is still S5/D7;
+the inspected weapon descriptions remain blank.
+Phase 3: OPEN. ItemDefinition has no MinFloor/MaxFloor, and ItemManager's
+GetRandomDrop(int roll) filters ShopOnly/progression items but not floor bands.
+Phase 4: OPEN. No WeaponModelVariant field or Bow02-05 child-selection path.
+New ammunition tiers are not the proposed bow-model variants.
+Keep the proposed reachability/floor-band tests; general economy tests do not
+establish floor-drop balance, all-weapon visual correctness or determinism by floor.
+
+Docs/InputPromptsTODO.md - OPEN
+No shared InputDevice/InputPrompts classes. MenuUIInputModule and CursorManager
+still detect independently. Mixed keyboard/controller strings remain in
+CampaignHUD, OverworldScene, DungeonOptions and AutoplayRunner.
+Some menu hints already adapt; that existing partial behavior is not completion
+of the centralization, conversion, device-switch tests, docs or optional glyphs.
+Recheck bindings before implementation: old prompt/key examples can drift.
+
+Docs/TerminalModeTODO.md - OPEN / OPTIONAL FEATURE
+No TerminalMode, TerminalFrame or Unity terminal views found. Core Explorer
+renderers and NoAnimations are foundations only. Keep both renderer and terminal
+menu phases open; a separate Explorer is not the full Unity game in terminal mode.
+
+Docs/LevelUpChoicePlan.md - OPEN
+No AttributePoints, HeroAttributes, LevelUpChoiceDialog or stat-allocation flow
+found. PartyMenu currently has Inventory/Skills/Capabilities, not the proposed
+Stats/Equipment tabs. The AddXPAction prerequisite is still relevant: it credits
+this.character but reads level/EXP from the acting character and enqueues an
+untargeted LevelUpAction (MovementAction.cs). Prioritize this correctness audit
+independently of choosing the attribute balance and UI design.
+
+Docs/FeelImprovementsTODO.md - OPEN, WITH EXISTING FOUNDATIONS
+Phase 0: substring-based HeroAnimator.SetAnimations still admits the bad pools.
+Phases 1-2: no proposed PlayOneShot/status-loop integration; existing enum values
+and clips are not event hooks. Sleeping/DrinkPotion also need supported actions.
+Phase 3: CombatVisualCatalog.ImportedEffects and its authoring assignment remain;
+per-status/per-skill overrides and the double-audio listen check remain relevant.
+Phase 4: StatusVisualProfile contains Aura/Priority only, no Icon or Loop.
+Phase 5: no proposed per-surface Footstep mapping/hooks in SoundEffects.
+Phase 6: DungeonTheme has no proposed Music/BossMusic fields.
+Phase 7: DungeonPresentation still uses kit models and a 120-triangle cap;
+TownInteriorCatalog integration and broader theme dressing remain open.
+Existing deterministic placement/batching and VFX infrastructure should be reused.
+Town dressing/HomeBed replacement overlaps the diorama plan; track it once.
+
+Docs/TWCBiomeStylingIntegrationPlan.md - STILL RELEVANT, PARTIAL
+Existing TWC masks/smart layers, ocean and constrained cosmetics are implemented.
+No general OverworldStyleProfile/source-binding architecture found. The proposed
+ownership migration, dependency-aware caching and full validation remain open;
+moving broad ground entirely to TWC is conditional on adopting that architecture.
+
+Docs/Art/DioramaRestylePlan.md - OPEN PROPOSAL, REBASE BEFORE IMPLEMENTING
+No PaintedGroundMesh, OverworldGroundLayer, DioramaScale or DioramaStyle.md found.
+Existing painted textures, TWC layers, rooms/roofs, interiors and item visuals are
+foundations. They do not complete the splat ground, scale ladder, foliage/facade
+restyle and settlement plan. Asset purchase/import is a proposal, not a confirmed
+dependency; this audit makes no claim about current store pricing or ownership.
+Reuse the existing interior/Adorable work and recheck overlap with ArtAssetAudit.
+
+Other Docs audit material
+Docs/Art/ArtAssetAudit.md is a findings backlog, not a completed checklist: its
+checkmark glyphs do not mean fixes landed (ImportedEffects and clip matching
+still exist). Its concrete proposals overlap FeelImprovements and Diorama.
+Current spot checks support retaining those issues; historical size/reference
+counts and "safe deletion" claims need a fresh dependency/build audit before
+deleting assets. No assets were deleted in this review.
+HeroPrefabAudit, EnemyPrefabAudit, EnvironmentAudit, TWCSampleAudit and
+EnvironmentValidation are audit/reference or verification documents, not
+standalone unimplemented feature lists. Old failures/counts are not fresh status.
+BlenderModelGuide's unchecked boxes are reusable per-asset acceptance criteria,
+not nine outstanding project tasks; leave them unchecked.
+
+Recommended next work
+1. Investigate/fix AddXPAction recipient targeting and the extra Cast picker.
+2. Complete the concrete enemy requests; review hero appearance/class mapping.
+3. Verify the two ambiguous overworld visual items with matched captures.
+4. Implement centralized prompts and the small animation/VFX cleanup work.
+5. Rebase weapon progression around the existing tiered catalogs.
+6. Choose priorities for attributes, encounters, terminal mode and diorama
+   work as separate features; do not infer priority from old TODO ordering.
+
+Audit changes are documentation only. No gameplay, assets or saves were changed.

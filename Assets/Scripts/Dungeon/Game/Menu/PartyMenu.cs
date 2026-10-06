@@ -187,6 +187,12 @@ public sealed class PartyMenu : Dialog
         if (context is IPartyMenuEntryHandler handler && handler.OpenEntry(this, Hero, entry)) return;
         var actions = context.Actions(Hero,entry);
         if (!actions.Any(a=>a.Available)) return;
+        if (entry.Skill?.ActivationType == ActivationType.Active && actions.Count == 1)
+        {
+            Common.Instance.MenuInputHandler.ClearInputThisFrame();
+            actions[0].Execute(this);
+            return;
+        }
         Pick(entry.Title, actions.Where(a=>a.Available).Select(a => (a.Label, (Action)(() => a.Execute(this)))).ToList(),false);
     }
     public void Pick(string title, List<(string Label, Action Execute)> options,bool closeOnChoose=true)

@@ -8,6 +8,21 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Edge Cases")]
+    public static void RunGameplayEdgeCases() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameplayCorrectnessTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Correctness")]
+    public static void RunGameplayCorrectness() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameplayCorrectnessTests", "EternalEnigma.Tests.ClassAssignmentTests",
+        "EternalEnigma.Tests.EnemyBehaviorTests.SilverDevilActsTwiceAndNessieRootsUntilKilled",
+        "EternalEnigma.Tests.SkillRegressionTests.GamepadOpensSelectsCancelsReopensAndConfirmsSkill",
+        "EternalEnigma.Tests.SkillRegressionTests.KeyboardInvokesSelfAndUntargetedSkillsAndClosesTargeting",
+        "EternalEnigma.Tests.SkillRegressionTests.MissileSkillAimsDiagonallyCancelsAndHitsOnlyFirstCharacter",
+        "EternalEnigma.Tests.InventorySkillTargetingTests",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Classes")]
+    public static void RunGameplayClasses() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.ClassContentTests.EveryHeroHasItsFixedClass", "HeroClassTests", "EquipmentRegressionTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Casting")]
     public static void RunCasting() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CastingAndPiercingTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Casting Regression")]

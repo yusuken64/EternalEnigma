@@ -14,24 +14,50 @@ public class EnemyManager : MonoBehaviour
 
 	internal Enemy GetEnemyPrefab(int floor)
 	{
-		floor = Mathf.Clamp(floor, 1, 27);
-		var spawnDefinition = SpawnDefinitions.Where(
-			x => x.FloorMin <= floor &&
-				 x.FloorMax >= floor)
-			.OrderBy(x => Guid.NewGuid())
-			.First();
-		return spawnDefinition.EnemyCharacterPrefab;
+		return GetEnemyPrefab(floor, UnityEngine.Random.Range(0, int.MaxValue));
 	}
 
-	/// <summary>Deterministic pick: candidates for the floor ordered by SpawnName (ordinal), indexed by roll.</summary>
+	/// <summary>Deterministic weighted pick in ordinal name order. Normal enemies have weight 20; metal slimes have weight 1.</summary>
 	internal Enemy GetEnemyPrefab(int floor, int roll)
 	{
 		floor = Mathf.Clamp(floor, 1, 27);
 		var candidates = SpawnDefinitions.Where(x => x.FloorMin <= floor && x.FloorMax >= floor)
 			.OrderBy(x => x.SpawnName, StringComparer.Ordinal).ToList();
 		if (candidates.Count == 0) throw new InvalidOperationException($"No spawn definitions cover floor {floor}.");
-		return candidates[(int)((uint)roll % (uint)candidates.Count)].EnemyCharacterPrefab;
+		int Weight(SpawnDefinition d) => Mathf.Max(1, d.EnemyCharacterPrefab.GetComponent<EnemyBehavior>()?.SpawnWeight ?? 20);
+		uint ticket = (uint)roll % (uint)candidates.Sum(Weight);
+		foreach (var candidate in candidates)
+		{
+			int weight = Weight(candidate);
+			if (ticket < weight) return candidate.EnemyCharacterPrefab;
+			ticket -= (uint)weight;
+		}
+		throw new InvalidOperationException("Invalid spawn weights.");
 	}
+
+    internal List<Enemy> SpawnPack(Enemy prefab, Vector3Int origin, ISet<Vector3Int> reserved)
+    {
+        var game = Game.Instance;
+        var spawned = new List<Enemy>();
+        var positions = new List<Vector3Int> { origin };
+        int count = Mathf.Max(1, prefab.GetComponent<EnemyBehavior>()?.PackSize ?? 1);
+        positions.AddRange(game.CurrentDungeon.GetWalkableNeighborhoodTiles(origin)
+            .Where(p => p != origin && !reserved.Contains(p) && SkillMovement.CanOccupy(prefab, p))
+            .OrderBy(p => p.x).ThenBy(p => p.y).Take(count - 1));
+        foreach (var cell in positions)
+        {
+            if (!SkillMovement.CanOccupy(prefab, cell)) continue;
+            var enemy = Instantiate(prefab, game.transform);
+            enemy.UpdateCachedStats();
+            enemy.InitialzeVitalsFromStats();
+            enemy.IsDormant = UnityEngine.Random.value < EnemyAwareness.DormantSpawnChance;
+            enemy.TilemapPosition = cell;
+            game.Enemies.Add(enemy);
+            reserved.Add(cell);
+            spawned.Add(enemy);
+        }
+        return spawned;
+    }
 
 #if UNITY_EDITOR
 	[ContextMenu("Generate Spawn Definitions")]

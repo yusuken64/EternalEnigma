@@ -209,7 +209,7 @@ because `PartyMenu` is shared by all three contexts.
   the tab and opens the LevelUpChoiceDialog. In the dungeon it is available whenever the
   menu is (it costs no turn, so it isn't limited to the controlled hero).
 - Shortcut: a "Stats [T]" button in `PartyMenuLauncher` plus a gamepad binding (pick it
-  together with `Docs/InputPromptsTODO.md`).
+  together with `TODOs/03-input-prompts.md`).
 - HUD: a "▲" badge on the `DungeonPartyCard` of a hero with unspent points.
 
 ## Equipment tab
@@ -328,7 +328,7 @@ menu and queues the action, the same as the Inventory tab's Equip does today.
   These delegate to the existing equip paths, so the class filter and saving behave the
   same.
 - Launcher: an "Equipment [E]" button plus a gamepad binding (alongside
-  `Docs/InputPromptsTODO.md`).
+  `TODOs/03-input-prompts.md`).
 
 ## Prerequisites (bugs from the audit)
 

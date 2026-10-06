@@ -2045,8 +2045,8 @@ MonoBehaviour:
   Skills: []
   SkillRanks: []
   HighestLevel: 1
-  PrimaryClass: {fileID: 11400000, guid: d34e00215c40ae846a35b21974a01ad2, type: 2}
-  SecondaryClass: {fileID: 0}
+  PrimaryClass: {fileID: 11400000, guid: 76761bc3cc2b11e49a137d328298a256, type: 2}
+  SecondaryClass: {fileID: 11400000, guid: f6f4a7a332340c94c98a7b37f045f370, type: 2}
   CirlcleRenderer: {fileID: 8103258936086618030}
   AllyColor: {r: 0.27058825, g: 0.972549, b: 0.91764706, a: 1}
   PlayerColor: {r: 0.28235295, g: 0.9411765, b: 0.1882353, a: 1}

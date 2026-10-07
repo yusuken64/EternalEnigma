@@ -70,7 +70,8 @@ The already-committed task 05 work supplies dungeon theme lists, TownInteriorCat
 | environment-duplicates | `f8af6528` | 1096 |
 | legacy-biome-swatches | `01afd637` | 24 |
 | recovery-scenes | `d341a17a` | 5 |
-| unused-wfc | This commit | See cleanup ledger |
+| unused-wfc | `1742ddc1` | 22 |
+| skill-contact-sheets | This commit | See cleanup ledger |
 
 ### Resume order
 

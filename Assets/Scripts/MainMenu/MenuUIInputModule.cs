@@ -101,6 +101,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public bool Allows(GameObject obj)
     {
+        if (AutoplayRunner.BlocksPlayerInput)
+            return obj != null && AutoplayRunner.Active.ShowPlaybackUI && obj.GetComponentInParent<AutoplayPanel>() != null;
         return obj != null && (scopes.Count == 0 ||
             (scopes[^1].Root != null && obj.transform.IsChildOf(scopes[^1].Root)));
     }
@@ -168,7 +170,19 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public override void Process()
     {
         ControlDeviceState.Poll();
-        if (AutoplayRunner.BlocksPlayerInput) { consumedFrame = Time.frameCount; return; }
+        if (AutoplayRunner.BlocksPlayerInput)
+        {
+            consumedFrame = Time.frameCount;
+            if (!AutoplayRunner.Active.ShowPlaybackUI || AutoplayRunner.Active.GetComponentInChildren<AutoplayPanel>() == null) return;
+            if (!Allows(eventSystem.currentSelectedGameObject)) eventSystem.SetSelectedGameObject(null);
+            // The playback canvas shields underlying UI. Keep pointer controls alive while
+            // the runner owns keyboard/controller shortcuts and gameplay stays blocked.
+            bool navigation = eventSystem.sendNavigationEvents;
+            eventSystem.sendNavigationEvents = false;
+            try { base.Process(); }
+            finally { eventSystem.sendNavigationEvents = navigation; }
+            return;
+        }
         scopes.RemoveAll(s => s.Owner == null || s.Root == null || !s.Root.gameObject.activeInHierarchy);
         // World targets use directional/confirm input in TargetDialog and MenuManager.
         // Keep EventSystem enabled so a settings dialog pushed above targeting still works.

@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace EternalEnigma.Tests
@@ -58,6 +60,96 @@ namespace EternalEnigma.Tests
                 File.WriteAllText(path,JsonUtility.ToJson(report,true));
             }
             yield return harness.Cleanup();
+        }
+
+        [UnityTest]
+        public IEnumerator DebugMenuLaunchCanResumeWhileLoading()
+        {
+            using var input = new TestInputScope();
+            var animation = DungeonPreferences.AnimationOverride;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
+            try
+            {
+                yield return harness.LoadMainMenuDirect();
+                var original = Common.Instance.GameSaveData;
+                string saved = harness.Store.Json;
+                var transition = Common.Instance.ScreenTransition;
+                transition.TransitionTimeSeconds = 2;
+                var mouse = InputSystem.AddDevice<Mouse>();
+                var keyboard = InputSystem.AddDevice<Keyboard>();
+                Object.FindFirstObjectByType<MainMenuDeveloperControls>().Toggle.onClick.Invoke();
+                var launch = Object.FindObjectsByType<Button>(FindObjectsSortMode.None)
+                    .Single(button => Enumerable.Range(0, button.onClick.GetPersistentEventCount())
+                        .Any(i => button.onClick.GetPersistentMethodName(i) == nameof(MainMenu.DebugAutoplay_Clicked)));
+                EventSystem.current.SetSelectedGameObject(launch.gameObject);
+                yield return Click(mouse, launch);
+                var run = AutoplayRunner.Active;
+                Assert.That(run, Is.Not.Null, "The authored debug button must start autoplay.");
+                run.Report.ValidationOnly = true;
+                Assert.That(run.Options.Speed, Is.EqualTo(1));
+
+                // Input during the initial fade used to pause time with the resume UI hidden underneath it.
+                yield return new WaitForSecondsRealtime(.85f);
+                Assert.That(transition.BlockScreen.activeSelf, Is.True);
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Space));
+                yield return null; yield return null;
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                yield return null;
+                Assert.That(run.ReturnPromptOpen, Is.True);
+                Assert.That(Time.timeScale, Is.Zero);
+                var panel = Object.FindFirstObjectByType<AutoplayPanel>();
+                var backgroundHits = new System.Collections.Generic.List<RaycastResult>();
+                EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position = new Vector2(5, 5) }, backgroundHits);
+                Assert.That(backgroundHits[0].gameObject, Is.EqualTo(panel.gameObject),
+                    "Autoplay must shield game UI while still accepting playback controls.");
+                Directory.CreateDirectory("Temp/AutoplayValidation");
+                ScreenCapture.CaptureScreenshot("Temp/AutoplayValidation/loading-prompt.png");
+                yield return Click(mouse, panel.KeepWatching);
+                Assert.That(run.ReturnPromptOpen, Is.False, "Keep watching must accept a real pointer click.");
+                Assert.That(run.Paused, Is.False);
+
+                transition.TransitionTimeSeconds = .1f;
+                yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true &&
+                    !transition.BlockScreen.activeSelf && run.Report.Actions > 1, "autoplay leaving the loading screen");
+                yield return Click(mouse, panel.Pause);
+                Assert.That(run.Paused, Is.True);
+                yield return Click(mouse, panel.Hide);
+                Assert.That(run.PanelVisible, Is.False);
+                yield return Click(mouse, panel.Show);
+                Assert.That(run.PanelVisible, Is.True);
+                yield return Click(mouse, panel.Pause);
+                Assert.That(run.Paused, Is.False);
+                Assert.That(run.ReturnPromptOpen, Is.False, "Playback clicks must not open stop options.");
+                yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Game>()?.IsReady == true &&
+                    run.Report.DungeonTurns > 0 && !transition.BlockScreen.activeSelf, "debug autoplay taking dungeon turns");
+                ScreenCapture.CaptureScreenshot("Temp/AutoplayValidation/debug-started.png");
+                yield return null;
+                run.ExitDemo();
+                yield return harness.WaitUntil(() => AutoplayRunner.Active == null, "debug launch cleanup");
+                Assert.That(Common.Instance.GameSaveData, Is.SameAs(original));
+                Assert.That(harness.Store.Json, Is.EqualTo(saved));
+            }
+            finally { DungeonPreferences.AnimationOverride = animation; }
+        }
+
+        private static IEnumerator Click(Mouse mouse, Button button)
+        {
+            EventSystem.current.SetSelectedGameObject(button.gameObject);
+            yield return null;
+            Canvas.ForceUpdateCanvases();
+            var rect = (RectTransform)button.transform;
+            var point = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center));
+            var hits = new System.Collections.Generic.List<RaycastResult>();
+            EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position = point }, hits);
+            Assert.That(hits, Is.Not.Empty);
+            Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject), Is.EqualTo(button.gameObject),
+                button.name + " is covered by " + hits[0].gameObject.name);
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = point });
+            yield return null;
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = point, buttons = 1 });
+            yield return null;
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = point });
+            yield return null; yield return null;
         }
 
         [UnityTest]

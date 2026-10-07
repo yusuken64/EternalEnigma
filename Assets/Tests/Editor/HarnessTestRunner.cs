@@ -395,10 +395,15 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay")]
     public static void RunAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayTests.DebugMenuLaunchCanResumeWhileLoading",
         "EternalEnigma.Tests.AutoplayTests.HidePanelAndTakeControlPreserveSessionAndSave",
         "EternalEnigma.Tests.AutoplayTests.InputPromptCancelAndReturnPreserveOriginalSave",
         "EternalEnigma.Tests.AutoplayTests.NormalModeAllowsDefeatAndWritesTuningReport",
         "EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay Startup")]
+    public static void RunAutoplayStartup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayTests.DebugMenuLaunchCanResumeWhileLoading");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Demo")]
     public static void RunDemo() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

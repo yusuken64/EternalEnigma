@@ -11,10 +11,15 @@ public sealed class AutoplayPanel : MonoBehaviour
     public Button[] Speeds;
     public static readonly float[] Rates={.5f,1,2,4,8,16,32};
     AutoplayRunner runner;
+    Image inputBlocker;
 
     public void Bind(AutoplayRunner value)
     {
         runner=value;
+        // A paused transition cannot uncover the resume prompt, so playback UI must stay above it.
+        GetComponent<Canvas>().sortingOrder=ScreenTransition.SceneOverlayOrder+1;
+        inputBlocker=gameObject.AddComponent<Image>();
+        inputBlocker.color=Color.clear;
         Hide.onClick.AddListener(()=>runner.SetPanelVisible(false));
         Show.onClick.AddListener(()=>runner.SetPanelVisible(true));
         Pause.onClick.AddListener(()=>runner.SetPaused(!runner.Paused));
@@ -38,6 +43,7 @@ public sealed class AutoplayPanel : MonoBehaviour
     public void Refresh()
     {
         bool visible=runner!=null&&runner.ShowPlaybackUI;
+        if(inputBlocker!=null)inputBlocker.enabled=visible;
         Expanded.gameObject.SetActive(visible&&!runner.ReturnPromptOpen&&(runner.PanelVisible||runner.TakingControl));
         Collapsed.gameObject.SetActive(visible&&!runner.ReturnPromptOpen&&!runner.PanelVisible&&!runner.TakingControl);
         Prompt.gameObject.SetActive(visible&&runner.ReturnPromptOpen);

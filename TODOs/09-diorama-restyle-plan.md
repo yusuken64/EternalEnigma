@@ -1,5 +1,77 @@
 # Diorama restyle: ground, props, houses, overworld (via TWC layers)
 
+## Execution status (2026-10-07)
+
+User requested all phases, a resumable status record, and a commit after each phase with automatic continuation. Existing TODO consolidation edits are preserved. **No further WebGL builds until final validation.**
+
+### Current checkpoint
+
+All phase implementations and in-scope audit fixes are committed in **`cab69fce`**. Before/After captures are complete and reviewed. **All 50 failures from the pre-cleanup PlayMode run passed focused followups; the clean full EditMode suite passed 285/0.** Reports are preserved as `Verification/PreCleanupPlayMode.*`, `PreCleanupEditMode.*` and the followup files below. All eleven cleanup groups are now removed, and the frozen-GUID verification passed. The full post-cleanup EditMode suite passed 285/0 (206 seconds); the full PlayMode suite passed **323/0**, with four expected manual-only skips, in 45m48s (run `19ef3e5a05cd46bdac0d1f0e2bca433d`). One commit per cleanup group is now landing; final player validation follows.
+
+| Phase | Status | Evidence / remaining gate |
+|---|---|---|
+| 0 — fit and scale | Implemented; final WebGL runtime check pending | H = 1.206013; environment and ten Wave 4 adapters; lit materials/atlas correction; fit tests 2/0; Windows fit samples; style guide and task 07 handoff. Existing fit WebGL build succeeded, 0 errors / 11 warnings. |
+| 1 — ground | Implemented and visually reviewed | Nine dry channels, water/bridge priority, one TWC ground owner, ten seamless 1024² textures, town border/approach. Ground + campaign tests 7/0. |
+| 3 — foliage/props | Implemented and visually reviewed | 15 source-preserving adapters, biome tree picker, cover, route clearance, reused TownInteriors furniture, authored bed. Vegetation tests 5/0. Same-depth reference comparison accepts broadleaf 2.85H / pine 3.1H. |
+| 4 — houses | Implemented and visually reviewed | Modular facades/service sockets, 1.6H doors, 2.2H eaves, overhang/ridges/chimneys/dormers; in-place 9×9 rooms and per-building roof hiding retained. Roof + sleep/save-slot tests 3/0. |
+| 2 — terrain | Implemented and visually reviewed | Six cliffs plus concave adapters, eight palettes, rock caps, cyan shore, budgeted tree walls. Terrain 14/14 captures and seam/determinism checks passed. |
+| 5 — settlements | Implemented and visually reviewed | Shared house miniatures, grounded Kenney tower/gate/flag adapters, tilted readable signboards and one paving owner. FinalSigns 3/3 merged into After. |
+| 6 — items | Implemented and visually reviewed | Per-item prefab/icon overrides, all 11 fallbacks, separate currency pickup, atlas/lit/glass materials, corrected floor poses and half-cell pivots. Item/UI gameplay 5/0; nine floor sheets and three icon sheets reviewed. |
+| Audit fixes | Implemented; final regression/build gate pending | Framed NPC portraits, stable class sprites, heading fallback, UI atlas, GameUISkin autoplay panel, result icons, lit enemies, empty Ally anchors, stripped build previews, migrated TWC sample dependencies, WebGL texture limits, shop goods and five town critters. |
+| Cleanup | Applied; full gates passed; committing groups | Eleven groups removed, about 1.26 GiB of source files. `CleanupCompleted.csv` records exact counts/bytes; `CleanupVerification.json` confirms no remaining targets or retained GUID references. Post-cleanup EditMode 285/0 and PlayMode 323/0, four manual-only skips. Group commits are recorded below. |
+| Final validation | In progress | Core 379/0, post-cleanup EditMode 285/0 and PlayMode 323/0. Windows/WebGL players and packed-asset reports remain. |
+
+### Completed evidence and corrections
+
+- [x] Portable Blender source roots; `ArtSource/Diorama/build.py`, `.blend` and deterministic JSON retain 35 authored meshes. Only selected vendor FBX Read/Write settings change: 15 environment models and three Kenney models; lists are in `Fit/Selected*FBXs.txt`.
+- [x] Before/After **54/54 views** across all eight biomes, with three matching camera framings. [Local review](../Docs/Art/Previews/Diorama/Review.html) and `Stats.csv` retain the comparison. FinalTowns includes all five critters, varied counter goods, and unobscured service doors; corrected sign views are merged into After.
+- [x] Same-seed builds match: town **322 meshes / 1,703,422 triangles / 5,990 batched parts**; overworld **1,361 meshes / 2,352,142 triangles / 13,078 parts**. Forest **234,042 triangles / 517 trees**; every tree chunk stays below 96,000 triangles. No art colliders and one ground owner. `Verification/Determinism.txt`.
+- [x] Final Core suite **379 passed / 0 failed / 0 skipped**, 3m19s: `Verification/CoreFinal.trx`.
+- [x] Focused followups **22/0** (class content, interiors, item bounds, dungeon themes); autoplay manual checks **4/0**; latest item/UI gameplay **5/0** (currency, override/fallback drop and throw, portrait reset, key/mimic, result icons).
+- [x] Post-cleanup full PlayMode **323 passed / 0 failed / 4 skipped**, 45m48s: `Verification/PostCleanupPlayMode.*`. The four explicit autoplay checks already passed separately (4/0).
+- [x] Post-cleanup full EditMode **285 passed / 0 failed / 0 skipped**, 206 seconds: `Verification/PostCleanupEditMode.*` (run `dc50a486a2bb41e4bfd8f12776df572c`).
+- [x] Pre-cleanup full EditMode **285 passed / 0 failed**, `Verification/PreCleanupEditMode.*`. The earlier portrait failure incorrectly expected square portraits; their source is 512×640. Corrected the width-only assertion; runtime `FaceCamDisplay` applies/restores the packed sprite's UV rectangle.
+- [x] Currency regression repaired: `GoldPickup.prefab` retains the `Gold` behaviour separately from the enum's inventory fallback. All eleven category bindings are refreshed, and dropped model children again use the logical cell-center offset `(1,1)`. Five gameplay checks pass after the repair.
+- [x] Windows fit benchmark: RTX 2060 / D3D11, 1280×800, twelve instances, 45 warmup + 180 samples; monster medians 0.75–2.04 ms, trees 0.35–0.36 ms, empty baseline 0.275 ms. These samples include synchronous GPU readback and are not normal backbuffer FPS. `Fit/WindowsBenchmark.json`.
+
+All evidence paths above are relative to `Docs/Art/Previews/Diorama/`. [DioramaStyle.md](../Docs/Art/DioramaStyle.md) records sources, palettes, scale, authoring menus and the final-player protocol.
+
+### Active regression findings
+
+Repairs compile without errors; the town preview has been rebuilt with `TownRoofTileOutput` in its matching script file. `TimedBuffStatusEffect.PreventsMenu` now permits actions instead of throwing; deliberate-input detection excludes synthetic stick-direction buttons and detects new keys while another key is held (including a null-key guard). The harness reports live progress/failure details and has **Run Failed PlayMode** to rerun exact failed names from its last XML. Followups completed **33/17**, **15/2**, **0/2**, then **1/1**, preserved as `Verification/RegressionPass1.*` through `RegressionPass4.*`; the final cursor check is **1/0** in `Verification/CursorFollowup.*`. An intervening run was cancelled after exposing the missing null-key guard. Environment rebuilds pass using stable XY placement (marker Z bobs). All originally failing cases are now resolved by these followups.
+
+The remaining cursor check found `CursorManager` disabled in `Common.unity`. It is now enabled, with the authoring pass preserving that setting. Editing the open scene produced Unity's external-change modal; the computer-use skill reloaded the saved scene after MCP timed out. The timed-out test request was already queued, so it was not dispatched again.
+
+The mouse regressions exposed a real UI bug: an empty option-preview panel covered dungeon picker rows. `PartyMenuPicker` now hides the entire panel when descriptions are absent; authoring places dungeon previews beside the dock and disables their raycasts. Both mouse pickers and the UI audit pass, and `Verification/PickerAfter.png` was visually reviewed. The two remaining test corrections distinguish repeated marker names by placement and use an unbound stick click to change prompts without entering a town.
+
+Fixture repairs cover authored UI setup, campaign-slot navigation, explicit save checkpoints, proficient equipment and equipped ammunition, bag-only inventory rows, charging skill completion, status-effect timing, mouse clicks at rect centers, and new ground/settlement ownership. Imported bow definitions are cloned before teardown; bow selection excludes ammunition; melee smoke checks guarantee hit chance; movement fallback selects trap-free space. Mimic fixtures initialize vitals; production HUD tests use a campaign rather than the sandbox that hides it; the custom non-interior building has an empty shop catalog. These changes retain real interaction/persistence assertions and require a green rerun before completion.
+
+Historical failures already resolved include stale class/skill expectations checked against HEAD, an invalid save-slot focus precondition, arrow thickness bounds, the wall-decoration adjacency probe, a too-strict gate width ratio, and a test teardown that unloaded the final scene. TurtleShell now uses a project-owned non-looping hit override, retaining its vendor clip/controller. Apparent result-icon clipping was a capture aspect-ratio issue; the capture now explicitly uses 1280:720.
+
+### Cleanup and landing
+
+The first post-cleanup compile exposed a C# dependency outside the GUID/path audit: `DungeonGenerator.cs` also defined `BSPNode`, `BSPRect` and `BSPPosition`, which the retained legacy tile-grid API references. Those unchanged shared types now live in `Assets/Scripts/Dungeon/Game/BSPNode.cs`. The initial EditMode run was cancelled; compilation now succeeds and the restarted full EditMode suite passed 285/0. The shared-type body is unchanged. GUID/path verification does not replace the compile gate.
+
+`Tools/diorama-reference-audit.py` covers the two new packs and retained assets; `ReferenceAuditBeforeCleanup.json` freezes its findings. `CleanupManifest.json` stores exact paths and GUIDs for eleven groups, including the two unused enemy prefabs. No orphan archive metadata files remain to remove. Read-only build-report prefix filters and guarded historical audit/migration paths are documented exceptions. `Tools/Invoke-DioramaCleanup.ps1` validates normalized paths beneath `Assets` before a named group is removed. Post-cleanup `--verify-cleanup` checks missing targets and retained GUID references.
+
+The already-committed task 05 work supplies dungeon theme lists, TownInteriorCatalog fallback, palette materials and music fields. Task 09 preserves those assets; its dungeon change keeps compact themed props instead of the larger overworld tree picker and raises the outdoor per-piece budget to 250. Clip, sound, animation, footstep, status and VFX polish remain with priority 05. Wave 4 spawn/boss registration remains with task 07. Farts/FartScene are retained.
+
+**Landing adjustment:** phase implementation followed 0 → 1 → 3 → 4 → 2 → 5 → 6, but shared TWC assets, catalogs and authoring APIs were integrated before the user's per-phase commit instruction. The coupled implementation landed in `cab69fce`; cleanup retains one commit per nonempty group after its final gates. Each remaining phase is committed and followed automatically by the next. Existing TODO consolidation edits remain in the working tree.
+
+### Cleanup commit checkpoints
+
+| Group | Commit | Tracked files |
+|---|---|---:|
+| legacy-tilemap | This commit | See cleanup ledger |
+
+### Resume order
+
+1. Full post-cleanup suites are complete: EditMode 285/0; PlayMode 323/0 and four expected skips. The implementation checkpoint is `cab69fce`; deletion and frozen-GUID verification are complete. Do not regenerate the cleanup manifest after deletion.
+2. Clean full reports are saved as `Verification/PostCleanupEditMode.*` and `PostCleanupPlayMode.*`. Confirm Unity has finished test cleanup before changing assets.
+3. Commit each cleanup group using the prepared `Temp/CommitDioramaCleanup.ps1` (Git index permission required); record its IDs and checkpoint status.
+4. **Final stage only:** build/run Windows first; fix any player issues. Then build/run the final integrated WebGL player and run the existing fit WebGL build. Save three production-scene captures, frame samples, shader-error counts and per-pack build inclusion.
+5. Update this checkpoint with final results and commit IDs, regenerate the review index, and retain only intended font fallback changes rather than generated font-atlas noise.
+
 ## Context
 The art references (`ArtRefs/`, Pokémon BDSP style) look like a lit, handcrafted miniature: soft-edged dirt paths, blended ground, tiered cliffs, dense rounded foliage, oversized iconic props and storybook houses. The game currently looks like a flat tile map:
 - hard 90° cell edges between surfaces

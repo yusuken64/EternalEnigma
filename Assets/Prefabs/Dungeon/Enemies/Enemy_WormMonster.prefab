@@ -780,7 +780,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bfd95676563b425a973ae4cbd940d5f0, type: 2}
+  - {fileID: 2100000, guid: 288e24375c8a34d4a80b6eaddb2e3235, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -891,8 +891,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 990010060001}
   - component: {fileID: 8639548010823113620}
+  - component: {fileID: 990010060001}
   - component: {fileID: 3119655136135461553}
   - component: {fileID: 8562843712464608807}
   m_Layer: 8
@@ -918,6 +918,35 @@ Transform:
   - {fileID: 5590973851788533376}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &990010060001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5543747752720980080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6616f7d00b5ae3743a0956be51d15f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::EnemyBehavior
+  WaitUntilAttacked: 0
+  RangedAttack: 0
+  Range: 6
+  Steals: 0
+  AlwaysFlees: 0
+  RootsAdjacentTarget: 1
+  Stationary: 0
+  ExplodesOnDeath: 0
+  ExplosionDamage: 20
+  WarpWhenHitChance: 0
+  SpawnWeight: 20
+  PackSize: 1
+  StealItems: 1
+  StealGold: 1
+  Confusion: {fileID: 0}
+  Mimic: 0
+  ChestVisualPrefab: {fileID: 0}
 --- !u!114 &3119655136135461553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -939,6 +968,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 13
+    MagicPower: 0
     Defense: 23
     EXPOnKill: 40
     HungerAccumulateThreshold: 0
@@ -1456,17 +1486,3 @@ Transform:
   - {fileID: 5669093324445824559}
   m_Father: {fileID: 6968730635369092339}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-
---- !u!114 &990010060001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5543747752720980080}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6616f7d00b5ae3743a0956be51d15f71, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: EternalEnigma.Game::EnemyBehavior
-  RootsAdjacentTarget: 1

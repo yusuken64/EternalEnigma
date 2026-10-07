@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Enemy_TurtleShell_HitOverrides
+  m_Controller: {fileID: 9100000, guid: 1aad8362519e42b8b92255924e21edb1, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: d95e831e81894e71abba9ad8e4774c5b, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: 7f802ba2705f23745b58c13124dc4e12, type: 2}

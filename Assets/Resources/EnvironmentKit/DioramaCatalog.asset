@@ -1,0 +1,637 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f4acf86be62a8340b2239fa88b9a647, type: 3}
+  m_Name: DioramaCatalog
+  m_EditorClassIdentifier: EternalEnigma.Game::DioramaCatalog
+  Models:
+  - Id: SnowPine
+    Prefab: {fileID: 6749964191357574048, guid: afd79708a5b5a7740b9d7224e3583066, type: 3}
+    Height: 3.89
+    Width: 2.1999996
+    TargetHeight: 3.7386405
+    Triangles: 380
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: Palm
+    Prefab: {fileID: 8547879534078873909, guid: 6fc4ea9c6a0272745be46914c0b77bcf, type: 3}
+    Height: 3.3686051
+    Width: 2.5605001
+    TargetHeight: 3.7386405
+    Triangles: 400
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: Willow
+    Prefab: {fileID: 2166125974070778492, guid: 065557f39cab93c47b4574367c4b9d02, type: 3}
+    Height: 3.3375938
+    Width: 3.2611828
+    TargetHeight: 3.4371371
+    Triangles: 1092
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: DeadTree
+    Prefab: {fileID: 1211059339934660187, guid: f4dabe22bf7f0324abad46d7bdb7d836, type: 3}
+    Height: 2.9608269
+    Width: 1.8788636
+    TargetHeight: 3.4371371
+    Triangles: 364
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: CharredTree
+    Prefab: {fileID: 5374568749202664684, guid: 5b5315157123f734aae79578c30900ad, type: 3}
+    Height: 2.9608269
+    Width: 1.8788636
+    TargetHeight: 3.4371371
+    Triangles: 364
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: TallGrass
+    Prefab: {fileID: 1711149513223026668, guid: f796bc03eac5aa649bc5ab5559adaa5a, type: 3}
+    Height: 0.69
+    Width: 1.059065
+    TargetHeight: 0
+    Triangles: 104
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: Fern
+    Prefab: {fileID: 6030471484903710030, guid: e0edfcdcf032eb144a6d0420671b40d4, type: 3}
+    Height: 0.30682725
+    Width: 1.1934863
+    TargetHeight: 0
+    Triangles: 448
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: MushroomRing
+    Prefab: {fileID: 764619949086905457, guid: 963619771339bd148b77e77a3ce2ab26, type: 3}
+    Height: 0.4
+    Width: 1.0104017
+    TargetHeight: 0
+    Triangles: 588
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: Reeds
+    Prefab: {fileID: 812430039160637802, guid: 7c2903b3b29a7d341b3d38c0be5d77dd, type: 3}
+    Height: 0.8827624
+    Width: 1.1312721
+    TargetHeight: 0
+    Triangles: 396
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: GrassLip
+    Prefab: {fileID: 1654248551248744009, guid: 8e85e4391014b71458b8524cfce51e5e, type: 3}
+    Height: 0.17
+    Width: 0.97
+    TargetHeight: 0
+    Triangles: 64
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: Fence
+    Prefab: {fileID: 6942566470463734012, guid: 261ebed99dd55f44398eba7ac272c877, type: 3}
+    Height: 0.81
+    Width: 1.7446817
+    TargetHeight: 0.7236079
+    Triangles: 336
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: FlowerBox
+    Prefab: {fileID: 6380389117560650237, guid: 21fb63f06cc65084d80f1d2b38ef520b, type: 3}
+    Height: 0.485
+    Width: 0.99
+    TargetHeight: 0
+    Triangles: 600
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: Mailbox
+    Prefab: {fileID: 7044800479658053505, guid: 06c64dffdeebeec41955bdb9b8ff9e55, type: 3}
+    Height: 1.19
+    Width: 0.6
+    TargetHeight: 0
+    Triangles: 268
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: Signboard
+    Prefab: {fileID: 1177571209896290446, guid: 30b91fd25ac60ce4185a608ad656f661, type: 3}
+    Height: 1.2916743
+    Width: 1.56
+    TargetHeight: 1.3266144
+    Triangles: 300
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: BoulderSmall
+    Prefab: {fileID: 1248774321362148524, guid: 82ad80dbc6a7f6245b6862dd109ad554, type: 3}
+    Height: 0.88
+    Width: 1.0498607
+    TargetHeight: 0.7236079
+    Triangles: 72
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: BoulderLarge
+    Prefab: {fileID: 7647698418871588063, guid: 52871698a31391a4fbf710732b1c32c0, type: 3}
+    Height: 1.3399999
+    Width: 1.565247
+    TargetHeight: 1.0854118
+    Triangles: 72
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: FacadeWall
+    Prefab: {fileID: 5194890175700757577, guid: bc4c94f12edcda0499feb19cbb6b237c, type: 3}
+    Height: 2.7082288
+    Width: 2.04
+    TargetHeight: 0
+    Triangles: 552
+    Lod: 0
+    Tree: 0
+    Sockets:
+    - kind: Ornament
+      center: {x: -0.46, y: -0.095, z: -2.1532288}
+      width: 0.55
+      height: 0.5
+  - Id: FacadeWindow
+    Prefab: {fileID: 8560591494594514693, guid: 48d8ecae48a855449a25277a264efac3, type: 3}
+    Height: 2.7082288
+    Width: 2.04
+    TargetHeight: 0
+    Triangles: 1560
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: FacadeDoor
+    Prefab: {fileID: 4887083815502293759, guid: 805e72eea6f4c0b4c9abf8ea1dfa143e, type: 3}
+    Height: 2.723229
+    Width: 2.04
+    TargetHeight: 0
+    Triangles: 1240
+    Lod: 0
+    Tree: 0
+    Sockets:
+    - kind: Service
+      center: {x: -0.82, y: -0.1, z: -1.65}
+      width: 0.92
+      height: 0.9
+  - Id: CornerPost
+    Prefab: {fileID: 7878560090889549467, guid: 7635e5d50dbc8004cb01582c77b1ebc1, type: 3}
+    Height: 2.6532288
+    Width: 0.2
+    TargetHeight: 0
+    Triangles: 60
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: StoneBase
+    Prefab: {fileID: 8327357675882209614, guid: 5d84f684c02029a43ba09f2de617ed39, type: 3}
+    Height: 0.2
+    Width: 2
+    TargetHeight: 0
+    Triangles: 60
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: RoofEave
+    Prefab: {fileID: 3957580262191351140, guid: 55b01ef577199264585873b7eb5776cd, type: 3}
+    Height: 0.15
+    Width: 1.08
+    TargetHeight: 0
+    Triangles: 60
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: RoofRidge
+    Prefab: {fileID: 1446870047901664254, guid: 2b4b820172e14c04e8f0f0cd56befbae, type: 3}
+    Height: 0.19
+    Width: 1.04
+    TargetHeight: 0
+    Triangles: 28
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: Chimney
+    Prefab: {fileID: 8640873333805938247, guid: 68f10a9c322ce37458b1c4581a786606, type: 3}
+    Height: 0.9475
+    Width: 0.53
+    TargetHeight: 0
+    Triangles: 180
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: Dormer
+    Prefab: {fileID: 7102609933703032562, guid: 4ba2fd5103cacb841ba4f84221f42e05, type: 3}
+    Height: 0.97
+    Width: 1.1
+    TargetHeight: 0
+    Triangles: 246
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: ServiceInn
+    Prefab: {fileID: 7238157239233516976, guid: 276fc92d66b20d147a357a1af9f51fbe, type: 3}
+    Height: 0.687909
+    Width: 0.69
+    TargetHeight: 0
+    Triangles: 380
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: ServiceShop
+    Prefab: {fileID: 7534472254149410671, guid: b68bb62d07e961e4aa14aeeb32706e0f, type: 3}
+    Height: 0.687909
+    Width: 0.69
+    TargetHeight: 0
+    Triangles: 220
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: ServiceTrainer
+    Prefab: {fileID: 9003517831407396525, guid: 4975c3c85c5104240bdae4c8a5eaa85b, type: 3}
+    Height: 0.687909
+    Width: 0.69
+    TargetHeight: 0
+    Triangles: 180
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CliffSingle
+    Prefab: {fileID: 3900296115973088679, guid: b099a084a8936f645a6a5445a24556ae, type: 3}
+    Height: 0.42
+    Width: 1
+    TargetHeight: 0
+    Triangles: 128
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CliffEnd
+    Prefab: {fileID: 8169525891950191912, guid: b53cc1a0aa5472b4db3ca7ef5168abed, type: 3}
+    Height: 0.42
+    Width: 1
+    TargetHeight: 0
+    Triangles: 128
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CliffStraight
+    Prefab: {fileID: 5365342555003917554, guid: 7d4d34fffb2720d4fa1726bf371191de, type: 3}
+    Height: 0.42
+    Width: 1
+    TargetHeight: 0
+    Triangles: 128
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CliffOuter
+    Prefab: {fileID: 8492855694523834672, guid: 71b37fd788e2874419bfffa7a56aeb5f, type: 3}
+    Height: 0.42
+    Width: 1
+    TargetHeight: 0
+    Triangles: 128
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CliffTee
+    Prefab: {fileID: 3358811644100775627, guid: dd173c052c0467248b5b2fb7c0e37eb0, type: 3}
+    Height: 0.42
+    Width: 1
+    TargetHeight: 0
+    Triangles: 128
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CliffFill
+    Prefab: {fileID: 304645592942893854, guid: 243fe88869df3904d94458c006ebe739, type: 3}
+    Height: 0
+    Width: 1
+    TargetHeight: 0
+    Triangles: 128
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: RockCap
+    Prefab: {fileID: 640032223673379043, guid: 7a19382453cb35941a258aff4d7c0859, type: 3}
+    Height: 0.46
+    Width: 0.9023942
+    TargetHeight: 0
+    Triangles: 80
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackTree01
+    Prefab: {fileID: 6577898741055684539, guid: b171d2bb12c1761438eb37eca0ed9cb9, type: 3}
+    Height: 4.578854
+    Width: 2.9947824
+    TargetHeight: 3.7386405
+    Triangles: 366
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: PackTree02
+    Prefab: {fileID: 4083931432873187153, guid: ab09d8b7040e83747bf6bb3b52815b6c, type: 3}
+    Height: 3.349767
+    Width: 2.8035436
+    TargetHeight: 3.7386405
+    Triangles: 280
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: PackTree03
+    Prefab: {fileID: 6261485190113843228, guid: 9861ba4c9751dd94f97b6307eb02f494, type: 3}
+    Height: 4.192664
+    Width: 3.7015913
+    TargetHeight: 3.4371371
+    Triangles: 1038
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: PackTree04
+    Prefab: {fileID: 3353032975416575990, guid: 55ec70d5049e3a446896d37c7fa75f55, type: 3}
+    Height: 4.017977
+    Width: 3.295939
+    TargetHeight: 3.4371371
+    Triangles: 1020
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: PackTree05
+    Prefab: {fileID: 8672993604672642549, guid: e560c397b379c1d4f9de66dcec2074bc, type: 3}
+    Height: 5.4008274
+    Width: 2.8841863
+    TargetHeight: 2.6532288
+    Triangles: 1007
+    Lod: 0
+    Tree: 1
+    Sockets: []
+  - Id: PackGrass01
+    Prefab: {fileID: 4335130985619020290, guid: ae0cebb6e30875344b1733d5aa13ae13, type: 3}
+    Height: 0.518555
+    Width: 1.1153533
+    TargetHeight: 0.32562354
+    Triangles: 220
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackGrass03
+    Prefab: {fileID: 4848002760509581362, guid: 0ef9f09177e00cf4d9fd9316f27940b3, type: 3}
+    Height: 0.9606166
+    Width: 0.7161437
+    TargetHeight: 0.32562354
+    Triangles: 135
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackGrass04
+    Prefab: {fileID: 6159431065637273734, guid: 9c412d475bbdb13488acfb09bdc3a0f2, type: 3}
+    Height: 0.49983025
+    Width: 1.3996148
+    TargetHeight: 0.32562354
+    Triangles: 300
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackFlower01
+    Prefab: {fileID: 5454385584642712949, guid: 5858a4b43407e5d4d9fcc8b682d288ce, type: 3}
+    Height: 0.26228607
+    Width: 0.7700244
+    TargetHeight: 0.277383
+    Triangles: 306
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackFlower02
+    Prefab: {fileID: 4203245619549648519, guid: e1c0c19983ba6ad4f9c0cfd362f0ef32, type: 3}
+    Height: 0.2285668
+    Width: 0.6761218
+    TargetHeight: 0.277383
+    Triangles: 324
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackFlower03
+    Prefab: {fileID: 4807215315203633167, guid: 35ca79826cbf0ff4e8876aa8ab14a636, type: 3}
+    Height: 0.5300042
+    Width: 0.5358813
+    TargetHeight: 0.277383
+    Triangles: 374
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackFlower04
+    Prefab: {fileID: 6790568171490262748, guid: 90a9e02aa4d58834b9bf19e34ff71e79, type: 3}
+    Height: 0.39293936
+    Width: 0.51391727
+    TargetHeight: 0.277383
+    Triangles: 324
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackFlower05
+    Prefab: {fileID: 8639539116611791431, guid: 82afb74efb588aa4db080b092c3627e1, type: 3}
+    Height: 0.45007643
+    Width: 0.58348906
+    TargetHeight: 0.277383
+    Triangles: 490
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackRock01
+    Prefab: {fileID: 7264834166023638049, guid: abb473d37214aac4da9d4a6cd6b1f080, type: 3}
+    Height: 3.6475763
+    Width: 5.2311983
+    TargetHeight: 0.84420913
+    Triangles: 284
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: PackRock05
+    Prefab: {fileID: 948034479693218076, guid: 1c0315ec61c443e40b038e11da1686e4, type: 3}
+    Height: 3.948064
+    Width: 4.6501245
+    TargetHeight: 1.1457124
+    Triangles: 368
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CastleTower
+    Prefab: {fileID: 22418195887970552, guid: 8a177b8d35b1234448166a57ec86f5eb, type: 3}
+    Height: 3.3
+    Width: 2.5190842
+    TargetHeight: 0
+    Triangles: 176
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CastleGate
+    Prefab: {fileID: 7541168618126815471, guid: 62e19673503c81b4882f1bc6c84983af, type: 3}
+    Height: 2.3
+    Width: 1.7557251
+    TargetHeight: 0
+    Triangles: 192
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: CastleFlag
+    Prefab: {fileID: 7252246209959282427, guid: e506a05f0c7d84a429650093d5e862b0, type: 3}
+    Height: 2.8
+    Width: 1.8570503
+    TargetHeight: 0
+    Triangles: 172
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  Roles:
+  - Plaster
+  - Timber
+  - Roof
+  - Door
+  - Glass
+  - Leaf
+  - Flower
+  - Stone
+  - Metal
+  - Glow
+  - Snow
+  - Bark
+  Palettes:
+  - Biome: 0
+    Materials:
+    - {fileID: 2100000, guid: 88caf49ae23df014ea0731b4e8e0df34, type: 2}
+    - {fileID: 2100000, guid: eda242e9a9d2719498e056ef027e6067, type: 2}
+    - {fileID: 2100000, guid: 40f36a994dea04c42b942d16a83f914a, type: 2}
+    - {fileID: 2100000, guid: 54d84c3cd20ad80498e68eb04934ca15, type: 2}
+    - {fileID: 2100000, guid: 5f9dfc2b3e4bb9743966655f41b3d8f0, type: 2}
+    - {fileID: 2100000, guid: 2ac8fb06e66080d4f93f0787a12e3f70, type: 2}
+    - {fileID: 2100000, guid: e2fff0c9ab2fbe341991e54f2987f4cd, type: 2}
+    - {fileID: 2100000, guid: 96ea010d215289d4993b84d48267c093, type: 2}
+    - {fileID: 2100000, guid: 233d8feda4a485c44ab9a724644359dc, type: 2}
+    - {fileID: 2100000, guid: 8e19effe810606e41b6223a76c784649, type: 2}
+    - {fileID: 2100000, guid: eb46f8772c16c9b4b818bb8dc3179efe, type: 2}
+    - {fileID: 2100000, guid: 92bca73977caba7418950fed81669ca0, type: 2}
+  - Biome: 1
+    Materials:
+    - {fileID: 2100000, guid: 935efc920b0a3004ca1342bc521f090c, type: 2}
+    - {fileID: 2100000, guid: bcd1c29adecf052488cc82293ef56777, type: 2}
+    - {fileID: 2100000, guid: 6ee0cdbb622847e48b8a16c998ef4003, type: 2}
+    - {fileID: 2100000, guid: ab40b5f669f20a946b35c3b9b3350035, type: 2}
+    - {fileID: 2100000, guid: aa8b17b6e63f79241bb14823c7125f32, type: 2}
+    - {fileID: 2100000, guid: 79f296af6f882394bb72bcac52279c02, type: 2}
+    - {fileID: 2100000, guid: 9ce07a7d953039c45951ce021fc53a38, type: 2}
+    - {fileID: 2100000, guid: 3577376f5505b32489726d9e44f35edb, type: 2}
+    - {fileID: 2100000, guid: 3744a63f58b0acf4687c06ce2172a979, type: 2}
+    - {fileID: 2100000, guid: 8af8f163430740d4295ada5a0514e7d9, type: 2}
+    - {fileID: 2100000, guid: 13d0a0c0360000647902f878b8e40668, type: 2}
+    - {fileID: 2100000, guid: 8054e2c66d405e24da82dcb1545a73c6, type: 2}
+  - Biome: 2
+    Materials:
+    - {fileID: 2100000, guid: 33f4a7e373230774c9c1ba6fdf38b2ac, type: 2}
+    - {fileID: 2100000, guid: 9de2178313e19ee4dbef9997051583db, type: 2}
+    - {fileID: 2100000, guid: 85dd7c2c4b2731f4cbf3e6c943cf0e2b, type: 2}
+    - {fileID: 2100000, guid: 53f2e2a49f56bf14d941d29a4d91964f, type: 2}
+    - {fileID: 2100000, guid: 73795f6fa3d38ab4d9914b3931d620b3, type: 2}
+    - {fileID: 2100000, guid: bf290e166b052854b8ec01332b6a0338, type: 2}
+    - {fileID: 2100000, guid: 9a9a69bb4639f3045857c1fe51f6afed, type: 2}
+    - {fileID: 2100000, guid: 2a0ab169bf79d9d4481489e235e2fd25, type: 2}
+    - {fileID: 2100000, guid: bebfbb25e41f4104b98cf77610977203, type: 2}
+    - {fileID: 2100000, guid: 3cc25444c4391004f9b0881d0d41f609, type: 2}
+    - {fileID: 2100000, guid: f63a974becd1d5a4f9b31cbd09633663, type: 2}
+    - {fileID: 2100000, guid: 0f8078bd5768c70498fb7af594f4f5c6, type: 2}
+  - Biome: 3
+    Materials:
+    - {fileID: 2100000, guid: d1589ce2f1fcac64288a87560a109066, type: 2}
+    - {fileID: 2100000, guid: 469299951bd953c49a028c23b38dca5d, type: 2}
+    - {fileID: 2100000, guid: ff5243c7584683549ad2d5481f5e376b, type: 2}
+    - {fileID: 2100000, guid: 2ccbfb0b889c35641884f571b7ee991a, type: 2}
+    - {fileID: 2100000, guid: c305cf20a437e584da38ee2efea3aab8, type: 2}
+    - {fileID: 2100000, guid: 2f064eb80e37c274eaecbd3d06b65f71, type: 2}
+    - {fileID: 2100000, guid: 40538930891f96b42bb855b855313a70, type: 2}
+    - {fileID: 2100000, guid: 828efd83392fab249b78031d68b60ab7, type: 2}
+    - {fileID: 2100000, guid: 925ad31435c2aad439493abfd6017605, type: 2}
+    - {fileID: 2100000, guid: 828a725afade7bc42b9a6a2f888806a9, type: 2}
+    - {fileID: 2100000, guid: 5532303235c9ff3429d0d9b95573a78c, type: 2}
+    - {fileID: 2100000, guid: 89e88b67cc1bb9249be538b9369b4d45, type: 2}
+  - Biome: 4
+    Materials:
+    - {fileID: 2100000, guid: 49f79d895daedb8478ac5661cdba0402, type: 2}
+    - {fileID: 2100000, guid: 9736d2e234300204d820d8e90d5a411d, type: 2}
+    - {fileID: 2100000, guid: d24125e5aff799b49aa3deb4dd1f8d49, type: 2}
+    - {fileID: 2100000, guid: 703a9383bd71f054686d0fc95ffa0cbf, type: 2}
+    - {fileID: 2100000, guid: e66a0ef8cc1aba64fb248213240d5e60, type: 2}
+    - {fileID: 2100000, guid: 963bd0f72f359034cb917265f04e1cfc, type: 2}
+    - {fileID: 2100000, guid: ca891f3b4a5799147a2fbfdc8322362a, type: 2}
+    - {fileID: 2100000, guid: 929f2b9a6589eff458f20f61fa1066ee, type: 2}
+    - {fileID: 2100000, guid: 0a98ad5f5e8e5d94d9721701347a47c1, type: 2}
+    - {fileID: 2100000, guid: e51edb2a4334aea4d96b1ee26fe4f8b2, type: 2}
+    - {fileID: 2100000, guid: b52ad440003a12042b4ff5add47a90fd, type: 2}
+    - {fileID: 2100000, guid: 5b83398dc7c54194fa9ebf3db4efdeb8, type: 2}
+  - Biome: 5
+    Materials:
+    - {fileID: 2100000, guid: 4f77eb20f83d764429830a06c0d56263, type: 2}
+    - {fileID: 2100000, guid: 872627ade06ceb04294a28658376c6f5, type: 2}
+    - {fileID: 2100000, guid: 60ad1c551deffec4ba56e6ed7b9ba418, type: 2}
+    - {fileID: 2100000, guid: 278eaa73ba2df044983ea5132c653c1d, type: 2}
+    - {fileID: 2100000, guid: 0ecc6b1ba7c583249a7637926602a054, type: 2}
+    - {fileID: 2100000, guid: 1d7105bcfcd38aa4284be6f2bc656674, type: 2}
+    - {fileID: 2100000, guid: e430aa5cb1ddf4f4c9df6baa9a33c02d, type: 2}
+    - {fileID: 2100000, guid: 3f3e14570538a424fb1d9efae6182be3, type: 2}
+    - {fileID: 2100000, guid: de9a50b8ede42e94bb4c23700a0e6b89, type: 2}
+    - {fileID: 2100000, guid: f67672e4e260dd14f924e0afaa628b7e, type: 2}
+    - {fileID: 2100000, guid: 44a1404b9ff39d14ba97b466b6b6090a, type: 2}
+    - {fileID: 2100000, guid: 6f54b9295b7dd054dafc0d0bab3fb832, type: 2}
+  - Biome: 6
+    Materials:
+    - {fileID: 2100000, guid: d76e961370124c946be345c004557ecd, type: 2}
+    - {fileID: 2100000, guid: 2b11154e237d5d240944b2cd4a49395e, type: 2}
+    - {fileID: 2100000, guid: 5895f55a493704649938c277ce2778d8, type: 2}
+    - {fileID: 2100000, guid: 7c54985a07839e14b8672c27a3a37a6d, type: 2}
+    - {fileID: 2100000, guid: 3c8c3260ed0717d47b7ee6d0cfdfc8e9, type: 2}
+    - {fileID: 2100000, guid: c92d6168ed8424843b1671e7047ec3ac, type: 2}
+    - {fileID: 2100000, guid: 2ab7e40f80bf81e47aeb99779eb6d322, type: 2}
+    - {fileID: 2100000, guid: a0e249875006f12458da0e0e8bb8d9c2, type: 2}
+    - {fileID: 2100000, guid: 7bba10c402ca5a841990b350daff6208, type: 2}
+    - {fileID: 2100000, guid: 94257240ce9ce6e4c91ab3af0960b432, type: 2}
+    - {fileID: 2100000, guid: 6c61f06005a299049a167c82532c99b8, type: 2}
+    - {fileID: 2100000, guid: 8c336a8a666ed5d468f39ea347f619c8, type: 2}
+  - Biome: 7
+    Materials:
+    - {fileID: 2100000, guid: b3f933e2971e4d14ca643f6842de0cfd, type: 2}
+    - {fileID: 2100000, guid: d9135a0858d75f24bb185e78b07c8e2b, type: 2}
+    - {fileID: 2100000, guid: 3be2e128eca530849a35147b292324f8, type: 2}
+    - {fileID: 2100000, guid: 6178858dfb5225e4688432046e86cc57, type: 2}
+    - {fileID: 2100000, guid: dde91e5e17977064e9ba9eb0e6141f79, type: 2}
+    - {fileID: 2100000, guid: 0681a92c8776b484d96600a9aa3d93d4, type: 2}
+    - {fileID: 2100000, guid: 99073f10574b6254c90e44916a2affe4, type: 2}
+    - {fileID: 2100000, guid: 3baa5381c5d06a54985ab35dbb006725, type: 2}
+    - {fileID: 2100000, guid: 6d636165e7fa64c4bb23dd683e16000b, type: 2}
+    - {fileID: 2100000, guid: a1e2ad9d67d048c4a8ef9174ec03c99f, type: 2}
+    - {fileID: 2100000, guid: 6a07d5b26b9d75649a9bd2ecd6c545e1, type: 2}
+    - {fileID: 2100000, guid: 32e17ff9c33bbe543a9c5f40e129fa93, type: 2}
+  Cliffs:
+  - {fileID: 2100000, guid: c51e92a4ac224fb419f3e069c6acb5dc, type: 2}
+  - {fileID: 2100000, guid: 78e19fab5dbbeb84f8a145bbb258d48a, type: 2}
+  - {fileID: 2100000, guid: 2359377af8ed62c4fa551f1ddbc96bb1, type: 2}
+  - {fileID: 2100000, guid: 8da109b77fe52d84faa40adf435f5d12, type: 2}
+  - {fileID: 2100000, guid: 825957e846d8a5044ac0c52003409a34, type: 2}
+  - {fileID: 2100000, guid: 9624606e57fe9a241b6df468e4923374, type: 2}
+  - {fileID: 2100000, guid: da630718a46f032439ee62f03e416278, type: 2}
+  - {fileID: 2100000, guid: ed4856fe4f5a71f44b95145f978ce9d2, type: 2}
+  CliffGrid: {fileID: 4300000, guid: c0228f9218be9ed44b0c9bd4ba357949, type: 2}
+  TreeWalls: 1

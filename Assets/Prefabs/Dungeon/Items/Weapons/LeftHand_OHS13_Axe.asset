@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_OHS13_Axe
   m_EditorClassIdentifier: 
   ItemName: Battle Axe (Off-hand)
-  MaxFloor: 40
-  MinFloor: 25
   Description: Battle Axe (Off-hand) grants 13 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 25
+  MaxFloor: 40
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 4834386441244723265, guid: d4f981ca393512c46a7c06e627ed4c4d, type: 3}
+  Icon: {fileID: 53103710894206503, guid: 7c46a92c73dd4be49a94823518ddf798, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 13
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS13_Axe
+  WeaponModelVariant: 
   WeaponType: 8
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

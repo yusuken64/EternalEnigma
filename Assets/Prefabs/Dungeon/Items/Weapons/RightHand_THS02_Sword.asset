@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: RightHand_THS02_Sword
   m_EditorClassIdentifier: 
   ItemName: Iron Greatsword
-  MaxFloor: 30
-  MinFloor: 15
   Description: Iron Greatsword grants 10 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 15
+  MaxFloor: 30
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 2634084163073797558, guid: 6f03d1441838c7646855b60f3b0eb823, type: 3}
+  Icon: {fileID: -3760559872136116895, guid: 01cf2cd6a3aff8445b5fb15f6c4345f2, type: 3}
   EquipmentSlot: 1
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 10
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: THS02_Sword
+  WeaponModelVariant: 
   WeaponType: 3
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

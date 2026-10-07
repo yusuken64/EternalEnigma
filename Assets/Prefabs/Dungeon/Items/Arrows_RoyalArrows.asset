@@ -14,22 +14,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Royal Arrows
   Description: Royal arrows for bows.
-  WeaponModelVariant: Arrow05
+  ShopOnly: 1
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
+  ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 20
-  Targeting: 4
-  TargetSelector:
-    Team: 1
-    Area: 0
-  MissileRange: 40
-  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 6358885167220982449, guid: fc823f4c534b3d34d90c34d7c9865caa, type: 3}
+  Icon: {fileID: -8388727603461457630, guid: 37cc86f35511700499bc4780245b39f3, type: 3}
   EquipmentSlot: 2
-  StatModification: {}
+  StatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    MagicPower: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
   WeaponModelName: Arrows
+  WeaponModelVariant: Arrow05
   WeaponType: 2
   IsAmmunition: 1
   ArrowDamageMultiplier: 2
   ArrowTargets: 5
-  ShopOnly: 1
+  IsRangedAttack: 0
+  ProjectilePrefab: {fileID: 0}

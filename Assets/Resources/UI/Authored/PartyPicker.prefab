@@ -794,9 +794,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5397714120215395755}
     m_Modifications:
+    - target: {fileID: 1384995894571870720, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1689069092092075705, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       propertyPath: m_Name
       value: Option preview
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689069092092075705, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7674463184335244964, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       propertyPath: m_Pivot.x

@@ -60,6 +60,7 @@ public static class MaterialCatalog
 		definition.StackStartMax = 1;
 		definition.StackMax = StackMax;
 		definition.DroppedItemVisual = visual;
+        DioramaItemCatalog.Load()?.Apply(definition);
 		return definition;
 	}
 }

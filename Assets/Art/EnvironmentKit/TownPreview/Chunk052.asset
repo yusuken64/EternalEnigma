@@ -6,19 +6,19 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Glow
+  m_Name: Gate arrow
   serializedVersion: 12
   m_SubMeshes:
   - serializedVersion: 2
     firstByte: 0
-    indexCount: 24
+    indexCount: 6
     topology: 0
     baseVertex: 0
     firstVertex: 0
-    vertexCount: 6
+    vertexCount: 3
     localAABB:
-      m_Center: {x: 0, y: 0, z: 0}
-      m_Extent: {x: 1, y: 1, z: 1}
+      m_Center: {x: 0, y: -0.44, z: -0.07}
+      m_Extent: {x: 0.56, y: 0.28000003, z: 0}
   m_Shapes:
     vertices: []
     shapes: []
@@ -35,10 +35,10 @@ Mesh:
   m_KeepVertices: 1
   m_KeepIndices: 1
   m_IndexFormat: 0
-  m_IndexBuffer: 000001000400010002000400020003000400030000000400010000000500020001000500030002000500000003000500
+  m_IndexBuffer: 000001000200020001000000
   m_VertexData:
     serializedVersion: 3
-    m_VertexCount: 6
+    m_VertexCount: 3
     m_Channels:
     - stream: 0
       offset: 0
@@ -96,8 +96,8 @@ Mesh:
       offset: 0
       format: 0
       dimension: 0
-    m_DataSize: 144
-    _typelessdata: 000000000000803f0000000000000000000080bf000000000000803f0000000000000000000080bf000000000000000000000000000080bf00000000000000000000803f00000000000080bf00000000000000000000803f000000000000000000000000000000000000803f0000000000000000000080bf0000000000000000000080bf00000000000000000000803f
+    m_DataSize: 72
+    _typelessdata: 295c0fbf0ad723be295c8fbd000000000000000000000000295c0f3f0ad723be295c8fbd00000000000000000000000000000000ec5138bf295c8fbd000000000000000000000000
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -151,8 +151,8 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 1, y: 1, z: 1}
+    m_Center: {x: 0, y: -0.44, z: -0.07}
+    m_Extent: {x: 0.56, y: 0.28000003, z: 0}
   m_MeshUsageFlags: 0
   m_CookingOptions: 30
   m_BakedConvexCollisionMesh: 

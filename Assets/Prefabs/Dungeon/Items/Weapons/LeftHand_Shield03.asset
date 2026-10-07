@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_Shield03
   m_EditorClassIdentifier: 
   ItemName: Round Shield
-  MaxFloor: 10
-  MinFloor: 1
   Description: Round Shield grants 3 defense.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 6
+  DroppedItemPrefab: {fileID: 7054197594462601781, guid: 7c52e19aff0ebc24ba8d7e1692a7ca57, type: 3}
+  Icon: {fileID: -3122857244195897101, guid: 1f1087864ee40c44a89da292f8e0d3c7, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 3
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Shield03
+  WeaponModelVariant: 
   WeaponType: 6
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

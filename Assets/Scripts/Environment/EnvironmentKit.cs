@@ -16,7 +16,7 @@ public sealed class EnvironmentKit : ScriptableObject
     public Material Shore;
     public TreeModelPicker TreeModels;
     public Mesh Mesh(string id) => Models.First(m => m.Id == id).Mesh;
-    public int Triangles(string id) => Models.First(m => m.Id == id).Triangles;
+    public int Triangles(string id) => DioramaCatalog.Load()?.Get(id)?.Triangles ?? Models.First(m => m.Id == id).Triangles;
     public Material Material(OverworldBiome biome) => Palettes.First(p => p.Biome == biome).Props;
     public Material BuildingMaterial(OverworldBiome biome) => Palettes.First(p => p.Biome == biome).Buildings;
     public Material Surface(string id, OverworldBiome biome) => id.StartsWith("SmartShore") ? Shore : id.StartsWith("SmartRoad") ? Road : id == "Paving" ? Paving :

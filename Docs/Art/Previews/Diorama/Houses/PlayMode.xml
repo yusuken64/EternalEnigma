@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-07 01:12:49Z" end-time="2026-10-07 01:13:42Z" duration="53.2907852">
+  <test-suite type="TestSuite" id="1388" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="322" result="Passed" start-time="2026-10-07 01:12:49Z" end-time="2026-10-07 01:13:42Z" duration="53.290785" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1382" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="322" result="Passed" start-time="2026-10-07 01:12:49Z" end-time="2026-10-07 01:13:42Z" duration="53.203267" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1383" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="294" result="Passed" start-time="2026-10-07 01:12:49Z" end-time="2026-10-07 01:13:42Z" duration="53.189155" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1384" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="294" result="Passed" start-time="2026-10-07 01:12:49Z" end-time="2026-10-07 01:13:42Z" duration="53.178124" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <output><![CDATA[[MCP Unity] WebSocket server started successfully on localhost:8091.
+]]></output>
+          <test-suite type="TestFixture" id="1075" name="CampaignSleepTests" fullname="EternalEnigma.Tests.CampaignSleepTests" classname="EternalEnigma.Tests.CampaignSleepTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 01:12:49Z" end-time="2026-10-07 01:13:38Z" duration="49.072228" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1076" name="HomeSleepSavesOnceRestoresAwakePositionAndRollsBackProgression" fullname="EternalEnigma.Tests.CampaignSleepTests.HomeSleepSavesOnceRestoresAwakePositionAndRollsBackProgression" methodname="HomeSleepSavesOnceRestoresAwakePositionAndRollsBackProgression" classname="EternalEnigma.Tests.CampaignSleepTests" runstate="Runnable" seed="790733313" result="Passed" start-time="2026-10-07 01:12:49Z" end-time="2026-10-07 01:13:23Z" duration="33.962727" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 1932500746
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Load Save Data
+Town seed 1932500746
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+Load Save Data
+Town seed 1932500746
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1077" name="ThreeSeedsHaveAccessibleHomesAndSlotBrowserPreservesCanceledReplacement" fullname="EternalEnigma.Tests.CampaignSleepTests.ThreeSeedsHaveAccessibleHomesAndSlotBrowserPreservesCanceledReplacement" methodname="ThreeSeedsHaveAccessibleHomesAndSlotBrowserPreservesCanceledReplacement" classname="EternalEnigma.Tests.CampaignSleepTests" runstate="Runnable" seed="467203975" result="Passed" start-time="2026-10-07 01:13:23Z" end-time="2026-10-07 01:13:38Z" duration="15.046755" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 1932500746
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Load Save Data
+Town seed 1283629199
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Load Save Data
+Town seed 346429647
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Load Save Data
+Town seed 1932500746
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1351" name="TownGameplayTests" fullname="EternalEnigma.Tests.TownGameplayTests" classname="EternalEnigma.Tests.TownGameplayTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-07 01:13:38Z" end-time="2026-10-07 01:13:42Z" duration="4.090609" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1353" name="EnteringAndLeavingARoomOnlyChangesItsRoof" fullname="EternalEnigma.Tests.TownGameplayTests.EnteringAndLeavingARoomOnlyChangesItsRoof" methodname="EnteringAndLeavingARoomOnlyChangesItsRoof" classname="EternalEnigma.Tests.TownGameplayTests" runstate="Runnable" seed="1781939982" result="Passed" start-time="2026-10-07 01:13:38Z" end-time="2026-10-07 01:13:42Z" duration="4.079977" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 12345
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Saving results to: Temp/HarnessResults/PlayMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

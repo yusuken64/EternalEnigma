@@ -11,11 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: CrabMonsterMeatCroquette
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   ItemName: Crab Monster Meat Croquette
   Description: Baked with real Crab Monster meat. Restores 125 hunger.
-  ItemEffectDefinition: {fileID: 11400000, guid: ca681172a4fd4ba18684e677534afb4e, type: 2}
   ShopOnly: 1
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
+  ItemEffectDefinition: {fileID: 11400000, guid: ca681172a4fd4ba18684e677534afb4e, type: 2}
   ApplyToThrownTarget: 0
   IsFood: 1
   ProtectedFromTraps: 0
@@ -25,10 +28,13 @@ MonoBehaviour:
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 1
+  DroppedItemPrefab: {fileID: 6318451085222222115, guid: 4af668bde42358940bf6af4e8d9d70de, type: 3}
+  Icon: {fileID: -7337028403189073675, guid: a83330c5e8af01440a7b36be666c86b1, type: 3}
   Targeting: 1
   TargetSelector:
     Team: 3
     Area: 4
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0

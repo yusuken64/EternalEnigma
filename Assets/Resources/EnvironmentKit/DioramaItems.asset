@@ -1,0 +1,682 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3e5d8722026a5841b73325b760e3024, type: 3}
+  m_Name: DioramaItems
+  m_EditorClassIdentifier: EternalEnigma.Game::DioramaItemCatalog
+  Items:
+  - Name: Antidote
+    Source: jar
+    Prefab: {fileID: 3760455209508077683, guid: fcbb145db2264bd4b83a0d29e7f0596e, type: 3}
+    Icon: {fileID: -4223610583757067308, guid: 9b7dc0543e546e94b93202f56a52aedd, type: 3}
+    Tint: {r: 0.38, g: 0.86, b: 0.43, a: 1}
+  - Name: Apprentice Wand
+    Source: '@Wand02'
+    Prefab: {fileID: 8144961922360750928, guid: e7a22ee77ceb35a44bd25937a577555c, type: 3}
+    Icon: {fileID: 3520883017482070664, guid: ff8077339f83af040bc5aefc7ae19fce, type: 3}
+    Tint: {r: 0.98, g: 0.89637333, b: 0.82320005, a: 1}
+  - Name: Arcane Wand
+    Source: '@Wand06'
+    Prefab: {fileID: 5554459159140339278, guid: c88129be37c026e49a80575838b83237, type: 3}
+    Icon: {fileID: 6204475003798259804, guid: 30a840b243eb6d244b8491fa0d19e6de, type: 3}
+    Tint: {r: 0.98, g: 0.9460267, b: 0.82320005, a: 1}
+  - Name: Arrows
+    Source: '@Projectile/Arrow01Projectile'
+    Prefab: {fileID: 4315556430199564862, guid: d816c0024ef9e224b8018a99712f5699, type: 3}
+    Icon: {fileID: -5731478219640836952, guid: ff7f847966f0e294dbc88210f0bb4343, type: 3}
+    Tint: {r: 0.7896, g: 0.85226667, b: 0.94, a: 1}
+  - Name: Battle Axe
+    Source: '@OHS13_Axe'
+    Prefab: {fileID: 6881609138739882384, guid: b8449f502e87a1f48847dea0a3ea27e6, type: 3}
+    Icon: {fileID: 6714612685720611990, guid: 8428b33394eeb054dac4ff969e1035fd, type: 3}
+    Tint: {r: 0.73080003, g: 0.87, b: 0.812, a: 1}
+  - Name: Battle Axe (Off-hand)
+    Source: '@OHS13_Axe'
+    Prefab: {fileID: 4834386441244723265, guid: d4f981ca393512c46a7c06e627ed4c4d, type: 3}
+    Icon: {fileID: 53103710894206503, guid: 7c46a92c73dd4be49a94823518ddf798, type: 3}
+    Tint: {r: 0.7476, g: 0.89, b: 0.81642663, a: 1}
+  - Name: Battle Bee Butter Honey Latte
+    Source: cup
+    Prefab: {fileID: 36994012751669551, guid: fb0d8b460f9a6b545a9ad27701f4ce4f, type: 3}
+    Icon: {fileID: -855750400660969640, guid: fec8f04b39eb2b049947699b58f2f6af, type: 3}
+    Tint: {r: 0.7896, g: 0.88485336, b: 0.94, a: 1}
+  - Name: Beholder Eye Cream Pistachio Latte
+    Source: cup
+    Prefab: {fileID: 1680514486944970680, guid: f159ef4ca14ac044e99cc43704dc54db, type: 3}
+    Icon: {fileID: 3957133744160192773, guid: 7e48f75b827703b45bd8e125836ca56c, type: 3}
+    Tint: {r: 0.93, g: 0.85808, b: 0.7812, a: 1}
+  - Name: Beholder Eye Jelly Double Espresso
+    Source: cup
+    Prefab: {fileID: 7026747328459061369, guid: 1fc4d36cb8e5533419e3bfcedcb18e00, type: 3}
+    Icon: {fileID: 2943144842023156660, guid: b9477bd047d52784cacc41e65eb9de32, type: 3}
+    Tint: {r: 0.7950666, g: 0.7476, b: 0.89, a: 1}
+  - Name: Bolt Spell
+    Source: book2
+    Prefab: {fileID: 7215753180675764541, guid: cf5b8d6e9c5f9ec42a61a3dc63a850fc, type: 3}
+    Icon: {fileID: -2444293339617916995, guid: 09b8462892934904b9d217e5d9be2bb3, type: 3}
+    Tint: {r: 1, g: 0.92, b: 0.38, a: 1}
+  - Name: Bow
+    Source: bow
+    Prefab: {fileID: 8637249123556452226, guid: e5762abd4f60e874d977dd3582947a42, type: 3}
+    Icon: {fileID: 5793679877156584722, guid: 005a35813f50a0c47a674e3a6b3fcd97, type: 3}
+    Tint: {r: 0.96000004, g: 0.95744, b: 0.80640006, a: 1}
+  - Name: Bow02
+    Source: bow
+    Prefab: {fileID: 3764513452407502371, guid: 6e0954b3b9d627d4899fa259333fad20, type: 3}
+    Icon: {fileID: -4500830572392707586, guid: 022da9b9b948f434d81f706c19c2ac14, type: 3}
+    Tint: {r: 0.83477336, g: 0.7224, b: 0.86, a: 1}
+  - Name: Bow03
+    Source: bow
+    Prefab: {fileID: 5609838045370943365, guid: 4d3aa9d56cd31d34d841f35ba15146dc, type: 3}
+    Icon: {fileID: 1596666959302398485, guid: d525e03396676954c8005e5fb7f94de9, type: 3}
+    Tint: {r: 0.85800004, g: 0.99, b: 0.8316, a: 1}
+  - Name: Bow04
+    Source: bow
+    Prefab: {fileID: 2737014386669288830, guid: 684d9ab5203cac94ea1b85b687cf057f, type: 3}
+    Icon: {fileID: 4764919016065435618, guid: 6cc03e57bedf7ad46b77f6d1bb4dfe1f, type: 3}
+    Tint: {r: 0.8784534, g: 0.7644, b: 0.91, a: 1}
+  - Name: Bow05
+    Source: bow
+    Prefab: {fileID: 7370855028820654213, guid: 553ed820b1eebe34cb1e28e37d9a4d42, type: 3}
+    Icon: {fileID: -1247570567272989361, guid: 419b467201005584e803fd5c7e6afe14, type: 3}
+    Tint: {r: 0.77607995, g: 0.89, b: 0.7476, a: 1}
+  - Name: Bread
+    Source: waffle
+    Prefab: {fileID: 702065342381121615, guid: 8568a5696fbb3484299364dd5dccf3d1, type: 3}
+    Icon: {fileID: 6377803885203465414, guid: 22d8fa0e86c92f441857b1799750d1d3, type: 3}
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+  - Name: Cactus Pulp Caramel Cloud Latte
+    Source: cup
+    Prefab: {fileID: 8106057339304691705, guid: a288c4ae60f91564bb31adf6b0af2c5d, type: 3}
+    Icon: {fileID: -7410544042313653623, guid: 3743bc9158d945e49b2b856f33759a6e, type: 3}
+    Tint: {r: 1, g: 0.84000003, b: 0.94933337, a: 1}
+  - Name: Cactus Pulp Caramel Coffee
+    Source: cup
+    Prefab: {fileID: 5187927579576162728, guid: ea6ced111782c3343b4e68bfae1be55f, type: 3}
+    Icon: {fileID: -6377066659980171398, guid: 76fec4fcaf3ce2f4280faa9968393fd0, type: 3}
+    Tint: {r: 0.8698133, g: 0.7896, b: 0.94, a: 1}
+  - Name: Charred Bread
+    Source: waffle
+    Prefab: {fileID: 221748537300529071, guid: aae7c8a0e466f994da1da170d898b2a2, type: 3}
+    Icon: {fileID: 8524933800828191664, guid: 24e42e905631c8c40be0217e5b1734d8, type: 3}
+    Tint: {r: 0.23, g: 0.15, b: 0.12, a: 1}
+  - Name: Crab Monster Meat Croquette
+    Source: ham
+    Prefab: {fileID: 6318451085222222115, guid: 4af668bde42358940bf6af4e8d9d70de, type: 3}
+    Icon: {fileID: -7337028403189073675, guid: a83330c5e8af01440a7b36be666c86b1, type: 3}
+    Tint: {r: 0.86, g: 0.7224, b: 0.8003733, a: 1}
+  - Name: Crystal Shield
+    Source: '@Shield16'
+    Prefab: {fileID: 9071570185210919326, guid: ab07e1106d1839b428b0b2bd3ada85bb, type: 3}
+    Icon: {fileID: -2092242695014119961, guid: 2e3e0684c6e9ffb488a2520b64e5cdca, type: 3}
+    Tint: {r: 0.80464, g: 0.94, b: 0.7896, a: 1}
+  - Name: Crystal Wand
+    Source: '@Wand04'
+    Prefab: {fileID: 7142739066014133898, guid: 4fdf636d6a226894d9ef360496910f39, type: 3}
+    Icon: {fileID: 8404508887995725508, guid: eb3187761f30796448f1c68fee54a52d, type: 3}
+    Tint: {r: 0.7812, g: 0.78863996, b: 0.93, a: 1}
+  - Name: 'Demo Scroll: Ally Mend'
+    Source: book2
+    Prefab: {fileID: 8756257749535756425, guid: 552318ffcdf8ed846a384a747bd7e3c4, type: 3}
+    Icon: {fileID: -1729595031522606487, guid: 79f55a16c915b6f47830aafb4e79208f, type: 3}
+    Tint: {r: 0.7896, g: 0.94, b: 0.91242665, a: 1}
+  - Name: 'Demo Scroll: Area Burst'
+    Source: book2
+    Prefab: {fileID: 4909494948946882220, guid: 757a9613b5580c540ba504550e51d57e, type: 3}
+    Icon: {fileID: 1231064769060710787, guid: 1931648482fa445438412db88ae7e469, type: 3}
+    Tint: {r: 0.798, g: 0.95, b: 0.8132, a: 1}
+  - Name: 'Demo Scroll: Arrow Shot'
+    Source: book2
+    Prefab: {fileID: 914980890654411843, guid: 4cf780a3d5b76ed44a353ecc0eedd8ba, type: 3}
+    Icon: {fileID: -891878485839875129, guid: 1d16330f1e5e55946939cbc94e5abb04, type: 3}
+    Tint: {r: 0.8685601, g: 0.8316, b: 0.99, a: 1}
+  - Name: 'Demo Scroll: Enemy Pulse'
+    Source: book2
+    Prefab: {fileID: 1328545243470957037, guid: 1738eb9af0b55fb4cb7b5725d8f29f63, type: 3}
+    Icon: {fileID: -8558358133224481743, guid: ce15bb1ecda36ca42a0bab08a559862d, type: 3}
+    Tint: {r: 0.73080003, g: 0.82824, b: 0.87, a: 1}
+  - Name: 'Demo Scroll: Inspect Item'
+    Source: book2
+    Prefab: {fileID: 5898313979469407465, guid: 81e713589e4ea0d448accecc39539c38, type: 3}
+    Icon: {fileID: -837583673992315695, guid: 6c2ab3b2fa1d5e644882d4596050d9e5, type: 3}
+    Tint: {r: 0.9051467, g: 0.7644, b: 0.91, a: 1}
+  - Name: 'Demo Scroll: Inspect Weapon'
+    Source: book2
+    Prefab: {fileID: 4435796080693513967, guid: c8b4b22ae500aa54c918500512710180, type: 3}
+    Icon: {fileID: 4291527304649262041, guid: c198872c2613c0a4193c7e8bc7394a69, type: 3}
+    Tint: {r: 0.7476, g: 0.8876267, b: 0.89, a: 1}
+  - Name: 'Demo Scroll: Party Mend'
+    Source: book2
+    Prefab: {fileID: 2300224244438700254, guid: ed2cb26c07d92494cad2b7221480187d, type: 3}
+    Icon: {fileID: 88371226532029102, guid: 4e0f8042928e1924483a0b1f2250f3f6, type: 3}
+    Tint: {r: 0.88, g: 0.7392, b: 0.8119467, a: 1}
+  - Name: 'Demo Scroll: Self Focus'
+    Source: book2
+    Prefab: {fileID: 2846394199115080730, guid: c3c1723b96a6e324f875f09447c9da49, type: 3}
+    Icon: {fileID: -6168735542120607572, guid: 70f490742a022c245b7ce6df525537c2, type: 3}
+    Tint: {r: 0.8148, g: 0.97, b: 0.8329067, a: 1}
+  - Name: 'Demo Scroll: Single Hit'
+    Source: book2
+    Prefab: {fileID: 52758638743826577, guid: c28722b632879b94c982411b8358100c, type: 3}
+    Icon: {fileID: -5900849217842810500, guid: 0e967e92e7c649649b9a00d4b461453a, type: 3}
+    Tint: {r: 0.7855733, g: 0.89, b: 0.7476, a: 1}
+  - Name: Demo Training Sword
+    Source: '@Projectile/Arrow01Projectile'
+    Prefab: {fileID: 2051897690969765225, guid: 7a55fad521c07cf4e8f4874b6b68e16f, type: 3}
+    Icon: {fileID: 8170861563501994557, guid: bf5a590efb5f02e4e9e475e479ae8ed5, type: 3}
+    Tint: {r: 1, g: 0.84000003, b: 0.8586667, a: 1}
+  - Name: Dragon Sausage & Onion Pastry
+    Source: waffle
+    Prefab: {fileID: 928107825725066807, guid: 22f15d8ef0938e445abd713724af4cbe, type: 3}
+    Icon: {fileID: 3558565823406389814, guid: ba8a9910b85c9f14aa69ae55b27eef8c, type: 3}
+    Tint: {r: 0.91, g: 0.82992005, b: 0.7644, a: 1}
+  - Name: Dragon Shield
+    Source: '@Shield17'
+    Prefab: {fileID: 6567862583589051987, guid: 700ae215be5333a45951d9872dd02d1b, type: 3}
+    Icon: {fileID: 7693835148744890258, guid: 8cfee70b801e2c34b878c87a13997d5c, type: 3}
+    Tint: {r: 0.7896, g: 0.7921067, b: 0.94, a: 1}
+  - Name: Dragon Spear
+    Source: '@Spear05'
+    Prefab: {fileID: 441859531325054983, guid: cf79edda8d1e89246866becd49ec1ab9, type: 3}
+    Icon: {fileID: 3419910789688199120, guid: 32ff28397f5de8549871a68ebfe591e3, type: 3}
+    Tint: {r: 0.75600004, g: 0.90000004, b: 0.7728, a: 1}
+  - Name: Explosion Spell
+    Source: book2
+    Prefab: {fileID: 2494195526338484880, guid: a25ad70cfa9eeab418585204a5938447, type: 3}
+    Icon: {fileID: 2617847153395109927, guid: 5e3c1f9b1bc0c4a4a8e3ba840dc6c172, type: 3}
+    Tint: {r: 1, g: 0.42, b: 0.31, a: 1}
+  - Name: Flame Sword
+    Source: '@OHS15_Sword'
+    Prefab: {fileID: 8452167848045426349, guid: 84cf065c183f34349bd29b01b2500e8b, type: 3}
+    Icon: {fileID: 107933223821802773, guid: 7885c74d049a9e14db7be5a75caba0c7, type: 3}
+    Tint: {r: 0.7752533, g: 0.7728, b: 0.92, a: 1}
+  - Name: Flame Sword (Off-hand)
+    Source: '@OHS15_Sword'
+    Prefab: {fileID: 4956220048270687412, guid: a225a144727bdb548821ab8f138bd791, type: 3}
+    Icon: {fileID: 907910119224535409, guid: 14d581fc14b5952468adadd7ed50ec03, type: 3}
+    Tint: {r: 0.88, g: 0.7392, b: 0.85418665, a: 1}
+  - Name: Frailty Potion
+    Source: potion_red
+    Prefab: {fileID: 1889257530571400786, guid: 397f247cb00e10b47a057d9ecfd6a696, type: 3}
+    Icon: {fileID: -3215468318590382348, guid: 697563265b1a7c8439441118fed9f267, type: 3}
+    Tint: {r: 0.4, g: 0.3, b: 0.44, a: 1}
+  - Name: Gilded Greatsword
+    Source: '@THS06_Sword'
+    Prefab: {fileID: 2298493342896276551, guid: 456ceac38e7b4b34f8a044b3fece487d, type: 3}
+    Icon: {fileID: 8014894321562694463, guid: 497be89eb3c70e04bb5ab85bb20978ee, type: 3}
+    Tint: {r: 0.92, g: 0.8365867, b: 0.7728, a: 1}
+  - Name: Gilded Shield
+    Source: '@Shield13'
+    Prefab: {fileID: 7569718718766677587, guid: 1b659fb2445e7c04e93b3462134f5d58, type: 3}
+    Icon: {fileID: 1262794753031559231, guid: 7124b0df6bd071b488b402816739d67c, type: 3}
+    Tint: {r: 0.95, g: 0.83093333, b: 0.798, a: 1}
+  - Name: Gilded Sword
+    Source: '@OHS08_Sword'
+    Prefab: {fileID: 3835164476423812208, guid: a81281891979d8b4eac7542b94820512, type: 3}
+    Icon: {fileID: 9162041488560499279, guid: 6a3cbff943e7e5940bd75e428b4e840b, type: 3}
+    Tint: {r: 0.7896, g: 0.94, b: 0.92245334, a: 1}
+  - Name: Gilded Sword (Off-hand)
+    Source: '@OHS08_Sword'
+    Prefab: {fileID: 5730178443990688054, guid: 8654415f50fe7f042942cce12134b2c6, type: 3}
+    Icon: {fileID: -8485247684206459081, guid: 98894b575a262804a8480f69eef55c92, type: 3}
+    Tint: {r: 0.8148, g: 0.9312, b: 0.97, a: 1}
+  - Name: Greatsword
+    Source: '@THS01_Sword'
+    Prefab: {fileID: 2855344283913315624, guid: 0f1361a3b4818884fa064c6ba84a02a2, type: 3}
+    Icon: {fileID: -418109159464060496, guid: 541a0c4a4a36c0f4a8a14d8ff175310f, type: 3}
+    Tint: {r: 0.8148, g: 0.9518933, b: 0.97, a: 1}
+  - Name: Guardian Shield
+    Source: '@Shield19'
+    Prefab: {fileID: 8093009662083325052, guid: 770d5643e3e0a6148ab1a990fea55d45, type: 3}
+    Icon: {fileID: 904483126528104975, guid: cd79d6bf9960c7e4dac3740fa05ead48, type: 3}
+    Tint: {r: 0.97, g: 0.8536, b: 0.8148, a: 1}
+  - Name: Hand Axe
+    Source: '@OHS10_Axe'
+    Prefab: {fileID: 1521062912686611631, guid: 772e3734014cc8445b5c4c8e115e0bea, type: 3}
+    Icon: {fileID: 460036364849521324, guid: fd1e40e4ecc6cb240b8b2b879efc1bc9, type: 3}
+    Tint: {r: 0.87, g: 0.83288, b: 0.73080003, a: 1}
+  - Name: Hand Axe (Off-hand)
+    Source: '@OHS10_Axe'
+    Prefab: {fileID: 8554247232121582653, guid: 1e5bf12ad6ca82540ac153c60c5b38dc, type: 3}
+    Icon: {fileID: 2715488158751274412, guid: 01c6a94fc78fc6a4bb43591f0afceaf0, type: 3}
+    Tint: {r: 0.7741067, g: 0.91, b: 0.7644, a: 1}
+  - Name: Heater Shield
+    Source: '@Shield11'
+    Prefab: {fileID: 2545770025109254043, guid: 0c78b33336e0afa43952a94bffb56c7c, type: 3}
+    Icon: {fileID: -6325791900181653259, guid: 13ba1d3c0621c794b87ce8a4a6539f5d, type: 3}
+    Tint: {r: 0.93, g: 0.78368, b: 0.7812, a: 1}
+  - Name: Iron Arrows
+    Source: '@Projectile/Arrow02Projectile'
+    Prefab: {fileID: 5058917219263210891, guid: 255ebb6f4979ecb4f83d8dd4aff95321, type: 3}
+    Icon: {fileID: 8615564519677323192, guid: 635034abcd90e38468e83a0915e1deea, type: 3}
+    Tint: {r: 0.89, g: 0.88762665, b: 0.7476, a: 1}
+  - Name: Iron Buckler
+    Source: '@Shield04'
+    Prefab: {fileID: 8697015519561434937, guid: 4ad7eecc68625f74cbdc112d71759a98, type: 3}
+    Icon: {fileID: 2076592306178205751, guid: 2420e56f8f0494744a50adf1557fdd6e, type: 3}
+    Tint: {r: 0.8256, g: 0.7224, b: 0.86, a: 1}
+  - Name: Iron Greatsword
+    Source: '@THS02_Sword'
+    Prefab: {fileID: 2634084163073797558, guid: 6f03d1441838c7646855b60f3b0eb823, type: 3}
+    Icon: {fileID: -3760559872136116895, guid: 01cf2cd6a3aff8445b5fb15f6c4345f2, type: 3}
+    Tint: {r: 0.7644, g: 0.90272003, b: 0.91, a: 1}
+  - Name: Iron Shield
+    Source: '@Shield05'
+    Prefab: {fileID: 301551165338411028, guid: bdbe4fc27c344fd45a8d3d8b65c2b52b, type: 3}
+    Icon: {fileID: 652396172009227223, guid: d89618f71570090478d8a430de56be86, type: 3}
+    Tint: {r: 0.93, g: 0.91016, b: 0.7812, a: 1}
+  - Name: Iron Spear
+    Source: '@Spear02'
+    Prefab: {fileID: 5662621481163900395, guid: c16c600ff01c44840a634292a2303ca8, type: 3}
+    Icon: {fileID: 7605374458236164795, guid: 8e13c93c0a9b3ac419ceca4b1c406b08, type: 3}
+    Tint: {r: 0.8316, g: 0.88968, b: 0.99, a: 1}
+  - Name: Iron Sword
+    Source: '@OHS04_Sword'
+    Prefab: {fileID: 8779532917767302919, guid: 9a799b4694b36d742bb5a52e1710f54e, type: 3}
+    Icon: {fileID: -5907893746237068616, guid: b0043dd40cc79334e97f8ab083eb1c58, type: 3}
+    Tint: {r: 0.8316, g: 0.99, b: 0.83688, a: 1}
+  - Name: Iron Sword (Off-hand)
+    Source: '@OHS04_Sword'
+    Prefab: {fileID: 481403345148123592, guid: 616b23262e24b7f40849c2f3e9879f5c, type: 3}
+    Icon: {fileID: 6591788129324680288, guid: a908fd59c6682874e961cf606182461d, type: 3}
+    Tint: {r: 0.9636, g: 0.99, b: 0.8316, a: 1}
+  - Name: Kite Shield
+    Source: '@Shield06'
+    Prefab: {fileID: 166562476334873939, guid: 3068b213015b0074f83a5a0f1c95c51c, type: 3}
+    Icon: {fileID: -2305068877148949274, guid: dcbe4b0c6de7795418895bfb34dda90f, type: 3}
+    Tint: {r: 0.8816, g: 0.95, b: 0.798, a: 1}
+  - Name: Knight's Greatsword
+    Source: '@THS04_Sword'
+    Prefab: {fileID: 2505515791577782418, guid: f81965b9ea909b34688376d3abbb632b, type: 3}
+    Icon: {fileID: 4803546425679700078, guid: 8fd99a3e716ff364e8096c45fd9440a3, type: 3}
+    Tint: {r: 0.96000004, g: 0.94976, b: 0.80640006, a: 1}
+  - Name: Knight's Shield
+    Source: '@Shield10'
+    Prefab: {fileID: 3682120538953554684, guid: 65906d52499119441a367ef4421035f6, type: 3}
+    Icon: {fileID: 3281768961925632840, guid: 230d8e31b50fd88448d09722574ecb5e, type: 3}
+    Tint: {r: 0.89786667, g: 0.7644, b: 0.91, a: 1}
+  - Name: Knight's Spear
+    Source: '@Spear04'
+    Prefab: {fileID: 7723144768963688665, guid: f634632315b4b5247836006cec983a5d, type: 3}
+    Icon: {fileID: 1857980047233799628, guid: de1441dbec36a5d4f8cce1fed33ecac5, type: 3}
+    Tint: {r: 1, g: 0.84000003, b: 0.86399996, a: 1}
+  - Name: Knight's Sword
+    Source: '@OHS06_Sword'
+    Prefab: {fileID: 2781856162141677371, guid: 78a99de1cdd7a854d838af098c40d166, type: 3}
+    Icon: {fileID: 8422302225816891275, guid: 693c20558b0df044c9510b2bd9fd2a04, type: 3}
+    Tint: {r: 0.7392, g: 0.85418665, b: 0.88, a: 1}
+  - Name: Knight's Sword (Off-hand)
+    Source: '@OHS06_Sword'
+    Prefab: {fileID: 3932169811905445206, guid: 09001e25878685640b4c19eba69d1df0, type: 3}
+    Icon: {fileID: -7955499213442655260, guid: 52996fe74c299ea4aa342cf52487e050, type: 3}
+    Tint: {r: 0.88, g: 0.7392, b: 0.8119467, a: 1}
+  - Name: Legendary Shield
+    Source: '@Shield20'
+    Prefab: {fileID: 63732338530202243, guid: c1c928a1ce331f341a5f06eac517a14b, type: 3}
+    Icon: {fileID: 7454535405852567759, guid: bd711f88c7dd11f41a663f4a76060fd3, type: 3}
+    Tint: {r: 0.88320005, g: 0.90000004, b: 0.75600004, a: 1}
+  - Name: Mallet
+    Source: '@OHS11_Hammer'
+    Prefab: {fileID: 2060830984777004073, guid: 194acef00534030469ba8dbc8cb04d48, type: 3}
+    Icon: {fileID: 1116392999112033529, guid: 7104fd09b0a249143b941316ca64d91f, type: 3}
+    Tint: {r: 0.90000004, g: 0.87600005, b: 0.75600004, a: 1}
+  - Name: Mallet (Off-hand)
+    Source: '@OHS11_Hammer'
+    Prefab: {fileID: 6462727998479614369, guid: e01f88797d92ae04396bd7d0e6bd4d65, type: 3}
+    Icon: {fileID: -659419043866379911, guid: ba9e940a2bee2a647b0c709832ebe165, type: 3}
+    Tint: {r: 0.7392, g: 0.80021334, b: 0.88, a: 1}
+  - Name: Mythril Shield
+    Source: '@Shield15'
+    Prefab: {fileID: 5646613260821932334, guid: 1884e9aa4020c62419cb9db7c479c382, type: 3}
+    Icon: {fileID: 5617378930391878880, guid: b8eac54faa30dc941aac465a9d55b17d, type: 3}
+    Tint: {r: 0.75600004, g: 0.90000004, b: 0.89760005, a: 1}
+  - Name: Mythril Sword
+    Source: '@OHS12_Sword'
+    Prefab: {fileID: 7022010949459706917, guid: a93558e2c534b354b941aca12a0d208e, type: 3}
+    Icon: {fileID: 4153264939069653040, guid: fdaaf9aebdf5b734ba4e463e5d1b865a, type: 3}
+    Tint: {r: 0.72928005, g: 0.7224, b: 0.86, a: 1}
+  - Name: Mythril Sword (Off-hand)
+    Source: '@OHS12_Sword'
+    Prefab: {fileID: 4638164164430985496, guid: ced2c5f083bf61f498497a3db072457c, type: 3}
+    Icon: {fileID: 1117747842423027405, guid: 13eefbb32a4a4f7418a7382dd30383f1, type: 3}
+    Tint: {r: 0.896, g: 0.96000004, b: 0.80640006, a: 1}
+  - Name: Needle
+    Source: '@OHS02_Niddle'
+    Prefab: {fileID: 9096178222627363046, guid: e65d34900ea41c64ea2fa3354f078d03, type: 3}
+    Icon: {fileID: -7989647911547048007, guid: 1481c7cabf568444094b0b212844d2d5, type: 3}
+    Tint: {r: 0.7644, g: 0.89544004, b: 0.91, a: 1}
+  - Name: Needle (Off-hand)
+    Source: '@OHS02_Niddle'
+    Prefab: {fileID: 1733497052891675082, guid: 69ab91a1d63379f43a448b139115e5a9, type: 3}
+    Icon: {fileID: 3131105857760884149, guid: 5ba1b30b493e7534e93c8e458a3923a7, type: 3}
+    Tint: {r: 0.7644, g: 0.7692534, b: 0.91, a: 1}
+  - Name: Oak Wand
+    Source: '@Wand03'
+    Prefab: {fileID: 9180475072502524439, guid: 97cbe8d86b734854da4890ea27b97825, type: 3}
+    Icon: {fileID: -4135769926948366435, guid: 2839c85c8e55d794db08de3bc0e286fc, type: 3}
+    Tint: {r: 0.95, g: 0.8081333, b: 0.798, a: 1}
+  - Name: Oblivion Draught
+    Source: ink
+    Prefab: {fileID: 3284896212152509239, guid: 60c17f6facb2f9e45abaea9d0c37a113, type: 3}
+    Icon: {fileID: 897414813787536110, guid: 763d9b582fe6be54fac4606dccb5c26d, type: 3}
+    Tint: {r: 0.7, g: 0.62, b: 0.86, a: 1}
+  - Name: Potion
+    Source: potion_red
+    Prefab: {fileID: 2464494763526741040, guid: e46c620697b1e8e49b8d55b2d57d1dcf, type: 3}
+    Icon: {fileID: -8183618978423376395, guid: 320658db76d71f24cb5f9f7c8d627834, type: 3}
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+  - Name: Potion 100HP
+    Source: potion_red
+    Prefab: {fileID: 6670592017259130635, guid: 237b46d0e9703474f88295cc727fbe09, type: 3}
+    Icon: {fileID: 4965393329888944118, guid: adb01d36783e3e946bd3965ac9a2ec56, type: 3}
+    Tint: {r: 0.7896, g: 0.94, b: 0.92245334, a: 1}
+  - Name: Potion 40HP
+    Source: potion_red
+    Prefab: {fileID: 4787527502033425584, guid: bef7d4bd09eaab140b27714a4e3e789b, type: 3}
+    Icon: {fileID: -5528995205074438710, guid: 653fb184d19863640a2d74cab44ad536, type: 3}
+    Tint: {r: 0.7896, g: 0.80464, b: 0.94, a: 1}
+  - Name: Potion 60HP
+    Source: potion_red
+    Prefab: {fileID: 7459605782290444114, guid: 175846d88b845e94388eb0d9a7afebf2, type: 3}
+    Icon: {fileID: 1346494980889771644, guid: c817ab47ba9debe4e8108cac3cf9f1b4, type: 3}
+    Tint: {r: 0.91, g: 0.7644, b: 0.7644, a: 1}
+  - Name: Potion 80HP
+    Source: potion_red
+    Prefab: {fileID: 2045956048972934558, guid: bc4c0e9ca4ed43944ab880ab4edb896b, type: 3}
+    Icon: {fileID: 6275638700739471470, guid: 797785fb9f8a72f4492a8cd79ca02cc4, type: 3}
+    Tint: {r: 0.98, g: 0.82320005, b: 0.82842666, a: 1}
+  - Name: Roasted Battle Bee Espresso
+    Source: cup
+    Prefab: {fileID: 6535034095160029934, guid: 88a9766aeb9cec8408b2625010d49290, type: 3}
+    Icon: {fileID: 9006708598272412244, guid: 76345c8cc34cdb74f85acaa3601a1856, type: 3}
+    Tint: {r: 0.9570667, g: 0.97, b: 0.8148, a: 1}
+  - Name: Round Shield
+    Source: '@Shield03'
+    Prefab: {fileID: 7054197594462601781, guid: 7c52e19aff0ebc24ba8d7e1692a7ca57, type: 3}
+    Icon: {fileID: -3122857244195897101, guid: 1f1087864ee40c44a89da292f8e0d3c7, type: 3}
+    Tint: {r: 0.9493067, g: 0.8148, b: 0.97, a: 1}
+  - Name: Royal Arrows
+    Source: '@Projectile/Arrow05Projectile'
+    Prefab: {fileID: 6358885167220982449, guid: fc823f4c534b3d34d90c34d7c9865caa, type: 3}
+    Icon: {fileID: -8388727603461457630, guid: 37cc86f35511700499bc4780245b39f3, type: 3}
+    Tint: {r: 0.94, g: 0.92496, b: 0.7896, a: 1}
+  - Name: Royal Greatsword
+    Source: '@THS07_Sword'
+    Prefab: {fileID: 2636351720570725110, guid: 5ee2f84f6cf88db4cae4a50a3d1f55d1, type: 3}
+    Icon: {fileID: 314889641041149932, guid: 473dd6c23cc4cbb4493dcac3953a110d, type: 3}
+    Tint: {r: 0.9027467, g: 0.97, b: 0.8148, a: 1}
+  - Name: Royal Shield
+    Source: '@Shield14'
+    Prefab: {fileID: 5937915916824552544, guid: e493e51acf30a63498d82667a9ad848f, type: 3}
+    Icon: {fileID: -2799570274327167570, guid: b5cbc99e64c7c614b89237c3b4c1dbe9, type: 3}
+    Tint: {r: 0.93184, g: 0.80640006, b: 0.96000004, a: 1}
+  - Name: Royal Sword
+    Source: '@OHS09_Sword'
+    Prefab: {fileID: 3581557637105615179, guid: 128c764dfe76b8b48b330722d18cf966, type: 3}
+    Icon: {fileID: 8629058110577557162, guid: ef06d2a2604c5184fbbcfecff59c993d, type: 3}
+    Tint: {r: 0.92, g: 0.89301336, b: 0.7728, a: 1}
+  - Name: Royal Sword (Off-hand)
+    Source: '@OHS09_Sword'
+    Prefab: {fileID: 3147952208486580253, guid: 2b3227b9ec770114689d493615ae2752, type: 3}
+    Icon: {fileID: 4099451163204422659, guid: 072533e5c25fdf742bc92d292efc2ac0, type: 3}
+    Tint: {r: 0.86, g: 0.84853333, b: 0.7224, a: 1}
+  - Name: SP Potion
+    Source: potion_blue
+    Prefab: {fileID: 957754649593690325, guid: 4207ce02b22ae39439c2b292169d5234, type: 3}
+    Icon: {fileID: 2609418408833940037, guid: edeb89daee3f87044a7536cec989bf29, type: 3}
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+  - Name: Sage's Wand
+    Source: '@Wand07'
+    Prefab: {fileID: 756257866172340873, guid: 117d625070054e14581f67a39207613b, type: 3}
+    Icon: {fileID: -8085100974585141730, guid: d1aeceeab01286f41ba6cf87ce68db78, type: 3}
+    Tint: {r: 0.90000004, g: 0.75600004, b: 0.85440004, a: 1}
+  - Name: Salamander-Fat Caramel Cold Brew
+    Source: cup
+    Prefab: {fileID: 4237782662435527159, guid: dbf226c20bc2b5f4db6cbbea644a5e52, type: 3}
+    Icon: {fileID: 2681411046329669217, guid: f65dd7ef328966b48936f3580f0eac2e, type: 3}
+    Tint: {r: 0.7812, g: 0.79112, b: 0.93, a: 1}
+  - Name: Salamander-Fat Caramel Latte
+    Source: cup
+    Prefab: {fileID: 3324485960126357204, guid: db29eed5bcf3cca4cb753eafdde40356, type: 3}
+    Icon: {fileID: -2317810473714619687, guid: 66239e5f109eecf4f9182fa4ca5d4e60, type: 3}
+    Tint: {r: 0.7896, g: 0.94, b: 0.80965334, a: 1}
+  - Name: Shadow Shield
+    Source: '@Shield18'
+    Prefab: {fileID: 2713066560149992350, guid: b63e742e93aa6fe4a9f5b41e2446e378, type: 3}
+    Icon: {fileID: 6390809869372953925, guid: ea3e6357e0f4f2942b1304fe7e90c1bd, type: 3}
+    Tint: {r: 0.856, g: 1, b: 0.84000003, a: 1}
+  - Name: Shadow Sword
+    Source: '@OHS16_Sword'
+    Prefab: {fileID: 923593060649165812, guid: 94a5343113468804e8b60fc4d0013bd7, type: 3}
+    Icon: {fileID: 7459555405617299309, guid: 4023e51d4e02bdb4d86180e204778d9d, type: 3}
+    Tint: {r: 0.73080003, g: 0.87, b: 0.8236, a: 1}
+  - Name: Shadow Sword (Off-hand)
+    Source: '@OHS16_Sword'
+    Prefab: {fileID: 2779209389328857876, guid: e1c85ed231841594e9f28cb94d4c345d, type: 3}
+    Icon: {fileID: 3586331404346084683, guid: 69d903f0b477cfd42a24e10827815827, type: 3}
+    Tint: {r: 0.97, g: 0.8561867, b: 0.8148, a: 1}
+  - Name: Short Sword
+    Source: '@OHS03_Sword'
+    Prefab: {fileID: 5828323439932327430, guid: 713adcaeaad75604f86a1426b66177f7, type: 3}
+    Icon: {fileID: 3526286786735781374, guid: 4678d20ad86b5ab48a6547f8ffafce6e, type: 3}
+    Tint: {r: 0.7728, g: 0.88074666, b: 0.92, a: 1}
+  - Name: Short Sword (Off-hand)
+    Source: '@OHS03_Sword'
+    Prefab: {fileID: 1367323569873081875, guid: c9b1ef66a73cd29499faa882627f43f3, type: 3}
+    Icon: {fileID: 3501623637063346232, guid: e78bf958915b0624691f826d66a1ee7b, type: 3}
+    Tint: {r: 0.99, g: 0.8316, b: 0.99, a: 1}
+  - Name: Silver Arrows
+    Source: '@Projectile/Arrow04Projectile'
+    Prefab: {fileID: 3419191109393404912, guid: b60f5b2c5bb47f644b63d5cfc2e947ef, type: 3}
+    Icon: {fileID: -8003178591145668855, guid: 47d27fbf3c9248f42b786aabf197cbb7, type: 3}
+    Tint: {r: 0.90000004, g: 0.75600004, b: 0.79920006, a: 1}
+  - Name: Silver Greatsword
+    Source: '@THS05_Sword'
+    Prefab: {fileID: 7355100501599957026, guid: 2af2305f3d4760a4db5f43189447b7ab, type: 3}
+    Icon: {fileID: -1433702973121570888, guid: 32ab96bf8bcc9d84b9dea93762007168, type: 3}
+    Tint: {r: 0.94, g: 0.7896, b: 0.7946133, a: 1}
+  - Name: Silver Shield
+    Source: '@Shield12'
+    Prefab: {fileID: 5745222669036728303, guid: cc80ac50ecc4f14428cd97167b7644c3, type: 3}
+    Icon: {fileID: -1158592569108872869, guid: ecce250b3b40cba4f9bac362364c4ad6, type: 3}
+    Tint: {r: 0.91, g: 0.7644, b: 0.78138673, a: 1}
+  - Name: Silver Sword
+    Source: '@OHS07_Sword'
+    Prefab: {fileID: 6580827587572449791, guid: af114aa2a657e604d9b582f419e8b97b, type: 3}
+    Icon: {fileID: -3137289930106927865, guid: ffddb31bfaa605345abdc7d2d6d30a2a, type: 3}
+    Tint: {r: 0.86, g: 0.74304, b: 0.7224, a: 1}
+  - Name: Silver Sword (Off-hand)
+    Source: '@OHS07_Sword'
+    Prefab: {fileID: 2898957236742993797, guid: 7848b8a06c8f2c44f982d2f48726f59e, type: 3}
+    Icon: {fileID: -2929440812222887441, guid: 447b8c9769eb6ba45b507ae841541c87, type: 3}
+    Tint: {r: 0.8148, g: 0.97, b: 0.8536, a: 1}
+  - Name: Silver Wand
+    Source: '@Wand05'
+    Prefab: {fileID: 7189705375907277925, guid: bd0ad445171259e46bb0f1b9e1b842ed, type: 3}
+    Icon: {fileID: 2343995068260766418, guid: 35f25f2a20a9d90498471db4fcab790f, type: 3}
+    Tint: {r: 0.95488006, g: 0.96000004, b: 0.80640006, a: 1}
+  - Name: Sleep Potion
+    Source: potion_blue
+    Prefab: {fileID: 1111059172152770263, guid: 55a29ea47e1cbdf4395f199336ace1c4, type: 3}
+    Icon: {fileID: 1882138235590139070, guid: 5813cb34a0b256e4f9cbc06c08bc8501, type: 3}
+    Tint: {r: 0.75, g: 0.48, b: 0.95, a: 1}
+  - Name: Slime Jelly Danish
+    Source: cake
+    Prefab: {fileID: 578327811675461577, guid: 293f938f2af296a4d8a2fd85a74ed43c, type: 3}
+    Icon: {fileID: -7823473982067821710, guid: 488a7fa5019f78946b1358de7fe5eada, type: 3}
+    Tint: {r: 0.89, g: 0.76658666, b: 0.7476, a: 1}
+  - Name: Smiling Mushroom & Cheese Croissant
+    Source: cake
+    Prefab: {fileID: 8310595613757643562, guid: a41fa9fa6d11c954f87dea0e788abfc6, type: 3}
+    Icon: {fileID: 7371649155459711038, guid: ccb40c48530ece648b5894da3426f6df, type: 3}
+    Tint: {r: 0.7392, g: 0.88, b: 0.81664, a: 1}
+  - Name: Specter Cream Shakerato
+    Source: cup
+    Prefab: {fileID: 7186924015905683907, guid: d7610d18185a1fd44888c3f60a963800, type: 3}
+    Icon: {fileID: -6804578210067703540, guid: 57bda04cdaa036643b4e9f0317d94d8b, type: 3}
+    Tint: {r: 0.8635734, g: 0.7728, b: 0.92, a: 1}
+  - Name: Specter Cream Tiramisu Latte
+    Source: cup
+    Prefab: {fileID: 2558306469927187227, guid: f5247e3db0b157a4ca5ddc05fa100ac9, type: 3}
+    Icon: {fileID: 1428211314003525895, guid: 131224a4748f46341b6dbdbe16c6896f, type: 3}
+    Tint: {r: 0.86, g: 0.7224, b: 0.83477336, a: 1}
+  - Name: Spoiled Bread
+    Source: waffle
+    Prefab: {fileID: 750261551987557591, guid: d30a6d64ed3204e4380630c1df9693d9, type: 3}
+    Icon: {fileID: 1453843558252206693, guid: b6d30ea5935f61c4499b6a7629acd05c, type: 3}
+    Tint: {r: 0.5, g: 0.7, b: 0.28, a: 1}
+  - Name: Steel Arrows
+    Source: '@Projectile/Arrow03Projectile'
+    Prefab: {fileID: 351816197115398170, guid: 31f915f7ad45bf946921a135bf558f27, type: 3}
+    Icon: {fileID: -2102818004307591694, guid: 51c2cbd77cf8bb745bbad8ec48aaa334, type: 3}
+    Tint: {r: 0.90000004, g: 0.83760005, b: 0.75600004, a: 1}
+  - Name: Steel Buckler
+    Source: '@Shield08'
+    Prefab: {fileID: 2273248824043557111, guid: 1214c9e1ab9173749a9dcd24ffd18286, type: 3}
+    Icon: {fileID: 5719492196838460669, guid: 4cd7b4b8d89813040a7c870f5d7bf295, type: 3}
+    Tint: {r: 0.90000004, g: 0.75600004, b: 0.8568, a: 1}
+  - Name: Steel Greatsword
+    Source: '@THS03_Sword'
+    Prefab: {fileID: 5930674499116949014, guid: c6bba5036e68ac9489d01cd0f37c3bf6, type: 3}
+    Icon: {fileID: 469326138579922495, guid: ef4711a127990f7429f59f01310a7207, type: 3}
+    Tint: {r: 0.80640006, g: 0.8422401, b: 0.96000004, a: 1}
+  - Name: Steel Shield
+    Source: '@Shield09'
+    Prefab: {fileID: 3584218933435102371, guid: 96b3e5c23d4ac9b49b109ffe802815d4, type: 3}
+    Icon: {fileID: 1642993380547303272, guid: 555837b494883b44ab8336c2e61cdf6c, type: 3}
+    Tint: {r: 0.7476, g: 0.8876267, b: 0.89, a: 1}
+  - Name: Steel Spear
+    Source: '@Spear03'
+    Prefab: {fileID: 654929395185115311, guid: a9cf85a26dce69949ac3d528d0540fa7, type: 3}
+    Icon: {fileID: -5235373223297854397, guid: 9758cba7201c7cd46910f69667a9623b, type: 3}
+    Tint: {r: 0.87552005, g: 0.96000004, b: 0.80640006, a: 1}
+  - Name: Steel Sword
+    Source: '@OHS05_Sword'
+    Prefab: {fileID: 5638190647088866557, guid: 28087aa28d6460b4e94ffdbbf972bf81, type: 3}
+    Icon: {fileID: -1393976079562266106, guid: abb53762c552caa4689beabb5541fb7a, type: 3}
+    Tint: {r: 0.74624, g: 0.88, b: 0.7392, a: 1}
+  - Name: Steel Sword (Off-hand)
+    Source: '@OHS05_Sword'
+    Prefab: {fileID: 7250140189210545820, guid: df2c54a0f4dc73e4fa25654cc3a4bb56, type: 3}
+    Icon: {fileID: -1369840693116677296, guid: cfd4f2e23ca57c4468cfc55ee1bf621e, type: 3}
+    Tint: {r: 0.79744, g: 0.89, b: 0.7476, a: 1}
+  - Name: Stick
+    Source: '@OHS01_Stick'
+    Prefab: {fileID: 2479419273883919567, guid: 2a4197e88b953bd49a24006dbeb6bea0, type: 3}
+    Icon: {fileID: -6752209579222859107, guid: 96f54a79085d68e4ea55e4191d4f4bf1, type: 3}
+    Tint: {r: 0.84015995, g: 0.7476, b: 0.89, a: 1}
+  - Name: Stick (Off-hand)
+    Source: '@OHS01_Stick'
+    Prefab: {fileID: 1611879943037663356, guid: 09f7624cac2a7cc4c962f6d028abc5ae, type: 3}
+    Icon: {fileID: -4964489890427126135, guid: 930ed7c3e0ac1364dabf99f68793939a, type: 3}
+    Tint: {r: 0.7392, g: 0.83072, b: 0.88, a: 1}
+  - Name: Tower Shield
+    Source: '@Shield07'
+    Prefab: {fileID: 166309056294135676, guid: d6d079d09ce824a4387cad1335a72ea5, type: 3}
+    Icon: {fileID: -4109633820324087616, guid: e0632bd2d9ba70342953a307a04e07f6, type: 3}
+    Tint: {r: 0.7896, g: 0.94, b: 0.9374933, a: 1}
+  - Name: War Hammer
+    Source: '@OHS14_Hammer'
+    Prefab: {fileID: 1567505675956241084, guid: 6d20721c17b82d4498a3162a36ae4c99, type: 3}
+    Icon: {fileID: 4604983344836961366, guid: b307066620339df4cbfc460d5c375808, type: 3}
+    Tint: {r: 0.8148, g: 0.94672006, b: 0.97, a: 1}
+  - Name: War Hammer (Off-hand)
+    Source: '@OHS14_Hammer'
+    Prefab: {fileID: 6182540798883352296, guid: 15ed07fd611c9df4593263059bdcd1ad, type: 3}
+    Icon: {fileID: -7858192298869626100, guid: 5ba207a19ec2a67438bfd7d7b21cd4ec, type: 3}
+    Tint: {r: 0.84010667, g: 0.7392, b: 0.88, a: 1}
+  - Name: Warp Spell
+    Source: book
+    Prefab: {fileID: 3406107758805609372, guid: 95c9023b226dd10418bbe4c63b2e0676, type: 3}
+    Icon: {fileID: 3296030828632769034, guid: 1bbd539663f63a9439a7d7dcd2da576f, type: 3}
+    Tint: {r: 0.68, g: 0.42, b: 1, a: 1}
+  - Name: Wooden Arrows
+    Source: '@Projectile/Arrow01Projectile'
+    Prefab: {fileID: 5703218444614809259, guid: 587b551095210db4e8aeaebcfd4b6f11, type: 3}
+    Icon: {fileID: -379678104857422058, guid: f5a5038deefb22e439928d56e773897d, type: 3}
+    Tint: {r: 0.73080003, g: 0.87, b: 0.83056, a: 1}
+  - Name: Wooden Buckler
+    Source: '@Shield01'
+    Prefab: {fileID: 1530235394592456177, guid: b8ce1894340ea734fa44fdfd6c993712, type: 3}
+    Icon: {fileID: 993132629809891538, guid: d7be8688d022cee40ae0b79ce6d5bce7, type: 3}
+    Tint: {r: 0.89, g: 0.7476, b: 0.75472003, a: 1}
+  - Name: Wooden Shield
+    Source: '@Shield02'
+    Prefab: {fileID: 8860756183744663839, guid: c845baef1b5be1043bda03483e4f1fac, type: 3}
+    Icon: {fileID: -2676707814735518520, guid: 8674683763bc48b4782aeb59fe851d37, type: 3}
+    Tint: {r: 0.9573333, g: 1, b: 0.84000003, a: 1}
+  - Name: Wooden Spear
+    Source: '@Spear01'
+    Prefab: {fileID: 8523550064964348031, guid: 948662e4a3692aa4791334b5e02a2da5, type: 3}
+    Icon: {fileID: -6108368365542575707, guid: 7aa3022b5e6b40b4d88b3169a71b52f2, type: 3}
+    Tint: {r: 0.73080003, g: 0.85608, b: 0.87, a: 1}
+  - Name: Wooden Wand
+    Source: '@Wand01'
+    Prefab: {fileID: 2589650370415842859, guid: 4c4b3dfca2e8f534a8850d25a13c6431, type: 3}
+    Icon: {fileID: -6861595239656124428, guid: 91d0433e0933ac34f90bc73d280749b5, type: 3}
+    Tint: {r: 0.9674134, g: 0.8148, b: 0.97, a: 1}
+  - Name: Iron Ore
+    Source: jewel
+    Prefab: {fileID: 4838244388646616704, guid: a4ab043f207df16408e5740c3e4916a2, type: 3}
+    Icon: {fileID: 3614031489363769448, guid: 5b87897dbb8d4eb48a14716e0359c910, type: 3}
+    Tint: {r: 0.48, g: 0.56, b: 0.65, a: 1}
+  - Name: Healing Herb
+    Source: leaf
+    Prefab: {fileID: 608487342328674770, guid: 5a2107a2c71eb144593c4335ab705b2f, type: 3}
+    Icon: {fileID: 2574258138379507593, guid: f546c10c20a04064fa2120c1f5e3df33, type: 3}
+    Tint: {r: 0.55, g: 0.85, b: 0.48, a: 1}
+  - Name: Timber
+    Source: log
+    Prefab: {fileID: 8288251982080315863, guid: 620a54008ece7c848adf4b0660b759f6, type: 3}
+    Icon: {fileID: -306688834532216674, guid: 3d59d86415bf8c24fb04ee070e0b56df, type: 3}
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+  - Name: Trap Parts
+    Source: wheel
+    Prefab: {fileID: 145470462543809159, guid: 737e9cf5ebb72fa4f8bb30a160cb06da, type: 3}
+    Icon: {fileID: -3263104748035628187, guid: 5c464f46dbfa139499a6799fb7214dbd, type: 3}
+    Tint: {r: 0.66, g: 0.71, b: 0.75, a: 1}
+  Props:
+  - Id: bag
+    Prefab: {fileID: 8587473421401397981, guid: 4d8cb231d16f3284fa72113e58e7d32d, type: 3}
+  - Id: key
+    Prefab: {fileID: 5649661179106538313, guid: 60947dc1f880c9d488a509816b2f0dbf, type: 3}
+  - Id: skull
+    Prefab: {fileID: 85404542009736526, guid: b8b21da375eb5d943a2bd25ecb352f00, type: 3}
+  - Id: treasure chest
+    Prefab: {fileID: 616959809414817356, guid: ab7a79951de88764aa6d80db67cf9ac5, type: 3}
+  - Id: exclamation mark
+    Prefab: {fileID: 766916468975948119, guid: 30207b06d923684449c3e446c4337816, type: 3}
+  - Id: question mark
+    Prefab: {fileID: 1637085367948185905, guid: 30aef663d26636c418ffc2f84a5fd4dc, type: 3}
+  - Id: cake
+    Prefab: {fileID: 8390298821409283013, guid: b6319204aa97cb94cb6d5dcbeaf71fdc, type: 3}
+  - Id: waffle
+    Prefab: {fileID: 7482564320024770485, guid: 54132ec3eb6e4164d85715e08b8cc761, type: 3}
+  - Id: egg
+    Prefab: {fileID: 7046153938152156186, guid: de9d2e0bb207a114182b653bc1d6186c, type: 3}
+  - Id: potion_red
+    Prefab: {fileID: 2489543116867140126, guid: b9bf9ef713727b24ebecc36c2becd3ae, type: 3}
+  - Id: potion_blue
+    Prefab: {fileID: 1196637957430744128, guid: 65fb49e1358c111489070c9ffd126233, type: 3}
+  - Id: jar
+    Prefab: {fileID: 4691558370547530932, guid: fce57ae444593d449bdf47ec60df04e5, type: 3}
+  - Id: hen
+    Prefab: {fileID: 9009686691508387264, guid: a33c3047fcbe1f34db876f1e3a0637ac, type: 3}
+  - Id: duck
+    Prefab: {fileID: 2013774701941395749, guid: 78216514674199448a6042cd607809fa, type: 3}
+  - Id: butterfly
+    Prefab: {fileID: 1437718772332382653, guid: 8ce1f46ff833bb145a876fb94451ee7d, type: 3}
+  - Id: bee
+    Prefab: {fileID: 9021176193295995317, guid: b3818b266560f10459b226d182640509, type: 3}
+  - Id: ladybug
+    Prefab: {fileID: 2345786683420440072, guid: 871a0c9cc8449e94f93a0e2049904808, type: 3}
+  - Id: trophy
+    Prefab: {fileID: 2389897137711012155, guid: b1ed198405bdbb64bade9f499dffa9f0, type: 3}

@@ -362,7 +362,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal DroppedItem SetDroppedItem(Vector3Int position, ItemDefinition item, int? stackStock = null)
 	{
-		var droppedItemPrefab = DroppedItemPrefabs.First(x => x.DroppedItemVisual == item.DroppedItemVisual);
+		var droppedItemPrefab = item.ResolveDroppedPrefab(DroppedItemPrefabs);
 		var itemInstance = Instantiate(droppedItemPrefab, this.transform);
 		itemInstance.transform.position = CellToWorld(position);
 		DungeonPresentation.GroundFloorObject(itemInstance.transform);

@@ -51,6 +51,24 @@ public static class EnvironmentTownPreview
                 EditorUtility.SetDirty(saved);filter.sharedMesh=saved;
             }
             // Saved preview meshes are project assets; generated runtime meshes retain normal ownership.
+            int materialIndex=0;
+            var materials=new System.Collections.Generic.Dictionary<Material,Material>();
+            foreach(var renderer in creator.worldObject.GetComponentsInChildren<MeshRenderer>())
+                renderer.sharedMaterials=renderer.sharedMaterials.Select(source=>{
+                    if(source==null||AssetDatabase.Contains(source))return source;
+                    if(materials.TryGetValue(source,out var existing))return existing;
+                    string path=$"{folder}/Material{materialIndex++:000}.mat";
+                    var saved=AssetDatabase.LoadAssetAtPath<Material>(path);
+                    if(saved==null){saved=new Material(source);AssetDatabase.CreateAsset(saved,path);}else EditorUtility.CopySerialized(source,saved);
+                    saved.hideFlags=HideFlags.None;
+                    if(source.mainTexture is Texture2D texture&&!AssetDatabase.Contains(texture))
+                    {
+                        string texturePath=$"{folder}/RoofShingles.asset";var savedTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+                        if(savedTexture==null){savedTexture=Object.Instantiate(texture);savedTexture.hideFlags=HideFlags.None;AssetDatabase.CreateAsset(savedTexture,texturePath);}
+                        saved.mainTexture=savedTexture;
+                    }
+                    EditorUtility.SetDirty(saved);materials.Add(source,saved);return saved;
+                }).ToArray();
             foreach(var owner in creator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>()) Object.DestroyImmediate(owner);
             AssetDatabase.SaveAssets();
         }

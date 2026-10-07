@@ -17,8 +17,8 @@ public readonly struct CosmeticPlacement
 public static class OverworldCosmetics
 {
     public const string Layer = "Cosmetic/Biome Props";
-    public const int TriangleBudget = 120000;
-    public const int PropsPerChunk = 48;
+    public const int TriangleBudget = 600000;
+    public const int PropsPerChunk = 160;
 
     public static bool InLayer(OverworldGrid grid, string layer, int x, int y) =>
         x >= 0 && y >= 0 && x < grid.Width && y < grid.Height && grid.Layers.TryGetValue(layer, out var mask) && mask[x, y];
@@ -59,6 +59,7 @@ public static class OverworldCosmetics
     public static List<CosmeticPlacement> Plan(OverworldGrid grid, EnvironmentKit kit, TreeModelPicker treeModels=null)
     {
         var result = new List<CosmeticPlacement>(); var protect = Protected(grid);
+        var diorama=DioramaCatalog.Load();
         treeModels=treeModels!=null?treeModels:kit.TreeModels;
         var chunks = new Dictionary<(int, int), int>(); int triangles = 0;
         for (int y = 1; y < grid.Height - 1; y++) for (int x = 1; x < grid.Width - 1; x++)
@@ -68,7 +69,10 @@ public static class OverworldCosmetics
             if (biome == OverworldBiome.Water || InLayer(grid, OverworldLayers.Water, x, y)) continue;
             uint h = Hash(grid.CampaignSeed, x, y);
             bool tree = InLayer(grid, OverworldLayers.Trees, x, y);
-            if (h % 1000 >= (tree ? 150 : 25)) continue;
+            if(tree && diorama!=null && diorama.TreeWalls)continue;
+            bool cliff=BiomeDecorations.Directions.Any(d=>InLayer(grid,OverworldLayers.Mountains,x+d.x,y+d.y));
+            uint patch=Hash(grid.CampaignSeed^13817,x/4,y/4);
+            if (h % 1000 >= (tree ? 180 : cliff?180:patch%4==0?160:45)) continue;
             var chunk = (x / 32, y / 32); chunks.TryGetValue(chunk, out int count);
             if (count >= PropsPerChunk) continue;
             string model =
@@ -82,9 +86,14 @@ public static class OverworldCosmetics
                     _ => tree ? "Tree" : "Flowers"
                 };
             if(tree && treeModels!=null) model=treeModels.Pick(biome,Hash(grid.CampaignSeed ^ 15401,x,y));
+            if(!tree)
+            {
+                string replacement=DioramaPlacement.GroundCover(biome,h,cliff);
+                if(diorama?.Get(replacement)!=null)model=replacement;
+            }
             int cost = kit.Triangles(model); if (triangles + cost > TriangleBudget) continue;
             triangles += cost; chunks[chunk] = count + 1;
-            result.Add(new CosmeticPlacement(x, y, model, biome, .8f + (h >> 8) % 20 / 100f, (h >> 16) % 360));
+            result.Add(new CosmeticPlacement(x, y, model, biome, diorama?.Get(model)!=null?DioramaPlacement.Variation(h):.8f + (h >> 8) % 20 / 100f, (h >> 16) % 360));
         }
         return result;
     }

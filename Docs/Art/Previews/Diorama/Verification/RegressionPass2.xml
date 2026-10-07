@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="17" result="Failed(Child)" total="17" passed="15" failed="2" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:28:04Z" duration="103.2571577">
+  <test-suite type="TestSuite" id="1394" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="327" result="Failed" site="Child" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:28:04Z" duration="103.257158" total="17" passed="15" failed="2" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1388" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="327" result="Failed" site="Child" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:28:04Z" duration="103.125049" total="17" passed="15" failed="2" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <output><![CDATA[[MCP Unity] WebSocket server started successfully on localhost:8091.
+]]></output>
+      <test-suite type="TestFixture" id="1015" name="EnemyAnimationStateTests" fullname="EnemyAnimationStateTests" classname="EnemyAnimationStateTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:26:21Z" duration="0.317889" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1018" name="ChestMonsterRevealsWhenAttackedEvenIfTheAttackMisses" fullname="EnemyAnimationStateTests.ChestMonsterRevealsWhenAttackedEvenIfTheAttackMisses" methodname="ChestMonsterRevealsWhenAttackedEvenIfTheAttackMisses" classname="EnemyAnimationStateTests" runstate="Runnable" seed="692419412" result="Passed" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:26:21Z" duration="0.159683" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Enemy animation 'SenseSomethingStart' missing on ChestMonster; using IdleNormal.
+]]></output>
+        </test-case>
+        <test-case id="1017" name="ChestMonsterStaysDormantUntilPickupAttemptAndRevealsWhenMoved" fullname="EnemyAnimationStateTests.ChestMonsterStaysDormantUntilPickupAttemptAndRevealsWhenMoved" methodname="ChestMonsterStaysDormantUntilPickupAttemptAndRevealsWhenMoved" classname="EnemyAnimationStateTests" runstate="Runnable" seed="1589748036" result="Passed" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:26:21Z" duration="0.074945" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Enemy animation 'IdleNormal' missing on ChestMonster; using IdleNormal.
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestSuite" id="1389" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="299" result="Failed" site="Child" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:28:04Z" duration="102.767263" total="14" passed="12" failed="2" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1390" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="299" result="Failed" site="Child" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:28:04Z" duration="102.756230" total="14" passed="12" failed="2" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1117" name="ClassSkillSmokeTests" fullname="EternalEnigma.Tests.ClassSkillSmokeTests" classname="EternalEnigma.Tests.ClassSkillSmokeTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:26:46Z" duration="24.652516" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1124" name="ArrowSkillUsesAnArrow" fullname="EternalEnigma.Tests.ClassSkillSmokeTests.ArrowSkillUsesAnArrow" methodname="ArrowSkillUsesAnArrow" classname="EternalEnigma.Tests.ClassSkillSmokeTests" runstate="Runnable" seed="1344263389" result="Passed" start-time="2026-10-07 04:26:21Z" end-time="2026-10-07 04:26:32Z" duration="10.751871" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1118" name="MeleeAndAreaDamageSkillsHurtEnemies" fullname="EternalEnigma.Tests.ClassSkillSmokeTests.MeleeAndAreaDamageSkillsHurtEnemies" methodname="MeleeAndAreaDamageSkillsHurtEnemies" classname="EternalEnigma.Tests.ClassSkillSmokeTests" runstate="Runnable" seed="1556383132" result="Passed" start-time="2026-10-07 04:26:32Z" end-time="2026-10-07 04:26:46Z" duration="13.884917" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1140" name="CombatFoundationTests" fullname="EternalEnigma.Tests.CombatFoundationTests" classname="EternalEnigma.Tests.CombatFoundationTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-07 04:26:46Z" end-time="2026-10-07 04:27:00Z" duration="13.850824" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1145" name="ArrowSkillConsumesAndBlocks" fullname="EternalEnigma.Tests.CombatFoundationTests.ArrowSkillConsumesAndBlocks" methodname="ArrowSkillConsumesAndBlocks" classname="EternalEnigma.Tests.CombatFoundationTests" runstate="Runnable" seed="275818975" result="Passed" start-time="2026-10-07 04:26:46Z" end-time="2026-10-07 04:26:53Z" duration="7.220050" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1146" name="PerTargetArrowSkillSkipsWhenOutOfArrows" fullname="EternalEnigma.Tests.CombatFoundationTests.PerTargetArrowSkillSkipsWhenOutOfArrows" methodname="PerTargetArrowSkillSkipsWhenOutOfArrows" classname="EternalEnigma.Tests.CombatFoundationTests" runstate="Runnable" seed="282255419" result="Passed" start-time="2026-10-07 04:26:53Z" end-time="2026-10-07 04:27:00Z" duration="6.616248" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1149" name="ControlDeviceStateTests" fullname="EternalEnigma.Tests.ControlDeviceStateTests" classname="EternalEnigma.Tests.ControlDeviceStateTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-07 04:27:00Z" end-time="2026-10-07 04:27:00Z" duration="0.103076" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1150" name="CursorAndPromptsFollowDeliberateInputWithKeyboardMousePriority" fullname="EternalEnigma.Tests.ControlDeviceStateTests.CursorAndPromptsFollowDeliberateInputWithKeyboardMousePriority" methodname="CursorAndPromptsFollowDeliberateInputWithKeyboardMousePriority" classname="EternalEnigma.Tests.ControlDeviceStateTests" runstate="Runnable" seed="363824371" result="Passed" start-time="2026-10-07 04:27:00Z" end-time="2026-10-07 04:27:00Z" duration="0.092002" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1151" name="ControllerFlowTests" fullname="EternalEnigma.Tests.ControllerFlowTests" classname="EternalEnigma.Tests.ControllerFlowTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-07 04:27:00Z" end-time="2026-10-07 04:27:03Z" duration="2.970178" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1153" name="MainMenuHeroPickerAndBackUseControllerOnly" fullname="EternalEnigma.Tests.ControllerFlowTests.MainMenuHeroPickerAndBackUseControllerOnly" methodname="MainMenuHeroPickerAndBackUseControllerOnly" classname="EternalEnigma.Tests.ControllerFlowTests" runstate="Runnable" seed="2130772753" result="Passed" start-time="2026-10-07 04:27:00Z" end-time="2026-10-07 04:27:03Z" duration="2.959430" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1194" name="DungeonVisualAuditTests" fullname="EternalEnigma.Tests.DungeonVisualAuditTests" classname="EternalEnigma.Tests.DungeonVisualAuditTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 04:27:03Z" end-time="2026-10-07 04:27:12Z" duration="9.577109" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1195" name="HudDecorationsRespectVisibilityAndMenusKeepWorking" fullname="EternalEnigma.Tests.DungeonVisualAuditTests.HudDecorationsRespectVisibilityAndMenusKeepWorking" methodname="HudDecorationsRespectVisibilityAndMenusKeepWorking" classname="EternalEnigma.Tests.DungeonVisualAuditTests" runstate="Runnable" seed="2030269663" result="Passed" start-time="2026-10-07 04:27:03Z" end-time="2026-10-07 04:27:12Z" duration="9.565765" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1216" name="EnvironmentPlaygroundTests" fullname="EternalEnigma.Tests.EnvironmentPlaygroundTests" classname="EternalEnigma.Tests.EnvironmentPlaygroundTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-10-07 04:27:12Z" end-time="2026-10-07 04:27:14Z" duration="1.278681" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1218" name="AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates" fullname="EternalEnigma.Tests.EnvironmentPlaygroundTests.AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates" methodname="AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates" classname="EternalEnigma.Tests.EnvironmentPlaygroundTests" runstate="Runnable" seed="1201497756" result="Failed" start-time="2026-10-07 04:27:12Z" end-time="2026-10-07 04:27:14Z" duration="1.264433" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  One owner per terrain layer: Diorama shop and park accents_layer/exclamation mark x4
+  Expected: 39
+  But was:  36
+]]></message>
+                <stack-trace><![CDATA[at EternalEnigma.Tests.EnvironmentPlaygroundTests+<AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates>d__3.MoveNext () [0x003b0] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnvironmentPlaygroundTests.cs:54
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+              </failure>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1242" name="InventorySkillTargetingTests" fullname="EternalEnigma.Tests.InventorySkillTargetingTests" classname="EternalEnigma.Tests.InventorySkillTargetingTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-07 04:27:14Z" end-time="2026-10-07 04:27:27Z" duration="13.190747" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1247" name="ItemUseOpensNestedPickerAndCancelPreservesOriginalInventory" fullname="EternalEnigma.Tests.InventorySkillTargetingTests.ItemUseOpensNestedPickerAndCancelPreservesOriginalInventory" methodname="ItemUseOpensNestedPickerAndCancelPreservesOriginalInventory" classname="EternalEnigma.Tests.InventorySkillTargetingTests" runstate="Runnable" seed="1381265994" result="Passed" start-time="2026-10-07 04:27:14Z" end-time="2026-10-07 04:27:21Z" duration="7.095168" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1245" name="WeaponFilterCanBeConfirmedWithMouseAfterOpeningWithGamepad" fullname="EternalEnigma.Tests.InventorySkillTargetingTests.WeaponFilterCanBeConfirmedWithMouseAfterOpeningWithGamepad" methodname="WeaponFilterCanBeConfirmedWithMouseAfterOpeningWithGamepad" classname="EternalEnigma.Tests.InventorySkillTargetingTests" runstate="Runnable" seed="166573194" result="Passed" start-time="2026-10-07 04:27:21Z" end-time="2026-10-07 04:27:27Z" duration="6.072884" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1255" name="MenuSceneNavigationTests" fullname="EternalEnigma.Tests.MenuSceneNavigationTests" classname="EternalEnigma.Tests.MenuSceneNavigationTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-07 04:27:27Z" end-time="2026-10-07 04:27:36Z" duration="9.264554" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1257" name="TestDungeonStartsWithoutASave" fullname="EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave" methodname="TestDungeonStartsWithoutASave" classname="EternalEnigma.Tests.MenuSceneNavigationTests" runstate="Runnable" seed="1098326415" result="Passed" start-time="2026-10-07 04:27:27Z" end-time="2026-10-07 04:27:36Z" duration="9.252651" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1285" name="OverworldSceneTests" fullname="EternalEnigma.Tests.OverworldSceneTests" classname="EternalEnigma.Tests.OverworldSceneTests" runstate="Runnable" testcasecount="7" result="Failed" site="Child" start-time="2026-10-07 04:27:36Z" end-time="2026-10-07 04:27:53Z" duration="16.833421" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1286" name="CampaignHintChangesWithDeviceWhileMessageIsStored" fullname="EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored" methodname="CampaignHintChangesWithDeviceWhileMessageIsStored" classname="EternalEnigma.Tests.OverworldSceneTests" runstate="Runnable" seed="1416298065" result="Failed" start-time="2026-10-07 04:27:36Z" end-time="2026-10-07 04:27:53Z" duration="16.821957" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[Unhandled log message: '[Exception] InvalidOperationException: Sequence contains no matching element'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                <stack-trace><![CDATA[System.Linq.Enumerable.Single[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) (at <7229ad31196947fdb61dcfd278f7b739>:0)
+CampaignParty+<>c__DisplayClass2_0.<PrepareActive>b__0 (System.String id) (at Assets/Scripts/Overworld/CampaignParty.cs:44)
+System.Linq.Enumerable+SelectEnumerableIterator`2[TSource,TResult].ToList () (at <7229ad31196947fdb61dcfd278f7b739>:0)
+System.Linq.Enumerable.ToList[TSource] (System.Collections.Generic.IEnumerable`1[T] source) (at <7229ad31196947fdb61dcfd278f7b739>:0)
+CampaignParty.PrepareActive (Common common, TownConfiguration configuration) (at Assets/Scripts/Overworld/CampaignParty.cs:43)
+CampaignTravelService.PrepareTown (System.String id) (at Assets/Scripts/Overworld/CampaignTravelService.cs:255)
+CampaignTravelService.EnterLocation (DungeonEncounterVisualSettings visuals) (at Assets/Scripts/Overworld/CampaignTravelService.cs:58)
+OverworldMenuManager.ConfirmEntry () (at Assets/Scripts/Overworld/OverworldMenuManager.cs:60)
+OverworldScene.ClaimRewards (System.Boolean announceLocked) (at Assets/Scripts/Overworld/OverworldScene.cs:466)
+OverworldScene.ClaimRewards () (at Assets/Scripts/Overworld/OverworldScene.cs:453)
+OverworldScene.Update () (at Assets/Scripts/Overworld/OverworldScene.cs:255)
+
+]]></stack-trace>
+              </failure>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+InvalidOperationException: Sequence contains no matching element
+System.Linq.Enumerable.Single[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) (at <7229ad31196947fdb61dcfd278f7b739>:0)
+CampaignParty+<>c__DisplayClass2_0.<PrepareActive>b__0 (System.String id) (at Assets/Scripts/Overworld/CampaignParty.cs:44)
+System.Linq.Enumerable+SelectEnumerableIterator`2[TSource,TResult].ToList () (at <7229ad31196947fdb61dcfd278f7b739>:0)
+System.Linq.Enumerable.ToList[TSource] (System.Collections.Generic.IEnumerable`1[T] source) (at <7229ad31196947fdb61dcfd278f7b739>:0)
+CampaignParty.PrepareActive (Common common, TownConfiguration configuration) (at Assets/Scripts/Overworld/CampaignParty.cs:43)
+CampaignTravelService.PrepareTown (System.String id) (at Assets/Scripts/Overworld/CampaignTravelService.cs:255)
+CampaignTravelService.EnterLocation (DungeonEncounterVisualSettings visuals) (at Assets/Scripts/Overworld/CampaignTravelService.cs:58)
+OverworldMenuManager.ConfirmEntry () (at Assets/Scripts/Overworld/OverworldMenuManager.cs:60)
+OverworldScene.ClaimRewards (System.Boolean announceLocked) (at Assets/Scripts/Overworld/OverworldScene.cs:466)
+OverworldScene.ClaimRewards () (at Assets/Scripts/Overworld/OverworldScene.cs:453)
+OverworldScene.Update () (at Assets/Scripts/Overworld/OverworldScene.cs:255)
+
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1293" name="SettingsInteractionTests" fullname="EternalEnigma.Tests.SettingsInteractionTests" classname="EternalEnigma.Tests.SettingsInteractionTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-07 04:27:53Z" end-time="2026-10-07 04:27:55Z" duration="2.597798" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1297" name="AudioChannelsAreIndependentPersistAndRefreshLabels" fullname="EternalEnigma.Tests.SettingsInteractionTests.AudioChannelsAreIndependentPersistAndRefreshLabels" methodname="AudioChannelsAreIndependentPersistAndRefreshLabels" classname="EternalEnigma.Tests.SettingsInteractionTests" runstate="Runnable" seed="2040983324" result="Passed" start-time="2026-10-07 04:27:53Z" end-time="2026-10-07 04:27:55Z" duration="2.586416" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1357" name="TownGameplayTests" fullname="EternalEnigma.Tests.TownGameplayTests" classname="EternalEnigma.Tests.TownGameplayTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-07 04:27:55Z" end-time="2026-10-07 04:28:04Z" duration="8.421657" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1360" name="CallerControlsBuildingsAndRecruitsAndShopsHaveIndependentStock" fullname="EternalEnigma.Tests.TownGameplayTests.CallerControlsBuildingsAndRecruitsAndShopsHaveIndependentStock" methodname="CallerControlsBuildingsAndRecruitsAndShopsHaveIndependentStock" classname="EternalEnigma.Tests.TownGameplayTests" runstate="Runnable" seed="1743452882" result="Passed" start-time="2026-10-07 04:27:55Z" end-time="2026-10-07 04:28:04Z" duration="8.409933" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+GameObject (named 'Roofs_layer') references runtime script in scene file. Fixing!
+Load Save Data
+Town seed 12345
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+GameObject (named 'Roofs_layer') references runtime script in scene file. Fixing!
+Load Save Data
+Town seed 12345
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+      <test-suite type="TestFixture" id="1019" name="FloorMessageTests" fullname="FloorMessageTests" classname="FloorMessageTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 04:28:04Z" end-time="2026-10-07 04:28:04Z" duration="0.017256" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1020" name="VictoryMessageHasRoomAndRendersAboveTheDungeonHud" fullname="FloorMessageTests.VictoryMessageHasRoomAndRendersAboveTheDungeonHud" methodname="VictoryMessageHasRoomAndRendersAboveTheDungeonHud" classname="FloorMessageTests" runstate="Runnable" seed="1378677343" result="Passed" start-time="2026-10-07 04:28:04Z" end-time="2026-10-07 04:28:04Z" duration="0.003781" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: Temp/HarnessResults/PlayMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

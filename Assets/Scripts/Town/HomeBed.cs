@@ -13,8 +13,6 @@ public sealed class HomeBed : MonoBehaviour
     private Town town;
     private void Awake() { town = GetComponentInParent<Town>(); SleepingController = Resources.Load<RuntimeAnimatorController>("HomeSleeping"); }
     private int activationFrame = -1;
-    private readonly System.Collections.Generic.List<Material> materials = new();
-    private void OnDestroy() { foreach(var material in materials) if(material != null) Destroy(material); }
     public static HomeBed Create(Town town, Vector3Int tile)
     {
         var root = new GameObject("Home bed"); root.transform.SetParent(town.transform);
@@ -23,21 +21,15 @@ public sealed class HomeBed : MonoBehaviour
         float size = town.WalkableMap.TileWorldCreator.twcAsset.cellSize;
         root.transform.position += new Vector3(.5f,.5f,0)*size;
         // Bed occupies one tile. Doorway, bedside and party trail remain on the carved walkable floor.
-        Part("Frame", new Vector3(0,0,-.13f), new Vector3(.8f,.95f,.2f), new Color(.25f,.13f,.07f));
-        Part("Mattress", new Vector3(0,0,-.28f), new Vector3(.72f,.88f,.15f), new Color(.55f,.65f,.76f));
-        Part("Pillow", new Vector3(0,.28f,-.39f), new Vector3(.6f,.25f,.12f), new Color(.9f,.86f,.73f));
+        var catalog=TownInteriorCatalog.Load();
+        var model=Object.Instantiate(catalog.Get("Bed").Prefab,root.transform);
+        model.name="Authored bed";model.transform.localScale=Vector3.one*size;
+        foreach(var renderer in model.GetComponentsInChildren<Renderer>())
+            renderer.sharedMaterial=catalog.Material(town.WalkableMap.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current??EternalEnigma.Core.World.OverworldBiome.Grassland);
         bed.SleepAnchor = new GameObject("Sleeping pose anchor").transform;
         bed.SleepAnchor.SetParent(root.transform, false); bed.SleepAnchor.localPosition = new Vector3(0,0,-.42f)*size;
         bed.SleepingController = Resources.Load<RuntimeAnimatorController>("HomeSleeping");
         return bed;
-        void Part(string name, Vector3 position, Vector3 scale, Color color)
-        {
-            var part = GameObject.CreatePrimitive(PrimitiveType.Cube); part.name = name; part.transform.SetParent(root.transform, false);
-            part.transform.localPosition = position*size; part.transform.localScale = scale*size;
-            Object.Destroy(part.GetComponent<Collider>());
-            var material = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard")); material.color = color;
-            part.GetComponent<Renderer>().sharedMaterial = material; bed.materials.Add(material);
-        }
     }
     public void Interact()
     {

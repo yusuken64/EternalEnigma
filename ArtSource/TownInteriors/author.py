@@ -4,7 +4,7 @@ Exports editable rigs, FBX and lossless Unity mesh/weight manifests; never edits
 import bpy, math, json, random
 from pathlib import Path
 from mathutils import Vector
-ROOT=Path(globals().get('EE_PROJECT_ROOT','C:/Users/yusuk/Documents/GitHub/EternalEnigma'))
+ROOT=Path(EE_PROJECT_ROOT) if 'EE_PROJECT_ROOT' in globals() else Path(__file__).resolve().parents[2]
 OUT=ROOT/'ArtSource/TownInteriors'; EXPORT=ROOT/'Assets/Art/TownInteriors/Models'
 OUT.mkdir(parents=True,exist_ok=True);EXPORT.mkdir(parents=True,exist_ok=True)
 COLORS=['442937','713e35','a35c3d','d49a50','f5ddb0','fff2cc','267c81','55b6a6','79529a','b38cc5','629747','b6cf68','3e4358','7376ac','a1aae0','bd434b','e77949','ffd33f','428cc0','9cccea','e16ba1','edaec2','805a3e','b89b69','aaa68c','e9e3d1','c4ad80','dbb954','3d332d','9fb8a1','edab72','f4cfa6']

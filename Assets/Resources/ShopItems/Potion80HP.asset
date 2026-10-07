@@ -11,13 +11,37 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: Potion80HP
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   ItemName: Potion 80HP
   Description: Restores 80 HP.
-  ItemEffectDefinition: {fileID: 11400000, guid: 2540da650f12436b8b4419fe83a9c75f, type: 2}
   ShopOnly: 1
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
+  ItemEffectDefinition: {fileID: 11400000, guid: 2540da650f12436b8b4419fe83a9c75f, type: 2}
   ApplyToThrownTarget: 1
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 4
+  DroppedItemPrefab: {fileID: 2045956048972934558, guid: bc4c0e9ca4ed43944ab880ab4edb896b, type: 3}
+  Icon: {fileID: 6275638700739471470, guid: 797785fb9f8a72f4492a8cd79ca02cc4, type: 3}
+  Targeting: 1
+  TargetSelector:
+    Team: 3
+    Area: 4
+    Life: 0
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 0}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []

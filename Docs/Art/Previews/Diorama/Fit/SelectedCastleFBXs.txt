@@ -1,0 +1,4 @@
+Assets/Art/KennyNL/Castle Kit/Models/towerSquare.fbx
+Assets/Art/KennyNL/Castle Kit/Models/wallNarrowGate.fbx
+Assets/Art/KennyNL/Castle Kit/Models/flagBlue.fbx
+Only Read/Write enabled; own collider-free lit adapters.

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: guardian
   DisplayName: Guardian
+  Icon: {fileID: 21300000, guid: a372646c3b0f48068464a7c93ce114e0, type: 3}
   Role: Tank / defender
   AllowedWeapons: 00000000010000000600000009000000
   GrowthPerLevel:
@@ -21,6 +22,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 1
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -40,6 +42,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 2
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -54,6 +57,7 @@ MonoBehaviour:
     CritChance: 0
     Evasion: 0
     HitBonus: 0
+  PreferredAttribute: 0
   Skills:
   - Skill: {fileID: 11400000, guid: adce17605d52ec44cb4af352aa5f659f, type: 2}
     Tier: 1

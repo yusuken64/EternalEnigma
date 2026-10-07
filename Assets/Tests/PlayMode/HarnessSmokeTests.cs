@@ -47,7 +47,9 @@ public class HarnessSmokeTests
     {
         yield return harness.LoadDungeon(new TestScenario());
         var definition = Common.Instance.ItemManager.ItemDefinitions.Find(d =>
-            d is EquipmentItemDefinition e && e.EquipmentSlot == EquipmentSlot.MainHand);
+            d is EquipmentItemDefinition e && e.EquipmentSlot == EquipmentSlot.MainHand &&
+            HeroClass.AllowsItem(harness.Ally.PrimaryClass, harness.Ally.SecondaryClass,
+                (EquipableInventoryItem)e.AsInventoryItem(null)));
         Assert.That(definition, Is.Not.Null, "Need one main-hand item in ItemManager.");
         var item = harness.AddItem(definition.ItemName) as EquipableInventoryItem;
         yield return harness.UseItemThroughMenu(item);

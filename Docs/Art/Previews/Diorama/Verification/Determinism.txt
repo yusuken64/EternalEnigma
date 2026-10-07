@@ -1,0 +1,4 @@
+Seed 12345; actual production TWC output, two builds per surface.
+Town: meshes=322, triangles=1703440, owners=42, props=5990, ground=3779,0,0,0,0,0,0,101,476,0,0
+Forest triangles: 234042; trees: 517; chunk cap: 96000.
+Overworld: meshes=1361, triangles=2354396, owners=106, props=13078, ground=6395,3534,2436,0,6732,1846,3080,1481,393,39639,0

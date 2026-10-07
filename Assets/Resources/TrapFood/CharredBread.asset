@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Charred Bread
   Description: Restores 50% of normal fullness.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 11400000, guid: 99a85691d51868944a1954ba022960db, type: 2}
   ApplyToThrownTarget: 0
   IsFood: 1
@@ -24,10 +28,13 @@ MonoBehaviour:
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 1
+  DroppedItemPrefab: {fileID: 221748537300529071, guid: aae7c8a0e466f994da1da170d898b2a2, type: 3}
+  Icon: {fileID: 8524933800828191664, guid: 24e42e905631c8c40be0217e5b1734d8, type: 3}
   Targeting: 1
   TargetSelector:
     Team: 3
     Area: 4
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0

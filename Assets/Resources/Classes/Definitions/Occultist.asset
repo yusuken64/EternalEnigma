@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Occultist
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: occultist
-  PreferredAttribute: 1
   DisplayName: Occultist
+  Icon: {fileID: 21300000, guid: 4a4776d7587a4daa93d4a138ca7be295, type: 3}
   Role: Debuff and status specialist
   AllowedWeapons: 0400000000000000
   GrowthPerLevel:
@@ -22,6 +22,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 1
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -41,6 +42,7 @@ MonoBehaviour:
     SPMax: 4
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -55,6 +57,7 @@ MonoBehaviour:
     CritChance: 0
     Evasion: 0
     HitBonus: 0
+  PreferredAttribute: 1
   Skills:
   - Skill: {fileID: 11400000, guid: 453d1b6a0640ebe449c3d78c77a58044, type: 2}
     Tier: 1

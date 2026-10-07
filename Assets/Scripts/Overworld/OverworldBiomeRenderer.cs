@@ -37,6 +37,16 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
         var grid = GetComponent<CampaignOverworld>().CurrentGrid;
         if (grid == null) return;
         Clear();
+        var painted = creator.worldObject.GetComponentInChildren<PaintedGroundOutput>();
+        if (painted != null)
+        {
+            // Broad surfaces now belong to TWC; retain a handle for cache and inspectors.
+            cachedSurfaces = painted.gameObject;
+            hiddenRenderers = Array.FindAll(creator.worldObject.GetComponentsInChildren<Renderer>(),
+                r => r.GetComponentInParent<EnvironmentMeshOwner>() == null);
+            foreach (var renderer in hiddenRenderers) renderer.enabled = false;
+            return;
+        }
         surfaces = new GameObject("Biome Floors") { hideFlags = HideFlags.DontSave };
         surfaces.transform.SetParent(transform, false);
         // Town actors keep their root at the cell corner and their visuals half a
@@ -133,7 +143,7 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
 
     public GameObject ReleaseSurfacesOwnership(out Mesh[] generatedMeshes)
     {
-        cachedSurfaces = surfaces;
+        if (surfaces != null) cachedSurfaces = surfaces;
         surfaces = null;
         generatedMeshes = meshes.ToArray();
         meshes.Clear();

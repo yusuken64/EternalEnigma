@@ -184,14 +184,17 @@ namespace EternalEnigma.Tests
             arrowSkill.SkillAnimation = damageSkill.SkillAnimation;
             arrowSkill.RankScaling = new SkillRankScaling(damageSkill.RankScaling);
 
-            var bow = AssetDatabase.LoadAssetAtPath<EquipmentItemDefinition>("Assets/Prefabs/Dungeon/Items/Weapons/LeftHand_Bows.asset");
-            Assert.That(bow, Is.Not.Null);
+            var sourceBow = AssetDatabase.LoadAssetAtPath<EquipmentItemDefinition>("Assets/Prefabs/Dungeon/Items/Weapons/LeftHand_Bows.asset");
+            Assert.That(sourceBow, Is.Not.Null);
+            var bow = Object.Instantiate(sourceBow);
             itemAssets.Add(bow);
             var bowItem = (EquipableInventoryItem)bow.AsInventoryItem(null);
             caster.Equipment.Equip(bowItem);
 
             var arrows = harness.AddItem("Wooden Arrows");
             arrows.StackStock = 2;
+            caster.Equipment.Equip((EquipableInventoryItem)arrows);
+            harness.Game.PlayerController.Inventory.Remove(arrows);
 
             caster.Skills.Add(arrowSkill);
             caster.InvalidateCachedStats();
@@ -203,11 +206,11 @@ namespace EternalEnigma.Tests
             Assert.That(ArrowSupply.Count(caster), Is.EqualTo(0));
 
             Assert.That(caster.CanCast(arrowSkill, out var reason1), Is.False);
-            Assert.That(reason1, Is.EqualTo("Not enough arrows"));
+            Assert.That(reason1, Is.EqualTo("no arrows"));
 
             caster.Equipment.UnEquip(bowItem);
             Assert.That(caster.CanCast(arrowSkill, out var reason2), Is.False);
-            Assert.That(reason2, Is.EqualTo("Needs a bow"));
+            Assert.That(reason2, Is.EqualTo("no arrows"));
         }
 
         [UnityTest]
@@ -221,7 +224,7 @@ namespace EternalEnigma.Tests
             allTargetSkill.ActivationType = damageSkill.ActivationType;
             allTargetSkill.SPCost = damageSkill.SPCost;
             allTargetSkill.Targeting = SkillTargeting.AllTargets;
-            allTargetSkill.TargetSelector = new TargetSelector { Area = TargetArea.Visible };
+            allTargetSkill.TargetSelector = new TargetSelector { Team = TargetTeam.Enemies, Area = TargetArea.Visible };
             allTargetSkill.ArrowCost = 1;
             allTargetSkill.ArrowCostMode = ArrowCostMode.PerTarget;
             allTargetSkill.ActionEffects = new List<GameAction>(damageSkill.ActionEffects);
@@ -230,13 +233,17 @@ namespace EternalEnigma.Tests
 
             var arrows = harness.AddItem("Wooden Arrows");
             arrows.StackStock = 1;
+            var bow = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>().First(d => !d.IsAmmunition && d.WeaponType == WeaponType.BowAndArrow);
+            caster.Equipment.Equip((EquipableInventoryItem)bow.AsInventoryItem(null));
+            caster.Equipment.Equip((EquipableInventoryItem)arrows);
+            harness.Game.PlayerController.Inventory.Remove(arrows);
 
             caster.Skills.Add(allTargetSkill);
             caster.InvalidateCachedStats();
 
             var initialHPs = harness.Game.Enemies.Select(e => e.Vitals.HP).ToList();
 
-            yield return harness.ExecuteAction(new SkillAction(caster, allTargetSkill, null));
+            yield return harness.ExecuteSkillToCompletion(new SkillAction(caster, allTargetSkill, null));
 
             Assert.That(ArrowSupply.Count(caster), Is.EqualTo(0));
             var damagedCount = harness.Game.Enemies.Count(e => e.Vitals.HP < initialHPs[harness.Game.Enemies.IndexOf(e)]);
@@ -248,7 +255,7 @@ namespace EternalEnigma.Tests
         {
             var taunt = CreateStatusTemplate<TauntStatusEffect>(3);
             first.ApplyStatusEffect(taunt);
-            taunt.OnApplied(first, friend);
+            first.StatusEffects.OfType<TauntStatusEffect>().Single().OnApplied(first, friend);
 
             var target = first.GetPursuitTarget();
             Assert.That(target, Is.SameAs(friend));

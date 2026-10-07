@@ -1,0 +1,11 @@
+{
+    "runId": "26be6aa15c8845cca866e03772041b56",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [],
+    "passed": 273,
+    "failed": 50,
+    "skipped": 4,
+    "xml": "Temp/HarnessResults/PlayMode.xml"
+}

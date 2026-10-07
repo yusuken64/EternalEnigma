@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_OHS05_Sword
   m_EditorClassIdentifier: 
   ItemName: Steel Sword (Off-hand)
-  MaxFloor: 10
-  MinFloor: 1
   Description: Steel Sword (Off-hand) grants 5 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 7250140189210545820, guid: df2c54a0f4dc73e4fa25654cc3a4bb56, type: 3}
+  Icon: {fileID: -1369840693116677296, guid: cfd4f2e23ca57c4468cfc55ee1bf621e, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 5
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS05_Sword
+  WeaponModelVariant: 
   WeaponType: 5
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

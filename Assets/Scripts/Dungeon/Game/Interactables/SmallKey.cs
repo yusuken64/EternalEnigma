@@ -42,8 +42,7 @@ public sealed class SmallKey : Interactable
         if (dungeon.SmallKeyPrefab != null)
         {
             model = Instantiate(dungeon.SmallKeyPrefab, go.transform, false);
-            // Same forward tilt as the Adorable gold bag pickup.
-            model.transform.localRotation = Quaternion.Euler(-33f, 0f, 0f);
+            // The project-owned prefab contains its authored XY floor pose.
         }
         else
         {
@@ -58,7 +57,7 @@ public sealed class SmallKey : Interactable
         {
             Bounds Bounds() { var b = renderers[0].bounds; foreach (var r in renderers.Skip(1)) b.Encapsulate(r.bounds); return b; }
             var bounds = Bounds();
-            model.transform.localScale *= size * .5f / Mathf.Max(.01f, Mathf.Max(bounds.size.x, bounds.size.y));
+            model.transform.localScale *= Mathf.Min(size*.5f,DioramaScale.HeroHeight*.72f) / Mathf.Max(.01f, Mathf.Max(bounds.size.x, bounds.size.y));
             bounds = Bounds();
             var center = go.transform.position + new Vector3(size * .5f, size * .5f, 0f);
             model.transform.position += new Vector3(center.x - bounds.center.x, center.y - bounds.center.y, 0f);

@@ -1,0 +1,127 @@
+item,source,tint,prefab
+Antidote,jar,61DB6E,Assets/Prefabs/Dungeon/DroppedItems/Individual/Antidote.prefab
+Apprentice Wand,@Wand02,FAE5D2,Assets/Prefabs/Dungeon/DroppedItems/Individual/Apprentice_Wand.prefab
+Arcane Wand,@Wand06,FAF1D2,Assets/Prefabs/Dungeon/DroppedItems/Individual/Arcane_Wand.prefab
+Arrows,@Projectile/Arrow01Projectile,C9D9F0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Arrows.prefab
+Battle Axe,@OHS13_Axe,BADECF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Battle_Axe.prefab
+Battle Axe (Off-hand),@OHS13_Axe,BFE3D0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Battle_Axe__Off_hand_.prefab
+Battle Bee Butter Honey Latte,cup,C9E2F0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Battle_Bee_Butter_Honey_Latte.prefab
+Beholder Eye Cream Pistachio Latte,cup,EDDBC7,Assets/Prefabs/Dungeon/DroppedItems/Individual/Beholder_Eye_Cream_Pistachio_Latte.prefab
+Beholder Eye Jelly Double Espresso,cup,CBBFE3,Assets/Prefabs/Dungeon/DroppedItems/Individual/Beholder_Eye_Jelly_Double_Espresso.prefab
+Bolt Spell,book2,FFEB61,Assets/Prefabs/Dungeon/DroppedItems/Individual/Bolt_Spell.prefab
+Bow,bow,F5F4CE,Assets/Prefabs/Dungeon/DroppedItems/Individual/Bow.prefab
+Bow02,bow,D5B8DB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Bow02.prefab
+Bow03,bow,DBFCD4,Assets/Prefabs/Dungeon/DroppedItems/Individual/Bow03.prefab
+Bow04,bow,E0C3E8,Assets/Prefabs/Dungeon/DroppedItems/Individual/Bow04.prefab
+Bow05,bow,C6E3BF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Bow05.prefab
+Bread,waffle,FFFFFF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Bread.prefab
+Cactus Pulp Caramel Cloud Latte,cup,FFD6F2,Assets/Prefabs/Dungeon/DroppedItems/Individual/Cactus_Pulp_Caramel_Cloud_Latte.prefab
+Cactus Pulp Caramel Coffee,cup,DEC9F0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Cactus_Pulp_Caramel_Coffee.prefab
+Charred Bread,waffle,3B261F,Assets/Prefabs/Dungeon/DroppedItems/Individual/Charred_Bread.prefab
+Crab Monster Meat Croquette,ham,DBB8CC,Assets/Prefabs/Dungeon/DroppedItems/Individual/Crab_Monster_Meat_Croquette.prefab
+Crystal Shield,@Shield16,CDF0C9,Assets/Prefabs/Dungeon/DroppedItems/Individual/Crystal_Shield.prefab
+Crystal Wand,@Wand04,C7C9ED,Assets/Prefabs/Dungeon/DroppedItems/Individual/Crystal_Wand.prefab
+Demo Scroll: Ally Mend,book2,C9F0E9,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Ally_Mend.prefab
+Demo Scroll: Area Burst,book2,CBF2CF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Area_Burst.prefab
+Demo Scroll: Arrow Shot,book2,DDD4FC,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Arrow_Shot.prefab
+Demo Scroll: Enemy Pulse,book2,BAD3DE,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Enemy_Pulse.prefab
+Demo Scroll: Inspect Item,book2,E7C3E8,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Inspect_Item.prefab
+Demo Scroll: Inspect Weapon,book2,BFE2E3,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Inspect_Weapon.prefab
+Demo Scroll: Party Mend,book2,E0BCCF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Party_Mend.prefab
+Demo Scroll: Self Focus,book2,D0F7D4,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Self_Focus.prefab
+Demo Scroll: Single Hit,book2,C8E3BF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Scroll__Single_Hit.prefab
+Demo Training Sword,@Projectile/Arrow01Projectile,FFD6DB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Demo_Training_Sword.prefab
+Dragon Sausage & Onion Pastry,waffle,E8D4C3,Assets/Prefabs/Dungeon/DroppedItems/Individual/Dragon_Sausage___Onion_Pastry.prefab
+Dragon Shield,@Shield17,C9CAF0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Dragon_Shield.prefab
+Dragon Spear,@Spear05,C1E6C5,Assets/Prefabs/Dungeon/DroppedItems/Individual/Dragon_Spear.prefab
+Explosion Spell,book2,FF6B4F,Assets/Prefabs/Dungeon/DroppedItems/Individual/Explosion_Spell.prefab
+Flame Sword,@OHS15_Sword,C6C5EB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Flame_Sword.prefab
+Flame Sword (Off-hand),@OHS15_Sword,E0BCDA,Assets/Prefabs/Dungeon/DroppedItems/Individual/Flame_Sword__Off_hand_.prefab
+Frailty Potion,potion_red,664C70,Assets/Prefabs/Dungeon/DroppedItems/Individual/Frailty_Potion.prefab
+Gilded Greatsword,@THS06_Sword,EBD5C5,Assets/Prefabs/Dungeon/DroppedItems/Individual/Gilded_Greatsword.prefab
+Gilded Shield,@Shield13,F2D4CB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Gilded_Shield.prefab
+Gilded Sword,@OHS08_Sword,C9F0EB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Gilded_Sword.prefab
+Gilded Sword (Off-hand),@OHS08_Sword,D0EDF7,Assets/Prefabs/Dungeon/DroppedItems/Individual/Gilded_Sword__Off_hand_.prefab
+Greatsword,@THS01_Sword,D0F3F7,Assets/Prefabs/Dungeon/DroppedItems/Individual/Greatsword.prefab
+Guardian Shield,@Shield19,F7DAD0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Guardian_Shield.prefab
+Hand Axe,@OHS10_Axe,DED4BA,Assets/Prefabs/Dungeon/DroppedItems/Individual/Hand_Axe.prefab
+Hand Axe (Off-hand),@OHS10_Axe,C5E8C3,Assets/Prefabs/Dungeon/DroppedItems/Individual/Hand_Axe__Off_hand_.prefab
+Heater Shield,@Shield11,EDC8C7,Assets/Prefabs/Dungeon/DroppedItems/Individual/Heater_Shield.prefab
+Iron Arrows,@Projectile/Arrow02Projectile,E3E2BF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Iron_Arrows.prefab
+Iron Buckler,@Shield04,D3B8DB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Iron_Buckler.prefab
+Iron Greatsword,@THS02_Sword,C3E6E8,Assets/Prefabs/Dungeon/DroppedItems/Individual/Iron_Greatsword.prefab
+Iron Shield,@Shield05,EDE8C7,Assets/Prefabs/Dungeon/DroppedItems/Individual/Iron_Shield.prefab
+Iron Spear,@Spear02,D4E3FC,Assets/Prefabs/Dungeon/DroppedItems/Individual/Iron_Spear.prefab
+Iron Sword,@OHS04_Sword,D4FCD5,Assets/Prefabs/Dungeon/DroppedItems/Individual/Iron_Sword.prefab
+Iron Sword (Off-hand),@OHS04_Sword,F6FCD4,Assets/Prefabs/Dungeon/DroppedItems/Individual/Iron_Sword__Off_hand_.prefab
+Kite Shield,@Shield06,E1F2CB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Kite_Shield.prefab
+Knight's Greatsword,@THS04_Sword,F5F2CE,Assets/Prefabs/Dungeon/DroppedItems/Individual/Knight_s_Greatsword.prefab
+Knight's Shield,@Shield10,E5C3E8,Assets/Prefabs/Dungeon/DroppedItems/Individual/Knight_s_Shield.prefab
+Knight's Spear,@Spear04,FFD6DC,Assets/Prefabs/Dungeon/DroppedItems/Individual/Knight_s_Spear.prefab
+Knight's Sword,@OHS06_Sword,BCDAE0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Knight_s_Sword.prefab
+Knight's Sword (Off-hand),@OHS06_Sword,E0BCCF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Knight_s_Sword__Off_hand_.prefab
+Legendary Shield,@Shield20,E1E6C1,Assets/Prefabs/Dungeon/DroppedItems/Individual/Legendary_Shield.prefab
+Mallet,@OHS11_Hammer,E6DFC1,Assets/Prefabs/Dungeon/DroppedItems/Individual/Mallet.prefab
+Mallet (Off-hand),@OHS11_Hammer,BCCCE0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Mallet__Off_hand_.prefab
+Mythril Shield,@Shield15,C1E6E5,Assets/Prefabs/Dungeon/DroppedItems/Individual/Mythril_Shield.prefab
+Mythril Sword,@OHS12_Sword,BAB8DB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Mythril_Sword.prefab
+Mythril Sword (Off-hand),@OHS12_Sword,E4F5CE,Assets/Prefabs/Dungeon/DroppedItems/Individual/Mythril_Sword__Off_hand_.prefab
+Needle,@OHS02_Niddle,C3E4E8,Assets/Prefabs/Dungeon/DroppedItems/Individual/Needle.prefab
+Needle (Off-hand),@OHS02_Niddle,C3C4E8,Assets/Prefabs/Dungeon/DroppedItems/Individual/Needle__Off_hand_.prefab
+Oak Wand,@Wand03,F2CECB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Oak_Wand.prefab
+Oblivion Draught,ink,B29EDB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Oblivion_Draught.prefab
+Potion,potion_red,FFFFFF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Potion.prefab
+Potion 100HP,potion_red,C9F0EB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Potion_100HP.prefab
+Potion 40HP,potion_red,C9CDF0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Potion_40HP.prefab
+Potion 60HP,potion_red,E8C3C3,Assets/Prefabs/Dungeon/DroppedItems/Individual/Potion_60HP.prefab
+Potion 80HP,potion_red,FAD2D3,Assets/Prefabs/Dungeon/DroppedItems/Individual/Potion_80HP.prefab
+Roasted Battle Bee Espresso,cup,F4F7D0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Roasted_Battle_Bee_Espresso.prefab
+Round Shield,@Shield03,F2D0F7,Assets/Prefabs/Dungeon/DroppedItems/Individual/Round_Shield.prefab
+Royal Arrows,@Projectile/Arrow05Projectile,F0ECC9,Assets/Prefabs/Dungeon/DroppedItems/Individual/Royal_Arrows.prefab
+Royal Greatsword,@THS07_Sword,E6F7D0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Royal_Greatsword.prefab
+Royal Shield,@Shield14,EECEF5,Assets/Prefabs/Dungeon/DroppedItems/Individual/Royal_Shield.prefab
+Royal Sword,@OHS09_Sword,EBE4C5,Assets/Prefabs/Dungeon/DroppedItems/Individual/Royal_Sword.prefab
+Royal Sword (Off-hand),@OHS09_Sword,DBD8B8,Assets/Prefabs/Dungeon/DroppedItems/Individual/Royal_Sword__Off_hand_.prefab
+SP Potion,potion_blue,FFFFFF,Assets/Prefabs/Dungeon/DroppedItems/Individual/SP_Potion.prefab
+Sage's Wand,@Wand07,E6C1DA,Assets/Prefabs/Dungeon/DroppedItems/Individual/Sage_s_Wand.prefab
+Salamander-Fat Caramel Cold Brew,cup,C7CAED,Assets/Prefabs/Dungeon/DroppedItems/Individual/Salamander_Fat_Caramel_Cold_Brew.prefab
+Salamander-Fat Caramel Latte,cup,C9F0CE,Assets/Prefabs/Dungeon/DroppedItems/Individual/Salamander_Fat_Caramel_Latte.prefab
+Shadow Shield,@Shield18,DAFFD6,Assets/Prefabs/Dungeon/DroppedItems/Individual/Shadow_Shield.prefab
+Shadow Sword,@OHS16_Sword,BADED2,Assets/Prefabs/Dungeon/DroppedItems/Individual/Shadow_Sword.prefab
+Shadow Sword (Off-hand),@OHS16_Sword,F7DAD0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Shadow_Sword__Off_hand_.prefab
+Short Sword,@OHS03_Sword,C5E1EB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Short_Sword.prefab
+Short Sword (Off-hand),@OHS03_Sword,FCD4FC,Assets/Prefabs/Dungeon/DroppedItems/Individual/Short_Sword__Off_hand_.prefab
+Silver Arrows,@Projectile/Arrow04Projectile,E6C1CC,Assets/Prefabs/Dungeon/DroppedItems/Individual/Silver_Arrows.prefab
+Silver Greatsword,@THS05_Sword,F0C9CB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Silver_Greatsword.prefab
+Silver Shield,@Shield12,E8C3C7,Assets/Prefabs/Dungeon/DroppedItems/Individual/Silver_Shield.prefab
+Silver Sword,@OHS07_Sword,DBBDB8,Assets/Prefabs/Dungeon/DroppedItems/Individual/Silver_Sword.prefab
+Silver Sword (Off-hand),@OHS07_Sword,D0F7DA,Assets/Prefabs/Dungeon/DroppedItems/Individual/Silver_Sword__Off_hand_.prefab
+Silver Wand,@Wand05,F3F5CE,Assets/Prefabs/Dungeon/DroppedItems/Individual/Silver_Wand.prefab
+Sleep Potion,potion_blue,BF7AF2,Assets/Prefabs/Dungeon/DroppedItems/Individual/Sleep_Potion.prefab
+Slime Jelly Danish,cake,E3C3BF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Slime_Jelly_Danish.prefab
+Smiling Mushroom & Cheese Croissant,cake,BCE0D0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Smiling_Mushroom___Cheese_Croissant.prefab
+Specter Cream Shakerato,cup,DCC5EB,Assets/Prefabs/Dungeon/DroppedItems/Individual/Specter_Cream_Shakerato.prefab
+Specter Cream Tiramisu Latte,cup,DBB8D5,Assets/Prefabs/Dungeon/DroppedItems/Individual/Specter_Cream_Tiramisu_Latte.prefab
+Spoiled Bread,waffle,80B247,Assets/Prefabs/Dungeon/DroppedItems/Individual/Spoiled_Bread.prefab
+Steel Arrows,@Projectile/Arrow03Projectile,E6D6C1,Assets/Prefabs/Dungeon/DroppedItems/Individual/Steel_Arrows.prefab
+Steel Buckler,@Shield08,E6C1DA,Assets/Prefabs/Dungeon/DroppedItems/Individual/Steel_Buckler.prefab
+Steel Greatsword,@THS03_Sword,CED7F5,Assets/Prefabs/Dungeon/DroppedItems/Individual/Steel_Greatsword.prefab
+Steel Shield,@Shield09,BFE2E3,Assets/Prefabs/Dungeon/DroppedItems/Individual/Steel_Shield.prefab
+Steel Spear,@Spear03,DFF5CE,Assets/Prefabs/Dungeon/DroppedItems/Individual/Steel_Spear.prefab
+Steel Sword,@OHS05_Sword,BEE0BC,Assets/Prefabs/Dungeon/DroppedItems/Individual/Steel_Sword.prefab
+Steel Sword (Off-hand),@OHS05_Sword,CBE3BF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Steel_Sword__Off_hand_.prefab
+Stick,@OHS01_Stick,D6BFE3,Assets/Prefabs/Dungeon/DroppedItems/Individual/Stick.prefab
+Stick (Off-hand),@OHS01_Stick,BCD4E0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Stick__Off_hand_.prefab
+Tower Shield,@Shield07,C9F0EF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Tower_Shield.prefab
+War Hammer,@OHS14_Hammer,D0F1F7,Assets/Prefabs/Dungeon/DroppedItems/Individual/War_Hammer.prefab
+War Hammer (Off-hand),@OHS14_Hammer,D6BCE0,Assets/Prefabs/Dungeon/DroppedItems/Individual/War_Hammer__Off_hand_.prefab
+Warp Spell,book,AD6BFF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Warp_Spell.prefab
+Wooden Arrows,@Projectile/Arrow01Projectile,BADED4,Assets/Prefabs/Dungeon/DroppedItems/Individual/Wooden_Arrows.prefab
+Wooden Buckler,@Shield01,E3BFC0,Assets/Prefabs/Dungeon/DroppedItems/Individual/Wooden_Buckler.prefab
+Wooden Shield,@Shield02,F4FFD6,Assets/Prefabs/Dungeon/DroppedItems/Individual/Wooden_Shield.prefab
+Wooden Spear,@Spear01,BADADE,Assets/Prefabs/Dungeon/DroppedItems/Individual/Wooden_Spear.prefab
+Wooden Wand,@Wand01,F7D0F7,Assets/Prefabs/Dungeon/DroppedItems/Individual/Wooden_Wand.prefab
+Iron Ore,jewel,7A8FA6,Assets/Prefabs/Dungeon/DroppedItems/Individual/Iron_Ore.prefab
+Healing Herb,leaf,8CD97A,Assets/Prefabs/Dungeon/DroppedItems/Individual/Healing_Herb.prefab
+Timber,log,FFFFFF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Timber.prefab
+Trap Parts,wheel,A8B5BF,Assets/Prefabs/Dungeon/DroppedItems/Individual/Trap_Parts.prefab

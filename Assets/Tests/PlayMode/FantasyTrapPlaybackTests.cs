@@ -41,6 +41,12 @@ namespace EternalEnigma.Tests
             camera = cameraObject.AddComponent<Camera>(); camera.orthographic = true; camera.orthographicSize = 8;
             camera.transform.position = actor.transform.position + new Vector3(1.25f,1.25f,-30); camera.transform.rotation = Quaternion.identity;
             game.PlayerController.CameraController = root.AddComponent<CameraController>(); game.PlayerController.CameraController.Camera = camera;
+            var messages = new GameObject("Trap test messages"); messages.transform.SetParent(root.transform);
+            messages.SetActive(false); messages.AddComponent<GameMessages>().AuthorLayout(true); messages.SetActive(true);
+            var canvas = GameUISkin.Canvas("Combat callouts", game.transform, 0);
+            var callouts = canvas.gameObject.AddComponent<CombatCalloutView>(); callouts.Root = (RectTransform)canvas.transform;
+            callouts.Normal = Resources.Load<DungeonFloatingText>("UI/Authored/Callout");
+            callouts.Prominent = Resources.Load<DungeonFloatingText>("UI/Authored/ProminentCallout");
             typeof(Game).GetProperty("IsReady").SetValue(game, true);
         }
         [UnityTearDown] public IEnumerator Cleanup()

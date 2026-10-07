@@ -204,7 +204,8 @@ namespace EternalEnigma.Tests
         [UnityTest]
         public IEnumerator CloneExpiresAfterItsTurns()
         {
-            var cloneSkill = MakeSkill("Clone", new SummonCloneAction { StatPercent = 0.5f, Turns = 2 });
+            // Its spawning round is the first of three rounds of lifetime.
+            var cloneSkill = MakeSkill("Clone", new SummonCloneAction { StatPercent = 0.5f, Turns = 3 });
             Learn(cloneSkill);
 
             yield return harness.ExecuteAction(new SkillAction(caster, cloneSkill, caster));

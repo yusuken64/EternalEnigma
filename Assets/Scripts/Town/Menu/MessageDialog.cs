@@ -8,6 +8,16 @@ public class MessageDialog : Dialog
 {
 	public TextMeshProUGUI PromptText;
 	public Button OkButton;
+    public Image Portrait;
+    public GameObject PortraitFrame;
+    public void SetPortrait(Sprite sprite)
+    {
+        if(Portrait==null||PortraitFrame==null)return;
+        Portrait.sprite=sprite;PortraitFrame.SetActive(sprite!=null);
+        PromptText.rectTransform.anchorMin=new Vector2(sprite!=null?.30f:.06f,.28f);
+        PromptText.alignment=sprite!=null?TextAlignmentOptions.MidlineLeft:TextAlignmentOptions.Center;
+    }
+    private void OnDisable()=>SetPortrait(null);
 
 	private void Awake()
 	{
@@ -25,6 +35,16 @@ public class MessageDialog : Dialog
         PromptText.fontSizeMin = 16;
         PromptText.fontSizeMax = 28;
         PromptText.textWrappingMode = TextWrappingModes.Normal;
+        if(PortraitFrame==null)
+        {
+            var frame=GameUISkin.Rect("Portrait frame",panel,new Vector2(.05f,.35f),new Vector2(.26f,.88f));
+            frame.anchorMin=frame.anchorMax=new Vector2(.16f,.6f);frame.sizeDelta=new Vector2(144,144);
+            var image=frame.gameObject.AddComponent<Image>();GameUITheme.Current.Surface(image,GameUITheme.Current.DungeonIconFrame);image.raycastTarget=false;
+            PortraitFrame=frame.gameObject;
+            var face=GameUISkin.Rect("Portrait",frame,new Vector2(.08f,.08f),new Vector2(.92f,.92f));
+            Portrait=face.gameObject.AddComponent<Image>();Portrait.preserveAspect=true;Portrait.raycastTarget=false;
+        }
+        PortraitFrame.SetActive(false);
         Fit((RectTransform)OkButton.transform, new Vector2(.3f, .06f), new Vector2(.7f, .20f));
         var caption = OkButton.GetComponentInChildren<TMP_Text>();
         caption.enableAutoSizing = true;

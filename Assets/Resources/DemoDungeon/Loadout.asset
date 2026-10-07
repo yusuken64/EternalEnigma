@@ -22,9 +22,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 2
     Area: 1
+    Life: 0
   Targeting: 0
   InventoryTargetSelector:
     ItemType: 0
@@ -48,6 +51,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -115,9 +119,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 2
     Area: 1
+    Life: 0
   Targeting: 2
   InventoryTargetSelector:
     ItemType: 0
@@ -141,6 +148,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -188,6 +196,10 @@ MonoBehaviour:
   ItemName: 'Demo Scroll: Inspect Item'
   Description: Choose any inventory item to inspect its stock or stats. Does not
     consume the selected item. Use spends one scroll, no SP. Cancel spends nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 0}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -198,10 +210,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 5898313979469407465, guid: 81e713589e4ea0d448accecc39539c38, type: 3}
+  Icon: {fileID: -837583673992315695, guid: 6c2ab3b2fa1d5e644882d4596050d9e5, type: 3}
   Targeting: 3
   TargetSelector:
     Team: 3
     Area: 1
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 1
@@ -231,6 +246,10 @@ MonoBehaviour:
   ItemName: 'Demo Scroll: Inspect Weapon'
   Description: Choose a weapon to inspect its stats. Does not consume or enchant
     the selected weapon. Use spends one scroll, no SP. Cancel spends nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 0}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -241,10 +260,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 4435796080693513967, guid: c8b4b22ae500aa54c918500512710180, type: 3}
+  Icon: {fileID: 4291527304649262041, guid: c198872c2613c0a4193c7e8bc7394a69, type: 3}
   Targeting: 3
   TargetSelector:
     Team: 3
     Area: 1
+    Life: 0
   InventoryTargetSelector:
     ItemType: 2
     IncludeEquipped: 1
@@ -287,6 +309,10 @@ MonoBehaviour:
   ItemName: 'Demo Scroll: Single Hit'
   Description: Choose one visible enemy to damage. Use spends one scroll, no SP.
     Cancel spends nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: -3472550292180710157}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -297,10 +323,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 52758638743826577, guid: c28722b632879b94c982411b8358100c, type: 3}
+  Icon: {fileID: -5900849217842810500, guid: 0e967e92e7c649649b9a00d4b461453a, type: 3}
   Targeting: 0
   TargetSelector:
     Team: 1
     Area: 1
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0
@@ -339,6 +368,10 @@ MonoBehaviour:
   ItemName: 'Demo Scroll: Ally Mend'
   Description: Choose one visible ally (including yourself) to heal. Use spends one
     scroll, no SP. Cancel spends nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 3163525555380041772}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -349,10 +382,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 8756257749535756425, guid: 552318ffcdf8ed846a384a747bd7e3c4, type: 3}
+  Icon: {fileID: -1729595031522606487, guid: 79f55a16c915b6f47830aafb4e79208f, type: 3}
   Targeting: 0
   TargetSelector:
     Team: 2
     Area: 1
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0
@@ -378,6 +414,10 @@ MonoBehaviour:
   ItemName: 'Demo Scroll: Party Mend'
   Description: Cast immediately on all visible allies. Use spends one scroll, no
     SP. Cancel spends nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 718196461677307367}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -388,10 +428,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 2300224244438700254, guid: ed2cb26c07d92494cad2b7221480187d, type: 3}
+  Icon: {fileID: 88371226532029102, guid: 4e0f8042928e1924483a0b1f2250f3f6, type: 3}
   Targeting: 2
   TargetSelector:
     Team: 2
     Area: 1
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0
@@ -417,6 +460,10 @@ MonoBehaviour:
   ItemName: 'Demo Scroll: Area Burst'
   Description: Choose an enemy. Hits enemies within one tile of it; allies are excluded.
     Use spends one scroll, no SP. Cancel spends nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: -4159740513227030897}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -427,10 +474,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 4909494948946882220, guid: 757a9613b5580c540ba504550e51d57e, type: 3}
+  Icon: {fileID: 1231064769060710787, guid: 1931648482fa445438412db88ae7e469, type: 3}
   Targeting: 0
   TargetSelector:
     Team: 1
     Area: 1
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0
@@ -463,9 +513,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 1
     Area: 1
+    Life: 0
   Targeting: 4
   InventoryTargetSelector:
     ItemType: 0
@@ -488,6 +541,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -574,9 +628,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 1
     Area: 1
+    Life: 0
   Targeting: 2
   InventoryTargetSelector:
     ItemType: 0
@@ -600,6 +657,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -664,6 +722,10 @@ MonoBehaviour:
   ItemName: Demo Training Sword
   Description: Use Inspect Item or Inspect Weapon on this sword to try inventory
     targeting. It can also be equipped.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -674,12 +736,15 @@ MonoBehaviour:
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 2051897690969765225, guid: 7a55fad521c07cf4e8f4874b6b68e16f, type: 3}
+  Icon: {fileID: 8170861563501994557, guid: bf5a590efb5f02e4e9e475e479ae8ed5, type: 3}
   EquipmentSlot: 0
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 5
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -695,7 +760,11 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Arrows
+  WeaponModelVariant: 
   WeaponType: 2
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}
 --- !u!114 &2046126679513295709
@@ -714,6 +783,10 @@ MonoBehaviour:
   Description: Aim in eight directions. Hits the first enemy in the path, up to 8
     tiles. Walls and allies block shots. Use spends one scroll, no SP. Cancel spends
     nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: -4937013768755952714}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -724,10 +797,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 914980890654411843, guid: 4cf780a3d5b76ed44a353ecc0eedd8ba, type: 3}
+  Icon: {fileID: -891878485839875129, guid: 1d16330f1e5e55946939cbc94e5abb04, type: 3}
   Targeting: 4
   TargetSelector:
     Team: 1
     Area: 1
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0
@@ -760,9 +836,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 1
     Area: 1
+    Life: 0
   Targeting: 0
   InventoryTargetSelector:
     ItemType: 0
@@ -786,6 +865,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -857,9 +937,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 1
     Area: 1
+    Life: 0
   Targeting: 0
   InventoryTargetSelector:
     ItemType: 0
@@ -883,6 +966,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -954,9 +1038,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 3
     Area: 4
+    Life: 0
   Targeting: 1
   InventoryTargetSelector:
     ItemType: 0
@@ -979,6 +1066,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -1024,9 +1112,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 3
     Area: 1
+    Life: 0
   Targeting: 3
   InventoryTargetSelector:
     ItemType: 0
@@ -1049,6 +1140,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -1100,6 +1192,10 @@ MonoBehaviour:
   ItemName: 'Demo Scroll: Enemy Pulse'
   Description: Cast immediately on all visible enemies. Use spends one scroll, no
     SP. Cancel spends nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 6702725309827704848}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -1110,10 +1206,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 1328545243470957037, guid: 1738eb9af0b55fb4cb7b5725d8f29f63, type: 3}
+  Icon: {fileID: -8558358133224481743, guid: ce15bb1ecda36ca42a0bab08a559862d, type: 3}
   Targeting: 2
   TargetSelector:
     Team: 1
     Area: 1
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0
@@ -1139,6 +1238,10 @@ MonoBehaviour:
   ItemName: 'Demo Scroll: Self Focus'
   Description: Cast immediately on yourself. Applies the Anger status. Use spends
     one scroll, no SP. Cancel spends nothing.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 4387666134115303020}
   ApplyToThrownTarget: 0
   IsFood: 0
@@ -1149,10 +1252,13 @@ MonoBehaviour:
   StackStartMax: 20
   StackMax: 99
   DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 2846394199115080730, guid: c3c1723b96a6e324f875f09447c9da49, type: 3}
+  Icon: {fileID: -6168735542120607572, guid: 70f490742a022c245b7ce6df525537c2, type: 3}
   Targeting: 1
   TargetSelector:
     Team: 3
     Area: 4
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0
@@ -1185,9 +1291,12 @@ MonoBehaviour:
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
   SPCost: 1
+  CastTime: 0
+  MissileTargets: 1
   TargetSelector:
     Team: 3
     Area: 1
+    Life: 0
   Targeting: 3
   InventoryTargetSelector:
     ItemType: 2
@@ -1210,6 +1319,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0

@@ -151,12 +151,26 @@ namespace EternalEnigma.Tests
         [UnityTest]
         public IEnumerator ShadowStepFallsBackWhenBehindIsBlocked()
         {
-            // Place first enemy 3 tiles away
+            // Keep this movement case free of traps that can displace the caster on landing.
+            var dungeon = harness.Game.CurrentDungeon;
+            var targetCell = Enumerable.Range(0, dungeon.dungeonWidth).SelectMany(x =>
+                Enumerable.Range(0, dungeon.dungeonHeight).Select(y => new Vector3Int(x, y)))
+                .First(p => Enumerable.Range(-3, 5).All(x => Enumerable.Range(-1, 3).All(y =>
+                {
+                    var cell = p + new Vector3Int(x, y);
+                    return dungeon.IsWalkable(cell) && !dungeon.IsHazard(cell) && dungeon.GetInteractable(cell) == null &&
+                        !harness.Game.AllCharacters.Any(c => c != caster && c != first && c != second && c.TilemapPosition == cell);
+                })));
             var primaryTarget = first;
+            primaryTarget.SetPosition(targetCell);
             caster.SetPosition(primaryTarget.TilemapPosition + Vector3Int.left * 3);
 
             // Place second enemy on the preferred behind tile
             second.SetPosition(primaryTarget.TilemapPosition + Vector3Int.right);
+            harness.Game.UpdateMiniMap();
+            var expected = SkillMovement.FindTileBehind(caster, primaryTarget);
+            Assert.That(expected, Is.Not.Null);
+            Assert.That(expected.Value, Is.Not.EqualTo(second.TilemapPosition));
 
             var skill = Learn("Damage");
             skill.Targeting = SkillTargeting.SelectedTarget;
@@ -172,6 +186,7 @@ namespace EternalEnigma.Tests
             // Caster should end at Chebyshev distance 1 from primary target
             var finalCasterPos = caster.TilemapPosition;
             var chebDistance = TileWorldDungeon.ChevDistance(finalCasterPos, primaryTarget.TilemapPosition);
+            Assert.That(finalCasterPos, Is.EqualTo(expected.Value));
             Assert.That(chebDistance, Is.EqualTo(1), "Caster should end at Chebyshev distance 1 from target");
         }
 

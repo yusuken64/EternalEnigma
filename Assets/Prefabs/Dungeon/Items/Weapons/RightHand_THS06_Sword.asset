@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: RightHand_THS06_Sword
   m_EditorClassIdentifier: 
   ItemName: Gilded Greatsword
-  MaxFloor: 40
-  MinFloor: 25
   Description: Gilded Greatsword grants 18 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 25
+  MaxFloor: 40
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 2298493342896276551, guid: 456ceac38e7b4b34f8a044b3fece487d, type: 3}
+  Icon: {fileID: 8014894321562694463, guid: 497be89eb3c70e04bb5ab85bb20978ee, type: 3}
   EquipmentSlot: 1
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 18
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: THS06_Sword
+  WeaponModelVariant: 
   WeaponType: 3
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

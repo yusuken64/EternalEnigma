@@ -32,7 +32,7 @@ public class TownBuildingManager : MonoBehaviour
             BiomeModel.ApplyAll(building.gameObject, map.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current ?? EternalEnigma.Core.World.OverworldBiome.Grassland);
             if (hasBody)
                 foreach (var renderer in building.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
-            if (definition.Id == "inn")
+            if (definition.Id == "inn" && DioramaCatalog.Load()==null)
             {
                 var kit = EnvironmentKit.Load();
                 if (kit != null)

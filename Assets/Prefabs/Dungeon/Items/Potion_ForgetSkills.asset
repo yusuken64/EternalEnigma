@@ -13,10 +13,36 @@ MonoBehaviour:
   m_Name: Potion_ForgetSkills
   m_EditorClassIdentifier: 
   ItemName: Oblivion Draught
-  Description: Forget every learned skill and get all skill points back (applied in town).
+  Description: Forget every learned skill and get all skill points back (applied
+    in town).
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 11400000, guid: 065b237bc41f4b52925dd81af2ca835e, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 4
+  DroppedItemPrefab: {fileID: 3284896212152509239, guid: 60c17f6facb2f9e45abaea9d0c37a113, type: 3}
+  Icon: {fileID: 897414813787536110, guid: 763d9b582fe6be54fac4606dccb5c26d, type: 3}
+  Targeting: 1
+  TargetSelector:
+    Team: 3
+    Area: 4
+    Life: 0
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 0}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []

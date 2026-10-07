@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: RightHand_OHS02_Niddle
   m_EditorClassIdentifier: 
   ItemName: Needle
-  MaxFloor: 10
-  MinFloor: 1
   Description: Needle grants 2 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 9096178222627363046, guid: e65d34900ea41c64ea2fa3354f078d03, type: 3}
+  Icon: {fileID: -7989647911547048007, guid: 1481c7cabf568444094b0b212844d2d5, type: 3}
   EquipmentSlot: 0
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 2
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -36,7 +45,17 @@ MonoBehaviour:
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
   WeaponModelName: OHS02_Niddle
+  WeaponModelVariant: 
   WeaponType: 7
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

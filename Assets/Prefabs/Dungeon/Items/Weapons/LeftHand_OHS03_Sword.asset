@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_OHS03_Sword
   m_EditorClassIdentifier: 
   ItemName: Short Sword (Off-hand)
-  MaxFloor: 10
-  MinFloor: 1
   Description: Short Sword (Off-hand) grants 3 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 1367323569873081875, guid: c9b1ef66a73cd29499faa882627f43f3, type: 3}
+  Icon: {fileID: 3501623637063346232, guid: e78bf958915b0624691f826d66a1ee7b, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 3
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS03_Sword
+  WeaponModelVariant: 
   WeaponType: 5
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

@@ -16,11 +16,10 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11400000, guid: 2ba55a6e871fb3c47a24ae191c53896c, type: 2}
-    - {fileID: 11400000, guid: 2603a17d3b8970e49b23ef3623da61ae, type: 2}
-    - {fileID: 160684, guid: 083050ca1fb78d34a9b15812864fb625, type: 3}
-    - {fileID: 11400000, guid: 5ad1f57f73c4f9e45ac3641e4f9401bc, type: 2}
-    - {fileID: 11400000, guid: d6737b9555c6724479fe4d7e0221b502, type: 2}
+    - {fileID: 11400000, guid: b031c9b65ed22d84b981b6cef565c08d, type: 2}
+    - {fileID: 11400000, guid: c182d777afc55a2499571a57c7c5058a, type: 2}
+    - {fileID: 9214212535235456234, guid: ffbfd625f6053cb4d9fe6976554b4caa, type: 3}
+    - {fileID: 11400000, guid: a27c3b2ec69755c40b6ec5f14b4dcdfc, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -556,6 +555,21 @@ MonoBehaviour:
     - Name: Throne
       Entry: 5
       Data: true
+    - Name: LayoutVersion
+      Entry: 3
+      Data: 0
+    - Name: Tier
+      Entry: 3
+      Data: 0
+    - Name: Biome
+      Entry: 3
+      Data: 0
+    - Name: Role
+      Entry: 3
+      Data: 0
+    - Name: GatheringCount
+      Entry: 3
+      Data: 0
     - Name: EnemyCount
       Entry: 3
       Data: 10
@@ -1106,6 +1120,21 @@ MonoBehaviour:
     - Name: Throne
       Entry: 5
       Data: true
+    - Name: LayoutVersion
+      Entry: 3
+      Data: 0
+    - Name: Tier
+      Entry: 3
+      Data: 0
+    - Name: Biome
+      Entry: 3
+      Data: 0
+    - Name: Role
+      Entry: 3
+      Data: 0
+    - Name: GatheringCount
+      Entry: 3
+      Data: 0
     - Name: EnemyCount
       Entry: 3
       Data: 10
@@ -1656,6 +1685,21 @@ MonoBehaviour:
     - Name: Throne
       Entry: 5
       Data: true
+    - Name: LayoutVersion
+      Entry: 3
+      Data: 0
+    - Name: Tier
+      Entry: 3
+      Data: 0
+    - Name: Biome
+      Entry: 3
+      Data: 0
+    - Name: Role
+      Entry: 3
+      Data: 0
+    - Name: GatheringCount
+      Entry: 3
+      Data: 0
     - Name: EnemyCount
       Entry: 3
       Data: 10
@@ -2206,6 +2250,21 @@ MonoBehaviour:
     - Name: Throne
       Entry: 5
       Data: true
+    - Name: LayoutVersion
+      Entry: 3
+      Data: 0
+    - Name: Tier
+      Entry: 3
+      Data: 0
+    - Name: Biome
+      Entry: 3
+      Data: 0
+    - Name: Role
+      Entry: 3
+      Data: 0
+    - Name: GatheringCount
+      Entry: 3
+      Data: 0
     - Name: EnemyCount
       Entry: 3
       Data: 10
@@ -2756,6 +2815,21 @@ MonoBehaviour:
     - Name: Throne
       Entry: 5
       Data: true
+    - Name: LayoutVersion
+      Entry: 3
+      Data: 0
+    - Name: Tier
+      Entry: 3
+      Data: 0
+    - Name: Biome
+      Entry: 3
+      Data: 0
+    - Name: Role
+      Entry: 3
+      Data: 0
+    - Name: GatheringCount
+      Entry: 3
+      Data: 0
     - Name: EnemyCount
       Entry: 3
       Data: 10
@@ -9535,7 +9609,7 @@ MonoBehaviour:
       Data: 
     - Name: preset
       Entry: 10
-      Data: 3
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -9707,7 +9781,7 @@ MonoBehaviour:
       Data: 
     - Name: preset
       Entry: 10
-      Data: 4
+      Data: 3
     - Name: 
       Entry: 8
       Data: 

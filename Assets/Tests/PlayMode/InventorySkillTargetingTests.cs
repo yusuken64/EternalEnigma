@@ -109,6 +109,26 @@ namespace EternalEnigma.Tests
             yield return null;
         }
 
+        private IEnumerator ClickRow(AuthoredButton row)
+        {
+            Canvas.ForceUpdateCanvases();
+            var canvas = row.GetComponentInParent<Canvas>();
+            var position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
+                row.transform.TransformPoint(((RectTransform)row.transform).rect.center));
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
+            yield return null;
+            var pointer = new PointerEventData(EventSystem.current) { position = position };
+            var hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, hits);
+            Assert.That(hits, Is.Not.Empty, "The row center must be inside the active UI.");
+            Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject), Is.EqualTo(row.gameObject),
+                "Raycast at " + position + ": " + string.Join(", ", hits.Select(h => h.gameObject.name)));
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position, buttons = 1 });
+            yield return null;
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
+            yield return null;
+        }
+
         [UnityTest]
         public IEnumerator FiltersIncludeOnlyEligibleBagItemsAndOptionallyCasterEquipment()
         {
@@ -192,13 +212,7 @@ namespace EternalEnigma.Tests
             var rows=picker.Rows.GetComponentsInChildren<AuthoredButton>();
             Assert.That(rows.Length, Is.EqualTo(1));
             var row = rows[0];
-            var canvas = row.GetComponentInParent<Canvas>();
-            var position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
-                row.transform.position);
-            InputSystem.QueueStateEvent(mouse, new MouseState { position = position, buttons = 1 });
-            yield return null;
-            InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
-            yield return null;
+            yield return ClickRow(row);
             yield return harness.WaitForIdle();
             Assert.That(effect.Marked, Is.EquivalentTo(new[] { sword }));
             Assert.That(caster.Vitals.SP, Is.EqualTo(18));
@@ -258,13 +272,7 @@ namespace EternalEnigma.Tests
             yield return Press(Key.Enter);
             picker = (PartyMenuPicker)MenuManager.Instance.CurrentDialog;
             var row = picker.Rows.GetComponentsInChildren<AuthoredButton>()[0];
-            var canvas = row.GetComponentInParent<Canvas>();
-            var position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
-                row.transform.position);
-            InputSystem.QueueStateEvent(mouse, new MouseState { position = position, buttons = 1 });
-            yield return null;
-            InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
-            yield return null;
+            yield return ClickRow(row);
             yield return harness.WaitForIdle();
             Assert.That(effect.Marked, Is.EquivalentTo(new[] { sword }));
             Assert.That(scroll.StackStock, Is.EqualTo(1));

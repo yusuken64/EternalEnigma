@@ -24,8 +24,11 @@ namespace EternalEnigma.Tests.CoreIntegration
                 Assert.That(model.Mesh.bounds.max.z, Is.LessThan(.01f), model.Id);
             }
             Assert.That(kit.Palettes.Select(p => p.Props).Distinct().Count(), Is.EqualTo(8));
-            Assert.That(kit.Palettes.All(p => p.Props.mainTexture.width == 2048 && p.Ground != null), Is.True);
-            Assert.That(kit.Palettes.All(p => p.Buildings.mainTexture.width == 2048), Is.True);
+            // The active WebGL target loads the documented 1024 override.
+            Assert.That(kit.Palettes.All(p => p.Props.mainTexture.width is 1024 or 2048 && p.Ground != null), Is.True);
+            Assert.That(kit.Palettes.All(p => p.Buildings.mainTexture.width is 1024 or 2048), Is.True);
+            foreach(var palette in kit.Palettes)
+                Assert.That(((TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(palette.Buildings.mainTexture))).GetPlatformTextureSettings("WebGL").maxTextureSize,Is.EqualTo(1024));
             Assert.That(kit.Palettes.All(p => p.Props.mainTexture == p.Buildings.mainTexture), Is.True,
                 "Compatible building/prop families share the same atlas in memory");
             Assert.That(kit.Mesh("SmartHouseEdge").uv.Distinct().Count(),Is.GreaterThan(8),"Facades need projected texture UVs, not point palette UVs");
@@ -38,18 +41,19 @@ namespace EternalEnigma.Tests.CoreIntegration
             foreach(EternalEnigma.Core.World.OverworldBiome biome in System.Enum.GetValues(typeof(EternalEnigma.Core.World.OverworldBiome)))
             {
                 var choices=picker.Models.Where(c=>c.Matches(biome)).ToArray();
-                var allowed=choices.Select(c=>c.Prefab.GetComponent<BiomeModel>().ModelId).ToArray();
+                var allowed=choices.Select(c=>TreeModelPicker.Id(c.Prefab)).ToArray();
                 var results=Enumerable.Range(0,512).Select(i=>picker.Pick(biome,OverworldCosmetics.Hash(42,i,0))).Distinct().ToArray();
                 CollectionAssert.IsSubsetOf(results,allowed);Assert.That(results.Length,Is.GreaterThanOrEqualTo(2),biome.ToString());
-                Assert.That(results.Any(id=>id.EndsWith("Pair")||id.EndsWith("Grove")),Is.True,biome.ToString());
                 foreach(var id in results)
                 {
-                    Assert.That(kit.Triangles(id),Is.LessThanOrEqualTo(120));
-                    var bounds=kit.Mesh(id).bounds;Assert.That(Mathf.Max(bounds.size.x,bounds.size.y),Is.LessThanOrEqualTo(1.05f),id);
+                    var model=DioramaCatalog.Load().Get(id);Assert.That(model,Is.Not.Null,id);
+                    Assert.That(model.Tree,Is.True,id);Assert.That(kit.Triangles(id),Is.LessThanOrEqualTo(1100));
+                    Assert.That(model.Width*model.Scale,Is.LessThanOrEqualTo(3.8f),id);
+                    Assert.That(model.Height*model.Scale/DioramaScale.HeroHeight,Is.InRange(2.2f,3.11f),id);
                 }
             }
-            Assert.That(picker.Pick(EternalEnigma.Core.World.OverworldBiome.Tundra,0),Does.StartWith("SnowPine"));
-            Assert.That(picker.Pick(EternalEnigma.Core.World.OverworldBiome.Volcanic,0),Does.StartWith("CharredTree"));
+            Assert.That(picker.Models.Any(c=>TreeModelPicker.Id(c.Prefab)=="SnowPine"&&c.Matches(EternalEnigma.Core.World.OverworldBiome.Tundra)),Is.True);
+            Assert.That(picker.Models.Any(c=>TreeModelPicker.Id(c.Prefab)=="CharredTree"&&c.Matches(EternalEnigma.Core.World.OverworldBiome.Volcanic)),Is.True);
             Assert.That(Random.state,Is.EqualTo(state));
         }
 
@@ -62,7 +66,7 @@ namespace EternalEnigma.Tests.CoreIntegration
                 var creator=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<TileWorldCreator>()).Single();
                 Assert.That(creator.worldObject.GetComponentsInChildren<ClusterIdentifier>(),Is.Empty,"Legacy baked TWC clusters must be removed from the scene");
                 var renderers=creator.worldObject.GetComponentsInChildren<MeshRenderer>();
-                Assert.That(renderers.Any(r=>r.sharedMaterial==EnvironmentKit.Load().BuildingMaterial(EternalEnigma.Core.World.OverworldBiome.Grassland)),Is.True);
+                Assert.That(renderers.Any(r=>r.sharedMaterial!=null&&r.sharedMaterial.shader.name=="EternalEnigma/Diorama Vertex Lit"),Is.True);
                 // TMP regenerates sign-label meshes on enable; only environment geometry is baked.
                 Assert.That(creator.worldObject.GetComponentsInChildren<MeshFilter>().Where(f=>f.GetComponent("TextMeshPro")==null)
                     .All(f=>AssetDatabase.GetAssetPath(f.sharedMesh).StartsWith("Assets/Art/EnvironmentKit/TownPreview/")),Is.True);

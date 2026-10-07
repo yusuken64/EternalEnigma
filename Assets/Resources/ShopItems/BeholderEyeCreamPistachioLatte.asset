@@ -11,13 +11,38 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
   m_Name: BeholderEyeCreamPistachioLatte
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   ItemName: Beholder Eye Cream Pistachio Latte
-  Description: Brewed with real Beholder eye jelly and cream. Restores 100 HP and 25 SP.
-  ItemEffectDefinition: {fileID: 11400000, guid: ed93173a4d374531a70b63073f9cd854, type: 2}
+  Description: Brewed with real Beholder eye jelly and cream. Restores 100 HP and
+    25 SP.
   ShopOnly: 1
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
+  ItemEffectDefinition: {fileID: 11400000, guid: ed93173a4d374531a70b63073f9cd854, type: 2}
   ApplyToThrownTarget: 1
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 4
+  DroppedItemPrefab: {fileID: 1680514486944970680, guid: f159ef4ca14ac044e99cc43704dc54db, type: 3}
+  Icon: {fileID: 3957133744160192773, guid: 7e48f75b827703b45bd8e125836ca56c, type: 3}
+  Targeting: 1
+  TargetSelector:
+    Team: 3
+    Area: 4
+    Life: 0
+  InventoryTargetSelector:
+    ItemType: 0
+    IncludeEquipped: 0
+  AreaRadius: 0
+  MissileRange: 8
+  MissileProjectilePrefab: {fileID: 0}
+  InventoryEffects: []
+  references:
+    version: 2
+    RefIds: []

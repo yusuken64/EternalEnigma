@@ -13,72 +13,33 @@ MonoBehaviour:
   m_Name: TreeModels
   m_EditorClassIdentifier: EternalEnigma.Game::TreeModelPicker
   Models:
-  - Prefab: {fileID: 2888652562707692179, guid: df9d5241a2b6d9c438946164fa8547ef, type: 3}
-    Weight: 3
-    Biomes: 0000000004000000
-  - Prefab: {fileID: 3350810224626237396, guid: 606e448e00d80ae43a2d5005f61ac0ff, type: 3}
+  - Prefab: {fileID: 6577898741055684539, guid: b171d2bb12c1761438eb37eca0ed9cb9, type: 3}
     Weight: 2
-    Biomes: 0000000004000000
-  - Prefab: {fileID: 1967961925751193957, guid: fd88527726be1084b9a76490a79d1e6c, type: 3}
-    Weight: 2
-    Biomes: 0000000004000000
-  - Prefab: {fileID: 2666752516677087888, guid: c33ae0e8f613c7c4581410cb83c8d8d1, type: 3}
-    Weight: 3
-    Biomes: 0000000004000000
-  - Prefab: {fileID: 3211814465314204524, guid: 5cdc9ce0382be6a4a821c8534fcaff10, type: 3}
-    Weight: 2
-    Biomes: 0000000004000000
-  - Prefab: {fileID: 8652053746434071164, guid: 4ae695ac7e53d404f99dc868cbb6e26d, type: 3}
+    Biomes: 000000000400000003000000
+  - Prefab: {fileID: 4083931432873187153, guid: ab09d8b7040e83747bf6bb3b52815b6c, type: 3}
+    Weight: 1
+    Biomes: 03000000
+  - Prefab: {fileID: 6261485190113843228, guid: 9861ba4c9751dd94f97b6307eb02f494, type: 3}
     Weight: 4
-    Biomes: 03000000
-  - Prefab: {fileID: 161380441016145566, guid: e744b8dafce03db498a2936c9e4f36d3, type: 3}
-    Weight: 3
-    Biomes: 03000000
-  - Prefab: {fileID: 560990552094676044, guid: 800943c57e59a814ca3d1cac8e4b4b3b, type: 3}
+    Biomes: 0000000004000000
+  - Prefab: {fileID: 3353032975416575990, guid: 55ec70d5049e3a446896d37c7fa75f55, type: 3}
     Weight: 2
-    Biomes: 03000000
-  - Prefab: {fileID: 93949662283610817, guid: 28f1ee674ba181f4ebf5e1c7a421d123, type: 3}
+    Biomes: 0000000004000000
+  - Prefab: {fileID: 8672993604672642549, guid: e560c397b379c1d4f9de66dcec2074bc, type: 3}
+    Weight: 3
+    Biomes: 01000000
+  - Prefab: {fileID: 8547879534078873909, guid: 6fc4ea9c6a0272745be46914c0b77bcf, type: 3}
+    Weight: 2
+    Biomes: 0100000002000000
+  - Prefab: {fileID: 2166125974070778492, guid: 065557f39cab93c47b4574367c4b9d02, type: 3}
+    Weight: 3
+    Biomes: 0600000002000000
+  - Prefab: {fileID: 6749964191357574048, guid: afd79708a5b5a7740b9d7224e3583066, type: 3}
     Weight: 4
     Biomes: 05000000
-  - Prefab: {fileID: 4592017311391972891, guid: 4140fd9ac6331e94684875229e982cb9, type: 3}
-    Weight: 3
-    Biomes: 05000000
-  - Prefab: {fileID: 2089588903357493733, guid: 32d249964b096124ea11b104577db74b, type: 3}
-    Weight: 2
-    Biomes: 05000000
-  - Prefab: {fileID: 8698957230123412700, guid: 15664716b0cec054090f3123df0fab79, type: 3}
-    Weight: 3
-    Biomes: 01000000
-  - Prefab: {fileID: 4860399775850370347, guid: 993c65e740c2b714d8ca87f7feeaaae1, type: 3}
-    Weight: 2
-    Biomes: 01000000
-  - Prefab: {fileID: 1473306777902335312, guid: 257a9706c700cf14a9198e5535381ae6, type: 3}
-    Weight: 2
-    Biomes: 01000000
-  - Prefab: {fileID: 9157619643758592277, guid: a840ef934e2dfe64c8ddf788c55270e9, type: 3}
-    Weight: 2
-    Biomes: 01000000
-  - Prefab: {fileID: 480299432052825274, guid: a7ebd293dfc6b5e4a965e4f05fa504ec, type: 3}
-    Weight: 3
-    Biomes: 02000000
-  - Prefab: {fileID: 7939909602016257, guid: a64d5127b7790d94b94790720a2563d9, type: 3}
-    Weight: 2
-    Biomes: 02000000
-  - Prefab: {fileID: 7183305314696497139, guid: 21d76f7fb10054b4d866013aae66253f, type: 3}
+  - Prefab: {fileID: 1211059339934660187, guid: f4dabe22bf7f0324abad46d7bdb7d836, type: 3}
     Weight: 1
-    Biomes: 06000000
-  - Prefab: {fileID: 5133218049267906232, guid: cbdbc91ff817e8d42809b35a900ddcfd, type: 3}
-    Weight: 1
-    Biomes: 06000000
-  - Prefab: {fileID: 6511123583514981372, guid: 06e7ed0b8c3580442837cff4a4147f87, type: 3}
-    Weight: 3
-    Biomes: 06000000
-  - Prefab: {fileID: 7795605271134047581, guid: 2dcac40724dcb7a46a4a95caf2cbc646, type: 3}
-    Weight: 2
-    Biomes: 06000000
-  - Prefab: {fileID: 9056432123443781085, guid: d943fc64d92a06b4e9d844679634a4c8, type: 3}
-    Weight: 3
-    Biomes: 07000000
-  - Prefab: {fileID: 1550949737736009723, guid: 8d28505fc9d032d45af28cc0d17c5ea9, type: 3}
-    Weight: 2
+    Biomes: 050000000600000007000000
+  - Prefab: {fileID: 5374568749202664684, guid: 5b5315157123f734aae79578c30900ad, type: 3}
+    Weight: 4
     Biomes: 07000000

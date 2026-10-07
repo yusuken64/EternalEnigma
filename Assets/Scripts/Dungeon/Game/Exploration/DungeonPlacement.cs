@@ -53,7 +53,7 @@ internal static class DungeonPlacement
     internal static bool TryDrop(TileWorldDungeon dungeon, Vector3Int origin, InventoryItem item, out DroppedItem dropped)
     {
         dropped = null;
-        if (item?.ItemDefinition == null || !dungeon.DroppedItemPrefabs.Any(p => p.DroppedItemVisual == item.ItemDefinition.DroppedItemVisual)) return false;
+        if (item?.ItemDefinition == null || item.ItemDefinition.ResolveDroppedPrefab(dungeon.DroppedItemPrefabs)==null) return false;
         var reachable = Reachable(dungeon, origin);
         var cells = OpenCells(dungeon, items: true).Where(reachable.Contains)
             .OrderBy(p => TileWorldDungeon.ChevDistance(origin, p)).ThenBy(p => p.y).ThenBy(p => p.x).ToList();

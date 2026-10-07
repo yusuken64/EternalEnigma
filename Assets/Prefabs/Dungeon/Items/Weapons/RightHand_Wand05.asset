@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: RightHand_Wand05
   m_EditorClassIdentifier: 
   ItemName: Silver Wand
-  MaxFloor: 10
-  MinFloor: 1
   Description: Silver Wand grants 5 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 5
+  DroppedItemPrefab: {fileID: 7189705375907277925, guid: bd0ad445171259e46bb0f1b9e1b842ed, type: 3}
+  Icon: {fileID: 2343995068260766418, guid: 35f25f2a20a9d90498471db4fcab790f, type: 3}
   EquipmentSlot: 0
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 5
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Wand05
+  WeaponModelVariant: 
   WeaponType: 4
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

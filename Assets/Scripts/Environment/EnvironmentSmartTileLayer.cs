@@ -24,10 +24,13 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
     public bool SkipMapBoundary;
     public Material SurfaceMaterial;
     public bool TownPalette;
+    public string[] BuildingServices=Array.Empty<string>();
+    public bool DioramaCliffs;
     public override TWCBuildLayer Clone() => new EnvironmentSmartTileLayer { guid = guid, layerName = layerName,
         assignedGenerationLayerGuid = assignedGenerationLayerGuid, active = active, Kit = Kit,
         QuarterTiles = QuarterTiles, WallTiles = WallTiles, Road = Road, Buildings = Buildings, Elevation = Elevation, HeightScale = HeightScale,
-        PerimeterOnly=PerimeterOnly,SkipMapBoundary=SkipMapBoundary,SurfaceMaterial=SurfaceMaterial,TownPalette=TownPalette };
+        PerimeterOnly=PerimeterOnly,SkipMapBoundary=SkipMapBoundary,SurfaceMaterial=SurfaceMaterial,TownPalette=TownPalette,
+        BuildingServices=(string[])(BuildingServices??Array.Empty<string>()).Clone(),DioramaCliffs=DioramaCliffs };
 
     public override void Execute(TileWorldCreator creator, bool force)
     {
@@ -49,6 +52,35 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
             var townCatalog = TownPalette ? TownInteriorCatalog.Load() : null;
             float size = creator.twcAsset.cellSize;
+            if(Road && PaintedGroundStyle.Load() is PaintedGroundStyle painted && (town!=null || creator.twcAsset.mapBuildLayers.OfType<OverworldGroundLayer>().Any(l=>l.active)))
+            {
+                // Floor ownership has moved to the splat. This TWC layer retains
+                // the road mask and emits only the authored verge along its edges.
+                if(painted.GrassLip!=null && painted.GrassLipMaterial!=null)
+                {
+                    var roads=creator.GetMapOutputFromBlueprintLayer(assignedGenerationLayerGuid);
+                    if(roads!=null)
+                    for(int y=0;y<roads.GetLength(1);y++) for(int x=0;x<roads.GetLength(0);x++)
+                    {
+                        if(!roads[x,y]) continue;
+                        if(town!=null&&(!town.Layers.TryGetValue(TownLayers.Alleys,out var pathAlleys)||!pathAlleys[x,y]))continue;
+                        if(grid!=null&&OverworldCosmetics.Biome(grid,x,y) is not (OverworldBiome.Grassland or OverworldBiome.Forest or OverworldBiome.Marsh))continue;
+                        foreach(var side in new[]{new Vector2Int(0,-1),new Vector2Int(1,0),new Vector2Int(0,1),new Vector2Int(-1,0)})
+                        {
+                            int nx=x+side.x,ny=y+side.y;
+                            if(nx<0||ny<0||nx>=roads.GetLength(0)||ny>=roads.GetLength(1)||roads[nx,ny]) continue;
+                            if(grid!=null&&(OverworldCosmetics.InLayer(grid,OverworldLayers.Water,nx,ny)||OverworldCosmetics.InLayer(grid,OverworldLayers.Mountains,nx,ny)))continue;
+                            if(town!=null&&(!town.Layers[TownLayers.Walkable][nx,ny]||town.Layers[TownLayers.Roofs][nx,ny]))continue;
+                            uint verge=OverworldCosmetics.Hash(creator.currentSeed^14329,x*3+side.x,y*3+side.y);
+                            if(verge%3==0)continue;
+                            float along=((verge>>8)%100/100f-.5f)*.45f;
+                            batch.Add(painted.GrassLip,painted.GrassLipMaterial,new Vector3(x+.5f+side.x*.55f+side.y*along,y+.5f+side.y*.55f+side.x*along,0)*size,
+                                new Vector3(.42f,.40f,.35f)*size,(side.x!=0?90:0)+(int)(verge%11)-5,SilhouetteRole.Receiver);
+                        }
+                    }
+                }
+                batch.Finish();return;
+            }
             if (grid != null && sixTerrain)
             {
                 if (BuildSixTerrain(creator, grid, batch, size)) return;
@@ -95,8 +127,10 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                             buildingOf.TryGetValue(neighbor, out var neighborDoor) && currentDoor.Equals(neighborDoor)) continue;
                         bool entrance = side.Item2 == -1 && entrances.Contains(new GridPoint(x, y - 1));
                         bool window = !entrance && (x + y) % 2 == 0;
+                        int slot=entrance?Array.IndexOf(town.BuildingSlots.ToArray(),new GridPoint(x,y-1)):-1;
+                        string service=slot>=0&&slot<(BuildingServices?.Length??0)?BuildingServices[slot]:"";
                         TownHouseTiles.Facade(batch, plaster, timber, door, glass, size, cell,
-                            side.Item1, side.Item2, entrance, window);
+                            side.Item1, side.Item2, entrance, window,biome,decorationFaces,service);
                         if (!entrance && !window && town.Layers[TownLayers.ShopWalls].At(cell))
                             decorationFaces.Faces.Add(new BiomeDecorationFace {
                                 Center = new Vector3(x + .5f + side.Item1 * .46f,
@@ -109,6 +143,14 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 }
                 batch.Finish();
                 return;
+            }
+            if(Buildings && grid!=null && DioramaCatalog.Load() is DioramaCatalog settlementKit)
+            {
+                var houses=creator.GetMapOutputFromBlueprintLayer(assignedGenerationLayerGuid);
+                for(int y=0;y<houses.GetLength(1);y++)for(int x=0;x<houses.GetLength(0);x++)if(houses[x,y])
+                    DioramaSettlementGeometry.House(batch,settlementKit,OverworldCosmetics.Biome(grid,x,y),
+                        new Vector3(x+.5f,y+.5f,0)*size,size,OverworldCosmetics.Hash(grid.CampaignSeed,x,y));
+                batch.Finish();return;
             }
             // Solid houses retain their blocked front wall in the Core plan. Omit
             // only the facade panels in front of the entrance art to make a recess.
@@ -168,12 +210,20 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
         var cells = full.clusters.Values.SelectMany(c => c.Values)
             .Select(t => new Vector2Int((int)t.position.x, (int)t.position.z)).ToHashSet();
         var shapes = new System.Collections.Generic.Dictionary<int, (Mesh mesh, float angle)>();
+        var diorama=DioramaCliffs?DioramaCatalog.Load():null;
         bool coast = layerName == SmartEnvironmentMasks.Coast;
         bool Connected(Vector2Int cell) => cells.Contains(cell) || (coast && SkipMapBoundary &&
             (cell.x < 0 || cell.y < 0 || cell.x >= grid.Width || cell.y >= grid.Height));
         foreach (var cell in cells)
         {
             int x = cell.x, y = cell.y;
+            if(diorama!=null && layerName==SmartEnvironmentMasks.Summits)
+            {
+                uint hash=OverworldCosmetics.Hash(grid.CampaignSeed^7301,x,y);
+                diorama.Add(batch,"RockCap",OverworldCosmetics.Biome(grid,x,y),new Vector3(x+.5f,y+.5f,-Elevation)*size,
+                    (hash>>16)%360,scale:new Vector3(size,size,size*.65f));
+                continue;
+            }
             int mask = (Connected(cell + Vector2Int.up) ? 1 : 0) |
                 (Connected(cell + Vector2Int.right) ? 2 : 0) |
                 (Connected(cell + Vector2Int.down) ? 4 : 0) |
@@ -205,7 +255,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 if (shape == null)
                 {
                     angle = 0;
-                    shape = SixTerrainMesh(mask, diagonals, coast, .42f * HeightScale);
+                    shape = diorama!=null && diorama.CliffGrid!=null ? DioramaCliffGeometry.Adapt(diorama.CliffGrid,mask,diagonals) : SixTerrainMesh(mask, diagonals, coast, .42f * HeightScale);
                     batch.Owner.Meshes.Add(shape);
                 }
                 variant = (shape, angle);
@@ -213,6 +263,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             }
             if (variant.mesh.vertexCount == 0) continue;
             var material = SurfaceMaterial != null ? SurfaceMaterial : coast ? Kit.Shore : Kit.Ground(OverworldBiome.Mountain);
+            if(diorama!=null && diorama.Cliffs.Length==8)material=diorama.Cliffs[(int)OverworldCosmetics.Biome(grid,x,y)];
             batch.Add(variant.mesh, material, new Vector3(x + .5f, y + .5f, -Elevation) * size,
                 Vector3.one * size, variant.angle, coast ? SilhouetteRole.Receiver : SilhouetteRole.Caster);
         }

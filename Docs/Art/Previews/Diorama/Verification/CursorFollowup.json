@@ -1,0 +1,19 @@
+{
+    "runId": "9be5f5a4bf0d48a19a5138c7c59cc69a",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [
+        "EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored"
+    ],
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/PlayMode.xml",
+    "startedUtc": "2026-10-07T04:37:55.8680997Z",
+    "updatedUtc": "2026-10-07T04:38:26.1400367Z",
+    "currentTest": "",
+    "lastFinished": "EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored: Passed",
+    "failures": [],
+    "durationSeconds": 24.9097783
+}

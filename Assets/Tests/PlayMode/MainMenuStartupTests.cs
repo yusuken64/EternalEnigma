@@ -87,8 +87,13 @@ namespace EternalEnigma.Tests
                 InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Enter));
                 yield return null; yield return null;
                 InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                yield return null;
+                Assert.That(Object.FindFirstObjectByType<CampaignSlots>(), Is.Not.Null);
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Enter));
+                yield return null; yield return null;
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
                 Assert.That(Object.FindFirstObjectByType<ProtagonistHeroPicker>(), Is.Not.Null,
-                    "Enter must open hero selection from the initial New Game button.");
+                    "Enter must open hero selection after choosing an empty campaign slot.");
                 yield return null;
             }
             finally { InputSystem.RemoveDevice(keyboard); }

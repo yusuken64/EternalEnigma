@@ -75,6 +75,7 @@ namespace EternalEnigma.Tests
             Assert.That(Common.Instance.GameSaveData,Is.Not.SameAs(original));
             Assert.That(harness.Store.Json,Is.EqualTo(json));
             run.SetPaused(true);
+            yield return DioramaUICapture.Save(Object.FindFirstObjectByType<AutoplayPanel>().GetComponent<Canvas>(), "autoplay-panel");
             run.SetSpeed(4);
             CheckControlPreference(true);
             var settings = Common.Instance.GlobalSettings;
@@ -109,7 +110,7 @@ namespace EternalEnigma.Tests
                     yield return null; yield return null;
                     Assert.That(run.ReturnPromptOpen,Is.True);
                     CheckControlPreference(true);
-                    ScreenCapture.CaptureScreenshot("Temp/AutoplayValidation/return-prompt.png");
+                    yield return DioramaUICapture.Save(Object.FindFirstObjectByType<AutoplayPanel>().GetComponent<Canvas>(), "autoplay-return-prompt");
                     InputSystem.QueueStateEvent(keyboard,new KeyboardState());
                     yield return null;
                     run.ConfirmReturn(false);
@@ -149,6 +150,8 @@ namespace EternalEnigma.Tests
                     Assert.That(Common.Instance.GameSaveData,Is.SameAs(original));
                     Assert.That(harness.Store.Json,Is.EqualTo(json));
                     Assert.That(Common.Instance.GameSaveData.TownSaveData.Gold,Is.EqualTo(321));
+                    yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true,"main menu restored");
+                    Object.FindFirstObjectByType<MainMenuDeveloperControls>().Toggle.onClick.Invoke();
                     var debugButton = Object.FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None)
                         .Single(button => Enumerable.Range(0, button.onClick.GetPersistentEventCount())
                             .Any(i => button.onClick.GetPersistentMethodName(i) == nameof(MainMenu.DebugAutoplay_Clicked)));
@@ -283,7 +286,8 @@ namespace EternalEnigma.Tests
             Assert.That(run.Report.EligibleForBalance,Is.False);
             int strength = harness.Ally.FinalStats.Strength;
             var dungeon = harness.Game.CurrentDungeon;
-            var free = Enumerable.Range(0,dungeon.dungeonWidth).SelectMany(x => Enumerable.Range(0,dungeon.dungeonHeight).Select(y => new Vector3Int(x,y)))
+            // Ranged attacks trace a straight line; use an adjacent clear cell.
+            var free = new[]{Vector3Int.right,Vector3Int.left,Vector3Int.up,Vector3Int.down}.Select(offset=>harness.Ally.TilemapPosition+offset)
                 .First(p => dungeon.IsWalkable(p) && !harness.Game.AllCharacters.Any(c => c.ToBounds().Contains(p)));
             yield return harness.SpawnEnemy("Enemy_Slime",free);
             var enemy = harness.Game.Enemies.Last();

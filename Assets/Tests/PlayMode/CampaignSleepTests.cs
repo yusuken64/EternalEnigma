@@ -128,6 +128,9 @@ namespace EternalEnigma.Tests
             Assert.That(browser.Slots.All(slot=>slot.Button is SelectToActivateButton),Is.True);
             Assert.That(browser.GetComponentsInChildren<UnityEngine.UI.Button>().Any(b=>b.name=="Continue" || b.name=="Choose hero"),Is.False);
             var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=-1};
+            // The browser initially focuses the active slot. Exercise the two-click
+            // contract from an unselected slot; an already focused slot activates.
+            EventSystem.current.SetSelectedGameObject(null);
             ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerDownHandler);
             ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerClickHandler);
             Assert.That(browser.gameObject.activeSelf,Is.True,"First click selects the save slot.");
@@ -135,7 +138,7 @@ namespace EternalEnigma.Tests
             ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerDownHandler);
             ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerClickHandler);
             yield return null;
-            Object.FindFirstObjectByType<CampaignChoice>().GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Replace campaign").onClick.Invoke();yield return null;
+            Object.FindFirstObjectByType<CampaignChoice>().Confirm.onClick.Invoke();yield return null;
             Object.FindFirstObjectByType<ProtagonistHeroPicker>().GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Back").onClick.Invoke();yield return null;
             Assert.That(harness.Store.Read(0),Is.EqualTo(original));
             var completed=SaveSystem.LoadData(1);completed.Campaign.Finished=true;SaveSystem.SaveData(1,completed);
@@ -149,6 +152,7 @@ namespace EternalEnigma.Tests
             SaveSystem.ActiveSlot=0;main.Continue_Clicked();yield return null;
             browser=Object.FindFirstObjectByType<CampaignSlots>();
             slotButton=browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Slot 1");
+            EventSystem.current.SetSelectedGameObject(null);
             ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerDownHandler);
             ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerClickHandler);
             Assert.That(browser.gameObject.activeSelf,Is.True,"First Continue click only selects the slot.");

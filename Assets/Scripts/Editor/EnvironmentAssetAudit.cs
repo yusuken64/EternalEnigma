@@ -15,7 +15,7 @@ public static class EnvironmentAssetAudit
         Directory.CreateDirectory("Docs/Art");
         var report = new StringBuilder("# Environment asset audit\n\nCurrent committed assets measured in Unity. Triangle counts are imported mesh index counts for active prefab renderers, including repeated instances; renderer/material slots are not GPU timings.\n\n");
         report.AppendLine("| Asset | Triangles | Vertices | Renderers / slots | Colliders | Bounds |\n|---|---:|---:|---:|---:|---|");
-        var paths = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Overworld", "Assets/Prefabs/Town", "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles" })
+        var paths = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Overworld", "Assets/Prefabs/Town", "Assets/Art/Diorama" })
             .Select(AssetDatabase.GUIDToAssetPath).Where(p => !p.Contains("/Allies/") && !p.Contains("DungeonTier") && !p.Contains("SkillGrid")).OrderBy(p => p);
         foreach (string path in paths)
         {

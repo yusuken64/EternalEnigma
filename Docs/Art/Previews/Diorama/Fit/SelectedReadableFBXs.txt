@@ -1,0 +1,17 @@
+Selected for TWC EnvironmentBatch. Only ModelImporter.isReadable was changed.
+LOD0: town/cosmetics; LOD1: dense tree walls. No mesh/prefab/material vendor edits.
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/Rock/Rock01.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/Rock/Rock05.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Flower01.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Flower02.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Flower03.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Flower04.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Flower05.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Grass01.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Grass03.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Grass04.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Tree01.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Tree02.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Tree03.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Tree04.fbx
+Assets/RPG Tiny Fantasy World 01 PA/Mesh/TreePlants/Tree05.fbx

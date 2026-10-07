@@ -42,7 +42,11 @@ public static class BiomeDecorations
         var posts=TownPosts(plan);float size=creator.twcAsset.cellSize;
         var biome=creator.GetComponent<TownBiomeStyle>()?.Current??OverworldBiome.Grassland;
         var batch=new EnvironmentBatch(root);
-        foreach(var p in posts)BiomeDecorationPlacement.Add(batch,root,catalog,catalog.Get(biome,BiomeDecorationKind.LampPost),new Vector3(p.x+.5f,p.y+.5f,0)*size,size*.8f,0);
+        foreach(var p in posts)
+        {
+            var lamp=catalog.Get(biome,BiomeDecorationKind.LampPost);
+            BiomeDecorationPlacement.Add(batch,root,catalog,lamp,new Vector3(p.x+.5f,p.y+.5f,0)*size,DioramaScale.ToHeight(lamp.Mesh.bounds.size.z,DioramaScale.Lamp),0);
+        }
         batch.Finish();BiomeDecorationPlacement.Walls(creator.worldObject.transform,root,catalog,plan.Seed,"town",size,posts);
     }
     public static void World(TileWorldCreator creator,OverworldGrid grid)
@@ -50,7 +54,8 @@ public static class BiomeDecorations
         var catalog=Catalog(creator);if(!Enabled||catalog==null||creator.worldObject==null)return;
         var root=BiomeDecorationPlacement.Reset(creator.worldObject.transform);
         BiomeDecorationPlacement.Walls(creator.worldObject.transform,root,catalog,grid.CampaignSeed,"overworld",creator.twcAsset.cellSize);
-        BiomeRoadSigns.Build(grid,root,catalog,creator.twcAsset.cellSize);
+        if(!creator.twcAsset.mapBuildLayers.OfType<OverworldSettlementLayer>().Any(l=>l.active))
+            BiomeRoadSigns.Build(grid,root,catalog,creator.twcAsset.cellSize);
     }
     public static void Dungeon(TileWorldCreator creator,DungeonFloor floor,DungeonVisualSelection selection,bool preview=false)
     {

@@ -28,10 +28,12 @@ Shader "EternalEnigma/Smart Shoreline"
                 float n=tex2D(_NoiseTex,i.world*.037).r;
                 float wave=tex2D(_MainTex,i.world*.12+_Time.y*float2(.018,.01)).r;
                 float t=i.uv.y+(n-.5)*.18;
-                float foam=1-smoothstep(.018,.065,abs(t-(.22+(wave-.8)*.2)));
+                float tide=.23+sin(_Time.y*.9+i.world.x*.22+i.world.y*.17)*.035+(wave-.65)*.13;
+                float foam=1-smoothstep(.018,.075,abs(t-tide));
+                float lace=(1-smoothstep(.005,.028,abs(t-tide-.11)))*(.35+.35*n);
                 float3 color=lerp(_SandColor.rgb,_ShallowColor.rgb,smoothstep(.14,.3,t));
-                color=lerp(color,_FoamColor.rgb,foam*.85);
-                float alpha=smoothstep(0,.06,i.uv.y)*(1-smoothstep(.3,1,i.uv.y));
+                color=lerp(color,_FoamColor.rgb,saturate(foam*.9+lace));
+                float alpha=smoothstep(0,.04,i.uv.y)*(1-smoothstep(.45,1,i.uv.y));
                 return fixed4(color*(.97+wave*.045),alpha);
             }
             ENDCG

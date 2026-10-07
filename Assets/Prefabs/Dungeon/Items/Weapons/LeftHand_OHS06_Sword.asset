@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_OHS06_Sword
   m_EditorClassIdentifier: 
   ItemName: Knight's Sword (Off-hand)
-  MaxFloor: 10
-  MinFloor: 1
   Description: Knight's Sword (Off-hand) grants 6 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 3932169811905445206, guid: 09001e25878685640b4c19eba69d1df0, type: 3}
+  Icon: {fileID: -7955499213442655260, guid: 52996fe74c299ea4aa342cf52487e050, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 6
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS06_Sword
+  WeaponModelVariant: 
   WeaponType: 5
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

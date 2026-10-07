@@ -88,6 +88,8 @@ namespace EternalEnigma.Tests
             var menu = Object.FindFirstObjectByType<MainMenu>();
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(menu.StartButton));
             yield return Press(GamepadButton.South);
+            Assert.That(Object.FindFirstObjectByType<CampaignSlots>(), Is.Not.Null);
+            yield return Press(GamepadButton.South);
             Assert.That(Object.FindFirstObjectByType<ProtagonistHeroPicker>(), Is.Not.Null);
             var first = EventSystem.current.currentSelectedGameObject;
             yield return Press(GamepadButton.DpadRight);
@@ -101,6 +103,8 @@ namespace EternalEnigma.Tests
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.Not.EqualTo(menu.StartButton));
             yield return Press(GamepadButton.South);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True);
+            yield return Press(GamepadButton.East);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(Common.Instance.GlobalSettings.ResumeButton.gameObject));
             yield return Press(GamepadButton.East);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False);
         }
@@ -140,6 +144,8 @@ namespace EternalEnigma.Tests
             Assert.That(menus.Opened, Is.False);
             yield return Press(GamepadButton.Start);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True);
+            yield return Press(GamepadButton.East);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(Common.Instance.GlobalSettings.ResumeButton.gameObject));
             yield return Press(GamepadButton.East);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False);
             Assert.That(Common.Instance.MenuInputHandler.PlayerInput.currentActionMap.name, Is.EqualTo("Player"));

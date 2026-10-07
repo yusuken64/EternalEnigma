@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-07 02:13:42Z" end-time="2026-10-07 02:14:39Z" duration="57.1872834">
+  <test-suite type="TestSuite" id="1391" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="324" result="Passed" start-time="2026-10-07 02:13:42Z" end-time="2026-10-07 02:14:39Z" duration="57.187283" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1385" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="324" result="Passed" start-time="2026-10-07 02:13:42Z" end-time="2026-10-07 02:14:39Z" duration="57.072011" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <output><![CDATA[[MCP Unity] WebSocket server started successfully on localhost:8091.
+]]></output>
+      <test-suite type="TestSuite" id="1386" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="296" result="Passed" start-time="2026-10-07 02:13:42Z" end-time="2026-10-07 02:14:39Z" duration="57.057157" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1387" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="296" result="Passed" start-time="2026-10-07 02:13:42Z" end-time="2026-10-07 02:14:39Z" duration="57.046329" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1061" name="AutoplayTests" fullname="EternalEnigma.Tests.AutoplayTests" classname="EternalEnigma.Tests.AutoplayTests" runstate="Explicit" testcasecount="4" result="Passed" start-time="2026-10-07 02:13:42Z" end-time="2026-10-07 02:14:39Z" duration="57.036391" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties>
+              <property name="_SKIPREASON" value="Run manually with Tools &gt; Eternal Enigma &gt; Tests &gt; Run Autoplay" />
+            </properties>
+            <test-case id="1065" name="DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit" fullname="EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit" methodname="DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit" classname="EternalEnigma.Tests.AutoplayTests" runstate="Runnable" seed="1867714957" result="Passed" start-time="2026-10-07 02:13:42Z" end-time="2026-10-07 02:13:54Z" duration="11.847179" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1063" name="HidePanelAndTakeControlPreserveSessionAndSave" fullname="EternalEnigma.Tests.AutoplayTests.HidePanelAndTakeControlPreserveSessionAndSave" methodname="HidePanelAndTakeControlPreserveSessionAndSave" classname="EternalEnigma.Tests.AutoplayTests" runstate="Runnable" seed="1859950505" result="Passed" start-time="2026-10-07 02:13:54Z" end-time="2026-10-07 02:14:16Z" duration="21.948214" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Load Save Data
+Town seed 1932500746
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1062" name="InputPromptCancelAndReturnPreserveOriginalSave" fullname="EternalEnigma.Tests.AutoplayTests.InputPromptCancelAndReturnPreserveOriginalSave" methodname="InputPromptCancelAndReturnPreserveOriginalSave" classname="EternalEnigma.Tests.AutoplayTests" runstate="Runnable" seed="1829301818" result="Passed" start-time="2026-10-07 02:14:16Z" end-time="2026-10-07 02:14:27Z" duration="11.124593" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+GameObject (named 'Roofs_layer') references runtime script in scene file. Fixing!
+Load Save Data
+Town seed 1932500746
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+            </test-case>
+            <test-case id="1064" name="NormalModeAllowsDefeatAndWritesTuningReport" fullname="EternalEnigma.Tests.AutoplayTests.NormalModeAllowsDefeatAndWritesTuningReport" methodname="NormalModeAllowsDefeatAndWritesTuningReport" classname="EternalEnigma.Tests.AutoplayTests" runstate="Runnable" seed="157132776" result="Passed" start-time="2026-10-07 02:14:27Z" end-time="2026-10-07 02:14:39Z" duration="12.041039" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+GameObject (named 'Roofs_layer') references runtime script in scene file. Fixing!
+Load Save Data
+Town seed 1932500746
+WalkableMap type: WalkableMap
+TileWorldCreator type: TWC.TileWorldCreator
+Generate Buildings
+Generate Allies
+Initialize Player
+Town done
+Dungeon created
+Dungeon created
+Dungeon destroyed
+Stairs Created
+Dungeon destroyed
+<color=#0099bc><b>DOTWEEN ► </b></color>Target or field is missing/null (Void TryThrowEditorNullExceptionObject(UnityEngine.Object, System.String)) ► The object of type 'UnityEngine.RectTransform' has been destroyed but you are still trying to access it.
+Your script should either check if it is null or you should not destroy the object.
+
+  at UnityEngine.Object+MarshalledUnityObject.TryThrowEditorNullExceptionObject (UnityEngine.Object unityObj, System.String parameterName) [0x0006a] in <41b87322553648a1a76174c5109c71f9>:0 
+  at UnityEngine.Bindings.ThrowHelper.ThrowNullReferenceException (System.Object obj) [0x00010] in <41b87322553648a1a76174c5109c71f9>:0 
+  at UnityEngine.Transform.get_rotation () [0x00006] in <41b87322553648a1a76174c5109c71f9>:0 
+  at DG.Tweening.ShortcutExtensions+<>c__DisplayClass76_0.<DOBlendablePunchRotation>b__1 (UnityEngine.Vector3 v) [0x00051] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\ShortcutExtensions.cs:1310 
+  at DG.Tweening.Plugins.Vector3ArrayPlugin.EvaluateAndApply (DG.Tweening.Plugins.Options.Vector3ArrayOptions options, DG.Tweening.Tween t, System.Boolean isRelative, DG.Tweening.Core.DOGetter`1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, System.Single elapsed, UnityEngine.Vector3[] startValue, UnityEngine.Vector3[] changeValue, System.Single duration, System.Boolean usingInversePosition, System.Int32 newCompletedSteps, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x0036d] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Plugins\Vector3ArrayPlugin.cs:140 
+  at DG.Tweening.Core.TweenerCore`3[T1,T2,TPlugOptions].ApplyTween (System.Single prevPosition, System.Int32 prevCompletedLoops, System.Int32 newCompletedSteps, System.Boolean useInversePosition, DG.Tweening.Core.Enums.UpdateMode updateMode, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x00030] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Core\TweenerCore.cs:261 
+
+
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+<color=#ff7337><color=#0099bc><b>DOTWEEN ► </b></color> SAFE MODE ►</color> DOTween's safe mode captured 1 errors. This is usually ok (it's what safe mode is there for) but if your game is encountering issues you should set Log Behaviour to Default in DOTween Utility Panel in order to get detailed warnings when an error is captured (consider that these errors are always on the user side).
+- 1 missing target or field errors
+Saving results to: Temp/HarnessResults/PlayMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

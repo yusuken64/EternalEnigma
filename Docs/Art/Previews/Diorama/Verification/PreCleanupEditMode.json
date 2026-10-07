@@ -1,0 +1,17 @@
+{
+    "runId": "9de8e7e5720a4996b66d26fe67134697",
+    "mode": "EditMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.EditMode",
+    "testFilters": [],
+    "passed": 285,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/EditMode.xml",
+    "startedUtc": "2026-10-07T04:38:53.0124302Z",
+    "updatedUtc": "2026-10-07T04:42:53.9670979Z",
+    "currentTest": "",
+    "lastFinished": "TrainerOfferTests.TownAllowlistDoesNotFilterClassOffers: Passed",
+    "failures": [],
+    "durationSeconds": 239.9791425
+}

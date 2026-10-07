@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 9e4b70fcd1dba2643b2c21c82032bcb3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4b794cb9a1811854991fd174b284e565, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
@@ -34,8 +34,8 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _FoamColor: {r: 0.83, g: 0.94, b: 0.88, a: 1}
-    - _SandColor: {r: 0.65999997, g: 0.59, b: 0.39999998, a: 1}
-    - _ShallowColor: {r: 0.23999995, g: 0.6399999, b: 0.67, a: 1}
+    - _FoamColor: {r: 0.91, g: 1, b: 1, a: 1}
+    - _SandColor: {r: 0.83, g: 0.77, b: 0.56, a: 1}
+    - _ShallowColor: {r: 0.19, g: 0.78, b: 0.8, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

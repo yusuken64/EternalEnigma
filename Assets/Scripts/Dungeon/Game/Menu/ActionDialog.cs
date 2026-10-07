@@ -46,8 +46,7 @@ namespace JuicyChickenGames.Menu
 		public void Throw_Clicked()
 		{
             if (!CanAct || _character.Equipment.IsEquipped(_data)) return;
-			var droppedItem = Game.Instance.CurrentDungeon.DroppedItemPrefabs
-				.FirstOrDefault(x => x.DroppedItemVisual == _data.ItemDefinition.DroppedItemVisual);
+			var droppedItem = _data.ItemDefinition.ResolveDroppedPrefab(Game.Instance.CurrentDungeon.DroppedItemPrefabs);
 			var droppedItemPrefab = droppedItem != null
 				? droppedItem.gameObject
 				: Game.Instance.ThrownItemProjectilePrefab;

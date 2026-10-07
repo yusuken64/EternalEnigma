@@ -40,7 +40,7 @@ namespace EternalEnigma.Tests
             Assert.That(StatusCategories.IsBind(restriction), Is.True);
             var destination = center + Vector3Int.left;
             var move = new MovementAction(harness.Ally, center, destination);
-            Assert.That(move.IsValid(harness.Ally), Is.False);
+            Assert.That(move.IsValid(harness.Ally), Is.True, "Attempting a blocked move spends the action, while execution cancels the displacement.");
             move.ExecuteImmediate(harness.Ally);
             SkillMovement.Place(harness.Ally, destination);
             Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(center));

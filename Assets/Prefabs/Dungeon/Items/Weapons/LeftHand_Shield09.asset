@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_Shield09
   m_EditorClassIdentifier: 
   ItemName: Steel Shield
-  MaxFloor: 20
-  MinFloor: 6
   Description: Steel Shield grants 9 defense.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 6
+  MaxFloor: 20
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 6
+  DroppedItemPrefab: {fileID: 3584218933435102371, guid: 96b3e5c23d4ac9b49b109ffe802815d4, type: 3}
+  Icon: {fileID: 1642993380547303272, guid: 555837b494883b44ab8336c2e61cdf6c, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 9
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Shield09
+  WeaponModelVariant: 
   WeaponType: 6
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

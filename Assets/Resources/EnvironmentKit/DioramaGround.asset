@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3f53b83370f8504fa1309335e472faf, type: 3}
+  m_Name: DioramaGround
+  m_EditorClassIdentifier: EternalEnigma.Game::PaintedGroundStyle
+  DryGround: {fileID: 2100000, guid: 334435992cef13c45b438ba9b088c72e, type: 2}
+  Water: {fileID: 2100000, guid: 0be2382560cca884480ad717c62b1671, type: 2}
+  Bridge: {fileID: 2100000, guid: 8a33c03c8f73580479cc7eaeb2de822b, type: 2}
+  GrassLip: {fileID: 4300000, guid: 5a1b94f20fe95e2418bd619c3d09a07f, type: 2}
+  GrassLipMaterial: {fileID: 2100000, guid: 2ac8fb06e66080d4f93f0787a12e3f70, type: 2}
+  Revision: 1

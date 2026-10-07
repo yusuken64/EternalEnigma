@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_Shield07
   m_EditorClassIdentifier: 
   ItemName: Tower Shield
-  MaxFloor: 20
-  MinFloor: 6
   Description: Tower Shield grants 7 defense.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 6
+  MaxFloor: 20
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 6
+  DroppedItemPrefab: {fileID: 166309056294135676, guid: d6d079d09ce824a4387cad1335a72ea5, type: 3}
+  Icon: {fileID: -4109633820324087616, guid: e0632bd2d9ba70342953a307a04e07f6, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 7
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Shield07
+  WeaponModelVariant: 
   WeaponType: 6
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

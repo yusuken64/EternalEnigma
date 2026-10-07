@@ -100,14 +100,16 @@ public static class BiomeRoadSigns
         foreach(var sign in Plan(grid)) {
             var root=new GameObject("Road sign").transform;root.SetParent(parent,false);root.localPosition=new Vector3(sign.Verge.x+.5f,sign.Verge.y+.5f,0)*size;
             var batch=new EnvironmentBatch(root);float scale=size*.8f;
-            BiomeDecorationPlacement.Add(batch,root,catalog,catalog.Get(sign.Biome,BiomeDecorationKind.SignPost),Vector3.zero,scale,0,false);
+            var diorama=DioramaCatalog.Load();
+            if(diorama!=null)diorama.Add(batch,"Signboard",sign.Biome,Vector3.zero,scale:new Vector3(1.65f,1,1));
+            else BiomeDecorationPlacement.Add(batch,root,catalog,catalog.Get(sign.Biome,BiomeDecorationKind.SignPost),Vector3.zero,scale,0,false);
             for(int i=0;i<sign.Branches.Length;i++) {
                 var branch=sign.Branches[i];float z=-(1.15f-i*.35f)*scale;
                 float angle=Mathf.Atan2(branch.Direction.y,branch.Direction.x)*Mathf.Rad2Deg;
                 // Tilt the writing face upward: north/south boards otherwise become edge-on
                 // to the production camera. The long arrow axis still follows the road branch.
                 var rotation=Quaternion.Euler(0,0,angle)*Quaternion.Euler(55,0,0);
-                BiomeDecorationPlacement.Add(batch,root,catalog,catalog.Get(sign.Biome,BiomeDecorationKind.SignPanel),new Vector3(0,0,z),scale,rotation,false);
+                if(diorama==null)BiomeDecorationPlacement.Add(batch,root,catalog,catalog.Get(sign.Biome,BiomeDecorationKind.SignPanel),new Vector3(0,0,z),scale,rotation,false);
                 var label=new GameObject("Destination "+branch.TownId).AddComponent<TextMeshPro>();label.transform.SetParent(root,false);
                 label.transform.localPosition=new Vector3(0,-.08f*scale,z-.02f);label.text=context.GetTownDisplayName(branch.TownId);
                 label.fontSizeMin=.5f;label.fontSizeMax=1.6f;label.enableAutoSizing=true;label.textWrappingMode=TextWrappingModes.Normal;
@@ -115,6 +117,14 @@ public static class BiomeRoadSigns
                 label.outlineColor=Color.black;label.outlineWidth=.18f;
                 label.rectTransform.sizeDelta=new Vector2(.95f*scale,.20f*scale);
                 var facing=label.gameObject.AddComponent<BiomeSignLabel>();facing.DisplayName=label.text;facing.Direction=new Vector3(branch.Direction.x,branch.Direction.y,0);facing.CameraOffset=scale*1.4f;
+                if(diorama!=null)
+                {
+                    float rowHeight=.30f/sign.Branches.Length;
+                    label.transform.localPosition=new Vector3(0,-.042f,-1.06f+(i-(sign.Branches.Length-1)*.5f)*rowHeight);
+                    label.rectTransform.sizeDelta=new Vector2(2.03f,rowHeight);label.fontSizeMin=.6f;label.fontSizeMax=3.2f;
+                    label.textWrappingMode=TextWrappingModes.NoWrap;label.overflowMode=TextOverflowModes.Ellipsis;
+                    facing.CameraOffset=.045f;
+                }
             }
             batch.Finish();
         }

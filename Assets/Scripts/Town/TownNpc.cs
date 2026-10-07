@@ -13,7 +13,7 @@ public sealed class TownNpc : MonoBehaviour
         var context = Common.Instance.CampaignContext;
         string hint = context == null ? "" : EternalEnigma.Core.Progression.CampaignGuidance.TownHint(context, context.State.LocationId,
             id => CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? id);
-        TownMenu.ShowMessage(Definition.DisplayName + ": " + Definition.Greeting + (hint.Length == 0 ? "" : "\n\n" + hint));
+        TownMenu.ShowMessage(Definition.DisplayName + ": " + Definition.Greeting + (hint.Length == 0 ? "" : "\n\n" + hint),Definition.Portrait);
     }
     public static void TurnToward(Transform visual, Vector3Int direction)
     {

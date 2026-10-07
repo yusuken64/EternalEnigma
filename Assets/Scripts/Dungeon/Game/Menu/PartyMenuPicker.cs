@@ -60,7 +60,12 @@ public sealed class PartyMenuPicker : Dialog
         var picker=parent.GetComponentsInChildren<PartyMenuPicker>(true).FirstOrDefault(p=>p.Owner==null);
         if(picker==null)throw new InvalidOperationException("No free authored party picker for this dialog stack.");
         picker.committed=false;picker.submittedFrame=-1;picker.Title.text=title;picker.Title.enableAutoSizing=true;picker.Title.fontSizeMin=18;picker.Title.fontSizeMax=30;picker.first=null;picker.description=null;
-        if(picker.OptionDescription!=null){picker.OptionDescription.gameObject.SetActive(choices.Any(c=>!string.IsNullOrEmpty(c.Description)));picker.OptionDescription.text="Select an option for its stat preview.";}
+        if(picker.OptionDescription!=null)
+        {
+            picker.OptionDescription.transform.parent.gameObject.SetActive(choices.Any(c=>!string.IsNullOrEmpty(c.Description)));
+            picker.OptionDescription.gameObject.SetActive(true);
+            picker.OptionDescription.text="Select an option for its stat preview.";
+        }
         foreach(Transform child in picker.Rows){child.gameObject.SetActive(false);Destroy(child.gameObject);}
         var buttons = new List<Button>();
         foreach(var choice in choices)

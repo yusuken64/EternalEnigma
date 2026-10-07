@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_Shield10
   m_EditorClassIdentifier: 
   ItemName: Knight's Shield
-  MaxFloor: 30
-  MinFloor: 15
   Description: Knight's Shield grants 10 defense.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 15
+  MaxFloor: 30
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 6
+  DroppedItemPrefab: {fileID: 3682120538953554684, guid: 65906d52499119441a367ef4421035f6, type: 3}
+  Icon: {fileID: 3281768961925632840, guid: 230d8e31b50fd88448d09722574ecb5e, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 10
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Shield10
+  WeaponModelVariant: 
   WeaponType: 6
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

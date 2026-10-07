@@ -19,7 +19,7 @@ public sealed class CoreStateRegressionTests
             DungeonReturnService.Commit(save, config, victory, 800, new InventoryItem[0], new Ally[0], retreat);
             DungeonReturnService.Commit(save, config, victory, 999, new InventoryItem[0], new Ally[0], retreat);
             Assert.That(save.TownSaveData.Gold, Is.EqualTo(expected));
-            Assert.That(save.TownSaveData.RestockCycle, Is.EqualTo(1));
+            Assert.That(save.TownSaveData.RestockCycle, Is.EqualTo(victory||retreat?1:0));
         }
         finally { Object.DestroyImmediate(config); }
     }

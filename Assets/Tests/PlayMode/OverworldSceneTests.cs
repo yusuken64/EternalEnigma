@@ -29,9 +29,12 @@ namespace EternalEnigma.Tests
         [UnityTest]
         public IEnumerator CampaignHintChangesWithDeviceWhileMessageIsStored()
         {
-            Common.Instance.BeginSandbox(42);
+            Common.Instance.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
             keyboard = InputSystem.AddDevice<Keyboard>();
             pad = InputSystem.AddDevice<Gamepad>();
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.K));
+            yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
             yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
             scene = SceneManager.GetSceneByName("Overworld");
             var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
@@ -40,12 +43,14 @@ namespace EternalEnigma.Tests
             var message = (TMPro.TMP_Text)typeof(CampaignHUD).GetField("message",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(hud);
             Assert.That(world.Message, Does.Contain("{Interact}"));
+            yield return harness.WaitUntil(() => message.text.Contains("Enter"), "first campaign HUD refresh");
             Assert.That(message.text, Does.Contain("Enter"));
 
-            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.South));
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.LeftStick));
             yield return null;
             Assert.That(message.text, Does.Contain("A / Cross"));
             Assert.That(message.text, Does.Not.Contain("Enter"));
+            yield return null; // CursorManager may update before the input module in this frame.
             Assert.That(Cursor.visible, Is.False);
 
             InputSystem.QueueStateEvent(pad, new GamepadState());
@@ -53,6 +58,7 @@ namespace EternalEnigma.Tests
             yield return null;
             Assert.That(message.text, Does.Contain("Enter"));
             Assert.That(message.text, Does.Not.Contain("A / Cross"));
+            yield return null;
             Assert.That(Cursor.visible, Is.True);
         }
 
@@ -176,7 +182,10 @@ namespace EternalEnigma.Tests
             Assert.That(biomeRenderer.BarrierMaterial, Is.Not.Null);
             Assert.That(biomeRenderer.Biomes.All(b => b.Material != null && b.Material.mainTexture != null), Is.True);
             Assert.That(biomeRenderer.Biomes.Select(b => b.Material.mainTexture).Distinct().Count(), Is.EqualTo(8),"Painted biomes differ by artwork, not material tint.");
-            Assert.That(biomeRenderer.RenderedSurfaces.GetComponentsInChildren<MeshRenderer>().Any(r => r.enabled && r.sharedMaterial == biomeRenderer.Biomes.First(b => b.Biome == OverworldBiome.Water).Material), Is.True);
+            var ground=world.Map.GetComponent<TWC.TileWorldCreator>().worldObject.GetComponentsInChildren<PaintedGroundOutput>();
+            Assert.That(ground.Length,Is.EqualTo(1),"TWC is the sole broad ground owner.");
+            Assert.That(ground[0].SurfaceCells[(int)GroundSurface.Water],Is.GreaterThan(0));
+            Assert.That(ground[0].GetComponentsInChildren<MeshRenderer>().Any(r=>r.enabled&&r.sharedMaterial==PaintedGroundStyle.Load().Water),Is.True);
             var grid = world.Map.CurrentGrid;
             var cosmetic = world.Map.GetComponent<TWC.TileWorldCreator>().worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Single(o => o.name == SmartEnvironmentMasks.Walls + "_layer");
             Assert.That(cosmetic.PropCount, Is.EqualTo(grid.TownFootprints.Sum(t => t.Walls.Count())));

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Scout
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: scout
-  PreferredAttribute: 2
   DisplayName: Scout
+  Icon: {fileID: 21300000, guid: f4c50ff9ddf54a298cb9407a4bc4ca0a, type: 3}
   Role: Utility and exploration
   AllowedWeapons: 020000000000000008000000
   GrowthPerLevel:
@@ -22,6 +22,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 1
     Strength: 2
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -41,6 +42,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 20
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -55,6 +57,7 @@ MonoBehaviour:
     CritChance: 0
     Evasion: 0
     HitBonus: 0
+  PreferredAttribute: 2
   Skills:
   - Skill: {fileID: 11400000, guid: 742412d913d88774ea3c6385310ae3a0, type: 2}
     Tier: 1

@@ -15,25 +15,26 @@ public static class UnifiedPresentationAuthoring
         if(profile==null){profile=ScriptableObject.CreateInstance<GamePresentationProfile>();AssetDatabase.CreateAsset(profile,profilePath);}
         profile.AllyTemplate=AssetDatabase.LoadAssetAtPath<Ally>("Assets/Prefabs/Dungeon/Ally.prefab");
         profile.CoinIcon=AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Bamao/BamaoUIPack/Sprites/Shop/icon_coin.png");
-        profile.BagIcon=RenderIcon(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/3D Props - Adorable Items/Adorable 3D Items/Prefabs/bag.prefab"),"Bag",false);
+        profile.BagIcon=RenderIcon(DioramaItemCatalog.Load()?.GetProp("bag")??AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/3D Props - Adorable Items/Adorable 3D Item_Atlas/Prefabs/bag.prefab"),"Bag",DioramaItemCatalog.Load()!=null,true);
         profile.ItemIcons=new Sprite[11];
-        foreach(var guid in AssetDatabase.FindAssets("t:Prefab",new[]{"Assets/Prefabs/Dungeon"}))
+        foreach(var visual in Enum.GetValues(typeof(DroppedItemVisual)).Cast<DroppedItemVisual>())
         {
-            var prefab=AssetDatabase.LoadAssetAtPath<DroppedItem>(AssetDatabase.GUIDToAssetPath(guid));
-            if(prefab!=null && profile.ItemIcons[(int)prefab.DroppedItemVisual]==null)
-                profile.ItemIcons[(int)prefab.DroppedItemVisual]=RenderIcon(prefab.gameObject,prefab.DroppedItemVisual.ToString(),true);
+            var prefab=AssetDatabase.LoadAssetAtPath<DroppedItem>("Assets/Prefabs/Dungeon/DroppedItems/"+visual+".prefab");
+            if(prefab!=null)profile.ItemIcons[(int)visual]=RenderIcon(prefab.gameObject,visual.ToString(),true,true);
         }
+        foreach(var item in DioramaItemAuthoring.Definitions())
+            if(item.DroppedItemPrefab!=null){item.Icon=RenderIcon(item.DroppedItemPrefab.gameObject,"Item_"+DioramaItemAuthoring.Safe(item.ItemName),true,true);EditorUtility.SetDirty(item);}
         EditorUtility.SetDirty(profile);AssetDatabase.SaveAssets();
         AssetDatabase.SaveAssets();
         Debug.Log("Updated presentation icons. UI layouts remain authored in prefabs.");
     }
 
-    private static Sprite RenderIcon(GameObject prefab,string name,bool xy)
+    public static Sprite RenderIcon(GameObject prefab,string name,bool xy,bool force=false)
     {
         const string folder="Assets/Resources/UI/ItemIcons";
         Directory.CreateDirectory(folder);
         string path=folder+"/"+name+".png";
-        if(File.Exists(path))return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if(File.Exists(path)&&!force)return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         var root=UnityEngine.Object.Instantiate(prefab);root.transform.position=new Vector3(10000,10000,10000);
         foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=31;
         foreach(var script in root.GetComponentsInChildren<MonoBehaviour>())script.enabled=false;
@@ -50,9 +51,9 @@ public static class UnifiedPresentationAuthoring
             camera.orthographic=true;camera.orthographicSize=bounds.size.magnitude*.57f;camera.nearClipPlane=.01f;camera.farClipPlane=100;
             camera.transform.position=bounds.center+(xy?new Vector3(0,-.4f,-1):new Vector3(0,.3f,-1)).normalized*bounds.size.magnitude*3;
             camera.transform.LookAt(bounds.center,xy?Vector3.up:Vector3.up);camera.targetTexture=target;
-            light.type=LightType.Directional;light.cullingMask=1<<31;light.intensity=1;light.shadows=LightShadows.None;
+            light.type=LightType.Directional;light.cullingMask=1<<31;light.intensity=.8f;light.shadows=LightShadows.None;
             light.transform.rotation=camera.transform.rotation;
-            RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.7f,.7f,.7f);
+            RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.45f,.45f,.45f);
             camera.Render();RenderTexture.active=target;image.ReadPixels(new Rect(0,0,128,128),0,0);image.Apply();File.WriteAllBytes(path,image.EncodeToPNG());
         }
         finally

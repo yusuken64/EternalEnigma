@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-07 03:07:13Z" end-time="2026-10-07 03:07:15Z" duration="2.1595483">
+  <test-suite type="TestSuite" id="1000" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="285" result="Passed" start-time="2026-10-07 03:07:13Z" end-time="2026-10-07 03:07:15Z" duration="2.159548" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1357" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="285" result="Passed" start-time="2026-10-07 03:07:13Z" end-time="2026-10-07 03:07:15Z" duration="1.999748" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1358" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="177" result="Passed" start-time="2026-10-07 03:07:13Z" end-time="2026-10-07 03:07:15Z" duration="1.965768" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1359" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="177" result="Passed" start-time="2026-10-07 03:07:13Z" end-time="2026-10-07 03:07:15Z" duration="1.865311" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1187" name="HeroPortraitTests" fullname="EternalEnigma.Tests.HeroPortraitTests" classname="EternalEnigma.Tests.HeroPortraitTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 03:07:14Z" end-time="2026-10-07 03:07:15Z" duration="1.764299" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1188" name="EveryHeroHasItsOwnSavedPortraitAndStudioCycles" fullname="EternalEnigma.Tests.HeroPortraitTests.EveryHeroHasItsOwnSavedPortraitAndStudioCycles" methodname="EveryHeroHasItsOwnSavedPortraitAndStudioCycles" classname="EternalEnigma.Tests.HeroPortraitTests" runstate="Runnable" seed="1508790734" result="Passed" start-time="2026-10-07 03:07:14Z" end-time="2026-10-07 03:07:15Z" duration="1.645061" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1189" name="PortraitDisplayUsesSavedImageWithoutChangingModelLayers" fullname="EternalEnigma.Tests.HeroPortraitTests.PortraitDisplayUsesSavedImageWithoutChangingModelLayers" methodname="PortraitDisplayUsesSavedImageWithoutChangingModelLayers" classname="EternalEnigma.Tests.HeroPortraitTests" runstate="Runnable" seed="552929610" result="Passed" start-time="2026-10-07 03:07:15Z" end-time="2026-10-07 03:07:15Z" duration="0.005801" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: Temp/HarnessResults/EditMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

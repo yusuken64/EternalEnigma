@@ -1,0 +1,2526 @@
+[
+  {
+    "path": "Assets/Art/3D Props - Adorable Items/Adorable 3D Items",
+    "assets": 822,
+    "bytes": 42839114,
+    "externalGuidReferences": {},
+    "literalPathReferences": {
+      "Assets/Tests/Editor/HarnessPlayerBuild.cs": [
+        "\"Assets/Art/3D Props - Adorable Items/Adorable 3D Items/\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/DungeonTexture",
+    "assets": 8,
+    "bytes": 64006,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Models",
+    "assets": 69,
+    "bytes": 1564980,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Prefabs",
+    "assets": 553,
+    "bytes": 1806151,
+    "externalGuidReferences": {},
+    "literalPathReferences": {
+      "Assets/Scripts/Editor/DioramaCleanupAuthoring.cs": [
+        "\"Assets/Art/EnvironmentKit/Prefabs/\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Prefabs/Desert",
+    "assets": 69,
+    "bytes": 225614,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Prefabs/Forest",
+    "assets": 69,
+    "bytes": 225617,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Prefabs/Marsh",
+    "assets": 69,
+    "bytes": 225592,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Prefabs/Mountain",
+    "assets": 69,
+    "bytes": 225601,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Prefabs/Tundra",
+    "assets": 69,
+    "bytes": 225611,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Prefabs/Volcanic",
+    "assets": 69,
+    "bytes": 225566,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/EnvironmentKit/Prefabs/Water",
+    "assets": 69,
+    "bytes": 225594,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/bridge.fbx",
+    "assets": 1,
+    "bytes": 15055,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/bridge.obj",
+    "assets": 1,
+    "bytes": 2711,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/bridgeStraightPole_exclusive.fbx",
+    "assets": 1,
+    "bytes": 29461,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/bridgeStraightPole_exclusive.obj",
+    "assets": 1,
+    "bytes": 10290,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/bridgeStraight_exclusive.fbx",
+    "assets": 1,
+    "bytes": 33180,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/bridgeStraight_exclusive.obj",
+    "assets": 1,
+    "bytes": 12757,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/door.fbx",
+    "assets": 1,
+    "bytes": 41307,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/door.fbx": [
+        "Assets/Prefabs/Dungeon/TileWorldDungeon.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/door.obj",
+    "assets": 1,
+    "bytes": 18734,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagBannerLong.fbx",
+    "assets": 1,
+    "bytes": 17333,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagBannerLong.obj",
+    "assets": 1,
+    "bytes": 3685,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagBannerShort.fbx",
+    "assets": 1,
+    "bytes": 17236,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagBannerShort.obj",
+    "assets": 1,
+    "bytes": 3630,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagBlue.fbx",
+    "assets": 1,
+    "bytes": 50761,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/flagBlue.fbx": [
+        "Assets/Art/Diorama/Settlements/CastleFlag.prefab",
+        "Assets/Scenes/MainMenu.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagBlue.obj",
+    "assets": 1,
+    "bytes": 16795,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagBlueWide.fbx",
+    "assets": 1,
+    "bytes": 42651,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagBlueWide.obj",
+    "assets": 1,
+    "bytes": 11853,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagWhite.fbx",
+    "assets": 1,
+    "bytes": 55133,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagWhite.obj",
+    "assets": 1,
+    "bytes": 17773,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagWhiteWide.fbx",
+    "assets": 1,
+    "bytes": 42665,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/flagWhiteWide.obj",
+    "assets": 1,
+    "bytes": 11863,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/gate.fbx",
+    "assets": 1,
+    "bytes": 41883,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/gate.fbx": [
+        "Assets/Scenes/MainMenu.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/gate.obj",
+    "assets": 1,
+    "bytes": 17645,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/king.fbx",
+    "assets": 1,
+    "bytes": 23804,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/king.fbx": [
+        "Assets/Prefabs/Town/Statue.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/king.obj",
+    "assets": 1,
+    "bytes": 3047,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/knightBlue.fbx",
+    "assets": 1,
+    "bytes": 23906,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/knightBlue.obj",
+    "assets": 1,
+    "bytes": 3113,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/knightRed.fbx",
+    "assets": 1,
+    "bytes": 23890,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/knightRed.obj",
+    "assets": 1,
+    "bytes": 3103,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/metalGate.fbx",
+    "assets": 1,
+    "bytes": 217165,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/metalGate.obj",
+    "assets": 1,
+    "bytes": 80979,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/metalGate.obj": [
+        "Assets/Prefabs/Town/Entrance.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/shieldBlue.fbx",
+    "assets": 1,
+    "bytes": 34002,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/shieldBlue.obj",
+    "assets": 1,
+    "bytes": 16051,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/shieldRed.fbx",
+    "assets": 1,
+    "bytes": 33999,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/shieldRed.obj",
+    "assets": 1,
+    "bytes": 16056,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeBallista.fbx",
+    "assets": 1,
+    "bytes": 258701,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/siegeBallista.fbx": [
+        "Assets/Prefabs/Town/Ballista.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeBallista.obj",
+    "assets": 1,
+    "bytes": 103584,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeCatapult.fbx",
+    "assets": 1,
+    "bytes": 320512,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeCatapult.obj",
+    "assets": 1,
+    "bytes": 118769,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeRam.fbx",
+    "assets": 1,
+    "bytes": 299408,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeRam.obj",
+    "assets": 1,
+    "bytes": 115397,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeTower.fbx",
+    "assets": 1,
+    "bytes": 453369,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeTower.obj",
+    "assets": 1,
+    "bytes": 191756,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeTrebuchet.fbx",
+    "assets": 1,
+    "bytes": 403981,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/siegeTrebuchet.obj",
+    "assets": 1,
+    "bytes": 153576,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/stairsStone.fbx",
+    "assets": 1,
+    "bytes": 21984,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/stairsStone.obj",
+    "assets": 1,
+    "bytes": 6825,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/stairsStoneSlant.fbx",
+    "assets": 1,
+    "bytes": 22542,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/stairsStoneSlant.obj",
+    "assets": 1,
+    "bytes": 7163,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/sword.fbx",
+    "assets": 1,
+    "bytes": 21024,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/sword.fbx": [
+        "Assets/Prefabs/Town/Shop.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/sword.obj",
+    "assets": 1,
+    "bytes": 5335,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerBase.fbx",
+    "assets": 1,
+    "bytes": 56579,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerBase.obj",
+    "assets": 1,
+    "bytes": 22793,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/towerBase.obj": [
+        "Assets/Prefabs/Town/Shop.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonBase_exclusive.fbx",
+    "assets": 1,
+    "bytes": 22196,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonBase_exclusive.obj",
+    "assets": 1,
+    "bytes": 4045,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonMid_exclusive.fbx",
+    "assets": 1,
+    "bytes": 71944,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonMid_exclusive.obj",
+    "assets": 1,
+    "bytes": 31889,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonRoofDetailed_exclusive.fbx",
+    "assets": 1,
+    "bytes": 30813,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonRoofDetailed_exclusive.obj",
+    "assets": 1,
+    "bytes": 10202,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonRoof_exclusive.fbx",
+    "assets": 1,
+    "bytes": 22930,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonRoof_exclusive.obj",
+    "assets": 1,
+    "bytes": 6217,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonTopWood_exclusive.fbx",
+    "assets": 1,
+    "bytes": 31785,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonTopWood_exclusive.obj",
+    "assets": 1,
+    "bytes": 9091,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonTop_exclusive.fbx",
+    "assets": 1,
+    "bytes": 31614,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerHexagonTop_exclusive.obj",
+    "assets": 1,
+    "bytes": 9588,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSlantRoof_exclusive.fbx",
+    "assets": 1,
+    "bytes": 84906,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSlantRoof_exclusive.obj",
+    "assets": 1,
+    "bytes": 40263,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquare.fbx",
+    "assets": 1,
+    "bytes": 29882,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/towerSquare.fbx": [
+        "Assets/Art/Diorama/Settlements/CastleTower.prefab",
+        "Assets/Prefabs/Town/Entrance.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquare.obj",
+    "assets": 1,
+    "bytes": 9970,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareArch.fbx",
+    "assets": 1,
+    "bytes": 94135,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareArch.obj",
+    "assets": 1,
+    "bytes": 34101,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareBase.fbx",
+    "assets": 1,
+    "bytes": 15124,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/towerSquareBase.fbx": [
+        "Assets/Prefabs/Town/Statue.prefab",
+        "Assets/Scenes/MainMenu.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareBase.obj",
+    "assets": 1,
+    "bytes": 2045,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareBaseBorder.fbx",
+    "assets": 1,
+    "bytes": 14393,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareBaseBorder.obj",
+    "assets": 1,
+    "bytes": 1908,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareBaseColor.fbx",
+    "assets": 1,
+    "bytes": 20083,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareBaseColor.obj",
+    "assets": 1,
+    "bytes": 4324,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMid.fbx",
+    "assets": 1,
+    "bytes": 30918,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMid.obj",
+    "assets": 1,
+    "bytes": 8267,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidColor.fbx",
+    "assets": 1,
+    "bytes": 18154,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidColor.obj",
+    "assets": 1,
+    "bytes": 3145,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidDoor_exclusive.fbx",
+    "assets": 1,
+    "bytes": 73476,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidDoor_exclusive.obj",
+    "assets": 1,
+    "bytes": 30819,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidOpen.fbx",
+    "assets": 1,
+    "bytes": 71273,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidOpen.obj",
+    "assets": 1,
+    "bytes": 17591,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidOpenSimple_exclusive.fbx",
+    "assets": 1,
+    "bytes": 60383,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidOpenSimple_exclusive.obj",
+    "assets": 1,
+    "bytes": 12689,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidWindows.fbx",
+    "assets": 1,
+    "bytes": 107577,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidWindows.fbx": [
+        "Assets/Scenes/MainMenu.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareMidWindows.obj",
+    "assets": 1,
+    "bytes": 39572,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareRoof.fbx",
+    "assets": 1,
+    "bytes": 28577,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareRoof.obj",
+    "assets": 1,
+    "bytes": 9096,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTop.fbx",
+    "assets": 1,
+    "bytes": 26405,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTop.obj",
+    "assets": 1,
+    "bytes": 7869,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopColor.fbx",
+    "assets": 1,
+    "bytes": 27876,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopColor.obj",
+    "assets": 1,
+    "bytes": 8353,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopColor.obj": [
+        "Assets/Prefabs/Town/Statue.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoof.fbx",
+    "assets": 1,
+    "bytes": 24271,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoof.obj",
+    "assets": 1,
+    "bytes": 6994,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoofHigh.fbx",
+    "assets": 1,
+    "bytes": 24413,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoofHigh.fbx": [
+        "Assets/Scenes/MainMenu.unity"
+      ]
+    },
+    "literalPathReferences": {
+      "Assets/Scripts/Editor/DioramaSettlementAuthoring.cs": [
+        "\"Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoofHigh.fbx\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoofHigh.obj",
+    "assets": 1,
+    "bytes": 7078,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoofHighDetail.fbx",
+    "assets": 1,
+    "bytes": 24463,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoofHighDetail.obj",
+    "assets": 1,
+    "bytes": 7102,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoofHighWindows_exclusive.fbx",
+    "assets": 1,
+    "bytes": 36181,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerSquareTopRoofHighWindows_exclusive.obj",
+    "assets": 1,
+    "bytes": 13159,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerTop.fbx",
+    "assets": 1,
+    "bytes": 54414,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerTop.obj",
+    "assets": 1,
+    "bytes": 22040,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerTopCorner.fbx",
+    "assets": 1,
+    "bytes": 48367,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/towerTopCorner.obj",
+    "assets": 1,
+    "bytes": 19162,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wall.fbx",
+    "assets": 1,
+    "bytes": 26345,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/wall.fbx": [
+        "Assets/Scenes/MainMenu.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wall.obj",
+    "assets": 1,
+    "bytes": 8769,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallCorner.fbx",
+    "assets": 1,
+    "bytes": 28907,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallCorner.obj",
+    "assets": 1,
+    "bytes": 10347,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallCornerHalf.fbx",
+    "assets": 1,
+    "bytes": 26202,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallCornerHalf.obj",
+    "assets": 1,
+    "bytes": 8871,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallCornerHalfTower.fbx",
+    "assets": 1,
+    "bytes": 113589,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallCornerHalfTower.obj",
+    "assets": 1,
+    "bytes": 41593,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallCornerSlant_exclusive.fbx",
+    "assets": 1,
+    "bytes": 28941,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallCornerSlant_exclusive.obj",
+    "assets": 1,
+    "bytes": 9925,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallDoor.fbx",
+    "assets": 1,
+    "bytes": 126028,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallDoor.obj",
+    "assets": 1,
+    "bytes": 49005,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallHalf.fbx",
+    "assets": 1,
+    "bytes": 20688,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallHalf.obj",
+    "assets": 1,
+    "bytes": 5931,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallHalfModular_exclusive.fbx",
+    "assets": 1,
+    "bytes": 19440,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallHalfModular_exclusive.obj",
+    "assets": 1,
+    "bytes": 5179,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrow.fbx",
+    "assets": 1,
+    "bytes": 20986,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrow.obj",
+    "assets": 1,
+    "bytes": 6223,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowCorner.fbx",
+    "assets": 1,
+    "bytes": 21560,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowCorner.obj",
+    "assets": 1,
+    "bytes": 6322,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowGate.fbx",
+    "assets": 1,
+    "bytes": 33159,
+    "externalGuidReferences": {
+      "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowGate.fbx": [
+        "Assets/Art/Diorama/Settlements/CastleGate.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowGate.obj",
+    "assets": 1,
+    "bytes": 13868,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowStairs.fbx",
+    "assets": 1,
+    "bytes": 39280,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowStairs.obj",
+    "assets": 1,
+    "bytes": 16382,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowStairsFence.fbx",
+    "assets": 1,
+    "bytes": 62280,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowStairsFence.obj",
+    "assets": 1,
+    "bytes": 29989,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowWood.fbx",
+    "assets": 1,
+    "bytes": 95193,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowWood.obj",
+    "assets": 1,
+    "bytes": 41073,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowWoodFence.fbx",
+    "assets": 1,
+    "bytes": 106375,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallNarrowWoodFence.obj",
+    "assets": 1,
+    "bytes": 48840,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallPillar.fbx",
+    "assets": 1,
+    "bytes": 30667,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallPillar.obj",
+    "assets": 1,
+    "bytes": 11352,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallStud.fbx",
+    "assets": 1,
+    "bytes": 14171,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallStud.obj",
+    "assets": 1,
+    "bytes": 2093,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallToNarrow.fbx",
+    "assets": 1,
+    "bytes": 30616,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/KennyNL/Castle Kit/Models/wallToNarrow.obj",
+    "assets": 1,
+    "bytes": 11355,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/RPGHero",
+    "assets": 50,
+    "bytes": 348998445,
+    "externalGuidReferences": {
+      "Assets/Art/RPGHero/Prefabs/RPGHeroHP.prefab": [
+        "Assets/Prefabs/Dungeon/Enemy.prefab"
+      ]
+    },
+    "literalPathReferences": {
+      "Assets/Tests/Editor/HarnessPlayerBuild.cs": [
+        "\"Assets/Art/RPGHero/\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/Art/Torch.mat",
+    "assets": 1,
+    "bytes": 2863,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeBarrier.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeBridge.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeDesert.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeForest.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeGrassland.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeMarsh.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeMountain.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeRoad.mat",
+    "assets": 1,
+    "bytes": 2263,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeRoad.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeTundra.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeVolcanic.png",
+    "assets": 1,
+    "bytes": 1430,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Overworld/BiomeWater.png",
+    "assets": 1,
+    "bytes": 376,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Prefabs/Dungeon/Dungeon.prefab",
+    "assets": 1,
+    "bytes": 1352208,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Prefabs/Dungeon/Enemies/Enemy_LargeSlime.prefab",
+    "assets": 1,
+    "bytes": 20993,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Prefabs/Dungeon/Enemies/Enemy_MushroomSmile.prefab",
+    "assets": 1,
+    "bytes": 28239,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Prefabs/Dungeon/Enemy.prefab",
+    "assets": 1,
+    "bytes": 9259,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Prefabs/Dungeon/_TileWorldCreator_Dungeon.prefab",
+    "assets": 1,
+    "bytes": 1469,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG Tiny Fantasy World 01 PA",
+    "assets": 530,
+    "bytes": 109944802,
+    "externalGuidReferences": {
+      "Assets/RPG Tiny Fantasy World 01 PA/Material/DefaultPBR.mat": [
+        "Assets/RPGMonsterWave4Polyart/Prefab/BlueSlime.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/BoneDragon.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/CastleMonster.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/Crawler.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/FlameKnight.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/FlowerMonster.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/IceGolem.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/LittleDemon.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/SkeletonMage.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/StarFish.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/Weapons/LD_Mace.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/Weapons/LD_Shield.prefab",
+        "Assets/RPGMonsterWave4Polyart/Prefab/Weapons/SM_Staff.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Texture/Base Map.png": [
+        "Assets/Art/Diorama/Materials/Environment_DefaultPBR.mat",
+        "Assets/Art/Diorama/Materials/Environment_Grass01.mat",
+        "Assets/Art/Diorama/Materials/Environment_Grass01_Foliage.mat",
+        "Assets/Art/Diorama/Materials/Environment_Grass03.mat",
+        "Assets/Art/Diorama/Materials/Environment_Grass03_Foliage.mat",
+        "Assets/Art/Diorama/Materials/Environment_Tree01.mat",
+        "Assets/Art/Diorama/Materials/Environment_Tree01_Foliage.mat"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/BuildingUtilityDeco/SignPost01.prefab": [
+        "Assets/Art/Diorama/Prefabs/SignPost01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/BuildingUtilityDeco/WatchTower01.prefab": [
+        "Assets/Art/Diorama/Prefabs/WatchTower01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/BuildingUtilityDeco/WoodFence01.prefab": [
+        "Assets/Art/Diorama/Prefabs/WoodFence01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/GroundPadding/GroundPadding01_1.prefab": [
+        "Assets/Art/Diorama/Prefabs/GroundPadding01_1.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/Mountains/Mountain01.prefab": [
+        "Assets/Art/Diorama/Prefabs/Mountain01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/RiverRoadLakeFall/RoadA01.prefab": [
+        "Assets/Art/Diorama/Prefabs/RoadA01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/Rock/Rock01.prefab": [
+        "Assets/Art/Diorama/Prefabs/Rock01.prefab",
+        "Assets/Art/Diorama/Production/Rock01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/Rock/Rock05.prefab": [
+        "Assets/Art/Diorama/Prefabs/Rock05.prefab",
+        "Assets/Art/Diorama/Production/Rock05.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Flower01.prefab": [
+        "Assets/Art/Diorama/Prefabs/Flower01.prefab",
+        "Assets/Art/Diorama/Production/Flower01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Flower02.prefab": [
+        "Assets/Art/Diorama/Prefabs/Flower02.prefab",
+        "Assets/Art/Diorama/Production/Flower02.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Flower03.prefab": [
+        "Assets/Art/Diorama/Prefabs/Flower03.prefab",
+        "Assets/Art/Diorama/Production/Flower03.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Flower04.prefab": [
+        "Assets/Art/Diorama/Prefabs/Flower04.prefab",
+        "Assets/Art/Diorama/Production/Flower04.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Flower05.prefab": [
+        "Assets/Art/Diorama/Prefabs/Flower05.prefab",
+        "Assets/Art/Diorama/Production/Flower05.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Grass01.prefab": [
+        "Assets/Art/Diorama/Prefabs/Grass01.prefab",
+        "Assets/Art/Diorama/Production/Grass01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Grass03.prefab": [
+        "Assets/Art/Diorama/Prefabs/Grass03.prefab",
+        "Assets/Art/Diorama/Production/Grass03.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Grass04.prefab": [
+        "Assets/Art/Diorama/Prefabs/Grass04.prefab",
+        "Assets/Art/Diorama/Production/Grass04.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Tree01.prefab": [
+        "Assets/Art/Diorama/Prefabs/Tree01.prefab",
+        "Assets/Art/Diorama/Production/Tree01.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Tree02.prefab": [
+        "Assets/Art/Diorama/Prefabs/Tree02.prefab",
+        "Assets/Art/Diorama/Production/Tree02.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Tree03.prefab": [
+        "Assets/Art/Diorama/Prefabs/Tree03.prefab",
+        "Assets/Art/Diorama/Production/Tree03.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Tree04.prefab": [
+        "Assets/Art/Diorama/Prefabs/Tree04.prefab",
+        "Assets/Art/Diorama/Production/Tree04.prefab"
+      ],
+      "Assets/RPG Tiny Fantasy World 01 PA/Prefab/TreePlants/Tree05.prefab": [
+        "Assets/Art/Diorama/Prefabs/Tree05.prefab",
+        "Assets/Art/Diorama/Production/Tree05.prefab"
+      ]
+    },
+    "literalPathReferences": {
+      "Assets/Tests/EditMode/DioramaAssetTests.cs": [
+        "\"Assets/RPG Tiny Fantasy World 01 PA/\""
+      ],
+      "Assets/Tests/EditMode/DioramaVegetationTests.cs": [
+        "\"Assets/RPG Tiny Fantasy World 01 PA/Mesh/\""
+      ],
+      "Assets/Tests/Editor/HarnessPlayerBuild.cs": [
+        "\"Assets/RPG Tiny Fantasy World 01 PA/\""
+      ],
+      "Assets/Scripts/Editor/DioramaFitAuthoring.cs": [
+        "\"Assets/RPG Tiny Fantasy World 01 PA\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/RPGMonsterWave4Polyart",
+    "assets": 257,
+    "bytes": 154093588,
+    "externalGuidReferences": {
+      "Assets/RPGMonsterWave4Polyart/Prefab/BlueSlime.prefab": [
+        "Assets/Art/Diorama/Wave4/BlueSlime.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/BoneDragon.prefab": [
+        "Assets/Art/Diorama/Wave4/BoneDragon.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/CastleMonster.prefab": [
+        "Assets/Art/Diorama/Wave4/CastleMonster.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/Crawler.prefab": [
+        "Assets/Art/Diorama/Wave4/Crawler.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/FlameKnight.prefab": [
+        "Assets/Art/Diorama/Wave4/FlameKnight.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/FlowerMonster.prefab": [
+        "Assets/Art/Diorama/Wave4/FlowerMonster.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/IceGolem.prefab": [
+        "Assets/Art/Diorama/Wave4/IceGolem.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/LittleDemon.prefab": [
+        "Assets/Art/Diorama/Wave4/LittleDemon.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/SkeletonMage.prefab": [
+        "Assets/Art/Diorama/Wave4/SkeletonMage.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Prefab/StarFish.prefab": [
+        "Assets/Art/Diorama/Wave4/StarFish.prefab"
+      ],
+      "Assets/RPGMonsterWave4Polyart/Texture/Default/Albedo.png": [
+        "Assets/Art/Diorama/Materials/Wave4_DefaultPolyart.mat"
+      ]
+    },
+    "literalPathReferences": {
+      "Assets/Tests/EditMode/DioramaAssetTests.cs": [
+        "\"Assets/RPGMonsterWave4Polyart/\"",
+        "\"Assets/RPGMonsterWave4Polyart/Texture/\""
+      ],
+      "Assets/Tests/Editor/HarnessPlayerBuild.cs": [
+        "\"Assets/RPGMonsterWave4Polyart/\""
+      ],
+      "Assets/Scripts/Editor/DioramaFitAuthoring.cs": [
+        "\"Assets/RPGMonsterWave4Polyart\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/All.png",
+    "assets": 1,
+    "bytes": 33975973,
+    "externalGuidReferences": {
+      "Assets/RPG_skills_and_abilities/All.png": [
+        "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/All_03.png",
+    "assets": 1,
+    "bytes": 7706847,
+    "externalGuidReferences": {
+      "Assets/RPG_skills_and_abilities/All_03.png": [
+        "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/All_04.png",
+    "assets": 1,
+    "bytes": 6989661,
+    "externalGuidReferences": {
+      "Assets/RPG_skills_and_abilities/All_04.png": [
+        "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/All_addone_04.png",
+    "assets": 1,
+    "bytes": 7848218,
+    "externalGuidReferences": {
+      "Assets/RPG_skills_and_abilities/All_addone_04.png": [
+        "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/All_addone_05.png",
+    "assets": 1,
+    "bytes": 6618343,
+    "externalGuidReferences": {
+      "Assets/RPG_skills_and_abilities/All_addone_05.png": [
+        "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/All_addone_06.png",
+    "assets": 1,
+    "bytes": 6860989,
+    "externalGuidReferences": {
+      "Assets/RPG_skills_and_abilities/All_addone_06.png": [
+        "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/All_addone_07.png",
+    "assets": 1,
+    "bytes": 2436993,
+    "externalGuidReferences": {
+      "Assets/RPG_skills_and_abilities/All_addone_07.png": [
+        "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity",
+    "assets": 1,
+    "bytes": 24368,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/RPG_skills_and_abilities/all02.png",
+    "assets": 1,
+    "bytes": 7953034,
+    "externalGuidReferences": {
+      "Assets/RPG_skills_and_abilities/all02.png": [
+        "Assets/RPG_skills_and_abilities/RPG_skills_and_abilities.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/Scripts/DungeonGenerator.cs",
+    "assets": 1,
+    "bytes": 15817,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/Demo",
+    "assets": 47,
+    "bytes": 578017977,
+    "externalGuidReferences": {
+      "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonAsset.asset": [
+        "Assets/Prefabs/Dungeon/_TileWorldCreator_Dungeon.prefab"
+      ]
+    },
+    "literalPathReferences": {
+      "Assets/Scripts/Editor/OverworldTerrainAudit.cs": [
+        "\"Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity\"",
+        "\"Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset\"",
+        "\"Assets/TileWorldCreator/Demo/11_MixTilesets/MixTilesetAsset.asset\""
+      ],
+      "Assets/Scripts/Editor/TWCSampleAudit.cs": [
+        "\"Assets/TileWorldCreator/Demo\"",
+        "\"Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity\"",
+        "\"Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity\"",
+        "\"Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoB.unity\"",
+        "\"Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/Tiles",
+    "assets": 519,
+    "bytes": 209806249,
+    "externalGuidReferences": {
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/WoodenBridgeTileset.asset": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/woodenBridge_deadEndExtended_mesh.prefab": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/AutomaticRampsDemoAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/woodenBridge_straight.prefab": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_corner_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_deadEndExtended_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_fourWay_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_single_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_straight_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_threeWay_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/BlockPreset.asset": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/RampsDemoAssetA.asset",
+        "Assets/TileWorldCreator/Demo/09_Ramps/RampsDemoAssetB.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/BlockRampPreset.asset": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/RampsDemoAssetB.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/BlockRampPreset2.asset": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/RampsDemoAssetA.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/House/HousePresetLvl1.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/House/HouseRoofPreset.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Park/ParkPreset.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/RoadPreset.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/RoadStreetLightsPreset.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/Materials/matRoadBorder.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/Materials/matRoadTarmac.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/Mesh/streetLight_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Park/Mesh/Tree.fbx": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Park/Prefabs/Tree.prefab": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matBlack.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matBrown.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matDoor.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matGreen.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matGrey.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matRed.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matWhite.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Materials/matBlockRampTilesPreset.mat": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Materials/matBlockTilesPreset.mat": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoB.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/blockRamp_edge_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/blockRamp_exteriorCorner_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_edgeRamp_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoB.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_edge_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_exteriorCorner_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_fill_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_interiorCorner_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/CliffPreset.asset": [
+        "Assets/TileWorldCreator/Demo/01_RuntimeEditor/RuntimeEditorAsset.asset",
+        "Assets/TileWorldCreator/Demo/09_Ramps/AutomaticRampsDemoAsset.asset",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/MixTilesetAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/CliffPresetOnlyWater.asset": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/CliffPresetWater.asset": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/CliffSandPreset.asset": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/DugeonTorchLight.asset": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonAsset.asset",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonGameDemoAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/DungeonCarpet.asset": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonAsset.asset",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonGameDemoAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/DungeonOnlyFloor.asset": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonAsset.asset",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonGameDemoAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/DungeonTiles.asset": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonAsset.asset",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonGameDemoAsset.asset",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/MixTilesetAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/PrototypeTiles.asset": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/MixTilesetAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_materials/mat_preset00_B.mat": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_materials/mat_preset00_C.mat": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_materials/mat_preset00_Ci.mat": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_materials/mat_preset00_I.mat": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_carpet_edge.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_carpet_exteriorCorner.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_carpet_fill.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_carpet_interiorCorner.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_column.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_cornerTile.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_dirt.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_edgeTile.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_groundTile.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_invertedCorner.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_torchlight.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_materials/mat_Dungeon_wall.mat": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_mesh/column.fbx": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon.unity",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_mesh/torchlight.fbx": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/07_Dungeon_Game.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_prefabs/dungeon_column.prefab": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonAsset.asset",
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonGameDemoAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_prefabs/gate.prefab": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonGameDemoAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/_prefabs/treasureChest.prefab": [
+        "Assets/TileWorldCreator/Demo/07_Dungeon/DungeonGameDemoAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_blockTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_cactus.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_cornerTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_edgeTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_groundTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_invertedCornerTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_stones.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_Sand_edge.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_Sand_exteriorCorner.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_Sand_fill.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_Sand_interiorCorner.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_mesh/cactus.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_mesh/stones.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_prefabs/cliffIsland_cactus.prefab": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_prefabs/cliffIsland_stones.prefab": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ]
+    },
+    "literalPathReferences": {
+      "Assets/Tests/Editor/HarnessPlayerBuild.cs": [
+        "\"Assets/TileWorldCreator/Tiles/\""
+      ],
+      "Assets/Scripts/Editor/DioramaAuditAuthoring.cs": [
+        "\"Assets/TileWorldCreator/Tiles/\""
+      ],
+      "Assets/Scripts/Editor/DioramaCleanupAuthoring.cs": [
+        "\"Assets/TileWorldCreator/Tiles/\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland",
+    "assets": 45,
+    "bytes": 7428037,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland",
+    "assets": 81,
+    "bytes": 32312246,
+    "externalGuidReferences": {
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/CliffPreset.asset": [
+        "Assets/TileWorldCreator/Demo/01_RuntimeEditor/RuntimeEditorAsset.asset",
+        "Assets/TileWorldCreator/Demo/09_Ramps/AutomaticRampsDemoAsset.asset",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/MixTilesetAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/CliffPresetOnlyWater.asset": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/CliffPresetWater.asset": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/CliffSandPreset.asset": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_blockTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_cactus.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_cornerTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_edgeTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_groundTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_invertedCornerTile.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity",
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_CliffIsland_stones.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_Sand_edge.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_Sand_exteriorCorner.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_Sand_fill.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_materials/mat_Sand_interiorCorner.mat": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_mesh/cactus.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_mesh/stones.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_prefabs/cliffIsland_cactus.prefab": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/CliffIsland/_prefabs/cliffIsland_stones.prefab": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype",
+    "assets": 31,
+    "bytes": 294131,
+    "externalGuidReferences": {
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/PrototypeTiles.asset": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/MixTilesetAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_materials/mat_preset00_B.mat": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_materials/mat_preset00_C.mat": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_materials/mat_preset00_Ci.mat": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_materials/mat_preset00_I.mat": [
+        "Assets/TileWorldCreator/Demo/11_MixTilesets/11_MixTilesets.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 2 Tiles/Prototype/_mesh/preset_00_tile_F.fbx": [
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer0/01_2DIsland_lay0_edgeTile.prefab",
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer0/02_2DIsland_lay0_exteriorCornerTile.prefab",
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer0/03_2DIsland_lay0_interiorCornerTile.prefab",
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer0/04_2DIsland_lay0_fillTile.prefab",
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer0/05_2DIsland_lay0_groundTile.prefab",
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer1/01_2DIsland_lay1_edgeTile.prefab",
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer1/02_2DIsland_lay1_exteriorCornerTile.prefab",
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer1/03_2DIsland_lay1_interiorCornerTile.prefab",
+        "Assets/TileWorldCreator/Tiles/Version 2 Tiles/2DIsland/_prefabs/layer1/04_2DIsland_lay1_fillTile.prefab"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/Tiles/Version 2 Tiles/SciFi",
+    "assets": 91,
+    "bytes": 154123670,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles",
+    "assets": 136,
+    "bytes": 1096935,
+    "externalGuidReferences": {
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/BlockPreset.asset": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/RampsDemoAssetA.asset",
+        "Assets/TileWorldCreator/Demo/09_Ramps/RampsDemoAssetB.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/BlockRampPreset.asset": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/RampsDemoAssetB.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/BlockRampPreset2.asset": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/RampsDemoAssetA.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/House/HousePresetLvl1.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/House/HouseRoofPreset.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Park/ParkPreset.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/RoadPreset.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/RoadStreetLightsPreset.asset": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/Materials/matRoadBorder.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/Materials/matRoadTarmac.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Road/Mesh/streetLight_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Park/Mesh/Tree.fbx": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Park/Prefabs/Tree.prefab": [
+        "Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matBlack.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matBrown.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matDoor.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matGreen.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matGrey.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matRed.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/City/Materials/matWhite.mat": [
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Materials/matBlockRampTilesPreset.mat": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Materials/matBlockTilesPreset.mat": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoB.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/blockRamp_edge_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/blockRamp_exteriorCorner_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_edgeRamp_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoB.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_edge_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_exteriorCorner_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_fill_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/Block/Mesh/block_interiorCorner_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_RampsDemoA.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles",
+    "assets": 65,
+    "bytes": 1214331,
+    "externalGuidReferences": {
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/WoodenBridgeTileset.asset": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/woodenBridge_deadEndExtended_mesh.prefab": [
+        "Assets/TileWorldCreator/Demo/09_Ramps/AutomaticRampsDemoAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/woodenBridge_straight.prefab": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/CliffIslandAsset.asset"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_corner_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_deadEndExtended_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_AutomaticRampsPlacement.unity",
+        "Assets/TileWorldCreator/Demo/09_Ramps/09_ObjectRampsPlacementWithCorrectOrientation.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_fourWay_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_single_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_straight_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ],
+      "Assets/TileWorldCreator/Tiles/Version 3 Tiles/6-Tiles/WoodenBridge/Mesh/woodenBridge_threeWay_mesh.fbx": [
+        "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/TileWorldCreator/VillageLSystemAsset.asset",
+    "assets": 1,
+    "bytes": 124138,
+    "externalGuidReferences": {
+      "Assets/TileWorldCreator/VillageLSystemAsset.asset": [
+        "Assets/Scenes/EnvironmentPlayground.unity",
+        "Assets/Scenes/Town.unity",
+        "Assets/TileWorldCreator/Demo/02_Village/02_Village_LSystem.unity"
+      ]
+    },
+    "literalPathReferences": {
+      "Assets/Tests/EditMode/BiomeDecorationTests.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Tests/EditMode/TownAndPropVisualTests.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Tests/EditMode/TownInteriorIntegrationTests.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Tests/EditMode/TownLayoutIntegrationTests.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Scripts/Editor/BiomeDecorationIntegration.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Scripts/Editor/CoreLayerAuthoring.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Scripts/Editor/DioramaCleanupAuthoring.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Scripts/Editor/EnvironmentAssetAudit.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Scripts/Editor/TownHousePreview.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ],
+      "Assets/Scripts/Editor/TownInteriorPreview.cs": [
+        "\"Assets/TileWorldCreator/VillageLSystemAsset.asset\""
+      ]
+    },
+    "resources": false
+  },
+  {
+    "path": "Assets/Tiles",
+    "assets": 259,
+    "bytes": 81779015,
+    "externalGuidReferences": {
+      "Assets/Tiles/DungeonRuleTile.asset": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/StairTile.asset": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (1).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (11).asset": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (19).asset": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (19).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (2).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (23).asset": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (23).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (4).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (42).asset": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (42).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (48).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (49).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (52).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (53).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (54).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (55).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (57).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (66).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (67).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (68).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (69).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (7).asset": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/tiles/Tile (72).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/objects/door3/1.png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/objects/floor button/Button (1).png": [
+        "Assets/Prefabs/Dungeon/Dungeon.prefab"
+      ],
+      "Assets/Tiles/The Dungeon/png/objects/torch/1.png": [
+        "Assets/Art/Torch.mat"
+      ]
+    },
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/_Recovery",
+    "assets": 3,
+    "bytes": 148846,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  },
+  {
+    "path": "Assets/unity-wave-function-collapse",
+    "assets": 12,
+    "bytes": 53679,
+    "externalGuidReferences": {},
+    "literalPathReferences": {},
+    "resources": false
+  }
+]

@@ -1,8 +1,9 @@
 """Run through Blender MCP. Repeatable bespoke low-poly meshes; no scene clearing."""
 import bpy, math, json, os
+from pathlib import Path
 from mathutils import Vector, Quaternion
 
-ROOT = 'C:/Users/yusuk/Documents/GitHub/EternalEnigma'
+ROOT = str(Path(EE_PROJECT_ROOT) if 'EE_PROJECT_ROOT' in globals() else Path(__file__).resolve().parents[2])
 DEST = ROOT + '/Assets/Art/EternalEnigma/BiomeDecorations'
 SOURCE = ROOT + '/ArtSource/BiomeDecorations'
 os.makedirs(DEST, exist_ok=True)

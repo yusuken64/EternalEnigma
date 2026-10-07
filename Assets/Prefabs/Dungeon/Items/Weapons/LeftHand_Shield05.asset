@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_Shield05
   m_EditorClassIdentifier: 
   ItemName: Iron Shield
-  MaxFloor: 10
-  MinFloor: 1
   Description: Iron Shield grants 5 defense.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 6
+  DroppedItemPrefab: {fileID: 301551165338411028, guid: bdbe4fc27c344fd45a8d3d8b65c2b52b, type: 3}
+  Icon: {fileID: 652396172009227223, guid: d89618f71570090478d8a430de56be86, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 5
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Shield05
+  WeaponModelVariant: 
   WeaponType: 6
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

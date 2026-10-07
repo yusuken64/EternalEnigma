@@ -117,7 +117,7 @@ public static class PaintedEnvironmentAuthoring
         if (!t.LoadImage(File.ReadAllBytes(path))) throw new IOException(path);
         return t;
     }
-    static void WriteSurface(Texture2D source, Rect region, string path, Color tint)
+    public static void WriteSurface(Texture2D source, Rect region, string path, Color tint)
     {
         const int n=1024;
         var pixels=new Color[n*n];
@@ -206,7 +206,6 @@ public static class PaintedEnvironmentAuthoring
             var m=AssetDatabase.LoadAssetAtPath<Material>("Assets/Overworld/Biome"+Biomes[b]+".mat");
             if(m!=null) Set(m,Texture("Ground_"+Biomes[b]),Color.white,.5f);
         }
-        Set(AssetDatabase.LoadAssetAtPath<Material>("Assets/Overworld/BiomeRoad.mat"),kit.Road.mainTexture,Color.white,.5f);
         foreach(var material in new[]{kit.Paving,kit.Road}) {material.SetOverrideTag("EnvironmentProjection","Planar");EditorUtility.SetDirty(material);}
         Set(AssetDatabase.LoadAssetAtPath<Material>("Assets/Overworld/BiomeBarrier.mat"),Texture("Ground_Mountain"),Color.white,.5f);
         // The ocean shader, secondary noise layer, animation speeds and shoreline masks are untouched.

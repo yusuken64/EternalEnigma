@@ -14,22 +14,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Iron Arrows
   Description: Iron arrows for bows.
-  WeaponModelVariant: Arrow02
+  ShopOnly: 1
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
+  ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 20
   StackStartMax: 20
   StackMax: 20
-  Targeting: 4
-  TargetSelector:
-    Team: 1
-    Area: 0
-  MissileRange: 40
-  MissileProjectilePrefab: {fileID: 8649945278838495128, guid: b9223e97c46e47a39780709b38d0dbbc, type: 3}
+  DroppedItemVisual: 0
+  DroppedItemPrefab: {fileID: 5058917219263210891, guid: 255ebb6f4979ecb4f83d8dd4aff95321, type: 3}
+  Icon: {fileID: 8615564519677323192, guid: 635034abcd90e38468e83a0915e1deea, type: 3}
   EquipmentSlot: 2
-  StatModification: {}
+  StatModification:
+    HPMax: 0
+    SPMax: 0
+    HungerMax: 0
+    Strength: 0
+    MagicPower: 0
+    Defense: 0
+    EXPOnKill: 0
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 0
+    AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
   WeaponModelName: Arrows
+  WeaponModelVariant: Arrow02
   WeaponType: 2
   IsAmmunition: 1
   ArrowDamageMultiplier: 1.25
   ArrowTargets: 2
-  ShopOnly: 1
+  IsRangedAttack: 0
+  ProjectilePrefab: {fileID: 0}

@@ -21,6 +21,7 @@ public static class OverworldTerrainAudit
         var text = new StringBuilder();
         var previous = SceneManager.GetActiveScene();
         const string path = "Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity";
+        if(!File.Exists(path)){Debug.Log("TWC demo assets were removed after migration. The retained audit is Docs/Art/TWCSampleAudit.md.");return;}
         var scene = SceneManager.GetSceneByPath(path);
         bool opened = !scene.IsValid() || !scene.isLoaded;
         if (opened) scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);

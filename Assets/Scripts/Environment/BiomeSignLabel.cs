@@ -15,9 +15,10 @@ public sealed class BiomeSignLabel : MonoBehaviour
     private static readonly Plane[] planes=new Plane[6];
     private static int frame=-1;
     private static Camera frameCamera;
-    private void LateUpdate()
+    private void LateUpdate()=>Face(Camera.main);
+    public void Face(Camera camera)
     {
-        var camera=Camera.main;if(camera==null)return;
+        if(camera==null)return;
         if(!anchored){anchor=transform.localPosition;anchored=true;}
         transform.position=transform.parent.TransformPoint(anchor)-camera.transform.forward*CameraOffset;
         if(visual==null)visual=GetComponent<Renderer>();

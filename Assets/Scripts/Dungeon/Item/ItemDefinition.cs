@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 public abstract class ItemDefinition : ScriptableObject
 {
@@ -22,6 +24,18 @@ public abstract class ItemDefinition : ScriptableObject
 	public int StackMax;
 
 	public DroppedItemVisual DroppedItemVisual;
+
+    public DroppedItem DroppedItemPrefab;
+    public Sprite Icon;
+    public DroppedItem ResolveDroppedPrefab(IEnumerable<DroppedItem> categories) =>
+        DroppedItemPrefab != null ? DroppedItemPrefab : categories?.FirstOrDefault(p=>p!=null&&p.DroppedItemVisual==DroppedItemVisual);
+    public Sprite ResolveIcon(GamePresentationProfile profile=null)
+    {
+        if(Icon!=null)return Icon;
+        profile=profile!=null?profile:GamePresentationProfile.Current;
+        int index=(int)DroppedItemVisual;
+        return profile!=null&&profile.ItemIcons!=null&&index>=0&&index<profile.ItemIcons.Length?profile.ItemIcons[index]:null;
+    }
 
 	abstract internal InventoryItem AsInventoryItem(int? stock);
 

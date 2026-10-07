@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: RightHand_THS04_Sword
   m_EditorClassIdentifier: 
   ItemName: Knight's Greatsword
-  MaxFloor: 40
-  MinFloor: 25
   Description: Knight's Greatsword grants 14 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 25
+  MaxFloor: 40
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 2505515791577782418, guid: f81965b9ea909b34688376d3abbb632b, type: 3}
+  Icon: {fileID: 4803546425679700078, guid: 8fd99a3e716ff364e8096c45fd9440a3, type: 3}
   EquipmentSlot: 1
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 14
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: THS04_Sword
+  WeaponModelVariant: 
   WeaponType: 3
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

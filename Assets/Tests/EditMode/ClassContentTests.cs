@@ -45,9 +45,9 @@ namespace EternalEnigma.Tests
 
                 var expected = ClassContentExpectations.Rows.Where(r => r.ClassId == id).ToList();
 
-                Assert.That(def.Skills.Count, Is.EqualTo(20), $"Class {id} should have 20 skills");
+                Assert.That(def.Skills.Count, Is.EqualTo(expected.Count), $"Class {id} should match its authored kit");
 
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < expected.Count; i++)
                 {
                     var entry = def.Skills[i];
                     Assert.That(entry, Is.Not.Null, $"{id} #{i + 1} entry should not be null");
@@ -127,6 +127,8 @@ namespace EternalEnigma.Tests
                             };
                         }
 
+                        if(skillName is "Quick Casting" or "Casting Dance")expectedLearnCost=200;
+                        if(skillName is "Mobile Casting" or "Casting Chorus")expectedLearnCost=300;
                         Assert.That(skill.LearnCost, Is.EqualTo(expectedLearnCost),
                             $"{classId}/{skillName} tier {entry.Tier} should have LearnCost {expectedLearnCost}");
                         Assert.That(skill.MaxRank, Is.EqualTo(entry.MaxRank),

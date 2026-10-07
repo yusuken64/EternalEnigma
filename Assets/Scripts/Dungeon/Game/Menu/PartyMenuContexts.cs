@@ -35,7 +35,7 @@ public abstract class PartyMenuContext : IPartyMenuContext
         return Bag.Where(i=>i?.ItemDefinition!=null).Select(i=>new PartyMenuEntry {
             Item=i,Title=i.ItemName+(i.HasStacks?$"  x{i.StackStock}":"")+(hero.Equipment.IsEquipped(i)?"  [Equipped]":""),
             Equipped=hero.Equipment.IsEquipped(i),Section=hero.Equipment.IsEquipped(i)?"Equipped":"Shared bag",
-            Icon=GamePresentationProfile.Current?.ItemIcons.Length>(int)i.ItemDefinition.DroppedItemVisual ? GamePresentationProfile.Current.ItemIcons[(int)i.ItemDefinition.DroppedItemVisual] : null,
+            Icon=i.ItemDefinition.ResolveIcon(),
             Description=i.ItemDefinition.Description+(i is EquipableInventoryItem equipment ? "\n"+equipment.EquipmentSlot+"\n"+
                 (hero.DungeonActor!=null?StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,hero.Equipment.Current().With(equipment))):
                     StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,hero.Equipment.Current().With(equipment)))):"") }).ToList();

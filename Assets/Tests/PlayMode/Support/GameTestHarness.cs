@@ -184,8 +184,19 @@ public sealed class GameTestHarness
     public IEnumerator UseItemThroughMenu(InventoryItem item)
     {
         yield return WaitForIdle();
-        var items = Ally.Equipment.GetEquippedItems().Cast<InventoryItem>()
-            .Concat(Game.PlayerController.Inventory.InventoryItems).Where(i => i != null).ToList();
+        if (Ally.Equipment.IsEquipped(item))
+        {
+            MenuManager.Instance.OpenPartyMenu(PartyMenuTab.Equipment, Ally);
+            var slot = ((EquipableInventoryItem)item).EquipmentSlot;
+            int row = slot == EquipmentSlot.Accessory ? 2 : slot == EquipmentSlot.OffHand ? 1 : 0;
+            MenuManager.Instance.PartyMenu.EntryButtons[row].onClick.Invoke();
+            var picker = (PartyMenuPicker)MenuManager.Instance.CurrentDialog;
+            picker.Rows.GetComponentsInChildren<AuthoredButton>().Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text == "Unequip").Button.onClick.Invoke();
+            yield return null;
+            yield return WaitForIdle();
+            yield break;
+        }
+        var items = Game.PlayerController.Inventory.InventoryItems.Where(i => i != null).ToList();
         int index = items.IndexOf(item);
         Assert.That(index, Is.GreaterThanOrEqualTo(0), "Item must be equipped or in the bag.");
         MenuManager.Instance.OpenInventoryAs(Ally);
@@ -196,6 +207,16 @@ public sealed class GameTestHarness
         useButton.onClick.Invoke(); // Exercise the scene's serialized UnityEvent, not a duplicate equip implementation.
         yield return null;
         yield return WaitForIdle();
+    }
+
+    internal IEnumerator ExecuteSkillToCompletion(SkillAction action)
+    {
+        Assert.That(Ally.CanCast(action.Skill, out var reason), Is.True, action.Skill.SkillName + ": " + reason);
+        Assert.That(action.IsValid(Ally), Is.True, action.Skill.SkillName + ": invalid target");
+        yield return ExecuteAction(action);
+        for (int step = 0; Ally.PendingCast != null && step < 32; step++)
+            yield return ExecuteAction(new WaitAction());
+        Assert.That(Ally.PendingCast, Is.Null, "The skill must finish its charging actions.");
     }
 
     public IEnumerator SpawnEnemy(string prefabName, Vector3Int position)

@@ -29,9 +29,8 @@ namespace EternalEnigma.Tests
             Assert.That(layer.QuarterTiles.name,Is.EqualTo("House"));
             var owner=creator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Single(o=>o.name=="Houses_layer");
             Assert.That(owner.PropCount,Is.GreaterThan(0));
-            var material=EnvironmentKit.Load().BuildingMaterial(creator.GetComponent<TownBiomeStyle>().Current);
-            Assert.That(owner.GetComponentsInChildren<MeshRenderer>().All(r=>r.sharedMaterial==material),Is.True);
-            Assert.That(material.mainTexture.width,Is.EqualTo(2048));
+            Assert.That(owner.GetComponentsInChildren<MeshRenderer>().All(r=>r.sharedMaterial.shader.name=="EternalEnigma/Diorama Vertex Lit"),Is.True);
+            Assert.That(owner.GetComponent<BiomeDecorationSurfaceSet>().Faces.Count,Is.GreaterThan(0));
         }
         [UnityTest]
         public IEnumerator AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates()
@@ -50,8 +49,11 @@ namespace EternalEnigma.Tests
             yield return null;
             var owner = p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Single(o => o.name == "Medieval streets, houses and parks_layer");
             int triangles = owner.TriangleCount;
-            var originalOwners=p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Where(o=>o.name!="Biome decorations").Select(o=>o.name).OrderBy(n=>n).ToArray();
-            Assert.That(originalOwners.Distinct().Count(),Is.EqualTo(originalOwners.Length),"One owner per terrain layer");
+            string OwnerPath(EnvironmentMeshOwner o) => UnityEditor.AnimationUtility.CalculateTransformPath(o.transform, p.TownCreator.worldObject.transform)
+                + " at " + ((Vector2)o.transform.localPosition).ToString("R"); // Repeated markers have distinct XY placements; Z can bob.
+            var originalOwners=p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Where(o=>o.name!="Biome decorations").Select(OwnerPath).OrderBy(n=>n).ToArray();
+            Assert.That(originalOwners.Distinct().Count(),Is.EqualTo(originalOwners.Length),
+                "One owner per terrain layer: " + string.Join("; ", originalOwners.GroupBy(n=>n).Where(g=>g.Count()>1).Select(g=>g.Key+" x"+g.Count())));
             Assert.That(triangles, Is.GreaterThan(100));
             Assert.That(p.TownCreator.worldObject.GetComponentsInChildren<Collider>(), Is.Empty);
             for (int i = 0; i < 8; i++)
@@ -64,7 +66,7 @@ namespace EternalEnigma.Tests
             Assert.That(p.TownBiome, Is.EqualTo(OverworldBiome.Grassland));
             Assert.That(owner.TriangleCount, Is.EqualTo(triangles));
             p.Rebuild(); yield return Until(() => builds == 10); yield return null;
-            Assert.That(p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Where(o=>o.name!="Biome decorations").Select(o=>o.name).OrderBy(n=>n), Is.EqualTo(originalOwners));
+            Assert.That(p.TownCreator.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Where(o=>o.name!="Biome decorations").Select(OwnerPath).OrderBy(n=>n), Is.EqualTo(originalOwners));
             Assert.That(p.TownCreator.worldObject.transform.Find("Biome decorations"),Is.Not.Null);
             bool worldDone = false; p.Overworld.TerrainBuilt += _ => worldDone = true;
             p.ShowOverworld(); yield return Until(() => worldDone); yield return null;
@@ -80,7 +82,7 @@ namespace EternalEnigma.Tests
             var ocean = wc.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Single(o => o.name == "Ocean/Surrounding water_layer");
             var summit=wc.worldObject.GetComponentsInChildren<EnvironmentMeshOwner>().Single(o=>o.name==SmartEnvironmentMasks.Summits+"_layer");
             Assert.That(summit.TriangleCount,Is.GreaterThan(0));
-            Assert.That(summit.TriangleCount,Is.EqualTo(summit.PropCount*8));
+            Assert.That(summit.TriangleCount,Is.EqualTo(summit.PropCount*DioramaCatalog.Load().Get("RockCap").Triangles));
             Assert.That(summit.GetComponentsInChildren<MeshRenderer>().All(r=>r.enabled),Is.True);
             var summitLayer=wc.twcAsset.mapBuildLayers.OfType<EnvironmentSmartTileLayer>().Single(l=>l.layerName==SmartEnvironmentMasks.Summits);
             var summitMask=wc.GetMapOutputFromBlueprintLayer(summitLayer.assignedGenerationLayerGuid);
@@ -124,7 +126,7 @@ namespace EternalEnigma.Tests
             Assert.That(p.TownTemplate.mapBuildLayers.OfType<TownEnvironmentLayer>().Single().TreeModels,Is.SameAs(p.Kit.TreeModels));
             Assert.That(p.Overworld.Template.mapBuildLayers.OfType<OverworldCosmeticLayer>().Single().TreeModels,Is.SameAs(p.Kit.TreeModels));
             p.ShowGallery(); Assert.That(wc.worldObject.activeSelf, Is.False);
-            Assert.That(p.Overworld.GetComponent<OverworldBiomeRenderer>().RenderedSurfaces.activeSelf, Is.False);
+            Assert.That(p.Overworld.GetComponent<OverworldBiomeRenderer>().RenderedSurfaces.activeInHierarchy, Is.False);
         }
         private static IEnumerator Until(Func<bool> done)
         {

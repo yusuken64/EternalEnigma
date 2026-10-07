@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 628102230e27e94468c78365f9a41b1a, type: 3}
+  m_Name: CliffSixTerrain
+  m_EditorClassIdentifier: TileWorldCreator::TWC.TileWorldCreator6TilesPreset
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  useRulesForEdgeTile: 0
+  useRulesForExtCornerTile: 0
+  useRulesForIntCornerTile: 0
+  useRulesForFillTile: 0
+  singleTile: {fileID: 2348876032310542091, guid: e5566097c93f9fa4baa235661c0d3e32, type: 3}
+  deadEndTile: {fileID: 3257633975886498925, guid: 3338d7c6b660cde48aada82e41510582, type: 3}
+  straightTile: {fileID: 8983775548419938248, guid: 8bdf3c0bb6dd74a4088b3dfa6957cfc5, type: 3}
+  cornerTile: {fileID: 1552513409560226588, guid: 5ed4b852e0a8e894fa0e57a8145f3210, type: 3}
+  threeWayTile: {fileID: 3628773013305358823, guid: 666a68c37ae77d34ebb77297c4e87ca2, type: 3}
+  fourWayTile: {fileID: 289005711550146286, guid: 7d85dcd3da3cfa54982cf4740666e8a5, type: 3}
+  deadEndTileRotationOffset: {x: 0, y: 0, z: 0}
+  straightTileRotationOffset: {x: 0, y: 0, z: 0}
+  cornerTileRotationOffset: {x: 0, y: 0, z: 0}
+  threeWayTileRotationOffset: {x: 0, y: 0, z: 0}
+  fourWayTileRotationOffset: {x: 0, y: 0, z: 0}
+  singleTileScalingOffset: {x: 0, y: 0, z: 0}
+  deadEndTileScalingOffset: {x: 0, y: 0, z: 0}
+  straightTileScalingOffset: {x: 0, y: 0, z: 0}
+  cornerTileScalingOffset: {x: 0, y: 0, z: 0}
+  threeWayTileScalingOffset: {x: 0, y: 0, z: 0}
+  fourWayTileScalingOffset: {x: 0, y: 0, z: 0}

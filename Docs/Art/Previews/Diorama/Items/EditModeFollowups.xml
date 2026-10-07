@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="22" result="Passed" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-07 02:02:06Z" end-time="2026-10-07 02:03:12Z" duration="65.698654">
+  <test-suite type="TestSuite" id="1000" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="282" result="Passed" start-time="2026-10-07 02:02:06Z" end-time="2026-10-07 02:03:12Z" duration="65.698654" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1353" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="282" result="Passed" start-time="2026-10-07 02:02:06Z" end-time="2026-10-07 02:03:12Z" duration="65.558601" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1354" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="174" result="Passed" start-time="2026-10-07 02:02:06Z" end-time="2026-10-07 02:03:12Z" duration="65.507878" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1355" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="174" result="Passed" start-time="2026-10-07 02:02:06Z" end-time="2026-10-07 02:03:12Z" duration="65.407757" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1160" name="ClassContentTests" fullname="EternalEnigma.Tests.ClassContentTests" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-07 02:02:07Z" end-time="2026-10-07 02:02:09Z" duration="2.033334" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1165" name="ArrowSkillsNeedABow" fullname="EternalEnigma.Tests.ClassContentTests.ArrowSkillsNeedABow" methodname="ArrowSkillsNeedABow" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="2144915161" result="Passed" start-time="2026-10-07 02:02:07Z" end-time="2026-10-07 02:02:07Z" duration="0.674468" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1161" name="CatalogHasTheTenClasses" fullname="EternalEnigma.Tests.ClassContentTests.CatalogHasTheTenClasses" methodname="CatalogHasTheTenClasses" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="1499898163" result="Passed" start-time="2026-10-07 02:02:07Z" end-time="2026-10-07 02:02:07Z" duration="0.052190" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1162" name="EachClassKitMatchesTheDesign" fullname="EternalEnigma.Tests.ClassContentTests.EachClassKitMatchesTheDesign" methodname="EachClassKitMatchesTheDesign" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="1463026316" result="Passed" start-time="2026-10-07 02:02:07Z" end-time="2026-10-07 02:02:07Z" duration="0.013137" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1167" name="EveryHeroHasItsFixedClass" fullname="EternalEnigma.Tests.ClassContentTests.EveryHeroHasItsFixedClass" methodname="EveryHeroHasItsFixedClass" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="721696262" result="Passed" start-time="2026-10-07 02:02:07Z" end-time="2026-10-07 02:02:08Z" duration="0.870216" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1163" name="SkillAssetsAreWellFormed" fullname="EternalEnigma.Tests.ClassContentTests.SkillAssetsAreWellFormed" methodname="SkillAssetsAreWellFormed" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="507056959" result="Passed" start-time="2026-10-07 02:02:08Z" end-time="2026-10-07 02:02:08Z" duration="0.006013" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1166" name="SkillNamesResolveToOneAsset" fullname="EternalEnigma.Tests.ClassContentTests.SkillNamesResolveToOneAsset" methodname="SkillNamesResolveToOneAsset" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="479799541" result="Passed" start-time="2026-10-07 02:02:08Z" end-time="2026-10-07 02:02:08Z" duration="0.014937" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1164" name="StatusEffectsAreWired" fullname="EternalEnigma.Tests.ClassContentTests.StatusEffectsAreWired" methodname="StatusEffectsAreWired" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="569017728" result="Passed" start-time="2026-10-07 02:02:08Z" end-time="2026-10-07 02:02:08Z" duration="0.001487" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1168" name="TownsHaveNoLegacyTrainerList" fullname="EternalEnigma.Tests.ClassContentTests.TownsHaveNoLegacyTrainerList" methodname="TownsHaveNoLegacyTrainerList" classname="EternalEnigma.Tests.ClassContentTests" runstate="Runnable" seed="310258240" result="Passed" start-time="2026-10-07 02:02:08Z" end-time="2026-10-07 02:02:09Z" duration="0.289986" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestSuite" id="1357" name="CoreIntegration" fullname="EternalEnigma.Tests.CoreIntegration" runstate="Runnable" testcasecount="99" result="Passed" start-time="2026-10-07 02:02:09Z" end-time="2026-10-07 02:03:11Z" duration="62.881815" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1258" name="DungeonThemeTests" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-07 02:02:09Z" end-time="2026-10-07 02:02:14Z" duration="5.543490" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="ParameterizedMethod" id="1265" name="AllThemesPreserveMasksSpawnsAndTemplates" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 02:02:09Z" end-time="2026-10-07 02:02:10Z" duration="1.460252" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1263" name="AllThemesPreserveMasksSpawnsAndTemplates(False)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates(False)" methodname="AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="860882674" result="Passed" start-time="2026-10-07 02:02:09Z" end-time="2026-10-07 02:02:10Z" duration="1.236029" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1264" name="AllThemesPreserveMasksSpawnsAndTemplates(True)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates(True)" methodname="AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="687704513" result="Passed" start-time="2026-10-07 02:02:10Z" end-time="2026-10-07 02:02:10Z" duration="0.178010" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1266" name="NewTilesRespectBudgetsAndDecorationClearance" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.NewTilesRespectBudgetsAndDecorationClearance" methodname="NewTilesRespectBudgetsAndDecorationClearance" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="913100993" result="Passed" start-time="2026-10-07 02:02:10Z" end-time="2026-10-07 02:02:10Z" duration="0.014108" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1267" name="RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" methodname="RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="367053283" result="Passed" start-time="2026-10-07 02:02:10Z" end-time="2026-10-07 02:02:13Z" duration="2.602626" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1262" name="SelectionRoundTripsWithoutOverworldGeneration" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.SelectionRoundTripsWithoutOverworldGeneration" methodname="SelectionRoundTripsWithoutOverworldGeneration" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="39071752" result="Passed" start-time="2026-10-07 02:02:13Z" end-time="2026-10-07 02:02:14Z" duration="1.184246" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1261" name="ThemedGroundIgnoresLegacyRaisedMapRoot" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 02:02:14Z" end-time="2026-10-07 02:02:14Z" duration="0.127339" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1259" name="ThemedGroundIgnoresLegacyRaisedMapRoot(False)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot(False)" methodname="ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="1203245841" result="Passed" start-time="2026-10-07 02:02:14Z" end-time="2026-10-07 02:02:14Z" duration="0.090687" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1260" name="ThemedGroundIgnoresLegacyRaisedMapRoot(True)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot(True)" methodname="ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="1134300368" result="Passed" start-time="2026-10-07 02:02:14Z" end-time="2026-10-07 02:02:14Z" duration="0.034269" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestFixture" id="1344" name="TownInteriorIntegrationTests" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-07 02:02:14Z" end-time="2026-10-07 02:03:11Z" duration="57.335633" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1346" name="BirdLoopsKeepFeetAboveSupportAndRootsFixed" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests.BirdLoopsKeepFeetAboveSupportAndRootsFixed" methodname="BirdLoopsKeepFeetAboveSupportAndRootsFixed" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" seed="604453658" result="Passed" start-time="2026-10-07 02:02:14Z" end-time="2026-10-07 02:02:14Z" duration="0.184862" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1345" name="CatalogHasDistinctCharactersBirdsAndCompleteDependencies" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests.CatalogHasDistinctCharactersBirdsAndCompleteDependencies" methodname="CatalogHasDistinctCharactersBirdsAndCompleteDependencies" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" seed="1960925112" result="Passed" start-time="2026-10-07 02:02:14Z" end-time="2026-10-07 02:02:15Z" duration="0.422683" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1347" name="HundredSeedsPublishCoreOccupancyToUnityAndPreserveCacheIdentity" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests.HundredSeedsPublishCoreOccupancyToUnityAndPreserveCacheIdentity" methodname="HundredSeedsPublishCoreOccupancyToUnityAndPreserveCacheIdentity" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" seed="1128896496" result="Passed" start-time="2026-10-07 02:02:15Z" end-time="2026-10-07 02:03:10Z" duration="55.646863" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1348" name="RebuildReleasesOwnedMeshesAndKeepsThreeSupportedSilentBirds" fullname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests.RebuildReleasesOwnedMeshesAndKeepsThreeSupportedSilentBirds" methodname="RebuildReleasesOwnedMeshesAndKeepsThreeSupportedSilentBirds" classname="EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests" runstate="Runnable" seed="1770425075" result="Passed" start-time="2026-10-07 02:03:10Z" end-time="2026-10-07 02:03:11Z" duration="1.078308" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestSuite" id="1356" name="EditMode" fullname="EternalEnigma.Tests.EditMode" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-10-07 02:03:11Z" end-time="2026-10-07 02:03:12Z" duration="0.390880" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1214" name="DioramaItemTests" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-07 02:03:11Z" end-time="2026-10-07 02:03:12Z" duration="0.323928" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1215" name="AllItemsResolveLitColliderFreeVisualsAndIcons" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests.AllItemsResolveLitColliderFreeVisualsAndIcons" methodname="AllItemsResolveLitColliderFreeVisualsAndIcons" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" seed="491962799" result="Passed" start-time="2026-10-07 02:03:12Z" end-time="2026-10-07 02:03:12Z" duration="0.264577" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1217" name="AnUnsetOverrideKeepsCategoryFallbackAndAnOverrideWorksWithoutCategories" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests.AnUnsetOverrideKeepsCategoryFallbackAndAnOverrideWorksWithoutCategories" methodname="AnUnsetOverrideKeepsCategoryFallbackAndAnOverrideWorksWithoutCategories" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" seed="1626534594" result="Passed" start-time="2026-10-07 02:03:12Z" end-time="2026-10-07 02:03:12Z" duration="0.004597" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1216" name="ShopItemsHaveDistinctModelAndTintCombinations" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests.ShopItemsHaveDistinctModelAndTintCombinations" methodname="ShopItemsHaveDistinctModelAndTintCombinations" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" seed="1482861491" result="Passed" start-time="2026-10-07 02:03:12Z" end-time="2026-10-07 02:03:12Z" duration="0.020267" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: Temp/HarnessResults/EditMode.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

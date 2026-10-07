@@ -8,6 +8,7 @@ public class ClassDefinition : ScriptableObject
 {
 	public string Id;
 	public string DisplayName;
+    public Sprite Icon;
 	[TextArea] public string Role;
 	public List<WeaponType> AllowedWeapons = new();
 	public StatModification GrowthPerLevel = new();

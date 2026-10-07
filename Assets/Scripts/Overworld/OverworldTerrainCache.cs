@@ -10,6 +10,7 @@ public sealed class OverworldTerrainCache
     private readonly Transform parent;
     private CampaignContext context;
     private TileWorldCreatorAsset template;
+    private string artIdentity;
     private TileWorldCreatorAsset asset;
     private Dictionary<string, WorldMap> maps;
     private GameObject world;
@@ -24,7 +25,7 @@ public sealed class OverworldTerrainCache
 
     public bool TryRestore(CampaignContext current, CampaignOverworld map, OverworldScene view)
     {
-        if (!IsBuilt || !ReferenceEquals(context, current) || template != map.Template) return false;
+        if (!IsBuilt || !ReferenceEquals(context, current) || template != map.Template || artIdentity != DioramaArtIdentity.For(map)) return false;
         map.UseCachedTerrain(current.Grid, asset, maps, world);
         map.GetComponent<OverworldBiomeRenderer>()?.UseCachedSurfaces(surfaces);
         activeView = view;
@@ -36,7 +37,7 @@ public sealed class OverworldTerrainCache
     {
         Clear();
         var creator = map.GetComponent<TileWorldCreator>();
-        context = current; template = map.Template;
+        context = current; template = map.Template; artIdentity = DioramaArtIdentity.For(map);
         asset = map.ReleaseGeneratedAssetOwnership();
         maps = creator.generatedBlueprintMaps;
         world = creator.worldObject;
@@ -56,7 +57,7 @@ public sealed class OverworldTerrainCache
         {
             surfaces = biomes.ReleaseSurfacesOwnership(out var meshes);
             ownedMeshes.UnionWith(meshes);
-            if (surfaces != null) surfaces.transform.SetParent(Root.transform, true);
+            if (surfaces != null && !surfaces.transform.IsChildOf(world.transform)) surfaces.transform.SetParent(Root.transform, true);
         }
         activeView = view;
         BuildCount++;
@@ -80,7 +81,7 @@ public sealed class OverworldTerrainCache
                 if (layer.previewTextureMap != null) Object.Destroy(layer.previewTextureMap);
             Object.Destroy(asset);
         }
-        Root = null; context = null; template = null; asset = null;
+        Root = null; context = null; template = null; asset = null; artIdentity = null;
         maps = null; world = null; surfaces = null; activeView = null;
     }
 }

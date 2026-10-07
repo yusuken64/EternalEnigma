@@ -9,6 +9,31 @@ namespace EternalEnigma.Tests.CoreIntegration
     public class OverworldSixTerrainTests
     {
         [Test]
+        public void AuthoredCliffsAndConcaveAdaptersMeetAlongEveryBorderSample()
+        {
+            var source=DioramaCatalog.Load().CliffGrid;
+            var set=AssetDatabase.LoadAssetAtPath<TileWorldCreator6TilesPreset>("Assets/Art/Diorama/Cliffs/CliffSixTerrain.asset");
+            var meshes=new System.Collections.Generic.Dictionary<Vector2Int,Vector3[]>();
+            bool At(int x,int y)=>x>=0&&y>=0&&x<9&&y<9&&OverworldCosmetics.Hash(51,x,y)%5!=0;
+            for(int y=0;y<9;y++)for(int x=0;x<9;x++)if(At(x,y))
+            {
+                int n=(At(x,y+1)?1:0)|(At(x+1,y)?2:0)|(At(x,y-1)?4:0)|(At(x-1,y)?8:0);
+                int d=(At(x+1,y+1)?1:0)|(At(x+1,y-1)?2:0)|(At(x-1,y-1)?4:0)|(At(x-1,y+1)?8:0);
+                bool concave=((n&3)==3&&(d&1)==0)||((n&6)==6&&(d&2)==0)||((n&12)==12&&(d&4)==0)||((n&9)==9&&(d&8)==0);
+                if(concave){var mesh=DioramaCliffGeometry.Adapt(source,n,d);meshes[new(x,y)]=mesh.vertices;Object.DestroyImmediate(mesh);}
+                else {var selected=EnvironmentSmartTileLayer.SelectSixTerrainPrefab(set,n);meshes[new(x,y)]=selected.prefab.GetComponentInChildren<MeshFilter>().sharedMesh.vertices.Select(v=>Quaternion.Euler(0,0,selected.angle)*v).ToArray();}
+            }
+            foreach(var cell in meshes)foreach(var direction in new[]{Vector2Int.up,Vector2Int.right})
+                if(meshes.TryGetValue(cell.Key+direction,out var neighbor))for(int i=0;i<=8;i++)
+                {
+                    float t=i/8f-.5f;
+                    var a=direction.x==1?new Vector2(.5f,t):new Vector2(t,.5f);
+                    var b=direction.x==1?new Vector2(-.5f,t):new Vector2(t,-.5f);
+                    float Height(Vector3[] vertices,Vector2 p)=>vertices.First(v=>Vector2.Distance(v,p)<.001f).z;
+                    Assert.That(Height(cell.Value,a),Is.EqualTo(Height(neighbor,b)).Within(.001f),$"{cell.Key} to {direction} at {t}");
+                }
+        }
+        [Test]
         public void MountainCornersRespondToMissingDiagonalAndFaceTheCamera()
         {
             var connected = EnvironmentSmartTileLayer.SixTerrainMesh(15, 15, false, .42f);
@@ -54,9 +79,13 @@ namespace EternalEnigma.Tests.CoreIntegration
                 Assert.That(layer.active, Is.True, layer.layerName);
                 Assert.That(layer.QuarterTiles, Is.Null, layer.layerName);
                 Assert.That(layer.WallTiles, Is.Not.Null, layer.layerName);
-                Assert.That(layer.SurfaceMaterial, Is.Not.Null, layer.layerName);
                 if (layer.layerName != SmartEnvironmentMasks.Coast)
-                    Assert.That(layer.SurfaceMaterial.GetTag("EnvironmentProjection", false, ""), Is.EqualTo("Box"));
+                {
+                    Assert.That(layer.DioramaCliffs,Is.True);Assert.That(layer.HeightScale,Is.EqualTo(1));
+                    Assert.That(DioramaCatalog.Load().Cliffs.Length,Is.EqualTo(8));
+                    Assert.That(DioramaCatalog.Load().Cliffs.All(m=>m.shader.name=="EternalEnigma/Diorama Cliff"),Is.True);
+                }
+                else Assert.That(layer.SurfaceMaterial, Is.Not.Null, layer.layerName);
                 Assert.That(asset.mapBlueprintLayers.Any(b => b.guid == layer.assignedGenerationLayerGuid), Is.True, layer.layerName);
                 var set = layer.WallTiles;
                 foreach (var piece in new[] { set.singleTile, set.deadEndTile, set.straightTile,
@@ -73,7 +102,7 @@ namespace EternalEnigma.Tests.CoreIntegration
         [Test]
         public void AllSixteenCardinalMasksRotateTheirPrefabConnectionsCorrectly()
         {
-            var set = AssetDatabase.LoadAssetAtPath<TileWorldCreator6TilesPreset>("Assets/Art/EnvironmentKit/SmartTiles/SixTerrain/MountainSixTerrain.asset");
+            var set = AssetDatabase.LoadAssetAtPath<TileWorldCreator6TilesPreset>("Assets/Art/Diorama/Cliffs/CliffSixTerrain.asset");
             Vector2[] sides = { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
             for (int mask = 0; mask < 16; mask++)
             {

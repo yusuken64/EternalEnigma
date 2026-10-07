@@ -265,7 +265,7 @@ namespace EternalEnigma.Tests
             yield return harness.ExecuteAction(new SkillAction(caster, skillEncore, caster));
 
             songs = SongRules.ActiveSongs(caster);
-            Assert.That(songs[0].TurnsLeft, Is.EqualTo(turnsBefore + 3));
+            Assert.That(songs[0].TurnsLeft, Is.EqualTo(turnsBefore + 3 - 1), "The casting round also advances song duration.");
         }
 
         [UnityTest]
@@ -321,7 +321,7 @@ namespace EternalEnigma.Tests
             var action = new SkillAction(caster, skill, enemy);
             var effects = action.ExecuteImmediate(caster);
 
-            int damageCount = effects.OfType<TakeDamageAction>().Count();
+            int damageCount = effects.OfType<SongCountStrikeAction>().SelectMany(effect => effect.ExecuteImmediate(caster)).OfType<TakeDamageAction>().Count();
             Assert.That(damageCount, Is.EqualTo(2));
         }
 
@@ -416,10 +416,10 @@ namespace EternalEnigma.Tests
             caster.Skills.Add(skillCmd);
             caster.InvalidateCachedStats();
 
+            int friendHPBefore = friend.Vitals.HP;
+
             friend.SetAction(new WaitAction());
             yield return harness.ExecuteAction(new SkillAction(caster, skillCmd, friend));
-
-            int friendHPBefore = friend.Vitals.HP;
 
             friend.SetAction(new WaitAction());
             yield return harness.ExecuteAction(new WaitAction());

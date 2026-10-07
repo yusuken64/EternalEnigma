@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_OHS09_Sword
   m_EditorClassIdentifier: 
   ItemName: Royal Sword (Off-hand)
-  MaxFloor: 20
-  MinFloor: 6
   Description: Royal Sword (Off-hand) grants 9 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 6
+  MaxFloor: 20
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 3147952208486580253, guid: 2b3227b9ec770114689d493615ae2752, type: 3}
+  Icon: {fileID: 4099451163204422659, guid: 072533e5c25fdf742bc92d292efc2ac0, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 9
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS09_Sword
+  WeaponModelVariant: 
   WeaponType: 5
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

@@ -242,7 +242,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bfd95676563b425a973ae4cbd940d5f0, type: 2}
+  - {fileID: 2100000, guid: 288e24375c8a34d4a80b6eaddb2e3235, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1410,6 +1410,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 14
+    MagicPower: 0
     Defense: 17
     EXPOnKill: 20
     HungerAccumulateThreshold: 0
@@ -1453,6 +1454,11 @@ MonoBehaviour:
   AlwaysFlees: 0
   RootsAdjacentTarget: 0
   Stationary: 0
+  ExplodesOnDeath: 0
+  ExplosionDamage: 20
+  WarpWhenHitChance: 0
+  SpawnWeight: 20
+  PackSize: 1
   StealItems: 1
   StealGold: 0
   Confusion: {fileID: 0}

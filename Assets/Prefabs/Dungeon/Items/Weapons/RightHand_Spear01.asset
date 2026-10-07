@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: RightHand_Spear01
   m_EditorClassIdentifier: 
   ItemName: Wooden Spear
-  MaxFloor: 10
-  MinFloor: 1
   Description: Wooden Spear grants 2 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 8523550064964348031, guid: 948662e4a3692aa4791334b5e02a2da5, type: 3}
+  Icon: {fileID: -6108368365542575707, guid: 7aa3022b5e6b40b4d88b3169a71b52f2, type: 3}
   EquipmentSlot: 0
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 2
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -36,7 +45,17 @@ MonoBehaviour:
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
   WeaponModelName: Spear01
+  WeaponModelVariant: 
   WeaponType: 1
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

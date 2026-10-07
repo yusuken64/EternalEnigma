@@ -155,6 +155,7 @@ public static class DungeonUIAuthoring
         Theme.DungeonPickerPrefab=Variant("Assets/Resources/UI/Authored/PartyPicker.prefab","PartyPicker",root=>
         {
             var picker=root.GetComponent<PartyMenuPicker>();Shield(root);Dock(picker.Title.transform.parent,root.transform);
+            AttributeUIAuthoring.ConfigurePickerPreview(picker, true);
             picker.RowTemplate=plain;ButtonRole(picker.BackButton,DungeonVisualRole.Secondary);
             var title=picker.Title;Fit(title.transform,.06f,.85f,.87f,.97f);title.color=GameUITheme.LightInk;
             CloseButton(title.transform.parent,picker);

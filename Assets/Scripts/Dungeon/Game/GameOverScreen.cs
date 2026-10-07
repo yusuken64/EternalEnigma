@@ -11,6 +11,8 @@ public class GameOverScreen : Dialog
 {
 	public TextMeshProUGUI MessageText;
 	public Button OkButton;
+    public Image ResultIcon;
+    public Sprite VictoryIcon, DefeatIcon;
 	[SerializeField] private Image messageBackdrop;
 	private PlayerController _playerController;
 	private bool _victory;
@@ -50,6 +52,8 @@ public class GameOverScreen : Dialog
 			messageBackdrop.raycastTarget = false;
 		}
 		MessageText.color = GameUITheme.Ink;
+        if(ResultIcon==null)ResultIcon=GameUISkin.Rect("Result icon",transform,new Vector2(.43f,.77f),new Vector2(.57f,.95f)).gameObject.AddComponent<Image>();
+        ResultIcon.preserveAspect=true;ResultIcon.raycastTarget=false;
 	}
 #endif
 
@@ -58,6 +62,7 @@ public class GameOverScreen : Dialog
 
 		_playerController = playerController;
 		_victory = victory;
+        if(ResultIcon!=null){ResultIcon.sprite=victory?VictoryIcon:DefeatIcon;ResultIcon.enabled=ResultIcon.sprite!=null;}
 		CloseAction = victory ? () => { Common.Instance.Travel.ReturnToMenu(); } : null;
 		MessageText.text = victory ? $"Victory!\nFinal dungeon cleared\nTreasure: {playerController.Gold:N0}" :
 			$"Player Perished\nOn floor {playerController.Floor}\nTreasure: {playerController.Gold:N0}";

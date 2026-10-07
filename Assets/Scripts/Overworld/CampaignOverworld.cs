@@ -68,7 +68,16 @@ public sealed class CampaignOverworld : MonoBehaviour
         if (building) throw new InvalidOperationException("Wait for the current TWC build to finish before replacing the map.");
         var creator = Creator;
         var bindings = LayerBindings.Count == 0 ? grid.Layers.Keys.OrderBy(n => n, StringComparer.Ordinal)
-            .Select(n => new CampaignLayerBinding(n, n)).ToList() : LayerBindings;
+            .Select(n => new CampaignLayerBinding(n, n)).ToList() : LayerBindings.ToList();
+        var groundTemplate = Template != null ? Template : generatedAsset != null ? previousAsset : creator.twcAsset;
+        if (groundTemplate != null)
+        {
+            foreach (var input in groundTemplate.mapBuildLayers.OfType<OverworldGroundLayer>().Where(l=>l.active).SelectMany(l=>l.Inputs))
+                if (!bindings.Any(b=>b.BlueprintLayer==input.BlueprintLayer))
+                    bindings.Add(new CampaignLayerBinding(input.CoreLayer,input.BlueprintLayer));
+            if(groundTemplate.mapBuildLayers.OfType<OverworldTreeWallLayer>().Any(l=>l.active)&&!bindings.Any(b=>b.BlueprintLayer==OverworldLayers.Trees))
+                bindings.Add(new CampaignLayerBinding(OverworldLayers.Trees,OverworldLayers.Trees));
+        }
         if (bindings.Any(b => b == null || !grid.Layers.ContainsKey(b.CoreLayer ?? "") || string.IsNullOrWhiteSpace(b.BlueprintLayer)) ||
             bindings.Select(b => b.BlueprintLayer).Distinct(StringComparer.Ordinal).Count() != bindings.Count)
             throw new ArgumentException("Bindings require known core layers and unique, nonempty TWC layer names.");

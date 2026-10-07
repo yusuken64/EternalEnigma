@@ -13,6 +13,9 @@ public static class TownInteriorRendering
     public static void Configure(TileWorldCreatorAsset asset)
     {
         var catalog=TownInteriorCatalog.Load();if(catalog==null)return;
+        if(!asset.mapBuildLayers.OfType<DioramaTownAccentLayer>().Any())asset.mapBuildLayers.Add(new DioramaTownAccentLayer {
+            guid=new Guid("798ab8d8-6075-411f-98ea-387d50ba3947"),layerName="Diorama shop and park accents",active=true,
+            assignedGenerationLayerGuid=asset.mapBlueprintLayers.First(l=>l.layerName==TownLayers.Parks).guid});
         foreach(var pair in new[]{(TownLayers.Carpet,catalog.Carpet),(TownLayers.Counters,catalog.Counter)})
         {
             var blueprint=asset.mapBlueprintLayers.FirstOrDefault(l=>l.layerName==pair.Item1);if(blueprint==null)continue;
@@ -39,6 +42,8 @@ public static class TownInteriorRendering
         foreach(var interior in plan.Interiors)
         foreach(var p in interior.Props)
         {
+            if(DioramaItemCatalog.Load()!=null&&interior.Spec.Kind==TownInteriorKind.Shop&&
+                interior.Spec.Theme is TownShopTheme.Bakery or TownShopTheme.Consumables&&p.Asset is "Basket" or "Potions")continue;
             var asset=catalog.Get(p.Asset);if(asset==null)throw new InvalidOperationException("Missing interior asset "+p.Asset);
             var position=new Vector3(p.Cell.X+.5f,p.Cell.Y+.5f,-p.Elevation)*size;
             batch.Add(asset.Mesh,catalog.Material(biome),position,Vector3.one*size,p.QuarterTurns*90);
@@ -101,7 +106,9 @@ public static class TownInteriorRendering
             bool horizontal=walls.At(new GridPoint(wallCell.X-1,wallCell.Y))||walls.At(new GridPoint(wallCell.X+1,wallCell.Y));
             bool vertical=walls.At(new GridPoint(wallCell.X,wallCell.Y-1))||walls.At(new GridPoint(wallCell.X,wallCell.Y+1));
             if(horizontal && vertical)continue; // No fittings on corners or junction posts.
-            var adjacent=center+normal*size*.6f;
+            // Facades sit on the outside edge of the blocked wall cell. Sample
+            // beyond that full cell to find the room's usable interior floor.
+            var adjacent=center+normal*size*1.1f;
             var cell=new GridPoint(Mathf.FloorToInt(adjacent.x/size),Mathf.FloorToInt(adjacent.y/size));
             if(!plan.IsWalkable(cell)||furniture.Contains(cell))continue;
             bool inside=plan.Layers[TownLayers.ShopFloor].At(cell);

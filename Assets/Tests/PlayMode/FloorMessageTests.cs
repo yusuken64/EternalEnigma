@@ -21,11 +21,13 @@ public sealed class FloorMessageTests
         {
             screen.MessageText = text.GetComponent<TextMeshProUGUI>();
             screen.OkButton = button.GetComponent<Button>();
+            screen.AuthorCanvas();
+            screen.AuthorLayout();
             player.Floor = 40;
             player.Gold = 1000000;
             screen.Setup(player, true);
 
-            Assert.That(screen.GetComponent<Canvas>().overrideSorting, Is.True);
+            Assert.That(screen.GetComponent<Canvas>().isRootCanvas || screen.GetComponent<Canvas>().overrideSorting, Is.True);
             Assert.That(screen.GetComponent<Canvas>().sortingOrder, Is.GreaterThan(2));
             Assert.That(screen.MessageText.rectTransform.anchorMax.x - screen.MessageText.rectTransform.anchorMin.x,
                 Is.GreaterThan(.6f));

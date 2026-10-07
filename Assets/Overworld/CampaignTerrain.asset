@@ -16,16 +16,14 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11400000, guid: d2fcb08fa6ac8c84a8b81211a72732bf, type: 2}
-    - {fileID: 11400000, guid: e9a249ce8b3f4e04da9b8c6f0b684105, type: 2}
+    - {fileID: 11400000, guid: 2d3b0d63880688e4aab8f5a42b22d3ad, type: 2}
     - {fileID: 11400000, guid: c7ece03df003cf54480a9af06e8202d6, type: 2}
     - {fileID: 11400000, guid: 567dc25c02b4a064aba62d6ca286ad5a, type: 2}
-    - {fileID: 11400000, guid: 429b88590739ba742b93e5206a28c061, type: 2}
-    - {fileID: 2100000, guid: b0cc2b9b399b8fe4491e4c6517453ba0, type: 2}
+    - {fileID: 11400000, guid: 948779905af59f944bf57881bfb10bcc, type: 2}
     - {fileID: 11400000, guid: b5b11edeb54a7d54093c1022510f38d2, type: 2}
     - {fileID: 11400000, guid: b4a862aa3ee66ad4c8ea92d420e08002, type: 2}
     - {fileID: 11400000, guid: 78e6fea4944a5a743ac1ce15ae14bf94, type: 2}
-    - {fileID: 2100000, guid: 628859f318a31d946a20dee10ce1f3a0, type: 2}
+    - {fileID: 2100000, guid: 0be2382560cca884480ad717c62b1671, type: 2}
     - {fileID: 2100000, guid: 1dcd7b0bded49384e8799a1e77c41649, type: 2}
     - {fileID: 11400000, guid: 1770499b8502cf248b221be57c7339a4, type: 2}
     - {fileID: 2100000, guid: 331bea66e3f34b643b9b0711e52b0131, type: 2}
@@ -40,7 +38,7 @@ MonoBehaviour:
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
-      Data: 11
+      Data: 37
     - Name: 
       Entry: 7
       Data: 1|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
@@ -926,6 +924,1592 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 37|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 3d84bc343ce24e7a8c07b2d5825b5d16
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Biome/Grassland
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 38|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 39|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: a543682b51224004a6a33018ab5536a2
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landscape/Grassland
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 40|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 41|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 0294f9764c394413bd37f71fc81b329b
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Biome/Desert
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 42|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 43|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 65abeac2d9f34f45ae9d8a09ab6beedc
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landscape/Desert
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 44|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 45|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 1481c189c82144319ca66185064dfc48
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Biome/Water
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 46|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 47|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 14dad56030b54597856b1ce2d2d01104
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landscape/Water
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 48|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 49|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: e0b2481fa6b14becbc1aaea6190c210f
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Biome/Mountain
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 50|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 51|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: e93166d322b54d9c9896e7b517068a07
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landscape/Mountain
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 52|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 53|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 81210027463f425ead460cfbeee8cb51
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Biome/Forest
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 54|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 55|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: fe251d4f00994f1d8de2f08a0d98cb1c
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landscape/Forest
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 56|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 57|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: f4d6a7ea0c7b4aafba84e2538ea846f1
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Biome/Tundra
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 58|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 59|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: f0dc0fb2770746aa86a5f1039279326f
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landscape/Tundra
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 60|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 61|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 55bb02d4151245339cdb2567c71ffbd0
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Biome/Marsh
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 62|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 63|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 30cd825cee90430686321911e2c89d3c
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landscape/Marsh
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 64|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 65|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 93e59d46c2334bcab7c21c8a4aac479c
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Biome/Volcanic
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 66|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 67|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: ce67cc57848047d9b199cf54e327cc18
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landscape/Volcanic
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 68|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 69|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: e1bd7f860977437d9311b296187d0b08
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Water
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 70|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 71|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: d8f8dd1c2c4548e98548248bd3084f2c
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Bridges
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 72|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 73|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 84052d9481eb41238d7f18d17c9e42d8
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: TownFootprints
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 74|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 75|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 0eecce2fea11455694bd8d5badeac748
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Trees
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 76|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 77|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: f28d618ccb334dd9a605147209ef6faf
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: StoryDungeons
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 78|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 79|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 2e5f403313f64074bb69358be7e9ecd4
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: RepeatableDungeons
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 80|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 81|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: 763e4627e6a84a60b0abf3fc9cb0ebc0
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: FinalDungeon
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 82|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 83|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: eda5ee77cd25430386be5f2c375753ce
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Converters
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 84|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 85|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: dbbe813b18d3438b967520d2c7ae5bb6
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Landmarks
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 86|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 87|TWC.TileWorldCreatorAsset+BlueprintLayerData, TileWorldCreator
+    - Name: guid
+      Entry: 2
+      Data: c4f9abdc774d4f6ab9d0cd971005202b
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: layerName
+      Entry: 1
+      Data: Secrets
+    - Name: map
+      Entry: 6
+      Data: 
+    - Name: randomSeedOverride
+      Entry: 5
+      Data: false
+    - Name: useCustomSeed
+      Entry: 5
+      Data: false
+    - Name: customLayerRandomSeed
+      Entry: 3
+      Data: 0
+    - Name: previewColor
+      Entry: 7
+      Data: UnityEngine.Color, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: mapResultFailed
+      Entry: 5
+      Data: false
+    - Name: stack
+      Entry: 7
+      Data: 88|System.Collections.Generic.List`1[[TWC.TileWorldCreatorAsset+BlueprintLayerData+ActionStack,
+        TileWorldCreator]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -933,310 +2517,350 @@ MonoBehaviour:
       Data: 
     - Name: mapBuildLayers
       Entry: 7
-      Data: 37|System.Collections.Generic.List`1[[TWC.Actions.TWCBuildLayer, TileWorldCreator]],
+      Data: 89|System.Collections.Generic.List`1[[TWC.Actions.TWCBuildLayer, TileWorldCreator]],
         mscorlib
     - Name: 
       Entry: 12
-      Data: 13
+      Data: 14
     - Name: 
       Entry: 7
-      Data: 38|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 90|OverworldGroundLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
-      Data: 2415b5f230ff4720ac4b5c74c7d4370b
-    - Name: assignedGenerationLayerGuid
-      Entry: 2
-      Data: 202f9d20d91146e3a131dc3150e98711
-    - Name: layerName
-      Entry: 1
-      Data: Parks
-    - Name: foldout
-      Entry: 5
-      Data: true
-    - Name: active
-      Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
-      Entry: 3
-      Data: 0
-    - Name: tiles
-      Entry: 7
-      Data: 39|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
-        TileWorldCreator]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 40|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
-    - Name: rndSelectionWeight
-      Entry: 4
-      Data: 1
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: editor
-      Entry: 6
-      Data: 
-    - Name: preset
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: mergeTiles
-      Entry: 5
-      Data: true
-    - Name: keepPrefabConnection
-      Entry: 5
-      Data: false
-    - Name: scaleTileByCellSize
-      Entry: 5
-      Data: true
-    - Name: scaleTileHeight
-      Entry: 5
-      Data: true
-    - Name: tileColliderHeightOffset
-      Entry: 4
-      Data: 0
-    - Name: tileColliderHeight
-      Entry: 4
-      Data: 1
-    - Name: tileColliderBorderOffset
-      Entry: 4
-      Data: 0
-    - Name: colliderTypeVariantA
-      Entry: 3
-      Data: 0
-    - Name: colliderTypeVariantB
-      Entry: 3
-      Data: 0
-    - Name: assignLayer
-      Entry: 7
-      Data: UnityEngine.LayerMask, UnityEngine.CoreModule
-    - Name: 
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: setShadowCastingMode
-      Entry: 5
-      Data: false
-    - Name: shadowCasting
-      Entry: 3
-      Data: 0
-    - Name: globalPositionOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0.04
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: globalRotationOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: globalScalingOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: ignoreLayers
-      Entry: 7
-      Data: 41|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 42|TWC.Actions.InstantiateTiles, TileWorldCreator
-    - Name: guid
-      Entry: 2
-      Data: 495907ab0d5345699b65d58066720cf0
+      Data: e731be52e434496a8f265f4a9c9caca1
     - Name: assignedGenerationLayerGuid
       Entry: 2
       Data: d08a831924f74436bac0feb5cb47af7b
     - Name: layerName
       Entry: 1
-      Data: Roads
+      Data: Painted Ground
     - Name: foldout
       Entry: 5
-      Data: true
+      Data: false
     - Name: active
       Entry: 5
-      Data: false
-    - Name: selectedLayerIndex
-      Entry: 3
-      Data: 0
-    - Name: tiles
-      Entry: 7
-      Data: 43|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
-        TileWorldCreator]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 44|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
-    - Name: rndSelectionWeight
-      Entry: 4
-      Data: 1
-    - Name: foldout
-      Entry: 5
-      Data: false
-    - Name: editor
-      Entry: 6
-      Data: 
-    - Name: preset
+      Data: true
+    - Name: Style
       Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: mergeTiles
-      Entry: 5
-      Data: true
-    - Name: keepPrefabConnection
-      Entry: 5
-      Data: false
-    - Name: scaleTileByCellSize
-      Entry: 5
-      Data: true
-    - Name: scaleTileHeight
-      Entry: 5
-      Data: true
-    - Name: tileColliderHeightOffset
-      Entry: 4
       Data: 0
-    - Name: tileColliderHeight
-      Entry: 4
-      Data: 1
-    - Name: tileColliderBorderOffset
-      Entry: 4
-      Data: 0
-    - Name: colliderTypeVariantA
-      Entry: 3
-      Data: 0
-    - Name: colliderTypeVariantB
-      Entry: 3
-      Data: 0
-    - Name: assignLayer
+    - Name: Inputs
       Entry: 7
-      Data: UnityEngine.LayerMask, UnityEngine.CoreModule
-    - Name: 
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: setShadowCastingMode
-      Entry: 5
-      Data: false
-    - Name: shadowCasting
-      Entry: 3
-      Data: 0
-    - Name: globalPositionOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: globalRotationOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: globalScalingOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: ignoreLayers
-      Entry: 7
-      Data: 45|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
+      Data: 91|CampaignLayerBinding[], EternalEnigma.Game
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 26
+    - Name: 
+      Entry: 7
+      Data: 92|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Biome/Grassland
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Biome/Grassland
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 93|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landscape/Grassland
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landscape/Grassland
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 94|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Biome/Desert
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Biome/Desert
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 95|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landscape/Desert
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landscape/Desert
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 96|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Biome/Water
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Biome/Water
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 97|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landscape/Water
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landscape/Water
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 98|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Biome/Mountain
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Biome/Mountain
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 99|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landscape/Mountain
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landscape/Mountain
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 100|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Biome/Forest
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Biome/Forest
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 101|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landscape/Forest
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landscape/Forest
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 102|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Biome/Tundra
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Biome/Tundra
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 103|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landscape/Tundra
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landscape/Tundra
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 104|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Biome/Marsh
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Biome/Marsh
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 105|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landscape/Marsh
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landscape/Marsh
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 106|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Biome/Volcanic
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Biome/Volcanic
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 107|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landscape/Volcanic
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landscape/Volcanic
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 108|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Roads
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Roads
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 109|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Water
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Water
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 110|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Bridges
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Bridges
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 111|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: TownFootprints
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: TownFootprints
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 112|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: StoryDungeons
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: StoryDungeons
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 113|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: RepeatableDungeons
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: RepeatableDungeons
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 114|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: FinalDungeon
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: FinalDungeon
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 115|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Converters
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Converters
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 116|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Landmarks
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Landmarks
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 117|CampaignLayerBinding, EternalEnigma.Game
+    - Name: CoreLayer
+      Entry: 1
+      Data: Secrets
+    - Name: BlueprintLayer
+      Entry: 1
+      Data: Secrets
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 13
       Data: 
@@ -1248,7 +2872,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 46|OverworldCosmeticLayer, EternalEnigma.Game
+      Data: 118|OverworldCosmeticLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: 1f4ec74f34494c92ba76713af45b8018
@@ -1266,16 +2890,16 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: TreeModels
       Entry: 10
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 47|EnvironmentSmartTileLayer, EternalEnigma.Game
+      Data: 119|EnvironmentSmartTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: a319393fe8904828b9bd4d2942530b55
@@ -1293,13 +2917,13 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: QuarterTiles
       Entry: 6
       Data: 
     - Name: WallTiles
       Entry: 10
-      Data: 4
+      Data: 3
     - Name: Road
       Entry: 5
       Data: false
@@ -1319,17 +2943,23 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: SurfaceMaterial
-      Entry: 10
-      Data: 5
+      Entry: 6
+      Data: 
     - Name: TownPalette
       Entry: 5
       Data: false
+    - Name: BuildingServices
+      Entry: 6
+      Data: 
+    - Name: DioramaCliffs
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 48|EnvironmentSmartTileLayer, EternalEnigma.Game
+      Data: 120|EnvironmentSmartTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: 4ffa884523aa4e26a776d7d7b88fc84e
@@ -1347,13 +2977,13 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: QuarterTiles
       Entry: 6
       Data: 
     - Name: WallTiles
       Entry: 10
-      Data: 4
+      Data: 3
     - Name: Road
       Entry: 5
       Data: false
@@ -1373,17 +3003,23 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: SurfaceMaterial
-      Entry: 10
-      Data: 5
+      Entry: 6
+      Data: 
     - Name: TownPalette
       Entry: 5
       Data: false
+    - Name: BuildingServices
+      Entry: 6
+      Data: 
+    - Name: DioramaCliffs
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 49|EnvironmentSmartTileLayer, EternalEnigma.Game
+      Data: 121|EnvironmentSmartTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: c4361076e3ee4d9699649a136fd5f38b
@@ -1401,13 +3037,13 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: QuarterTiles
       Entry: 6
       Data: 
     - Name: WallTiles
       Entry: 10
-      Data: 4
+      Data: 3
     - Name: Road
       Entry: 5
       Data: false
@@ -1427,17 +3063,23 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: SurfaceMaterial
-      Entry: 10
-      Data: 5
+      Entry: 6
+      Data: 
     - Name: TownPalette
       Entry: 5
       Data: false
+    - Name: BuildingServices
+      Entry: 6
+      Data: 
+    - Name: DioramaCliffs
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 50|EnvironmentSmartTileLayer, EternalEnigma.Game
+      Data: 122|EnvironmentSmartTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: f62636e87de64bae951137787e98d3a0
@@ -1455,13 +3097,13 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: QuarterTiles
       Entry: 6
       Data: 
     - Name: WallTiles
       Entry: 10
-      Data: 4
+      Data: 3
     - Name: Road
       Entry: 5
       Data: false
@@ -1481,17 +3123,23 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: SurfaceMaterial
-      Entry: 10
-      Data: 5
+      Entry: 6
+      Data: 
     - Name: TownPalette
       Entry: 5
       Data: false
+    - Name: BuildingServices
+      Entry: 6
+      Data: 
+    - Name: DioramaCliffs
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 51|EnvironmentSmartTileLayer, EternalEnigma.Game
+      Data: 123|EnvironmentSmartTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: da0b49bcbe1b4761bab4edbfa575eb16
@@ -1509,10 +3157,10 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: QuarterTiles
       Entry: 10
-      Data: 6
+      Data: 4
     - Name: WallTiles
       Entry: 6
       Data: 
@@ -1540,12 +3188,18 @@ MonoBehaviour:
     - Name: TownPalette
       Entry: 5
       Data: false
+    - Name: BuildingServices
+      Entry: 6
+      Data: 
+    - Name: DioramaCliffs
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 52|EnvironmentSmartTileLayer, EternalEnigma.Game
+      Data: 124|EnvironmentSmartTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: c27c62bf48d742e2b23dd235ab3c7443
@@ -1563,10 +3217,10 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: QuarterTiles
       Entry: 10
-      Data: 7
+      Data: 5
     - Name: WallTiles
       Entry: 6
       Data: 
@@ -1594,12 +3248,18 @@ MonoBehaviour:
     - Name: TownPalette
       Entry: 5
       Data: false
+    - Name: BuildingServices
+      Entry: 6
+      Data: 
+    - Name: DioramaCliffs
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 53|EnvironmentSmartTileLayer, EternalEnigma.Game
+      Data: 125|EnvironmentSmartTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: 4dc816e509c340079292b35f826c95f7
@@ -1617,13 +3277,13 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: QuarterTiles
       Entry: 6
       Data: 
     - Name: WallTiles
       Entry: 10
-      Data: 8
+      Data: 6
     - Name: Road
       Entry: 5
       Data: false
@@ -1648,12 +3308,18 @@ MonoBehaviour:
     - Name: TownPalette
       Entry: 5
       Data: false
+    - Name: BuildingServices
+      Entry: 6
+      Data: 
+    - Name: DioramaCliffs
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 54|OverworldOceanLayer, EternalEnigma.Game
+      Data: 126|OverworldOceanLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: bb7b7fffe5d34a31940ea730d89d8928
@@ -1671,7 +3337,7 @@ MonoBehaviour:
       Data: true
     - Name: Water
       Entry: 10
-      Data: 9
+      Data: 7
     - Name: NoiseOverlay
       Entry: 5
       Data: false
@@ -1683,7 +3349,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 55|OverworldOceanLayer, EternalEnigma.Game
+      Data: 127|OverworldOceanLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: 01b52fbc68b344b89018ed575ce6aeff
@@ -1701,7 +3367,7 @@ MonoBehaviour:
       Data: true
     - Name: Water
       Entry: 10
-      Data: 10
+      Data: 8
     - Name: NoiseOverlay
       Entry: 5
       Data: true
@@ -1713,7 +3379,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 56|EnvironmentSmartTileLayer, EternalEnigma.Game
+      Data: 128|EnvironmentSmartTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: e3592fe8f39c49708ecd26e0908e6c02
@@ -1731,13 +3397,13 @@ MonoBehaviour:
       Data: true
     - Name: Kit
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: QuarterTiles
       Entry: 6
       Data: 
     - Name: WallTiles
       Entry: 10
-      Data: 11
+      Data: 9
     - Name: Road
       Entry: 5
       Data: false
@@ -1758,10 +3424,61 @@ MonoBehaviour:
       Data: true
     - Name: SurfaceMaterial
       Entry: 10
-      Data: 12
+      Data: 10
     - Name: TownPalette
       Entry: 5
       Data: false
+    - Name: BuildingServices
+      Entry: 6
+      Data: 
+    - Name: DioramaCliffs
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 129|OverworldTreeWallLayer, EternalEnigma.Game
+    - Name: guid
+      Entry: 2
+      Data: e731be52e434496a8f265f4a9c9caca2
+    - Name: assignedGenerationLayerGuid
+      Entry: 2
+      Data: 0eecce2fea11455694bd8d5badeac748
+    - Name: layerName
+      Entry: 1
+      Data: Cosmetic/Tree Walls
+    - Name: foldout
+      Entry: 5
+      Data: false
+    - Name: active
+      Entry: 5
+      Data: true
+    - Name: Kit
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 130|OverworldSettlementLayer, EternalEnigma.Game
+    - Name: guid
+      Entry: 2
+      Data: 74d21b9f387646c09ca653c6fe98915b
+    - Name: assignedGenerationLayerGuid
+      Entry: 2
+      Data: d08a831924f74436bac0feb5cb47af7b
+    - Name: layerName
+      Entry: 1
+      Data: Cosmetic/Settlements
+    - Name: foldout
+      Entry: 5
+      Data: false
+    - Name: active
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 

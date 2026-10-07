@@ -1,0 +1,14 @@
+{
+    "runId": "42f788c7098f4f2cb4d563da49a28499",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [
+        "EternalEnigma.Tests.TownGameplayTests.EnteringAndLeavingARoomOnlyChangesItsRoof",
+        "EternalEnigma.Tests.CampaignSleepTests"
+    ],
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/PlayMode.xml"
+}

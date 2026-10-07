@@ -145,12 +145,14 @@ public static class DungeonPresentation
                 if(DecorationAllowed(floor,x,y) && (floor.Layers[DungeonLayers.Floor].At(new GridPoint(x-1,y)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x+1,y)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x,y-1)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x,y+1)))) candidates.Add((x,y,Hash(floor.Seed,x,y)));
             foreach(var p in candidates.OrderBy(p=>p.hash).Take(16))
             {
-                string id=theme.UseTrees && (p.hash&1)==0 ? kit.TreeModels.Pick(theme.Biome,p.hash) : theme.Decorations.Length>0 ? theme.Decorations[p.hash%(uint)theme.Decorations.Length] : "Rock";
+                // Dungeon alcoves use the compact theme kit; overworld trees follow
+                // a larger hero-height ladder and cannot fit below dungeon fog.
+                string id=theme.Decorations.Length>0 ? theme.Decorations[p.hash%(uint)theme.Decorations.Length] : "Rock";
                 var model=kit.Models.FirstOrDefault(m=>m.Id==id);
                 var interior=interiors?.Get(id);
                 Mesh mesh=model?.Mesh ?? interior?.Mesh;
                 if(id=="CryptRoots") mesh=Resources.Load<Mesh>("DungeonThemes/CryptRoots");
-                int triangleBudget=theme.Environment==DungeonEnvironmentKind.Interior ? 250 : 120;
+                int triangleBudget=250;
                 if(mesh==null || mesh.triangles.Length/3>triangleBudget) continue;
                 // Constrain full footprint and height below the fog plane (-3.35).
                 float extent=Mathf.Max(mesh.bounds.size.x,mesh.bounds.size.y);

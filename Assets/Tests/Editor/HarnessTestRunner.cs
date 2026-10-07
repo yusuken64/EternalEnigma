@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 using UnityEditor;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
@@ -8,6 +10,15 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Failed PlayMode")]
+    public static void RunFailedPlayMode()
+    {
+        var names = XDocument.Load("Temp/HarnessResults/PlayMode.xml").Descendants("test-case")
+            .Where(test => (string)test.Attribute("result") == "Failed")
+            .Select(test => (string)test.Attribute("fullname")).Distinct().ToArray();
+        if (names.Length == 0) throw new InvalidOperationException("The last PlayMode report has no failed cases.");
+        Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", names);
+    }
     [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Edge Cases")]
     public static void RunGameplayEdgeCases() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.GameplayCorrectnessTests");
@@ -121,6 +132,20 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run EditMode")]
     public static void RunEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Diorama Gameplay")]
+    public static void RunDioramaGameplay()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.DioramaGameplayTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Diorama Generation")]
+    public static void RunDioramaGeneration()=>Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode","EternalEnigma.Tests.EditMode.DioramaGenerationTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Diorama Followups")]
+    public static void RunDioramaFollowups()=>Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode","EternalEnigma.Tests.ClassContentTests","EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests","EternalEnigma.Tests.EditMode.DioramaItemTests","EternalEnigma.Tests.CoreIntegration.DungeonThemeTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Diorama Fit")]
+    public static void RunDioramaFit() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.EditMode.DioramaAssetTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Diorama Ground")]
+    public static void RunDioramaGround() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.EditMode.DioramaGroundTests", "EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Diorama Vegetation")]
+    public static void RunDioramaVegetation() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.EditMode.DioramaVegetationTests", "EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.TreePickerUsesBiomeSpecificSinglesAndGroupsWithoutGameplayRandom", "EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Diorama Roofs")]
+    public static void RunDioramaRoofs() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.TownGameplayTests.EnteringAndLeavingARoomOnlyChangesItsRoof", "EternalEnigma.Tests.CampaignSleepTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Unified Presentation")]
     public static void RunUnifiedPresentation() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode","EternalEnigma.Tests.UnifiedPartyMenuTests");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Rendering")]
@@ -468,6 +493,7 @@ public static class HarnessTestRunner
         var run = JsonUtility.FromJson<RunSummary>(json);
         if (run.state != "Queued") return;
         run.state = "Running";
+        run.startedUtc = DateTime.UtcNow.ToString("O");
         SessionState.SetString(SessionKey, JsonUtility.ToJson(run));
         Write(run);
         try
@@ -521,13 +547,44 @@ public static class HarnessTestRunner
         public int failed;
         public int skipped;
         public string xml;
+        public string startedUtc;
+        public string updatedUtc;
+        public string currentTest;
+        public string lastFinished;
+        public string[] failures = Array.Empty<string>();
+        public double durationSeconds;
     }
 
     private sealed class Results : ICallbacks
     {
         public void RunStarted(ITestAdaptor testsToRun) { }
-        public void TestStarted(ITestAdaptor test) { }
-        public void TestFinished(ITestResultAdaptor result) { }
+        public void TestStarted(ITestAdaptor test)
+        {
+            if (test.IsSuite) return;
+            Progress(run => run.currentTest = test.FullName);
+        }
+        public void TestFinished(ITestResultAdaptor result)
+        {
+            if (result.Test.IsSuite) return;
+            Progress(run => {
+                run.passed += result.PassCount;
+                run.failed += result.FailCount;
+                run.skipped += result.SkipCount;
+                run.lastFinished = result.FullName + ": " + result.ResultState;
+                if (result.FailCount > 0)
+                    run.failures = (run.failures ?? Array.Empty<string>()).Append(result.FullName + "\n" + result.Message + "\n" + result.StackTrace).ToArray();
+            });
+        }
+        private static void Progress(Action<RunSummary> update)
+        {
+            var json = SessionState.GetString(SessionKey, "");
+            if (string.IsNullOrEmpty(json)) return;
+            var run = JsonUtility.FromJson<RunSummary>(json);
+            update(run);
+            run.updatedUtc = DateTime.UtcNow.ToString("O");
+            SessionState.SetString(SessionKey, JsonUtility.ToJson(run));
+            Write(run);
+        }
         public void RunFinished(ITestResultAdaptor result)
         {
             var json = SessionState.GetString(SessionKey, "");
@@ -537,6 +594,9 @@ public static class HarnessTestRunner
             run.failed = result.FailCount;
             run.skipped = result.SkipCount;
             run.state = "Completed";
+            run.currentTest = "";
+            run.durationSeconds = result.Duration;
+            run.updatedUtc = DateTime.UtcNow.ToString("O");
             run.xml = $"Temp/HarnessResults/{run.mode}.xml";
             TestRunnerApi.SaveResultToFile(result, run.xml);
             Write(run);

@@ -1,0 +1,15 @@
+{
+    "runId": "e0a70ac28067406b8d4bea60d39e4003",
+    "mode": "EditMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.EditMode",
+    "testFilters": [
+        "EternalEnigma.Tests.EditMode.DioramaVegetationTests",
+        "EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.TreePickerUsesBiomeSpecificSinglesAndGroupsWithoutGameplayRandom",
+        "EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells"
+    ],
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/EditMode.xml"
+}

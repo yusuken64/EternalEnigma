@@ -57,7 +57,7 @@ namespace EternalEnigma.Tests
         private GameObject Selected => EventSystem.current.currentSelectedGameObject;
         [UnityTest] public IEnumerator GameplayExplanationChangesWhileDialogRemainsOpen()
         {
-            var gameplay = settings.TabGroup.TabContents.Single(t => t.Content.GetComponent<DungeonOptions>() != null);
+            var gameplay = settings.TabGroup.TabContents.Single(t => t.TabButton.GetComponentInChildren<TMP_Text>().text == "Gameplay");
             gameplay.TabButton.Select(); yield return null;
             var explanation = gameplay.Content.GetComponentsInChildren<TMP_Text>(true)
                 .Single(t => t.text.Contains("Full Control asks"));
@@ -150,7 +150,7 @@ namespace EternalEnigma.Tests
         [UnityTest] public IEnumerator AudioChannelsAreIndependentPersistAndRefreshLabels()
         {
             var sliders = settings.GetComponentsInChildren<VolumeSlider>(true);
-            Assert.That(sliders.Length, Is.EqualTo(3));
+            Assert.That(sliders.Select(s => s.VolumeParameterName), Is.EquivalentTo(new[] { "MasterVolume", "MusicVolume", "EffectVolume", "UIVolume" }));
             var saved = sliders.Where(s => PlayerPrefs.HasKey(AudioPreferences.Key(s.VolumeParameterName))).ToDictionary(s => s.VolumeParameterName, s => PlayerPrefs.GetFloat(AudioPreferences.Key(s.VolumeParameterName)));
             var original = sliders.ToDictionary(s => s.VolumeParameterName, s => AudioPreferences.Read(s.AudioMixerGroup, s.VolumeParameterName));
             try
@@ -168,8 +168,9 @@ namespace EternalEnigma.Tests
                 var manager = Common.Instance.AudioManager;
                 Assert.That(manager.UIAudioSources.All(s => s.outputAudioMixerGroup == manager.UIAudioMixerGroup), Is.True);
                 Assert.That(manager.EffectAudioSources.All(s => s.outputAudioMixerGroup == manager.EffectAudioMixerGroup), Is.True);
+                foreach (var source in manager.UIAudioSources) source.Stop();
                 manager.PlayUISound(manager.SoundEffects.Hover);
-                Assert.That(manager.UIAudioSources.Any(s => s.clip == manager.SoundEffects.Hover), Is.True);
+                Assert.That(manager.UIAudioSources.Any(s => s.isPlaying), Is.True, "A one-shot cue plays without replacing AudioSource.clip.");
                 settings.Exit_Clicked(); settings.ShowDialog(); yield return null;
                 var ui = sliders.Single(s => s.VolumeParameterName == "UIVolume"); Assert.That(ui.VolumeValueText.text, Is.EqualTo("0%"));
             }

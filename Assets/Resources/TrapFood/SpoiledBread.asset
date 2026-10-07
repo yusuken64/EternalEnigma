@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Spoiled Bread
   Description: Restores 25% of normal fullness.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 2147483647
   ItemEffectDefinition: {fileID: 11400000, guid: 87f8f78a0c8348e41a9c86f29b9ac1c6, type: 2}
   ApplyToThrownTarget: 0
   IsFood: 1
@@ -24,10 +28,13 @@ MonoBehaviour:
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 1
+  DroppedItemPrefab: {fileID: 750261551987557591, guid: d30a6d64ed3204e4380630c1df9693d9, type: 3}
+  Icon: {fileID: 1453843558252206693, guid: b6d30ea5935f61c4499b6a7629acd05c, type: 3}
   Targeting: 1
   TargetSelector:
     Team: 3
     Area: 4
+    Life: 0
   InventoryTargetSelector:
     ItemType: 0
     IncludeEquipped: 0

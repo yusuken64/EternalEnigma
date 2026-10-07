@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_Shield14
   m_EditorClassIdentifier: 
   ItemName: Royal Shield
-  MaxFloor: 40
-  MinFloor: 25
   Description: Royal Shield grants 14 defense.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 25
+  MaxFloor: 40
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 6
+  DroppedItemPrefab: {fileID: 5937915916824552544, guid: e493e51acf30a63498d82667a9ad848f, type: 3}
+  Icon: {fileID: -2799570274327167570, guid: b5cbc99e64c7c614b89237c3b4c1dbe9, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 14
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Shield14
+  WeaponModelVariant: 
   WeaponType: 6
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

@@ -21,9 +21,10 @@ public sealed class TreeModelPicker : ScriptableObject
         int total=0;foreach(var choice in Models) if(choice.Matches(biome)) total+=choice.Weight;
         if(total==0) return biome==OverworldBiome.Desert?"Cactus":biome==OverworldBiome.Tundra?"Pine":biome==OverworldBiome.Marsh||biome==OverworldBiome.Volcanic?"DeadTree":"Tree";
         int ticket=(int)(hash%(uint)total);
-        foreach(var choice in Models) if(choice.Matches(biome)) {ticket-=choice.Weight;if(ticket<0)return choice.Prefab.GetComponent<BiomeModel>().ModelId;}
+        foreach(var choice in Models) if(choice.Matches(biome)) {ticket-=choice.Weight;if(ticket<0)return Id(choice.Prefab);}
         return "Tree";
     }
+    public static string Id(GameObject prefab)=>prefab.GetComponent<DioramaModelTag>()?.Id??prefab.GetComponent<BiomeModel>()?.ModelId;
 #if UNITY_EDITOR
     public static TreeModelPicker Draw(TreeModelPicker picker)
     {

@@ -4,13 +4,15 @@ public abstract class PersistedSingletonMonoBehaviour<T> : MonoBehaviour where T
 {
     private static T instance;
 
+    public static T InstanceOrNull => instance != null ? instance : instance = FindFirstObjectByType<T>();
+
     public static T Instance
     {
         get
         {
             if (instance == null)
             {
-                instance = FindFirstObjectByType<T>();
+                instance = InstanceOrNull;
 
                 if (instance == null)
                 {

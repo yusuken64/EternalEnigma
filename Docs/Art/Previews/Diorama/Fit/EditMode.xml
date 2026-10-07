@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-07 00:18:05Z" end-time="2026-10-07 00:18:06Z" duration="1.0026886">
+  <test-suite type="TestSuite" id="1000" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="272" result="Passed" start-time="2026-10-07 00:18:05Z" end-time="2026-10-07 00:18:06Z" duration="1.002689" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1340" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="272" result="Passed" start-time="2026-10-07 00:18:05Z" end-time="2026-10-07 00:18:06Z" duration="0.884353" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1341" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="164" result="Passed" start-time="2026-10-07 00:18:05Z" end-time="2026-10-07 00:18:06Z" duration="0.809005" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1342" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="164" result="Passed" start-time="2026-10-07 00:18:05Z" end-time="2026-10-07 00:18:06Z" duration="0.709921" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1343" name="EditMode" fullname="EternalEnigma.Tests.EditMode" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-07 00:18:05Z" end-time="2026-10-07 00:18:06Z" duration="0.610347" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1206" name="DioramaAssetTests" fullname="EternalEnigma.Tests.EditMode.DioramaAssetTests" classname="EternalEnigma.Tests.EditMode.DioramaAssetTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 00:18:05Z" end-time="2026-10-07 00:18:06Z" duration="0.508843" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1208" name="EveryWave4CandidateHasWorkingMovementAttackDamageAndDeathClips" fullname="EternalEnigma.Tests.EditMode.DioramaAssetTests.EveryWave4CandidateHasWorkingMovementAttackDamageAndDeathClips" methodname="EveryWave4CandidateHasWorkingMovementAttackDamageAndDeathClips" classname="EternalEnigma.Tests.EditMode.DioramaAssetTests" runstate="Runnable" seed="632478237" result="Passed" start-time="2026-10-07 00:18:05Z" end-time="2026-10-07 00:18:05Z" duration="0.355493" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1207" name="FitAdaptersKeepVendorMeshesAndUseColliderFreeBuiltInMaterials" fullname="EternalEnigma.Tests.EditMode.DioramaAssetTests.FitAdaptersKeepVendorMeshesAndUseColliderFreeBuiltInMaterials" methodname="FitAdaptersKeepVendorMeshesAndUseColliderFreeBuiltInMaterials" classname="EternalEnigma.Tests.EditMode.DioramaAssetTests" runstate="Runnable" seed="1436713701" result="Passed" start-time="2026-10-07 00:18:06Z" end-time="2026-10-07 00:18:06Z" duration="0.044132" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: Temp/HarnessResults/EditMode.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

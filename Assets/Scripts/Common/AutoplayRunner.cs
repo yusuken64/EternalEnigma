@@ -65,6 +65,11 @@ public sealed class AutoplayRunner : MonoBehaviour
     public static bool BlocksPlayerInput => Active != null && !Active.PlayerControlled;
     public bool PlayerControlled { get; private set; }
     public bool PanelVisible { get; private set; } = true;
+    public bool TakingControl => takingControl;
+    public bool AppSession => appSession;
+    public bool CanTakeControl => startedCampaign;
+    public bool ShowPlaybackUI => Options != null && !PlayerControlled && !exiting;
+    private AutoplayPanel playbackUI;
     private bool takingControl;
     public AutoplayOptions Options { get; private set; }
     public AutoplayReport Report { get; private set; }
@@ -153,6 +158,8 @@ public sealed class AutoplayRunner : MonoBehaviour
         AllySkillPolicy.Cast += RecordSkillCast;
         Time.timeScale = Options.Speed;
         WriteReport();
+        var panel = Resources.Load<AutoplayPanel>("UI/AutoplayPanel");
+        if (panel != null) { playbackUI = Instantiate(panel, transform); playbackUI.Bind(this); }
     }
 
     private IEnumerator Start()
@@ -709,9 +716,9 @@ public sealed class AutoplayRunner : MonoBehaviour
     }
 
     private Rect CollapsedPanel => new Rect(Mathf.Max(0, Screen.width - 148), 64, 132, 36);
-    private Vector2 playbackScroll;
     private Rect PlaybackPanel => new Rect(Mathf.Max(0, Screen.width - 340), 64, Mathf.Min(324, Screen.width), Mathf.Min(470, Screen.height - 80));
-    private bool OverPlaybackPanel(Vector2 position) => (PanelVisible ? PlaybackPanel : CollapsedPanel).Contains(new Vector2(position.x, Screen.height - position.y));
+    private bool OverPlaybackPanel(Vector2 position) => playbackUI != null ? playbackUI.Contains(position) :
+        (PanelVisible ? PlaybackPanel : CollapsedPanel).Contains(new Vector2(position.x, Screen.height - position.y));
 
     private bool UserInput()
     {
@@ -741,74 +748,6 @@ public sealed class AutoplayRunner : MonoBehaviour
         yield return SceneManager.LoadSceneAsync("MainMenu");
         common.ScreenTransition.DoOpen();
         Destroy(gameObject);
-    }
-
-    private void OnGUI()
-    {
-        GameUISkin.UseLegacySkin();
-        if (Options == null || PlayerControlled || exiting) return;
-        if (takingControl)
-        {
-            GameUISkin.LegacyBeginArea(PlaybackPanel);
-            GUILayout.Label("Finishing current action...");
-            GUILayout.EndArea(); return;
-        }
-        if (ReturnPromptOpen)
-        {
-            GUI.depth = -100;
-            GameUISkin.LegacyBeginArea(new Rect((Screen.width-360)/2f,(Screen.height-220)/2f,360,220));
-            GUILayout.Label("Stop autoplay?");
-            GUILayout.Label("Your saved game is unchanged.");
-            bool canInteract = GUI.enabled;
-            GUI.enabled = canInteract && startedCampaign;
-            if (GameUISkin.LegacyButton("Take control (T / X)")) TakeControl();
-            GUI.enabled = canInteract;
-            if (GameUISkin.LegacyButton("Return to main menu (" + InputPrompts.Interact + ")")) ConfirmReturn(true);
-            if (GameUISkin.LegacyButton("Keep watching (" + InputPrompts.Back + ")")) ConfirmReturn(false);
-            GUILayout.EndArea(); return;
-        }
-        if (!PanelVisible)
-        {
-            GUILayout.BeginArea(CollapsedPanel);
-            if (GameUISkin.LegacyButton("Autoplay [F8]")) SetPanelVisible(true);
-            GUILayout.EndArea(); return;
-        }
-        GameUISkin.LegacyBeginArea(PlaybackPanel);
-        playbackScroll = GUILayout.BeginScrollView(playbackScroll);
-        if (GameUISkin.LegacyButton("Hide panel [F8]")) SetPanelVisible(false);
-        GUILayout.Label(Options.DebugPlaythrough ? "AUTOPLAY — DEBUG PLAYTHROUGH" : "AUTOPLAY — NORMAL PLAYTHROUGH");
-        if (Options.DebugPlaythrough) GUILayout.Label("Godmode + infinite strength: " + Options.Godmode + " | Infinite resources: " + Options.InfiniteResources);
-        GUILayout.Label(Status.Length > 220 ? Status.Substring(0,220) + "…" : Status);
-        GUILayout.Label("Actions: " + Report.Actions + " | Dungeon turns: " + Report.DungeonTurns);
-        if (Running)
-        {
-            GUILayout.Label("Playback: " + Options.Speed.ToString("0.#") + "x" + (Paused ? " (paused)" : ""));
-            float[] speeds = { .5f, 1f, 2f, 4f, 8f, 16f, 32f };
-            for (int row = 0; row < 2; row++)
-            {
-                GUILayout.BeginHorizontal();
-                for (int column = 0; column < 4; column++)
-                {
-                    int index = row * 4 + column;
-                    if (index >= speeds.Length) break;
-                    float speed = speeds[index];
-                    bool previousEnabled = GUI.enabled;
-                    GUI.enabled = previousEnabled && !Mathf.Approximately(Options.Speed, speed);
-                    if (GameUISkin.LegacyButton(speed.ToString("0.#") + "x")) SetSpeed(speed);
-                    GUI.enabled = previousEnabled;
-                }
-                GUILayout.EndHorizontal();
-            }
-            if (GameUISkin.LegacyButton("Animations: " + DungeonPreferences.SpeedLabel))
-                DungeonPreferences.AnimationMode = (DungeonAnimationMode)(((int)DungeonPreferences.AnimationMode + 1) % 4);
-            if (GameUISkin.LegacyButton(Paused ? "Resume" : "Pause")) SetPaused(!Paused);
-        }
-        if (!appSession && Running && GameUISkin.LegacyButton("Stop and report")) Stop();
-        if (GameUISkin.LegacyButton("Stop autoplay...")) RequestReturn();
-        if (appSession) GUILayout.Label("Input outside playback controls: stop autoplay options");
-        if (!Running) GUILayout.Label(appSession ? "Playthrough report saved." : "Report saved: " + DirectoryPath);
-        GUILayout.EndScrollView();
-        GUILayout.EndArea();
     }
 
     private void Capture()

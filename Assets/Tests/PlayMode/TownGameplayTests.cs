@@ -92,6 +92,8 @@ namespace EternalEnigma.Tests
             assets.Add(custom);
             custom.Id = "custom-building";
             custom.DialogId = "";
+            custom.ShopCatalog.Clear();
+            custom.ServiceInterior = false;
             var template = new GameObject("Custom town dialog");
             Object.DontDestroyOnLoad(template);
             assets.Add(template);
@@ -107,9 +109,10 @@ namespace EternalEnigma.Tests
             var customBuilding = World.TownBuildings[2];
             var door = customBuilding.TilemapPosition;
             var front = door + Vector3Int.up;
-            var hasBody = World.Plan.Layers[TownLayers.Houses].At(front.ToGridPoint());
+            var footprint = World.Plan.Footprints.Single(f => f.Door.Equals(door.ToGridPoint()));
+            var hasBody = footprint.Cells.Count > 0;
             Assert.That(customBuilding.transform.position, Is.EqualTo(World.WalkableMap.CellToWorld(hasBody ? front : door)));
-            if (hasBody) Assert.That(World.Plan.IsWalkable(front.ToGridPoint()), Is.False);
+            Assert.That(hasBody, Is.True, "The caller's custom building has an authored footprint.");
             var hero = World.TownPlayer.ControllingTownAlly;
             var approach = door + Vector3Int.down;
             hero.TilemapPosition = approach;
@@ -122,10 +125,13 @@ namespace EternalEnigma.Tests
             Assert.That(World.Services.Buy(first, offer.Item.ItemName, out _), Is.True);
             Assert.That(World.Services.Shop(first).Stock[0].Remaining, Is.EqualTo(offer.Quantity - 1));
             Assert.That(World.Services.Shop(second).Stock[0].Remaining, Is.EqualTo(offer.Quantity));
-            // Exit/Continue must retain caller configuration and the purchased stock.
+            // Explicit checkpoints retain stock when the caller reloads its configured town.
+            World.WriteSaveData();
+            SaveSystem.SaveData(Common.Instance.GameSaveData);
             Common.Instance.GlobalSettings.MainMenu_Clicked();
-            yield return null;
-            Object.FindFirstObjectByType<MainMenu>().Continue_Clicked();
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true, "main menu return");
+            Common.Instance.GameSaveData = SaveSystem.LoadData();
+            TownSceneLoader.Load(configuration);
             yield return harness.WaitUntil(() => World != null && World.IsReady, "configured town return");
             Assert.That(World.Configuration, Is.SameAs(configuration));
             Assert.That(World.Services.Shop(first).Stock[0].Remaining, Is.EqualTo(offer.Quantity - 1));
@@ -156,6 +162,9 @@ namespace EternalEnigma.Tests
             int gold = World.TownPlayer.Gold;
             Assert.That(World.Services.Buy(shop, offer.Item.ItemName, out _), Is.False);
             Assert.That(World.TownPlayer.Gold, Is.EqualTo(gold));
+            Assert.That(SaveSystem.LoadData().TownSaveData.InventoryItems, Is.Empty,
+                "Purchases do not overwrite the checkpoint until an explicit save.");
+            SaveSystem.SaveData(Common.Instance.GameSaveData);
             var saved = SaveSystem.LoadData().TownSaveData;
             Assert.That(saved.InventoryItems.Count, Is.EqualTo(offer.Quantity));
             Assert.That(saved.Shops.Single().Stock[0].Remaining, Is.Zero);
@@ -193,6 +202,9 @@ namespace EternalEnigma.Tests
             yield return null;
             trainer.BallistaPurchaseDialog.Purchase_Clicked();
             Assert.That(Manager.CurrentDialog, Is.SameAs(trainer));
+            Assert.That(Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData[0].Skills, Does.Contain(skill.SkillName));
+            Assert.That(SaveSystem.LoadData().TownSaveData.RecruitedAlliesData[0].Skills, Does.Not.Contain(skill.SkillName));
+            SaveSystem.SaveData(Common.Instance.GameSaveData);
             var save = SaveSystem.LoadData().TownSaveData;
             Assert.That(save.RecruitedAlliesData[0].Skills, Does.Contain(skill.SkillName));
             Assert.That(save.Gold, Is.EqualTo(10000), "Skills cost points, not gold.");
@@ -214,8 +226,11 @@ namespace EternalEnigma.Tests
         public IEnumerator TownInventoryUsesSharedActionMenuAndSavesEquipment()
         {
             yield return harness.LoadTown(new TestScenario().CreateSave());
-            var item = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>().First().AsInventoryItem(null);
             var player = World.TownPlayer;
+            var hero = player.ControllingTownAlly;
+            var item = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>()
+                .Select(d => (EquipableInventoryItem)d.AsInventoryItem(null))
+                .First(i => HeroClass.AllowsItem(hero.PrimaryClass, hero.SecondaryClass, i));
             player.Inventory.Add(item);
             Manager.Open(Menus.InventoryMenu);
             Menus.InventoryMenu.SetupTown(player.Inventory, player.ControllingTownAlly);
@@ -228,6 +243,7 @@ namespace EternalEnigma.Tests
             yield return null;
             Assert.That(player.ControllingTownAlly.Equipment.IsEquipped(item), Is.True);
             Assert.That(player.Inventory, Has.No.Member(item));
+            SaveSystem.SaveData(Common.Instance.GameSaveData);
             Assert.That(SaveSystem.LoadData().TownSaveData.RecruitedAlliesData[0].Equipment[0].ItemName, Is.EqualTo(item.ItemName));
             Menus.InventoryMenu.InventoryMenuItems[0].onClick.Invoke();
             yield return null;
@@ -263,10 +279,12 @@ namespace EternalEnigma.Tests
             harness.Game.PlayerController.Inventory.Add(item);
             Common.Instance.GlobalSettings.MainMenu_Clicked();
             yield return null;
-            var save = SaveSystem.LoadData();
+            var save = Common.Instance.GameSaveData;
             Assert.That(save.TownSaveData.Gold, Is.EqualTo(320));
             Assert.That(save.TownSaveData.InventoryItems, Is.Empty);
             Assert.That(save.DungeonSaveData.ReturnCommitted, Is.True);
+            Assert.That(SaveSystem.LoadData().TownSaveData.Gold, Is.EqualTo(250),
+                "Abandoning a run does not overwrite the explicit checkpoint.");
         }
 
         private IEnumerator DungeonRoundTrip(bool victory)

@@ -1,0 +1,11 @@
+{
+    "runId": "85d5803016d24470ba1a3741129845e9",
+    "mode": "EditMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.EditMode",
+    "testFilters": [],
+    "passed": 282,
+    "failed": 2,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/EditMode.xml"
+}

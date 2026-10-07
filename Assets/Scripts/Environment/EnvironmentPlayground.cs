@@ -115,6 +115,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
             {
                 var definition = townConfiguration.SlotBuildings[i];
                 if (definition == null) continue;
+                if(DioramaCatalog.Load()!=null && plan.Footprints.Any(f=>f.Door.Equals(plan.BuildingSlots[i])&&f.Cells.Count>0))continue;
                 string id = definition.Id;
                 string model = definition.DialogId == "shop" ? "Shop" : id == "inn" ? "InnSign" : id == "trainer" ? "Trainer" : id == "statue" ? "Shrine" : "DungeonPortal";
                 var p = plan.BuildingSlots[i]; Kit.Create(model, TownBiome, townMarkers, new Vector3(p.X + .5f, p.Y + .5f, 0) * creator.twcAsset.cellSize, creator.twcAsset.cellSize * .8f);
@@ -130,6 +131,7 @@ public sealed class EnvironmentPlayground : MonoBehaviour
         var grid = Overworld.CurrentGrid;
         foreach (var location in grid.Locations)
         {
+            if(creator.twcAsset.mapBuildLayers.OfType<OverworldSettlementLayer>().Any(l=>l.active))break;
             if (grid.TownFootprints.Any(t => t.LocationId == location.Key)) continue;
             var p = location.Value;
             Kit.Create(location.Key.Contains("dungeon") || location.Key.Contains("story") || location.Key.Contains("repeatable") ? "DungeonPortal" : "Shrine",

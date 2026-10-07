@@ -123,7 +123,9 @@ public sealed class OverworldScene : MonoBehaviour
             var marker = Instantiate(prefab, CellCenterToWorld(Map.CurrentGrid.Locations[location.Id]), Quaternion.identity, transform);
             marker.name = location.Id;
             var cell = Map.CurrentGrid.Locations[location.Id];
-            if (location.Kind != LocationKind.Town) BuildLocationFootprint(marker, location.Kind, cell);
+            if(creator.twcAsset.mapBuildLayers.OfType<OverworldSettlementLayer>().Any(l=>l.active))
+                foreach(var renderer in marker.GetComponentsInChildren<Renderer>())renderer.enabled=false;
+            else if (location.Kind != LocationKind.Town) BuildLocationFootprint(marker, location.Kind, cell);
             BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
             locationVisuals.Add(cell, marker);
         }

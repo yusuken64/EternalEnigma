@@ -475,7 +475,7 @@ namespace EternalEnigma.Tests
             }
             harness.Game.PlayerController.TakeControl(friend);
             MenuManager.Instance.OpenSkillsMenu(friend); yield return null;
-            yield return Press(GamepadButton.South); yield return Press(GamepadButton.South);
+            yield return Press(GamepadButton.South);
             Assert.That(MenuManager.Instance.TargetDialog.CameraTarget,Is.SameAs(original));
             original.SetAction(new WaitAction()); yield return Press(GamepadButton.South);
             yield return harness.WaitForIdle();

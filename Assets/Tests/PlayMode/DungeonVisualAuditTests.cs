@@ -96,13 +96,13 @@ namespace EternalEnigma.Tests
             manager.PartyMenu.Pick("Choose an action", new() { ("Use item", () => chosen++), ("Inspect details", () => {}) });
             var picker = (PartyMenuPicker)manager.CurrentDialog;
             var button = picker.Rows.GetComponentInChildren<Button>();
-            Assert.That(button.colors.pressedColor, Is.EqualTo(new Color(.90f, .77f, .58f)),
+            Assert.That(button.colors.pressedColor, Is.EqualTo(new Color(.77f, .67f, .52f)),
                 "New rows must receive their dungeon appearance before their first rendered frame.");
             yield return null;
             yield return Capture("action-picker", 1280, 720);
             Canvas.ForceUpdateCanvases();
             var pointer = new PointerEventData(EventSystem.current) {
-                position = RectTransformUtility.WorldToScreenPoint(null, button.transform.position),
+                position = RectTransformUtility.WorldToScreenPoint(null, button.transform.TransformPoint(((RectTransform)button.transform).rect.center)),
                 button = PointerEventData.InputButton.Left
             };
             var hits = new List<RaycastResult>();

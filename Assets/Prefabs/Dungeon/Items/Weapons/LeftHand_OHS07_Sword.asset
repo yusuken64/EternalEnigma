@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_OHS07_Sword
   m_EditorClassIdentifier: 
   ItemName: Silver Sword (Off-hand)
-  MaxFloor: 20
-  MinFloor: 6
   Description: Silver Sword (Off-hand) grants 7 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 6
+  MaxFloor: 20
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 2898957236742993797, guid: 7848b8a06c8f2c44f982d2f48726f59e, type: 3}
+  Icon: {fileID: -2929440812222887441, guid: 447b8c9769eb6ba45b507ae841541c87, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 7
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS07_Sword
+  WeaponModelVariant: 
   WeaponType: 5
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

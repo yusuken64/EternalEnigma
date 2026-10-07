@@ -51,12 +51,13 @@ namespace EternalEnigma.Tests
             yield return null;
             var menu = Object.FindFirstObjectByType<MainMenu>();
             Assert.That(menu.StartButton.GetComponentInParent<Canvas>().rootCanvas.renderMode, Is.EqualTo(RenderMode.ScreenSpaceOverlay));
-            Assert.That(menu.ContinueButton.activeSelf, Is.False);
+            Assert.That(menu.ContinueButton.activeSelf, Is.True, "Campaigns opens the slot browser even when every slot is empty.");
             menu.Options_Clicked(); yield return null;
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True);
             Common.Instance.GlobalSettings.Exit_Clicked(); yield return null;
             Assert.That(menu.NavigationHandler.gameObject.activeInHierarchy, Is.True);
             menu.StartGame_Clicked(); yield return null;
+            Object.FindFirstObjectByType<CampaignSlots>().Slots[SaveSystem.ActiveSlot].Button.onClick.Invoke(); yield return null;
             Assert.That(Object.FindFirstObjectByType<ProtagonistHeroPicker>(), Is.Not.Null);
             // Exit is only invoked in a player; verify the retained serialized handler in editor.
             Assert.That(Object.FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None)
@@ -67,10 +68,10 @@ namespace EternalEnigma.Tests
             yield return null;
             Assert.That(menu.NavigationHandler.gameObject.activeInHierarchy, Is.True, "Cancelling hero selection restores the menu.");
             menu.StartGame_Clicked(); yield return null;
+            Object.FindFirstObjectByType<CampaignSlots>().Slots[SaveSystem.ActiveSlot].Button.onClick.Invoke(); yield return null;
             picker = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
             var hero = (menu.TownConfiguration ?? TownSceneLoader.Default).AllyCatalog[1];
             picker.GetComponentsInChildren<Button>().Single(b => b.name.StartsWith(hero.Name + "  ")).onClick.Invoke();
-            picker.GetComponentsInChildren<Button>().Single(b => b.name == "Begin journey").onClick.Invoke();
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "new campaign from hero selection");
             Assert.That(Common.Instance.GameSaveData.ProtagonistId, Is.EqualTo(hero.Id));
             Assert.That(Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData[0].PrimaryClassId, Is.EqualTo(hero.PrimaryClass.Id));

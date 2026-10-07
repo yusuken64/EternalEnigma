@@ -71,7 +71,7 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             var cls = secondaryStep && i == 0 ? null : available[i - (secondaryStep ? 1 : 0)];
-            var row=ChoiceTemplate.Spawn(choices,cls==null?"Begin with primary only":cls.DisplayName,()=>Choose(cls),cls==null?null:Resources.Load<Sprite>("UI/"+cls.DisplayName));
+            var row=ChoiceTemplate.Spawn(choices,cls==null?"Begin with primary only":cls.DisplayName,()=>Choose(cls),cls?.Icon);
             var button=row.Button;button.GetComponent<ClassPickerFocus>().Focused=()=>ShowDetails(cls);
             first ??= button;
         }

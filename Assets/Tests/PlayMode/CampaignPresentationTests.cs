@@ -30,7 +30,8 @@ namespace EternalEnigma.Tests
             Assert.That(picker, Is.Not.Null);
             Assert.That(picker.GetComponentInChildren<RawImage>().texture, Is.TypeOf<RenderTexture>());
             var heroes = menu.TownConfiguration != null ? menu.TownConfiguration.AllyCatalog : TownSceneLoader.Default.AllyCatalog;
-            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(8 + 4));
+            Assert.That(picker.ChoiceButtons.Count(b => b.gameObject.activeSelf), Is.EqualTo(8));
+            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(8 + 3));
             Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "Choose your hero"), Is.True);
             Canvas.ForceUpdateCanvases();
             Directory.CreateDirectory("Temp/UIValidation");
@@ -57,10 +58,8 @@ namespace EternalEnigma.Tests
             var heroes = TownSceneLoader.Default.AllyCatalog;
             TownAlly chosen = null;
             var picker = ProtagonistHeroPicker.Show(heroes, hero => { chosen = hero; confirmations++; }, () => Assert.Fail("Unexpected cancel"));
-            picker.GetComponentsInChildren<Button>().Single(b => b.name.StartsWith(heroes[1].Name + "  ")).onClick.Invoke();
-            yield return null;
-            var begin = picker.GetComponentsInChildren<Button>().Single(b => b.name == "Begin journey");
-            begin.onClick.Invoke(); begin.onClick.Invoke();
+            var choice = picker.ChoiceButtons[1];
+            choice.onClick.Invoke(); choice.onClick.Invoke();
             Assert.That(confirmations, Is.EqualTo(1));
             Assert.That(chosen, Is.SameAs(heroes[1]));
             yield return null;
@@ -140,13 +139,13 @@ namespace EternalEnigma.Tests
             var town = Object.FindFirstObjectByType<Town>();
             var hud = town.GetComponent<CampaignHUD>();
             Assert.That(hud, Is.Not.Null);
-            hud.GetComponentsInChildren<Button>().Single(b => b.name == "Party  [P / B]").onClick.Invoke();
+            hud.PartyButton.onClick.Invoke();
             yield return null;
             Assert.That(hud.IsPartyOpen, Is.True);
             Directory.CreateDirectory("Temp/UIValidation");
             ScreenCapture.CaptureScreenshot("Temp/UIValidation/town-party.png");
             yield return new WaitForSecondsRealtime(.3f);
-            hud.GetComponentsInChildren<Button>().Single(b => b.name == "Done").onClick.Invoke();
+            hud.DoneButton.onClick.Invoke();
             Assert.That(hud.IsPartyOpen, Is.False);
             var context = Common.Instance.CampaignContext;
             Assert.That(context.BeginTownDungeon("story-0"), Is.True);

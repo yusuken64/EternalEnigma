@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_OHS01_Stick
   m_EditorClassIdentifier: 
   ItemName: Stick (Off-hand)
-  MaxFloor: 10
-  MinFloor: 1
   Description: Stick (Off-hand) grants 1 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 1611879943037663356, guid: 09f7624cac2a7cc4c962f6d028abc5ae, type: 3}
+  Icon: {fileID: -4964489890427126135, guid: 930ed7c3e0ac1364dabf99f68793939a, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 1
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS01_Stick
+  WeaponModelVariant: 
   WeaponType: 7
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

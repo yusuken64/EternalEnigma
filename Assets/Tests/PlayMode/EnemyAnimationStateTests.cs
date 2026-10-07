@@ -6,6 +6,15 @@ using UnityEngine;
 
 public sealed class EnemyAnimationStateTests
 {
+    private GameObject messageRoot;
+    [SetUp] public void SetupMessages()
+    {
+        messageRoot = new GameObject("Mimic test messages");
+        messageRoot.SetActive(false);
+        messageRoot.AddComponent<GameMessages>().AuthorLayout(true);
+        messageRoot.SetActive(true);
+    }
+    [TearDown] public void CleanupMessages() => Object.DestroyImmediate(messageRoot);
     [Test]
     public void EnemyPrefabsResolveTheirRequiredAnimationStates()
     {
@@ -36,6 +45,7 @@ public sealed class EnemyAnimationStateTests
         Assert.That(allyPrefab, Is.Not.Null);
         var enemy = Object.Instantiate(prefab);
         var ally = Object.Instantiate(allyPrefab);
+        enemy.InitialzeVitalsFromStats();
         try
         {
             var behavior = enemy.GetComponent<EnemyBehavior>();
@@ -65,6 +75,7 @@ public sealed class EnemyAnimationStateTests
         finally { Object.DestroyImmediate(ally.gameObject); Object.DestroyImmediate(enemy.gameObject); }
 
         enemy = Object.Instantiate(prefab);
+        enemy.InitialzeVitalsFromStats();
         try
         {
             var behavior = enemy.GetComponent<EnemyBehavior>();
@@ -84,6 +95,7 @@ public sealed class EnemyAnimationStateTests
         var allyPrefab = AssetDatabase.LoadAssetAtPath<Ally>("Assets/Prefabs/Dungeon/Ally.prefab");
         var enemy = Object.Instantiate(prefab);
         var ally = Object.Instantiate(allyPrefab);
+        enemy.InitialzeVitalsFromStats();
         try
         {
             var behavior = enemy.GetComponent<EnemyBehavior>();

@@ -57,10 +57,11 @@ public class TownMenu : MonoBehaviour
         return dialog;
     }
 
-    public static void ShowMessage(string text)
+    public static void ShowMessage(string text,Sprite portrait=null)
     {
         var dialog = Common.Instance.MessageDialog;
         dialog.PromptText.text = text;
+        dialog.SetPortrait(portrait);
         FindFirstObjectByType<TownMenuManager>().Open(dialog);
     }
 

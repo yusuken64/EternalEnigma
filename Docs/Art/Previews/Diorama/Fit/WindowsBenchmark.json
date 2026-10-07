@@ -1,0 +1,115 @@
+﻿{
+    "unity":  "6000.2.7f2",
+    "platform":  "WindowsPlayer",
+    "gpu":  "NVIDIA GeForce RTX 2060",
+    "api":  "Direct3D11",
+    "protocol":  "1280x800 offscreen render with synchronous GPU readback each frame; includes animation/update and readback overhead",
+    "width":  1280,
+    "height":  800,
+    "samples":  [
+                    {
+                        "name":  "Empty baseline",
+                        "copies":  0,
+                        "triangles":  0,
+                        "meanMs":  0.46766552329063418,
+                        "medianMs":  0.2750000059604645,
+                        "p95Ms":  1.8188987970352173
+                    },
+                    {
+                        "name":  "BlueSlime",
+                        "copies":  12,
+                        "triangles":  39840,
+                        "meanMs":  1.4031000137329102,
+                        "medianMs":  0.9794996380805969,
+                        "p95Ms":  4.147902488708496
+                    },
+                    {
+                        "name":  "BoneDragon",
+                        "copies":  12,
+                        "triangles":  105264,
+                        "meanMs":  1.6620994806289673,
+                        "medianMs":  1.4405966997146607,
+                        "p95Ms":  3.0896966457366945
+                    },
+                    {
+                        "name":  "CastleMonster",
+                        "copies":  12,
+                        "triangles":  194412,
+                        "meanMs":  2.264352321624756,
+                        "medianMs":  2.043501853942871,
+                        "p95Ms":  3.6621031761169435
+                    },
+                    {
+                        "name":  "Crawler",
+                        "copies":  12,
+                        "triangles":  56016,
+                        "meanMs":  0.9437649846076965,
+                        "medianMs":  0.8479024767875671,
+                        "p95Ms":  1.42509925365448
+                    },
+                    {
+                        "name":  "FlameKnight",
+                        "copies":  12,
+                        "triangles":  96216,
+                        "meanMs":  1.249802827835083,
+                        "medianMs":  1.1310019493103028,
+                        "p95Ms":  2.0657031536102297
+                    },
+                    {
+                        "name":  "FlowerMonster",
+                        "copies":  12,
+                        "triangles":  55464,
+                        "meanMs":  0.9006410837173462,
+                        "medianMs":  0.8233985304832459,
+                        "p95Ms":  1.2555980682373047
+                    },
+                    {
+                        "name":  "IceGolem",
+                        "copies":  12,
+                        "triangles":  197976,
+                        "meanMs":  1.7809100151062012,
+                        "medianMs":  1.6570011377334595,
+                        "p95Ms":  2.8004961013793947
+                    },
+                    {
+                        "name":  "LittleDemon",
+                        "copies":  12,
+                        "triangles":  91320,
+                        "meanMs":  1.1782211065292359,
+                        "medianMs":  1.0627976655960084,
+                        "p95Ms":  1.8214002847671509
+                    },
+                    {
+                        "name":  "SkeletonMage",
+                        "copies":  12,
+                        "triangles":  67344,
+                        "meanMs":  0.9765372276306152,
+                        "medianMs":  0.8952026963233948,
+                        "p95Ms":  1.354003667831421
+                    },
+                    {
+                        "name":  "StarFish",
+                        "copies":  12,
+                        "triangles":  51024,
+                        "meanMs":  0.8239688873291016,
+                        "medianMs":  0.7510983943939209,
+                        "p95Ms":  1.1132014989852906
+                    },
+                    {
+                        "name":  "Tree01",
+                        "copies":  12,
+                        "triangles":  4392,
+                        "meanMs":  0.40628668665885928,
+                        "medianMs":  0.35629960894584658,
+                        "p95Ms":  0.5942956209182739
+                    },
+                    {
+                        "name":  "Tree03",
+                        "copies":  12,
+                        "triangles":  12456,
+                        "meanMs":  0.3859561085700989,
+                        "medianMs":  0.3509991466999054,
+                        "p95Ms":  0.6380952596664429
+                    }
+                ]
+}

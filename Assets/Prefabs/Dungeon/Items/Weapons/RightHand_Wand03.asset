@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: RightHand_Wand03
   m_EditorClassIdentifier: 
   ItemName: Oak Wand
-  MaxFloor: 10
-  MinFloor: 1
   Description: Oak Wand grants 3 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 1
+  MaxFloor: 10
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 5
+  DroppedItemPrefab: {fileID: 9180475072502524439, guid: 97cbe8d86b734854da4890ea27b97825, type: 3}
+  Icon: {fileID: -4135769926948366435, guid: 2839c85c8e55d794db08de3bc0e286fc, type: 3}
   EquipmentSlot: 0
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 3
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Wand03
+  WeaponModelVariant: 
   WeaponType: 4
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

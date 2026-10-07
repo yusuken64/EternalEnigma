@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_Shield15
   m_EditorClassIdentifier: 
   ItemName: Mythril Shield
-  MaxFloor: 40
-  MinFloor: 25
   Description: Mythril Shield grants 15 defense.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 25
+  MaxFloor: 40
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 6
+  DroppedItemPrefab: {fileID: 5646613260821932334, guid: 1884e9aa4020c62419cb9db7c479c382, type: 3}
+  Icon: {fileID: 5617378930391878880, guid: b8eac54faa30dc941aac465a9d55b17d, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 15
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: Shield15
+  WeaponModelVariant: 
   WeaponType: 6
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

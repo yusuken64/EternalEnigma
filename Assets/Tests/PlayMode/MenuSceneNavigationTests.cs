@@ -164,10 +164,12 @@ namespace EternalEnigma.Tests
             var loadout = DemoDungeonLoadout.Load();
             Assert.That(loadout, Is.Not.Null);
             Assert.That(loadout.Skills.Count, Is.EqualTo(9));
+            var demoTargets = new[] { SkillTargeting.SelectedTarget, SkillTargeting.Self,
+                SkillTargeting.AllTargets, SkillTargeting.InventoryItem, SkillTargeting.Missile };
             Assert.That(loadout.Skills.Select(s => s.Targeting).Distinct(),
-                Is.EquivalentTo(System.Enum.GetValues(typeof(SkillTargeting))));
+                Is.EquivalentTo(demoTargets));
             Assert.That(loadout.Items.OfType<UsableItemDefinition>().Select(i => i.Targeting).Distinct(),
-                Is.EquivalentTo(System.Enum.GetValues(typeof(SkillTargeting))));
+                Is.EquivalentTo(demoTargets));
             Assert.That(harness.Game.Enemies.Count, Is.EqualTo(3));
             Assert.That(harness.Game.Enemies.All(e => e.Vitals.HP == 500), Is.True);
             Assert.That(harness.Game.Enemies.Cast<Enemy>().All(e => e.Policies.Count == 0), Is.True);
@@ -180,7 +182,8 @@ namespace EternalEnigma.Tests
                 Assert.That(Common.Instance.SkillManager.GetSkillByName(skill.SkillName), Is.SameAs(skill));
             if (save == null)
             {
-                var weapon = inventory.InventoryItems.OfType<EquipableInventoryItem>().First();
+                var weapon = inventory.InventoryItems.OfType<EquipableInventoryItem>()
+                    .First(i => i.EquipmentSlot == EquipmentSlot.MainHand && !i.EquipmentItemDefinition.IsAmmunition);
                 foreach (var skill in harness.Ally.Skills.Where(s => loadout.Skills.Any(d => d.SkillName == s.SkillName)))
                 {
                     Assert.That(harness.Ally.CanCast(skill, out var reason), Is.True, skill.SkillName + ": " + reason);

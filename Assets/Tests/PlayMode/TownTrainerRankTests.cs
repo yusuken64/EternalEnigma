@@ -91,6 +91,7 @@ namespace EternalEnigma.Tests
                 Assert.That(TrainerOffers.AvailablePoints(hero), Is.EqualTo(points - 1 - 2 - 3));
                 Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000), "Skills cost points, not gold.");
 
+                SaveSystem.SaveData(Common.Instance.GameSaveData); // Explicit checkpoint persists the captured ranks.
                 var saved = SaveSystem.LoadData().TownSaveData;
                 Assert.That(saved.RecruitedAlliesData[0].SkillRanks.Any(sr => sr.SkillName == "T Strike" && sr.Rank == 3), Is.True);
                 Assert.That(saved.RecruitedAlliesData[0].Skills, Does.Contain("T Strike"));

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-07 04:38:01Z" end-time="2026-10-07 04:38:26Z" duration="24.9097783">
+  <test-suite type="TestSuite" id="1394" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="327" result="Passed" start-time="2026-10-07 04:38:01Z" end-time="2026-10-07 04:38:26Z" duration="24.909778" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1388" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="327" result="Passed" start-time="2026-10-07 04:38:01Z" end-time="2026-10-07 04:38:26Z" duration="24.735541" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1389" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="299" result="Passed" start-time="2026-10-07 04:38:01Z" end-time="2026-10-07 04:38:26Z" duration="24.722935" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1390" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="299" result="Passed" start-time="2026-10-07 04:38:01Z" end-time="2026-10-07 04:38:26Z" duration="24.711291" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1285" name="OverworldSceneTests" fullname="EternalEnigma.Tests.OverworldSceneTests" classname="EternalEnigma.Tests.OverworldSceneTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-07 04:38:01Z" end-time="2026-10-07 04:38:26Z" duration="24.698162" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1286" name="CampaignHintChangesWithDeviceWhileMessageIsStored" fullname="EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored" methodname="CampaignHintChangesWithDeviceWhileMessageIsStored" classname="EternalEnigma.Tests.OverworldSceneTests" runstate="Runnable" seed="1415866751" result="Passed" start-time="2026-10-07 04:38:01Z" end-time="2026-10-07 04:38:26Z" duration="24.594164" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Saving results to: Temp/HarnessResults/PlayMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

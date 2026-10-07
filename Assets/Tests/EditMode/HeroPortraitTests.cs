@@ -22,7 +22,7 @@ namespace EternalEnigma.Tests
                 foreach (var hero in studio.Heroes)
                 {
                     Assert.That(hero.Portrait, Is.Not.Null, hero.name);
-                    Assert.That(hero.Portrait.texture.width, Is.EqualTo(512));
+                    Assert.That(hero.Portrait.rect.width, Is.EqualTo(512));
                     Assert.That(AssetDatabase.GetAssetPath(hero.Portrait), Does.EndWith(hero.name + ".png"));
                 }
                 studio.Show(-1); Assert.That(studio.Index, Is.EqualTo(23));
@@ -45,11 +45,17 @@ namespace EternalEnigma.Tests
                 var display = displayObject.AddComponent<FaceCamDisplay>();
                 var image = displayObject.GetComponent<RawImage>();
                 image.texture = Texture2D.blackTexture;
+                image.uvRect = new Rect(.1f,.2f,.7f,.6f);
                 display.SetFollow(visual);
                 Assert.That(image.texture, Is.SameAs(prefab.Portrait.texture));
+                var rect = prefab.Portrait.textureRect;
+                Assert.That(image.uvRect, Is.EqualTo(new Rect(rect.x / prefab.Portrait.texture.width,
+                    rect.y / prefab.Portrait.texture.height, rect.width / prefab.Portrait.texture.width,
+                    rect.height / prefab.Portrait.texture.height)));
                 Assert.That(visual.layer, Is.EqualTo(4));
                 display.Unfollow(visual);
                 Assert.That(image.texture, Is.SameAs(Texture2D.blackTexture));
+                Assert.That(image.uvRect, Is.EqualTo(new Rect(.1f,.2f,.7f,.6f)));
             }
             finally { Object.DestroyImmediate(hero); Object.DestroyImmediate(displayObject); }
         }

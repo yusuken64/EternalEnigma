@@ -10,6 +10,7 @@ public class FaceCamDisplay : MonoBehaviour
     private int originalLayer;
     private bool usingPortrait;
     private Texture liveTexture;
+    private Rect liveUvRect;
 
     internal void SetFollow(GameObject followObject)
     {
@@ -23,8 +24,11 @@ public class FaceCamDisplay : MonoBehaviour
             ?? followObject.GetComponentInParent<Ally>(true)?.Portrait;
         if (image != null && portrait != null)
         {
-            if (!usingPortrait) liveTexture = image.texture;
+            if (!usingPortrait) { liveTexture = image.texture; liveUvRect = image.uvRect; }
             image.texture = portrait.texture;
+            var rect = portrait.textureRect;
+            image.uvRect = new Rect(rect.x / portrait.texture.width, rect.y / portrait.texture.height,
+                rect.width / portrait.texture.width, rect.height / portrait.texture.height);
             usingPortrait = true;
             currentFollowedObject = followObject;
             return;
@@ -50,7 +54,7 @@ public class FaceCamDisplay : MonoBehaviour
             if (usingPortrait)
             {
                 var image = GetComponentInChildren<UnityEngine.UI.RawImage>(true);
-                if (image != null) image.texture = liveTexture;
+                if (image != null) { image.texture = liveTexture; image.uvRect = liveUvRect; }
                 usingPortrait = false;
                 currentFollowedObject = null;
                 return;

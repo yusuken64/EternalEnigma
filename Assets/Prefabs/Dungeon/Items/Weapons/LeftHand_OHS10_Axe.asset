@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: LeftHand_OHS10_Axe
   m_EditorClassIdentifier: 
   ItemName: Hand Axe (Off-hand)
-  MaxFloor: 30
-  MinFloor: 15
   Description: Hand Axe (Off-hand) grants 10 strength.
+  ShopOnly: 0
+  IsProgressionItem: 0
+  MinFloor: 15
+  MaxFloor: 30
   ItemEffectDefinition: {fileID: 11400000, guid: 232fa514bee30ff48be367202d481583, type: 2}
   ApplyToThrownTarget: 0
+  IsFood: 0
+  ProtectedFromTraps: 0
+  SpoiledFood: {fileID: 0}
+  CharredFood: {fileID: 0}
   StackStartMin: 1
   StackStartMax: 1
   StackMax: 0
   DroppedItemVisual: 9
+  DroppedItemPrefab: {fileID: 8554247232121582653, guid: 1e5bf12ad6ca82540ac153c60c5b38dc, type: 3}
+  Icon: {fileID: 2715488158751274412, guid: 01c6a94fc78fc6a4bb43591f0afceaf0, type: 3}
   EquipmentSlot: 2
   StatModification:
     HPMax: 0
     SPMax: 0
     HungerMax: 0
     Strength: 10
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -43,6 +52,10 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   WeaponModelName: OHS10_Axe
+  WeaponModelVariant: 
   WeaponType: 8
+  IsAmmunition: 0
+  ArrowDamageMultiplier: 1
+  ArrowTargets: 1
   IsRangedAttack: 0
   ProjectilePrefab: {fileID: 0}

@@ -18,7 +18,9 @@ public class AuditRegressionTests
     private EquipableInventoryItem AddEquipment(EquipmentSlot slot)
     {
         var definition = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>()
-            .First(x => x.EquipmentSlot == slot);
+            .First(x => x.EquipmentSlot == slot && !x.IsAmmunition && x.WeaponType != WeaponType.BowAndArrow &&
+                HeroClass.AllowsItem(harness.Ally.PrimaryClass, harness.Ally.SecondaryClass,
+                    (EquipableInventoryItem)x.AsInventoryItem(null)));
         var item = (EquipableInventoryItem)definition.AsInventoryItem(null);
         harness.Game.PlayerController.Inventory.Add(item);
         return item;
@@ -84,11 +86,13 @@ public class AuditRegressionTests
         Common.Instance.GlobalSettings.ShowDialog();
         Common.Instance.GlobalSettings.ReturntoMainButton.onClick.Invoke();
         yield return null;
-        var saved = SaveSystem.LoadData().TownSaveData;
+        var saved = Common.Instance.GameSaveData.TownSaveData;
         Assert.That(saved.Gold, Is.EqualTo(37));
         Assert.That(saved.DonationTotal, Is.EqualTo(63));
         Assert.That(saved.InventoryItems.Select(i => i.ItemName), Does.Contain(item.ItemName));
         Assert.That(saved.RecruitedAlliesData[0].Skills, Does.Contain("regression-snapshot"));
+        Assert.That(SaveSystem.LoadData().TownSaveData.Gold, Is.EqualTo(100),
+            "Leaving town captures the session without overwriting its explicit checkpoint.");
     }
 
     [UnityTest]

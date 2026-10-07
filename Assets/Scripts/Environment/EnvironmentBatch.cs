@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System;
+using System.Linq;
 using UnityEngine;
 
 public sealed class EnvironmentBatch
@@ -12,6 +14,31 @@ public sealed class EnvironmentBatch
     {
         this.parent = parent;
         owner = parent.gameObject.AddComponent<EnvironmentMeshOwner>();
+    }
+    public void AddPrefab(GameObject prefab,Vector3 position,Vector3 scale,Quaternion rotation,int lod=0,Func<Material,Material> materialMap=null)
+    {
+        var groupsInPrefab=prefab.GetComponentsInChildren<LODGroup>(true);
+        var lodRenderers=new HashSet<Renderer>(groupsInPrefab.SelectMany(g=>g.GetLODs()).SelectMany(l=>l.renderers));
+        var chosen=new HashSet<Renderer>(groupsInPrefab.SelectMany(g=>g.GetLODs()[Mathf.Clamp(lod,0,g.lodCount-1)].renderers));
+        var root=Matrix4x4.TRS(position,rotation,scale)*prefab.transform.worldToLocalMatrix;
+        foreach(var filter in prefab.GetComponentsInChildren<MeshFilter>(true))
+        {
+            var renderer=filter.GetComponent<MeshRenderer>();if(renderer==null||filter.sharedMesh==null)continue;
+            if(lodRenderers.Contains(renderer)&&!chosen.Contains(renderer))continue;
+            var mesh=filter.sharedMesh;
+            var materials=renderer.sharedMaterials;
+            var keyPosition=position;
+            for(int sub=0;sub<mesh.subMeshCount;sub++)
+            {
+                var material=materials[Mathf.Min(sub,materials.Length-1)];if(materialMap!=null)material=materialMap(material);
+                if(material==null)continue;
+                var key=(Mathf.FloorToInt(keyPosition.x/64),Mathf.FloorToInt(keyPosition.y/64),material,SilhouetteRole.Caster);
+                if(!groups.TryGetValue(key,out var list))groups[key]=list=new List<CombineInstance>();
+                list.Add(new CombineInstance {mesh=mesh,subMeshIndex=sub,transform=root*filter.transform.localToWorldMatrix});
+                owner.TriangleCount+=(int)mesh.GetIndexCount(sub)/3;
+            }
+        }
+        owner.PropCount++;
     }
     public void Add(Mesh mesh, Material material, Vector3 position, Vector3 scale, float rotation = 0, SilhouetteRole? role = null)
         => Add(mesh,material,position,scale,Quaternion.Euler(0,0,rotation),role);

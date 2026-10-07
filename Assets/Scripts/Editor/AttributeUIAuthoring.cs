@@ -5,6 +5,32 @@ using UnityEngine.UI;
 
 public static class AttributeUIAuthoring
 {
+    public static void ConfigurePickerPreview(PartyMenuPicker picker, bool dungeon)
+    {
+        if (picker.OptionDescription == null) return;
+        var panel = (RectTransform)picker.OptionDescription.transform.parent;
+        panel.anchorMin = new Vector2(dungeon ? .285f : .71f, .22f);
+        panel.anchorMax = new Vector2(dungeon ? .59f : .96f, .78f);
+        panel.offsetMin = panel.offsetMax = Vector2.zero;
+        foreach (var graphic in panel.GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
+        panel.gameObject.SetActive(false);
+    }
+
+    [MenuItem("Tools/Eternal Enigma/Repair Picker Preview Layout")]
+    public static void RepairPickerPreviewLayout()
+    {
+        foreach (var path in new[] { "Assets/Resources/UI/Authored/PartyPicker.prefab", "Assets/Resources/UI/Dungeon/PartyPicker.prefab" })
+        {
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                ConfigurePickerPreview(root.GetComponent<PartyMenuPicker>(), path.Contains("/Dungeon/"));
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+    }
+
     [MenuItem("Tools/Eternal Enigma/Author Attribute UI")]
     public static void Author()
     {
@@ -49,6 +75,7 @@ public static class AttributeUIAuthoring
                     picker.OptionDescription=GameUISkin.Label(previewPanel.transform,"Stat preview",new Vector2(.06f,.04f),new Vector2(.94f,.96f),22);
                     picker.OptionDescription.textWrappingMode=TextWrappingModes.Normal;
                 }
+                ConfigurePickerPreview(picker, path.Contains("/Dungeon/"));
                 PrefabUtility.SaveAsPrefabAsset(root,path);
             }
             finally{PrefabUtility.UnloadPrefabContents(root);}

@@ -36,7 +36,9 @@ public static class ControlDeviceState
                 padUsed = DeliberateMovement(left, previousLeft) ||
                     DeliberateMovement(right, previousRight) || DeliberateMovement(dpad, previousDpad);
             foreach (var control in pad.allControls)
-                if (control is ButtonControl button && button.wasPressedThisFrame)
+                // Stick directions are synthetic buttons; their thresholds can turn
+                // a small drift into a press even when the vector delta is too small.
+                if (control is ButtonControl button && button.parent is not StickControl && button.wasPressedThisFrame)
                     padUsed = true;
             previousLeft = left;
             previousRight = right;
@@ -49,7 +51,10 @@ public static class ControlDeviceState
             mouse.scroll.ReadValue().sqrMagnitude > 0f ||
             mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame ||
             mouse.middleButton.wasPressedThisFrame);
-        bool keyboardUsed = Keyboard.current?.anyKey.wasPressedThisFrame == true;
+        bool keyboardUsed = false;
+        if (Keyboard.current != null)
+            foreach (var key in Keyboard.current.allKeys)
+                if (key != null && key.wasPressedThisFrame) { keyboardUsed = true; break; }
 
         // Keyboard and mouse take priority if both kinds of device act this frame.
         if (keyboardUsed || mouseUsed) Set(false);

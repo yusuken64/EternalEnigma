@@ -13,11 +13,6 @@ public class TimedBuffStatusEffect : StatusEffect
 		return null;
 	}
 
-	//public override bool PreventsMenu()
-	//{
-	//	return false;
-	//}
-
 	public override void Tick()
 	{
 		base.Tick();
@@ -127,6 +122,6 @@ public class TimedBuffStatusEffect : StatusEffect
 
     internal override bool PreventsMenu()
     {
-        throw new NotImplementedException();
+        return false;
     }
 }

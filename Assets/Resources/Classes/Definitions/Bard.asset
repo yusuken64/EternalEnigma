@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Bard
   m_EditorClassIdentifier: EternalEnigma.Game::ClassDefinition
   Id: bard
-  PreferredAttribute: 1
   DisplayName: Bard
+  Icon: {fileID: 21300000, guid: be1ef07a6b2e41fa962f5d5c723b7dc5, type: 3}
   Role: Buff and support fighter
   AllowedWeapons: 0000000005000000
   GrowthPerLevel:
@@ -22,6 +22,7 @@ MonoBehaviour:
     SPMax: 0
     HungerMax: 0
     Strength: 2
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -41,6 +42,7 @@ MonoBehaviour:
     SPMax: 2
     HungerMax: 0
     Strength: 0
+    MagicPower: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
@@ -55,6 +57,7 @@ MonoBehaviour:
     CritChance: 0
     Evasion: 0
     HitBonus: 0
+  PreferredAttribute: 1
   Skills:
   - Skill: {fileID: 11400000, guid: 806fa31a93f7c9d4cbe86102a4fa721e, type: 2}
     Tier: 1

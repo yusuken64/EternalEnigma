@@ -38,7 +38,7 @@ public static class DungeonClearAbilities
         return skill;
     }
 
-    public static IEnumerable<Skill> Unlocked => Common.Instance?.CampaignContext?.Completed
+    public static IEnumerable<Skill> Unlocked => Common.InstanceOrNull?.CampaignContext?.Completed
         .OrderBy(id => id).Select(ForDungeon) ?? Enumerable.Empty<Skill>();
 
     public static Skill Find(string name) => Unlocked.FirstOrDefault(skill => skill.SkillName == name);

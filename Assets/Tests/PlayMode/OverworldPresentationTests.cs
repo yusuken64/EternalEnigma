@@ -34,11 +34,15 @@ namespace EternalEnigma.Tests
                     foreach(var location in context.Campaign.Locations.Where(l=>l.ParentTownId==null))
                         Assert.That(world.transform.Find(location.Id).gameObject.activeSelf,Is.True,"Occupied locations must keep their models.");
                     var camera=world.ViewCamera;var original=camera.transform.position;
+                    var ground=world.Map.GetComponent<TWC.TileWorldCreator>().worldObject.GetComponentsInChildren<PaintedGroundOutput>();
+                    Assert.That(ground, Has.Length.EqualTo(1));
+                    Assert.That(ground[0].SurfaceCells[(int)GroundSurface.Cobble], Is.GreaterThan(0));
                     foreach(var location in context.Campaign.Locations.Where(l=>l.ParentTownId==null && l.Kind!=LocationKind.Town))
                     {
                         var marker=world.transform.Find(location.Id);
                         var plaza=marker.Find("Point of interest plaza");
-                        Assert.That(plaza.GetComponent<Renderer>().sharedMaterial,Is.SameAs(EnvironmentKit.Load().Paving));
+                        Assert.That(plaza, Is.Null, "The shared TWC ground owns POI paving.");
+                        Assert.That(marker.GetComponentsInChildren<Renderer>().All(r => !r.enabled), Is.True, "The TWC settlement layer owns visible landmarks.");
                         foreach(var mesh in marker.GetComponentsInChildren<MeshFilter>().Where(m=>m.name.EndsWith("perimeter post")))
                             foreach(var uv in mesh.sharedMesh.uv)Assert.That(Vector2Int.FloorToInt(uv*4),Is.EqualTo(new Vector2Int(3,0)),"A location post must not sample the whole atlas.");
                     }

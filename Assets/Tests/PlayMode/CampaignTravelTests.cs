@@ -157,7 +157,7 @@ namespace EternalEnigma.Tests
             var decorationMeshes=decorations.GetComponentsInChildren<EnvironmentMeshOwner>().SelectMany(o=>o.Meshes).ToArray();
             var grid = context.Grid;
             Assert.That(SaveSystem.LoadData().Campaign.TownNames.Select(t=>t.Name),Is.EqualTo(context.State.TownNames.Select(t=>t.Name)));
-            var biomeMesh = root.GetComponentsInChildren<MeshFilter>().First(m => m.sharedMesh.name.EndsWith(" floor")).sharedMesh;
+            var biomeMesh = root.GetComponentInChildren<PaintedGroundOutput>().GetComponentInChildren<MeshFilter>().sharedMesh;
             Assert.That(cache.BuildCount, Is.EqualTo(1));
             Assert.That(common.Travel.EnterLocation(), Is.True);
             yield return WaitTown();

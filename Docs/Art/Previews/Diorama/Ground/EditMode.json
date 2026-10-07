@@ -1,0 +1,14 @@
+{
+    "runId": "7aca348c947a40d698eded23f2eb3a6e",
+    "mode": "EditMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.EditMode",
+    "testFilters": [
+        "EternalEnigma.Tests.EditMode.DioramaGroundTests",
+        "EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests"
+    ],
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/EditMode.xml"
+}

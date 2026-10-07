@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="5" result="Passed" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:36Z" duration="15.9977177">
+  <test-suite type="TestSuite" id="1000" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="278" result="Passed" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:36Z" duration="15.997718" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1348" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="278" result="Passed" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:36Z" duration="15.875987" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42496" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1349" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="170" result="Passed" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:36Z" duration="15.803651" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1350" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="170" result="Passed" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:36Z" duration="15.704326" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1352" name="CoreIntegration" fullname="EternalEnigma.Tests.CoreIntegration" runstate="Runnable" testcasecount="98" result="Passed" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:36Z" duration="15.479099" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1264" name="EnvironmentKitTests" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:36Z" duration="15.379333" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="ParameterizedMethod" id="1270" name="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:35Z" duration="15.225743" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1268" name="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells(42)" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells(42)" methodname="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="1689244358" result="Passed" start-time="2026-10-07 00:55:20Z" end-time="2026-10-07 00:55:27Z" duration="6.960990" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1269" name="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells(123)" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells(123)" methodname="CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="1577243682" result="Passed" start-time="2026-10-07 00:55:27Z" end-time="2026-10-07 00:55:35Z" duration="8.157959" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1266" name="TreePickerUsesBiomeSpecificSinglesAndGroupsWithoutGameplayRandom" fullname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.TreePickerUsesBiomeSpecificSinglesAndGroupsWithoutGameplayRandom" methodname="TreePickerUsesBiomeSpecificSinglesAndGroupsWithoutGameplayRandom" classname="EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests" runstate="Runnable" seed="1330229123" result="Passed" start-time="2026-10-07 00:55:35Z" end-time="2026-10-07 00:55:36Z" duration="0.052482" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestSuite" id="1351" name="EditMode" fullname="EternalEnigma.Tests.EditMode" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-07 00:55:36Z" end-time="2026-10-07 00:55:36Z" duration="0.125219" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1214" name="DioramaVegetationTests" fullname="EternalEnigma.Tests.EditMode.DioramaVegetationTests" classname="EternalEnigma.Tests.EditMode.DioramaVegetationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-07 00:55:36Z" end-time="2026-10-07 00:55:36Z" duration="0.123859" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1216" name="CanopyFittingKeepsProtectedRoadRectangleClear" fullname="EternalEnigma.Tests.EditMode.DioramaVegetationTests.CanopyFittingKeepsProtectedRoadRectangleClear" methodname="CanopyFittingKeepsProtectedRoadRectangleClear" classname="EternalEnigma.Tests.EditMode.DioramaVegetationTests" runstate="Runnable" seed="212519297" result="Passed" start-time="2026-10-07 00:55:36Z" end-time="2026-10-07 00:55:36Z" duration="0.001277" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1215" name="ImportedTreeBatchPreservesSourceMeshesUsesOneLodAndKeepsMeasuredHeight" fullname="EternalEnigma.Tests.EditMode.DioramaVegetationTests.ImportedTreeBatchPreservesSourceMeshesUsesOneLodAndKeepsMeasuredHeight" methodname="ImportedTreeBatchPreservesSourceMeshesUsesOneLodAndKeepsMeasuredHeight" classname="EternalEnigma.Tests.EditMode.DioramaVegetationTests" runstate="Runnable" seed="130124422" result="Passed" start-time="2026-10-07 00:55:36Z" end-time="2026-10-07 00:55:36Z" duration="0.022965" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: Temp/HarnessResults/EditMode.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

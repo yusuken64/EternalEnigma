@@ -41,6 +41,7 @@ namespace EternalEnigma.Tests
             foreach (var actor in harness.Game.AllCharacters)
             {
                 actor.BaseStats.HPMax = actor.BaseStats.SPMax = 100;
+                actor.BaseStats.HitBonus = 1; // Damage smoke cases exercise effects, with hit chance covered separately.
                 actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
                 actor.InvalidateCachedStats();
                 actor.Vitals.HP = 60; actor.Vitals.SP = 20;
@@ -74,13 +75,13 @@ namespace EternalEnigma.Tests
         private IEnumerator Cast(Skill skill, Character target)
         {
             friend.SetAction(new WaitAction());
-            yield return harness.ExecuteAction(new SkillAction(caster, skill, target));
+            yield return harness.ExecuteSkillToCompletion(new SkillAction(caster, skill, target));
         }
 
         private IEnumerator Missile(Skill skill, Vector3Int dir)
         {
             friend.SetAction(new WaitAction());
-            yield return harness.ExecuteAction(SkillAction.ForMissile(caster, skill, dir));
+            yield return harness.ExecuteSkillToCompletion(SkillAction.ForMissile(caster, skill, dir));
         }
 
         private void ResetHp()
@@ -179,10 +180,12 @@ namespace EternalEnigma.Tests
         public IEnumerator ArrowSkillUsesAnArrow()
         {
             ResetHp();
-            var bow = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>().First(d => d.WeaponType == WeaponType.BowAndArrow);
+            var bow = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>().First(d => !d.IsAmmunition && d.WeaponType == WeaponType.BowAndArrow);
             caster.Equipment.Equip((EquipableInventoryItem)bow.AsInventoryItem(null));
             caster.InvalidateCachedStats();
-            harness.AddItem("Wooden Arrows");
+            var ammunition = (EquipableInventoryItem)harness.AddItem("Wooden Arrows");
+            caster.Equipment.Equip(ammunition);
+            harness.Game.PlayerController.Inventory.Remove(ammunition);
             int arrows = ArrowSupply.Count(caster);
             Assume.That(arrows, Is.GreaterThan(0));
             ResetHp();

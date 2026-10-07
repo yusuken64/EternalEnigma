@@ -1,6 +1,7 @@
 """Generate a local, self-contained index for the retained Before/After evidence."""
 from pathlib import Path
 import csv, json
+from html import escape
 
 root = Path(__file__).resolve().parents[1] / 'Docs/Art/Previews/Diorama'
 def stats(folder):
@@ -33,6 +34,7 @@ th,td{text-align:right;padding:8px 18px;border-bottom:1px solid #3c4c40}th:first
 <div class="pair"><figure><figcaption>Before</figcaption><a id="beforeLink"><img id="before" alt="Before restyle"></a></figure><figure><figcaption>After</figcaption><a id="afterLink"><img id="after" alt="After restyle"></a></figure></div>
 <table><thead><tr><th>Recorded scene statistic</th><th>Before</th><th>After</th></tr></thead><tbody id="stats"></tbody></table>
 <p class="note">These are recorded scene totals. Triangle and material counts include geometry outside the camera; they are not frame-time measurements. Runtime performance and build inclusion reports are retained separately under Verification/.</p></section>
+__VALIDATION__
 <footer>Evidence and resume status: TODOs/09-diorama-restyle-plan.md. Source and style decisions: Docs/Art/DioramaStyle.md.</footer>
 <script>
 const data=__DATA__, view=document.querySelector('#view'), mode=document.querySelector('#mode');
@@ -42,5 +44,35 @@ const rows=[['Renderers','renderers'],['Materials','materials'],['Triangles','tr
 document.querySelector('#stats').replaceChildren(...rows.map(([title,key])=>{const tr=document.createElement('tr');for(const text of [title,...['before','after'].map(side=>key==='textureBytes'?(Number(entry[side][key])/1048576).toFixed(1):Number(entry[side][key]).toLocaleString())]){const td=document.createElement('td');td.textContent=text;tr.append(td);}return tr;}));}
 view.onchange=()=>{const old=mode.value;mode.replaceChildren(...data[Number(view.value)].modes.map(value=>new Option(value,value)));if(data[Number(view.value)].modes.includes(old))mode.value=old;render();};mode.onchange=render;view.onchange();
 </script></html>'''.replace('__DATA__', json.dumps(data))
+validation = ['<section><h2>Final validation</h2>']
+for mode in ('EditMode', 'PlayMode'):
+    path = root / 'Verification' / f'PostCleanup{mode}.json'
+    if path.exists():
+        report = json.loads(path.read_text(encoding='utf-8-sig'))
+        validation.append(f'<p><a href="Verification/{path.name}">{mode}</a>: '
+                          f'{report["passed"]} passed, {report["failed"]} failed, {report["skipped"]} skipped.</p>')
+for platform in ('Windows', 'WebGL'):
+    path = root / 'Verification' / f'{platform}PlayerValidation.json'
+    if not path.exists():
+        continue
+    report = json.loads(path.read_text(encoding='utf-8-sig'))
+    validation.append(f'<h3>{platform}</h3><p>{escape(report["gpu"])} / {escape(report["api"])}</p>'
+                      f'<p>{escape(report["protocol"])}</p><p><a href="Verification/{path.name}">Raw measurements</a> · '
+                      f'<a href="Verification/{platform}ArtInclusion.csv">Packed art inclusion</a></p>')
+    validation.append('<table><tr><th>Scene</th><th>Median ms</th><th>p95 ms</th><th>Error materials</th></tr>')
+    for sample in report['samples']:
+        scene = escape(sample['scene'])
+        validation.append(f'<tr><td>{scene}</td><td>{sample["medianMs"]:.2f}</td>'
+                          f'<td>{sample["p95Ms"]:.2f}</td><td>{sample["errorMaterials"]}</td></tr>')
+    validation.append('</table><div class="pair">')
+    for sample in report['samples']:
+        scene = escape(sample['scene'])
+        screenshot = f'Verification/{platform}_{scene}.png'
+        if (root / screenshot).exists():
+            validation.append(f'<figure><figcaption>{platform} — {scene}</figcaption><a href="{screenshot}">'
+                              f'<img src="{screenshot}" loading="lazy" alt="{platform} {scene} player capture"></a></figure>')
+    validation.append('</div>')
+validation.append('</section>')
+html = html.replace('__VALIDATION__', '\n'.join(validation))
 (root / 'Review.html').write_text(html, encoding='utf-8')
 print(f'Review index: {len(data)} matched views, {sum(len(entry["modes"]) for entry in data)} image pairs.')

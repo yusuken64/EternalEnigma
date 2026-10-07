@@ -7,6 +7,12 @@ using UnityEngine;
 
 public static class HarnessPlayerBuild
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Select WebGL Build Target")]
+    public static void SelectWebGLBuildTarget()
+    {
+        if(EditorUserBuildSettings.activeBuildTarget==BuildTarget.WebGL)return;
+        EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL,BuildTarget.WebGL);
+    }
     [MenuItem("Tools/Eternal Enigma/Tests/Restore Windows Build Target")]
     public static void RestoreWindowsBuildTarget()
     {

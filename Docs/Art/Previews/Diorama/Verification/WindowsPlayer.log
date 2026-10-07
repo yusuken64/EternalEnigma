@@ -1,0 +1,627 @@
+Mono path[0] = 'C:/Users/yusuk/Documents/GitHub/EternalEnigma/Builds/AuditVerification/EternalEnigma_Data/Managed'
+Mono config path = 'C:/Users/yusuk/Documents/GitHub/EternalEnigma/Builds/AuditVerification/MonoBleedingEdge/etc'
+Found 1 interfaces on host : 0) 10.0.0.2
+Player connection [72760]  Target information:
+
+Player connection [72760]  * "[IP] 10.0.0.2 [Port] 55000 [Flags] 2 [Guid] 1867610777 [EditorId] 336810848 [Version] 1048832 [Id] WindowsPlayer(2,LAPTOP-5K61F1O8) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] Eternal Enigma: Avarice's Abyss" 
+
+Player connection [72760] Started UDP target info broadcast (1) on [225.0.0.222:54997].
+
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.2.7f2 (2b518236b676)
+[Subsystems] Discovering subsystems at path C:/Users/yusuk/Documents/GitHub/EternalEnigma/Builds/AuditVerification/EternalEnigma_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 2060
+[D3D12 Device Filter] Driver Version: 32.0.15.7270
+[D3D12 Device Filter] Feature Level: 12.1
+[D3D12 Device Filter] Graphics Memory: 5955 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 2060 (ID=0x1f15)
+    Vendor:   NVIDIA
+    VRAM:     5955 MB
+    Driver:   32.0.15.7270
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.176 seconds
+- Finished resetting the current domain, in  0.002 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+<RI> Input initialized.
+UnloadTime: 2.385700 ms
+Odin Serializer ArchitectureInfo initialization with defaults (all unaligned read/writes disabled).
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+TWC.OdinSerializer.ArchitectureInfo:.cctor () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.OdinSerializer/Core/Misc/ArchitectureInfo.cs:56)
+TWC.OdinSerializer.UnitySerializationInitializer:Initialize () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.OdinSerializer/Unity Integration/UnitySerializationInitializer.cs:57)
+TWC.OdinSerializer.UnitySerializationInitializer:InitializeRuntime () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.OdinSerializer/Unity Integration/UnitySerializationInitializer.cs:88)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Odin Serializer detected whitelisted runtime platform WindowsPlayer and memory read test succeeded; enabling all unaligned memory read/writes.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+TWC.OdinSerializer.ArchitectureInfo:SetRuntimePlatform (UnityEngine.RuntimePlatform) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.OdinSerializer/Core/Misc/ArchitectureInfo.cs:118)
+TWC.OdinSerializer.UnitySerializationInitializer:Initialize () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.OdinSerializer/Unity Integration/UnitySerializationInitializer.cs:57)
+TWC.OdinSerializer.UnitySerializationInitializer:InitializeRuntime () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.OdinSerializer/Unity Integration/UnitySerializationInitializer.cs:88)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.353300 ms
+Unloading 24 unused Assets / (0 B). Loaded Objects now: 4896.
+Memory consumption went from 101.9 MB to 101.9 MB.
+Total: 2.321800 ms (FindLiveObjects: 0.315100 ms CreateObjectMapping: 0.106800 ms MarkObjects: 1.852500 ms  DeleteObjects: 0.047000 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.779400 ms
+Unloading 35 unused Assets / (77.4 KB). Loaded Objects now: 39774.
+Memory consumption went from 152.1 MB to 152.1 MB.
+Total: 11.655500 ms (FindLiveObjects: 1.543300 ms CreateObjectMapping: 1.660100 ms MarkObjects: 8.102000 ms  DeleteObjects: 0.349400 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.686800 ms
+Unloading 523 unused Assets / (1.4 MB). Loaded Objects now: 34036.
+Memory consumption went from 168.3 MB to 166.9 MB.
+Total: 12.528200 ms (FindLiveObjects: 1.231300 ms CreateObjectMapping: 2.186900 ms MarkObjects: 8.056000 ms  DeleteObjects: 1.053200 ms)
+
+Load Save Data
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:40)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Town seed 1283629199
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town:LoadSaveData () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:73)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:48)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+WalkableMap type: WalkableMap
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:59)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+TileWorldCreator type: TWC.TileWorldCreator
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:60)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Generate Buildings
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town/<FinishGeneration>d__50:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:336)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+UnityEngine.MonoBehaviour:StartCoroutineManaged2 (System.Collections.IEnumerator)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator) (at C:/build/output/unity/unity/Runtime/Export/Scripting/MonoBehaviour.bindings.cs:114)
+Town:buildLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:320)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:141)
+TownFloorTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownFloorTileLayer.cs:38)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownRoofTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownRoofTileLayer.cs:116)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+DioramaTownAccentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaTownAccentLayer.cs:54)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1044)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownEnvironmentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownEnvironmentLayer.cs:138)
+TWC.TileWorldCreator:ExecuteAllBuildLayers (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:978)
+Town:blueprintLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:313)
+TWC.TileWorldCreator:set_executedBlueprintLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:114)
+TWC.TileWorldCreator:ExecuteBlueprintLayer (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:779)
+TWC.TileWorldCreator:ExecuteAllBlueprintLayers () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:600)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:63)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Generate Allies
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town/<FinishGeneration>d__50:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:342)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+UnityEngine.MonoBehaviour:StartCoroutineManaged2 (System.Collections.IEnumerator)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator) (at C:/build/output/unity/unity/Runtime/Export/Scripting/MonoBehaviour.bindings.cs:114)
+Town:buildLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:320)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:141)
+TownFloorTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownFloorTileLayer.cs:38)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownRoofTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownRoofTileLayer.cs:116)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+DioramaTownAccentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaTownAccentLayer.cs:54)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1044)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownEnvironmentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownEnvironmentLayer.cs:138)
+TWC.TileWorldCreator:ExecuteAllBuildLayers (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:978)
+Town:blueprintLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:313)
+TWC.TileWorldCreator:set_executedBlueprintLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:114)
+TWC.TileWorldCreator:ExecuteBlueprintLayer (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:779)
+TWC.TileWorldCreator:ExecuteAllBlueprintLayers () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:600)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:63)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Initialize Player
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town/<FinishGeneration>d__50:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:345)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+UnityEngine.MonoBehaviour:StartCoroutineManaged2 (System.Collections.IEnumerator)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator) (at C:/build/output/unity/unity/Runtime/Export/Scripting/MonoBehaviour.bindings.cs:114)
+Town:buildLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:320)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:141)
+TownFloorTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownFloorTileLayer.cs:38)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownRoofTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownRoofTileLayer.cs:116)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+DioramaTownAccentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaTownAccentLayer.cs:54)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1044)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownEnvironmentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownEnvironmentLayer.cs:138)
+TWC.TileWorldCreator:ExecuteAllBuildLayers (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:978)
+Town:blueprintLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:313)
+TWC.TileWorldCreator:set_executedBlueprintLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:114)
+TWC.TileWorldCreator:ExecuteBlueprintLayer (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:779)
+TWC.TileWorldCreator:ExecuteAllBlueprintLayers () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:600)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:63)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Town done
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town/<FinishGeneration>d__50:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:366)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+DIORAMA_PLAYER_STAGE Town
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+DioramaPlayerValidation/<Measure>d__6:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaPlayerValidation.cs:109)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Unloading 8 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 9.711500 ms
+Dungeon created
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:Log (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:128)
+TileWorldDungeon:Awake () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/TileWorldDungeon.cs:56)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 128)
+
+Unloading 2834 unused Assets / (90.8 MB). Loaded Objects now: 40743.
+Memory consumption went from 414.7 MB to 323.9 MB.
+Total: 29.755500 ms (FindLiveObjects: 1.853100 ms CreateObjectMapping: 2.974500 ms MarkObjects: 18.293500 ms  DeleteObjects: 6.633500 ms)
+
+Dungeon created
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:Log (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:128)
+TileWorldDungeon:Awake () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/TileWorldDungeon.cs:56)
+UnityEngine.Object:Internal_CloneSingle (UnityEngine.Object)
+UnityEngine.Object:Instantiate<TileWorldDungeon> (TileWorldDungeon) (at C:/build/output/unity/unity/Runtime/Export/Scripting/UnityEngineObject.bindings.cs:643)
+TileWorldDungeonGenerator:BuildComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/TileWorldDungeonGenerator.cs:136)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:141)
+DungeonThemeTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DungeonThemeTileLayer.cs:45)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1044)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1044)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+DungeonThemeTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DungeonThemeTileLayer.cs:45)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+DungeonThemeTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DungeonThemeTileLayer.cs:45)
+TWC.TileWorldCreator:ExecuteAllBuildLayers (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:978)
+TileWorldDungeonGenerator:BluePrintComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/TileWorldDungeonGenerator.cs:125)
+TWC.TileWorldCreator:set_executedBlueprintLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:114)
+TWC.TileWorldCreator:ExecuteBlueprintLayer (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:779)
+TWC.TileWorldCreator:ExecuteAllBlueprintLayers () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:600)
+TileWorldDungeonGenerator:GenerateThroneRoom () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/TileWorldDungeonGenerator.cs:79)
+Game/<AdvanceFloorRoutine>d__36:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Dungeon/Game/Game.cs:245)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 128)
+
+Dungeon destroyed
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:Log (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:128)
+TileWorldDungeon:OnDestroy () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/TileWorldDungeon.cs:68)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 128)
+
+Stairs Created
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:Log (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:128)
+Game/<AdvanceFloorRoutine>d__36:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Dungeon/Game/Game.cs:291)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 128)
+
+DIORAMA_PLAYER_STAGE Dungeon
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+DioramaPlayerValidation/<Measure>d__6:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaPlayerValidation.cs:109)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+Dungeon destroyed
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:Log (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:128)
+TileWorldDungeon:OnDestroy () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/TileWorldDungeon.cs:68)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 128)
+
+UnloadTime: 6.978600 ms
+Unloading 5567 unused Assets / (16.4 MB). Loaded Objects now: 34287.
+Memory consumption went from 205.9 MB to 189.5 MB.
+Total: 23.108900 ms (FindLiveObjects: 1.570900 ms CreateObjectMapping: 2.179000 ms MarkObjects: 16.533100 ms  DeleteObjects: 2.825300 ms)
+
+Load Save Data
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:40)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Town seed 1283629199
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town:LoadSaveData () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:73)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:48)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+WalkableMap type: WalkableMap
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:59)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+TileWorldCreator type: TWC.TileWorldCreator
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:60)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Generate Buildings
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town/<FinishGeneration>d__50:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:336)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+UnityEngine.MonoBehaviour:StartCoroutineManaged2 (System.Collections.IEnumerator)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator) (at C:/build/output/unity/unity/Runtime/Export/Scripting/MonoBehaviour.bindings.cs:114)
+Town:buildLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:320)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:141)
+TownFloorTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownFloorTileLayer.cs:38)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownRoofTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownRoofTileLayer.cs:116)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+DioramaTownAccentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaTownAccentLayer.cs:54)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1044)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownEnvironmentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownEnvironmentLayer.cs:138)
+TWC.TileWorldCreator:ExecuteAllBuildLayers (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:978)
+Town:blueprintLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:313)
+TWC.TileWorldCreator:set_executedBlueprintLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:114)
+TWC.TileWorldCreator:ExecuteBlueprintLayer (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:779)
+TWC.TileWorldCreator:ExecuteAllBlueprintLayers () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:600)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:63)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Generate Allies
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town/<FinishGeneration>d__50:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:342)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+UnityEngine.MonoBehaviour:StartCoroutineManaged2 (System.Collections.IEnumerator)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator) (at C:/build/output/unity/unity/Runtime/Export/Scripting/MonoBehaviour.bindings.cs:114)
+Town:buildLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:320)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:141)
+TownFloorTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownFloorTileLayer.cs:38)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownRoofTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownRoofTileLayer.cs:116)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+DioramaTownAccentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaTownAccentLayer.cs:54)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1044)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownEnvironmentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownEnvironmentLayer.cs:138)
+TWC.TileWorldCreator:ExecuteAllBuildLayers (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:978)
+Town:blueprintLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:313)
+TWC.TileWorldCreator:set_executedBlueprintLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:114)
+TWC.TileWorldCreator:ExecuteBlueprintLayer (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:779)
+TWC.TileWorldCreator:ExecuteAllBlueprintLayers () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:600)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:63)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Initialize Player
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town/<FinishGeneration>d__50:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:345)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+UnityEngine.MonoBehaviour:StartCoroutineManaged2 (System.Collections.IEnumerator)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator) (at C:/build/output/unity/unity/Runtime/Export/Scripting/MonoBehaviour.bindings.cs:114)
+Town:buildLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:320)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:141)
+TownFloorTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownFloorTileLayer.cs:38)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownRoofTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownRoofTileLayer.cs:116)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+DioramaTownAccentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaTownAccentLayer.cs:54)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1044)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+EnvironmentSmartTileLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/EnvironmentSmartTileLayer.cs:197)
+TWC.TileWorldCreator:ExecuteNextBuildLayer (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:1040)
+TWC.TileWorldCreator:set_executedBuildLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:162)
+TownEnvironmentLayer:Execute (TWC.TileWorldCreator,bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/TownEnvironmentLayer.cs:138)
+TWC.TileWorldCreator:ExecuteAllBuildLayers (bool) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:978)
+Town:blueprintLayersComplete (TWC.TileWorldCreator) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:313)
+TWC.TileWorldCreator:set_executedBlueprintLayersCount (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:114)
+TWC.TileWorldCreator:ExecuteBlueprintLayer (int) (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:779)
+TWC.TileWorldCreator:ExecuteAllBlueprintLayers () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/TileWorldCreator/Code/TileWorldCreator.cs:600)
+Town:Start () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:63)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Town done
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+Town/<FinishGeneration>d__50:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Town/Town.cs:366)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.519800 ms
+Unloading 2733 unused Assets / (59.3 MB). Loaded Objects now: 32670.
+Memory consumption went from 381.3 MB to 322.0 MB.
+Total: 18.338400 ms (FindLiveObjects: 1.420600 ms CreateObjectMapping: 2.270100 ms MarkObjects: 12.381900 ms  DeleteObjects: 2.265400 ms)
+
+DIORAMA_PLAYER_STAGE Overworld
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+DioramaPlayerValidation/<Measure>d__6:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaPlayerValidation.cs:109)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+DIORAMA_PLAYER_JSON {"platform":"WindowsPlayer","gpu":"NVIDIA GeForce RTX 2060","api":"Direct3D11","unity":"6000.2.7f2","protocol":"Seed 12345; production town, starter dungeon and overworld; 1280x800 world-camera rendering with synchronous one-pixel GPU readback, 45 warmup + 180 samples. Includes update/readback overhead; excludes scene generation and is not normal backbuffer FPS.","samples":[{"scene":"Town","triangles":1748445,"renderers":309,"materials":69,"errorMaterials":0,"medianMs":3.6544997692108156,"p95Ms":4.836203098297119},{"scene":"Dungeon","triangles":10983,"renderers":23,"materials":13,"errorMaterials":0,"medianMs":1.9929988384246827,"p95Ms":4.284700870513916},{"scene":"Overworld","triangles":2331961,"renderers":1094,"materials":93,"errorMaterials":0,"medianMs":3.967602252960205,"p95Ms":5.686699390411377}],"errors":[]}
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+UnityEngine.Logger:Log (UnityEngine.LogType,object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:60)
+UnityEngine.Debug:Log (object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:123)
+DioramaPlayerValidation/<Start>d__4:MoveNext () (at C:/Users/yusuk/Documents/GitHub/EternalEnigma/Assets/Scripts/Environment/DioramaPlayerValidation.cs:63)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr) (at C:/build/output/unity/unity/Runtime/Export/Scripting/Coroutines.cs:17)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 123)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+PlayerConnection::Cleanup##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1791376484253,"processId":69560,"allocatedMemory":49185,"memoryLabels":[{"Default":136},{"NewDelete":136},{"Manager":8693},{"VFX":-104},{"GfxDevice":288},{"GfxThread":24},{"Serialization":520},{"JobScheduler":32768},{"String":448},{"HashMap":3584},{"PoolAlloc":96},{"VR":1864},{"Video":144},{"NativeArray":372},{"Subsystems":96},{"CoreBusinessMetrics":120}]}

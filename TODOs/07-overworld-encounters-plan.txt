@@ -11,6 +11,9 @@ Implement the consolidated overworld and puzzle ideas below through the existing
 - Prison possessions are confiscated temporarily and recovered.
 - Every enemy family receives a large boss variant; campaigns select bosses by seed.
 
+The imported `Assets/RPGMonsterWave4Polyart/Prefab` pack supplies ten candidate monster visuals, including BoneDragon, CastleMonster and IceGolem. Select boss roles only after the Phase 0 visual/performance check in `09-diorama-restyle-plan.md`; the import did not add these monsters to dungeon enemy prefabs or spawn pools.
+After that art check, this encounter task owns project enemy prefab variants, animation/material setup, deterministic spawn-band registration and boss-role selection. Test ordinary and boss spawns at the intended floor bands and sample a full floor on WebGL before adding a Wave 4 enemy to production pools.
+
 ## Phase 1 — Shared dungeon systems
 
 **Encounter definitions and objectives**
@@ -154,3 +157,14 @@ Create prefab variants using existing models and animations, with a real 3×3 fo
 - Visually inspect every encounter type, all boss variants, enlarged markers, and the largest woodland floors.
 
 Defaults: guarantee every **encounter archetype**, not every boss variant, within one campaign. Apply generation changes to new campaigns and follow the repository’s existing fingerprint compatibility policy without deleting or rewriting old save slots. Preserve unrelated working-tree changes.
+
+## Diorama Phase 0 visual handoff (2026-10-06)
+
+Task 09 supplies collider-free Wave 4 wrappers and project-owned Built-in lit materials in `Assets/Art/Diorama/Wave4`. No spawn pools or boss registrations have changed. Full measurements, animation checks and side-by-side captures are in `Docs/Art/Previews/Diorama/Fit`; selection notes are in `Docs/Art/DioramaStyle.md`.
+
+- Common candidates: BlueSlime (3,320 triangles), Crawler (4,668), FlowerMonster (4,622), StarFish (4,252).
+- Caster/elite candidates: SkeletonMage (5,612), LittleDemon (7,610), FlameKnight (8,018).
+- Boss/rare candidates: BoneDragon (8,772; use FlyFWD locomotion), CastleMonster (16,201), IceGolem (16,498). None has authored LODs.
+- All ten pass idle/attack/hit/death and moving rig checks. Vendor prefabs currently bind the environment DefaultPBR atlas; wrappers explicitly rebind the Wave 4 atlas. Preserve that correction when creating Enemy prefabs.
+- Twelve-instance isolated Windows median timings: 0.75–2.04 ms on RTX 2060/D3D11, including GPU readback; raw results in `Fit/WindowsBenchmark.json`. These are comparative fit costs, not full-game budgets. WebGL runtime evaluation is deferred to task 09 final validation at user request.
+- Fit captures normalize candidates to 1.4 hero heights for comparison; choose final encounter/boss scale in this task. Use the largest two meshes sparingly until final WebGL evidence is available.

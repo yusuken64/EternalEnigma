@@ -293,25 +293,54 @@ public sealed class MemorySaveStore : ISaveStore
 // Synthetic keyboard/mouse events must reach Play Mode even when the Test Runner has focus.
 public sealed class TestInputScope : IDisposable
 {
+    private static readonly List<TestInputScope> activeScopes = new();
     private readonly InputSettings previous = InputSystem.settings;
     private readonly InputSettings settings;
+    private readonly InputDevice[] existingDevices;
     private readonly InputDevice[] suspendedDevices;
+    private bool disposed;
+
+    [InitializeOnLoadMethod]
+    private static void InstallCleanup()
+    {
+        EditorApplication.playModeStateChanged += OnPlayModeChanged;
+        AssemblyReloadEvents.beforeAssemblyReload += RestoreAll;
+    }
+
+    private static void OnPlayModeChanged(PlayModeStateChange state)
+    {
+        if (state == PlayModeStateChange.ExitingPlayMode) RestoreAll();
+    }
+
+    internal static void RestoreAll()
+    {
+        // A failed nested UnityTest coroutine or an interrupted run may skip Dispose.
+        // Restore nested scopes in reverse order before their managed state is lost.
+        while (activeScopes.Count > 0) activeScopes[^1].Dispose();
+    }
 
     public TestInputScope()
     {
         // Physical HID reports can replace Gamepad.current between synthetic test events.
         // Disable only devices that were enabled, and restore them when the fixture ends.
-        suspendedDevices=InputSystem.devices.Where(device=>device.enabled).ToArray();
+        existingDevices = InputSystem.devices.ToArray();
+        suspendedDevices=existingDevices.Where(device=>device.enabled).ToArray();
         foreach(var device in suspendedDevices)InputSystem.DisableDevice(device);
         settings = Object.Instantiate(previous);
         settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
         InputSystem.settings = settings;
+        activeScopes.Add(this);
     }
 
     public void Dispose()
     {
+        if (disposed) return;
+        disposed = true;
+        activeScopes.Remove(this);
         InputSystem.settings = previous;
+        foreach (var device in InputSystem.devices.ToArray())
+            if (!device.native && !existingDevices.Contains(device)) InputSystem.RemoveDevice(device);
         foreach(var device in suspendedDevices)if(device.added)InputSystem.EnableDevice(device);
         Object.DestroyImmediate(settings);
     }

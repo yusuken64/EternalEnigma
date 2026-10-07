@@ -1,0 +1,57 @@
+[
+  {
+    "group": "legacy-tilemap",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "twc-samples",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "rpg-hero-placeholder",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "unused-enemy-prefabs",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "adorable-per-texture",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "environment-duplicates",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "legacy-biome-swatches",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "recovery-scenes",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "unused-wfc",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "skill-contact-sheets",
+    "remaining": [],
+    "danglingReferences": {}
+  },
+  {
+    "group": "kenney-duplicate-models",
+    "remaining": [],
+    "danglingReferences": {}
+  }
+]

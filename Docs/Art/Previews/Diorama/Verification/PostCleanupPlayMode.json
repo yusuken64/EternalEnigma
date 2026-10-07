@@ -1,0 +1,17 @@
+{
+    "runId": "19ef3e5a05cd46bdac0d1f0e2bca433d",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [],
+    "passed": 323,
+    "failed": 0,
+    "skipped": 4,
+    "xml": "Temp/HarnessResults/PlayMode.xml",
+    "startedUtc": "2026-10-07T05:05:11.8512289Z",
+    "updatedUtc": "2026-10-07T05:51:05.1350075Z",
+    "currentTest": "",
+    "lastFinished": "SightPlaybackTests.SightTracksPlaybackAndOffscreenActionsStillApplyResults: Passed",
+    "failures": [],
+    "durationSeconds": 2747.9547093
+}

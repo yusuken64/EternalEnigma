@@ -93,7 +93,20 @@ public static class DioramaAuditAuthoring
         {
             var material=AssetDatabase.LoadAssetAtPath<Material>(path);
             if(material.HasProperty("_MainTex")&&material.mainTexture!=null&&AssetDatabase.GetAssetPath(material.mainTexture).StartsWith("Assets/TileWorldCreator/Tiles/"))
-            {material.mainTexture=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Art/PaintedEnvironment/Masonry.png");EditorUtility.SetDirty(material);}
+            {
+                // The menu meshes use the source textures' UV layouts. Retain those textures
+                // before removing the sample pack instead of replacing them with generic masonry.
+                const string folder="Assets/Art/MainMenu/Textures";
+                if(!AssetDatabase.IsValidFolder(folder))AssetDatabase.CreateFolder("Assets/Art/MainMenu","Textures");
+                string source=AssetDatabase.GetAssetPath(material.mainTexture);
+                string target=folder+"/"+Path.GetFileName(source);
+                if(!File.Exists(target)&&!AssetDatabase.CopyAsset(source,target))
+                    throw new InvalidOperationException("Could not retain main menu texture: "+source);
+                var texture=AssetDatabase.LoadAssetAtPath<Texture2D>(target);
+                if(texture==null)throw new InvalidOperationException("Main menu texture is missing: "+target);
+                material.mainTexture=texture;
+                EditorUtility.SetDirty(material);
+            }
         }
         // Legacy presets remain functional with our own four-piece assets.
         var dungeonThemes=Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");var baseline=dungeonThemes.Themes.First();

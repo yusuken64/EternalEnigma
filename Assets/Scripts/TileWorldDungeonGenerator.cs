@@ -101,7 +101,7 @@ public class TileWorldDungeonGenerator : MonoBehaviour
         creator.twcAsset.hideFlags=HideFlags.DontSave;
         creator.twcAsset.useRandomSeed=useSeed;creator.twcAsset.randomSeed=seed;
         ThemeCatalog?.Apply(creator.twcAsset,CurrentVisuals,throne);
-        RenderSettings.ambientLight=Color.Lerp(CurrentVisuals.IsLegacy ? originalAmbient : ThemeCatalog.Get(CurrentVisuals).Ambient,new Color(.62f,.64f,.67f),.65f);
+        RenderSettings.ambientLight=ScenePresentation.FillAmbient(CurrentVisuals.IsLegacy ? originalAmbient : ThemeCatalog.Get(CurrentVisuals).Ambient);
         if(themeLight!=null) {themeLight.color=CurrentVisuals.IsLegacy ? originalLightColor : ThemeCatalog.Get(CurrentVisuals).LightColor;
             themeLight.intensity=CurrentVisuals.IsLegacy ? originalLightIntensity : ThemeCatalog.Get(CurrentVisuals).LightIntensity;}
     }

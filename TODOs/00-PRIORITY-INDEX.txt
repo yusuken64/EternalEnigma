@@ -22,10 +22,8 @@ Numbers are recommended execution order, not estimates or dependencies.
 08-twc-biome-styling-plan.md
    General style bindings, rendering ownership, cache and validation work.
 09-diorama-restyle-plan.md
-   Broader ground/foliage/building/item visual restyle.
-10-art-asset-audit.md
-   Supporting asset findings and remaining cleanup opportunities. Findings
-   already assigned to 03/04/05/09 belong to those tasks, not a second backlog.
+   Ground/foliage/building/item restyle, imported asset integration, and art
+   audit findings/cleanup in one task. Feel/input/weapon fixes remain in 03/04/05.
 11-terminal-mode.md
    Optional full-game terminal rendering and menus.
 

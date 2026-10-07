@@ -14,6 +14,13 @@ public sealed class ScenePresentation : MonoBehaviour
     private Camera viewCamera;
     private Color originalBackground;
     private static readonly Color GrasslandSky = new Color32(0x65, 0xBD, 0xF2, 0xFF);
+    public static Color FillAmbient(Color ambient) => Color.Lerp(ambient,new Color(.62f,.64f,.67f),.65f);
+    public static Vector3 SunDirection(bool outdoor, float phase)
+    {
+        float angle=(outdoor?phase*360:35)*Mathf.Deg2Rad;
+        float elevation=(outdoor?55+10*Mathf.Sin(phase*Mathf.PI*2):55)*Mathf.Deg2Rad;
+        return new Vector3(Mathf.Cos(angle)*Mathf.Cos(elevation),Mathf.Sin(angle)*Mathf.Cos(elevation),Mathf.Sin(elevation));
+    }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetPhase(){Phase=0;advancedFrame=-1;SilhouetteParticipant.Active.Clear();}
     public static void Ensure(MonoBehaviour owner)
@@ -50,7 +57,7 @@ public sealed class ScenePresentation : MonoBehaviour
         sun=RenderSettings.sun;
         if(sun==null)foreach(var light in FindObjectsByType<Light>(FindObjectsSortMode.None))if(light.type==LightType.Directional){sun=light;break;}
         if(sun!=null)sun.shadows=LightShadows.None;
-        RenderSettings.ambientLight=Color.Lerp(RenderSettings.ambientLight,new Color(.62f,.64f,.67f),.65f);
+        RenderSettings.ambientLight=FillAmbient(RenderSettings.ambientLight);
     }
     private void Update()
     {
@@ -80,9 +87,7 @@ public sealed class ScenePresentation : MonoBehaviour
             advancedFrame=Time.frameCount;
             Phase=Mathf.Repeat(Phase+Time.deltaTime/Mathf.Max(1,GamePresentationProfile.Current?.SunPeriodSeconds??1200),1);
         }
-        float angle=(outdoor?Phase*360:35)*Mathf.Deg2Rad;
-        float elevation=(outdoor?55+10*Mathf.Sin(Phase*Mathf.PI*2):55)*Mathf.Deg2Rad;
-        var direction=new Vector3(Mathf.Cos(angle)*Mathf.Cos(elevation),Mathf.Sin(angle)*Mathf.Cos(elevation),Mathf.Sin(elevation));
+        var direction=SunDirection(outdoor,Phase);
         if(silhouettes!=null)silhouettes.Direction=direction;
         if(sun!=null)sun.transform.rotation=Quaternion.LookRotation(direction,Vector3.up);
     }

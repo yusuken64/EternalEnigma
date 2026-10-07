@@ -103,7 +103,9 @@ Each `Wave4_*.png` compares the existing slime, the hero and the candidate. Thei
 - Selected Read/Write changes are listed in `Fit/SelectedReadableFBXs.txt` (15 environment meshes) and `Fit/SelectedCastleFBXs.txt` (three Kenney models). No character vendor meshes, materials, prefabs or clips are edited.
 - Same-depth town, road and forest views have been reviewed against `ArtRefs/Untitled2.png`, `Untitled3.png`, `Untitled7.png` and `Untitled8.png`. Broadleaf **2.85H** and pine **3.1H** remain the production multipliers. The rendered canopy is roughly three hero heights, with the road rectangle clear; snow pine uses the same scale and blue-white ground keeps its outline visible. See `After/Town_*_HeroTree.png` and `Terrain/Overworld_{Road,Forest}_HeroTree.png`.
 - `Fit/Landmarks.png` records the corrected Kenney XY adapters. Source root transforms remain intact under a normalized wrapper. Gate and flag turn toward the gameplay camera, and `towerSquare` supplies the complete tower rather than a roof-only module.
-- **Pending:** final player shader/performance validation and completion of the full Unity suites.
+- Full post-cleanup suites: **EditMode 285/0**, **PlayMode 323/0 with four explicit skips** (the four manual autoplay checks passed separately). Final Core: **379/0**. Raw reports are in `Verification/`.
+- Windows development build and production-scene validation passed: **0 build errors**, no runtime errors and no unsupported/error materials in Town, Dungeon or Overworld. All three player captures were reviewed. The build is **510,795,584 bytes**; its 160 warnings and captured compiler-warning lines are retained with the report.
+- **Pending:** final integrated WebGL and isolated fit WebGL runtime validation.
 
 ### Authoring and review entry points
 
@@ -121,6 +123,10 @@ Reproduction order, under `Tools / Eternal Enigma` in Unity:
 Dropped-item roots retain logical cell-corner positions; their model children are centered at `(1,1)` inside the two-unit grid. Decorative props are centered at the origin for their placement layers. Currency and inventory-category Gold use separate behaviour prefabs. NPC portraits use `Image`; the saved hero portrait `RawImage` applies the sprite's atlas UV rectangle and restores its previous UVs when released.
 
 For the final development-player gate, use `Tests / Build Windows Player` and `Tools/Invoke-DioramaPlayerValidation.ps1`, then `Tests / Build Presentation WebGL` and `node Tools/diorama-webgl-benchmark.mjs --integrated`. The latter build is reserved for the end of the task. Running the same Node script without `--integrated` exercises the existing isolated fit build without rebuilding it. Each report describes the GPU-readback measurement protocol; compare its samples separately from ordinary backbuffer FPS.
+
+When changing platforms, select `Tests / Restore Windows Build Target` or `Tests / Select WebGL Build Target` first, then wait for script compilation and domain reload to finish before invoking the build menu. An `Unknown` report with zero duration/bytes is not a completed build.
+
+Windows integrated samples (RTX 2060 / D3D11, 1280×800, 45 warmup + 180 samples with synchronous readback): Town median/p95 **3.65/4.84 ms**, Dungeon **1.99/4.28 ms**, Overworld **3.97/5.69 ms**. The packed-asset report contains **1,012,892 bytes / 16 sources** from Tiny Fantasy World and **16,224,057 bytes / 388 sources** from project-owned diorama art. Wave 4 remains absent from production until task 07 integration. Baked TownPreview meshes and the removed TWC, per-texture Adorable and RPGHero folders each contribute **zero packed bytes**.
 
 ## Ground channel and ownership contract
 

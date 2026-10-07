@@ -66,7 +66,8 @@ The already-committed task 05 work supplies dungeon theme lists, TownInteriorCat
 | twc-samples | `2dee505b` | 942 |
 | rpg-hero-placeholder | `68ce971c` | 89 |
 | unused-enemy-prefabs | `3fd7360f` | 4 |
-| adorable-per-texture | This commit | See cleanup ledger |
+| adorable-per-texture | `65130951` | 1639 |
+| environment-duplicates | This commit | See cleanup ledger |
 
 ### Resume order
 

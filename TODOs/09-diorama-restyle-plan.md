@@ -63,7 +63,8 @@ The already-committed task 05 work supplies dungeon theme lists, TownInteriorCat
 | Group | Commit | Tracked files |
 |---|---|---:|
 | legacy-tilemap | `02a12dc6` | 517 |
-| twc-samples | This commit | See cleanup ledger |
+| twc-samples | `2dee505b` | 942 |
+| rpg-hero-placeholder | This commit | See cleanup ledger |
 
 ### Resume order
 

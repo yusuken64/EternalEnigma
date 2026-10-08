@@ -18,24 +18,33 @@ The town inn uses normal dialog confirmation/Back handling.
 | Minimap | View / Share |
 | Settings | Menu / Options |
 
-## Shared Inventory and Skills window
+## Shared party window
 
-Town, overworld, and dungeon use the same window. Q / X / Square opens Inventory;
-R / LB / L1 opens Skills. At the root, the active shortcut closes the window and
-the other switches tabs. Shortcuts are ignored inside action and target pickers.
+Town, overworld and dungeon expose Inventory, Equipment, Skills and Stats; the
+overworld also has Capabilities. Q / X / Square opens Inventory, and R / LB / L1
+opens Skills. At the root, the active shortcut closes the window and the other
+switches tabs. Equipment and Stats have clickable launcher tabs but no dedicated
+keyboard/gamepad shortcut. Shortcuts are ignored inside action and target pickers.
 
-Navigate with WASD/arrows, D-pad/left stick, or mouse. Highlighting only inspects;
-Enter/Space or A/Cross opens action choices. Confirm Use, Cast, Equip, or Sell to
-execute or choose a target. Escape / B / Circle / Back returns one level.
-Tab / RB / R1 browses the next hero; Shift+Tab / LT / L2 browses the previous hero.
-Browsing never changes the controlled world character. Move right from a list row
-to scroll a long description with up/down; move left to return to the list.
+Navigate with WASD/arrows, D-pad/left stick or mouse. Confirming a dungeon active
+skill starts casting or target selection directly; items open their action list.
+Escape / B / Circle / Back returns one level. The compact root dock hides the
+separate description pane; nested pickers and service dialogs retain their own
+details and scrolling controls.
 
-Empty lists keep tabs, hero browsing, and Back available. Inventory lists equipped
-instances before shared bag contents; Skills separates learned active and passive
-skills. Unavailable actions explain their restrictions in the details panel.
-Dungeon execution still requires the controlled actor's turn and uses the existing
-targeting, costs, replay, and turn systems. Overworld permits equipment changes only.
+Tab / RB / R1 selects the next hero; Shift+Tab / LT / L2 selects the previous hero.
+In town/overworld this changes inspection only. In the dungeon dock it changes the
+controlled hero while browsing; nested actions and targeting retain their original
+actor. Dungeon HUD portraits also support clicking to switch heroes.
+
+Inventory lists shared bag items; Equipment shows Weapon, Off-hand and Accessory
+slots and per-item bonuses, with stat previews in the change picker. Skills separates
+active/passive entries. Stats
+shows progression, attributes, vitals, combat values and resistances, with free
+attribute spending. Empty lists keep navigation and Back available; unavailable
+actions explain their restrictions. Dungeon actions retain actor-turn eligibility,
+targeting, costs and replay. Overworld allows equipment changes and attribute
+spending; items and skills are otherwise inspectable only.
 
 The shared Common scene owns the single `PlayerInput`. DungeonScene must not add another:
 multiple active `PlayerInput` components disable Unity's automatic control-scheme switching,
@@ -54,6 +63,15 @@ gamepad, keyboard, or mouse activity once per frame. The persistent `CursorManag
 Common scene polls it, and `MenuUIInputModule` also polls while a menu is active. Keyboard
 or mouse activity restores keyboard prompts and the visible cursor; gamepad activity hides
 the cursor. An unchanged stick position does not switch devices.
+
+## Terminal presentation
+
+Main-menu and Display settings controls, or F11, toggle ASCII map presentation.
+Town, overworld and dungeon use live gameplay state and the same campaign saves.
+The main menu has an ASCII backdrop and restyled buttons; gameplay dialogs retain
+uGUI while terminal-native adapters are unfinished. The redundant dungeon minimap
+and event feed hide while their knowledge/history remain active. Animation settings
+are preserved. See [remaining terminal work](../TODOs/11-terminal-mode.md).
 
 ## Gameplay settings
 

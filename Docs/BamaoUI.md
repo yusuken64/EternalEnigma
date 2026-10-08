@@ -19,7 +19,7 @@ Parchment panels similarly inherit from `Assets/Resources/UI/GamePanelBackground
 
 Selected Bamao sprite import borders were configured for nine-slicing; original texture art is unchanged. Screenshots and regression summaries are under `Temp/UIValidation` and `Temp/DungeonUI`.
 
-## Dungeon dock
+## Shared gameplay dock
 
 The initial asset audit found 1,182 images and 236 prefabs in the installed pack, 44 distinct pack images referenced by project scenes/prefabs/resources, and eight sprites exposed by the shared theme. The dungeon theme now exposes these explicit roles and reusable prefab references:
 
@@ -37,9 +37,9 @@ The initial asset audit found 1,182 images and 236 prefabs in the installed pack
 | Resource track | `Select Character/State_blank` |
 | HP/SP/hunger fills | `Select Character/State_HP`, `State_blue`, `State_yellow` |
 
-Run **Tools > Eternal Enigma > UI > Author Dungeon Dock** to regenerate the dungeon copies under `Assets/Resources/UI/Dungeon` and install them in DungeonScene. Shared town and overworld menu geometry is unchanged. Stretchable roles use slicing; square icons and the cross preserve aspect ratio. `DungeonTextStyle` preserves brown text on paper and light text on wood during generic styling. Dense descriptions use the existing body font; decorative lettering is reserved for headings.
+Run **Tools > Eternal Enigma > UI > Author Dungeon Dock** to regenerate the dungeon copies under `Assets/Resources/UI/Dungeon` and install them in DungeonScene. The party window uses the same compact dock geometry in town, overworld and dungeon. Stretchable roles use slicing; square icons and the cross preserve aspect ratio. `DungeonTextStyle` preserves brown text on paper and light text on wood during generic styling. Dense descriptions use the existing body font; decorative lettering is reserved for headings.
 
-The dock uses safe-area anchors `(0.60, 0.03)`–`(0.98, 0.88)`. The inventory and skills belong to the controlled character. There is no party selector inside the dock. Tab/Shift+Tab or controller character-switch inputs change control while browsing, and the HUD portraits accept left clicks above the transparent input shield. Switching refreshes the current tab and retains each character's entry/scroll state. Nested actions and targeting keep their original actor. Browsing spends no turns or resources.
+The dock uses safe-area anchors `(0.73, 0.03)`–`(0.98, 0.88)`. Persistent HUD launcher tabs expose Inventory, Equipment, Skills and Stats, plus Capabilities on the overworld. The root dock hides its duplicate tabs, hero header, description pane, hint row and close button; the main list fills the panel. In the dungeon, inventory and skills belong to the controlled character. There is no party selector inside the dock. Tab/Shift+Tab or controller character-switch inputs change control while browsing, and the HUD portraits accept left clicks above the transparent input shield. Switching refreshes the current tab and retains each character's entry/scroll state. Nested actions and targeting keep their original actor. Browsing spends no turns or resources.
 
 Only the top dungeon dialog canvas is visible; targeting hides underlying panels. Cancel restores selection and all scroll positions. Selecting an inventory item opens Use/Equip/Unequip, Throw, Drop, Cancel directly, retaining eligibility checks. The minimap hides while browsing and recent events fit to the dock's left. Both history entry points call `GameMessages.ShowHistory()`, sharing one dialog with duplicate-open protection, an empty state, newest-entry positioning, and keyboard/controller scrolling. History remains scene-local with existing coalescing and dungeon turn messages.
 

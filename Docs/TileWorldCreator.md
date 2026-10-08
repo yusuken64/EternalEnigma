@@ -250,7 +250,12 @@ Events: `OnBlueprintLayersComplete(TileWorldCreator)` and `OnBuildLayersComplete
 - Runtime editing only works on layers whose stack contains a `Paint` generator.
 - Saved files store the recipe, not the result. The same seed and stack give the same map.
 
-## Demo scenes worth opening
+## Vendor demo references
+
+These names refer to vendor package examples. The project removed the demo assets
+after migrating production dependencies; they are not required in the checkout.
+Use the committed Environment Playground for current integration examples, or the
+[retained sample audit](Art/TWCSampleAudit.md) for the inspected vendor stacks.
 
 `01 Runtime editor` (fill/clear/save/load) · `02 Village` / `02 Village L-System` · `03 Rooms` ·
 `04 Platformer` (Objects-only build + selection rules) · `06 Cliff Island` · `07 Dungeon Game`

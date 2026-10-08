@@ -6,7 +6,7 @@ the campaign and grid layouts; Unity runs the playable game.
 
 ## Player flow
 
-New Journey opens the authored hero roster. Choosing a hero chooses their model and fixed
+New Journey selects a save slot, then opens the authored hero roster. Choosing a hero chooses their model and fixed
 primary/secondary class combination; the normal menu does not offer arbitrary class reassignment.
 A new campaign begins with that protagonist in town-0 and grants starting supplies once.
 Recruit companions, equip the party, learn skills and enter the town's story dungeon.
@@ -35,28 +35,30 @@ text and named keys are generated from the logical requirements. The overworld h
 
 Towns use configured buildings, walk-in service interiors, recruitment, shops, a trainer,
 donation/entrance flows and an inn. The inn rests the party for free and can record a checkpoint.
-Damage carries between successful runs until rested. Defeat's recovery button restores an inn
-checkpoint when present; otherwise town return rules apply. Quit/abandon uses ordinary defeat
-return rules. Retreat preserves loot without awarding dungeon completion.
+Damage carries between successful runs until rested. Campaign defeat offers Load last save;
+quit discards unsaved progress. Both use the selected campaign slot without defeat penalties.
+Configured standalone runs retain their separate return rules. Retreat preserves loot in memory
+without awarding dungeon completion.
 
-Core's detailed service towns and Unity's configured towns are separate integration paths.
-Campaign towns bind Core service slots to Unity building definitions and detailed
-layout layers. See [towns](Town.md).
+Campaign towns bind Core service slots to Unity building definitions and detailed layout layers;
+standalone towns may instead supply explicit configuration. See [towns](Town.md).
 
 ## Saves and development modes
 
 Only the current save schema is supported; there are no save-format versions or migrations.
-Campaign state, roster, current item stock, equipment, learned ranks, carried HP/SP and inn
-checkpoint data persist. Layouts regenerate from seeds; exact combat turns do not resume.
+Explicit campaign saves persist progression, roster, level/EXP/attributes, item stock, equipment,
+learned ranks, carried vitals and the save-point arrival. There are no nested inn or pre-run
+snapshots. Layouts regenerate from seeds; exact combat turns do not resume.
 Sandbox, Test Dungeon, Ability Test Lab and autoplay isolate their state from the player's save.
 
 The game uses stylized fantasy models, Bamao UI, biome terrain and dungeon themes. Editor
 playgrounds support environments, portraits and combat effects. Committed Blender files and
-Unity assets are the editable art sources; completed construction scripts have been removed.
+Unity assets are the editable art sources. Reusable diorama and town-interior authoring scripts
+remain; obsolete one-time installers have been removed.
 
 ## Current limitations
 
 Balance, full narrative content and target-hardware performance remain development work.
-Logical completion checks do not prove combat victory. The unfinished town-service and
-TWC-styling integration plans are retained with current scope. See [generation contract](../Procedural_RPG_Generation_Spec.md),
+Logical completion checks do not prove combat victory. Remaining encounter, TWC style-profile
+and terminal integration work is listed in the [priority index](../TODOs/00-PRIORITY-INDEX.txt). See [generation contract](../Procedural_RPG_Generation_Spec.md),
 [campaign flow](CampaignFlow.md), [classes](Classes.md) and [test harness](../Assets/Tests/README.md).

@@ -20,7 +20,7 @@ generation algorithms for deterministic caching.
 
 Width ranges describe the corridor carving brush; intersections and connections into rooms can be wider. Rectangular room anchors are entirely walkable, while organic extensions are represented only by the floor mask.
 
-Layout, placement, scenery and cosmetic streams are separate. A skin override never selects a layout. Runs persist `LayoutVersion`, `LayoutTier` and `LayoutBiome` alongside the visual selection. `UseBiomePresentation` distinguishes later Grassland from the starter presentation. Runtime TWC assets are cloned and every Core action receives identical options before blueprints execute. `SetCustomRandomSeed` writes the asset seed, so configuration reads that value rather than the previous generation's `currentSeed`.
+Layout, placement, scenery and cosmetic streams are separate. A skin override never selects a layout. Runs store `UseBiomeLayout`, `LayoutTier` and `LayoutBiome` alongside the visual selection. `UseBiomePresentation` distinguishes later Grassland from the starter presentation. Runtime TWC assets are cloned and every Core action receives identical options before blueprints execute. `SetCustomRandomSeed` writes the asset seed, so configuration reads that value rather than the previous generation's `currentSeed`.
 
 ## Scenery and rewards
 
@@ -46,6 +46,7 @@ Core sweeps cover 24 seeds × eight biomes × five tiers × three roles, generat
 
 [Preview images and measured costs](Art/Previews/BiomeLayouts/README.md) include 56×56 regular floors and tier-4 entry/exit floors for every biome. Measurements are editor CPU timings on this workstation, not player frame-time guarantees. The geometry timing includes blueprint generation, mesh building and scenery creation. Forest currently has substantially more triangles than the other themes because of its existing tile assets.
 
-Current Core audit: **340 passed, 0 failed**. Earlier failure counts are superseded.
+The earlier biome-layout audit recorded **340 passed, 0 failed** in Core. For later
+retained full-suite results, see [diorama verification](Art/DioramaStyle.md#verification-and-reproduction).
 Unity validation uses the current save schema, explicit visual selection, and profile/cache
 agreement. See [test harness](../Assets/Tests/README.md) for current results and commands.

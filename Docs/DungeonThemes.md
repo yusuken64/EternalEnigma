@@ -33,21 +33,21 @@ common.Travel.EnterLocation(new DungeonEncounterVisualSettings
 
 `CampaignTravelService` resolves biome/environment at run creation and stores the selection
 directly in `DungeonSaveData.VisualSelection`. Floors reuse it. There is no selection-format
-version or migration. Standalone runs default to Grassland Interior. Interrupted-run recovery
-returns to the entrance; it does not restore mid-floor combat.
+version or migration. Standalone runs default to Grassland Interior. Campaign Continue/recovery loads the selected slot's last explicit checkpoint;
+it does not restore mid-floor combat.
 
 ## Presentation and ownership
 
-The catalog is `Assets/Resources/DungeonThemes/Catalog.asset`. Each entry contains regular/throne boundary presets, floor/accent presets, materials, decoration choices, and lighting. Starter-layout Grassland Interior uses the original presentation. Biome-layout Grassland enables the themed presentation like other biome profiles.
+The catalog is `Assets/Resources/DungeonThemes/Catalog.asset`. Each entry contains regular/throne boundary presets, floor/accent presets, materials, decoration choices, lighting, Music and BossMusic. All production biomes, including starter-layout Grassland, use the shared themed presentation. The playground retains an explicit legacy comparison.
 
 The other themes replace only build presentation on cloned TWC assets. `DungeonThemeTileLayer` consumes TWC's existing edge, outer-corner, inner-corner, and fill classifications and exclusions. Blueprint stacks, masks, generation dimensions, seeds, placements, navigation, sight, and minimap data remain unchanged.
 
 Output belongs to the existing dungeon output root. Floor changes clear both creators' previous output, including baked clusters. Combined meshes and per-clone preview textures have explicit owners. Two small vendor fixes stop tile/object editor coroutines when their creator has been destroyed and release temporary material submeshes after combining.
 
-Decorations use a local integer hash, the existing biome tree picker, and shared materials. There are at most 16 placements in each 32×32-cell chunk. Rotated, centered mesh bounds fit entirely inside blocked cells, including thin throne-room boundaries. Props have no colliders. Water/lava are opaque cosmetic surfaces outside walkways.
+Decorations use a local integer hash and compact theme IDs resolved from EnvironmentKit or TownInteriorCatalog, with the corresponding source material. The larger overworld tree picker is deliberately excluded. There are at most 16 placements in each 32×32-cell chunk. Rotated, centered mesh bounds fit entirely inside blocked cells, including thin throne-room boundaries. Props have no colliders. Water/lava are opaque cosmetic surfaces outside walkways.
 
-Themed map roots use unit scale at the origin; ground is offset to Z=0.05 beneath
-unit feet. The original starter presentation retains its depth compensation. Fog and
+Themed map roots use unit scale at the origin; ground sits at Z=0.001 beneath
+unit feet. Throne carpet uses a smaller depth bias. Fog and
 visibility remain controlled by gameplay, including skipped offscreen effect playback.
 
 ## Art
@@ -56,10 +56,13 @@ Blender MCP produced the crypt quarter-tiles and root mesh. The [painted environ
 
 - Crypt edge/outer/inner: 8 triangles; fill: 2.
 - Root prop: 48 triangles; root-covered tiles: at most 56.
-- Reused terrain tiles remain below 300 triangles; selected props are checked against the 120-triangle limit.
+- Compact decoration meshes are capped at 250 triangles per piece in both interior and outdoor themes.
 - Existing Grassland dungeon assets are preserved and are exempt from the new-asset triangle limit.
 
-Edit the committed catalog and presets directly; the completed installer is removed. **Capture All Themes** remains available.
+Edit the committed catalog and presets directly; the original installer is removed.
+**Tools > Eternal Enigma > Dungeon Themes > Apply Feel Assets** refreshes theme music,
+decoration lists, movement sounds and Standalone streaming music settings.
+**Capture All Themes** remains available.
 
 ## Verification
 

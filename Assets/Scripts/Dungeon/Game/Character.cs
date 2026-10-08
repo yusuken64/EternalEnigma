@@ -563,7 +563,7 @@ disp: {displayedVitals}");
 		var ret = actionsResponses
 			.SelectMany(x => x.GetResponseTo(this, gameAction));
 
-		//TODO: check abilities, skills, weapons
+		//TODO: add equipment-specific responses; statuses and passive skills use GetClassResponses.
 		return ret.ToList();
 	}
 

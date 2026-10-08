@@ -15,8 +15,8 @@ reflect current state. Context/template changes release the cache, which is neve
 Town-0 contains story-0. Its completion unlocks the town exit with the Town gate key.
 Repeatable-0 outside town awards the separate Town area key, used at starter-exit.
 Interior dungeons have `ParentTownId`, share their parent town's overworld tile, and return
-inside that town. Other victories return to the dungeon marker; ordinary defeats return
-to the last town. Floor ranges by tier are 1-5, 5-10, 10-20, 20-30 and 30-40.
+inside that town. Other victories return to the dungeon marker. Campaign defeat
+restores the selected slot's last explicit save, including its saved town and position. Floor ranges by tier are 1-5, 5-10, 10-20, 20-30 and 30-40.
 
 `StartDungeon` captures live town state in memory and selects the run's biome, tier and visuals.
 The two starter locations use BSP/throne layouts. Seeds derive from campaign seed/location/floor.

@@ -54,6 +54,29 @@ remain in effect; no class starts with spent attribute points.
 | Bard | 5 | 0 | 2 | INT |
 | Commander | 5 | 0 | 1 | INT |
 
+## Stats and equipment views
+
+The shared party window has Inventory, Equipment, Skills and Stats tabs; the overworld
+also exposes Capabilities. Stats shows level/EXP, attributes, vitals, combat values and
+resistances. Equipment shows all three slots, including empty or blocked slots and each
+item's bonuses. Its change picker supplies full-stat previews with class/passive conditions,
+two-handed displacement and proficiency restrictions before confirmation.
+
+Source breakdowns and aggregate equipment bonuses are computed in entry descriptions,
+but the compact root dock currently hides that description pane. Their visibility is an
+open presentation decision in the attribute follow-ups below.
+
+`HeroStatRules` rebuilds base stats; `StatPreview` and `StatBreakdown` share contribution
+calculation with live stats. Attribute points transfer through saves, party travel and
+summons; summons cannot earn or spend points. Town/overworld changes capture live state and
+persist at the next explicit save. Dungeon equipment changes spend the controlled hero's
+action; attribute spending is free. Equipment and Stats currently have clickable launcher
+tabs without dedicated keyboard/gamepad shortcuts.
+
+Current class identity uses starting stat bonuses, not starting attribute allocations.
+Equipment-granted attributes, attribute respec and enemy attribute authoring remain optional
+[follow-ups](../TODOs/06-level-up-attributes-plan.md).
+
 ## Weapon proficiency
 
 Sticks and needles: no proficiency required, including their offhand versions.
@@ -78,7 +101,8 @@ Core `SkillLearningRules` is shared by Unity trainer offers and the console edit
 - Available points are derived from highest level and learned ranks, not a separately saved balance.
 - The trainer lists the visiting hero's kit. A nonempty `LearnableSkills` configuration filters it.
   Classless configured heroes use gold-priced, single-rank offers.
-- Successful learning/ranking saves immediately. Rejected offers explain the missing requirement.
+- Successful learning/ranking captures live progression. Disk persistence waits for an explicit
+  [save checkpoint](CampaignSaves.md). Rejected offers explain the missing requirement.
 
 `TownAllyData` stores class IDs, learned names/ranks and highest level. Each dungeon ally gets
 independent runtime skill instances. Rank scaling affects damage/healing/status/stat actions;
@@ -105,5 +129,7 @@ editing the committed class/skill/prefab assets. Combat effect and portrait tool
 Core class tests cover gates, caps, points, costs and tree format. Unity fixtures include
 `ClassContentTests`, `TownTrainerRankTests`, `AllySkillIntentTests`, `AllySkillPolicyTests`,
 `AllyAiClassPartyTests`, combat-foundation, movement, song/command and inventory-targeting tests.
+`HeroAttributeTests` covers conversion caps/breakpoints, pending points, save/return transfer
+and simulated loadouts. `WeaponCatalogTests` covers [weapon availability](Weapons.md).
 Run `node Tools/unity-mcp.mjs harness Classes`, `Town`, `AllyAI` and `EditMode` as appropriate.
 Balance testing remains separate from content and rule verification.

@@ -1,37 +1,38 @@
-Pending work, ordered by priority (2026-10-06)
+Pending work, ordered by priority (audited 2026-10-08)
 
-Lower numbers come first. Ordering favors correctness and visible defects,
-then usability/content improvements, then larger optional features.
-Numbers are recommended execution order, not estimates or dependencies.
+Lower numbers are recommended execution order, not estimates or dependencies.
+Existing numbers are retained so references remain stable.
 
-01-gameplay-correctness.txt
-   Completed 2026-10-06: EXP targeting, direct casting, hero classes and enemies.
-   Retains an unresolved design clarification about overworld capabilities.
 02-overworld-presentation.txt
-   Verify/fix the remaining texture and lock-model reports.
+   Decide whether locks need models selected by obstacle/lock type.
+   The original texture repairs and generic gate restyle are implemented.
 03-input-prompts.md
-   Shared input-device detection and consistent device-aware hints.
-04-weapon-availability.md + 04-weapon-availability-plan.md
-   Remaining weapon data, floor-drop bands and optional model variants.
+   Finish device-aware hints in newer UI; decide Equipment/Stats shortcuts.
+   Shared detection, prompt formatting and cursor switching are implemented.
 05-feel-improvements.md
-   Animation correctness, feedback, status VFX/icons, sound and decoration.
+   Focused animation/audio acceptance, status readability and optional polish.
+   The original animation, VFX, footsteps, music and decoration hooks exist.
 06-level-up-attributes-plan.md
-   Attribute allocation, stats/equipment views and balance; EXP bug fixed in 01.
+   Balance, breakdown visibility and damage-credit follow-ups. Attributes, Stats,
+   Equipment, Magic Power, spending, persistence and previews are implemented.
 07-overworld-encounters-plan.txt
-   Consolidated encounter/puzzle proposal, bosses and exploration pickups.
+   Encounter objectives, puzzles/reset, prison recovery, bosses and pickups.
+   Includes the unresolved distinction between combat and traversal rewards.
 08-twc-biome-styling-plan.md
-   General style bindings, rendering ownership, cache and validation work.
+   General style profiles/binding validation and broader invalidation tests.
+   Production broad ground already belongs to TWC and has art cache identity.
 09-diorama-restyle-plan.md
-   Ground/foliage/building/item restyle, imported asset integration, and art
-   audit findings/cleanup in one task. Feel/input/weapon fixes remain in 03/04/05.
+   WebGL runtime acceptance and retained optional art follow-ups.
+   Restyle, cleanup, Windows validation and integrated WebGL build are complete.
 11-terminal-mode.md
-   Optional full-game terminal rendering and menus.
+   Terminal menu adapters, visibility/targeting checks, shared-save playthrough
+   and player/resolution acceptance. Maps and main-menu styling exist.
 
-Completed core, travel, economy, casting and town-service TODO files were
-removed. Original bugfixes, overworld ideas and puzzle notes were removed as
-superseded; their unresolved scope is retained above. Completed items were
-removed from mixed gameplay/presentation lists.
+Completed gameplay and weapon TODO files were removed. Current weapon behavior
+is in Docs/Weapons.md; current attributes and controls are in Docs/Classes.md
+and Docs/DungeonControls.md. Mixed plans now list only unfinished work.
 
-The historical source audit is retained in Docs/TodoAudit-2026-10-06.txt.
-Its old filenames and test results describe the pre-cleanup audit baseline.
-No Unity tests were rerun for this documentation-only organization.
+Audit evidence: Docs/TodoAudit-2026-10-08.txt.
+Docs/TodoAudit-2026-10-06.txt and Docs/GameplayCorrectness-2026-10-06.txt are
+historical records, including their old filenames and test results.
+No gameplay tests or player builds were run for this documentation audit.

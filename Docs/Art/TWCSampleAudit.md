@@ -3,7 +3,12 @@
 This is retained vendor-sample reference material, not a description of production scene
 layouts. Production uses the committed EnvironmentKit and detailed Core town adapter.
 
-Read from the installed TileWorldCreator 3 package. Missing local demos were restored from the already-cached package, without replacing existing files. No separately named river demo is present in this package; CliffIsland provides water/sand/cliff transitions.
+Captured from the TileWorldCreator 3 package before the diorama cleanup. Missing
+local demos were temporarily restored from the cached package for inspection;
+those demo assets were subsequently removed from the project. Paths and GUIDs
+below describe that historical sample snapshot, not files required in the current
+checkout. The package had no separately named river demo; CliffIsland supplied
+water/sand/cliff examples.
 
 ## Assets/TileWorldCreator/Demo/06_CliffIsland/06_CliffIsland.unity
 

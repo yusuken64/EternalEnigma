@@ -156,4 +156,7 @@ See [Campaign flow](../Docs/CampaignFlow.md). New Journey selects an authored he
 starts in town-0. Story-0 unlocks the town exit; repeatable-0 awards the separate starter-area
 key. Unity campaign towns now consume detailed Core service-slot layouts. Saves use only
 the current schema, without version fields or migrations. Generated-world identifiers and
-fingerprints remain for reproducibility and integrity. The full Core audit passed 340 tests.
+fingerprints remain for reproducibility and integrity. The retained post-cleanup Core report
+records 379 passes; the later terminal handoff reports 385. These are historical results,
+not a fresh run. See [verification evidence](../Docs/Art/DioramaStyle.md#verification-and-reproduction)
+and [terminal acceptance work](../TODOs/11-terminal-mode.md).

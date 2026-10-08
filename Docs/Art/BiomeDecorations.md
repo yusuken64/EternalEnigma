@@ -90,9 +90,10 @@ preserve existing names and backfill old saves. `GetTownDisplayName` supplies si
 text, town UI, travel titles and town destination labels. Presentation names are
 excluded from the logical campaign fingerprint; generator versions are unchanged.
 
-## Streetlight sample audit
+## Streetlight sample audit (historical)
 
-`Assets/TileWorldCreator/Demo/02_Village/VillageAsset.asset` has an active
+The vendor Village demo was removed during the diorama cleanup. At inspection,
+its VillageAsset had an active
 StreetLights blueprint that adds Houses and expands it. Subtract and Select are
 disabled. `RoadStreetLightsPreset.asset` has only an edge tile, rotated +90 degrees
 around Y; the build layer merges tiles. `streetLight_mesh.prefab` contains only

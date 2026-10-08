@@ -12,7 +12,8 @@ Six ordered semantic regions A-F have distinct themes and landmarks. Five progre
 contain four story dungeons, the final dungeon, repeatable locations and towns. Interior
 dungeons have `ParentTownId`; their grid projection shares the town tile. Towns provide the
 five service kinds: bakery, consumables, items, inn and one trainer. `TownLayout` assigns them
-to seeded slots with authored entrance/statue buildings and residential plots.
+to seeded slots with one authored dungeon entrance and seven residential plots. Unity gives
+town-0 a home in its first residential slot.
 
 The 21-capability vocabulary activates a seed-dependent subset of personal, vehicle and utility
 abilities. Roles partition active abilities into critical and exploratory uses. Required

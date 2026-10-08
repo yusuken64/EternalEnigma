@@ -21,9 +21,15 @@ Circles, area stages, and persistent auras have a minimum **3×3 tile footprint*
 
 Rotation corrections are composed with the prefab's original root rotation. This matters for Magic Arsenal ground meshes whose roots are already tilted. Legacy horizontal billboards, which otherwise ignore root rotation, are converted to the dungeon plane in the owned variants. Explicit footprint/orientation repair commands are available under the same menu; the orientation command resets customized ground rotations.
 
-Profiles and status definitions live in `Assets/Resources/CombatEffects`. Project-owned prefab variants live in `Assets/Prefabs/CombatEffects`; they reference both Magic Arsenal and the 52 Special Effect Pack. Demo movement/input scripts, colliders, and lights are removed from these variants. Imported pack originals remain available in the catalog.
+Profiles and status definitions live in `Assets/Resources/CombatEffects`. Project-owned prefab variants live in `Assets/Prefabs/CombatEffects`; they reference both Magic Arsenal and the 52 Special Effect Pack. Demo movement/input scripts, colliders, lights and embedded audio sources are removed
+from these variants. The catalog retains referenced effects; unused imported effects
+were removed during the diorama cleanup.
 
 **Assign Missing Profiles And Icons** fills missing references and creates missing defaults. It preserves existing manual assignments and profile tuning. **Validate Assignments** checks coverage; the assignment tests also verify character/status coverage, icon provenance, and safe effect variants. **Export Preview Gallery** writes representative preview PNGs into `Temp/CombatEffectPreviews`.
+
+**Refresh Status Presentation** authors the distinct curse, damage-over-time, shield,
+song, overhead and arm effects, plus wall/pillar/beam/slash/charge skill overrides.
+The remaining visual and audio acceptance work is in [task 05](../TODOs/05-feel-improvements.md).
 
 ## Runtime
 
@@ -35,7 +41,9 @@ Status presentation snapshots are recorded during resolution and applied in repl
 
 The preexisting particle and trail components have been removed from status prefabs. Their status scripts and text indicators remain; persistent particles come exclusively from the new aura profiles.
 
-`CombatEffectPlayer` owns the scene-local particle pool, clears trails/particles on reuse, follows aura anchors, respects fog, and clears effects on floor changes or scene teardown. Legacy skill and projectile playback remains available for unassigned content.
+`CombatEffectPlayer` owns the scene-local particle pool, clears trails/particles on reuse, follows aura anchors, respects fog, and clears effects on floor changes or scene teardown.
+It suppresses embedded prefab audio and selects the appropriate cast/impact sound pool,
+avoiding a second audio source inside the particle variant. Legacy skill and projectile playback remains available for unassigned content.
 
 Ability icons appear in dungeon skill menus, town skill lists, trainer rows, and purchase dialogs. The shared row helper creates a non-interactive icon slot for older menu prefabs.
 

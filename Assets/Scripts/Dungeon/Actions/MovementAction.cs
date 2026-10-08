@@ -205,7 +205,7 @@ internal class AttackAction : GameAction
 			character.PlayIdleAnimation();
 			yield break;
 		}
-		//TODO play sound based on implementation
+		//TODO choose fallback attack audio by weapon/attack type.
 		AudioManager.Instance.SoundEffects.Slash.PlayAsSound();
 		if (Visuals.Sequence != null) yield break;
 		character.PlayAttackAnimation();

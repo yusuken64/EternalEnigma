@@ -23,11 +23,14 @@ See [campaign flow](CampaignFlow.md) for saves and [classes](Classes.md) for lea
 
 ## Unified gameplay presentation
 
-`Resources/UI/PartyMenu.prefab` supplies Inventory/Skills, hero browsing, shared rows,
-scrolling details, action/target pickers, and device-aware hints. Scene adapters implement
-`IPartyMenuContext`; dungeon actions retain the existing command/targeting pipeline.
-The panel uses safe-area anchors (0.08, 0.12)–(0.82, 0.86). Shops and trainers remain
-separate dialogs and share the button skin, selection behavior, and detail-scroll control.
+`Resources/UI/PartyMenu.prefab` supplies Inventory, Equipment, Skills and Stats, plus
+Capabilities on the overworld. Persistent HUD launcher tabs select the compact dock;
+its duplicate tabs, hero header, description pane and hint row are hidden at the root.
+The panel uses safe-area anchors (0.73, 0.03)–(0.98, 0.88) in all three gameplay scenes.
+Scene adapters implement `IPartyMenuContext`; dungeon actions retain the existing
+command/targeting pipeline. Dungeon hero browsing changes the controlled ally;
+town/overworld browsing changes inspection only. Shops, trainers and nested pickers
+retain their own dialogs and details controls. See [controls](DungeonControls.md).
 
 `Resources/UI/ResourceHUD.prefab` owns the upper-right money/bag widget: 1920×1080
 reference, 280×96, offset (-24, -100), 12-pixel padding and 8-pixel spacing. Town and
@@ -58,7 +61,13 @@ and test/autoplay buttons require the Developer toggle in editor/development bui
 Town/dungeon follow offset is (0, -12, -14), with orthographic size compensated for ground
 coverage. Collapsed event logs show three messages and retain history access.
 
-## Verification — 2026-10-03
+## Verification — 2026-10-03 (historical)
+
+The results below describe the original presentation change. Later retained
+[diorama verification](Art/DioramaStyle.md#verification-and-reproduction) reports
+285 EditMode passes and 323 PlayMode passes with four explicit skips and no failures.
+Those later reports supersede the open automated failures listed here; they do not
+supply the missing matched before/after player-performance comparison.
 
 The [verification artifacts](Art/Verification/UnifiedPresentation) include fixed-seed scene
 captures, four menu resolutions (960×600, 1280×720, 1920×1080, 2560×1080), and test reports.
@@ -70,7 +79,7 @@ and enabled. These are feature comparisons, not a complete pre-change visual bas
 | --- | --- |
 | Unified production-scene PlayMode suite | 9 passed: menu state, recovery/cost validation, inventory filters, equipment/save/roster identity, layouts, developer controls, silhouette pixels and allocation checks |
 | Focused equipment/painted-surface EditMode suite | 5 passed, including continuous UVs across variant materials |
-| Controller/focus regressions | 20 passed; cursor-visibility assertion remains failing |
+| Controller/focus regressions | 20 passed; cursor-visibility assertion failed in this run |
 | Windows development build | Succeeded, 0 errors, 11 warnings |
 | WebGL development build | Succeeded, 0 errors, 11 warnings |
 | Headless Edge / software WebGL 2 smoke | New journey reached town; Q opened Inventory and R switched to Skills; captures reviewed |
@@ -81,18 +90,19 @@ were reported. See `WebGLConsole.txt` for the complete output. This software-ren
 test is not a hardware performance benchmark. The Editor was restored to its Windows target.
 
 The broad EditMode run passed 201 of 211 tests. Its painted-surface expectation was updated
-for the three compatible materials and passed the focused rerun. Nine other failures remain
+for the three compatible materials and passed the focused rerun. Nine other failures were recorded
 in ally emergency intent, authored boss flags, imported Core DLL hash, legacy material
 instantiation, stealth, and targeting/vitals fixtures; see the full XML report. A clean
 pre-change run was not available, so this does not establish that every remaining failure
-predates this change. The controller cursor test also needs a focused Editor/hardware check.
+predates this change. The later full PlayMode report passed the automated cursor check; physical-device
+validation remains separate.
 
 The renderer pixel test checks actual projected geometry, union opacity for overlapping
 casters, hidden dynamic casters, receiver exclusion, and scene-depth occlusion. Warm
 silhouette command construction allocated zero managed bytes in the measured loop. This
 does not measure every presentation component or prove the full animated/fog/bridge matrix.
 
-The latest short Editor sample measured median frames of 7.371 ms without silhouettes and
+The original short Editor sample measured median frames of 7.371 ms without silhouettes and
 8.164 ms with them (+10.8%). This is a noisy Editor proxy, not a matched desktop/WebGL player
 benchmark. The ≤10% player-performance target and full platform visual matrix remain
 unverified; the recorded proxy does not meet that target. No complete before/after player

@@ -3,7 +3,8 @@
 The listed behaviors are runtime components on committed enemy prefabs. Completed roster,
 behavior and statue construction scripts are removed; tune the prefab data directly.
 
-Names and models follow the existing assignments in `Assets/Data/MonsterData.txt`.
+The roster reference follows `Assets/Data/MonsterData.txt`; the behavior table describes
+current prefab assignments, including later changes to the original mapping.
 
 | Reference enemy | Existing prefab | Added behavior |
 |---|---|---|
@@ -15,8 +16,10 @@ Names and models follow the existing assignments in `Assets/Data/MonsterData.txt
 | Giant Eyeball / おおめだま | Enemy_Beholder | Five-tile confusion gaze; three affected turns |
 | Mimic / ミミック | Enemy_ChestMonster | Treasure-chest disguise until attacked |
 | Silver Devil / シルバーデビル | Enemy_LizardWarrior | Two actions and up to two attacks per activation |
-| Metal Babble / はぐれメタル | Enemy_MetalSlime | Silver recolored slime; 3 HP, 49 defense, 500 XP, two movement actions; flees |
-| Goopi / マドハンド | Enemy_Skeleton | Stationary; roots adjacent targets until this enemy dies, allowing attacks and item use |
+| Metal Babble / はぐれメタル | Enemy_MetalSlime | Silver recolored slime; 3 HP, 49 defense, 500 XP, two movement actions; flees, has spawn weight 1 versus the normal 20, and a 25% warp chance after surviving a hit |
+| Nessie (rooting behavior moved from Skeleton) | Enemy_WormMonster | Stationary; roots adjacent targets until this enemy dies, allowing attacks and item use |
+| Bomb Crag / ばくだんいわ | Enemy_TurtleShell | Explodes on death; silence suppresses both damage and the explosion effect |
+| Hork / くさったしたい | Enemy_Werewolf | Spawns in packs of three when valid placement cells are available |
 
 Early combat floors (2–3 in the starter run) contain a breakable Black Knight-shaped Stone Hulk statue. It is static scenery with 40 HP and no loot. Placement preserves connected movement and avoids stairs, spawns, items and characters. The live Black Knight enemy remains separate.
 
@@ -30,9 +33,15 @@ Thieves carry one stolen inventory entry or gold amount. They seek greater dista
 
 Disguised mimics remain damageable enemies for deliberate attacks and area damage. They appear as treasure on the minimap, use a chest label in messages, and are excluded from autonomous targeting. On provocation, the disguise disappears and the original animated model returns.
 
-The inspector component `EnemyBehavior` controls these abilities. `Tools > Eternal Enigma > Enemies > Author Dungeon Behaviors` reapplies the assignments. `Tools > Eternal Enigma > Tests > Run Enemy Behaviors` runs behavior integration and prefab combat/animation regression checks.
+The inspector component `EnemyBehavior` controls these abilities; edit the committed
+prefabs directly. The one-time behavior authoring command was removed.
+`Tools > Eternal Enigma > Tests > Run Enemy Behaviors` runs behavior integration
+and prefab combat/animation regression checks.
 
-## Roster reference
+## Original roster reference
+
+This source-data mapping records the initial substitutions. It does not override
+current prefab behavior: Skeleton no longer roots targets; WormMonster owns that ability.
 
 | Reference | Existing prefab |
 |---|---|

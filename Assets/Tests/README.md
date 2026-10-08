@@ -1,9 +1,11 @@
 # Game test harness
 
-Current audit: the full Core suite passes 340 tests. Save fixtures now cover only the current
-schema, item stock and campaign state; no migration cases remain. Town layout integration
-compares complete Core options/layers, and campaign service tests exercise vendors and inn
-checkpoint restore. The MCP dependency uses the committed metadata-fixed archive documented
+Retained post-cleanup results record 379 Core passes, 285 EditMode passes, and
+323 PlayMode passes with four explicit skips and no failures. See the
+[diorama verification reports](../../Docs/Art/DioramaStyle.md#verification-and-reproduction)
+for dates and scope; these are saved results, not a fresh run of the current checkout.
+Save fixtures cover the current slot schema, item stock, campaign state and explicit
+checkpoint restore. Town integration compares Core layout options/layers and services. The MCP dependency uses the committed metadata-fixed archive documented
 in [Packages/McpUnityPatch.md](../../Packages/McpUnityPatch.md).
 
 The EditMode assembly also includes `EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests`.
@@ -113,8 +115,8 @@ first confirmation. Targeted skills require a second confirmation and can be
 cancelled without spending SP or a turn. Target selection enables its component
 only while needed, and disables it after confirm/cancel. Gamepad/keyboard/mouse
 tests inject device events through the real Input System bindings; they do not
-test physical hardware. The test dungeon party carries all six active skills:
-Rowan has Damage/Dot, Alex has ShieldBash/Anger, and Reese has Healing/Hot.
+test physical hardware. The current main-menu Test Dungeon uses the nine-skill
+DemoDungeon loadout described above; harness scenarios supply their own skills.
 
 Sight coverage: `DungeonSightTests` verifies wall occlusion, blocked diagonal
 corners, symmetric range limits, room/corridor classification, and immediate
@@ -143,7 +145,7 @@ simulate physical keyboard/controller bindings. Recompile scripts before running
 the harness after adding tests, and confirm the new fixtures appear in the XML.
 
 `GridMovement` owns terrain step rules shared by town, dungeon, A* and BFS.
-Town retains its houses/trees mask and allows corner cutting; dungeon and
+Town uses its generated occupancy masks, including furniture, and allows corner cutting; dungeon and
 searches require both diagonal side cells to be open. Occupancy, large-unit
 hallway behavior, turns, party following and interactions remain in mode-specific
 actions. Coordinate conversion uses the generator's cell size (currently 2).
@@ -255,8 +257,9 @@ Prefer the `harness` commands above for reliable Play Mode result collection.
 
 `harness Town` checks Continue, dungeon return, direct town loading, caller-supplied
 configuration, custom building dialogs, shop stock and purchase validation,
-immediate training saves, donation unlocks, shared equipment menus, party safeguards,
-and victory/defeat inventory persistence. See [Town authoring](../../Docs/Town.md).
+immediate capture of training changes in memory, donation unlocks, shared equipment
+menus, party safeguards, and victory/defeat inventory transfer. Explicit save tests
+separately verify persistence; training and travel do not overwrite checkpoints. See [Town authoring](../../Docs/Town.md).
 The town holds the transition fully opaque while generating, then initializes
 the party, snaps the camera to the controlled hero, and starts the reveal. The
 transition tests observe coverage during generation and camera position/orientation
@@ -272,13 +275,14 @@ assembly name. Tests have friend access to internal gameplay methods.
 
 The harness commands run the entire corresponding test assembly. Audit regressions
 cover equipment displacement, two-handed removal, inventory restoration, town
-progress saved through the return-to-menu button, floor labels, and declining then
+state captured without overwriting the explicit checkpoint on return to menu, floor labels, and declining then
 reopening the stair prompt. The stair test injects a sampled attack edge into the
 production decision method; it does not validate physical keyboard bindings.
 
-Several catalog definitions share an ItemName. Tests requiring a specific weapon
-must construct it from its exact definition instead of using AddItem(name).
-The existing name-based save format still cannot distinguish these variants.
+The active weapon catalog has unique names, enforced by `WeaponCatalogTests`.
+Construct a specific variant from its exact definition when a test depends on its
+model or stats. Save restoration remains name-based, so keep new catalog names
+unique. See [weapons](../../Docs/Weapons.md).
 
 **Tools > Eternal Enigma > Tests > Build Windows Player** performs a development
 build of all enabled build scenes to `Builds/AuditVerification`. Its result is

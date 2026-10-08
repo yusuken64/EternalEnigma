@@ -1,16 +1,19 @@
-Priority 2: Verify remaining overworld visual defects
+Priority 2: Remaining overworld lock-model decision
+Source and retained-evidence audit: 2026-10-08.
 
-Source-audited 2026-10-06; no fresh visual acceptance pass.
-Audit evidence: Docs/TodoAudit-2026-10-06.txt.
+The original terrain-normal/projection and location-platform/post UV fixes are
+implemented. OverworldPresentationTests passed in the retained 2026-10-07
+PostCleanupPlayMode.xml report. The subsequent diorama restyle supplies TWC
+ground, settlement paving and normalized Kenney gate/landmark adapters.
+Current rendering and retained captures: Docs/OverworldVisualDetailAndModels.md
+and Docs/Art/DioramaStyle.md. Do not repeat the old texture-fix checklist.
 
-1. Verify the original broken overworld POC textures are resolved.
-   POI platform paving and perimeter-post atlas UV fixes exist and have
-   assertions in OverworldPresentationTests. Capture the affected views
-   before closing the broader report; fix any remaining defects.
-2. Verify overworld locks match the intended new models.
-   GateMarker positioning, orientation and biome styling exist. Lock-specific
-   model selection does not; establish whether that was the intended request.
+Remaining:
+- Establish whether the request for "new lock models" requires a distinct
+  visual for each obstacle/lock type. Current GateMarker presentation uses
+  a shared gate model with route orientation and state styling; it does not
+  select models from LockSkinCatalog or a lock-type model catalog.
+- If distinct models are wanted, define that mapping, then check route
+  legibility, closed/open state and cached-terrain revisits.
 
-Verification:
-Inspect matched texture/gate views, route legibility, gate state and cached terrain.
-Raise visual fixes in priority if they obscure routes or locks.
+WebGL runtime acceptance is tracked once, in 09-diorama-restyle-plan.md.

@@ -1,0 +1,83 @@
+Documentation and TODO audit — 2026-10-08
+
+Scope
+-----
+Reviewed the 64 project Markdown/TODO documents found by git inventory, their
+local references, project-authored source TODO comments, recent commits and
+retained verification reports. Generated output, Library/PackageCache and vendor
+source comments were not treated as project backlog. No gameplay code, assets,
+test results or player builds were regenerated for this audit.
+
+Completed TODOs removed
+----------------------
+01-gameplay-correctness.txt: recipient-correct EXP, direct skill selection, hero
+class mapping, TurtleShell explosion/silence, MetalSlime weighting/warp, Nessie
+rooting and Werewolf packs are implemented. Existing evidence remains in
+Docs/GameplayCorrectness-2026-10-06.txt. The unresolved distinction between
+first-clear combat passives and traversal rewards moved to task 07.
+
+04-weapon-availability.md and 04-weapon-availability-plan.md: the active catalog,
+shop reachability, bow/arrow variants, stats and floor-banded drops are
+implemented. Current behavior and retained test evidence moved to Docs/Weapons.md.
+
+Mixed plans updated
+-------------------
+02: texture/platform/terrain-normal repairs and generic gate presentation exist;
+    the decision about lock-type-specific models remains.
+03: ControlDeviceState, InputPrompts and cursor integration exist. New terminal/
+    picker hints, Equipment/Stats shortcuts and hardware acceptance remain.
+05: animation hooks, status profiles, footsteps, music and bounded decoration
+    exist. Focused event/audio/readability acceptance and optional polish remain.
+06: attributes, Magic Power, reconstruction, transfer, spending and UI exist.
+    Balance/optional extensions, breakdown visibility in the compact dock and
+    original-caster DoT credit remain.
+07: Wave 4 visual adapters and Windows fit checks exist; gameplay encounter,
+    objective, puzzle, prison and boss/spawn integration remains.
+08: TWC ground ownership and DioramaArtIdentity cache invalidation exist.
+    General style-profile architecture and broader invalidation checks remain.
+09: restyle and cleanup are complete. Windows validation and the integrated
+    WebGL build succeeded. No retained report closes the diorama browser-runtime
+    or isolated-fit WebGL runtime gates.
+11: terminal map rendering, toggle, fonts, main-menu presentation and map
+    interactions exist. Menu adapters and the remaining parity/acceptance work
+    stay open.
+
+Evidence reviewed
+-----------------
+Current implementations and fixtures include ControlDeviceState/InputPrompts,
+WeaponCatalogTests, HeroAttributes/HeroStatRules/AttributeSpending,
+HeroAttributeTests, PartyMenu/PartyMenuLauncher/Dialog, TerminalRuntime and its
+views, CampaignSaving/SaveSystem, CampaignTownLayout, HeroAnimator,
+CombatEffectAuthoring/CombatEffectPlayer and the TWC ground/cache layers.
+
+Retained post-cleanup results under Docs/Art/Previews/Diorama/Verification:
+- CoreFinal.trx: 379 passed.
+- PostCleanupEditMode.xml: 285 passed, 0 failed.
+  Includes WeaponCatalogTests (3), HeroAttributeTests (6), InputPromptsTests (2)
+  and FeelAssetTests (2).
+- PostCleanupPlayMode.xml: 323 passed, 0 failed, 4 explicit skips.
+  Includes device-state and overworld-presentation regressions.
+- WindowsBuild.txt / WindowsPlayerValidation.json: build and three-scene
+  runtime validation succeeded.
+- WebGLBuild.txt: succeeded, 0 errors, 12 warnings, 233,526,160 bytes.
+These saved reports predate some current UI/terminal changes and are not a
+fresh certification of the current checkout.
+
+Reference corrections
+---------------------
+Updated campaign save/checkpoint semantics, town layout/occupancy, party tabs
+and compact dock behavior, attribute/equipment reference material, current
+enemy assignments and weapon rigs. Updated TWC ground ownership, decoration/
+tree budgets and current art-source references. Older art measurements and test
+failures are labeled historical where later evidence supersedes them.
+
+Reviewed 11 project source TODO markers. Narrowed the response TODO to equipment
+because status/passive-skill responses already exist, and clarified that the
+MovementAction-file sound TODO concerns attack audio. Retained unimplemented
+source TODOs and vendor comments.
+
+Validation
+----------
+Documentation links and explicit repository paths were checked after edits.
+Whitespace/diff checks were run. Changes are documentation and two comments;
+Unity/Core gameplay suites were not rerun.

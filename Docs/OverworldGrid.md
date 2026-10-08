@@ -26,17 +26,19 @@ travel action after unlocking. Party changes require a town. The overworld has n
 
 ## Unity
 
-Inventory and Skills use the same window and shortcuts as town/dungeon. Overworld actions
-are limited to equipping/unequipping compatible items. `EquipmentTransferService` preserves
+The party window exposes Inventory, Equipment, Skills, Stats and Capabilities.
+Overworld actions allow equipping/unequipping compatible items and free attribute spending. `EquipmentTransferService` preserves
 individual item instances and returns displaced equipment to the shared bag. The context
 commits active-party equipment, roster records, and inventory through campaign persistence
-without replacing inn or dungeon rollback snapshots. Items and skills remain inspectable;
+without writing the selected campaign slot's explicit checkpoint. Items and skills remain inspectable;
 consumption, casting, and selling are unavailable. Open dialogs consume movement/interact
 input. Hero browsing changes inspection only.
 
 `CampaignOverworld` imports Core masks into a cloned TileWorldCreator template.
-`OverworldBiomeRenderer` draws broad terrain. Project TWC layers draw smart terrain features,
-roads, houses, walls, coastline/ocean and bounded cosmetics. Markers and gate state are separate.
+`OverworldGroundLayer` owns broad terrain, roads, town paving, bridges and in-grid water.
+`OverworldBiomeRenderer` exposes the generated ground for compatibility/caching and keeps a
+fallback for templates without that layer. Other TWC layers draw mountains, tree walls,
+houses, walls, coastline/ocean and bounded cosmetics. Markers and gate state are separate.
 Core remains movement authority; art does not introduce collision rules.
 
 `Common` owns the campaign context and an in-memory terrain cache. Grid generation is lazy;

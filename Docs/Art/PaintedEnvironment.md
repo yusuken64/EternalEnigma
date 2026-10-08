@@ -1,5 +1,11 @@
 # Painted environment surfaces
 
+This records the painted-surface pass and its 2026-10-03 verification. Later
+production ground, foliage, facades and item bindings are documented in
+[diorama style](DioramaStyle.md). The later retained full suites passed with no
+failures; open failures below describe the original audit, not current status.
+Use the current diorama authoring workflow when reproducing production scenes.
+
 Dungeon, town, and overworld materials now use a shared painted family: quiet flagstone
 floors, stronger recessed wall masonry, timber, shingles, plaster, foliage, and eight
 biome ground surfaces. The main-menu scene, its materials, and vendor originals remain
@@ -93,7 +99,7 @@ tests address UV/texture seams, not those intentional mesh edges.
   corrected (the old 256-pixel atlas expectation and inherited full-control preference),
   and both passed the focused rerun. This includes all 32 dungeon transitions, visibility,
   repeated generation/cleanup, ocean animation, town rendering, scenery hazards and travel.
-- Four `OverworldSceneTests` remain failing: `AuthoredSceneBuildsCampaignAndMovesHeroWithSealedGates`
+- Four `OverworldSceneTests` failed in this run: `AuthoredSceneBuildsCampaignAndMovesHeroWithSealedGates`
   expects 8 but observes 2; the three `RequiredReturnTripSeed*` tests expect capability
   enum names while the UI returns prose gate descriptions. No gameplay or message behavior
   was changed to satisfy these assertions.

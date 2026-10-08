@@ -46,8 +46,10 @@ tier-scaled dimensions, containers, destructibles, hazards and gathering. Entry/
 are quiet transition rooms. Mid-floor combat state is not saved.
 
 Core detailed towns assign the five service kinds (bakery, consumables, items, inn, trainer)
-to seeded building slots. Unity still configures its town from `TownConfiguration.Buildings`;
-it does not consume Core's full `TownLayout.SlotServices` assignment yet.
+to seeded building slots. Unity's `CampaignTownLayout.Configure` consumes `TownLayout.SlotServices`
+and maps them to authored building definitions, with one dungeon entrance and seven residential
+slots. Town-0 turns the first residential slot into the home. Furnished interiors publish
+furniture occupancy, vendor anchors and reserved interaction cells to both Core and Unity.
 
 ## Gameplay and persistence
 
@@ -60,8 +62,9 @@ checkpoint. See [game design](Docs/GameDesign.md), [classes](Docs/Classes.md) an
 Saves use only the current `GameSaveData`/`CampaignSnapshot` schema, without format versions,
 old-key rewrites or migrations. Inventory and equipment use `ItemSaveData` including remaining
 stock. Campaign content fingerprints remain integrity checks. Start a new game for incompatible
-older data. Continue recovers interrupted runs at their entrance; inn defeat recovery restores
-the checkpoint. See [campaign flow](Docs/CampaignFlow.md).
+older data. Continue and defeat recovery load the selected slot's last explicit checkpoint;
+quit discards unsaved campaign progress. Initial creation, home/inn saves and the completed-campaign
+save are the persistent writes. See [campaign saves](Docs/CampaignSaves.md).
 
 ## Validation boundaries and remaining work
 
@@ -69,7 +72,8 @@ Core tests cover deterministic generation, class learning, logical completion, g
 town/dungeon placement and progression restoration. They assume reachable combat can be won;
 they do not establish game balance or certify Unity prefab behavior.
 
-Remaining work includes the Unity service-layout bridge, complete TWC-owned biome styling,
-lock legibility tiers, wrong-capability feedback, terrain-specific narration and chronicle/faction
-content. No full plot, release balance or target-device performance guarantee is implied.
+Remaining work includes generalized TWC style profiles/binding validation, encounter and
+puzzle content, terminal-native menus, lock legibility tiers, graded wrong-capability feedback,
+terrain-specific narration and chronicle/faction content. The town-service bridge and production
+TWC ground renderer are implemented. No full plot, release balance or target-device performance guarantee is implied.
 The old 64-rule proposal is not an acceptance claim for this build.

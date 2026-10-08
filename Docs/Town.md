@@ -84,9 +84,10 @@ captures, four interior types, vendor behavior, greetings, movement and revisit 
   trainer shows their class kit; `LearnableSkills` can filter it. Classless configured heroes
   retain gold-priced single-rank training.
 - The inn provides free HP/SP restoration and a separate Save action that records an inn checkpoint.
-- Successful returns preserve remaining bag/equipment stock and carried HP/SP. The defeat recovery
-  button restores the inn checkpoint when available. Without it, configured defeat rules apply;
-  the default return loses items/equipment and retains earned gold. Quit/abandon uses return rules.
+- Successful returns preserve remaining bag/equipment stock and carried HP/SP in memory. In a
+  campaign, defeat loads the selected slot's last explicit save and quit discards unsaved progress;
+  neither applies a new penalty. Standalone configured runs retain `DungeonReturnService` rules
+  (by default, losing items/equipment and retaining gold on defeat).
 - Retreat retains loot without completing the dungeon. Starting supplies are granted only at new game.
 - The last party member cannot be dismissed. Removing the controlled hero selects another;
   dismissed equipment goes back into the bag.
@@ -97,11 +98,12 @@ captures, four interior types, vendor behavior, greetings, movement and revisit 
 
 Inventory/equipment persist only as `ItemSaveData`; no name-only compatibility list or format
 migration remains. Item identity still uses names, so definitions sharing a name are ambiguous.
-Skills/ranks, highest level and carried vitals live in each `TownAllyData` record.
+Skills/ranks, level/EXP, attributes, highest level and carried vitals live in each
+`TownAllyData` record.
 
 ## Inventory and recovery
 
-The shared Inventory/Skills window uses the controls in [Dungeon controls](DungeonControls.md).
+The shared Inventory/Equipment/Skills/Stats window uses the controls in [Dungeon controls](DungeonControls.md).
 Town supports equipment changes, material selling, positive HP/SP recovery, and compatible
 inventory inspection. `TownUtilityService` validates the complete effect list, living
 beneficiaries, item-instance ownership, and SP costs before committing once through
@@ -112,8 +114,8 @@ Recovery skills use learned rank, class healing/consumable passives, and persist
 `HighestLevel`. Saved -1 vitals mean full health/SP. Recovery clamps to calculated maxima;
 full targets, insufficient SP, revival, food, damage, movement, status changes, buffs,
 permanent stat changes, and mixed unsupported effects cannot be used. Inventory utilities
-honor their filters and equipped-item eligibility. Normal transactions preserve both the
-inn checkpoint and dungeon rollback snapshot.
+honor their filters and equipped-item eligibility. Normal transactions capture live state without
+rewriting the selected slot's checkpoint; there is no separate dungeon rollback snapshot.
 
 ## Maintenance and checks
 

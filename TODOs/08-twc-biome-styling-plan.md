@@ -1,36 +1,38 @@
-# Remaining TWC biome styling integration
+# Remaining TWC style-profile architecture
 
-Status: partial presentation integration. The environment kit, smart tiles, native derived
-mountain layers, ocean/shore layers and constrained cosmetics are implemented. The proposed
-general style-profile/source-binding architecture is not implemented, so this plan remains.
+Audited 2026-10-08. The general composed `OverworldStyleProfile` and semantic
+binding validator remain unimplemented. The production rendering migration is
+further along than the original plan described.
 
-## Current ownership
+## Implemented foundation
 
-Core owns campaign/grid topology and movement. `CampaignOverworld` imports masks into a cloned
-TWC template. `OverworldBiomeRenderer` owns broad biome terrain; project TWC build layers own
-smart mountains, roads, houses, walls, cosmetics and surrounding ocean. Rendering uses separate
-gameplay and landscape masks. Committed presets/materials/prefabs are editable in Unity.
+Core owns topology and movement. `CampaignOverworld` clones the TWC template
+and imports Core masks through its layer bindings. `OverworldGroundLayer` now
+owns broad biome/landscape ground, roads, town paving, bridges and in-grid water.
+`OverworldBiomeRenderer` retains a compatibility/cache handle; its old quad
+renderer is only a fallback for templates without `PaintedGroundOutput`.
+Separate TWC layers own mountains, tree walls, settlements, cosmetics and ocean.
 
-The adapter contains special handling for existing presentation layers. There is no general
-`OverworldStyleProfile` with validated semantic source bindings, layer roles, placement policy
-and dependency-aware cache identity. Existing implementation must not be described as the
-complete architecture below.
+`OverworldTerrainCache` compares `DioramaArtIdentity`, which includes template,
+kit, ground style, diorama catalog and bindings. Editor identity includes asset
+dependency hashes; player identity uses serialized/runtime resource facts.
+`DioramaGroundTests` already covers single surface ownership, priority, seams,
+determinism and a ground-style identity change. Protected placement and cosmetic
+budgets also have existing tests.
 
-## Remaining work
+## Remaining
 
-1. Define one composed style profile/template with stable semantic-to-blueprint-GUID bindings.
-   Replace only imported source stacks and preserve artist-owned derivations.
-2. Validate layer references/order, required masks, dimensions and ownership; distinguish valid
-   empty masks from execution errors. Keep movement independent of rendered geometry.
-3. Move broad surface mesh emission into a configurable TWC build action if full TWC ownership
-   is adopted. Assign each surface exactly one rendering owner during the transition.
-4. Preserve route/location/gate/crossing exclusions after every scatter/transform. Bound both
-   individual footprints and aggregate triangle/instance costs.
-5. Include style/template dependencies in terrain cache invalidation and isolate visual random
-   streams. Rebuild/dispose complete owned outputs without touching imported shared assets.
-6. Validate same-seed determinism, asset isolation, failure cleanup, changing styles, gate state,
-   protected approaches and target-device cost in the production overworld and playground.
+1. Define a composed style profile with stable semantic-to-blueprint GUID
+   bindings, explicit layer roles and artist-owned derivations.
+2. Validate required masks, references/order, dimensions and ownership; distinguish
+   intentionally empty layers from execution errors. Preserve movement authority.
+3. Generalize invalidation to the chosen profile's complete dependencies and
+   verify runtime style swaps, failure cleanup and shared-asset isolation.
+4. Extend existing placement/ownership tests to composed styles, preserving
+   protected approaches after every transform and bounding aggregate costs.
+5. Measure target-device cost for the resulting styles in production and the
+   playground. Existing diorama samples are limited to their recorded setup.
 
-See [current rendering](../Docs/OverworldVisualDetailAndModels.md), [playground](../Docs/Art/EnvironmentPlayground.md)
-and [model guide](../Docs/BlenderModelGuide.md). Completed construction scripts are removed; the sources,
-presets, templates and runtime builders remain.
+See [current rendering](../Docs/OverworldVisualDetailAndModels.md),
+[ground ownership](../Docs/Art/DioramaStyle.md#ground-channel-and-ownership-contract)
+and [playground](../Docs/Art/EnvironmentPlayground.md).

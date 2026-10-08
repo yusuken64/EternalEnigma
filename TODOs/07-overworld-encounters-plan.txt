@@ -11,8 +11,20 @@ Implement the consolidated overworld and puzzle ideas below through the existing
 - Prison possessions are confiscated temporarily and recovered.
 - Every enemy family receives a large boss variant; campaigns select bosses by seed.
 
-The imported `Assets/RPGMonsterWave4Polyart/Prefab` pack supplies ten candidate monster visuals, including BoneDragon, CastleMonster and IceGolem. Select boss roles only after the Phase 0 visual/performance check in `09-diorama-restyle-plan.md`; the import did not add these monsters to dungeon enemy prefabs or spawn pools.
-After that art check, this encounter task owns project enemy prefab variants, animation/material setup, deterministic spawn-band registration and boss-role selection. Test ordinary and boss spawns at the intended floor bands and sample a full floor on WebGL before adding a Wave 4 enemy to production pools.
+Status audited 2026-10-08: the encounter/objective/puzzle systems below remain
+planned. The imported Wave 4 pack has ten project visual adapters with corrected
+materials, animation fit checks and retained Windows benchmark results; see
+[art handoff](../Docs/Art/DioramaStyle.md#wave-4-handoff). The final WebGL build
+succeeded, but browser runtime validation remains open in task 09.
+These visuals have not been registered as gameplay enemies or added to spawn pools.
+This encounter task still owns gameplay prefab behavior, deterministic spawn bands
+and boss roles. Test ordinary/boss spawns at intended floor bands and sample a full
+floor on WebGL before adding a Wave 4 enemy to production pools.
+
+Reward decision carried forward from the completed gameplay checklist: every
+dungeon's first clear already grants a permanent combat passive. Decide whether
+additional traversal/lock capabilities are intended; these reward types are not
+equivalent. Do not duplicate the existing first-clear combat rewards.
 
 ## Phase 1 — Shared dungeon systems
 

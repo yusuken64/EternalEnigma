@@ -24,13 +24,15 @@ same generation inputs. Combat progress and exact floor state are not persisted.
 ## Town plans
 
 Base layers are Roads, Houses, Trees, Parks, Roofs, Buildings, Allies, Dungeon, ShopFloor,
-ShopWalls and Walkable. `Walkable == !(Houses | Trees | ShopWalls)`. Detailed plans additionally
-provide MainRoads, Alleys and Props. `BuildingSlots`, `Footprints`, `ShopRooms`, vendor anchors,
+ShopWalls and Walkable. Base walkability excludes houses, trees and shop walls;
+furnished plans also exclude furniture/counter occupancy. Detailed plans additionally
+provide MainRoads, Alleys and Props, with furnishing/carpet/counter data when enabled. `BuildingSlots`, `Footprints`, `ShopRooms`, vendor anchors,
 PartySpawn and Exit describe placement and interaction independently of art.
 
-`TownLayout` sizes campaign towns and assigns five service kinds, two authored buildings and
+`TownLayout` sizes campaign towns and assigns five service kinds, one authored entrance and
 seven residential plots in stable seeded order. Unity's `CampaignTownLayout` maps that order
-to authored definitions. Residential slots render through the house mask and have no dialog.
+to authored definitions. Residential slots have furnished rooms when enabled; town-0's first
+residential slot is the home, with a bed and explicit save flow.
 All services have walk-in rooms. The spine, party spawn and exit are centered on the generated
 map. Custom noncampaign configurations retain explicit building/spawn options.
 

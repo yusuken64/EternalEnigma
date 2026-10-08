@@ -1,7 +1,11 @@
-# Imported environment kit
+# Base environment kit measurements
 
-The table records imported mesh measurements retained with the committed kit. Core-sized
-towns reuse these assets; changed town dimensions affect instance counts, not per-mesh budgets.
+This table preserves the original imported mesh audit. It is not an inventory of
+current production bindings: the diorama pass replaced selected trees, facades,
+landmarks and terrain adapters, and cleanup removed unused duplicates. Use
+[diorama style and fit evidence](DioramaStyle.md) for current source selections,
+scale and full-scene measurements. The source manifest remains useful for the
+base kit meshes that are retained.
 
 Blender-generated assets; Unity mesh counts after import. XY ground, negative-Z height, base-centered pivot. Static, no bones, no colliders. Painted atlas UVs; shared materials. CPU read access is retained for TWC chunk combining. The [painted surface pass](PaintedEnvironment.md) preserves every recorded mesh budget below.
 

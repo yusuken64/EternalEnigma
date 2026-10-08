@@ -1,8 +1,11 @@
 # Eternal Enigma: Blender model generation guide and asset audit
 
-Audit date: 2026-09-22. Use this document when generating heroes, equipment, pickups, terrain, and environment props for this project.
-
-For the current overworld renderer and retained TWC integration work, see [OverworldVisualDetailAndModels.md](OverworldVisualDetailAndModels.md).
+Source audit: 2026-09-22; reference paths and production guidance updated 2026-10-08.
+The measurement table preserves the original source audit, including vendor assets
+later removed. Use this guide for modeling/rigging conventions and
+[diorama style](Art/DioramaStyle.md) for current source selections, measured hero
+scale and environment height/budget decisions. See
+[overworld rendering](OverworldVisualDetailAndModels.md) for current TWC ownership.
 
 ## Art direction
 
@@ -24,14 +27,17 @@ The Unity scene query timed out, so this audit does not claim live gameplay visu
 |---|---|---|
 | Playable heroes | `Assets/Prefabs/Town/Allies/Ally_MC01.prefab` through `Ally_MC24.prefab`; `Assets/Art/RPGTinyHeroWavePolyart/` | Main style and rig reference. Use an assembled playable prefab, not every mesh in its source FBX. |
 | Held equipment | `Assets/Art/RPGTinyHeroWavePolyart/Mesh/Weapons/`; `Assets/Prefabs/Dungeon/Items/Weapons/` | Match the hero hand scale, sockets, stance, and exact model-name wiring. |
-| Dropped items | `Assets/Prefabs/Dungeon/DroppedItems/` | Mostly non-atlas Adorable Items assets; the dropped sword uses `RPGHero/Meshes/Sword.fbx`. |
-| Dungeon terrain | `Assets/Prefabs/Dungeon/DungeonThroneAsset.asset`; `Assets/TileWorldCreator/Tiles/Version 2 Tiles/Dungeon/` | Modular chunky masonry, cheap floor planes, separate gate/prop meshes. |
-| Town terrain | `Assets/TileWorldCreator/VillageLSystemAsset.asset`; `Assets/TileWorldCreator/Tiles/Version 3 Tiles/4-Tiles/` | House, roof, park, road, and tree references. Park/road/tree meshes were sampled; house geometry was not measured. |
-| Overworld terrain | `Assets/Overworld/CampaignTerrain.asset`; `Assets/Scripts/Overworld/OverworldBiomeRenderer.cs` | Runtime chunked surfaces currently replace the visible TWC terrain renderers. Do not assume adding a TWC prefab makes it visible here. |
+| Dropped items | `Assets/Prefabs/Dungeon/DroppedItems/`; `Assets/Art/Diorama` | Adorable atlas variants with project-owned lit materials and Tiny Hero weapon fallbacks. The old RPGHero sword and per-texture item sources were removed. |
+| Dungeon terrain | [Dungeon themes](DungeonThemes.md) and their committed TWC presets | Modular themed masonry, floor surfaces and separate gate/prop meshes; vendor demo paths are no longer production references. |
+| Town terrain | `Assets/TileWorldCreator/VillageLSystemAsset.asset`; `Assets/Art/Diorama` | Current modular facades, roofs, furniture, imported tree adapters and painted ground. |
+| Overworld terrain | `Assets/Overworld/CampaignTerrain.asset`; [ground contract](Art/DioramaStyle.md#ground-channel-and-ownership-contract) | TWC owns production ground and separate terrain/foliage layers. OverworldBiomeRenderer keeps a compatibility handle and a legacy fallback. |
 
-Other bundled packs and their PBR/high-poly variants are not the default hero style authority. The `RPGHero` dropped sword is a specific existing exception, not a reason to adopt that pack's character proportions.
+Other bundled packs and their PBR/high-poly variants are not the default hero style authority. Use the assembled Tiny Hero prefabs for character proportions.
 
-### Measured source geometry
+### Measured source geometry (2026-09-22 snapshot)
+
+Some sources below were replaced or removed during the diorama cleanup. Their
+counts describe the captured source models, not today's prefab bindings.
 
 | Source mesh / group | Triangles | Used material slots per mesh | Notes |
 |---|---:|---:|---|
@@ -44,7 +50,7 @@ Other bundled packs and their PBR/high-poly variants are not the default hero st
 | Dropped sword / gold bag | 232 / 242 | 1 | Sword comes from RPGHero; bag is Adorable Items. |
 | Dropped bow / ring / skull | 266 / 266 / 270 | 1 | Low segment counts remain visible in the outlines. |
 | Dropped potion / treasure chest | 324 / 347 | 2 / 1 | Potion uses two materials in its prefab. |
-| Dropped bread (`waffle`) / key | 428 / 450 | 1 | Bread currently resolves to a waffle model. |
+| Dropped bread (`waffle`) / key | 428 / 450 | 1 | Bread resolved to a waffle model in this snapshot. |
 | Dungeon ground / block | 2 / 2 | 1 | Do not replace ordinary floor cells with dense geometry. |
 | Dungeon edge / corner / inner corner | 674 / 811 / 599 | 3 | Layered, chipped masonry with multiple surfaces. |
 | Dungeon column / torch | 143 / 134 | 1 | Repeated decoration. |
@@ -58,7 +64,7 @@ Other bundled packs and their PBR/high-poly variants are not the default hero st
 
 - **Count the active assembly.** `Ally_MC01` has active body, cloak, head, hair, mouth, eyes, and horn meshes. Its prefab also contains many inactive alternatives. Neither the whole FBX sum nor the body alone represents its visible cost. Budget the selected appearance plus equipped weapons.
 - **Separate materials from colors.** Sampled Adorable Items FBXs import into Blender with ten material slots, but only one is used by most meshes; the potion uses two. Clean unused slots on new exports and verify Unity submeshes. Do not report ten draw calls simply from that source slot count.
-- **Keep cheap floors cheap.** The overworld uses 32×32-cell chunks, four vertices/two triangles per ordinary cell, and five vertices/four triangles per raised cell. Layers can overlap, so two triangles per cell is not the total scene cost. Shadows are disabled on these generated surfaces.
+- **Keep cheap floors cheap.** Production painted ground uses 32×32-cell chunks with a half-cell vertex grid for biome blending. The old four/five-vertex cell surfaces remain a compatibility fallback. Count overlapping terrain, water and decoration layers separately; a single floor cell is not the total scene cost.
 - **Scale conventions differ.** The sampled park floor FBX has Unity `globalScale: 100`; the hero body has `globalScale: 1`. Copying raw Blender dimensions across those packs will produce incorrect sizes.
 - **Current rendering is built-in.** `ProjectSettings/GraphicsSettings.asset` has no custom render pipeline. The bundled `PolyartMaskTint` shader uses albedo, three tint masks, and emission. A Blender material alone does not reproduce this Unity shader.
 - **Small shared textures already work.** Tiny Hero's default albedo source is 512×512, despite a general importer maximum of 2048. The sampled potion red texture is 1024×1024. Maximum import size is not proof of actual source resolution.
@@ -139,7 +145,7 @@ For Blender authoring:
 - Base hero replacements on the existing Tiny Hero skeleton/bind pose. `AllBodiesCloaks.fbx` uses Humanoid import and an existing avatar source. A differently proportioned new rig requires explicit retargeting validation; Humanoid alone is not a guarantee.
 - Preserve socket names **`weapon_r` and `weapon_l`**, their parent relationships, and their local orientation. Keep useful accessory bones when the reference animation or attachments use them.
 - `Assets/Scripts/Town/HeroAnimator.cs` activates registered hand objects by exact `EquipmentItemDefinition.WeaponModelName`. New equipment needs both correct object names and registration in the corresponding hand list. An exported model file alone is insufficient.
-- Bows in the current catalog are left-hand equipment. Preserve their skinned deformation where applicable; do not replace an animated bow with a rigid mesh without testing its action.
+- Bows occupy the logical main-hand equipment slot; their visible model attaches to the rig's left hand, with an arrow in the right. Preserve skinned deformation and test variant-name resolution and Bow01/Arrow01 fallbacks; see [weapons](Weapons.md).
 - Use at most four normalized bone influences per vertex as a new-asset target; test lower quality settings that reduce skin weights. Avoid tiny weights and unnecessary auxiliary bones.
 - Keep locomotion consistent with the existing grid movement/root-motion setup. Do not introduce root translation into clips as an unreviewed side effect.
 - Validate idle, forward movement, attack, hit, and death for all applicable stances: unarmed, single sword, sword/shield, dual swords, two-hand sword, spear, wand, and bow. Inspect feet, shoulder deformation, hand grips, cape intersections, and weapon reach.
@@ -188,8 +194,8 @@ Example constraints to insert:
 
 - **Hero:** use `Ally_MC01` as the assembled scale reference; target 6,000 triangles including selected costume and equipment; preserve the existing skeleton and weapon sockets; make a broad hat the primary silhouette cue.
 - **Potion:** use `DroppedItems/Potion.prefab`; target 300 triangles and one opaque palette material; emphasize a stout bottle and oversized cork; match the current gameplay footprint through the prefab wrapper.
-- **Dungeon wall:** use `A_edge_tile.fbx` plus its TWC prefab/preset; target 650 triangles and two shared materials; preserve joins and final cell fit; use a few chunky chips along the silhouette.
-- **Tree:** use the Park `Tree.prefab`; target 800 triangles and two materials; tapered trunk, three to five broad crown masses, and no individual leaf cards; compare actor visibility at the game camera.
+- **Dungeon wall:** use a committed themed wall prefab and its [TWC preset](DungeonThemes.md); begin near 650 triangles and two shared materials, then validate against that theme's actual budget; preserve joins and final cell fit.
+- **Tree:** use the current diorama Tree03 broadleaf adapter; match its measured 2.85-hero-height placement and canopy clearance. Start near 800 triangles, then compare silhouette, actor visibility and repetition cost at the actual game camera.
 
 ## Acceptance checklist
 

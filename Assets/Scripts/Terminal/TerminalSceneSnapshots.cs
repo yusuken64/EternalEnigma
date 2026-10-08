@@ -151,5 +151,5 @@ internal static class TerminalSceneSnapshots
         if (At(plan.Layers, TownLayers.Roads, p)) return Cell(':', TerminalPalette.Dim);
         return FloorCell;
     }
-    private static IEnumerable<string> Tail(GameMessages messages) => messages == null ? Array.Empty<string>() : messages.History.Skip(Math.Max(0, messages.History.Count - 2)).ToArray();
+    private static IEnumerable<string> Tail(GameMessages messages) => messages == null ? Array.Empty<string>() : messages.History.Skip(Math.Max(0, messages.History.Count - 2)).Select(InputPrompts.Format).ToArray();
 }

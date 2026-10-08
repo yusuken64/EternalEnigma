@@ -202,24 +202,6 @@ public static class AuthoredUIMigration
         Instance(pickerPrefab,owner).name="Party target picker";
         Instance(Load<GameMessages>("DungeonEvents"),owner);
         if(name=="DungeonScene")DungeonScene(scene,owner.GetComponent<Game>());
-        else
-        {
-            var hud=owner.gameObject.AddComponent<CampaignHUD>();hud.Town=owner.GetComponent<Town>();hud.Overworld=owner.GetComponent<OverworldScene>();hud.AuthorLayout();
-            hud.ActionTemplate=Load<AuthoredButton>("TravelAction").Button;hud.CompanionTemplate=Load<AuthoredButton>("Companion").Button;
-            var actions=owner.Find("Campaign HUD/Panel/Travel actions");
-            if(name=="Overworld"){var layout=Vertical(actions,0);layout.childForceExpandHeight=true;layout.reverseArrangement=true;}
-            if(name=="Town")
-            {
-                var content=owner.Find("Campaign HUD/Panel (1)");
-                var roster=(Transform)typeof(CampaignHUD).GetField("rosterContent",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(hud);
-                hud.EmptyRoster=GameUISkin.Label(roster,"Meet companions as you explore the campaign.",Vector2.zero,Vector2.one,24);hud.EmptyRoster.gameObject.AddComponent<LayoutElement>().preferredHeight=100;
-                var menu=Find<TownMenu>(scene);
-                if(!menu.BuildingDialogs.Any(b=>b.Id=="home"))menu.BuildingDialogs.Add(new TownDialogBinding{Id="home",Dialog=Instance(Load<HomeBedDialog>("Home"),menu.transform)});
-                if(!menu.BuildingDialogs.Any(b=>b.Id=="inn"))menu.BuildingDialogs.Add(new TownDialogBinding{Id="inn",Dialog=Instance(Load<InnDialog>("Inn"),menu.transform)});
-                if(menu.ItemActionDialog==null)menu.ItemActionDialog=Instance(Resources.Load<ActionDialog>("TownItemActions"),menu.transform);
-                menu.ItemActionDialog.gameObject.SetActive(false);
-            }
-        }
         foreach(var shop in scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<ShopMenuDialog>(true)))
             if(shop.GetComponentInChildren<MenuControlHints>(true)==null)MenuControlHints.Bind(GameUISkin.Label(shop.transform,"",new Vector2(.1f,.08f),new Vector2(.8f,.12f),20));
     }

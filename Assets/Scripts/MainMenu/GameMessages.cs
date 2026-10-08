@@ -134,19 +134,26 @@ public sealed class GameMessages : MonoBehaviour
         text.fontSize=30;text.color=GameUITheme.Ink;
         GameUISkin.PanelGraphic(group.transform).color=new Color(1,1,1,.94f);
         historyButton.onClick.AddListener(ToggleHistory);
+        ControlDeviceState.Changed += RefreshText;
         SetTerminalPresentation(TerminalMode.Effective);
     }
     private void Render()
     {
         hasMessage=true; group.blocksRaycasts=true; group.interactable=true;
+        RefreshText();
+        lastMessage = Time.unscaledTime; group.alpha = 1;
+    }
+
+    private void RefreshText()
+    {
+        if (!hasMessage) return;
         var entries = inDungeonTurn ? turnEvents : history;
         int start = Mathf.Max(0,entries.Count-3);
-        text.text = string.Join("\n", entries.GetRange(start, entries.Count-start));
+        text.text = InputPrompts.Format(string.Join("\n", entries.GetRange(start, entries.Count-start)));
         Canvas.ForceUpdateCanvases();
         text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
             Mathf.Max(scroll.viewport.rect.height, text.GetPreferredValues(text.text, scroll.viewport.rect.width, 0).y + 12));
         scroll.verticalNormalizedPosition = 0;
-        lastMessage = Time.unscaledTime; group.alpha = 1;
     }
 
     private void Add(string message, bool coalesce)
@@ -176,5 +183,9 @@ public sealed class GameMessages : MonoBehaviour
         if (!inDungeonTurn) group.alpha = 1 - Mathf.Clamp01((Time.unscaledTime - lastMessage - 9f) / 2f);
         group.blocksRaycasts=group.interactable=group.alpha>0;
     }
-    private void OnDestroy() { if (instance == this) instance = null; }
+    private void OnDestroy()
+    {
+        ControlDeviceState.Changed -= RefreshText;
+        if (instance == this) instance = null;
+    }
 }

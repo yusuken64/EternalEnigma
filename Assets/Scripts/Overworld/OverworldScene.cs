@@ -51,7 +51,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         if (!messageChanged) return;
         messageChanged = false;
-        GameMessages.Post(InputPrompts.Format(message), coalesce: true);
+        GameMessages.Post(message, coalesce: true);
     }
     private HashSet<string> claimed => Context.Claimed;
     private HashSet<string> recruited => Context.Roster;
@@ -94,7 +94,6 @@ public sealed class OverworldScene : MonoBehaviour
         var campaignHud = AuthoredUI.Require<CampaignHUD>(transform);
         campaignHud.Overworld=this;
         campaignHud.enabled=!Context.IsSandbox;
-        transform.Find("Campaign HUD").gameObject.SetActive(!Context.IsSandbox);
         Campaign = Context.Campaign;
         Map.Seed = Campaign.Seed;
         var grid = Context.Grid;
@@ -188,7 +187,7 @@ public sealed class OverworldScene : MonoBehaviour
             if (live != null) OverworldPartyMenuContext.RestoreHero(live, data);
         }
         RefreshGates();
-        Message = "{Interact}: claim location rewards or use a key at a gate.";
+        Message = "Move: {Move} | {Interact}: claim location rewards or use a key at a gate.";
         FollowCamera();
     }
 

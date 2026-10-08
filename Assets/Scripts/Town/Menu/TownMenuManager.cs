@@ -14,17 +14,11 @@ public class TownMenuManager : MonoBehaviour
     public Dialog CurrentDialog => dialogs.Current;
     private CampaignHUD campaignHUD;
     public PartyMenu PartyMenu { get; private set; }
-    private void Start()
-    {
-        var town=FindFirstObjectByType<Town>();
-        PartyMenuLauncher.Create(transform,()=>town!=null&&town.IsReady&&!town.TownPlayer.CutsceneLocked,OpenPartyMenu);
-    }
 
 	private void Update()
 	{
 		if (AutoplayRunner.BlocksPlayerInput || FindFirstObjectByType<Town>()?.TownPlayer.CutsceneLocked == true) return;
 		if (campaignHUD == null && Common.Instance.CampaignContext != null) campaignHUD = FindFirstObjectByType<CampaignHUD>();
-		if (campaignHUD != null && campaignHUD.IsPartyOpen) return;
 		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
 		if (Opened && Common.Instance.MenuInputHandler.OptionInput && !Common.Instance.MenuInputHandler.CancelMenuInput)
 		{

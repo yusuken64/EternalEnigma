@@ -15,7 +15,7 @@ public sealed class EventHistoryDialog : Dialog
         foreach(var role in GetComponentsInChildren<DungeonUIRole>(true))role.Apply();
         foreach(var style in GetComponentsInChildren<DungeonTextStyle>(true))
             style.GetComponent<TMP_Text>().color=style.OnWood?GameUITheme.LightInk:GameUITheme.Ink;
-        Entries.text = entries.Count == 0 ? "No events yet." : string.Join("\n\n", entries);
+        Entries.text = entries.Count == 0 ? "No events yet." : InputPrompts.Format(string.Join("\n\n", entries));
         Entries.richText = false;
         Back.onClick.RemoveAllListeners(); Back.onClick.AddListener(CloseDialog);
         Canvas.ForceUpdateCanvases();

@@ -37,7 +37,6 @@ public class TownPlayer : MonoBehaviour
 		!Common.Instance.Travel.IsTransitioning && !Common.Instance.GlobalSettings.IsOpen &&
 		MenuUIInputModule.Active?.InputConsumed != true && MenuUIInputModule.Active?.HasDialog != true &&
 		(townMenuManager == null || townMenuManager.DialogStack.Count == 0) &&
-		(campaignHUD == null || !campaignHUD.IsPartyOpen) &&
 		PlayerInputHandler.Instance != null && PlayerInputHandler.Instance.moveInput.magnitude > .1f &&
 		!PlayerInputHandler.Instance.holdPosition;
 
@@ -112,7 +111,6 @@ public class TownPlayer : MonoBehaviour
 	{
 		if (campaignHUD == null && Common.Instance.CampaignContext != null)
 			campaignHUD = FindFirstObjectByType<CampaignHUD>();
-		if (campaignHUD != null && campaignHUD.IsPartyOpen) return;
 		var inputHandler = PlayerInputHandler.Instance;
 
 		if (inputHandler == null || _busy)

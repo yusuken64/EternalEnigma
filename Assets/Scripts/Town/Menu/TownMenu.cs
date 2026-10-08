@@ -8,8 +8,6 @@ public class TownMenu : MonoBehaviour
 {
     public List<TownDialogBinding> BuildingDialogs = new();
     public AllyRecruitDialog AllyRecruitDialog;
-    public InventoryMenu InventoryMenu;
-    public SkillDialog SkillDialog;
     public ActionDialog ItemActionDialog;
     private readonly Dictionary<Dialog, Dialog> customDialogs = new();
 
@@ -17,8 +15,6 @@ public class TownMenu : MonoBehaviour
     {
         foreach (var binding in BuildingDialogs) binding.Dialog.gameObject.SetActive(false);
         AllyRecruitDialog.gameObject.SetActive(false);
-        InventoryMenu.gameObject.SetActive(false);
-        SkillDialog.gameObject.SetActive(false);
         if(ItemActionDialog==null)throw new InvalidOperationException("Town item actions must be authored in the scene.");
         ItemActionDialog.gameObject.SetActive(false);
     }

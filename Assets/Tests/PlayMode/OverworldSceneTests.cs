@@ -39,12 +39,13 @@ namespace EternalEnigma.Tests
             scene = SceneManager.GetSceneByName("Overworld");
             var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
             yield return harness.WaitUntil(() => world.IsReady, "overworld control prompts");
-            var hud = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<CampaignHUD>(true)).Single();
-            var message = (TMPro.TMP_Text)typeof(CampaignHUD).GetField("message",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(hud);
+            var feed = AuthoredUI.Require<GameMessages>(world.transform);
+            var message = feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>().content.GetComponent<TMPro.TMP_Text>();
             Assert.That(world.Message, Does.Contain("{Interact}"));
-            yield return harness.WaitUntil(() => message.text.Contains("Enter"), "first campaign HUD refresh");
+            yield return harness.WaitUntil(() => message.text.Contains("Enter"), "first campaign event log entry");
             Assert.That(message.text, Does.Contain("Enter"));
+            Assert.That(feed.History.Count(entry => entry == world.Message), Is.EqualTo(1));
+            int eventCount = feed.History.Count;
 
             InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.LeftStick));
             yield return null;
@@ -60,6 +61,13 @@ namespace EternalEnigma.Tests
             Assert.That(message.text, Does.Not.Contain("A / Cross"));
             yield return null;
             Assert.That(Cursor.visible, Is.True);
+            Assert.That(feed.History.Count, Is.EqualTo(eventCount), "Changing controls must not duplicate campaign messages.");
+            GameMessages.ShowHistory();
+            yield return null;
+            var history = feed.GetComponentInChildren<EventHistoryDialog>();
+            Assert.That(history.Entries.text, Does.Contain("Enter"));
+            Assert.That(history.Entries.text, Does.Not.Contain("{Interact}"));
+            history.CloseDialog();
         }
 
         [UnityTest]

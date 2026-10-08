@@ -332,7 +332,10 @@ public static class HarnessTestRunner
     public static void RunMessages() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.GameMessageTests", "EternalEnigma.Tests.OverworldSceneTests", "EternalEnigma.Tests.InventorySkillTargetingTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Message Display")]
-    public static void RunMessageDisplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.GameMessageTests");
+    public static void RunMessageDisplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameMessageTests",
+        "EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored",
+        "EternalEnigma.Tests.CampaignPresentationTests.CampaignUsesTravelHudAndPartyCanCloseBeforeLeavingTown");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Biome Regression")]
     public static void RunBiomeRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.BiomeSceneryTests", "EternalEnigma.Tests.SkillRegressionTests", "EternalEnigma.Tests.SkillMovementTests", "EternalEnigma.Tests.InventorySkillTargetingTests", "EternalEnigma.Tests.DungeonThemeTransitionTests", "EternalEnigma.Tests.DungeonThemeExplorerTests");

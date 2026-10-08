@@ -216,14 +216,6 @@ namespace EternalEnigma.Tests
             yield return null;
             var hud = Object.FindFirstObjectByType<Town>().GetComponent<CampaignHUD>();
             yield return Press(GamepadButton.East);
-            Assert.That(hud.IsPartyOpen, Is.True);
-            Assert.That(MenuUIInputModule.IsUsable(EventSystem.current.currentSelectedGameObject), Is.True);
-            yield return Press(GamepadButton.East);
-            Assert.That(hud.IsPartyOpen, Is.False, "Back must close without reopening the party.");
-            yield return Press(GamepadButton.East);
-            Assert.That(hud.IsPartyOpen, Is.True);
-            yield return Press(GamepadButton.South);
-            Assert.That(hud.IsPartyOpen, Is.False, "Done must accept controller confirm.");
         }
 
         [UnityTest] public IEnumerator CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly()

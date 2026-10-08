@@ -232,11 +232,6 @@ namespace EternalEnigma.Tests
                 .Select(d => (EquipableInventoryItem)d.AsInventoryItem(null))
                 .First(i => HeroClass.AllowsItem(hero.PrimaryClass, hero.SecondaryClass, i));
             player.Inventory.Add(item);
-            Manager.Open(Menus.InventoryMenu);
-            Menus.InventoryMenu.SetupTown(player.Inventory, player.ControllingTownAlly);
-            Menus.InventoryMenu.SetNavigation();
-            yield return null;
-            Menus.InventoryMenu.InventoryMenuItems[0].onClick.Invoke();
             yield return null;
             Assert.That(Manager.CurrentDialog, Is.SameAs(Menus.ItemActionDialog));
             Menus.ItemActionDialog.Use_Clicked();
@@ -245,7 +240,6 @@ namespace EternalEnigma.Tests
             Assert.That(player.Inventory, Has.No.Member(item));
             SaveSystem.SaveData(Common.Instance.GameSaveData);
             Assert.That(SaveSystem.LoadData().TownSaveData.RecruitedAlliesData[0].Equipment[0].ItemName, Is.EqualTo(item.ItemName));
-            Menus.InventoryMenu.InventoryMenuItems[0].onClick.Invoke();
             yield return null;
             Menus.ItemActionDialog.Use_Clicked();
             Assert.That(player.Inventory.Count(i => i == item), Is.EqualTo(1));

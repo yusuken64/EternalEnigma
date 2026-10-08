@@ -30,20 +30,18 @@ namespace EternalEnigma.Tests
             Assert.That(picker, Is.Not.Null);
             Assert.That(picker.GetComponentInChildren<RawImage>().texture, Is.TypeOf<RenderTexture>());
             var heroes = menu.TownConfiguration != null ? menu.TownConfiguration.AllyCatalog : TownSceneLoader.Default.AllyCatalog;
-            Assert.That(picker.ChoiceButtons.Count(b => b.gameObject.activeSelf), Is.EqualTo(8));
-            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(8 + 3));
+            Assert.That(picker.ChoiceButtons.Count(b => b.gameObject.activeSelf), Is.EqualTo(heroes.Count));
+            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(heroes.Count + 1));
+            for (int i = 0; i < heroes.Count; i++)
+                Assert.That(picker.ChoiceButtons[i].transform.Find("Hero portrait")?.GetComponent<Image>()?.sprite,
+                    Is.EqualTo(heroes[i].Portrait), heroes[i].Name);
             Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "Choose your hero"), Is.True);
             Canvas.ForceUpdateCanvases();
             Directory.CreateDirectory("Temp/UIValidation");
             ScreenCapture.CaptureScreenshot("Temp/UIValidation/hero-picker.png");
             yield return new WaitForSecondsRealtime(.5f);
-            picker.GetComponentsInChildren<Button>().Single(b => b.name == "Next").onClick.Invoke();
-            yield return null;
-            Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "2 / 3"), Is.True);
-            Assert.That(picker.GetComponentsInChildren<Button>().Any(b => b.name.Contains(heroes[8].Name)), Is.True);
-            picker.GetComponentsInChildren<Button>().Single(b => b.name == "Previous").onClick.Invoke();
-            yield return null;
-            Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text == "1 / 3"), Is.True);
+            Assert.That(picker.ChoiceButtons[8].gameObject.activeInHierarchy, Is.True);
+            Assert.That(picker.ChoiceButtons[8].name, Does.Contain(heroes[8].Name));
             picker.GetComponentsInChildren<Button>().Single(b => b.name == "Back").onClick.Invoke();
             yield return null;
             Assert.That(Object.FindFirstObjectByType<ProtagonistHeroPicker>(), Is.Null);

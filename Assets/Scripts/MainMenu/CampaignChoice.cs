@@ -21,6 +21,14 @@ public sealed class CampaignChoice : MonoBehaviour
         }
         choice.Confirm.onClick.RemoveAllListeners();choice.Back.onClick.RemoveAllListeners();
         choice.Confirm.onClick.AddListener(()=>Close(action));choice.Back.onClick.AddListener(()=>Close(cancel));
+        // The authored buttons can have no automatic navigation path when this
+        // confirmation is opened over the slot picker.
+        choice.Confirm.navigation = new Navigation { mode = Navigation.Mode.Explicit,
+            selectOnLeft = choice.Back, selectOnRight = choice.Back,
+            selectOnUp = choice.Back, selectOnDown = choice.Back };
+        choice.Back.navigation = new Navigation { mode = Navigation.Mode.Explicit,
+            selectOnLeft = choice.Confirm, selectOnRight = choice.Confirm,
+            selectOnUp = choice.Confirm, selectOnDown = choice.Confirm };
         MenuUIInputModule.Active?.PushDialog(choice,choice.transform,choice.Back.gameObject,()=>Close(cancel));choice.Back.Select();
     }
 }

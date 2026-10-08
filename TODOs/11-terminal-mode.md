@@ -4,7 +4,7 @@
 
 A "Terminal mode" option in the Unity client presents the whole game as colored ASCII: overworld, towns, dungeon combat, items, allies and, eventually, menus. The same campaign and saves work in terminal and 3D modes.
 
-**The first implementing agent has repository access and the .NET SDK, but no Unity installation, editor, MCP connection or license.** It should complete the standalone renderer, tests and as much Unity integration source as possible. A second agent with Unity access will finish integration, resolve import/compile/runtime issues, and verify the result. Do not stop all work because one integration detail needs Unity.
+This implementation environment has the .NET SDK and Unity 6.2.7f2 with Unity MCP. The renderer and Unity source have both been compiled and tested here. The verification record below distinguishes tested map behavior from unfinished menu and acceptance work.
 
 Track implementation and validation separately. Passing .NET tests proves the standalone rendering code works; it does not prove Unity adapters compile, TMP renders correctly, or the game is playable. Leave those checks explicitly pending for the Unity handoff.
 
@@ -84,9 +84,9 @@ The Explorer targets .NET 10, uses its own session state and does not implement 
 - [ ] Create a "Terminal mode: On/Off" control in code from `MainMenu.Start` after readiness, and in `DisplayOptions` initialization. Parent controls to existing menu/settings containers; explicitly wire callbacks and navigation without adding unassigned serialized fields. Refresh labels when the preference changes and avoid duplicate controls/listeners on reopen.
 - [ ] Preserve normal `CampaignSlots`, hero selection, New Journey/Continue and `Travel` behavior. The preference changes presentation only; do not introduce terminal-specific save files or migration.
 - [ ] Add a debug F11 toggle using the existing Input System, with a null-device guard. Provide menu access independently of the hotkey. Consume the toggle input and apply presentation changes at a safe movement/turn boundary; do not interrupt a coroutine or discard a queued action.
-- [ ] Make the effective dungeon animation policy return `NoAnimations` while terminal presentation is active. Preserve the saved animation preference and existing `AnimationOverride` value instead of overwriting either; switching back restores their normal precedence. Keep immediate resolution, replay completion, displayed-state synchronization and turn bookkeeping running.
-- [ ] Skip only the cosmetic two-second wait in `Game.AdvanceFloorRoutine` when terminal presentation is active. Keep generation callbacks, floor-start passives, actor setup, minimap refresh, readiness and transition completion. Do not disable Game, TurnManager or TWC, or change global time scale.
-- [ ] Leave town/overworld movement routines intact initially; their animation can finish behind the overlay. If removing those delays is needed later, do it with Unity tests for movement locks and arrival interactions.
+- [ ] Preserve the saved animation preference and any `AnimationOverride` while terminal presentation is active. Movement and action timing must remain the same as in the 3D presentation.
+- [ ] Keep the normal floor transition wait, generation callbacks, floor-start passives, actor setup, minimap refresh, readiness and transition completion. Do not disable Game, TurnManager or TWC, or change global time scale.
+- [ ] Leave town/overworld movement routines intact; their animation can finish behind the overlay.
 - [ ] Switching off must restore normal presentation without mutating campaign state, consuming a turn, resetting exploration or closing a gameplay action. Preserve normal UI as the fallback until replacement terminal menus are verified.
 
 ### 5. Prepare terminal-native menus after the map milestone
@@ -133,7 +133,7 @@ Use the Unity version in `ProjectSettings/ProjectVersion.txt` and the project's 
 
 - [ ] Import the updated Core DLL, new scripts and font; resolve compilation/import errors. Check player-runtime code is outside `UNITY_EDITOR`, scripts are in the intended assemblies, and font/TMP resources are included in builds. If dynamic font setup cannot meet layout/build requirements, create a project-owned TMP font asset and bind it through the runtime resource loader.
 - [ ] Inspect runtime construction from a clean launch, direct gameplay scene startup and repeated menu/travel cycles: one persistent terminal owner, one screen, no duplicated listeners or EventSystems, and no stale floor/campaign references. Test domain reload disabled as well as normal startup.
-- [ ] **EditMode:** preference persistence/defaults; runtime construction helpers; font glyph availability/advance; literal TMP parsing; effective animation preference restoration. Verify the actual TMP output agrees with the offline cell widths, including `<`/`>` and narrow layouts.
+- [ ] **EditMode:** preference persistence/defaults; runtime construction helpers; font glyph availability/advance; literal TMP parsing; animation preference preservation. Verify the actual TMP output agrees with the offline cell widths, including `<`/`>` and narrow layouts.
 - [ ] **PlayMode:** use `Assets/Tests/PlayMode/Support/GameTestHarness.cs` and existing campaign/menu fixtures. Load real scenes, wait for readiness, assert glyphs only for currently visible or legitimately revealed content, submit moves/actions and check resulting cells, HP/SP and messages. Test floor replacement, traps/disguises/reveal effects and switching modes after exploration.
 - [ ] Verify character, prop, tile, inventory and missile targeting with keyboard/controller navigation, confirm and cancel. Check the selected target remains visible, cancellation is free, each command executes once, and hidden world indicators have a terminal equivalent.
 - [ ] Verify settings, main-menu toggle, menu focus, mouse clicks on retained uGUI, input locking and transition overlays. Test toggles during movement, action replay, floor generation and open menus; queue or reject transitions safely where necessary.
@@ -147,15 +147,26 @@ Use the Unity version in `ProjectSettings/ProjectVersion.txt` and the project's 
 
 | Deliverable | Status / evidence / remaining work |
 | --- | --- |
-| Core cells, renderer and snapshots | Planned; no implementation is claimed by this document update. |
-| Offline tests and fixture output | Pending; record exact commands and results. |
-| Runtime owner, screen and font | Pending; distinguish source implementation from import/layout verification. |
-| Town/overworld/dungeon adapters and targeting | Pending; record member/API assumptions needing Unity. |
-| Entry points, speed and mode restoration | Pending; verify original preferences and input behavior survive toggling. |
-| Terminal-native menu coverage | Pending; list implemented routes and retained uGUI fallbacks. |
-| Core DLL and new asset metadata | Pending; record DLL hash agreement and any missing font/import work. |
-| Unity tests | Pending; distinguish authored tests from executed results. |
-| Gameplay, save compatibility and player builds | Pending; owned by the Unity-enabled agent. |
+| Core cells, renderer and snapshots | **Implemented + .NET verified.** `Core/EternalEnigma.Core/EternalEnigma.Core/Terminal/` has reusable cells/frame, literal TMP markup, viewport, three map snapshot/renderers, glyph rules, and pure menu navigation. The current snapshots use immutable Core maps plus copied visibility/live actor facts. |
+| Offline tests and fixture output | **Implemented + .NET verified.** `Core/EternalEnigma.Core/EternalEnigma.Core.Tests/Terminal/TerminalTests.cs` covers frame caching, hostile text, orientation, fog, live removal/gate change, glyph rules, and nested menu navigation. Full Core suite: 385 passed, 0 failed on the final source. |
+| Runtime owner, screen and font | **Implemented + Unity verified for startup and font loading.** `Assets/Scripts/Terminal/TerminalRuntime.cs`, `TerminalMode.cs`, `TerminalScreen.cs`, and `TerminalModeButton.cs` create one persistent owner, black overlay, bounded polling, dynamic TMP font, and preferences. DejaVu Sans Mono 2.37 and its license are under `Assets/Resources/Terminal/`; fallback uses the bundled TMP default SDF. MainMenu Play mode showed one screen and the new button. Font metrics at additional resolutions and player builds remain to check. |
+| Town/overworld/dungeon adapters and targeting | **Implemented + Unity partially verified.** `Assets/Scripts/Terminal/TerminalSceneSnapshots.cs` reads live scene state, minimap knowledge, logical cells, interactables, live gates/keys/warps, actors, party stats and messages. `TargetDialog.TerminalSelectedCell` and `TerminalValidCells` are read-only. PlayMode map toggles passed in all three scenes, and floor replacement refreshed the dungeon terminal. Captures are `Temp/TerminalTown.png`, `Temp/TerminalDungeon.png`, `Temp/TerminalOverworld.png`. Targeting modalities, revealed hazards and live gate transitions still need dedicated PlayMode tests. |
+| Entry points, speed and mode restoration | **Implemented + Unity partially verified.** Main menu and DisplayOptions buttons, F11, and deferred switching during movement/turn processing are in source. Terminal mode preserves the existing animation preference and floor wait. It also suppresses the redundant dungeon minimap visuals and event-feed canvas while preserving minimap knowledge and message history; normal presentation is restored on exit. Dungeon PlayMode test asserts the animation override and unchanged cell. Input consumption and switching during every transition/coroutine remain to test. |
+| Terminal-native menu coverage | **Pure model implemented; Unity routes remaining.** `TerminalMenuModel` has stable IDs, enabled reasons, pagination, nested cancel/focus and input-sequence confirmation. No uGUI dialog is hidden. All transaction routes in the table below retain the existing visible uGUI path. |
+| Core DLL and new asset metadata | **Implemented + verified.** Unity imported generated `.meta` files and compiled new scripts. Built and imported DLL SHA-256 both `6F3C7729E442CF367225B0636EFFD2739A8C4EA4BFA674B2A559AB8C56FBFDA8`. The font archive was checked against the official SHA-256 in `Assets/Resources/Terminal/README.md`. |
+| Unity tests | **Executed, with one new check pending.** `Assets/Tests/EditMode/TerminalIntegrationTests.cs`: four tests for preference, button, font and literal TMP parsing passed. `Assets/Tests/PlayMode/TerminalPlayModeTests.cs`: town, dungeon, overworld and dungeon floor replacement passed on their most recent runs. The new duplicate-UI toggle test now initializes the lazily created event feed before assertions; reruns have timed out through Unity MCP before writing a result. Unity MCP often times out on long PlayMode runs; tests write results to `Temp/TerminalPlayModeResults.txt`. |
+| Gameplay, save compatibility and player builds | **Remaining Unity work.** The shared-save playthrough, modal coverage, resizing matrix, and Windows/WebGL player builds have not been completed. |
+
+### Terminal menu route coverage
+
+| Existing flow | Intended adapter / authoritative call | Current presentation / verification |
+| --- | --- | --- |
+| Main menu, slots, hero selection, settings | Existing `MainMenu`, `CampaignSlots`, `ProtagonistHeroPicker`, `GlobalSettings` | uGUI retained; terminal preference button implemented and visually checked in MainMenu. |
+| Town building choices, shop buy/sell, trainer, recruit/dismiss, rest/save, equipment | Existing `TownMenu`, `TownServices`, `TrainerOffers`, `EquipmentTransferService` | uGUI retained; terminal model adapter and transaction validation still needed. |
+| Dungeon party, skills, items, equipment, stairs, pause, results | Existing `PartyMenu`, `InventoryMenu`, action factories and `TurnManager.SubmitCommand`/`SetAction` | uGUI retained; terminal model adapter and action validation still needed. |
+| Character, prop, tile, inventory and missile targeting | Existing `TargetDialog` selection and action creation | uGUI input retained; ASCII selected cell/valid cells implemented. Dedicated confirm/cancel/area tests still needed. |
+| Overworld party, warp, gates, confirmations, history | Existing `OverworldMenuManager`, `CampaignContext.Gates`, `GameMessages` | uGUI retained; read-only gate/warp/map facts implemented. Terminal menu adapters still needed. |
+| Level-up, game-over/victory and shared dialogs | Existing scene dialogs | uGUI retained; terminal equivalents and focus ownership still needed. |
 
 ## Out of scope
 

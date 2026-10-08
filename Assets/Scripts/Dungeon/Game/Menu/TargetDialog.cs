@@ -25,6 +25,13 @@ namespace JuicyChickenGames.Menu
         private float nextMoveTime;
         public List<Character> Targetables { get; private set; }
         public Character CameraTarget { get; private set; }
+        public Vector3Int? TerminalSelectedCell => missileRange > 0 ? MissileEndpoint :
+            tiles.Count > 0 ? selectedTile : selectedProp != null ? selectedProp.Position :
+            CameraTarget != null ? CameraTarget.TilemapPosition : (Vector3Int?)null;
+        public IReadOnlyList<Vector3Int> TerminalValidCells => tiles.Count > 0 ? tiles :
+            Targetables != null ? Targetables.Where(c => c != null && c.Vitals.HP > 0).Select(c => c.TilemapPosition)
+                .Concat(props.Where(p => p != null && p.Alive).Select(p => p.Position)).ToArray() :
+            System.Array.Empty<Vector3Int>();
 
         internal void Setup(Character character, Skill skill)
         {

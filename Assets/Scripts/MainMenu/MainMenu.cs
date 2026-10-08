@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -16,6 +17,7 @@ public class MainMenu : MonoBehaviour
 	public NavigationHandler NavigationHandler;
 
 	private ProtagonistHeroPicker heroPicker;
+    private readonly List<GameObject> suspendedEventSystems = new();
     public bool IsReady { get; private set; }
 
 	private IEnumerator Start()
@@ -25,12 +27,13 @@ public class MainMenu : MonoBehaviour
         var interactable = buttons.Select(button => button.interactable).ToArray();
         foreach (var button in buttons) button.interactable = false;
         yield return LoadingSceneIntegration.EnsureCommon();
+        UseMenuEventSystem();
         for (int i = 0; i < buttons.Length; i++) if (buttons[i] != null) buttons[i].interactable = interactable[i];
-        IsReady = true;
         GetComponent<MainMenuDeveloperControls>()?.Initialize();
         Common.Instance.EndSandbox();
         Common.Instance.Travel.SceneReady();
         ContinueButton.gameObject.SetActive(true);
+        IsReady = true;
         StartButton.GetComponent<Button>().Select();
 	}
 
@@ -64,6 +67,29 @@ public class MainMenu : MonoBehaviour
 		Common.Instance.GameSaveData = CreateNewSave(NewCampaignSeed(), hero);
 		Common.Instance.Travel.NewCampaign(Common.Instance.GameSaveData.TownSaveData.TownSeed);
 	}
+
+    private void UseMenuEventSystem()
+    {
+        var own = gameObject.scene.GetRootGameObjects()
+            .SelectMany(root => root.GetComponentsInChildren<EventSystem>(true)).FirstOrDefault();
+        if (own == null) return;
+        foreach (var other in FindObjectsByType<EventSystem>(FindObjectsSortMode.None))
+        {
+            if (other == own || other.gameObject.scene == gameObject.scene) continue;
+            suspendedEventSystems.Add(other.gameObject);
+            other.gameObject.SetActive(false);
+        }
+        EventSystem.current = own;
+        // Refresh the static input-module owner after the other module is disabled.
+        var module = own.GetComponent<MenuUIInputModule>();
+        if (module != null) { module.enabled = false; module.enabled = true; }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var system in suspendedEventSystems)
+            if (system != null) system.SetActive(true);
+    }
 
 	private GameSaveData NewSaveData()
 		=> CreateNewSave(NewCampaignSeed());

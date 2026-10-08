@@ -21,7 +21,12 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
         }
     }
     private void OnDestroy() { overworldTerrain?.Clear(); }
-    public CampaignTravelService Travel { get; private set; }
+    private CampaignTravelService travel;
+    public CampaignTravelService Travel
+    {
+        get => travel ??= new CampaignTravelService(this);
+        private set => travel = value;
+    }
     private GameSaveData playerSave;
     private int playerSlot;
     public void BeginSandbox(int seed)
@@ -52,16 +57,25 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
 	public MenuInputHandler MenuInputHandler;
 	public GlobalSettings GlobalSettings;
 
-	protected override void Initialize()
+    protected override void Initialize()
 	{
         DisplayPreferences.Current.Restore();
 		LoadData();
         gameObject.AddComponent<CampaignPlaytime>();
         Travel = new CampaignTravelService(this);
+        TerminalRuntime.Ensure(this);
 #if !UNITY_EDITOR
 		SceneManager.LoadScene(1);
 #endif
 	}
+
+    private void OnEnable()
+    {
+        // Scene and editor reloads can restore Common without its runtime-only services.
+        if (InstanceOrNull != this) return;
+        if (travel == null) Travel = new CampaignTravelService(this);
+        TerminalRuntime.Ensure(this);
+    }
 
 	private void LoadData()
 	{
@@ -74,6 +88,7 @@ public class LoadingSceneIntegration
 {
     private static AsyncOperation commonLoad;
     private static bool bootstrapping;
+    private static bool CommonReady => Common.InstanceOrNull != null && Common.InstanceOrNull.Travel != null;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStartupState()
@@ -85,13 +100,15 @@ public class LoadingSceneIntegration
     public static IEnumerator EnsureCommon()
     {
         // The editor's normal bootstrap replaces the original scene; do not race that load.
-        while (bootstrapping) yield return null;
-        if (UnityEngine.Object.FindFirstObjectByType<Common>() != null) yield break;
-        if (commonLoad == null || commonLoad.isDone)
+        while (bootstrapping && !CommonReady) yield return null;
+        if (CommonReady) yield break;
+        if (UnityEngine.Object.FindFirstObjectByType<Common>() == null && (commonLoad == null || commonLoad.isDone))
             commonLoad = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
         // Unity allows an AsyncOperation to be yielded by only one coroutine.
         // Menu and music can both wait here, so poll the shared load instead.
-        while (!commonLoad.isDone) yield return null;
+        // The editor bootstrap can replace the scene while this load is pending.
+        // A live Common instance is sufficient for callers to continue.
+        while (!CommonReady) yield return null;
     }
 
 #if UNITY_EDITOR

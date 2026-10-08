@@ -722,7 +722,8 @@ public sealed class AutoplayRunner : MonoBehaviour
 
     private bool UserInput()
     {
-        if (Keyboard.current?.anyKey.wasPressedThisFrame == true) return true;
+        var keyboard = Keyboard.current;
+        if (keyboard != null && keyboard.allKeys.Any(key => key != null && key != keyboard.f11Key && key.wasPressedThisFrame)) return true;
         var mouse = Mouse.current;
         // Pointer motion must remain free so viewers can reach the playback controls.
         if (mouse != null && !OverPlaybackPanel(mouse.position.ReadValue()) &&

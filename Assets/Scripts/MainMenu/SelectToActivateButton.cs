@@ -10,6 +10,7 @@ using UnityEngine.UI;
 [AddComponentMenu("UI/Select To Activate Button")]
 public class SelectToActivateButton : Button
 {
+    public bool ActivateOnFirstPointerPress { get; set; }
     private bool canActivatePointer;
     private int pressedPointerId;
 
@@ -22,7 +23,7 @@ public class SelectToActivateButton : Button
 
         var eventSystem = EventSystem.current;
         canActivatePointer = IsActive() && IsInteractable() && eventSystem != null
-            && eventSystem.currentSelectedGameObject == gameObject;
+            && (ActivateOnFirstPointerPress || eventSystem.currentSelectedGameObject == gameObject);
         pressedPointerId = eventData.pointerId;
 
         // Capture selection before Button.OnPointerDown changes it.

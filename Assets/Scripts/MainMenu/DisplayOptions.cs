@@ -16,6 +16,7 @@ public sealed class DisplayOptions : MonoBehaviour
 
     private void Awake()
     {
+        TerminalModeButton.Ensure(transform, Resolution);
         WindowMode.onValueChanged.AddListener(ChangeMode);
         Resolution.onValueChanged.AddListener(ChangeResolution);
     }

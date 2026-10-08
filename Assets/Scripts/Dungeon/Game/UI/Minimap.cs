@@ -25,6 +25,7 @@ public class Minimap : MonoBehaviour
     private TileWorldDungeon _currentDungeon;
     private MinimapMode currentMode;
     private bool dockHidden;
+    private bool terminalHidden;
 
     public FogOverlay FogOverlay;
 
@@ -198,7 +199,7 @@ public class Minimap : MonoBehaviour
     {
         bool hide = MenuManager.Instance != null && MenuManager.Instance.Opened && MenuManager.Instance.CurrentDialog != MenuManager.Instance.TargetDialog;
         if (hide != dockHidden) { dockHidden = hide; UpdateMinimapMode(); }
-        if (dockHidden) return;
+        if (dockHidden || terminalHidden) return;
         if (PlayerInputHandler.Instance.mapPressed)
         {
             currentMode = (MinimapMode)(((int)currentMode + 1) % System.Enum.GetValues(typeof(MinimapMode)).Length);
@@ -208,7 +209,7 @@ public class Minimap : MonoBehaviour
 
     private void UpdateMinimapMode()
     {
-        if (dockHidden)
+        if (dockHidden || terminalHidden)
         {
             foreach (var panel in GetComponentsInChildren<Image>(true)) panel.enabled = false;
             minimapImage.gameObject.SetActive(false);
@@ -230,6 +231,13 @@ public class Minimap : MonoBehaviour
                 minimapImage.gameObject.SetActive(true);
                 break;
         }
+    }
+
+    public void SetTerminalPresentation(bool hidden)
+    {
+        if (terminalHidden == hidden) return;
+        terminalHidden = hidden;
+        UpdateMinimapMode();
     }
 
     public enum MinimapMode

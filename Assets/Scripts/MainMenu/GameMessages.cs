@@ -20,6 +20,9 @@ public sealed class GameMessages : MonoBehaviour
     private bool docked;
     private bool inDungeonTurn;
     private bool hasMessage;
+    private Canvas displayCanvas;
+    private bool displayCanvasWasEnabled;
+    private bool terminalHidden;
     public IReadOnlyList<string> TurnEvents => turnEvents;
     public static void BeginTurn()
     {
@@ -40,6 +43,16 @@ public sealed class GameMessages : MonoBehaviour
     }
 
     public IReadOnlyList<string> History => history;
+
+    public void SetTerminalPresentation(bool hidden)
+    {
+        if (terminalHidden == hidden) return;
+        displayCanvas ??= group.GetComponentInParent<Canvas>();
+        if (displayCanvas == null) return;
+        if (hidden) displayCanvasWasEnabled = displayCanvas.enabled;
+        terminalHidden = hidden;
+        displayCanvas.enabled = hidden ? false : displayCanvasWasEnabled;
+    }
 
     public static string Name(Character character)
     {
@@ -115,6 +128,7 @@ public sealed class GameMessages : MonoBehaviour
         instance=this; group.alpha=0; group.blocksRaycasts=false; group.interactable=false;
         var rect = (RectTransform)group.transform; normalMin = rect.anchorMin; normalMax = rect.anchorMax;
         historyButton.onClick.AddListener(ToggleHistory);
+        SetTerminalPresentation(TerminalMode.Effective);
     }
     private void Render()
     {

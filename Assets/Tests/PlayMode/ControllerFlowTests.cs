@@ -90,10 +90,16 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.South);
             Assert.That(Object.FindFirstObjectByType<CampaignSlots>(), Is.Not.Null);
             yield return Press(GamepadButton.South);
-            Assert.That(Object.FindFirstObjectByType<ProtagonistHeroPicker>(), Is.Not.Null);
+            var picker = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
+            Assert.That(picker, Is.Not.Null);
             var first = EventSystem.current.currentSelectedGameObject;
+            Assert.That(first, Is.EqualTo(picker.ChoiceButtons[0].gameObject));
+            yield return Press(GamepadButton.DpadDown);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(picker.ChoiceButtons[6].gameObject));
+            yield return Press(GamepadButton.DpadUp);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
             yield return Press(GamepadButton.DpadRight);
-            Assert.That(EventSystem.current.currentSelectedGameObject, Is.Not.EqualTo(first));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(picker.ChoiceButtons[1].gameObject));
             yield return Send(new GamepadState { leftStick = Vector2.left });
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
             yield return Press(GamepadButton.East);

@@ -160,6 +160,36 @@ public sealed class CoreBugfixTests
         Assert.That(SaveSystem.ActiveSlot, Is.EqualTo(next));
     }
 
+    [UnityTest] public IEnumerator ReplaceCampaignConfirmationSupportsKeyboardNavigation()
+    {
+        yield return harness.LoadMainMenu(new TestScenario().CreateSave());
+        var menu = Object.FindFirstObjectByType<MainMenu>();
+        yield return harness.WaitUntil(() => menu.IsReady, "menu ready");
+        keyboard = InputSystem.AddDevice<Keyboard>();
+        MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { keyboard };
+        CampaignSlots.Show(menu, true);
+        var slots = Object.FindFirstObjectByType<CampaignSlots>();
+        slots.Slots[SaveSystem.ActiveSlot].Button.onClick.Invoke();
+        var choice = Object.FindFirstObjectByType<CampaignChoice>();
+        Assert.That(choice, Is.Not.Null);
+        Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(choice.Back.gameObject));
+        yield return null;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.LeftArrow));
+        yield return null; yield return null;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+        yield return null;
+        Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(choice.Confirm.gameObject));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.RightArrow));
+        yield return null; yield return null;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+        yield return null;
+        Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(choice.Back.gameObject));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Enter));
+        yield return null; yield return null;
+        Assert.That(choice.gameObject.activeSelf, Is.False);
+        Assert.That(slots.gameObject.activeSelf, Is.True);
+    }
+
     [UnityTest] public IEnumerator VictoryCarriesBalanceEquipmentAndAbilityThroughSaveLoad() => CampaignReturn(true);
     [UnityTest] public IEnumerator DefeatHonorsLootPolicyThroughSaveLoad() => CampaignReturn(false);
 

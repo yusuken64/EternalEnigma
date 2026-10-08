@@ -54,7 +54,6 @@ namespace JuicyChickenGames.Menu
 
         private void RefreshPresentation()
         {
-            if (Game.Instance == null) return;
             foreach (var dialog in Stack)
                 foreach (var canvas in dialog.GetComponentsInChildren<Canvas>(true))
                     canvas.enabled = dialog == Current;

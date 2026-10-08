@@ -10,8 +10,11 @@ public class LevelSystem : MonoBehaviour
 		0, 10, 30, 60, 100, 150, 230, 350, 500, 700,
 		950, 1200, 1500, 1800, 2300, 3000, 4000, 6000, 9000, 15000,
 		23000, 33000, 45000, 60000, 80000, 100000, 130000, 180000, 240000, 300000,
-		400000, 500000, 600000, 700000, 800000, 900000, 999999
+		400000, 500000, 600000, 700000, 800000, 900000, 999999,
+		1100000, 1200000, 1300000
 	};
+	public static int MaxLevel => expTable.Length;
+	public static int ExperienceAtLevel(int level) => expTable[Mathf.Clamp(level, 1, MaxLevel) - 1];
 
 	// Returns progress [0..1] toward next level based on current level and EXP
 	public float GetPercentageToNextLevel(Vitals displayedVitals)

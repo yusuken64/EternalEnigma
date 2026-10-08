@@ -17,16 +17,13 @@ public sealed class MenuControlHints : MonoBehaviour
     {
         bool pad=ControlDeviceState.Gamepad;
         if(lastPad==pad)return;lastPad=pad;
-        if(DungeonDock)
+        if(DungeonDock || Party)
         {
-            Label.text=InputPrompts.Pick("Tab / Shift+Tab: switch character\n{Interact}: actions   {Back}: back   Right: details",
-                "RB / LT: switch character\n{Interact}: actions   {Back}: back   Right: details");
+            Label.text=InputPrompts.Pick("Left/Right: tabs   Up/Down: browse\nTab / Shift+Tab: hero\n{Confirm}: actions   {Back}: back",
+                "Left/Right: tabs   Up/Down: browse\nRB / LT: hero\n{Confirm}: actions   {Back}: back");
             Label.text=InputPrompts.Format(Label.text);
             return;
         }
-        Label.text=InputPrompts.Format(Party ? InputPrompts.Pick(
-            "{Inventory}: Inventory   {Skills}: Skills   {Confirm}: actions\n{Back}: Back   Tab / Shift+Tab: hero   Wheel: scroll",
-            "{Inventory}: Inventory   {Skills}: Skills\n{Confirm}: actions   {Back}: Back   RB / LT: hero") :
-            "{Move}: browse   {Confirm}: choose   {Back}: Back");
+        Label.text=InputPrompts.Format("{Move}: browse   {Confirm}: choose   {Back}: Back");
     }
 }

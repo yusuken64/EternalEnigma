@@ -17,6 +17,20 @@ namespace JuicyChickenGames.Menu
         public void CloseDialog() => Owner?.Close(this);
         public virtual void PrepareTown(TownInteractionContext context) { }
 
+        internal void UseGameplayDock(Transform panel)
+        {
+            Fit(panel,.73f,.03f,.98f,.88f);
+            foreach(var image in GetComponentsInChildren<Image>(true))
+                if(image.name=="Input shield")image.color=Color.clear;
+        }
+
+        internal static void Fit(Transform transform,float left,float bottom,float right,float top)
+        {
+            var rect=(RectTransform)transform;
+            rect.anchorMin=new Vector2(left,bottom);rect.anchorMax=new Vector2(right,top);
+            rect.offsetMin=rect.offsetMax=Vector2.zero;
+        }
+
         internal abstract void SetFirstSelect();
         internal void RestoreSelect()
         {

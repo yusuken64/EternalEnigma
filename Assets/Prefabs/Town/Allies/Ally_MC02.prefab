@@ -2707,7 +2707,7 @@ MonoBehaviour:
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 6007775086357394207}
   CurrentFacing: 0
-  Equipment: {fileID: 5677610799426604446, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  Equipment: {fileID: -3808915525038250615}
   Name: Morgan
   Id: 173b3bf3552315a408b274b2cb9f7cbe
   Description: Morgan, a fearless warrior, hails from a distant land where martial
@@ -2719,6 +2719,10 @@ MonoBehaviour:
   HighestLevel: 1
   Level: 1
   Experience: 0
+  Attributes:
+    Str: 0
+    Int: 0
+    Agi: 0
   Hp: -1
   Sp: -1
   HasHunger: 0

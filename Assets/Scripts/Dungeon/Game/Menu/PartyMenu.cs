@@ -15,6 +15,7 @@ public sealed class PartyMenu : Dialog
     public TMP_Text Details, Hints, HeroText;
     public Button InventoryTab, SkillsTab, EquipmentTab, StatsTab, BackButton;
     private Button capabilitiesTab;
+    public PartyMenuLauncher HudTabs { get; private set; }
     public TrainerPreviewScroll DetailsControl;
     public IReadOnlyList<Button> EntryButtons => rows;
     private IPartyMenuContext context;
@@ -23,6 +24,7 @@ public sealed class PartyMenu : Dialog
     private readonly Dictionary<(string, PartyMenuTab), ViewState> states = new();
     private sealed class ViewState { public object Identity; public int Index; public float Scroll = 1; }
     private int heroIndex, selectedIndex;
+    private float? listSpacing;
     private string result;
     public PartyMenuTab Tab { get; private set; }
     public bool IsRoot => Owner?.Current == this;
@@ -35,61 +37,37 @@ public sealed class PartyMenu : Dialog
 
     public void Setup(IPartyMenuContext source, PartyMenuTab tab, string heroId = null)
     {
-        EnsureTabs();
         if (context != source) { context?.Dispose(); context = source; states.Clear(); }
         heroIndex = Math.Max(0, context.Heroes.ToList().FindIndex(h => h.Id == heroId));
         Tab = tab; result = null;
-        if(source is OverworldPartyMenuContext && capabilitiesTab==null)
-        {
-            capabilitiesTab=Instantiate(SkillsTab,SkillsTab.transform.parent);
-            capabilitiesTab.name="Capabilities tab";
-            var rect=(RectTransform)capabilitiesTab.transform;
-            var inventoryRect=(RectTransform)InventoryTab.transform;
-            var skillsRect=(RectTransform)SkillsTab.transform;
-            float left=inventoryRect.anchorMin.x, right=skillsRect.anchorMax.x;
-            float width=(right-left)/3;
-            inventoryRect.anchorMax=new Vector2(left+width,inventoryRect.anchorMax.y);
-            skillsRect.anchorMin=new Vector2(left+width,skillsRect.anchorMin.y);
-            skillsRect.anchorMax=new Vector2(left+width*2,skillsRect.anchorMax.y);
-            rect.anchorMin=new Vector2(left+width*2,rect.anchorMin.y);
-            rect.anchorMax=new Vector2(right,rect.anchorMax.y);
-            capabilitiesTab.onClick.RemoveAllListeners();
-            capabilitiesTab.onClick.AddListener(()=>SwitchTab(PartyMenuTab.Capabilities));
-        }
-        if(capabilitiesTab!=null)capabilitiesTab.gameObject.SetActive(source is OverworldPartyMenuContext);
-        LayoutTabs();
-        if(source is not DungeonPartyMenuContext)
-        {
-            var summary=HeroText.rectTransform;
-            if(summary.parent!=Panel)summary.SetParent(Panel,false);
-            summary.anchorMin=new Vector2(.36f,.82f);summary.anchorMax=new Vector2(.94f,.96f);
-            summary.offsetMin=summary.offsetMax=Vector2.zero;
-        }
-        InventoryTab.onClick.RemoveAllListeners(); SkillsTab.onClick.RemoveAllListeners(); BackButton.onClick.RemoveAllListeners();
-        EquipmentTab.onClick.RemoveAllListeners(); StatsTab.onClick.RemoveAllListeners();
-        InventoryTab.onClick.AddListener(() => SwitchTab(PartyMenuTab.Inventory));
-        SkillsTab.onClick.AddListener(() => SwitchTab(PartyMenuTab.Skills));
-        EquipmentTab.onClick.AddListener(() => SwitchTab(PartyMenuTab.Equipment));
-        StatsTab.onClick.AddListener(() => SwitchTab(PartyMenuTab.Stats));
-        BackButton.onClick.AddListener(CloseDialog);
+        UseHudTabs();
         Refresh();
     }
-    private void EnsureTabs()
+    private void UseHudTabs()
     {
-        if(EquipmentTab==null){EquipmentTab=Instantiate(SkillsTab,SkillsTab.transform.parent);EquipmentTab.name="Equipment tab";}
-        if(StatsTab==null){StatsTab=Instantiate(SkillsTab,SkillsTab.transform.parent);StatsTab.name="Stats tab";}
-    }
-    private void LayoutTabs()
-    {
-        var tabs=new List<Button>{InventoryTab,EquipmentTab,SkillsTab,StatsTab};
-        if(capabilitiesTab!=null && capabilitiesTab.gameObject.activeSelf)tabs.Add(capabilitiesTab);
-        float left=.035f,right=.965f;
-        for(int i=0;i<tabs.Count;i++)
-        {
-            var rect=(RectTransform)tabs[i].transform;
-            rect.anchorMin=new Vector2(Mathf.Lerp(left,right,(float)i/tabs.Count),rect.anchorMin.y);
-            rect.anchorMax=new Vector2(Mathf.Lerp(left,right,(float)(i+1)/tabs.Count),rect.anchorMax.y);
-        }
+        if(HudTabs!=null)return;
+        HudTabs=AuthoredUI.Require<PartyMenuLauncher>(transform);
+        // Replace the authored in-panel tabs with the scene's persistent HUD buttons.
+        foreach(var button in new[]{InventoryTab,EquipmentTab,SkillsTab,StatsTab})
+            if(button!=null)button.gameObject.SetActive(false);
+        UseGameplayDock(Panel);
+        HeroesRoot.gameObject.SetActive(false);
+        HeroText.gameObject.SetActive(false);
+        DetailsControl.Scroll.gameObject.SetActive(false);
+        Hints.gameObject.SetActive(false);
+        foreach(var label in Panel.GetComponentsInChildren<TMP_Text>(true))
+            if(label.transform.parent==Panel)label.gameObject.SetActive(false);
+        foreach(var name in new[]{"Description parchment","Heading ribbon"})
+            Panel.Find(name)?.gameObject.SetActive(false);
+        BackButton.gameObject.SetActive(false);
+        foreach(var close in Panel.GetComponentsInChildren<DungeonDialogClose>(true))
+            close.gameObject.SetActive(false);
+        Fit(scrollView.transform,.035f,.025f,.965f,.975f);
+        InventoryTab=HudTabs.ButtonFor(PartyMenuTab.Inventory);
+        EquipmentTab=HudTabs.ButtonFor(PartyMenuTab.Equipment);
+        SkillsTab=HudTabs.ButtonFor(PartyMenuTab.Skills);
+        StatsTab=HudTabs.ButtonFor(PartyMenuTab.Stats);
+        capabilitiesTab=HudTabs.ButtonFor(PartyMenuTab.Capabilities);
     }
     public void Shortcut(PartyMenuTab tab)
     {
@@ -136,18 +114,17 @@ public sealed class PartyMenu : Dialog
     }
     public void Refresh()
     {
+        StopAutoScroll();scrollView.StopMovement();
         Clear(HeroesRoot); Clear(RowsRoot); rows.Clear();
-        for (int i = 0; context is not DungeonPartyMenuContext && i < context.Heroes.Count; i++)
-        {
-            int slot = i;
-            var hero=context.Heroes[i];
-            var row=HeroTemplate.Spawn(HeroesRoot, i==heroIndex ? "> "+hero.Name : hero.Name,()=>BrowseHero(slot-heroIndex),hero.Portrait);
-        }
-        InventoryTab.GetComponentInChildren<TMP_Text>().text = Tab == PartyMenuTab.Inventory ? "> Inventory" : "Inventory";
-        SkillsTab.GetComponentInChildren<TMP_Text>().text = Tab == PartyMenuTab.Skills ? "> Skills" : "Skills";
-        EquipmentTab.GetComponentInChildren<TMP_Text>().text = Tab == PartyMenuTab.Equipment ? "> Equipment" : "Equipment";
-        StatsTab.GetComponentInChildren<TMP_Text>().text = Tab == PartyMenuTab.Stats ? "> Stats" : "Stats";
-        if(capabilitiesTab!=null)capabilitiesTab.GetComponentInChildren<TMP_Text>().text=Tab==PartyMenuTab.Capabilities?"> Capabilities":"Capabilities";
+        bool compactStats=Tab==PartyMenuTab.Stats;
+        var layout=RowsRoot.GetComponent<VerticalLayoutGroup>();
+        listSpacing ??= layout.spacing;
+        layout.spacing=compactStats?2:listSpacing.Value;
+        // Stats fills the viewport; other tabs retain their scrolling lists.
+        RowsRoot.GetComponent<ContentSizeFitter>().enabled=!compactStats;
+        Fit(RowsRoot,0,compactStats?0:1,1,1);
+        scrollView.vertical=!compactStats;
+        HudTabs.Refresh();
         entries = Hero == null ? new() : context.Entries(Hero, Tab);
         ViewState state = null;
         if (Hero != null) states.TryGetValue((Hero.Id,Tab), out state);
@@ -161,42 +138,40 @@ public sealed class PartyMenu : Dialog
             {
                 section = entry.Section;
                 var heading=Instantiate(HeadingTemplate,RowsRoot);heading.text=section;heading.gameObject.SetActive(true);
+                if(compactStats)FitStatRow(heading.gameObject,heading,.7f,20);
             }
             var row=(entry.Icon!=null?EntryTemplate:PlainEntryTemplate).Spawn(RowsRoot,entry.Title,()=>OpenActions(index),entry.Icon);
+            if(compactStats)
+            {
+                Fit(row.Label.transform,.035f,0,.965f,1);
+                FitStatRow(row.gameObject,row.Label,1,24);
+            }
             var button=row.Button;
             button.GetComponent<PartyMenuRow>().Selected = () => { selectedIndex = index; ShowDetails(); ScrollToSelected(button.gameObject); };
             rows.Add(button);
         }
         if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=Tab==PartyMenuTab.Inventory?"The bag is empty.":Tab==PartyMenuTab.Capabilities?"No acquired capabilities.":"No learned skills.";empty.gameObject.SetActive(true);}
-        Canvas.ForceUpdateCanvases(); scrollView.verticalNormalizedPosition = state?.Scroll ?? 1;
+        Canvas.ForceUpdateCanvases(); scrollView.verticalNormalizedPosition = compactStats?1:state?.Scroll ?? 1;
         WireNavigation();
         ShowDetails();
+    }
+    private static void FitStatRow(GameObject row,TMP_Text label,float heightWeight,float maxFontSize)
+    {
+        var size=row.GetComponent<LayoutElement>();
+        size.minHeight=0;size.preferredHeight=0;size.flexibleHeight=heightWeight;
+        label.enableAutoSizing=true;label.fontSize=maxFontSize;label.fontSizeMin=14;label.fontSizeMax=maxFontSize;
+        label.textWrappingMode=TextWrappingModes.NoWrap;label.margin=new Vector4(4,0,4,0);
     }
     private void WireNavigation()
     {
         var tab=Tab==PartyMenuTab.Inventory?InventoryTab:Tab==PartyMenuTab.Equipment?EquipmentTab:Tab==PartyMenuTab.Stats?StatsTab:Tab==PartyMenuTab.Capabilities?capabilitiesTab:SkillsTab;
+        Selectable firstRow=rows.Count>0?rows[0]:tab;
         for(int i=0;i<rows.Count;i++)rows[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
-            selectOnUp=i>0?rows[i-1]:tab,selectOnDown=i+1<rows.Count?rows[i+1]:BackButton,selectOnRight=DetailsControl};
-        InventoryTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnRight=EquipmentTab,selectOnDown=rows.Count>0?rows[0]:BackButton};
-        EquipmentTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=InventoryTab,selectOnRight=SkillsTab,selectOnDown=rows.Count>0?rows[0]:BackButton};
-        SkillsTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=EquipmentTab,selectOnRight=StatsTab,selectOnDown=rows.Count>0?rows[0]:BackButton};
-        StatsTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=SkillsTab,selectOnRight=DetailsControl,selectOnDown=rows.Count>0?rows[0]:BackButton};
+            selectOnUp=i>0?rows[i-1]:tab,selectOnDown=i+1<rows.Count?rows[i+1]:null};
+        InventoryTab.navigation=EquipmentTab.navigation=SkillsTab.navigation=StatsTab.navigation=
+            new Navigation {mode=Navigation.Mode.Explicit,selectOnDown=firstRow};
         if(capabilitiesTab!=null && capabilitiesTab.gameObject.activeSelf)
-        {
-            var nav=StatsTab.navigation;nav.selectOnRight=capabilitiesTab;StatsTab.navigation=nav;
-            capabilitiesTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=StatsTab,selectOnRight=DetailsControl,selectOnDown=rows.Count>0?rows[0]:BackButton};
-        }
-        BackButton.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnUp=rows.Count>0?rows[selectedIndex]:tab};
-        var heroes=HeroesRoot.GetComponentsInChildren<Button>();
-        for(int i=0;i<heroes.Length;i++)heroes[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
-            selectOnLeft=i>0?heroes[i-1]:null,selectOnRight=i+1<heroes.Length?heroes[i+1]:null,selectOnDown=tab};
-        if(heroes.Length>0)
-        {
-            var nav=InventoryTab.navigation;nav.selectOnUp=heroes[heroIndex];InventoryTab.navigation=nav;
-            nav=SkillsTab.navigation;nav.selectOnUp=heroes[heroIndex];SkillsTab.navigation=nav;
-            nav=EquipmentTab.navigation;nav.selectOnUp=heroes[heroIndex];EquipmentTab.navigation=nav;
-            nav=StatsTab.navigation;nav.selectOnUp=heroes[heroIndex];StatsTab.navigation=nav;
-        }
+            capabilitiesTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnDown=firstRow};
     }
     private void ShowDetails()
     {
@@ -208,7 +183,6 @@ public sealed class PartyMenu : Dialog
             return;
         }
         var entry = entries[selectedIndex];
-        DetailsControl.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=rows[selectedIndex],selectOnRight=BackButton};
         var actions = Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? new List<PartyMenuAction>() : context.Actions(Hero,entry);
         string availability = string.Join("\n", actions.Select(a => a.Available ? a.Label : a.Label+": "+a.UnavailableReason));
         string restriction=Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? "" : context.Restriction(Hero,entry);
@@ -249,13 +223,13 @@ public sealed class PartyMenu : Dialog
     }
     public void Pick(string title, List<(string Label, Action Execute)> options,bool closeOnChoose=true)
     {
-        var picker = PartyMenuPicker.Build(transform.parent, title, options,closeOnChoose);
+        var picker = PartyMenuPicker.Build(transform.parent, title, options,closeOnChoose,showBackButton:false);
         picker.CloseAction = null;
         Owner.Open(picker);
     }
     public void PickDetailed(string title,List<(string Label,string Description,Action Execute)> options)
     {
-        var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options);
+        var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options,showBackButton:false);
         picker.CloseAction=null;Owner.Open(picker);
     }
     public void Complete(string message)

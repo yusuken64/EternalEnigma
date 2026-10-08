@@ -3417,7 +3417,7 @@ MonoBehaviour:
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 6007775086357394207}
   CurrentFacing: 0
-  Equipment: {fileID: 5677610799426604446, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  Equipment: {fileID: -353569376472780226}
   Name: Avery
   Id: d3dd9f4baffd29e43bf87ab29437b30f
   Description: Avery, a skilled mage, grew up in a secluded village known for its
@@ -3429,6 +3429,10 @@ MonoBehaviour:
   HighestLevel: 1
   Level: 1
   Experience: 0
+  Attributes:
+    Str: 0
+    Int: 0
+    Agi: 0
   Hp: -1
   Sp: -1
   HasHunger: 0

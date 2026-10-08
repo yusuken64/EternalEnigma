@@ -13,6 +13,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
     private OverworldScene world;
     public PartyMenu PartyMenu { get; private set; }
     public bool Opened=>dialogs.Opened;
+    internal void Open(Dialog dialog)=>dialogs.Open(dialog);
     public LockInteractionSession Interaction { get; private set; }
     public string CompanionName(string id) => CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? id;
 
@@ -71,7 +72,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
         return true;
     }
     private void Awake()=>world=GetComponent<OverworldScene>();
-    private void Start()=>PartyMenuLauncher.Create(transform,()=>world.IsReady&&!world.IsMoving&&!world.Context.IsSandbox,OpenPartyMenu);
+    private void Start()=>PartyMenuLauncher.Create(transform,()=>world.IsReady&&!world.IsMoving&&!world.Context.IsSandbox,OpenPartyMenu,includeCapabilities:true);
     private void Update()
     {
         var common=Common.Instance;

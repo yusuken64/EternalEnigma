@@ -2860,7 +2860,7 @@ MonoBehaviour:
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 6007775086357394207}
   CurrentFacing: 0
-  Equipment: {fileID: 5677610799426604446, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  Equipment: {fileID: -9004513059496652482}
   Name: Alex
   Id: 72cc990e9ae0c9849a631719a2431227
   Description: Alex, a skilled archer, grew up in a nomadic tribe mastering the art
@@ -2872,6 +2872,10 @@ MonoBehaviour:
   HighestLevel: 1
   Level: 1
   Experience: 0
+  Attributes:
+    Str: 0
+    Int: 0
+    Agi: 0
   Hp: -1
   Sp: -1
   HasHunger: 0

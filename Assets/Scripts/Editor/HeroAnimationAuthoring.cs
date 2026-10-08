@@ -6,6 +6,30 @@ using UnityEngine;
 
 public static class HeroAnimationAuthoring
 {
+    [MenuItem("Tools/Eternal Enigma/Heroes/Repair Equipment Ownership")]
+    public static void RepairEquipmentOwnership()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Exit Play Mode first.");
+        int repaired = 0;
+        foreach (var prefab in TownSceneLoader.Default.AllyCatalog)
+        {
+            var path = AssetDatabase.GetAssetPath(prefab);
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                var hero = root.GetComponent<TownAlly>();
+                var equipment = root.GetComponent<Equipment>();
+                if (equipment == null) throw new InvalidOperationException(path + " has no local equipment.");
+                if (hero.Equipment == equipment) continue;
+                hero.Equipment = equipment;
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+                repaired++;
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+        Debug.Log($"Repaired equipment ownership on {repaired} hero prefabs.");
+    }
+
     [MenuItem("Tools/Eternal Enigma/Hero Animations/Rebuild Clip Pools")]
     public static void Rebuild()
     {

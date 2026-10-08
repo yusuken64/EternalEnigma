@@ -3054,7 +3054,7 @@ MonoBehaviour:
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 6007775086357394207}
   CurrentFacing: 0
-  Equipment: {fileID: 5677610799426604446, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  Equipment: {fileID: -5060458799993293493}
   Name: Skylar
   Id: 355be7c629ed2c54bb20a558c41b1d5d
   Description: Skylar, a nomadic healer, wandered the lands offering aid to those
@@ -3066,6 +3066,10 @@ MonoBehaviour:
   HighestLevel: 1
   Level: 1
   Experience: 0
+  Attributes:
+    Str: 0
+    Int: 0
+    Agi: 0
   Hp: -1
   Sp: -1
   HasHunger: 0

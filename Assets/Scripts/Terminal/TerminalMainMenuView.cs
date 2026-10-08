@@ -270,6 +270,7 @@ public sealed class TerminalMainMenuView : MonoBehaviour
             }
             if (arrowCanvas != null) arrowCanvas.enabled = false;
             if (menuBacking != null) menuBacking.enabled = false;
+            menu.GetComponent<MainMenuDeveloperControls>()?.Initialize();
             if (developerToggle != null) developerToggle.SetActive(false);
             if (hint != null) hint.gameObject.SetActive(true);
             RefreshSelection();

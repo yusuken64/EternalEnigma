@@ -52,16 +52,23 @@ public sealed class PartyMenuPicker : Dialog
         return picker;
     }
 #endif
-    public static PartyMenuPicker Build(Transform parent,string title,List<(string Label,Action Execute)> choices,bool closeOnChoose=true)
-        => BuildDetailed(parent,title,choices.Select(c=>(c.Label,(string)null,c.Execute)).ToList(),closeOnChoose);
+    public static PartyMenuPicker Build(Transform parent,string title,List<(string Label,Action Execute)> choices,bool closeOnChoose=true,bool showBackButton=true)
+        => BuildDetailed(parent,title,choices.Select(c=>(c.Label,(string)null,c.Execute)).ToList(),closeOnChoose,showBackButton);
 
-    public static PartyMenuPicker BuildDetailed(Transform parent,string title,List<(string Label,string Description,Action Execute)> choices,bool closeOnChoose=true)
+    public static PartyMenuPicker BuildDetailed(Transform parent,string title,List<(string Label,string Description,Action Execute)> choices,bool closeOnChoose=true,bool showBackButton=true)
     {
         var picker=parent.GetComponentsInChildren<PartyMenuPicker>(true).FirstOrDefault(p=>p.Owner==null);
         if(picker==null)throw new InvalidOperationException("No free authored party picker for this dialog stack.");
+        picker.UseGameplayDock(picker.Title.transform.parent);
+        picker.BackButton.gameObject.SetActive(showBackButton);
+        foreach(var close in picker.Title.transform.parent.GetComponentsInChildren<DungeonDialogClose>(true))
+            close.gameObject.SetActive(showBackButton);
+        var viewport=(RectTransform)picker.scrollView.transform;
+        Fit(viewport,viewport.anchorMin.x,showBackButton ? .2f : .035f,viewport.anchorMax.x,viewport.anchorMax.y);
         picker.committed=false;picker.submittedFrame=-1;picker.Title.text=title;picker.Title.enableAutoSizing=true;picker.Title.fontSizeMin=18;picker.Title.fontSizeMax=30;picker.first=null;picker.description=null;
         if(picker.OptionDescription!=null)
         {
+            Fit(picker.OptionDescription.transform.parent,.285f,.22f,.59f,.78f);
             picker.OptionDescription.transform.parent.gameObject.SetActive(choices.Any(c=>!string.IsNullOrEmpty(c.Description)));
             picker.OptionDescription.gameObject.SetActive(true);
             picker.OptionDescription.text="Select an option for its stat preview.";
@@ -82,8 +89,11 @@ public sealed class PartyMenuPicker : Dialog
             if(picker.first==null && row.Button.interactable)picker.first=row.Button;
         }
         picker.BackButton.onClick.RemoveAllListeners();picker.BackButton.onClick.AddListener(picker.CloseDialog);
-        if(picker.first==null)picker.first=picker.BackButton;
-        buttons.Add(picker.BackButton);
+        if(showBackButton)
+        {
+            if(picker.first==null)picker.first=picker.BackButton;
+            buttons.Add(picker.BackButton);
+        }
         for(int i=0;i<buttons.Count;i++)buttons[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
             selectOnUp=buttons[(i+buttons.Count-1)%buttons.Count],selectOnDown=buttons[(i+1)%buttons.Count]};
         picker.scrollView.verticalNormalizedPosition=1;
@@ -99,8 +109,8 @@ public sealed class PartyMenuPicker : Dialog
         label.gameObject.AddComponent<LayoutElement>();
         var read=label.gameObject.AddComponent<TrainerPreviewScroll>();
         read.Scroll=scrollView;
-        read.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=BackButton,selectOnRight=first};
-        foreach(var button in Rows.GetComponentsInChildren<Button>().Append(BackButton).Where(b=>b!=read))
+        read.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=BackButton.gameObject.activeSelf?BackButton:null,selectOnRight=first};
+        foreach(var button in Rows.GetComponentsInChildren<Button>().Append(BackButton).Where(b=>b!=read && b.gameObject.activeSelf))
         {var nav=button.navigation;nav.selectOnLeft=read;button.navigation=nav;}
         first=read;
         label.gameObject.SetActive(true);
@@ -118,6 +128,6 @@ public sealed class PartyMenuPicker : Dialog
         }
         Canvas.ForceUpdateCanvases();
         scrollView.verticalNormalizedPosition=1;
-        first.Select();
+        first?.Select();
     }
 }

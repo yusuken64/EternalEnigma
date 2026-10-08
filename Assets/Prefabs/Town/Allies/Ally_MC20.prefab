@@ -2624,7 +2624,7 @@ MonoBehaviour:
   TilemapPosition: {x: 0, y: 0, z: 0}
   VisualParent: {fileID: 6007775086357394207}
   CurrentFacing: 0
-  Equipment: {fileID: 5677610799426604446, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
+  Equipment: {fileID: -6735030971379191162}
   Name: Sydney
   Id: 5aeb231ec594b13458da991976aeedde
   Description: Sydney, an agile acrobat, grew up in a traveling circus, mastering
@@ -2636,6 +2636,10 @@ MonoBehaviour:
   HighestLevel: 1
   Level: 1
   Experience: 0
+  Attributes:
+    Str: 0
+    Int: 0
+    Agi: 0
   Hp: -1
   Sp: -1
   HasHunger: 0

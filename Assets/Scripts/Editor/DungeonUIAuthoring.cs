@@ -69,7 +69,7 @@ public static class DungeonUIAuthoring
     {
         var safe=root.Find("Dock safe area") ?? GameUISkin.Rect("Dock safe area",root,Vector2.zero,Vector2.one);
         if(safe.GetComponent<SafeAreaPanel>()==null)safe.gameObject.AddComponent<SafeAreaPanel>();
-        panel.SetParent(safe,false);Fit(panel,.60f,.03f,.98f,.88f);
+        panel.SetParent(safe,false);Fit(panel,.73f,.03f,.98f,.88f);
         Role(GameUISkin.PanelGraphic(panel),DungeonVisualRole.Wood);
     }
     static void CloseButton(Transform panel,Dialog dialog)
@@ -128,7 +128,7 @@ public static class DungeonUIAuthoring
         {var text=root.GetComponent<TMP_Text>();text.color=GameUITheme.LightInk;text.fontSize=24;}).GetComponent<TMP_Text>();
         Theme.DungeonMenuPrefab=Variant("Assets/Resources/UI/PartyMenu.prefab","PartyMenu",root=>
         {
-            var menu=root.GetComponent<PartyMenu>();Shield(root);Fit(menu.Panel,.60f,.03f,.98f,.88f);
+            var menu=root.GetComponent<PartyMenu>();Shield(root);Fit(menu.Panel,.73f,.03f,.98f,.88f);
             Role(GameUISkin.PanelGraphic(menu.Panel),DungeonVisualRole.Wood);
             menu.HeroTemplate=hero;menu.EntryTemplate=entry;menu.PlainEntryTemplate=plain;
             menu.HeadingTemplate=section;menu.EmptyTemplate=empty;
@@ -267,6 +267,68 @@ public static class DungeonUIAuthoring
         var root=(GameObject)PrefabUtility.InstantiatePrefab(prefab,old.transform.parent);root.SetActive(old.activeSelf);
         root.transform.SetSiblingIndex(old.transform.GetSiblingIndex());Object.DestroyImmediate(old);return root;
     }
+    [MenuItem("Tools/Eternal Enigma/UI/Share Dungeon Party Menus")]
+    public static void ShareDungeonPartyMenus()
+    {
+        GameUIButtonBackgroundAuthoring.RequireSavedScenes();
+        const string shortcutsPath="Assets/Resources/UI/Authored/PartyShortcuts.prefab";
+        var setup=EditorSceneManager.GetSceneManagerSetup();
+        try
+        {
+            var shortcuts=PrefabUtility.LoadPrefabContents(shortcutsPath);
+            try
+            {
+                shortcuts.GetComponent<PartyMenuLauncher>().ApplyAppearance();Record(shortcuts);
+                PrefabUtility.SaveAsPrefabAsset(shortcuts,shortcutsPath);
+            }
+            finally{PrefabUtility.UnloadPrefabContents(shortcuts);}
+            var shortcutsPrefab=AssetDatabase.LoadAssetAtPath<GameObject>(shortcutsPath);
+            foreach(var name in new[]{"Town","DungeonScene","Overworld"})
+            {
+                var scene=EditorSceneManager.OpenScene("Assets/Scenes/"+name+".unity");
+                var roots=scene.GetRootGameObjects();
+                var party=roots.SelectMany(r=>r.GetComponentsInChildren<PartyMenu>(true)).Single();
+                if(PrefabUtility.GetCorrespondingObjectFromSource(party.gameObject)!=Theme.DungeonMenuPrefab)
+                    Replace(party.gameObject,Theme.DungeonMenuPrefab);
+                foreach(var picker in roots.SelectMany(r=>r.GetComponentsInChildren<PartyMenuPicker>(true)).ToArray())
+                    if(PrefabUtility.GetCorrespondingObjectFromSource(picker.gameObject)!=Theme.DungeonPickerPrefab)
+                    {
+                        string pickerName=picker.name;
+                        Replace(picker.gameObject,Theme.DungeonPickerPrefab).name=pickerName;
+                    }
+                var launcher=roots.SelectMany(r=>r.GetComponentsInChildren<PartyMenuLauncher>(true)).Single();
+                Replace(launcher.gameObject,shortcutsPrefab);
+                EditorSceneManager.SaveScene(scene);
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log("Town, dungeon and overworld now share the dungeon party menu, pickers and tab appearance.");
+        }
+        finally{EditorSceneManager.RestoreSceneManagerSetup(setup);}
+    }
+    [MenuItem("Tools/Eternal Enigma/UI/Share Dungeon Event History")]
+    public static void ShareDungeonEventHistory()
+    {
+        GameUIButtonBackgroundAuthoring.RequireSavedScenes();
+        var setup=EditorSceneManager.GetSceneManagerSetup();
+        try
+        {
+            var dungeon=EditorSceneManager.OpenScene("Assets/Scenes/DungeonScene.unity");
+            var reference=dungeon.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<GameMessages>(true)).Single();
+            // Keep the dungeon's authored parchment, wood button and text styling together.
+            PrefabUtility.ApplyPrefabInstance(reference.gameObject,InteractionMode.AutomatedAction);
+            var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/UI/Authored/DungeonEvents.prefab");
+            foreach(var name in new[]{"DungeonScene","Town","Overworld"})
+            {
+                var scene=name=="DungeonScene"?dungeon:EditorSceneManager.OpenScene("Assets/Scenes/"+name+".unity");
+                var feed=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<GameMessages>(true)).Single();
+                Replace(feed.gameObject,prefab);
+                EditorSceneManager.SaveScene(scene);
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log("Town, dungeon and overworld now share the dungeon event feed and history view.");
+        }
+        finally{EditorSceneManager.RestoreSceneManagerSetup(setup);}
+    }
     static GameObject BuildInventory()
     {
         var row=Variant("Assets/Prefabs/Menu/InventoryMenuItem.prefab","InventoryItem",root=>
@@ -314,7 +376,7 @@ public static class DungeonUIAuthoring
             GameUISkin.Rect("Input shield",canvas.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>().color=Color.clear;
             var safe=GameUISkin.Rect("Safe area",canvas.transform,Vector2.zero,Vector2.one);safe.gameObject.AddComponent<SafeAreaPanel>();
             var dialog=canvas.gameObject.AddComponent<EventHistoryDialog>();
-            dialog.Panel=Surface(safe,"History panel",DungeonVisualRole.Wood,.6f,.03f,.98f,.88f).rectTransform;
+            dialog.Panel=Surface(safe,"History panel",DungeonVisualRole.Wood,.73f,.03f,.98f,.88f).rectTransform;
             Surface(dialog.Panel,"Heading ribbon",DungeonVisualRole.Heading,.04f,.88f,.89f,.98f);
             var title=GameUISkin.Label(dialog.Panel,"Event history",new Vector2(.08f,.885f),new Vector2(.85f,.975f),32);title.font=Theme.HeadingFont;title.alignment=TextAlignmentOptions.Center;
             var paper=Surface(dialog.Panel,"History parchment",DungeonVisualRole.Paper,.04f,.13f,.96f,.87f);

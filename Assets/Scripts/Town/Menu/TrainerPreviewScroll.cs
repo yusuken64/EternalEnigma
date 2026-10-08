@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// Focusable details control: up/down scroll the text, left returns to the skill.
+// Up/down scroll the text; explicit vertical links leave it at either end.
 public sealed class TrainerPreviewScroll : SelectToActivateButton
 {
     public ScrollRect Scroll;
@@ -12,6 +12,14 @@ public sealed class TrainerPreviewScroll : SelectToActivateButton
         {
             Canvas.ForceUpdateCanvases();
             float overflow = Scroll.content.rect.height - Scroll.viewport.rect.height;
+            bool up=eventData.moveDir==MoveDirection.Up;
+            var destination=up?navigation.selectOnUp:navigation.selectOnDown;
+            bool atEdge=overflow<=0 || (up?Scroll.verticalNormalizedPosition>=.9999f:Scroll.verticalNormalizedPosition<=.0001f);
+            if(atEdge && destination!=null)
+            {
+                base.OnMove(eventData);
+                return;
+            }
             if (overflow > 0)
                 Scroll.verticalNormalizedPosition = Mathf.Clamp01(Scroll.verticalNormalizedPosition +
                     (eventData.moveDir == MoveDirection.Up ? 1 : -1) * 100 / overflow);

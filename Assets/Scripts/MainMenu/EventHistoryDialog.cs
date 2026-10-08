@@ -9,25 +9,12 @@ public sealed class EventHistoryDialog : Dialog
     public TMP_Text Entries;
     public TrainerPreviewScroll Reader;
     public Button Back;
-    public void Setup(System.Collections.Generic.IReadOnlyList<string> entries, bool dungeon)
+    public void Setup(System.Collections.Generic.IReadOnlyList<string> entries)
     {
-        // The shared dialog keeps the established parchment treatment in travel scenes.
-        foreach(var role in GetComponentsInChildren<DungeonUIRole>(true))
-        {
-            role.Apply();
-            var image=role.GetComponent<Image>();
-            if(role.Role==DungeonVisualRole.Heading)image.enabled=dungeon;
-            if(!dungeon && (role.Role==DungeonVisualRole.Wood || role.Role==DungeonVisualRole.Paper))
-                GameUITheme.Current.Surface(image,GameUITheme.Current.Panel,1);
-            if(!dungeon && (role.Role==DungeonVisualRole.Secondary || role.Role==DungeonVisualRole.Close))
-                GameUITheme.Current.Surface(image,GameUITheme.Current.Button,1);
-            if(role.Role==DungeonVisualRole.Close)
-                foreach(var label in role.GetComponentInParent<Button>(true).GetComponentsInChildren<TMP_Text>(true))label.text=dungeon?"":"X";
-        }
+        UseGameplayDock(Panel);
+        foreach(var role in GetComponentsInChildren<DungeonUIRole>(true))role.Apply();
         foreach(var style in GetComponentsInChildren<DungeonTextStyle>(true))
-            style.GetComponent<TMP_Text>().color=dungeon && style.OnWood?GameUITheme.LightInk:GameUITheme.Ink;
-        Panel.anchorMin = dungeon ? new Vector2(.60f,.03f) : new Vector2(.20f,.12f);
-        Panel.anchorMax = dungeon ? new Vector2(.98f,.88f) : new Vector2(.80f,.88f);
+            style.GetComponent<TMP_Text>().color=style.OnWood?GameUITheme.LightInk:GameUITheme.Ink;
         Entries.text = entries.Count == 0 ? "No events yet." : string.Join("\n\n", entries);
         Entries.richText = false;
         Back.onClick.RemoveAllListeners(); Back.onClick.AddListener(CloseDialog);

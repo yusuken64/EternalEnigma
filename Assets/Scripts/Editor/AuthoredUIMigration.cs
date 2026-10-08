@@ -194,10 +194,13 @@ public static class AuthoredUIMigration
         Transform owner=name=="Town"?Find<Town>(scene).transform:name=="Overworld"?Find<OverworldScene>(scene).transform:Find<Game>(scene).transform;
         Instance(Resources.Load<ResourceHUD>("UI/ResourceHUD"),owner);
         Instance(Load<PartyMenuLauncher>("PartyShortcuts"),owner);
-        var party=Instance(Resources.Load<PartyMenu>("UI/PartyMenu"),owner);party.gameObject.SetActive(false);
-        Instance(Load<PartyMenuPicker>("PartyPicker"),owner);
-        Instance(Load<PartyMenuPicker>("PartyPicker"),owner).name="Party target picker";
-        Instance(Load<GameMessages>(name=="DungeonScene"?"DungeonEvents":"TravelEvents"),owner);
+        var theme=GameUITheme.Current;
+        var partyPrefab=theme.DungeonMenuPrefab!=null?theme.DungeonMenuPrefab.GetComponent<PartyMenu>():Resources.Load<PartyMenu>("UI/PartyMenu");
+        var pickerPrefab=theme.DungeonPickerPrefab!=null?theme.DungeonPickerPrefab.GetComponent<PartyMenuPicker>():Load<PartyMenuPicker>("PartyPicker");
+        var party=Instance(partyPrefab,owner);party.gameObject.SetActive(false);
+        Instance(pickerPrefab,owner);
+        Instance(pickerPrefab,owner).name="Party target picker";
+        Instance(Load<GameMessages>("DungeonEvents"),owner);
         if(name=="DungeonScene")DungeonScene(scene,owner.GetComponent<Game>());
         else
         {
@@ -332,7 +335,7 @@ public static class AuthoredUIMigration
                     Find<CampaignSlots>(scene).transform.SetParent(dialogs.transform,false);
                     Find<ProtagonistHeroPicker>(scene).transform.SetParent(dialogs.transform,false);
                     Find<ProtagonistClassPicker>(scene).transform.SetParent(dialogs.transform,false);
-                    if(!scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<GameMessages>(true)).Any())Instance(Load<GameMessages>("TravelEvents"),dialogs.transform);
+                    if(!scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<GameMessages>(true)).Any())Instance(Load<GameMessages>("DungeonEvents"),dialogs.transform);
                     var classes=Find<ProtagonistClassPicker>(scene).transform.Find("Classes");
                     var grid=classes.GetComponent<GridLayoutGroup>();if(grid!=null)Object.DestroyImmediate(grid);
                     if(classes.GetComponent<ResponsiveGridLayout>()==null)classes.gameObject.AddComponent<ResponsiveGridLayout>();

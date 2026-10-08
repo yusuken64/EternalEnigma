@@ -16,7 +16,7 @@ public sealed class GameMessages : MonoBehaviour
     [SerializeField] private Button historyButton;
     private EventHistoryDialog historyDialog;
     private readonly JuicyChickenGames.Menu.DialogController historyController = new();
-    private Vector2 normalMin, normalMax;
+    private static readonly Vector2 normalMin=new(.24f,.016f), normalMax=new(.79f,.20f);
     private bool docked;
     private bool inDungeonTurn;
     private bool hasMessage;
@@ -37,8 +37,10 @@ public sealed class GameMessages : MonoBehaviour
         if (instance == null) instance = Resolve();
         if (instance.historyDialog != null && instance.historyDialog.Owner != null) return;
         if (instance.historyDialog == null) instance.historyDialog = Instantiate(GameUITheme.Current.HistoryPrefab, instance.transform);
-        instance.historyDialog.Setup(instance.history, Game.Instance != null);
+        instance.historyDialog.Setup(instance.history);
         if (Game.Instance != null) MenuManager.Open(instance.historyDialog);
+        else if (Object.FindFirstObjectByType<TownMenuManager>() is { } townMenus) townMenus.Open(instance.historyDialog);
+        else if (Object.FindFirstObjectByType<OverworldMenuManager>() is { } worldMenus) worldMenus.Open(instance.historyDialog);
         else instance.historyController.Open(instance.historyDialog);
     }
 
@@ -93,20 +95,19 @@ public sealed class GameMessages : MonoBehaviour
         instance = this;
         var canvas = GameUISkin.Canvas("Message display", transform, 2);
 
-        var panel = GameUISkin.Panel(canvas.transform, dungeon ? new Vector2(.24f,.016f) : new Vector2(.69f,.16f),
-            dungeon ? new Vector2(.79f,.20f) : new Vector2(.99f,.45f));
-        if (dungeon) panel.color = new Color(1,1,1,.94f);
+        var panel = GameUISkin.Panel(canvas.transform, normalMin, normalMax);
+        panel.color = new Color(1,1,1,.94f);
         panel.raycastTarget = false;
         group = panel.gameObject.AddComponent<CanvasGroup>();
         group.blocksRaycasts = true; group.interactable = true;
-        var button = GameUISkin.Button(panel.transform, "Events / History", new Vector2(dungeon ? .70f : .71f,dungeon ? .72f : .80f), new Vector2(dungeon ? .975f : .98f,.98f), ToggleHistory);
+        var button = GameUISkin.Button(panel.transform, "Events / History", new Vector2(.70f,.72f), new Vector2(.975f,.98f), ToggleHistory);
         historyButton=button;
-        button.GetComponentInChildren<TMP_Text>().fontSize = dungeon ? 24 : 22;
-        var viewport = GameUISkin.Rect("Event viewport", panel.transform, new Vector2(.035f,.03f), new Vector2(.965f,dungeon ? .70f : .80f));
+        button.GetComponentInChildren<TMP_Text>().fontSize = 24;
+        var viewport = GameUISkin.Rect("Event viewport", panel.transform, new Vector2(.035f,.03f), new Vector2(.965f,.70f));
         viewport.gameObject.AddComponent<RectMask2D>();
         var hitArea = viewport.gameObject.AddComponent<Image>(); hitArea.color = new Color(0,0,0,.001f);
-        text = GameUISkin.Label(viewport, "", new Vector2(0,1), Vector2.one, dungeon ? 30 : 23);
-        if (dungeon) text.color = GameUITheme.Ink;
+        text = GameUISkin.Label(viewport, "", new Vector2(0,1), Vector2.one, 30);
+        text.color = GameUITheme.Ink;
         text.rectTransform.pivot = new Vector2(.5f,1);
         text.richText = false;
         text.overflowMode = TextOverflowModes.Overflow;
@@ -126,7 +127,12 @@ public sealed class GameMessages : MonoBehaviour
     private void Awake()
     {
         instance=this; group.alpha=0; group.blocksRaycasts=false; group.interactable=false;
-        var rect = (RectTransform)group.transform; normalMin = rect.anchorMin; normalMax = rect.anchorMax;
+        JuicyChickenGames.Menu.Dialog.Fit(group.transform,normalMin.x,normalMin.y,normalMax.x,normalMax.y);
+        JuicyChickenGames.Menu.Dialog.Fit(historyButton.transform,.70f,.72f,.975f,.98f);
+        JuicyChickenGames.Menu.Dialog.Fit(scroll.viewport,.035f,.03f,.965f,.70f);
+        historyButton.GetComponentInChildren<TMP_Text>().fontSize=24;
+        text.fontSize=30;text.color=GameUITheme.Ink;
+        GameUISkin.PanelGraphic(group.transform).color=new Color(1,1,1,.94f);
         historyButton.onClick.AddListener(ToggleHistory);
         SetTerminalPresentation(TerminalMode.Effective);
     }
@@ -156,7 +162,8 @@ public sealed class GameMessages : MonoBehaviour
     private void Update()
     {
         historyController.Tick();
-        bool showDock = Game.Instance != null && MenuManager.Instance != null && MenuManager.Instance.Opened && MenuManager.Instance.CurrentDialog != MenuManager.Instance.TargetDialog;
+        bool showDock = MenuUIInputModule.Active?.HasDialog==true &&
+            (Game.Instance==null || MenuManager.Instance==null || MenuManager.Instance.CurrentDialog!=MenuManager.Instance.TargetDialog);
         if (showDock != docked)
         {
             docked = showDock;

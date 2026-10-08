@@ -70,6 +70,12 @@ public class InventoryMenu : Dialog
     public void SetupView(List<InventoryItem> items, GameObject portrait, Func<InventoryItem, bool> isEquipped,
         Action<InventoryMenuItem, InventoryItem> clicked, Action<InventoryItem> preview)
     {
+        if(DungeonDock)
+        {
+            var panel=scrollView.transform.parent;
+            UseGameplayDock(panel);
+            foreach(var close in panel.GetComponentsInChildren<DungeonDialogClose>(true))close.gameObject.SetActive(false);
+        }
         if (followingObject != portrait)
         {
             if (followingObject != null) FaceCamDisplay.Unfollow(followingObject);

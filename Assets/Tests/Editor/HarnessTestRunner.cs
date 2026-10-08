@@ -10,6 +10,52 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Endgame Debug Starts")]
+    public static void RunEndgameDebugStarts()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.EndgameDebugStartTests",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DeveloperButtonTogglesDebugControls",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.TestDungeonStartsWithoutASave",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonRootSwitchingDoesNotConsumeATurn",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.DungeonDockTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Event History Views")]
+    public static void RunEventHistoryViews()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonRootSwitchingDoesNotConsumeATurn",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.TerminalPlayModeTests.DungeonTerminalHidesDuplicateUiButKeepsMapAndHistory");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Menu Layout")]
+    public static void RunMenuLayout()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonRootSwitchingDoesNotConsumeATurn",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.DungeonDockTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Menu Tab Navigation")]
+    public static void RunMenuTabNavigation()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonRootSwitchingDoesNotConsumeATurn",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.DungeonDockTests",
+        "EternalEnigma.Tests.ControllerFlowTests.MainMenuHeroPickerAndBackUseControllerOnly",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Shared Menu Tabs")]
+    public static void RunSharedMenuTabs()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonRootSwitchingDoesNotConsumeATurn",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.DungeonDockTests",
+        "EternalEnigma.Tests.GameMessageTests",
+        "EternalEnigma.Tests.CampaignPresentationTests.CampaignUsesTravelHudAndPartyCanCloseBeforeLeavingTown",
+        "EternalEnigma.Tests.TerminalPlayModeTests.DungeonTerminalHidesDuplicateUiButKeepsMapAndHistory");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Failed PlayMode")]
     public static void RunFailedPlayMode()
     {

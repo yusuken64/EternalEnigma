@@ -90,7 +90,7 @@ namespace EternalEnigma.Tests
 
         [UnityTest] public IEnumerator TurtleExplosionsChainThroughRealDamageAndDeathResolution()
         {
-            harness.Ally.Vitals.Level = 37;
+            harness.Ally.Vitals.Level = LevelSystem.MaxLevel;
             harness.Ally.BaseStats.HPMax = 200; harness.Ally.UpdateCachedStats(); harness.Ally.Vitals.HP = 200;
             yield return harness.SpawnEnemy("Enemy_TurtleShell", center + Vector3Int.right);
             var first = Last;

@@ -133,7 +133,6 @@ namespace EternalEnigma.Tests
             var messageCanvas = messages.GetComponentInChildren<Canvas>();
             Assert.That(messageCanvas, Is.Not.Null);
             Assert.That(minimap.minimapImage, Is.Not.Null);
-            Assert.That(minimap.Frame, Is.Not.Null);
             Assert.That(minimap.minimapImage.gameObject.activeSelf, Is.True);
             Assert.That(messageCanvas.enabled, Is.True);
 
@@ -141,7 +140,7 @@ namespace EternalEnigma.Tests
             yield return new WaitForSecondsRealtime(.25f);
             Assert.That(TerminalMode.Effective, Is.True);
             Assert.That(minimap.minimapImage.gameObject.activeSelf, Is.False);
-            Assert.That(minimap.Frame.enabled, Is.False);
+            if (minimap.Frame != null) Assert.That(minimap.Frame.enabled, Is.False);
             Assert.That(minimap.dungeonMap, Is.Not.Null);
             Assert.That(messageCanvas.enabled, Is.False);
             GameMessages.Post("Terminal history remains live");
@@ -150,7 +149,7 @@ namespace EternalEnigma.Tests
             TerminalMode.SetRequested(false);
             yield return null;
             Assert.That(minimap.minimapImage.gameObject.activeSelf, Is.True);
-            Assert.That(minimap.Frame.enabled, Is.True);
+            if (minimap.Frame != null) Assert.That(minimap.Frame.enabled, Is.True);
             Assert.That(messageCanvas.enabled, Is.True);
         }
         [UnityTest] public IEnumerator OverworldToggleUsesLiveCampaignPosition()

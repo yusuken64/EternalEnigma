@@ -199,5 +199,24 @@ public class MainMenu : MonoBehaviour
 	{
         AutoplayRunner.WatchDemo(new AutoplayOptions {
             DebugPlaythrough = true, Godmode = true, InfiniteResources = true, Speed = 1 });
+	}
+
+    public void EndgameTown_Clicked() => StartEndgameDebug(EndgameDebugDestination.Town);
+    public void EndgameDungeon_Clicked() => StartEndgameDebug(EndgameDebugDestination.Dungeon);
+    public void EndgameOverworld_Clicked() => StartEndgameDebug(EndgameDebugDestination.Overworld);
+
+    private void StartEndgameDebug(EndgameDebugDestination destination)
+    {
+        if (!IsReady || Common.Instance.Travel.IsTransitioning) return;
+        var common = Common.Instance;
+        var configuration = TownConfiguration ?? TownSceneLoader.Default;
+        var save = EndgameDebugStart.Create(configuration, common.ItemManager, destination);
+        common.EndSandbox();
+        common.CampaignContext = null;
+        common.PendingDemoLoadout = null;
+        CampaignParty.ClearLiveParty(common);
+        common.GameSaveData = save;
+        TownSceneLoader.Configure(configuration);
+        common.Travel.Continue();
     }
 }

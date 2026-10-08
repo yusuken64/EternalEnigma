@@ -5,6 +5,7 @@ public sealed class MainMenuDeveloperControls : MonoBehaviour
 {
     public Button Toggle;
     public GameObject[] Controls;
+    public Button FirstControl;
     private bool open;
     public void Initialize()
     {
@@ -19,5 +20,6 @@ public sealed class MainMenuDeveloperControls : MonoBehaviour
     {
         open = !open;
         foreach (var control in Controls) control.SetActive(open);
+        (open && FirstControl != null ? FirstControl : Toggle).Select();
     }
 }

@@ -45,6 +45,7 @@ public sealed class CampaignTravelService
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
         CampaignParty.ClearLiveParty(common);
         if (Context.State.Scene == "Town") PrepareTown(Context.State.LocationId);
+        if (Context.State.Scene == "DungeonScene") CampaignParty.BuildDungeonParty(common);
         Load(Context.State.Scene);
     }
     public bool EnterLocation(DungeonEncounterVisualSettings visuals = null)

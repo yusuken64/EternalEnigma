@@ -24,6 +24,8 @@ public sealed class LevelUpChoiceDialog : Dialog
         var prefab=Resources.Load<LevelUpChoiceDialog>("UI/LevelUpChoiceDialog");
         if(prefab==null)throw new InvalidOperationException("LevelUpChoiceDialog prefab is missing.");
         var dialog=Instantiate(prefab,parent);
+        dialog.UseGameplayDock(dialog.Heading.transform.parent);
+        dialog.Heading.enableAutoSizing=true;dialog.Heading.fontSizeMin=18;dialog.Heading.fontSizeMax=30;
         dialog.hero=target;dialog.spend=spendPoint;dialog.finished=onFinished;
         dialog.Configure();return dialog;
     }

@@ -183,6 +183,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5630899016516392853}
     m_Modifications:
+    - target: {fileID: 298424460644082088, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_Sprite
+      value:
+      objectReference: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -193,7 +213,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.82
+      value: 0.735
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.y
@@ -201,7 +221,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.72
+      value: 0.63
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.y
@@ -267,6 +287,22 @@ PrefabInstance:
       propertyPath: m_text
       value: Skills
       objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_TextWrappingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
       value: Skills
@@ -278,8 +314,50 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6132143893837882786}
+    - targetCorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8941468141734315094}
   m_SourcePrefab: {fileID: 100100000, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+--- !u!1 &369846930366097098 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 8934728810448571}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6132143893837882786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369846930366097098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 3
+--- !u!1 &4113964686652840584 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 8934728810448571}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8941468141734315094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4113964686652840584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b03027b026930b49adca2cf182fb9cb, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
+  OnWood: 1
 --- !u!224 &4582526810700271128 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -290,7 +368,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 8934728810448571}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 4113964686652840584}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -315,6 +393,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5630899016516392853}
     m_Modifications:
+    - target: {fileID: 298424460644082088, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_Sprite
+      value:
+      objectReference: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -325,7 +423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.58
+      value: 0.505
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.y
@@ -333,7 +431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.46
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.y
@@ -399,6 +497,22 @@ PrefabInstance:
       propertyPath: m_text
       value: Inventory
       objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_TextWrappingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
       value: Inventory
@@ -410,8 +524,50 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2170172670240452198}
+    - targetCorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8239170933310609000}
   m_SourcePrefab: {fileID: 100100000, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+--- !u!1 &899858563324607321 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 667301698856442664}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2170172670240452198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899858563324607321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 3
+--- !u!1 &3479796381613459227 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 667301698856442664}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8239170933310609000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3479796381613459227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b03027b026930b49adca2cf182fb9cb, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
+  OnWood: 1
 --- !u!224 &3946669020212450187 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -422,7 +578,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 667301698856442664}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 3479796381613459227}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -447,6 +603,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5630899016516392853}
     m_Modifications:
+    - target: {fileID: 298424460644082088, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_Sprite
+      value:
+      objectReference: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -457,7 +633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.71
+      value: 0.62
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.y
@@ -465,7 +641,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.59
+      value: 0.515
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.y
@@ -531,6 +707,22 @@ PrefabInstance:
       propertyPath: m_text
       value: Equipment
       objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_TextWrappingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
       value: Equipment
@@ -542,13 +734,55 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9063360993629324621}
+    - targetCorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1811652241986801095}
   m_SourcePrefab: {fileID: 100100000, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+--- !u!1 &1342004924535767869 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 3141191870346911502}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1811652241986801095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342004924535767869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b03027b026930b49adca2cf182fb9cb, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
+  OnWood: 1
 --- !u!224 &1445682492757006253 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 3141191870346911502}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3362370988456771455 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 3141191870346911502}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9063360993629324621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3362370988456771455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 3
 --- !u!114 &6122597512157736692 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9178358729106878970, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -565,7 +799,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 3141191870346911502}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1342004924535767869}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -579,6 +813,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5630899016516392853}
     m_Modifications:
+    - target: {fileID: 298424460644082088, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_Sprite
+      value:
+      objectReference: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387495245040761145, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -589,7 +843,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.94
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.y
@@ -597,7 +851,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.83
+      value: 0.745
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.y
@@ -663,6 +917,22 @@ PrefabInstance:
       propertyPath: m_text
       value: Stats
       objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_TextWrappingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
       value: Stats
@@ -674,13 +944,55 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4398330385749267608}
+    - targetCorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8679231272085815543}
   m_SourcePrefab: {fileID: 100100000, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
 --- !u!224 &208922731451281660 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 4423071199328696415}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &318036835452822636 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 4423071199328696415}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8679231272085815543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318036835452822636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b03027b026930b49adca2cf182fb9cb, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
+  OnWood: 1
+--- !u!1 &4062154600296962094 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 4423071199328696415}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4398330385749267608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4062154600296962094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 3
 --- !u!114 &4756350347360471461 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9178358729106878970, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -697,7 +1009,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 4423071199328696415}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 318036835452822636}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}

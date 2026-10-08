@@ -2,7 +2,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using TMPro;
 using UnityEditor;
+using UnityEditor.Events;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -14,6 +16,75 @@ using Object = UnityEngine.Object;
 public static class MainMenuSceneAuthoring
 {
     const string ScenePath = "Assets/Scenes/MainMenu.unity";
+
+    [MenuItem("Tools/Eternal Enigma/Main Menu/Author Endgame Debug Starts")]
+    public static void AuthorEndgameDebugStarts()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Exit Play Mode first.");
+        var scene = SceneManager.GetSceneByPath(ScenePath);
+        if (!scene.IsValid() || !scene.isLoaded) throw new InvalidOperationException("Open the MainMenu scene first.");
+        var menu = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<MainMenu>(true)).Single();
+        var developer = menu.GetComponent<MainMenuDeveloperControls>();
+        var parent = developer.Toggle.transform.parent;
+        var existing = parent.Find("Debug starts");
+        var panel = existing != null ? existing.GetComponent<Image>() :
+            GameUISkin.Panel(parent, new Vector2(.41f, .105f), new Vector2(.75f, .655f));
+        panel.name = "Debug starts";
+        var heading = panel.transform.Find("Debug heading")?.GetComponent<TMP_Text>();
+        if (heading == null)
+        {
+            heading = GameUISkin.Label(panel.transform, "", new Vector2(.055f, .81f), new Vector2(.945f, .96f), 30);
+            heading.name = "Debug heading";
+        }
+        heading.alignment = TextAlignmentOptions.Center;
+        heading.text = $"DEVELOPER\n<size=23>Endgame: 4 heroes / level {LevelSystem.MaxLevel}</size>";
+        Button Create(string label, UnityEngine.Events.UnityAction action)
+        {
+            var button = panel.transform.Find(label)?.GetComponent<Button>() ??
+                GameUISkin.Button(panel.transform, label, Vector2.zero, Vector2.one, null);
+            for (int i = button.onClick.GetPersistentEventCount() - 1; i >= 0; i--) UnityEventTools.RemovePersistentListener(button.onClick, i);
+            UnityEventTools.AddPersistentListener(button.onClick, action);
+            return button;
+        }
+        var autoplay = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Button>(true)).Single(button =>
+            Enumerable.Range(0, button.onClick.GetPersistentEventCount()).Any(i =>
+                button.onClick.GetPersistentMethodName(i) == nameof(MainMenu.DebugAutoplay_Clicked)));
+        var buttons = new[] {
+            Create("Endgame Town", menu.EndgameTown_Clicked),
+            Create("Endgame Dungeon", menu.EndgameDungeon_Clicked),
+            Create("Endgame Overworld", menu.EndgameOverworld_Clicked),
+            menu.TestDungeonButton, autoplay
+        };
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            var button = buttons[i];
+            button.transform.SetParent(panel.transform, false);
+            var rect = (RectTransform)button.transform;
+            float top = .795f - i * .15f;
+            rect.anchorMin = new Vector2(.06f, top - .125f); rect.anchorMax = new Vector2(.94f, top);
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            rect.localScale = Vector3.one;
+            var label = button.GetComponentInChildren<TMP_Text>(true);
+            label.fontSize = 28; label.enableAutoSizing = true; label.fontSizeMin = 20; label.fontSizeMax = 28;
+            var navigation = button.navigation;
+            navigation.mode = Navigation.Mode.Explicit;
+            navigation.selectOnUp = i == 0 ? developer.Toggle : buttons[i - 1];
+            navigation.selectOnDown = i == buttons.Length - 1 ? developer.Toggle : buttons[i + 1];
+            navigation.selectOnRight = menu.StartButton.GetComponent<Button>();
+            button.navigation = navigation;
+            button.gameObject.SetActive(false);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(button);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(rect);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(label);
+        }
+        developer.FirstControl = buttons[0];
+        developer.Controls = new[] { panel.gameObject }.Concat(buttons.Select(button => button.gameObject)).ToArray();
+        panel.gameObject.SetActive(false);
+        EditorUtility.SetDirty(developer);
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+        Debug.Log("Authored endgame town, dungeon, and overworld developer starts.");
+    }
 
     [MenuItem("Tools/Eternal Enigma/Main Menu/Apply Gameplay Lighting")]
     public static void ApplyGameplayLighting()

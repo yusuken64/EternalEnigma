@@ -20,6 +20,9 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public bool UsingGamepad => ControlDeviceState.Gamepad;
     private DungeonControls controls;
     private int consumedFrame = -1;
+    private PartyMenu tabMenu;
+    private int tabDirection;
+    private float nextTabRepeat;
     private GameObject rememberedSelection;
     private readonly List<InputActionReference> references = new();
     private readonly List<Scope> scopes = new();
@@ -104,7 +107,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
         if (AutoplayRunner.BlocksPlayerInput)
             return obj != null && AutoplayRunner.Active.ShowPlaybackUI && obj.GetComponentInParent<AutoplayPanel>() != null;
         return obj != null && (scopes.Count == 0 ||
-            (scopes[^1].Root != null && obj.transform.IsChildOf(scopes[^1].Root)));
+            (scopes[^1].Root != null && obj.transform.IsChildOf(scopes[^1].Root)) ||
+            (scopes[^1].Owner is PartyMenu party && party.HudTabs!=null && party.HudTabs.Allows(obj)));
     }
 
     public void PushDialog(MonoBehaviour owner, Transform root, GameObject first = null,
@@ -167,6 +171,28 @@ public class MenuUIInputModule : InputSystemUIInputModule
         eventSystem.SetSelectedGameObject(next);
     }
 
+    private void ProcessPartyTabs()
+    {
+        var party=scopes.Count>0?scopes[^1].Owner as PartyMenu:null;
+        var navigation=UI.Navigate.ReadValue<Vector2>();
+        int direction=Mathf.Abs(navigation.x)>Mathf.Abs(navigation.y)?(navigation.x>0?1:-1):0;
+        if(party==null || !party.IsRoot || direction==0)
+        {
+            tabMenu=null;tabDirection=0;
+            return;
+        }
+        if(InputConsumed)return;
+        bool first=party!=tabMenu || direction!=tabDirection;
+        if(first || Time.unscaledTime>=nextTabRepeat)
+        {
+            tabMenu=party;tabDirection=direction;
+            nextTabRepeat=Time.unscaledTime+(first?moveRepeatDelay:moveRepeatRate);
+            party.HudTabs.CycleTab(direction);
+        }
+        // Horizontal input belongs to the tabs even between held-input repeats.
+        ConsumeInput();
+    }
+
     public override void Process()
     {
         ControlDeviceState.Poll();
@@ -215,6 +241,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
             }
         }
 
+        ProcessPartyTabs();
         bool recovering = !IsUsable(eventSystem.currentSelectedGameObject) || !Allows(eventSystem.currentSelectedGameObject);
         if (recovering && (UI.Navigate.ReadValue<Vector2>().sqrMagnitude > 0.1f || UI.Submit.WasPressedThisFrame()))
         {

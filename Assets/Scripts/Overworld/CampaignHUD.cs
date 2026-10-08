@@ -38,7 +38,7 @@ public sealed class CampaignHUD : MonoBehaviour
     {
         if (Town != null) townMenus = FindFirstObjectByType<TownMenuManager>();
         var canvas = GameUISkin.Canvas("Campaign HUD", transform, 50);
-        var bar = GameUISkin.Panel(canvas.transform, new Vector2(.02f, .025f), new Vector2(.72f, .15f));
+        var bar = GameUISkin.Panel(canvas.transform, new Vector2(.02f, .80f), new Vector2(.72f, .925f));
         message = GameUISkin.Label(bar.transform, "", new Vector2(.025f, .12f), new Vector2(.68f, .88f), 24);
         message.enableAutoSizing = true; message.fontSizeMin = 18; message.fontSizeMax = 24;
         actions = GameUISkin.Rect("Travel actions", bar.transform, new Vector2(.7f, .12f), new Vector2(.98f, .88f));
@@ -46,7 +46,7 @@ public sealed class CampaignHUD : MonoBehaviour
         {
             var partyButton = PartyButton = GameUISkin.Button(actions, "Party  [P]", Vector2.zero, Vector2.one, () => SetPartyOpen(!IsPartyOpen));
             partyButton.navigation = new Navigation { mode = Navigation.Mode.None };
-            rosterPanel = GameUISkin.Panel(canvas.transform, new Vector2(.02f, .18f), new Vector2(.33f, .82f)).gameObject;
+            rosterPanel = GameUISkin.Panel(canvas.transform, new Vector2(.02f, .22f), new Vector2(.33f, .78f)).gameObject;
             GameUISkin.Label(rosterPanel.transform, "YOUR COMPANIONS", new Vector2(.06f, .88f), new Vector2(.94f, .97f), 28);
             GameUISkin.Label(rosterPanel.transform, "Choose up to three to travel with you.", new Vector2(.06f, .79f), new Vector2(.94f, .88f), 22);
             var viewport = GameUISkin.Rect("Roster viewport", rosterPanel.transform, new Vector2(.04f, .13f), new Vector2(.96f, .77f));
@@ -67,8 +67,11 @@ public sealed class CampaignHUD : MonoBehaviour
 
     private void Start()
     {
+        // Travel controls leave the shared event feed's bottom dock unobstructed.
+        JuicyChickenGames.Menu.Dialog.Fit(message.transform.parent,.02f,.80f,.72f,.925f);
         if(Town!=null)
         {
+            JuicyChickenGames.Menu.Dialog.Fit(rosterPanel.transform,.02f,.22f,.33f,.78f);
             townMenus=FindFirstObjectByType<TownMenuManager>();
             PartyButton.onClick.AddListener(()=>SetPartyOpen(!IsPartyOpen));
             DoneButton.onClick.AddListener(()=>SetPartyOpen(false));

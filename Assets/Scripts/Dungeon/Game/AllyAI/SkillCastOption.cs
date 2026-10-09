@@ -76,7 +76,9 @@ public static class SkillCastOptions
 					result.Add(new SkillCastOption(skill, caster, null, affected));
 			}
 
-			return result;
+			// AI decisions use personal, logical sight, including missile and area recipients.
+			bool Visible(Character c) => c != null && (c == caster || Game.Instance.CurrentDungeon.CanSee(caster, c));
+			return result.Where(o => (o.Target == null || Visible(o.Target)) && o.Affected.Any(Visible)).ToList();
 		}
 		catch (Exception e)
 		{

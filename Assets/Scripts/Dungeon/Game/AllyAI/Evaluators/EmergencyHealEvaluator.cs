@@ -18,8 +18,9 @@ public sealed class EmergencyHealEvaluator : IAllySkillEvaluator
 			{
 				int covered = option.Affected.Count(needy.Contains);
 				if (covered == 0) continue;
-				float healing = option.Affected.Where(c => c != null && c.Team == context.Ally.Team)
+				float healing = option.Affected.Where(c => context.Party.Contains(c))
 					.Sum(c => SkillEstimates.EstimateHealing(skill, context.Ally, c));
+				if (healing <= 0) continue;
 				float score = covered * 1000f + healing;
 				if (best == null || score > best.Score)
 					best = new AllySkillChoice(Name, option, score, $"Heal {covered} below 30%");

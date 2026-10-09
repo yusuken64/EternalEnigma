@@ -12,9 +12,9 @@ public enum SkillIntent
 public static class SkillIntents
 {
 	public static readonly HashSet<string> DisablingStatuses = new(StringComparer.Ordinal)
-		{ "Sleep", "Stun", "Paralysis", "Fear", "Stuck", "Arm Bind", "Silence", "Blind", "Taunt" };
+		{ "Sleep", "Stun", "Paralysis", "Fear", "Stuck", "Arm Bind", "Silence", "Blind", "Taunt", "Confusion" };
 	public static readonly HashSet<string> DebuffStatuses = new(StringComparer.Ordinal)
-		{ "Weaken", "Frail", "Exposed", "Curse", "Dot", "Burn" };
+		{ "Weaken", "Frail", "Exposed", "Curse", "Dot", "Burn", "Defense Down" };
 	public static readonly HashSet<string> AilmentStatuses = new(StringComparer.Ordinal)
 		{ "Dot", "Sleep", "Frail", "Paralysis", "Curse", "Fear", "Blind", "Burn", "Stun", "Weaken", "Exposed" };
 	public static readonly HashSet<string> BindStatuses = new(StringComparer.Ordinal)
@@ -35,12 +35,12 @@ public static class SkillIntents
 		{
 			if (DisablingStatuses.Contains(name))
 				return SkillIntent.CrowdControl;
-			else if (DebuffStatuses.Contains(name))
+			else if (DebuffStatuses.Contains(name) || status is FollowUpMarkStatusEffect)
 				return SkillIntent.Debuff;
 		}
 		else
 		{
-			if (status is TimedBuffStatusEffect || name == "Strength" || name == "Hot")
+			if (StatusCategories.IsBuff(status))
 				return SkillIntent.Buff;
 		}
 
@@ -74,7 +74,12 @@ public static class SkillIntents
 			{
 				result |= SkillIntent.Heal;
 			}
-			else if (effect is ICureEffect)
+			else if (effect is CleanseAction cleanse)
+			{
+				if (cleanse.Buffs && enemies) result |= SkillIntent.Debuff;
+				if ((cleanse.Ailments || cleanse.Binds) && !enemies) result |= SkillIntent.Cure;
+			}
+			else if (effect is ICureEffect && !enemies)
 			{
 				result |= SkillIntent.Cure;
 			}
@@ -139,12 +144,6 @@ public static class SkillIntents
 						result |= ClassifyStatus(c.StatusEffect, enemies);
 					}
 				}
-			}
-			else if (effect is CleanseAction x)
-			{
-				if (x.Buffs && enemies)
-					result |= SkillIntent.Debuff;
-				// ICureEffect case already covers Ailments/Binds for party targets
 			}
 			else if (effect is SpreadAilmentsAction)
 			{

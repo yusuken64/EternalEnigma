@@ -14,8 +14,8 @@ public sealed class DamageEvaluator : IAllySkillEvaluator
 			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
 			{
 				// Never hit our own side.
-				if (option.Affected.Any(c => c != null && c != context.Ally && c.Team == context.Ally.Team)) continue;
-				float score = option.Affected.Where(c => c != null && c.Team != context.Ally.Team && c.Vitals.HP > 0)
+				if (option.Affected.Any(c => !context.VisibleEnemies.Contains(c))) continue;
+				float score = option.Affected.Where(context.VisibleEnemies.Contains)
 					.Sum(c => SkillEstimates.EstimateDamage(skill, context.Ally, c));
 				if (score <= threshold) continue;
 				if (best == null || score > best.Score)

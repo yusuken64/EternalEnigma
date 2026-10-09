@@ -116,10 +116,39 @@ movement skills, gathering, exploration reveals and ranked passives. Arrow skill
 Dominate excludes bosses. Downed allies leave the active list and can be revived; the party
 continues fighting while any ally remains alive. Carried HP/SP persists until rest/recovery.
 
-Ally skill AI classifies effects rather than hardcoding classes. Priorities include revival,
-emergency healing, cleansing, support upkeep, control and worthwhile damage. It reserves SP
-for healing/revival and ammunition for bow skills, and respects hold-position for movement skills.
-Autoplay uses the same policy. It is a baseline policy, not evidence of balanced classes.
+Ally AI uses each companion's personal sight for leaders, enemies and support recipients.
+The three session-only strategies retain their serialized values (Follow 0, Aggressive 1,
+Hold Position 2); newly created dungeon allies default to Aggressive.
+
+| Strategy | Leader visible | Leader unseen |
+|---|---|---|
+| Follow | Fight from the current tile; follow when no enemies are visible. Never chase, reposition for shots or use movement skills. | Prioritize visible revival/emergency healing, then search for the leader. |
+| Aggressive | Attack, pursue or reposition for personally visible enemies; otherwise follow. | Engage reachable visible enemies, then search. Enemy pursuit ends when sight is lost. |
+| Hold Position | Attack or provide useful support without moving. | Remain stationary and provide useful visible support. |
+
+Movement-enabled allies remember the leader's identity and last personally observed tile.
+When lost, they take legal paths to that tile, then wander one step per action. They also
+wander if they have no memory or the remembered tile is unreachable. Wandering favors
+forward movement, avoids immediate reversal when alternatives exist, and favors safe,
+unoccupied cells. Blocked allies wait and retry. Reacquiring sight immediately updates
+memory and ends searching. Hidden leader movement and party-wide sight never supply a
+destination. Holding still permits observation; changing floors or leaders clears memory.
+Memory is runtime-only, with no save migration. Explicit commands, displacement and status
+overrides retain precedence; already-started casts follow the normal casting rules.
+
+Skill priorities are revival, emergency healing below 30% HP, cleansing, casting support,
+buff/SP upkeep, control, damage and useful out-of-combat utility. Effects determine intent.
+Scoring accounts for immunity, existing effects, chance, actual recipients and effective
+restoration. Commands refresh only reachable recipients. Field Kitchen requires a visible
+standing party member to lack at least one full rank-scaled restoration amount.
+
+Follow and Hold reserve the largest SP cost among learned active healing/revival skills;
+Aggressive reserves half (rounded down). This reserve survives temporary lack of SP or
+eligible targets. Recovery skills may spend it. Arrow skills leave three arrows in reserve.
+Basic attacks and damage scoring share ammunition, sight, target and firing-line checks.
+Aggressive ranged allies keep valid firing positions or choose the cheapest legal route
+to a visible firing cell. There are no five-tile follow or three-tile positioning cutoffs.
+Autoplay companions use these same decisions; its leader keeps objective navigation.
 
 The old implementation phases and run-once content-generation checklist are removed. Continue
 editing the committed class/skill/prefab assets. Combat effect and portrait tools remain reusable.
@@ -128,7 +157,7 @@ editing the committed class/skill/prefab assets. Combat effect and portrait tool
 
 Core class tests cover gates, caps, points, costs and tree format. Unity fixtures include
 `ClassContentTests`, `TownTrainerRankTests`, `AllySkillIntentTests`, `AllySkillPolicyTests`,
-`AllyAiClassPartyTests`, combat-foundation, movement, song/command and inventory-targeting tests.
+`AllyAiClassPartyTests`, `AllyAiRegressionTests`, combat-foundation, movement, song/command and inventory-targeting tests.
 `HeroAttributeTests` covers conversion caps/breakpoints, pending points, save/return transfer
 and simulated loadouts. `WeaponCatalogTests` covers [weapon availability](Weapons.md).
 Run `node Tools/unity-mcp.mjs harness Classes`, `Town`, `AllyAI` and `EditMode` as appropriate.

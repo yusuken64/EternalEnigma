@@ -230,6 +230,21 @@ specific combat encounters should explicitly spawn those enemies.
 
 ## MCP / command line
 
+**Run AllyAI** includes the authored-skill and sight/search regressions in
+`AllyAiRegressionTests` as well as the existing policy and class-party suites.
+**Run Ally AI Intent** runs the expanded effect classification and budget tests.
+**Run Ally AI Dependencies** covers sight playback, movement, skill movement,
+casting/piercing, downed allies, summons and dungeon control. **Run Autoplay**
+provides the separate explicit autoplay integration checks.
+Sight playback fixes its animation mode for the fixture and restores it afterward.
+Manual autoplay tests temporarily enable the hidden developer canvas and restore
+the user's terminal presentation preference after checking the 3D menu inputs.
+
+The search fixture uses disposable runtime terrain masks to exercise exact walls,
+doors, corridors, blocked routes and dead ends without modifying scenes or assets.
+Authored skill instances execute real effects and charging actions, checking SP,
+ammunition, food, immunity, recipient eligibility and restoration.
+
 The project installs a pinned MCP Unity package. Its bridge is localhost-only,
 auto-starts on port 8091, and leaves package-installation permission disabled.
 The auth token stays in ignored `Library/McpUnity`; do not commit it.

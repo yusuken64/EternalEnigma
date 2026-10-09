@@ -10,12 +10,15 @@ public sealed class ReviveEvaluator : IAllySkillEvaluator
 		AllySkillChoice best = null;
 		foreach (var skill in context.WithIntent(SkillIntent.Revive))
 		{
-			var option = SkillCastOptions.Enumerate(context.Ally, skill).FirstOrDefault();
-			if (option == null) continue;
-			bool visibleScope = skill.ActionEffects.OfType<ReviveAction>().Any(r => r.Scope == ReviveScope.Visible);
-			float score = visibleScope ? context.Downed.Count : 1f;
-			if (best == null || score > best.Score)
-				best = new AllySkillChoice(Name, option, score, $"Revive {context.Downed.Count} downed");
+			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
+			{
+				var reachable = skill.ActionEffects.OfType<ReviveAction>().SelectMany(r => r.Targets(context.Ally))
+					.Where(a => context.Downed.Contains(a)).Distinct();
+				int count = option.Target is Ally selected && selected.IsDowned
+					? (reachable.Contains(selected) ? 1 : 0) : reachable.Count();
+				if (count > 0 && (best == null || count > best.Score))
+					best = new AllySkillChoice(Name, option, count, $"Revive {count} downed");
+			}
 		}
 		return best;
 	}

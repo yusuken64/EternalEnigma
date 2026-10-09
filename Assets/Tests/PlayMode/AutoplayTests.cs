@@ -19,6 +19,8 @@ namespace EternalEnigma.Tests
     public sealed class AutoplayTests
     {
         private GameTestHarness harness;
+        private bool hadTerminalPreference;
+        private int terminalPreference;
         private static void CheckControlPreference(bool blocked)
         {
             bool hadKey = PlayerPrefs.HasKey("Dungeon.FullControl");
@@ -47,19 +49,31 @@ namespace EternalEnigma.Tests
         {
             if (!UnityEditor.SessionState.GetBool("EternalEnigma.Autoplay.ManualChecks",false))
                 Assert.Ignore("Autoplay session checks require the manual Run Autoplay command.");
+            hadTerminalPreference = PlayerPrefs.HasKey(TerminalMode.PreferenceKey);
+            terminalPreference = PlayerPrefs.GetInt(TerminalMode.PreferenceKey);
+            TerminalMode.SetRequested(false); // These tests click the 3D menu's developer controls.
             harness = new GameTestHarness(); yield return null;
         }
         [UnityTearDown] public IEnumerator Cleanup()
         {
             if (harness == null) yield break;
-            if (AutoplayRunner.Active != null)
+            try
             {
-                var run = AutoplayRunner.Active; var report = run.Report; var path = Path.Combine(run.DirectoryPath,"report.json");
-                report.ValidationOnly = true; report.EligibleForBalance = false;
-                run.ExitDemo(); yield return harness.WaitUntil(() => AutoplayRunner.Active == null,"demo exit");
-                File.WriteAllText(path,JsonUtility.ToJson(report,true));
+                if (AutoplayRunner.Active != null)
+                {
+                    var run = AutoplayRunner.Active; var report = run.Report; var path = Path.Combine(run.DirectoryPath,"report.json");
+                    report.ValidationOnly = true; report.EligibleForBalance = false;
+                    run.ExitDemo(); yield return harness.WaitUntil(() => AutoplayRunner.Active == null,"demo exit");
+                    File.WriteAllText(path,JsonUtility.ToJson(report,true));
+                }
+                yield return harness.Cleanup();
             }
-            yield return harness.Cleanup();
+            finally
+            {
+                if (hadTerminalPreference) PlayerPrefs.SetInt(TerminalMode.PreferenceKey, terminalPreference);
+                else PlayerPrefs.DeleteKey(TerminalMode.PreferenceKey);
+                PlayerPrefs.Save();
+            }
         }
 
         [UnityTest]
@@ -77,10 +91,15 @@ namespace EternalEnigma.Tests
                 transition.TransitionTimeSeconds = 2;
                 var mouse = InputSystem.AddDevice<Mouse>();
                 var keyboard = InputSystem.AddDevice<Keyboard>();
-                Object.FindFirstObjectByType<MainMenuDeveloperControls>().Toggle.onClick.Invoke();
-                var launch = Object.FindObjectsByType<Button>(FindObjectsSortMode.None)
+                var developer = Object.FindFirstObjectByType<MainMenuDeveloperControls>();
+                // The shipped scene hides the developer canvas; this opt-in fixture opens it at runtime.
+                developer.Toggle.GetComponentInParent<Canvas>(true).gameObject.SetActive(true);
+                developer.Toggle.onClick.Invoke();
+                yield return null;
+                var launch = developer.Controls.Select(control => control.GetComponent<Button>()).Where(button => button != null)
                     .Single(button => Enumerable.Range(0, button.onClick.GetPersistentEventCount())
                         .Any(i => button.onClick.GetPersistentMethodName(i) == nameof(MainMenu.DebugAutoplay_Clicked)));
+                Assert.That(launch.IsActive() && launch.IsInteractable(), Is.True, ButtonState(launch));
                 EventSystem.current.SetSelectedGameObject(launch.gameObject);
                 yield return Click(mouse, launch);
                 var run = AutoplayRunner.Active;
@@ -131,6 +150,10 @@ namespace EternalEnigma.Tests
             }
             finally { DungeonPreferences.AnimationOverride = animation; }
         }
+
+        private static string ButtonState(Button button) =>
+            $"enabled={button.enabled}, interactable={button.interactable}/{button.IsInteractable()}, terminal={TerminalMode.Requested}/{TerminalMode.Effective}; " +
+            string.Join(" > ", button.GetComponentsInParent<Transform>(true).Select(t => t.name + "=" + t.gameObject.activeSelf));
 
         private static IEnumerator Click(Mouse mouse, Button button)
         {
@@ -243,10 +266,14 @@ namespace EternalEnigma.Tests
                     Assert.That(harness.Store.Json,Is.EqualTo(json));
                     Assert.That(Common.Instance.GameSaveData.TownSaveData.Gold,Is.EqualTo(321));
                     yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true,"main menu restored");
-                    Object.FindFirstObjectByType<MainMenuDeveloperControls>().Toggle.onClick.Invoke();
-                    var debugButton = Object.FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None)
+                    var developer = Object.FindFirstObjectByType<MainMenuDeveloperControls>();
+                    developer.Toggle.GetComponentInParent<Canvas>(true).gameObject.SetActive(true);
+                    developer.Toggle.onClick.Invoke();
+                    yield return null;
+                    var debugButton = developer.Controls.Select(control => control.GetComponent<Button>()).Where(button => button != null)
                         .Single(button => Enumerable.Range(0, button.onClick.GetPersistentEventCount())
                             .Any(i => button.onClick.GetPersistentMethodName(i) == nameof(MainMenu.DebugAutoplay_Clicked)));
+                    Assert.That(debugButton.IsActive() && debugButton.IsInteractable(), Is.True, ButtonState(debugButton));
                     debugButton.onClick.Invoke();
                     Assert.That(AutoplayRunner.Active, Is.Not.Null);
                     Assert.That(AutoplayRunner.Active.Options.DebugPlaythrough, Is.True);

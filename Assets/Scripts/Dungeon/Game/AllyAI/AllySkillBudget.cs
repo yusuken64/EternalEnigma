@@ -17,7 +17,7 @@ public static class AllySkillBudget
 	public static int SpReserve(IEnumerable<Skill> skills, AllyStrategy strategy)
 	{
 		if (skills == null) return 0;
-		int reserve = skills.Where(s => s != null && IsReserveSkill(s)).Select(s => Math.Max(0, s.SPCost)).DefaultIfEmpty(0).Max();
+		int reserve = skills.Where(s => s != null && s.ActivationType == ActivationType.Active && IsReserveSkill(s)).Select(s => Math.Max(0, s.SPCost)).DefaultIfEmpty(0).Max();
 		return strategy == AllyStrategy.Aggresive ? reserve / 2 : reserve;
 	}
 

@@ -8,6 +8,38 @@ namespace EternalEnigma.Tests
 	{
 		private readonly List<Object> created = new();
 
+        [TestCase("Occultist/Slumber Hex", SkillIntent.CrowdControl)]
+        [TestCase("Occultist/Plague", SkillIntent.Debuff)]
+        [TestCase("Bard/Discord", SkillIntent.Debuff)]
+        [TestCase("Commander/Inspire", SkillIntent.Buff)]
+        [TestCase("Bard/Rousing Chorus", SkillIntent.Buff)]
+        [TestCase("Elementalist/Amplify", SkillIntent.Buff)]
+        [TestCase("Guardian/Parry Stance", SkillIntent.Buff | SkillIntent.CrowdControl)]
+        [TestCase("Guardian/Bulwark", SkillIntent.Buff)]
+        [TestCase("Commander/Command- Endure", SkillIntent.Buff)]
+        [TestCase("Healer/Renew", SkillIntent.Buff)]
+        [TestCase("Healer/Cure", SkillIntent.Cure)]
+        [TestCase("Scout/Field Kitchen", SkillIntent.Utility)]
+        public void AuthoredSkillsHaveExecutableIntents(string path, SkillIntent expected)
+        {
+            var skill = Resources.Load<Skill>("Classes/Skills/" + path);
+            Assert.That(skill, Is.Not.Null, path);
+            Assert.That(SkillIntents.Classify(skill), Is.EqualTo(expected));
+        }
+
+        [Test] public void EnemyBuffRemovalIsNotMisclassifiedAsPartyCure()
+        {
+            var skill = MakeSkill(TargetTeam.Enemies, SkillTargeting.SelectedTarget, new CleanseAction { Buffs = true });
+            Assert.That(SkillIntents.Classify(skill), Is.EqualTo(SkillIntent.Debuff));
+        }
+
+        [Test] public void StrategySerializedValuesAreStable()
+        {
+            Assert.That((int)AllyStrategy.Follow, Is.Zero);
+            Assert.That((int)AllyStrategy.Aggresive, Is.EqualTo(1));
+            Assert.That((int)AllyStrategy.HoldPosition, Is.EqualTo(2));
+        }
+
 		[TearDown]
 		public void TearDown()
 		{

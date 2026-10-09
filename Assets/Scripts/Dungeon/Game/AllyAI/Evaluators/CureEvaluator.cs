@@ -14,7 +14,7 @@ public sealed class CureEvaluator : IAllySkillEvaluator
 			if (cures.Count == 0) continue;
 			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
 			{
-				int afflicted = option.Affected.Count(c => c != null && c.Team == context.Ally.Team &&
+				int afflicted = option.Affected.Count(c => context.Party.Contains(c) &&
 					c.StatusEffects.Any(s => s != null && !s.IsExpired() && cures.Any(cure => cure.Cures(s))));
 				if (afflicted == 0) continue;
 				if (best == null || afflicted > best.Score)

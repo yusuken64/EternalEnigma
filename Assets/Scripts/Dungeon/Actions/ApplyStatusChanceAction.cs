@@ -51,15 +51,7 @@ public class ApplyStatusChanceAction : GameAction
 		}
 
 		// Calculate chance with scaling and ailment bonus
-		float chance = Chance;
-		if (chance < 1f && rank.Scaling != null)
-		{
-			chance = rank.Scaling.ScaleChance(chance, rank.Rank);
-		}
-		if (IsAilment)
-		{
-			chance += ClassPassives.AilmentChanceBonus(caster);
-		}
+		float chance = Probability(caster, rank);
 
 		// Roll for resistance
 		if (chance < 1f && UnityEngine.Random.value >= chance)
@@ -81,6 +73,12 @@ public class ApplyStatusChanceAction : GameAction
 		}
 
 		return result;
+	}
+
+	internal float Probability(Character source, SkillRankContext context)
+	{
+		float chance = Chance < 1f && context.Scaling != null ? context.Scaling.ScaleChance(Chance, context.Rank) : Chance;
+		return Mathf.Clamp01(chance + (IsAilment ? ClassPassives.AilmentChanceBonus(source) : 0));
 	}
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)

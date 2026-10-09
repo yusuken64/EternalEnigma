@@ -12,8 +12,12 @@ internal static class MissileTargeting
         internal readonly List<Hit> Encounters = new();
     }
     internal static Line TraceLine(Character caster, Vector3Int direction, int range, int cap = 1, bool splash = false)
+        => TraceLineFrom(caster, caster.TilemapPosition, direction, range, cap, splash);
+
+    // Evaluate a prospective firing position without moving the actor or changing sight.
+    internal static Line TraceLineFrom(Character caster, Vector3Int origin, Vector3Int direction, int range, int cap = 1, bool splash = false)
     {
-        var result = new Line { Endpoint = caster.TilemapPosition };
+        var result = new Line { Endpoint = origin };
         if (!IsDirection(direction)) return result;
         var dungeon = Game.Instance.CurrentDungeon;
         var seen = new HashSet<Character>();

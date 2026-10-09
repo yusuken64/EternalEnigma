@@ -34,7 +34,7 @@ public class ReviveAction : GameAction, ISkillCastCondition
 	{
 		var game = Game.Instance;
 		if (game == null || from == null || game.DownedAllies == null) return Enumerable.Empty<Ally>();
-		return game.DownedAllies.Where(a => a != null && a.Team == from.Team && (Scope == ReviveScope.Adjacent
+		return game.DownedAllies.Where(a => a != null && a.Team == from.Team && game.CurrentDungeon.CanSee(from, a) && (Scope == ReviveScope.Adjacent
 			? TileWorldDungeon.ChevDistance(a.TilemapPosition, from.TilemapPosition) <= 1
 			: game.CurrentDungeon.CanSee(from, a))).ToList();
 	}

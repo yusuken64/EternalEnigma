@@ -10,8 +10,19 @@ using UnityEngine.TestTools;
 public class SightPlaybackTests
 {
     private GameTestHarness harness;
-    [UnitySetUp] public IEnumerator SetUp() { harness = new GameTestHarness(); yield return null; }
-    [UnityTearDown] public IEnumerator TearDown() => harness.Cleanup();
+    private DungeonAnimationMode? previousAnimation;
+    [UnitySetUp] public IEnumerator SetUp()
+    {
+        previousAnimation = DungeonPreferences.AnimationOverride;
+        DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
+        harness = new GameTestHarness();
+        yield return null;
+    }
+    [UnityTearDown] public IEnumerator TearDown()
+    {
+        try { yield return harness.Cleanup(); }
+        finally { DungeonPreferences.AnimationOverride = previousAnimation; }
+    }
 
     [UnityTest]
     public IEnumerator BigSlimeAnimatesWhenOnlyItsLeadingEdgeEntersSight()

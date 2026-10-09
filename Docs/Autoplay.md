@@ -31,8 +31,11 @@ and preserve consumables used by the bot. Debug runs never grant progression
 keys/capabilities or fabricate dungeon victories. Every debug run is marked
 ineligible for balance statistics, including one with both cheat switches off.
 
-The policy reads the current campaign graph and deliberately knows the full
-dungeon map and stair positions. Reports label this omniscient navigation. Town
+The leader's policy reads the current campaign graph and deliberately knows the full
+dungeon map and stair positions. Reports label this omniscient navigation. Companions
+use the normal [ally strategies](Classes.md): personal sight, last-seen leader memory
+and legal wandering when lost, including in Full Control. They never route to an
+unseen leader's current position or swap the leader backward. Town
 and dungeon routes reuse the game's `AStar.FindPath` (used by enemy pursuit), with
 the existing character grid adapter for dungeons and a town walkability adapter.
 The bot follows the route between turns, replanning when blocked, displaced, or

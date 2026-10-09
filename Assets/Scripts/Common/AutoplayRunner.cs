@@ -517,6 +517,12 @@ public sealed class AutoplayRunner : MonoBehaviour
             var use = new UseInventoryItemAction(player.Inventory,ally,item);
             if (use.IsValid(ally)) { Report.ItemsUsed++; Act(ally,use,"Use " + item.ItemName); return; }
         }
+        if (player.PartyLeader != null && ally != player.PartyLeader)
+        {
+            var action = ally.ChooseAutonomousActions(includeControlled: true).FirstOrDefault() ?? new WaitAction();
+            Act(ally, action, "Companion " + action.GetType().Name);
+            return;
+        }
         var skills = new AllySkillPolicy(game, ally, 0) { IncludeControlledAlly = true };
         if (skills.ShouldRun())
         {
@@ -525,12 +531,6 @@ public sealed class AutoplayRunner : MonoBehaviour
         }
         var attack = new AllyAttackPolicy(game,ally,0);
         if (attack.ShouldRun()) { var action = attack.GetActions().FirstOrDefault(a => a.IsValid(ally)); if (action != null) { Act(ally,action,"Attack"); return; } }
-        if (player.PartyLeader != null && ally != player.PartyLeader)
-        {
-            var follow = FollowerTravelAction(game, ally, player.PartyLeader);
-            Act(ally, follow, follow is WaitAction ? "Companion holds formation" : "Companion follows leader");
-            return;
-        }
         var stairs = dungeon.Interactables.OfType<Stairs>().FirstOrDefault();
         if (stairs == null) { Finish("Unsupported","Ready dungeon has no stairs objective."); return; }
         if (stairs != null && stairs.Position == ally.TilemapPosition)
@@ -569,28 +569,8 @@ public sealed class AutoplayRunner : MonoBehaviour
         Act(ally,movement,"Dungeon move " + next);
     }
 
-    internal static GameAction FollowerTravelAction(Game game, Ally ally, Ally leader)
-    {
-        if (ally.AllyStrategy == AllyStrategy.HoldPosition ||
-            TileWorldDungeon.ChevDistance(ally.TilemapPosition, leader.TilemapPosition) <= 1)
-            return new WaitAction();
-        var grid = Character.GetAStarGrid();
-        foreach (var node in grid)
-        {
-            var cell = new Vector3Int(node.X, node.Y);
-            // The occupied leader cell is the path target only; never move into it or swap.
-            if (cell != leader.TilemapPosition && game.CurrentDungeon.OverlapsAnyOtherCharacter(
-                ally, Character.ToBounds(ally.FootPrint, cell)) != null) node.IsWalkable = false;
-        }
-        var path = AStar.FindPath(grid, grid[ally.TilemapPosition.x, ally.TilemapPosition.y],
-            grid[leader.TilemapPosition.x, leader.TilemapPosition.y], DiagonalMovement.RequireOpenSides);
-        if (path == null || path.Count == 0) return new WaitAction();
-        var next = new Vector3Int(path[0].X, path[0].Y);
-        if (game.CurrentDungeon.OverlapsAnyOtherCharacter(ally, Character.ToBounds(ally.FootPrint, next)) != null)
-            return new WaitAction();
-        ally.SetFacingByTargetPosition(next);
-        return new MovementAction(ally, ally.TilemapPosition, next);
-    }
+    internal static GameAction FollowerTravelAction(Game game, Ally ally, Ally leader) =>
+        AllyNavigation.FollowOrSearch(game, ally);
 
     private void Act(Ally ally, GameAction action, string description)
     {

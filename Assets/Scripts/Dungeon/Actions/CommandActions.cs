@@ -57,14 +57,16 @@ public class ApplyCommandAction : GameAction
 		int heal = rank.Scaling.ScalePower(HealPerTurn, rank.Rank);
 		int bonus = rank.Scaling.ScalePower(BonusElementPercent, rank.Rank);
 
-		var recipients = game.Allies.Where(a => a != null && a.Vitals.HP > 0 && (a == caster || game.CurrentDungeon.CanSee(caster, a)));
-		foreach (var recipient in recipients)
+		foreach (var recipient in Recipients(game, caster))
 		{
 			CommandStatusEffect.AddOrRefresh(recipient, caster, string.IsNullOrEmpty(CommandId) ? CommandName : CommandId, CommandName, mod, heal, BonusElement, bonus, turns);
 		}
 
 		return new();
 	}
+
+    internal static IEnumerable<Ally> Recipients(Game game, Character caster) => game.Allies
+        .Where(a => a != null && a.Vitals.HP > 0 && (a == caster || game.CurrentDungeon.CanSee(caster, a)));
 
     internal override void RecordOutcome(Character character) => GameMessages.ForCharacter(caster, $"{CommandName}!");
     internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false) { yield break; }

@@ -23,9 +23,8 @@ public class Ally : Character
 	// Set by ForgetSkillsAction; DungeonReturnService then clears the hero's saved skills.
 	internal bool SkillsForgotten;
     private AllyAttackPolicy AllyAttackPolicy;
-	private AllyRangedPositioningPolicy AllyRangedPositioningPolicy;
-	private AllyPursuitPolicy PursuitPolicy;
-	private WanderPolicy WanderPolicy;
+	private AllyAwareness awareness;
+	internal AllyAwareness Awareness => awareness ??= new AllyAwareness(this);
 	internal AllySkillPolicy SkillPolicy;
 	public override bool IsWaitingForPlayerInput { get; set; }
 
@@ -101,16 +100,13 @@ public class Ally : Character
 
 	private void Start()
 	{
-		SkillPolicy = new AllySkillPolicy(Game.Instance, this, 0);
-		AllyAttackPolicy = new AllyAttackPolicy(Game.Instance, this, 1);
-		AllyRangedPositioningPolicy = new AllyRangedPositioningPolicy(Game.Instance, this, 2);
-		PursuitPolicy = new AllyPursuitPolicy(Game.Instance, this, 3);
-		WanderPolicy = new WanderPolicy(Game.Instance, this, 4);
+		EnsurePolicies();
 	}
 
     // Evaluate forced statuses only once per action, including random confusion/paralysis.
     internal bool PrepareManualAction(bool evaluateStatuses = true)
     {
+        Awareness.Refresh(Game.Instance);
         global::PendingCast.Validate(this);
         if (PendingCast?.Remaining == 0 && PendingCast.Skill?.UsesArrows == true && (!ArrowSupply.HasBow(this) || ArrowSupply.Count(this) < ArrowSupply.RequiredToCast(PendingCast.Skill)))
         { global::PendingCast.Cancel(this, "no arrows"); _forcedAction = null; if (this == Game.Instance.PlayerController.ControlledAlly) GameMessages.Post("no arrows", true); return false; }
@@ -124,78 +120,27 @@ public class Ally : Character
         determinedActions = new() { _forcedAction }; _forcedAction = null; return true;
     }
 
-	public override void DetermineAction()
+	private void EnsurePolicies()
 	{
-        if (PrepareManualAction()) return;
-
-		if (SkillPolicy != null && SkillPolicy.ShouldRun())
-		{
-			determinedActions = SkillPolicy.GetActions();
-			return;
-		}
-
-		if (AllyAttackPolicy.ShouldRun())
-		{
-			determinedActions = AllyAttackPolicy.GetActions();
-			return;
-		}
-
-		PursuitTarget = GetTarget();
-		if (PursuitTarget != null)
-		{
-			PursuitPosition = PursuitTarget.TilemapPosition;
-		}
-		if (AllyRangedPositioningPolicy.ShouldRun())
-		{
-			determinedActions = AllyRangedPositioningPolicy.GetActions();
-			return;
-		}
-		if (PursuitPolicy.ShouldRun())
-		{
-			determinedActions = PursuitPolicy.GetActions();
-			return;
-		}
-		if (WanderPolicy.ShouldRun())
-		{
-			determinedActions = WanderPolicy.GetActions();
-			return;
-		}
-
-		determinedActions = new List<GameAction>()
-		{
-			new WaitAction()
-		};
+		SkillPolicy ??= new AllySkillPolicy(Game.Instance, this, 0);
+		AllyAttackPolicy ??= new AllyAttackPolicy(Game.Instance, this, 1);
 	}
 
-	private Character GetTarget()
+	public override void DetermineAction()
 	{
-		var game = Game.Instance;
+		if (PrepareManualAction()) return;
+		determinedActions = ChooseAutonomousActions();
+	}
 
-		List<Character> pursuitTargets = new List<Character>();
-
-		if (AllyStrategy == AllyStrategy.Aggresive)
-		{
-			pursuitTargets.AddRange(game.Enemies.Where(x => x != null && !EnemyBehavior.IsDisguised(x) && x.Team != Team));
-
-			var aggressiveTarget = pursuitTargets
-				.Where(x => game.CurrentDungeon.CanSee(this, x))
-				.OrderBy(x => TileWorldDungeon.ChevDistance(x.TilemapPosition, TilemapPosition))
-				.ThenBy(x => x.TilemapPosition == PursuitPosition)
-				.FirstOrDefault();
-
-			if (aggressiveTarget != null) { return aggressiveTarget; }
-		}
-		
-		if (AllyStrategy != AllyStrategy.HoldPosition)
-		{
-			if (TileWorldDungeon.ChevDistance(game.PlayerController.PartyLeader.TilemapPosition,
-				TilemapPosition) < 5)
-			{
-				return game.PlayerController.PartyLeader;
-			}
-		}
-
-		return null;
+	// Autoplay companions use the same decisions. The turn manager still owns forced actions and casts.
+	internal List<GameAction> ChooseAutonomousActions(bool includeControlled = false)
+	{
+		EnsurePolicies();
+		Awareness.Refresh(Game.Instance);
+		SkillPolicy.IncludeControlledAlly = includeControlled;
+		if (SkillPolicy.ShouldRun()) return SkillPolicy.GetActions();
+		if (!Awareness.SearchFirst && AllyAttackPolicy.ShouldRun()) return AllyAttackPolicy.GetActions();
+		return new List<GameAction> { AllyNavigation.Travel(Game.Instance, this) };
 	}
 
 	public override List<GameAction> GetDeterminedAction()
@@ -235,14 +180,7 @@ public class Ally : Character
 		{
 			return new List<GameAction>();
 		}
-		if (action is MovementAction movementAction)
-		{
-			var target = GetTarget();
-			if (target != null)
-			{
-				PursuitPosition = target.TilemapPosition;
-			}
-		}
+		if (action is MovementAction) Awareness.Refresh(Game.Instance);
 		return GetActionResponses(action);
 	}
 
@@ -396,227 +334,33 @@ public class Ally : Character
 
 internal class AllyAttackPolicy : PolicyBase
 {
-	private readonly Ally _ally;
-	private Character target;
-    private bool _isRangedAttack;
-    private GameObject _projectilePrefab;
-    private Facing _rangedAttackFacing;
-
+    private readonly Ally ally;
+    private AllyCombat.Attack attack;
     public AllyAttackPolicy(Game game, Character character, int priority) : base(game, character, priority)
-	{
-		_ally = character as Ally;
-	}
-
-	public override List<GameAction> GetActions()
-	{
-		if (_isRangedAttack)
-		{
-			character.SetFacing(_rangedAttackFacing);
-			return new List<GameAction>()
-			{
-				new RangedAttackAction(_ally, null, _ally.FinalStats.Strength, _projectilePrefab)
-			};
-		}
-		else
-		{
-			character.SetFacingByTargetPosition(target.TilemapPosition);
-			return new List<GameAction>() { new AttackAction(_ally, _ally.TilemapPosition, target.TilemapPosition) };
-		}
-	}
-
-	public override bool ShouldRun()
-	{
-		_isRangedAttack = _ally.IsRangedAttack(out _projectilePrefab);
-        if (_isRangedAttack && ArrowSupply.HasBow(_ally) && ArrowSupply.Count(_ally) < 1) return false;
-		if (_isRangedAttack)
-		{
-			var visibleTiles = game.CurrentDungeon.GetVisibleTiles(_ally, _ally.TilemapPosition);
-			var facings = Enum.GetValues(typeof(Facing)).Cast<Facing>().ToArray();
-			Shuffle(facings);
-			foreach (Facing direction in facings)
-			{
-				var line = MissileTargeting.TraceLine(_ally, Dungeon.GetFacingOffset(direction), 10 + ClassPassives.MissileRangeBonus(_ally), ArrowSupply.Penetration(_ally));
-                Vector3Int pos = line.Encounters.FirstOrDefault().Cell;
-
-				if (!visibleTiles.Contains(pos)) { continue; }
-
-				// Find enemy at pos (if any)
-				target = line.Encounters.Select(h => h.Character).FirstOrDefault(x => !EnemyBehavior.IsDisguised(x));
-
-				if (target != null)
-				{
-					_rangedAttackFacing = direction;
-					return true;
-				}
-			}
-		}
-		else
-		{
-			var attackBounds = _ally.GetAttackBounds();
-			target = Game.Instance.AllCharacters
-				.Where(x => x != null)
-				.Where(x => x.Team != _ally.Team && !EnemyBehavior.IsDisguised(x))
-				.Where(x => attackBounds.Overlaps2D(x.ToBounds()))
-                .Where(x => game.CurrentDungeon.CanSee(_ally, x))
-				.FirstOrDefault();
-		}
-
-		return target != null;
-	}
-
-	private void Shuffle<T>(T[] array)
-	{
-		for (int i = array.Length - 1; i > 0; i--)
-		{
-			int j = UnityEngine.Random.Range(0, i + 1);
-			T temp = array[i];
-			array[i] = array[j];
-			array[j] = temp;
-		}
-	}
-}
-
-public class AllyPursuitPolicy : PolicyBase
-{
-	private readonly Ally ally;
-	private List<AStar.Node> path;
-
-	public AllyPursuitPolicy(Game game, Ally ally, int priority) : base(game, ally as Character, priority)
-	{
-		this.ally = ally;
-	}
-
-	public override List<GameAction> GetActions()
-	{
-		var newMapPosition = new Vector3Int(path[0].X, path[0].Y);
-		character.SetFacingByTargetPosition(newMapPosition);
-		return new List<GameAction>() { new MovementAction(character, character.TilemapPosition, newMapPosition) };
-	}
-
-	public override bool ShouldRun()
-	{
-		if (ally.AllyStrategy == AllyStrategy.HoldPosition)
-		{
-			return false;
-		}
-
-		if (character.PursuitPosition == null) { return false; }
-
-		path = character.CalculatePursuitPath();
-
-		if (path != null &&
-			path.Count > 0)
-		{
-			return true;
-		}
-
-		return false;
-	}
-}
-
-public class AllyRangedPositioningPolicy : PolicyBase
-{
-	private readonly Ally ally;
-	private Vector3Int desiredPosition;
-	private List<AStar.Node> path;
-
-	private const int RangedAttackDistance = 3;
-
-	public AllyRangedPositioningPolicy(Game game, Ally ally, int priority) : base(game, ally, priority)
-	{
-		this.ally = ally;
-	}
-
-	public override bool ShouldRun()
-	{
-		if (ally.AllyStrategy == AllyStrategy.HoldPosition)
-		{
-			return false;
-		}
-
-		var isRangedAttack = ally.IsRangedAttack(out _);
-		if (!isRangedAttack)
-        {
-			return false;
-        }
-
-		// Find shortest path among candidates from current position
-		List<AStar.Node> bestPath = null;
-		Vector3Int bestPos = default;
-		int bestPathLength = int.MaxValue;
-
-		foreach (var target in game.Enemies)
-		{
-            if (target == null || EnemyBehavior.IsDisguised(target) || !game.CurrentDungeon.CanSee(ally, target)) { continue; }
-
-			// If already exactly 3 tiles away, no need to reposition
-			if (TileWorldDungeon.ManhattanDistance(ally.TilemapPosition, target.TilemapPosition) == RangedAttackDistance)
-			{
-				return false; // Positioning not needed, attack policy can take over
-			}
-
-			// Find candidate positions 3 tiles away from target that are walkable and reachable
-			var candidates = GetPositionsAtDistance(target.TilemapPosition, RangedAttackDistance)
-				.Where(pos =>
-					Game.Instance.CurrentDungeon.IsWalkable(pos) && // Your method to check walkability
-					!Game.Instance.AllCharacters.Any(c => c.TilemapPosition == pos) // Position not occupied
-				)
-				.ToList();
-
-			if (candidates.Count == 0) continue;
-
-			var grid = Character.GetAStarGrid();
-			foreach (var candidate in candidates)
-			{
-				var candidatePath = ally.CalculateRangedAttackPath(candidate, grid);
-				if (candidatePath != null && candidatePath.Count < bestPathLength)
-				{
-					bestPathLength = candidatePath.Count;
-					bestPath = candidatePath;
-					bestPos = candidate;
-				}
-			}
-		}
-
-		if (bestPath == null) return false; // No reachable candidate positions
-
-		path = bestPath;
-		desiredPosition = bestPos;
-
-		return true;
-	}
-
-	public override List<GameAction> GetActions()
-	{
-		if (path == null || path.Count == 0) return new List<GameAction>();
-
-		var nextStep = new Vector3Int(path[0].X, path[0].Y);
-
-		// Face towards target
-		ally.SetFacingByTargetPosition(desiredPosition);
-
-		// Move towards next step in path
-		return new List<GameAction> { new MovementAction(ally, ally.TilemapPosition, nextStep) };
-	}
-
-	private IEnumerable<Vector3Int> GetPositionsAtDistance(Vector3Int origin, int distance)
-	{
-		for (int dx = -distance; dx <= distance; dx += distance)
-		{
-			for (int dy = -distance; dy <= distance; dy += distance)
-			{
-				if (dx == 0 && dy == 0)
-					continue;
-
-				yield return new Vector3Int(origin.x + dx, origin.y + dy, origin.z);
-			}
-		}
-	}
+    {
+        ally = character as Ally;
+    }
+    public override bool ShouldRun()
+    {
+        attack = null;
+        ally.Awareness.Refresh(game);
+        if (ally.Awareness.SearchFirst) return false;
+        attack = AllyCombat.ChooseAttack(game, ally);
+        return attack != null;
+    }
+    public override List<GameAction> GetActions()
+    {
+        // A target may have moved, died or changed teams since evaluation.
+        if (!ShouldRun()) return new List<GameAction> { new WaitAction() };
+        ally.PursuitTarget = attack.Target;
+        ally.PursuitPosition = attack.Target.TilemapPosition;
+        return new List<GameAction> { attack.ToAction(ally) };
+    }
 }
 
 public enum AllyStrategy
 {
-	Follow,
-	Aggresive,
-	HoldPosition
+    Follow = 0,
+    Aggresive = 1,
+    HoldPosition = 2
 }

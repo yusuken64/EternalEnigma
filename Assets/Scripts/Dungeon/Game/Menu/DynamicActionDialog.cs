@@ -25,6 +25,9 @@ namespace JuicyChickenGames.Menu
 
 		internal override void SetFirstSelect()
 		{
+			Canvas.ForceUpdateCanvases();
+			foreach (var row in actionButtons) row.SizeDescription();
+			Canvas.ForceUpdateCanvases();
 			if (actionButtons.Any())
 			{
 				var first = actionButtons.FirstOrDefault(x => selector(x._data));
@@ -59,6 +62,7 @@ namespace JuicyChickenGames.Menu
 	{
 		public Sprite Icon;
 		public string ActionName;
+		public string Description;
 		public Action ClickAction;
 
 		public object Data;

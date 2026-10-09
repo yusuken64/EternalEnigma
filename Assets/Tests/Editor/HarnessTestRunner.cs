@@ -396,7 +396,21 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run AllyAI")]
     public static void RunAllyAI() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.AllyAiClassPartyTests");
+        "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.AllyAiClassPartyTests", "EternalEnigma.Tests.AllyAiRegressionTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Ally AI Regressions")]
+    public static void RunAllyAIRegressions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AllyAiRegressionTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Ally AI Intent")]
+    public static void RunAllyAIIntent() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.AllySkillIntentTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Ally AI Dependencies")]
+    public static void RunAllyAIDependencies() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "SightPlaybackTests", "MovementRegressionTests", "EternalEnigma.Tests.SkillMovementTests",
+        "EternalEnigma.Tests.CastingAndPiercingTests", "EternalEnigma.Tests.DownedAllyTests",
+        "EternalEnigma.Tests.SummonTests", "EternalEnigma.Tests.DungeonControlTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Overworld")]
     public static void RunOverworld() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.OverworldSceneTests");

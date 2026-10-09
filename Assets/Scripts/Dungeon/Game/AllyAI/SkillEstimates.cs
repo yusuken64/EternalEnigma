@@ -11,9 +11,16 @@ public static class SkillEstimates
 		return attacker.FinalStats.Strength * Mathf.Pow(15f / 16f, target.FinalStats.Defense) * (127f / 128f);
 	}
 
-	public static float NormalAttackExpected(Character attacker, Character target) =>
-		attacker == null || target == null ? 0f : CombatMath.HitChance(attacker, target) * BaseAttackDamage(attacker, target) *
-		ClassPassives.DamageMultiplier(new OutgoingDamage(attacker,target,ArrowSupply.HasBow(attacker)?DamageCategory.Bow:DamageCategory.Weapon,DamageElement.Physical,false));
+	public static float NormalAttackExpected(Character attacker, Character target)
+	{
+		if (attacker == null || target == null) return 0f;
+		bool ranged = attacker is Ally ally && ally.IsRangedAttack(out _);
+		bool bow = ArrowSupply.HasBow(attacker);
+		float power = ranged ? attacker.FinalStats.Strength : BaseAttackDamage(attacker, target);
+		return CombatMath.HitChance(attacker, target) * power * (bow ? ArrowSupply.DamageMultiplier(attacker) : 1) *
+			(!ranged || bow ? ClassPassives.DamageMultiplier(new OutgoingDamage(attacker, target,
+				bow ? DamageCategory.Bow : DamageCategory.Weapon, DamageElement.Physical, false)) : 1);
+	}
 
 	public static float EstimateDamage(Skill skill, Character caster, Character target)
 	{

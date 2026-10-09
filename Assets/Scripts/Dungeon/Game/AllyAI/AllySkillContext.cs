@@ -13,6 +13,7 @@ public sealed class AllySkillContext
 	public IReadOnlyList<Ally> Downed { get; private set; }
 	public int SpReserve { get; private set; }
 	public bool AllowMovement { get; private set; }
+	public bool SearchFirst { get; private set; }
 	public float NormalAttackValue { get; private set; }
 
 	private AllySkillContext() { }
@@ -31,14 +32,14 @@ public sealed class AllySkillContext
 		context.Ally = ally;
 		context.Game = game;
 
-		context.AllowMovement = ally.AllyStrategy != AllyStrategy.HoldPosition;
+		ally.Awareness.Refresh(game);
+		context.AllowMovement = ally.AllyStrategy == AllyStrategy.Aggresive && !ally.IsMovementBlocked;
+		context.SearchFirst = ally.Awareness.SearchFirst;
 
-		context.VisibleEnemies = game.AllCharacters
-			.Where(c => c != null && !EnemyBehavior.IsDisguised(c) && c != ally && c.Vitals.HP > 0 && c.Team != ally.Team && c.Team != Team.Neutral && game.CurrentDungeon.CanSee(ally, c))
-			.ToList();
+		context.VisibleEnemies = AllyCombat.VisibleHostiles(game, ally);
 
-		context.Party = PartyRules.StandingMembers(game);
-		context.Downed = (game.DownedAllies ?? new List<Ally>()).Where(a => a != null).ToList();
+		context.Party = PartyRules.StandingMembers(game).Where(a => a == ally || game.CurrentDungeon.CanSee(ally, a)).ToList();
+		context.Downed = (game.DownedAllies ?? new List<Ally>()).Where(a => a != null && game.CurrentDungeon.CanSee(ally, a)).ToList();
 
 		var castableSkills = new List<Skill>();
 		var allSkills = ally.Skills ?? new List<Skill>();
@@ -66,22 +67,10 @@ public sealed class AllySkillContext
 
 		context.Castable = castableSkills;
 
-		context.SpReserve = AllySkillBudget.SpReserve(context.Castable, ally.AllyStrategy);
-
-		if (ally.IsRangedAttack(out _))
-		{
-			context.NormalAttackValue = context.VisibleEnemies.Count > 0
-				? context.VisibleEnemies.Max(e => SkillEstimates.NormalAttackExpected(ally, e))
-				: 0f;
-		}
-		else
-		{
-			var bounds = ally.GetAttackBounds();
-			var visibleInRange = context.VisibleEnemies.Where(e => bounds.Overlaps2D(e.ToBounds()));
-			context.NormalAttackValue = visibleInRange.Any()
-				? visibleInRange.Max(e => SkillEstimates.NormalAttackExpected(ally, e))
-				: 0f;
-		}
+		// Reserve learned recovery costs even when SP, range, targets or statuses prevent casting now.
+		context.SpReserve = AllySkillBudget.SpReserve(allSkills, ally.AllyStrategy);
+		context.NormalAttackValue = AllyCombat.AttacksFrom(game, ally, ally.TilemapPosition)
+			.Select(a => a.Value).DefaultIfEmpty(0f).Max();
 
 		return context;
 	}

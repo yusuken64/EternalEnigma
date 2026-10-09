@@ -169,7 +169,8 @@ namespace EternalEnigma.Tests
             // Place third at a position adjacent to friend for this test
             var dungeon = harness.Game.CurrentDungeon;
             var centerCell = friend.TilemapPosition;
-            third.SetPosition(centerCell + new Vector3Int(-1, -1, 0));
+            third.SetPosition(centerCell + Vector3Int.up);
+            Assert.That(dungeon.CanSee(friend, third), Is.True, "Revival requires personal sight as well as range.");
 
             third.Vitals.HP = 0;
             third.SyncDisplayedStats();
@@ -332,10 +333,13 @@ namespace EternalEnigma.Tests
             var lunge = Make("Lunge", 1, TargetTeam.Enemies, SkillTargeting.Missile, new DashStrikeAction());
             lunge.MissileRange = 3;
 
-            friend.AllyStrategy = AllyStrategy.Follow;
+            friend.AllyStrategy = AllyStrategy.Aggresive;
             var choice = Decide();
             Assert.That(choice, Is.Not.Null);
             Assert.That(choice.Evaluator, Is.EqualTo("Damage"));
+
+            friend.AllyStrategy = AllyStrategy.Follow;
+            Assert.That(Decide(), Is.Null, "Follow never uses offensive movement skills.");
 
             friend.AllyStrategy = AllyStrategy.HoldPosition;
             choice = Decide();

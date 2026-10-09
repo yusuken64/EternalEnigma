@@ -1,91 +1,74 @@
+using System;
 using System.Linq;
 
 public sealed class BuffUpkeepEvaluator : IAllySkillEvaluator
 {
-	public string Name => "BuffUpkeep";
-	private const int RefreshAtTurns = 1; // recast when 1 turn or less remains
+    public string Name => "BuffUpkeep";
+    private const int RefreshAtTurns = 1;
 
-	public AllySkillChoice Evaluate(AllySkillContext context)
-	{
-		if (context == null || context.VisibleEnemies.Count == 0) return null;
-		AllySkillChoice best = null;
-		foreach (var skill in context.WithIntent(SkillIntent.Buff))
-			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
-			{
-				int needing = CountNeeding(context, skill, option);
-				if (needing <= 0) continue;
-				if (best == null || needing > best.Score)
-					best = new AllySkillChoice(Name, option, needing, $"Upkeep {skill.SkillName}");
-			}
-		return best;
-	}
+    public AllySkillChoice Evaluate(AllySkillContext context)
+    {
+        if (context == null) return null;
+        AllySkillChoice best = null;
+        foreach (var skill in context.WithIntent(SkillIntent.Buff))
+            foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
+            {
+                float score = Benefit(context, skill, option);
+                if (score > 0 && (best == null || score > best.Score))
+                    best = new AllySkillChoice(Name, option, score, $"Upkeep {skill.SkillName}");
+            }
+        return best;
+    }
 
-	private static int CountNeeding(AllySkillContext context, Skill skill, SkillCastOption option)
-	{
-		if (skill == null || skill.ActionEffects == null || skill.ActionEffects.Count == 0)
-			return 0;
+    private static float Benefit(AllySkillContext context, Skill skill, SkillCastOption option)
+    {
+        float score = 0;
+        foreach (var effect in skill.ActionEffects)
+        {
+            if (effect is RestoreSPAction restore)
+            {
+                int amount = skill.RankContext.Scaling.ScalePower(restore.Amount, skill.RankContext.Rank);
+                float restored = option.Affected.Where(c => context.Party.Contains(c) && !(restore.ExcludeCaster && c == context.Ally))
+                    .Sum(c => Math.Max(0, Math.Min(amount, c.FinalStats.SPMax - c.Vitals.SP + (c == context.Ally ? skill.SPCost : 0))));
+                // Do not spend SP merely to buy back the same (or a smaller) amount.
+                score += Math.Max(0, restored - skill.SPCost);
+                continue;
+            }
+            if (context.VisibleEnemies.Count == 0) continue;
+            if (effect is StartSongAction song && song.SongId != null)
+            {
+                if (!SongRules.ActiveSongs(context.Ally).Any(s => s.SongId == song.SongId && s.TurnsLeft > RefreshAtTurns))
+                    score += context.Party.Count;
+            }
+            else if (effect is ApplyCommandAction command)
+            {
+                string id = string.IsNullOrEmpty(command.CommandId) ? command.CommandName : command.CommandId;
+                // Share execution recipients, including personally visible summons.
+                score += ApplyCommandAction.Recipients(context.Game, context.Ally).Count(p => !p.StatusEffects.OfType<CommandStatusEffect>()
+                    .Any(s => !s.IsExpired() && s.CommandId == id && s.TurnsLeft > RefreshAtTurns));
+            }
+            else if (effect is SummonCloneAction)
+                score += SummonRules.ClonesOf(context.Game, context.Ally).Count < SummonRules.CloneLimit(context.Ally) ? 1 : 0;
+            else if (effect is ApplyStatusEffectAction apply && apply.StatusEffect != null)
+                score += option.Affected.Where(c => context.Party.Contains(c)).Sum(c => StatusBenefit(context, c, apply.StatusEffect));
+            else if (effect is ApplyStatusChanceAction chance && chance.StatusEffect != null)
+            {
+                var recipients = chance.OnCaster ? new Character[] { context.Ally } : option.Affected;
+                score += chance.Probability(context.Ally, skill.RankContext) *
+                    recipients.Where(c => context.Party.Contains(c)).Sum(c => StatusBenefit(context, c, chance.StatusEffect));
+            }
+        }
+        return score;
+    }
 
-		int maxNeeding = 0;
-		foreach (var effect in skill.ActionEffects)
-		{
-			if (effect == null) continue;
-
-			int needing = 0;
-			if (effect is StartSongAction songEffect && songEffect.SongId != null)
-			{
-				// Song: recast if not active or about to expire
-				if (SongRules.ActiveSongs(context.Ally).Any(s => s.SongId == songEffect.SongId && s.TurnsLeft > RefreshAtTurns))
-					needing = 0;
-				else
-					needing = context.Party.Count;
-			}
-			else if (effect is ApplyCommandAction cmdEffect && cmdEffect.CommandId != null)
-			{
-				// Command: count party members without the command
-				needing = context.Party.Count(p => p != null && !HasCommand(p, cmdEffect.CommandId));
-			}
-			else if (effect is SummonCloneAction)
-			{
-				// Clone: recast if under limit
-				needing = SummonRules.ClonesOf(context.Game, context.Ally).Count < SummonRules.CloneLimit(context.Ally) ? 1 : 0;
-			}
-			else if (effect is ApplyStatusEffectAction statusEffect && statusEffect.StatusEffect != null)
-			{
-				// Status effect: count allies needing it
-				needing = 0;
-				foreach (var target in option.Affected)
-				{
-					if (target == null || target.Team != context.Ally.Team) continue;
-					if (HasStatus(target, statusEffect.StatusEffect)) continue;
-
-					// Check effect-specific conditions
-					if (statusEffect.StatusEffect.GetEffectName() == "Hot")
-					{
-						// Hot: only apply if HP is below 70%
-						if (target.Vitals.HP >= target.FinalStats.HPMax * 0.7f) continue;
-					}
-					else if (statusEffect.StatusEffect is BarrierStatusEffect)
-					{
-						// Barrier: only apply if enemies are within 2 tiles of party
-						if (!context.VisibleEnemies.Any(e =>
-							context.Party.Any(p => TileWorldDungeon.ChevDistance(e.TilemapPosition, p.TilemapPosition) <= 2)))
-							continue;
-					}
-
-					needing++;
-				}
-			}
-
-			if (needing > maxNeeding)
-				maxNeeding = needing;
-		}
-
-		return maxNeeding;
-	}
-
-	private static bool HasCommand(Character c, string commandId) =>
-		c.StatusEffects.OfType<CommandStatusEffect>().Any(s => s.CommandId == commandId && s.TurnsLeft > RefreshAtTurns);
-
-	private static bool HasStatus(Character c, StatusEffect prefab) =>
-		c.StatusEffects.Any(s => s != null && !s.IsExpired() && s.TurnsLeft > RefreshAtTurns && s.StackKey == prefab.StackKey);
+    private static float StatusBenefit(AllySkillContext context, Character target, StatusEffect status)
+    {
+        if (!StatusCategories.IsBuff(status) || ClassPassives.IsImmune(target, status)) return 0;
+        var existing = target.StatusEffects.FirstOrDefault(s => s != null && !s.IsExpired() && s.StackKey == status.StackKey);
+        if (existing != null && (existing.TurnsLeft > RefreshAtTurns ||
+            existing is TimedBuffStatusEffect current && status is TimedBuffStatusEffect incoming && current.Magnitude() > incoming.Magnitude())) return 0;
+        if (status is HotStatusEffect && target.Vitals.HP >= target.FinalStats.HPMax * .7f) return 0;
+        if (status is BarrierStatusEffect && !context.VisibleEnemies.Any(e => TileWorldDungeon.ChevDistance(e.TilemapPosition, target.TilemapPosition) <= 2)) return 0;
+        return 1;
+    }
 }

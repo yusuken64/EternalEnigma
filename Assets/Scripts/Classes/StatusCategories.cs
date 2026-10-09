@@ -10,7 +10,9 @@ public static class StatusCategories
 	public static bool IsAilment(StatusEffect status) => status != null && AilmentNames.Contains(status.GetEffectName());
 	// Positive effects Discord may strip from enemies.
 	public static bool IsBuff(StatusEffect status) => status != null && !IsBind(status) && !IsAilment(status) &&
-		(status is StrengthStatusEffect || status is HotStatusEffect || status is TimedBuffStatusEffect || status is CommandStatusEffect);
+		(status is StrengthStatusEffect || status is HotStatusEffect || status is TimedBuffStatusEffect || status is CommandStatusEffect ||
+		 status is ParryStatusEffect || status is AmplifyStatusEffect || status is DamageShieldStatusEffect ||
+		 status is DamageReductionStatusEffect || status is EndureStatusEffect || status is StealthStatusEffect || status is SafePassageStatusEffect);
 	public static int CountAilments(Character character) => character == null || character.StatusEffects == null ? 0 :
 		character.StatusEffects.Count(s => s != null && !s.IsExpired() && IsAilment(s));
 }

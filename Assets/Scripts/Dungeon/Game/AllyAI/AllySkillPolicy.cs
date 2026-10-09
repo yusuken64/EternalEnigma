@@ -45,6 +45,7 @@ public sealed class AllySkillPolicy : PolicyBase
 
 		foreach (var evaluator in evaluators)
 		{
+			if (context.SearchFirst && evaluator is not ReviveEvaluator && evaluator is not EmergencyHealEvaluator) continue;
 			var choice = evaluator?.Evaluate(context);
 			if (choice != null)
 			{
@@ -59,6 +60,7 @@ public sealed class AllySkillPolicy : PolicyBase
 	{
 		pending = null;
 		pendingAction = null;
+		LastChoice = null;
 
 		if (!Enabled || ally == null || ally.Vitals.HP <= 0 || ally.IsDowned)
 		{

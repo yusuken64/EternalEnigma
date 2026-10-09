@@ -28,6 +28,7 @@ namespace JuicyChickenGames.Menu
 				new DynamicActionInfo()
 				{
 					ActionName = "Follow",
+					Description = "Fight in place while the leader is visible. If lost, search their last seen tile, then wander.",
 					Data = AllyStrategy.Follow,
 					ClickAction = () =>
 					{
@@ -51,6 +52,7 @@ namespace JuicyChickenGames.Menu
 				new DynamicActionInfo()
 				{
 					ActionName = "Aggressive",
+					Description = "Pursue visible enemies. Otherwise follow the leader, or search their last seen tile and wander.",
 					Data = AllyStrategy.Aggresive,
 					ClickAction = () =>
 					{
@@ -64,6 +66,7 @@ namespace JuicyChickenGames.Menu
 				new DynamicActionInfo()
 				{
 					ActionName = "Hold Position",
+					Description = "Fight and support allies without moving. Direct orders and forced movement still apply.",
 					Data = AllyStrategy.HoldPosition,
 					ClickAction = () =>
 					{

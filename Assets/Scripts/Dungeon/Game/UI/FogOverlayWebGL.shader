@@ -43,7 +43,7 @@ Shader "Custom/FogOverlayWebGL"
                       float2 uv = (i.worldPos.xy - _FogWorldOrigin.xy) / _FogWorldSize.xy;
 
                       if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
-                          discard;
+                          return fixed4(0.0, 0.0, 0.0, 1.0);
 
                       float fog = tex2D(_FogTex, uv).a;
 

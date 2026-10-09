@@ -31,10 +31,12 @@ namespace EternalEnigma.Tests.EditMode
                 try
                 {
                     var rs=instance.GetComponentsInChildren<Renderer>();var b=rs[0].bounds;foreach(var r in rs)b.Encapsulate(r.bounds);
-                    Assert.That(b.size.z,Is.InRange(.02f,DioramaScale.Pickup+.002f),item.ItemName);
+                    Assert.That(b.size.z,Is.InRange(.02f,Resources.Load<DungeonPickupPresentation>("DungeonThemes/PickupPresentation").HeroHeight),item.ItemName);
                     Assert.That(Mathf.Max(b.size.x,b.size.y,b.size.z),Is.GreaterThan(.35f),item.ItemName);
-                    Assert.That(Mathf.Max(b.size.x,b.size.y),Is.LessThanOrEqualTo(DioramaScale.HeroHeight*.73f),item.ItemName);
-                    Assert.That(b.max.z,Is.EqualTo(-.025f).Within(.003f),item.ItemName);
+                    Assert.That(Mathf.Max(b.size.x,b.size.y),Is.LessThanOrEqualTo(1.641f),item.ItemName);
+                    var footprint=instance.GetComponentInChildren<DungeonPickupFootprint>();
+                    Assert.That(footprint,Is.Not.Null,item.ItemName);
+                    Assert.That(footprint.GroundZ,Is.EqualTo(-.025f).Within(.003f),item.ItemName);
                     Assert.That(b.center.x,Is.EqualTo(1).Within(.003f),item.ItemName+" cell center");
                     Assert.That(b.center.y,Is.EqualTo(1).Within(.003f),item.ItemName+" cell center");
                 }

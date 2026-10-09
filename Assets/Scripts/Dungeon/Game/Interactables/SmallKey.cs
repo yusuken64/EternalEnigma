@@ -57,7 +57,9 @@ public sealed class SmallKey : Interactable
         {
             Bounds Bounds() { var b = renderers[0].bounds; foreach (var r in renderers.Skip(1)) b.Encapsulate(r.bounds); return b; }
             var bounds = Bounds();
-            model.transform.localScale *= Mathf.Min(size*.5f,DioramaScale.HeroHeight*.72f) / Mathf.Max(.01f, Mathf.Max(bounds.size.x, bounds.size.y));
+            // Authored dungeon adapters already have a measured screen silhouette. Only shrink
+            // a fallback/oversized model to fit; never enlarge it to the old universal footprint.
+            model.transform.localScale *= Mathf.Min(1f, size*.82f / Mathf.Max(.01f, Mathf.Max(bounds.size.x, bounds.size.y)));
             bounds = Bounds();
             var center = go.transform.position + new Vector3(size * .5f, size * .5f, 0f);
             model.transform.position += new Vector3(center.x - bounds.center.x, center.y - bounds.center.y, 0f);

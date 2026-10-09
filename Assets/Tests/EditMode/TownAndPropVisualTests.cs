@@ -27,7 +27,8 @@ namespace EternalEnigma.Tests.CoreIntegration
                     instance.transform.position = new Vector3(14, 22, 0);
                     DungeonPresentation.GroundFloorObject(instance.transform);
                     Assert.That(instance.transform.position, Is.EqualTo(new Vector3(14, 22, 0)), path);
-                    Assert.That(instance.GetComponentsInChildren<MeshRenderer>(true).Max(r => r.bounds.max.z),
+                    var footprint = instance.GetComponentInChildren<DungeonPickupFootprint>();
+                    Assert.That(footprint != null ? footprint.GroundZ : instance.GetComponentsInChildren<MeshRenderer>(true).Max(r => r.bounds.max.z),
                         Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.0001f), path);
                 }
                 finally { Object.DestroyImmediate(instance); }

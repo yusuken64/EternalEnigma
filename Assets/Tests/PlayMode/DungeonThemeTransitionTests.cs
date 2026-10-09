@@ -47,8 +47,20 @@ namespace EternalEnigma.Tests
                     Assert.That(mount.GetComponent<BiomeDecorationEffect>().FloorVisible,Is.EqualTo(fog.IsCurrentlyVisible(mount.FloorPosition)));
                 }
                 foreach(var mesh in old) Assert.That(mesh==null,Is.True,"Old combined mesh must be destroyed.");
-                foreach(var renderer in root.GetComponentsInChildren<MeshRenderer>()) Assert.That(renderer.bounds.min.z,Is.GreaterThan(-3.35f),renderer.name);
-                Assert.That(Object.FindFirstObjectByType<FogOverlay>().fogOverlayQuad.transform.position.z,Is.EqualTo(-3.35f));
+                float fogZ=-Mathf.Max(3.35f,Game.Instance.CurrentDungeon.PresentationWallHeight+.35f);
+                foreach(var renderer in root.GetComponentsInChildren<MeshRenderer>()) Assert.That(renderer.bounds.min.z,Is.GreaterThan(fogZ),renderer.name);
+                Assert.That(fog.fogOverlayQuad.transform.position.z,Is.EqualTo(fogZ));
+                var cutaway=root.GetComponentInChildren<DungeonBoundaryCutaway>();
+                Assert.That(cutaway,Is.Not.Null,choice.Biome+" "+choice.Environment);
+                Assert.That(cutaway.Height,Is.EqualTo(Resources.Load<DungeonPickupPresentation>("DungeonThemes/PickupPresentation").HeroHeight*1.25f).Within(.001f));
+                var theme=generator.ThemeCatalog.Get(choice);
+                var boundaryPreset=throne?theme.ThroneSmartBoundary:theme.RegularSmartBoundary;
+                var wallMaterial=boundaryPreset.MaterialOverride!=null?boundaryPreset.MaterialOverride:boundaryPreset.Tiles.singleTile.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+                foreach(var renderer in cutaway.GetComponentsInChildren<MeshRenderer>().Where(r=>r.GetComponent<SilhouetteParticipant>()?.Role==SilhouetteRole.Caster))
+                {
+                    Assert.That(renderer.sharedMaterial.mainTexture,Is.SameAs(wallMaterial.mainTexture));
+                    Assert.That(renderer.sharedMaterial.color,Is.EqualTo(wallMaterial.color));
+                }
                 if(choice.Biome==OverworldBiome.Desert&&choice.Environment==DungeonEnvironmentKind.Interior&&!throne)
                     yield return BiomeDecorationCapture.Audit(root,"Dungeon");
                 ScreenCapture.CaptureScreenshot("Docs/Art/Previews/DungeonThemes/Gameplay_"+choice.Biome+"_"+choice.Environment+(throne?"_Throne":"_Regular")+".png");yield return null;

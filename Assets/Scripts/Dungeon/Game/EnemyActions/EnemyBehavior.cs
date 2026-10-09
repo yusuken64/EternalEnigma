@@ -48,7 +48,7 @@ public sealed class EnemyBehavior : MonoBehaviour
         disguise.name = "Treasure chest disguise";
         disguise.transform.localPosition = Vector3.zero;
         disguise.transform.localRotation = Quaternion.identity;
-        // Authored model uses the same local scale as ordinary dungeon treasure.
+        DungeonPresentation.GroundFloorObject(disguise.transform);
     }
 
     internal void Tick() { if (cooldown > 0) cooldown--; }

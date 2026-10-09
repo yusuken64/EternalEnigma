@@ -49,7 +49,8 @@ namespace EternalEnigma.Tests.CoreIntegration
                         Assert.That(paving.Any(c=>c.Raycast(ray,out var hit,9)),Is.True,$"{biome} {environment} legacy {legacy} seed {seed}: no rendered floor below loot/scenery at {cell} ({dx},{dy}).");
                         var foot=new Vector3(ray.origin.x,ray.origin.y,-.01f);
                         var view=new Vector3(0,12,14).normalized;
-                        Assert.That(walls.Any(c=>c.Raycast(new Ray(foot-view*8,view),out var hit,7.99f)),Is.False,
+                        Assert.That(walls.Any(c=>c.Raycast(new Ray(foot-view*8,view),out var hit,7.99f) &&
+                            c.GetComponentInParent<DungeonBoundaryCutaway>()?.Cuts(hit.point,view)!=true),Is.False,
                             $"{biome} {environment} legacy {legacy} seed {seed}: raised terrain covers loot/scenery at {cell} ({dx},{dy}) from the gameplay camera.");
                     }
                 }

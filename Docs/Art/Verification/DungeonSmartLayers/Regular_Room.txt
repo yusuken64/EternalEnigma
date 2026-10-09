@@ -1,0 +1,1 @@
+seed=12345 start=(3,5) wall_faces=4370 mounts=3 meshes=21

@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="43" result="Passed" total="43" passed="43" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:35:20Z" duration="336.9189706">
+  <test-suite type="TestSuite" id="1000" name="Eternal Enigma_ Avarice's Abyss" fullname="Eternal Enigma_ Avarice's Abyss" runstate="Runnable" testcasecount="317" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:35:20Z" duration="336.918971" total="43" passed="43" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1394" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="317" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:35:20Z" duration="336.898486" total="43" passed="43" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="103460" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1395" name="EternalEnigma" fullname="EternalEnigma" runstate="Runnable" testcasecount="209" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:35:20Z" duration="336.893833" total="43" passed="43" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1396" name="Tests" fullname="EternalEnigma.Tests" runstate="Runnable" testcasecount="209" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:35:20Z" duration="336.884774" total="43" passed="43" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1398" name="CoreIntegration" fullname="EternalEnigma.Tests.CoreIntegration" runstate="Runnable" testcasecount="107" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:35:17Z" duration="333.717491" total="33" passed="33" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1256" name="BiomeDecorationTests" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:30:39Z" duration="56.127614" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1257" name="CatalogIsCompleteBoundedAndNonInteractive" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.CatalogIsCompleteBoundedAndNonInteractive" methodname="CatalogIsCompleteBoundedAndNonInteractive" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="2018722230" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:29:43Z" duration="0.088364" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1263" name="DerivedTownMasksUseTheSameLayoutContract" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.DerivedTownMasksUseTheSameLayoutContract" methodname="DerivedTownMasksUseTheSameLayoutContract" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1788188564" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:29:43Z" duration="0.235851" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1259" name="GraphRejectsDiagonalWarpAndImmediateReverseAndCollapsesJunctions" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.GraphRejectsDiagonalWarpAndImmediateReverseAndCollapsesJunctions" methodname="GraphRejectsDiagonalWarpAndImmediateReverseAndCollapsesJunctions" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="97113832" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:29:43Z" duration="0.014708" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1267" name="LegacyReplacementPreservesCompleteBuildRandomState" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.LegacyReplacementPreservesCompleteBuildRandomState" methodname="LegacyReplacementPreservesCompleteBuildRandomState" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="671110384" result="Passed" start-time="2026-10-09 03:29:44Z" end-time="2026-10-09 03:29:47Z" duration="3.787390" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1260" name="RealWorldSignsAreDeterministicSupportedAndReachRealTowns" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.RealWorldSignsAreDeterministicSupportedAndReachRealTowns" methodname="RealWorldSignsAreDeterministicSupportedAndReachRealTowns" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="175979412" result="Passed" start-time="2026-10-09 03:29:47Z" end-time="2026-10-09 03:29:53Z" duration="5.319724" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1264" name="RegularDungeonCombinations" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.RegularDungeonCombinations" methodname="RegularDungeonCombinations" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1739614872" result="Passed" start-time="2026-10-09 03:29:53Z" end-time="2026-10-09 03:30:32Z" duration="38.955046" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1261" name="RoadSearchHandlesBendsLoopsAndDisconnectedTowns" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.RoadSearchHandlesBendsLoopsAndDisconnectedTowns" methodname="RoadSearchHandlesBendsLoopsAndDisconnectedTowns" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1570408086" result="Passed" start-time="2026-10-09 03:30:32Z" end-time="2026-10-09 03:30:32Z" duration="0.001222" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1258" name="SpacingCrossesChunkBoundariesAndDoesNotConsumeRandom" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.SpacingCrossesChunkBoundariesAndDoesNotConsumeRandom" methodname="SpacingCrossesChunkBoundariesAndDoesNotConsumeRandom" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="169345319" result="Passed" start-time="2026-10-09 03:30:32Z" end-time="2026-10-09 03:30:32Z" duration="0.028180" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1265" name="ThroneDungeonCombinations" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.ThroneDungeonCombinations" methodname="ThroneDungeonCombinations" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="54703268" result="Passed" start-time="2026-10-09 03:30:32Z" end-time="2026-10-09 03:30:35Z" duration="3.509224" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1266" name="TownNamesRoundTripThroughUnitySaveSerialization" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.TownNamesRoundTripThroughUnitySaveSerialization" methodname="TownNamesRoundTripThroughUnitySaveSerialization" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1452697813" result="Passed" start-time="2026-10-09 03:30:35Z" end-time="2026-10-09 03:30:37Z" duration="1.926802" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1262" name="TownRoadVergesRespectClearance" fullname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.TownRoadVergesRespectClearance" methodname="TownRoadVergesRespectClearance" classname="EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests" runstate="Runnable" seed="1285496566" result="Passed" start-time="2026-10-09 03:30:37Z" end-time="2026-10-09 03:30:39Z" duration="2.217252" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1268" name="BiomeLayoutIntegrationTests" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-09 03:30:39Z" end-time="2026-10-09 03:34:03Z" duration="204.121794" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1279" name="EveryLayerUsesSameProfileAndReskinPreservesResult" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.EveryLayerUsesSameProfileAndReskinPreservesResult" methodname="EveryLayerUsesSameProfileAndReskinPreservesResult" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="872260760" result="Passed" start-time="2026-10-09 03:30:39Z" end-time="2026-10-09 03:30:40Z" duration="0.749773" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1278" name="LayoutChoiceAndGrasslandPresentationAreIndependent" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LayoutChoiceAndGrasslandPresentationAreIndependent" methodname="LayoutChoiceAndGrasslandPresentationAreIndependent" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="1090080870" result="Passed" start-time="2026-10-09 03:30:40Z" end-time="2026-10-09 03:30:40Z" duration="0.000860" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1277" name="LootAndSceneryStandOnRenderedFloor" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-09 03:30:40Z" end-time="2026-10-09 03:34:03Z" duration="203.356328" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1269" name="LootAndSceneryStandOnRenderedFloor(Grassland)" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor(Grassland)" methodname="LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="593834848" result="Passed" start-time="2026-10-09 03:30:40Z" end-time="2026-10-09 03:31:04Z" duration="24.394594" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+]]></output>
+                </test-case>
+                <test-case id="1270" name="LootAndSceneryStandOnRenderedFloor(Forest)" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor(Forest)" methodname="LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="1632411987" result="Passed" start-time="2026-10-09 03:31:04Z" end-time="2026-10-09 03:31:31Z" duration="26.573671" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+]]></output>
+                </test-case>
+                <test-case id="1271" name="LootAndSceneryStandOnRenderedFloor(Desert)" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor(Desert)" methodname="LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="1010574914" result="Passed" start-time="2026-10-09 03:31:31Z" end-time="2026-10-09 03:31:56Z" duration="24.657167" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+]]></output>
+                </test-case>
+                <test-case id="1272" name="LootAndSceneryStandOnRenderedFloor(Water)" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor(Water)" methodname="LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="939730345" result="Passed" start-time="2026-10-09 03:31:56Z" end-time="2026-10-09 03:32:21Z" duration="25.390091" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+]]></output>
+                </test-case>
+                <test-case id="1273" name="LootAndSceneryStandOnRenderedFloor(Mountain)" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor(Mountain)" methodname="LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="930055207" result="Passed" start-time="2026-10-09 03:32:21Z" end-time="2026-10-09 03:32:46Z" duration="25.362857" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+]]></output>
+                </test-case>
+                <test-case id="1274" name="LootAndSceneryStandOnRenderedFloor(Tundra)" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor(Tundra)" methodname="LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="548553526" result="Passed" start-time="2026-10-09 03:32:46Z" end-time="2026-10-09 03:33:12Z" duration="25.300291" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+]]></output>
+                </test-case>
+                <test-case id="1275" name="LootAndSceneryStandOnRenderedFloor(Marsh)" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor(Marsh)" methodname="LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="252095576" result="Passed" start-time="2026-10-09 03:33:12Z" end-time="2026-10-09 03:33:37Z" duration="25.594595" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+]]></output>
+                </test-case>
+                <test-case id="1276" name="LootAndSceneryStandOnRenderedFloor(Volcanic)" fullname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests.LootAndSceneryStandOnRenderedFloor(Volcanic)" methodname="LootAndSceneryStandOnRenderedFloor" classname="EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests" runstate="Runnable" seed="2064578153" result="Passed" start-time="2026-10-09 03:33:37Z" end-time="2026-10-09 03:34:03Z" duration="26.052070" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+Source mesh has over 2,097,152 triangles in it, and is using the Fast Midphase option. This might cause certain collisions to not be detected correctly due to an issue in the physics engine. If you observe that in your project, a workaround could be to turn off the Fast Midphase option for this particular mesh. Source mesh name: Environment chunk
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestFixture" id="1299" name="DungeonThemeTests" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-09 03:34:03Z" end-time="2026-10-09 03:35:14Z" duration="71.077835" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <output><![CDATA[[MCP Unity] WebSocket message received: {"method":"get_console_logs","params":{"logType":"error","offset":0,"limit":15,"includeStackTrace":false},"id":"a5db57ee-a2ce-4e93-bfe1-8bb7d39b286f"}
+]]></output>
+              <test-suite type="ParameterizedMethod" id="1306" name="AllThemesPreserveMasksSpawnsAndTemplates" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-09 03:34:03Z" end-time="2026-10-09 03:34:04Z" duration="0.770072" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1304" name="AllThemesPreserveMasksSpawnsAndTemplates(False)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates(False)" methodname="AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="781999722" result="Passed" start-time="2026-10-09 03:34:03Z" end-time="2026-10-09 03:34:04Z" duration="0.589644" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1305" name="AllThemesPreserveMasksSpawnsAndTemplates(True)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.AllThemesPreserveMasksSpawnsAndTemplates(True)" methodname="AllThemesPreserveMasksSpawnsAndTemplates" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="2069014190" result="Passed" start-time="2026-10-09 03:34:04Z" end-time="2026-10-09 03:34:04Z" duration="0.167136" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1307" name="NewTilesRespectBudgetsAndDecorationClearance" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.NewTilesRespectBudgetsAndDecorationClearance" methodname="NewTilesRespectBudgetsAndDecorationClearance" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="1927974003" result="Passed" start-time="2026-10-09 03:34:04Z" end-time="2026-10-09 03:34:04Z" duration="0.010265" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1308" name="RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" methodname="RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="525418182" result="Passed" start-time="2026-10-09 03:34:04Z" end-time="2026-10-09 03:35:11Z" duration="66.858549" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1303" name="SelectionRoundTripsWithoutOverworldGeneration" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.SelectionRoundTripsWithoutOverworldGeneration" methodname="SelectionRoundTripsWithoutOverworldGeneration" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="1095334378" result="Passed" start-time="2026-10-09 03:35:11Z" end-time="2026-10-09 03:35:12Z" duration="0.949376" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1302" name="ThemedGroundIgnoresLegacyRaisedMapRoot" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-09 03:35:12Z" end-time="2026-10-09 03:35:14Z" duration="2.436133" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <output><![CDATA[[MCP Unity] Console logs retrieved: 0 entries (logType=error, offset=0, limit=15, includeStackTrace=False)
+[MCP Unity] WebSocket message response for request ID 'a5db57ee-a2ce-4e93-bfe1-8bb7d39b286f': {"id":"a5db57ee-a2ce-4e93-bfe1-8bb7d39b286f","result":{"logs":[],"message":"Retrieved 0 of 0 log entries of type 'error' (offset: 0, limit: 15, total: 69)","success":true,"type":"text"}}
+]]></output>
+                <test-case id="1300" name="ThemedGroundIgnoresLegacyRaisedMapRoot(False)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot(False)" methodname="ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="793815337" result="Passed" start-time="2026-10-09 03:35:12Z" end-time="2026-10-09 03:35:14Z" duration="2.173276" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1301" name="ThemedGroundIgnoresLegacyRaisedMapRoot(True)" fullname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests.ThemedGroundIgnoresLegacyRaisedMapRoot(True)" methodname="ThemedGroundIgnoresLegacyRaisedMapRoot" classname="EternalEnigma.Tests.CoreIntegration.DungeonThemeTests" runstate="Runnable" seed="1764876883" result="Passed" start-time="2026-10-09 03:35:14Z" end-time="2026-10-09 03:35:14Z" duration="0.211835" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestFixture" id="1378" name="TownAndPropVisualTests" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-09 03:35:14Z" end-time="2026-10-09 03:35:17Z" duration="2.385716" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1379" name="FloorObjectsTouchGroundWithoutMovingTheirLogicalRoot" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.FloorObjectsTouchGroundWithoutMovingTheirLogicalRoot" methodname="FloorObjectsTouchGroundWithoutMovingTheirLogicalRoot" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="506882379" result="Passed" start-time="2026-10-09 03:35:14Z" end-time="2026-10-09 03:35:15Z" duration="0.195358" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1383" name="ImportedPropsFitCellsAndRender" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.ImportedPropsFitCellsAndRender" methodname="ImportedPropsFitCellsAndRender" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="1997102147" result="Passed" start-time="2026-10-09 03:35:15Z" end-time="2026-10-09 03:35:15Z" duration="0.063483" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1384" name="TownHasExpandedEnclosureAndReachableGate" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.TownHasExpandedEnclosureAndReachableGate" methodname="TownHasExpandedEnclosureAndReachableGate" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="2027673485" result="Passed" start-time="2026-10-09 03:35:15Z" end-time="2026-10-09 03:35:17Z" duration="2.064021" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1382" name="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:17Z" duration="0.044512" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1380" name="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(&quot;DamageTrap&quot;,&quot;SpikeTrap&quot;)" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(&quot;DamageTrap&quot;,&quot;SpikeTrap&quot;)" methodname="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="1678071382" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:17Z" duration="0.029401" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1381" name="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(&quot;BumpTrap&quot;,&quot;BumpTrap&quot;)" fullname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests.TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual(&quot;BumpTrap&quot;,&quot;BumpTrap&quot;)" methodname="TrapPrefabsUseImportedModelsAndCanHideTheirEntireVisual" classname="EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests" runstate="Runnable" seed="1126738368" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:17Z" duration="0.000337" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestSuite" id="1397" name="EditMode" fullname="EternalEnigma.Tests.EditMode" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:20Z" duration="3.163395" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1237" name="DioramaItemTests" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:17Z" duration="0.522933" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1239" name="AllItemsResolveLitColliderFreeVisualsAndIcons" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests.AllItemsResolveLitColliderFreeVisualsAndIcons" methodname="AllItemsResolveLitColliderFreeVisualsAndIcons" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" seed="1937787374" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:17Z" duration="0.434815" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1241" name="AnUnsetOverrideKeepsCategoryFallbackAndAnOverrideWorksWithoutCategories" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests.AnUnsetOverrideKeepsCategoryFallbackAndAnOverrideWorksWithoutCategories" methodname="AnUnsetOverrideKeepsCategoryFallbackAndAnOverrideWorksWithoutCategories" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" seed="1892571841" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:17Z" duration="0.002870" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1238" name="ProductionDungeonKeepsCurrencyAndAllCategoryBindings" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests.ProductionDungeonKeepsCurrencyAndAllCategoryBindings" methodname="ProductionDungeonKeepsCurrencyAndAllCategoryBindings" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" seed="1376739297" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:17Z" duration="0.007927" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1240" name="ShopItemsHaveDistinctModelAndTintCombinations" fullname="EternalEnigma.Tests.EditMode.DioramaItemTests.ShopItemsHaveDistinctModelAndTintCombinations" methodname="ShopItemsHaveDistinctModelAndTintCombinations" classname="EternalEnigma.Tests.EditMode.DioramaItemTests" runstate="Runnable" seed="86511525" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:17Z" duration="0.056083" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1245" name="DungeonSmartLayerTests" fullname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" classname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:20Z" duration="2.568130" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="ParameterizedMethod" id="1248" name="AuthoredLayersRoundTripAndThemesRespectParticipation" fullname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.AuthoredLayersRoundTripAndThemesRespectParticipation" classname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:18Z" duration="0.053386" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1246" name="AuthoredLayersRoundTripAndThemesRespectParticipation(False)" fullname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.AuthoredLayersRoundTripAndThemesRespectParticipation(False)" methodname="AuthoredLayersRoundTripAndThemesRespectParticipation" classname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" runstate="Runnable" seed="63939063" result="Passed" start-time="2026-10-09 03:35:17Z" end-time="2026-10-09 03:35:18Z" duration="0.032888" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1247" name="AuthoredLayersRoundTripAndThemesRespectParticipation(True)" fullname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.AuthoredLayersRoundTripAndThemesRespectParticipation(True)" methodname="AuthoredLayersRoundTripAndThemesRespectParticipation" classname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" runstate="Runnable" seed="1252785441" result="Passed" start-time="2026-10-09 03:35:18Z" end-time="2026-10-09 03:35:18Z" duration="0.007509" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1252" name="DungeonPickupsHaveIndividualReferenceRatiosAndGroundWithoutMovingRoots" fullname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.DungeonPickupsHaveIndividualReferenceRatiosAndGroundWithoutMovingRoots" methodname="DungeonPickupsHaveIndividualReferenceRatiosAndGroundWithoutMovingRoots" classname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" runstate="Runnable" seed="851536977" result="Passed" start-time="2026-10-09 03:35:18Z" end-time="2026-10-09 03:35:18Z" duration="0.131825" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1249" name="EveryNeighborCombinationHasRotationSafeConnectionsAndDiagonalFills" fullname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.EveryNeighborCombinationHasRotationSafeConnectionsAndDiagonalFills" methodname="EveryNeighborCombinationHasRotationSafeConnectionsAndDiagonalFills" classname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" runstate="Runnable" seed="316543915" result="Passed" start-time="2026-10-09 03:35:18Z" end-time="2026-10-09 03:35:18Z" duration="0.005974" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1250" name="IndependentRebuildsReleaseMeshesHonorExclusionsAndKeepRandomState" fullname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.IndependentRebuildsReleaseMeshesHonorExclusionsAndKeepRandomState" methodname="IndependentRebuildsReleaseMeshesHonorExclusionsAndKeepRandomState" classname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" runstate="Runnable" seed="1734563487" result="Passed" start-time="2026-10-09 03:35:18Z" end-time="2026-10-09 03:35:20Z" duration="2.282069" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1251" name="TallBoundaryCutsForegroundAndReleasesItsMaskOnIndependentRebuild" fullname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.TallBoundaryCutsForegroundAndReleasesItsMaskOnIndependentRebuild" methodname="TallBoundaryCutsForegroundAndReleasesItsMaskOnIndependentRebuild" classname="EternalEnigma.Tests.EditMode.DungeonSmartLayerTests" runstate="Runnable" seed="640641241" result="Passed" start-time="2026-10-09 03:35:20Z" end-time="2026-10-09 03:35:20Z" duration="0.074038" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: Temp/HarnessResults/EditMode.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

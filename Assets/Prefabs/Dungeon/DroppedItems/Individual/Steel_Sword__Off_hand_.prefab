@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.25, y: 1, z: 1.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3386949248655322743}
@@ -144,6 +144,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3386949248655322743}
+  - component: {fileID: 7856812414910912219}
   m_Layer: 0
   m_Name: Floor pose
   m_TagString: Untagged
@@ -159,11 +160,24 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7398216740795328929}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.28514886, y: 0.10858771, z: -0.16201036, w: 0.9384303}
-  m_LocalPosition: {x: 0.926152, y: 0.7606286, z: -0.12240376}
-  m_LocalScale: {x: 0.59032893, y: 0.59032893, z: 0.59032893}
+  m_LocalRotation: {x: -0.36875358, y: 0.064013496, z: -0.19798888, w: 0.9059379}
+  m_LocalPosition: {x: 0.79341877, y: 0.5691976, z: -0.2124915}
+  m_LocalScale: {x: 1.2836063, y: 1.2836063, z: 1.2836063}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 284845487032708265}
   m_Father: {fileID: 5300533743604165661}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7856812414910912219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7398216740795328929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28088a0cb9143574394668ef4b3c1d9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonPickupFootprint
+  SupportPoint: {x: 0.08599721, y: -0.16842864, z: 0.037064716}

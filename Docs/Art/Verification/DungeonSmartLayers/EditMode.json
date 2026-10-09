@@ -1,0 +1,25 @@
+{
+    "runId": "f3aa5129d01e42cca685901165811832",
+    "mode": "EditMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.EditMode",
+    "testFilters": [
+        "EternalEnigma.Tests.EditMode.DungeonSmartLayerTests",
+        "EternalEnigma.Tests.EditMode.DioramaItemTests",
+        "EternalEnigma.Tests.CoreIntegration.DungeonThemeTests",
+        "EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests",
+        "EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests",
+        "EternalEnigma.Tests.CoreIntegration.BiomeLayoutIntegrationTests",
+        "EternalEnigma.Tests.FogVisibilityTests"
+    ],
+    "passed": 43,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/EditMode.xml",
+    "startedUtc": "2026-10-09T03:29:41.7675219Z",
+    "updatedUtc": "2026-10-09T03:35:20.5400068Z",
+    "currentTest": "",
+    "lastFinished": "EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.TallBoundaryCutsForegroundAndReleasesItsMaskOnIndependentRebuild: Passed",
+    "failures": [],
+    "durationSeconds": 336.9189706
+}

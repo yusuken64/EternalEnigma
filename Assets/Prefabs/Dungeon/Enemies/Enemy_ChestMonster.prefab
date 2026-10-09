@@ -724,7 +724,7 @@ MonoBehaviour:
   StealGold: 1
   Confusion: {fileID: 0}
   Mimic: 1
-  ChestVisualPrefab: {fileID: 616959809414817356, guid: ab7a79951de88764aa6d80db67cf9ac5, type: 3}
+  ChestVisualPrefab: {fileID: 616959809414817356, guid: efccd6d3e82a68d4a9080ec876163910, type: 3}
 --- !u!114 &939524957300749658
 MonoBehaviour:
   m_ObjectHideFlags: 0

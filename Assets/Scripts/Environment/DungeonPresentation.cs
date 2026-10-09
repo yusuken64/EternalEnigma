@@ -26,7 +26,8 @@ public static class DungeonPresentation
         // Keep the logical cell/root fixed; authored pickup and stair meshes live below it.
         var renderers = root.GetComponentsInChildren<MeshRenderer>(true);
         if (renderers.Length == 0) return;
-        float bottom = renderers.Max(renderer => renderer.bounds.max.z);
+        var footprint = root.GetComponentInChildren<DungeonPickupFootprint>();
+        float bottom = footprint != null ? footprint.GroundZ : renderers.Max(renderer => renderer.bounds.max.z);
         var shift = Vector3.forward * (GroundPlaneZ - bottom);
         foreach (Transform child in root) child.position += shift;
     }
@@ -166,5 +167,6 @@ public static class DungeonPresentation
             }
         }
         batch.Finish();
+        creator.worldObject.GetComponentInChildren<DungeonBoundaryCutaway>()?.ApplyMaterials(root,batch.Owner,true);
     }
 }

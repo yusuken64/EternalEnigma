@@ -1,0 +1,1713 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df8b4afda2dd78c45920ab6c29db965e, type: 3}
+  m_Name: PickupPresentation
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonPickupPresentation
+  HeroPrefab: Assets/Prefabs/Town/Allies/Ally_MC03.prefab
+  HeroRigPrefab: Assets/Prefabs/Dungeon/Ally.prefab
+  HeroHeight: 3.3877816
+  HeroScreenHeight: 0.2278797
+  CameraOffset: {x: 0, y: -12, z: -14}
+  OrthographicSize: 6.997899
+  Items:
+  - Name: Antidote
+    Source: jar
+    Prefab: {fileID: 3149399104654154780, guid: fcbb145db2264bd4b83a0d29e7f0596e, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3025835
+    ProjectedRatio: 0.43000016
+    WorldHeightRatio: 0.40188745
+  - Name: Apprentice Wand
+    Source: '@Wand02'
+    Prefab: {fileID: 8135957398941515050, guid: e7a22ee77ceb35a44bd25937a577555c, type: 3}
+    Size: 1
+    Euler: {x: 289.99997, y: 20.000025, z: 322}
+    Shape: {x: 1.5, y: 1, z: 1.5}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.0342922
+    ProjectedRatio: 0.58000034
+    WorldHeightRatio: 0.62982565
+  - Name: Arcane Wand
+    Source: '@Wand06'
+    Prefab: {fileID: 8586960278277534379, guid: c88129be37c026e49a80575838b83237, type: 3}
+    Size: 1
+    Euler: {x: 305, y: 20.000002, z: 337}
+    Shape: {x: 1.5, y: 1, z: 1.5}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.6201156
+    ProjectedRatio: 0.5799999
+    WorldHeightRatio: 0.48141348
+  - Name: Arrows
+    Source: '@Projectile/Arrow01Projectile'
+    Prefab: {fileID: 1547443449043942913, guid: d816c0024ef9e224b8018a99712f5699, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 198, z: 152}
+    Shape: {x: 2.8, y: 2.8, z: 1}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4576991
+    ProjectedRatio: 0.57000005
+    WorldHeightRatio: 0.3689858
+  - Name: Battle Axe
+    Source: '@OHS13_Axe'
+    Prefab: {fileID: 1391364650270836602, guid: b8449f502e87a1f48847dea0a3ea27e6, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999985, z: 298}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1826783
+    ProjectedRatio: 0.56999993
+    WorldHeightRatio: 0.43340045
+  - Name: Battle Axe (Off-hand)
+    Source: '@OHS13_Axe'
+    Prefab: {fileID: 6072118901480934991, guid: d4f981ca393512c46a7c06e627ed4c4d, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999985, z: 298}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1826783
+    ProjectedRatio: 0.56999993
+    WorldHeightRatio: 0.43340045
+  - Name: Battle Bee Butter Honey Latte
+    Source: cup
+    Prefab: {fileID: 4500139514080692894, guid: fb0d8b460f9a6b545a9ad27701f4ce4f, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417657
+    ProjectedRatio: 0.43000004
+    WorldHeightRatio: 0.36801758
+  - Name: Beholder Eye Cream Pistachio Latte
+    Source: cup
+    Prefab: {fileID: 6865578819301280046, guid: f159ef4ca14ac044e99cc43704dc54db, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417657
+    ProjectedRatio: 0.43000004
+    WorldHeightRatio: 0.36801758
+  - Name: Beholder Eye Jelly Double Espresso
+    Source: cup
+    Prefab: {fileID: 5132551706983534999, guid: 1fc4d36cb8e5533419e3bfcedcb18e00, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417657
+    ProjectedRatio: 0.43000004
+    WorldHeightRatio: 0.36801758
+  - Name: Bolt Spell
+    Source: book2
+    Prefab: {fileID: 491227926630918232, guid: cf5b8d6e9c5f9ec42a61a3dc63a850fc, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.6399484
+    ProjectedRatio: 0.42999583
+    WorldHeightRatio: 0.20041513
+  - Name: Bow
+    Source: bow
+    Prefab: {fileID: 1330550707379997490, guid: e5762abd4f60e874d977dd3582947a42, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 90, z: 180}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.5795
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3294524
+    ProjectedRatio: 0.5794996
+    WorldHeightRatio: 0.5454429
+  - Name: Bow02
+    Source: bow
+    Prefab: {fileID: 465794747773886590, guid: 6e0954b3b9d627d4899fa259333fad20, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 90, z: 180}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.5795
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3294524
+    ProjectedRatio: 0.5794996
+    WorldHeightRatio: 0.5454429
+  - Name: Bow03
+    Source: bow
+    Prefab: {fileID: 5740788412282478403, guid: 4d3aa9d56cd31d34d841f35ba15146dc, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 90, z: 180}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.5795
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3294524
+    ProjectedRatio: 0.5794996
+    WorldHeightRatio: 0.5454429
+  - Name: Bow04
+    Source: bow
+    Prefab: {fileID: 5918866170699138031, guid: 684d9ab5203cac94ea1b85b687cf057f, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 90, z: 180}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.5795
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3294524
+    ProjectedRatio: 0.5794996
+    WorldHeightRatio: 0.5454429
+  - Name: Bow05
+    Source: bow
+    Prefab: {fileID: 6911244899376647079, guid: 553ed820b1eebe34cb1e28e37d9a4d42, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 90, z: 180}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.5795
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3294524
+    ProjectedRatio: 0.5794996
+    WorldHeightRatio: 0.5454429
+  - Name: Bread
+    Source: waffle
+    Prefab: {fileID: 2489675637843255831, guid: 8568a5696fbb3484299364dd5dccf3d1, type: 3}
+    Size: 0
+    Euler: {x: 340, y: -0.00000022714173, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3738968
+    ProjectedRatio: 0.41434696
+    WorldHeightRatio: 0.22142258
+  - Name: Cactus Pulp Caramel Cloud Latte
+    Source: cup
+    Prefab: {fileID: 305259064116116984, guid: a288c4ae60f91564bb31adf6b0af2c5d, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417676
+    ProjectedRatio: 0.4300006
+    WorldHeightRatio: 0.36801758
+  - Name: Cactus Pulp Caramel Coffee
+    Source: cup
+    Prefab: {fileID: 171637886195257888, guid: ea6ced111782c3343b4e68bfae1be55f, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417676
+    ProjectedRatio: 0.4300006
+    WorldHeightRatio: 0.36801758
+  - Name: Charred Bread
+    Source: waffle
+    Prefab: {fileID: 4044164824856512842, guid: aae7c8a0e466f994da1da170d898b2a2, type: 3}
+    Size: 0
+    Euler: {x: 340, y: -0.00000022714173, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3738968
+    ProjectedRatio: 0.41434696
+    WorldHeightRatio: 0.22142258
+  - Name: Crab Monster Meat Croquette
+    Source: ham
+    Prefab: {fileID: 6584258889470952842, guid: 4af668bde42358940bf6af4e8d9d70de, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3614541
+    ProjectedRatio: 0.43000048
+    WorldHeightRatio: 0.37095508
+  - Name: Crystal Shield
+    Source: '@Shield16'
+    Prefab: {fileID: 6432922267575810000, guid: ab07e1106d1839b428b0b2bd3ada85bb, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.051306
+    ProjectedRatio: 0.42999998
+    WorldHeightRatio: 0.23287025
+  - Name: Crystal Wand
+    Source: '@Wand04'
+    Prefab: {fileID: 1853771209794422960, guid: 4fdf636d6a226894d9ef360496910f39, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000008, z: 322}
+    Shape: {x: 1.5, y: 1, z: 1.5}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.493871
+    ProjectedRatio: 0.57999974
+    WorldHeightRatio: 0.40537515
+  - Name: 'Demo Scroll: Ally Mend'
+    Source: book2
+    Prefab: {fileID: 8554062656444663075, guid: 552318ffcdf8ed846a384a747bd7e3c4, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Demo Scroll: Area Burst'
+    Source: book2
+    Prefab: {fileID: 8853595249584652460, guid: 757a9613b5580c540ba504550e51d57e, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Demo Scroll: Arrow Shot'
+    Source: book2
+    Prefab: {fileID: 3768108627734499456, guid: 4cf780a3d5b76ed44a353ecc0eedd8ba, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Demo Scroll: Enemy Pulse'
+    Source: book2
+    Prefab: {fileID: 6730365010134814924, guid: 1738eb9af0b55fb4cb7b5725d8f29f63, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Demo Scroll: Inspect Item'
+    Source: book2
+    Prefab: {fileID: 807805396436586626, guid: 81e713589e4ea0d448accecc39539c38, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Demo Scroll: Inspect Weapon'
+    Source: book2
+    Prefab: {fileID: 5954815849323050427, guid: c8b4b22ae500aa54c918500512710180, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Demo Scroll: Party Mend'
+    Source: book2
+    Prefab: {fileID: 5072229442051885818, guid: ed2cb26c07d92494cad2b7221480187d, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Demo Scroll: Self Focus'
+    Source: book2
+    Prefab: {fileID: 2877829488955908068, guid: c3c1723b96a6e324f875f09447c9da49, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Demo Scroll: Single Hit'
+    Source: book2
+    Prefab: {fileID: 4310878628065828264, guid: c28722b632879b94c982411b8358100c, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: Demo Training Sword
+    Source: '@Projectile/Arrow01Projectile'
+    Prefab: {fileID: 1053078012494235156, guid: 7a55fad521c07cf4e8f4874b6b68e16f, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 198, z: 152}
+    Shape: {x: 2.8, y: 2.8, z: 1}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4576991
+    ProjectedRatio: 0.57000005
+    WorldHeightRatio: 0.3689858
+  - Name: Dragon Sausage & Onion Pastry
+    Source: waffle
+    Prefab: {fileID: 8561951301387308169, guid: 22f15d8ef0938e445abd713724af4cbe, type: 3}
+    Size: 0
+    Euler: {x: 340, y: -0.00000022714173, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3738968
+    ProjectedRatio: 0.41434696
+    WorldHeightRatio: 0.22142258
+  - Name: Dragon Shield
+    Source: '@Shield17'
+    Prefab: {fileID: 2167678227453983851, guid: 700ae215be5333a45951d9872dd02d1b, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.7654216
+    ProjectedRatio: 0.41691175
+    WorldHeightRatio: 0.25037688
+  - Name: Dragon Spear
+    Source: '@Spear05'
+    Prefab: {fileID: 309717674630536746, guid: cf79edda8d1e89246866becd49ec1ab9, type: 3}
+    Size: 1
+    Euler: {x: 336, y: 34.999996, z: 307}
+    Shape: {x: 1.65, y: 1, z: 1.65}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.74407744
+    ProjectedRatio: 0.5799998
+    WorldHeightRatio: 0.3635755
+  - Name: Explosion Spell
+    Source: book2
+    Prefab: {fileID: 1656438519504588107, guid: a25ad70cfa9eeab418585204a5938447, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: Flame Sword
+    Source: '@OHS15_Sword'
+    Prefab: {fileID: 4355349134354224441, guid: 84cf065c183f34349bd29b01b2500e8b, type: 3}
+    Size: 1
+    Euler: {x: 305, y: 20.000002, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1225588
+    ProjectedRatio: 0.58
+    WorldHeightRatio: 0.4835464
+  - Name: Flame Sword (Off-hand)
+    Source: '@OHS15_Sword'
+    Prefab: {fileID: 8391833042999569703, guid: a225a144727bdb548821ab8f138bd791, type: 3}
+    Size: 1
+    Euler: {x: 305, y: 20.000002, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1225588
+    ProjectedRatio: 0.58
+    WorldHeightRatio: 0.4835464
+  - Name: Frailty Potion
+    Source: potion_red
+    Prefab: {fileID: 8443427215061586937, guid: 397f247cb00e10b47a057d9ecfd6a696, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: Gilded Greatsword
+    Source: '@THS06_Sword'
+    Prefab: {fileID: 7224698952196199802, guid: 456ceac38e7b4b34f8a044b3fece487d, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.8175805
+    ProjectedRatio: 0.5800001
+    WorldHeightRatio: 0.29210258
+  - Name: Gilded Shield
+    Source: '@Shield13'
+    Prefab: {fileID: 7676595333599456200, guid: 1b659fb2445e7c04e93b3462134f5d58, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.7017803
+    ProjectedRatio: 0.42999965
+    WorldHeightRatio: 0.24908447
+  - Name: Gilded Sword
+    Source: '@OHS08_Sword'
+    Prefab: {fileID: 5672266403142925153, guid: a81281891979d8b4eac7542b94820512, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2431921
+    ProjectedRatio: 0.58
+    WorldHeightRatio: 0.34069097
+  - Name: Gilded Sword (Off-hand)
+    Source: '@OHS08_Sword'
+    Prefab: {fileID: 1740428851213204290, guid: 8654415f50fe7f042942cce12134b2c6, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2431921
+    ProjectedRatio: 0.58
+    WorldHeightRatio: 0.34069097
+  - Name: Greatsword
+    Source: '@THS01_Sword'
+    Prefab: {fileID: 181151287394522255, guid: 0f1361a3b4818884fa064c6ba84a02a2, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000011, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.0008378
+    ProjectedRatio: 0.5799999
+    WorldHeightRatio: 0.38415334
+  - Name: Guardian Shield
+    Source: '@Shield19'
+    Prefab: {fileID: 8644510310257559718, guid: 770d5643e3e0a6148ab1a990fea55d45, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.723923
+    ProjectedRatio: 0.42786384
+    WorldHeightRatio: 0.2644607
+  - Name: Hand Axe
+    Source: '@OHS10_Axe'
+    Prefab: {fileID: 7432996855286310217, guid: 772e3734014cc8445b5c4c8e115e0bea, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 5.000002, z: 358}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.249417
+    ProjectedRatio: 0.56999975
+    WorldHeightRatio: 0.35179326
+  - Name: Hand Axe (Off-hand)
+    Source: '@OHS10_Axe'
+    Prefab: {fileID: 9114346115474374204, guid: 1e5bf12ad6ca82540ac153c60c5b38dc, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 5.000002, z: 358}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.249417
+    ProjectedRatio: 0.56999975
+    WorldHeightRatio: 0.35179326
+  - Name: Heater Shield
+    Source: '@Shield11'
+    Prefab: {fileID: 7533045241576526627, guid: 0c78b33336e0afa43952a94bffb56c7c, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.7762022
+    ProjectedRatio: 0.43000028
+    WorldHeightRatio: 0.24574478
+  - Name: Iron Arrows
+    Source: '@Projectile/Arrow02Projectile'
+    Prefab: {fileID: 4886145109571714392, guid: 255ebb6f4979ecb4f83d8dd4aff95321, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 198, z: 152}
+    Shape: {x: 2.8, y: 2.8, z: 1}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3724109
+    ProjectedRatio: 0.56999975
+    WorldHeightRatio: 0.36183304
+  - Name: Iron Buckler
+    Source: '@Shield04'
+    Prefab: {fileID: 1896363342276365928, guid: 4ad7eecc68625f74cbdc112d71759a98, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.0617259
+    ProjectedRatio: 0.43000004
+    WorldHeightRatio: 0.26524308
+  - Name: Iron Greatsword
+    Source: '@THS02_Sword'
+    Prefab: {fileID: 836801008967383176, guid: 6f03d1441838c7646855b60f3b0eb823, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999992, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.9647631
+    ProjectedRatio: 0.57999957
+    WorldHeightRatio: 0.4455915
+  - Name: Iron Shield
+    Source: '@Shield05'
+    Prefab: {fileID: 7908042729308506708, guid: bdbe4fc27c344fd45a8d3d8b65c2b52b, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.077567
+    ProjectedRatio: 0.424675
+    WorldHeightRatio: 0.2596852
+  - Name: Iron Spear
+    Source: '@Spear02'
+    Prefab: {fileID: 4636908630061505745, guid: c16c600ff01c44840a634292a2303ca8, type: 3}
+    Size: 1
+    Euler: {x: 336, y: 19.999994, z: 307}
+    Shape: {x: 1.65, y: 1, z: 1.65}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.7709703
+    ProjectedRatio: 0.5800001
+    WorldHeightRatio: 0.2813106
+  - Name: Iron Sword
+    Source: '@OHS04_Sword'
+    Prefab: {fileID: 3601969902334841618, guid: 9a799b4694b36d742bb5a52e1710f54e, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000011, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.339421
+    ProjectedRatio: 0.5799999
+    WorldHeightRatio: 0.3887012
+  - Name: Iron Sword (Off-hand)
+    Source: '@OHS04_Sword'
+    Prefab: {fileID: 5457470555779323959, guid: 616b23262e24b7f40849c2f3e9879f5c, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000011, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.339421
+    ProjectedRatio: 0.5799999
+    WorldHeightRatio: 0.3887012
+  - Name: Kite Shield
+    Source: '@Shield06'
+    Prefab: {fileID: 3502951686004388974, guid: 3068b213015b0074f83a5a0f1c95c51c, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.6953801
+    ProjectedRatio: 0.42999965
+    WorldHeightRatio: 0.23453799
+  - Name: Knight's Greatsword
+    Source: '@THS04_Sword'
+    Prefab: {fileID: 7835037466915863126, guid: f81965b9ea909b34688376d3abbb632b, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000011, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.9098642
+    ProjectedRatio: 0.57999974
+    WorldHeightRatio: 0.39208397
+  - Name: Knight's Shield
+    Source: '@Shield10'
+    Prefab: {fileID: 2942481239538099396, guid: 65906d52499119441a367ef4421035f6, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.8806165
+    ProjectedRatio: 0.4300002
+    WorldHeightRatio: 0.2268295
+  - Name: Knight's Spear
+    Source: '@Spear04'
+    Prefab: {fileID: 8993001107485109893, guid: f634632315b4b5247836006cec983a5d, type: 3}
+    Size: 1
+    Euler: {x: 336, y: 19.999994, z: 307}
+    Shape: {x: 1.65, y: 1, z: 1.65}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.74533373
+    ProjectedRatio: 0.58000016
+    WorldHeightRatio: 0.27530476
+  - Name: Knight's Sword
+    Source: '@OHS06_Sword'
+    Prefab: {fileID: 248647268420045506, guid: 78a99de1cdd7a854d838af098c40d166, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000011, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2498021
+    ProjectedRatio: 0.5800003
+    WorldHeightRatio: 0.38425827
+  - Name: Knight's Sword (Off-hand)
+    Source: '@OHS06_Sword'
+    Prefab: {fileID: 8852582143899777915, guid: 09001e25878685640b4c19eba69d1df0, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000011, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2498021
+    ProjectedRatio: 0.5800003
+    WorldHeightRatio: 0.38425827
+  - Name: Legendary Shield
+    Source: '@Shield20'
+    Prefab: {fileID: 2205542458282575392, guid: c1c928a1ce331f341a5f06eac517a14b, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.669609
+    ProjectedRatio: 0.43000016
+    WorldHeightRatio: 0.2419047
+  - Name: Mallet
+    Source: '@OHS11_Hammer'
+    Prefab: {fileID: 3058125481708606955, guid: 194acef00534030469ba8dbc8cb04d48, type: 3}
+    Size: 1
+    Euler: {x: 5.000008, y: 95, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2224249
+    ProjectedRatio: 0.5700003
+    WorldHeightRatio: 0.37371048
+  - Name: Mallet (Off-hand)
+    Source: '@OHS11_Hammer'
+    Prefab: {fileID: 9096719522717245231, guid: e01f88797d92ae04396bd7d0e6bd4d65, type: 3}
+    Size: 1
+    Euler: {x: 5.000008, y: 95, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2224249
+    ProjectedRatio: 0.5700003
+    WorldHeightRatio: 0.37371048
+  - Name: Mythril Shield
+    Source: '@Shield15'
+    Prefab: {fileID: 7112656715511990506, guid: 1884e9aa4020c62419cb9db7c479c382, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.8114017
+    ProjectedRatio: 0.4226326
+    WorldHeightRatio: 0.26731318
+  - Name: Mythril Sword
+    Source: '@OHS12_Sword'
+    Prefab: {fileID: 7146958773018823561, guid: a93558e2c534b354b941aca12a0d208e, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2228651
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.40698734
+  - Name: Mythril Sword (Off-hand)
+    Source: '@OHS12_Sword'
+    Prefab: {fileID: 8751616716067353162, guid: ced2c5f083bf61f498497a3db072457c, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2228651
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.40698734
+  - Name: Needle
+    Source: '@OHS02_Niddle'
+    Prefab: {fileID: 2639839161877664907, guid: e65d34900ea41c64ea2fa3354f078d03, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2356316
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.30845362
+  - Name: Needle (Off-hand)
+    Source: '@OHS02_Niddle'
+    Prefab: {fileID: 64000930895225096, guid: 69ab91a1d63379f43a448b139115e5a9, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2356316
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.30845362
+  - Name: Oak Wand
+    Source: '@Wand03'
+    Prefab: {fileID: 4268435622056863237, guid: 97cbe8d86b734854da4890ea27b97825, type: 3}
+    Size: 1
+    Euler: {x: 305, y: 19.999998, z: 322}
+    Shape: {x: 1.5, y: 1, z: 1.5}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.7287145
+    ProjectedRatio: 0.5799999
+    WorldHeightRatio: 0.48709512
+  - Name: Oblivion Draught
+    Source: ink
+    Prefab: {fileID: 7279381850274645817, guid: 60c17f6facb2f9e45abaea9d0c37a113, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3513904
+    ProjectedRatio: 0.4299999
+    WorldHeightRatio: 0.39545426
+  - Name: Potion
+    Source: potion_red
+    Prefab: {fileID: 2282193662818948389, guid: e46c620697b1e8e49b8d55b2d57d1dcf, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: Potion 100HP
+    Source: potion_red
+    Prefab: {fileID: 692341073168595256, guid: 237b46d0e9703474f88295cc727fbe09, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: Potion 40HP
+    Source: potion_red
+    Prefab: {fileID: 3239051410027991617, guid: bef7d4bd09eaab140b27714a4e3e789b, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: Potion 60HP
+    Source: potion_red
+    Prefab: {fileID: 1591018949570052261, guid: 175846d88b845e94388eb0d9a7afebf2, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: Potion 80HP
+    Source: potion_red
+    Prefab: {fileID: 6413184146123308635, guid: bc4c0e9ca4ed43944ab880ab4edb896b, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: Roasted Battle Bee Espresso
+    Source: cup
+    Prefab: {fileID: 2067731304842885627, guid: 88a9766aeb9cec8408b2625010d49290, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417676
+    ProjectedRatio: 0.4300006
+    WorldHeightRatio: 0.36801758
+  - Name: Round Shield
+    Source: '@Shield03'
+    Prefab: {fileID: 1296265596239076260, guid: 7c52e19aff0ebc24ba8d7e1692a7ca57, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.9535974
+    ProjectedRatio: 0.4300003
+    WorldHeightRatio: 0.22464661
+  - Name: Royal Arrows
+    Source: '@Projectile/Arrow05Projectile'
+    Prefab: {fileID: 4266591976992874632, guid: fc823f4c534b3d34d90c34d7c9865caa, type: 3}
+    Size: 1
+    Euler: {x: 330, y: 197.99998, z: 152}
+    Shape: {x: 2.8, y: 2.8, z: 1}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4386388
+    ProjectedRatio: 0.5700001
+    WorldHeightRatio: 0.48534596
+  - Name: Royal Greatsword
+    Source: '@THS07_Sword'
+    Prefab: {fileID: 7561058213719188428, guid: 5ee2f84f6cf88db4cae4a50a3d1f55d1, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.8287989
+    ProjectedRatio: 0.5799999
+    WorldHeightRatio: 0.28849113
+  - Name: Royal Shield
+    Source: '@Shield14'
+    Prefab: {fileID: 3084684633816568727, guid: e493e51acf30a63498d82667a9ad848f, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.0240183
+    ProjectedRatio: 0.42068112
+    WorldHeightRatio: 0.27740255
+  - Name: Royal Sword
+    Source: '@OHS09_Sword'
+    Prefab: {fileID: 5021288706293976923, guid: 128c764dfe76b8b48b330722d18cf966, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999992, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2168425
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.4422659
+  - Name: Royal Sword (Off-hand)
+    Source: '@OHS09_Sword'
+    Prefab: {fileID: 5451860060150216557, guid: 2b3227b9ec770114689d493615ae2752, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999992, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2168425
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.4422659
+  - Name: SP Potion
+    Source: potion_blue
+    Prefab: {fileID: 8374135149450611696, guid: 4207ce02b22ae39439c2b292169d5234, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: Sage's Wand
+    Source: '@Wand07'
+    Prefab: {fileID: 3926838794510602251, guid: 117d625070054e14581f67a39207613b, type: 3}
+    Size: 1
+    Euler: {x: 305, y: 19.999998, z: 322}
+    Shape: {x: 1.5, y: 1, z: 1.5}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.607745
+    ProjectedRatio: 0.58
+    WorldHeightRatio: 0.4899317
+  - Name: Salamander-Fat Caramel Cold Brew
+    Source: cup
+    Prefab: {fileID: 1719690202232684919, guid: dbf226c20bc2b5f4db6cbbea644a5e52, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417676
+    ProjectedRatio: 0.4300006
+    WorldHeightRatio: 0.36801758
+  - Name: Salamander-Fat Caramel Latte
+    Source: cup
+    Prefab: {fileID: 5175459054622082312, guid: db29eed5bcf3cca4cb753eafdde40356, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417676
+    ProjectedRatio: 0.4300006
+    WorldHeightRatio: 0.36801758
+  - Name: Shadow Shield
+    Source: '@Shield18'
+    Prefab: {fileID: 1982676066100021722, guid: b63e742e93aa6fe4a9f5b41e2446e378, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.6708167
+    ProjectedRatio: 0.41282076
+    WorldHeightRatio: 0.25753203
+  - Name: Shadow Sword
+    Source: '@OHS16_Sword'
+    Prefab: {fileID: 1373734833479947830, guid: 94a5343113468804e8b60fc4d0013bd7, type: 3}
+    Size: 1
+    Euler: {x: 305, y: 20.000002, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1246907
+    ProjectedRatio: 0.58000046
+    WorldHeightRatio: 0.48318058
+  - Name: Shadow Sword (Off-hand)
+    Source: '@OHS16_Sword'
+    Prefab: {fileID: 7431594963382332291, guid: e1c85ed231841594e9f28cb94d4c345d, type: 3}
+    Size: 1
+    Euler: {x: 305, y: 20.000002, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1246907
+    ProjectedRatio: 0.58000046
+    WorldHeightRatio: 0.48318058
+  - Name: Short Sword
+    Source: '@OHS03_Sword'
+    Prefab: {fileID: 8860285511232982318, guid: 713adcaeaad75604f86a1426b66177f7, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999992, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3475965
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.44538057
+  - Name: Short Sword (Off-hand)
+    Source: '@OHS03_Sword'
+    Prefab: {fileID: 4608649674505309402, guid: c9b1ef66a73cd29499faa882627f43f3, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999992, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3475965
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.44538057
+  - Name: Silver Arrows
+    Source: '@Projectile/Arrow04Projectile'
+    Prefab: {fileID: 1971602512282909977, guid: b60f5b2c5bb47f644b63d5cfc2e947ef, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 183, z: 152}
+    Shape: {x: 2.8, y: 2.8, z: 1}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4822257
+    ProjectedRatio: 0.56999993
+    WorldHeightRatio: 0.3960558
+  - Name: Silver Greatsword
+    Source: '@THS05_Sword'
+    Prefab: {fileID: 9208163482691703811, guid: 2af2305f3d4760a4db5f43189447b7ab, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.88830054
+    ProjectedRatio: 0.58000016
+    WorldHeightRatio: 0.4324858
+  - Name: Silver Shield
+    Source: '@Shield12'
+    Prefab: {fileID: 5826961772761065595, guid: cc80ac50ecc4f14428cd97167b7644c3, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.948145
+    ProjectedRatio: 0.42999992
+    WorldHeightRatio: 0.27658084
+  - Name: Silver Sword
+    Source: '@OHS07_Sword'
+    Prefab: {fileID: 2192140857972028651, guid: af114aa2a657e604d9b582f419e8b97b, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999992, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1538501
+    ProjectedRatio: 0.5800001
+    WorldHeightRatio: 0.44270986
+  - Name: Silver Sword (Off-hand)
+    Source: '@OHS07_Sword'
+    Prefab: {fileID: 6629382347605073248, guid: 7848b8a06c8f2c44f982d2f48726f59e, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999992, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1538501
+    ProjectedRatio: 0.5800001
+    WorldHeightRatio: 0.44270986
+  - Name: Silver Wand
+    Source: '@Wand05'
+    Prefab: {fileID: 6579208956512938541, guid: bd0ad445171259e46bb0f1b9e1b842ed, type: 3}
+    Size: 1
+    Euler: {x: 349.99997, y: 80.000015, z: 292}
+    Shape: {x: 1.5, y: 1, z: 1.5}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4505188
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.5610954
+  - Name: Sleep Potion
+    Source: potion_blue
+    Prefab: {fileID: 177054793439080227, guid: 55a29ea47e1cbdf4395f199336ace1c4, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: Slime Jelly Danish
+    Source: cake
+    Prefab: {fileID: 1061784616792407392, guid: 293f938f2af296a4d8a2fd85a74ed43c, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.403487
+    ProjectedRatio: 0.42999965
+    WorldHeightRatio: 0.34917596
+  - Name: Smiling Mushroom & Cheese Croissant
+    Source: cake
+    Prefab: {fileID: 4591029854159085040, guid: a41fa9fa6d11c954f87dea0e788abfc6, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.403487
+    ProjectedRatio: 0.42999965
+    WorldHeightRatio: 0.34917596
+  - Name: Specter Cream Shakerato
+    Source: cup
+    Prefab: {fileID: 4207863718987382097, guid: d7610d18185a1fd44888c3f60a963800, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417676
+    ProjectedRatio: 0.4300006
+    WorldHeightRatio: 0.36801758
+  - Name: Specter Cream Tiramisu Latte
+    Source: cup
+    Prefab: {fileID: 1913625592962810870, guid: f5247e3db0b157a4ca5ddc05fa100ac9, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4417676
+    ProjectedRatio: 0.4300006
+    WorldHeightRatio: 0.36801758
+  - Name: Spoiled Bread
+    Source: waffle
+    Prefab: {fileID: 5110845903016977446, guid: d30a6d64ed3204e4380630c1df9693d9, type: 3}
+    Size: 0
+    Euler: {x: 340, y: -0.00000022714173, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3738968
+    ProjectedRatio: 0.41434696
+    WorldHeightRatio: 0.22142258
+  - Name: Steel Arrows
+    Source: '@Projectile/Arrow03Projectile'
+    Prefab: {fileID: 588237836634257151, guid: 31f915f7ad45bf946921a135bf558f27, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 153, z: 182}
+    Shape: {x: 2.8, y: 2.8, z: 1}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3774815
+    ProjectedRatio: 0.57000005
+    WorldHeightRatio: 0.38225126
+  - Name: Steel Buckler
+    Source: '@Shield08'
+    Prefab: {fileID: 5671632089112608868, guid: 1214c9e1ab9173749a9dcd24ffd18286, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.078918
+    ProjectedRatio: 0.43000025
+    WorldHeightRatio: 0.25564933
+  - Name: Steel Greatsword
+    Source: '@THS03_Sword'
+    Prefab: {fileID: 6228657508442889562, guid: c6bba5036e68ac9489d01cd0f37c3bf6, type: 3}
+    Size: 1
+    Euler: {x: 349.99997, y: 5.0000024, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.928125
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.3452754
+  - Name: Steel Shield
+    Source: '@Shield09'
+    Prefab: {fileID: 7600000027613259275, guid: 96b3e5c23d4ac9b49b109ffe802815d4, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.9614758
+    ProjectedRatio: 0.43000028
+    WorldHeightRatio: 0.25345767
+  - Name: Steel Spear
+    Source: '@Spear03'
+    Prefab: {fileID: 5821089983917852861, guid: a9cf85a26dce69949ac3d528d0540fa7, type: 3}
+    Size: 1
+    Euler: {x: 336, y: 19.999994, z: 307}
+    Shape: {x: 1.65, y: 1, z: 1.65}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.7261958
+    ProjectedRatio: 0.58000016
+    WorldHeightRatio: 0.2769341
+  - Name: Steel Sword
+    Source: '@OHS05_Sword'
+    Prefab: {fileID: 3848958515693896476, guid: 28087aa28d6460b4e94ffdbbf972bf81, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000011, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2836063
+    ProjectedRatio: 0.5800001
+    WorldHeightRatio: 0.3814474
+  - Name: Steel Sword (Off-hand)
+    Source: '@OHS05_Sword'
+    Prefab: {fileID: 3741798728235491254, guid: df2c54a0f4dc73e4fa25654cc3a4bb56, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 20.000011, z: 328}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2836063
+    ProjectedRatio: 0.5800001
+    WorldHeightRatio: 0.3814474
+  - Name: Stick
+    Source: '@OHS01_Stick'
+    Prefab: {fileID: 7310895870378778117, guid: 2a4197e88b953bd49a24006dbeb6bea0, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3878292
+    ProjectedRatio: 0.57999974
+    WorldHeightRatio: 0.336492
+  - Name: Stick (Off-hand)
+    Source: '@OHS01_Stick'
+    Prefab: {fileID: 3905282654910601722, guid: 09f7624cac2a7cc4c962f6d028abc5ae, type: 3}
+    Size: 1
+    Euler: {x: 335, y: 20, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3878292
+    ProjectedRatio: 0.57999974
+    WorldHeightRatio: 0.336492
+  - Name: Tower Shield
+    Source: '@Shield07'
+    Prefab: {fileID: 5853968496707445499, guid: d6d079d09ce824a4387cad1335a72ea5, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.6634544
+    ProjectedRatio: 0.42999998
+    WorldHeightRatio: 0.2393134
+  - Name: War Hammer
+    Source: '@OHS14_Hammer'
+    Prefab: {fileID: 4404152583803284061, guid: 6d20721c17b82d4498a3162a36ae4c99, type: 3}
+    Size: 1
+    Euler: {x: 350, y: 80.000015, z: 298}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1696688
+    ProjectedRatio: 0.5700001
+    WorldHeightRatio: 0.48765376
+  - Name: War Hammer (Off-hand)
+    Source: '@OHS14_Hammer'
+    Prefab: {fileID: 6226166057793356442, guid: 15ed07fd611c9df4593263059bdcd1ad, type: 3}
+    Size: 1
+    Euler: {x: 350, y: 80.000015, z: 298}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1696688
+    ProjectedRatio: 0.5700001
+    WorldHeightRatio: 0.48765376
+  - Name: Warp Spell
+    Source: book
+    Prefab: {fileID: 1971154239555500273, guid: 95c9023b226dd10418bbe4c63b2e0676, type: 3}
+    Size: 0
+    Euler: {x: 340, y: -0.00000022714173, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4273368
+    ProjectedRatio: 0.42999995
+    WorldHeightRatio: 0.22762404
+  - Name: Wooden Arrows
+    Source: '@Projectile/Arrow01Projectile'
+    Prefab: {fileID: 3085065559261221114, guid: 587b551095210db4e8aeaebcfd4b6f11, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 198, z: 152}
+    Shape: {x: 2.8, y: 2.8, z: 1}
+    TargetRatio: 0.57
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4576991
+    ProjectedRatio: 0.57000005
+    WorldHeightRatio: 0.3689858
+  - Name: Wooden Buckler
+    Source: '@Shield01'
+    Prefab: {fileID: 2288619551458252387, guid: b8ce1894340ea734fa44fdfd6c993712, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.1620975
+    ProjectedRatio: 0.43000007
+    WorldHeightRatio: 0.36156154
+  - Name: Wooden Shield
+    Source: '@Shield02'
+    Prefab: {fileID: 4887355439241104914, guid: c845baef1b5be1043bda03483e4f1fac, type: 3}
+    Size: 0
+    Euler: {x: 30.000002, y: 200, z: 25.000008}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.3012142
+    ProjectedRatio: 0.42398113
+    WorldHeightRatio: 0.25454292
+  - Name: Wooden Spear
+    Source: '@Spear01'
+    Prefab: {fileID: 1874829044900186153, guid: 948662e4a3692aa4791334b5e02a2da5, type: 3}
+    Size: 1
+    Euler: {x: 320.99997, y: 20.000006, z: 322}
+    Shape: {x: 1.65, y: 1, z: 1.65}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.833679
+    ProjectedRatio: 0.58
+    WorldHeightRatio: 0.39742628
+  - Name: Wooden Wand
+    Source: '@Wand01'
+    Prefab: {fileID: 3653435653270570442, guid: 4c4b3dfca2e8f534a8850d25a13c6431, type: 3}
+    Size: 1
+    Euler: {x: 305, y: 4.999998, z: 352}
+    Shape: {x: 1.5, y: 1, z: 1.5}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.7277881
+    ProjectedRatio: 0.58000016
+    WorldHeightRatio: 0.47034764
+  - Name: Iron Ore
+    Source: jewel
+    Prefab: {fileID: 4001002615513686852, guid: a4ab043f207df16408e5740c3e4916a2, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.39
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3447765
+    ProjectedRatio: 0.38092723
+    WorldHeightRatio: 0.2945138
+  - Name: Healing Herb
+    Source: leaf
+    Prefab: {fileID: 4270879124260401861, guid: 5a2107a2c71eb144593c4335ab705b2f, type: 3}
+    Size: 0
+    Euler: {x: 340, y: -0.00000022714173, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.39
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.9682053
+    ProjectedRatio: 0.39000022
+    WorldHeightRatio: 0.219881
+  - Name: Timber
+    Source: log
+    Prefab: {fileID: 5037823273182661447, guid: 620a54008ece7c848adf4b0660b759f6, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.082939
+    ProjectedRatio: 0.43000007
+    WorldHeightRatio: 0.39692193
+  - Name: Trap Parts
+    Source: wheel
+    Prefab: {fileID: 2899518405792724375, guid: 737e9cf5ebb72fa4f8bb30a160cb06da, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.39
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.141684
+    ProjectedRatio: 0.39000028
+    WorldHeightRatio: 0.30515736
+  - Name: 'Category: Bow'
+    Source: bow
+    Prefab: {fileID: 8595900342138293941, guid: c3a033d59c0654747be38cc484f2604d, type: 3}
+    Size: 1
+    Euler: {x: 315, y: 90, z: 180}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.5795
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3294524
+    ProjectedRatio: 0.5794996
+    WorldHeightRatio: 0.5454429
+  - Name: 'Category: Bread'
+    Source: waffle
+    Prefab: {fileID: 8595900342138293941, guid: ddb63206242adb24a9e63066392991e1, type: 3}
+    Size: 0
+    Euler: {x: 340, y: -0.00000022714173, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3738968
+    ProjectedRatio: 0.41434696
+    WorldHeightRatio: 0.22142258
+  - Name: 'Category: Gold'
+    Source: gold coin bag2
+    Prefab: {fileID: 8595900342138293941, guid: 8d5ca0eb592f2674599441d25424b36d, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.6253366
+    ProjectedRatio: 0.42482418
+    WorldHeightRatio: 0.3816393
+  - Name: 'Category: Key'
+    Source: key
+    Prefab: {fileID: 8595900342138293941, guid: 3aaf72c49b38b664b80aa6dfe95fbf0d, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.37
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.0774856
+    ProjectedRatio: 0.37000024
+    WorldHeightRatio: 0.26569903
+  - Name: 'Category: Potion'
+    Source: potion_red
+    Prefab: {fileID: 8595900342138293941, guid: acc899337b301ad4d991ba4d195fa9f3, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2321429
+    ProjectedRatio: 0.39691725
+    WorldHeightRatio: 0.3461828
+  - Name: 'Category: Ring'
+    Source: ring
+    Prefab: {fileID: 8595900342138293941, guid: 0cbb4616ef679184889a11609a683a87, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.37
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.456592
+    ProjectedRatio: 0.37
+    WorldHeightRatio: 0.32464662
+  - Name: 'Category: Shield'
+    Source: shield
+    Prefab: {fileID: 8595900342138293941, guid: 8e78221187f0c6649a9e640f20e0145e, type: 3}
+    Size: 0
+    Euler: {x: 340, y: -0.00000022714173, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.1966169
+    ProjectedRatio: 0.4150512
+    WorldHeightRatio: 0.16675799
+  - Name: 'Category: Skull'
+    Source: skull
+    Prefab: {fileID: 8595900342138293941, guid: 4a089f16d0f39d746a04a5ccf78d69d4, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.222085
+    ProjectedRatio: 0.3657928
+    WorldHeightRatio: 0.38883904
+  - Name: 'Category: SpellBook'
+    Source: book2
+    Prefab: {fileID: 8595900342138293941, guid: e16aa31a873fb3f40bca6d92e9749be6, type: 3}
+    Size: 0
+    Euler: {x: 275.00006, y: -0.0000097959355, z: 342}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 4.640022
+    ProjectedRatio: 0.43000335
+    WorldHeightRatio: 0.20041963
+  - Name: 'Category: Sword'
+    Source: '@OHS03_Sword'
+    Prefab: {fileID: 8595900342138293941, guid: e444648bcedccef418f3cf53897dbdc8, type: 3}
+    Size: 1
+    Euler: {x: 320, y: 34.999992, z: 313}
+    Shape: {x: 1.25, y: 1, z: 1.6}
+    TargetRatio: 0.58
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.3475965
+    ProjectedRatio: 0.57999986
+    WorldHeightRatio: 0.44538057
+  - Name: 'Category: TreasureChest'
+    Source: treasure chest
+    Prefab: {fileID: 8595900342138293941, guid: 73156ff30792efe498f82a96eb5eb8e4, type: 3}
+    Size: 2
+    Euler: {x: -90, y: 0, z: -12}
+    Shape: {x: 1.22, y: 1.8, z: 1.1}
+    TargetRatio: 0.5
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 0.9424437
+    ProjectedRatio: 0.6005195
+    WorldHeightRatio: 0.5
+  - Name: Currency
+    Source: gold coin bag2
+    Prefab: {fileID: 582040097240011437, guid: fc5f8f501407308499d678f15e2ecc0a, type: 3}
+    Size: 0
+    Euler: {x: 315, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 1, y: 1}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 2.6253366
+    ProjectedRatio: 0.42482418
+    WorldHeightRatio: 0.3816393
+  - Name: Small key
+    Source: key
+    Prefab: {fileID: 5649661179106538313, guid: 8b98b2fd472e57d4cb7ec689dceba2e9, type: 3}
+    Size: 0
+    Euler: {x: 270, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.37
+    CellCenter: {x: 0, y: 0}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.4760514
+    ProjectedRatio: 0.3699997
+    WorldHeightRatio: 0.4719962
+  - Name: Chest disguise
+    Source: treasure chest
+    Prefab: {fileID: 616959809414817356, guid: efccd6d3e82a68d4a9080ec876163910, type: 3}
+    Size: 2
+    Euler: {x: -90, y: 0, z: -12}
+    Shape: {x: 1.22, y: 1.8, z: 1.1}
+    TargetRatio: 0.5
+    CellCenter: {x: -0.25, y: -0.22000003}
+    ParentScale: {x: 2, y: 2, z: 2}
+    BakedScale: 0.47122186
+    ProjectedRatio: 0.6005194
+    WorldHeightRatio: 0.5
+  - Name: Bag
+    Source: bag
+    Prefab: {fileID: 8587473421401397981, guid: 22926c55a61580f488f7298aee3933e8, type: 3}
+    Size: 0
+    Euler: {x: 270, y: 0, z: 0}
+    Shape: {x: 1, y: 1, z: 1}
+    TargetRatio: 0.43
+    CellCenter: {x: 0, y: 0}
+    ParentScale: {x: 1, y: 1, z: 1}
+    BakedScale: 1.2894368
+    ProjectedRatio: 0.43000045
+    WorldHeightRatio: 0.4222879

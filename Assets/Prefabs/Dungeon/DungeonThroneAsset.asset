@@ -16,9 +16,11 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11400000, guid: b031c9b65ed22d84b981b6cef565c08d, type: 2}
+    - {fileID: 11400000, guid: b5f2257806b75904c81932a9fef161df, type: 2}
+    - {fileID: 11400000, guid: 07c22c639ccd8b0429bd44b95f8fcf07, type: 2}
     - {fileID: 11400000, guid: c182d777afc55a2499571a57c7c5058a, type: 2}
     - {fileID: 9214212535235456234, guid: ffbfd625f6053cb4d9fe6976554b4caa, type: 3}
+    - {fileID: 11400000, guid: b031c9b65ed22d84b981b6cef565c08d, type: 2}
     - {fileID: 11400000, guid: a27c3b2ec69755c40b6ec5f14b4dcdfc, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
@@ -8972,7 +8974,7 @@ MonoBehaviour:
       Data: 5
     - Name: 
       Entry: 7
-      Data: 46|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 46|DungeonBoundaryLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: 1c9901b2c5dd4eb18441c8f2858b812a
@@ -8988,83 +8990,16 @@ MonoBehaviour:
     - Name: active
       Entry: 5
       Data: true
-    - Name: selectedLayerIndex
+    - Name: Role
       Entry: 3
-      Data: 0
-    - Name: tiles
-      Entry: 7
-      Data: 47|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
-        TileWorldCreator]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 48|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
-    - Name: rndSelectionWeight
-      Entry: 4
-      Data: 1
-    - Name: foldout
+      Data: 3
+    - Name: UseThemePreset
       Entry: 5
-      Data: false
-    - Name: editor
-      Entry: 6
-      Data: 
-    - Name: preset
+      Data: true
+    - Name: Preset
       Entry: 10
       Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: mergeTiles
-      Entry: 5
-      Data: true
-    - Name: keepPrefabConnection
-      Entry: 5
-      Data: false
-    - Name: scaleTileByCellSize
-      Entry: 5
-      Data: true
-    - Name: scaleTileHeight
-      Entry: 5
-      Data: false
-    - Name: tileColliderHeightOffset
-      Entry: 4
-      Data: 0
-    - Name: tileColliderHeight
-      Entry: 4
-      Data: 0
-    - Name: tileColliderBorderOffset
-      Entry: 4
-      Data: 0
-    - Name: colliderTypeVariantA
-      Entry: 3
-      Data: 0
-    - Name: colliderTypeVariantB
-      Entry: 3
-      Data: 0
-    - Name: assignLayer
-      Entry: 7
-      Data: UnityEngine.LayerMask, UnityEngine.CoreModule
-    - Name: 
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: setShadowCastingMode
-      Entry: 5
-      Data: false
-    - Name: shadowCasting
-      Entry: 3
-      Data: 0
-    - Name: globalPositionOffset
+    - Name: Offset
       Entry: 7
       Data: UnityEngine.Vector3, UnityEngine.CoreModule
     - Name: 
@@ -9079,39 +9014,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: globalRotationOffset
+    - Name: IgnoreLayers
       Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: globalScalingOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: ignoreLayers
-      Entry: 7
-      Data: 49|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
+      Data: 47|System.String[], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -9121,12 +9026,27 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: SmartPreset
+      Entry: 10
+      Data: 1
+    - Name: GroundPreset
+      Entry: 10
+      Data: 2
+    - Name: WallHeight
+      Entry: 4
+      Data: 4.234727
+    - Name: CutawayForeground
+      Entry: 5
+      Data: true
+    - Name: PresentationVersion
+      Entry: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 50|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 48|DungeonThemeTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: e7e0ca998be546bbba683d307c9143e6
@@ -9142,83 +9062,16 @@ MonoBehaviour:
     - Name: active
       Entry: 5
       Data: true
-    - Name: selectedLayerIndex
+    - Name: Role
       Entry: 3
-      Data: 0
-    - Name: tiles
-      Entry: 7
-      Data: 51|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
-        TileWorldCreator]], mscorlib
-    - Name: 
-      Entry: 12
       Data: 1
-    - Name: 
-      Entry: 7
-      Data: 52|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
-    - Name: rndSelectionWeight
-      Entry: 4
-      Data: 1
-    - Name: foldout
+    - Name: UseThemePreset
       Entry: 5
-      Data: false
-    - Name: editor
-      Entry: 6
-      Data: 
-    - Name: preset
+      Data: true
+    - Name: Preset
       Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: mergeTiles
-      Entry: 5
-      Data: true
-    - Name: keepPrefabConnection
-      Entry: 5
-      Data: false
-    - Name: scaleTileByCellSize
-      Entry: 5
-      Data: true
-    - Name: scaleTileHeight
-      Entry: 5
-      Data: false
-    - Name: tileColliderHeightOffset
-      Entry: 4
-      Data: 0
-    - Name: tileColliderHeight
-      Entry: 4
-      Data: 0
-    - Name: tileColliderBorderOffset
-      Entry: 4
-      Data: 0
-    - Name: colliderTypeVariantA
-      Entry: 3
-      Data: 0
-    - Name: colliderTypeVariantB
-      Entry: 3
-      Data: 0
-    - Name: assignLayer
-      Entry: 7
-      Data: UnityEngine.LayerMask, UnityEngine.CoreModule
-    - Name: 
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: setShadowCastingMode
-      Entry: 5
-      Data: false
-    - Name: shadowCasting
-      Entry: 3
-      Data: 0
-    - Name: globalPositionOffset
+      Data: 2
+    - Name: Offset
       Entry: 7
       Data: UnityEngine.Vector3, UnityEngine.CoreModule
     - Name: 
@@ -9233,39 +9086,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: globalRotationOffset
+    - Name: IgnoreLayers
       Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: globalScalingOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: ignoreLayers
-      Entry: 7
-      Data: 53|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
+      Data: 49|System.String[], mscorlib
     - Name: 
       Entry: 12
       Data: 1
@@ -9283,7 +9106,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 54|TWC.Actions.InstantiateObjects, TileWorldCreator
+      Data: 50|TWC.Actions.InstantiateObjects, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: faa314ee1dbf4e0e885b493ce1814393
@@ -9298,7 +9121,7 @@ MonoBehaviour:
       Data: false
     - Name: active
       Entry: 5
-      Data: true
+      Data: false
     - Name: selectedCopyLayerIndex
       Entry: 3
       Data: 0
@@ -9316,7 +9139,7 @@ MonoBehaviour:
       Data: false
     - Name: prefab
       Entry: 10
-      Data: 2
+      Data: 3
     - Name: instantiateChilds
       Entry: 5
       Data: false
@@ -9328,7 +9151,7 @@ MonoBehaviour:
       Data: 
     - Name: randomChildPrefabs
       Entry: 7
-      Data: 55|System.Collections.Generic.List`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
+      Data: 51|System.Collections.Generic.List`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
         mscorlib
     - Name: 
       Entry: 12
@@ -9569,7 +9392,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 56|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 52|TWC.Actions.InstantiateTiles, TileWorldCreator
     - Name: guid
       Entry: 2
       Data: 7d85e41a2c1d4e7a959db811fc851a7a
@@ -9584,20 +9407,20 @@ MonoBehaviour:
       Data: false
     - Name: active
       Entry: 5
-      Data: true
+      Data: false
     - Name: selectedLayerIndex
       Entry: 3
       Data: 0
     - Name: tiles
       Entry: 7
-      Data: 57|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
+      Data: 53|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
         TileWorldCreator]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 58|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
+      Data: 54|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
     - Name: rndSelectionWeight
       Entry: 4
       Data: 0.4
@@ -9609,13 +9432,13 @@ MonoBehaviour:
       Data: 
     - Name: preset
       Entry: 10
-      Data: 0
+      Data: 4
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 59|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
+      Data: 55|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
     - Name: rndSelectionWeight
       Entry: 4
       Data: 1
@@ -9726,7 +9549,7 @@ MonoBehaviour:
       Data: 
     - Name: ignoreLayers
       Entry: 7
-      Data: 60|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
+      Data: 56|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -9741,7 +9564,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 61|TWC.Actions.InstantiateTiles, TileWorldCreator
+      Data: 57|DungeonThemeTileLayer, EternalEnigma.Game
     - Name: guid
       Entry: 2
       Data: 48e5180a251f421db3b82058962ca9e7
@@ -9757,83 +9580,16 @@ MonoBehaviour:
     - Name: active
       Entry: 5
       Data: true
-    - Name: selectedLayerIndex
+    - Name: Role
       Entry: 3
-      Data: 0
-    - Name: tiles
-      Entry: 7
-      Data: 62|System.Collections.Generic.List`1[[TWC.Actions.InstantiateTiles+TilePresets,
-        TileWorldCreator]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 63|TWC.Actions.InstantiateTiles+TilePresets, TileWorldCreator
-    - Name: rndSelectionWeight
-      Entry: 4
-      Data: 1
-    - Name: foldout
+      Data: 2
+    - Name: UseThemePreset
       Entry: 5
-      Data: false
-    - Name: editor
-      Entry: 6
-      Data: 
-    - Name: preset
+      Data: true
+    - Name: Preset
       Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: mergeTiles
-      Entry: 5
-      Data: true
-    - Name: keepPrefabConnection
-      Entry: 5
-      Data: false
-    - Name: scaleTileByCellSize
-      Entry: 5
-      Data: true
-    - Name: scaleTileHeight
-      Entry: 5
-      Data: false
-    - Name: tileColliderHeightOffset
-      Entry: 4
-      Data: 0
-    - Name: tileColliderHeight
-      Entry: 4
-      Data: 1
-    - Name: tileColliderBorderOffset
-      Entry: 4
-      Data: 0
-    - Name: colliderTypeVariantA
-      Entry: 3
-      Data: 0
-    - Name: colliderTypeVariantB
-      Entry: 3
-      Data: 0
-    - Name: assignLayer
-      Entry: 7
-      Data: UnityEngine.LayerMask, UnityEngine.CoreModule
-    - Name: 
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: setShadowCastingMode
-      Entry: 5
-      Data: false
-    - Name: shadowCasting
-      Entry: 3
-      Data: 0
-    - Name: globalPositionOffset
+      Data: 5
+    - Name: Offset
       Entry: 7
       Data: UnityEngine.Vector3, UnityEngine.CoreModule
     - Name: 
@@ -9844,52 +9600,13 @@ MonoBehaviour:
       Data: 0
     - Name: 
       Entry: 4
-      Data: 0
+      Data: -0.0005
     - Name: 
       Entry: 8
       Data: 
-    - Name: globalRotationOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: globalScalingOffset
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: ignoreLayers
-      Entry: 7
-      Data: 64|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+    - Name: IgnoreLayers
+      Entry: 9
+      Data: 47
     - Name: 
       Entry: 8
       Data: 

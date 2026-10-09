@@ -50,14 +50,17 @@ public class FogOverlay : MonoBehaviour
         if (fogTexture != null) Destroy(fogTexture);
         worldSize = new Vector2(currentDungeon.dungeonWidth, currentDungeon.dungeonHeight);
 
-        // Set quad size
-        fogOverlayQuad.transform.localScale = new Vector3(worldSize.x * cellSize, worldSize.y * cellSize, 1);
-
-        // Center it on world
+        // Cover tall dungeon boundaries. Compensate the added height along the view
+        // ray so the existing fog-mask projection and gameplay visibility stay fixed.
+        float coverHeight=Mathf.Max(3.35f,currentDungeon.PresentationWallHeight+.35f);
+        float padding=coverHeight+cellSize*2;
+        fogOverlayQuad.transform.localScale=new Vector3(worldSize.x*cellSize+padding*2,worldSize.y*cellSize+padding*2,1);
+        var direction=Camera.main!=null?Camera.main.transform.forward:new Vector3(0,12,14).normalized;
+        var shift=direction.z>.001f ? -(Vector2)direction*((coverHeight-3.35f)/direction.z) : Vector2.zero;
         fogOverlayQuad.transform.position = new Vector3(
-            worldOrigin.x + worldSize.x * cellSize / 2,
-            worldOrigin.y + worldSize.y * cellSize / 2,
-            -3.35f
+            worldOrigin.x + worldSize.x * cellSize / 2+shift.x,
+            worldOrigin.y + worldSize.y * cellSize / 2+shift.y,
+            -coverHeight
         );
 
         // Cache material once
@@ -65,7 +68,7 @@ public class FogOverlay : MonoBehaviour
 
         // Pass shader uniforms
         fogMaterial.SetVector("_FogWorldSize", new Vector4(worldSize.x * cellSize, worldSize.y * cellSize, 0, 0));
-        fogMaterial.SetVector("_FogWorldOrigin", new Vector4(worldOrigin.x, worldOrigin.y, 0, 0));
+        fogMaterial.SetVector("_FogWorldOrigin", new Vector4(worldOrigin.x+shift.x, worldOrigin.y+shift.y, 0, 0));
 
         // Create and setup texture once
         int width = currentDungeon.dungeonWidth;

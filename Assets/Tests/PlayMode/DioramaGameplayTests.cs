@@ -16,6 +16,8 @@ namespace EternalEnigma.Tests
         GameTestHarness harness;
         [UnitySetUp] public IEnumerator Setup(){harness=new GameTestHarness();yield return null;}
         [UnityTearDown] public IEnumerator Cleanup(){yield return harness.Cleanup();}
+        static Vector3[] Points(GameObject obj)=>(Vector3[])System.AppDomain.CurrentDomain.GetAssemblies()
+            .Select(a=>a.GetType("DungeonPickupAuthoring")).First(t=>t!=null).GetMethod("Points").Invoke(null,new object[]{obj});
 
         [UnityTest]
         public IEnumerator CurrencyUsesProductionPlacementAndAwardsItsSeededAmount()
@@ -65,6 +67,38 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator FloorItemRatiosUseTheLiveDungeonHero()
+        {
+            yield return harness.LoadDungeon(new TestScenario());
+            yield return null;
+            var table=Resources.Load<DungeonPickupPresentation>("DungeonThemes/PickupPresentation");
+            var authoring=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("DungeonPickupAuthoring")).First(t=>t!=null);
+            Vector2[] Project(Vector3[] points)=>(Vector2[])authoring.GetMethod("Project").Invoke(null,new object[]{Camera.main,points});
+            var hero=Points(harness.Ally.gameObject);var heroScreen=Project(hero);
+            float screenHeight=heroScreen.Max(p=>p.y)-heroScreen.Min(p=>p.y);
+            float height=hero.Max(p=>p.z)-hero.Min(p=>p.z);
+            Assert.That(height,Is.EqualTo(table.HeroHeight).Within(table.HeroHeight*.06f),"Authoring must retain the production rig scale.");
+            var report=new System.Text.StringBuilder("name,live_hero_ratio,world_height_ratio\n");
+            foreach(var entry in table.Items)
+            {
+                var obj=Object.Instantiate(entry.Prefab);
+                try
+                {
+                    obj.transform.localScale=Vector3.Scale(obj.transform.localScale,entry.ParentScale);
+                    var points=Points(obj);var projected=Project(points);
+                    float diameter=(float)authoring.GetMethod("Diameter").Invoke(null,new object[]{projected});
+                    float ratio=diameter/screenHeight,vertical=(points.Max(p=>p.z)-points.Min(p=>p.z))/height;
+                    if(entry.Size==DungeonPickupSize.Chest)Assert.That(vertical,Is.EqualTo(.5f).Within(.03f),entry.Name);
+                    else Assert.That(ratio,Is.InRange(entry.Size==DungeonPickupSize.Elongated?.5f:1f/3,entry.Size==DungeonPickupSize.Elongated?2f/3:.5f),entry.Name);
+                    report.AppendLine($"\"{entry.Name}\",{ratio:F4},{vertical:F4}");
+                }
+                finally {Object.Destroy(obj);}
+            }
+            System.IO.Directory.CreateDirectory("Docs/Art/Verification/DungeonSmartLayers");
+            System.IO.File.WriteAllText("Docs/Art/Verification/DungeonSmartLayers/LivePickupRatios.csv",report.ToString());
+        }
+
+        [UnityTest]
         public IEnumerator KeyAndMimicUseAuthoredFloorPoses()
         {
             yield return harness.LoadDungeon(new TestScenario());
@@ -79,6 +113,11 @@ namespace EternalEnigma.Tests
             var mimic=harness.Game.Enemies.Last();Assert.That(mimic.GetComponent<EnemyBehavior>().Disguised,Is.True);
             var chest=mimic.GetComponentsInChildren<Transform>().Single(t=>t.name=="Treasure chest disguise");
             Assert.That(chest.GetComponentsInChildren<Renderer>().All(r=>r.sharedMaterials.All(m=>m.shader.name=="Standard")),Is.True);
+            Assert.That(chest.GetComponentInChildren<DungeonPickupFootprint>().GroundZ,Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.001f));
+            var chestBounds=chest.GetComponentsInChildren<Renderer>().Select(r=>r.bounds).Aggregate((a,b)=>{a.Encapsulate(b);return a;});
+            var chestPoints=Points(chest.gameObject);
+            Assert.That(chestPoints.Max(p=>p.z)-chestPoints.Min(p=>p.z),Is.EqualTo(Resources.Load<DungeonPickupPresentation>("DungeonThemes/PickupPresentation").HeroHeight*.5f).Within(.001f));
+            Assert.That(Mathf.Max(chestBounds.size.x,chestBounds.size.y),Is.LessThanOrEqualTo(1.641f));
             var camera=Camera.main;var originalPosition=camera.transform.position;float originalSize=camera.orthographicSize;
             try
             {

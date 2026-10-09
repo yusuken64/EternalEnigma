@@ -1,0 +1,26 @@
+{
+    "runId": "883c7c2c7d064365b787a91cdb0502d8",
+    "mode": "PlayMode",
+    "state": "Completed",
+    "filter": "EternalEnigma.Tests.PlayMode",
+    "testFilters": [
+        "EternalEnigma.Tests.DungeonThemeTransitionTests",
+        "EternalEnigma.Tests.DungeonThemeExplorerTests",
+        "EternalEnigma.Tests.BiomeSceneryTests",
+        "EternalEnigma.Tests.BiomeDecorationVisibilityTests",
+        "EternalEnigma.Tests.DioramaGameplayTests.CurrencyUsesProductionPlacementAndAwardsItsSeededAmount",
+        "EternalEnigma.Tests.DioramaGameplayTests.IndividualAndFallbackItemsDropAndThrowThroughProductionPaths",
+        "EternalEnigma.Tests.DioramaGameplayTests.KeyAndMimicUseAuthoredFloorPoses",
+        "EternalEnigma.Tests.DioramaGameplayTests.FloorItemRatiosUseTheLiveDungeonHero"
+    ],
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "xml": "Temp/HarnessResults/PlayMode.xml",
+    "startedUtc": "2026-10-09T03:36:03.7487678Z",
+    "updatedUtc": "2026-10-09T03:39:22.6517818Z",
+    "currentTest": "",
+    "lastFinished": "EternalEnigma.Tests.DungeonThemeTransitionTests.InteriorOutdoorTransitionsKeepSelectionFogAndSingleOutput: Passed",
+    "failures": [],
+    "durationSeconds": 196.4293153
+}

@@ -33,6 +33,8 @@ public class TileWorldDungeon : MonoBehaviour
 	[SerializeField] private TileWorldCreator _tileWorldCreator;
 	private bool[,] floorMask;
 	private bool[,] _isHallwayCache;
+    internal float PresentationWallHeight => _tileWorldCreator?.twcAsset.mapBuildLayers.OfType<DungeonBoundaryLayer>()
+        .Where(l=>l.active&&l.SmartPreset!=null).Select(l=>l.WallHeight).DefaultIfEmpty(0).Max() ?? 0;
 
     internal bool EnsureRuntimeData()
     {

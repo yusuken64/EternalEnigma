@@ -40,7 +40,7 @@ it does not restore mid-floor combat.
 
 The catalog is `Assets/Resources/DungeonThemes/Catalog.asset`. Each entry contains regular/throne boundary presets, floor/accent presets, materials, decoration choices, lighting, Music and BossMusic. All production biomes, including starter-layout Grassland, use the shared themed presentation. The playground retains an explicit legacy comparison.
 
-The other themes replace only build presentation on cloned TWC assets. `DungeonThemeTileLayer` consumes TWC's existing edge, outer-corner, inner-corner, and fill classifications and exclusions. Blueprint stacks, masks, generation dimensions, seeds, placements, navigation, sight, and minimap data remain unchanged.
+Dungeon templates contain authored `DungeonThemeTileLayer` floor/accent layers and a `DungeonBoundaryLayer`. Themes configure participating roles on clones without replacing the build stack or changing active flags, bindings, offsets, or explicit preset overrides. All eight biomes, in both Interior and Outdoor regular/throne layouts, use the whole-cell Polyart six-piece kit with diagonal fills, inside corners, 4.23-unit walls, and foreground cutaways. Theme adapters share the kit geometry and retain the existing boundary textures and colors; Grassland Interior retains its Polyart atlas. Four-piece presets remain available as an authoring fallback. Blueprint stacks, masks, generation dimensions, seeds, placements, navigation, sight, and minimap data remain unchanged. See [dungeon smart layers and pickups](DungeonSmartLayers.md) for authoring and verification.
 
 Output belongs to the existing dungeon output root. Floor changes clear both creators' previous output, including baked clusters. Combined meshes and per-clone preview textures have explicit owners. Two small vendor fixes stop tile/object editor coroutines when their creator has been destroyed and release temporary material submeshes after combining.
 
@@ -58,6 +58,8 @@ Blender MCP produced the crypt quarter-tiles and root mesh. The [painted environ
 - Root prop: 48 triangles; root-covered tiles: at most 56.
 - Compact decoration meshes are capped at 250 triangles per piece in both interior and outdoor themes.
 - Existing Grassland dungeon assets are preserved and are exempt from the new-asset triangle limit.
+
+Those counts describe the retained four-piece fallback assets. Production smart boundaries use the shared Blender kit in `ArtSource/DungeonSmartTiles`; theme adapters add no duplicate geometry. Review the [current all-biome captures](Art/Verification/DungeonSmartLayers/Biomes/Review.html).
 
 Edit the committed catalog and presets directly; the original installer is removed.
 **Tools > Eternal Enigma > Dungeon Themes > Apply Feel Assets** refreshes theme music,

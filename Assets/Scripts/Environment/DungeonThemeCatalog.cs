@@ -12,6 +12,7 @@ public sealed class DungeonTheme
     public OverworldBiome Biome;
     public DungeonEnvironmentKind Environment;
     public TileWorldCreator4TilesPreset RegularBoundary, ThroneBoundary, Floor, Accent;
+    public DungeonBoundaryPreset RegularSmartBoundary, ThroneSmartBoundary;
     public Material DecorationMaterial, PoolMaterial;
     public AudioClip Music, BossMusic;
     public string[] Decorations = Array.Empty<string>();
@@ -31,25 +32,21 @@ public sealed class DungeonThemeCatalog : ScriptableObject
     // Only build presentation changes. Blueprint stacks, masks, dimensions and seed remain untouched.
     public void Apply(TileWorldCreatorAsset clone, DungeonVisualSelection selection, bool throne)
     {
-        // Preserve the legacy renderer's random stream. Its torch output is retired at
-        // generation completion before the replacement decoration root becomes visible.
-        if (selection.IsLegacy) return;
         var theme = Get(selection);
-        for (int i=0;i<clone.mapBuildLayers.Count;i++)
+        foreach (var layer in clone.mapBuildLayers.OfType<DungeonThemeTileLayer>())
         {
-            var layer=clone.mapBuildLayers[i];
-            if (layer is InstantiateTiles tiles)
+            if (!layer.UseThemePreset || layer.Role == DungeonThemeRole.Custom) continue;
+            // Participation is explicit. Active flags, bindings, offsets and the build stack remain authored.
+            layer.Preset = layer.Role switch {
+                DungeonThemeRole.Floor => theme.Floor,
+                DungeonThemeRole.Accent => throne ? theme.Accent : theme.Floor,
+                _ => throne ? theme.ThroneBoundary : theme.RegularBoundary
+            };
+            if (layer is DungeonBoundaryLayer boundary)
             {
-                string role = layer.layerName.ToLowerInvariant();
-                if(role.Contains("torch")) { layer.active=false; continue; }
-                // Floor excludes the carpet mask, so both must supply paving on regular floors.
-                // Reserve the flat accent material for the throne's actual carpet.
-                var preset = role.Contains("carpet") ? (throne ? theme.Accent : theme.Floor) : role.Contains("floor") || role.Contains("ground") ? theme.Floor : throne ? theme.ThroneBoundary : theme.RegularBoundary;
-                clone.mapBuildLayers[i] = new DungeonThemeTileLayer { guid=layer.guid, assignedGenerationLayerGuid=layer.assignedGenerationLayerGuid,
-                    layerName=layer.layerName, active=layer.active, Preset=preset, Offset=tiles.globalPositionOffset + (role.Contains("carpet") && throne ? new Vector3(0,0,-.0005f) : Vector3.zero),
-                    IgnoreLayers=tiles.ignoreLayers.ToArray() };
+                boundary.SmartPreset = throne ? theme.ThroneSmartBoundary : theme.RegularSmartBoundary;
+                boundary.GroundPreset = theme.Floor;
             }
-            else layer.active = false; // Legacy torches/gates/columns are replaced by bounded cosmetics.
         }
     }
 }

@@ -1,0 +1,34 @@
+{
+  "protectedAssetsUnchanged": true,
+  "pickupPrefabsWithUnchangedLogicalRootsMeshesMaterialsAndInteractions": 138,
+  "smartBoundaryBiomeEnvironmentSelections": 16,
+  "smartBoundaryLayoutBindings": 32,
+  "otherThemeSettingsAndExistingSurfaceAssetsUnchanged": true,
+  "unchangedDungeonHeroHeight": 3.3877816,
+  "wallKitHeight": 4.2347269999999995,
+  "wallToHeroHeightRatio": 1.25,
+  "blueprintYamlSha256": {
+    "DungeonAsset": "428267667eedbb37dd9dc46a74629509c354e7ff026fd06ac7aeb8a56bb24290",
+    "DungeonThroneAsset": "a3293dd3e4c32bc9ef60d018a8e87246698cb540efe7e1bb446028003c920445"
+  },
+  "originalSourceSha256": {
+    "Wall01.fbx": "76761a499d4f5d441a2ce6842abb8918d4cad8a0b59802bfafb4f606ce980033",
+    "Wall02.fbx": "b845207d97725d59e57ed275c6f23943bdbe856270df113732a91cdd8c8dac5d",
+    "Wall03.fbx": "e7d92a787b38af36c93fcbed0ea1addaeab2d40a65486642b1f9ebc4c8aa384e",
+    "Wall04.fbx": "299b7e4067ac434c736e2ff13dc7806a920e939f56517681bd2629b3bf0e0389"
+  },
+  "projectedPickupRatios": {
+    "Ordinary": {
+      "count": 74,
+      "minimum": 0.3658,
+      "maximum": 0.43
+    },
+    "Elongated": {
+      "count": 65,
+      "minimum": 0.57,
+      "maximum": 0.58
+    }
+  },
+  "pickupComparisons": 141,
+  "chestWorldHeightRatio": 0.5
+}

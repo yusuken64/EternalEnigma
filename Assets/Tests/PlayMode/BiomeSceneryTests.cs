@@ -57,7 +57,7 @@ namespace EternalEnigma.Tests
                 var renderers=pickup.GetComponentsInChildren<Renderer>();
                 Assert.That(renderers,Is.Not.Empty);
                 Assert.That(renderers.All(r=>r.enabled && !r.forceRenderingOff),Is.True,"Nearby floor loot must be visible.");
-                Assert.That(renderers.Max(r=>r.bounds.max.z),Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.003f));
+                Assert.That(pickup.GetComponentInChildren<DungeonPickupFootprint>().GroundZ,Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.003f));
             }
             // Walk from the entrance through the actual turn pipeline. Remove combat
             // actors so this regression measures terrain and props, not random enemy AI.

@@ -98,6 +98,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9151516799892122269}
+  - component: {fileID: 6002958719163072107}
   m_Layer: 0
   m_Name: Floor pose
   m_TagString: Untagged
@@ -113,14 +114,27 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2318052580494867531}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.16201037, y: 0.9384303, z: -0.28514886, w: -0.10858776}
-  m_LocalPosition: {x: 1.0204039, y: 1.0370629, z: -0.24587667}
-  m_LocalScale: {x: 0.8475969, y: 0.8475969, z: 0.8475969}
+  m_LocalRotation: {x: 0.16201039, y: 0.9384303, z: -0.28514886, w: -0.10858771}
+  m_LocalPosition: {x: 1.0436051, y: 1.0792074, z: -0.3906325}
+  m_LocalScale: {x: 1.8114017, y: 1.8114017, z: 1.8114017}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3190954948218079624}
   m_Father: {fileID: 9035587710906942994}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6002958719163072107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2318052580494867531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28088a0cb9143574394668ef4b3c1d9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonPickupFootprint
+  SupportPoint: {x: 0.0018469313, y: -0.36529878, z: 0.008245779}
 --- !u!1 &7112656715511990506
 GameObject:
   m_ObjectHideFlags: 0

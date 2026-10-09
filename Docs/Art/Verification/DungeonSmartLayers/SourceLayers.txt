@@ -1,0 +1,34 @@
+DungeonAsset grid=2 orientation=XY
+ blueprint 5953e10e-9627-4f21-a677-0129148c2dc5 Dungeon
+ blueprint 79052e7b-8ad8-41e4-bbc0-f5323ef20bd9 Carpet
+ blueprint 631786d4-dec3-4cf9-8f4b-602bfa4ffb2d Floor
+ blueprint fb61a18c-ace2-410d-bc9c-d6ed050dd44a Columns
+ blueprint 7288020a-3666-484e-9f21-63c0b583e988 Torchlights
+ blueprint d722fb01-7fef-4cf2-8419-b97338240438 
+ blueprint b4bd0e8c-aaeb-4420-8991-423ff9814533 
+ build 1c9901b2-c5dd-4eb1-8441-c8f2858b812a Dungeon InstantiateTiles active=True blueprint=5953e10e-9627-4f21-a677-0129148c2dc5
+  offset=(0.00, 0.00, 0.00) excludes= presets=Grassland_Interior_Boundary
+ build e7e0ca99-8be5-46bb-ba68-3d307c9143e6 Floor InstantiateTiles active=True blueprint=631786d4-dec3-4cf9-8f4b-602bfa4ffb2d
+  offset=(0.00, 0.00, 0.00) excludes=79052e7b-8ad8-41e4-bbc0-f5323ef20bd9 presets=Grassland_Interior_Floor
+ build faa314ee-1dbf-4e0e-885b-493ce1814393 Columns InstantiateObjects active=True blueprint=fb61a18c-ace2-410d-bc9c-d6ed050dd44a
+ build 7d85e41a-2c1d-4e7a-959d-b811fc851a7a Torchlights InstantiateTiles active=True blueprint=7288020a-3666-484e-9f21-63c0b583e988
+  offset=(0.00, 0.00, 0.00) excludes= presets=Grassland_Interior_Boundary,
+ build 48e5180a-251f-421d-b3b8-2058962ca9e7 Carpet InstantiateTiles active=True blueprint=79052e7b-8ad8-41e4-bbc0-f5323ef20bd9
+  offset=(0.00, 0.00, 0.00) excludes= presets=Grassland_Interior_Accent
+DungeonThroneAsset grid=2 orientation=XY
+ blueprint 5953e10e-9627-4f21-a677-0129148c2dc5 Dungeon
+ blueprint 79052e7b-8ad8-41e4-bbc0-f5323ef20bd9 Carpet
+ blueprint 631786d4-dec3-4cf9-8f4b-602bfa4ffb2d Floor
+ blueprint fb61a18c-ace2-410d-bc9c-d6ed050dd44a Columns
+ blueprint 7288020a-3666-484e-9f21-63c0b583e988 Torchlights
+ blueprint d722fb01-7fef-4cf2-8419-b97338240438 
+ blueprint b4bd0e8c-aaeb-4420-8991-423ff9814533 
+ build 1c9901b2-c5dd-4eb1-8441-c8f2858b812a Dungeon InstantiateTiles active=True blueprint=5953e10e-9627-4f21-a677-0129148c2dc5
+  offset=(0.00, 0.00, 0.00) excludes= presets=Grassland_Interior_Boundary
+ build e7e0ca99-8be5-46bb-ba68-3d307c9143e6 Floor InstantiateTiles active=True blueprint=631786d4-dec3-4cf9-8f4b-602bfa4ffb2d
+  offset=(0.00, 0.00, 0.00) excludes=79052e7b-8ad8-41e4-bbc0-f5323ef20bd9 presets=Grassland_Interior_Floor
+ build faa314ee-1dbf-4e0e-885b-493ce1814393 Columns InstantiateObjects active=True blueprint=fb61a18c-ace2-410d-bc9c-d6ed050dd44a
+ build 7d85e41a-2c1d-4e7a-959d-b811fc851a7a Torchlights InstantiateTiles active=True blueprint=7288020a-3666-484e-9f21-63c0b583e988
+  offset=(0.00, 0.00, 0.00) excludes= presets=Grassland_Interior_Boundary,
+ build 48e5180a-251f-421d-b3b8-2058962ca9e7 Carpet InstantiateTiles active=True blueprint=79052e7b-8ad8-41e4-bbc0-f5323ef20bd9
+  offset=(0.00, 0.00, 0.00) excludes= presets=Grassland_Interior_Accent

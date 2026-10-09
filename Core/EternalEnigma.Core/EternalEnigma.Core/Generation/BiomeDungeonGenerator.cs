@@ -131,11 +131,12 @@ internal static class BiomeDungeonGenerator
         if (vault != null) occupied.Add(vault.Value.Door);
         double scale = Density(cells.Count);
         int Count(int n, int cap = 64) => Math.Min(cap, (int)Math.Round(n * scale, MidpointRounding.AwayFromZero));
-        List<Placement> Place(int n, bool keepExitRouteClear = false)
+        List<Placement> Place(int n, bool keepExitRouteClear = false, bool lootClearance = false)
         {
             var result = new List<Placement>();
             foreach (var p in place.Shuffle(cells.Where(p => !occupied.Contains(p) &&
-                         (!keepExitRouteClear || !reserved.Contains(p)))).Take(n))
+                         (!keepExitRouteClear || !reserved.Contains(p)) &&
+                         (!lootClearance || DungeonFloorGenerator.HasLootClearance(layer, p)))).Take(n))
             { result.Add(new Placement(p, place.Range(int.MaxValue))); occupied.Add(p); }
             return result;
         }
@@ -144,18 +145,28 @@ internal static class BiomeDungeonGenerator
         var enemies = Place(regular ? Count(o.EnemyCount) : 0, keepExitRouteClear: true);
         var props = new List<DungeonScenery>();
         var blocked = new HashSet<GridPoint>();
+        bool PlaceBlockingProp(GridPoint cell)
+        {
+            blocked.Add(cell);
+            var reachable = GridSearch.VisitOrder(start, p => Neighbors(layer, p, blocked)).ToHashSet();
+            if (reachable.Count == cells.Count - blocked.Count &&
+                blocked.All(p => Orthogonal(p).Any(reachable.Contains))) return true;
+            blocked.Remove(cell);
+            return false;
+        }
         int goldBudget = regular ? Count(o.GoldCount) : 0, itemBudget = regular ? Count(o.ItemCount) : 0;
+        // Keep at least half of each budget on the floor; scenery otherwise consumes all items.
+        int looseGold = (goldBudget + 1) / 2, looseItems = (itemBudget + 1) / 2;
         DungeonScenery? chest = null;
         if (vault != null)
         {
             // The vault's chest is paid from the floor budget, so total loot is unchanged.
-            foreach (var p in lockRandom.Shuffle(vault.Value.Cells.Where(p => !occupied.Contains(p))).OrderBy(p => GridSight.IsRoom(layer, p) ? 0 : 1))
+            foreach (var p in lockRandom.Shuffle(vault.Value.Cells.Where(p => !occupied.Contains(p) && DungeonFloorGenerator.HasLootClearance(layer, p))))
             {
-                if (itemBudget == 0 && goldBudget == 0) break;
-                blocked.Add(p);
-                if (GridSearch.VisitOrder(start, q => Neighbors(layer, q, blocked)).Count != cells.Count - blocked.Count) { blocked.Remove(p); continue; }
-                var reward = itemBudget > 0 ? SceneryReward.Item : SceneryReward.Gold;
-                if (itemBudget > 0) itemBudget--; else goldBudget--;
+                if (itemBudget <= looseItems && goldBudget <= looseGold) break;
+                if (!PlaceBlockingProp(p)) continue;
+                var reward = itemBudget > looseItems ? SceneryReward.Item : SceneryReward.Gold;
+                if (itemBudget > looseItems) itemBudget--; else goldBudget--;
                 chest = new DungeonScenery(p, DungeonSceneryKind.Container, 0, lockRandom.Range(int.MaxValue), reward);
                 props.Add(chest); occupied.Add(p);
                 break;
@@ -165,20 +176,15 @@ internal static class BiomeDungeonGenerator
         {
             int target = regular ? Count(kind == DungeonSceneryKind.Container ? 2 : kind == DungeonSceneryKind.Destructible ? 6 : 3) : 0;
             int placed = 0;
-            foreach (var p in sceneryRandom.Shuffle(cells.Where(p => !occupied.Contains(p) && !reserved.Contains(p))))
+            foreach (var p in sceneryRandom.Shuffle(cells.Where(p => !occupied.Contains(p) && !reserved.Contains(p) && DungeonFloorGenerator.HasLootClearance(layer, p))))
             {
                 if (placed >= target) break;
-                if (kind != DungeonSceneryKind.Hazard)
-                {
-                    blocked.Add(p);
-                    var reachable = GridSearch.VisitOrder(start, q => Neighbors(layer, q, blocked));
-                    if (reachable.Count != cells.Count - blocked.Count) { blocked.Remove(p); continue; }
-                }
+                if (kind != DungeonSceneryKind.Hazard && !PlaceBlockingProp(p)) continue;
                 var reward = SceneryReward.None;
                 if (kind != DungeonSceneryKind.Hazard)
                 {
-                    if (itemBudget > 0) { itemBudget--; reward = SceneryReward.Item; }
-                    else if (goldBudget > 0) { goldBudget--; reward = SceneryReward.Gold; }
+                    if (itemBudget > looseItems) { itemBudget--; reward = SceneryReward.Item; }
+                    else if (goldBudget > looseGold) { goldBudget--; reward = SceneryReward.Gold; }
                 }
                 props.Add(new DungeonScenery(p, kind, kind == DungeonSceneryKind.Destructible ? 20 + 10 * o.Tier : 0, sceneryRandom.Range(int.MaxValue), reward));
                 occupied.Add(p); placed++;
@@ -199,8 +205,8 @@ internal static class BiomeDungeonGenerator
                 locks.Add(new DungeonLock(vault.Value.Door, 40 + 20 * o.Tier, vault.Value.Cells.OrderBy(p => p.X).ThenBy(p => p.Y)));
             }
         }
-        var gold = Place(goldBudget, keepExitRouteClear: true);
-        var items = Place(itemBudget, keepExitRouteClear: true);
+        var gold = Place(goldBudget, keepExitRouteClear: true, lootClearance: true);
+        var items = Place(itemBudget, keepExitRouteClear: true, lootClearance: true);
         var gathering = GatheringPlacement.Place(layer, start, stairs, occupied, o.Seed, regular ? Count(o.GatheringCount, 16) : 0);
         var walls = new bool[w, h]; var accents = new bool[w, h]; var columns = new bool[w, h]; var torches = new bool[w, h];
         var decor = new SeedStream(o.Seed, 1400);

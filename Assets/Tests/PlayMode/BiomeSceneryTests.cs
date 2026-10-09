@@ -18,6 +18,75 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup() {yield return harness.Cleanup();DungeonPreferences.FullControlOverride=previousControl;}
 
         [UnityTest]
+        public IEnumerator GeneratedFloorSpawnsVisibleLooseItems()
+        {
+            var save=Common.Instance.GameSaveData.DungeonSaveData;
+            save.UseBiomeLayout=true;save.LayoutTier=0;save.LayoutBiome=OverworldBiome.Forest;
+            harness.Game.AdvanceFloor();yield return harness.WaitForIdle();
+            var dungeon=harness.Game.CurrentDungeon;
+            Assert.That(dungeon.Floor.Items,Is.Not.Empty,"Scenery must leave some items on the floor.");
+            var pickups=dungeon.Interactables.OfType<DroppedItem>().ToArray();
+            Assert.That(pickups.Length,Is.EqualTo(dungeon.Floor.Items.Count));
+            Assert.That(dungeon.Interactables.OfType<Gold>().Count(),Is.EqualTo(dungeon.Floor.Gold.Count));
+            var terrain=harness.Game.DungeonGenerator.TileWorldCreator.worldObject;
+            var walls=terrain.transform.Find("Dungeon_layer").GetComponentsInChildren<MeshFilter>()
+                .Select(f=>{var c=f.gameObject.AddComponent<MeshCollider>();c.sharedMesh=f.sharedMesh;return c;}).ToArray();
+            Physics.SyncTransforms();
+            foreach(var interactable in dungeon.Interactables.Where(p=>p is DroppedItem or Gold or DungeonProp))
+            {
+                var bounds=interactable.GetComponentsInChildren<Renderer>().Select(r=>r.bounds).Aggregate((a,b)=>{a.Encapsulate(b);return a;});
+                var expected=dungeon.CellToWorld(interactable.Position)+new Vector3(1,1,0);
+                Assert.That(bounds.center.x,Is.EqualTo(expected.x).Within(.02f),interactable.name+" X placement");
+                Assert.That(bounds.center.y,Is.EqualTo(expected.y).Within(.02f),interactable.name+" Y placement");
+                var ray=new Ray(new Vector3(bounds.center.x,bounds.center.y,-8),Vector3.forward);
+                Assert.That(walls.Any(c=>c.Raycast(ray,out var hit,8)),Is.False,interactable.name+" is inside rendered terrain at "+interactable.Position);
+                if(interactable is not DungeonProp {IsDoor:true})
+                {
+                    var view=new Vector3(0,12,14).normalized;
+                    var foot=new Vector3(bounds.center.x,bounds.center.y,-.01f);
+                    Assert.That(walls.Any(c=>c.Raycast(new Ray(foot-view*8,view),out var hit,7.99f)),Is.False,
+                        interactable.name+" is covered by raised terrain at "+interactable.Position);
+                }
+            }
+            foreach(var wall in walls) Object.Destroy(wall);
+            foreach(var pickup in pickups)
+            {
+                Assert.That(pickup.InventoryItem,Is.Not.Null);
+                harness.PlaceAlly(pickup.Position);harness.Game.UpdateMiniMap();
+                yield return null;yield return null;
+                var renderers=pickup.GetComponentsInChildren<Renderer>();
+                Assert.That(renderers,Is.Not.Empty);
+                Assert.That(renderers.All(r=>r.enabled && !r.forceRenderingOff),Is.True,"Nearby floor loot must be visible.");
+                Assert.That(renderers.Max(r=>r.bounds.max.z),Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.003f));
+            }
+            // Walk from the entrance through the actual turn pipeline. Remove combat
+            // actors so this regression measures terrain and props, not random enemy AI.
+            foreach(var enemy in harness.Game.Enemies.ToArray()) Object.Destroy(enemy.gameObject);
+            harness.Game.Enemies.Clear();yield return null;
+            harness.PlaceAlly(dungeon.GetStartPosition());
+            IEnumerable<GridPoint> Neighbors(GridPoint p)=>GridMovement.GetNeighbors(p.ToCell(),
+                cell=>dungeon.IsWalkable(cell)&&!dungeon.IsHazard(cell)).Select(cell=>cell.ToGridPoint());
+            var distances=GridSearch.Distances(dungeon.Floor.Start,Neighbors);
+            var last=pickups.Where(p=>distances.ContainsKey(p.Position.ToGridPoint())).OrderBy(p=>distances[p.Position.ToGridPoint()]).First();
+            var item=last.InventoryItem;
+            var path=GridSearch.Path(dungeon.Floor.Start,last.Position.ToGridPoint(),Neighbors);
+            Assert.That(path.Count,Is.GreaterThan(1));
+            foreach(var cell in path.Skip(1))
+            {
+                var move=new MovementAction(harness.Ally,harness.Ally.TilemapPosition,cell.ToCell());
+                Assert.That(move.IsValid(harness.Ally),Is.True);
+                yield return harness.ExecuteAction(move);
+                Assert.That(harness.Ally.TilemapPosition,Is.EqualTo(cell.ToCell()));
+            }
+            System.IO.Directory.CreateDirectory("Temp/DungeonLootValidation");
+            ScreenCapture.CaptureScreenshot("Temp/DungeonLootValidation/loose-items.png");
+            yield return new WaitForSecondsRealtime(.3f);
+            yield return harness.ExecuteAction(new PickUpItemAction(last));
+            Assert.That(harness.Game.PlayerController.Inventory.InventoryItems.Contains(item),Is.True);
+            Assert.That(dungeon.Interactables.Contains(last),Is.False);
+        }
+
+        [UnityTest]
         public IEnumerator DamageOpeningHazardsAndTransitions()
         {
             var dungeon=harness.Game.CurrentDungeon;var ally=harness.Ally;

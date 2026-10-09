@@ -21,6 +21,20 @@ public sealed class BiomeDungeonTests
     static int Area(DungeonFloor floor) => floor.Layers[DungeonLayers.Floor].ToArray().Cast<bool>().Count(v => v);
 
     [Theory]
+    [InlineData(0, 0)] [InlineData(1, 0)] [InlineData(0, 1)] [InlineData(1, 1)]
+    public void SmallLootBudgetsStillLeaveAvailablePickups(int items, int gold)
+    {
+        for (int seed = 0; seed < 24; seed++)
+        {
+            var floor = DungeonFloorGenerator.Generate(new DungeonFloorOptions(seed,
+                enemyCount: 0, goldCount: gold, itemCount: items, trapCount: 0,
+                gatheringCount: 0, layoutVersion: DungeonLayoutProfile.CurrentVersion));
+            Assert.Equal(items == 0, floor.Items.Count == 0);
+            Assert.Equal(gold == 0, floor.Gold.Count == 0);
+        }
+    }
+
+    [Theory]
     [InlineData(OverworldBiome.Grassland)] [InlineData(OverworldBiome.Forest)]
     [InlineData(OverworldBiome.Desert)] [InlineData(OverworldBiome.Water)]
     [InlineData(OverworldBiome.Mountain)] [InlineData(OverworldBiome.Tundra)]
@@ -46,7 +60,11 @@ public sealed class BiomeDungeonTests
                 for (int y = 0; y < f.Height; y++) { Assert.False(layer[0, y]); Assert.False(layer[f.Width - 1, y]); }
                 foreach (var room in f.Rooms) foreach (var p in room.Cells()) Assert.True(layer.At(p));
                 var blocked = f.Scenery.Where(p => p.Kind != DungeonSceneryKind.Hazard).Select(p => p.Cell).ToHashSet();
-                Assert.Equal(count - blocked.Count, GridSearch.VisitOrder(f.Start, p => BiomeDungeonGenerator.Neighbors(layer, p, blocked)).Count);
+                var reachable = GridSearch.VisitOrder(f.Start, p => BiomeDungeonGenerator.Neighbors(layer, p, blocked)).ToHashSet();
+                Assert.Equal(count - blocked.Count, reachable.Count);
+                Assert.All(f.Items.Concat(f.Gold), p => Assert.Contains(p.Cell, reachable));
+                Assert.All(f.Scenery, p => Assert.True(BiomeDungeonGenerator.Orthogonal(p.Cell).Any(reachable.Contains),
+                    $"{biome} tier {tier} seed {seed}: no reachable interaction side for {p.Kind} at {p.Cell}."));
                 blocked.UnionWith(f.Scenery.Where(p => p.Kind == DungeonSceneryKind.Hazard).Select(p => p.Cell));
                 Assert.Contains(f.Stairs, GridSearch.VisitOrder(f.Start, p => BiomeDungeonGenerator.Neighbors(layer, p, blocked)));
                 var exitRoute = GatheringPlacement.RequiredPath(layer, f.Start, f.Stairs).ToHashSet();
@@ -60,6 +78,8 @@ public sealed class BiomeDungeonTests
                 else
                 {
                     area += count;
+                    Assert.NotEmpty(f.Items);
+                    Assert.NotEmpty(f.Gold);
                     int budget = (int)Math.Round(5 * BiomeDungeonGenerator.Density(count), MidpointRounding.AwayFromZero);
                     Assert.Equal(budget, f.Items.Count + f.Scenery.Count(p => p.Reward == SceneryReward.Item));
                     Assert.Equal(budget, f.Gold.Count + f.Scenery.Count(p => p.Reward == SceneryReward.Gold));

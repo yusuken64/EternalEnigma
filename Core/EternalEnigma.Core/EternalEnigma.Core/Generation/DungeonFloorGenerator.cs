@@ -6,6 +6,16 @@ namespace EternalEnigma.Core.Generation;
 
 public static class DungeonFloorGenerator
 {
+    // Keep a walkable tile around floor loot so raised boundaries cannot cover its
+    // footprint from the angled gameplay camera, and props have room to be approached.
+    internal static bool HasLootClearance(GridLayer floor, GridPoint cell)
+    {
+        for (int dx = -1; dx <= 1; dx++)
+        for (int dy = -1; dy <= 1; dy++)
+            if (!floor.At(new GridPoint(cell.X + dx, cell.Y + dy))) return false;
+        return true;
+    }
+
     public static DungeonFloor Generate(DungeonFloorOptions options)
     {
         if (options == null) throw new ArgumentNullException(nameof(options));
@@ -657,7 +667,7 @@ public static class DungeonFloorGenerator
             var candidates = new List<GridPoint>();
             foreach (var cell in floorCells)
             {
-                if (!occupied.Contains(cell))
+                if (!occupied.Contains(cell) && HasLootClearance(floorLayer, cell))
                     candidates.Add(cell);
             }
 
@@ -677,7 +687,7 @@ public static class DungeonFloorGenerator
             var candidates = new List<GridPoint>();
             foreach (var cell in floorCells)
             {
-                if (!occupied.Contains(cell))
+                if (!occupied.Contains(cell) && HasLootClearance(floorLayer, cell))
                     candidates.Add(cell);
             }
 

@@ -15,6 +15,13 @@ public class TownMenuManager : MonoBehaviour
     private CampaignHUD campaignHUD;
     public PartyMenu PartyMenu { get; private set; }
 
+    private void Start()
+    {
+        var town = GetComponentInParent<Town>();
+        PartyMenuLauncher.Create(transform,
+            () => town.IsReady && !town.TownPlayer.CutsceneLocked && !Opened, OpenPartyMenu);
+    }
+
 	private void Update()
 	{
 		if (AutoplayRunner.BlocksPlayerInput || FindFirstObjectByType<Town>()?.TownPlayer.CutsceneLocked == true) return;

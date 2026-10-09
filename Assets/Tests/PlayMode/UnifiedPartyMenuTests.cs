@@ -36,6 +36,58 @@ namespace EternalEnigma.Tests
             yield return new WaitForSecondsRealtime(.3f);
         }
 
+        [UnityTest]public IEnumerator TownKeyboardInventoryOpensUsesItemAndCloses()
+        {
+            yield return harness.LoadTown(new TestScenario {Seed=12345}.CreateSave());
+            var town=Object.FindFirstObjectByType<Town>();
+            var manager=town.GetComponentInChildren<TownMenuManager>();
+            var keyboard=InputSystem.AddDevice<Keyboard>();
+            MenuUIInputModule.Active.actionsAsset.devices=new InputDevice[]{keyboard};
+
+            yield return PressNavigation(keyboard,Key.Q);
+            var menu=manager.PartyMenu;
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu));
+            Assert.That(menu,Is.Not.Null);
+            Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Inventory));
+            Assert.That(menu.EntryButtons,Is.Empty);
+            Assert.That(menu.InventoryTab.interactable,Is.True);
+            yield return PressNavigation(keyboard,Key.Q);
+            Assert.That(manager.Opened,Is.False,"Q closes an empty inventory.");
+
+            var hero=town.TownPlayer.ControllingTownAlly;
+            hero.Hp=1;
+            var effect=Asset<ModifyStatsItemEffectDefinition>();effect.VitalModification=new VitalModification{Hp=5};
+            var definition=Asset<UsableItemDefinition>();definition.ItemName="Keyboard recovery test";
+            definition.ItemEffectDefinition=effect;definition.Targeting=SkillTargeting.SelectedTarget;
+            definition.TargetSelector=new TargetSelector{Team=TargetTeam.Self,Area=TargetArea.Self};
+            var item=definition.AsInventoryItem(null);town.TownPlayer.Inventory.Add(item);
+
+            yield return PressNavigation(keyboard,Key.Q);
+            Assert.That(menu.EntryButtons.Count,Is.EqualTo(1));
+            yield return PressNavigation(keyboard,Key.Enter);
+            Assert.That(manager.CurrentDialog,Is.TypeOf<PartyMenuPicker>(),"Enter opens the item actions.");
+            yield return PressNavigation(keyboard,Key.Enter);
+            Assert.That(manager.DialogStack.Count,Is.EqualTo(3),"Target selection uses a second authored picker.");
+            yield return PressNavigation(keyboard,Key.Escape);
+            Assert.That(manager.DialogStack.Count,Is.EqualTo(2));
+            Assert.That(town.TownPlayer.Inventory.Contains(item),Is.True,"Cancel does not consume the item.");
+            yield return PressNavigation(keyboard,Key.Enter);
+            yield return PressNavigation(keyboard,Key.Enter);
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu));
+            Assert.That(hero.Hp,Is.EqualTo(6));
+            Assert.That(town.TownPlayer.Inventory.Contains(item),Is.False);
+
+            yield return PressNavigation(keyboard,Key.R);
+            Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Skills));
+            yield return PressNavigation(keyboard,Key.Q);
+            Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Inventory));
+            yield return PressNavigation(keyboard,Key.Escape);
+            Assert.That(manager.Opened,Is.False);
+            Assert.That(Common.Instance.MenuInputHandler.PlayerInput.currentActionMap.name,Is.EqualTo("Player"));
+            menu.InventoryTab.onClick.Invoke();yield return null;
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu),"The HUD shortcut is wired on ordinary town startup.");
+        }
+
         [UnityTest]public IEnumerator TownTabsNestedBackAndRecoveryPreserveCheckpoint()
         {
             yield return harness.LoadTown(new TestScenario {Seed=12345}.CreateSave());

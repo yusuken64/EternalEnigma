@@ -42,8 +42,10 @@ public class MainMenu : MonoBehaviour
 	public void Continue_Clicked()
 	{
         if (!IsReady) return;
-        CampaignSlots.Show(this, false);
-	}
+        //CampaignSlots.Show(this, false);
+        CampaignStartMenu.gameObject.SetActive(true);
+        CampaignStartMenu.Setup(false);
+    }
 
 	public void StartGame_Clicked()
 	{

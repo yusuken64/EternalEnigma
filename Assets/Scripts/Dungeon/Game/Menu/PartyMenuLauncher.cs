@@ -136,7 +136,7 @@ public sealed class PartyMenuLauncher : MonoBehaviour
     {
         if(ready==null || tabs==null)return;
         bool partyOpen=PartyOpen;
-        canvas.enabled=Available && (partyOpen || ready() && MenuUIInputModule.Active?.HasDialog!=true);
+        //canvas.enabled=Available && (partyOpen || ready() && MenuUIInputModule.Active?.HasDialog!=true);
         // The same HUD buttons sit above the party menu's full-screen input shield.
         canvas.sortingOrder=partyOpen?menu.GetComponent<Canvas>().sortingOrder+1:defaultSortingOrder;
         bool interactable=CanUseTabs;

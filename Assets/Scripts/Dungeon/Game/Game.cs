@@ -288,9 +288,6 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		CurrentDungeon = DungeonGenerator.GeneratedDungeon;
 		CurrentDungeon.IsThroneFloor = throneFloor;
-		var theme = DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals);
-		var music = throneFloor ? theme.BossMusic : theme.Music;
-		AudioManager.Instance?.PlayMusic(music != null ? music : DungeonGenerator.ThemeCatalog.FallbackMusic);
 		CurrentDungeon.IsExitFloor = PlayerController.Floor >= Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
 		CurrentDungeon.InitializeCache();
 		FindFirstObjectByType<FogOverlay>().Initialize(CurrentDungeon);

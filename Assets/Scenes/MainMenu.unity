@@ -53992,6 +53992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::CampaignStartMenu
   MainMenu: {fileID: 1656518432}
+  SlotViewer: {fileID: 1785576743}
   CampaignSlotViews:
   - {fileID: 1957450760}
   - {fileID: 1839512184}
@@ -97811,7 +97812,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1785576744
 RectTransform:
   m_ObjectHideFlags: 0

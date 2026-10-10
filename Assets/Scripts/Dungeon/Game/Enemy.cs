@@ -169,11 +169,6 @@ public class Enemy : Character
         var behavior = GetComponent<EnemyBehavior>();
         if (behavior != null) behavior.Provoke();
         else IsDormant = false;
-		if (wasDormant && !IsDormant)
-		{
-			PlayOneShot("SenseSomethingStart");
-			AudioManager.Instance?.PlayAmbushCue();
-		}
     }
 
 	public override void StartTurn()

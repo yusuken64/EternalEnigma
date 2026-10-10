@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class CampaignStartMenu : MonoBehaviour
 {
     public MainMenu MainMenu;
+    public GameObject SlotViewer;
     public List<CampaignSlotView> CampaignSlotViews;
 
     //CampaignSlots.Show(this, true);
@@ -16,6 +17,7 @@ public class CampaignStartMenu : MonoBehaviour
     internal void Setup(bool newJourney)
     {
         _newJourney = newJourney;
+        SlotViewer.gameObject.SetActive(true);
         var catalog = Resources.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
 
         for (int i = 0; i < CampaignSlotViews.Count; i++)

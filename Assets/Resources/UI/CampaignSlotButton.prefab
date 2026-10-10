@@ -74,7 +74,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4279641147
   m_fontColor: {r: 0.23, g: 0.14, b: 0.085, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -87,7 +87,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 3840279058049002961}
   - component: {fileID: 7217301011995483966}
   - component: {fileID: 9178358729106878970}
+  - component: {fileID: 3210084579307623504}
   m_Layer: 0
   m_Name: CampaignSlotButton
   m_TagString: Untagged
@@ -257,7 +258,40 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 298424460644082088}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3210084579307623504}
+        m_TargetAssemblyTypeName: CampaignSlotView, EternalEnigma.Game
+        m_MethodName: Click
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3210084579307623504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8395137042286762100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbc2ca77cbeb304497eafac11b030f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::CampaignSlotView
+  Button: {fileID: 9178358729106878970}
+  Label: {fileID: 0}
+  Artwork: {fileID: 0}
+  Portraits:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  SelectToActivateButton: {fileID: 9178358729106878970}
 --- !u!1001 &2726256779584894680
 PrefabInstance:
   m_ObjectHideFlags: 0

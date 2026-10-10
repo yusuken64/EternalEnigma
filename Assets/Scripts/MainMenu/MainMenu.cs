@@ -49,7 +49,7 @@ public class MainMenu : MonoBehaviour
 	{
         if (!IsReady) return;
 		CampaignStartMenu.gameObject.SetActive(true);
-		CampaignStartMenu.Setup();
+		CampaignStartMenu.Setup(true);
     }
 
     public void ChooseHero()

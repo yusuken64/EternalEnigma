@@ -6,7 +6,16 @@ public static class SaveSystem
     public const int SlotCount = 3;
     private static ISaveStore store = new PlayerPrefsSaveStore();
     private static int activeSlot;
-    public static int ActiveSlot { get => activeSlot; set { ValidateSlot(value); activeSlot = value; } }
+    public static int ActiveSlot 
+    {
+        get => activeSlot;
+        set
+        {
+            ValidateSlot(value);
+            activeSlot = value;
+        }
+    }
+
     public static void ValidateSlot(int slot) { if (slot < 0 || slot >= SlotCount) throw new ArgumentOutOfRangeException(nameof(slot)); }
     public static IDisposable UseStore(ISaveStore replacement)
     {

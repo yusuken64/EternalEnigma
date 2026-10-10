@@ -18,7 +18,10 @@ public static class DioramaArtIdentity
         void Add(Object asset)
         {
             if(asset==null) return;
-            value.Append(JsonUtility.ToJson(asset));
+            // JsonUtility accepts script objects, but not native assets such as meshes,
+            // textures, shaders or prefabs. Their identity is local to this terrain cache.
+            value.Append(asset.GetType().FullName).Append(':').Append(asset.GetInstanceID()).Append('|');
+            if(asset is ScriptableObject || asset is MonoBehaviour) value.Append(JsonUtility.ToJson(asset));
             if(asset is TWC.TileWorldCreatorAsset terrain)
             {
                 foreach(var layer in terrain.mapBlueprintLayers)

@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using EternalEnigma.Core.Progression;
+using EternalEnigma.Core.World;
 using UnityEditor;
 using UnityEngine;
 
@@ -81,6 +83,45 @@ namespace EternalEnigma.Tests
                 int stat = Math.Max(item.StatModification.Strength, item.StatModification.Defense);
                 Assert.That(stat, Is.LessThanOrEqualTo(new[] { 0, 6, 9, 12, 20 }[offer.MinimumTier]), item.name);
             }
+        }
+
+        [TestCase(42)]
+        [TestCase(173)]
+        public void GeneratedOverworldPickupsResolveFromProductionCatalog(int seed)
+        {
+            var go = new GameObject("Overworld loot audit");
+            try
+            {
+                var manager = go.AddComponent<ItemManager>();
+                var scene = File.ReadAllText("Assets/Scenes/Common.unity");
+                var section = Regex.Match(scene, @"  ItemDefinitions:\s*(.*?)  StartingItems:", RegexOptions.Singleline).Groups[1].Value;
+                manager.ItemDefinitions = Regex.Matches(section, @"guid: ([0-9a-f]+)").Cast<Match>()
+                    .Select(m => AssetDatabase.LoadAssetAtPath<ItemDefinition>(AssetDatabase.GUIDToAssetPath(m.Groups[1].Value)))
+                    .Where(i => i != null).ToList();
+                manager.StartingItems = new();
+                var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
+                var pickups = context.Grid.Pickups;
+                Assert.That(pickups.Select(p => p.Kind).Distinct(),
+                    Is.EquivalentTo(new[] { OverworldPickupKind.Weapon, OverworldPickupKind.SkillScroll }));
+                foreach (var pickup in pickups)
+                {
+                    var definition = OverworldPickups.Definition(context, pickup, manager);
+                    int tier = context.Campaign.Regions.Single(r => r.Id == pickup.RegionId).Tier;
+                    int floor = CampaignContext.Floors(tier).Start + 1;
+                    Assert.That(definition.IsProgressionItem, Is.False, pickup.Id);
+                    Assert.That(floor, Is.InRange(definition.MinFloor, definition.MaxFloor), pickup.Id);
+                    Assert.That(OverworldPickups.Definition(context, pickup, manager), Is.SameAs(definition), pickup.Id);
+                    Assert.That(manager.GetAsInventoryItemByName(definition.ItemName).ItemDefinition, Is.SameAs(definition));
+                    if (pickup.Kind == OverworldPickupKind.SkillScroll)
+                    {
+                        Assert.That(definition, Is.TypeOf<UsableItemDefinition>(), pickup.Id);
+                        Assert.That(definition.DroppedItemVisual, Is.EqualTo(DroppedItemVisual.SpellBook), pickup.Id);
+                        Assert.That(definition.ItemEffectDefinition, Is.Not.Null, pickup.Id);
+                    }
+                    else Assert.That(definition, Is.TypeOf<EquipmentItemDefinition>(), pickup.Id);
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(go); }
         }
 
         [Test]

@@ -90,5 +90,52 @@ namespace EternalEnigma.Tests.EditMode
             try {string before=DioramaArtIdentity.For(map);style.Revision++;Assert.That(DioramaArtIdentity.For(map),Is.Not.EqualTo(before));}
             finally {style.Revision=revision;Object.DestroyImmediate(obj);}
         }
+
+        [Test]
+        public void ArtIdentitySupportsAuthoredOverworldDependencies()
+        {
+            var obj=new GameObject("Authored cache identity test");
+            var map=obj.AddComponent<CampaignOverworld>();
+            try
+            {
+                map.StyleProfile=Resources.Load<OverworldStyleProfile>("EnvironmentKit/OverworldStyle");
+                Assert.That(map.StyleProfile,Is.Not.Null);
+                Assert.That(map.StyleProfile.Dependencies.OfType<Mesh>(),Is.Not.Empty);
+                string identity=DioramaArtIdentity.For(map);
+                Assert.That(identity,Is.Not.Empty);
+                Assert.That(DioramaArtIdentity.For(map),Is.EqualTo(identity));
+            }
+            finally {Object.DestroyImmediate(obj);}
+        }
+
+        [Test]
+        public void ArtIdentityTracksNativeDependencyReplacementAndMaterialChanges()
+        {
+            var obj=new GameObject("Native cache identity test");
+            var map=obj.AddComponent<CampaignOverworld>();
+            var profile=ScriptableObject.CreateInstance<OverworldStyleProfile>();
+            var mesh=new Mesh();var replacement=new Mesh();var texture=new Texture2D(2,2);
+            var material=new Material(Shader.Find("Unlit/Color")){color=Color.white};
+            try
+            {
+                map.StyleProfile=profile;
+                profile.Dependencies=new Object[]{mesh,texture,material,material.shader,obj};
+                string original=DioramaArtIdentity.For(map);
+                Assert.That(DioramaArtIdentity.For(map),Is.EqualTo(original));
+                profile.Dependencies[0]=replacement;
+                string replaced=DioramaArtIdentity.For(map);
+                Assert.That(replaced,Is.Not.EqualTo(original));
+                material.color=Color.red;
+                Assert.That(DioramaArtIdentity.For(map),Is.Not.EqualTo(replaced));
+                profile.Dependencies[0]=mesh;material.color=Color.white;
+                Assert.That(DioramaArtIdentity.For(map),Is.EqualTo(original));
+            }
+            finally
+            {
+                Object.DestroyImmediate(obj);Object.DestroyImmediate(profile);
+                Object.DestroyImmediate(mesh);Object.DestroyImmediate(replacement);
+                Object.DestroyImmediate(texture);Object.DestroyImmediate(material);
+            }
+        }
     }
 }

@@ -156,8 +156,11 @@ public class Enemy : Character
 
 	public override IEnumerator ExecuteActionRoutine(GameAction action)
 	{
-		if (this == null) { yield break; }
+		// Puzzle completion can remove an objective actor during simulation, before
+		// its queued movement is replayed or before a yielded visual finishes.
+		if (this == null || !isActiveAndEnabled) { yield break; }
 		yield return action.Visuals.Play(action, this, !action.ShouldAnimate(this));
+		if (this == null || !isActiveAndEnabled) { yield break; }
 		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations && Vitals.HP > 0) PlayIdleAnimation();
 
 		action.UpdateDisplayedStats();

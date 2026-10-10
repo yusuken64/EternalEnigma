@@ -62,6 +62,40 @@ namespace EternalEnigma.Tests
             Assert.That(game.Encounter.Puzzle.Complete,Is.True);
         }
 
+        [UnityTest] public IEnumerator LureCompletionRemovesTargetWithoutReplayingItsDestroyedAnimator()
+            => CompleteTargetPuzzle(EncounterKind.Lure, DungeonAnimationMode.NoAnimations);
+
+        [UnityTest] public IEnumerator HerdingCompletionRemovesTargetWithNormalAnimationPlayback()
+            => CompleteTargetPuzzle(EncounterKind.Herding, DungeonAnimationMode.Normal);
+
+        IEnumerator CompleteTargetPuzzle(EncounterKind kind, DungeonAnimationMode animationMode)
+        {
+            var previousAnimation = DungeonPreferences.AnimationOverride;
+            try
+            {
+                DungeonPreferences.AnimationOverride = animationMode;
+                yield return LoadEncounter(kind);
+                var game = harness.Game;
+                var target = game.Enemies.Single(e => e.GetComponent<EncounterActor>()?.Invulnerable == true);
+                Assert.That(game.CanExitFloor, Is.False);
+                for (int turn = 0; turn < 120 && !game.Encounter.Puzzle.Complete; turn++)
+                {
+                    var action = game.Encounter.AutoplayPuzzleAction(harness.Ally);
+                    Assert.That(action, Is.Not.Null);
+                    Assert.That(action.IsValid(harness.Ally), Is.True);
+                    yield return harness.ExecuteAction(action);
+                }
+                yield return null; // Let the completed objective's deferred destruction finish.
+                Assert.That(game.Encounter.Puzzle.Complete, Is.True);
+                Assert.That(game.CanExitFloor, Is.True);
+                Assert.That(target == null, Is.True);
+                Assert.That(game.Enemies, Is.Empty);
+                yield return harness.ExecuteAction(new WaitAction());
+                Assert.That(game.TurnManager.IsProcessingTurn, Is.False);
+            }
+            finally { DungeonPreferences.AnimationOverride = previousAnimation; }
+        }
+
         [UnityTest] public IEnumerator ResetRestoresInventoryIdentityGoldExperienceAndSamePuzzle()
         {
             yield return LoadEncounter(EncounterKind.LightPattern);

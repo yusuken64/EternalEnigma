@@ -37,7 +37,9 @@ public sealed class OverworldPickups : MonoBehaviour
         var definitions=items.ItemDefinitions.Concat(items.StartingItems).Where(i=>i!=null&&!i.IsProgressionItem&&i.MinFloor<=floor&&i.MaxFloor>=floor);
         var pool=definitions.Where(i=>pickup.Kind==OverworldPickupKind.Weapon
             ? i is EquipmentItemDefinition equipment && !equipment.IsAmmunition && equipment.WeaponType!=WeaponType.OffhandShield && equipment.EquipmentSlot!=EquipmentSlot.Accessory
-            : i.ItemEffectDefinition is SkillItemEffectDefinition)
+            // Production spell scrolls use dedicated item effects (bolt, warp, explosion),
+            // while SkillItemEffectDefinition is also used by the demo loadout.
+            : i is UsableItemDefinition && (i.DroppedItemVisual==DroppedItemVisual.SpellBook || i.ItemEffectDefinition is SkillItemEffectDefinition))
             .Distinct().OrderBy(i=>i.ItemName,System.StringComparer.Ordinal).ToArray();
         if(pool.Length==0)throw new System.InvalidOperationException("No eligible "+pickup.Kind+" definitions for "+pickup.RegionId);
         return pool[(uint)pickup.Roll%(uint)pool.Length];

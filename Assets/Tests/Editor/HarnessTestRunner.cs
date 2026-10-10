@@ -322,6 +322,9 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Enemy Animation States")]
     public static void RunEnemyAnimationStates() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EnemyAnimationStateTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Encounter Gameplay")]
+    public static void RunEncounterGameplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.EncounterGameplayTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Floor Message")]
     public static void RunFloorMessage() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "FloorMessageTests");
 

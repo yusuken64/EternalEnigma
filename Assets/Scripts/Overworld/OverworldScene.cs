@@ -59,6 +59,7 @@ public sealed class OverworldScene : MonoBehaviour
     private HashSet<string> resolved => Context.Resolved;
     private readonly Dictionary<string, List<GameObject>> gateVisuals = new();
     private readonly Dictionary<GridPoint, GameObject> locationVisuals = new();
+    private readonly Dictionary<string,GameObject> clearedVisuals = new();
     private Dictionary<GridPoint, CampaignLocation> locations;
     private TileWorldCreator creator;
     private OverworldTerrainCache terrainCache;
@@ -127,6 +128,17 @@ public sealed class OverworldScene : MonoBehaviour
             else if (location.Kind != LocationKind.Town) BuildLocationFootprint(marker, location.Kind, cell);
             BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
             locationVisuals.Add(cell, marker);
+            if(location.IsDungeon && DioramaCatalog.Load() is { } catalog)
+            {
+                var cleared=new GameObject("Cleared "+location.Id);
+                cleared.transform.SetParent(transform,false);
+                cleared.transform.position=CellCenterToWorld(cell);
+                var batch=new EnvironmentBatch(cleared.transform);
+                catalog.Add(batch,"CastleFlag",OverworldCosmetics.Biome(Map.CurrentGrid,cell.X,cell.Y),
+                    new Vector3(creator.twcAsset.cellSize*.65f,0,-.1f),variation:.4f);
+                batch.Finish();cleared.SetActive(Context.Completed.Contains(location.Id));
+                clearedVisuals[location.Id]=cleared;
+            }
         }
         foreach (var gate in Map.CurrentGrid.Locks)
         {
@@ -142,6 +154,7 @@ public sealed class OverworldScene : MonoBehaviour
                 marker.transform.localScale=Vector3.one*creator.twcAsset.cellSize;
                 BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
                 var route = Campaign.Routes.First(r => r.Id == gate.RouteId);
+                OverworldLockVisual.Build(marker,route,OverworldCosmetics.Biome(Map.CurrentGrid,cell.X,cell.Y));
                 marker.name = (route.ShortcutKind == ShortcutKind.None ? "Gate " : "Shortcut ") + gate.RouteId;
                 if (route.ShortcutKind != ShortcutKind.None)
                     foreach (var renderer in marker.GetComponentsInChildren<Renderer>())
@@ -177,6 +190,7 @@ public sealed class OverworldScene : MonoBehaviour
         Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);
         walkHistory.Add(Position);
         IsReady = true;
+        gameObject.AddComponent<OverworldPickups>().Initialize(this);
         Common.Instance.Travel.SceneReady();
         Common.Instance.ScreenTransition.DoOpen();
         RebuildFollowers();
@@ -302,6 +316,7 @@ public sealed class OverworldScene : MonoBehaviour
             return false;
         }
         Position = next;
+        GetComponent<OverworldPickups>()?.TryCollect();
         RefreshBiomeMusic();
         var crossed = Map.CurrentGrid.LockAt(next);
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
@@ -311,7 +326,7 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
             if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) Message += " | " + GateDescription(id);
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
-            Message += " | {Interact}: Collect " + route.KeyLabel;
+            Message += route.KeyCondition == KeyAcquisition.AtLocation ? " | {Interact}: Collect " + route.KeyLabel : " | Clear this encounter to earn " + route.KeyLabel;
         foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
         walkHistory.Add(Position);
         if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
@@ -456,6 +471,7 @@ public sealed class OverworldScene : MonoBehaviour
         StopHeldWalk();
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning) return;
         if (GetComponent<OverworldMenuManager>().Opened) return;
+        if (GetComponent<OverworldPickups>()?.TryCollect() == true) return;
         if (!locations.TryGetValue(Position, out var location))
         {
             if (announceLocked) OpenGate();
@@ -540,10 +556,12 @@ public sealed class OverworldScene : MonoBehaviour
     {
         foreach (var marker in locationVisuals)
             marker.Value.SetActive(true);
+        foreach(var marker in clearedVisuals)marker.Value.SetActive(Context.Completed.Contains(marker.Key));
     }
 
     private void RefreshGates()
     {
+        RefreshLocationMarkers();
         foreach (var gate in Map.CurrentGrid.Locks)
             foreach (var visual in gateVisuals[gate.RouteId]) visual.SetActive(!gates.IsWalkable(gate.Cells[0], Held));
     }

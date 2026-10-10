@@ -248,7 +248,7 @@ public static class OverworldGridGenerator
         var masks = new Dictionary<string, bool[,]>(StringComparer.Ordinal);
         foreach (string name in new[] { OverworldLayers.Ground, OverworldLayers.Walkable, OverworldLayers.Roads,
             OverworldLayers.Mountains, OverworldLayers.Trees, OverworldLayers.Water, OverworldLayers.Reserved,
-            OverworldLayers.Towns, OverworldLayers.TownFootprints, OverworldLayers.TownWalls, OverworldLayers.TownInteriors,
+            OverworldLayers.Towns, OverworldLayers.TownFootprints, OverworldLayers.TownWalls, OverworldLayers.TownInteriors, OverworldLayers.LocationFootprints,
             OverworldLayers.StoryDungeons, OverworldLayers.RepeatableDungeons, OverworldLayers.FinalDungeon,
             OverworldLayers.Converters, OverworldLayers.Landmarks, OverworldLayers.Secrets, OverworldLayers.PlayerStart,
             OverworldLayers.Locks, OverworldLayers.AreaLocks, OverworldLayers.ObstacleLocks, OverworldLayers.InteractionLocks }) masks[name] = new bool[w, h];
@@ -413,6 +413,27 @@ public static class OverworldGridGenerator
             foreach (var cell in town.Walls) masks[OverworldLayers.TownWalls][cell.X, cell.Y] = true;
             foreach (var cell in town.Interior) masks[OverworldLayers.TownInteriors][cell.X, cell.Y] = true;
         }
+        var locationFootprints = new List<GridLocationFootprint>();
+        foreach (var location in campaign.Locations.Where(l => l.ParentTownId == null && l.IsDungeon).OrderBy(l => l.Id, StringComparer.Ordinal))
+        {
+            var entrance = positions[location.Id]; int size = location.Encounter?.Kind == EncounterKind.LostWoods ? 7 : 5;
+            var centersToTry = new[] { entrance }.Concat(Directions.SelectMany(d => Enumerable.Range(1, size / 2).Select(n => new GridPoint(entrance.X + d.X * n, entrance.Y + d.Y * n))));
+            GridLocationFootprint? footprint = null;
+            foreach (var center in centersToTry)
+            {
+                var inward = new GridPoint(0, 1);
+                if (!center.Equals(entrance)) inward = new GridPoint(Math.Sign(center.X - entrance.X), Math.Sign(center.Y - entrance.Y));
+                var candidate = new GridLocationFootprint(location.Id, entrance, inward, size,
+                    location.Encounter?.Kind == EncounterKind.Bridge ? new GridPoint(entrance.X + inward.X, entrance.Y + inward.Y) : (GridPoint?)null, location.Encounter?.Kind, center);
+                if (candidate.Cells.Any(p => !Inside(p.X, p.Y) || owner[p.X, p.Y] != groupOf[location.Id] || masks[OverworldLayers.Locks][p.X, p.Y] ||
+                    masks[OverworldLayers.TownFootprints][p.X, p.Y] || masks[OverworldLayers.LocationFootprints][p.X, p.Y] || approachLane[p.X, p.Y]) ||
+                    positions.Any(p => p.Key != location.Id && candidate.Cells.Contains(p.Value))) continue;
+                footprint = candidate; break;
+            }
+            if (footprint == null) throw new InvalidOperationException("No encounter footprint fits " + location.Id);
+            locationFootprints.Add(footprint);
+            foreach (var p in footprint.Cells) { masks[OverworldLayers.LocationFootprints][p.X, p.Y] = true; masks[OverworldLayers.Reserved][p.X, p.Y] = true; }
+        }
         List<GridPoint> Path(GridPoint from, GridPoint to, int a, int b, string? gate = null)
         {
             bool Allowed(GridPoint p) => Inside(p.X, p.Y) && ground[p.X, p.Y] &&
@@ -447,6 +468,7 @@ public static class OverworldGridGenerator
         }
         // Keep the outside ring and the only approach free of subsequent terrain noise.
         foreach (var town in towns) Dry(town.Cells, false);
+        foreach (var footprint in locationFootprints) Dry(footprint.Cells, false);
         foreach (var route in campaign.Routes)
         {
             var path = route.IsWarp ? new List<GridPoint> { positions[route.From], positions[route.To] } :
@@ -562,7 +584,25 @@ public static class OverworldGridGenerator
                 masks[palette[regionOwner[x, y]!] == OverworldBiome.Forest ? OverworldLayers.Trees : OverworldLayers.Mountains][x, y] = true;
         }
         var biomes = AssignBiomes(campaign, masks, flooded, regionOwner, locks);
-        var grid = new OverworldGrid(campaign, masks.ToDictionary(m => m.Key, m => new GridLayer(m.Value)), positions, routePaths, locks, biomes, towns);
+        var pickupRandom = new SeedStream(campaign.Seed, 1750);
+        var pickups = new List<OverworldPickup>();
+        foreach (var region in campaign.Regions.OrderBy(r => r.Id, StringComparer.Ordinal))
+        {
+            var candidates = new List<GridPoint>();
+            for (int y = 2; y < h - 2; y++) for (int x = 2; x < w - 2; x++)
+            {
+                var p = new GridPoint(x, y);
+                if (!ground[x, y] || flooded[x, y] || regionOwner[x, y] != region.Id || masks[OverworldLayers.Locks][x, y] ||
+                    masks[OverworldLayers.LocationFootprints][x, y] || approachLane[x, y] || positions.Values.Any(q => Math.Abs(q.X - x) <= 3 && Math.Abs(q.Y - y) <= 3) ||
+                    locks.Any(g => g.Cells.Any(q => Math.Abs(q.X - x) <= 3 && Math.Abs(q.Y - y) <= 3))) continue;
+                // A dry cell in the location's connected territory is reachable without owning a water vehicle.
+                if (dry[x, y]) candidates.Add(p);
+            }
+            var chosen = pickupRandom.Shuffle(candidates).Take(3).ToArray();
+            if (chosen.Length != 3) throw new InvalidOperationException("No reachable pickups fit " + region.Id);
+            for (int i = 0; i < 3; i++) pickups.Add(new OverworldPickup(region.Id + "-pickup-" + i, region.Id, chosen[i], i == 0 ? OverworldPickupKind.Weapon : OverworldPickupKind.SkillScroll, pickupRandom.Range(int.MaxValue)));
+        }
+        var grid = new OverworldGrid(campaign, masks.ToDictionary(m => m.Key, m => new GridLayer(m.Value)), positions, routePaths, locks, biomes, towns, locationFootprints, pickups);
         var validation = OverworldGridValidator.Validate(campaign, grid);
         if (!validation.IsValid) throw new InvalidOperationException(string.Join("\n", validation.Errors));
         return grid;

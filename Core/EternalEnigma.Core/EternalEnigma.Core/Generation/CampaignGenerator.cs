@@ -6,7 +6,7 @@ namespace EternalEnigma.Core.Generation;
 
 public static class CampaignGenerator
 {
-    public const int Version = 10;
+    public const int Version = 11;
     public const int TierCount = 5;
 
     public static Campaign Generate(int seed)
@@ -195,8 +195,10 @@ public static class CampaignGenerator
             string label = ((char)('A' + later)).ToString();
             routes.Add(new CampaignRoute($"shortcut-B-{label}", "checkpoint-1", $"checkpoint-{later}",
                 Requirement.Open, LockForm.None, shortcutKind: ShortcutKind.Keyed,
-                keyId: $"Biome {label} key", keyLocationId: $"region-{later}-landmark", isWarp: true));
+                keyId: $"Biome {label} key", keyLocationId: $"region-{later}-landmark", isWarp: true, keyCondition: KeyAcquisition.DungeonCompletion));
         }
+
+        AssignEncounters(seed, locations, routes, active);
 
         // Stage 9 only dresses routes that already exist, so it cannot change topology or progression.
         regions = LockNarrator.NameRegions(seed, regions);
@@ -205,6 +207,36 @@ public static class CampaignGenerator
         var validation = CampaignValidator.Validate(campaign);
         if (!validation.IsValid) throw new InvalidOperationException($"Campaign {seed} failed validation:\n{string.Join("\n", validation.Errors)}");
         return campaign;
+    }
+
+    private static void AssignEncounters(int seed, List<CampaignLocation> locations, List<CampaignRoute> routes, IReadOnlyCollection<Capability> active)
+    {
+        var random = new SeedStream(seed, 1700);
+        void Assign(string id, EncounterDefinition encounter)
+        {
+            int index = locations.FindIndex(l => l.Id == id); var old = locations[index];
+            locations[index] = new CampaignLocation(old.Id, old.RegionId, old.Tier, old.Kind, old.Required, old.Stage, old.ParentTownId, old.Services, encounter);
+        }
+        var landmarks = random.Shuffle(locations.Where(l => Enumerable.Range(0, 6).Any(i => l.Id == $"region-{i}-landmark")));
+        var cave = landmarks.First(l => l.Stage > 0);
+        var caveRequirement = new Requirement(new[] { CapabilitySet.Of(Capability.Engineering) }.Concat(active.Contains(Capability.Breach) ? new[] { CapabilitySet.Of(Capability.Breach) } : Array.Empty<CapabilitySet>()).ToArray());
+        Assign(cave.Id, new EncounterDefinition(EncounterKind.BoulderCave, cave.Tier, caveRequirement));
+        int caveRouteIndex = routes.FindIndex(r => r.To == cave.Id); var caveRoute = routes[caveRouteIndex];
+        routes[caveRouteIndex] = new CampaignRoute(caveRoute.Id, caveRoute.From, caveRoute.To, caveRequirement, LockForm.Obstacle);
+        var kinds = random.Shuffle(new[] { EncounterKind.OvertakenCity, EncounterKind.LostWoods, EncounterKind.Prison, EncounterKind.Ambush, EncounterKind.BossArena });
+        int n = 0; foreach (var location in landmarks.Where(l => l.Id != cave.Id)) Assign(location.Id, new EncounterDefinition(kinds[n++], location.Tier));
+        var puzzles = random.Shuffle(new[] { EncounterKind.Sokoban, EncounterKind.LightPattern, EncounterKind.Lure, EncounterKind.Herding });
+        n = 0; foreach (var location in random.Shuffle(locations.Where(l => l.Id.StartsWith("payoff-", StringComparison.Ordinal))).Take(4))
+            Assign(location.Id, new EncounterDefinition(puzzles[n++], location.Tier));
+        var bridgeRoute = random.Shuffle(routes.Where(r => r.IsProgressionBoundary && r.From != "checkpoint-0")).First();
+        var near = locations.Single(l => l.Id == bridgeRoute.From);
+        const string bridgeId = "encounter-bridge";
+        locations.Add(new CampaignLocation(bridgeId, near.RegionId, near.Tier, LocationKind.Landmark, true, near.Stage,
+            encounter: new EncounterDefinition(EncounterKind.Bridge, near.Tier, bridgeRoute.Requirement, bridgeRoute.To, bridgeRoute.Id)));
+        routes.Add(new CampaignRoute("bridge-approach", near.Id, bridgeId, Requirement.Open, LockForm.None));
+        int bridgeIndex = routes.FindIndex(r => r.Id == bridgeRoute.Id);
+        routes[bridgeIndex] = new CampaignRoute(bridgeRoute.Id, bridgeRoute.From, bridgeRoute.To, bridgeRoute.Requirement, bridgeRoute.Form,
+            bridgeRoute.Required, bridgeRoute.IsProgressionBoundary, completionLocationId: bridgeId);
     }
 
     private static List<Capability> Select(SeedStream random, CapabilityKind kind, int count, Func<Capability, bool> mandatory)

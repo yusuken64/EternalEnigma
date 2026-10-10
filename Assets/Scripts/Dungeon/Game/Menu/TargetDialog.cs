@@ -10,13 +10,16 @@ namespace JuicyChickenGames.Menu
         public GameObject TargetIndicator;
         private Character casterCharacter;
         private Skill targetingSkill;
+        private UsableItemDefinition targetingItem;
+        private TileWorldDungeon targetingFloor;
         private DungeonProp selectedProp;
         private List<DungeonProp> props = new();
         private System.Func<Character, Vector3Int, GameAction> createAction;
         private int missileRange;
         private List<Vector3Int> tiles = new();
         private Vector3Int selectedTile;
-        public string RangeLabel => missileRange > 0 ? $"Range: {missileRange} tiles" : targetingSkill != null ? "Choose a highlighted valid target" : "";
+        private int EffectiveMissileRange => missileRange + (targetingSkill != null && targetingSkill.UsesArrows && casterCharacter != null ? ClassPassives.MissileRangeBonus(casterCharacter) : 0);
+        public string RangeLabel => missileRange > 0 ? $"Range: {EffectiveMissileRange} tiles" : targetingSkill != null ? "Choose a highlighted valid target" : "";
         private TMPro.TMP_Text promptText;
         private string originalPrompt;
         public Vector3Int Direction { get; private set; }
@@ -29,9 +32,51 @@ namespace JuicyChickenGames.Menu
             tiles.Count > 0 ? selectedTile : selectedProp != null ? selectedProp.Position :
             CameraTarget != null ? CameraTarget.TilemapPosition : (Vector3Int?)null;
         public IReadOnlyList<Vector3Int> TerminalValidCells => tiles.Count > 0 ? tiles :
-            Targetables != null ? Targetables.Where(c => c != null && c.Vitals.HP > 0).Select(c => c.TilemapPosition)
+            Targetables != null ? Targetables.Where(c => c != null && c.Vitals != null).Select(c => c.TilemapPosition)
                 .Concat(props.Where(p => p != null && p.Alive).Select(p => p.Position)).ToArray() :
             System.Array.Empty<Vector3Int>();
+        public IEnumerable<Vector3Int> TerminalAreaCells
+        {
+            get
+            {
+                int radius = targetingSkill != null ? targetingSkill.AreaRadius : targetingItem != null ? targetingItem.AreaRadius : 0;
+                if (radius <= 0 || !TerminalSelectedCell.HasValue || Game.Instance?.CurrentDungeon == null) yield break;
+                var center = TerminalSelectedCell.Value;
+                for (int y = -radius; y <= radius; y++) for (int x = -radius; x <= radius; x++)
+                {
+                    var cell = center + new Vector3Int(x, y, 0);
+                    if (Game.Instance.CurrentDungeon.IsFloorCell(cell)) yield return cell;
+                }
+            }
+        }
+        public IEnumerable<Vector3Int> TerminalMissilePath
+        {
+            get
+            {
+                if (missileRange <= 0 || casterCharacter == null || !MissileTargeting.IsDirection(Direction)) yield break;
+                int length = TileWorldDungeon.ChevDistance(casterCharacter.TilemapPosition, MissileEndpoint);
+                for (int i = 1; i <= length; i++) yield return casterCharacter.TilemapPosition + Direction * i;
+            }
+        }
+        public string TerminalLabel
+        {
+            get
+            {
+                string name = targetingSkill != null ? targetingSkill.SkillName : targetingItem != null ? targetingItem.ItemName : "Select target";
+                var cell = TerminalSelectedCell;
+                string target = cell.HasValue ? $"Tile ({cell.Value.x},{cell.Value.y})" : "No target";
+                if (selectedProp != null) target = selectedProp.GetInteractionText();
+                else if (CameraTarget != null && (CameraTarget is Ally || DungeonSight.OverlapsVisible(Game.Instance.PartyVisibleTiles,
+                    Character.ToBounds(CameraTarget.FootPrint, CameraTarget.TilemapPosition))))
+                    target = CameraTarget is Enemy enemy && EnemyBehavior.IsDisguised(enemy) ? "Item" : CameraTarget.CharacterName;
+                int radius = targetingSkill != null ? targetingSkill.AreaRadius : targetingItem != null ? targetingItem.AreaRadius : 0;
+                string direction = missileRange > 0 ? $"\nAim {DirectionName(Direction)} ({Direction.x},{Direction.y}) range {EffectiveMissileRange}" : "";
+                return name + "\n" + target + direction + (radius > 0 ? $"\nArea radius {radius}" : "") +
+                    $"\n{InputPrompts.Confirm}: confirm\n{InputPrompts.Back}: cancel";
+            }
+        }
+        private static string DirectionName(Vector3Int direction) =>
+            (direction.y > 0 ? "N" : direction.y < 0 ? "S" : "") + (direction.x > 0 ? "E" : direction.x < 0 ? "W" : "");
 
         internal void Setup(Character character, Skill skill)
         {
@@ -46,9 +91,11 @@ namespace JuicyChickenGames.Menu
         }
 
         internal void Setup(Character character, List<Character> targets,
-            System.Func<Character, Vector3Int, GameAction> factory, int range = 0)
+            System.Func<Character, Vector3Int, GameAction> factory, int range = 0, UsableItemDefinition item = null)
         {
             casterCharacter = character;
+            targetingItem = item;
+            targetingFloor = Game.Instance.CurrentDungeon;
             createAction = factory;
             missileRange = range;
             Targetables = targets;
@@ -62,7 +109,7 @@ namespace JuicyChickenGames.Menu
                 originalPrompt = promptText.text;
                 if (missileRange > 0) promptText.text = "Aim in a direction, then confirm";
             }
-            if (tiles.Count > 0) SelectTile(selectedTile);
+            if (tiles.Count > 0) SelectTile(tiles.Contains(selectedTile) ? selectedTile : tiles[0]);
             else if (missileRange > 0) Aim(Dungeon.GetFacingOffset(character.CurrentFacing));
             else if(Targetables.Count > 0) SelectTarget(Targetables[0]); else SelectProp(props[0]);
             lastMove = Vector2.zero;
@@ -72,7 +119,7 @@ namespace JuicyChickenGames.Menu
         private void Aim(Vector3Int direction)
         {
             Direction = direction;
-            var line = targetingSkill != null ? MissileTargeting.TraceLine(casterCharacter, direction, missileRange + (targetingSkill.UsesArrows ? ClassPassives.MissileRangeBonus(casterCharacter) : 0), targetingSkill.AreaRadius > 0 ? 1 : ArrowSupply.Penetration(casterCharacter, targetingSkill), targetingSkill.AreaRadius > 0) : null;
+            var line = targetingSkill != null ? MissileTargeting.TraceLine(casterCharacter, direction, EffectiveMissileRange, targetingSkill.AreaRadius > 0 ? 1 : ArrowSupply.Penetration(casterCharacter, targetingSkill), targetingSkill.AreaRadius > 0) : null;
             var hit = line != null ? new MissileTargeting.Hit(line.Endpoint, line.Encounters.LastOrDefault().Character) : MissileTargeting.Trace(casterCharacter, direction, missileRange);
             MissileEndpoint = hit.Cell;
             CameraTarget = hit.Character;
@@ -154,7 +201,11 @@ namespace JuicyChickenGames.Menu
         {
             if (createAction == null || casterCharacter == null) return;
             var caster = casterCharacter;
+            if (Game.Instance == null || Game.Instance.CurrentDungeon != targetingFloor || caster.Vitals == null || caster.Vitals.HP <= 0 ||
+                !Game.Instance.AllCharacters.Contains(caster))
+            { MenuManager.Close(this); return; }
             var action = selectedProp != null && targetingSkill != null ? SkillAction.ForScenery(caster,targetingSkill,selectedProp) : createAction(CameraTarget, Direction);
+            if (action == null) { MenuManager.Close(this); return; }
             if (!action.ValidateCommand(caster, out var reason)) { if (reason != null) GameMessages.Post(reason, true); MenuManager.Close(this); return; }
             MenuManager.Instance.CloseAllMenus();
             caster.SetAction(action);
@@ -168,7 +219,7 @@ namespace JuicyChickenGames.Menu
             SelectTargetPrompt.SetActive(false);
             if (promptText != null) promptText.text = originalPrompt;
             promptText = null;
-            props.Clear(); tiles.Clear(); selectedProp=null; targetingSkill=null;
+            props.Clear(); tiles.Clear(); selectedProp=null; targetingSkill=null; targetingItem=null; targetingFloor=null;
             Targetables = null;
             CameraTarget = null;
             casterCharacter = null;

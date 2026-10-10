@@ -105,4 +105,44 @@ public class TerminalTests
         Assert.Equal('R', TerminalGlyphs.TownService("Trainer"));
         Assert.Equal('*', TerminalGlyphs.TownService("Unknown"));
     }
+
+    [Fact]
+    public void KnowledgeReusesUnchangedGridAndKeepsEarlierSnapshotsImmutable()
+    {
+        var visible = new GridPoint(1, 1);
+        TerminalVisibility Read(GridPoint point) => point.Equals(visible) ? TerminalVisibility.Visible : TerminalVisibility.Unseen;
+        var first = TerminalKnowledge.Capture(4, 3, Read);
+        var unchanged = TerminalKnowledge.Capture(4, 3, Read, first);
+        Assert.Same(first, unchanged);
+        var snapshot = new DungeonTerminalSnapshot(4, 3, visible, "Floor", _ => new TerminalCell('.', TerminalPalette.White), first);
+        visible = new GridPoint(2, 1);
+        var changed = TerminalKnowledge.Capture(4, 3, Read, unchanged);
+        Assert.NotSame(first, changed);
+        Assert.Equal(TerminalVisibility.Visible, snapshot.VisibilityAt(new GridPoint(1, 1)));
+        Assert.Equal(TerminalVisibility.Unseen, snapshot.VisibilityAt(visible));
+        Assert.Equal(TerminalVisibility.Visible, changed.At(visible));
+        Assert.Equal(TerminalVisibility.Unseen, changed.At(new GridPoint(1, 1)));
+        Assert.Same(changed, TerminalKnowledge.Capture(4, 3, Read, changed));
+        Assert.NotSame(changed, TerminalKnowledge.Capture(5, 3, Read, changed));
+    }
+
+    [Fact]
+    public void TargetPreviewDistinguishesValidCellsAreaDirectionAndEndpointWithoutRevealingFog()
+    {
+        var fog = new TerminalVisibility[8, 6];
+        for (int y = 0; y < 6; y++) for (int x = 0; x < 8; x++) fog[x, y] = TerminalVisibility.Visible;
+        fog[0, 0] = TerminalVisibility.Unseen;
+        var target = new TerminalTargetSnapshot(new GridPoint(4, 2), "Bolt\nAim north\nArea radius 1",
+            new[] { new GridPoint(3, 2), new GridPoint(0, 0) }, new[] { new GridPoint(1, 2) },
+            new[] { new GridPoint(4, 0), new GridPoint(4, 1), new GridPoint(4, 2) }, new GridPoint(0, 1));
+        var snapshot = new DungeonTerminalSnapshot(8, 6, new GridPoint(4, 0), "Floor", _ => new TerminalCell('.', TerminalPalette.White), fog, target: target);
+        var renderer = new DungeonTerminalRenderer();
+        renderer.Render(snapshot, 12, 12);
+        Assert.Equal('?', renderer.Frame[3, 4].Glyph);
+        Assert.Equal('*', renderer.Frame[5, 4].Glyph);
+        Assert.Equal('|', renderer.Frame[6, 5].Glyph);
+        Assert.Equal('X', renderer.Frame[6, 4].Glyph);
+        Assert.Equal(' ', renderer.Frame[2, 6].Glyph);
+        Assert.All(renderer.Frame.PlainText.Split('\n'), line => Assert.Equal(12, line.Length));
+    }
 }

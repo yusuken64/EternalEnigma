@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
+	public const int DefaultCapacity = 10;
 	public List<InventoryItem> InventoryItems = new();
 
-    public int MaxItems = 10;
+    public int MaxItems = DefaultCapacity;
 
 	public delegate void InventoryChangedEventHandler();
 	public event InventoryChangedEventHandler HandleInventoryChanged;

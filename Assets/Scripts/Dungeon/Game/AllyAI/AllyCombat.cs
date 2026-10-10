@@ -6,7 +6,7 @@ internal static class AllyCombat
 {
     internal static bool IsVisibleHostile(Game game, Ally ally, Character target) =>
         target != null && target != ally && target.Vitals.HP > 0 && target.Team != ally.Team &&
-        target.Team != Team.Neutral && !EnemyBehavior.IsDisguised(target) &&
+        target.Team != Team.Neutral && !EnemyBehavior.IsDisguised(target) && !EncounterActor.Protected(target) &&
         game.AllCharacters.Contains(target) && game.CurrentDungeon.CanSee(ally, target);
 
     internal static List<Character> VisibleHostiles(Game game, Ally ally) => game.AllCharacters

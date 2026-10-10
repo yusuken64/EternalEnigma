@@ -87,7 +87,8 @@ try
             if (location == null) throw new ArgumentException($"Unknown location: {dungeon}");
 
             int dungeonSeed = CampaignContext.LocationSeed(seed, dungeon, floor);
-            var floorOptions = CampaignContext.DungeonFloorOptionsFor(seed, dungeon, floor, location.Tier, OverworldGridGenerator.BiomeForRegion(campaign,location.RegionId),1);
+            var plan = new DungeonRunPlan(seed, location, OverworldGridGenerator.BiomeForRegion(campaign, location.RegionId));
+            var floorOptions = plan.Floor(floor).Options;
             var dungeonFloor = DungeonFloorGenerator.Generate(floorOptions);
 
             // Build JSON object
@@ -103,6 +104,9 @@ try
                 dungeonFloor.Width,
                 dungeonFloor.Height,
                 dungeonFloor.IsThroneFloor,
+                fingerprint = DungeonFloorFingerprint.Compute(dungeonFloor),
+                encounter = location.Encounter, plan.Floor(floor).CombatDifficulty,
+                dungeonFloor.Objective, dungeonFloor.PuzzleObjects, dungeonFloor.ObjectiveEnemies, dungeonFloor.RecoveryStashes, dungeonFloor.Exits, dungeonFloor.SolutionWitness,
                 layers,
                 rooms = dungeonFloor.Rooms,
                 start = dungeonFloor.Start,
@@ -146,7 +150,7 @@ try
                 File.WriteAllText(Path.Combine(output, $"overworld-{campaign.Seed}.json"), JsonSerializer.Serialize(new
                 {
                     version = OverworldGrid.GenerationVersion, grid.CampaignFingerprint, grid.Width, grid.Height,
-                    grid.PlayerStart, grid.Locations, grid.Routes, grid.Locks, grid.Warps, grid.RegionBiomes, grid.TownFootprints, campaign.ReturnObjectives,
+                    grid.PlayerStart, grid.Locations, grid.Routes, grid.Locks, grid.Warps, grid.RegionBiomes, grid.TownFootprints, grid.LocationFootprints, grid.Pickups, campaign.ReturnObjectives,
                     shortcuts = campaign.Routes.Where(r => r.ShortcutKind != EternalEnigma.Core.Progression.ShortcutKind.None), layers
                 }, options));
                 File.WriteAllText(Path.Combine(output, $"overworld-{campaign.Seed}.svg"), GridPreview.Svg(grid, campaign));

@@ -94,6 +94,17 @@ internal static class GridPreview
         foreach (var trap in dungeon.Traps)
             svg.Append($"<circle cx=\"{(trap.Cell.X + 0.5) * 8}\" cy=\"{(dungeon.Height - trap.Cell.Y - 0.5) * 8}\" r=\"2\" fill=\"#ff00ff\"><title>Trap (roll={trap.Roll})</title></circle>");
 
+        foreach (var p in dungeon.PuzzleObjects)
+        {
+            var color = p.Kind == PuzzleObjectKind.Boulder ? "#555555" : p.Kind == PuzzleObjectKind.Goal ? "#ffffff" :
+                p.Kind == PuzzleObjectKind.Light || p.Kind == PuzzleObjectKind.LightTarget ? (p.InitialState ? "#ffff55" : "#333344") : "#ffaaff";
+            svg.Append($"<rect x=\"{p.Position.X * 8 + 1}\" y=\"{(dungeon.Height - p.Position.Y - 1) * 8 + 1}\" width=\"6\" height=\"6\" fill=\"{color}\" stroke=\"#111111\"><title>{p.Kind}: {SecurityElement.Escape(p.Id)}; target={p.TargetState}</title></rect>");
+        }
+        foreach (var p in dungeon.ObjectiveEnemies)
+            svg.Append($"<rect x=\"{(p.Position.X - p.Footprint / 2) * 8}\" y=\"{(dungeon.Height - p.Position.Y - p.Footprint / 2 - 1) * 8}\" width=\"{p.Footprint * 8}\" height=\"{p.Footprint * 8}\" fill=\"#bb3333\"><title>Required: {SecurityElement.Escape(p.Family + " " + p.Id)}</title></rect>");
+        foreach (var p in dungeon.RecoveryStashes)
+            svg.Append($"<rect x=\"{p.Position.X * 8}\" y=\"{(dungeon.Height - p.Position.Y - 1) * 8}\" width=\"8\" height=\"8\" fill=\"#33ddff\"><title>Possessions stash</title></rect>");
+
         return svg.Append("</svg>").ToString();
     }
 
@@ -119,6 +130,10 @@ internal static class GridPreview
         Draw(OverworldLayers.Towns, "#ffffff"); Draw(OverworldLayers.StoryDungeons, "#ea5d60");
         Draw(OverworldLayers.RepeatableDungeons, "#ce9e59"); Draw(OverworldLayers.FinalDungeon, "#f02b40");
         Draw(OverworldLayers.PlayerStart, "#38ff93");
+        foreach (var footprint in grid.LocationFootprints)
+            svg.Append($"<rect x=\"{footprint.Cells.Min(p => p.X)}\" y=\"{grid.Height - footprint.Cells.Max(p => p.Y) - 1}\" width=\"{footprint.Size}\" height=\"{footprint.Size}\" fill=\"none\" stroke=\"#ffeedd\" stroke-width=\".3\"><title>{SecurityElement.Escape(footprint.LocationId)} {footprint.EncounterKind}</title></rect>");
+        foreach (var pickup in grid.Pickups)
+            svg.Append($"<circle cx=\"{pickup.Position.X + .5}\" cy=\"{grid.Height - pickup.Position.Y - .5}\" r=\".8\" fill=\"#ffdd66\"><title>{pickup.Kind}: {pickup.Id}</title></circle>");
         foreach (var location in grid.Locations)
             svg.Append($"<circle cx=\"{location.Value.X}.5\" cy=\"{grid.Height - location.Value.Y - 1}.5\" r=\"1.3\" fill=\"transparent\"><title>{SecurityElement.Escape(location.Key)}</title></circle>");
         foreach (var route in campaign.Routes.Where(r => r.ShortcutKind != ShortcutKind.None))

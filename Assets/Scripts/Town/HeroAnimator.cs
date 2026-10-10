@@ -25,6 +25,8 @@ public class HeroAnimator : MonoBehaviour
 	private Stance walkStance;
 	private Coroutine oneShot;
 	private AnimatedAction? statusLoop;
+    internal AnimatedAction? LastPlayedAction { get; private set; }
+    internal int PlaybackCount { get; private set; }
 
 	internal void BeginWalk(bool continuous)
 	{
@@ -56,14 +58,18 @@ public class HeroAnimator : MonoBehaviour
 		if (!walkStep) StopWalkContinuation();
 	}
 
-	private void OnDisable() { walking = walkStep = continueWalk = false; oneShot = null; }
+	private void OnDisable()
+    {
+        if(oneShot!=null)StopCoroutine(oneShot);
+        walking = walkStep = continueWalk = false; oneShot = null;
+    }
 
 	internal void PlayIdleAnimation()
 	{
 		PlayAnimation(statusLoop.HasValue && HasClip(statusLoop.Value) ? statusLoop.Value : AnimatedAction.Idle);
 	}
 	private bool HasClip(AnimatedAction action) => StanceAnimations?.FirstOrDefault(x => x.Stance == CurrentStance)?
-		.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations?.Count > 0;
+		.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations?.Any(c=>c!=null)==true;
 
 	internal void PlayWalkAnimation()
 	{
@@ -98,11 +104,12 @@ public class HeroAnimator : MonoBehaviour
 		var stance = StanceAnimations?.FirstOrDefault(x => x.Stance == CurrentStance);
 		var clips = stance?.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations;
 		if (Animator == null || stance?.AnimatorController == null || clips == null || clips.Count == 0) return false;
-		var clip = clips.Sample();
+		var clip = VisualRandom.Pick(clips);
 		if (clip == null) return false;
 		walking = walkStep = continueWalk = false;
 		Animator.runtimeAnimatorController = stance.AnimatorController;
 		Animator.Play(clip.name, 0, 0);
+        LastPlayedAction=action;PlaybackCount++;
 		duration = clip.length;
 		return true;
 	}
@@ -110,6 +117,7 @@ public class HeroAnimator : MonoBehaviour
 	public bool PlayOneShot(AnimatedAction action)
 	{
 		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations) return false;
+		if(!HasClip(action)) {PlayIdleAnimation();return false;}
 		if (oneShot != null) { StopCoroutine(oneShot); oneShot = null; }
 		if (!PlayClip(action, out var duration)) return false;
 		oneShot = StartCoroutine(RestoreIdleAfter(duration, CurrentStance));
@@ -127,7 +135,7 @@ public class HeroAnimator : MonoBehaviour
 	{
 		yield return new WaitForSecondsRealtime(duration);
 		oneShot = null;
-		if (CurrentStance == stance) PlayIdleAnimation();
+		PlayIdleAnimation();
 	}
 
 	internal void SetWeapon(EquipmentItemDefinition mainHandItemDefinition, EquipmentItemDefinition offHandItemDefinition)

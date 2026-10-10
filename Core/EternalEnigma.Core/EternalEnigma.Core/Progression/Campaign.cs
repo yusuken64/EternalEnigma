@@ -34,8 +34,10 @@ public sealed class CampaignLocation
     public string? ParentTownId { get; }
     /// <summary>Shops and trainers a town offers; empty for every other kind.</summary>
     public IReadOnlyList<TownService> Services { get; }
-    public CampaignLocation(string id, string regionId, int tier, LocationKind kind, bool required = false, int stage = 0, string? parentTownId = null, IEnumerable<TownService>? services = null)
-    { Id = id; RegionId = regionId; Tier = tier; Kind = kind; Required = required; Stage = stage; ParentTownId = parentTownId; Services = Array.AsReadOnly((services ?? Array.Empty<TownService>()).ToArray()); }
+    public EncounterDefinition? Encounter { get; }
+    public bool IsDungeon => Encounter != null || Kind == LocationKind.StoryDungeon || Kind == LocationKind.RepeatableDungeon || Kind == LocationKind.FinalDungeon;
+    public CampaignLocation(string id, string regionId, int tier, LocationKind kind, bool required = false, int stage = 0, string? parentTownId = null, IEnumerable<TownService>? services = null, EncounterDefinition? encounter = null)
+    { Id = id; RegionId = regionId; Tier = tier; Kind = kind; Required = required; Stage = stage; ParentTownId = parentTownId; Services = Array.AsReadOnly((services ?? Array.Empty<TownService>()).ToArray()); Encounter = encounter; }
 }
 
 /// <summary>Bidirectional abstract route. Area gates remain conditional; other locks latch open.</summary>
@@ -53,7 +55,8 @@ public sealed class CampaignRoute
     public string? KeyId { get; }
     public string? KeyLocationId { get; }
     public KeyAcquisition KeyCondition { get; }
-    public bool IsStarterExit => KeyCondition == KeyAcquisition.DungeonCompletion;
+    public bool IsStarterExit => Id == "starter-exit" || IsTownExit;
+    public string? CompletionLocationId { get; }
     public bool IsWarp { get; }
     /// <summary>A gate enforced by leaving the town scene, rather than by an overworld tile.</summary>
     public bool IsTownExit { get; }
@@ -67,13 +70,14 @@ public sealed class CampaignRoute
     public string GateHint => LockText ?? (ShortcutKind == ShortcutKind.Keyed ? "Requires: " + KeyId :
         ShortcutKind == ShortcutKind.FarSide ? "Open shortcut at the far endpoint." : "Requires: " + Requirement);
     public bool HasGate => !Requirement.IsOpen || ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed;
-    public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false, ShortcutKind shortcutKind = ShortcutKind.None, string? unlockingEndpoint = null, string? keyId = null, string? keyLocationId = null, bool isWarp = false, KeyAcquisition keyCondition = KeyAcquisition.AtLocation, bool isTownExit = false, string? skinId = null, string? lockText = null, string? keyName = null)
-    { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; ShortcutKind = shortcutKind; UnlockingEndpoint = unlockingEndpoint; KeyId = keyId; KeyLocationId = keyLocationId; IsWarp = isWarp; KeyCondition = keyCondition; IsTownExit = isTownExit; SkinId = skinId; LockText = lockText; KeyName = keyName; }
+    public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false, ShortcutKind shortcutKind = ShortcutKind.None, string? unlockingEndpoint = null, string? keyId = null, string? keyLocationId = null, bool isWarp = false, KeyAcquisition keyCondition = KeyAcquisition.AtLocation, bool isTownExit = false, string? skinId = null, string? lockText = null, string? keyName = null, string? completionLocationId = null)
+    { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; ShortcutKind = shortcutKind; UnlockingEndpoint = unlockingEndpoint; KeyId = keyId; KeyLocationId = keyLocationId; IsWarp = isWarp; KeyCondition = keyCondition; IsTownExit = isTownExit; SkinId = skinId; LockText = lockText; KeyName = keyName; CompletionLocationId = completionLocationId; }
     /// <summary>Copy of this route carrying its generated fiction. Routes are otherwise immutable.</summary>
     public CampaignRoute WithFiction(string skinId, string lockText, string? keyName = null) =>
-        new(Id, From, To, Requirement, Form, Required, IsProgressionBoundary, ShortcutKind, UnlockingEndpoint, KeyId, KeyLocationId, IsWarp, KeyCondition, IsTownExit, skinId, lockText, keyName);
+        new(Id, From, To, Requirement, Form, Required, IsProgressionBoundary, ShortcutKind, UnlockingEndpoint, KeyId, KeyLocationId, IsWarp, KeyCondition, IsTownExit, skinId, lockText, keyName, CompletionLocationId);
     public string? Other(string location) => location == From ? To : location == To ? From : null;
     public bool CanTraverse(CapabilitySet held, ISet<string> resolved) =>
+        CompletionLocationId != null ? resolved.Contains(Id) && (Form != LockForm.Area || Requirement.IsSatisfiedBy(held)) :
         (ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed) ? resolved.Contains(Id) :
         (Latches && resolved.Contains(Id)) || Requirement.IsSatisfiedBy(held);
     public bool Latches => ShortcutKind == ShortcutKind.None && (Form == LockForm.Obstacle || Form == LockForm.Interaction);

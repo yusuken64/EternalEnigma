@@ -7,4 +7,5 @@ public class FloorRevealState
 	public bool LayoutRevealed;        // Floor Sense: whole layout + stairs on the minimap
 	public int EnemiesRevealedTurns;   // Farsight: enemies drawn on the minimap while > 0
 	public bool TreasureRevealed;      // Treasure Hunter: Gold interactables drawn on the minimap
+    public bool TrapsRevealed;         // Farsight permanently identifies traps on this floor.
 }

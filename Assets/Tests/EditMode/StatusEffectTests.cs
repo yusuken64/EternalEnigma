@@ -153,6 +153,16 @@ public class StatusEffectTests
 		Assert.That(new List<GameAction>(otherReflect).Count, Is.EqualTo(0));
 	}
 
+    [Test]
+    public void UnattributedStatusDamageCannotAwardExperienceToItsVictim()
+    {
+        var victim=Actor();
+        var dot=(TakeDamageAction)Status<DotStatusEffect>().GetTickEffects(victim)[0];
+        var burn=(TakeDamageAction)Status<BurnStatusEffect>().GetTickEffects(victim)[0];
+        Assert.That(dot.AwardExperience,Is.False);
+        Assert.That(burn.AwardExperience,Is.False);
+    }
+
 	[Test]
 	public void DebuffStatMods()
 	{

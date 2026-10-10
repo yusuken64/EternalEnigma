@@ -76,6 +76,26 @@ public static class DungeonFloorValidator
         Check(stairsOnFloor, "stairs: Stairs position must be on Floor.");
         Check(startNotStairs, "start.equals.stairs: Start and Stairs must be different positions.");
 
+        if (options.Encounter.HasValue)
+        {
+            Check(floor.Objective.Equals(options.Objective), "objective: Definition differs from options.");
+            var terrain = new HashSet<GridPoint>(GridSearch.VisitOrder(floor.Start, floor.Neighbors));
+            Check(terrain.Count == floorLayer.ToArray().Cast<bool>().Count(b => b), "encounter.terrain: Terrain is disconnected.");
+            Check(terrain.Contains(floor.Stairs), "encounter.exit: Exit is disconnected from underlying terrain.");
+            Check(floor.PuzzleObjects.All(p => terrain.Contains(p.Position)) && floor.RecoveryStashes.All(s => terrain.Contains(s.Position)), "encounter.objects: Object is outside reachable terrain.");
+            Check(floor.ObjectiveEnemies.Select(e => e.Id).Distinct(StringComparer.Ordinal).Count() == floor.ObjectiveEnemies.Count, "encounter.identity: Required actor identities must be distinct.");
+            var occupied = new HashSet<GridPoint>();
+            foreach (var enemy in floor.ObjectiveEnemies)
+                for (int dx = -enemy.Footprint / 2; dx <= enemy.Footprint / 2; dx++) for (int dy = -enemy.Footprint / 2; dy <= enemy.Footprint / 2; dy++)
+                { var p = new GridPoint(enemy.Position.X + dx, enemy.Position.Y + dy); Check(terrain.Contains(p) && occupied.Add(p) && !p.Equals(floor.Start) && !p.Equals(floor.Stairs), "encounter.footprint: Objective actor footprint is obstructed."); }
+            Check(floor.Enemies.Concat(floor.Gold).Concat(floor.Items).All(p => terrain.Contains(p.Cell) && occupied.Add(p.Cell)), "encounter.placements: Invalid or overlapping placement.");
+            if (floor.Objective.AllowsReset) Check(floor.SolutionWitness.Count > 0 && PuzzleState.ValidateWitness(floor), "encounter.witness: No valid production-action solution witness.");
+            if (floor.Objective.Kind == DungeonObjectiveKind.DefeatEnemies || floor.Objective.Kind == DungeonObjectiveKind.DefeatBoss)
+                Check(floor.ObjectiveEnemies.Count > 0, "encounter.enemies: Defeat objective requires stable actors.");
+            if (floor.Objective.Kind == DungeonObjectiveKind.RecoverPossessions) Check(floor.RecoveryStashes.Count == 1, "encounter.stash: Recovery objective requires one stash.");
+            return new DungeonFloorValidationResult(errors);
+        }
+
         // 6. Validate placements
         var placementCells = new HashSet<GridPoint>();
         ValidatePlacements(floor, options, errors, placementCells);

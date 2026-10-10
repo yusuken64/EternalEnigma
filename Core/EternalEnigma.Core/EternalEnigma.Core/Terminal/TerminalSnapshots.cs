@@ -39,15 +39,52 @@ public sealed class TerminalTargetSnapshot
     public GridPoint? Cell { get; }
     public string Label { get; }
     public IReadOnlyList<GridPoint> Area { get; }
-    public TerminalTargetSnapshot(GridPoint? cell, string? label, IEnumerable<GridPoint>? area = null)
-    { Cell = cell; Label = label ?? string.Empty; Area = Array.AsReadOnly((area ?? Array.Empty<GridPoint>()).ToArray()); }
+    public IReadOnlyList<GridPoint> ValidCells { get; }
+    public IReadOnlyList<GridPoint> Path { get; }
+    public GridPoint Direction { get; }
+    public TerminalTargetSnapshot(GridPoint? cell, string? label, IEnumerable<GridPoint>? area = null,
+        IEnumerable<GridPoint>? validCells = null, IEnumerable<GridPoint>? path = null, GridPoint direction = default)
+    {
+        Cell = cell; Label = label ?? string.Empty;
+        Area = Array.AsReadOnly((area ?? Array.Empty<GridPoint>()).ToArray());
+        ValidCells = Array.AsReadOnly((validCells ?? Array.Empty<GridPoint>()).ToArray());
+        Path = Array.AsReadOnly((path ?? Array.Empty<GridPoint>()).ToArray());
+        Direction = direction;
+    }
+}
+
+/// <summary>Immutable visibility, shared by consecutive captures until knowledge changes.</summary>
+public sealed class TerminalKnowledge
+{
+    private readonly TerminalVisibility[,] cells;
+    public int Width => cells.GetLength(0);
+    public int Height => cells.GetLength(1);
+    private TerminalKnowledge(TerminalVisibility[,] cells) { this.cells = cells; }
+    public TerminalVisibility At(GridPoint point) => cells[point.X, point.Y];
+    public static TerminalKnowledge Copy(TerminalVisibility[,] cells) => new((TerminalVisibility[,])cells.Clone());
+    public static TerminalKnowledge Capture(int width, int height, Func<GridPoint, TerminalVisibility> read,
+        TerminalKnowledge? previous = null)
+    {
+        if (width < 1 || height < 1) throw new ArgumentOutOfRangeException(nameof(width));
+        if (read == null) throw new ArgumentNullException(nameof(read));
+        bool sameSize = previous != null && previous.Width == width && previous.Height == height;
+        TerminalVisibility[,]? changed = sameSize ? null : new TerminalVisibility[width, height];
+        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
+        {
+            var value = read(new GridPoint(x, y));
+            if (changed == null && previous!.cells[x, y] != value)
+                changed = (TerminalVisibility[,])previous.cells.Clone();
+            if (changed != null) changed[x, y] = value;
+        }
+        return changed == null ? previous! : new TerminalKnowledge(changed);
+    }
 }
 
 /// <summary>Immutable frame facts. The static terrain callback may close over an immutable Core world description.</summary>
 public abstract class TerminalMapSnapshot
 {
     private readonly Func<GridPoint, TerminalCell> terrain;
-    private readonly TerminalVisibility[,] visibility;
+    private readonly TerminalKnowledge? visibility;
     public int Width { get; }
     public int Height { get; }
     public GridPoint Focus { get; }
@@ -58,35 +95,33 @@ public abstract class TerminalMapSnapshot
     public TerminalTargetSnapshot? Target { get; }
 
     protected TerminalMapSnapshot(int width, int height, GridPoint focus, string? title,
-        Func<GridPoint, TerminalCell> terrain, TerminalVisibility[,]? visibility,
+        Func<GridPoint, TerminalCell> terrain, TerminalKnowledge? visibility,
         IEnumerable<TerminalActor>? actors, IEnumerable<TerminalPartyStat>? party,
         IEnumerable<string>? messages, TerminalTargetSnapshot? target)
     {
         if (width < 1 || height < 1) throw new ArgumentOutOfRangeException(nameof(width));
         Width = width; Height = height; Focus = focus; Title = title ?? string.Empty;
         this.terrain = terrain ?? throw new ArgumentNullException(nameof(terrain));
-        if (visibility != null && (visibility.GetLength(0) != width || visibility.GetLength(1) != height))
+        if (visibility != null && (visibility.Width != width || visibility.Height != height))
             throw new ArgumentException("Visibility dimensions must match the map.", nameof(visibility));
-        this.visibility = visibility == null ? AllVisible(width, height) : (TerminalVisibility[,])visibility.Clone();
+        this.visibility = visibility;
         Actors = Array.AsReadOnly((actors ?? Array.Empty<TerminalActor>()).ToArray());
         Party = Array.AsReadOnly((party ?? Array.Empty<TerminalPartyStat>()).ToArray());
         Messages = Array.AsReadOnly((messages ?? Array.Empty<string>()).Select(s => s ?? string.Empty).ToArray());
         Target = target;
     }
-    private static TerminalVisibility[,] AllVisible(int width, int height)
-    {
-        var cells = new TerminalVisibility[width, height];
-        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++) cells[x, y] = TerminalVisibility.Visible;
-        return cells;
-    }
     public TerminalCell TerrainAt(GridPoint p) => terrain(p);
-    public TerminalVisibility VisibilityAt(GridPoint p) => visibility[p.X, p.Y];
+    public TerminalVisibility VisibilityAt(GridPoint p) => visibility?.At(p) ?? TerminalVisibility.Visible;
 }
 
 public sealed class DungeonTerminalSnapshot : TerminalMapSnapshot
 {
     public DungeonTerminalSnapshot(int width, int height, GridPoint focus, string? title, Func<GridPoint, TerminalCell> terrain,
         TerminalVisibility[,] visibility, IEnumerable<TerminalActor>? actors = null, IEnumerable<TerminalPartyStat>? party = null,
+        IEnumerable<string>? messages = null, TerminalTargetSnapshot? target = null)
+        : base(width, height, focus, title, terrain, TerminalKnowledge.Copy(visibility), actors, party, messages, target) { }
+    public DungeonTerminalSnapshot(int width, int height, GridPoint focus, string? title, Func<GridPoint, TerminalCell> terrain,
+        TerminalKnowledge visibility, IEnumerable<TerminalActor>? actors = null, IEnumerable<TerminalPartyStat>? party = null,
         IEnumerable<string>? messages = null, TerminalTargetSnapshot? target = null)
         : base(width, height, focus, title, terrain, visibility, actors, party, messages, target) { }
 }

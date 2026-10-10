@@ -165,12 +165,12 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	}
 
 	private void OpenWorldTargeting(Character character, List<Character> targets,
-		Func<Character, Vector3Int, GameAction> createAction, int missileRange = 0, Skill skill = null)
+		Func<Character, Vector3Int, GameAction> createAction, int missileRange = 0, Skill skill = null, UsableItemDefinition item = null)
 	{
 		Common.Instance.MenuInputHandler.SwitchToUIInput();
 		this.gameObject.SetActive(true);
 		MenuManager.Open(TargetDialog);
-		if(skill != null) TargetDialog.Setup(character,skill); else TargetDialog.Setup(character, targets, createAction, missileRange);
+		if(skill != null) TargetDialog.Setup(character,skill); else TargetDialog.Setup(character, targets, createAction, missileRange, item);
 
 		TargetDialog.CloseAction = () =>
 		{
@@ -209,7 +209,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			{
 				OpenWorldTargeting(character, definition.TargetingRules.GetCharacters(character),
 					(target, direction) => Create().WithTarget(target).WithDirection(direction),
-					definition.Targeting == SkillTargeting.Missile ? definition.MissileRange : 0);
+					definition.Targeting == SkillTargeting.Missile ? definition.MissileRange : 0, item: definition);
 				return;
 			}
 		}

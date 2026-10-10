@@ -8,6 +8,9 @@ public abstract class StatusEffect : MonoBehaviour
 	public int TurnsLeft;
 	public StatusVisualProfile VisualProfile;
 
+    // Runtime credit only; prefabs and victim-owned tick actions must never become the caster.
+    internal Character DamageSource { get; set; }
+
 	// Prevents walking and displacement without preventing attacks or item use.
 	internal virtual bool BlocksMovement => false;
 

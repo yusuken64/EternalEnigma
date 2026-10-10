@@ -208,11 +208,20 @@ public sealed class PartyMenu : Dialog
                     var action=context.Actions(Hero,itemEntry).FirstOrDefault(a=>a.Available);
                     action?.Execute(this);
                 }:null))).ToList();
-            PickDetailed("Change "+entry.Title,options);return;
+            PickDetailed("Change "+entry.Title,options,entry.Description);return;
         }
         if (context is IPartyMenuEntryHandler handler && handler.OpenEntry(this, Hero, entry)) return;
         var actions = entry.Slot.HasValue || entry.SpendAttribute ? new List<PartyMenuAction>() : context.Actions(Hero,entry);
-        if (!actions.Any(a=>a.Available)) return;
+        if (!actions.Any(a=>a.Available))
+        {
+            if(!string.IsNullOrEmpty(entry.Description))
+            {
+                var details=PartyMenuPicker.Build(transform.parent,entry.Title,new List<(string,Action)>());
+                details.Description(entry.Description);
+                Owner.Open(details);
+            }
+            return;
+        }
         if (entry.Skill?.ActivationType == ActivationType.Active && actions.Count == 1)
         {
             Common.Instance.MenuInputHandler.ClearInputThisFrame();
@@ -227,9 +236,10 @@ public sealed class PartyMenu : Dialog
         picker.CloseAction = null;
         Owner.Open(picker);
     }
-    public void PickDetailed(string title,List<(string Label,string Description,Action Execute)> options)
+    public void PickDetailed(string title,List<(string Label,string Description,Action Execute)> options,string description=null)
     {
         var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options,showBackButton:false);
+        if(!string.IsNullOrEmpty(description))picker.Description(description);
         picker.CloseAction=null;Owner.Open(picker);
     }
     public void Complete(string message)

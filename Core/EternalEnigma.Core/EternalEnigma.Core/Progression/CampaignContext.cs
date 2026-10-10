@@ -28,7 +28,7 @@ public sealed class CampaignSnapshot
     public bool Finished;
     public string[] Keys = Array.Empty<string>(), Opened = Array.Empty<string>(), Resolved = Array.Empty<string>(),
         Claimed = Array.Empty<string>(), Roster = Array.Empty<string>(), Active = Array.Empty<string>(),
-        Towns = Array.Empty<string>(), Completed = Array.Empty<string>();
+        Towns = Array.Empty<string>(), Completed = Array.Empty<string>(), CollectedPickups = Array.Empty<string>();
     public Capability[] Permanent = Array.Empty<Capability>();
 }
 
@@ -74,6 +74,8 @@ public HashSet<string> Roster { get; }
 public HashSet<string> Active { get; }
 public HashSet<string> Towns { get; }
 public HashSet<string> Completed { get; }
+    public HashSet<string> CollectedPickups { get; }
+    public bool ResetFloorUnlocked => Completed.Contains("repeatable-0");
     public CapabilitySet Permanent { get; private set; }
     public CapabilitySet Held => Permanent.Union(CapabilitySet.From(Campaign.Companions.Where(c => Active.Contains(c.Id)).Select(c => c.Capability)));
     public OverworldGates Gates => gates ??= new OverworldGates(Campaign, Grid, Resolved, Keys, Opened, Completed);
@@ -100,6 +102,7 @@ public HashSet<string> Completed { get; }
             !Campaign.Locations.Any(l => l.Id == State.PendingDungeon && l.ParentTownId != null);
         Keys = new(State.Keys); Opened = new(State.Opened); Resolved = new(State.Resolved); Claimed = new(State.Claimed);
         Roster = new(State.Roster); Active = new(State.Active); Towns = new(State.Towns); Completed = new(State.Completed);
+        CollectedPickups = new(State.CollectedPickups ?? Array.Empty<string>());
         Permanent = CapabilitySet.From(State.Permanent);
         if (snapshot == null) Towns.Add(Campaign.StartLocationId);
     }
@@ -108,6 +111,7 @@ public HashSet<string> Completed { get; }
         State.Keys = Keys.OrderBy(x => x).ToArray(); State.Opened = Opened.OrderBy(x => x).ToArray(); State.Resolved = Resolved.OrderBy(x => x).ToArray();
         State.Claimed = Claimed.OrderBy(x => x).ToArray(); State.Roster = Roster.OrderBy(x => x).ToArray(); State.Active = Active.ToArray();
         State.Towns = Towns.OrderBy(x => x).ToArray(); State.Completed = Completed.OrderBy(x => x).ToArray(); State.Permanent = Permanent.Values.ToArray();
+        State.CollectedPickups = CollectedPickups.OrderBy(x => x, StringComparer.Ordinal).ToArray();
         return State;
     }
     private void BackfillTownNames()
@@ -129,7 +133,7 @@ public HashSet<string> Completed { get; }
         var source = Campaign.Sources.FirstOrDefault(s => s.Id == sourceId);
         if (source == null || Location?.Id != source.LocationId || Claimed.Contains(sourceId) || !source.Prerequisites.IsSatisfiedBy(Held)) return false;
         var kind = Location!.Kind;
-        if ((kind == LocationKind.StoryDungeon || kind == LocationKind.FinalDungeon) && !Completed.Contains(source.LocationId)) return false;
+        if ((Location!.Encounter != null || kind == LocationKind.StoryDungeon || kind == LocationKind.FinalDungeon) && !Completed.Contains(source.LocationId)) return false;
         if (source.CompanionId != null) Roster.Add(source.CompanionId);
         else Permanent = Permanent.Union(CapabilitySet.Of(source.Capability));
         Claimed.Add(sourceId); return true;
@@ -143,7 +147,7 @@ public HashSet<string> Completed { get; }
     {
         var location = Location;
         if (State.PendingDungeon.Length != 0 || location == null ||
-            !(location.Kind == LocationKind.StoryDungeon || location.Kind == LocationKind.RepeatableDungeon || location.Kind == LocationKind.FinalDungeon)) return false;
+            !location.IsDungeon || (location.Encounter != null && !location.Encounter.CanEnter(Held, Completed))) return false;
         State.PendingDungeon = location.Id; State.LocationId = location.Id; State.Scene = "DungeonScene"; return true;
     }
     public bool CanLeaveTown(string townId) => Campaign.Routes.Where(r => r.IsTownExit && r.From == townId)
@@ -165,6 +169,7 @@ public HashSet<string> Completed { get; }
         if (victory)
         {
             Completed.Add(id);
+            foreach (var route in Campaign.Routes.Where(r => r.CompletionLocationId == id)) { Resolved.Add(route.Id); Opened.Add(route.Id); }
             foreach (var route in Campaign.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed && r.KeyLocationId == id && r.KeyId != null))
                 Keys.Add(route.KeyId!);
             foreach (var route in Campaign.Routes.Where(r => r.IsTownExit && r.KeyLocationId == id && r.KeyId != null && Keys.Contains(r.KeyId)))
@@ -173,7 +178,11 @@ public HashSet<string> Completed { get; }
             State.Finished |= id == Campaign.FinalLocationId; State.Scene = "Overworld"; State.LocationId = id;
             var parent = Campaign.Locations.Single(l => l.Id == id).ParentTownId;
             if (parent != null) ReturnToTown(parent);
-            else Position = Grid.Locations[id];
+            else
+            {
+                var destination = Campaign.Locations.Single(l => l.Id == id).Encounter?.ReturnLocationId ?? id;
+                State.LocationId = destination; Position = Grid.Locations[destination];
+            }
         }
         else ReturnToTown(State.LastTownId);
         State.PendingDungeon = "";
@@ -210,8 +219,19 @@ public HashSet<string> Completed { get; }
     }
     public DungeonFloor DungeonFloor(string locationId, int floor)
     {
+        return DungeonFloorGenerator.Generate(RunPlan(locationId).Floor(floor).Options);
+    }
+    public DungeonRunPlan RunPlan(string locationId)
+    {
         var location = Campaign.Locations.FirstOrDefault(l => l.Id == locationId) ?? throw new ArgumentException("Unknown location.", nameof(locationId));
-        return DungeonFloorGenerator.Generate(DungeonFloorOptionsFor(State.Seed, locationId, floor, location.Tier, OverworldGridGenerator.BiomeForRegion(Campaign, location.RegionId), 1));
+        return new DungeonRunPlan(State.Seed, location, OverworldGridGenerator.BiomeForRegion(Campaign, location.RegionId));
+    }
+    /// <summary>Host inventory acceptance and persistent identity are committed together; a full bag leaves the pickup available.</summary>
+    public bool TryCollectPickup(string pickupId, Func<OverworldPickup, bool> acceptItem)
+    {
+        var pickup = Grid.Pickups.FirstOrDefault(p => p.Id == pickupId);
+        if (pickup == null || CollectedPickups.Contains(pickupId) || !Position.Equals(pickup.Position) || !acceptItem(pickup)) return false;
+        CollectedPickups.Add(pickupId); return true;
     }
     /// <summary>The dungeon entrance is the only non-service building every town requires.</summary>
     public const int AuthoredTownBuildings = 1;

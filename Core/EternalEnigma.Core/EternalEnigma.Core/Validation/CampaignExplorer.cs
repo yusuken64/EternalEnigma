@@ -67,7 +67,11 @@ public static class CampaignExplorer
                     if (reachable.Add(current)) changed = true;
                     if (byLocation[current].Kind == LocationKind.Town && towns.Add(current)) changed = true;
                     // Exploration assumes a reachable dungeon can be completed. Runtime requires an explicit victory.
-                    if (byLocation[current].Kind == LocationKind.StoryDungeon || byLocation[current].Kind == LocationKind.RepeatableDungeon || byLocation[current].Kind == LocationKind.FinalDungeon) completed.Add(current);
+                    if (byLocation[current].IsDungeon && byLocation[current].Encounter?.CanEnter(held, completed) != false)
+                    {
+                        if (completed.Add(current)) changed = true;
+                        foreach (var gate in campaign.Routes.Where(r => r.CompletionLocationId == current)) if (resolved.Add(gate.Id)) changed = true;
+                    }
                     foreach (var shortcut in campaign.Routes.Where(r => excludedRoutes?.Contains(r.Id) != true))
                         if (shortcut.TryCollectKey(current, resolved, completed)) changed = true;
                     foreach (var source in campaign.Sources.Where(s => s.LocationId == current).OrderBy(s => s.Id, StringComparer.Ordinal))
@@ -75,7 +79,8 @@ public static class CampaignExplorer
                         if (sources.Contains(source.Id) || (guaranteedOnly && !source.Guaranteed) ||
                             (excludedCompanionId != null && source.CompanionId == excludedCompanionId) ||
                             (criticalOnly && manifest[source.Capability].Role != CapabilityRole.Critical) ||
-                            source.Capability == excludedCapability || !source.Prerequisites.IsSatisfiedBy(held)) continue;
+                            source.Capability == excludedCapability || !source.Prerequisites.IsSatisfiedBy(held) ||
+                            (byLocation[current].Encounter != null && !completed.Contains(current))) continue;
                         sources.Add(source.Id);
                         changed = true;
                         if (source.Capability.Kind() == CapabilityKind.Personal)

@@ -38,6 +38,7 @@ public sealed class OverworldGates
     public LockInteractionSession? BeginInteraction(string routeId, Func<GridPoint> position, Func<CapabilitySet> held, Func<bool>? current = null)
     {
         if (!routes.TryGetValue(routeId, out var route) || !route.HasGate || route.ShortcutKind == ShortcutKind.FarSide) return null;
+        if (route.CompletionLocationId != null && !completed.Contains(route.CompletionLocationId)) return null;
         bool Valid() => (current?.Invoke() ?? true) && NeedsOpening(route) &&
             Nearby(position()).Any(r => r.Id == routeId) && IsWalkable(position(), held());
         if (!Valid()) return null;

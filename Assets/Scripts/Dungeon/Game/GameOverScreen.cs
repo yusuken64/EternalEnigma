@@ -95,6 +95,7 @@ public class GameOverScreen : Dialog
 
 	public static void GoBackToTown(bool isWin, PlayerController playerController)
 	{
+        if (isWin && Game.Instance != null && !Game.Instance.CheckFloorExit()) return;
         var common = Common.Instance;
         if (common.CampaignContext != null) { common.Travel.FinishDungeon(isWin, playerController); return; }
         var configuration = TownSceneLoader.ResolveSaved();

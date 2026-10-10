@@ -109,6 +109,13 @@ public class TileWorldDungeonGenerator : MonoBehaviour
     private void SetCampaignSeed(TileWorldCreator creator)
     {
         var context = Common.Instance.CampaignContext;
+        if (context != null && Game.Instance.RunPlan != null)
+        {
+            var options = Game.Instance.RunPlan.Floor(Game.Instance.PlayerController.Floor).Options;
+            creator.SetCustomRandomSeed(options.Seed);
+            CoreDungeonLayerGenerator.Configure(creator.twcAsset, options);
+            return;
+        }
         if (context != null) creator.SetCustomRandomSeed(context.LocationSeed(context.State.LocationId, Game.Instance.PlayerController.Floor));
         var run = Common.Instance.GameSaveData?.DungeonSaveData;
         if (run != null && run.UseBiomeLayout)

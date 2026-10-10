@@ -10,14 +10,16 @@ namespace EternalEnigma.Tests.EditMode
         [Test]
         public void HeroPoolsContainPlayableClipsOnly()
         {
-            foreach (var path in new[] { "Assets/Prefabs/Dungeon/Player.prefab", "Assets/Prefabs/Town/TownPlayer.prefab" })
+            var paths=AssetDatabase.FindAssets("t:Prefab",new[] {"Assets/Prefabs/Town/Allies","Assets/Prefabs/Dungeon/Heroes"}.Where(AssetDatabase.IsValidFolder).ToArray())
+                .Select(AssetDatabase.GUIDToAssetPath).Concat(new[] {"Assets/Prefabs/Dungeon/Player.prefab","Assets/Prefabs/Town/TownPlayer.prefab"}).Distinct();
+            foreach (var path in paths)
             {
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                 foreach (var hero in prefab.GetComponentsInChildren<HeroAnimator>(true))
                 foreach (var stance in hero.StanceAnimations)
                 {
                     foreach (var action in new[] { AnimatedAction.Idle, AnimatedAction.Attack, AnimatedAction.MoveFWD, AnimatedAction.GetHit, AnimatedAction.Die })
-                        Assert.That(stance.NamedAnimations.First(a => a.AnimationAction == action).Animations.Count, Is.GreaterThan(0), path + " " + stance.Stance + " " + action);
+                        Assert.That(stance.NamedAnimations.First(a => a.AnimationAction == action).Animations.Any(c=>c!=null), Is.True, path + " " + stance.Stance + " " + action);
                     foreach (var clip in stance.NamedAnimations.SelectMany(a => a.Animations))
                     {
                         Assert.That(clip.name, Does.Not.Contain("Stay").IgnoreCase, path + " " + stance.Stance);

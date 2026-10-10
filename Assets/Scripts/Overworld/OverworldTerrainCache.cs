@@ -25,7 +25,7 @@ public sealed class OverworldTerrainCache
 
     public bool TryRestore(CampaignContext current, CampaignOverworld map, OverworldScene view)
     {
-        if (!IsBuilt || !ReferenceEquals(context, current) || template != map.Template || artIdentity != DioramaArtIdentity.For(map)) return false;
+        if (!IsBuilt || !ReferenceEquals(context, current) || template != map.EffectiveTemplate || artIdentity != DioramaArtIdentity.For(map)) return false;
         map.UseCachedTerrain(current.Grid, asset, maps, world);
         map.GetComponent<OverworldBiomeRenderer>()?.UseCachedSurfaces(surfaces);
         activeView = view;
@@ -37,7 +37,7 @@ public sealed class OverworldTerrainCache
     {
         Clear();
         var creator = map.GetComponent<TileWorldCreator>();
-        context = current; template = map.Template; artIdentity = DioramaArtIdentity.For(map);
+        context = current; template = map.EffectiveTemplate; artIdentity = DioramaArtIdentity.For(map);
         asset = map.ReleaseGeneratedAssetOwnership();
         maps = creator.generatedBlueprintMaps;
         world = creator.worldObject;

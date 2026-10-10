@@ -90,7 +90,9 @@ public sealed class ReturnAndShortcutTests
             Assert.False(route.TryCollectKey(route.To, state));
             Assert.False(grid.TryWarp(route.Id, cell, all, state, out _));
             Assert.False(grid.TryWarp(route.Id, grid.Locations[route.To], all, state, out _));
-            Assert.True(route.TryCollectKey(route.KeyLocationId!, state));
+            Assert.False(route.TryCollectKey(route.KeyLocationId!, state));
+            var completed = new HashSet<string> { route.KeyLocationId! };
+            Assert.True(route.TryCollectKey(route.KeyLocationId!, state, completed));
             Assert.False(route.TryCollectKey(route.KeyLocationId!, state));
             Assert.True(route.CanTraverse(CapabilitySet.Empty, state));
             Assert.True(grid.IsWalkable(cell, CapabilitySet.Empty, state));

@@ -50,12 +50,14 @@ public sealed class OverworldBiomeTests
                 p => grid.RequiresBoat(p) && grid.LockAt(p) == null);
         Assert.True(shores > 0);
         var reachable = new HashSet<GridPoint> { grid.PlayerStart };
+        var completedGates = new HashSet<string> { "starter-exit", "town-exit" };
+        foreach (var route in campaign.Routes.Where(r => r.CompletionLocationId != null && r.Requirement.IsSatisfiedBy(withoutBoat))) completedGates.Add(route.Id);
         var queue = new Queue<GridPoint>(); queue.Enqueue(grid.PlayerStart);
         while (queue.Count > 0)
         {
             var at = queue.Dequeue();
             foreach (var next in OverworldMovement.Neighbors(at))
-                if (grid.CanStep(at, next, withoutBoat, new HashSet<string> { "starter-exit", "town-exit" }) && reachable.Add(next)) queue.Enqueue(next);
+                if (grid.CanStep(at, next, withoutBoat, completedGates) && reachable.Add(next)) queue.Enqueue(next);
         }
         Assert.Contains(campaign.Sources.Where(s => s.Capability == Capability.Boat), s => reachable.Contains(grid.Locations[s.LocationId]));
         foreach (var cell in grid.Locations.Values) Assert.False(grid.RequiresBoat(cell));

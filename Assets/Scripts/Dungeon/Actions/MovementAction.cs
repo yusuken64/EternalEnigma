@@ -23,6 +23,12 @@ internal class MovementAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if ((character != null && character.IsMovementBlocked)) { blocked = true; newMapPosition=originalPosition; return new(); }
+
+        if (Game.Instance.Encounter?.Blocks(newMapPosition) == true && !Game.Instance.Encounter.Push(character,newMapPosition))
+        { blocked = true; newMapPosition = originalPosition; return new(); }
+
+        if (!FootprintCanStep(character,originalPosition,newMapPosition))
+        { blocked = true; newMapPosition = originalPosition; return new(); }
 		bool excludeAllies = false;
 
 		var overlapTarget = Game.Instance.CurrentDungeon
@@ -98,7 +104,7 @@ internal class MovementAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		var canWalk = Game.Instance.CurrentDungeon.CanWalkTo(originalPosition, newMapPosition);
+		var canWalk = FootprintCanStep(character,originalPosition,newMapPosition) || Game.Instance.Encounter?.CanPush(character,newMapPosition) == true;
 		// A blocked mover (rooted/stuck) is still a valid command: ExecuteImmediate cancels the step and the turn is spent.
 
 		bool excludeAllies = true;
@@ -110,6 +116,14 @@ internal class MovementAction : GameAction
 
 		return canMove;
 	}
+
+    internal static bool FootprintCanStep(Character character, Vector3Int from, Vector3Int to)
+    {
+        var dungeon = Game.Instance.CurrentDungeon;
+        bool Free(Vector3Int center) => Character.ToBounds(character.FootPrint,center).Cells()
+            .All(cell => dungeon.IsWalkable(new Vector3Int(cell.x,cell.y,0)));
+        return GridMovement.CanStep(from,to,Free);
+    }
 
 	internal override bool CanBeCombined(GameAction action)
 	{
@@ -234,6 +248,7 @@ public class TakeDamageAction : GameAction
 	public bool RollToHit;
     public bool Environmental;
     internal bool AwardExperience = true;
+	internal Character ExperienceRecipient;
 	public int ResponseDepth;
 	internal bool Critical;
 	private bool resolved;
@@ -268,6 +283,7 @@ public class TakeDamageAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+        if (EncounterActor.Protected(target)) { damage = 0; return new(); }
         if (target is Enemy provoked && !Environmental) provoked.Provoke();
 		if (!resolved)
 		{
@@ -299,7 +315,7 @@ public class TakeDamageAction : GameAction
 		{
 			return new List<GameAction>()
 			{
-				new DeathAction(target, attacker) { AwardExperience = !Environmental && AwardExperience }
+				new DeathAction(target, ExperienceRecipient != null ? ExperienceRecipient : attacker) { AwardExperience = !Environmental && AwardExperience }
 			};
 		}
 
@@ -495,7 +511,9 @@ public class DeathAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
         if (resolved || target == null || Game.Instance.DeadUnits.Contains(target)) return new();
+        if (EncounterActor.Protected(target)) { target.Vitals.HP = Mathf.Max(1,target.Vitals.HP); return new(); }
         resolved = true;
+        Game.Instance.Encounter?.OnDeath(target);
         TrackAnimationTarget(target);
         global::PendingCast.Cancel(target, "dead or downed");
 		if (target is Ally ally && !PartyRules.IsSummon(ally))

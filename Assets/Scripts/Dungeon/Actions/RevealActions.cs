@@ -43,6 +43,9 @@ public class RevealEnemiesAction : GameAction
 	{
 		var game = Game.Instance;
 		game.FloorReveal.EnemiesRevealedTurns = Math.Max(game.FloorReveal.EnemiesRevealedTurns, turns);
+        game.FloorReveal.TrapsRevealed = true;
+        foreach (var interactable in game.CurrentDungeon.Interactables)
+            if (interactable is Trap trap && trap.VisualObject != null) trap.VisualObject.SetActive(true);
 		game.UpdateMiniMap();
 		return new();
 	}

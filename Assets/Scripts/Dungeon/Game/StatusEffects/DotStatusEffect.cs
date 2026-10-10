@@ -31,6 +31,6 @@ public class DotStatusEffect : StatusEffect
 
 	internal override List<GameAction> GetTickEffects(Character character)
 	{
-		return new() { new TakeDamageAction(character, character, TickDamage, false, false) };
+		return new() { new TakeDamageAction(character, character, TickDamage, false, false) { ExperienceRecipient = DamageSource, AwardExperience = DamageSource != null } };
 	}
 }

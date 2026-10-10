@@ -17,6 +17,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public bool OwnsFocus(MonoBehaviour owner) => scopes.Count > 0 && scopes[^1].Owner == owner;
     public InputAction NextHero { get; private set; }
     public InputAction PreviousHero { get; private set; }
+    public InputAction OpenEquipment { get; private set; }
+    public InputAction OpenStats { get; private set; }
     public bool UsingGamepad => ControlDeviceState.Gamepad;
     private DungeonControls controls;
     private int consumedFrame = -1;
@@ -47,6 +49,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
         NextHero.AddBinding("<Keyboard>/tab"); NextHero.AddBinding("<Gamepad>/rightShoulder");
         PreviousHero = uiMap.AddAction("InspectPreviousHero", InputActionType.Button);
         PreviousHero.AddBinding("<Gamepad>/leftTrigger");
+        OpenEquipment = uiMap.AddAction("OpenEquipment", InputActionType.Button, "<Keyboard>/i");
+        OpenStats = uiMap.AddAction("OpenStats", InputActionType.Button, "<Keyboard>/t");
         actionsAsset = controls.asset;
         point = Reference(UI.Point);
         move = Reference(UI.Navigate);
@@ -213,6 +217,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
         // World targets use directional/confirm input in TargetDialog and MenuManager.
         // Keep EventSystem enabled so a settings dialog pushed above targeting still works.
         if (scopes.Count > 0 && scopes[^1].Owner is JuicyChickenGames.Menu.TargetDialog) return;
+        if (TerminalMenuBridge.Process(this, scopes.Count > 0 ? scopes[^1].Owner : null,
+            scopes.Count > 0 ? scopes[^1].Root : null, scopes.Count > 0 ? scopes[^1].Back : null)) return;
         RememberSelection();
         if (!InputConsumed && scopes.Count > 0)
         {

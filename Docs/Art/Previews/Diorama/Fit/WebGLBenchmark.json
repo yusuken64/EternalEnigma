@@ -1,0 +1,115 @@
+{
+  "unity": "6000.2.7f2",
+  "platform": "WebGLPlayer",
+  "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009BC4) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "api": "OpenGLES3",
+  "protocol": "1280x800 offscreen render with synchronous GPU readback each frame; includes animation/update and readback overhead",
+  "width": 960,
+  "height": 600,
+  "samples": [
+    {
+      "name": "Empty baseline",
+      "copies": 0,
+      "triangles": 0,
+      "meanMs": 16.938888549804688,
+      "medianMs": 17,
+      "p95Ms": 18
+    },
+    {
+      "name": "BlueSlime",
+      "copies": 12,
+      "triangles": 39840,
+      "meanMs": 16.66111183166504,
+      "medianMs": 17,
+      "p95Ms": 18
+    },
+    {
+      "name": "BoneDragon",
+      "copies": 12,
+      "triangles": 105264,
+      "meanMs": 16.761110305786133,
+      "medianMs": 17,
+      "p95Ms": 19
+    },
+    {
+      "name": "CastleMonster",
+      "copies": 12,
+      "triangles": 194412,
+      "meanMs": 17.97222137451172,
+      "medianMs": 18,
+      "p95Ms": 22
+    },
+    {
+      "name": "Crawler",
+      "copies": 12,
+      "triangles": 56016,
+      "meanMs": 16.66666603088379,
+      "medianMs": 17,
+      "p95Ms": 18
+    },
+    {
+      "name": "FlameKnight",
+      "copies": 12,
+      "triangles": 96216,
+      "meanMs": 16.738889694213867,
+      "medianMs": 17,
+      "p95Ms": 19
+    },
+    {
+      "name": "FlowerMonster",
+      "copies": 12,
+      "triangles": 55464,
+      "meanMs": 16.655555725097656,
+      "medianMs": 17,
+      "p95Ms": 18
+    },
+    {
+      "name": "IceGolem",
+      "copies": 12,
+      "triangles": 197976,
+      "meanMs": 16.633333206176758,
+      "medianMs": 16.9999942779541,
+      "p95Ms": 18
+    },
+    {
+      "name": "LittleDemon",
+      "copies": 12,
+      "triangles": 91320,
+      "meanMs": 16.672222137451172,
+      "medianMs": 16.9999942779541,
+      "p95Ms": 18
+    },
+    {
+      "name": "SkeletonMage",
+      "copies": 12,
+      "triangles": 67344,
+      "meanMs": 16.655555725097656,
+      "medianMs": 17,
+      "p95Ms": 18
+    },
+    {
+      "name": "StarFish",
+      "copies": 12,
+      "triangles": 51024,
+      "meanMs": 16.66666603088379,
+      "medianMs": 17,
+      "p95Ms": 18
+    },
+    {
+      "name": "Tree01",
+      "copies": 12,
+      "triangles": 4392,
+      "meanMs": 16.672222137451172,
+      "medianMs": 17,
+      "p95Ms": 18
+    },
+    {
+      "name": "Tree03",
+      "copies": 12,
+      "triangles": 12456,
+      "meanMs": 16.66666603088379,
+      "medianMs": 16.9999942779541,
+      "p95Ms": 18
+    }
+  ]
+}

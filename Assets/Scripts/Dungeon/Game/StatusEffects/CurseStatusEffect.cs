@@ -36,7 +36,7 @@ public class CurseStatusEffect : StatusEffect
 		{
 			int reflected = (int)System.Math.Floor(hit.Damage * ReflectFraction);
 			if (reflected > 0)
-				return new List<GameAction> { new TakeDamageAction(owner, owner, reflected, true, false) { ResponseDepth = hit.ResponseDepth + 1 } };
+				return new List<GameAction> { new TakeDamageAction(owner, owner, reflected, true, false) { ResponseDepth = hit.ResponseDepth + 1, ExperienceRecipient = DamageSource, AwardExperience = DamageSource != null } };
 		}
 		return new List<GameAction>();
 	}

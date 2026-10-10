@@ -31,6 +31,7 @@ public static class CampaignGuidance
         string anchor = location.ParentTownId ?? location.Id;
         var region = context.Campaign.Regions.Single(r => r.Id == location.RegionId);
         string name = location.Kind == LocationKind.Town ? context.GetTownDisplayName(location.Id) :
+            location.Encounter != null ? region.DisplayName + " " + location.Encounter.DisplayName.ToLowerInvariant() :
             location.ParentTownId != null ? "the dungeon in " + context.GetTownDisplayName(anchor) : region.DisplayName + " " + location.Kind.ToString().Replace("Dungeon", " dungeon").ToLowerInvariant();
         if (anchor == townId) return name + " here in town (" + context.Grid.RegionBiomes[location.RegionId] + ")";
         return name + " (" + context.Grid.RegionBiomes[location.RegionId] + ", " +
@@ -50,6 +51,8 @@ public static class CampaignGuidance
     internal static string DescribeLock(CampaignContext context, string townId, CampaignRoute route, Func<string, string>? companionName = null)
     {
         string obstacle = (route.LockText ?? route.GateHint) + " The way leads to " + Location(context, townId, route.To) + ". ";
+        if (route.CompletionLocationId != null && !context.Completed.Contains(route.CompletionLocationId))
+            return obstacle + "Complete " + Location(context, townId, route.CompletionLocationId) + " to open the crossing.";
         if (route.ShortcutKind == ShortcutKind.FarSide)
             return obstacle + "Open the shortcut from " + Location(context, townId, route.UnlockingEndpoint!) + ".";
         if (route.KeyId != null)

@@ -193,6 +193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::CampaignOverworld
   Template: {fileID: 11400000, guid: 592cad30711bdf547ba7b21fbcad6732, type: 2}
   CosmeticKit: {fileID: 11400000, guid: c7ece03df003cf54480a9af06e8202d6, type: 2}
+  StyleProfile: {fileID: 11400000, guid: 9bbe44a035742ea4f916581e53846dba, type: 2}
   Seed: 42
   Width: 256
   Height: 256
@@ -295,9 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::CampaignHUD
   Overworld: {fileID: 344879133}
-  Town: {fileID: 0}
   actions: {fileID: 0}
-  rosterPanel: {fileID: 0}
   rosterContent: {fileID: 0}
   ActionTemplate: {fileID: 8331159520150128807, guid: 7f89f6fbd7f2eb645be4d9372dedacb9, type: 3}
   CompanionTemplate: {fileID: 8080510321044646896, guid: 0faac88b8013f9049b4911e25e1273cb, type: 3}

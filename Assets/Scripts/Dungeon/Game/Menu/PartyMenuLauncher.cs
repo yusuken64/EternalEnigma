@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[DefaultExecutionOrder(-90)]
 public sealed class PartyMenuLauncher : MonoBehaviour
 {
     private Func<bool> ready;
@@ -152,11 +153,28 @@ public sealed class PartyMenuLauncher : MonoBehaviour
         foreach(var tab in tabs)
         {
             string shortcut=tab==PartyMenuTab.Inventory?" ["+InputPrompts.Inventory+"]":
-                tab==PartyMenuTab.Skills?" ["+InputPrompts.Skills+"]":"";
+                tab==PartyMenuTab.Skills?" ["+InputPrompts.Skills+"]":
+                !pad && tab==PartyMenuTab.Equipment?" ["+InputPrompts.Equipment+"]":
+                !pad && tab==PartyMenuTab.Stats?" ["+InputPrompts.Stats+"]":"";
             var button=ButtonFor(tab);
             button.GetComponentInChildren<TMP_Text>().text=(selected==tab?"> ":"")+tab+shortcut;
             var colors=button.colors;colors.normalColor=selected==tab?GameUITheme.Selected:Color.white;button.colors=colors;
         }
     }
-    private void Update()=>Refresh();
+    private void Update()
+    {
+        var input=MenuUIInputModule.Active;
+        if(input!=null && !input.InputConsumed && CanUseTabs)
+        {
+            PartyMenuTab? shortcut=input.OpenEquipment.WasPressedThisFrame()?PartyMenuTab.Equipment:
+                input.OpenStats.WasPressedThisFrame()?PartyMenuTab.Stats:null;
+            if(shortcut.HasValue)
+            {
+                if(PartyOpen)menu.Shortcut(shortcut.Value);
+                else Activate(shortcut.Value);
+                Common.Instance.MenuInputHandler.ClearInputThisFrame();
+            }
+        }
+        Refresh();
+    }
 }

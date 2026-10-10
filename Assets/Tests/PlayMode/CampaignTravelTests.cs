@@ -21,6 +21,8 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup() { yield return harness.Cleanup();DungeonPreferences.FullControlOverride=previousControl; }
         private IEnumerator WaitTown() => harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "campaign town");
         private IEnumerator WaitWorld() => harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true, "shared overworld");
+        // These tests exercise travel commits and reward UI; encounter tests cover gameplay to the final exit.
+        private static void StageServiceVictory() => Game.Instance.PlayerController.Floor = Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
         private IEnumerator AcknowledgeKey(string key)
         {
             var common = Common.Instance;
@@ -108,6 +110,7 @@ namespace EternalEnigma.Tests
             var game = Game.Instance;
             game.PlayerController.Gold += 123;
             int gold = common.GameSaveData.TownSaveData.Gold;
+            StageServiceVictory();
             MenuManager.Instance.ShowYesNoDialog("Exit Dungeon?",
                 () => GameOverScreen.GoBackToTown(true, game.PlayerController), () => { });
             MenuManager.Instance.StairDialog.YesClicked();
@@ -176,6 +179,7 @@ namespace EternalEnigma.Tests
             Assert.That(common.Travel.EnterLocation(), Is.True);
             yield return harness.WaitForIdle();
             Assert.That(root.activeSelf, Is.False);
+            StageServiceVictory();
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True);
             yield return AcknowledgeKey("Town area key");
             yield return WaitWorld();
@@ -243,6 +247,7 @@ namespace EternalEnigma.Tests
             Assert.That(common.GameSaveData.DungeonSaveData.EndFloor, Is.EqualTo(5));
             Assert.That(Game.Instance.Allies.Select(a => a.TownAllyId), Is.EqualTo(common.GameSaveData.TownSaveData.RecruitedAlliesData.Select(a => a.AllyId)));
             Game.Instance.PlayerController.Gold += 123;
+            StageServiceVictory();
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True);
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.False);
             yield return AcknowledgeKey("Town gate key");
@@ -270,6 +275,7 @@ namespace EternalEnigma.Tests
             context.Position = context.Grid.Locations["repeatable-0"];
             Assert.That(common.Travel.EnterLocation(), Is.True);
             yield return harness.WaitForIdle();
+            StageServiceVictory();
             Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True);
             yield return AcknowledgeKey("Town area key");
             yield return WaitWorld();

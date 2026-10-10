@@ -1,6 +1,6 @@
 # Remaining terminal-mode integration and acceptance
 
-Audited 2026-10-08. Terminal mode is a presentation option in the Unity game.
+Audited 2026-10-08; implementation updated 2026-10-09. Terminal mode is a presentation option in the Unity game.
 Normal campaign objects, input, combat, services and saves remain authoritative;
 there is no separate full-game terminal simulation.
 
@@ -18,60 +18,85 @@ there is no separate full-game terminal simulation.
 - Terminal presentation hides the redundant dungeon minimap/event feed while
   retaining their knowledge/history. Animation preferences and gameplay timing
   are preserved; world cameras and generation remain active.
-- `TerminalMainMenuView` now supplies an animated ASCII title/backdrop and
+- `TerminalMainMenuView` supplies an animated ASCII title/backdrop and
   restyles the existing main-menu buttons, restoring them on mode exit.
-  This uses uGUI callbacks and focus, not a terminal-native transaction adapter.
+  Its footer follows the active input device.
+- `TerminalMenuBridge` binds `TerminalMenuModel` to the current menu scope's
+  live controls. `TerminalMenuSession` uses stable row IDs, refreshes on submit,
+  checks ownership/active/interactable state and changed labels, and rejects
+  duplicate input sequences. Production Submit callbacks retain transaction and
+  turn-command validation. No town/equipment/combat transaction is duplicated.
+- `TerminalMenuStyle` applies and restores monospace text and dark panels on
+  active dialogs. Original uGUI remains visible and clickable; native text fields,
+  sliders, dropdowns, preview scrolling, party tabs and Back/focus scopes retain
+  their production control routes.
+- Target snapshots distinguish valid cells (`?`), affected area (`*`), missile
+  path/direction and selected endpoint (`X`). Labels include skill/item, selected
+  character/prop/tile, area radius and device-aware confirm/cancel controls.
+- Dungeon knowledge follows minimap treasure (gold, dropped items, containers),
+  explored hazards, trap discovery/Farsight and enemy disguise rules. Visible
+  multi-cell actors occupy their full footprint; unseen mimics do not become loot.
+- Immutable `TerminalKnowledge` reuses unchanged visibility and allocates a new
+  grid only when it changes. Older captures remain immutable. Maps without fog
+  need no visibility array. Static terrain is cached per dungeon floor, town plan
+  and overworld grid; live gates, keys, actors, resources and messages still refresh.
 
-## Remaining implementation
+## Implementation checklist
 
-- [ ] Bind the pure menu model to town services, dungeon commands and shared
+- [x] Bind the pure menu model to town services, dungeon commands and shared
   dialogs in the coverage table below. Revalidate actors/items/targets on confirm;
   cancel and stale selections must spend no resources or turns.
-- [ ] Give terminal modals exclusive input ownership and restore previous focus.
+- [x] Give terminal modals exclusive input ownership and restore previous focus.
   Keep each existing uGUI route visible until its full replacement passes.
-- [ ] Complete targeting presentation beyond the current selected cell and valid
-  cells: verify missile endpoint/direction, area preview and target labels for
+- [x] Complete targeting presentation beyond the selected cell and valid
+  cells: missile endpoint/direction, area preview and target labels for
   character, prop, tile, inventory and missile flows.
-- [ ] Audit knowledge parity with the minimap, especially revealed treasure,
-  hazards/traps, mimics and multi-cell actors. `TerminalSceneSnapshots.Dungeon`
-  currently handles treasure-revealed gold explicitly; confirm dropped items and
-  containers obey their corresponding reveal rules before claiming parity.
-- [ ] Review snapshot allocation/static-map caching. Bounded polling and output
-  caching exist, but the dungeon adapter allocates a visibility grid per capture.
+- [x] Align knowledge rules with the minimap for revealed treasure,
+  hazards/traps, mimics and multi-cell actors.
+- [x] Remove per-capture full visibility allocation/copying and cache static terrain.
+
+These checkmarks describe implementation, not a completed player acceptance pass.
 
 | Flow | Current presentation / remaining work |
 | --- | --- |
-| Main menu | ASCII backdrop and restyled uGUI buttons implemented; controller-aware footer remains in [task 03](03-input-prompts.md). |
-| Slots, hero selection, settings | Existing uGUI retained; terminal equivalents and focus validation remain. |
-| Town buildings, buy/sell, trainer, recruit/dismiss, rest/save, equipment | uGUI retained; adapters must call existing TownServices, TrainerOffers and EquipmentTransferService paths. |
-| Dungeon party, skills, items, equipment, stairs, pause, results | uGUI retained; adapters must reuse action factories and the existing turn-command pipeline. |
-| Targeting | Existing input/dialog logic retained; ASCII cell markers implemented, full preview and confirm/cancel checks remain. |
-| Overworld party/capabilities, warps, gates, confirmations, history | uGUI retained; live map facts exist, menu adapters remain. |
-| Level-up and game-over/victory | uGUI retained; terminal equivalents remain. |
+| Main menu | ASCII backdrop, device-aware footer and live-control menu-model binding. |
+| Slots, hero selection, settings | Shared terminal adapter/style; native widget behavior retained. |
+| Town buildings, buy/sell, trainer, recruit/dismiss, rest/save, equipment | Shared adapter dispatches production controls and existing TownServices, TrainerOffers and EquipmentTransferService paths. |
+| Dungeon party, skills, items, equipment, stairs, pause, results | Shared adapter dispatches existing action factories and turn-command pipeline. |
+| Targeting | Production target input, expanded ASCII preview and stale caster/floor/command validation. |
+| Overworld party/capabilities, warps, gates, confirmations, history | Shared scoped menu adapter; live map facts retained. |
+| Level-up and game-over/victory | Shared adapter/style through existing DialogController scopes. |
 
 ## Remaining acceptance
 
-- [ ] Run the current `TerminalIntegrationTests` and `TerminalPlayModeTests`,
-  including main-menu restoration and duplicate-UI hide/restore. The earlier
-  handoff reported four EditMode tests and the three map/floor-replacement checks
-  passing; its later duplicate-UI rerun timed out. That is not a passing result
-  for the current six-test PlayMode fixture.
+- [ ] Run the current seven `TerminalIntegrationTests` and ten
+  `TerminalPlayModeTests`, including stale/duplicate menu submits, focus and shop
+  transaction revalidation, knowledge parity, target preview/cancel and stale
+  target confirm, main-menu restoration, duplicate-UI hide/restore, desktop/small
+  grid resizing and both directions of shared-save continue. The eight
+  Core terminal tests include immutable knowledge reuse and preview marker/fog
+  coverage. Earlier reports do not verify these newly expanded fixtures.
 - [ ] Verify clean startup, direct scene launch, repeated travel, floor replacement,
   teardown and domain reload disabled: one owner/screen and no stale state.
 - [ ] Exercise targeting, toggles during movement/replay/loading/open menus,
   input consumption, cursor/focus, and mouse interaction with retained uGUI.
 - [ ] Inspect 1280x720, 1920x1080, a small window and live resizing for aligned
   glyphs, literal text, unclipped HUD/log and transition/modal ordering.
+  A deterministic font/frame resize test covers the computed grids; it does not
+  replace screenshots and live-window visual inspection.
 - [ ] Complete a shared-save playthrough: terminal New Journey -> town -> overworld
   -> dungeon; fight, target a skill/item, descend, transact and explicitly save.
   Continue in 3D and compare party, inventory, gold and progression; repeat in
   reverse using disposable test slots.
+  `SharedSaveContinuesBothDirectionsWithMatchingPartyInventoryGoldAndProgression`
+  covers shop purchase, inn save, mode switching and real campaign Continue in
+  both directions using the harness's memory save store. Its seeded progressed
+  fixture is not a full town/overworld/dungeon combat playthrough.
 - [ ] Build and smoke-test Windows and WebGL after integration. Earlier diorama
   builds predate terminal mode and do not verify its font/UI resources.
 - [ ] If world-render suppression is added later, preserve camera/audio/projection
   dependencies and verify complete restoration across scene changes.
 
 Run offline builds/tests and rebuild/import the Core DLL as described in
-[Core](../Core/README.md). Unity/player checks are separate. The original offline
-handoff reported 385 Core tests passing; no new test run or DLL hash comparison
-was performed during this documentation audit.
+[Core](../Core/README.md). Unity/player checks are separate. Record current run
+results here during integration; source implementation alone is not player acceptance.

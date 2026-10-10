@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class BoundsIntExtensions
 {
+    public static IEnumerable<Vector3Int> Cells(this BoundsInt bounds)
+    { foreach (var cell in bounds.allPositionsWithin) yield return cell; }
 	public static bool Overlaps2D(this BoundsInt bounds, BoundsInt other)
 	{
 		bool intersectsX = bounds.min.x < other.max.x && bounds.max.x > other.min.x;

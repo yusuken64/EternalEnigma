@@ -59,15 +59,17 @@ public sealed class OverworldMenuManager : MonoBehaviour
         var location=context.Location;
         if(location==null)return false;
         if(location.Kind==LocationKind.Town)return Common.Instance.Travel.EnterLocation();
-        if(location.Kind!=LocationKind.StoryDungeon && location.Kind!=LocationKind.RepeatableDungeon && location.Kind!=LocationKind.FinalDungeon)return false;
+        if(location.Encounter==null && location.Kind!=LocationKind.StoryDungeon && location.Kind!=LocationKind.RepeatableDungeon && location.Kind!=LocationKind.FinalDungeon)return false;
         EnsurePickers();
         var position=world.Position;
-        var picker=PartyMenuPicker.Build(PartyMenu.transform.parent,"Enter dungeon?",new List<(string,Action)>{("Enter",()=>
+        var picker=PartyMenuPicker.Build(PartyMenu.transform.parent,location.Encounter==null?"Enter dungeon?":"Enter encounter?",new List<(string,Action)>{("Enter",()=>
         {
             if(Common.Instance.CampaignContext==context && context.Position.Equals(position) && context.Location==location)
                 Common.Instance.Travel.EnterLocation();
         })});
-        picker.Description(location.Id+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared"));
+        picker.Description(location.Id+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
+            (location.Encounter?.Kind==EncounterKind.Prison?"\nYour carried and equipped possessions will be confiscated temporarily. Recover them from the guarded stash before escaping. Gold and learned skills remain available.":"")+
+            (location.Encounter?.RequiresResetFloor==true && !context.ResetFloorUnlocked?"\nRequires Reset Floor: clear repeatable-0 first.":""));
         dialogs.Open(picker);
         return true;
     }

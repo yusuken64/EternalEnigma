@@ -16,6 +16,8 @@ public sealed class PartyMenuPicker : Dialog
     private bool committed;
     private int submittedFrame = -1;
     private TMP_Text description;
+    private string descriptionText;
+    private bool descriptionGamepad;
     #if UNITY_EDITOR
     public static PartyMenuPicker AuthorLayout(Transform parent, string title, List<(string Label, Action Execute)> choices,bool closeOnChoose=true)
     {
@@ -103,7 +105,8 @@ public sealed class PartyMenuPicker : Dialog
     {
         var label=description=Instantiate(Title,Rows);
         label.name="Interaction description";
-        label.text=text+"\n\n<size=18>Up / Down: scroll   |   Right: actions</size>"; label.fontSize=24; label.enableAutoSizing=false;
+        descriptionText=text;
+        RefreshDescription(); label.fontSize=24; label.enableAutoSizing=false;
         label.textWrappingMode=TextWrappingModes.Normal;
         label.transform.SetAsFirstSibling();
         label.gameObject.AddComponent<LayoutElement>();
@@ -114,6 +117,20 @@ public sealed class PartyMenuPicker : Dialog
         {var nav=button.navigation;nav.selectOnLeft=read;button.navigation=nav;}
         first=read;
         label.gameObject.SetActive(true);
+    }
+    private void Update()
+    {
+        if(description!=null && descriptionGamepad!=ControlDeviceState.Gamepad)
+        {
+            RefreshDescription();
+            float width=Mathf.Max(200,((RectTransform)Rows).rect.width);
+            description.GetComponent<LayoutElement>().preferredHeight=description.GetPreferredValues(description.text,width,0).y+24;
+        }
+    }
+    private void RefreshDescription()
+    {
+        descriptionGamepad=ControlDeviceState.Gamepad;
+        description.text=descriptionText+"\n\n<size=18>"+InputPrompts.DescriptionHint+"</size>";
     }
     internal override void SetFirstSelect()
     {

@@ -170,6 +170,29 @@ public static class OverworldGridValidator
             int after = Distance(grid, grid.Locations[route.From], grid.Locations[route.To], all, unlocked);
             Check(before > 0 && after > 0 && after * 4 <= before * 3, $"shortcut.savings: {route.Id} saves less than 25% ({before} -> {after}).");
         }
+        if (campaign.GeneratorVersion >= 11)
+        {
+            var footprints = new HashSet<GridPoint>();
+            Check(campaign.Locations.Where(l => l.ParentTownId == null && l.IsDungeon).Select(l => l.Id).OrderBy(x => x, StringComparer.Ordinal)
+                .SequenceEqual(grid.LocationFootprints.Select(f => f.LocationId).OrderBy(x => x, StringComparer.Ordinal)), "encounter.footprints: Missing exterior dungeon footprint.");
+            foreach (var footprint in grid.LocationFootprints)
+            {
+                Check(footprint.Size == (footprint.EncounterKind == EncounterKind.LostWoods ? 7 : 5), "encounter.size: Incorrect miniature size.");
+                Check(footprint.Cells.Count == footprint.Size * footprint.Size && footprint.Cells.Contains(footprint.Entrance), "encounter.shape: Footprint must contain its entrance.");
+                foreach (var cell in footprint.Cells)
+                    Check(grid.Contains(cell) && footprints.Add(cell) && !townCells.Contains(cell) && grid.LockAt(cell) == null &&
+                        grid.Layers[OverworldLayers.LocationFootprints].At(cell), "encounter.reservation: Footprint overlaps another location or gate.");
+            }
+            Check(grid.Pickups.Select(p => p.Id).Distinct().Count() == grid.Pickups.Count && grid.Pickups.Select(p => p.Position).Distinct().Count() == grid.Pickups.Count, "pickup.identity: Pickups need unique identities and cells.");
+            foreach (var region in campaign.Regions)
+            {
+                var pickups = grid.Pickups.Where(p => p.RegionId == region.Id).ToArray();
+                Check(pickups.Length == 3 && pickups.Count(p => p.Kind == OverworldPickupKind.Weapon) == 1 && pickups.Count(p => p.Kind == OverworldPickupKind.SkillScroll) == 2, "pickup.count: Each region needs one weapon and two scrolls.");
+            }
+            foreach (var pickup in grid.Pickups)
+                Check(grid.IsGround(pickup.Position) && !grid.RequiresBoat(pickup.Position) && grid.LockAt(pickup.Position) == null && !footprints.Contains(pickup.Position) &&
+                    grid.Locations.Values.All(p => Math.Abs(p.X - pickup.Position.X) > 3 || Math.Abs(p.Y - pickup.Position.Y) > 3), "pickup.position: Pickup overlaps an entrance or cannot be reached.");
+        }
         return new OverworldGridValidationResult(errors.Distinct());
     }
     public static int Distance(OverworldGrid grid, GridPoint from, GridPoint to, CapabilitySet held, ISet<string> resolved, string? blockedRoute = null)

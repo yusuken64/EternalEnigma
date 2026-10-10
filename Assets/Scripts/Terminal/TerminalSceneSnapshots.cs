@@ -12,6 +12,74 @@ internal static class TerminalSceneSnapshots
     private static GridPoint Point(Vector3Int p) => new(p.x, p.y);
     private static TerminalCell Cell(char glyph, TerminalColor color) => new(glyph, color);
     private static readonly TerminalCell FloorCell = new('.', TerminalPalette.Dim);
+    private static DungeonCache dungeonCache;
+    private static Town cachedTown;
+    private static TownPlan cachedTownPlan;
+    private static Func<GridPoint, TerminalCell> cachedTownTerrain;
+    private static OverworldCache overworldCache;
+
+    private sealed class OverworldCache
+    {
+        internal readonly OverworldScene Scene;
+        internal readonly OverworldGrid Grid;
+        internal readonly Dictionary<GridPoint, LocationKind> Locations;
+        internal readonly HashSet<GridPoint> Warps;
+        internal readonly Dictionary<GridPoint, string> KeyIds = new();
+        internal readonly GridPoint[] GateCells;
+        internal readonly Func<GridPoint, TerminalCell> Ground;
+        internal OverworldCache(OverworldScene scene)
+        {
+            Scene = scene; Grid = scene.Map.CurrentGrid;
+            Locations = scene.Campaign.Locations.Where(l => l.ParentTownId == null && Grid.Locations.ContainsKey(l.Id))
+                .ToDictionary(l => Grid.Locations[l.Id], l => l.Kind);
+            Warps = Grid.Warps.SelectMany(r => new[] { Grid.Locations[r.From], Grid.Locations[r.To] }).ToHashSet();
+            GateCells = Grid.Locks.SelectMany(l => l.Cells).ToArray();
+            foreach (var route in scene.Campaign.Routes.Where(r => r.KeyLocationId != null && Grid.Locations.ContainsKey(r.KeyLocationId)))
+                KeyIds[Grid.Locations[route.KeyLocationId]] = route.KeyId;
+            Ground = CacheTerrain(Grid.Width, Grid.Height, p =>
+            {
+                if (Grid.RequiresBoat(p) || At(Grid.Layers, OverworldLayers.Water, p)) return Cell('~', TerminalPalette.Ally);
+                if (At(Grid.Layers, OverworldLayers.Roads, p)) return Cell(':', TerminalPalette.Dim);
+                if (At(Grid.Layers, OverworldLayers.Trees, p)) return Cell('"', TerminalPalette.Item);
+                return Grid.IsGround(p) ? FloorCell : Cell('#', TerminalPalette.Wall);
+            });
+        }
+    }
+
+    private static Func<GridPoint, TerminalCell> CacheTerrain(int width, int height, Func<GridPoint, TerminalCell> read)
+    {
+        var cells = new TerminalCell[width, height];
+        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++) cells[x, y] = read(new GridPoint(x, y));
+        return p => cells[p.X, p.Y];
+    }
+
+    private sealed class DungeonCache
+    {
+        internal readonly DungeonFloor Floor;
+        internal readonly Func<GridPoint, TerminalCell> Terrain;
+        internal readonly Func<GridPoint, TerminalVisibility> ReadKnowledge;
+        internal TerminalKnowledge Knowledge;
+        internal Game Game;
+        internal Minimap.MinimapTileData[,] Known;
+        internal DungeonCache(DungeonFloor floor)
+        {
+            Floor = floor;
+            Terrain = CacheTerrain(floor.Width, floor.Height, p => DungeonTerrain(floor, p));
+            ReadKnowledge = p =>
+            {
+                if (Game.PartyVisibleTiles.Contains(new Vector3Int(p.X, p.Y, 0))) return TerminalVisibility.Visible;
+                if (Known == null || p.X >= Known.GetLength(0) || p.Y >= Known.GetLength(1) || Known[p.X, p.Y] == null)
+                    return TerminalVisibility.Unseen;
+                return Known[p.X, p.Y].visibility == Minimap.MinimapTileVisibility.Visible ? TerminalVisibility.Visible :
+                    Known[p.X, p.Y].visibility == Minimap.MinimapTileVisibility.Explored ? TerminalVisibility.Explored : TerminalVisibility.Unseen;
+            };
+        }
+    }
+    internal static void ClearCache()
+    {
+        dungeonCache = null; overworldCache = null;
+        cachedTown = null; cachedTownPlan = null; cachedTownTerrain = null;
+    }
     private static bool At(IReadOnlyDictionary<string, GridLayer> layers, string key, GridPoint p) =>
         layers.TryGetValue(key, out var layer) && layer.At(p);
 
@@ -20,15 +88,11 @@ internal static class TerminalSceneSnapshots
         var live = game.CurrentDungeon;
         var floor = live.Floor;
         int width = floor.Width, height = floor.Height;
-        var visibility = new TerminalVisibility[width, height];
-        var known = minimap != null ? minimap.dungeonMap : null;
-        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
-        {
-            if (known != null && x < known.GetLength(0) && y < known.GetLength(1))
-                visibility[x, y] = known[x, y].visibility == Minimap.MinimapTileVisibility.Visible ? TerminalVisibility.Visible :
-                    known[x, y].visibility == Minimap.MinimapTileVisibility.Explored ? TerminalVisibility.Explored : TerminalVisibility.Unseen;
-            if (game.PartyVisibleTiles.Contains(new Vector3Int(x, y, 0))) visibility[x, y] = TerminalVisibility.Visible;
-        }
+        if (dungeonCache == null || !ReferenceEquals(dungeonCache.Floor, floor)) dungeonCache = new DungeonCache(floor);
+        var cache = dungeonCache;
+        cache.Game = game;
+        cache.Known = minimap != null ? minimap.dungeonMap : null;
+        var visibility = cache.Knowledge = TerminalKnowledge.Capture(width, height, cache.ReadKnowledge, cache.Knowledge);
         var actors = new List<TerminalActor>();
         foreach (var character in game.AllCharacters)
         {
@@ -45,35 +109,42 @@ internal static class TerminalSceneSnapshots
             if (!visible) continue;
             char glyph = character is Enemy disguise && EnemyBehavior.IsDisguised(disguise) ? 'i' :
                 character is Enemy ? TerminalGlyphs.Enemy(character.CharacterName) : '\0';
-            actors.Add(new TerminalActor(character.GetInstanceID().ToString(), p, glyph == 'i' ? TerminalActorKind.Item : kind, glyph,
-                revealed || overlapsSight));
+            foreach (var occupied in Character.ToBounds(character.FootPrint, character.TilemapPosition).allPositionsWithin)
+                actors.Add(new TerminalActor(character.GetInstanceID().ToString(), Point(occupied), glyph == 'i' ? TerminalActorKind.Item : kind, glyph,
+                    character is Ally || revealed || overlapsSight));
         }
         foreach (var ally in game.DownedAllies)
-            if (ally != null) actors.Add(new TerminalActor(ally.GetInstanceID().ToString(), Point(ally.TilemapPosition), TerminalActorKind.Downed));
+            if (ally != null) actors.Add(new TerminalActor(ally.GetInstanceID().ToString(), Point(ally.TilemapPosition), TerminalActorKind.Downed, visibleInFog: true));
         foreach (var interactable in live.Interactables)
         {
             if (interactable == null) continue;
             var p = Point(interactable.Position);
             if (p.X < 0 || p.Y < 0 || p.X >= width || p.Y >= height) continue;
-            bool visible = visibility[p.X, p.Y] == TerminalVisibility.Visible;
+            bool visible = game.PartyVisibleTiles.Contains(interactable.Position);
+            bool knownHazard = interactable is DungeonProp hazard && hazard.Definition != null &&
+                hazard.Definition.Kind == DungeonSceneryKind.Hazard && visibility.At(p) != TerminalVisibility.Unseen;
+            bool treasure = interactable is Gold or DroppedItem || interactable is DungeonProp container &&
+                container.Definition != null && container.Definition.Kind == DungeonSceneryKind.Container;
+            // Match the minimap's knowledge rules, including Farsight trap identification.
             bool revealed = game.FloorReveal != null &&
                 ((game.FloorReveal.LayoutRevealed && interactable is Stairs) ||
-                 (game.FloorReveal.TreasureRevealed && interactable is Gold));
-            if (interactable is Trap trap && (trap.VisualObject == null || !trap.VisualObject.activeSelf || !visible)) continue;
-            if (!visible && !revealed) continue;
+                 (game.FloorReveal.TreasureRevealed && treasure) || (game.FloorReveal.TrapsRevealed && interactable is Trap));
+            if (interactable is Trap trap && (trap.VisualObject == null || !trap.VisualObject.activeSelf || !visible && !revealed)) continue;
+            if (!visible && !revealed && !knownHazard) continue;
             char glyph = interactable is Stairs ? '>' : interactable is Gold ? '$' :
-                interactable is DroppedItem ? 'i' : interactable is Trap ? '^' :
+                interactable is DroppedItem ? 'i' : interactable is Trap || knownHazard ? '^' :
                 interactable is DungeonProp prop && prop.IsDoor ? '+' : 'p';
-            actors.Add(new TerminalActor(interactable.GetInstanceID().ToString(), p, TerminalActorKind.Item, glyph, revealed));
+            actors.Add(new TerminalActor(interactable.GetInstanceID().ToString(), p, TerminalActorKind.Item, glyph, revealed || knownHazard));
         }
         var target = targetDialog != null && targetDialog.isActiveAndEnabled && targetDialog.TerminalSelectedCell.HasValue
-            ? new TerminalTargetSnapshot(Point(targetDialog.TerminalSelectedCell.Value), targetDialog.RangeLabel,
-                targetDialog.TerminalValidCells.Select(Point)) : null;
+            ? new TerminalTargetSnapshot(Point(targetDialog.TerminalSelectedCell.Value), targetDialog.TerminalLabel,
+                targetDialog.TerminalAreaCells.Select(Point), targetDialog.TerminalValidCells.Select(Point),
+                targetDialog.TerminalMissilePath.Select(Point), Point(targetDialog.Direction)) : null;
         var party = game.Allies.Where(a => a != null && a.Vitals != null).Select(a =>
             new TerminalPartyStat(a.CharacterName, a.Vitals.Level, a.Vitals.HP, a.FinalStats.HPMax,
                 a.Vitals.SP, a.FinalStats.SPMax)).ToArray();
         return new DungeonTerminalSnapshot(width, height, Point(game.PlayerController.ControlledAlly.TilemapPosition),
-            "Dungeon floor " + game.PlayerController.Floor, p => DungeonTerrain(floor, p), visibility, actors,
+            "Dungeon floor " + game.PlayerController.Floor, cache.Terrain, visibility, actors,
             party, Tail(messages), target);
     }
     private static TerminalCell DungeonTerrain(DungeonFloor floor, GridPoint p)
@@ -89,31 +160,27 @@ internal static class TerminalSceneSnapshots
     internal static OverworldTerminalSnapshot Overworld(OverworldScene scene, GameMessages messages = null)
     {
         var grid = scene.Map.CurrentGrid;
-        var locations = scene.Campaign.Locations.Where(l => l.ParentTownId == null && grid.Locations.ContainsKey(l.Id))
-            .ToDictionary(l => grid.Locations[l.Id], l => l.Kind);
-        var gateOpen = grid.Locks.SelectMany(l => l.Cells.Select(c => (c, l.RouteId)))
-            .ToDictionary(e => e.c, e => scene.Context.Gates.IsWalkable(e.c, scene.Held));
+        if (overworldCache == null || overworldCache.Scene != scene || !ReferenceEquals(overworldCache.Grid, grid))
+            overworldCache = new OverworldCache(scene);
+        var cache = overworldCache;
+        var gateOpen = cache.GateCells.ToDictionary(p => p, p => scene.Context.Gates.IsWalkable(p, scene.Held));
         var keys = new Dictionary<GridPoint, bool>();
-        foreach (var route in scene.Campaign.Routes.Where(r => r.KeyLocationId != null && grid.Locations.ContainsKey(r.KeyLocationId)))
-            keys[grid.Locations[route.KeyLocationId]] = scene.CollectedKeys.Contains(route.KeyId);
+        foreach (var key in cache.KeyIds) keys[key.Key] = scene.CollectedKeys.Contains(key.Value);
         var followers = scene.Followers.Where(a => a != null)
             .Select(a => new TerminalActor(a.GetInstanceID().ToString(), Point(a.TilemapPosition), TerminalActorKind.Ally));
         var actors = followers.Concat(new[] { new TerminalActor("player", scene.Position, TerminalActorKind.Player) }).ToArray();
         return new OverworldTerminalSnapshot(grid.Width, grid.Height, scene.Position, "Overworld", p =>
         {
-            if (grid.WarpsAt(p).Any()) return Cell('O', TerminalPalette.Feature);
+            if (cache.Warps.Contains(p)) return Cell('O', TerminalPalette.Feature);
             if (keys.TryGetValue(p, out bool collected)) return Cell(collected ? 'k' : 'K', TerminalPalette.Item);
-            if (locations.TryGetValue(p, out var kind)) return Cell(kind switch
+            if (cache.Locations.TryGetValue(p, out var kind)) return Cell(kind switch
             {
                 LocationKind.Town => 'T', LocationKind.StoryDungeon => 'D', LocationKind.RepeatableDungeon => 'R',
                 LocationKind.FinalDungeon => 'F', LocationKind.Converter => 'C', LocationKind.Secret => '?',
                 LocationKind.Landmark => '*', _ => 'o'
             }, TerminalPalette.Feature);
             if (gateOpen.TryGetValue(p, out bool open)) return Cell(open ? '/' : '+', TerminalPalette.Feature);
-            if (grid.RequiresBoat(p) || At(grid.Layers, OverworldLayers.Water, p)) return Cell('~', TerminalPalette.Ally);
-            if (At(grid.Layers, OverworldLayers.Roads, p)) return Cell(':', TerminalPalette.Dim);
-            if (At(grid.Layers, OverworldLayers.Trees, p)) return Cell('"', TerminalPalette.Item);
-            return grid.IsGround(p) ? FloorCell : Cell('#', TerminalPalette.Wall);
+            return cache.Ground(p);
         }, actors, null, Tail(messages));
     }
 
@@ -130,10 +197,15 @@ internal static class TerminalSceneSnapshots
         foreach (var npc in town.Townsfolk)
             if (npc != null) actors.Add(new TerminalActor(npc.GetInstanceID().ToString(), Point(npc.Cell), TerminalActorKind.Npc));
         actors.Add(new TerminalActor("player", focus, TerminalActorKind.Player));
-        var doors = town.TownBuildings.Where(b => b != null && b.Definition != null)
-            .GroupBy(b => Point(b.TilemapPosition)).ToDictionary(g => g.Key,
-                g => TerminalGlyphs.TownService(g.First().Definition.Id ?? g.First().Definition.DialogId));
-        return new TownTerminalSnapshot(plan.Width, plan.Height, focus, "Town", p => TownTerrain(plan, doors, p), actors, null, Tail(messages));
+        if (cachedTown != town || !ReferenceEquals(cachedTownPlan, plan))
+        {
+            cachedTown = town; cachedTownPlan = plan;
+            var doors = town.TownBuildings.Where(b => b != null && b.Definition != null)
+                .GroupBy(b => Point(b.TilemapPosition)).ToDictionary(g => g.Key,
+                    g => TerminalGlyphs.TownService(g.First().Definition.Id ?? g.First().Definition.DialogId));
+            cachedTownTerrain = CacheTerrain(plan.Width, plan.Height, p => TownTerrain(plan, doors, p));
+        }
+        return new TownTerminalSnapshot(plan.Width, plan.Height, focus, "Town", cachedTownTerrain, actors, null, Tail(messages));
     }
     private static TerminalCell TownTerrain(TownPlan plan, IReadOnlyDictionary<GridPoint, char> doors, GridPoint p)
     {

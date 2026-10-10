@@ -24,8 +24,10 @@ public sealed class OverworldCosmeticLayer : TWCBuildLayer
             if (previous != null) { if (Application.isPlaying) UnityEngine.Object.Destroy(previous); else UnityEngine.Object.DestroyImmediate(previous); }
             var batch = new EnvironmentBatch(root.transform); float size = creator.twcAsset.cellSize;
             var diorama=DioramaCatalog.Load();
+            var allowed=creator.GetMapOutputFromBlueprintLayer(assignedGenerationLayerGuid);
             foreach (var p in OverworldCosmetics.Plan(grid, Kit,TreeModels))
             {
+                if(allowed!=null && !allowed[p.X,p.Y])continue;
                 if(diorama?.Get(p.Model)!=null)
                 {
                     diorama.Add(batch,p.Model,p.Biome,new Vector3(p.X+.5f,p.Y+.5f,-p.Height)*size,p.Rotation,p.Scale);

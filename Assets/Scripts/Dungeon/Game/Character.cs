@@ -268,6 +268,7 @@ public abstract class Character : MonoBehaviour, Actor
                 if (pair.Key is Enemy movedEnemy && pair.Value != movedEnemy.TilemapPosition)
                     movedEnemy.GetComponent<EnemyBehavior>()?.RevealIfMoved();
                 effects.AddRange(dungeon.EntryEffects(pair.Key,pair.Value,pair.Key.TilemapPosition));
+                Game.Instance.Encounter?.OnMoved(pair.Key,pair.Value,pair.Key.TilemapPosition);
                 if (pair.Value != pair.Key.TilemapPosition && dungeon.GetInteractable(pair.Key.TilemapPosition) is FantasyTrap trap && trap.CanTrigger(pair.Key))
                     effects.Add(new TrapResolutionAction(trap, pair.Key, pair.Key.TilemapPosition - pair.Value));
             }
@@ -626,7 +627,8 @@ disp: {displayedVitals}");
 		{
 			for (int j = 0; j < game.CurrentDungeon.dungeonHeight; j++)
 			{
-				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
+				var isWalkable = ToBounds(FootPrint,new Vector3Int(i,j)).Cells()
+                    .All(cell => game.CurrentDungeon.IsWalkable(new Vector3Int(cell.x,cell.y,0)));
 
 				var containsCharacter = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
 				var containsTrap = game.CurrentDungeon.Interactables

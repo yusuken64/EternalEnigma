@@ -95,6 +95,80 @@ namespace EternalEnigma.Tests.CoreIntegration
             Assert.That(creator.twcAsset, Is.SameAs(template));
         }
 
+        [Test]
+        public void ComposedStylesBindByGuidAndKeepSharedTemplatesIsolated()
+        {
+            var basis=ScriptableObject.CreateInstance<OverworldStyleProfile>();
+            var variant=ScriptableObject.CreateInstance<OverworldStyleProfile>();
+            var ground=ScriptableObject.CreateInstance<PaintedGroundStyle>();
+            try
+            {
+                var layer=template.mapBlueprintLayers[0];
+                basis.Template=template;basis.GroundStyle=ground;
+                basis.Layers.Add(new OverworldStyleBinding {BlueprintGuid=layer.guid.ToString(),CoreLayer=OverworldLayers.Ground});
+                basis.Layers.Add(new OverworldStyleBinding {BlueprintGuid=template.mapBlueprintLayers[1].guid.ToString(),CoreLayer=OverworldLayers.Towns});
+                template.mapBuildLayers.Add(new OverworldGroundLayer {Inputs=new[] {new CampaignLayerBinding(OverworldLayers.Ground,"Floor")}});
+                variant.BaseProfile=basis;
+                adapter.StyleProfile=variant;
+                layer.layerName="Artist renamed ground";
+                var grid=OverworldGridGenerator.Generate(CampaignGenerator.Generate(42));
+                string before=DioramaArtIdentity.For(adapter);
+                adapter.Apply(grid);
+                Assert.That(creator.GetMapOutputFromBlueprintLayer(layer.guid).Cast<bool>(),Is.EqualTo(grid.Layers[OverworldLayers.Ground].ToArray().Cast<bool>()));
+                Assert.That(template.mapWidth,Is.EqualTo(9));
+                Assert.That(((OverworldGroundLayer)template.mapBuildLayers[0]).Inputs[0].BlueprintLayer,Is.EqualTo("Floor"));
+                variant.Layers.Add(new OverworldStyleBinding {BlueprintGuid=template.mapBlueprintLayers[1].guid.ToString(),CoreLayer=OverworldLayers.Roads});
+                Assert.That(DioramaArtIdentity.For(adapter),Is.Not.EqualTo(before));
+                adapter.Apply(grid);
+                Assert.That(creator.GetMapOutputFromBlueprintLayer(template.mapBlueprintLayers[1].guid).Cast<bool>(),Is.EqualTo(grid.Layers[OverworldLayers.Roads].ToArray().Cast<bool>()));
+                Assert.That(basis.Layers[0].CoreLayer,Is.EqualTo(OverworldLayers.Ground));
+                variant.BaseProfile=variant;
+                Assert.Throws<InvalidOperationException>(()=>adapter.Apply(grid));
+                Assert.That(adapter.CurrentGrid,Is.SameAs(grid));
+            }
+            finally {Object.DestroyImmediate(variant);Object.DestroyImmediate(basis);Object.DestroyImmediate(ground);}
+        }
+
+        [Test]
+        public void RequiredEmptyStyleOutputFailsAndReleasesItsClone()
+        {
+            var profile=ScriptableObject.CreateInstance<OverworldStyleProfile>();
+            var ground=ScriptableObject.CreateInstance<PaintedGroundStyle>();
+            try
+            {
+                var grid=OverworldGridGenerator.Generate(CampaignGenerator.Generate(42));
+                var empty=grid.Layers.First(p=>!p.Value.ToArray().Cast<bool>().Any(v=>v)).Key;
+                profile.Template=template;profile.GroundStyle=ground;
+                profile.Layers.Add(new OverworldStyleBinding {BlueprintGuid=template.mapBlueprintLayers[0].guid.ToString(),CoreLayer=empty,AllowEmpty=false});
+                profile.Layers.Add(new OverworldStyleBinding {BlueprintGuid=template.mapBlueprintLayers[1].guid.ToString(),CoreLayer=OverworldLayers.Towns});
+                template.mapBuildLayers.Add(new OverworldGroundLayer {Inputs=Array.Empty<CampaignLayerBinding>()});
+                adapter.StyleProfile=profile;
+                Assert.Throws<InvalidOperationException>(()=>adapter.Apply(grid));
+                Assert.That(adapter.LastGenerationError,Does.Contain("empty"));
+                Assert.That(adapter.CurrentGrid,Is.Null);
+                Assert.That(creator.twcAsset,Is.SameAs(template));
+                Assert.That(creator.generatedBlueprintMaps,Is.Empty);
+                profile.Layers[0].AllowEmpty=true;
+                Assert.DoesNotThrow(()=>adapter.Apply(grid));
+                Assert.That(adapter.LastGenerationError,Is.Null);
+            }
+            finally {Object.DestroyImmediate(profile);Object.DestroyImmediate(ground);}
+        }
+
+        [Test]
+        public void CosmeticTransformsCannotOccupyReservedApproaches()
+        {
+            var grid=OverworldGridGenerator.Generate(CampaignGenerator.Generate(42));
+            var reserved=OverworldCosmetics.Protected(grid);
+            var cells=new bool[grid.Width,grid.Height];
+            for(int y=0;y<grid.Height;y++)for(int x=0;x<grid.Width;x++)cells[x,y]=true;
+            var action=new ProtectOverworldApproaches(reserved);
+            action.Execute(cells,creator);
+            foreach(var cell in grid.Locations.Values)Assert.That(cells[cell.X,cell.Y],Is.False);
+            foreach(var gate in grid.Locks)foreach(var cell in gate.Cells)Assert.That(cells[cell.X,cell.Y],Is.False);
+            Assert.Throws<InvalidOperationException>(()=>action.Execute(new bool[1,1],creator));
+        }
+
         [UnityTest]
         public IEnumerator RealTWCObjectBuildLayerPlacesTownPrefabsFromImportedMask()
         {

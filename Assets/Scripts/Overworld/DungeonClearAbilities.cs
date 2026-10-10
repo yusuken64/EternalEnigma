@@ -24,8 +24,9 @@ public static class DungeonClearAbilities
             "repeatable-5" => ("Lightfoot", new StatModification { Evasion = .03f }),
             "repeatable-6" => ("Deep Reserves", new StatModification { HPMax = 3, SPMax = 2 }),
             "final-dungeon" => ("Enigma's Legacy", new StatModification { Strength = 3, Defense = 1 }),
-            _ => ($"Dungeon Mastery: {id}", new StatModification { HPMax = 2, SPMax = 1 })
+            _ => ((string)null, (StatModification)null)
         };
+        if (name == null) return null;
         var skill = ScriptableObject.CreateInstance<Skill>();
         skill.name = skill.SkillName = name;
         skill.hideFlags = HideFlags.HideAndDontSave;
@@ -39,7 +40,7 @@ public static class DungeonClearAbilities
     }
 
     public static IEnumerable<Skill> Unlocked => Common.InstanceOrNull?.CampaignContext?.Completed
-        .OrderBy(id => id).Select(ForDungeon) ?? Enumerable.Empty<Skill>();
+        .OrderBy(id => id).Select(ForDungeon).Where(skill => skill != null) ?? Enumerable.Empty<Skill>();
 
     public static Skill Find(string name) => Unlocked.FirstOrDefault(skill => skill.SkillName == name);
 

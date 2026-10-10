@@ -19,6 +19,7 @@ public static class OverworldLayers
     public const string Reserved = "Reserved";
     public const string Towns = "Towns";
     public const string TownFootprints = "TownFootprints";
+    public const string LocationFootprints = "LocationFootprints";
     public const string TownWalls = "TownWalls";
     public const string TownInteriors = "TownInteriors";
     public const string StoryDungeons = "StoryDungeons";
@@ -63,7 +64,7 @@ public sealed class OverworldGrid
     private readonly int[,] lockIndices;
     private readonly CampaignRoute[] lockRoutes;
     private readonly CampaignRoute[] townExits;
-    public const int GenerationVersion = 12;
+    public const int GenerationVersion = 13;
     public int Width { get; }
     public int Height { get; }
     public int CampaignSeed { get; }
@@ -73,13 +74,16 @@ public sealed class OverworldGrid
     public IReadOnlyDictionary<string, IReadOnlyList<GridPoint>> Routes { get; }
     public IReadOnlyList<GridLock> Locks { get; }
     public IReadOnlyList<GridTown> TownFootprints { get; }
+    public IReadOnlyList<GridLocationFootprint> LocationFootprints { get; }
+    public IReadOnlyList<OverworldPickup> Pickups { get; }
     public IReadOnlyList<CampaignRoute> Warps { get; }
     public IReadOnlyDictionary<string, OverworldBiome> RegionBiomes { get; }
     public GridPoint PlayerStart { get; }
 
     internal OverworldGrid(Campaign campaign, IDictionary<string, GridLayer> layers,
         IDictionary<string, GridPoint> locations, IDictionary<string, IReadOnlyList<GridPoint>> routes, IEnumerable<GridLock> locks,
-        IDictionary<string, OverworldBiome>? regionBiomes = null, IEnumerable<GridTown>? townFootprints = null)
+        IDictionary<string, OverworldBiome>? regionBiomes = null, IEnumerable<GridTown>? townFootprints = null,
+        IEnumerable<GridLocationFootprint>? locationFootprints = null, IEnumerable<OverworldPickup>? pickups = null)
     {
         CampaignSeed = campaign.Seed;
         CampaignFingerprint = Generation.CampaignFingerprint.Compute(campaign);
@@ -93,6 +97,8 @@ public sealed class OverworldGrid
             r => (IReadOnlyList<GridPoint>)Array.AsReadOnly(r.Value.ToArray()), StringComparer.Ordinal));
         Locks = Array.AsReadOnly(locks.ToArray());
         TownFootprints = Array.AsReadOnly((townFootprints ?? Array.Empty<GridTown>()).ToArray());
+        LocationFootprints = Array.AsReadOnly((locationFootprints ?? Array.Empty<GridLocationFootprint>()).ToArray());
+        Pickups = Array.AsReadOnly((pickups ?? Array.Empty<OverworldPickup>()).ToArray());
         Warps = Array.AsReadOnly(campaign.Routes.Where(r => r.IsWarp).ToArray());
         PlayerStart = Locations[campaign.StartLocationId];
         lockRoutes = Locks.Select(l => campaign.Routes.Single(r => r.Id == l.RouteId)).ToArray();

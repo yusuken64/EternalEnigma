@@ -544,7 +544,8 @@ public class TileWorldDungeon : MonoBehaviour
     }
 	internal bool IsWalkable(Vector3Int newMapPosition)
 	{
-		return IsFloorCell(newMapPosition) && !Interactables.OfType<DungeonProp>().Any(p => p.Position == newMapPosition && p.BlocksMovement);
+		return IsFloorCell(newMapPosition) && !Interactables.OfType<DungeonProp>().Any(p => p.Position == newMapPosition && p.BlocksMovement) &&
+            (Game.Instance?.CurrentDungeon != this || Game.Instance.Encounter?.Blocks(newMapPosition) != true);
 	}
 
 	internal Vector3Int GetStartPosition() => Floor.Start.ToCell();

@@ -12,6 +12,27 @@ public class Game : SingletonMonoBehaviour<Game>
 	private DemoDungeonLoadout demoLoadout;
 	public TileWorldDungeonGenerator DungeonGenerator;
 	public TileWorldDungeon CurrentDungeon;
+    public EternalEnigma.Core.Progression.DungeonRunPlan RunPlan { get; private set; }
+    public EncounterRuntime Encounter { get; private set; }
+    public PrisonEscrow Prison { get; private set; }
+    private FloorEntrySnapshot entrySnapshot;
+    private UnityEngine.Random.State floorGenerationRandom;
+    private bool resettingFloor;
+    public bool CanExitFloor => Encounter == null || Encounter.CanExit;
+    public bool CanResetFloor => IsReady && !resettingFloor && entrySnapshot != null && Encounter?.AllowsReset == true &&
+        Common.Instance.CampaignContext?.Completed.Contains("repeatable-0") == true && !Common.Instance.Travel.IsTransitioning;
+    public bool CheckFloorExit(bool announce = true)
+    {
+        if (CanExitFloor) return true;
+        if (announce) GameMessages.Post(Encounter.ObjectiveText);
+        return false;
+    }
+    internal bool ResetFloor()
+    {
+        if (!CanResetFloor) return false;
+        resettingFloor = true; IsReady = false; TurnManager.InteruptTurn();
+        StartCoroutine(AdvanceFloorRoutine(true)); return true;
+    }
 
 	public TurnManager TurnManager;
 	public LevelSystem LevelSystem;
@@ -121,6 +142,8 @@ public class Game : SingletonMonoBehaviour<Game>
 	private void InitializeGame()
 	{
 		DownedAllies.Clear();
+        var context = Common.Instance.CampaignContext;
+        RunPlan = context != null && context.State.PendingDungeon.Length > 0 ? context.RunPlan(context.State.PendingDungeon) : null;
 
         var hud = DungeonHud.Ensure(this);
         foreach(var slot in hud.PartySlots) slot.gameObject.SetActive(false);
@@ -188,6 +211,10 @@ public class Game : SingletonMonoBehaviour<Game>
         PlayerController.Gold = townSave.Gold;
         var items = townSave.InventoryItems.Select(i => i.Restore(Common.Instance.ItemManager));
         items.ToList().ForEach(x => PlayerController.Inventory.Add(x));
+        Prison = new PrisonEscrow();
+        if (context?.Location?.Encounter?.Kind == EternalEnigma.Core.Progression.EncounterKind.Prison) Prison.Confiscate(this);
+        if (context?.Completed.Contains("repeatable-0") == true)
+            foreach (var ally in Allies) if (!ally.Skills.Any(s => s.SkillName == "Reset Floor")) ally.Skills.Add(ResetFloorAction.Skill());
 		demoLoadout = Common.Instance.PendingDemoLoadout;
 		Common.Instance.PendingDemoLoadout = null;
 		if (demoLoadout != null) demoLoadout.Apply(this);
@@ -209,6 +236,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void AdvanceFloor()
 	{
+        if (CurrentDungeon != null && !CheckFloorExit()) return;
+        if (resettingFloor || Common.Instance.Travel.IsTransitioning) return;
 		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
 			foreach (var ally in Allies.Where(a => a != null && a.Vitals.HP > 0)) ally.HeroAnimator?.PlayOneShot(AnimatedAction.Victory);
 		PlayerController.Floor++;
@@ -220,10 +249,13 @@ public class Game : SingletonMonoBehaviour<Game>
 		NewFloorMessage.HideScreen(PlayerController.Floor);
 	}
 
-	private IEnumerator AdvanceFloorRoutine()
+	private IEnumerator AdvanceFloorRoutine(bool reset = false)
 	{
-		bool throneFloor = PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor ||
-			PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
+        if (reset) UnityEngine.Random.state = floorGenerationRandom;
+        else { entrySnapshot?.Dispose(); entrySnapshot = null; floorGenerationRandom = UnityEngine.Random.state; }
+        bool throneFloor = RunPlan != null ? RunPlan.Floor(PlayerController.Floor).Options.IsThroneFloor :
+            PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor || PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
+        Encounter = null;
 
 		Enemies.ForEach(x => DestroyImmediate(x.gameObject));
 		Enemies.Clear();
@@ -259,7 +291,7 @@ public class Game : SingletonMonoBehaviour<Game>
 		var theme = DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals);
 		var music = throneFloor ? theme.BossMusic : theme.Music;
 		AudioManager.Instance?.PlayMusic(music != null ? music : DungeonGenerator.ThemeCatalog.FallbackMusic);
-		CurrentDungeon.IsExitFloor = throneFloor && PlayerController.Floor >= Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
+		CurrentDungeon.IsExitFloor = PlayerController.Floor >= Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
 		CurrentDungeon.InitializeCache();
 		FindFirstObjectByType<FogOverlay>().Initialize(CurrentDungeon);
 		FindFirstObjectByType<Minimap>().Initialize(CurrentDungeon);
@@ -269,12 +301,13 @@ public class Game : SingletonMonoBehaviour<Game>
 		yield return null;
 
 		var floor = CurrentDungeon.Floor;
+        Encounter = new EncounterRuntime(this);
 		var startPosition = floor.Start.ToCell();
 		PlayerController.ControlledAlly.SetPosition(startPosition);
 
 		foreach (var ally in Allies)
 		{
-			if (ally != null)
+			if (ally != null && ally != PlayerController.ControlledAlly)
 			{
 				var dropPosition = CurrentDungeon.GetPositionWith(startPosition,
 					node =>
@@ -292,17 +325,19 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		if (!throneFloor)
 		{
+            int difficulty = RunPlan?.Floor(PlayerController.Floor).CombatDifficulty ?? PlayerController.Floor;
+            Encounter.Populate(difficulty);
             var reservedSpawns = new HashSet<Vector3Int>(floor.Enemies.Select(p => p.Cell.ToCell())
                 .Concat(floor.Scenery.Select(p => p.Cell.ToCell())).Concat(floor.Locks.Select(p => p.Door.ToCell())));
             reservedSpawns.Add(floor.Stairs.ToCell());
 			foreach (var p in floor.Enemies)
 			{
-                EnemyManager.SpawnPack(EnemyManager.GetEnemyPrefab(PlayerController.Floor, p.Roll), p.Cell.ToCell(), reservedSpawns);
+				EnemyManager.SpawnPack(EnemyManager.GetEnemyPrefab(difficulty, p.Roll), p.Cell.ToCell(), reservedSpawns);
 			}
 
-			foreach (var p in floor.Gold) CurrentDungeon.SetTreasure(p.Cell.ToCell());
+			foreach (var p in floor.Gold) CurrentDungeon.SetTreasure(p.Cell.ToCell(), p.Roll);
 
-			foreach (var p in floor.Items) CurrentDungeon.SetDroppedItem(p.Cell.ToCell(), Common.Instance.ItemManager.GetRandomDrop(p.Roll, PlayerController.Floor));
+			foreach (var p in floor.Items) CurrentDungeon.SetDroppedItem(p.Cell.ToCell(), Common.Instance.ItemManager.GetRandomDrop(p.Roll, difficulty));
 
 			foreach (var p in floor.Traps) CurrentDungeon.SetTrap(p.Cell.ToCell(), p.Roll);
 
@@ -314,7 +349,7 @@ public class Game : SingletonMonoBehaviour<Game>
                     DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
             CurrentDungeon.DoorsChanged();
 			SpawnGatheringPoints(startPosition);
-            if (PlayerController.Floor <= 3) EarlyDungeonStatue.Place(CurrentDungeon, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
+            if (PlayerController.Floor <= 3 && RunPlan?.IsEncounter != true) EarlyDungeonStatue.Place(CurrentDungeon, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
 		}
 
 		if (demoLoadout != null && PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor)
@@ -322,7 +357,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 
-		ClassPassives.OnFloorStart(this);
+        if (!reset) ClassPassives.OnFloorStart(this);
+        else entrySnapshot.Restore(this);
 		PlayerController.ControlledAlly.currentInteractable = null;
         foreach (var actor in AllCharacters.Where(c=>c!=null && c.Vitals.HP>0))
         {
@@ -333,6 +369,8 @@ public class Game : SingletonMonoBehaviour<Game>
 		Game.Instance.PlayerController.StartTurn();
 		UpdateMiniMap();
 		IsReady = true;
+        resettingFloor = false;
+        if (!reset && Encounter.AllowsReset) entrySnapshot = new FloorEntrySnapshot(this);
         ScenePresentation.RegisterWorld(CurrentDungeon.transform);
         ScenePresentation.RegisterWorld(DungeonGenerator.transform);
 	}

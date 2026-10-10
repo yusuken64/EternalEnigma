@@ -54071,8 +54071,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 982955767}
+  - component: {fileID: 982955768}
   m_Layer: 0
-  m_Name: Main menu dialogs
+  m_Name: CampaignStartMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54096,6 +54097,22 @@ Transform:
   - {fileID: 2041058199}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &982955768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982955766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94356d7974b6d89438d5355bbfe159da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::CampaignStartMenu
+  CampaignSlotViews:
+  - {fileID: 1957450760}
+  - {fileID: 1839512184}
+  - {fileID: 1561151165}
 --- !u!1 &984209169
 GameObject:
   m_ObjectHideFlags: 0
@@ -83684,6 +83701,7 @@ MonoBehaviour:
   - {fileID: 794761349}
   - {fileID: 102200799}
   - {fileID: 675005119}
+  SelectToActivateButton: {fileID: 0}
 --- !u!1 &1562443297
 GameObject:
   m_ObjectHideFlags: 0
@@ -88052,6 +88070,7 @@ MonoBehaviour:
   StartButton: {fileID: 437284388}
   ContinueButton: {fileID: 6967896922278924393}
   TestDungeonButton: {fileID: 1202014874}
+  CampaignStartMenu: {fileID: 982955768}
   NavigationHandler: {fileID: 1656518435}
   DebugAllies:
   - AllyId: 
@@ -97849,7 +97868,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1785576744
 RectTransform:
   m_ObjectHideFlags: 0
@@ -100830,6 +100849,7 @@ MonoBehaviour:
   - {fileID: 1583154154}
   - {fileID: 1160693394}
   - {fileID: 1115577119}
+  SelectToActivateButton: {fileID: 0}
 --- !u!1 &1839863276
 GameObject:
   m_ObjectHideFlags: 0
@@ -106800,6 +106820,7 @@ MonoBehaviour:
   - {fileID: 28640907}
   - {fileID: 1127214863}
   - {fileID: 2026226731}
+  SelectToActivateButton: {fileID: 0}
 --- !u!1 &1957524022
 GameObject:
   m_ObjectHideFlags: 0

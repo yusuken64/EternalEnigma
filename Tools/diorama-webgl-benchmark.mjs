@@ -33,6 +33,7 @@ await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 let browser;
 const logs = [];
 const captures = [];
+const pageErrors = [];
 try {
     browser = await chromium.launch({ headless: true, args: ['--use-angle=d3d11','--enable-webgl','--disable-background-timer-throttling','--disable-renderer-backgrounding'] });
     const page = await browser.newPage({ viewport:{width:1280,height:800} });
@@ -42,14 +43,17 @@ try {
         const line = event.text(); logs.push(event.type() + ': ' + line);
         const stage = line.match(/DIORAMA_PLAYER_STAGE (Town|Dungeon|Overworld)/)?.[1];
         if (integrated && stage) captures.push(page.screenshot({path:join(evidence,'WebGL_'+stage+'.png')}));
+        const fitStage = line.match(/DIORAMA_BENCHMARK_STAGE (.+)/)?.[1];
+        if (!integrated && fitStage) captures.push(page.screenshot({path:join(evidence,'WebGL_'+fitStage.replace(/[^a-z0-9]/gi,'_')+'.png')}));
         const marker = integrated ? 'DIORAMA_PLAYER_JSON ' : 'DIORAMA_BENCHMARK_JSON ';
         const offset = line.indexOf(marker);
         if (offset >= 0) {
             try { finish(JSON.parse(line.slice(offset + marker.length))); } catch {}
         }
     });
-    page.on('pageerror', error => logs.push('PAGE ERROR: '+error));
+    page.on('pageerror', error => {pageErrors.push(String(error));logs.push('PAGE ERROR: '+error);});
     await page.goto(`http://127.0.0.1:${server.address().port}` + (integrated ? '/?dioramaValidation=1' : '/'), {waitUntil:'domcontentloaded'});
+    await page.locator('#unity-canvas').click();
     const interval = setInterval(() => console.log('WebGL benchmark running; console lines: '+logs.length), 30000);
     let timer;
     const report = await Promise.race([completed, new Promise((_,reject) => { timer=setTimeout(()=>reject(new Error('WebGL benchmark timed out')),600000); })]).finally(()=>{clearInterval(interval);clearTimeout(timer);});
@@ -59,6 +63,8 @@ try {
     console.log(JSON.stringify(report,null,2));
     if (integrated && (report.errors.length || report.samples.length !== 3 || report.samples.some(s => s.errorMaterials)))
         throw new Error('Integrated player validation failed; see the saved report.');
+    if (pageErrors.length || !integrated && ((report.errors?.length ?? 0) || report.samples.length !== 13 || report.samples.some(s=>s.errorMaterials)))
+        throw new Error('WebGL runtime validation failed; see the saved report and browser console.');
 } finally {
     writeFileSync(join(evidence,'WebGLConsole.txt'),logs.join('\n'));
     if(browser)await browser.close();

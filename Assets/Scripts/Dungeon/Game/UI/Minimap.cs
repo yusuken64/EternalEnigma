@@ -150,7 +150,7 @@ public class Minimap : MonoBehaviour
             {
                 if (trap.VisualObject.activeSelf)
                 {
-                    if (visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)))
+                    if (reveal?.TrapsRevealed == true || visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)))
                     {
                         PaintCell(interactable.Position.x, interactable.Position.y,
                     interactable is Stairs ? new Color(.3f,.9f,1f) :
@@ -162,7 +162,8 @@ public class Minimap : MonoBehaviour
             }
             else if (visibleTiles.Contains(new Vector3Int(interactable.Position.x, interactable.Position.y, 0)) ||
                 (interactable is DungeonProp prop && prop.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard && dungeonMap[prop.Position.x,prop.Position.y].visibility != MinimapTileVisibility.Unseen) ||
-                (reveal != null && ((reveal.LayoutRevealed && interactable is Stairs) || (reveal.TreasureRevealed && interactable is Gold))))
+                (reveal != null && ((reveal.LayoutRevealed && interactable is Stairs) || (reveal.TreasureRevealed &&
+                    (interactable is Gold or DroppedItem || interactable is DungeonProp container && container.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Container)))))
             {
                 PaintCell(interactable.Position.x, interactable.Position.y,
                     interactable is Stairs ? new Color(.3f,.9f,1f) :

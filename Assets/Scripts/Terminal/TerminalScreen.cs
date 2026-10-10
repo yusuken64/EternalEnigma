@@ -55,10 +55,10 @@ public sealed class TerminalScreen : MonoBehaviour
         return true;
     }
 
-    public bool Resize()
+    public bool Resize() => Resize(Screen.width, Screen.height);
+    internal bool Resize(int width, int height)
     {
         if (text == null) return false;
-        int width = Screen.width, height = Screen.height;
         if (width == lastWidth && height == lastHeight) return false;
         lastWidth = width; lastHeight = height;
         // Text area uses overlay canvas pixels and a fixed advance, including the fallback SDF.

@@ -12,7 +12,13 @@ public sealed class CampaignSession
     private readonly HashSet<string> resolved = new(StringComparer.Ordinal);
     private readonly HashSet<string> towns = new(StringComparer.Ordinal);
     private readonly HashSet<string> completed = new();
-    public bool CompleteLocation() => (locations[LocationId].Kind == LocationKind.StoryDungeon || locations[LocationId].Kind == LocationKind.RepeatableDungeon || locations[LocationId].Kind == LocationKind.FinalDungeon) && completed.Add(LocationId);
+    public bool CompleteLocation()
+    {
+        var location = locations[LocationId];
+        if (!location.IsDungeon || location.Encounter?.CanEnter(HeldCapabilities, completed) == false || !completed.Add(LocationId)) return false;
+        foreach (var route in campaign.Routes.Where(r => r.CompletionLocationId == LocationId)) resolved.Add(route.Id);
+        return true;
+    }
     private string[] active = Array.Empty<string>();
     public string LocationId { get; private set; }
     public CapabilitySet PermanentCapabilities { get; private set; }
@@ -63,6 +69,7 @@ public sealed class CampaignSession
         var source = campaign.Sources.FirstOrDefault(s => s.Id == sourceId);
         if (source == null || source.LocationId != LocationId || claimed.Contains(sourceId) ||
             !source.Prerequisites.IsSatisfiedBy(HeldCapabilities)) return false;
+        if (locations[LocationId].Encounter != null && !completed.Contains(LocationId)) return false;
         if (source.Capability.Kind() == CapabilityKind.Personal)
         {
             if (source.CompanionId == null || !campaign.Companions.Any(c => c.Id == source.CompanionId && c.Capability == source.Capability)) return false;

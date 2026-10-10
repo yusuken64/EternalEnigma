@@ -77,5 +77,9 @@ public static class HarnessPlayerBuild
             lines.Add(prefix+","+entries.Sum(c=>(long)c.packedSize)+","+entries.Select(c=>c.sourceAssetPath).Distinct().Count());
         }
         File.WriteAllLines(folder+"/"+platform+"ArtInclusion.csv",lines);
+        var effects=new System.Collections.Generic.HashSet<string>(AssetDatabase.GetDependencies("Assets/Resources/CombatEffects/Catalog.asset",true));
+        var effectAssets=content.Where(c=>effects.Contains(c.sourceAssetPath)).GroupBy(c=>c.sourceAssetPath)
+            .OrderBy(g=>g.Key,StringComparer.Ordinal).Select(g=>"\""+g.Key.Replace("\"","\"\"")+"\","+g.Sum(c=>(long)c.packedSize));
+        File.WriteAllLines(folder+"/"+platform+"VfxInclusion.csv",new[]{"sourceAsset,packedBytes"}.Concat(effectAssets));
     }
 }

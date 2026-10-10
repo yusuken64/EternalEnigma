@@ -268,7 +268,7 @@ public sealed class AutoplayRunner : MonoBehaviour
         Capture(); WriteReport();
     }
 
-    private static bool IsDungeon(CampaignLocation location) => location.Kind == LocationKind.StoryDungeon ||
+    private static bool IsDungeon(CampaignLocation location) => location.Encounter != null || location.Kind == LocationKind.StoryDungeon ||
         location.Kind == LocationKind.RepeatableDungeon || location.Kind == LocationKind.FinalDungeon;
 
     private void TownTick(Town town, CampaignContext context)
@@ -400,7 +400,7 @@ public sealed class AutoplayRunner : MonoBehaviour
         // reopen its modal forever and prevent routing to the key's source.
         if (TryGateActions(world) || world.OpenShortcut()) { worldSteps.Clear(); Log("Open gate or shortcut"); return; }
         var here = c.Location;
-        bool Objective(CampaignLocation l) => IsDungeon(l) ? !c.Completed.Contains(l.Id) :
+        bool Objective(CampaignLocation l) => IsDungeon(l) ? !c.Completed.Contains(l.Id) && (l.Encounter == null || l.Encounter.CanEnter(c.Held,c.Completed)) :
             (l.Kind == LocationKind.Town && (!visited.Contains(l.Id) || c.Campaign.Locations.Any(d => d.ParentTownId == l.Id && !c.Completed.Contains(d.Id)))) ||
             c.Campaign.Sources.Any(s => s.LocationId == l.Id && !c.Claimed.Contains(s.Id) && s.Prerequisites.IsSatisfiedBy(c.Held)) ||
             c.Campaign.Routes.Any(r => r.KeyLocationId == l.Id && !c.Gates.HasKey(r) && r.KeyCondition == KeyAcquisition.AtLocation) ||
@@ -524,6 +524,11 @@ public sealed class AutoplayRunner : MonoBehaviour
             return;
         }
         var skills = new AllySkillPolicy(game, ally, 0) { IncludeControlledAlly = true };
+        var puzzleAction = game.Encounter?.AutoplayPuzzleAction(ally);
+        if (puzzleAction != null) { Act(ally,puzzleAction,"Solve puzzle through "+puzzleAction.GetType().Name); return; }
+        var stash = dungeon.Interactables.OfType<EncounterStash>().FirstOrDefault(s=>s.Position==ally.TilemapPosition &&
+            (s.IsRecovery ? game.Prison?.Recovered != true || game.Prison.Overflow.Count>0 && player.Inventory.CanAdd() : !s.Opened));
+        if (stash != null) { Act(ally,new InteractAction(stash),"Recover encounter supplies"); return; }
         if (skills.ShouldRun())
         {
             var cast = skills.GetActions().FirstOrDefault();
@@ -533,7 +538,7 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (attack.ShouldRun()) { var action = attack.GetActions().FirstOrDefault(a => a.IsValid(ally)); if (action != null) { Act(ally,action,"Attack"); return; } }
         var stairs = dungeon.Interactables.OfType<Stairs>().FirstOrDefault();
         if (stairs == null) { Finish("Unsupported","Ready dungeon has no stairs objective."); return; }
-        if (stairs != null && stairs.Position == ally.TilemapPosition)
+        if (stairs != null && stairs.Position == ally.TilemapPosition && game.CanExitFloor)
         {
             // The regular prompt normally handles this. Re-enter to trigger it if a status effect interrupted arrival.
             ally.currentInteractable = stairs; ally.MovedThisTurn = true; player.StartTurn(); return;
@@ -549,7 +554,8 @@ public sealed class AutoplayRunner : MonoBehaviour
             return grid;
         }
         Vector3Int? RouteTo(Vector3Int target) => dungeonRoute.Next(ally.TilemapPosition,target,DungeonGrid,CanStep);
-        Vector3Int? next = RouteTo(stairs.Position);
+        var goal = game.Encounter?.AutoplayDestination(ally) ?? stairs.Position;
+        Vector3Int? next = RouteTo(goal);
         if (next.HasValue) { approachRoute.Clear(); combatObjective = null; }
         else if (combatObjective.HasValue && combatObjective.Value != ally.TilemapPosition && CanOccupy(combatObjective.Value))
             next = approachRoute.Next(ally.TilemapPosition,combatObjective.Value,DungeonGrid,CanStep);

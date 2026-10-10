@@ -114,7 +114,7 @@ public sealed class OverworldGridTests
             var route = campaign.Routes.Single(r => r.Id == gate.RouteId);
             var cell = gate.Cells[0];
             Assert.False(grid.IsWalkable(cell, CapabilitySet.Empty));
-            Assert.Equal(route.ShortcutKind != ShortcutKind.FarSide && route.ShortcutKind != ShortcutKind.Keyed, grid.IsWalkable(cell, route.Requirement.Alternatives[0]));
+            Assert.Equal(route.CompletionLocationId == null && route.ShortcutKind != ShortcutKind.FarSide && route.ShortcutKind != ShortcutKind.Keyed, grid.IsWalkable(cell, route.Requirement.Alternatives[0]));
             Assert.Equal(route.Latches || route.ShortcutKind == ShortcutKind.FarSide || route.ShortcutKind == ShortcutKind.Keyed, grid.IsWalkable(cell, CapabilitySet.Empty, new HashSet<string> { gate.RouteId }));
         }
     }
@@ -165,7 +165,7 @@ public sealed class OverworldGridTests
     {
         var campaign = CampaignGenerator.Generate(seed);
         var grid = OverworldGridGenerator.Generate(campaign, new OverworldGridOptions(areaExpansionRadius: variation));
-        Assert.Equal(12, OverworldGrid.GenerationVersion);
+        Assert.Equal(13, OverworldGrid.GenerationVersion);
         Assert.Equal(CampaignFingerprint.Compute(campaign), grid.CampaignFingerprint);
         foreach (var a in grid.Locations.Where(p => campaign.Locations.Single(l => l.Id == p.Key).ParentTownId == null))
         foreach (var b in grid.Locations.Where(b => campaign.Locations.Single(l => l.Id == b.Key).ParentTownId == null && StringComparer.Ordinal.Compare(a.Key,b.Key)<0))

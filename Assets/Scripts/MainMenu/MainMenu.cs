@@ -13,8 +13,9 @@ public class MainMenu : MonoBehaviour
 	public GameObject StartButton;
 	public GameObject ContinueButton;
     public Button TestDungeonButton;
+	public CampaignStartMenu CampaignStartMenu;
 
-	public NavigationHandler NavigationHandler;
+    public NavigationHandler NavigationHandler;
 
 	private ProtagonistHeroPicker heroPicker;
     private readonly List<GameObject> suspendedEventSystems = new();
@@ -35,7 +36,8 @@ public class MainMenu : MonoBehaviour
         ContinueButton.gameObject.SetActive(true);
         IsReady = true;
         StartButton.GetComponent<Button>().Select();
-	}
+        CampaignStartMenu.gameObject.SetActive(false);
+    }
 
 	public void Continue_Clicked()
 	{
@@ -43,12 +45,13 @@ public class MainMenu : MonoBehaviour
         CampaignSlots.Show(this, false);
 	}
 
-
 	public void StartGame_Clicked()
 	{
         if (!IsReady) return;
-        CampaignSlots.Show(this, true);
+		CampaignStartMenu.gameObject.SetActive(true);
+		CampaignStartMenu.Setup();
     }
+
     public void ChooseHero()
     {
 		if (Common.Instance.Travel.IsTransitioning || heroPicker != null) return;

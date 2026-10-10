@@ -105,6 +105,38 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator StatusKillsCreditTheLatestCasterWithoutChangingDamageResponses()
+        {
+            var poison = CreateStatusTemplate<DotStatusEffect>(20);
+            var burn = CreateStatusTemplate<BurnStatusEffect>(20);
+            var curse = CreateStatusTemplate<CurseStatusEffect>(20);
+            StatusEffect[] templates = { poison, burn, curse };
+            Character[] victims = { first, second, distant };
+            for(int i=0;i<templates.Length;i++)
+            {
+                var victim=victims[i];
+                new ApplyStatusEffectAction(victim,templates[i],caster).ExecuteImmediate(caster);
+                new ApplyStatusEffectAction(victim,templates[i],friend).ExecuteImmediate(friend);
+                var applied=victim.StatusEffects.Single(s=>s.StackKey==templates[i].StackKey);
+                Assert.That(applied.DamageSource,Is.SameAs(friend));
+                Assert.That(templates[i].DamageSource,Is.Null,"Runtime credit must not leak into the template.");
+                victim.BaseStats.FireResistance=0;victim.InvalidateCachedStats();victim.Vitals.HP=1;
+                TakeDamageAction tick;
+                if(applied is DotStatusEffect dot) {dot.TickDamage=5;tick=(TakeDamageAction)dot.GetTickEffects(victim).Single();}
+                else if(applied is BurnStatusEffect fire) {fire.TickDamage=5;tick=(TakeDamageAction)fire.GetTickEffects(victim).Single();}
+                else tick=(TakeDamageAction)applied.GetResponseTo(victim,new TakeDamageAction(victim,caster,10)).Single();
+                int originalCasterXp=caster.Vitals.Exp,recipientXp=friend.Vitals.Exp,victimXp=victim.Vitals.Exp;
+                Assert.That(tick.Attacker,Is.SameAs(victim),"Damage interception keeps its existing owner semantics.");
+                var death=tick.ExecuteImmediate(victim).OfType<DeathAction>().Single();
+                foreach(var reward in death.ExecuteImmediate(victim).OfType<AddXPAction>())reward.ExecuteImmediate(victim);
+                Assert.That(friend.Vitals.Exp,Is.EqualTo(recipientXp+victim.FinalStats.EXPOnKill));
+                Assert.That(caster.Vitals.Exp,Is.EqualTo(originalCasterXp));
+                Assert.That(victim.Vitals.Exp,Is.EqualTo(victimXp));
+            }
+            yield return null;
+        }
+
+        [UnityTest]
         public IEnumerator FireDamageRespectsResistance()
         {
             first.BaseStats.FireResistance = 1;

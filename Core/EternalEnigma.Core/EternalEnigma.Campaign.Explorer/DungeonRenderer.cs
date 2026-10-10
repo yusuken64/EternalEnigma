@@ -4,7 +4,7 @@ namespace EternalEnigma.ConsoleExplorer;
 
 public static class DungeonRenderer
 {
-    public const string Legend = "@ you  < start  > stairs  e enemy  $ gold  i item  ^ hazard/trap  C container  X destructible  , carpet  I column  ! torch  # wall";
+    public const string Legend = "@ you  < start  > stairs  E required enemy  O boulder  o goal  + lit  - dark  T target/trap  R stash  e enemy  $ gold  i item  ^ trap  # wall | R reset puzzle";
 
     public static string[] Render(DungeonRun run, int width, int height)
     {
@@ -38,6 +38,14 @@ public static class DungeonRenderer
         if (p.Equals(run.Position)) return '@';
         if (p.Equals(dungeon.Stairs)) return '>';
         if (p.Equals(dungeon.Start)) return '<';
+        if (run.Puzzle.Boulders.Values.Contains(p)) return 'O';
+        if (run.Puzzle.Enemy?.Equals(p) == true && !run.Puzzle.Complete) return 'E';
+        if (dungeon.ObjectiveEnemies.Any(e => run.Objective.RemainingEnemyIds.Contains(e.Id) && !e.Invulnerable && Math.Abs(e.Position.X - p.X) <= e.Footprint / 2 && Math.Abs(e.Position.Y - p.Y) <= e.Footprint / 2)) return 'E';
+        if (dungeon.RecoveryStashes.Any(s => s.Position.Equals(p))) return 'R';
+        var puzzle = dungeon.PuzzleObjects.FirstOrDefault(o => o.Position.Equals(p) && o.Kind != PuzzleObjectKind.Boulder);
+        if (puzzle != null) return puzzle.Kind switch {
+            PuzzleObjectKind.Goal => 'o', PuzzleObjectKind.Light => run.Puzzle.Lights[puzzle.Id] ? '+' : '-',
+            PuzzleObjectKind.LightTarget => puzzle.TargetState ? '1' : '0', PuzzleObjectKind.BasicSupplies => 'i', _ => 'T' };
 
         if (dungeon.Enemies.Any(e => e.Cell.Equals(p))) return 'e';
         if (dungeon.Gold.Any(g => g.Cell.Equals(p))) return '$';

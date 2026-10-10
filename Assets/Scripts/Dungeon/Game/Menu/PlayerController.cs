@@ -200,11 +200,11 @@ public class PlayerController : MonoBehaviour
             {
                 holdTime = 0f;
                 var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
-                if (Game.Instance.CurrentDungeon.CanWalkTo(newMapPosition, newMapPosition + offset))
+                if (Game.Instance.CurrentDungeon.CanWalkTo(newMapPosition, newMapPosition + offset) || Game.Instance.Encounter?.CanPush(ControlledAlly,newMapPosition+offset) == true)
                 {
                     newMapPosition += offset;
 
-                    var destinationChar = Game.Instance.AllCharacters.FirstOrDefault(x => x.TilemapPosition == newMapPosition);
+                    var destinationChar = Game.Instance.CurrentDungeon.OverlapsAnyOtherCharacter(ControlledAlly,Character.ToBounds(newMapPosition));
 
                     if (destinationChar == null)
                     {
@@ -445,6 +445,7 @@ public class PlayerController : MonoBehaviour
     private void ShowStairPrompt(Stairs stairs)
     {
         StopHeldWalk();
+        if (!Game.Instance.CheckFloorExit()) return;
         if (!Game.Instance.CurrentDungeon.IsExitFloor)
         {
             MenuManager.Instance.ShowYesNoDialog(

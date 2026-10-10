@@ -24,6 +24,10 @@ public sealed class CampaignOverworld : MonoBehaviour
 {
     public TileWorldCreatorAsset Template;
     public EnvironmentKit CosmeticKit;
+    public OverworldStyleProfile StyleProfile;
+    public TileWorldCreatorAsset EffectiveTemplate => StyleProfile?.ResolveTemplate() ?? Template;
+    public EnvironmentKit EffectiveKit => StyleProfile?.ResolveKit() ?? CosmeticKit;
+    public string LastGenerationError { get; private set; }
     public int Seed = 42;
     [Range(16, 1024)] public int Width = 256;
     [Range(16, 1024)] public int Height = 256;
@@ -67,22 +71,23 @@ public sealed class CampaignOverworld : MonoBehaviour
         if (grid == null) throw new ArgumentNullException(nameof(grid));
         if (building) throw new InvalidOperationException("Wait for the current TWC build to finish before replacing the map.");
         var creator = Creator;
-        var bindings = LayerBindings.Count == 0 ? grid.Layers.Keys.OrderBy(n => n, StringComparer.Ordinal)
+        var template = EffectiveTemplate != null ? EffectiveTemplate : generatedAsset != null ? previousAsset : creator.twcAsset;
+        var styleLayers = StyleProfile?.ResolveLayers().ToDictionary(b=>Guid.Parse(b.BlueprintGuid));
+        var bindings = StyleProfile != null ? StyleProfile.Bindings(grid,template) : LayerBindings.Count == 0 ? grid.Layers.Keys.OrderBy(n => n, StringComparer.Ordinal)
             .Select(n => new CampaignLayerBinding(n, n)).ToList() : LayerBindings.ToList();
-        var groundTemplate = Template != null ? Template : generatedAsset != null ? previousAsset : creator.twcAsset;
+        var groundTemplate = template;
         if (groundTemplate != null)
         {
             foreach (var input in groundTemplate.mapBuildLayers.OfType<OverworldGroundLayer>().Where(l=>l.active).SelectMany(l=>l.Inputs))
-                if (!bindings.Any(b=>b.BlueprintLayer==input.BlueprintLayer))
+                if (!bindings.Any(b=>b.BlueprintLayer==input.BlueprintLayer || StyleProfile!=null && b.CoreLayer==input.CoreLayer))
                     bindings.Add(new CampaignLayerBinding(input.CoreLayer,input.BlueprintLayer));
-            if(groundTemplate.mapBuildLayers.OfType<OverworldTreeWallLayer>().Any(l=>l.active)&&!bindings.Any(b=>b.BlueprintLayer==OverworldLayers.Trees))
+            if(StyleProfile==null && groundTemplate.mapBuildLayers.OfType<OverworldTreeWallLayer>().Any(l=>l.active)&&!bindings.Any(b=>b.BlueprintLayer==OverworldLayers.Trees))
                 bindings.Add(new CampaignLayerBinding(OverworldLayers.Trees,OverworldLayers.Trees));
         }
         if (bindings.Any(b => b == null || !grid.Layers.ContainsKey(b.CoreLayer ?? "") || string.IsNullOrWhiteSpace(b.BlueprintLayer)) ||
             bindings.Select(b => b.BlueprintLayer).Distinct(StringComparer.Ordinal).Count() != bindings.Count)
             throw new ArgumentException("Bindings require known core layers and unique, nonempty TWC layer names.");
 
-        var template = Template != null ? Template : generatedAsset != null ? previousAsset : creator.twcAsset;
         if (template != null && template.mapBlueprintLayers.Select(l => l.layerName).Distinct(StringComparer.Ordinal).Count() != template.mapBlueprintLayers.Count)
             throw new ArgumentException("The TWC template contains duplicate blueprint layer names.");
         ReleaseAsset();
@@ -96,20 +101,41 @@ public sealed class CampaignOverworld : MonoBehaviour
         generatedAsset.useRandomSeed = true; generatedAsset.randomSeed = grid.CampaignSeed;
         generatedAsset.useNewRandomSeedForEveryLayer = false;
         generatedAsset.mergePreviewTextures = false;
+        if(StyleProfile?.ResolveGround() is { } groundStyle)
+            foreach(var output in generatedAsset.mapBuildLayers.OfType<OverworldGroundLayer>())output.Style=groundStyle;
+        if(StyleProfile!=null)
+        {
+            foreach(var output in generatedAsset.mapBuildLayers.OfType<OverworldGroundLayer>())
+                output.Inputs=output.Inputs.Select(input=>new CampaignLayerBinding(input.CoreLayer,
+                    (bindings.FirstOrDefault(b=>b.CoreLayer==input.CoreLayer && b.BlueprintLayer==input.BlueprintLayer)??
+                    bindings.FirstOrDefault(b=>b.CoreLayer==input.CoreLayer))?.BlueprintLayer??input.BlueprintLayer)).ToArray();
+            foreach(var output in generatedAsset.mapBuildLayers.OfType<OverworldCosmeticLayer>())output.Kit=EffectiveKit??output.Kit;
+            foreach(var output in generatedAsset.mapBuildLayers.OfType<OverworldTreeWallLayer>())output.Kit=EffectiveKit??output.Kit;
+        }
         // Preserve template GUIDs so authored build layers still point to the same blueprint slots.
         foreach (var binding in bindings)
             if (!generatedAsset.mapBlueprintLayers.Any(l => l.layerName == binding.BlueprintLayer))
                 generatedAsset.mapBlueprintLayers.Add(new TileWorldCreatorAsset.BlueprintLayerData(binding.BlueprintLayer, true));
         foreach (var layer in generatedAsset.mapBlueprintLayers)
         {
+            if(StyleProfile!=null && !layer.active)continue;
+            var styleBinding=styleLayers!=null && styleLayers.TryGetValue(layer.guid,out var specification)?specification:null;
             // Keep authored Add/Shrink stacks for the nested cliff tiers, as in TWC's layered samples.
-            if (SmartEnvironmentMasks.IsDerived(layer.layerName)) continue;
+            if (styleBinding?.Role==OverworldLayerRole.DerivedTerrain ||
+                styleBinding==null && SmartEnvironmentMasks.IsDerived(layer.layerName)) continue;
+            if(styleBinding?.Role==OverworldLayerRole.Cosmetic && layer.stack.Count>0)
+            {
+                var protect=OverworldCosmetics.Protected(grid);
+                layer.stack=layer.stack.SelectMany(step=>new[] {step,new TileWorldCreatorAsset.BlueprintLayerData.ActionStack(
+                    "Reserve approaches",new ProtectOverworldApproaches(protect))}).ToList();
+                continue;
+            }
             var binding = bindings.FirstOrDefault(b => b.BlueprintLayer == layer.layerName);
             var mask = binding == null ? new bool[grid.Width, grid.Height] : binding.CoreLayer == OverworldLayers.Walkable
                 ? grid.CreateWalkableLayer(held, resolvedLocks) : grid.Layers[binding.CoreLayer].ToArray();
-            if (layer.layerName == OverworldCosmetics.Layer && CosmeticKit != null)
-                foreach (var prop in OverworldCosmetics.Plan(grid, CosmeticKit,generatedAsset.mapBuildLayers.OfType<OverworldCosmeticLayer>().FirstOrDefault()?.TreeModels)) mask[prop.X, prop.Y] = true;
-            mask = SmartEnvironmentMasks.World(grid, layer.layerName) ?? mask;
+            if ((styleBinding?.Role==OverworldLayerRole.PlannedCosmetic || StyleProfile==null && layer.layerName == OverworldCosmetics.Layer) && EffectiveKit != null)
+                foreach (var prop in OverworldCosmetics.Plan(grid, EffectiveKit,generatedAsset.mapBuildLayers.OfType<OverworldCosmeticLayer>().FirstOrDefault()?.TreeModels)) mask[prop.X, prop.Y] = true;
+            mask = SmartEnvironmentMasks.World(grid, StyleProfile!=null?styleBinding?.Projection:layer.layerName) ?? mask;
             layer.stack = new List<TileWorldCreatorAsset.BlueprintLayerData.ActionStack>
             { new("Campaign mask", new CampaignLayerAction(mask)) };
             layer.active = true;
@@ -120,16 +146,31 @@ public sealed class CampaignOverworld : MonoBehaviour
         creator.generatedBlueprintMaps.Clear();
         CurrentGrid = grid;
         var randomState = UnityEngine.Random.state;
+        LastGenerationError=null;
         try
         {
             // This produces both GUID and GUID_UNSUBD WorldMaps, as needed by tile and object build layers.
             creator.ExecuteAllBlueprintLayers();
             foreach (var layer in generatedAsset.mapBlueprintLayers)
             {
-                // Empty placement masks are valid (e.g. a seed without obstacle-form locks).
+                if(!layer.active)continue;
+                var output=creator.GetMapOutputFromBlueprintLayer(layer.guid);
+                if(output==null || output.GetLength(0)!=grid.Width || output.GetLength(1)!=grid.Height)
+                    throw new InvalidOperationException("Blueprint produced a missing or incorrectly sized mask: "+layer.layerName);
+                bool empty=!output.Cast<bool>().Any(v=>v);
+                if(empty && styleLayers!=null && styleLayers.TryGetValue(layer.guid,out var spec) && !spec.AllowEmpty)
+                    throw new InvalidOperationException("Required style layer produced an empty mask: "+layer.layerName);
+                // TWC uses these flags solely to flag empty intermediate masks. Exceptions and
+                // invalid outputs above are generation errors; intentional empty masks are valid.
                 layer.mapResultFailed = false;
                 foreach (var action in layer.stack) if (action.action is TWC.Actions.TWCBlueprintAction blueprint) blueprint.resultFailed = false;
             }
+        }
+        catch(Exception error)
+        {
+            LastGenerationError=error.Message;
+            ReleaseAsset();
+            throw;
         }
         finally { UnityEngine.Random.state = randomState; }
     }

@@ -5,7 +5,13 @@ namespace EternalEnigma.Core.World;
 /// <summary>Immutable, validated result type of dungeon-floor generation.</summary>
 public sealed class DungeonFloor
 {
-    public const int GenerationVersion = 2;
+    public const int GenerationVersion = 3;
+    public DungeonObjectiveDefinition Objective { get; }
+    public IReadOnlyList<PuzzleObjectPlacement> PuzzleObjects { get; }
+    public IReadOnlyList<ObjectiveEnemyPlacement> ObjectiveEnemies { get; }
+    public IReadOnlyList<DungeonExitPlacement> Exits { get; }
+    public IReadOnlyList<RecoveryStashPlacement> RecoveryStashes { get; }
+    public IReadOnlyList<GridPoint> SolutionWitness { get; }
     public IReadOnlyList<DungeonScenery> Scenery { get; }
     public int Width { get; }
     public int Height { get; }
@@ -24,7 +30,9 @@ public sealed class DungeonFloor
 
     internal DungeonFloor(int seed, bool isThroneFloor, IDictionary<string, GridLayer> layers, IEnumerable<GridRect> rooms,
         GridPoint start, GridPoint stairs, IEnumerable<Placement> enemies, IEnumerable<Placement> gold,
-        IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null, IEnumerable<DungeonScenery>? scenery = null, IEnumerable<DungeonLock>? locks = null)
+        IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null, IEnumerable<DungeonScenery>? scenery = null, IEnumerable<DungeonLock>? locks = null,
+        DungeonObjectiveDefinition? objective = null, IEnumerable<PuzzleObjectPlacement>? puzzleObjects = null,
+        IEnumerable<ObjectiveEnemyPlacement>? objectiveEnemies = null, IEnumerable<RecoveryStashPlacement>? recoveryStashes = null, IEnumerable<GridPoint>? solutionWitness = null)
     {
         // Validate layers
         if (!layers.ContainsKey(DungeonLayers.Floor))
@@ -94,6 +102,12 @@ public sealed class DungeonFloor
         Traps = Array.AsReadOnly(traps.ToArray());
         GatheringSites = Array.AsReadOnly((gatheringSites ?? Enumerable.Empty<GatheringSite>()).ToArray());
         Locks = Array.AsReadOnly((locks ?? Enumerable.Empty<DungeonLock>()).ToArray());
+        Objective = objective ?? new DungeonObjectiveDefinition();
+        PuzzleObjects = Array.AsReadOnly((puzzleObjects ?? Array.Empty<PuzzleObjectPlacement>()).ToArray());
+        ObjectiveEnemies = Array.AsReadOnly((objectiveEnemies ?? Array.Empty<ObjectiveEnemyPlacement>()).ToArray());
+        RecoveryStashes = Array.AsReadOnly((recoveryStashes ?? Array.Empty<RecoveryStashPlacement>()).ToArray());
+        Exits = Array.AsReadOnly(new[] { new DungeonExitPlacement("exit", stairs) });
+        SolutionWitness = Array.AsReadOnly((solutionWitness ?? Array.Empty<GridPoint>()).ToArray());
     }
 
     /// <summary>Checks if a cell is within bounds.</summary>

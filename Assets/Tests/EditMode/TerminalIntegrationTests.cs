@@ -3,6 +3,8 @@ using TMPro;
 using UnityEngine;
 using EternalEnigma.Core.Terminal;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using EternalEnigma.Core.World;
 
 namespace EternalEnigma.Tests
 {
@@ -83,6 +85,96 @@ namespace EternalEnigma.Tests
                 Assert.That(TerminalMode.Requested, Is.True);
             }
             finally { Object.DestroyImmediate(parent); }
+        }
+
+        [Test] public void MenuAdapterRevalidatesRebuiltDisabledAndChangedRowsAndSubmitsOnlyOnce()
+        {
+            var root = new GameObject("Terminal menu test", typeof(RectTransform));
+            var events = new GameObject("Terminal event test", typeof(EventSystem));
+            int invoked = 0;
+            try
+            {
+                var row = new GameObject("Buy potion", typeof(RectTransform), typeof(Button));
+                row.transform.SetParent(root.transform, false);
+                var button = row.GetComponent<Button>();
+                button.onClick.AddListener(() => invoked++);
+                var session = new TerminalMenuSession(root.transform, () => true);
+                session.Select(button);
+                button.interactable = false;
+                Assert.That(session.Confirm(1), Is.False);
+                Assert.That(invoked, Is.Zero);
+                button.interactable = true;
+                row.name = "Buy a different item";
+                Assert.That(session.Confirm(2), Is.False, "Changed row must be read before confirming it.");
+                Assert.That(session.Confirm(2), Is.False, "A rejected press cannot be replayed in the same frame.");
+                Assert.That(session.Confirm(3), Is.True);
+                Assert.That(session.Confirm(3), Is.False);
+                Assert.That(invoked, Is.EqualTo(1));
+                Object.DestroyImmediate(row);
+                var replacement = new GameObject("Replacement", typeof(RectTransform), typeof(Button));
+                replacement.transform.SetParent(root.transform, false);
+                replacement.GetComponent<Button>().onClick.AddListener(() => invoked++);
+                Assert.That(session.Confirm(4), Is.False, "A rebuilt row cannot inherit a stale confirm.");
+                Assert.That(invoked, Is.EqualTo(1));
+            }
+            finally { Object.DestroyImmediate(root); Object.DestroyImmediate(events); }
+        }
+
+        [Test] public void MenuAdapterCannotInvokeAControlBehindAnotherModalOrAfterClose()
+        {
+            var root = new GameObject("Terminal owner test", typeof(RectTransform));
+            var events = new GameObject("Terminal event test", typeof(EventSystem));
+            bool owns = true;
+            int invoked = 0;
+            try
+            {
+                var row = new GameObject("Rest", typeof(RectTransform), typeof(Button));
+                row.transform.SetParent(root.transform, false);
+                row.GetComponent<Button>().onClick.AddListener(() => invoked++);
+                var session = new TerminalMenuSession(root.transform, () => owns);
+                owns = false;
+                Assert.That(session.Confirm(10), Is.False);
+                owns = true;
+                root.SetActive(false);
+                Assert.That(session.Confirm(11), Is.False);
+                Assert.That(invoked, Is.Zero);
+            }
+            finally { Object.DestroyImmediate(root); Object.DestroyImmediate(events); }
+        }
+
+        [Test] public void TerminalFontAndFramesStayAlignedAcrossDesktopAndSmallResizes()
+        {
+            var root = new GameObject("Terminal resize test");
+            try
+            {
+                var screen = root.AddComponent<TerminalScreen>();
+                Assert.That(screen.Initialize(), Is.True);
+                var font = screen.FontAsset;
+                float advance = font.characterLookupTable['M'].glyph.metrics.horizontalAdvance;
+                foreach (char character in "i W@#.")
+                    Assert.That(font.characterLookupTable[character].glyph.metrics.horizontalAdvance, Is.EqualTo(advance).Within(.01f),
+                        "The bundled terminal font must give every glyph the same cell width.");
+                var renderer = new TownTerminalRenderer();
+                var snapshot = new TownTerminalSnapshot(12, 8, new GridPoint(6, 4), "Town <literal>",
+                    _ => new TerminalCell('.', TerminalPalette.Dim),
+                    new[] { new TerminalActor("hero", new GridPoint(6, 4), TerminalActorKind.Player) },
+                    target: new TerminalTargetSnapshot(new GridPoint(6, 4), "Long target label wraps inside the terminal viewport"));
+                foreach (var size in new[] { new Vector2Int(1280, 720), new Vector2Int(1920, 1080), new Vector2Int(480, 320), new Vector2Int(1280, 720) })
+                {
+                    screen.Resize(size.x, size.y);
+                    Assert.That(screen.Resize(size.x, size.y), Is.False, "Repeated size needs no new grid.");
+                    renderer.Render(snapshot, screen.Columns, screen.Rows);
+                    var rows = renderer.Frame.PlainText.Split('\n');
+                    Assert.That(rows.Length, Is.EqualTo(screen.Rows));
+                    foreach (string row in rows) Assert.That(row.Length, Is.EqualTo(screen.Columns));
+                    Assert.That(renderer.Frame[screen.Columns - 1, screen.Rows - 1].Glyph, Is.EqualTo('+'));
+                    screen.SetText(renderer.Frame.RichText);
+                    var text = root.GetComponentInChildren<TextMeshProUGUI>();
+                    text.ForceMeshUpdate(true, true);
+                    Assert.That(text.GetParsedText(), Does.Contain("<literal>"));
+                }
+            }
+            finally { Object.DestroyImmediate(root); }
         }
     }
 }

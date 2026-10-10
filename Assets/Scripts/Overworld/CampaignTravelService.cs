@@ -73,8 +73,8 @@ public sealed class CampaignTravelService
     }
     private void StartDungeon(CampaignLocation location, DungeonEncounterVisualSettings visuals)
     {
-        var floors = CampaignContext.Floors(location.Tier);
-        common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = floors.Start, EndFloor = floors.End };
+        var floors = Context.RunPlan(location.Id);
+        common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = floors.StartFloor, EndFloor = floors.EndFloor };
         common.GameSaveData.DungeonSaveData.VisualSelection = DungeonVisualSelection.Resolve(Context, visuals);
         var run = common.GameSaveData.DungeonSaveData;
         run.UseBiomeLayout = !EternalEnigma.Core.Generation.DungeonLayoutProfile.IsStarter(location.Id);
@@ -93,6 +93,9 @@ public sealed class CampaignTravelService
     public bool FinishDungeon(bool victory, PlayerController player, bool travel = true, bool keepLoot = false)
     {
         if (Context == null || Context.IsSandbox || transitioning || Context.State.PendingDungeon.Length == 0) return false;
+        if (victory && Game.Instance?.CurrentDungeon != null &&
+            (!Game.Instance.CheckFloorExit() || player.Floor < common.GameSaveData.DungeonSaveData.EndFloor)) return false;
+        if (!victory) Game.Instance?.Prison?.Recover(Game.Instance);
         DungeonReturnService.Commit(common.GameSaveData, TownSceneLoader.ResolveSaved(), victory,
             player.Gold, player.Inventory.InventoryItems, PartyRules.PartyMembers(Game.Instance), keepLoot);
         var previousKeys = Context.Keys.ToArray();
@@ -107,7 +110,8 @@ public sealed class CampaignTravelService
         if (firstClear != null)
         {
             var ability = DungeonClearAbilities.ForDungeon(firstClear);
-            capabilities = capabilities.Append($"<b>{ability.SkillName}</b>\n{ability.Description}").ToArray();
+            if (ability != null) capabilities = capabilities.Append($"<b>{ability.SkillName}</b>\n{ability.Description}").ToArray();
+            if (firstClear == "repeatable-0") capabilities = capabilities.Append("<b>Reset Floor</b>\nPermanently restore puzzle floors to their entry state at no SP cost.").ToArray();
         }
         CampaignParty.ClearLiveParty(common);
         CampaignParty.Capture(common);

@@ -234,7 +234,10 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         hint.color = Ink;
         hint.alignment = TextAlignmentOptions.Center;
         hint.raycastTarget = false;
-        hint.text = "UP/DOWN: SELECT    ENTER: CONFIRM    F11: 3D VIEW";
+        hint.text = InputPrompts.MenuHint;
+        hint.enableAutoSizing = true;
+        hint.fontSizeMin = 12;
+        hint.fontSizeMax = 18;
         hintObject.SetActive(false);
     }
 
@@ -311,6 +314,7 @@ public sealed class TerminalMainMenuView : MonoBehaviour
     private void RefreshSelection()
     {
         if (options == null) return;
+        if (hint != null) hint.text = InputPrompts.MenuHint;
         var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
         foreach (var option in options)
         {

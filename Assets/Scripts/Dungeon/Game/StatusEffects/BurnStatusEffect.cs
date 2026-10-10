@@ -31,6 +31,6 @@ public class BurnStatusEffect : StatusEffect
 
 	internal override List<GameAction> GetTickEffects(Character character)
 	{
-		return new() { new TakeDamageAction(character, character, TickDamage, false, false, DamageElement.Fire) };
+		return new() { new TakeDamageAction(character, character, TickDamage, false, false, DamageElement.Fire) { ExperienceRecipient = DamageSource, AwardExperience = DamageSource != null } };
 	}
 }

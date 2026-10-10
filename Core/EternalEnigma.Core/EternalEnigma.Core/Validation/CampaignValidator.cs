@@ -324,6 +324,25 @@ public static class CampaignValidator
             var keyNames = campaign.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed).Select(r => r.KeyName ?? "").ToArray();
             Check(keyNames.Distinct(StringComparer.Ordinal).Count() == keyNames.Length, "lock.keyNames: Key names must be distinct.");
         }
+        if (campaign.GeneratorVersion >= 11)
+        {
+            foreach (EncounterKind kind in Enum.GetValues(typeof(EncounterKind)))
+                Check(campaign.Locations.Any(l => l.Encounter?.Kind == kind), $"encounter.coverage: Missing {kind}.");
+            foreach (var location in campaign.Locations.Where(l => l.Encounter != null))
+            {
+                Check(ActiveRequirement(location.Encounter!.EntryRequirement), $"encounter.requirement: {location.Id} requires an inactive capability.");
+                Check(location.Services.Count == 0 && location.ParentTownId == null, $"encounter.location: {location.Id} must be an external location without town services.");
+            }
+            foreach (var route in campaign.Routes.Where(r => r.KeyId != null))
+                Check(route.KeyCondition == KeyAcquisition.DungeonCompletion && locations[route.KeyLocationId!].IsDungeon,
+                    $"encounter.key: {route.Id} must award its key after dungeon completion.");
+            foreach (var bridge in campaign.Locations.Where(l => l.Encounter?.Kind == EncounterKind.Bridge))
+            {
+                var route = campaign.Routes.FirstOrDefault(r => r.Id == bridge.Encounter!.BridgeRouteId);
+                Check(route != null && route.IsProgressionBoundary && route.CompletionLocationId == bridge.Id && route.To == bridge.Encounter!.ReturnLocationId &&
+                    route.Requirement.ToString() == bridge.Encounter.EntryRequirement.ToString(), "encounter.bridge: Crossing must preserve its capability requirement and require completion.");
+            }
+        }
         return new CampaignValidationResult(errors, guaranteed);
     }
 }

@@ -2,6 +2,11 @@ namespace EternalEnigma.Core.Generation;
 
 public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
 {
+    public EternalEnigma.Core.Progression.EncounterKind? Encounter { get; }
+    public EternalEnigma.Core.World.DungeonObjectiveDefinition Objective { get; }
+    public int EncounterFloor { get; }
+    public bool FinalEncounterFloor { get; }
+    public string? BossFamily { get; }
     public int LayoutVersion { get; }
     public EternalEnigma.Core.World.OverworldBiome Biome { get; }
     public int Tier { get; }
@@ -17,7 +22,8 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
     public int GatheringCount { get; }
 
     public DungeonFloorOptions(int seed, int width = 32, int height = 32, bool isThroneFloor = false,
-        int enemyCount = 10, int goldCount = 5, int itemCount = 5, int trapCount = 5, int gatheringCount = 3, int layoutVersion = 0, EternalEnigma.Core.World.OverworldBiome biome = EternalEnigma.Core.World.OverworldBiome.Grassland, int tier = 0, DungeonFloorRole role = DungeonFloorRole.Regular) // == GatheringPlacement.DefaultCount
+        int enemyCount = 10, int goldCount = 5, int itemCount = 5, int trapCount = 5, int gatheringCount = 3, int layoutVersion = 0, EternalEnigma.Core.World.OverworldBiome biome = EternalEnigma.Core.World.OverworldBiome.Grassland, int tier = 0, DungeonFloorRole role = DungeonFloorRole.Regular,
+        EternalEnigma.Core.Progression.EncounterKind? encounter = null, EternalEnigma.Core.World.DungeonObjectiveDefinition? objective = null, int encounterFloor = 1, bool finalEncounterFloor = true, string? bossFamily = null) // == GatheringPlacement.DefaultCount
     {
         if (width < 12 || width > 128)
             throw new ArgumentOutOfRangeException(nameof(width), "Width must be between 12 and 128.");
@@ -56,12 +62,16 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
         ItemCount = itemCount;
         TrapCount = trapCount;
         GatheringCount = gatheringCount;
+        Encounter = encounter; Objective = objective ?? new EternalEnigma.Core.World.DungeonObjectiveDefinition();
+        EncounterFloor = encounterFloor; FinalEncounterFloor = finalEncounterFloor;
+        BossFamily = bossFamily;
     }
 
     public static DungeonFloorOptions Throne(int seed) => new(seed, 12, 12, true, 0, 0, 0, 0, 0);
 
     public bool Equals(DungeonFloorOptions? other) =>
         other != null &&
+        Encounter == other.Encounter && Objective.Equals(other.Objective) && EncounterFloor == other.EncounterFloor && FinalEncounterFloor == other.FinalEncounterFloor && BossFamily == other.BossFamily &&
         LayoutVersion == other.LayoutVersion && Biome == other.Biome && Tier == other.Tier && Role == other.Role &&
         Seed == other.Seed &&
         Width == other.Width &&
@@ -77,6 +87,7 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
 
     public override int GetHashCode() =>
         unchecked(
+            (BossFamily?.GetHashCode() ?? 0) ^ Encounter.GetHashCode() * 12289 ^ Objective.GetHashCode() * 12301 ^ EncounterFloor * 12323 ^ FinalEncounterFloor.GetHashCode() * 12329 ^
             LayoutVersion * 7919 ^ (int)Biome * 8171 ^ Tier * 8191 ^ (int)Role * 8209 ^
             Seed * 397 ^
             Width * 397 ^
@@ -90,6 +101,6 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
         );
 
     public override string ToString() =>
-        $"DungeonFloorOptions(Layout={LayoutVersion}/{Biome}/{Tier}/{Role}, Seed={Seed}, {Width}x{Height}, IsThroneFloor={IsThroneFloor}, " +
+        $"DungeonFloorOptions(Encounter={Encounter}/{EncounterFloor}/{FinalEncounterFloor}, Objective={Objective.Kind}, Boss={BossFamily}, Layout={LayoutVersion}/{Biome}/{Tier}/{Role}, Seed={Seed}, {Width}x{Height}, IsThroneFloor={IsThroneFloor}, " +
         $"Enemies={EnemyCount}, Gold={GoldCount}, Items={ItemCount}, Traps={TrapCount}, Gathering={GatheringCount})";
 }

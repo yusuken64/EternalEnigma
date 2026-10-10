@@ -63,31 +63,7 @@ public static class AuthoredUIMigration
         var text=GameUISkin.Label(null,name,Vector2.zero,Vector2.one,font);text.gameObject.AddComponent<LayoutElement>().preferredHeight=height;
         return Save<TMP_Text>(text,name);
     }
-    [MenuItem("Tools/Eternal Enigma/UI/Migrate Authored Scenes")]
-    public static void Run()
-    {
-        if(EditorApplication.isPlaying || EditorApplication.isCompiling)throw new InvalidOperationException("Exit Play Mode and finish compiling first.");
-        for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("Save or discard the open scene changes before migration.");
-        Directory.CreateDirectory(Folder);AssetDatabase.Refresh();
-        var setup=EditorSceneManager.GetSceneManagerSetup();
-        try
-        {
-            Templates();
-            foreach(var name in new[]{"Common","MainMenu","Town","Overworld","DungeonScene"})
-            {
-                var scene=EditorSceneManager.OpenScene($"Assets/Scenes/{name}.unity");
-                if(scene.GetRootGameObjects().Any(r=>r.name==Marker))continue;
-                if(name=="Common")CommonScene(scene);
-                else if(name=="MainMenu")MainScene(scene);
-                else GameplayScene(scene,name);
-                foreach(var dialog in scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<MessageDialog>(true)))dialog.AuthorLayout();
-                new GameObject(Marker);
-                EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);
-            }
-            AssetDatabase.SaveAssets();Debug.Log("Authored UI migration completed.");
-        }
-        finally {EditorSceneManager.RestoreSceneManagerSetup(setup);}
-    }
+
     static void Templates()
     {
         if(AssetDatabase.LoadAssetAtPath<GameObject>($"{Folder}/PartyEntry.prefab")!=null)return;

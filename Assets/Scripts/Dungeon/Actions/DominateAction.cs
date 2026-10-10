@@ -26,7 +26,7 @@ public class DominateAction : GameAction
 			turns = rank.Scaling.ScaleDuration(Turns, rank.Rank) };
 
 	internal static bool CanDominate(Character target) =>
-		target is Enemy && target.Vitals != null && target.Vitals.HP > 0 && !EnemyRank.IsBoss(target) &&
+		target is Enemy && target.Vitals != null && target.Vitals.HP > 0 && !EnemyRank.IsBoss(target) && !EncounterActor.Required(target) &&
 		target.GetComponent<SummonedUnit>() == null &&
 		target.StatusEffects.Any(x => x is FearStatusEffect && !x.IsExpired());
 

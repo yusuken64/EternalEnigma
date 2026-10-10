@@ -50,10 +50,16 @@ public class ApplyStatusEffectAction : GameAction
             var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x != null && x.StackKey == statusEffectPrefab.StackKey);
             if (applied != null) applied.TurnsLeft += durationDelta;
         }
-		//var applied = statusInstance != null ? statusInstance :
-		//	target.StatusEffects.FirstOrDefault(x => x != null && statusEffectPrefab != null && x.StackKey == statusEffectPrefab.StackKey);
-		//applied?.OnApplied(target, caster);
-		//statusInstance?.gameObject.SetActive(false);
+        if(statusEffectPrefab != null && !ClassPassives.IsImmune(target, statusEffectPrefab))
+        {
+            var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x != null && x.StackKey == statusEffectPrefab.StackKey);
+            if(applied != null)
+            {
+                // Reapplication transfers credit to the most recent successful caster.
+                applied.DamageSource = caster;
+                applied.OnApplied(target, caster);
+            }
+        }
 		return new();
 	}
 

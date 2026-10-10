@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &9113502650962229742
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1354694882628254093, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: IsBoss
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: FootPrint
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: DisplayName
+      value: Large Smiling Mushroom
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: StartingStats.HPMax
+      value: 85
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: StartingStats.Strength
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: StartingStats.EXPOnKill
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5543747752720980080, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_Name
+      value: SmilingMushroom
+      objectReference: {fileID: 0}
+    - target: {fileID: 5590973851788533376, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5590973851788533376, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5590973851788533376, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8639548010823113620, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5543747752720980080, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4473131914924191712}
+  m_SourcePrefab: {fileID: 100100000, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+--- !u!1 &3645368497743258014 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5543747752720980080, guid: 0ffc33396441d814ca45c68b1fa3ce6d, type: 3}
+  m_PrefabInstance: {fileID: 9113502650962229742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4473131914924191712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3645368497743258014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69f22f9f986745a44897ba147133d772, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::LargeBossBehavior
+  Family: Smiling Mushroom
+  WarningTurns: 1
+  CooldownTurns: 3
+  EffectTurns: 2

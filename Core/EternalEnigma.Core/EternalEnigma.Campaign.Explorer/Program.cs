@@ -48,14 +48,12 @@ try
     }
     if (dungeonId != null)
     {
-        var location = campaign.Locations.FirstOrDefault(l => l.Id == dungeonId &&
-            l.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon);
+        var location = campaign.Locations.FirstOrDefault(l => l.Id == dungeonId && l.IsDungeon);
         if (location == null) { Console.Error.WriteLine("Unknown dungeon: " + dungeonId); return 1; }
-        var run = new DungeonRun(seed, location, OverworldGridGenerator.BiomeForRegion(campaign,location.RegionId),1);
+        var run = new DungeonRun(seed, location, OverworldGridGenerator.BiomeForRegion(campaign,location.RegionId),1, floor);
         int targetFloor = floor ?? run.Floor;
         if (targetFloor < run.Floors.Start || targetFloor > run.Floors.End)
         { Console.Error.WriteLine($"Floor {targetFloor} is outside the range {run.Floors.Start}-{run.Floors.End} for {dungeonId}."); return 1; }
-        while (run.Floor < targetFloor) run.Descend();
         Console.WriteLine($"Campaign seed {seed} | Dungeon {dungeonId} floor {run.Floor}/{run.Floors.End}");
         foreach (string row in DungeonRenderer.Render(run, 79, 25)) Console.WriteLine(row);
         Console.WriteLine(DungeonRenderer.Legend);
@@ -182,7 +180,8 @@ static void Run(ExplorerSession session, MapRenderer renderer)
             }
             else if (session.View == ExplorerView.Dungeon)
             {
-                lines.Add("Enter: descend/finish | R: claim rewards | Esc: leave dungeon | N: no-clip (debug)");
+                lines.Add("Enter: interact/descend/finish | R: reset puzzle | Esc: leave dungeon | N: no-clip (debug)");
+                lines.Add("Objective: " + session.Dungeon!.Current.Objective.Kind + (session.Dungeon.CanExit ? " (exit open)" : " (unfinished)"));
                 lines.Add(DungeonRenderer.Legend);
             }
             else

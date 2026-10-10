@@ -13,7 +13,7 @@ public abstract class TerminalMapRenderer
         frame.Write(2, 0, snapshot.Title, TerminalPalette.White);
         int partyRows = snapshot.Party.Count == 0 ? 0 : Math.Min(2, snapshot.Party.Count);
         int logRows = Math.Min(2, snapshot.Messages.Count);
-        int targetRows = snapshot.Target != null && columns < 72 ? 1 : 0;
+        int targetRows = snapshot.Target != null && columns < 72 ? Math.Min(3, Math.Max(1, rows / 4)) : 0;
         int mapTop = 1, mapHeight = Math.Max(0, rows - 2 - partyRows - logRows - targetRows);
         int mapWidth = Math.Max(0, columns - 2);
         int sidebar = columns >= 72 ? Math.Min(20, columns / 4) : 0;
@@ -43,14 +43,24 @@ public abstract class TerminalMapRenderer
             if (x < 1 || y < mapTop || x >= 1 + mapWidth || y >= mapTop + mapHeight) continue;
             frame.Put(x, y, actor.Glyph, ActorColor(actor.Kind));
         }
-        if (snapshot.Target != null)
-            foreach (var possible in snapshot.Target.Area)
+        void Mark(IEnumerable<GridPoint> points, char glyph, TerminalColor color)
+        {
+            foreach (var possible in points)
             {
                 if (possible.X < 0 || possible.Y < 0 || possible.X >= snapshot.Width || possible.Y >= snapshot.Height || snapshot.VisibilityAt(possible) == TerminalVisibility.Unseen) continue;
                 int px = 1 + padX + possible.X - viewport.Left, py = mapTop + padY + viewport.Bottom + viewport.Height - 1 - possible.Y;
                 if (px >= 1 && px < 1 + mapWidth && py >= mapTop && py < mapTop + mapHeight)
-                    frame.Put(px, py, '?', TerminalPalette.Feature);
+                    frame.Put(px, py, glyph, color);
             }
+        }
+        if (snapshot.Target != null)
+        {
+            Mark(snapshot.Target.ValidCells, '?', TerminalPalette.Feature);
+            Mark(snapshot.Target.Area, '*', TerminalPalette.Selected);
+            var direction = snapshot.Target.Direction;
+            char line = direction.X == 0 ? '|' : direction.Y == 0 ? '-' : direction.X == direction.Y ? '/' : '\\';
+            Mark(snapshot.Target.Path, line, TerminalPalette.Selected);
+        }
         if (snapshot.Target?.Cell is GridPoint target && target.X >= 0 && target.Y >= 0 && target.X < snapshot.Width && target.Y < snapshot.Height && snapshot.VisibilityAt(target) != TerminalVisibility.Unseen)
         {
             int x = 1 + padX + target.X - viewport.Left, y = mapTop + padY + viewport.Bottom + viewport.Height - 1 - target.Y;
@@ -64,9 +74,30 @@ public abstract class TerminalMapRenderer
             frame.Write(1, hudY + i, $"{stat.Name} L{stat.Level} HP {stat.Hp}/{stat.MaxHp} SP {stat.Sp}/{stat.MaxSp}", TerminalPalette.Ally);
         }
         for (int i = 0; i < logRows; i++) frame.Write(1, hudY + partyRows + i, snapshot.Messages[snapshot.Messages.Count - logRows + i], TerminalPalette.White);
-        if (targetRows > 0) frame.Write(1, hudY + partyRows + logRows, snapshot.Target?.Label, TerminalPalette.Selected);
-        if (sidebar > 0 && snapshot.Target != null) frame.Write(columns - sidebar, 2, snapshot.Target.Label, TerminalPalette.Selected);
+        if (targetRows > 0) WriteWrapped(1, hudY + partyRows + logRows, columns - 2, targetRows, snapshot.Target!.Label);
+        if (sidebar > 0 && snapshot.Target != null) WriteWrapped(columns - sidebar, 2, sidebar - 1, Math.Max(0, mapHeight - 1), snapshot.Target.Label);
         return frame.Commit();
+    }
+    private void WriteWrapped(int x, int y, int width, int height, string label)
+    {
+        if (width < 1) return;
+        int row = 0;
+        foreach (string paragraph in label.Split('\n'))
+        {
+            string remaining = paragraph;
+            do
+            {
+                if (row >= height) return;
+                int count = Math.Min(width, remaining.Length);
+                if (count < remaining.Length)
+                {
+                    int space = remaining.LastIndexOf(' ', count - 1, count);
+                    if (space > 0) count = space;
+                }
+                frame.Write(x, y + row++, remaining.Substring(0, count), TerminalPalette.Selected);
+                remaining = remaining.Substring(count).TrimStart();
+            } while (remaining.Length > 0);
+        }
     }
     private static TerminalColor ActorColor(TerminalActorKind kind) => kind switch
     {

@@ -69,6 +69,8 @@ public class Enemy : Character
 			return;
 		}
 
+        var encounterAction = Game.Instance.Encounter?.EnemyAction(this);
+        if (encounterAction != null) { determinedActions = new() { encounterAction }; return; }
 		if (IsDormant)
 		{
 			determinedActions = new() { new WaitAction() };
@@ -106,7 +108,7 @@ public class Enemy : Character
 			CurrentEnemyState = EnemyState.Wander;
 		}
 
-        var special = GetComponent<EnemyBehavior>()?.ChooseAction();
+        var special = GetComponent<LargeBossBehavior>()?.ChooseAction() ?? GetComponent<EnemyBehavior>()?.ChooseAction();
         if (special != null) { determinedActions = new() { special }; return; }
 		var action = Policies.FirstOrDefault(x => x.ShouldRun());
 		if (GetComponent<EnemyBehavior>()?.Stationary == true && action is PursuitPolicy or WanderPolicy)
@@ -252,7 +254,7 @@ public class Enemy : Character
 	internal override void PlayAttackAnimation()
 	{
 		var states = AnimationStates("Attack");
-		PlayState(states.Length > 0 ? states[UnityEngine.Random.Range(0, states.Length)] : StateOrIdle("Attack"));
+		PlayState(states.Length > 0 ? VisualRandom.Pick(states) : StateOrIdle("Attack"));
 	}
 	internal override void PlayTakeDamageAnimation()
 	{

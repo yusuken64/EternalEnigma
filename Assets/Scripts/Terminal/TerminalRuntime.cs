@@ -29,7 +29,7 @@ public sealed class TerminalRuntime : MonoBehaviour
         instance = common.GetComponent<TerminalRuntime>() ?? common.gameObject.AddComponent<TerminalRuntime>();
     }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void Reset() { instance = null; }
+    private static void Reset() { instance = null; TerminalSceneSnapshots.ClearCache(); }
     private void Awake()
     {
         if (instance != null && instance != this) { Destroy(this); return; }
@@ -55,6 +55,7 @@ public sealed class TerminalRuntime : MonoBehaviour
         SceneManager.sceneLoaded -= SceneChanged;
         SceneManager.sceneUnloaded -= SceneUnloaded;
         TerminalMode.Changed -= PreferenceChanged;
+        TerminalSceneSnapshots.ClearCache();
         if (instance == this) { instance = null; TerminalMode.Effective = false; }
     }
     private void SceneChanged(Scene scene, LoadSceneMode mode) { BindScene(); lastRenderer = null; dirty = true; PreferenceChanged(); }

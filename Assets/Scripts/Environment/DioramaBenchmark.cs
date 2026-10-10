@@ -16,17 +16,22 @@ public sealed class DioramaBenchmark : MonoBehaviour
     [Serializable] public sealed class Sample
     {
         public string name;
-        public int copies, triangles;
+        public int copies, triangles, errorMaterials;
         public float meanMs, medianMs, p95Ms;
     }
     [Serializable] public sealed class Results
     {
         public string unity, platform, gpu, api;
         public string protocol = "1280x800 offscreen render with synchronous GPU readback each frame; includes animation/update and readback overhead";
-        public int width, height;
+        public int width, height, backbufferWidth, backbufferHeight;
+        public List<string> errors = new();
         public List<Sample> samples = new();
     }
     string status = "Preparing diorama workload";
+    RenderTexture preview;
+    Texture2D readback;
+    Application.LogCallback captureError;
+    bool showPreview;
     IEnumerator Start()
     {
         QualitySettings.vSyncCount = 0;
@@ -34,8 +39,8 @@ public sealed class DioramaBenchmark : MonoBehaviour
         Application.runInBackground = true;
         // A hidden Windows player can skip its normal backbuffer rendering. An explicit
         // target and readback force the same real GPU workload in Windows and WebGL.
-        var target = new RenderTexture(1280,800,24);
-        var readback = new Texture2D(1,1,TextureFormat.RGB24,false);
+        var target = preview = new RenderTexture(1280,800,24);
+        readback = new Texture2D(1,1,TextureFormat.RGB24,false);
         ViewCamera.enabled = false; ViewCamera.targetTexture = target;
         void RenderFrame()
         {
@@ -45,9 +50,14 @@ public sealed class DioramaBenchmark : MonoBehaviour
             RenderTexture.active = previous;
         }
         var results = new Results { unity = Application.unityVersion, platform = Application.platform.ToString(),
-            gpu = SystemInfo.graphicsDeviceName, api = SystemInfo.graphicsDeviceType.ToString(), width = Screen.width, height = Screen.height };
+            gpu = SystemInfo.graphicsDeviceName, api = SystemInfo.graphicsDeviceType.ToString(), width = target.width, height = target.height,
+            backbufferWidth=Screen.width,backbufferHeight=Screen.height };
+        captureError=(message,stack,type)=>
+        {if(type==LogType.Error || type==LogType.Exception || type==LogType.Assert)results.errors.Add(message);};
+        Application.logMessageReceived+=captureError;
         for (int candidate = -1; candidate < Candidates.Length; candidate++)
         {
+            showPreview=false;
             var root = new GameObject("Measured workload");
             string name = candidate < 0 ? "Empty baseline" : Candidates[candidate].name;
             int triangles = 0;
@@ -73,17 +83,35 @@ public sealed class DioramaBenchmark : MonoBehaviour
             for (int i = 0; i < SampleFrames; i++) { yield return null; RenderFrame(); elapsed[i] = Time.unscaledDeltaTime * 1000; }
             Array.Sort(elapsed);
             results.samples.Add(new Sample { name = name, copies = candidate < 0 ? 0 : Copies, triangles = triangles,
-                meanMs = elapsed.Average(), medianMs = elapsed[elapsed.Length / 2], p95Ms = elapsed[Mathf.Min(elapsed.Length - 1, Mathf.FloorToInt(elapsed.Length * .95f))] });
+                meanMs = elapsed.Average(), medianMs = elapsed[elapsed.Length / 2], p95Ms = elapsed[Mathf.Min(elapsed.Length - 1, Mathf.FloorToInt(elapsed.Length * .95f))],
+                errorMaterials=root.GetComponentsInChildren<Renderer>(true).SelectMany(r=>r.sharedMaterials)
+                    .Count(m=>m==null || m.shader==null || !m.shader.isSupported || m.shader.name=="Hidden/InternalErrorShader") });
+            showPreview=true;
+            yield return null;
+            Debug.Log("DIORAMA_BENCHMARK_STAGE "+name);
+            yield return new WaitForSecondsRealtime(.3f);
             Destroy(root); yield return null;
         }
         string json = JsonUtility.ToJson(results, true);
         Debug.Log("DIORAMA_BENCHMARK_JSON " + JsonUtility.ToJson(results));
         File.WriteAllText(Path.Combine(Application.persistentDataPath, "DioramaBenchmark.json"), json);
-        ViewCamera.targetTexture = null; Destroy(target); Destroy(readback);
+        Application.logMessageReceived-=captureError; captureError=null;
+        ViewCamera.targetTexture = null; Destroy(readback); readback=null;
         status = "Completed — " + results.samples.Count + " workloads";
 #if !UNITY_WEBGL && !UNITY_EDITOR
         Application.Quit();
 #endif
     }
-    void OnGUI() { GUI.Label(new Rect(12, 12, 800, 30), status); }
+    void OnGUI()
+    {
+        if(showPreview && preview!=null)GUI.DrawTexture(new Rect(0,0,Screen.width,Screen.height),preview,ScaleMode.ScaleToFit,false);
+        GUI.Label(new Rect(12, 12, 800, 30), status);
+    }
+    void OnDestroy()
+    {
+        if(captureError!=null)Application.logMessageReceived-=captureError;
+        if(ViewCamera!=null)ViewCamera.targetTexture=null;
+        if(readback!=null)Destroy(readback);
+        if(preview!=null)Destroy(preview);
+    }
 }

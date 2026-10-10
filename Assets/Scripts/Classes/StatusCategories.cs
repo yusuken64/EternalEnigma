@@ -3,14 +3,14 @@ using System.Linq;
 
 public static class StatusCategories
 {
-	public static readonly HashSet<string> BindNames = new() { "Stuck", "Arm Bind", "Silence" };
-	public static readonly HashSet<string> AilmentNames = new() { "Confusion", "Dot", "Sleep", "Frail", "Paralysis", "Curse", "Fear", "Blind", "Burn", "Stun", "Weaken", "Exposed", "Defense Down" };
+	public static readonly HashSet<string> BindNames = new() { "Stuck", "Root", "Arm Bind", "Silence" };
+	public static readonly HashSet<string> AilmentNames = new() { "Confusion", "Dot", "Poison", "Bleed", "Sleep", "Frail", "Paralysis", "Curse", "Fear", "Blind", "Burn", "Stun", "Weaken", "Exposed", "Defense Down" };
 
 	public static bool IsBind(StatusEffect status) => status != null && BindNames.Contains(status.GetEffectName());
 	public static bool IsAilment(StatusEffect status) => status != null && AilmentNames.Contains(status.GetEffectName());
 	// Positive effects Discord may strip from enemies.
 	public static bool IsBuff(StatusEffect status) => status != null && !IsBind(status) && !IsAilment(status) &&
-		(status is StrengthStatusEffect || status is HotStatusEffect || status is TimedBuffStatusEffect || status is CommandStatusEffect ||
+		(status is BossEffectStatus { Kind: "Guard" or "Armored" or "Empowered" } || status is StrengthStatusEffect || status is HotStatusEffect || status is TimedBuffStatusEffect || status is CommandStatusEffect ||
 		 status is ParryStatusEffect || status is AmplifyStatusEffect || status is DamageShieldStatusEffect ||
 		 status is DamageReductionStatusEffect || status is EndureStatusEffect || status is StealthStatusEffect || status is SafePassageStatusEffect);
 	public static int CountAilments(Character character) => character == null || character.StatusEffects == null ? 0 :

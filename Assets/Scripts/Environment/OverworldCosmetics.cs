@@ -44,6 +44,12 @@ public static class OverworldCosmetics
             if (InLayer(grid, OverworldLayers.Roads, x, y) || InLayer(grid, OverworldLayers.Bridges, x, y) ||
                 InLayer(grid, OverworldLayers.TownFootprints, x, y)) Mark(x, y, 1);
         foreach (var cell in grid.Locations.Values) Mark(cell.X, cell.Y, 3);
+        foreach(var footprint in grid.LocationFootprints)
+        {
+            foreach(var cell in footprint.Cells)Mark(cell.X,cell.Y,0);
+            Mark(footprint.Approach.X,footprint.Approach.Y,1);
+            if(footprint.OtherApproach is { } far)Mark(far.X,far.Y,1);
+        }
         foreach (var gate in grid.Locks) foreach (var cell in gate.Cells) Mark(cell.X, cell.Y, 2);
         Mark(grid.PlayerStart.X, grid.PlayerStart.Y, 3);
         return result;

@@ -70,7 +70,7 @@ public sealed class ExplorerSession
     private GridPoint lastInteriorPosition;
     public GridPoint InteriorPosition => Town?.Position ?? Dungeon?.Position ?? lastInteriorPosition;
     public bool CanEnterLocation => !InInterior && Location != null && (Location.Kind == LocationKind.Town ||
-        Location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon);
+        Location.IsDungeon);
 
     /// <summary>Enters the town or dungeon standing under the party, generating its interior on first visit.</summary>
     public bool EnterLocation()
@@ -89,8 +89,9 @@ public sealed class ExplorerSession
             Message = $"Entered {location.Id}. Walk to the south road to leave, or press I.";
             return true;
         }
-        if (location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon)
+        if (location.IsDungeon)
         {
+            if (location.Encounter?.CanEnter(Held, completed) == false) { Message = "Entry requirements are not met."; return false; }
             Dungeon = new DungeonRun(Campaign.Seed, location, OverworldGridGenerator.BiomeForRegion(Campaign,location.RegionId),1);
             // Legacy interior exploration predates throne floors and expects lootable content on entry;
             // skip the empty intro throne room automatically so old behaviour is preserved.
@@ -127,8 +128,9 @@ public sealed class ExplorerSession
                 View = ExplorerView.Town;
                 return true;
             }
-            if (location.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon or LocationKind.FinalDungeon)
+            if (location.IsDungeon)
             {
+                if (location.Encounter?.CanEnter(Held, completed) == false) { Message = "Entry requirements are not met."; return false; }
                 Dungeon = new DungeonRun(Campaign.Seed, location, OverworldGridGenerator.BiomeForRegion(Campaign,location.RegionId),1);
                 View = ExplorerView.Dungeon;
                 return true;
@@ -154,15 +156,19 @@ public sealed class ExplorerSession
             var dungeon = Dungeon!;
             if (dungeon.OnStairs)
             {
+                if (!dungeon.CanExit) { Message = "Complete the floor objective before departing."; return false; }
                 if (dungeon.IsLastFloor)
                 {
-                    completed.Add(Location!.Id);
+                    completed.Add(dungeon.Location.Id);
+                    foreach (var route in Campaign.Routes.Where(r => r.CompletionLocationId == dungeon.Location.Id)) resolved.Add(route.Id);
                     ClaimRewards();
                     Leave();
+                    if (dungeon.Location.Encounter?.ReturnLocationId is string destination) Position = Grid.Locations[destination];
                 }
                 else dungeon.Descend();
                 return true;
             }
+            if (dungeon.Interact()) { Message = dungeon.Message; return true; }
             return false;
         }
         return false;
@@ -191,6 +197,7 @@ public sealed class ExplorerSession
     public bool InteriorInteract()
     {
         if (Dungeon is not { } dungeon) { Message = "Nothing to interact with here."; return false; }
+        if (dungeon.Interact()) { Message = dungeon.Message; return true; }
         if (IsCleared(InteriorPosition)) { Message = "Already cleared."; return false; }
         string? kind = dungeon.Current.Enemies.Any(e => e.Cell.Equals(InteriorPosition)) ? "enemy" :
             dungeon.Current.Traps.Any(t => t.Cell.Equals(InteriorPosition)) ? "trap" :
@@ -339,10 +346,12 @@ public sealed class ExplorerSession
 
     public void ClaimRewards()
     {
+        if (Dungeon != null && Dungeon.Current.Objective.AllowsReset) { Dungeon.Reset(); Message = Dungeon.Message; return; }
         if (OpenGate()) return;
         foreach (var route in Campaign.Routes)
             if (route.TryUnlock(Location?.Id ?? "", resolved)) { Message = "Opened shortcut: " + route.Id; return; }
         var rewardLocation = Campaign.Locations.FirstOrDefault(l => l.ParentTownId != null && l.ParentTownId == Location?.Id) ?? Location;
+        if (rewardLocation?.Encounter != null && !completed.Contains(rewardLocation.Id)) { Message = "Complete this encounter to claim its rewards."; return; }
         if (rewardLocation?.Kind == LocationKind.StoryDungeon || rewardLocation?.Kind == LocationKind.RepeatableDungeon || rewardLocation?.Kind == LocationKind.FinalDungeon) completed.Add(rewardLocation.Id);
         var rewards = new List<string>();
         foreach (var route in Campaign.Routes)

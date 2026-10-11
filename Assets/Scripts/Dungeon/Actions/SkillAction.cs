@@ -71,6 +71,7 @@ internal class SkillAction : GameAction
         {
             if (!IsValid(character)) { AutoplayTrace?.Interrupt("Cast became invalid before execution"); return new(); }
             AutoplayTrace?.Start();
+            GameInputDiagnostics.Record("SkillStarted", caster, skill);
             castSucceeded = true;
             AddMetricsModification(caster, (stats, vitals) => vitals.SP -= skill.SPCost);
             int charge = skill.InitialCastTime(caster);
@@ -153,6 +154,7 @@ internal class SkillAction : GameAction
         }
         foreach (var effect in effects.OfType<ScaledDamageAction>()) effect.AmmunitionMultiplier = ammunitionMultiplier;
         AutoplayTrace?.Complete();
+        GameInputDiagnostics.Record("SkillReleased", caster, skill);
         return effects;
 	}
 

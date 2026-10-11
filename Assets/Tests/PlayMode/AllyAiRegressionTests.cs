@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EternalEnigma.Core.Generation;
+using EternalEnigma.Core.Progression;
 using EternalEnigma.Core.World;
 using NUnit.Framework;
 using UnityEngine;
@@ -577,6 +578,50 @@ namespace EternalEnigma.Tests
             ally.AllyStrategy = AllyStrategy.HoldPosition;
             enemy.SetPosition(new Vector3Int(6,4));
             Assert.That(ally.ChooseAutonomousActions(true).Single(), Is.TypeOf<WaitAction>());
+        }
+
+        [Test] public void LungeRejectsDamageBehindAnAllyUntilItsLandingPathIsFree()
+        {
+            second.Vitals.HP = 0;
+            ally.AllyStrategy = AllyStrategy.Aggresive;
+            leader.SetPosition(new Vector3Int(5,4));
+            var lunge = Learn("Lunge");
+            int hp = enemy.Vitals.HP;
+            Assert.That(Choice(), Is.Null, "The missile can see the enemy, but the ally blocks the dash.");
+            Resolve(SkillAction.ForMissile(ally, lunge, Vector3Int.right));
+            Assert.That(ally.TilemapPosition, Is.EqualTo(new Vector3Int(4,4)));
+            Assert.That(enemy.Vitals.HP, Is.EqualTo(hp));
+            leader.SetPosition(new Vector3Int(3,4));
+            Cast();
+            Assert.That(ally.TilemapPosition, Is.EqualTo(new Vector3Int(5,4)));
+            Assert.That(enemy.Vitals.HP, Is.LessThan(hp));
+        }
+
+        [Test] public void ObjectiveApproachRoutesAroundClosedCornersBeforeAttacking()
+        {
+            var floor = DungeonFloorGenerator.Generate(new DungeonFloorOptions(94, dungeon.dungeonWidth, dungeon.dungeonHeight,
+                enemyCount: 0, goldCount: 0, itemCount: 0, trapCount: 0, gatheringCount: 0,
+                encounter: EncounterKind.Ambush, objective: new DungeonObjectiveDefinition(DungeonObjectiveKind.DefeatEnemies)));
+            typeof(TileWorldDungeon).GetField("runtimeFloor", BindingFlags.Instance|BindingFlags.NonPublic).SetValue(dungeon, floor);
+            Layout((x,y) => x > 0 && y > 0 && x < 20 && y < 20 && !(x == 5 && y == 4) && !(x == 6 && y == 3));
+            ally.SetPosition(new Vector3Int(4,3));
+            second.Vitals.HP = 0;
+            var encounter = new EncounterRuntime(game);
+            encounter.Register(enemy, "corner-guard");
+            var route = new AutoplayRoute();
+            for (int step = 0; step < 12 && AllyCombat.ChooseAttack(game, ally) == null; step++)
+            {
+                var goal = encounter.AutoplayDestination(ally);
+                Assert.That(goal, Is.Not.Null.And.Not.EqualTo(new Vector3Int(5,3)), "The nearest diagonal cell cannot attack through the closed corner.");
+                var next = route.Next(ally.TilemapPosition, goal.Value, Character.GetAStarGrid, dungeon.CanWalkTo);
+                Assert.That(next, Is.Not.Null, "The legal approach remains reachable without oscillating.");
+                Resolve(new MovementAction(ally, ally.TilemapPosition, next.Value));
+            }
+            var attack = AllyCombat.ChooseAttack(game, ally);
+            Assert.That(attack, Is.Not.Null);
+            int hp = enemy.Vitals.HP;
+            Resolve(attack.ToAction(ally));
+            Assert.That(enemy.Vitals.HP, Is.LessThan(hp));
         }
 
         [Test] public void FollowAndHoldFightFromTheirTileAndAggressiveCanUseAuthoredMovement()

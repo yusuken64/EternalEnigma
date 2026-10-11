@@ -16,6 +16,14 @@ public class DashStrikeAction : GameAction
 
 	public DashStrikeAction() { }
 
+    internal static Vector3Int LandingCell(Character caster, Character target) =>
+        SkillMovement.LastFreeAlong(caster, SkillMovement.Step(caster.TilemapPosition, target.TilemapPosition),
+            TileWorldDungeon.ChevDistance(caster.TilemapPosition, target.TilemapPosition));
+
+    internal static bool CanReachTarget(Character caster, Character target) => caster != null && target != null &&
+        target.Vitals.HP > 0 && TileWorldDungeon.ChevDistance(LandingCell(caster, target), target.TilemapPosition) <=
+            SkillMovement.HalfSize(caster) + SkillMovement.HalfSize(target) + 1;
+
 	internal override GameAction AsTargetedSkill(Character caster, Character target)
 	{
 		return AsTargetedSkill(caster, target, SkillRankContext.Unranked);
@@ -38,9 +46,7 @@ public class DashStrikeAction : GameAction
 		if (caster == null || target == null || target.Vitals.HP <= 0)
 			return new();
 
-		var dir = SkillMovement.Step(caster.TilemapPosition, target.TilemapPosition);
-		int distance = TileWorldDungeon.ChevDistance(caster.TilemapPosition, target.TilemapPosition);
-		var cell = SkillMovement.LastFreeAlong(caster, dir, distance);
+		var cell = LandingCell(caster, target);
 		if (cell != caster.TilemapPosition)
 		{
 			SkillMovement.Place(caster, cell);

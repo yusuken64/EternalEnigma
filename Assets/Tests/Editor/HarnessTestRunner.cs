@@ -466,6 +466,15 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.AutoplayTests.SequentialSeedsWriteCompleteArtifactsAndRestoreOriginalSave",
         "EnemyAnimationStateTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Debug Campaign Failures")]
+    public static void RunDebugCampaignFailures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.EncounterGameplayTests.Seed45ObjectiveSpawnsRespectTheirDeclaredFootprint",
+        "EternalEnigma.Tests.EncounterGameplayTests.Seed72ObjectiveSpawnsRespectTheirDeclaredFootprint",
+        "EternalEnigma.Tests.AllyAiRegressionTests.ObjectiveApproachRoutesAroundClosedCornersBeforeAttacking",
+        "EternalEnigma.Tests.AllyAiRegressionTests.LungeRejectsDamageBehindAnAllyUntilItsLandingPathIsFree",
+        "EternalEnigma.Tests.AllyAiRegressionTests.FollowAndHoldFightFromTheirTileAndAggressiveCanUseAuthoredMovement",
+        "EternalEnigma.Tests.SkillMovementTests.LungeStopsBeforeWall");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay")]
     public static void RunAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.AutoplayTests.SequentialSeedsWriteCompleteArtifactsAndRestoreOriginalSave",

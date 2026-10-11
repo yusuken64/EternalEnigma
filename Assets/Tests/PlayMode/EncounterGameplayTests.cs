@@ -42,6 +42,38 @@ namespace EternalEnigma.Tests
                 foreach(var effect in actor.ExecuteActionImmediate(queue.Dequeue())??new List<GameAction>())queue.Enqueue(effect);
         }
 
+        [UnityTest] public IEnumerator Seed45ObjectiveSpawnsRespectTheirDeclaredFootprint() => VerifyObjectiveSpawns(45);
+        [UnityTest] public IEnumerator Seed72ObjectiveSpawnsRespectTheirDeclaredFootprint() => VerifyObjectiveSpawns(72);
+
+        IEnumerator VerifyObjectiveSpawns(int seed)
+        {
+            yield return harness.LoadMainMenu(null);
+            var common = Common.Instance;
+            common.GameSaveData = Object.FindFirstObjectByType<MainMenu>().CreateNewSave(seed);
+            common.Travel.NewCampaign(seed);
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "seeded campaign town");
+            var context = common.CampaignContext;
+            context.Position = context.Grid.Locations["region-0-landmark"];
+            context.State.Scene = "Overworld";
+            Assert.That(common.Travel.EnterLocation(), Is.True);
+            yield return harness.WaitForIdle();
+            var game = harness.Game;
+            var floor = game.CurrentDungeon.Floor;
+            Assert.That(floor.ObjectiveEnemies, Is.Not.Empty);
+            var first = floor.ObjectiveEnemies[0];
+            var unrestricted = game.EnemyManager.GetEnemyPrefab(game.RunPlan.Floor(game.PlayerController.Floor).CombatDifficulty,
+                EncounterRuntime.StableHash(first.Id) ^ floor.Seed);
+            Assert.That(unrestricted.FootPrint, Is.EqualTo(FootPrint.Size3x3), "These seeds previously selected a large slime for a one-cell objective slot.");
+            foreach (var placement in floor.ObjectiveEnemies)
+            {
+                var enemy = game.Enemies.Single(e => e.GetComponent<EncounterActor>()?.Id == placement.Id);
+                Assert.That(enemy.FootPrint, Is.EqualTo(FootPrint.Size1x1));
+                Assert.That(enemy.TilemapPosition, Is.EqualTo(placement.Position.ToCell()));
+                Assert.That(enemy.ToBounds().Cells().All(game.CurrentDungeon.IsWalkable), Is.True);
+                Assert.That(game.CurrentDungeon.OverlapsAnyOtherCharacter(enemy), Is.Null);
+            }
+        }
+
         [UnityTest] public IEnumerator SokobanUsesProductionMovementAndRejectsUnfinishedExit()
         {
             yield return LoadEncounter(EncounterKind.Sokoban);

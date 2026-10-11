@@ -12,7 +12,7 @@ public static class AudioPreferences
     public static void Restore(AudioMixerGroup group, string parameter, float? fallback = null)
     {
         if (group == null) return;
-        if (PlayerPrefs.HasKey(Key(parameter))) group.audioMixer.SetFloat(parameter, ToDecibels(PlayerPrefs.GetFloat(Key(parameter))));
+        if (GamePreferences.HasKey(Key(parameter))) group.audioMixer.SetFloat(parameter, ToDecibels(GamePreferences.GetFloat(Key(parameter))));
         else if (fallback.HasValue) group.audioMixer.SetFloat(parameter, ToDecibels(fallback.Value));
     }
     public static void Set(AudioMixerGroup group, string parameter, float level)
@@ -20,7 +20,7 @@ public static class AudioPreferences
         if (group == null) return;
         level = Mathf.Clamp01(level);
         group.audioMixer.SetFloat(parameter, ToDecibels(level));
-        PlayerPrefs.SetFloat(Key(parameter), level);
-        PlayerPrefs.Save();
+        GamePreferences.SetFloat(Key(parameter), level);
+        GamePreferences.Save();
     }
 }

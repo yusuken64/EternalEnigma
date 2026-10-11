@@ -33,6 +33,7 @@ public class TurnManager : MonoBehaviour
         if (!action.ValidateCommand(actor, out var reason))
         { if (!string.IsNullOrEmpty(reason)) GameMessages.Post(reason, true); player.StopHeldWalk(); return false; }
         actor._forcedAction = action;
+        GameInputDiagnostics.Record("CommandAccepted", actor, (action as SkillAction)?.Skill);
         if (actor != player.ControlledAlly) return true;
         actor.IsWaitingForPlayerInput = false;
         if (IsProcessingTurn) AwaitingCommand = false;
@@ -77,6 +78,7 @@ public class TurnManager : MonoBehaviour
 
 	private IEnumerator TrackTurnRoutine()
 	{
+		GameInputDiagnostics.Record("TurnStarted");
 		IsProcessingTurn = true;
 		try
         {

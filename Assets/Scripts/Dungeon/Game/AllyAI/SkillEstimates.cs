@@ -47,7 +47,8 @@ public static class SkillEstimates
 			// DashStrikeAction case
 			else if (effect is DashStrikeAction m1)
 			{
-				sum += m1.DamagePercent * BaseAttackDamage(caster, target);
+				if (DashStrikeAction.CanReachTarget(caster, target))
+					sum += m1.DamagePercent * BaseAttackDamage(caster, target);
 			}
 			// TeleportBehindAction case
 			else if (effect is TeleportBehindAction m2)

@@ -9,25 +9,25 @@ public static class DungeonPreferences
     public static bool FullControl
     {
         get => !AutoplayRunner.BlocksPlayerInput &&
-            (FullControlOverride ?? PlayerPrefs.GetInt("Dungeon.FullControl", 0) != 0);
-        set { PlayerPrefs.SetInt("Dungeon.FullControl", value ? 1 : 0); PlayerPrefs.Save(); }
+            (FullControlOverride ?? GamePreferences.GetInt("Dungeon.FullControl", 0) != 0);
+        set { GamePreferences.SetInt("Dungeon.FullControl", value ? 1 : 0); GamePreferences.Save(); }
     }
     public static DungeonAnimationMode AnimationMode
     {
         get => AutoplayRunner.SuppressesAnimations ? DungeonAnimationMode.NoAnimations : AnimationOverride ?? SavedAnimationMode;
-        set { PlayerPrefs.SetInt("Dungeon.AnimationModeV2", (int)value); PlayerPrefs.Save(); }
+        set { GamePreferences.SetInt("Dungeon.AnimationModeV2", (int)value); GamePreferences.Save(); }
     }
     private static DungeonAnimationMode SavedAnimationMode
     {
         get
         {
-            if (PlayerPrefs.HasKey("Dungeon.AnimationModeV2"))
-                return (DungeonAnimationMode)Mathf.Clamp(PlayerPrefs.GetInt("Dungeon.AnimationModeV2"), 0, 3);
-            int old = Mathf.Clamp(PlayerPrefs.GetInt("Dungeon.AnimationMode", 0), 0, 3);
+            if (GamePreferences.HasKey("Dungeon.AnimationModeV2"))
+                return (DungeonAnimationMode)Mathf.Clamp(GamePreferences.GetInt("Dungeon.AnimationModeV2"), 0, 3);
+            int old = Mathf.Clamp(GamePreferences.GetInt("Dungeon.AnimationMode", 0), 0, 3);
             var migrated = old == 0 ? DungeonAnimationMode.Normal :
                 old == 3 ? DungeonAnimationMode.NoAnimations : DungeonAnimationMode.AnimateControlledHeroActions;
-            PlayerPrefs.SetInt("Dungeon.AnimationModeV2", (int)migrated);
-            PlayerPrefs.Save();
+            GamePreferences.SetInt("Dungeon.AnimationModeV2", (int)migrated);
+            GamePreferences.Save();
             return migrated;
         }
     }

@@ -36,10 +36,10 @@ public sealed class DisplayPreferences
     }
     public void Restore()
     {
-        if (!PlayerPrefs.HasKey(ModeKey) || !PlayerPrefs.HasKey(WidthKey) || !PlayerPrefs.HasKey(HeightKey)) return;
-        var mode = (FullScreenMode)PlayerPrefs.GetInt(ModeKey);
+        if (!GamePreferences.HasKey(ModeKey) || !GamePreferences.HasKey(WidthKey) || !GamePreferences.HasKey(HeightKey)) return;
+        var mode = (FullScreenMode)GamePreferences.GetInt(ModeKey);
         if (!Modes.Contains(mode)) return;
-        var size = new Vector2Int(PlayerPrefs.GetInt(WidthKey), PlayerPrefs.GetInt(HeightKey));
+        var size = new Vector2Int(GamePreferences.GetInt(WidthKey), GamePreferences.GetInt(HeightKey));
         if (size.x <= 0 || size.y <= 0) size = Backend.Size;
         if (mode != FullScreenMode.Windowed && !Backend.Resolutions.Contains(size)) size = Backend.Desktop;
         Backend.Apply(size, mode);
@@ -48,9 +48,9 @@ public sealed class DisplayPreferences
     {
         if (!Modes.Contains(mode) || size.x <= 0 || size.y <= 0) return;
         Backend.Apply(size, mode);
-        PlayerPrefs.SetInt(ModeKey, (int)mode);
-        PlayerPrefs.SetInt(WidthKey, size.x);
-        PlayerPrefs.SetInt(HeightKey, size.y);
-        PlayerPrefs.Save();
+        GamePreferences.SetInt(ModeKey, (int)mode);
+        GamePreferences.SetInt(WidthKey, size.x);
+        GamePreferences.SetInt(HeightKey, size.y);
+        GamePreferences.Save();
     }
 }

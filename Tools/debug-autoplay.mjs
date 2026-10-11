@@ -7,10 +7,21 @@ if (!['status', 'verify', 'inspect'].includes(mode)) throw Error('Usage: node To
 const read = path => JSON.parse(readFileSync(path, 'utf8').replace(/^\uFEFF/, ''));
 if (mode === 'inspect') {
   const r = read(resolve(process.argv[3]));
+  const origin = r.Party[0], tiles = new Set((r.WalkableTiles ?? []).map(p => `${p.x},${p.y}`));
+  const map = origin ? Array.from({ length: 17 }, (_, row) => {
+    const y = origin.Y + 8 - row;
+    return `${y.toString().padStart(3)} ` + Array.from({ length: 17 }, (_, col) => {
+      const x = origin.X - 8 + col;
+      return r.Party.some(p => p.X === x && p.Y === y) ? '@' :
+        r.Enemies.some(p => p.X === x && p.Y === y) ? 'E' :
+        (r.Stairs ?? []).some(p => p.x === x && p.y === y) ? '>' : tiles.has(`${x},${y}`) ? '.' : '#';
+    }).join('');
+  }) : [];
   console.log(JSON.stringify({ seed: r.Seed, outcome: r.Outcome, location: r.Location, floor: r.Floor,
     party: r.Party.map(p => ({ id: p.Id, name: p.Name, x: p.X, y: p.Y, hp: p.HP })),
     enemies: r.Enemies, stairs: r.Stairs,
-    nearbyFloor: r.WalkableTiles.filter(p => r.Party.some(a => Math.max(Math.abs(p.x - a.X), Math.abs(p.y - a.Y)) <= 2)) }, null, 2));
+    mapLeftX: origin?.X - 8, map,
+    nearbyFloor: (r.WalkableTiles ?? []).filter(p => r.Party.some(a => Math.max(Math.abs(p.x - a.X), Math.abs(p.y - a.Y)) <= 2)) }, null, 2));
   process.exit(0);
 }
 const logs = resolve(import.meta.dirname, '../Logs/Playthroughs');

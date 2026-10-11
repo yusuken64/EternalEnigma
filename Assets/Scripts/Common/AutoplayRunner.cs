@@ -162,6 +162,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
 
     internal static void StartBatch(AutoplayOptions options)
     {
+        if (ChaosSessionLock.Held) throw new InvalidOperationException("An input-only chaos session is active.");
         if (Active != null) throw new InvalidOperationException("An autoplay session is already active.");
         var runner = new GameObject("Manual playthrough").AddComponent<AutoplayRunner>();
         DontDestroyOnLoad(runner.gameObject);
@@ -170,6 +171,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
 
     public static void WatchDemo(AutoplayOptions options)
     {
+        if (ChaosSessionLock.Held) return;
         if (options == null || !options.Validate(out _)) throw new ArgumentException("Invalid autoplay options.");
         if (Active != null || Common.Instance.Travel.IsTransitioning) return;
         var runner = new GameObject("Watch demo").AddComponent<AutoplayRunner>();

@@ -57,7 +57,8 @@ public sealed class EncounterRuntime
         {
             var prefab = placement.IsBoss ? LargeBossBehavior.Prefab(placement.Family) :
                 game.EnemyManager.EnemyPrefabs.FirstOrDefault(e=>e!=null && e.name=="Enemy_"+placement.Family.Replace(" ","")) ??
-                game.EnemyManager.GetEnemyPrefab(difficulty, StableHash(placement.Id)^floor.Seed);
+                game.EnemyManager.GetEnemyPrefab(difficulty, StableHash(placement.Id)^floor.Seed,
+                    placement.Footprint == 3 ? FootPrint.Size3x3 : FootPrint.Size1x1);
             if (prefab == null) throw new InvalidOperationException($"Missing objective enemy prefab: {placement.Family}");
             var enemy = UnityEngine.Object.Instantiate(prefab, game.transform);
             enemy.UpdateCachedStats(); enemy.InitialzeVitalsFromStats();
@@ -206,6 +207,7 @@ public sealed class EncounterRuntime
             return targets.SelectMany(e=>game.CurrentDungeon.GetWalkableNeighborhoodTiles(e.TilemapPosition)
                     .Concat(e.ToBounds().Cells().SelectMany(c=>new[] {c+Vector3Int.up,c+Vector3Int.down,c+Vector3Int.left,c+Vector3Int.right})))
                 .Where(p=>game.CurrentDungeon.IsWalkable(p)&&game.CurrentDungeon.OverlapsAnyOtherCharacter(ally,Character.ToBounds(p),true)==null)
+                .Where(p=>targets.Any(e=>e.ToBounds().Cells().Any(cell=>game.CurrentDungeon.CanWalkTo(p,cell))))
                 .OrderBy(p=>TileWorldDungeon.ChevDistance(ally.TilemapPosition,p)).ThenBy(p=>p.x).ThenBy(p=>p.y).Cast<Vector3Int?>().FirstOrDefault();
         }
         return null;

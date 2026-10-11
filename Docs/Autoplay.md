@@ -123,6 +123,8 @@ and every issue. `verify` requires at least 100 distinct sequential seeds, each 
 a finalized Victory, the real campaign Finished flag, no warnings/errors, matching
 build identifiers, and complete save, screenshot and action artifacts. Merely
 launching a batch or reaching its time limits does not pass this verification.
+`inspect <report.json>` prints the party, remaining enemies, stairs, and a local
+walkability map for investigating a stopped campaign.
 
 For concurrent local runs, **Build Debug Windows** builds the enabled production
 scenes into `Builds/DebugAutoplay/DebugAutoplay.exe`. Development players accept

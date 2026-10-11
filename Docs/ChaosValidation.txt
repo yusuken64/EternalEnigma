@@ -1,0 +1,130 @@
+Input-only chaos validation - 2026-10-11
+
+Acceptance status
+-----------------
+The randomized, input-only runner and strict reporting interfaces are implemented.
+Five-minute town-start smoke checks passed in Editor and a Windows development
+player. Broad smoke checks found game defects. Exhaustive acceptance is NOT passed:
+the current scenario library contains the Heal baseline and supports additional
+declared fixtures/input sequences/oracles; most checklist cases remain untested.
+
+Automated checks
+----------------
+Edit Mode: 13 passed, 0 failed.
+  Temp/Chaos/tests-EditMode.xml
+  Covers deterministic fixtures, exact saved manifests, tamper detection, unique
+  legal parties, variation, prerequisites, seed streams, saves/preferences,
+  evidence gates, progress detection, excluded developer controls, identity checks,
+  invalid options, missing artifacts and reporting failures.
+Play Mode: 3 passed, 1 failed.
+  Temp/Chaos/tests-PlayMode.xml
+  Passes: virtual input holds/opposing directions/cleanup, device switching,
+  controller skill-menu entry and keyboard targeting cancellation without cost.
+  Failure: NestedInventoryAndSettingsReturnThroughMixedDeviceInputs; see defect 2.
+Node CLI: 5 passed, 0 failed.
+  node --test Tools/tests/chaos-runner.test.mjs
+  Covers heartbeat/startup failures, wrong PID, artifact containment, fresh launch
+  confirmation after MCP reconnect, separate coverage/participation accounting,
+  and rejecting claimed passes without evidence.
+Windows development build: succeeded, 0 errors, 6 warnings.
+  Builds/Chaos/EternalEnigma-Chaos.exe
+  Temp/Chaos/build.txt
+  Rebuilt after the final resume/evidence changes; final build took 22.36 s.
+
+Performed runs (paths are relative to the repository)
+----------------------------------------------------
+Editor, seed 423, mixed devices, Town fixture filter, duration 300:
+  Logs/ChaosTownEditor/chaos-20261011-200831-0fad061f
+  Completed in 306.58 s, 1,925 inputs; SmokePassed true; CLI verify passed.
+  7 feature/device cases passed; FullPassed false.
+Windows development player, seed 424, mixed devices, Town fixture filter, duration 300:
+  Logs/ChaosTownPlayer/player-1791749054793/chaos-20261011-200419-f439b7fb
+  Completed in 310.17 s, 6,564 inputs; SmokePassed true; CLI verify passed.
+  8 feature/device cases passed; FullPassed false. External heartbeat watchdog ran.
+These restricted runs validate duration and input/fixture/report plumbing. They
+do not replace the failed broad runs or verify all town services and abilities.
+
+Heal full-mode filter, seed 42, all supported ranks, keyboard/controller:
+  Logs/ChaosHealRanks/chaos-20261011-200411-2984a614
+  10 ability cases passed: Heal ranks 1-5 on both devices; 122.07 s, 1,874 inputs.
+  Verified an actual cast by the controlled hero, HP increase, exact SP cost,
+  consumed turn, completed charge, closed targeting and returned control.
+  14 checklist cases passed including load/transition flows. 8,298 of 8,312
+  production cases remained required; 630 demo cases are tracked separately.
+
+Final Windows development build, seed 42, rank 1 Heal keyboard filter:
+  Logs/ChaosPlayerFull/player-1791750260825/chaos-20261011-202424-7db614d5
+  Completed in 18.90 s, 950 inputs, 3 passed cases, complete artifacts, no issues.
+  Independent verification found only the expected incomplete full-coverage and
+  hero/class participation gates. The player exited normally with status 1 because
+  a filtered full-mode run cannot claim exhaustive acceptance.
+The five-minute smoke runs above predate the final resume/paired-evidence changes.
+Each report retains its exact build/content identity; coverage is not merged across
+those identities. The final build was checked with this focused ability scenario.
+
+Broad Editor attempt, seed 421, Town/Dungeon/Overworld, configured 300 s:
+  Logs/ChaosSmokeEditor/chaos-20261011-194723-35fe4e86
+  Failed at 212.48 s, 1,704 inputs. Its suspected lock was in the main-menu
+  developer panel after returning from the dungeon, not proof of a dungeon lock.
+  This exposed runner issues subsequently corrected: developer/exit clicks are
+  excluded even at random pointer coordinates, and revisited valid world states
+  count as meaningful progress. Do not treat this attempt as a passing smoke.
+Broad Windows player attempt, seed 422, configured 300 s:
+  Logs/ChaosSmokePlayer/player-1791748042158/chaos-20261011-194726-2724df21
+  Failed at 227.50 s, 11,906 inputs, on defect 1 below. Artifacts were finalized;
+  CLI verify correctly rejected the failed and shorter-than-five-minute attempt.
+
+Game defects retained for follow-up
+----------------------------------
+1. Overworld party menu is missing its authored PartyMenu.
+   Loading an isolated Overworld fixture and pressing the inventory/skills shortcut
+   throws: InvalidOperationException: Expected one authored PartyMenu in Overworld;
+   found 0.
+   Stack: AuthoredUI.Require -> PartyMenu.Create -> OverworldMenuManager.OpenPartyMenu.
+   Reproduced in Editor and the development player. See the broad player report,
+   logs.jsonl, final.png, and scenario-0003 inputs/checkpoints above. Earlier Editor:
+   Logs/ChaosValidation/chaos-20261011-181706-2fd1cded
+2. A town inventory picker intercepts Settings Resume mouse clicks.
+   Reproduction: Q inventory -> controller South to open the nested picker ->
+   controller Start to open Settings -> mouse click Resume twice.
+   Settings remains open. The first raycast hit is Town/PartyPicker/Input shield,
+   ahead of Common/GlobalSettings/Settings/Buttons/Resume and its text/background.
+   The failing Play Mode regression records pointer position, focus and hit paths.
+These game defects were not repaired by the runner or hidden by marking tests passed.
+
+Replay, resume and remaining limits
+----------------------------------
+Exact fixture round-trip and hash checks pass. A same-build replay restored the
+recorded fixture but reported ReplayDiverged at checkpoint 21 during scene loading:
+  Source: Logs/ChaosFullValidation/chaos-20261011-184154-9a0fa13f
+  Replay: Logs/Chaos/chaos-20261011-184636-6fa7e320
+Frame-timed scene loading can diverge. Replay reports this and stops; it never
+repairs state or claims a successful reproduction. Earlier same-build resume:
+  Logs/Chaos/chaos-20261011-184557-285dea33
+restored the completed Heal case and executed zero replacement scenarios.
+
+Final chained-resume check:
+  First: Logs/ChaosResumeValidation/chaos-20261011-201554-c60352da
+  Second: Logs/Chaos/chaos-20261011-201926-5f39b1c9
+  Third: Logs/Chaos/chaos-20261011-202255-675b36c8
+The first run passed rank 1 keyboard Heal and two menu/transition cases. The second
+preserved these receipts and added rank 2 keyboard Heal. The third restored all
+four passed cases, executed zero scenarios/inputs, and sealed complete artifacts
+without issues. Independent CLI verification found only the expected missing
+required cases and hero/class participation; no artifact/accounting errors.
+Imported cases use stable unique names across successive resumes, and paired
+baseline evidence is included in each sealed case's artifact inventory.
+
+Each report.json contains the complete generated checklist and per-case reasons,
+exact hero/class participation, fixture/build/content identities, and hashed
+artifacts. Use the checklist CLI to inspect every untested feature/ability/rank/
+device variant. Random selection or passive ownership does not satisfy coverage.
+Unverified areas include other active effects, passive and class-passive triggers,
+specialized targeting/restriction cases, mouse ability targeting, exploration,
+probabilistic effects, summons, songs, commands, item use/equipment/discard oracles,
+campaign creation, all town services, defeat and endgame. Full acceptance requires
+declared scenarios and successful evidence for all applicable cases and all heroes/
+classes; current reports explicitly fail that gate.
+
+Tests and reports were produced from the existing dirty workspace. Unrelated
+pre-existing edits were preserved. No changes were committed or staged.

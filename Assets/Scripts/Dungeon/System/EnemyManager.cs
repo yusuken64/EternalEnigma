@@ -18,10 +18,11 @@ public class EnemyManager : MonoBehaviour
 	}
 
 	/// <summary>Deterministic weighted pick in ordinal name order. Normal enemies have weight 20; metal slimes have weight 1.</summary>
-	internal Enemy GetEnemyPrefab(int floor, int roll)
+	internal Enemy GetEnemyPrefab(int floor, int roll, FootPrint? footprint = null)
 	{
 		floor = Mathf.Clamp(floor, 1, 27);
 		var candidates = SpawnDefinitions.Where(x => x.FloorMin <= floor && x.FloorMax >= floor)
+			.Where(x => !footprint.HasValue || x.EnemyCharacterPrefab.FootPrint == footprint.Value)
 			.OrderBy(x => x.SpawnName, StringComparer.Ordinal).ToList();
 		if (candidates.Count == 0) throw new InvalidOperationException($"No spawn definitions cover floor {floor}.");
 		int Weight(SpawnDefinition d) => Mathf.Max(1, d.EnemyCharacterPrefab.GetComponent<EnemyBehavior>()?.SpawnWeight ?? 20);

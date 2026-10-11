@@ -82,6 +82,7 @@ public sealed class AutoplayWindow : EditorWindow
                 EditorGUILayout.HelpBox("Infinite resources replenishes gold, SP and hunger, and preserves used consumables. Keys, companions and abilities must still be earned. Debug runs are excluded from balance results.", MessageType.None);
             }
             options.ExploreAll = EditorGUILayout.Toggle("Visit all destinations", options.ExploreAll);
+            options.NoAnimations = EditorGUILayout.Toggle("Disable animations for run", options.NoAnimations);
             }
             options.Speed = EditorGUILayout.Slider("Playback speed", options.Speed, .5f, 32);
             options.TimeLimitMinutes = Mathf.Max(1, EditorGUILayout.FloatField("Time limit (minutes)", options.TimeLimitMinutes));
@@ -124,6 +125,14 @@ public sealed class AutoplayWindow : EditorWindow
     public static void RunNormal() => Launch(new AutoplayOptions());
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug")]
     public static void RunDebug() => Launch(new AutoplayOptions { DebugPlaythrough = true, DebugCoverage = true });
+    [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug From File")]
+    public static void RunDebugFromFile()
+    {
+        var settings = JsonUtility.FromJson<AutoplayOptions>(System.IO.File.ReadAllText("Temp/DebugAutoplay/options.json"));
+        if (settings.Mode != AutoplayMode.Campaign || !settings.DebugPlaythrough)
+            throw new System.ArgumentException("Expected debug campaign options.");
+        Launch(settings);
+    }
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Floor Loot Sweep")]
     public static void RunFloorLootSweep() => Launch(AutoplayOptions.LootSweep());
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Floor Loot Sweep From File")]

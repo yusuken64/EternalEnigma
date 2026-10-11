@@ -353,7 +353,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
 		if (demoLoadout != null && PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor)
 			yield return demoLoadout.PreparePracticeRoom(this);
-		if (!AutoplayRunner.Sweeping) yield return new WaitForSecondsRealtime(2.0f);
+		if (!AutoplayRunner.SuppressesAnimations) yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 
         if (!reset) ClassPassives.OnFloorStart(this);

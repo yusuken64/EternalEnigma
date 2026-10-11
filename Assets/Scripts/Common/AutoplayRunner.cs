@@ -18,11 +18,13 @@ public sealed class AutoplayOptions
 {
     public AutoplayMode Mode;
     public string ResumeManifestPath;
+    public string ReportRoot;
     public int ActionLimit = 100000;
     public int Seed = 42;
     public int RunCount = 1;
     public bool DebugCoverage;
     public bool DebugPlaythrough, Godmode = true, InfiniteResources = true;
+    public bool NoAnimations;
     public bool ExploreAll;
     public float Speed = 4, TimeLimitMinutes = 60, StallSeconds = 120;
 
@@ -102,6 +104,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     public const string PendingKey = "EternalEnigma.Autoplay.Pending";
     public static AutoplayRunner Active { get; private set; }
     public static bool BlocksPlayerInput => Active != null && !Active.PlayerControlled;
+    internal static bool SuppressesAnimations => BlocksPlayerInput &&
+        (Active.IsLootSweep || Active.Options?.NoAnimations == true);
     public bool PlayerControlled { get; private set; }
     public bool PanelVisible { get; private set; } = true;
     public bool TakingControl => takingControl;
@@ -152,11 +156,17 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         var json = UnityEditor.SessionState.GetString(PendingKey, "");
         if (string.IsNullOrEmpty(json)) return;
         UnityEditor.SessionState.EraseString(PendingKey);
-        var runner = new GameObject("Manual playthrough").AddComponent<AutoplayRunner>();
-        DontDestroyOnLoad(runner.gameObject);
-        runner.Initialize(JsonUtility.FromJson<AutoplayOptions>(json));
+        StartBatch(JsonUtility.FromJson<AutoplayOptions>(json));
     }
 #endif
+
+    internal static void StartBatch(AutoplayOptions options)
+    {
+        if (Active != null) throw new InvalidOperationException("An autoplay session is already active.");
+        var runner = new GameObject("Manual playthrough").AddComponent<AutoplayRunner>();
+        DontDestroyOnLoad(runner.gameObject);
+        runner.Initialize(options);
+    }
 
     public static void WatchDemo(AutoplayOptions options)
     {
@@ -175,12 +185,13 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         if (!options.Validate(out var reason)) throw new ArgumentException(reason);
         Active = this; Options = JsonUtility.FromJson<AutoplayOptions>(JsonUtility.ToJson(options));
-        HoldSweepReload();
+        HoldSessionReload();
         acceptInputAfter = Time.unscaledTime + .75f;
         originalTimeScale = Time.timeScale; originalRandom = UnityEngine.Random.state;
         originalFixedDeltaTime = Time.fixedDeltaTime;
-        if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime * Options.Speed;
-        string root = Application.isEditor ? "Logs" : Application.persistentDataPath;
+        Time.fixedDeltaTime = originalFixedDeltaTime * Options.Speed;
+        string root = !string.IsNullOrWhiteSpace(Options.ReportRoot) ? Options.ReportRoot :
+            Application.isEditor ? "Logs" : Application.persistentDataPath;
         BatchDirectoryPath = Path.GetFullPath(Path.Combine(root, "Playthroughs", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8)));
         Batch = new AutoplayBatch { StartedUtc = DateTime.UtcNow.ToString("O"), StartingSeed = Options.Seed, RequestedRuns = Options.RunCount };
         store = new AutoplayStore();
@@ -195,7 +206,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     private IEnumerator Start()
     {
         if (Options == null) yield break;
-        while (FindFirstObjectByType<Common>() == null) yield return null;
+        while (Common.Instance == null) yield return null;
         if (!appSession)
         {
             originalSave = Common.Instance.GameSaveData;
@@ -266,18 +277,18 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         nextTick = Time.unscaledTime + .03f / Options.Speed;
         try
         {
-            if (!IsLootSweep) Tick();
-            else
+            // Commands may finish synchronously without animations. Use the same
+            // bounded pacing for campaigns and sweeps, always respecting turn state.
             {
                 // At accelerated playback, submit another command only after the
                 // production turn has completed. Bound work so controls stay responsive.
-                double deadline = Time.realtimeSinceStartupAsDouble + .006;
+                double deadline = Time.realtimeSinceStartupAsDouble + (SuppressesAnimations ? .025 : .006);
                 for (int i = 0; i < Mathf.CeilToInt(Options.Speed); i++)
                 {
                     int before = Report.Actions;
                     Tick();
                     var game = Game.Instance;
-                    if (!Running || Paused || Report.Actions == before || game?.TurnManager.IsProcessingTurn == true ||
+                    if (!Running || Paused || pendingError != null || Report.Actions == before || game?.TurnManager.IsProcessingTurn == true ||
                         game?.PlayerController.ControlledAlly?.PendingCast != null || Time.realtimeSinceStartupAsDouble >= deadline) break;
                 }
             }
@@ -287,7 +298,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
 
     private void Tick()
     {
-        var common = FindFirstObjectByType<Common>();
+        var common = Common.Instance;
         if (common == null || common.Travel.IsTransitioning) return;
         if (IsLootSweep) { SweepTick(common); return; }
         if (!startedCampaign)
@@ -307,7 +318,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (context.State.Finished && (!Options.ExploreAll || context.Campaign.Locations.All(l =>
             IsDungeon(l) ? context.Completed.Contains(l.Id) : visited.Contains(l.Id))))
         { Finish("Victory", Options.ExploreAll ? "Campaign complete; every generated destination visited and dungeon completed once." : "Campaign Finished state reached."); return; }
-        var game = FindFirstObjectByType<Game>();
+        var game = Game.Instance;
         if (game != null) { DungeonTick(game); return; }
         var town = FindFirstObjectByType<Town>();
         if (town != null) { if (town.IsReady) TownTick(town, context); return; }
@@ -591,6 +602,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         }
         var attack = new AllyAttackPolicy(game,ally,0);
         if (attack.ShouldRun()) { var action = attack.GetActions().FirstOrDefault(a => a.IsValid(ally)); if (action != null) { Act(ally,action,"Attack"); return; } }
+        var mimicInteraction = NearbyMimicInteraction(game, ally);
+        if (mimicInteraction != null) { Act(ally, mimicInteraction, "Open treasure chest disguise"); return; }
         var stairs = dungeon.Interactables.OfType<Stairs>().FirstOrDefault();
         if (stairs == null) { Finish("Unsupported","Ready dungeon has no stairs objective."); return; }
         if (stairs != null && stairs.Position == ally.TilemapPosition && game.CanExitFloor)
@@ -618,7 +631,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         // Approach its nearest footprint edge so normal sight and attack rules can handle it.
         if (next == null)
             foreach (var target in discovered.Where(p => p != ally.TilemapPosition && CanOccupy(p) && game.Enemies.Any(e => e != null && e.Vitals.HP > 0 &&
-                Steps.Any(s => discovered.Contains(p+s) && e.ToBounds().Contains(p+s)))).OrderBy(p => (p-ally.TilemapPosition).sqrMagnitude))
+                Steps.Any(s => discovered.Contains(p+s) && e.ToBounds().Contains(p+s) && dungeon.CanWalkTo(p, p+s)))).OrderBy(p => (p-ally.TilemapPosition).sqrMagnitude))
                 if ((next = approachRoute.Next(ally.TilemapPosition,target,DungeonGrid,CanStep)).HasValue) { combatObjective = target; break; }
         if (next == null)
         {
@@ -628,6 +641,17 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         ally.SetFacingByTargetPosition(next.Value);
         GameAction movement = other == null ? new MovementAction(ally,ally.TilemapPosition,next.Value) : new SwapAllyPositionAction(ally,other);
         Act(ally,movement,"Dungeon move " + next);
+    }
+
+    internal static GameAction NearbyMimicInteraction(Game game, Ally ally)
+    {
+        foreach (var enemy in game.Enemies.OfType<Enemy>().Where(e => e != null && e.Vitals.HP > 0 && EnemyBehavior.IsDisguised(e)))
+        {
+            var interaction = new RevealMimicAction(enemy);
+            if (interaction.IsValid(ally) && game.CurrentDungeon.CanWalkTo(ally.TilemapPosition, enemy.TilemapPosition))
+            { ally.SetFacingByTargetPosition(enemy.TilemapPosition); return interaction; }
+        }
+        return null;
     }
 
     internal static GameAction FollowerTravelAction(Game game, Ally ally, Ally leader) =>
@@ -642,8 +666,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     private void Log(string message)
     {
         Status = message; Report.Actions++;
-        var c = Common.Instance?.CampaignContext; var game = FindFirstObjectByType<Game>();
-        var town = FindFirstObjectByType<Town>(); var ally = game?.PlayerController?.ControlledAlly;
+        var c = Common.Instance?.CampaignContext; var game = Game.Instance;
+        var town = game == null ? FindFirstObjectByType<Town>() : null; var ally = game?.PlayerController?.ControlledAlly;
         string position = ally != null ? ally.TilemapPosition.ToString() : town?.TownPlayer?.ControllingTownAlly != null ? town.TownPlayer.ControllingTownAlly.TilemapPosition.ToString() : c != null && c.State.Scene == "Overworld" ? c.Position.ToString() : "";
         WriteEvent(new AutoplayEvent { Kind = "Action", Message = message, ActorId = ally != null ? ActorId(ally) : town?.TownPlayer?.ControllingTownAlly?.Id });
         string combat = game == null ? "" : string.Join(",",game.Enemies.Where(e => e != null).Select(e => e.GetInstanceID() + ":" + e.Vitals.HP));
@@ -659,7 +683,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         if (!SessionRunning || float.IsNaN(speed) || float.IsInfinity(speed)) return;
         Options.Speed = Mathf.Clamp(speed, .5f, 32f);
-        if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime * Options.Speed;
+        Time.fixedDeltaTime = originalFixedDeltaTime * Options.Speed;
         if (!Paused && Running) Time.timeScale = Options.Speed;
         nextTick = Time.unscaledTime;
         WriteReport();
@@ -753,7 +777,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             Paused = false;
             PanelVisible = false;
             PlayerControlled = true;
-            if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime;
+            Time.fixedDeltaTime = originalFixedDeltaTime;
             takingControl = false;
             Time.timeScale = 1;
             yield break;
@@ -785,7 +809,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         while (Finalizing || unloadingRun) yield return null;
         Time.timeScale = originalTimeScale;
-        if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime;
+        Time.fixedDeltaTime = originalFixedDeltaTime;
         var common = Common.Instance;
         common.ScreenTransition.HoldClosed(); // Cancel a queued transition callback before restoring the original campaign.
         CampaignParty.ClearLiveParty(common);
@@ -800,7 +824,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
 
     private void Capture()
     {
-        var common = FindFirstObjectByType<Common>(); var game = FindFirstObjectByType<Game>();
+        var common = Common.Instance; var game = Game.Instance;
         var c = common?.CampaignContext;
         Report.Seconds = Time.realtimeSinceStartupAsDouble-started-pausedSeconds-(Paused ? Time.realtimeSinceStartupAsDouble-pausedAt : 0);
         Report.Scene = SceneManager.GetActiveScene().name; Report.Campaign = c?.Capture();
@@ -862,8 +886,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             finally
             {
                 Active = null; Time.timeScale = originalTimeScale;
-                if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime;
-                UnityEngine.Random.state = originalRandom; ReleaseSweepReload();
+                Time.fixedDeltaTime = originalFixedDeltaTime;
+                UnityEngine.Random.state = originalRandom; ReleaseSessionReload();
             }
         }
     }

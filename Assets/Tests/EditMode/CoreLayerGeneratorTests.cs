@@ -78,6 +78,27 @@ namespace EternalEnigma.Tests.CoreIntegration
         }
 
         [Test]
+        public void RuntimeTemplateResizesPaintLayersAcrossRectangularFloors()
+        {
+            var clone = LoadClone(DungeonPath);
+            var paints = clone.mapBlueprintLayers.SelectMany(layer => layer.stack)
+                .Select(entry => entry.action).OfType<TWC.Actions.Paint>().ToArray();
+            Assert.That(paints, Is.Not.Empty, "Exercise the production paint stack that failed in campaign seed 43.");
+            foreach (var paint in paints) paint.FillMap(false, creator);
+            foreach (var size in new[] { new Vector2Int(32, 80), new Vector2Int(80, 32), new Vector2Int(32, 32) })
+            {
+                CoreDungeonLayerGenerator.Configure(clone, new DungeonFloorOptions(43, size.x, size.y));
+                creator.SetCustomRandomSeed(43);
+                Assert.DoesNotThrow(() => creator.ExecuteAllBlueprintLayers());
+                Assert.That(CoreLayoutCache.TryGetDungeon(creator, out var floor), Is.True);
+                Assert.That(floor.Width, Is.EqualTo(size.x)); Assert.That(floor.Height, Is.EqualTo(size.y));
+                var mask = creator.GetMapOutputFromBlueprintLayer(DungeonLayers.Floor);
+                Assert.That(mask.GetLength(0), Is.EqualTo(size.x)); Assert.That(mask.GetLength(1), Is.EqualTo(size.y));
+                Assert.That(mask.Cast<bool>().Any(cell => cell), Is.True);
+            }
+        }
+
+        [Test]
         public void DungeonAssetExecutesToCoreLayersOnce()
         {
             var clone = LoadClone(DungeonPath);

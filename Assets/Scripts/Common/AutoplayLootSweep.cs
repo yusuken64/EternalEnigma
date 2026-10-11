@@ -194,6 +194,8 @@ public sealed partial class AutoplayRunner
             if (action != null) { Act(ally, action, "Attack"); return; }
         }
         var targets = LootLedger.Pending.Where(p => p != null).ToArray();
+        var mimicInteraction = NearbyMimicInteraction(game, ally);
+        if (mimicInteraction != null) { Act(ally, mimicInteraction, "Open treasure chest disguise"); return; }
         bool CanOccupy(Vector3Int p) => dungeon.IsWalkable(p) && dungeon.OverlapsAnyOtherCharacter(ally, Character.ToBounds(ally.FootPrint, p), true) == null;
         bool CanStep(Vector3Int a, Vector3Int b) => dungeon.CanWalkTo(a, b) && CanOccupy(b);
         AStar.Node[,] Grid()
@@ -236,7 +238,7 @@ public sealed partial class AutoplayRunner
             .OrderBy(p => (p.Position - ally.TilemapPosition).sqrMagnitude)) if (TryTarget(prop)) return;
         // Approach blocking creatures using the same A* and combat policy as campaign autoplay.
         foreach (var enemy in game.Enemies.Where(e => e != null && e.Vitals.HP > 0).OrderBy(e => (e.TilemapPosition - ally.TilemapPosition).sqrMagnitude))
-            foreach (var goal in enemy.ToBounds().Cells().SelectMany(p => Steps.Select(s => p + s)).Where(CanOccupy).Distinct())
+            foreach (var goal in enemy.ToBounds().Cells().SelectMany(p => Steps.Where(s => dungeon.CanWalkTo(p + s, p)).Select(s => p + s)).Where(CanOccupy).Distinct())
             {
                 var next = approachRoute.Next(ally.TilemapPosition, goal, Grid, CanStep);
                 if (!next.HasValue) continue;
@@ -260,19 +262,19 @@ public sealed partial class AutoplayRunner
         Active.WriteEvent(new AutoplayEvent { Kind = "Recovery", Message = message });
         Active.Issue("PlacementFailure", message);
     }
-    private bool sweepReloadLocked;
-    private void HoldSweepReload()
+    private bool sessionReloadLocked;
+    private void HoldSessionReload()
     {
 #if UNITY_EDITOR
         // File writers, save scopes and generation coroutines cannot survive a domain
         // reload. Defer it until scene cleanup has finished under the isolated store.
-        if (IsLootSweep) { UnityEditor.EditorApplication.LockReloadAssemblies(); sweepReloadLocked = true; }
+        UnityEditor.EditorApplication.LockReloadAssemblies(); sessionReloadLocked = true;
 #endif
     }
-    private void ReleaseSweepReload()
+    private void ReleaseSessionReload()
     {
 #if UNITY_EDITOR
-        if (sweepReloadLocked) { sweepReloadLocked = false; UnityEditor.EditorApplication.UnlockReloadAssemblies(); }
+        if (sessionReloadLocked) { sessionReloadLocked = false; UnityEditor.EditorApplication.UnlockReloadAssemblies(); }
 #endif
     }
     private void CaptureSweepCamera(string name)

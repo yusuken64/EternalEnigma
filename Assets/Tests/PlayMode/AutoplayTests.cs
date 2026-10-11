@@ -129,20 +129,28 @@ namespace EternalEnigma.Tests
         public IEnumerator PauseAndStopBetweenRunsKeepFinishedArtifacts()
         {
             yield return harness.LoadMainMenu(null);
-            AutoplayRunner.WatchDemo(new AutoplayOptions { RunCount=3,Speed=8 });
+            float originalStep = Time.fixedDeltaTime;
+            var originalAnimation = DungeonPreferences.AnimationMode;
+            AutoplayRunner.WatchDemo(new AutoplayOptions { RunCount=3,Speed=8,NoAnimations=true });
             var run=AutoplayRunner.Active;run.Report.ValidationOnly=true;
+            Assert.That(Time.fixedDeltaTime, Is.EqualTo(originalStep * 8).Within(.0001f));
+            Assert.That(DungeonPreferences.AnimationMode, Is.EqualTo(DungeonAnimationMode.NoAnimations));
             yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"batch town");
             run.SetPaused(true);run.Finish("Stalled","Synthetic lifecycle validation");
             yield return harness.WaitUntil(()=>!run.Finalizing,"flushed first run");
             Assert.That(run.Advancing,Is.True);Assert.That(run.Report.ArtifactsComplete,Is.True);
             run.SetSpeed(16);yield return null;yield return null;
             Assert.That(run.RunNumber,Is.EqualTo(1));Assert.That(Time.timeScale,Is.Zero);
+            Assert.That(Time.fixedDeltaTime, Is.EqualTo(originalStep * 16).Within(.0001f));
             run.Stop();run.SetPaused(false);yield return null;yield return null;
             Assert.That(run.RunNumber,Is.EqualTo(1));Assert.That(run.Batch.State,Is.EqualTo("Stopped"));
             Assert.That(run.Report.Outcome,Is.EqualTo("Stalled"));
             var issue=File.ReadAllLines(Path.Combine(run.DirectoryPath,"issues.jsonl")).Select(JsonUtility.FromJson<AutoplayEvent>).Single(e=>e.Severity=="Stalled");
             Assert.That(issue.Message,Does.Contain("Synthetic lifecycle"));
             Assert.That(issue.ActorId,Is.Not.Empty);
+            run.ExitDemo(); yield return harness.WaitUntil(() => AutoplayRunner.Active == null, "restore pacing");
+            Assert.That(Time.fixedDeltaTime, Is.EqualTo(originalStep).Within(.000001f));
+            Assert.That(DungeonPreferences.AnimationMode, Is.EqualTo(originalAnimation));
         }
 
         [UnityTest]
@@ -245,13 +253,17 @@ namespace EternalEnigma.Tests
         {
             yield return harness.LoadMainMenu(null);
             var original=Common.Instance.GameSaveData;
-            AutoplayRunner.WatchDemo(new AutoplayOptions {RunCount=3});
+            float originalStep = Time.fixedDeltaTime;
+            var originalAnimation = DungeonPreferences.AnimationMode;
+            AutoplayRunner.WatchDemo(new AutoplayOptions {RunCount=3, Speed=8, NoAnimations=true});
             var run=AutoplayRunner.Active;run.Report.ValidationOnly=true;
             yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"takeover town");
             run.SetPaused(true);run.Finish("Victory","Synthetic lifecycle validation");
             yield return harness.WaitUntil(()=>!run.Finalizing,"completed run before takeover");
             Assert.That(run.Advancing,Is.True);run.TakeControl();
             yield return harness.WaitUntil(()=>run.PlayerControlled,"takeover between seeds");
+            Assert.That(Time.fixedDeltaTime, Is.EqualTo(originalStep).Within(.000001f));
+            Assert.That(DungeonPreferences.AnimationMode, Is.EqualTo(originalAnimation));
             Assert.That(run.RunNumber,Is.EqualTo(1));Assert.That(run.Batch.State,Is.EqualTo("Stopped"));
             Assert.That(run.Advancing,Is.False);Assert.That(Common.Instance.GameSaveData,Is.Not.SameAs(original));
             Assert.That(Common.Instance.Travel.ReturnToMenu(),Is.True);

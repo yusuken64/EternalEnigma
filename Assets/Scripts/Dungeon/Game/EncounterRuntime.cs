@@ -64,6 +64,7 @@ public sealed class EncounterRuntime
             enemy.IsDormant = false; enemy.TilemapPosition = placement.Position.ToCell();
             if (!SkillMovement.CanOccupy(enemy,enemy.TilemapPosition))
                 throw new InvalidOperationException($"Objective actor {placement.Id} has a blocked {placement.Footprint}x{placement.Footprint} footprint at {placement.Position}.");
+            enemy.InitializeSpawn();
             game.Enemies.Add(enemy);
             Register(enemy, placement.Id, placement.Invulnerable);
         }

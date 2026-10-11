@@ -80,7 +80,7 @@ public class TurnManager : MonoBehaviour
 		IsProcessingTurn = true;
 		try
         {
-            if (AutoplayRunner.Sweeping)
+            if (AutoplayRunner.SuppressesAnimations)
             {
                 // No-animation playback still executes every production routine and
                 // its bookkeeping. Flatten completed enumerators; explicit waits,
@@ -359,7 +359,7 @@ public class TurnManager : MonoBehaviour
             foreach (var replay in simultaneousEffects)
                 replay.Action.AddDestinationSight(Game.Instance.PlaybackVisibleTiles);
 
-            if (AutoplayRunner.Sweeping)
+            if (AutoplayRunner.SuppressesAnimations)
             {
                 // There are no animations to run concurrently. Avoid scheduling an
                 // extra coroutine per effect merely to wait for an empty animation.

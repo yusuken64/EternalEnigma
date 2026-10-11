@@ -57,8 +57,7 @@ namespace TWC.Actions
 		{
 			var _r = new Paint();
 			
-			_r.paintMap = new bool[this.paintMap.GetLength(0),this.paintMap.GetLength(1)];
-			System.Array.Copy(this.paintMap, _r.paintMap, this.paintMap.Length);
+			if (paintMap != null) _r.paintMap = (bool[,])paintMap.Clone();
 			
 			_r.layerIndex = this.layerIndex;
 			_r.executeBuildLayers = this.executeBuildLayers;
@@ -69,10 +68,7 @@ namespace TWC.Actions
 		
 		public override void ModifyMap(int _x, int _y, bool _value, TileWorldCreator _twc)
 		{
-			if (paintMap == null)
-			{
-				paintMap = new bool[_twc.twcAsset.mapWidth, _twc.twcAsset.mapHeight];
-			}
+			EnsureMapSize(_twc);
 			
 			if (_x >= 0 && _x < paintMap.GetLength(0) && _y >= 0 && _y < paintMap.GetLength(1))
 			{
@@ -82,10 +78,7 @@ namespace TWC.Actions
 		
 		public override void FillMap(bool _value, TileWorldCreator _twc)
 		{
-			if (paintMap == null)
-			{
-				paintMap = new bool[_twc.twcAsset.mapWidth, _twc.twcAsset.mapHeight];
-			}
+			EnsureMapSize(_twc);
 			
 			for (int x = 0; x < paintMap.GetLength(0); x ++)
 			{
@@ -98,13 +91,23 @@ namespace TWC.Actions
 		
 		public override void CopyMap(TileWorldCreator _twc)
 		{
-			paintMap = _twc.twcAsset.mapBlueprintLayers[layerIndex].map;
+			paintMap = (bool[,])_twc.twcAsset.mapBlueprintLayers[layerIndex].map.Clone();
+		}
+
+		void EnsureMapSize(TileWorldCreator creator)
+		{
+			int width = creator.twcAsset.mapWidth, height = creator.twcAsset.mapHeight;
+			if (paintMap == null) paintMap = new bool[width, height];
+			else if (paintMap.GetLength(0) != width || paintMap.GetLength(1) != height)
+				paintMap = ResizeArray(paintMap, width, height);
 		}
 		
 		public bool[,] Execute(bool[,] map, TileWorldCreator _twc)
 		{
 			if (paintMap != null)
 			{
+				// Runtime floor configuration also resizes the asset, without opening the paint inspector.
+				EnsureMapSize(_twc);
 				return TileWorldCreatorUtilities.MergeMap(map, paintMap);
 			}
 			else

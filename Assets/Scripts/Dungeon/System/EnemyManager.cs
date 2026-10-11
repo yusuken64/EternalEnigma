@@ -52,6 +52,7 @@ public class EnemyManager : MonoBehaviour
             enemy.InitialzeVitalsFromStats();
             enemy.IsDormant = UnityEngine.Random.value < EnemyAwareness.DormantSpawnChance;
             enemy.TilemapPosition = cell;
+            enemy.InitializeSpawn();
             game.Enemies.Add(enemy);
             reserved.Add(cell);
             spawned.Add(enemy);

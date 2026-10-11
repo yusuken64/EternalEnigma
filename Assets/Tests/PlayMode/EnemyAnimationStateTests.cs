@@ -56,7 +56,12 @@ public sealed class EnemyAnimationStateTests
             Assert.That(behavior.Disguised, Is.True);
             Assert.That(enemy.IsDormant, Is.True);
             Assert.That(enemy.Animator.gameObject.activeInHierarchy, Is.False);
-            Assert.DoesNotThrow(() => enemy.PlayIdleAnimation());
+            var warnings = new System.Collections.Generic.List<string>();
+            void CaptureWarning(string message, string stack, LogType type) { if (type == LogType.Warning) warnings.Add(message); }
+            Application.logMessageReceived += CaptureWarning;
+            try { Assert.DoesNotThrow(() => enemy.PlayIdleAnimation()); }
+            finally { Application.logMessageReceived -= CaptureWarning; }
+            Assert.That(warnings, Is.Empty, "The hidden mimic animator must not be queried for missing states.");
 
             var pickup = new RevealMimicAction(enemy);
             ally.TilemapPosition = Vector3Int.left * 2;

@@ -32,6 +32,7 @@ internal class SpawnEnemyAction : GameAction
 		_spawnedEnemy.UpdateCachedStats();
 		_spawnedEnemy.InitialzeVitalsFromStats();
 		_spawnedEnemy.TilemapPosition = spawnTilePosition;
+        _spawnedEnemy.InitializeSpawn();
 		_spawnedEnemy.VisualParent.gameObject.SetActive(false);
 		_spawnedEnemy.VisualParent.transform.localScale = Vector3.zero;
 		_spawnedEnemy.VisualParent.transform.position = spawnSourceWorldLocation;

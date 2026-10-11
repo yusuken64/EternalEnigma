@@ -459,6 +459,13 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign Saves EditMode")]
     public static void RunCampaignSavesEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode","CampaignSlotStoreTests","SaveStoreTests","EternalEnigma.Tests.CoreIntegration.CampaignSaveTests","TrainerOfferTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Debug Autoplay Regression")]
+    public static void RunDebugAutoplayRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayTests.PauseAndStopBetweenRunsKeepFinishedArtifacts",
+        "EternalEnigma.Tests.AutoplayTests.TakeoverBetweenRunsCancelsAdvancement",
+        "EternalEnigma.Tests.AutoplayTests.SequentialSeedsWriteCompleteArtifactsAndRestoreOriginalSave",
+        "EnemyAnimationStateTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay")]
     public static void RunAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.AutoplayTests.SequentialSeedsWriteCompleteArtifactsAndRestoreOriginalSave",

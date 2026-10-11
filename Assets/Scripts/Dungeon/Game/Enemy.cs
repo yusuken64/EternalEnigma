@@ -31,9 +31,14 @@ public class Enemy : Character
 
     public List<PolicyBase> Policies;
     public override bool IsWaitingForPlayerInput { get; set; }
+    private bool spawnInitialized;
 
-    private void Start()
+    private void Start() => InitializeSpawn();
+
+    internal void InitializeSpawn()
 	{
+        if (spawnInitialized) return;
+        spawnInitialized = true;
         SetFacing(VisualRandom.Pick(spawnFacings));
         gameObject.AddComponent<FogHiddenVisual>();
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(TilemapPosition);
@@ -70,6 +75,8 @@ public class Enemy : Character
 			determinedActions = new();
 			return;
 		}
+
+        InitializeSpawn();
 
         var encounterAction = Game.Instance.Encounter?.EnemyAction(this);
         if (encounterAction != null) { determinedActions = new() { encounterAction }; return; }
@@ -210,7 +217,7 @@ public class Enemy : Character
 	{
 		var state = AnimationStates(action).FirstOrDefault();
 		if (state != null) return state;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 		string key = Animator.runtimeAnimatorController.name + ":" + action;
 		if (missingStates.Add(key)) Debug.LogWarning($"Enemy animation '{action}' missing on {Animator.runtimeAnimatorController.name}; using IdleNormal.", this);
 #endif
@@ -247,6 +254,7 @@ public class Enemy : Character
 	}
 	internal override void PlayIdleAnimation()
 	{
+		if (GetComponent<EnemyBehavior>()?.Disguised == true) return;
 		PlayState(StateOrIdle(statusLoop == AnimatedAction.Dizzy ? "Dizzy" :
 			!IsDormant && PursuitTarget != null && TileWorldDungeon.ChevDistance(TilemapPosition,PursuitTarget.TilemapPosition) <= 4
 				? "IdleBattle" : "IdleNormal"));

@@ -108,6 +108,37 @@ by CI or by opening the game. Run Normal and Run Debug menu commands use seed 42
 Programmatic `AutoplayOptions` remain single-run by default; `DebugCoverage` is an
 explicit option and only takes effect with `DebugPlaythrough`.
 
+For a scripted campaign debug batch, write `AutoplayOptions` JSON to
+`Temp/DebugAutoplay/options.json`, then invoke **Tools > Eternal Enigma > Playthrough >
+Run Debug From File** through Unity MCP. Use `Mode: 0`, `DebugPlaythrough: true`,
+`Seed` and `RunCount` to select the campaigns. The optional `NoAnimations: true`
+temporarily disables dungeon animations and floor-introduction delays without
+changing the saved animation preference. It still executes production turns,
+travel, generation and progression. Accelerated playback scales the physics step
+along with game time and restores it on takeover or exit. Script reloads are deferred
+until the isolated session is cleaned up.
+
+`node Tools/debug-autoplay.mjs status [batch-directory]` reports campaign progress
+and every issue. `verify` requires at least 100 distinct sequential seeds, each with
+a finalized Victory, the real campaign Finished flag, no warnings/errors, matching
+build identifiers, and complete save, screenshot and action artifacts. Merely
+launching a batch or reaching its time limits does not pass this verification.
+
+For concurrent local runs, **Build Debug Windows** builds the enabled production
+scenes into `Builds/DebugAutoplay/DebugAutoplay.exe`. Development players accept
+`--debug-autoplay-options <options.json>`; the options must name an explicit
+`ReportRoot`. The player launches the same isolated campaign runner, ignores
+watch-demo input prompts, and exits after finalization and save cleanup. It returns
+zero only when every requested campaign wins without issues. Normal launches do
+not start this runner.
+
+The report verifier also accepts a directory containing `campaign-suite.json`:
+`{"StartingSeed":43,"RequestedRuns":100,"Workers":["worker-1","worker-2"]}`.
+Each worker's `ReportRoot` is its named subdirectory of that directory. Give the
+workers disjoint consecutive seed ranges, such as 43–92 and 93–142. Verification
+reads their actual reports and requires all 100 seeds to finish on one build;
+the manifest alone never establishes a pass.
+
 A batch starts a new isolated campaign for each seed `Seed + run index` (zero-based).
 Victory, Defeat, Stalled and TimeLimit advance to the next seed. Unsupported,
 GameError, AutomationError, manual stop, return to menu and player takeover stop

@@ -128,8 +128,8 @@ public sealed partial class AutoplayRunner
     private AutoplayEvent Stamp(AutoplayEvent entry)
     {
         var c = Common.Instance?.CampaignContext;
-        var game = FindFirstObjectByType<Game>();
-        var town = FindFirstObjectByType<Town>();
+        var game = Game.Instance;
+        var town = game == null ? FindFirstObjectByType<Town>() : null;
         var ally = game?.PlayerController?.ControlledAlly;
         if (game != null && !string.IsNullOrEmpty(entry.ActorId))
             ally = game.Allies.Concat(game.DownedAllies).FirstOrDefault(a => a != null && ActorId(a) == entry.ActorId) ?? ally;

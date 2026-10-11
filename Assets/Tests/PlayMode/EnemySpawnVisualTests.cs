@@ -19,6 +19,60 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup() => harness.Cleanup();
 
         [UnityTest]
+        public IEnumerator SpawnedEnemiesCanActBeforeStartWithoutReinitializingNextFrame()
+        {
+            var dungeon = harness.Game.CurrentDungeon;
+            foreach (var name in new[] { "Enemy_Slime", "Enemy_ChestMonster" })
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/" + name + ".prefab");
+                var cell = dungeon.GetStartPosition();
+                var spawn = new SpawnEnemyAction(prefab, cell, dungeon.CellToWorld(cell));
+                spawn.ExecuteImmediate(harness.Ally);
+                var routine = spawn.ExecuteRoutine(harness.Ally, true);
+                Assert.That(routine.MoveNext(), Is.False, "A no-animation spawn completes without advancing a frame.");
+                var enemy = spawn.SpawnedEnemy;
+                Assert.That(enemy.Policies, Is.Not.Null.And.Not.Empty);
+                Assert.DoesNotThrow(enemy.DetermineAction);
+                var behavior = enemy.GetComponent<EnemyBehavior>();
+                if (behavior?.Mimic == true)
+                {
+                    Assert.That(behavior.Disguised && enemy.IsDormant, Is.True);
+                    Assert.That(enemy.GetComponentsInChildren<Transform>().Count(t => t.name == "Treasure chest disguise"), Is.EqualTo(1));
+                    behavior.Provoke();
+                }
+                var policies = enemy.Policies;
+                enemy.Policies.Clear(); enemy.SetFacing(Facing.Left);
+                yield return null;
+                Assert.That(enemy.Policies, Is.SameAs(policies).And.Empty, "Start must not replace an already initialized policy list.");
+                Assert.That(enemy.CurrentFacing, Is.EqualTo(Facing.Left), "Start must not reroll a spawn that already acted.");
+                Assert.That(enemy.GetComponents<FogHiddenVisual>(), Has.Length.EqualTo(1));
+                if (behavior?.Mimic == true) Assert.That(behavior.Disguised || enemy.IsDormant, Is.False);
+                harness.Game.Enemies.Remove(enemy); Object.Destroy(enemy.gameObject);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator AutoplayOpensBlockingMimicsThroughTheNormalTurnAction()
+        {
+            var game = harness.Game;
+            var ally = harness.Ally;
+            var cell = new[] { Vector3Int.up, Vector3Int.right, Vector3Int.down, Vector3Int.left }
+                .Select(offset => ally.TilemapPosition + offset)
+                .First(position => game.CurrentDungeon.CanWalkTo(ally.TilemapPosition, position) &&
+                    !game.AllCharacters.Any(c => c.ToBounds().Contains(position)));
+            yield return harness.SpawnEnemy("Enemy_ChestMonster", cell);
+            var mimic = game.Enemies.OfType<Enemy>().Single(e => e.TilemapPosition == cell);
+            Assert.That(EnemyBehavior.IsDisguised(mimic), Is.True);
+            Assert.That(AllyCombat.IsVisibleHostile(game, ally, mimic), Is.False);
+            var interaction = AutoplayRunner.NearbyMimicInteraction(game, ally);
+            Assert.That(interaction, Is.TypeOf<RevealMimicAction>());
+            yield return harness.ExecuteAction(interaction);
+            Assert.That(EnemyBehavior.IsDisguised(mimic) || mimic.IsDormant, Is.False);
+            Assert.That(AllyCombat.IsVisibleHostile(game, ally, mimic), Is.True);
+            Assert.That(AutoplayRunner.NearbyMimicInteraction(game, ally), Is.Null);
+        }
+
+        [UnityTest]
         public IEnumerator ActiveAndDormantSpawnsUseVariedFacingsAndMatchingVisualRotations()
         {
             var normal = new HashSet<Facing>(); var dormant = new HashSet<Facing>();

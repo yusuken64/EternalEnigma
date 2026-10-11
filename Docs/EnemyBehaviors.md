@@ -1,7 +1,6 @@
 # Dungeon enemy behaviors
 
-The listed behaviors are runtime components on committed enemy prefabs. Completed roster,
-behavior and statue construction scripts are removed; tune the prefab data directly.
+The listed behaviors are runtime components on committed enemy prefabs. Tune their behavior data directly.
 
 The roster reference follows `Assets/Data/MonsterData.txt`; the behavior table describes
 current prefab assignments, including later changes to the original mapping.
@@ -21,9 +20,9 @@ current prefab assignments, including later changes to the original mapping.
 | Bomb Crag / ばくだんいわ | Enemy_TurtleShell | Explodes on death; silence suppresses both damage and the explosion effect |
 | Hork / くさったしたい | Enemy_Werewolf | Spawns in packs of three when valid placement cells are available |
 
-Early combat floors (2–3 in the starter run) contain a breakable Black Knight-shaped Stone Hulk statue. It is static scenery with 40 HP and no loot. Placement preserves connected movement and avoids stairs, spawns, items and characters. The live Black Knight enemy remains separate.
+Early combat floors (2–3 in the starter run) can contain a breakable Black Knight-shaped Stone Hulk statue where its full footprint fits. It is static scenery with 40 HP and no loot. Its baked south-facing idle pose retains the live enemy's size. Placement preserves connected movement and keeps the entire model clear of walls, stairs, props and characters. **Art > Build Enemy Statue** rebuilds it from the enemy prefab; **Art > Build Dungeon Door** rebuilds the textured, normalized door adapter.
 
-Dormancy is an enemy state, separate from the Sleep ailment. Nearby movement does not wake these attack-provoked archetypes. A missed attack still provokes them. Ordinary randomly dormant enemies retain their proximity wake behavior.
+Dormancy is an enemy state, separate from the Sleep ailment. Nearby movement does not wake these attack-provoked archetypes. A missed attack still provokes them. Ordinary randomly dormant enemies retain their proximity wake behavior. Every spawned enemy receives a random initial facing, including dormant enemies and later summons, using visual randomness that does not advance gameplay RNG.
 
 Ranged attacks and confusion require a clear straight or diagonal line. Walls, blocked diagonal corners, scenery and intervening characters stop the shot. Ranged attacks use normal hit/critical resolution and consume an attack; confusion uses the status system and can be cleansed as an ailment. Cooldowns are two turns for ranged attacks and four for confusion.
 
@@ -31,7 +30,7 @@ Confused characters spend their turns attempting a random direction. They may wa
 
 Thieves carry one stolen inventory entry or gold amount. They seek greater distance from the party and fight when cornered. Defeating one drops its stolen property once, preserving the original inventory object, stack and upgrades. Equipped items cannot be stolen. Drops use normal pickup/full-inventory handling. Stolen property is floor-local, following the existing dungeon save model.
 
-Disguised mimics remain damageable enemies for deliberate attacks and area damage. They appear as treasure on the minimap, use a chest label in messages, and are excluded from autonomous targeting. On provocation, the disguise disappears and the original animated model returns.
+Disguised mimics remain damageable enemies for deliberate attacks and area damage. They appear as treasure on the minimap, use a chest label in messages, and are excluded from autonomous targeting. Their chest disguise matches the enemy's size and faces south independently of the hidden enemy's random facing. On provocation, the disguise disappears and the original animated model returns.
 
 The inspector component `EnemyBehavior` controls these abilities; edit the committed
 prefabs directly. The one-time behavior authoring command was removed.

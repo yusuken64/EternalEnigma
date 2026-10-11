@@ -18,6 +18,7 @@ namespace EternalEnigma.Tests.CoreIntegration
         {
             var source=AssetDatabase.LoadAssetAtPath<TileWorldCreatorAsset>("Assets/Prefabs/Dungeon/"+(throne?"DungeonThroneAsset":"DungeonAsset")+".asset");
             var clone=DungeonPresentation.CloneTemplate(source);
+            CoreDungeonLayerGenerator.Configure(clone,throne);
             var host=new GameObject("Raised ground regression"); var root=new GameObject("Legacy raised map");
             DungeonPresentation.PrepareMapRoot(root.transform, true);
             Assert.That(root.transform.position.z,Is.EqualTo(-1.51f));
@@ -73,6 +74,7 @@ namespace EternalEnigma.Tests.CoreIntegration
             foreach(var theme in catalog.Themes)
             {
                 var host=new GameObject("Theme test");var creator=host.AddComponent<TileWorldCreator>();var clone=DungeonPresentation.CloneTemplate(source);creator.twcAsset=clone;
+                CoreDungeonLayerGenerator.Configure(clone,throne);
                 try
                 {
                     creator.SetCustomRandomSeed(9173);
@@ -101,21 +103,23 @@ namespace EternalEnigma.Tests.CoreIntegration
                 Assert.That(floor.Layers[DungeonLayers.Floor][x,y],Is.False);
         }
 
-        [Test]
-        public void RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom()
+        [TestCase(false)] [TestCase(true)]
+        public void RepeatedThemeBuildsOwnMeshesAndDoNotConsumeGameplayRandom(bool throne)
         {
-            var source=AssetDatabase.LoadAssetAtPath<TileWorldCreatorAsset>("Assets/Prefabs/Dungeon/DungeonAsset.asset");
+            var source=AssetDatabase.LoadAssetAtPath<TileWorldCreatorAsset>("Assets/Prefabs/Dungeon/"+(throne?"DungeonThroneAsset":"DungeonAsset")+".asset");
             var catalog=Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
             var host=new GameObject("Theme repeat test");var creator=host.AddComponent<TileWorldCreator>();var root=new GameObject("Theme test output");creator.worldObject=root;
             var state=UnityEngine.Random.state;
             try
             {
-                foreach(var theme in catalog.Themes.Where(t=>t.Biome!=OverworldBiome.Grassland || t.Environment!=DungeonEnvironmentKind.Interior))
+                foreach(var theme in catalog.Themes)
                 {
                     var clone=DungeonPresentation.CloneTemplate(source);creator.twcAsset=clone;creator.SetCustomRandomSeed(12345);
+                    // Keep the complete theme/rebuild matrix small enough for editor physics cooking.
+                    CoreDungeonLayerGenerator.Configure(clone,throne ? DungeonFloorOptions.Throne(12345) : new DungeonFloorOptions(12345,16,16));
                     try
                     {
-                        catalog.Apply(clone,new DungeonVisualSelection {Biome=theme.Biome,Environment=theme.Environment},false);
+                        catalog.Apply(clone,new DungeonVisualSelection {Biome=theme.Biome,Environment=theme.Environment},throne);
                         creator.ExecuteAllBlueprintLayers();CoreLayoutCache.ClearResultFlags(clone);CoreLayoutCache.TryGetDungeon(creator,out var floor);
                         for(int repeat=0;repeat<2;repeat++)
                         {
@@ -124,12 +128,22 @@ namespace EternalEnigma.Tests.CoreIntegration
                             var before=UnityEngine.Random.state;creator.ExecuteAllBuildLayers(true);DungeonPresentation.Decorate(creator,floor,theme);
                             Assert.That(UnityEngine.Random.state,Is.EqualTo(before));
                             var cosmetics=root.transform.Find("Theme cosmetics").GetComponent<EnvironmentMeshOwner>();
+                            Assert.That(cosmetics.PropCount,Is.GreaterThan(0),theme.Name+" must retain visible cosmetics.");
                             Assert.That(cosmetics.PropCount,Is.LessThanOrEqualTo(16*((floor.Width+31)/32)*((floor.Height+31)/32)));
+                            var wallColliders=root.transform.Find("Dungeon_layer").GetComponentsInChildren<MeshFilter>()
+                                .Select(f=>{var c=f.gameObject.AddComponent<MeshCollider>();c.sharedMesh=f.sharedMesh;return c;}).ToArray();
+                            Physics.SyncTransforms();
                             foreach(var mesh in cosmetics.Meshes) foreach(var vertex in mesh.vertices)
                             {
                                 int x=Mathf.FloorToInt(vertex.x/clone.cellSize),y=Mathf.FloorToInt(vertex.y/clone.cellSize);
                                 Assert.That(DungeonPresentation.DecorationAllowed(floor,x,y),Is.True,"Full transformed prop footprint must stay outside walkable cells.");
+                                var ray=new Ray(new Vector3(vertex.x,vertex.y,-10),Vector3.forward);
+                                Assert.That(wallColliders.Any(c=>c.Raycast(ray,out _,9.99f)),Is.False,
+                                    theme.Name+" cosmetic overlaps rendered wall at "+vertex);
                             }
+                            foreach(var collider in wallColliders) UnityEngine.Object.DestroyImmediate(collider);
+                            foreach(var mesh in cosmetics.Meshes)
+                                Assert.That(mesh.bounds.max.z,Is.EqualTo(0).Within(.001f),"Ground props must sit on the paving.");
                             Assert.That(root.transform.Cast<Transform>().Count(t=>t.name=="Theme cosmetics"),Is.EqualTo(1));
                         }
                     }

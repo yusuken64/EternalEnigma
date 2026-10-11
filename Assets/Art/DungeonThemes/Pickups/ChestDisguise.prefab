@@ -57,9 +57,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7484842386655212623}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7032332, y: -0.073912784, z: -0.073912784, w: 0.7032332}
-  m_LocalPosition: {x: -2.1230807, y: -0.11102545, z: -2.6285675}
-  m_LocalScale: {x: 0.47122186, y: 0.47122186, z: 0.47122186}
+  m_LocalRotation: {x: 0.000000030908623, y: 0.7071068, z: 0.7071068, w: -0.000000030908623}
+  m_LocalPosition: {x: 5.0654945, y: -0.0025835037, z: 4.371338}
+  m_LocalScale: {x: 0.99217397, y: 1.3857923, z: 1.1870602}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3202375963834691951}
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28088a0cb9143574394668ef4b3c1d9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DungeonPickupFootprint
-  SupportPoint: {x: 5.7395296, y: -4.4557214, z: 0.38953272}
+  SupportPoint: {x: 4.989681, y: -3.1634169, z: 0.019228777}
 --- !u!1 &9111540893909896486
 GameObject:
   m_ObjectHideFlags: 0
@@ -106,7 +106,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.000000021855694, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 5.1054487, y: -3.6249535, z: 0.002176131}
-  m_LocalScale: {x: 1.22, y: 1.8, z: 1.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2418863593550582419}

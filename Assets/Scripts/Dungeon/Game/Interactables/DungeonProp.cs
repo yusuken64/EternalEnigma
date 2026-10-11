@@ -118,14 +118,17 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
         if (dungeon.LockedDoorPrefab == null) { DungeonPropModels.Create("Crate", parent, size); return; }
         bool spansX = !dungeon.IsFloorCell(cell + Vector3Int.left) && !dungeon.IsFloorCell(cell + Vector3Int.right);
         var model = Instantiate(dungeon.LockedDoorPrefab, parent, false);
-        // The model is authored Y-up and X-wide; this world is -Z up.
+        // The dungeon-owned adapter is Y-up and X-wide; imported model axes and
+        // material assignments are normalized by DungeonPropVisualAuthoring.
         model.transform.localRotation = Quaternion.Euler(0f, 0f, spansX ? 0f : 90f) * Quaternion.Euler(-90f, 0f, 0f);
         model.transform.localPosition = Vector3.zero;
         var renderers = model.GetComponentsInChildren<Renderer>();
         if (renderers.Length == 0) return;
         Bounds Bounds() { var b = renderers[0].bounds; foreach (var r in renderers.Skip(1)) b.Encapsulate(r.bounds); return b; }
         var bounds = Bounds();
-        model.transform.localScale *= size / Mathf.Max(.01f, spansX ? bounds.size.x : bounds.size.y);
+        float scale = Mathf.Min(size / Mathf.Max(.01f, spansX ? bounds.size.x : bounds.size.y),
+            size * 1.75f / Mathf.Max(.01f, bounds.size.z));
+        model.transform.localScale *= scale;
         bounds = Bounds();
         var center = parent.position + new Vector3(size * .5f, size * .5f, 0f);
         model.transform.position += new Vector3(center.x - bounds.center.x, center.y - bounds.center.y, DungeonPresentation.GroundPlaneZ - bounds.max.z);

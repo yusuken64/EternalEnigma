@@ -80,8 +80,10 @@ public static class DungeonPickupAuthoring
         Add("Bag","bag",AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/Bag.prefab"),Vector2.zero);
         var disguise = entries.Single(e=>e.Name=="Chest disguise");
         var enemy = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_ChestMonster.prefab");
+        disguise.Size = DungeonPickupSize.EnemyDisguise;
+        disguise.SizeReference = enemy;
         disguise.ParentScale = enemy.VisualParent.transform.lossyScale;
-        disguise.CellCenter = Vector2.one - (Vector2)enemy.VisualParent.transform.localPosition;
+        disguise.CellCenter = Vector2.zero;
         void Add(string name,string source,GameObject prefab,Vector2 center)
         {
             if (prefab == null) throw new InvalidOperationException("Missing dungeon pickup: "+name);
@@ -119,9 +121,10 @@ public static class DungeonPickupAuthoring
                         ? heroHeight * entry.TargetRatio / (points.Max(p=>p.z)-points.Min(p=>p.z))
                         : heroScreenHeight * entry.TargetRatio / Diameter(Project(camera,points));
                     pose.localScale = Vector3.one * scale;
+                    if (entry.Size == DungeonPickupSize.EnemyDisguise) FitEnemyDisguise(obj, pose, entry);
                     var bounds = VisualBounds(obj);
                     // A .18-unit margin within a two-unit cell, measured on actual geometry.
-                    if (Mathf.Max(bounds.size.x,bounds.size.y)>1.64f)
+                    if (entry.Size != DungeonPickupSize.EnemyDisguise && Mathf.Max(bounds.size.x,bounds.size.y)>1.64f)
                         pose.localScale *= 1.64f / Mathf.Max(bounds.size.x,bounds.size.y);
                     bounds = VisualBounds(obj);
                     points = Points(obj);
@@ -143,6 +146,59 @@ public static class DungeonPickupAuthoring
             Debug.Log($"Calibrated {entries.Count} dungeon floor visuals against unchanged hero H={heroHeight:F6}, camera size={camera.orthographicSize:F6}.");
         }
         finally { EditorSceneManager.ClosePreviewScene(scene); }
+    }
+
+    static void FitEnemyDisguise(GameObject obj, Transform pose, DungeonPickupPresentation.Entry entry)
+    {
+        var scene = EditorSceneManager.NewPreviewScene();
+        try
+        {
+            var enemy = ((GameObject)PrefabUtility.InstantiatePrefab(entry.SizeReference.gameObject, scene)).GetComponent<Enemy>();
+            DungeonPropVisualAuthoring.SampleSouthIdle(enemy);
+            var points = DungeonPropVisualAuthoring.EnemyPoints(enemy.gameObject);
+            var reference = new Bounds(points[0], Vector3.zero); foreach (var p in points) reference.Encapsulate(p);
+            entry.Euler = new Vector3(-90, 0, 180); entry.Shape = Vector3.one;
+            pose.localRotation = Quaternion.Euler(entry.Euler); pose.localScale = Vector3.one;
+            pose.GetChild(0).localScale = entry.Shape;
+            var bounds = VisualBounds(obj);
+            // Local Y becomes world -Z; local Z becomes world -Y in the south-facing pose.
+            pose.localScale = new Vector3(reference.size.x / bounds.size.x, reference.size.z / bounds.size.z, reference.size.y / bounds.size.y);
+        }
+        finally { EditorSceneManager.ClosePreviewScene(scene); }
+    }
+
+    [MenuItem("Tools/Eternal Enigma/Dungeon Smart Layers/Calibrate Mimic Disguise")]
+    public static void CalibrateMimicDisguise()
+    {
+        var table = AssetDatabase.LoadAssetAtPath<DungeonPickupPresentation>(TablePath);
+        var entry = table.Items.Single(e => e.Name == "Chest disguise");
+        entry.Size = DungeonPickupSize.EnemyDisguise;
+        entry.SizeReference = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_ChestMonster.prefab");
+        entry.ParentScale = entry.SizeReference.VisualParent.transform.lossyScale;
+        // The disguise rotates independently of the random facing of the enemy visual parent.
+        entry.CellCenter = Vector2.zero;
+        var obj = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(entry.Prefab));
+        var originalScale = obj.transform.localScale;
+        var scene = EditorSceneManager.NewPreviewScene();
+        try
+        {
+            obj.transform.localScale = Vector3.Scale(originalScale, entry.ParentScale);
+            var pose = obj.transform.Find("Floor pose");
+            FitEnemyDisguise(obj, pose, entry);
+            var points = Points(obj); var bounds = VisualBounds(obj);
+            pose.position += new Vector3(-bounds.center.x, -bounds.center.y, -.025f - points.Max(p => p.z));
+            points = Points(obj);
+            var footprint = pose.GetComponent<DungeonPickupFootprint>();
+            footprint.SupportPoint = pose.InverseTransformPoint(points.OrderByDescending(p => p.z).First());
+            var camera = GameplayCamera(scene, Vector3.zero, out _);
+            entry.BakedScale = pose.localScale.x;
+            entry.ProjectedRatio = Diameter(Project(camera, points)) / table.HeroScreenHeight;
+            entry.WorldHeightRatio = (points.Max(p => p.z) - points.Min(p => p.z)) / table.HeroHeight;
+            obj.transform.localScale = originalScale;
+            PrefabUtility.SaveAsPrefabAsset(obj, AssetDatabase.GetAssetPath(entry.Prefab));
+            EditorUtility.SetDirty(table); AssetDatabase.SaveAssets();
+        }
+        finally { PrefabUtility.UnloadPrefabContents(obj); EditorSceneManager.ClosePreviewScene(scene); }
     }
 
     static void FitEquipmentPose(GameObject obj,Transform pose,DungeonPickupPresentation.Entry entry,Camera camera,float heroScreenHeight,float heroHeight)
@@ -252,7 +308,7 @@ public static class DungeonPickupAuthoring
         }
         return points.ToArray();
     }
-    static Vector3[] Vertices(Mesh mesh)
+    internal static Vector3[] Vertices(Mesh mesh)
     {
         if(mesh.isReadable)return mesh.vertices;
         // Editor MeshUtility reads imported GPU meshes during Play Mode without

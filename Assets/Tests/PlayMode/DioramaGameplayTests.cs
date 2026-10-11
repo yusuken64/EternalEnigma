@@ -88,7 +88,8 @@ namespace EternalEnigma.Tests
                     var points=Points(obj);var projected=Project(points);
                     float diameter=(float)authoring.GetMethod("Diameter").Invoke(null,new object[]{projected});
                     float ratio=diameter/screenHeight,vertical=(points.Max(p=>p.z)-points.Min(p=>p.z))/height;
-                    if(entry.Size==DungeonPickupSize.Chest)Assert.That(vertical,Is.EqualTo(.5f).Within(.03f),entry.Name);
+                    if(entry.Size==DungeonPickupSize.EnemyDisguise) Assert.That(entry.SizeReference,Is.Not.Null,entry.Name);
+                    else if(entry.Size==DungeonPickupSize.Chest)Assert.That(vertical,Is.EqualTo(.5f).Within(.03f),entry.Name);
                     else Assert.That(ratio,Is.InRange(entry.Size==DungeonPickupSize.Elongated?.5f:1f/3,entry.Size==DungeonPickupSize.Elongated?2f/3:.5f),entry.Name);
                     report.AppendLine($"\"{entry.Name}\",{ratio:F4},{vertical:F4}");
                 }
@@ -116,13 +117,26 @@ namespace EternalEnigma.Tests
             Assert.That(chest.GetComponentInChildren<DungeonPickupFootprint>().GroundZ,Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.001f));
             var chestBounds=chest.GetComponentsInChildren<Renderer>().Select(r=>r.bounds).Aggregate((a,b)=>{a.Encapsulate(b);return a;});
             var chestPoints=Points(chest.gameObject);
-            Assert.That(chestPoints.Max(p=>p.z)-chestPoints.Min(p=>p.z),Is.EqualTo(Resources.Load<DungeonPickupPresentation>("DungeonThemes/PickupPresentation").HeroHeight*.5f).Within(.001f));
-            Assert.That(Mathf.Max(chestBounds.size.x,chestBounds.size.y),Is.LessThanOrEqualTo(1.641f));
+            Assert.That(Quaternion.Angle(chest.rotation,Quaternion.identity),Is.LessThan(.01f),"Disguise keeps its authored south-facing pose.");
+            var reference=Object.Instantiate(AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_ChestMonster.prefab"));
+            try
+            {
+                var authoring=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("DungeonPropVisualAuthoring")).First(t=>t!=null);
+                authoring.GetMethod("SampleSouthIdle").Invoke(null,new object[]{reference});
+                var points=(Vector3[])authoring.GetMethod("EnemyPoints").Invoke(null,new object[]{reference.gameObject});
+                var expected=new Bounds(points[0],Vector3.zero);foreach(var point in points)expected.Encapsulate(point);
+                Assert.That(Vector3.Distance(chestBounds.size,expected.size),Is.LessThan(.01f),"Disguise matches the enemy in all three dimensions.");
+            }
+            finally {Object.DestroyImmediate(reference.gameObject);}
             var camera=Camera.main;var originalPosition=camera.transform.position;float originalSize=camera.orthographicSize;
             try
             {
-                var middle=(key.transform.position+mimic.transform.position+harness.Ally.transform.position)/3+Vector3.back*.4f;
-                camera.transform.position=middle-camera.transform.forward*20;camera.orthographicSize=3;
+                var points=Points(key.gameObject).Concat(chestPoints).Concat(Points(harness.Ally.gameObject)).ToArray();
+                var bounds=new Bounds(points[0],Vector3.zero);foreach(var point in points)bounds.Encapsulate(point);
+                camera.transform.position=bounds.center-camera.transform.forward*20;
+                var view=points.Select(camera.transform.InverseTransformPoint).ToArray();
+                camera.orthographicSize=Mathf.Max(3,(view.Max(p=>p.y)-view.Min(p=>p.y))*.55f,
+                    (view.Max(p=>p.x)-view.Min(p=>p.x))*.55f/(1280f/800));
                 var target=RenderTexture.GetTemporary(1280,800,24);var oldTarget=camera.targetTexture;var previous=RenderTexture.active;
                 var image=new Texture2D(1280,800,TextureFormat.RGB24,false);
                 try

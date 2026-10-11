@@ -209,7 +209,8 @@ namespace EternalEnigma.Tests.EditMode
             {
             foreach(var entry in table.Items)
             {
-                if(entry.Size==DungeonPickupSize.Chest)Assert.That(entry.WorldHeightRatio,Is.EqualTo(.5f).Within(.01f),entry.Name);
+                if(entry.Size==DungeonPickupSize.EnemyDisguise) Assert.That(entry.SizeReference,Is.Not.Null,entry.Name);
+                else if(entry.Size==DungeonPickupSize.Chest)Assert.That(entry.WorldHeightRatio,Is.EqualTo(.5f).Within(.01f),entry.Name);
                 else Assert.That(entry.ProjectedRatio,Is.InRange(entry.Size==DungeonPickupSize.Elongated?.5f:1f/3,entry.Size==DungeonPickupSize.Elongated?2f/3:.5f),entry.Name);
                 var obj=Object.Instantiate(entry.Prefab);obj.transform.position=new Vector3(12,18,0);
                 obj.transform.localScale=Vector3.Scale(obj.transform.localScale,entry.ParentScale);
@@ -224,7 +225,8 @@ namespace EternalEnigma.Tests.EditMode
                     Assert.That(obj.transform.position,Is.EqualTo(before),entry.Name);Assert.That(obj.transform.localScale,Is.EqualTo(rootScale),entry.Name);
                     Assert.That(obj.GetComponentInChildren<DungeonPickupFootprint>().GroundZ,Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.0001f),entry.Name);
                     var renderers=obj.GetComponentsInChildren<MeshRenderer>();var bounds=renderers[0].bounds;foreach(var r in renderers)bounds.Encapsulate(r.bounds);
-                    Assert.That(Mathf.Max(bounds.size.x,bounds.size.y),Is.LessThanOrEqualTo(1.641f),entry.Name);
+                    if(entry.Size!=DungeonPickupSize.EnemyDisguise)
+                        Assert.That(Mathf.Max(bounds.size.x,bounds.size.y),Is.LessThanOrEqualTo(1.641f),entry.Name);
                 }
                 finally {Object.DestroyImmediate(obj);}
             }

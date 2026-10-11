@@ -111,9 +111,71 @@ public static class DungeonPresentation
     }
     public static bool DecorationAllowed(DungeonFloor floor,int x,int y)
     {
-        // The complete rotated prop footprint is fitted inside this blocked cell below.
+        // Blocked cells also contain walls. Decorate additionally fits props into the
+        // paved shoulder outside the rendered wall footprint, never the cell center.
         if (x<0 || y<0 || x>=floor.Width || y>=floor.Height || floor.Layers[DungeonLayers.Floor][x,y]) return false;
         return !protectedCells.GetValue(floor, Protected).Contains(new GridPoint(x,y));
+    }
+    static Dictionary<GridPoint, Bounds> BoundaryFootprints(TileWorldCreator creator, Transform space)
+    {
+        var footprints = new Dictionary<GridPoint, Bounds>();
+        float size = creator.twcAsset.cellSize;
+        var boundaries = creator.twcAsset.mapBuildLayers.OfType<DungeonThemeTileLayer>()
+            .Where(layer => layer.active && layer.Role == DungeonThemeRole.Boundary).Select(layer => layer.guid).ToHashSet();
+        foreach (var layer in creator.worldObject.GetComponentsInChildren<LayerIdentifier>())
+        {
+            if (!boundaries.Contains(layer.assignedLayer)) continue;
+            foreach (var surfaces in layer.GetComponentsInChildren<BiomeDecorationSurfaceSet>())
+            {
+                var matrix = space.worldToLocalMatrix * surfaces.transform.localToWorldMatrix;
+                foreach (var piece in surfaces.SolidBounds)
+                {
+                    var bounds = BiomeDecorationSurfaceSet.TransformBounds(piece, matrix);
+                    if (bounds.min.z >= -.01f) continue; // Paving beneath the wall is support, not an obstacle.
+                    int minX = Mathf.FloorToInt((bounds.min.x + .0001f) / size), maxX = Mathf.FloorToInt((bounds.max.x - .0001f) / size);
+                    int minY = Mathf.FloorToInt((bounds.min.y + .0001f) / size), maxY = Mathf.FloorToInt((bounds.max.y - .0001f) / size);
+                    for (int y = minY; y <= Mathf.Max(minY, maxY); y++) for (int x = minX; x <= Mathf.Max(minX, maxX); x++)
+                    {
+                        var cell = new GridPoint(x, y);
+                        if (footprints.TryGetValue(cell, out var occupied)) { occupied.Encapsulate(bounds); footprints[cell] = occupied; }
+                        else footprints.Add(cell, bounds);
+                    }
+                }
+            }
+        }
+        return footprints;
+    }
+    static bool DecorationPose(DungeonFloor floor, int x, int y, uint hash, float size, Mesh mesh,
+        Bounds wall, out Vector3 position, out float scale, out float angle)
+    {
+        position = default; scale = 0; angle = hash % 360;
+        var rotation = Quaternion.Euler(0, 0, angle);
+        var bounds = mesh.bounds;
+        var extent = rotation * new Vector3(bounds.size.x, 0, 0);
+        var other = rotation * new Vector3(0, bounds.size.y, 0);
+        float width = Mathf.Abs(extent.x) + Mathf.Abs(other.x), depth = Mathf.Abs(extent.y) + Mathf.Abs(other.y);
+        float margin = size * .025f;
+        var directions = new[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+        for (int i = 0; i < directions.Length; i++)
+        {
+            var direction = directions[(i + (int)(hash % 4)) % 4];
+            if (!floor.IsWalkable(new GridPoint(x + direction.x, y + direction.y))) continue;
+            float left = x * size + margin, right = (x + 1) * size - margin;
+            float bottom = y * size + margin, top = (y + 1) * size - margin;
+            if (direction.x > 0) left = Mathf.Max(left, wall.max.x + margin);
+            if (direction.x < 0) right = Mathf.Min(right, wall.min.x - margin);
+            if (direction.y > 0) bottom = Mathf.Max(bottom, wall.max.y + margin);
+            if (direction.y < 0) top = Mathf.Min(top, wall.min.y - margin);
+            if (right - left < size * .08f || top - bottom < size * .08f) continue;
+            float fit = Mathf.Min((right - left) / Mathf.Max(.01f, width), (top - bottom) / Mathf.Max(.01f, depth),
+                size * .6f / Mathf.Max(.01f, Mathf.Max(width, depth)), .85f / Mathf.Max(.01f, bounds.size.z));
+            if (Mathf.Max(width, depth) * fit < size * .12f) continue;
+            scale = fit;
+            var center = rotation * new Vector3(bounds.center.x, bounds.center.y, 0) * scale;
+            position = new Vector3((left + right) * .5f - center.x, (bottom + top) * .5f - center.y, -bounds.max.z * scale);
+            return true;
+        }
+        return false;
     }
     public static uint Hash(int seed,int x,int y)
     { unchecked { uint h=(uint)seed ^ (uint)x*0x9e3779b9u ^ (uint)y*0x85ebca6bu ^ 0x6d2b79f5u; h=(h^(h>>16))*0x7feb352du;return h^(h>>15); } }
@@ -139,13 +201,17 @@ public static class DungeonPresentation
         SetGroundHeight(root.transform);
         var batch=new EnvironmentBatch(root.transform);
         float size=creator.twcAsset.cellSize;
+        var walls = BoundaryFootprints(creator, root.transform);
         for(int cy=0;cy<floor.Height;cy+=32) for(int cx=0;cx<floor.Width;cx+=32)
         {
             var candidates=new List<(int x,int y,uint hash)>();
             for(int y=cy;y<Math.Min(cy+32,floor.Height);y++) for(int x=cx;x<Math.Min(cx+32,floor.Width);x++)
                 if(DecorationAllowed(floor,x,y) && (floor.Layers[DungeonLayers.Floor].At(new GridPoint(x-1,y)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x+1,y)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x,y-1)) || floor.Layers[DungeonLayers.Floor].At(new GridPoint(x,y+1)))) candidates.Add((x,y,Hash(floor.Seed,x,y)));
-            foreach(var p in candidates.OrderBy(p=>p.hash).Take(16))
+            int placed = 0;
+            foreach(var p in candidates.OrderBy(p=>p.hash))
             {
+                if (placed == 16) break;
+                if (!walls.TryGetValue(new GridPoint(p.x, p.y), out var wall)) continue;
                 // Dungeon alcoves use the compact theme kit; overworld trees follow
                 // a larger hero-height ladder and cannot fit below dungeon fog.
                 string id=theme.Decorations.Length>0 ? theme.Decorations[p.hash%(uint)theme.Decorations.Length] : "Rock";
@@ -155,15 +221,10 @@ public static class DungeonPresentation
                 if(id=="CryptRoots") mesh=Resources.Load<Mesh>("DungeonThemes/CryptRoots");
                 int triangleBudget=250;
                 if(mesh==null || mesh.triangles.Length/3>triangleBudget) continue;
-                // Constrain full footprint and height below the fog plane (-3.35).
-                float extent=Mathf.Max(mesh.bounds.size.x,mesh.bounds.size.y);
-                // .6 * sqrt(2) < 1: even a square rotated 45 degrees stays inside its cell.
-                float scale=Mathf.Min(size*.6f/Mathf.Max(.01f,extent),.85f/Mathf.Max(.01f,mesh.bounds.size.z));
-                float baseHeight=theme.Environment==DungeonEnvironmentKind.Outdoor ? .65f : .92f;
-                float angle=p.hash%360;
-                var center=Quaternion.Euler(0,0,angle)*new Vector3(mesh.bounds.center.x,mesh.bounds.center.y,0)*scale;
+                if (!DecorationPose(floor, p.x, p.y, p.hash, size, mesh, wall, out var position, out float scale, out float angle)) continue;
                 var material=interior != null && model == null ? interiors.Material(theme.Biome) : theme.DecorationMaterial;
-                batch.Add(mesh,material,new Vector3((p.x+.5f)*size-center.x,(p.y+.5f)*size-center.y,-baseHeight-mesh.bounds.max.z*scale),Vector3.one*scale,angle);
+                batch.Add(mesh,material,position,Vector3.one*scale,angle);
+                placed++;
             }
         }
         batch.Finish();

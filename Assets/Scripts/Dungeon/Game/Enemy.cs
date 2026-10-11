@@ -19,6 +19,7 @@ public class Enemy : Character
 	private AnimatedAction? statusLoop;
 	private Coroutine oneShot;
 	private static readonly HashSet<string> missingStates = new();
+    private static readonly Facing[] spawnFacings = Enum.GetValues(typeof(Facing)).Cast<Facing>().ToArray();
 
 	public string Description { get; internal set; }
 
@@ -33,6 +34,7 @@ public class Enemy : Character
 
     private void Start()
 	{
+        SetFacing(VisualRandom.Pick(spawnFacings));
         gameObject.AddComponent<FogHiddenVisual>();
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(TilemapPosition);
 		this.transform.position = worldPosition;

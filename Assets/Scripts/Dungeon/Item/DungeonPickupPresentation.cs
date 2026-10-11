@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public enum DungeonPickupSize { Ordinary, Elongated, Chest }
+public enum DungeonPickupSize { Ordinary, Elongated, Chest, EnemyDisguise }
 
 /// <summary>Individual authoring adjustments, baked into dungeon floor visual children only.</summary>
 [CreateAssetMenu(menuName = "Game/Art/Dungeon Pickup Presentation")]
@@ -11,6 +11,7 @@ public sealed class DungeonPickupPresentation : ScriptableObject
     {
         public string Name, Source;
         public GameObject Prefab;
+        public Enemy SizeReference;
         public DungeonPickupSize Size;
         public Vector3 Euler, Shape = Vector3.one;
         [Range(.3f,.7f)] public float TargetRatio = .43f;

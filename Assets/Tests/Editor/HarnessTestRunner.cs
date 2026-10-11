@@ -561,6 +561,19 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.CampaignTravelTests",
         "EternalEnigma.Tests.EnvironmentPlaygroundTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Prop Visuals EditMode")]
+    public static void RunDungeonPropVisualsEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.CoreIntegration.DungeonPropVisualTests",
+        "EternalEnigma.Tests.CoreIntegration.DungeonThemeTests",
+        "EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.DungeonPickupsHaveIndividualReferenceRatiosAndGroundWithoutMovingRoots");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Prop Visuals PlayMode")]
+    public static void RunDungeonPropVisualsPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.EnemySpawnVisualTests",
+        "EternalEnigma.Tests.DioramaGameplayTests.KeyAndMimicUseAuthoredFloorPoses",
+        "EternalEnigma.Tests.EnemyBehaviorTests",
+        "EternalEnigma.Tests.BiomeSceneryTests");
+
     private static void Run(TestMode mode, string filter, params string[] testFilters)
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);

@@ -12,15 +12,27 @@ public static class EarlyDungeonStatue
         if (prefab == null) return null;
         var start = dungeon.GetStartPosition();
         var stairs = dungeon.Floor.Stairs.ToCell();
+        float size = dungeon.CellToWorld(Vector3Int.right).x - dungeon.CellToWorld(Vector3Int.zero).x;
+        var bounds = prefab.GetComponent<MeshFilter>().sharedMesh.bounds;
+        var min = Vector3Int.FloorToInt((bounds.min + new Vector3(size * .5f - .05f, size * .5f - .05f, 0)) / size);
+        var max = Vector3Int.FloorToInt((bounds.max + new Vector3(size * .5f + .05f, size * .5f + .05f, 0)) / size);
+        bool Fits(Vector3Int cell)
+        {
+            for (int y = min.y; y <= max.y; y++) for (int x = min.x; x <= max.x; x++)
+            {
+                var p = cell + new Vector3Int(x, y);
+                if (!dungeon.IsWalkable(p) || p == start || p == stairs || dungeon.GetInteractable(p) != null ||
+                    Game.Instance.AllCharacters.Any(c => c != null && c.OverlapsWith(Character.ToBounds(p)))) return false;
+            }
+            return true;
+        }
         var candidates = new List<Vector3Int>();
         for(int y=1;y<dungeon.dungeonHeight-1;y++) for(int x=1;x<dungeon.dungeonWidth-1;x++)
         {
             var cell = new Vector3Int(x,y);
-            if (!dungeon.IsWalkable(cell) || TileWorldDungeon.ChevDistance(start,cell)<4 || TileWorldDungeon.ChevDistance(stairs,cell)<3 ||
-                dungeon.GetInteractable(cell)!=null || Game.Instance.AllCharacters.Any(c=>c!=null && c.OverlapsWith(Character.ToBounds(cell)))) continue;
-            // Back the statue against the far wall so foreground walls cannot hide it.
-            if (!dungeon.IsFloorCell(cell+Vector3Int.up) &&
-                new[] { Vector3Int.down,Vector3Int.left,Vector3Int.right }.All(d=>dungeon.IsFloorCell(cell+d))) candidates.Add(cell);
+            if (TileWorldDungeon.ChevDistance(start,cell)<4 || TileWorldDungeon.ChevDistance(stairs,cell)<3 || !Fits(cell)) continue;
+            // The full-size model, including its shield and axe, needs room in front of the far wall.
+            if (!dungeon.IsFloorCell(cell + Vector3Int.up * (max.y + 1))) candidates.Add(cell);
         }
         foreach(var cell in candidates.OrderBy(c=>TileWorldDungeon.ChevDistance(c,start)).ThenBy(c=>DungeonPresentation.Hash(dungeon.Floor.Seed,c.x,c.y)))
         {

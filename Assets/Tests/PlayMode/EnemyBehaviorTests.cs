@@ -114,6 +114,9 @@ namespace EternalEnigma.Tests
             harness.Game.UpdateMiniMap();yield return null;
             yield return new WaitForSeconds(3f);
             ScreenCapture.CaptureScreenshot("Temp/EnemyBehaviorPreview/metal-slime.png");yield return null;
+            // Use a configured biome floor rather than stale encounter settings in the editor template.
+            var run = Common.Instance.GameSaveData.DungeonSaveData;
+            run.UseBiomeLayout = true; run.LayoutBiome = EternalEnigma.Core.World.OverworldBiome.Grassland;
             harness.Game.AdvanceFloor();yield return harness.WaitForIdle();
             var dungeon=harness.Game.CurrentDungeon;
             var statue=dungeon.Interactables.OfType<DungeonProp>().Single(p=>p.name=="Stone Hulk statue");
@@ -121,6 +124,11 @@ namespace EternalEnigma.Tests
             Assert.That(statue.GetComponentInChildren<Animator>(),Is.Null);
             Assert.That(dungeon.IsWalkable(statue.Position),Is.False);
             Assert.That(statue.GetComponentInChildren<MeshFilter>().sharedMesh.vertexCount,Is.GreaterThan(0));
+            var bounds = statue.GetComponentInChildren<MeshRenderer>().bounds;
+            float size = dungeon.CellToWorld(Vector3Int.right).x - dungeon.CellToWorld(Vector3Int.zero).x;
+            var min = Vector3Int.FloorToInt(bounds.min / size); var max = Vector3Int.FloorToInt(bounds.max / size);
+            for (int y = min.y; y <= max.y; y++) for (int x = min.x; x <= max.x; x++)
+                Assert.That(dungeon.IsFloorCell(new Vector3Int(x,y)), Is.True, "The full statue must remain clear of walls.");
             var nearby=new[] {Vector3Int.left*2,Vector3Int.down*2,Vector3Int.right*2,Vector3Int.up*2}.Select(d=>statue.Position+d).First(dungeon.IsWalkable);
             harness.Ally.SetPosition(nearby);
             harness.Game.UpdateMiniMap();

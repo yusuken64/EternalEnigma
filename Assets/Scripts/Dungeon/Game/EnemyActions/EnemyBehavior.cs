@@ -26,6 +26,7 @@ public sealed class EnemyBehavior : MonoBehaviour
     public GameObject ChestVisualPrefab;
     private Enemy owner;
     private GameObject disguise;
+    private Vector3 disguiseScale;
     private readonly List<GameObject> hiddenChildren = new();
     private bool revealed;
     private int cooldown;
@@ -47,8 +48,21 @@ public sealed class EnemyBehavior : MonoBehaviour
         disguise = Instantiate(ChestVisualPrefab, owner.VisualParent.transform);
         disguise.name = "Treasure chest disguise";
         disguise.transform.localPosition = Vector3.zero;
-        disguise.transform.localRotation = Quaternion.identity;
+        UpdateDisguisePose();
+    }
+
+    void LateUpdate() => UpdateDisguisePose();
+
+    void UpdateDisguisePose()
+    {
+        if (disguise == null) return;
+        var scale = disguise.transform.lossyScale;
+        if (Mathf.Min(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z)) < .001f) return;
+        if (scale == disguiseScale && Quaternion.Angle(disguise.transform.rotation, Quaternion.identity) < .01f) return;
+        // The authored chest faces south independently of the hidden enemy's spawn facing.
+        disguise.transform.rotation = Quaternion.identity;
         DungeonPresentation.GroundFloorObject(disguise.transform);
+        disguiseScale = disguise.transform.lossyScale;
     }
 
     internal void Tick() { if (cooldown > 0) cooldown--; }

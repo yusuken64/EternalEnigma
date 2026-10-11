@@ -44,7 +44,7 @@ Dungeon templates contain authored `DungeonThemeTileLayer` floor/accent layers a
 
 Output belongs to the existing dungeon output root. Floor changes clear both creators' previous output, including baked clusters. Combined meshes and per-clone preview textures have explicit owners. Two small vendor fixes stop tile/object editor coroutines when their creator has been destroyed and release temporary material submeshes after combining.
 
-Decorations use a local integer hash and compact theme IDs resolved from EnvironmentKit or TownInteriorCatalog, with the corresponding source material. The larger overworld tree picker is deliberately excluded. There are at most 16 placements in each 32×32-cell chunk. Rotated, centered mesh bounds fit entirely inside blocked cells, including thin throne-room boundaries. Props have no colliders. Water/lava are opaque cosmetic surfaces outside walkways.
+Decorations use a local integer hash and compact theme IDs resolved from EnvironmentKit or TownInteriorCatalog, with the corresponding source material. The larger overworld tree picker is deliberately excluded. There are at most 16 placements in each 32×32-cell chunk. Each prop rests on the ground in the paved shoulder between the rendered wall footprint and the blocked cell's edge. Rotated bounds stay clear of walls and walkable cells, including thin throne-room boundaries; locations without enough clearance are skipped. Wall-piece bounds are recorded during construction, avoiding a scan of combined meshes. Props have no colliders. Water/lava are opaque cosmetic surfaces outside walkways.
 
 Themed map roots use unit scale at the origin; ground sits at Z=0.001 beneath
 unit feet. Throne carpet uses a smaller depth bias. Fog and

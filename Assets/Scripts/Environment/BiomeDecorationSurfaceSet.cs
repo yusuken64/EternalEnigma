@@ -20,9 +20,23 @@ public sealed class BiomeDecorationFace
 public sealed class BiomeDecorationSurfaceSet : MonoBehaviour
 {
     public List<BiomeDecorationFace> Faces = new();
+    // Per-piece envelopes stay small even when a combined boundary has millions of triangles.
+    public List<Bounds> SolidBounds = new();
+    internal static Bounds TransformBounds(Bounds bounds, Matrix4x4 matrix)
+    {
+        var x = matrix.MultiplyVector(Vector3.right * bounds.extents.x);
+        var y = matrix.MultiplyVector(Vector3.up * bounds.extents.y);
+        var z = matrix.MultiplyVector(Vector3.forward * bounds.extents.z);
+        return new Bounds(matrix.MultiplyPoint3x4(bounds.center), new Vector3(
+            Mathf.Abs(x.x) + Mathf.Abs(y.x) + Mathf.Abs(z.x),
+            Mathf.Abs(x.y) + Mathf.Abs(y.y) + Mathf.Abs(z.y),
+            Mathf.Abs(x.z) + Mathf.Abs(y.z) + Mathf.Abs(z.z)) * 2);
+    }
     // Pull only vertical planar faces. Sloping roofs and flat biome seams cannot qualify.
     public void Add(Mesh mesh, Matrix4x4 matrix, OverworldBiome biome, DecorationSurface surface, float cellSize, string houseId=null, bool splitPanels=false)
     {
+        if (surface == DecorationSurface.BuiltWall)
+            SolidBounds.Add(TransformBounds(mesh.bounds, matrix));
         if(surface==DecorationSurface.Facade) {
             var catalog=BiomeDecorationCatalog.Load();if(catalog==null)return;
             var definition=System.Array.Find(catalog.Facades,f=>f.Model==mesh.name);if(definition==null)return;

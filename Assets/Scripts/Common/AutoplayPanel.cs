@@ -50,14 +50,16 @@ public sealed class AutoplayPanel : MonoBehaviour
         if(!visible)return;
         Title.text=runner.Options.DebugPlaythrough?"Autoplay · Debug":"Autoplay";
         Status.text=runner.TakingControl?"Finishing current action…":runner.Status;
-        Counts.text=$"Actions: {runner.Report?.Actions??0}   Turns: {runner.Report?.DungeonTurns??0}";
+        Counts.text=$"Run {runner.RunNumber}/{runner.Options.RunCount} · Seed {runner.CurrentSeed}\nActions: {runner.Report?.Actions??0}   Turns: {runner.Report?.DungeonTurns??0}";
         Playback.text=$"Playback: {runner.Options.Speed:0.#}×"+(runner.Paused?" (paused)":"");
         PauseLabel.text=runner.Paused?"Resume":"Pause";
         AnimationLabel.text="Animations: "+DungeonPreferences.SpeedLabel;
-        Footer.text=runner.Running?"Input outside the controls opens stop options.":"Playthrough report saved.";
-        Pause.interactable=Animations.interactable=runner.Running&&!runner.TakingControl;
-        Stop.gameObject.SetActive(!runner.AppSession&&runner.Running);
+        string root=Application.isEditor?"Logs/Playthroughs":System.IO.Path.GetDirectoryName(runner.BatchDirectoryPath);
+        Footer.text=(runner.Finalizing?"Saving run artifacts…":runner.SessionRunning?"Input outside controls opens stop options.":runner.Report?.ArtifactsComplete==true?"Report saved.":"Report incomplete; see status.")+"\n"+
+            root+"/\n"+System.IO.Path.GetFileName(runner.BatchDirectoryPath)+"/\n"+System.IO.Path.GetFileName(runner.DirectoryPath);
+        Pause.interactable=Animations.interactable=runner.SessionRunning&&!runner.TakingControl;
+        Stop.gameObject.SetActive(runner.SessionRunning);
         Return.interactable=!runner.TakingControl;TakeControl.interactable=runner.CanTakeControl;
-        for(int i=0;i<Speeds.Length;i++)Speeds[i].interactable=runner.Running&&!runner.TakingControl&&!Mathf.Approximately(runner.Options.Speed,Rates[i]);
+        for(int i=0;i<Speeds.Length;i++)Speeds[i].interactable=runner.SessionRunning&&!runner.TakingControl&&!Mathf.Approximately(runner.Options.Speed,Rates[i]);
     }
 }

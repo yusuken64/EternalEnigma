@@ -61,6 +61,27 @@ namespace EternalEnigma.Tests
             Resolve(new AdvanceCastAction()); Assert.That(caster.PendingCast,Is.Null); Assert.That(friend.Vitals.HP,Is.GreaterThan(hp));
             Assert.That(caster.Vitals.SP,Is.EqualTo(sp-heal.SPCost));
         }
+
+        [Test] public void AutoplayTraceDistinguishesChargingCompletionAndInterruption()
+        {
+            var heal=Learn("Heal");heal.CastTime=2;
+            var events=new List<string>();
+            var action=new SkillAction(caster,heal,friend) {AutoplayTrace=new AutoplayCastTrace((kind,reason)=>events.Add(kind+":"+reason))};
+            Resolve(action);
+            Assert.That(events,Is.EqualTo(new[]{"CastStarted:"}));
+            PendingCast.Cancel(caster,"validation interruption");
+            Assert.That(events,Is.EqualTo(new[]{"CastStarted:","CastInterrupted:validation interruption"}));
+            action.AutoplayTrace.Complete();Assert.That(events.Count,Is.EqualTo(2),"A canceled release cannot count as complete.");
+            events.Clear();
+            var completed=new SkillAction(caster,heal,friend) {AutoplayTrace=new AutoplayCastTrace((kind,reason)=>events.Add(kind))};
+            Resolve(completed);Resolve(new AdvanceCastAction());Resolve(new AdvanceCastAction());
+            Assert.That(events,Is.EqualTo(new[]{"CastStarted","CastCompleted"}));
+            events.Clear();
+            var invalid=new SkillAction(caster,heal,friend) {AutoplayTrace=new AutoplayCastTrace((kind,reason)=>events.Add(kind))};
+            Resolve(invalid);friend.Vitals.HP=0;PartyRules.MarkDowned(harness.Game,friend);
+            Resolve(new AdvanceCastAction());Resolve(new AdvanceCastAction());
+            Assert.That(events,Is.EqualTo(new[]{"CastStarted","CastInterrupted"}));
+        }
         [Test] public void LockedCharacterFollowsMovementAndRangeChanges()
         {
             var heal=Learn("Heal"); Resolve(new SkillAction(caster,heal,friend));

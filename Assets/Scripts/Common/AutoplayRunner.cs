@@ -15,16 +15,39 @@ using UnityEngine.InputSystem.Controls;
 public sealed class AutoplayOptions
 {
     public int Seed = 42;
+    public int RunCount = 1;
+    public bool DebugCoverage;
     public bool DebugPlaythrough, Godmode = true, InfiniteResources = true;
     public bool ExploreAll;
     public float Speed = 4, TimeLimitMinutes = 60, StallSeconds = 120;
+
+    public bool Validate(out string reason)
+    {
+        reason = RunCount < 1 ? "Run count must be at least 1." :
+            (long)Seed + RunCount - 1 > int.MaxValue ? "The last seed would exceed 2147483647." :
+            float.IsNaN(Speed) || float.IsInfinity(Speed) || Speed < .5f || Speed > 32 ? "Speed must be between 0.5 and 32." :
+            float.IsNaN(TimeLimitMinutes) || float.IsInfinity(TimeLimitMinutes) || TimeLimitMinutes <= 0 ? "Time limit must be positive." :
+            float.IsNaN(StallSeconds) || float.IsInfinity(StallSeconds) || StallSeconds <= 0 ? "Stall timeout must be positive." : null;
+        return reason == null;
+    }
+    public int SeedForRun(int index)
+    {
+        if (index < 0 || index >= RunCount) throw new ArgumentOutOfRangeException(nameof(index));
+        return checked(Seed + index);
+    }
 }
 
 [Serializable]
 public sealed class AutoplayReport
 {
     public string Outcome = "Running", Reason, StartedUtc, EndedUtc, GameVersion, BuildId, UnityVersion;
-    public string Policy = "astar-objectives-v2-skills", Observation = "Full campaign graph and full dungeon map/stairs (omniscient navigation)";
+    public string Policy = "astar-objectives-v3-batch-coverage", Observation = "Full campaign graph and full dungeon map/stairs (omniscient navigation)";
+    public string RunId;
+    public int Seed, RunNumber, IssueCount, WarningCount, ErrorCount;
+    public bool ArtifactsComplete;
+    public List<AutoplayTransaction> Purchases = new(), Training = new();
+    public List<AutoplayAbilityCoverage> Abilities = new();
+    public string[] UnexercisedAbilities;
     public AutoplayOptions Options;
     public bool EligibleForBalance;
     public bool InfiniteStrength;
@@ -53,12 +76,12 @@ public sealed class AutoplayActor
 [Serializable]
 public sealed class AutoplaySkillUse
 {
-    public string Actor, Skill, Evaluator;
-    public int Casts;
+    public string Actor, ActorId, Skill, Evaluator;
+    public int Casts, Selected, Started, Interrupted;
 }
 
 /// <summary>Opt-in isolated session shared by the app's Watch Demo and the manual editor launcher.</summary>
-public sealed class AutoplayRunner : MonoBehaviour
+public sealed partial class AutoplayRunner : MonoBehaviour
 {
     public const string PendingKey = "EternalEnigma.Autoplay.Pending";
     public static AutoplayRunner Active { get; private set; }
@@ -67,7 +90,7 @@ public sealed class AutoplayRunner : MonoBehaviour
     public bool PanelVisible { get; private set; } = true;
     public bool TakingControl => takingControl;
     public bool AppSession => appSession;
-    public bool CanTakeControl => startedCampaign;
+    public bool CanTakeControl => startedCampaign && !unloadingRun;
     public bool ShowPlaybackUI => Options != null && !PlayerControlled && !exiting;
     private AutoplayPanel playbackUI;
     private bool takingControl;
@@ -79,7 +102,7 @@ public sealed class AutoplayRunner : MonoBehaviour
     public string Status { get; private set; } = "Starting";
     private IDisposable saveScope;
     private AutoplayStore store;
-    private StreamWriter actions;
+    private StreamWriter actions, issues;
     private double started, lastProgress, pausedAt, pausedSeconds;
     private float nextTick;
     private string progressSignature, pendingError, floorIdentity;
@@ -121,6 +144,7 @@ public sealed class AutoplayRunner : MonoBehaviour
 
     public static void WatchDemo(AutoplayOptions options)
     {
+        if (options == null || !options.Validate(out _)) throw new ArgumentException("Invalid autoplay options.");
         if (Active != null || Common.Instance.Travel.IsTransitioning) return;
         var runner = new GameObject("Watch demo").AddComponent<AutoplayRunner>();
         DontDestroyOnLoad(runner.gameObject);
@@ -133,31 +157,18 @@ public sealed class AutoplayRunner : MonoBehaviour
 
     private void Initialize(AutoplayOptions options)
     {
-        Active = this; Options = options;
+        if (!options.Validate(out var reason)) throw new ArgumentException(reason);
+        Active = this; Options = JsonUtility.FromJson<AutoplayOptions>(JsonUtility.ToJson(options));
         acceptInputAfter = Time.unscaledTime + .75f;
         originalTimeScale = Time.timeScale; originalRandom = UnityEngine.Random.state;
-        UnityEngine.Random.InitState(options.Seed);
         string root = Application.isEditor ? "Logs" : Application.persistentDataPath;
-        DirectoryPath = Path.GetFullPath(Path.Combine(root, "Playthroughs", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 6)));
-        Directory.CreateDirectory(DirectoryPath);
-        store = new AutoplayStore(DirectoryPath);
+        BatchDirectoryPath = Path.GetFullPath(Path.Combine(root, "Playthroughs", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8)));
+        Batch = new AutoplayBatch { StartedUtc = DateTime.UtcNow.ToString("O"), StartingSeed = Options.Seed, RequestedRuns = Options.RunCount };
+        store = new AutoplayStore();
         saveScope = SaveSystem.UseStore(store);
-        actions = new StreamWriter(Path.Combine(DirectoryPath, "actions.jsonl")) { AutoFlush = true };
-        started = lastProgress = Time.realtimeSinceStartupAsDouble;
-        Report = new AutoplayReport { Options = options, EligibleForBalance = !options.DebugPlaythrough,
-            InfiniteStrength = options.DebugPlaythrough && options.Godmode,
-            StartedUtc = DateTime.UtcNow.ToString("O"), GameVersion = Application.version,
-#if UNITY_WEBGL && !UNITY_EDITOR
-            // Assembly.ManifestModule is unsupported in the WebGL IL2CPP runtime.
-            BuildId = Application.buildGUID,
-#else
-            BuildId = typeof(Game).Assembly.ManifestModule.ModuleVersionId.ToString(),
-#endif
-            UnityVersion = Application.unityVersion };
         Application.logMessageReceived += OnLog;
-        AllySkillPolicy.Cast += RecordSkillCast;
-        Time.timeScale = Options.Speed;
-        WriteReport();
+        try { BeginRun(); }
+        catch (Exception error) { FailSession("Unable to initialize run", error); }
         var panel = Resources.Load<AutoplayPanel>("UI/AutoplayPanel");
         if (panel != null) { playbackUI = Instantiate(panel, transform); playbackUI.Bind(this); }
     }
@@ -166,7 +177,13 @@ public sealed class AutoplayRunner : MonoBehaviour
     {
         if (Options == null) yield break;
         while (FindFirstObjectByType<Common>() == null) yield return null;
-        if (!appSession) yield return SceneManager.LoadSceneAsync("MainMenu");
+        if (!appSession)
+        {
+            originalSave = Common.Instance.GameSaveData;
+            originalContext = Common.Instance.CampaignContext;
+            originalTownConfiguration = Common.Instance.CurrentTownConfiguration;
+            yield return SceneManager.LoadSceneAsync("MainMenu");
+        }
     }
 
     public static bool Protects(Vitals vitals) => Active != null && Active.Running && Active.Options.DebugPlaythrough &&
@@ -187,18 +204,12 @@ public sealed class AutoplayRunner : MonoBehaviour
         Active.Report.HealingReceived += Math.Max(0,after-before);
     }
 
-    private void RecordSkillCast(Ally ally, AllySkillChoice choice)
-    {
-        if (!Running || ally == null || choice?.Option?.Skill == null) return;
-        string actor = ally.CharacterName, skill = choice.Option.Skill.SkillName;
-        var use = Report.SkillUses.FirstOrDefault(u => u.Actor == actor && u.Skill == skill && u.Evaluator == choice.Evaluator);
-        if (use == null) Report.SkillUses.Add(use = new AutoplaySkillUse { Actor = actor, Skill = skill, Evaluator = choice.Evaluator });
-        use.Casts++;
-    }
-
     private void OnLog(string message, string stack, LogType type)
     {
-        if (Running && (type == LogType.Exception || type == LogType.Error || type == LogType.Assert))
+        if (PlayerControlled || disposed || Report == null) return;
+        if (type == LogType.Warning || type == LogType.Exception || type == LogType.Error || type == LogType.Assert)
+            Issue(type.ToString(), message, stack);
+        if (type == LogType.Exception || type == LogType.Error || type == LogType.Assert)
             pendingError ??= message + "\n" + stack;
     }
 
@@ -221,8 +232,10 @@ public sealed class AutoplayRunner : MonoBehaviour
             }
             if (appSession && Time.unscaledTime > acceptInputAfter && UserInput()) { RequestReturn(); return; }
         }
+        if (pendingReportingError != null) { FailSession("Reporting failed", new IOException(pendingReportingError)); pendingReportingError = null; return; }
+        if (pendingError != null && !Running && (Finalizing || Advancing)) { FailSession("Game error during run transition", new Exception(pendingError),"GameError"); pendingError = null; return; }
+        if (Running && pendingError != null) { Finish("GameError", pendingError); return; }
         if (!Running || Paused) return;
-        if (pendingError != null) { Finish("GameError", pendingError); return; }
         var now = Time.realtimeSinceStartupAsDouble;
         if (now - started - pausedSeconds > Options.TimeLimitMinutes * 60) { Finish("TimeLimit", "Manual run time limit reached."); return; }
         if (now - lastProgress > Options.StallSeconds) { Finish("Stalled", "No observable progress: " + Status); return; }
@@ -240,9 +253,11 @@ public sealed class AutoplayRunner : MonoBehaviour
         {
             var menu = FindFirstObjectByType<MainMenu>();
             if (menu == null) return;
-            common.GameSaveData = menu.CreateNewSave(Options.Seed);
+            if (!menu.IsReady) return;
+            UnityEngine.Random.InitState(CurrentSeed);
+            common.GameSaveData = menu.CreateNewSave(CurrentSeed);
             startedCampaign = true;
-            common.Travel.NewCampaign(Options.Seed);
+            common.Travel.NewCampaign(CurrentSeed);
             Log("New campaign"); return;
         }
         var context = common.CampaignContext;
@@ -279,7 +294,7 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (Options.DebugPlaythrough && Options.InfiniteResources) player.Gold = 1000000;
         if (preparedTown != town)
         {
-            preparedTown = town; shopped.Clear(); townRoute.Clear();
+            preparedTown = town; shopped.Clear(); failedPurchases.Clear(); failedTraining.Clear(); townRoute.Clear();
             ChooseParty(town, context);
             foreach (var source in context.Campaign.Sources.Where(s => s.LocationId == town.Configuration.Id)) context.Claim(source.Id);
             EquipParty(town);
@@ -287,20 +302,25 @@ public sealed class AutoplayRunner : MonoBehaviour
         }
         var interior = context.Campaign.Locations.FirstOrDefault(l => l.ParentTownId == town.Configuration.Id && !context.Completed.Contains(l.Id));
         Vector3Int target;
-        var shop = town.TownBuildings.FirstOrDefault(b => !shopped.Contains(b) && b.Definition.ShopCatalog.Any(o => WantsOffer(town,o)));
+        var shop = town.TownBuildings.FirstOrDefault(b => !shopped.Contains(b) && town.Services.Catalog(b.Definition).Any(o => WantsOffer(town,b.Definition,o)));
+        var training = NextTraining(town);
+        var trainer = training.ally == null ? null : town.TownBuildings.FirstOrDefault(b => IsTrainer(town,b));
         if (shop != null)
         {
-            target = shop.TilemapPosition;
+            target = ServicePosition(town,shop);
             if (player.ControllingTownAlly.TilemapPosition == target)
             {
-                foreach (var offer in shop.Definition.ShopCatalog)
-                    for (int i=0;i<4 && WantsOffer(town,offer);i++)
-                    {
-                        if (!town.Services.Buy(shop.Definition,offer.Item.ItemName,out _)) break;
-                        EquipParty(town); Log("Buy " + offer.Item.ItemName);
-                    }
+                foreach (var offer in town.Services.Catalog(shop.Definition))
+                    while (Running && WantsOffer(town,shop.Definition,offer))
+                        if (!BuyOffer(town,shop.Definition,offer)) break;
                 shopped.Add(shop); return;
             }
+        }
+        else if (trainer != null)
+        {
+            target = ServicePosition(town,trainer);
+            if (player.ControllingTownAlly.TilemapPosition == target)
+            { LearnOffer(town,training.ally,training.offer); return; }
         }
         else if (interior != null)
         {
@@ -320,8 +340,8 @@ public sealed class AutoplayRunner : MonoBehaviour
         if (manager.DialogStack.Count > 0) { manager.DialogStack.Peek().CloseDialog(); return; }
         var from = player.ControllingTownAlly.TilemapPosition;
         if (from == target) { Common.Instance.Travel.ExitTown(town); return; }
-        bool Blocked(Vector3Int cell) => cell != target && (town.TownBuildings.Any(b => b.TilemapPosition == cell) ||
-            town.TownAllies.Any(a => a.TilemapPosition == cell));
+        bool Blocked(Vector3Int cell) => cell != target && (town.TownBuildings.Any(b => !b.HasInterior && b.TilemapPosition == cell) ||
+            town.TownAllies.Any(a => a.TilemapPosition == cell)) || !town.CanEnter(cell);
         AStar.Node[,] TownGrid()
         {
             var grid = player.WalkableMap.GetAStarGrid();
@@ -334,9 +354,11 @@ public sealed class AutoplayRunner : MonoBehaviour
         player.SetAction(new TownMovement(player, from, next.Value)); Log("Town move " + next);
     }
 
-    private static float EquipmentScore(EquipmentItemDefinition item) => item.StatModification.Strength + item.StatModification.Defense;
+    private static float EquipmentScore(EquipmentItemDefinition item) => item.StatModification.Strength + item.StatModification.MagicPower +
+        item.StatModification.Defense + item.StatModification.HPMax*.1f + item.StatModification.SPMax*.2f;
     private static bool IsUpgrade(TownAlly ally, EquipmentItemDefinition item)
     {
+        if (!HeroClass.AllowsItem(ally.PrimaryClass,ally.SecondaryClass,(EquipableInventoryItem)item.AsInventoryItem(null))) return false;
         var equipped = ally.Equipment.GetEquippedItems().OfType<EquipableInventoryItem>().Where(e =>
             e.EquipmentSlot == item.EquipmentSlot || (item.EquipmentSlot == EquipmentSlot.TwoHand && e.EquipmentSlot != EquipmentSlot.Accessory) ||
             (item.EquipmentSlot != EquipmentSlot.Accessory && e.EquipmentSlot == EquipmentSlot.TwoHand)).ToArray();
@@ -347,15 +369,6 @@ public sealed class AutoplayRunner : MonoBehaviour
         foreach (var ally in town.TownPlayer.RecruitedAllies)
             foreach (var item in town.TownPlayer.Inventory.OfType<EquipableInventoryItem>().ToArray())
                 if (IsUpgrade(ally,item.EquipmentItemDefinition)) town.Services.ToggleEquipment(ally,item);
-    }
-    private static bool WantsOffer(Town town, TownShopOffer offer)
-    {
-        if (offer.Price > town.TownPlayer.Gold) return false;
-        if (offer.Item is EquipmentItemDefinition equipment)
-            return town.TownPlayer.RecruitedAllies.Any(a => IsUpgrade(a,equipment));
-        return offer.Item.ItemEffectDefinition is ModifyStatsItemEffectDefinition effect &&
-            (effect.VitalModification.Hp > 0 || effect.VitalModification.Hunger > 0) &&
-            town.TownPlayer.Inventory.Count(i => i.ItemName == offer.Item.ItemName) < 3;
     }
 
     private string PartyKey(CampaignContext c, IEnumerable<string> ids) => c.Completed.Count + "/" + c.Claimed.Count + "/" + c.Opened.Count + ":" + string.Join(",", ids.OrderBy(x => x));
@@ -482,6 +495,7 @@ public sealed class AutoplayRunner : MonoBehaviour
     private void DungeonTick(Game game)
     {
         if (!game.IsReady) return;
+        ObserveAbilities(game);
         if (game.GameOverScreen.gameObject.activeSelf || PartyRules.IsPartyDefeated(game))
         { Finish("Defeat", "Party defeated by normal gameplay. No retry or difficulty adjustment applied."); return; }
         // Full Control keeps the round running while waiting for each ally's order.
@@ -584,18 +598,13 @@ public sealed class AutoplayRunner : MonoBehaviour
         Report.DungeonTurns++; Log(description); if (Running) ally.SetAction(action);
     }
 
-    [Serializable] private sealed class Event { public double Seconds; public int Action, Floor, HP, SP, Hunger, Gold; public string Scene, Location, Message, Position; }
     private void Log(string message)
     {
         Status = message; Report.Actions++;
         var c = Common.Instance?.CampaignContext; var game = FindFirstObjectByType<Game>();
         var town = FindFirstObjectByType<Town>(); var ally = game?.PlayerController?.ControlledAlly;
         string position = ally != null ? ally.TilemapPosition.ToString() : town?.TownPlayer?.ControllingTownAlly != null ? town.TownPlayer.ControllingTownAlly.TilemapPosition.ToString() : c != null && c.State.Scene == "Overworld" ? c.Position.ToString() : "";
-        actions.WriteLine(JsonUtility.ToJson(new Event { Seconds = Time.realtimeSinceStartupAsDouble-started-pausedSeconds, Action = Report.Actions,
-            Scene = SceneManager.GetActiveScene().name, Location = c?.State.PendingDungeon.Length > 0 ? c.State.PendingDungeon : c?.Location?.Id,
-            Floor = game != null ? game.PlayerController.Floor : 0, HP = ally != null ? ally.Vitals.HP : 0, SP = ally != null ? ally.Vitals.SP : 0,
-            Hunger = ally != null ? ally.Vitals.Hunger : 0, Gold = game != null ? game.PlayerController.Gold : town != null ? town.TownPlayer.Gold : 0,
-            Position = position, Message = message }));
+        WriteEvent(new AutoplayEvent { Kind = "Action", Message = message, ActorId = ally != null ? ActorId(ally) : town?.TownPlayer?.ControllingTownAlly?.Id });
         string combat = game == null ? "" : string.Join(",",game.Enemies.Where(e => e != null).Select(e => e.GetInstanceID() + ":" + e.Vitals.HP));
         string signature = floorIdentity + "/" + progressSignature + "/" + position + "/" + message + "/" + combat;
         repetitions.TryGetValue(signature,out var count); repetitions[signature] = count+1;
@@ -606,22 +615,26 @@ public sealed class AutoplayRunner : MonoBehaviour
 
     public void SetSpeed(float speed)
     {
-        if (!Running || float.IsNaN(speed) || float.IsInfinity(speed)) return;
+        if (!SessionRunning || float.IsNaN(speed) || float.IsInfinity(speed)) return;
         Options.Speed = Mathf.Clamp(speed, .5f, 32f);
-        if (!Paused) Time.timeScale = Options.Speed;
+        if (!Paused && Running) Time.timeScale = Options.Speed;
         nextTick = Time.unscaledTime;
         WriteReport();
     }
 
     public void SetPaused(bool paused)
     {
-        if (!Running || Paused == paused) return;
+        if (!SessionRunning || Paused == paused) return;
         Paused = paused;
         if (paused) pausedAt = Time.realtimeSinceStartupAsDouble;
         else { var duration = Time.realtimeSinceStartupAsDouble-pausedAt; pausedSeconds += duration; lastProgress += duration; }
-        Time.timeScale = paused ? 0 : Options.Speed;
+        Time.timeScale = paused || !Running ? 0 : Options.Speed;
     }
-    public void Stop() => Finish("Stopped", "Stopped manually; no result inferred.");
+    public void Stop()
+    {
+        CancelBatch("Stopped manually; no result inferred.");
+        Finish("Stopped", "Stopped manually; no result inferred.");
+    }
 
     public void ExitDemo()
     {
@@ -653,16 +666,18 @@ public sealed class AutoplayRunner : MonoBehaviour
 
     public void TakeControl()
     {
-        if (!startedCampaign || PlayerControlled || takingControl || exiting) return;
+        if (!CanTakeControl || PlayerControlled || takingControl || exiting) return;
         takingControl = true;
         ReturnPromptOpen = false;
         SetPaused(false);
+        CancelBatch("Player took control of the isolated session.");
         Time.timeScale = 1;
         StartCoroutine(TakeControlRoutine());
     }
 
     private IEnumerator TakeControlRoutine()
     {
+        while (Finalizing) yield return null;
         // Finish the in-flight action before releasing input; never reset action budgets.
         yield return null;
         while (!exiting)
@@ -724,15 +739,16 @@ public sealed class AutoplayRunner : MonoBehaviour
     }
     private IEnumerator ExitRoutine()
     {
+        while (Finalizing || unloadingRun) yield return null;
         Time.timeScale = originalTimeScale;
         var common = Common.Instance;
         common.ScreenTransition.HoldClosed(); // Cancel a queued transition callback before restoring the original campaign.
         CampaignParty.ClearLiveParty(common);
+        common.Travel.SceneReady();
+        yield return SceneManager.LoadSceneAsync("MainMenu");
         common.CampaignContext = originalContext;
         common.GameSaveData = originalSave;
         common.CurrentTownConfiguration = originalTownConfiguration;
-        common.Travel.SceneReady();
-        yield return SceneManager.LoadSceneAsync("MainMenu");
         common.ScreenTransition.DoOpen();
         Destroy(gameObject);
     }
@@ -745,7 +761,13 @@ public sealed class AutoplayRunner : MonoBehaviour
         Report.Scene = SceneManager.GetActiveScene().name; Report.Campaign = c?.Capture();
         Report.Location = c?.State.PendingDungeon.Length > 0 ? c.State.PendingDungeon : c?.Location?.Id;
         Report.Visited = visited.OrderBy(x => x).ToArray();
-        if (common?.GameSaveData != null) SaveSystem.SaveData(common.GameSaveData);
+        if (startedCampaign && common?.GameSaveData != null)
+        {
+            var liveTown = FindFirstObjectByType<Town>();
+            if (liveTown != null && liveTown.IsReady) liveTown.WriteSaveData();
+            SaveSystem.Capture(common);
+            SaveSystem.SaveData(common.GameSaveData);
+        }
         if (game == null || !game.IsReady)
         {
             var town = FindFirstObjectByType<Town>();
@@ -753,7 +775,7 @@ public sealed class AutoplayRunner : MonoBehaviour
             Report.Gold = town != null ? town.TownPlayer.Gold : common?.GameSaveData?.TownSaveData.Gold ?? 0;
             Report.Inventory = town != null ? town.TownPlayer.Inventory.Select(ItemLabel).ToArray() : Array.Empty<string>();
             if (town != null) Report.Party = town.TownPlayer.RecruitedAllies.Select(a => new AutoplayActor {
-                Id = a.Id, Name = a.Name, X = a.TilemapPosition.x, Y = a.TilemapPosition.y,
+                Id = a.Id, Name = a.Name, Level = a.Level, HP = a.Hp, SP = a.Sp, X = a.TilemapPosition.x, Y = a.TilemapPosition.y,
                 Equipment = a.Equipment.GetEquippedItems().Select(ItemLabel).ToArray(), Skills = a.Skills.ToArray(), Class = HeroClass.Label(a.PrimaryClass, a.SecondaryClass) }).ToList();
             return;
         }
@@ -776,36 +798,21 @@ public sealed class AutoplayRunner : MonoBehaviour
         }
     }
     private static string ItemLabel(InventoryItem item) => item.ItemName + (item.StackStock.HasValue ? " x" + item.StackStock : "");
-    private void WriteReport() => File.WriteAllText(Path.Combine(DirectoryPath,"report.json"),JsonUtility.ToJson(Report,true));
-    public void Finish(string outcome, string reason)
-    {
-        if (!Running) return;
-        if (Report.ValidationOnly) Report.EligibleForBalance = false;
-        Report.Outcome = outcome; Report.Reason = reason; Report.EndedUtc = DateTime.UtcNow.ToString("O");
-        Status = outcome + ": " + reason;
-        AllySkillPolicy.Cast -= RecordSkillCast;
-        try
-        {
-            try { Capture(); } catch (Exception snapshotError) { Report.Reason += "\nSnapshot incomplete: " + snapshotError.Message; }
-            WriteReport(); ScreenCapture.CaptureScreenshot(Path.Combine(DirectoryPath,"final.png"));
-        }
-        finally { Time.timeScale = 0; actions?.Flush(); }
-        // Keep the isolated store installed until Play Mode exits, so inspecting the failed run cannot overwrite player data.
-    }
     private void OnDestroy()
     {
         if (disposed || Options == null) return;
         disposed = true;
-        try { if (Running) Finish("Stopped","Play Mode ended."); }
-        finally { AllySkillPolicy.Cast -= RecordSkillCast; Application.logMessageReceived -= OnLog; actions?.Dispose(); saveScope?.Dispose(); Active = null; Time.timeScale = originalTimeScale; UnityEngine.Random.state = originalRandom; }
+        try { FinalizeOnDestroy(); }
+        finally { Application.logMessageReceived -= OnLog; actions?.Dispose(); issues?.Dispose(); saveScope?.Dispose(); Active = null; Time.timeScale = originalTimeScale; UnityEngine.Random.state = originalRandom; }
     }
 
     private sealed class AutoplayStore : ISaveStore
     {
-        private string json; private readonly string path;
-        public AutoplayStore(string directory) { path = Path.Combine(directory,"save.json"); }
+        private string json, path;
+        public bool Sealed;
+        public void Begin(string directory) { path = Path.Combine(directory,"save.json"); json = null; Sealed = false; }
         public string Read(int slot) => json;
-        public void Write(int slot, string value) { json = value; File.WriteAllText(path,value); }
+        public void Write(int slot, string value) { if (path == null) return; if (!Sealed) File.WriteAllText(path,value); json = value; }
         public void Clear(int slot) { json = null; }
     }
 }

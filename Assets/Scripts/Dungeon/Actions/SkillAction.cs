@@ -5,6 +5,7 @@ using UnityEngine;
 
 internal class SkillAction : GameAction
 {
+    internal AutoplayCastTrace AutoplayTrace;
 	private Character caster;
 	private Skill skill;
 	private Character target;
@@ -68,7 +69,8 @@ internal class SkillAction : GameAction
 	{
 		if (!releasing)
         {
-            if (!IsValid(character)) return new();
+            if (!IsValid(character)) { AutoplayTrace?.Interrupt("Cast became invalid before execution"); return new(); }
+            AutoplayTrace?.Start();
             castSucceeded = true;
             AddMetricsModification(caster, (stats, vitals) => vitals.SP -= skill.SPCost);
             int charge = skill.InitialCastTime(caster);
@@ -76,7 +78,7 @@ internal class SkillAction : GameAction
             {
                 charging = true;
                 var release = new SkillAction(caster, skill, target) { releasing = true, direction = direction, tile = tile,
-                    sceneryTarget = sceneryTarget, inventoryTarget = inventoryTarget, floor = Game.Instance.CurrentDungeon,
+                    sceneryTarget = sceneryTarget, inventoryTarget = inventoryTarget, floor = Game.Instance.CurrentDungeon, AutoplayTrace = AutoplayTrace,
                     targetTeam = target != null ? target.Team : caster.Team,
                     captured = skill.SkillName == "Mass Revive" ? skill.GetTargetCharacters(caster).ToList() : null };
                 caster.PendingCast = new PendingCast(release, skill.SkillName, charge, skill);
@@ -93,6 +95,7 @@ internal class SkillAction : GameAction
                 skill.Targeting == SkillTargeting.InventoryItem && !skill.GetInventoryTargets(caster).Contains(inventoryTarget))
             {
                 GameMessages.ForCharacter(caster, $"[Cast] {GameMessages.Name(caster)}'s {skill.SkillName} fizzled: invalid target.");
+                AutoplayTrace?.Interrupt("Cast fizzled: invalid target or floor");
                 return new();
             }
             GameMessages.ForCharacter(caster, $"[Cast] {GameMessages.Name(caster)} releases {skill.SkillName}.");
@@ -149,6 +152,7 @@ internal class SkillAction : GameAction
             effects.Add(bound);
         }
         foreach (var effect in effects.OfType<ScaledDamageAction>()) effect.AmmunitionMultiplier = ammunitionMultiplier;
+        AutoplayTrace?.Complete();
         return effects;
 	}
 

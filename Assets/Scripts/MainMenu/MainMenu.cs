@@ -202,8 +202,7 @@ public class MainMenu : MonoBehaviour
 
 	public void DebugAutoplay_Clicked()
 	{
-        AutoplayRunner.WatchDemo(new AutoplayOptions {
-            DebugPlaythrough = true, Godmode = true, InfiniteResources = true, Speed = 1 });
+        if (IsReady && !Common.Instance.Travel.IsTransitioning) AutoplaySetup.Show(this);
 	}
 
     public void EndgameTown_Clicked() => StartEndgameDebug(EndgameDebugDestination.Town);

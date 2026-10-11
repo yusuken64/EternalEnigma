@@ -11,7 +11,7 @@ public sealed class AllySkillPolicy : PolicyBase
 		new CrowdControlEvaluator(), new DamageEvaluator(), new UtilityEvaluator()
 	};
 
-	// Raised once per AI cast (autoplay reports and tests subscribe).
+	// Raised when an AI cast is selected, before execution (not proof of completion).
 	public static event Action<Ally, AllySkillChoice> Cast;
 
 	public bool Enabled = true;
@@ -42,6 +42,9 @@ public sealed class AllySkillPolicy : PolicyBase
 		{
 			return null;
 		}
+
+        if (AutoplayRunner.Active?.CoverageEnabled == true)
+            return AutoplayRunner.Active.ChooseCoverage(context,evaluators);
 
 		foreach (var evaluator in evaluators)
 		{
@@ -123,6 +126,7 @@ public sealed class AllySkillPolicy : PolicyBase
 		}
 
 		Cast?.Invoke(ally, pending);
+        AutoplayRunner.Active?.TrackCast(ally,pending,pendingAction as SkillAction);
 
 		var result = new List<GameAction> { pendingAction };
 		pending = null;

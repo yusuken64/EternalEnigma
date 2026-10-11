@@ -461,11 +461,26 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay")]
     public static void RunAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayTests.SequentialSeedsWriteCompleteArtifactsAndRestoreOriginalSave",
+        "EternalEnigma.Tests.AutoplayTests.PauseAndStopBetweenRunsKeepFinishedArtifacts",
+        "EternalEnigma.Tests.AutoplayTests.CoveragePurchasesAndTrainingUseProductionRestrictions",
+        "EternalEnigma.Tests.AutoplayTests.ReportingFailureStopsBatchWithInspectableReason",
+        "EternalEnigma.Tests.AutoplayTests.GameErrorsPreserveStackTracesAndStopEvenWhenPaused",
+        "EternalEnigma.Tests.AutoplayTests.TakeoverBetweenRunsCancelsAdvancement",
         "EternalEnigma.Tests.AutoplayTests.DebugMenuLaunchCanResumeWhileLoading",
         "EternalEnigma.Tests.AutoplayTests.HidePanelAndTakeControlPreserveSessionAndSave",
         "EternalEnigma.Tests.AutoplayTests.InputPromptCancelAndReturnPreserveOriginalSave",
         "EternalEnigma.Tests.AutoplayTests.NormalModeAllowsDefeatAndWritesTuningReport",
         "EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay Policies")]
+    public static void RunAutoplayPolicies() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.CastingAndPiercingTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay EditMode")]
+    public static void RunAutoplayEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.AutoplayBatchTests", "EternalEnigma.Tests.AutoplayControlPreferenceTests", "EternalEnigma.Tests.AutoplayRouteTests",
+        "TrainerOfferTests", "EternalEnigma.Tests.EconomyCatalogTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay Startup")]
     public static void RunAutoplayStartup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

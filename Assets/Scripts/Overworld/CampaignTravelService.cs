@@ -240,7 +240,7 @@ public sealed class CampaignTravelService
     }
     public bool ReturnToMenu()
     {
-        if (AutoplayRunner.Active != null && AutoplayRunner.Active.PlayerControlled) { AutoplayRunner.Active.ExitDemo(); return true; }
+        if (AutoplayRunner.Active != null) { AutoplayRunner.Active.ExitDemo(); return true; }
         if (transitioning || Context == null) return false;
         if (Context.IsSandbox) common.EndSandbox();
         else { common.GameSaveData = SaveSystem.Inspect(SaveSystem.ActiveSlot, out _); common.CampaignContext = null; }

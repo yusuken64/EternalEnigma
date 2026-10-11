@@ -6,9 +6,14 @@ public sealed class DamageEvaluator : IAllySkillEvaluator
 	public const float NormalAttackMargin = 1.25f;
 
 	public AllySkillChoice Evaluate(AllySkillContext context)
+		=> Evaluate(context, false);
+
+    internal AllySkillChoice EvaluateCoverage(AllySkillContext context) => Evaluate(context, true);
+
+    private AllySkillChoice Evaluate(AllySkillContext context, bool coverage)
 	{
 		if (context == null || context.VisibleEnemies.Count == 0) return null;
-		float threshold = context.NormalAttackValue > 0f ? context.NormalAttackValue * NormalAttackMargin : 0f;
+		float threshold = !coverage && context.NormalAttackValue > 0f ? context.NormalAttackValue * NormalAttackMargin : 0f;
 		AllySkillChoice best = null;
 		foreach (var skill in context.WithIntent(SkillIntent.Damage))
 			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))

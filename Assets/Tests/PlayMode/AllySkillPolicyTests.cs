@@ -103,6 +103,28 @@ namespace EternalEnigma.Tests
 
         private AllySkillChoice Decide(Ally who = null) => new AllySkillPolicy(harness.Game, who ?? friend, 0).Decide();
 
+        [Test]
+        public void DebugCoveragePrefersUnexercisedDamageButKeepsEmergencyHealingAndNormalPolicy()
+        {
+            var blast=Make("Blast",1,TargetTeam.Enemies,SkillTargeting.SelectedTarget,new TakeDamageAction {damage=100});
+            var small=Make("Small blast",1,TargetTeam.Enemies,SkillTargeting.SelectedTarget,new TakeDamageAction {damage=1});
+            var heal=Make("Heal",1,TargetTeam.Allies,SkillTargeting.SelectedTarget,new TakeHealAction {healing=20});
+            var normal=Decide();Assert.That(normal.Option.Skill,Is.SameAs(blast));
+            AllySkillChoice Coverage()=>AutoplayCoverage.Choose(AllySkillContext.Build(friend,harness.Game),
+                AllySkillPolicy.CreateDefaultEvaluators(),s=>s==small?0:1,_=>0);
+            Assert.That(Coverage().Option.Skill,Is.SameAs(small));
+            Assert.That(Decide().Option.Skill,Is.SameAs(blast),"Normal AI is unchanged outside the explicit debug coverage path.");
+            leader.Vitals.HP=20;leader.SyncDisplayedStats();
+            Assert.That(Coverage().Evaluator,Is.EqualTo("EmergencyHeal"));
+            Assert.That(Coverage().Option.Target,Is.SameAs(leader));
+            leader.Vitals.HP=100;leader.SyncDisplayedStats();
+            friend.Vitals.SP=0;friend.SyncDisplayedStats();
+            Assert.That(Coverage(),Is.Null,"Coverage cannot bypass costs.");
+            friend.Vitals.SP=50;friend.SyncDisplayedStats();
+            weak.Vitals.HP=strong.Vitals.HP=0;weak.SyncDisplayedStats();strong.SyncDisplayedStats();
+            Assert.That(Coverage(),Is.Null,"No valid hostile targets and nobody needs healing.");
+        }
+
         [UnityTest]
         public IEnumerator EmergencyHealTargetsTheWoundedAllyBeforeDamage()
         {

@@ -113,7 +113,7 @@ public class Ally : Character
         if (IsDowned || Vitals.HP <= 0) { determinedActions = new(); return true; }
         var overrides = evaluateStatuses ? StatusEffects.Where(s => s != null && !s.IsExpired())
             .Select(s => s.GetActionOverride(this)).Where(a => a != null).ToList() : new List<GameAction>();
-        if (overrides.Count > 0) { global::PendingCast.Cancel(this, "action disabled"); _forcedAction = null; determinedActions = overrides; return true; }
+        if (overrides.Count > 0) { global::PendingCast.Cancel(this, "action disabled"); (_forcedAction as SkillAction)?.AutoplayTrace?.Interrupt("action disabled"); _forcedAction = null; determinedActions = overrides; return true; }
         if (PendingCast != null && (!global::PendingCast.Mobile(this) || this != Game.Instance.PlayerController.ControlledAlly || AutoplayRunner.BlocksPlayerInput))
         { determinedActions = new() { new AdvanceCastAction() }; _forcedAction = null; return true; }
         if (_forcedAction == null) return false;
@@ -153,6 +153,7 @@ public class Ally : Character
 	{
 		if (GetActionInterupt(action))
 		{
+            (action as SkillAction)?.AutoplayTrace?.Interrupt("Interrupted by status effect");
 			return new();
 		}
 

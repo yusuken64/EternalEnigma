@@ -77,6 +77,189 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator SequentialSeedsWriteCompleteArtifactsAndRestoreOriginalSave()
+        {
+            yield return harness.LoadMainMenu(new TestScenario { Gold = 321 }.CreateSave());
+            var original=Common.Instance.GameSaveData;string originalJson=harness.Store.Json;
+            AutoplayRunner.WatchDemo(new AutoplayOptions { Seed=42,RunCount=2,DebugPlaythrough=true,DebugCoverage=true,Speed=16,TimeLimitMinutes=.75f });
+            var run=AutoplayRunner.Active;run.Report.ValidationOnly=true;
+            string first=run.DirectoryPath;
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"first seeded town");
+            var firstCampaign=Common.Instance.CampaignContext;var firstSave=Common.Instance.GameSaveData;
+            yield return harness.WaitUntil(()=>run.RunNumber==2 || !run.SessionRunning,"second seed");
+            Assert.That(run.RunNumber,Is.EqualTo(2),run.Status);
+            Assert.That(run.CurrentSeed,Is.EqualTo(43));
+            Assert.That(run.Options.Speed,Is.EqualTo(16));
+            Assert.That(run.Report.Seed,Is.EqualTo(43));
+            Assert.That(run.Report.Purchases,Is.Empty);
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"fresh second town");
+            Assert.That(Common.Instance.CampaignContext,Is.Not.SameAs(firstCampaign));
+            Assert.That(Common.Instance.GameSaveData,Is.Not.SameAs(firstSave));
+            Assert.That(Common.Instance.CampaignContext.Completed,Is.Empty);
+            Assert.That(Common.Instance.GameSaveData.TownSaveData.RestockCycle,Is.Zero);
+            yield return harness.WaitUntil(()=>!run.SessionRunning,"short two-seed batch");
+            Assert.That(run.Batch.State,Is.EqualTo("Completed"),run.Status);
+            Assert.That(run.Batch.Runs.Select(r=>r.Seed),Is.EqualTo(new[]{42,43}));
+            foreach(var row in run.Batch.Runs)
+            {
+                string dir=Path.Combine(run.BatchDirectoryPath,row.Directory);
+                foreach(var file in new[]{"report.json","save.json","actions.jsonl","issues.jsonl","final.png"})
+                    Assert.That(File.Exists(Path.Combine(dir,file)),Is.True,file);
+                var report=JsonUtility.FromJson<AutoplayReport>(File.ReadAllText(Path.Combine(dir,"report.json")));
+                Assert.That(report.Outcome,Is.EqualTo("TimeLimit"),report.Reason);
+                Assert.That(report.ArtifactsComplete,Is.True);
+                Assert.That(report.Actions,Is.GreaterThan(2));
+                Assert.That(JsonUtility.FromJson<GameSaveData>(File.ReadAllText(Path.Combine(dir,"save.json"))),Is.Not.Null);
+                foreach(var line in File.ReadAllLines(Path.Combine(dir,"actions.jsonl")).Concat(File.ReadAllLines(Path.Combine(dir,"issues.jsonl"))))
+                {
+                    var entry=JsonUtility.FromJson<AutoplayEvent>(line);
+                    Assert.That(entry.Seed,Is.EqualTo(row.Seed));Assert.That(entry.RunId,Is.EqualTo(row.RunId));
+                    Assert.That(entry.Seconds,Is.GreaterThanOrEqualTo(0));
+                }
+            }
+            string preserved=File.ReadAllText(Path.Combine(first,"save.json"));
+            Assert.That(harness.Store.Json,Is.EqualTo(originalJson));
+            run.ExitDemo();yield return harness.WaitUntil(()=>AutoplayRunner.Active==null,"restore player session");
+            Assert.That(Common.Instance.GameSaveData,Is.SameAs(original));
+            Assert.That(harness.Store.Json,Is.EqualTo(originalJson));
+            Assert.That(File.ReadAllText(Path.Combine(first,"save.json")),Is.EqualTo(preserved));
+        }
+
+        [UnityTest]
+        public IEnumerator PauseAndStopBetweenRunsKeepFinishedArtifacts()
+        {
+            yield return harness.LoadMainMenu(null);
+            AutoplayRunner.WatchDemo(new AutoplayOptions { RunCount=3,Speed=8 });
+            var run=AutoplayRunner.Active;run.Report.ValidationOnly=true;
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"batch town");
+            run.SetPaused(true);run.Finish("Stalled","Synthetic lifecycle validation");
+            yield return harness.WaitUntil(()=>!run.Finalizing,"flushed first run");
+            Assert.That(run.Advancing,Is.True);Assert.That(run.Report.ArtifactsComplete,Is.True);
+            run.SetSpeed(16);yield return null;yield return null;
+            Assert.That(run.RunNumber,Is.EqualTo(1));Assert.That(Time.timeScale,Is.Zero);
+            run.Stop();run.SetPaused(false);yield return null;yield return null;
+            Assert.That(run.RunNumber,Is.EqualTo(1));Assert.That(run.Batch.State,Is.EqualTo("Stopped"));
+            Assert.That(run.Report.Outcome,Is.EqualTo("Stalled"));
+            var issue=File.ReadAllLines(Path.Combine(run.DirectoryPath,"issues.jsonl")).Select(JsonUtility.FromJson<AutoplayEvent>).Single(e=>e.Severity=="Stalled");
+            Assert.That(issue.Message,Does.Contain("Synthetic lifecycle"));
+            Assert.That(issue.ActorId,Is.Not.Empty);
+        }
+
+        [UnityTest]
+        public IEnumerator CoveragePurchasesAndTrainingUseProductionRestrictions()
+        {
+            yield return harness.LoadMainMenu(null);
+            AutoplayRunner.WatchDemo(new AutoplayOptions {DebugPlaythrough=true,DebugCoverage=true,InfiniteResources=false,Speed=8});
+            var run=AutoplayRunner.Active;run.Report.ValidationOnly=true;
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"coverage town");
+            run.SetPaused(true);
+            var town=Object.FindFirstObjectByType<Town>();var hero=town.TownPlayer.ControllingTownAlly;
+            var shop=Resources.Load<TownBuildingDefinition>("Towns/Buildings/Shop");
+            var locked=shop.ShopCatalog.First(o=>o.MinimumTier>0);
+            Assert.That(AutoplayRunner.PurchaseRejection(town,shop,locked),Does.Contain("resolved catalog"));
+            var bakery=Resources.Load<TownBuildingDefinition>("Towns/Buildings/Bakery");
+            var offer=town.Services.Catalog(bakery).First();
+            var stock=town.Services.Shop(bakery).Stock.Single(s=>s.ItemName==offer.Item.ItemName);
+            town.TownPlayer.Gold=offer.Price-1;int remaining=stock.Remaining;
+            Assert.That(run.WantsOffer(town,bakery,offer),Is.False);
+            Assert.That(run.BuyOffer(town,bakery,offer),Is.False);
+            Assert.That(stock.Remaining,Is.EqualTo(remaining));
+            int attempts=run.Report.Purchases.Count;
+            Assert.That(run.BuyOffer(town,bakery,offer),Is.False);
+            Assert.That(run.Report.Purchases.Count,Is.EqualTo(attempts),"A failed offer is not retried during the same visit.");
+            town.TownPlayer.Gold=100000;
+            foreach(var denied in town.Services.Catalog(shop).Where(o=>o.Item is EquipmentItemDefinition e &&
+                !HeroClass.AllowsItem(hero.PrimaryClass,hero.SecondaryClass,(EquipableInventoryItem)e.AsInventoryItem(null))))
+                Assert.That(run.WantsOffer(town,shop,denied),Is.False);
+            var available=town.Services.Catalog(bakery).Skip(1).First();
+            Assert.That(run.WantsOffer(town,bakery,available),Is.True);
+            Assert.That(run.BuyOffer(town,bakery,available),Is.True);
+            town.Services.Shop(bakery).Stock.Single(s=>s.ItemName==available.Item.ItemName).Remaining=0;
+            Assert.That(run.WantsOffer(town,bakery,available),Is.False);
+
+            hero.Skills.Clear();hero.SkillRanks.Clear();hero.Level=1;hero.HighestLevel=99;
+            var next=run.NextTraining(town);
+            Assert.That(next.offer.Kind,Is.EqualTo(EternalEnigma.Core.Classes.SkillKind.Mastery));
+            Assert.That(run.LearnOffer(town,next.ally,next.offer),Is.True);
+            next=run.NextTraining(town);
+            Assert.That(next.offer.CurrentRank,Is.Zero);
+            Assert.That(run.LearnOffer(town,next.ally,next.offer),Is.True);
+            while((next=run.NextTraining(town)).ally!=null) Assert.That(run.LearnOffer(town,next.ally,next.offer),Is.True);
+            Assert.That(TrainerOffers.AvailablePoints(hero),Is.Zero);
+            Assert.That(hero.Level,Is.EqualTo(1),"Autoplay never grants progression to learn a skill.");
+            Assert.That(TrainerOffers.Build(hero,town.Configuration).Where(o=>o.Tier>1).All(o=>!o.CanLearn),Is.True);
+            hero.Level=50; // Synthetic earned progression; report is validation-only.
+            while((next=run.NextTraining(town)).ally!=null)
+            {
+                var learnable=TrainerOffers.Build(hero,town.Configuration).Where(o=>o.CanLearn&&!o.IsMaxed).ToArray();
+                Assert.That(AutoplayRunner.TrainingPriority(next.offer),Is.EqualTo(learnable.Min(AutoplayRunner.TrainingPriority)));
+                Assert.That(run.LearnOffer(town,next.ally,next.offer),Is.True);
+            }
+            Assert.That(run.Report.Training.Any(t=>t.RankAfter>1),Is.True);
+            Assert.That(TrainerOffers.AvailablePoints(hero),Is.GreaterThanOrEqualTo(0));
+        }
+
+        [UnityTest]
+        public IEnumerator ReportingFailureStopsBatchWithInspectableReason()
+        {
+            yield return harness.LoadMainMenu(null);
+            AutoplayRunner.WatchDemo(new AutoplayOptions {RunCount=3});
+            var run=AutoplayRunner.Active;run.Report.ValidationOnly=true;
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"report failure town");
+            run.SetPaused(true);
+            var writer=(StreamWriter)typeof(AutoplayRunner).GetField("actions",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(run);
+            writer.Dispose();run.Finish("TimeLimit","Synthetic disk/stream failure validation");
+            yield return null;
+            Assert.That(run.RunNumber,Is.EqualTo(1));Assert.That(run.SessionRunning,Is.False);
+            Assert.That(run.Report.Outcome,Is.EqualTo("AutomationError"));
+            Assert.That(run.Status,Does.Contain("Unable to finish run artifacts"));
+            var issue=File.ReadAllLines(Path.Combine(run.DirectoryPath,"issues.jsonl")).Select(JsonUtility.FromJson<AutoplayEvent>).Last();
+            Assert.That(issue.StackTrace,Does.Contain("ObjectDisposedException"));
+            Assert.That(issue.Seed,Is.EqualTo(42));
+            Assert.That(JsonUtility.FromJson<AutoplayBatch>(File.ReadAllText(Path.Combine(run.BatchDirectoryPath,"batch.json"))).State,Is.EqualTo("Error"));
+        }
+
+        [UnityTest]
+        public IEnumerator GameErrorsPreserveStackTracesAndStopEvenWhenPaused()
+        {
+            yield return harness.LoadMainMenu(null);
+            AutoplayRunner.WatchDemo(new AutoplayOptions {RunCount=3});
+            var run=AutoplayRunner.Active;run.Report.ValidationOnly=true;
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"error validation town");
+            run.SetPaused(true);
+            var onLog=typeof(AutoplayRunner).GetMethod("OnLog",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+            onLog.Invoke(run,new object[]{"Validation warning","warning stack\nsecond line",LogType.Warning});
+            onLog.Invoke(run,new object[]{"Validation error","error stack\nsecond line",LogType.Error});
+            yield return harness.WaitUntil(()=>!run.Running&&!run.Finalizing,"reported game error");
+            Assert.That(run.Report.Outcome,Is.EqualTo("GameError"),run.Status);
+            Assert.That(run.SessionRunning,Is.False);Assert.That(run.RunNumber,Is.EqualTo(1));
+            var entries=File.ReadAllLines(Path.Combine(run.DirectoryPath,"issues.jsonl")).Select(JsonUtility.FromJson<AutoplayEvent>).ToArray();
+            Assert.That(entries.Single(e=>e.Severity=="Warning").StackTrace,Is.EqualTo("warning stack\nsecond line"));
+            Assert.That(entries.Single(e=>e.Severity=="Error").StackTrace,Is.EqualTo("error stack\nsecond line"));
+            Assert.That(Common.Instance.Travel.ReturnToMenu(),Is.True);
+            yield return harness.WaitUntil(()=>AutoplayRunner.Active==null,"return from stopped error batch");
+        }
+
+        [UnityTest]
+        public IEnumerator TakeoverBetweenRunsCancelsAdvancement()
+        {
+            yield return harness.LoadMainMenu(null);
+            var original=Common.Instance.GameSaveData;
+            AutoplayRunner.WatchDemo(new AutoplayOptions {RunCount=3});
+            var run=AutoplayRunner.Active;run.Report.ValidationOnly=true;
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"takeover town");
+            run.SetPaused(true);run.Finish("Victory","Synthetic lifecycle validation");
+            yield return harness.WaitUntil(()=>!run.Finalizing,"completed run before takeover");
+            Assert.That(run.Advancing,Is.True);run.TakeControl();
+            yield return harness.WaitUntil(()=>run.PlayerControlled,"takeover between seeds");
+            Assert.That(run.RunNumber,Is.EqualTo(1));Assert.That(run.Batch.State,Is.EqualTo("Stopped"));
+            Assert.That(run.Advancing,Is.False);Assert.That(Common.Instance.GameSaveData,Is.Not.SameAs(original));
+            Assert.That(Common.Instance.Travel.ReturnToMenu(),Is.True);
+            yield return harness.WaitUntil(()=>AutoplayRunner.Active==null,"takeover exit");
+            Assert.That(Common.Instance.GameSaveData,Is.SameAs(original));
+        }
+
+        [UnityTest]
         public IEnumerator DebugMenuLaunchCanResumeWhileLoading()
         {
             using var input = new TestInputScope();
@@ -102,6 +285,16 @@ namespace EternalEnigma.Tests
                 Assert.That(launch.IsActive() && launch.IsInteractable(), Is.True, ButtonState(launch));
                 EventSystem.current.SetSelectedGameObject(launch.gameObject);
                 yield return Click(mouse, launch);
+                var setup = Object.FindFirstObjectByType<AutoplaySetup>();
+                Assert.That(setup,Is.Not.Null);
+                Assert.That(setup.Seed.text,Is.EqualTo("42"));
+                Assert.That(setup.RunCount.text,Is.EqualTo("1"));
+                setup.Seed.text=int.MaxValue.ToString();setup.RunCount.text="2";
+                Assert.That(setup.Launch.interactable,Is.False);
+                Assert.That(setup.Validation.text,Does.Contain("exceed"));
+                setup.Seed.text="42";setup.RunCount.text="1";
+                yield return DioramaUICapture.Save(setup.GetComponent<Canvas>(),"autoplay-setup");
+                yield return Click(mouse, setup.Launch);
                 var run = AutoplayRunner.Active;
                 Assert.That(run, Is.Not.Null, "The authored debug button must start autoplay.");
                 run.Report.ValidationOnly = true;
@@ -275,6 +468,7 @@ namespace EternalEnigma.Tests
                             .Any(i => button.onClick.GetPersistentMethodName(i) == nameof(MainMenu.DebugAutoplay_Clicked)));
                     Assert.That(debugButton.IsActive() && debugButton.IsInteractable(), Is.True, ButtonState(debugButton));
                     debugButton.onClick.Invoke();
+                    Object.FindFirstObjectByType<AutoplaySetup>().StartBatch();
                     Assert.That(AutoplayRunner.Active, Is.Not.Null);
                     Assert.That(AutoplayRunner.Active.Options.DebugPlaythrough, Is.True);
                     Assert.That(AutoplayRunner.Active.Options.Godmode, Is.True);

@@ -20,6 +20,7 @@ internal sealed class PendingCast
     {
         if (c == null || c.PendingCast == null) return;
         var name = c.PendingCast.Name;
+        (c.PendingCast.Release as SkillAction)?.AutoplayTrace?.Interrupt(reason);
         c.PendingCast = null;
         CombatEffectPlayer.Get()?.ClearCasting(c);
         GameMessages.ForCharacter(c, $"[Cast] {GameMessages.Name(c)}'s {name} was interrupted: {reason}.");

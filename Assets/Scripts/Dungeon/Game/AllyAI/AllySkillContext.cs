@@ -18,6 +18,13 @@ public sealed class AllySkillContext
 
 	private AllySkillContext() { }
 
+    internal AllySkillContext ForSkill(Skill skill)
+    {
+        var subset = (AllySkillContext)MemberwiseClone();
+        subset.Castable = new[] { skill };
+        return subset;
+    }
+
 	public bool CanAfford(Skill skill) => AllySkillBudget.CanAfford(Ally.Vitals.SP, skill, SpReserve);
 
 	public IEnumerable<Skill> WithIntent(SkillIntent intent) =>

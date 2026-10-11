@@ -19,6 +19,8 @@ internal class PickUpItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		Game game = Game.Instance;
+        if (droppedItem == null || droppedItem.Opened || !game.CurrentDungeon.Interactables.Contains(droppedItem)) return new();
+        using var receipt = AutoplayRunner.LootPickup(droppedItem, character, droppedItem.InventoryItem.StackStock ?? 1);
 		canAdd = game.PlayerController.Inventory.CanAdd();
 		if (canAdd)
 		{

@@ -11,7 +11,17 @@ public static class MaterialCatalog
 	public const int StackMax = 99;
 
 	private static List<MaterialItemDefinition> all;
-	public static IReadOnlyList<MaterialItemDefinition> All => all ??= new List<MaterialItemDefinition>
+	public static IReadOnlyList<MaterialItemDefinition> All
+	{
+		get
+		{
+			// With domain reload disabled, static references survive Play Mode but
+			// their runtime ScriptableObjects do not. Rebuild the destroyed catalog.
+			if (all == null || all.Any(definition => definition == null)) all = CreateAll();
+			return all;
+		}
+	}
+	private static List<MaterialItemDefinition> CreateAll() => new()
 	{
 		Create(IronOre, "Ore gathered with Mining. Sells for 30 gold.", 30, true, EternalEnigma.Core.World.GatheringKind.Ore, DroppedItemVisual.TreasureChest),
 		Create(HealingHerb, "A herb gathered with Harvesting. Sells for 20 gold.", 20, true, EternalEnigma.Core.World.GatheringKind.Plant, DroppedItemVisual.Potion),

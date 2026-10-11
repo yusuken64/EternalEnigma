@@ -61,6 +61,7 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
     void ReleaseReward()
     {
         if (Opened) return;
+        using var evidence = AutoplayRunner.LootReward(this);
         Opened = true; // Commit before any drop callback; duplicate actions cannot award twice.
         var dungeon = Game.Instance.CurrentDungeon;
         dungeon.Interactables.Remove(this);

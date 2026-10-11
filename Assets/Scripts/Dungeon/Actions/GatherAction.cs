@@ -16,7 +16,7 @@ internal class GatherAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
-		if (point == null) return new();
+		if (point == null || !Game.Instance.CurrentDungeon.Interactables.Contains(point)) return new();
 		string skill = ExplorationSkillNames.ForKind(point.Kind);
 		int rank = Mathf.Max(ExplorationPassives.PartyBestRank(skill), ExplorationPassives.PartyBestRank(ExplorationSkillNames.Survey));
 		if (rank <= 0) { message = "Needs " + skill; return new(); }
@@ -27,6 +27,7 @@ internal class GatherAction : GameAction
 		if (scavenger > 0 && rng.NextDouble() < 0.20 + 0.05 * (scavenger - 1)) amount *= 2;
 
 		var material = MaterialCatalog.ForKind(point.Kind);
+        using var receipt = AutoplayRunner.LootPickup(point, gatherer ?? character, amount, material);
 		int added = MaterialCatalog.AddToInventory(Game.Instance.PlayerController.Inventory, material, amount);
 		if (added <= 0) { message = "Bag is full"; return new(); }
 

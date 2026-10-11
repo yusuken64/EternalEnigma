@@ -1,5 +1,83 @@
 # Manual playthrough and Debug autoplay
 
+## Floor loot sweep
+
+The Unity **Playthrough** window also offers **FloorLootSweep**. Selecting it defaults
+to 10,000 floors, starting seed 42, 32× playback, 100,000 actions, 60 active minutes,
+and five active minutes without meaningful progress per floor. Campaign remains
+mode zero, including previously saved settings and the main-menu setup. Programmatic
+callers can use `AutoplayOptions.LootSweep()` and change `RunCount` for short checks.
+
+Each case loads the production dungeon scene, its cloned generation settings, and a
+fresh isolated save. `manifest.json` is written before the first floor. It fixes the
+case index, sequential seed, all generation options, combat difficulty, and profile.
+Cases cycle through sorted supported theme/biome, interior/outdoor, tier 0–4 and
+entry/regular/exit combinations, plus supported legacy layouts. Build and content
+identifiers accompany the manifest and every attempt.
+Reports also record the actual generated seed, dimensions, floor role, and floor
+fingerprint. A mismatch against the manifest stops the batch.
+
+The validation party starts at the normal entrance. The loot policy uses the shared
+A*, combat policies, and real turn commands to walk, collect, open containers, break
+reward props, and unlock or bash doors. Stairs do not exit during a sweep. The party
+has debug survivability and the production Survey passive for harvesting. Currency
+replenishment and deliberate ability coverage are disabled. Inventory capacity
+expands before pickup, including companion pickups. Normal combat skills and cast
+reporting remain enabled. The animation override is temporary and does not change
+the user's saved animation preference.
+
+Loot receipts record source identity, initial/current cells, expected quantity,
+collector, action, resource values before/after, and removal. Collection requires
+both pickup removal and the exact inventory/stock, gold, or key delta. Prop rewards
+are declared before opening and linked to their spawned drops. New traversal drops
+join the same ledger. Missing generated loot, missing reward drops, visual offsets,
+invalid placement, and runtime recovery remain explicit failures. Initial inspection
+does not move seeded loot. Valid positions are preserved; an invalid initial position
+without a proven valid replacement is reported as a placement failure.
+
+`Passed` and `Failed` advance only floor sweeps. A recorded collection failure does
+not end the batch; game, automation, or reporting exceptions do. `batch.json` records
+`FinalizedFloors`, `PassedFloors`, `FailedFloors`, and `AllFloorsPassed` separately from
+its lifecycle state. A completed batch can contain failures. All sweep reports are
+validation-only and ineligible for balance statistics. Reports include unresolved
+loot, placement issues and recovery events; `entrance.png` and `gameplay-final.png`
+are gameplay-camera samples alongside the ordinary `final.png` screenshot.
+
+Set **Resume manifest** to an existing `manifest.json` to resume. Finalized `Passed`
+or `Failed` cases with complete artifacts are skipped only when their manifest,
+build and content identifiers match. Interrupted/stopped cases restart from generation
+in new attempt directories. Previous attempts remain intact. Per-case reports rebuild
+the aggregate, so an interrupted `batch.json` write cannot lose finalized work. A
+changed build/content version reruns the whole manifest. Earlier-version passes never
+satisfy acceptance. Pauses exclude time from run/stall limits and block advancement;
+repeated movement through visited cells does not reset the stall clock.
+
+For scripted manual launches, write the options JSON to
+`Temp/FloorLootSweep/options.json` and invoke **Tools > Eternal Enigma > Playthrough >
+Run Floor Loot Sweep From File** through Unity MCP. The ordinary **Run Floor Loot
+Sweep** command uses the full 10,000-case defaults. Neither command is a test runner.
+
+Focused verification:
+
+```powershell
+node Tools/unity-mcp.mjs harness FloorLootSweep
+```
+
+`EternalEnigma.Tests.AutoplaySweepTests` covers manifest distribution, serialization,
+counts, seed mapping, mode-specific outcomes and version/artifact resume filtering.
+The short PlayMode suite covers actual collections, container/key/prop rewards,
+capacity, companion receipts, invalid placement, stop/resume, reporting failures,
+cleanup and save restoration. These checks do not establish full-sweep acceptance:
+that requires 10,000 distinct finalized passing cases on the final version.
+
+`node Tools/floor-loot-sweep.mjs status [batch-directory]` reads progress and failures.
+`node Tools/floor-loot-sweep.mjs verify [batch-directory]` independently checks all
+10,000 cases, version identity, generated-floor fingerprints, artifacts, and each
+collection's action receipt. It exits with a failure status for incomplete or failed
+acceptance. With no directory argument it selects the latest sweep manifest.
+
+## Campaign autoplay
+
 Choose **Debug autoplay** in the main menu's developer controls to open its setup.
 Enter a **starting seed** and **run count**, then choose **Start autoplay**. Defaults
 are seed **42**, **1 run**, **1x**, with godmode, infinite strength, infinite resources,

@@ -473,13 +473,16 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.AutoplayTests.NormalModeAllowsDefeatAndWritesTuningReport",
         "EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run FloorLootSweep")]
+    public static void RunFloorLootSweep() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.AutoplayLootSweepTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay Policies")]
     public static void RunAutoplayPolicies() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.AllySkillPolicyTests", "EternalEnigma.Tests.CastingAndPiercingTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay EditMode")]
     public static void RunAutoplayEditMode() => Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode",
-        "EternalEnigma.Tests.AutoplayBatchTests", "EternalEnigma.Tests.AutoplayControlPreferenceTests", "EternalEnigma.Tests.AutoplayRouteTests",
+        "EternalEnigma.Tests.AutoplayBatchTests", "EternalEnigma.Tests.AutoplaySweepTests", "EternalEnigma.Tests.AutoplayControlPreferenceTests", "EternalEnigma.Tests.AutoplayRouteTests",
         "TrainerOfferTests", "EternalEnigma.Tests.EconomyCatalogTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay Startup")]

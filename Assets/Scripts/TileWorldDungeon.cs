@@ -351,6 +351,7 @@ public class TileWorldDungeon : MonoBehaviour
 		itemInstance.Setup(treasurePosition);
         if(seededRoll.HasValue) itemInstance.SeededAmount = 5 + 4*(Mathf.Clamp(Game.Instance.PlayerController.Floor,1,30)-1) + (int)((uint)seededRoll.Value%4);
 		Interactables.Add(itemInstance);
+        AutoplayRunner.ObserveLoot(itemInstance);
 	}
 
     internal void SetGoldAmount(Vector3Int position, int amount)
@@ -360,6 +361,7 @@ public class TileWorldDungeon : MonoBehaviour
         DungeonPresentation.GroundFloorObject(gold.transform);
         gold.Setup(position); gold.SeededAmount = amount;
         Interactables.Add(gold);
+        AutoplayRunner.ObserveLoot(gold);
     }
 
 	internal DroppedItem SetDroppedItem(Vector3Int position, ItemDefinition item, int? stackStock = null)
@@ -371,6 +373,7 @@ public class TileWorldDungeon : MonoBehaviour
 		itemInstance.Position = position;
 		itemInstance.InventoryItem = item.AsInventoryItem(stackStock);
 		Interactables.Add(itemInstance);
+        AutoplayRunner.ObserveLoot(itemInstance);
 		return itemInstance;
 	}
 
@@ -400,6 +403,7 @@ public class TileWorldDungeon : MonoBehaviour
 	{
 		var key = SmallKey.Create(this, position);
 		Interactables.Add(key);
+        AutoplayRunner.ObserveLoot(key);
 	}
 
 	internal void SetStairs(Vector3Int stairPosition)

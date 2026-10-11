@@ -11,9 +11,14 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
+public enum AutoplayMode { Campaign = 0, FloorLootSweep = 1 }
+
 [Serializable]
 public sealed class AutoplayOptions
 {
+    public AutoplayMode Mode;
+    public string ResumeManifestPath;
+    public int ActionLimit = 100000;
     public int Seed = 42;
     public int RunCount = 1;
     public bool DebugCoverage;
@@ -21,9 +26,14 @@ public sealed class AutoplayOptions
     public bool ExploreAll;
     public float Speed = 4, TimeLimitMinutes = 60, StallSeconds = 120;
 
+    public static AutoplayOptions LootSweep() => new() { Mode = AutoplayMode.FloorLootSweep, RunCount = 10000,
+        Seed = 42, Speed = 32, DebugPlaythrough = true, Godmode = true, InfiniteResources = false,
+        DebugCoverage = false, TimeLimitMinutes = 60, StallSeconds = 300 };
+
     public bool Validate(out string reason)
     {
-        reason = RunCount < 1 ? "Run count must be at least 1." :
+        reason = !Enum.IsDefined(typeof(AutoplayMode), Mode) ? "Unknown autoplay mode." :
+            ActionLimit < 1 ? "Action limit must be positive." : RunCount < 1 ? "Run count must be at least 1." :
             (long)Seed + RunCount - 1 > int.MaxValue ? "The last seed would exceed 2147483647." :
             float.IsNaN(Speed) || float.IsInfinity(Speed) || Speed < .5f || Speed > 32 ? "Speed must be between 0.5 and 32." :
             float.IsNaN(TimeLimitMinutes) || float.IsInfinity(TimeLimitMinutes) || TimeLimitMinutes <= 0 ? "Time limit must be positive." :
@@ -40,6 +50,12 @@ public sealed class AutoplayOptions
 [Serializable]
 public sealed class AutoplayReport
 {
+    public string ManifestId, CaseId, ContentId, Profile, GenerationOptions, GeneratedFloor;
+    public int GeneratedSeed, GeneratedWidth, GeneratedHeight;
+    public bool GeneratedThrone;
+    public int ExpectedLoot, CollectedLoot, PlacementCorrections, RecoveryEvents;
+    public List<AutoplayLootRecord> Loot = new();
+    public List<string> UnresolvedLoot = new(), PlacementIssues = new();
     public string Outcome = "Running", Reason, StartedUtc, EndedUtc, GameVersion, BuildId, UnityVersion;
     public string Policy = "astar-objectives-v3-batch-coverage", Observation = "Full campaign graph and full dungeon map/stairs (omniscient navigation)";
     public string RunId;
@@ -90,7 +106,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     public bool PanelVisible { get; private set; } = true;
     public bool TakingControl => takingControl;
     public bool AppSession => appSession;
-    public bool CanTakeControl => startedCampaign && !unloadingRun;
+    public bool CanTakeControl => startedCampaign && !unloadingRun && (!IsLootSweep || Game.Instance?.IsReady == true);
     public bool ShowPlaybackUI => Options != null && !PlayerControlled && !exiting;
     private AutoplayPanel playbackUI;
     private bool takingControl;
@@ -119,7 +135,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     private CampaignContext originalContext;
     private TownConfiguration originalTownConfiguration;
     private UnityEngine.Random.State originalRandom;
-    private float originalTimeScale;
+    private float originalTimeScale, originalFixedDeltaTime;
     private bool appSession;
     public bool ReturnPromptOpen { get; private set; }
     private bool wasPausedBeforePrompt, exiting;
@@ -159,15 +175,18 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         if (!options.Validate(out var reason)) throw new ArgumentException(reason);
         Active = this; Options = JsonUtility.FromJson<AutoplayOptions>(JsonUtility.ToJson(options));
+        HoldSweepReload();
         acceptInputAfter = Time.unscaledTime + .75f;
         originalTimeScale = Time.timeScale; originalRandom = UnityEngine.Random.state;
+        originalFixedDeltaTime = Time.fixedDeltaTime;
+        if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime * Options.Speed;
         string root = Application.isEditor ? "Logs" : Application.persistentDataPath;
         BatchDirectoryPath = Path.GetFullPath(Path.Combine(root, "Playthroughs", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8)));
         Batch = new AutoplayBatch { StartedUtc = DateTime.UtcNow.ToString("O"), StartingSeed = Options.Seed, RequestedRuns = Options.RunCount };
         store = new AutoplayStore();
         saveScope = SaveSystem.UseStore(store);
         Application.logMessageReceived += OnLog;
-        try { BeginRun(); }
+        try { InitializeSweep(); if (!batchCanceled) BeginRun(); }
         catch (Exception error) { FailSession("Unable to initialize run", error); }
         var panel = Resources.Load<AutoplayPanel>("UI/AutoplayPanel");
         if (panel != null) { playbackUI = Instantiate(panel, transform); playbackUI.Bind(this); }
@@ -215,6 +234,10 @@ public sealed partial class AutoplayRunner : MonoBehaviour
 
     private void Update()
     {
+        // Unity serializes MonoBehaviour fields across script reload, but cannot restore
+        // file writers, save scopes or coroutines. A reloaded attempt must be resumed
+        // from its manifest, never continued with a partially reconstructed session.
+        if (store == null) { enabled = false; return; }
         if (PlayerControlled || takingControl || exiting) return;
         if (!ReturnPromptOpen && Keyboard.current?.f8Key.wasPressedThisFrame == true)
         { SetPanelVisible(!PanelVisible); return; }
@@ -237,11 +260,28 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (Running && pendingError != null) { Finish("GameError", pendingError); return; }
         if (!Running || Paused) return;
         var now = Time.realtimeSinceStartupAsDouble;
-        if (now - started - pausedSeconds > Options.TimeLimitMinutes * 60) { Finish("TimeLimit", "Manual run time limit reached."); return; }
-        if (now - lastProgress > Options.StallSeconds) { Finish("Stalled", "No observable progress: " + Status); return; }
+        if (now - started - pausedSeconds > Options.TimeLimitMinutes * 60) { Finish(IsLootSweep ? "Failed" : "TimeLimit", "Active time limit reached."); return; }
+        if (now - lastProgress > Options.StallSeconds) { Finish(IsLootSweep ? "Failed" : "Stalled", "No meaningful progress: " + Status); return; }
         if (Time.unscaledTime < nextTick) return;
         nextTick = Time.unscaledTime + .03f / Options.Speed;
-        try { Tick(); }
+        try
+        {
+            if (!IsLootSweep) Tick();
+            else
+            {
+                // At accelerated playback, submit another command only after the
+                // production turn has completed. Bound work so controls stay responsive.
+                double deadline = Time.realtimeSinceStartupAsDouble + .006;
+                for (int i = 0; i < Mathf.CeilToInt(Options.Speed); i++)
+                {
+                    int before = Report.Actions;
+                    Tick();
+                    var game = Game.Instance;
+                    if (!Running || Paused || Report.Actions == before || game?.TurnManager.IsProcessingTurn == true ||
+                        game?.PlayerController.ControlledAlly?.PendingCast != null || Time.realtimeSinceStartupAsDouble >= deadline) break;
+                }
+            }
+        }
         catch (Exception error) { Finish("AutomationError", error.ToString()); }
     }
 
@@ -249,6 +289,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         var common = FindFirstObjectByType<Common>();
         if (common == null || common.Travel.IsTransitioning) return;
+        if (IsLootSweep) { SweepTick(common); return; }
         if (!startedCampaign)
         {
             var menu = FindFirstObjectByType<MainMenu>();
@@ -608,8 +649,9 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         string combat = game == null ? "" : string.Join(",",game.Enemies.Where(e => e != null).Select(e => e.GetInstanceID() + ":" + e.Vitals.HP));
         string signature = floorIdentity + "/" + progressSignature + "/" + position + "/" + message + "/" + combat;
         repetitions.TryGetValue(signature,out var count); repetitions[signature] = count+1;
-        if (count > 30) { Finish("Stalled", "Repeated action/state loop: " + message); return; }
-        lastProgress = Time.realtimeSinceStartupAsDouble;
+        if (!IsLootSweep && count > 30) { Finish("Stalled", "Repeated action/state loop: " + message); return; }
+        if (!IsLootSweep) lastProgress = Time.realtimeSinceStartupAsDouble;
+        if (IsLootSweep && Report.Actions >= Options.ActionLimit) { Finish("Failed", "Floor action limit reached."); return; }
         if (Report.Actions % 50 == 0) { Capture(); WriteReport(); }
     }
 
@@ -617,6 +659,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         if (!SessionRunning || float.IsNaN(speed) || float.IsInfinity(speed)) return;
         Options.Speed = Mathf.Clamp(speed, .5f, 32f);
+        if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime * Options.Speed;
         if (!Paused && Running) Time.timeScale = Options.Speed;
         nextTick = Time.unscaledTime;
         WriteReport();
@@ -710,6 +753,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             Paused = false;
             PanelVisible = false;
             PlayerControlled = true;
+            if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime;
             takingControl = false;
             Time.timeScale = 1;
             yield break;
@@ -741,6 +785,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         while (Finalizing || unloadingRun) yield return null;
         Time.timeScale = originalTimeScale;
+        if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime;
         var common = Common.Instance;
         common.ScreenTransition.HoldClosed(); // Cancel a queued transition callback before restoring the original campaign.
         CampaignParty.ClearLiveParty(common);
@@ -766,7 +811,14 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             var liveTown = FindFirstObjectByType<Town>();
             if (liveTown != null && liveTown.IsReady) liveTown.WriteSaveData();
             SaveSystem.Capture(common);
-            SaveSystem.SaveData(common.GameSaveData);
+            if (IsLootSweep && game != null && game.IsReady)
+            {
+                var snapshot = JsonUtility.FromJson<GameSaveData>(JsonUtility.ToJson(common.GameSaveData));
+                DungeonReturnService.Commit(snapshot, common.CurrentTownConfiguration ?? TownSceneLoader.Default, false,
+                    game.PlayerController.Gold, game.PlayerController.Inventory.InventoryItems, PartyRules.PartyMembers(game), keepLoot: true);
+                SaveSystem.SaveData(snapshot);
+            }
+            else SaveSystem.SaveData(common.GameSaveData);
         }
         if (game == null || !game.IsReady)
         {
@@ -803,7 +855,17 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (disposed || Options == null) return;
         disposed = true;
         try { FinalizeOnDestroy(); }
-        finally { Application.logMessageReceived -= OnLog; actions?.Dispose(); issues?.Dispose(); saveScope?.Dispose(); Active = null; Time.timeScale = originalTimeScale; UnityEngine.Random.state = originalRandom; }
+        finally
+        {
+            Application.logMessageReceived -= OnLog;
+            try { actions?.Dispose(); issues?.Dispose(); saveScope?.Dispose(); }
+            finally
+            {
+                Active = null; Time.timeScale = originalTimeScale;
+                if (IsLootSweep) Time.fixedDeltaTime = originalFixedDeltaTime;
+                UnityEngine.Random.state = originalRandom; ReleaseSweepReload();
+            }
+        }
     }
 
     private sealed class AutoplayStore : ISaveStore

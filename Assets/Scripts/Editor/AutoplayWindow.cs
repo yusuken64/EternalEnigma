@@ -41,10 +41,11 @@ public sealed class AutoplayWindow : EditorWindow
         var run = AutoplayRunner.Active;
         if (run != null)
         {
-            EditorGUILayout.LabelField(run.Options.DebugPlaythrough ? "Debug playthrough" : "Normal playthrough", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(run.IsLootSweep ? "Floor loot sweep" : run.Options.DebugPlaythrough ? "Debug playthrough" : "Normal playthrough", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(run.Status, MessageType.Info);
-            EditorGUILayout.LabelField($"Run {run.RunNumber}/{run.Options.RunCount} · Seed {run.CurrentSeed}",EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Actions / dungeon turns", run.Report.Actions + " / " + run.Report.DungeonTurns);
+            EditorGUILayout.LabelField(run.ProgressLabel,EditorStyles.boldLabel);
+            if (run.IsLootSweep) EditorGUILayout.LabelField("Loot collected / expected", $"{run.Report?.CollectedLoot ?? 0} / {run.Report?.ExpectedLoot ?? 0}");
+            EditorGUILayout.LabelField("Actions / dungeon turns", (run.Report?.Actions ?? 0) + " / " + (run.Report?.DungeonTurns ?? 0));
             if (run.SessionRunning)
             {
                 float speed = EditorGUILayout.Slider("Playback speed",run.Options.Speed,.5f,32);
@@ -60,8 +61,18 @@ public sealed class AutoplayWindow : EditorWindow
         }
         using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
         {
+            var mode = (AutoplayMode)EditorGUILayout.EnumPopup("Mode", options.Mode);
+            if (mode != options.Mode) options = mode == AutoplayMode.FloorLootSweep ? AutoplayOptions.LootSweep() : new AutoplayOptions();
+            bool sweep = options.Mode == AutoplayMode.FloorLootSweep;
             options.Seed = EditorGUILayout.IntField("Starting seed", options.Seed);
-            options.RunCount = EditorGUILayout.IntField("Run count", options.RunCount);
+            options.RunCount = EditorGUILayout.IntField(sweep ? "Floor count" : "Run count", options.RunCount);
+            if (sweep)
+            {
+                options.ResumeManifestPath = EditorGUILayout.TextField("Resume manifest", options.ResumeManifestPath);
+                EditorGUILayout.HelpBox("Validation only. Collects all loot through gameplay with debug survivability, 32× playback and expanded inventory. Resume keeps prior attempts and skips only finalized cases on the same build/content version.", MessageType.Info);
+            }
+            else
+            {
             options.DebugPlaythrough = EditorGUILayout.Toggle("Debug playthrough", options.DebugPlaythrough);
             if (options.DebugPlaythrough)
             {
@@ -71,9 +82,11 @@ public sealed class AutoplayWindow : EditorWindow
                 EditorGUILayout.HelpBox("Infinite resources replenishes gold, SP and hunger, and preserves used consumables. Keys, companions and abilities must still be earned. Debug runs are excluded from balance results.", MessageType.None);
             }
             options.ExploreAll = EditorGUILayout.Toggle("Visit all destinations", options.ExploreAll);
+            }
             options.Speed = EditorGUILayout.Slider("Playback speed", options.Speed, .5f, 32);
             options.TimeLimitMinutes = Mathf.Max(1, EditorGUILayout.FloatField("Time limit (minutes)", options.TimeLimitMinutes));
             options.StallSeconds = Mathf.Max(10, EditorGUILayout.FloatField("Stall timeout (seconds)", options.StallSeconds));
+            if (sweep) options.ActionLimit = EditorGUILayout.IntField("Action limit", options.ActionLimit);
             EditorGUILayout.HelpBox("Manual only. Normal runs can lose. The policy reads the current campaign and uses full dungeon map knowledge with the shared A*. Optional coverage visits each destination and completes each dungeon once.", MessageType.Info);
             bool valid = options.Validate(out var reason);
             if (!valid) EditorGUILayout.HelpBox(reason,MessageType.Error);
@@ -111,6 +124,15 @@ public sealed class AutoplayWindow : EditorWindow
     public static void RunNormal() => Launch(new AutoplayOptions());
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug")]
     public static void RunDebug() => Launch(new AutoplayOptions { DebugPlaythrough = true, DebugCoverage = true });
+    [MenuItem("Tools/Eternal Enigma/Playthrough/Run Floor Loot Sweep")]
+    public static void RunFloorLootSweep() => Launch(AutoplayOptions.LootSweep());
+    [MenuItem("Tools/Eternal Enigma/Playthrough/Run Floor Loot Sweep From File")]
+    public static void RunFloorLootSweepFromFile()
+    {
+        var settings = JsonUtility.FromJson<AutoplayOptions>(System.IO.File.ReadAllText("Temp/FloorLootSweep/options.json"));
+        if (settings.Mode != AutoplayMode.FloorLootSweep) throw new System.ArgumentException("Expected floor sweep options.");
+        Launch(settings);
+    }
     [MenuItem("Tools/Eternal Enigma/Playthrough/Stop and Report")]
     public static void StopRun() => AutoplayRunner.Active?.Stop();
 }

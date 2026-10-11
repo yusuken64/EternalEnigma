@@ -444,6 +444,7 @@ public class PlayerController : MonoBehaviour
 
     private void ShowStairPrompt(Stairs stairs)
     {
+        if (AutoplayRunner.Sweeping) return;
         StopHeldWalk();
         if (!Game.Instance.CheckFloorExit()) return;
         if (!Game.Instance.CurrentDungeon.IsExitFloor)

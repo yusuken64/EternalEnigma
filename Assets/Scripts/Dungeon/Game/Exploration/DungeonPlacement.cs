@@ -73,17 +73,19 @@ internal static class DungeonPlacement
             if (actor == null || Fits(dungeon, actor, actor.TilemapPosition, false)) continue;
             var cells = OpenCells(dungeon, actor);
             if (cells.Count == 0) continue; // Retry when a valid destination becomes available.
+            AutoplayRunner.PlacementRecovery($"Actor {actor.name} recovered from invalid placement {actor.TilemapPosition}");
             actor.TilemapPosition = cells[Random.Range(0, cells.Count)];
             actor.transform.position = dungeon.CellToWorld(actor.TilemapPosition);
             if (actor is Ally ally) ally.currentInteractable = null;
             GameMessages.ForCharacter(actor, $"{GameMessages.Name(actor)} was inside a wall and warped to a random open spot.");
             changed = true;
         }
-        foreach (var item in dungeon.Interactables.Where(i => i is DroppedItem or Gold).ToArray())
+        foreach (var item in dungeon.Interactables.Where(i => i is DroppedItem or Gold or SmallKey).ToArray())
         {
             if (dungeon.CanWalk(item.Position)) continue;
             var cells = OpenCells(dungeon, items: true);
             if (cells.Count == 0) continue;
+            AutoplayRunner.PlacementRecovery($"Loot {item.name} recovered from invalid placement {item.Position}");
             item.Position = cells[Random.Range(0, cells.Count)];
             item.transform.position = dungeon.CellToWorld(item.Position);
             changed = true;

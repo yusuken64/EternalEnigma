@@ -23,6 +23,9 @@ public sealed class SmallKey : Interactable
 
     internal override List<GameAction> GetInteractionSideEffects(Character character)
     {
+        if (Opened || !Game.Instance.CurrentDungeon.Interactables.Contains(this)) return new();
+        using var receipt = AutoplayRunner.LootPickup(this, character, 1);
+        Opened = true;
         Game.Instance.CurrentDungeon.RemoveInteractable(this);
         AudioManager.Instance.SoundEffects.BuySell.PlayAsSound();
         SmallKeys.Add();

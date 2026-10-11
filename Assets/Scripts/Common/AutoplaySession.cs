@@ -10,6 +10,10 @@ using UnityEngine.SceneManagement;
 [Serializable]
 public sealed class AutoplayBatch
 {
+    public AutoplayMode Mode;
+    public string ManifestId, BuildId, ContentId;
+    public int FinalizedFloors, PassedFloors, FailedFloors;
+    public bool AllFloorsPassed;
     public string StartedUtc, EndedUtc, State = "Running", Reason;
     public int StartingSeed, RequestedRuns;
     public List<AutoplayBatchRun> Runs = new();
@@ -18,15 +22,28 @@ public sealed class AutoplayBatch
 [Serializable]
 public sealed class AutoplayBatchRun
 {
+    public string CaseId, Profile, BuildId, ContentId;
+    public int ExpectedLoot, CollectedLoot, UnresolvedLoot, PlacementCorrections, RecoveryEvents;
     public int RunNumber, Seed, Actions, Purchases, LearnedRanks, CompletedCasts, InterruptedCasts, UnexercisedAbilities, Issues;
     public string RunId, Directory, Outcome, Reason;
     public bool ArtifactsComplete;
     public double Seconds;
+    public static AutoplayBatchRun FromReport(AutoplayReport r, string directory) => new() {
+        RunId = r.RunId, Directory = directory, RunNumber = r.RunNumber, Seed = r.Seed, Outcome = r.Outcome, Reason = r.Reason,
+        CaseId = r.CaseId, Profile = r.Profile, BuildId = r.BuildId, ContentId = r.ContentId, ArtifactsComplete = r.ArtifactsComplete,
+        Actions = r.Actions, Seconds = r.Seconds, Issues = r.IssueCount, ExpectedLoot = r.ExpectedLoot, CollectedLoot = r.CollectedLoot,
+        UnresolvedLoot = r.UnresolvedLoot?.Count ?? 0, PlacementCorrections = r.PlacementCorrections, RecoveryEvents = r.RecoveryEvents,
+        Purchases = r.Purchases.Count(p => p.Success), LearnedRanks = r.Training.Count(p => p.Success),
+        CompletedCasts = r.SkillUses.Sum(s => s.Casts), InterruptedCasts = r.SkillUses.Sum(s => s.Interrupted),
+        UnexercisedAbilities = r.UnexercisedAbilities?.Length ?? 0 };
 }
 
 [Serializable]
 public sealed class AutoplayEvent
 {
+    public string CaseId, Profile, LootId;
+    public int ExpectedAmount;
+    public bool Removed;
     public string Kind, RunId, Scene, Location, ActorId, TargetId, Message, Position, Severity, StackTrace;
     public string Item, Skill, Evaluator, Currency, Building, CastId;
     public int Seed, RunNumber, Action, Floor, HP, SP, Hunger, Gold, Cost, RankBefore, RankAfter, StockBefore, StockAfter;
@@ -64,7 +81,8 @@ public sealed partial class AutoplayRunner
     private string pendingReportingError;
     private readonly Dictionary<string,string> skipReasons = new();
 
-    public static bool ContinuesAfter(string outcome) => outcome is "Victory" or "Defeat" or "Stalled" or "TimeLimit";
+    public static bool ContinuesAfter(string outcome, AutoplayMode mode = AutoplayMode.Campaign) =>
+        mode == AutoplayMode.FloorLootSweep ? outcome is "Passed" or "Failed" : outcome is "Victory" or "Defeat" or "Stalled" or "TimeLimit";
 
     private void BeginRun()
     {
@@ -92,13 +110,14 @@ public sealed partial class AutoplayRunner
             BuildId = typeof(Game).Assembly.ManifestModule.ModuleVersionId.ToString(),
 #endif
             UnityVersion = Application.unityVersion };
+        BeginSweepRun();
         Directory.CreateDirectory(DirectoryPath);
         store.Begin(DirectoryPath);
         actions = new StreamWriter(Path.Combine(DirectoryPath,"actions.jsonl")) { AutoFlush = true };
         issues = new StreamWriter(Path.Combine(DirectoryPath,"issues.jsonl")) { AutoFlush = true };
         // An early stop still has a valid save artifact, never a copy of the player's save.
         File.WriteAllText(Path.Combine(DirectoryPath,"save.json"),JsonUtility.ToJson(new GameSaveData()));
-        Status = $"Starting run {RunNumber}/{Options.RunCount}, seed {CurrentSeed}";
+        Status = "Starting " + ProgressLabel;
         Time.timeScale = Paused ? 0 : Options.Speed;
         WriteReport(); WriteBatch();
     }
@@ -115,6 +134,7 @@ public sealed partial class AutoplayRunner
         if (game != null && !string.IsNullOrEmpty(entry.ActorId))
             ally = game.Allies.Concat(game.DownedAllies).FirstOrDefault(a => a != null && ActorId(a) == entry.ActorId) ?? ally;
         entry.Seed = Report.Seed; entry.RunId = Report.RunId; entry.RunNumber = RunNumber;
+        entry.CaseId = Report.CaseId; entry.Profile = Report.Profile;
         entry.Action = Report.Actions; entry.Seconds = Elapsed;
         entry.Scene = SceneManager.GetActiveScene().name;
         entry.Location = !string.IsNullOrEmpty(c?.State.PendingDungeon) ? c.State.PendingDungeon : c?.Location?.Id;
@@ -159,11 +179,13 @@ public sealed partial class AutoplayRunner
     private void WriteReport()
     {
         if (Report == null || DirectoryPath == null) return;
+        if (IsLootSweep) LootLedger?.Audit();
         Report.Options.Speed = Options.Speed;
         Report.UnexercisedAbilities = Report.Abilities.Where(a => a.Active && a.Completed == 0)
             .OrderBy(a => a.ActorId).ThenBy(a => a.Skill)
             .Select(a => $"{a.ActorId}: {a.Skill} (rank {a.Rank}) — {a.Reason ?? "No context-appropriate completed cast"}").ToArray();
-        File.WriteAllText(Path.Combine(DirectoryPath,"report.json"),JsonUtility.ToJson(Report,true));
+        if (IsLootSweep) AutoplaySweepManifest.WriteJson(Path.Combine(DirectoryPath,"report.json"), Report);
+        else File.WriteAllText(Path.Combine(DirectoryPath,"report.json"),JsonUtility.ToJson(Report,true));
     }
 
     private void WriteBatch()
@@ -175,16 +197,29 @@ public sealed partial class AutoplayRunner
             if (row == null) Batch.Runs.Add(row = new AutoplayBatchRun { RunId = Report.RunId, Seed = Report.Seed,
                 RunNumber = Report.RunNumber, Directory = Path.GetFileName(DirectoryPath) });
             row.Outcome = Report.Outcome; row.Reason = Report.Reason; row.ArtifactsComplete = Report.ArtifactsComplete;
+            row.CaseId = Report.CaseId; row.Profile = Report.Profile; row.BuildId = Report.BuildId; row.ContentId = Report.ContentId;
+            row.ExpectedLoot = Report.ExpectedLoot; row.CollectedLoot = Report.CollectedLoot; row.UnresolvedLoot = Report.UnresolvedLoot.Count;
+            row.PlacementCorrections = Report.PlacementCorrections; row.RecoveryEvents = Report.RecoveryEvents;
             row.Actions = Report.Actions; row.Seconds = Report.Seconds; row.Issues = Report.IssueCount;
             row.Purchases = Report.Purchases.Count(p => p.Success); row.LearnedRanks = Report.Training.Count(t => t.Success);
             row.CompletedCasts = Report.SkillUses.Sum(s => s.Casts); row.InterruptedCasts = Report.SkillUses.Sum(s => s.Interrupted);
             row.UnexercisedAbilities = Report.UnexercisedAbilities?.Length ?? 0;
         }
-        File.WriteAllText(Path.Combine(BatchDirectoryPath,"batch.json"),JsonUtility.ToJson(Batch,true));
+        if (IsLootSweep)
+        {
+            var latest = Batch.Runs.Where(r => r.BuildId == sweepBuild && r.ContentId == sweepContent && r.ArtifactsComplete && r.Outcome is "Passed" or "Failed")
+                .GroupBy(r => r.CaseId).Select(g => g.Last()).ToArray();
+            Batch.FinalizedFloors = latest.Length; Batch.PassedFloors = latest.Count(r => r.Outcome == "Passed");
+            Batch.FailedFloors = latest.Count(r => r.Outcome == "Failed");
+            Batch.AllFloorsPassed = Batch.FinalizedFloors == Options.RunCount && Batch.PassedFloors == Options.RunCount;
+        }
+        if (IsLootSweep) AutoplaySweepManifest.WriteJson(Path.Combine(BatchDirectoryPath,"batch.json"), Batch);
+        else File.WriteAllText(Path.Combine(BatchDirectoryPath,"batch.json"),JsonUtility.ToJson(Batch,true));
         var summary = new StringBuilder($"Autoplay batch: {Batch.State}\nStarting seed: {Batch.StartingSeed}; requested runs: {Batch.RequestedRuns}\n{Batch.Reason}\n\n");
+        if (IsLootSweep) summary.AppendLine($"VALIDATION ONLY — excluded from balance statistics\nManifest: {Manifest.Id}\nBuild: {sweepBuild}; content: {sweepContent}\nFinalized floors: {Batch.FinalizedFloors}/{Options.RunCount}; passed: {Batch.PassedFloors}; failed: {Batch.FailedFloors}; all passed: {Batch.AllFloorsPassed}\n");
         foreach (var run in Batch.Runs)
             summary.AppendLine($"Run {run.RunNumber}, seed {run.Seed}: {run.Outcome} ({run.Seconds:0.0}s, {run.Actions} actions, {run.Issues} issues)\n" +
-                $"  {run.Reason}\n  {run.Directory}/report.json\n  Purchases: {run.Purchases}; learned ranks: {run.LearnedRanks}; completed casts: {run.CompletedCasts}; interrupted: {run.InterruptedCasts}; unexercised: {run.UnexercisedAbilities}; artifacts complete: {run.ArtifactsComplete}\n");
+                $"  {run.Reason}\n  {run.Directory}/report.json\n  Case: {run.CaseId}; profile: {run.Profile}; loot: {run.CollectedLoot}/{run.ExpectedLoot}; unresolved: {run.UnresolvedLoot}; corrections: {run.PlacementCorrections}; recoveries: {run.RecoveryEvents}\n  Purchases: {run.Purchases}; learned ranks: {run.LearnedRanks}; completed casts: {run.CompletedCasts}; interrupted: {run.InterruptedCasts}; unexercised: {run.UnexercisedAbilities}; artifacts complete: {run.ArtifactsComplete}\n");
         File.WriteAllText(Path.Combine(BatchDirectoryPath,"summary.txt"),summary.ToString());
     }
 
@@ -200,7 +235,13 @@ public sealed partial class AutoplayRunner
     public void Finish(string outcome, string reason)
     {
         if (!Running) return;
-        if (!ContinuesAfter(outcome)) CancelBatch(reason);
+        if (IsLootSweep)
+        {
+            LootLedger?.Audit();
+            if (outcome == "Passed" && (!sweepInspected || LootLedger == null || LootLedger.Failed || Report.CollectedLoot != Report.ExpectedLoot))
+            { outcome = "Failed"; reason = "Loot accounting or placement verification failed. " + reason; }
+        }
+        if (!ContinuesAfter(outcome, Options.Mode)) CancelBatch(reason);
         if (Report.ValidationOnly) Report.EligibleForBalance = false;
         Report.Outcome = outcome; Report.Reason = reason; Report.EndedUtc = DateTime.UtcNow.ToString("O");
         pendingError = null;
@@ -210,9 +251,8 @@ public sealed partial class AutoplayRunner
         try
         {
             foreach (var trace in castTraces.ToArray()) trace.Interrupt("Run ended before cast completed: " + outcome);
-            if (outcome is "Stalled" or "Unsupported" or "AutomationError" or "GameError") Issue(outcome,reason);
-            Capture(); WriteReport(); actions?.Flush(); issues?.Flush(); store.Sealed = true;
-            ScreenCapture.CaptureScreenshot(Path.Combine(DirectoryPath,"final.png"));
+            if (outcome is "Failed" or "Stalled" or "Unsupported" or "AutomationError" or "GameError") Issue(outcome,reason);
+            Capture(); WriteReport(); actions?.Flush(); issues?.Flush();
             StartCoroutine(GuardSession(FinishRoutine()));
         }
         catch (Exception e) { Finalizing = false; FailSession("Unable to finish run artifacts",e); }
@@ -220,7 +260,18 @@ public sealed partial class AutoplayRunner
 
     private IEnumerator FinishRoutine()
     {
+        // Generation can already be in flight when stop/pause arrives. Keep the isolated
+        // store installed and capture the completed scene before permitting cleanup.
+        double generationDeadline = Time.realtimeSinceStartupAsDouble + 60;
+        while (loadingSweep)
+        {
+            if (Time.realtimeSinceStartupAsDouble > generationDeadline) throw new TimeoutException("Floor generation did not settle during finalization.");
+            yield return null;
+        }
+        if (IsLootSweep) { Capture(); LootLedger?.Audit(); CaptureSweepCamera("gameplay-final.png"); }
+        store.Sealed = true;
         string screenshot = Path.Combine(DirectoryPath,"final.png");
+        ScreenCapture.CaptureScreenshot(screenshot);
         double deadline = Time.realtimeSinceStartupAsDouble + 15;
         // CaptureScreenshot writes at the end of a rendered frame. Never unload before it is on disk.
         while (!File.Exists(screenshot) || new FileInfo(screenshot).Length == 0)
@@ -233,8 +284,10 @@ public sealed partial class AutoplayRunner
             throw new IOException(pendingReportingError ?? pendingError);
         Report.ArtifactsComplete = true;
         WriteReport(); CloseLogs();
+        if (IsLootSweep && ContinuesAfter(Report.Outcome, Options.Mode)) finalizedCases.Add(Report.CaseId);
         Finalizing = false;
-        Advancing = !batchCanceled && ContinuesAfter(Report.Outcome) && RunNumber < Options.RunCount;
+        int nextRun = NextSweepCase(RunNumber + 1);
+        Advancing = !batchCanceled && ContinuesAfter(Report.Outcome, Options.Mode) && nextRun <= Options.RunCount;
         if (!Advancing && !batchCanceled) { Batch.State = "Completed"; Batch.EndedUtc = DateTime.UtcNow.ToString("O"); }
         WriteBatch();
         if (!Advancing) yield break;
@@ -263,7 +316,7 @@ public sealed partial class AutoplayRunner
         while (Paused && !batchCanceled) yield return null;
         if (batchCanceled || exiting) { Advancing = false; yield break; }
         if (pendingError != null) throw new InvalidOperationException(pendingError);
-        RunNumber++;
+        RunNumber = nextRun;
         BeginRun(); Advancing = false;
     }
 
@@ -299,7 +352,7 @@ public sealed partial class AutoplayRunner
             Issue(outcome,context,error.ToString());
         }
         // Best effort only: a failed disk must not recursively log errors or advance the batch.
-        store.Sealed = true;
+        if (store != null) store.Sealed = true;
         try { CloseLogs(); } catch { }
         try { WriteReport(); } catch { }
         try { WriteBatch(); } catch { }

@@ -46,6 +46,8 @@ public class TurnManager : MonoBehaviour
 
     private void Update()
     {
+        var autoplay = AutoplayRunner.Active;
+        if (autoplay != null && !autoplay.PlayerControlled && (autoplay.Paused || !autoplay.Running)) return;
         var game = Game.Instance;
         var controlled = game?.PlayerController?.ControlledAlly;
         if (!IsProcessingTurn && game != null && game.IsReady && controlled?.PendingCast != null && !global::PendingCast.Mobile(controlled) &&
@@ -76,9 +78,37 @@ public class TurnManager : MonoBehaviour
 	private IEnumerator TrackTurnRoutine()
 	{
 		IsProcessingTurn = true;
-		try { yield return ProcessTurnRoutine(); }
+		try
+        {
+            if (AutoplayRunner.Sweeping)
+            {
+                // No-animation playback still executes every production routine and
+                // its bookkeeping. Flatten completed enumerators; explicit waits,
+                // commands and frame barriers remain real Unity yields.
+                var routine = FlattenCompletedRoutines(ProcessTurnRoutine());
+                try { while (routine.MoveNext()) yield return routine.Current; }
+                finally { (routine as IDisposable)?.Dispose(); }
+            }
+            else yield return ProcessTurnRoutine();
+        }
 		finally { IsProcessingTurn = false; AwaitingCommand = false; ActiveActor = null; }
 	}
+
+    private static IEnumerator FlattenCompletedRoutines(IEnumerator root)
+    {
+        var stack = new Stack<IEnumerator>(); stack.Push(root);
+        try
+        {
+            while (stack.Count > 0)
+            {
+                var current = stack.Peek();
+                if (!current.MoveNext()) { (stack.Pop() as IDisposable)?.Dispose(); continue; }
+                if (current.Current is IEnumerator nested && current.Current is not CustomYieldInstruction) stack.Push(nested);
+                else yield return current.Current;
+            }
+        }
+        finally { while (stack.Count > 0) (stack.Pop() as IDisposable)?.Dispose(); }
+    }
 
 	private IEnumerator ProcessTurnRoutine()
 	{
@@ -329,6 +359,14 @@ public class TurnManager : MonoBehaviour
             foreach (var replay in simultaneousEffects)
                 replay.Action.AddDestinationSight(Game.Instance.PlaybackVisibleTiles);
 
+            if (AutoplayRunner.Sweeping)
+            {
+                // There are no animations to run concurrently. Avoid scheduling an
+                // extra coroutine per effect merely to wait for an empty animation.
+                foreach (var replay in simultaneousEffects) yield return ReplayAction(replay);
+                Game.Instance.PlaybackVisibleTiles.Clear();
+                continue;
+            }
 			var effectsGroupedByActors = simultaneousEffects.GroupBy(x => x.Actor);
 
 			List<IEnumerator> simulaneousEffects = effectsGroupedByActors.Select(x =>

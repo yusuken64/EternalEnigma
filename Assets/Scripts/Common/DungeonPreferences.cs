@@ -14,7 +14,7 @@ public static class DungeonPreferences
     }
     public static DungeonAnimationMode AnimationMode
     {
-        get => AnimationOverride ?? SavedAnimationMode;
+        get => AutoplayRunner.Sweeping ? DungeonAnimationMode.NoAnimations : AnimationOverride ?? SavedAnimationMode;
         set { PlayerPrefs.SetInt("Dungeon.AnimationModeV2", (int)value); PlayerPrefs.Save(); }
     }
     private static DungeonAnimationMode SavedAnimationMode

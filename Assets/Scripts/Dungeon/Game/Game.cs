@@ -253,8 +253,8 @@ public class Game : SingletonMonoBehaviour<Game>
 	{
         if (reset) UnityEngine.Random.state = floorGenerationRandom;
         else { entrySnapshot?.Dispose(); entrySnapshot = null; floorGenerationRandom = UnityEngine.Random.state; }
-        bool throneFloor = RunPlan != null ? RunPlan.Floor(PlayerController.Floor).Options.IsThroneFloor :
-            PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor || PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
+        bool throneFloor = AutoplayRunner.SweepGeneration?.IsThroneFloor ?? (RunPlan != null ? RunPlan.Floor(PlayerController.Floor).Options.IsThroneFloor :
+            PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor || PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.EndFloor);
         Encounter = null;
 
 		Enemies.ForEach(x => DestroyImmediate(x.gameObject));
@@ -324,6 +324,15 @@ public class Game : SingletonMonoBehaviour<Game>
 		{
             int difficulty = RunPlan?.Floor(PlayerController.Floor).CombatDifficulty ?? PlayerController.Floor;
             Encounter.Populate(difficulty);
+            // Spawn blockers before testing enemy footprints. A large creature can
+            // overlap a neighboring prop even when its seeded center is free.
+            foreach (var definition in floor.Scenery)
+                DungeonProp.Create(CurrentDungeon, definition, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
+            foreach (var floorLock in floor.Locks)
+                DungeonProp.Create(CurrentDungeon, new EternalEnigma.Core.World.DungeonScenery(floorLock.Door,
+                    EternalEnigma.Core.World.DungeonSceneryKind.Door, floorLock.HitPoints, 0, EternalEnigma.Core.World.SceneryReward.None),
+                    DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
+            CurrentDungeon.DoorsChanged();
             var reservedSpawns = new HashSet<Vector3Int>(floor.Enemies.Select(p => p.Cell.ToCell())
                 .Concat(floor.Scenery.Select(p => p.Cell.ToCell())).Concat(floor.Locks.Select(p => p.Door.ToCell())));
             reservedSpawns.Add(floor.Stairs.ToCell());
@@ -338,20 +347,13 @@ public class Game : SingletonMonoBehaviour<Game>
 
 			foreach (var p in floor.Traps) CurrentDungeon.SetTrap(p.Cell.ToCell(), p.Roll);
 
-            foreach (var definition in floor.Scenery)
-                DungeonProp.Create(CurrentDungeon, definition, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
-            foreach (var floorLock in floor.Locks)
-                DungeonProp.Create(CurrentDungeon, new EternalEnigma.Core.World.DungeonScenery(floorLock.Door,
-                    EternalEnigma.Core.World.DungeonSceneryKind.Door, floorLock.HitPoints, 0, EternalEnigma.Core.World.SceneryReward.None),
-                    DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
-            CurrentDungeon.DoorsChanged();
 			SpawnGatheringPoints(startPosition);
             if (PlayerController.Floor <= 3 && RunPlan?.IsEncounter != true) EarlyDungeonStatue.Place(CurrentDungeon, DungeonGenerator.ThemeCatalog.Get(DungeonGenerator.CurrentVisuals));
 		}
 
 		if (demoLoadout != null && PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor)
 			yield return demoLoadout.PreparePracticeRoom(this);
-		yield return new WaitForSecondsRealtime(2.0f);
+		if (!AutoplayRunner.Sweeping) yield return new WaitForSecondsRealtime(2.0f);
 		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 
         if (!reset) ClassPassives.OnFloorStart(this);
@@ -365,6 +367,11 @@ public class Game : SingletonMonoBehaviour<Game>
         }
 		Game.Instance.PlayerController.StartTurn();
 		UpdateMiniMap();
+        if (AutoplayRunner.Sweeping)
+        {
+            AutoplayRunner.Active.LootLedger?.InspectPlacement(CurrentDungeon);
+            AutoplayRunner.Active.LootLedger?.VerifyGeneration(CurrentDungeon);
+        }
 		IsReady = true;
         resettingFloor = false;
         if (!reset && Encounter.AllowsReset) entrySnapshot = new FloorEntrySnapshot(this);
@@ -435,7 +442,10 @@ public class Game : SingletonMonoBehaviour<Game>
         if(Common.Instance.GameSaveData.DungeonSaveData.UseBiomeLayout)
         {
             foreach(var site in CurrentDungeon.Floor.GatheringSites)
+            {
+                if (AutoplayRunner.Sweeping) AutoplayRunner.Active.LootLedger?.DeclareGathering(site.Cell.ToCell());
                 GatheringPoint.Spawn(CurrentDungeon,site.Cell.ToCell(),site.Kind,site.Roll);
+            }
             return;
         }
 		var stairs = CurrentDungeon.GetStairsCell();
@@ -455,7 +465,10 @@ public class Game : SingletonMonoBehaviour<Game>
 			new EternalEnigma.Core.World.GridPoint(stairs.Value.x, stairs.Value.y),
 			occupied, seed, EternalEnigma.Core.Generation.GatheringPlacement.DefaultCount);
 		foreach (var site in sites)
+		{
+            if (AutoplayRunner.Sweeping) AutoplayRunner.Active.LootLedger?.DeclareGathering(site.Cell.ToCell());
 			GatheringPoint.Spawn(CurrentDungeon, new Vector3Int(site.Cell.X, site.Cell.Y, 0), site.Kind, site.Roll);
+		}
 	}
 
     public void DoFloatingText(string message, Color color, Character subject)

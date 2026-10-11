@@ -8,7 +8,10 @@ public class Gold : Interactable
 	internal override List<GameAction> GetInteractionSideEffects(Character character)
 	{
 		Game game = Game.Instance;
+        if (Opened || !game.CurrentDungeon.Interactables.Contains(this)) return new();
 		int goldAmount = SeededAmount ?? GetGoldPickupAmount(game.PlayerController.Floor);
+        using var receipt = AutoplayRunner.LootPickup(this, character, goldAmount);
+        Opened = true;
 		game.CurrentDungeon.RemoveInteractable(this);
 		AudioManager.Instance.SoundEffects.BuySell.PlayAsSound();
 		GameMessages.Post($"Picked up {goldAmount} gold.");

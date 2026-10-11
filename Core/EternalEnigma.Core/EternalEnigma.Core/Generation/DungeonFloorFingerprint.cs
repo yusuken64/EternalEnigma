@@ -12,6 +12,17 @@ public static class DungeonFloorFingerprint
         var text = new StringBuilder();
         void Row(params object?[] fields) { foreach (var field in fields) { var value = Convert.ToString(field, CultureInfo.InvariantCulture) ?? ""; text.Append(value.Length).Append(':').Append(value); } text.Append('\n'); }
         Row(DungeonFloor.GenerationVersion, floor.Seed, floor.Width, floor.Height, floor.Start, floor.Stairs, floor.Objective.Kind);
+        if (floor.TownPlan is TownPlan town)
+        {
+            Row("variant", floor.Variant, TownDungeonGenerator.Version, TownPlan.GenerationVersion);
+            foreach (var layer in town.Layers.OrderBy(p => p.Key, StringComparer.Ordinal))
+            { Row("town", layer.Key); for (int y = 0; y < town.Height; y++) for (int x = 0; x < town.Width; x++) text.Append(layer.Value[x, y] ? '1' : '0'); }
+            foreach (var interior in town.Interiors)
+            {
+                Row("interior", interior.Door, interior.Spec.Kind, interior.Spec.Theme, interior.Arrangement, interior.Mirrored);
+                foreach (var p in interior.Props) Row("furniture", p.Asset, p.Cell, p.QuarterTurns, p.Elevation, p.Blocks);
+            }
+        }
         foreach (var layer in floor.Layers.OrderBy(p => p.Key, StringComparer.Ordinal)) { Row(layer.Key); for (int y = 0; y < floor.Height; y++) for (int x = 0; x < floor.Width; x++) text.Append(layer.Value[x, y] ? '1' : '0'); }
         foreach (var p in floor.PuzzleObjects) Row("object", p.Id, p.Kind, p.Position, p.InitialState, p.TargetState);
         foreach (var p in floor.ObjectiveEnemies) Row("required", p.Id, p.Position, p.Family, p.Invulnerable, p.Footprint);

@@ -25,6 +25,8 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     public int SpineX = TownPlan.DefaultSpineX;
     public bool Detailed;
     public string InteriorKinds = "", ShopThemes = "";
+    // Hostile districts publish the same plan to both the town renderer and dungeon gameplay.
+    public CoreDungeonLayerGenerator DungeonSource;
 #if UNITY_EDITOR
     [NonSerialized] private TWCGUILayout guiLayout;
 #endif
@@ -42,7 +44,8 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         ExitX = ExitX,
         ExitY = ExitY,
         SpineX = SpineX,
-        Detailed = Detailed, InteriorKinds = InteriorKinds, ShopThemes = ShopThemes
+        Detailed = Detailed, InteriorKinds = InteriorKinds, ShopThemes = ShopThemes,
+        DungeonSource = (CoreDungeonLayerGenerator)DungeonSource?.Clone()
     };
 
 #if UNITY_EDITOR
@@ -62,7 +65,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
 
     public bool[,] Execute(bool[,] map, TileWorldCreator twc)
     {
-        var town = CoreLayoutCache.GetTown(twc, Options(twc));
+        var town = DungeonSource != null ? CoreLayoutCache.GetDungeon(twc, DungeonSource.Options(twc)).TownPlan : CoreLayoutCache.GetTown(twc, Options(twc));
         if (LayerName == "HouseFloor")
         {
             var floor = town.Layers[TownLayers.Roofs].ToArray();

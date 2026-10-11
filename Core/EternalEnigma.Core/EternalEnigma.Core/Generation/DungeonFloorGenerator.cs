@@ -19,6 +19,7 @@ public static class DungeonFloorGenerator
     public static DungeonFloor Generate(DungeonFloorOptions options)
     {
         if (options == null) throw new ArgumentNullException(nameof(options));
+        if (options.Variant == DungeonVariant.Town) return TownDungeonGenerator.Generate(options);
 
         if (options.Encounter.HasValue) return EncounterFloorGenerator.Generate(options);
 

@@ -58,11 +58,12 @@ public static class TownInteriorRendering
                 batch.Add(catalog.Get("Cookware").Mesh,catalog.Material(biome),position+new Vector3(0,-.04f,-.695f)*size,Vector3.one*size*.8f);
         }
         MountWalls(creator,plan,catalog,root,batch,perches,size,biome,audit);
-        // The exterior enclosure is outside Core movement space. Use its authored horizontal cap,
-        // with a narrow footed sign rather than putting birds on public floor or interaction cells.
+        // Use the enclosure's horizontal cap. District boundaries occupy the edge cells;
+        // friendly-town enclosures are just outside the grid.
         var sign=catalog.Get("PerchSign");var wall=EnvironmentKit.Load()?.Mesh("Wall");
+        bool district=plan.Layers.ContainsKey(TownLayers.Boundary);
         if(sign!=null && wall!=null)
-            foreach(int x in new[]{-1,plan.Width})
+            foreach(int x in district ? new[]{0,plan.Width-1} : new[]{-1,plan.Width})
             {
                 int y=3+(int)(BiomeDecorationPlacement.Hash(plan.Seed,"fence-perch",x.ToString())%(uint)(plan.Height-6));
                 var position=new Vector3(x+.5f,y+.5f,wall.bounds.min.z)*size;

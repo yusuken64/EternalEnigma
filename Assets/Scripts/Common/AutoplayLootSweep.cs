@@ -103,7 +103,7 @@ public sealed partial class AutoplayRunner
             common.CampaignContext = null; common.PendingDemoLoadout = null;
             common.GameSaveData = menu.CreateNewSave(CurrentSeed);
             common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = FloorCase.Difficulty, EndFloor = FloorCase.Difficulty,
-                UseBiomeLayout = FloorCase.LayoutVersion > 0, LayoutTier = FloorCase.Tier, LayoutBiome = FloorCase.Biome, VisualSelection = FloorCase.Visuals() };
+                UseBiomeLayout = FloorCase.LayoutVersion > 0, Variant = FloorCase.Variant, LayoutTier = FloorCase.Tier, LayoutBiome = FloorCase.Biome, VisualSelection = FloorCase.Visuals() };
             common.GameSaveData.TownSaveData.RecruitedAlliesData.Clear();
             foreach (var prefab in configuration.StartingParty)
             {

@@ -139,7 +139,8 @@ internal static class AllyNavigation
                 frontier.Remove(item);
                 var cell = new Vector3Int(item.x, item.y);
                 if (item.cost > Cost(cell)) continue;
-                foreach (var next in GridMovement.GetNeighbors(cell, Open, DiagonalMovement.RequireOpenSides))
+                foreach (var next in GridMovement.GetNeighbors(cell, Open, DiagonalMovement.RequireOpenSides)
+                    .Where(next => Game.Instance.CurrentDungeon.AllowsDoorwayStep(cell, next)))
                 {
                     float cost = item.cost + (next - cell).magnitude + (sight.Contains(next) && KnownHazard(game, next) ? 100 : 0);
                     if (cost >= Cost(next)) continue;

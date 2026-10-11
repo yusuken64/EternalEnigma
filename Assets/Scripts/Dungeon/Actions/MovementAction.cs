@@ -122,7 +122,7 @@ internal class MovementAction : GameAction
         var dungeon = Game.Instance.CurrentDungeon;
         bool Free(Vector3Int center) => Character.ToBounds(character.FootPrint,center).Cells()
             .All(cell => dungeon.IsWalkable(new Vector3Int(cell.x,cell.y,0)));
-        return GridMovement.CanStep(from,to,Free);
+        return dungeon.AllowsDoorwayStep(from,to) && GridMovement.CanStep(from,to,Free);
     }
 
 	internal override bool CanBeCombined(GameAction action)

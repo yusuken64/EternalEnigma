@@ -25,7 +25,7 @@ internal class TownMovement : TownAction
 	internal override List<TownAction> ExecuteImmediate()
 	{
 		var town=UnityEngine.Object.FindFirstObjectByType<Town>();
-        if(town!=null && !town.CanEnter(newMapPosition))return new();
+        if(town!=null && (!town.CanEnter(newMapPosition) || !town.WalkableMap.CanWalkTo(originalPosition,newMapPosition)))return new();
         // Move the currently controlled ally
 		townPlayer.ControllingTownAlly.TilemapPosition = newMapPosition;
 		townPlayer.RecordWalkPosition();

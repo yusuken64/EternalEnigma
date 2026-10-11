@@ -46,7 +46,7 @@ public sealed class DungeonRun
             Message = Objective.CanExit ? "Objective complete. Find the exit." : Current.Objective.Kind.ToString(); return true;
         }
 
-        if (!GridSteps.CanStep(Position, target, p=>Current.IsWalkable(p) && !Current.Scenery.Any(s=>s.Cell.Equals(p) && s.Kind!=DungeonSceneryKind.Hazard),DiagonalRule.RequireOpenSides))
+        if (!Current.CanStep(Position, target) || !GridSteps.CanStep(Position, target, p=>Current.IsWalkable(p) && !Current.Scenery.Any(s=>s.Cell.Equals(p) && s.Kind!=DungeonSceneryKind.Hazard),DiagonalRule.RequireOpenSides))
         {
             Message = "Blocked.";
             return false;

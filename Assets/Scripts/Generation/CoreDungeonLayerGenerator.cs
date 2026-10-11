@@ -20,6 +20,7 @@ public sealed class CoreDungeonLayerGenerator : TWCBlueprintAction, ITWCAction
     public int LayoutVersion, Tier;
     public OverworldBiome Biome;
     public DungeonFloorRole Role;
+    public DungeonVariant Variant;
     public int EncounterIndex = -1, EncounterFloor = 1;
     public DungeonObjectiveKind ObjectiveKind;
     public bool FinalEncounterFloor = true;
@@ -31,7 +32,7 @@ public sealed class CoreDungeonLayerGenerator : TWCBlueprintAction, ITWCAction
 #endif
 
     public CoreDungeonLayerGenerator() { }
-    public ITWCAction Clone() => new CoreDungeonLayerGenerator { LayerName = LayerName, Throne = Throne, LayoutVersion = LayoutVersion, Tier = Tier, Biome = Biome, Role = Role, GatheringCount = GatheringCount, EnemyCount = EnemyCount, GoldCount = GoldCount, ItemCount = ItemCount, TrapCount = TrapCount, EncounterIndex = EncounterIndex, EncounterFloor = EncounterFloor, ObjectiveKind = ObjectiveKind, FinalEncounterFloor = FinalEncounterFloor, BossFamily = BossFamily };
+    public ITWCAction Clone() => new CoreDungeonLayerGenerator { LayerName = LayerName, Throne = Throne, LayoutVersion = LayoutVersion, Tier = Tier, Biome = Biome, Role = Role, Variant = Variant, GatheringCount = GatheringCount, EnemyCount = EnemyCount, GoldCount = GoldCount, ItemCount = ItemCount, TrapCount = TrapCount, EncounterIndex = EncounterIndex, EncounterFloor = EncounterFloor, ObjectiveKind = ObjectiveKind, FinalEncounterFloor = FinalEncounterFloor, BossFamily = BossFamily };
 #if UNITY_EDITOR
     public float GetGUIHeight() => guiLayout != null ? guiLayout.height : 18 * 6;
 #else
@@ -42,7 +43,7 @@ public sealed class CoreDungeonLayerGenerator : TWCBlueprintAction, ITWCAction
         Throne && LayoutVersion == 0 ? DungeonFloorOptions.Throne(twc.currentSeed)
                : new DungeonFloorOptions(twc.currentSeed, twc.twcAsset.mapWidth, twc.twcAsset.mapHeight, Throne, EnemyCount, GoldCount, ItemCount, TrapCount, GatheringCount, LayoutVersion, Biome, Tier, Role,
                    EncounterIndex < 0 ? null : (EternalEnigma.Core.Progression.EncounterKind?)EncounterIndex,
-                   new DungeonObjectiveDefinition(ObjectiveKind), EncounterFloor, FinalEncounterFloor, BossFamily);
+                   new DungeonObjectiveDefinition(ObjectiveKind), EncounterFloor, FinalEncounterFloor, BossFamily, Variant);
 
     public bool[,] Execute(bool[,] map, TileWorldCreator twc)
     {
@@ -66,6 +67,7 @@ public sealed class CoreDungeonLayerGenerator : TWCBlueprintAction, ITWCAction
                 if (entry.action is CoreDungeonLayerGenerator g)
                 {
                     g.Throne = options.IsThroneFloor; g.LayoutVersion = options.LayoutVersion;
+                    g.Variant = options.Variant;
                     g.Tier = options.Tier; g.Biome = options.Biome; g.Role = options.Role;
                     g.EnemyCount = options.EnemyCount; g.GoldCount = options.GoldCount;
                     g.ItemCount = options.ItemCount; g.TrapCount = options.TrapCount; g.GatheringCount = options.GatheringCount;

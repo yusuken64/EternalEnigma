@@ -104,6 +104,12 @@ try
                 dungeonFloor.Width,
                 dungeonFloor.Height,
                 dungeonFloor.IsThroneFloor,
+                dungeonFloor.Variant,
+                townDistrict = dungeonFloor.TownPlan == null ? null : new {
+                    dungeonFloor.TownPlan.BuildingSlots, dungeonFloor.TownPlan.Footprints, dungeonFloor.TownPlan.Interiors,
+                    layers = dungeonFloor.TownPlan.Layers.ToDictionary(p => p.Key, p => Enumerable.Range(0, dungeonFloor.Height)
+                        .Select(y => new string(Enumerable.Range(0, dungeonFloor.Width).Select(x => p.Value[x,y] ? '1' : '0').ToArray())).ToArray())
+                },
                 fingerprint = DungeonFloorFingerprint.Compute(dungeonFloor),
                 encounter = location.Encounter, plan.Floor(floor).CombatDifficulty,
                 dungeonFloor.Objective, dungeonFloor.PuzzleObjects, dungeonFloor.ObjectiveEnemies, dungeonFloor.RecoveryStashes, dungeonFloor.Exits, dungeonFloor.SolutionWitness,
@@ -123,7 +129,7 @@ try
 
             File.WriteAllText(Path.Combine(output!, $"dungeon-{dungeonSeed}-{dungeon}-{floor}.json"), JsonSerializer.Serialize(dungeonJson, jsonOptions));
             File.WriteAllText(Path.Combine(output!, $"dungeon-{dungeonSeed}-{dungeon}-{floor}.svg"), GridPreview.DungeonSvg(dungeonFloor));
-            Console.WriteLine($"dungeon seed={dungeonSeed} {dungeonFloor.Width}x{dungeonFloor.Height} floor={floor} throne={dungeonFloor.IsThroneFloor}");
+            Console.WriteLine($"dungeon seed={dungeonSeed} {dungeonFloor.Width}x{dungeonFloor.Height} floor={floor} throne={dungeonFloor.IsThroneFloor} variant={dungeonFloor.Variant}");
         }
 
         return 0;

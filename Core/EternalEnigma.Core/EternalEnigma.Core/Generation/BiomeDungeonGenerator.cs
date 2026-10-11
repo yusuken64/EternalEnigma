@@ -12,8 +12,6 @@ internal static class BiomeDungeonGenerator
     internal static DungeonFloor Generate(DungeonFloorOptions o)
     {
         var rng = new SeedStream(o.Seed, 1100 + (uint)o.Biome);
-        var place = new SeedStream(o.Seed, 1200);
-        var sceneryRandom = new SeedStream(o.Seed, 1300);
         int w = o.Width, h = o.Height;
         var mask = new bool[w, h];
         var rooms = new List<GridRect>();
@@ -101,22 +99,41 @@ internal static class BiomeDungeonGenerator
             foreach(var room in rooms) Connect(room.Center,new GridPoint(axis,room.Center.Y));
         }
 
+        var initial = new GridLayer(mask);
+        var start = (o.Role == DungeonFloorRole.Exit ? rooms.Last() : rooms[0]).Center;
+        var distances = GridSearch.Distances(start, p => Neighbors(initial, p));
+        var stairs = distances.OrderByDescending(p => p.Value).ThenBy(p => p.Key.X).ThenBy(p => p.Key.Y).First().Key;
+        return Populate(o, mask, rooms, start, stairs);
+    }
+
+    /// <summary>Shared encounter and reward budgets over authoritative terrain.</summary>
+    internal static DungeonFloor Populate(DungeonFloorOptions o, bool[,] mask, List<GridRect> rooms, GridPoint start, GridPoint stairs, TownPlan? town = null)
+    {
+        var place = new SeedStream(o.Seed, 1200);
+        var sceneryRandom = new SeedStream(o.Seed, 1300);
+        int w = o.Width, h = o.Height;
         var layer = new GridLayer(mask);
         var cells = new List<GridPoint>();
         for (int x = 1; x < w - 1; x++) for (int y = 1; y < h - 1; y++) if (mask[x, y]) cells.Add(new GridPoint(x, y));
-        var start = (o.Role == DungeonFloorRole.Exit ? rooms.Last() : rooms[0]).Center;
-        var distances = GridSearch.Distances(start, p => Neighbors(layer, p));
-        var stairs = cells.OrderByDescending(p => distances[p]).First();
         var reserved = new HashSet<GridPoint>(GatheringPlacement.RequiredPath(layer, start, stairs));
         // Protect orthogonal support cells of every diagonal along the safe path as well.
         foreach (var p in reserved.ToArray()) for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++)
             if (layer.At(new GridPoint(p.X + dx, p.Y + dy))) reserved.Add(new GridPoint(p.X + dx, p.Y + dy));
         var occupied = new HashSet<GridPoint> { start, stairs };
         foreach (var p in cells.Where(p => Math.Max(Math.Abs(p.X - start.X), Math.Abs(p.Y - start.Y)) <= 3)) occupied.Add(p);
+        if (town != null)
+        {
+            // Keep open doorways and their approaches free of actors, hazards and scenery.
+            foreach (var door in town.BuildingSlots)
+                for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 2; dy++)
+                    occupied.Add(new GridPoint(door.X + dx, door.Y + dy));
+            occupied.UnionWith(TownDungeonGenerator.BossSquare(town).Cells());
+            foreach (var p in cells.Where(p => Math.Max(Math.Abs(p.X - stairs.X), Math.Abs(p.Y - stairs.Y)) <= 2)) occupied.Add(p);
+        }
         // Stream 1500 belongs to soft locks; floors that get none keep their placements.
         var lockRandom = new SeedStream(o.Seed, 1500);
         (GridPoint Door, HashSet<GridPoint> Cells)? vault = null;
-        if (o.Role == DungeonFloorRole.Regular && lockRandom.Range(100) < LockChance)
+        if (town == null && o.Role == DungeonFloorRole.Regular && lockRandom.Range(100) < LockChance)
         {
             vault = FindVault(layer, cells, start, stairs, reserved, occupied, lockRandom);
             // Looping biomes rarely have a one-door side room, so carve one into solid wall. Stairs are already fixed.
@@ -148,7 +165,8 @@ internal static class BiomeDungeonGenerator
         bool PlaceBlockingProp(GridPoint cell)
         {
             blocked.Add(cell);
-            var reachable = GridSearch.VisitOrder(start, p => Neighbors(layer, p, blocked)).ToHashSet();
+            var reachable = GridSearch.VisitOrder(start, p => Neighbors(layer, p, blocked)
+                .Where(q => town?.AllowsDoorwayStep(p, q) ?? true)).ToHashSet();
             if (reachable.Count == cells.Count - blocked.Count &&
                 blocked.All(p => Orthogonal(p).Any(reachable.Contains))) return true;
             blocked.Remove(cell);
@@ -213,8 +231,8 @@ internal static class BiomeDungeonGenerator
         for (int x = 0; x < w; x++) for (int y = 0; y < h; y++)
         {
             walls[x, y] = !mask[x, y];
-            if (mask[x, y]) accents[x, y] = GridSight.IsRoom(layer, new GridPoint(x, y));
-            else if (x > 0 && y > 0 && x < w - 1 && y < h - 1 &&
+            if (mask[x, y]) accents[x, y] = town == null ? GridSight.IsRoom(layer, new GridPoint(x, y)) : town.Layers[TownLayers.Carpet][x, y];
+            else if (town == null && x > 0 && y > 0 && x < w - 1 && y < h - 1 &&
                 (mask[x - 1, y] || mask[x + 1, y] || mask[x, y - 1] || mask[x, y + 1]))
             { int roll = decor.Range(12); columns[x, y] = roll == 0; torches[x, y] = roll == 1; }
         }
@@ -223,7 +241,7 @@ internal static class BiomeDungeonGenerator
             [DungeonLayers.Floor] = layer, [DungeonLayers.Dungeon] = new GridLayer(walls),
             [DungeonLayers.Carpet] = new GridLayer(accents), [DungeonLayers.Columns] = new GridLayer(columns),
             [DungeonLayers.Torchlights] = new GridLayer(torches)
-        }, rooms, start, stairs, enemies, gold, items, Array.Empty<Placement>(), gathering, props, locks);
+        }, rooms, start, stairs, enemies, gold, items, Array.Empty<Placement>(), gathering, props, locks, townPlan: town);
         var validation = EternalEnigma.Core.Validation.DungeonFloorValidator.Validate(result,o);
         if(!validation.IsValid) throw new InvalidOperationException(string.Join("\n",validation.Errors));
         return result;

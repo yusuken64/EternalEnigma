@@ -130,7 +130,8 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                         int slot=entrance?Array.IndexOf(town.BuildingSlots.ToArray(),new GridPoint(x,y-1)):-1;
                         string service=slot>=0&&slot<(BuildingServices?.Length??0)?BuildingServices[slot]:"";
                         TownHouseTiles.Facade(batch, plaster, timber, door, glass, size, cell,
-                            side.Item1, side.Item2, entrance, window,biome,decorationFaces,service);
+                            side.Item1, side.Item2, entrance, window,biome,decorationFaces,service,
+                            openEntrance: town.Layers.ContainsKey(TownLayers.Boundary));
                         if (!entrance && !window && town.Layers[TownLayers.ShopWalls].At(cell))
                             decorationFaces.Faces.Add(new BiomeDecorationFace {
                                 Center = new Vector3(x + .5f + side.Item1 * .46f,

@@ -84,6 +84,31 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator TownDistrictEntryFromOverworldPreservesRunVariant()
+        {
+            yield return StartCampaign();
+            var common = Common.Instance; var context = common.CampaignContext;
+            context.Resolved.UnionWith(context.Campaign.Routes.Where(r => r.IsTownExit).Select(r => r.Id));
+            Assert.That(common.Travel.ExitTown(Object.FindFirstObjectByType<Town>()), Is.True);
+            yield return WaitWorld();
+            yield return harness.WaitUntil(() => !common.ScreenTransition.BlockScreen.activeSelf, "overworld reveal");
+            var location = context.Campaign.Locations.First(l => l.Variant == DungeonVariant.Town);
+            Assert.That(context.Grid.TownFootprints.Any(t => t.LocationId == location.Id && t.IsHostile), Is.True);
+            context.Position = context.Grid.Locations[location.Id];
+            var menus = Object.FindFirstObjectByType<OverworldScene>().GetComponent<OverworldMenuManager>();
+            Assert.That(menus.ConfirmEntry(), Is.True);
+            yield return null;
+            var picker = menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p => p.Owner != null);
+            Assert.That(picker.GetComponentsInChildren<TMPro.TMP_Text>().Any(t => t.text.Contains("Town district")), Is.True);
+            picker.Rows.GetComponentsInChildren<AuthoredButton>().Single().Button.onClick.Invoke();
+            yield return harness.WaitForIdle();
+            Assert.That(common.GameSaveData.DungeonSaveData.Variant, Is.EqualTo(DungeonVariant.Town));
+            Assert.That(harness.Game.CurrentDungeon.Floor.Variant, Is.EqualTo(DungeonVariant.Town));
+            Assert.That(harness.Game.CurrentDungeon.Floor.TownPlan, Is.Not.Null);
+            Assert.That(Object.FindObjectsByType<TownPlayer>(FindObjectsSortMode.None), Is.Empty);
+        }
+
+        [UnityTest]
         public IEnumerator TownToDungeonRemovesTransferredHeroPositionCircles()
         {
             yield return StartCampaign();

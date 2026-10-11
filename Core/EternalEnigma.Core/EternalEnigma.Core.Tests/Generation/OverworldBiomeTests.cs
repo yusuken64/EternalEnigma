@@ -111,7 +111,7 @@ public sealed class OverworldBiomeTests
             var p = new GridPoint(at.X+dx,at.Y+dy);
             // Town miniatures deliberately occupy the old marker clearance with walls/buildings.
             bool townBuilding = grid.Layers[OverworldLayers.TownFootprints][p.X, p.Y] &&
-                !grid.Layers[OverworldLayers.Towns][p.X, p.Y];
+                !grid.TownFootprints.Any(t => t.Entrance.Equals(p));
             Assert.Equal(!townBuilding, grid.IsGround(p));
             Assert.False(grid.RequiresBoat(p));
         }

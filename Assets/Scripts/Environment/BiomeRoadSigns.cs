@@ -47,7 +47,7 @@ public static class BiomeRoadSigns
     public sealed class Sign {public Vector2Int Road,Verge;public OverworldBiome Biome;public Branch[] Branches;public int Priority;public HashSet<Vector2Int> JunctionCells;}
     public static List<Sign> Plan(OverworldGrid grid)
     {
-        var graph=BiomeRoadGraph.From(grid);var towns=grid.TownFootprints.ToDictionary(t=>new Vector2Int(t.Entrance.X,t.Entrance.Y),t=>t.LocationId);
+        var graph=BiomeRoadGraph.From(grid);var towns=grid.TownFootprints.Where(t=>!t.IsHostile).ToDictionary(t=>new Vector2Int(t.Entrance.X,t.Entrance.Y),t=>t.LocationId);
         var candidates=new List<(Vector2Int p,HashSet<Vector2Int> group,int priority,string approach)>();
         foreach(var town in towns.OrderBy(t=>t.Value,StringComparer.Ordinal)) {
             var seen=new HashSet<Vector2Int>{town.Key};var queue=new Queue<(Vector2Int p,int d)>();queue.Enqueue((town.Key,0));

@@ -47,6 +47,10 @@ carpet/counter masks, occupied cells and reservations. `Furniture` includes coun
 Core `Walkable` and Unity's published mask both exclude this occupancy. Furniture has no
 physics colliders. Carpets remain walkable and sit slightly above the paving.
 
+Door approach and threshold cells require cardinal steps, including when leaving. The shared
+`TownPlan.AllowsDoorwayStep` rule is used by friendly-town movement, dungeon districts and
+pathfinding. Other friendly-town terrain retains its existing diagonal movement behavior.
+
 `TownInteriorRendering` builds native TWC four-tile carpet and counter presets through
 `EnvironmentSmartTileLayer`. Separate layer GUIDs keep their generated chunks independent.
 Counter cabinets and tops support straight, L, U and island masks. Goods use the counter's

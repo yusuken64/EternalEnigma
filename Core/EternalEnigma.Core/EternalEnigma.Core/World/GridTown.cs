@@ -5,6 +5,7 @@ public sealed class GridTown
 {
     public const int Size = 5;
     public string LocationId { get; }
+    public bool IsHostile { get; }
     public GridPoint Entrance { get; }
     /// <summary>Cardinal direction from the gateway into the miniature.</summary>
     public GridPoint Inward { get; }
@@ -13,10 +14,11 @@ public sealed class GridTown
     public IReadOnlyList<GridPoint> Walls { get; }
     public IReadOnlyList<GridPoint> Interior { get; }
 
-    public GridTown(string locationId, GridPoint entrance, GridPoint inward)
+    public GridTown(string locationId, GridPoint entrance, GridPoint inward, bool isHostile = false)
     {
         if (Math.Abs(inward.X) + Math.Abs(inward.Y) != 1) throw new ArgumentException("Town direction must be cardinal.", nameof(inward));
         LocationId = locationId;
+        IsHostile = isHostile;
         Entrance = entrance;
         Inward = inward;
         var cells = new List<GridPoint>();

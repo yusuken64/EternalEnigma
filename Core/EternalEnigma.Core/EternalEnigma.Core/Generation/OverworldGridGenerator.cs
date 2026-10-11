@@ -378,11 +378,12 @@ public static class OverworldGridGenerator
                 for (int oy = -1; oy <= 1; oy++) for (int ox = -1; ox <= 1; ox++)
                     if (Inside(center.X + ox, center.Y + oy)) approachLane[center.X + ox, center.Y + oy] = true;
         }
-        foreach (var location in campaign.Locations.Where(l => l.Kind == LocationKind.Town && l.ParentTownId == null).OrderBy(l => l.Id, StringComparer.Ordinal))
+        foreach (var location in campaign.Locations.Where(l => (l.Kind == LocationKind.Town || l.Variant == DungeonVariant.Town) && l.ParentTownId == null)
+            .OrderBy(l => l.Variant == DungeonVariant.Town).ThenBy(l => l.Id, StringComparer.Ordinal))
         {
             var entrance = positions[location.Id];
             int group = groupOf[location.Id];
-            var orientations = Directions.Select(d => new GridTown(location.Id, entrance, d)).ToArray();
+            var orientations = Directions.Select(d => new GridTown(location.Id, entrance, d, location.Variant == DungeonVariant.Town)).ToArray();
             int offset = random.Range(orientations.Length);
             GridTown? town = null;
             for (int i = 0; i < orientations.Length; i++)
@@ -414,7 +415,7 @@ public static class OverworldGridGenerator
             foreach (var cell in town.Interior) masks[OverworldLayers.TownInteriors][cell.X, cell.Y] = true;
         }
         var locationFootprints = new List<GridLocationFootprint>();
-        foreach (var location in campaign.Locations.Where(l => l.ParentTownId == null && l.IsDungeon).OrderBy(l => l.Id, StringComparer.Ordinal))
+        foreach (var location in campaign.Locations.Where(l => l.ParentTownId == null && l.IsDungeon && l.Variant != DungeonVariant.Town).OrderBy(l => l.Id, StringComparer.Ordinal))
         {
             var entrance = positions[location.Id]; int size = location.Encounter?.Kind == EncounterKind.LostWoods ? 7 : 5;
             var centersToTry = new[] { entrance }.Concat(Directions.SelectMany(d => Enumerable.Range(1, size / 2).Select(n => new GridPoint(entrance.X + d.X * n, entrance.Y + d.Y * n))));

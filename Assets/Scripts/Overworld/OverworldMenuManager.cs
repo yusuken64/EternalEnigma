@@ -68,6 +68,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
                 Common.Instance.Travel.EnterLocation();
         })});
         picker.Description(location.Id+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
+            "\n" + location.DungeonDescription + (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? " · Hostile" : "") +
             (location.Encounter?.Kind==EncounterKind.Prison?"\nYour carried and equipped possessions will be confiscated temporarily. Recover them from the guarded stash before escaping. Gold and learned skills remain available.":"")+
             (location.Encounter?.RequiresResetFloor==true && !context.ResetFloorUnlocked?"\nRequires Reset Floor: clear repeatable-0 first.":""));
         dialogs.Open(picker);

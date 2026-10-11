@@ -21,7 +21,7 @@ public sealed class OverworldTownTests
         var grid = OverworldGridGenerator.Generate(campaign);
         var all = CapabilitySet.From(campaign.Manifest.Select(c => c.Id));
         var resolved = campaign.Routes.Select(r => r.Id).ToHashSet();
-        Assert.Equal(campaign.Locations.Count(l => l.Kind == LocationKind.Town), grid.TownFootprints.Count);
+        Assert.Equal(campaign.Locations.Count(l => (l.Kind == LocationKind.Town || l.Variant == DungeonVariant.Town) && l.ParentTownId == null), grid.TownFootprints.Count);
         var occupied = new HashSet<GridPoint>();
         foreach (var town in grid.TownFootprints)
         {

@@ -22,6 +22,48 @@ Width ranges describe the corridor carving brush; intersections and connections 
 
 Layout, placement, scenery and cosmetic streams are separate. A skin override never selects a layout. Runs store `UseBiomeLayout`, `LayoutTier` and `LayoutBiome` alongside the visual selection. `UseBiomePresentation` distinguishes later Grassland from the starter presentation. Runtime TWC assets are cloned and every Core action receives identical options before blueprints execute. `SetCustomRandomSeed` writes the asset seed, so configuration reads that value rather than the previous generation's `currentSeed`.
 
+## Town districts
+
+Campaign generation version 12 selects half of eligible non-starter repeatable dungeons,
+rounded up, using a dedicated seeded stream over sorted location IDs. Specialized encounters,
+including Overtaken City, are excluded. Existing names, routes, rewards, difficulty and floor
+counts remain unchanged. Unversioned version-11 campaigns restore standard layouts.
+
+`DungeonVariant.Town` is independent of visual overrides and travels with location/run options,
+cache identity, fingerprints and saved runs. Every floor becomes another intact district;
+entry and exit floors retain their existing gameplay roles. Overworld entrances use the same
+walled settlement footprints and regional house assets as friendly towns.
+
+`TownDungeonGenerator` wraps `TownPlanGenerator` and `TownInteriorGenerator`; Unity clones the
+shared village template referenced by `Resources/TownDungeonAssets`. Streets, building walls,
+open doorways and furnishings define combat movement. Districts use 52–60 cells per side,
+reserve a clear 5×5 square for large encounters, and reuse the biome population budgets below.
+No vendors, beds, recruitment or other town services are activated. Roof cutaways follow party
+visibility; dungeon sight, targeting, minimap and cleanup use the same authoritative floor.
+Town doorways require cardinal movement in both friendly towns and districts.
+
+The dungeon explorer cycles legacy, biome and town layouts. Automated floor sweeps include
+all town biome/tier/role combinations. CLI exports include the variant and town metadata.
+`Tools/Eternal Enigma/Town Dungeons/Capture Comparison` writes friendly/district views for
+Grassland, Desert and Tundra plus editor generation/render costs to `Temp/TownDungeon`.
+`Run Town Dungeons EditMode` and `Run Town Dungeons PlayMode` under the Tests menu cover the
+shared rendering contract and real movement, combat, loot, gates and geometry cleanup.
+
+Verification on 2026-10-11 covered 2,880 district configurations (24 seeds × eight biomes ×
+five tiers × three roles), each generated twice. All 411 Core test cases passed across the
+full run and a corrected doorway-fixture rerun. Unity passed 38 EditMode and 27 PlayMode
+cases across the regression runs and focused reruns, including actual overworld entry,
+doorway combat, roof visibility, loot, district gates, boss clearance and mesh cleanup.
+The overworld style-binding assertion also passed after restoring the shared house/wall
+projections. CLI campaign, overworld and town-floor JSON/SVG exports were checked.
+
+Comparison captures used Grassland, Desert and Tundra at seed 42/tier 2. District generation
+took 503–617 ms and mesh construction 402–580 ms in the editor, with 301 renderers and
+712,436–871,410 triangles; the corresponding friendly-town captures had 330–340 renderers
+and 1,140,724–1,696,094 triangles. These are editor CPU measurements, not frame-time claims.
+Screenshots, detailed timings and run reports are in `Temp/TownDungeon`. The
+`Capture Overworld` command in the same menu produces the friendly/hostile map comparison.
+
 ## Scenery and rewards
 
 Density is `clamp(sqrt(walkable / 322.13671875), 1, 2)`. The denominator is the mean of legacy 32×32 seeds 0 through 255, protected by a regression test. Enemy, supply and gathering counts round away from zero and retain their existing caps. Targets per reference floor are two containers, six destructibles and three hazards. Placement can reduce scenery counts when no safe cells remain.
@@ -36,7 +78,7 @@ Hazards deal rounded-up 10% maximum HP on entry. Character action execution dete
 
 ## Preview and verification
 
-The dungeon explorer has tier, role and legacy/biome controls. The generator inspector offers the same options. Both configure the gameplay generator and show scenery. The console explorer and CLI resolve campaign biome profiles; CLI JSON includes profile metadata and scenery.
+The dungeon explorer has tier, role and legacy/biome/town controls. The generator inspector also offers a layout variant selector. Both configure the gameplay generator and show scenery. The console explorer and CLI resolve campaign biome profiles; CLI JSON includes profile metadata and scenery.
 
 Unity menu commands:
 

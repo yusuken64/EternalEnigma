@@ -8,6 +8,7 @@ public class WalkableMap : MonoBehaviour
 	public TileWorldCreator TileWorldCreator;
 
 	private bool[,] _walkableMap;
+    private TownPlan townPlan;
 
 	private void Awake()
 	{
@@ -21,9 +22,11 @@ public class WalkableMap : MonoBehaviour
 
 	private void blueprintLayersComplete(TileWorldCreator _twc)
 	{
+        if (_twc != TileWorldCreator) return;
 		_walkableMap = CoreLayoutCache.TryGetTown(_twc, out var plan)
 			? plan.Layers[TownLayers.Walkable].ToArray()
 			: throw new InvalidOperationException("Core town plan missing.");
+        townPlan = plan;
 	}
 
 	internal Vector3 CellToWorld(Vector3Int newMapPosition)
@@ -33,7 +36,8 @@ public class WalkableMap : MonoBehaviour
 
 	internal bool CanWalkTo(Vector3Int from, Vector3Int to)
 	{
-		return GridMovement.CanStep(from, to, cell => GridMovement.IsWalkable(_walkableMap, cell),
+		return (townPlan?.AllowsDoorwayStep(from.ToGridPoint(), to.ToGridPoint()) ?? true) &&
+            GridMovement.CanStep(from, to, cell => GridMovement.IsWalkable(_walkableMap, cell),
 			DiagonalMovement.AllowCornerCutting);
 	}
 
@@ -41,7 +45,7 @@ public class WalkableMap : MonoBehaviour
     {
         var grid = new AStar.Node[_walkableMap.GetLength(0),_walkableMap.GetLength(1)];
         for (int x=0;x<grid.GetLength(0);x++) for (int y=0;y<grid.GetLength(1);y++)
-            grid[x,y] = new AStar.Node(x,y,_walkableMap[x,y],0);
+            grid[x,y] = new AStar.Node(x,y,_walkableMap[x,y],0) { CardinalOnly = townPlan?.IsDoorway(new GridPoint(x,y)) ?? false };
         return grid;
     }
 }

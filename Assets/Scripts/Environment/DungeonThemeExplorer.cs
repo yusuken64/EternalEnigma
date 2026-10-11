@@ -19,6 +19,7 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
     public DungeonEnvironmentKind Environment;
     public bool Throne;
     public bool LegacyLayout = true;
+    public DungeonVariant Variant;
     [Range(0,4)] public int Tier;
     public DungeonFloorRole FloorRole;
     public TMP_Text Summary, EnvironmentLabel, LayoutLabel, TierLabel, LegacyLabel;
@@ -52,7 +53,14 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
     }
     public void SelectBiome(int value) {if(IsBuilding)return;Biome=(OverworldBiome)value;Rebuild();}
     public void NextTier() { if(IsBuilding)return; Tier=(Tier+1)%5; Rebuild(); }
-    public void ToggleLegacy() { if(IsBuilding)return; LegacyLayout=!LegacyLayout; if(!LegacyLayout) {FloorRole=Throne?DungeonFloorRole.Entry:DungeonFloorRole.Regular;Throne=false;} Rebuild(); }
+    public void ToggleLegacy()
+    {
+        if (IsBuilding) return;
+        if (LegacyLayout) { LegacyLayout = false; Variant = DungeonVariant.Standard; FloorRole = Throne ? DungeonFloorRole.Entry : DungeonFloorRole.Regular; Throne = false; }
+        else if (Variant == DungeonVariant.Standard) Variant = DungeonVariant.Town;
+        else { Variant = DungeonVariant.Standard; LegacyLayout = true; }
+        Rebuild();
+    }
     public void NextRole() { if(IsBuilding)return; Throne=false; FloorRole=(DungeonFloorRole)(((int)FloorRole+1)%3); Rebuild(); }
     public void NextBiome()=>SelectBiome(((int)Biome+1)%8);
     public void ToggleEnvironment() {if(IsBuilding)return;Environment=Environment==DungeonEnvironmentKind.Interior?DungeonEnvironmentKind.Outdoor:DungeonEnvironmentKind.Interior;Rebuild();}
@@ -67,12 +75,17 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
     {
         if(IsBuilding) return;
         ClearGeometry();IsReady=false;IsBuilding=true;
-        bool compact = LegacyLayout ? Throne : Throne || FloorRole != DungeonFloorRole.Regular;
-        selection=new DungeonVisualSelection {Biome=Biome,Environment=Environment,UseBiomePresentation=!LegacyLayout};
-        asset=DungeonPresentation.CloneTemplate(compact?ThroneTemplate:RegularTemplate);asset.worldName="Playground dungeon themes";
-        Catalog.Apply(asset,selection,compact);
-        if (!LegacyLayout) CoreDungeonLayerGenerator.Configure(asset, DungeonLayoutProfile.Options(Playground.Seed, Biome, Tier, Throne ? DungeonFloorRole.Entry : FloorRole));
+        bool town = Variant == DungeonVariant.Town;
+        bool compact = LegacyLayout && !town ? Throne : Throne || FloorRole != DungeonFloorRole.Regular;
+        selection=new DungeonVisualSelection {Biome=Biome,Environment=Environment,UseBiomePresentation=town || !LegacyLayout};
+        asset=DungeonPresentation.CloneTemplate(town ? TownDungeonAssets.SharedTemplate : compact?ThroneTemplate:RegularTemplate);asset.worldName="Playground dungeon themes";
         Creator.twcAsset=asset;
+        if (town) TownDungeonPresentation.Configure(Creator, DungeonLayoutProfile.Options(Playground.Seed, Biome, Tier, FloorRole, variant: Variant));
+        else
+        {
+            Catalog.Apply(asset,selection,compact);
+            if (!LegacyLayout) CoreDungeonLayerGenerator.Configure(asset, DungeonLayoutProfile.Options(Playground.Seed, Biome, Tier, Throne ? DungeonFloorRole.Entry : FloorRole));
+        }
         WorldRoot=new GameObject(asset.worldName) {hideFlags=HideFlags.DontSave};Creator.worldObject=WorldRoot;
         WorldRoot.SetActive(visible);Creator.SetCustomRandomSeed(Playground.Seed);CoreLayoutCache.Clear(Creator);
         UpdateControls();var random=UnityEngine.Random.state;
@@ -84,9 +97,13 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
     {
         if(!CoreLayoutCache.TryGetDungeon(creator,out var floor)) throw new InvalidOperationException("Dungeon explorer needs Core Dungeon templates.");
         Floor=floor;
-        if(!selection.IsLegacy) DungeonPresentation.Decorate(creator,floor,Catalog.Get(selection));
-        else DungeonPresentation.TrackLegacyMeshes(WorldRoot);
-        BiomeDecorations.Dungeon(creator,floor,selection,true);
+        if (floor.Variant == DungeonVariant.Town) TownDungeonPresentation.Complete(creator, floor, true);
+        else
+        {
+            if(!selection.IsLegacy) DungeonPresentation.Decorate(creator,floor,Catalog.Get(selection));
+            else DungeonPresentation.TrackLegacyMeshes(WorldRoot);
+            BiomeDecorations.Dungeon(creator,floor,selection,true);
+        }
         DungeonPresentation.PreviewScenery(creator,floor,Catalog.Get(selection));
         IsBuilding=false;IsReady=true;WorldRoot.SetActive(visible);
         if(visible) {ApplyLighting();Frame();}UpdateControls();
@@ -123,7 +140,8 @@ public sealed class DungeonThemeExplorer : MonoBehaviour
         if(SeedInput!=null) SeedInput.SetTextWithoutNotify(Playground.Seed.ToString());
         if(Summary!=null) Summary.text=IsBuilding?"Building dungeon…":$"{Biome} · {Environment} · {(LegacyLayout ? (Throne?"Throne room":"Regular floor") : FloorRole.ToString())} · Tier {Tier} · Seed {Playground.Seed}";
         if (TierLabel != null) TierLabel.text=$"Tier {Tier}";
-        if (LegacyLabel != null) LegacyLabel.text=LegacyLayout?"Legacy":"Biome layout";
+        if (LegacyLabel != null) LegacyLabel.text=Variant == DungeonVariant.Town ? "Town district" : LegacyLayout?"Legacy":"Biome layout";
+        if (Summary != null && Variant == DungeonVariant.Town && !IsBuilding) Summary.text = $"Town district · {Biome} · {FloorRole} · Tier {Tier} · Seed {Playground.Seed}";
         if(Controls!=null) foreach(var selectable in Controls.GetComponentsInChildren<Selectable>(true)) selectable.interactable=!IsBuilding;
     }
     void ClearGeometry()

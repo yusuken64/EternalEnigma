@@ -5,7 +5,7 @@ using UnityEngine;
 public static class TownGateVisuals
 {
     public static void Create(EnvironmentKit kit, OverworldBiome biome, Transform parent,
-        GridPoint cell, float size, string label, bool dungeon)
+        GridPoint cell, float size, string label, bool dungeon, bool onward = false)
     {
         var root = new GameObject(label);
         root.transform.SetParent(parent, false);
@@ -28,7 +28,7 @@ public static class TownGateVisuals
         }
         var marker = new GameObject("Gate direction indicator");
         marker.transform.SetParent(root.transform, false);
-        float direction = dungeon ? 1 : -1;
+        float direction = dungeon || onward ? 1 : -1;
         var mesh = new Mesh { name = "Gate arrow" };
         mesh.vertices = new[] { new Vector3(-.28f, -.08f, -.035f) * size,
             new Vector3(.28f, -.08f, -.035f) * size,
@@ -40,7 +40,7 @@ public static class TownGateVisuals
         var renderer = marker.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = kit.Paving;
         var tint = new MaterialPropertyBlock();
-        var color = dungeon ? new Color(1f, .65f, .15f) : new Color(.25f, 1f, .85f);
+        var color = dungeon || onward ? new Color(1f, .65f, .15f) : new Color(.25f, 1f, .85f);
         tint.SetColor("_Color", color); tint.SetColor("_BaseColor", color);
         renderer.SetPropertyBlock(tint);
         var caption = new GameObject("Gate label").AddComponent<TextMeshPro>();

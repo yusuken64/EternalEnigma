@@ -3,7 +3,7 @@
 `CampaignGenerator.Generate(seed)` returns an immutable logical campaign after validation.
 Independent seeded streams control activation, topology, identities and lock narration.
 Core does not depend on Unity or global random state. Current generator metadata is defined
-by `CampaignGenerator.Version` (10); grid metadata is `OverworldGrid.GenerationVersion` (12).
+by `CampaignGenerator.Version` (12); grid metadata is `OverworldGrid.GenerationVersion` (12).
 These identify generated content and diagnostics, not a player-save schema.
 
 ## Generated content
@@ -55,7 +55,9 @@ validators check their own layouts; Unity fixtures verify adapters and scene gam
 
 `CampaignFingerprint` hashes canonical logical content, including services and fiction.
 Collection order and culture do not change it. Current-schema campaign restores check this
-fingerprint against regenerated content. No historical schema migration or version gate remains.
+fingerprint against regenerated content. Snapshots store `GeneratorVersion`; snapshots without
+it regenerate version 11, retaining standard layouts. Version 12 assigns intact town districts
+to half of eligible repeatable dungeons. `GenerateVersion` preserves version-11 campaigns.
 
 ## Commands
 

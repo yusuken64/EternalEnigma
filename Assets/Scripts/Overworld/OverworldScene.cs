@@ -117,7 +117,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (!restoredTerrain) terrainCache.Store(Context, Map, this);
         foreach (var location in Campaign.Locations.Where(l => l.ParentTownId == null))
         {
-            var prefab = location.Kind == LocationKind.Town ? TownMarker :
+            var prefab = location.Kind == LocationKind.Town || location.Variant == DungeonVariant.Town ? TownMarker :
                 location.Kind == LocationKind.StoryDungeon || location.Kind == LocationKind.RepeatableDungeon || location.Kind == LocationKind.FinalDungeon
                     ? DungeonMarker : LandmarkMarker;
             var marker = Instantiate(prefab, CellCenterToWorld(Map.CurrentGrid.Locations[location.Id]), Quaternion.identity, transform);
@@ -125,7 +125,7 @@ public sealed class OverworldScene : MonoBehaviour
             var cell = Map.CurrentGrid.Locations[location.Id];
             if(creator.twcAsset.mapBuildLayers.OfType<OverworldSettlementLayer>().Any(l=>l.active))
                 foreach(var renderer in marker.GetComponentsInChildren<Renderer>())renderer.enabled=false;
-            else if (location.Kind != LocationKind.Town) BuildLocationFootprint(marker, location.Kind, cell);
+            else if (location.Kind != LocationKind.Town && location.Variant != DungeonVariant.Town) BuildLocationFootprint(marker, location.Kind, cell);
             BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
             locationVisuals.Add(cell, marker);
             if(location.IsDungeon && DioramaCatalog.Load() is { } catalog)

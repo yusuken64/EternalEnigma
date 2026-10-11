@@ -35,9 +35,11 @@ public sealed class CampaignLocation
     /// <summary>Shops and trainers a town offers; empty for every other kind.</summary>
     public IReadOnlyList<TownService> Services { get; }
     public EncounterDefinition? Encounter { get; }
+    public EternalEnigma.Core.World.DungeonVariant Variant { get; }
+    public string DungeonDescription => Variant == EternalEnigma.Core.World.DungeonVariant.Town ? "Town district" : Encounter?.DisplayName ?? "Dungeon";
     public bool IsDungeon => Encounter != null || Kind == LocationKind.StoryDungeon || Kind == LocationKind.RepeatableDungeon || Kind == LocationKind.FinalDungeon;
-    public CampaignLocation(string id, string regionId, int tier, LocationKind kind, bool required = false, int stage = 0, string? parentTownId = null, IEnumerable<TownService>? services = null, EncounterDefinition? encounter = null)
-    { Id = id; RegionId = regionId; Tier = tier; Kind = kind; Required = required; Stage = stage; ParentTownId = parentTownId; Services = Array.AsReadOnly((services ?? Array.Empty<TownService>()).ToArray()); Encounter = encounter; }
+    public CampaignLocation(string id, string regionId, int tier, LocationKind kind, bool required = false, int stage = 0, string? parentTownId = null, IEnumerable<TownService>? services = null, EncounterDefinition? encounter = null, EternalEnigma.Core.World.DungeonVariant variant = EternalEnigma.Core.World.DungeonVariant.Standard)
+    { Id = id; RegionId = regionId; Tier = tier; Kind = kind; Required = required; Stage = stage; ParentTownId = parentTownId; Services = Array.AsReadOnly((services ?? Array.Empty<TownService>()).ToArray()); Encounter = encounter; Variant = variant; }
 }
 
 /// <summary>Bidirectional abstract route. Area gates remain conditional; other locks latch open.</summary>

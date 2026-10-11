@@ -19,6 +19,8 @@ public static class CoreLayoutCache
         {
             slot.Dungeon = DungeonFloorGenerator.Generate(options);
             slot.DungeonKey = options;
+            slot.Town = slot.Dungeon.TownPlan;
+            slot.TownKey = options.Variant == DungeonVariant.Town ? TownDungeonGenerator.TownOptions(options) : null;
             Generations++;
         }
         return slot.Dungeon;

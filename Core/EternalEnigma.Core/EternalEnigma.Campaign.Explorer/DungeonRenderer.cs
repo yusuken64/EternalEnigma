@@ -4,7 +4,7 @@ namespace EternalEnigma.ConsoleExplorer;
 
 public static class DungeonRenderer
 {
-    public const string Legend = "@ you  < start  > stairs  E required enemy  O boulder  o goal  + lit  - dark  T target/trap  R stash  e enemy  $ gold  i item  ^ trap  # wall | R reset puzzle";
+    public const string Legend = "@ you  < start  > stairs/gate  / doorway  f furniture  E required enemy  O boulder  o goal  + lit  - dark  T target/trap/tree  R stash  e enemy  $ gold  i item  ^ trap  # wall | R reset puzzle";
 
     public static string[] Render(DungeonRun run, int width, int height)
     {
@@ -53,6 +53,16 @@ public static class DungeonRenderer
         if (dungeon.Traps.Any(t => t.Cell.Equals(p))) return '^';
         var prop=dungeon.Scenery.FirstOrDefault(s=>s.Cell.Equals(p));
         if(prop!=null) return prop.Kind==DungeonSceneryKind.Container?'C':prop.Kind==DungeonSceneryKind.Destructible?'X':'^';
+
+        if (dungeon.TownPlan is TownPlan town)
+        {
+            if (town.IsDoorway(p)) return '/';
+            if (town.Layers[TownLayers.Furniture].At(p)) return 'f';
+            if (town.Layers[TownLayers.Trees].At(p)) return 'T';
+            if (!dungeon.IsWalkable(p)) return '#';
+            if (town.Layers[TownLayers.ShopFloor].At(p)) return '_';
+            if (town.Layers[TownLayers.Roads].At(p)) return ':';
+        }
 
         if (dungeon.Layers[DungeonLayers.Columns].At(p)) return 'I';
         if (dungeon.Layers[DungeonLayers.Torchlights].At(p)) return '!';

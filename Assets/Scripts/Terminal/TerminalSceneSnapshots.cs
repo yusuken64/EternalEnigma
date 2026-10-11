@@ -31,7 +31,7 @@ internal static class TerminalSceneSnapshots
         {
             Scene = scene; Grid = scene.Map.CurrentGrid;
             Locations = scene.Campaign.Locations.Where(l => l.ParentTownId == null && Grid.Locations.ContainsKey(l.Id))
-                .ToDictionary(l => Grid.Locations[l.Id], l => l.Kind);
+                .ToDictionary(l => Grid.Locations[l.Id], l => l.Variant == DungeonVariant.Town ? LocationKind.Town : l.Kind);
             Warps = Grid.Warps.SelectMany(r => new[] { Grid.Locations[r.From], Grid.Locations[r.To] }).ToHashSet();
             GateCells = Grid.Locks.SelectMany(l => l.Cells).ToArray();
             foreach (var route in scene.Campaign.Routes.Where(r => r.KeyLocationId != null && Grid.Locations.ContainsKey(r.KeyLocationId)))
@@ -144,13 +144,22 @@ internal static class TerminalSceneSnapshots
             new TerminalPartyStat(a.CharacterName, a.Vitals.Level, a.Vitals.HP, a.FinalStats.HPMax,
                 a.Vitals.SP, a.FinalStats.SPMax)).ToArray();
         return new DungeonTerminalSnapshot(width, height, Point(game.PlayerController.ControlledAlly.TilemapPosition),
-            "Dungeon floor " + game.PlayerController.Floor, cache.Terrain, visibility, actors,
+            (floor.Variant == DungeonVariant.Town ? "Town district · Floor " : "Dungeon floor ") + game.PlayerController.Floor, cache.Terrain, visibility, actors,
             party, Tail(messages), target);
     }
     private static TerminalCell DungeonTerrain(DungeonFloor floor, GridPoint p)
     {
         if (p.Equals(floor.Stairs)) return Cell('>', TerminalPalette.Feature);
         if (p.Equals(floor.Start)) return Cell('<', TerminalPalette.Feature);
+        if (floor.TownPlan is TownPlan town)
+        {
+            if (town.IsDoorway(p)) return Cell('/', TerminalPalette.Feature);
+            if (At(town.Layers, TownLayers.Furniture, p)) return Cell('f', TerminalPalette.Feature);
+            if (At(town.Layers, TownLayers.Trees, p)) return Cell('T', TerminalPalette.Item);
+            if (!floor.IsWalkable(p)) return Cell('#', TerminalPalette.Wall);
+            if (At(town.Layers, TownLayers.ShopFloor, p)) return Cell('_', TerminalPalette.Dim);
+            if (At(town.Layers, TownLayers.Roads, p)) return Cell(':', TerminalPalette.Dim);
+        }
         if (At(floor.Layers, DungeonLayers.Columns, p)) return Cell('I', TerminalPalette.Wall);
         if (At(floor.Layers, DungeonLayers.Torchlights, p)) return Cell('!', TerminalPalette.Feature);
         if (At(floor.Layers, DungeonLayers.Carpet, p)) return Cell(',', TerminalPalette.Feature);

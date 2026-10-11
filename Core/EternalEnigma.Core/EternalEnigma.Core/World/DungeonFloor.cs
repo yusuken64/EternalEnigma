@@ -6,6 +6,8 @@ namespace EternalEnigma.Core.World;
 public sealed class DungeonFloor
 {
     public const int GenerationVersion = 3;
+    public DungeonVariant Variant => TownPlan == null ? DungeonVariant.Standard : DungeonVariant.Town;
+    public TownPlan? TownPlan { get; }
     public DungeonObjectiveDefinition Objective { get; }
     public IReadOnlyList<PuzzleObjectPlacement> PuzzleObjects { get; }
     public IReadOnlyList<ObjectiveEnemyPlacement> ObjectiveEnemies { get; }
@@ -32,7 +34,7 @@ public sealed class DungeonFloor
         GridPoint start, GridPoint stairs, IEnumerable<Placement> enemies, IEnumerable<Placement> gold,
         IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null, IEnumerable<DungeonScenery>? scenery = null, IEnumerable<DungeonLock>? locks = null,
         DungeonObjectiveDefinition? objective = null, IEnumerable<PuzzleObjectPlacement>? puzzleObjects = null,
-        IEnumerable<ObjectiveEnemyPlacement>? objectiveEnemies = null, IEnumerable<RecoveryStashPlacement>? recoveryStashes = null, IEnumerable<GridPoint>? solutionWitness = null)
+        IEnumerable<ObjectiveEnemyPlacement>? objectiveEnemies = null, IEnumerable<RecoveryStashPlacement>? recoveryStashes = null, IEnumerable<GridPoint>? solutionWitness = null, TownPlan? townPlan = null)
     {
         // Validate layers
         if (!layers.ContainsKey(DungeonLayers.Floor))
@@ -89,6 +91,7 @@ public sealed class DungeonFloor
             wrappedLayers[DungeonLayers.Stairs] = new GridLayer(stairsCells);
         }
 
+        TownPlan = townPlan;
         Scenery = Array.AsReadOnly((scenery ?? Enumerable.Empty<DungeonScenery>()).ToArray());
         Seed = seed;
         IsThroneFloor = isThroneFloor;
@@ -117,10 +120,12 @@ public sealed class DungeonFloor
     public bool IsWalkable(GridPoint cell) => Layers[DungeonLayers.Floor].At(cell);
 
     /// <summary>Determines if a step from one point to another is valid (RequireOpenSides rule).</summary>
-    public bool CanStep(GridPoint from, GridPoint to) => GridSteps.CanStep(from, to, IsWalkable, DiagonalRule.RequireOpenSides);
+    public bool CanStep(GridPoint from, GridPoint to) => (TownPlan?.AllowsDoorwayStep(from, to) ?? true) &&
+        GridSteps.CanStep(from, to, IsWalkable, DiagonalRule.RequireOpenSides);
 
     /// <summary>Returns valid neighboring cells (EightWay order, RequireOpenSides rule).</summary>
-    public IEnumerable<GridPoint> Neighbors(GridPoint from) => GridSteps.Neighbors(from, IsWalkable, DiagonalRule.RequireOpenSides);
+    public IEnumerable<GridPoint> Neighbors(GridPoint from) => GridSteps.Neighbors(from, IsWalkable, DiagonalRule.RequireOpenSides)
+        .Where(to => TownPlan?.AllowsDoorwayStep(from, to) ?? true);
 
     /// <summary>Checks if a cell is in a room (open 2x2 area).</summary>
     public bool IsRoom(GridPoint cell) => GridSight.IsRoom(Layers[DungeonLayers.Floor], cell);

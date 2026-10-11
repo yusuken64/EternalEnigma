@@ -34,7 +34,7 @@ public sealed class PuzzleState
             if (!Free(pushed)) return false;
             boulders[boulder.Key] = pushed;
         }
-        else if (!GridSteps.CanStep(Player, destination, Free, DiagonalRule.RequireOpenSides)) return false;
+        else if (!floor.CanStep(Player, destination) || !GridSteps.CanStep(Player, destination, Free, DiagonalRule.RequireOpenSides)) return false;
         Player = destination;
         foreach (var tile in floor.PuzzleObjects.Where(p => p.Kind == PuzzleObjectKind.Light && p.Position.Equals(destination))) lights[tile.Id] = !lights[tile.Id];
         if (advanceEnemy) AdvanceEnemy();

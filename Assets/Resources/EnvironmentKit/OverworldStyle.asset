@@ -49,10 +49,12 @@ MonoBehaviour:
     CoreLayer: Towns
     Role: 0
     AllowEmpty: 1
+    Projection: Smart/Houses
   - BlueprintGuid: 4c15c6f0-c2a6-4b9c-a477-cec95b434763
     CoreLayer: TownFootprints
     Role: 0
     AllowEmpty: 1
+    Projection: Smart/Walls
   - BlueprintGuid: 7e9a5f1e-f070-46ba-9a44-8486366003fb
     CoreLayer: Water
     Role: 0

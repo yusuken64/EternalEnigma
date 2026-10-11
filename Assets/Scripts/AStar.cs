@@ -9,6 +9,7 @@ public static class AStar
         public int X { get; }
         public int Y { get; }
         public bool IsWalkable { get; set; }
+        public bool CardinalOnly { get; set; }
 		public int MovePenalty { get; }
 		public double GCost { get; set; } // (Actual Cost)
         public double HCost { get; set; } // (Heuristic Cost)
@@ -106,7 +107,8 @@ public static class AStar
             GridMovement.Contains(grid.GetLength(0), grid.GetLength(1), cell) &&
             grid[cell.x, cell.y] != null && grid[cell.x, cell.y].IsWalkable;
         foreach (var cell in GridMovement.GetNeighbors(new Vector3Int(node.X, node.Y), IsWalkable, diagonal))
-            yield return grid[cell.x, cell.y];
+            if (cell.x == node.X || cell.y == node.Y || !(node.CardinalOnly || grid[cell.x,cell.y].CardinalOnly))
+                yield return grid[cell.x, cell.y];
     }
 
     static double GetDistance(Node nodeA, Node nodeB)

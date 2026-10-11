@@ -33,7 +33,9 @@ public class TileWorldDungeon : MonoBehaviour
 	[SerializeField] private TileWorldCreator _tileWorldCreator;
 	private bool[,] floorMask;
 	private bool[,] _isHallwayCache;
-    internal float PresentationWallHeight => _tileWorldCreator?.twcAsset.mapBuildLayers.OfType<DungeonBoundaryLayer>()
+    internal float PresentationWallHeight => runtimeFloor?.Variant == DungeonVariant.Town
+        ? _tileWorldCreator.worldObject.GetComponentsInChildren<Renderer>(true).Select(r => -r.bounds.min.z).DefaultIfEmpty(0).Max()
+        : _tileWorldCreator?.twcAsset.mapBuildLayers.OfType<DungeonBoundaryLayer>()
         .Where(l=>l.active&&l.SmartPreset!=null).Select(l=>l.WallHeight).DefaultIfEmpty(0).Max() ?? 0;
 
     internal bool EnsureRuntimeData()
@@ -111,7 +113,8 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal List<Facing> GetValidWalkDirections(Vector3Int tilemapPosition)
 	{
-		return GridMovement.GetValidDirections(tilemapPosition, CanWalk).ToList();
+		return GridMovement.GetValidDirections(tilemapPosition, CanWalk)
+            .Where(f => AllowsDoorwayStep(tilemapPosition, tilemapPosition + GridMovement.GetFacingOffset(f))).ToList();
 	}
 
     private readonly Dictionary<(Vector3Int, int), HashSet<Vector3Int>> sightCache = new();
@@ -412,6 +415,8 @@ public class TileWorldDungeon : MonoBehaviour
 		itemInstance.transform.position = CellToWorld(stairPosition);
 		DungeonPresentation.GroundFloorObject(itemInstance.transform);
 		itemInstance.Position = stairPosition;
+		if (Floor.Variant == DungeonVariant.Town)
+            foreach (var renderer in itemInstance.GetComponentsInChildren<Renderer>(true)) renderer.enabled = false;
 		Interactables.Add(itemInstance);
 	}
 
@@ -426,8 +431,11 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal bool CanWalkTo(Vector3Int origin, Vector3Int destination)
 	{
-		return GridMovement.CanStep(origin, destination, CanWalk);
+		return AllowsDoorwayStep(origin, destination) && GridMovement.CanStep(origin, destination, CanWalk);
 	}
+
+    internal bool AllowsDoorwayStep(Vector3Int from, Vector3Int to) =>
+        Floor.TownPlan?.AllowsDoorwayStep(from.ToGridPoint(), to.ToGridPoint()) ?? true;
 
 	internal Vector3Int GetRangedAttackPosition(
 		Character thrower,

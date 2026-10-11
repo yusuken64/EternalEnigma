@@ -590,6 +590,26 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.EnemyBehaviorTests",
         "EternalEnigma.Tests.BiomeSceneryTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town Dungeons EditMode")]
+    public static void RunTownDungeonsEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.CoreIntegration.TownDungeonIntegrationTests",
+        "EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests",
+        "EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests", "EternalEnigma.Tests.AutoplaySweepTests",
+        "GridMovementTests", "EternalEnigma.Tests.AutoplayRouteTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town Dungeons PlayMode")]
+    public static void RunTownDungeonsPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownDungeonGameplayTests", "EternalEnigma.Tests.BiomeSceneryTests",
+        "EternalEnigma.Tests.CampaignTravelTests", "EternalEnigma.Tests.TownAmbientGameplayTests",
+        "EternalEnigma.Tests.TownGameplayTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town Dungeons Focused PlayMode")]
+    public static void RunTownDungeonsFocusedPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownDungeonGameplayTests.DoorwaysSupportStraightMovementCombatSightAndRoofCutaways",
+        "EternalEnigma.Tests.CampaignTravelTests.DungeonEntryApprovalCancellationAndCapabilitiesUseOverworldDialogs",
+        "EternalEnigma.Tests.CampaignTravelTests.TownDistrictEntryFromOverworldPreservesRunVariant",
+        "EternalEnigma.Tests.TownGameplayTests.TownInventoryUsesSharedActionMenuAndSavesEquipment");
+
     private static void Run(TestMode mode, string filter, params string[] testFilters)
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);

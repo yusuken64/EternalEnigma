@@ -24,6 +24,9 @@ public static class CampaignFingerprint
         foreach (var c in campaign.Manifest.OrderBy(c => c.Id)) Row("capability", c.Id, c.Role, c.Tier);
         foreach (var r in campaign.Regions.OrderBy(r => r.Id, StringComparer.Ordinal)) Row("region", r.Id, r.Theme, r.Tier, r.ProgressionOrder, r.Name);
         foreach (var l in campaign.Locations.OrderBy(l => l.Id, StringComparer.Ordinal)) Row("location", l.Id, l.RegionId, l.Tier, l.Kind, l.Required, l.Stage, l.ParentTownId, string.Join(",", l.Services.Select(s => s.Id)));
+        // Preserve version 11 fingerprints byte for byte so existing checkpoints can load.
+        if (campaign.GeneratorVersion >= 12)
+            foreach (var l in campaign.Locations.OrderBy(l => l.Id, StringComparer.Ordinal)) Row("variant", l.Id, l.Variant);
         foreach (var l in campaign.Locations.Where(l => l.Encounter != null).OrderBy(l => l.Id, StringComparer.Ordinal))
             Row("encounter", l.Id, l.Encounter!.Kind, l.Encounter.FloorCount, l.Encounter.EntryRequirement, l.Encounter.RequiresResetFloor, l.Encounter.ReturnLocationId, l.Encounter.BridgeRouteId);
         foreach (var r in campaign.Routes.OrderBy(r => r.Id, StringComparer.Ordinal)) Row("route", r.Id, r.From, r.To, r.Requirement, r.Form, r.Required, r.IsProgressionBoundary, r.ShortcutKind, r.UnlockingEndpoint, r.KeyId, r.KeyLocationId, r.IsWarp, r.KeyCondition, r.IsTownExit, r.SkinId, r.LockText, r.KeyName);

@@ -33,7 +33,7 @@ public static class OverworldGridValidator
         foreach (var interior in campaign.Locations.Where(l => l.ParentTownId != null))
             Check(grid.Locations.TryGetValue(interior.Id, out var at) && grid.Locations.TryGetValue(interior.ParentTownId!, out var townAt) && at.Equals(townAt),
                 $"interior.position: {interior.Id} must project onto its parent town.");
-        Check(campaign.Locations.Where(l => l.Kind == LocationKind.Town && l.ParentTownId == null).Select(l => l.Id).OrderBy(id => id, StringComparer.Ordinal)
+        Check(campaign.Locations.Where(l => (l.Kind == LocationKind.Town || l.Variant == DungeonVariant.Town) && l.ParentTownId == null).Select(l => l.Id).OrderBy(id => id, StringComparer.Ordinal)
             .SequenceEqual(grid.TownFootprints.Select(t => t.LocationId).OrderBy(id => id, StringComparer.Ordinal)), "towns: Missing/extra town footprints.");
         var townCells = new HashSet<GridPoint>();
         foreach (var town in grid.TownFootprints)
@@ -173,7 +173,7 @@ public static class OverworldGridValidator
         if (campaign.GeneratorVersion >= 11)
         {
             var footprints = new HashSet<GridPoint>();
-            Check(campaign.Locations.Where(l => l.ParentTownId == null && l.IsDungeon).Select(l => l.Id).OrderBy(x => x, StringComparer.Ordinal)
+            Check(campaign.Locations.Where(l => l.ParentTownId == null && l.IsDungeon && l.Variant != DungeonVariant.Town).Select(l => l.Id).OrderBy(x => x, StringComparer.Ordinal)
                 .SequenceEqual(grid.LocationFootprints.Select(f => f.LocationId).OrderBy(x => x, StringComparer.Ordinal)), "encounter.footprints: Missing exterior dungeon footprint.");
             foreach (var footprint in grid.LocationFootprints)
             {

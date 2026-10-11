@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class NewFloorMessage : MonoBehaviour
 {
+    private static string Label(int floor) => Common.Instance?.GameSaveData?.DungeonSaveData?.Variant == EternalEnigma.Core.World.DungeonVariant.Town
+        ? $"Town district · Floor {floor}" : $"Floor {floor}";
 	public Image BackgroundColor;
 	public TextMeshProUGUI FloorMessage;
     [SerializeField] private Image decorativeFrame;
@@ -33,7 +35,7 @@ public class NewFloorMessage : MonoBehaviour
 		BackgroundColor.sprite = null;
 		BackgroundColor.color = Color.black;
         FloorMessage.color = GameUITheme.LightInk;
-		FloorMessage.text = $"Floor {floor}";
+		FloorMessage.text = Label(floor);
 
 		BackgroundColor.CrossFadeAlpha(0, 3f, true);
         if (decorativeFrame != null) decorativeFrame.CrossFadeAlpha(0, 3f, true);
@@ -46,7 +48,7 @@ public class NewFloorMessage : MonoBehaviour
 	internal void HideScreen(int destinationFloor)
 	{
 		// Show the destination while its layout is being generated.
-		FloorMessage.text = $"Floor {destinationFloor}";
+		FloorMessage.text = Label(destinationFloor);
 		FloorMessage.transform.DOKill();
 		FloorMessage.transform.localRotation = Quaternion.identity;
 		this.gameObject.SetActive(true);

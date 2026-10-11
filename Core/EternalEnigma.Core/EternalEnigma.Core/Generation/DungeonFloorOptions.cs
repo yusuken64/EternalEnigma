@@ -2,6 +2,7 @@ namespace EternalEnigma.Core.Generation;
 
 public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
 {
+    public EternalEnigma.Core.World.DungeonVariant Variant { get; }
     public EternalEnigma.Core.Progression.EncounterKind? Encounter { get; }
     public EternalEnigma.Core.World.DungeonObjectiveDefinition Objective { get; }
     public int EncounterFloor { get; }
@@ -23,7 +24,7 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
 
     public DungeonFloorOptions(int seed, int width = 32, int height = 32, bool isThroneFloor = false,
         int enemyCount = 10, int goldCount = 5, int itemCount = 5, int trapCount = 5, int gatheringCount = 3, int layoutVersion = 0, EternalEnigma.Core.World.OverworldBiome biome = EternalEnigma.Core.World.OverworldBiome.Grassland, int tier = 0, DungeonFloorRole role = DungeonFloorRole.Regular,
-        EternalEnigma.Core.Progression.EncounterKind? encounter = null, EternalEnigma.Core.World.DungeonObjectiveDefinition? objective = null, int encounterFloor = 1, bool finalEncounterFloor = true, string? bossFamily = null) // == GatheringPlacement.DefaultCount
+        EternalEnigma.Core.Progression.EncounterKind? encounter = null, EternalEnigma.Core.World.DungeonObjectiveDefinition? objective = null, int encounterFloor = 1, bool finalEncounterFloor = true, string? bossFamily = null, EternalEnigma.Core.World.DungeonVariant variant = EternalEnigma.Core.World.DungeonVariant.Standard) // == GatheringPlacement.DefaultCount
     {
         if (width < 12 || width > 128)
             throw new ArgumentOutOfRangeException(nameof(width), "Width must be between 12 and 128.");
@@ -52,6 +53,10 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
                 throw new ArgumentException("Throne floors are fixed 12x12 with no placements.");
         }
 
+        if (!Enum.IsDefined(typeof(EternalEnigma.Core.World.DungeonVariant), variant)) throw new ArgumentOutOfRangeException(nameof(variant));
+        if (variant == EternalEnigma.Core.World.DungeonVariant.Town && (layoutVersion == 0 || encounter.HasValue || width < 52 || height < 52 || width > 64 || height > 64))
+            throw new ArgumentException("Town districts require a 52..64 cell biome layout without a specialized encounter.");
+        Variant = variant;
         LayoutVersion = layoutVersion; Biome = biome; Tier = tier; Role = role;
         Seed = seed;
         Width = width;
@@ -71,6 +76,7 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
 
     public bool Equals(DungeonFloorOptions? other) =>
         other != null &&
+        Variant == other.Variant &&
         Encounter == other.Encounter && Objective.Equals(other.Objective) && EncounterFloor == other.EncounterFloor && FinalEncounterFloor == other.FinalEncounterFloor && BossFamily == other.BossFamily &&
         LayoutVersion == other.LayoutVersion && Biome == other.Biome && Tier == other.Tier && Role == other.Role &&
         Seed == other.Seed &&
@@ -87,6 +93,7 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
 
     public override int GetHashCode() =>
         unchecked(
+            (int)Variant * 16411 ^
             (BossFamily?.GetHashCode() ?? 0) ^ Encounter.GetHashCode() * 12289 ^ Objective.GetHashCode() * 12301 ^ EncounterFloor * 12323 ^ FinalEncounterFloor.GetHashCode() * 12329 ^
             LayoutVersion * 7919 ^ (int)Biome * 8171 ^ Tier * 8191 ^ (int)Role * 8209 ^
             Seed * 397 ^
@@ -101,6 +108,6 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
         );
 
     public override string ToString() =>
-        $"DungeonFloorOptions(Encounter={Encounter}/{EncounterFloor}/{FinalEncounterFloor}, Objective={Objective.Kind}, Boss={BossFamily}, Layout={LayoutVersion}/{Biome}/{Tier}/{Role}, Seed={Seed}, {Width}x{Height}, IsThroneFloor={IsThroneFloor}, " +
+        $"DungeonFloorOptions(Variant={Variant}, Encounter={Encounter}/{EncounterFloor}/{FinalEncounterFloor}, Objective={Objective.Kind}, Boss={BossFamily}, Layout={LayoutVersion}/{Biome}/{Tier}/{Role}, Seed={Seed}, {Width}x{Height}, IsThroneFloor={IsThroneFloor}, " +
         $"Enemies={EnemyCount}, Gold={GoldCount}, Items={ItemCount}, Traps={TrapCount}, Gathering={GatheringCount})";
 }

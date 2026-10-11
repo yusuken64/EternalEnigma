@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using EternalEnigma.Core.World;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -49,7 +50,9 @@ namespace EternalEnigma.Tests
             Assert.That(clone.Cases.Count, Is.EqualTo(10000)); Assert.That(clone.Cases.Select(c => c.Id).Distinct().Count(), Is.EqualTo(10000));
             var profiles = clone.Cases.Select(c => c.Profile).Distinct().ToArray();
             Assert.That(profiles, Is.EqualTo(profiles.OrderBy(p => p, StringComparer.Ordinal).ToArray()));
-            Assert.That(profiles.Length, Is.EqualTo(Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog").Themes.Length * 15 + 3));
+            var themes = Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog").Themes;
+            Assert.That(profiles.Length, Is.EqualTo((themes.Length + themes.Select(t => t.Biome).Distinct().Count()) * 15 + 3));
+            Assert.That(clone.Cases.Any(c => c.Variant == DungeonVariant.Town), Is.True);
             var counts = clone.Cases.GroupBy(c => c.Profile).Select(g => g.Count()).ToArray();
             Assert.That(counts.Max() - counts.Min(), Is.LessThanOrEqualTo(1));
             for (int i = 0; i < clone.Cases.Count; i++)

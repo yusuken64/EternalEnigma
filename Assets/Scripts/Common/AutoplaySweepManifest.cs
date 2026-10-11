@@ -16,18 +16,19 @@ public sealed class AutoplayFloorCase
     public OverworldBiome Biome;
     public DungeonEnvironmentKind Environment;
     public DungeonFloorRole Role;
+    public DungeonVariant Variant;
     public bool Throne;
     public DungeonFloorOptions Options() => new(Seed, Width, Height, Throne, EnemyCount, GoldCount, ItemCount,
-        TrapCount, GatheringCount, LayoutVersion, Biome, Tier, Role);
+        TrapCount, GatheringCount, LayoutVersion, Biome, Tier, Role, variant: Variant);
     public DungeonVisualSelection Visuals() => new() { Biome = Biome, Environment = Environment, UseBiomePresentation = true };
 
     public static AutoplayFloorCase Create(int index, int seed, OverworldBiome biome, DungeonEnvironmentKind environment,
-        int tier, DungeonFloorRole role, int version = DungeonLayoutProfile.CurrentVersion)
+        int tier, DungeonFloorRole role, int version = DungeonLayoutProfile.CurrentVersion, DungeonVariant variant = DungeonVariant.Standard)
     {
-        var o = DungeonLayoutProfile.Options(seed, biome, tier, role, version);
-        string profile = $"v{version}/{biome}/{environment}/{role}/tier-{tier}";
+        var o = DungeonLayoutProfile.Options(seed, biome, tier, role, version, variant: variant);
+        string profile = $"v{version}/{biome}/{environment}/{role}/tier-{tier}/{variant}";
         var result = new AutoplayFloorCase { Index = index, Seed = seed, Profile = profile, Biome = o.Biome,
-            Environment = environment, Tier = o.Tier, Role = o.Role, LayoutVersion = o.LayoutVersion, Throne = o.IsThroneFloor,
+            Environment = environment, Tier = o.Tier, Role = o.Role, Variant = o.Variant, LayoutVersion = o.LayoutVersion, Throne = o.IsThroneFloor,
             Width = o.Width, Height = o.Height, EnemyCount = o.EnemyCount, GoldCount = o.GoldCount, ItemCount = o.ItemCount,
             TrapCount = o.TrapCount, GatheringCount = o.GatheringCount, Difficulty = 2 + tier * 7 };
         result.Id = Hash128.Compute(JsonUtility.ToJson(result)).ToString();
@@ -38,7 +39,7 @@ public sealed class AutoplayFloorCase
 [Serializable]
 public sealed class AutoplaySweepManifest
 {
-    public const int CurrentSchema = 1;
+    public const int CurrentSchema = 2;
     public int Schema = CurrentSchema, StartingSeed;
     public string Id, CreatedUtc, BuildId, ContentId;
     public List<AutoplayFloorCase> Cases = new();
@@ -68,6 +69,10 @@ public sealed class AutoplaySweepManifest
                         from role in (DungeonFloorRole[])Enum.GetValues(typeof(DungeonFloorRole))
                         select AutoplayFloorCase.Create(0, options.Seed, theme.Biome, theme.Environment, tier, role)).ToList();
         // Legacy layout remains supported by existing saves and starter dungeons.
+        foreach (var biome in catalog.Themes.Select(t => t.Biome).Distinct())
+        foreach (int tier in Enumerable.Range(0, 5))
+        foreach (DungeonFloorRole role in Enum.GetValues(typeof(DungeonFloorRole)))
+            profiles.Add(AutoplayFloorCase.Create(0, options.Seed, biome, DungeonEnvironmentKind.Outdoor, tier, role, variant: DungeonVariant.Town));
         foreach (DungeonFloorRole role in Enum.GetValues(typeof(DungeonFloorRole)))
             profiles.Add(AutoplayFloorCase.Create(0, options.Seed, OverworldBiome.Grassland, DungeonEnvironmentKind.Interior, 0, role, 0));
         profiles = profiles.OrderBy(p => p.Profile, StringComparer.Ordinal).ToList();
@@ -78,7 +83,7 @@ public sealed class AutoplaySweepManifest
             var p = profiles[i % profiles.Count];
             // The role is encoded in the profile even for legacy options (whose Core role is Regular).
             var role = (DungeonFloorRole)Enum.Parse(typeof(DungeonFloorRole), p.Profile.Split('/')[3]);
-            manifest.Cases.Add(AutoplayFloorCase.Create(i, options.SeedForRun(i), p.Biome, p.Environment, p.Tier, role, p.LayoutVersion));
+            manifest.Cases.Add(AutoplayFloorCase.Create(i, options.SeedForRun(i), p.Biome, p.Environment, p.Tier, role, p.LayoutVersion, p.Variant));
         }
         manifest.Id = manifest.Identity();
         return manifest;

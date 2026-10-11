@@ -450,7 +450,7 @@ public class PlayerController : MonoBehaviour
         if (!Game.Instance.CurrentDungeon.IsExitFloor)
         {
             MenuManager.Instance.ShowYesNoDialog(
-                "Take Stairs?",
+                stairs.GetInteractionText() + "?",
                 () => ControlledAlly.SetAction(new InteractAction(stairs)),
                 () => { });
         }

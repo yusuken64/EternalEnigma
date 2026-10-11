@@ -1,5 +1,21 @@
 # Manual playthrough and Debug autoplay
 
+## District dungeon walkthrough
+
+**Tools > Eternal Enigma > Town Dungeons > Run Debug District** starts an isolated
+seed-42 campaign and jumps to the entrance of `repeatable-1`. It plays all six
+districts (floors 5–10) through normal movement, combat, pickups, and gate transitions.
+On each regular floor it visits an interior, checks that diagonal doorway approaches
+are rejected, and verifies a collected item is in the inventory. Entry and exit
+floors retain their normal progression. It stops after returning to the overworld.
+
+This is a focused godmode/infinite-resources validation run, not a campaign victory
+or a balance test. Reports and gameplay screenshots are saved under
+`Logs/TownDungeonDebug`; `district.json` records per-floor coverage and the run
+directory. The ordinary autoplay report supplies actions, runtime issues, the final
+save, and `final.png`. Stop Play Mode after the artifacts finish to restore the
+original save and editor setup.
+
 ## Floor loot sweep
 
 The Unity **Playthrough** window also offers **FloorLootSweep**. Selecting it defaults

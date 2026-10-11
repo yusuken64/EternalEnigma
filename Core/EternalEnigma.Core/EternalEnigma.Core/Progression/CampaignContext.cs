@@ -15,6 +15,7 @@ public sealed class OverworldLaunchOptions
 [Serializable]
 public sealed class CampaignSnapshot
 {
+    public int GeneratorVersion;
     public int NamingVersion;
     public TownDisplayName[] TownNames = Array.Empty<TownDisplayName>();
     public int Seed;
@@ -92,11 +93,12 @@ public HashSet<string> Completed { get; }
     public CampaignContext(OverworldLaunchOptions options, CampaignSnapshot? snapshot = null)
     {
         Mode = options.Mode;
-        State = snapshot ?? new CampaignSnapshot { Seed = options.Seed, Identity = Guid.NewGuid().ToString("N") };
-        Campaign = CampaignGenerator.Generate(State.Seed);
+        State = snapshot ?? new CampaignSnapshot { Seed = options.Seed, Identity = Guid.NewGuid().ToString("N"), GeneratorVersion = CampaignGenerator.Version };
+        Campaign = CampaignGenerator.GenerateVersion(State.Seed, State.GeneratorVersion == 0 ? CampaignGenerator.LegacyVersion : State.GeneratorVersion);
         var fingerprint = CampaignFingerprint.Compute(Campaign);
         if (snapshot != null && State.Fingerprint != fingerprint) throw new InvalidOperationException("Campaign save fingerprint mismatch.");
         State.Fingerprint = fingerprint;
+        State.GeneratorVersion = Campaign.GeneratorVersion;
         BackfillTownNames();
         positionInitialized = snapshot != null && State.Scene != "Town" &&
             !Campaign.Locations.Any(l => l.Id == State.PendingDungeon && l.ParentTownId != null);
@@ -211,11 +213,11 @@ public HashSet<string> Completed { get; }
     }
     public int LocationSeed(string location, int floor = 0) => LocationSeed(State.Seed, location, floor);
     /// <summary>Throne floors are the first and last floor of the location's tier range.</summary>
-    public static DungeonFloorOptions DungeonFloorOptionsFor(int campaignSeed, string locationId, int floor, int tier, OverworldBiome biome = OverworldBiome.Grassland, int layoutVersion = 0)
+    public static DungeonFloorOptions DungeonFloorOptionsFor(int campaignSeed, string locationId, int floor, int tier, OverworldBiome biome = OverworldBiome.Grassland, int layoutVersion = 0, DungeonVariant variant = DungeonVariant.Standard)
     {
         var (start, end) = Floors(tier);
         int seed = LocationSeed(campaignSeed, locationId, floor);
-        return DungeonLayoutProfile.Options(seed, biome, tier, floor == start ? DungeonFloorRole.Entry : floor == end ? DungeonFloorRole.Exit : DungeonFloorRole.Regular, layoutVersion, locationId);
+        return DungeonLayoutProfile.Options(seed, biome, tier, floor == start ? DungeonFloorRole.Entry : floor == end ? DungeonFloorRole.Exit : DungeonFloorRole.Regular, layoutVersion, locationId, variant);
     }
     public DungeonFloor DungeonFloor(string locationId, int floor)
     {

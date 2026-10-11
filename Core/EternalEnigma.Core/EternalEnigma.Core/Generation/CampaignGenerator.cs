@@ -6,11 +6,15 @@ namespace EternalEnigma.Core.Generation;
 
 public static class CampaignGenerator
 {
-    public const int Version = 11;
+    public const int LegacyVersion = 11;
+    public const int Version = 12;
     public const int TierCount = 5;
 
-    public static Campaign Generate(int seed)
+    public static Campaign Generate(int seed) => GenerateVersion(seed, Version);
+
+    public static Campaign GenerateVersion(int seed, int version)
     {
+        if (version != LegacyVersion && version != Version) throw new ArgumentOutOfRangeException(nameof(version));
         // Stage identifiers are explicit: adding a new stage must not renumber existing streams.
         var activation = new SeedStream(seed, 0);
         var topology = new SeedStream(seed, 1);
@@ -199,14 +203,25 @@ public static class CampaignGenerator
         }
 
         AssignEncounters(seed, locations, routes, active);
+        if (version >= 12) AssignTownVariants(seed, locations);
 
         // Stage 9 only dresses routes that already exist, so it cannot change topology or progression.
         regions = LockNarrator.NameRegions(seed, regions);
         routes = LockNarrator.Apply(seed, routes, locations, regions, manifest);
-        var campaign = new Campaign(seed, Version, "town-0", "final-dungeon", manifest, regions, locations, routes, sources, companions, returns);
+        var campaign = new Campaign(seed, version, "town-0", "final-dungeon", manifest, regions, locations, routes, sources, companions, returns);
         var validation = CampaignValidator.Validate(campaign);
         if (!validation.IsValid) throw new InvalidOperationException($"Campaign {seed} failed validation:\n{string.Join("\n", validation.Errors)}");
         return campaign;
+    }
+
+    private static void AssignTownVariants(int seed, List<CampaignLocation> locations)
+    {
+        var eligible = locations.Where(l => l.Kind == LocationKind.RepeatableDungeon && l.Encounter == null && !DungeonLayoutProfile.IsStarter(l.Id))
+            .OrderBy(l => l.Id, StringComparer.Ordinal).ToArray();
+        // A dedicated stream leaves routes, encounters, rewards and all other selections unchanged.
+        foreach (var old in new SeedStream(seed, 1800).Shuffle(eligible).Take((eligible.Length + 1) / 2))
+            locations[locations.IndexOf(old)] = new CampaignLocation(old.Id, old.RegionId, old.Tier, old.Kind, old.Required, old.Stage,
+                old.ParentTownId, old.Services, old.Encounter, EternalEnigma.Core.World.DungeonVariant.Town);
     }
 
     private static void AssignEncounters(int seed, List<CampaignLocation> locations, List<CampaignRoute> routes, IReadOnlyCollection<Capability> active)

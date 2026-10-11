@@ -58,10 +58,10 @@ internal static class GridPreview
     {
         var svg = new StringBuilder($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {dungeon.Width * 8} {dungeon.Height * 8}\" width=\"{dungeon.Width * 8}\" height=\"{dungeon.Height * 8}\"><rect width=\"100%\" height=\"100%\" fill=\"#253643\"/>");
 
-        void Draw(string name, string color)
+        void Draw(string name, string color, IReadOnlyDictionary<string, GridLayer>? layers = null)
         {
-            if (!dungeon.Layers.ContainsKey(name)) return;
-            var layer = dungeon.Layers[name];
+            layers ??= dungeon.Layers;
+            if (!layers.TryGetValue(name, out var layer)) return;
             svg.Append($"<g fill=\"{color}\">");
             for (int y = 0; y < dungeon.Height; y++)
                 for (int x = 0; x < dungeon.Width; x++)
@@ -76,6 +76,16 @@ internal static class GridPreview
         Draw(DungeonLayers.Carpet, "#75aa58");
         Draw(DungeonLayers.Columns, "#8d9097");
         Draw(DungeonLayers.Torchlights, "#cadfe3");
+        if (dungeon.TownPlan is TownPlan town)
+        {
+            Draw(TownLayers.Roads, "#d4cba9", town.Layers);
+            Draw(TownLayers.ShopFloor, "#e8d5b7", town.Layers);
+            Draw(TownLayers.Carpet, "#568f91", town.Layers);
+            Draw(TownLayers.Trees, "#294b36", town.Layers);
+            Draw(TownLayers.ShopWalls, "#9b7556", town.Layers);
+            Draw(TownLayers.Furniture, "#714b34", town.Layers);
+            Draw(TownLayers.Buildings, "#f5cf72", town.Layers);
+        }
 
         // Draw markers for start and stairs
         svg.Append($"<circle cx=\"{(dungeon.Start.X + 0.5) * 8}\" cy=\"{(dungeon.Height - dungeon.Start.Y - 0.5) * 8}\" r=\"3\" fill=\"#38ff93\"><title>Start</title></circle>");
@@ -129,6 +139,7 @@ internal static class GridPreview
         Draw(OverworldLayers.NavigableWater, "#368ac0"); Draw(OverworldLayers.Bridges, "#c49b67");
         Draw(OverworldLayers.Towns, "#ffffff"); Draw(OverworldLayers.StoryDungeons, "#ea5d60");
         Draw(OverworldLayers.RepeatableDungeons, "#ce9e59"); Draw(OverworldLayers.FinalDungeon, "#f02b40");
+        Draw(OverworldLayers.TownInteriors, "#c5a46f"); Draw(OverworldLayers.TownWalls, "#79664f");
         Draw(OverworldLayers.PlayerStart, "#38ff93");
         foreach (var footprint in grid.LocationFootprints)
             svg.Append($"<rect x=\"{footprint.Cells.Min(p => p.X)}\" y=\"{grid.Height - footprint.Cells.Max(p => p.Y) - 1}\" width=\"{footprint.Size}\" height=\"{footprint.Size}\" fill=\"none\" stroke=\"#ffeedd\" stroke-width=\".3\"><title>{SecurityElement.Escape(footprint.LocationId)} {footprint.EncounterKind}</title></rect>");

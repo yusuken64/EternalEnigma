@@ -79,7 +79,8 @@ public sealed class TownPlan
             {
                 bool cellWalkable = walkableLayer[x, y];
                 bool cellBlocked = housesLayer[x, y] || treesLayer[x, y] || shopWallsLayer[x, y] ||
-                    (layers.TryGetValue(TownLayers.Furniture, out var furniture) && furniture[x,y]);
+                    (layers.TryGetValue(TownLayers.Furniture, out var furniture) && furniture[x,y]) ||
+                    (layers.TryGetValue(TownLayers.Boundary, out var boundary) && boundary[x,y]);
                 bool expectedWalkable = !cellBlocked;
 
                 if (cellWalkable != expectedWalkable)
@@ -154,8 +155,15 @@ public sealed class TownPlan
 
     public bool IsWalkable(GridPoint cell) => Layers[TownLayers.Walkable].At(cell);
 
+    /// <summary>The approach marker and the opening through the front wall.</summary>
+    public bool IsDoorway(GridPoint cell) => Layers[TownLayers.Buildings].At(cell) ||
+        Layers[TownLayers.Buildings].At(new GridPoint(cell.X, cell.Y - 1));
+
+    public bool AllowsDoorwayStep(GridPoint from, GridPoint to) =>
+        from.X == to.X || from.Y == to.Y || (!IsDoorway(from) && !IsDoorway(to));
+
     public bool CanStep(GridPoint from, GridPoint to) =>
-        GridSteps.CanStep(from, to, IsWalkable, DiagonalRule.AllowCornerCutting);
+        AllowsDoorwayStep(from, to) && GridSteps.CanStep(from, to, IsWalkable, DiagonalRule.AllowCornerCutting);
 
     public IEnumerable<GridPoint> CardinalNeighbors(GridPoint from) =>
         GridSteps.CardinalNeighbors(from, IsWalkable);

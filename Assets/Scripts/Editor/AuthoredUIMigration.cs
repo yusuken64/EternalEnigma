@@ -18,6 +18,31 @@ public static class AuthoredUIMigration
 {
     const string Folder="Assets/Resources/UI/Authored";
     const string Marker="Authored UI v1";
+
+    [MenuItem("Tools/Eternal Enigma/UI/Repair Overworld Entry Dialogs")]
+    public static void RepairOverworldEntryDialogs()
+    {
+        if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode before repairing scene bindings.");
+        const string path = "Assets/Scenes/Overworld.unity";
+        var scene = SceneManager.GetSceneByPath(path);
+        bool opened = !scene.IsValid() || !scene.isLoaded;
+        if (opened) scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
+        try
+        {
+            var owner = Find<OverworldScene>(scene).transform;
+            var menus = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<PartyMenu>(true)).ToArray();
+            if (menus.Length == 0)
+                Instance(GameUITheme.Current.DungeonMenuPrefab.GetComponent<PartyMenu>(), owner).gameObject.SetActive(false);
+            int pickers = scene.GetRootGameObjects().Sum(r => r.GetComponentsInChildren<PartyMenuPicker>(true).Length);
+            for (int i = pickers; i < 2; i++)
+            {
+                var picker = Instance(GameUITheme.Current.DungeonPickerPrefab.GetComponent<PartyMenuPicker>(), owner);
+                picker.name = i == 0 ? "PartyPicker" : "Party target picker"; picker.gameObject.SetActive(false);
+            }
+            EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
+        }
+        finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
+    }
     static void Set(object target,string field,object value)
     {
         var info=target.GetType().GetField(field,BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic);

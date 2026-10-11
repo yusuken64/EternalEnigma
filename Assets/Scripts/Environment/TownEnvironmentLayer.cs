@@ -94,6 +94,10 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             }
             // Expand the TWC scenery beyond the playable grid. Out-of-bounds cells are
             // impassable in WalkableMap, so the visible enclosure matches movement.
+            bool district = plan.Layers.ContainsKey(TownLayers.Boundary);
+            if (district) TownDungeonPresentation.Boundary(batch, faces, Kit, plan, biome, size);
+            else
+            {
             const int border = 4;
             for (int y = -border; y < plan.Height + border; y++)
             for (int x = -border; x < plan.Width + border; x++)
@@ -131,9 +135,10 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                 batch.Add(Kit.Mesh("Wall"), Kit.Material(biome),
                     new Vector3(plan.Exit.X + .5f + side * 1.5f, plan.Exit.Y, 0) * size,
                     Vector3.one * size, 90);
+            }
             if(diorama!=null)DioramaTownDressing.Build(batch,plan,biome,size,diorama);
             batch.Finish();
-            TownGateVisuals.Create(Kit, biome, root.transform, plan.Exit, size, "Town gate", false);
+            TownGateVisuals.Create(Kit, biome, root.transform, plan.Exit, size, district ? "District entrance" : "Town gate", false);
         }
         finally { creator.executedBuildLayersCount += 1; }
     }

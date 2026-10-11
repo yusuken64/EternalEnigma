@@ -18,6 +18,13 @@ the separate solution; see [campaign generation](../../Docs/CampaignGeneration.m
 template isolation and real town-marker instantiation. See
 [overworld grid setup](../../Docs/OverworldGrid.md).
 
+Town district coverage is available under **Tools > Eternal Enigma > Tests > Run Town
+Dungeons EditMode / PlayMode**. It exercises the shared town template, variant persistence,
+cache separation, overworld town silhouettes, cardinal doorway movement, street-to-interior
+combat, roof cutaways, loot, gate transitions, boss clearance and generated mesh cleanup.
+See [town district verification](../../Docs/BiomeDungeons.md#town-districts) for the current
+Core sweep and Unity results. These runs use the harness's isolated save storage.
+
 ## Skills
 
 `SkillRegressionTests` runs the production dungeon, skill assets, menu, input

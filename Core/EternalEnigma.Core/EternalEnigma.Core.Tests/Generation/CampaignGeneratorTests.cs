@@ -47,9 +47,16 @@ public sealed class CampaignGeneratorTests
     }
 
     [Fact]
+    public void VersionTwelveSeed42HasStableGoldenFingerprint()
+    {
+        Assert.Equal("1676456bccafdc864d6bc4801eb2ad7418331992216c3c200ed0c5f6d69dd5c3",
+            CampaignFingerprint.Compute(CampaignGenerator.Generate(42)));
+    }
+
+    [Fact]
     public void VersionElevenSeed42HasStableGoldenFingerprint()
     {
-        var actual = CampaignFingerprint.Compute(CampaignGenerator.Generate(42));
+        var actual = CampaignFingerprint.Compute(CampaignGenerator.GenerateVersion(42, CampaignGenerator.LegacyVersion));
         Assert.Equal("c4da7117be88acad6b4d14703d1579d2db1c2d525e85c600daafa4215ef9980c", actual);
     }
 

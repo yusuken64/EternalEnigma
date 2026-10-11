@@ -82,6 +82,7 @@ public class TileWorldDungeonGenerator : MonoBehaviour
     private void PreparePresentation(TileWorldCreator creator, bool throne)
     {
         var common=Common.Instance;
+        var variant = AutoplayRunner.SweepGeneration?.Variant ?? Game.Instance.RunPlan?.Variant ?? common.GameSaveData?.DungeonSaveData?.Variant ?? DungeonVariant.Standard;
         CurrentVisuals=common.GameSaveData?.DungeonSaveData?.VisualSelection ?? DungeonVisualSelection.Resolve(common.CampaignContext,EncounterVisuals);
         // Presentation is independent of the saved layout version, including old saves.
         var visuals = CurrentVisuals; visuals.UseBiomePresentation = true; CurrentVisuals = visuals;
@@ -96,11 +97,14 @@ public class TileWorldDungeonGenerator : MonoBehaviour
         var owned=throne?throneRuntime:regularRuntime;
         if(owned!=creator.twcAsset) DungeonPresentation.ReleaseTemplate(owned);
         DungeonPresentation.ReleaseTemplate(creator.twcAsset);
-        creator.twcAsset=DungeonPresentation.CloneTemplate(throne ? throneTemplate : regularTemplate);
+        var template = variant == DungeonVariant.Town ? TownDungeonAssets.SharedTemplate : throne ? throneTemplate : regularTemplate;
+        if (template == null) throw new InvalidOperationException("The shared town dungeon template is missing.");
+        creator.twcAsset=DungeonPresentation.CloneTemplate(template);
         if(throne) throneRuntime=creator.twcAsset;else regularRuntime=creator.twcAsset;
         creator.twcAsset.hideFlags=HideFlags.DontSave;
         creator.twcAsset.useRandomSeed=useSeed;creator.twcAsset.randomSeed=seed;
-        ThemeCatalog?.Apply(creator.twcAsset,CurrentVisuals,throne);
+        CoreLayoutCache.Clear(creator);
+        if (variant == DungeonVariant.Standard) ThemeCatalog?.Apply(creator.twcAsset,CurrentVisuals,throne);
         RenderSettings.ambientLight=ScenePresentation.FillAmbient(CurrentVisuals.IsLegacy ? originalAmbient : ThemeCatalog.Get(CurrentVisuals).Ambient);
         if(themeLight!=null) {themeLight.color=CurrentVisuals.IsLegacy ? originalLightColor : ThemeCatalog.Get(CurrentVisuals).LightColor;
             themeLight.intensity=CurrentVisuals.IsLegacy ? originalLightIntensity : ThemeCatalog.Get(CurrentVisuals).LightIntensity;}
@@ -112,7 +116,7 @@ public class TileWorldDungeonGenerator : MonoBehaviour
         if (sweep != null)
         {
             creator.SetCustomRandomSeed(sweep.Seed);
-            CoreDungeonLayerGenerator.Configure(creator.twcAsset, sweep);
+            ConfigureFloor(creator, sweep);
             return;
         }
         var context = Common.Instance.CampaignContext;
@@ -120,17 +124,23 @@ public class TileWorldDungeonGenerator : MonoBehaviour
         {
             var options = Game.Instance.RunPlan.Floor(Game.Instance.PlayerController.Floor).Options;
             creator.SetCustomRandomSeed(options.Seed);
-            CoreDungeonLayerGenerator.Configure(creator.twcAsset, options);
+            ConfigureFloor(creator, options);
             return;
         }
         if (context != null) creator.SetCustomRandomSeed(context.LocationSeed(context.State.LocationId, Game.Instance.PlayerController.Floor));
         var run = Common.Instance.GameSaveData?.DungeonSaveData;
-        if (run != null && run.UseBiomeLayout)
+        if (run != null && (run.UseBiomeLayout || run.Variant == DungeonVariant.Town))
         {
             int floor = Game.Instance.PlayerController.Floor;
             var role = floor == run.StartFloor ? DungeonFloorRole.Entry : floor == run.EndFloor ? DungeonFloorRole.Exit : DungeonFloorRole.Regular;
-            CoreDungeonLayerGenerator.Configure(creator.twcAsset, DungeonLayoutProfile.Options(creator.twcAsset.randomSeed, run.LayoutBiome, run.LayoutTier, role));
+            ConfigureFloor(creator, DungeonLayoutProfile.Options(creator.twcAsset.randomSeed, run.LayoutBiome, run.LayoutTier, role, variant: run.Variant));
         }
+    }
+
+    private static void ConfigureFloor(TileWorldCreator creator, DungeonFloorOptions options)
+    {
+        if (options.Variant == DungeonVariant.Town) TownDungeonPresentation.Configure(creator, options);
+        else CoreDungeonLayerGenerator.Configure(creator.twcAsset, options);
     }
 
 	private void BluePrintComplete(TileWorldCreator _twc)
@@ -144,9 +154,13 @@ public class TileWorldDungeonGenerator : MonoBehaviour
 		if (!CoreLayoutCache.TryGetDungeon(_twc, out var floor))
 			throw new InvalidOperationException("The TWC asset has no Core Dungeon Layer actions; run Tools/Eternal Enigma/Core Layers/Rewrite Dungeon Assets.");
 		CurrentFloor = floor;
-        if(!CurrentVisuals.IsLegacy) DungeonPresentation.Decorate(_twc, floor, ThemeCatalog.Get(CurrentVisuals));
-        else DungeonPresentation.TrackLegacyMeshes(_twc.worldObject);
-        BiomeDecorations.Dungeon(_twc,floor,CurrentVisuals);
+        if (floor.Variant == DungeonVariant.Town) TownDungeonPresentation.Complete(_twc, floor);
+        else
+        {
+            if(!CurrentVisuals.IsLegacy) DungeonPresentation.Decorate(_twc, floor, ThemeCatalog.Get(CurrentVisuals));
+            else DungeonPresentation.TrackLegacyMeshes(_twc.worldObject);
+            BiomeDecorations.Dungeon(_twc,floor,CurrentVisuals);
+        }
 		var newDungeon = Instantiate(TileWorldDungeonPrefab);
 		newDungeon.Setup(_twc, floor);
 		GeneratedDungeon = newDungeon;

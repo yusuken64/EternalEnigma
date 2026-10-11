@@ -77,6 +77,7 @@ public sealed class CampaignTravelService
         common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = floors.StartFloor, EndFloor = floors.EndFloor };
         common.GameSaveData.DungeonSaveData.VisualSelection = DungeonVisualSelection.Resolve(Context, visuals);
         var run = common.GameSaveData.DungeonSaveData;
+        run.Variant = floors.Variant;
         run.UseBiomeLayout = !EternalEnigma.Core.Generation.DungeonLayoutProfile.IsStarter(location.Id);
         run.LayoutTier = location.Tier;
         run.LayoutBiome = EternalEnigma.Core.Generation.OverworldGridGenerator.BiomeForRegion(Context.Campaign, location.RegionId);

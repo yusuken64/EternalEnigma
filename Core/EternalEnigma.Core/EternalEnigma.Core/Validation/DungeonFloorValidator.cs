@@ -106,6 +106,17 @@ public static class DungeonFloorValidator
         // 7. Validate reachability: every Floor cell is reachable from Start
         var reachable = GridSearch.VisitOrder(floor.Start, floor.Neighbors);
         var reachableSet = new HashSet<GridPoint>(reachable);
+        Check(floor.Variant == options.Variant, "variant: Floor variant differs from options.");
+        if (floor.TownPlan is TownPlan town)
+        {
+            Check(town.Width == floor.Width && town.Height == floor.Height, "town.size: Town metadata differs from combat geometry.");
+            Check(town.ShopRooms.Count == town.BuildingSlots.Count && town.Interiors.Count == town.BuildingSlots.Count, "town.interiors: Every building must have a furnished interior.");
+            Check(town.BuildingSlots.All(reachableSet.Contains) && town.ShopRooms.SelectMany(r => r.Floor).Where(town.IsWalkable).All(reachableSet.Contains), "town.doors: Interior disconnected under dungeon movement rules.");
+            Check(TownDungeonGenerator.BossSquare(town).Cells().All(floor.IsWalkable), "town.boss: Boss square is obstructed.");
+            Check(new GridRect(floor.Start.X - 1, floor.Start.Y - 1, 3, 3).Cells().All(floor.IsWalkable), "town.spawn: Party spawn lacks clearance.");
+            for (int x = 0; x < floor.Width; x++) for (int y = 0; y < floor.Height; y++)
+                Check(town.IsWalkable(new GridPoint(x, y)) == floorLayer[x, y], "town.geometry: Movement and rendering metadata disagree.");
+        }
         int unreachableCount = 0;
         for (int x = 0; x < floor.Width; x++)
         {
@@ -247,10 +258,12 @@ public static class DungeonFloorValidator
             Check(floor.Gold.Count + floor.Scenery.Count(p=>p.Reward==SceneryReward.Gold) == Scale(options.GoldCount), "gold.budget: Scenery must share the gold budget.");
             Check(floor.Items.Count + floor.Scenery.Count(p=>p.Reward==SceneryReward.Item) == Scale(options.ItemCount), "items.budget: Scenery must share the item budget.");
             var blocked = floor.Scenery.Where(p=>p.Kind!=DungeonSceneryKind.Hazard).Select(p=>p.Cell).ToHashSet();
-            Check(GridSearch.VisitOrder(floor.Start,p=>BiomeDungeonGenerator.Neighbors(floorLayer,p,blocked)).Count==area-blocked.Count,"scenery.connectivity: Blocking props disconnect floor.");
+            Check(GridSearch.VisitOrder(floor.Start,p=>BiomeDungeonGenerator.Neighbors(floorLayer,p,blocked)
+                .Where(q => floor.TownPlan?.AllowsDoorwayStep(p,q) ?? true)).Count==area-blocked.Count,"scenery.connectivity: Blocking props disconnect floor.");
             blocked.UnionWith(floor.Scenery.Select(p=>p.Cell));
             blocked.UnionWith(floor.Locks.Select(l=>l.Door));
-            Check(GridSearch.VisitOrder(floor.Start,p=>BiomeDungeonGenerator.Neighbors(floorLayer,p,blocked)).Contains(floor.Stairs),"scenery.hazards: No safe stair route.");
+            Check(GridSearch.VisitOrder(floor.Start,p=>BiomeDungeonGenerator.Neighbors(floorLayer,p,blocked)
+                .Where(q => floor.TownPlan?.AllowsDoorwayStep(p,q) ?? true)).Contains(floor.Stairs),"scenery.hazards: No safe stair route.");
             foreach(var prop in floor.Scenery)
             {
                 Check(prop.Kind!=DungeonSceneryKind.Door,"scenery.door: Doors belong to Locks.");

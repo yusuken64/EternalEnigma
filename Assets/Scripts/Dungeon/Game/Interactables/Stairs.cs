@@ -22,6 +22,6 @@ public class Stairs : Interactable
 
 	internal override string GetInteractionText()
 	{
-		return "Take Stairs";
+		return Game.Instance?.CurrentDungeon?.Floor?.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? "Pass through gate" : "Take Stairs";
 	}
 }

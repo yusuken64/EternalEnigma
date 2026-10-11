@@ -59,16 +59,21 @@ namespace EternalEnigma.Tests
             var otherRoofs = town.Roofs.Where(r => r != roomRoof).ToArray();
             var hero = town.TownPlayer.ControllingTownAlly;
             var door = roomRoof.Door.ToCell();
-            var inside = roomRoof.Room.Floor.First().ToCell();
+            var threshold = door + Vector3Int.up;
+            var inside = door + Vector3Int.up * 2;
             hero.TilemapPosition = door;
             hero.transform.position = town.WalkableMap.CellToWorld(door);
             town.RefreshRoofs();
             Assert.That(town.Roofs.All(r => r.gameObject.activeSelf), Is.True);
-            town.TownPlayer.SetAction(new TownMovement(town.TownPlayer, door, inside));
+            town.TownPlayer.SetAction(new TownMovement(town.TownPlayer, door, threshold));
+            yield return harness.WaitUntil(() => !town.TownPlayer.IsBusy, "cross doorway");
+            town.TownPlayer.SetAction(new TownMovement(town.TownPlayer, threshold, inside));
             yield return harness.WaitUntil(() => !town.TownPlayer.IsBusy, "enter room");
             Assert.That(roomRoof.gameObject.activeSelf, Is.False);
             Assert.That(otherRoofs.All(r => r.gameObject.activeSelf), Is.True);
-            town.TownPlayer.SetAction(new TownMovement(town.TownPlayer, inside, door));
+            town.TownPlayer.SetAction(new TownMovement(town.TownPlayer, inside, threshold));
+            yield return harness.WaitUntil(() => !town.TownPlayer.IsBusy, "cross doorway outward");
+            town.TownPlayer.SetAction(new TownMovement(town.TownPlayer, threshold, door));
             yield return harness.WaitUntil(() => !town.TownPlayer.IsBusy, "leave room");
             Assert.That(town.Roofs.All(r => r.gameObject.activeSelf), Is.True);
             // A spawn or leader change already inside the room uses the same occupancy rule.
@@ -76,6 +81,33 @@ namespace EternalEnigma.Tests
             town.RefreshRoofs();
             Assert.That(roomRoof.gameObject.activeSelf, Is.False);
             Assert.That(otherRoofs.All(r => r.gameObject.activeSelf), Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator DoorwayMovementAndAutoplayUseStraightApproaches()
+        {
+            yield return harness.LoadTown(new TestScenario().CreateSave());
+            var town = World; var player = town.TownPlayer;
+            var door = town.Plan.BuildingSlots.First().ToCell();
+            var diagonal = door + new Vector3Int(-1,-1);
+            var approach = door + Vector3Int.down;
+            player.ControllingTownAlly.TilemapPosition = diagonal;
+            Assert.That(town.WalkableMap.CanWalkTo(diagonal,door), Is.False);
+            new TownMovement(player,diagonal,door).ExecuteImmediate();
+            Assert.That(player.ControllingTownAlly.TilemapPosition, Is.EqualTo(diagonal));
+            var grid = town.WalkableMap.GetAStarGrid();
+            var path = AStar.FindPath(grid,grid[diagonal.x,diagonal.y],grid[door.x,door.y],DiagonalMovement.AllowCornerCutting);
+            Assert.That(path, Is.Not.Null);
+            var from = diagonal;
+            foreach (var node in path)
+            {
+                var to = new Vector3Int(node.X,node.Y);
+                Assert.That(town.WalkableMap.CanWalkTo(from,to),Is.True);
+                from = to;
+            }
+            player.ControllingTownAlly.TilemapPosition = approach;
+            new TownMovement(player,approach,door).ExecuteImmediate();
+            Assert.That(player.ControllingTownAlly.TilemapPosition, Is.EqualTo(door));
         }
 
         [UnityTest]
@@ -232,16 +264,25 @@ namespace EternalEnigma.Tests
                 .Select(d => (EquipableInventoryItem)d.AsInventoryItem(null))
                 .First(i => HeroClass.AllowsItem(hero.PrimaryClass, hero.SecondaryClass, i));
             player.Inventory.Add(item);
+            Manager.OpenPartyMenu(PartyMenuTab.Inventory);
             yield return null;
-            Assert.That(Manager.CurrentDialog, Is.SameAs(Menus.ItemActionDialog));
-            Menus.ItemActionDialog.Use_Clicked();
+            var menu = Manager.PartyMenu;
+            menu.EntryButtons.Single().onClick.Invoke();
+            yield return null;
+            Assert.That(Manager.CurrentDialog, Is.TypeOf<PartyMenuPicker>());
+            ((PartyMenuPicker)Manager.CurrentDialog).Rows.GetComponentsInChildren<AuthoredButton>()
+                .Single(b => b.Label.text == "Equip").Button.onClick.Invoke();
             yield return null;
             Assert.That(player.ControllingTownAlly.Equipment.IsEquipped(item), Is.True);
             Assert.That(player.Inventory, Has.No.Member(item));
             SaveSystem.SaveData(Common.Instance.GameSaveData);
             Assert.That(SaveSystem.LoadData().TownSaveData.RecruitedAlliesData[0].Equipment[0].ItemName, Is.EqualTo(item.ItemName));
+            menu.SwitchTab(PartyMenuTab.Equipment);
             yield return null;
-            Menus.ItemActionDialog.Use_Clicked();
+            menu.EntryButtons.Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text.Contains(item.ItemName)).onClick.Invoke();
+            yield return null;
+            ((PartyMenuPicker)Manager.CurrentDialog).Rows.GetComponentsInChildren<AuthoredButton>()
+                .Single(b => b.Label.text == "Unequip").Button.onClick.Invoke();
             Assert.That(player.Inventory.Count(i => i == item), Is.EqualTo(1));
             Assert.That(player.ControllingTownAlly.Equipment.IsEquipped(item), Is.False);
         }

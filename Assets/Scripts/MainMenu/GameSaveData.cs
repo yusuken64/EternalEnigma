@@ -28,6 +28,7 @@ public class GameSaveData
 [Serializable]
 public class DungeonSaveData
 {
+    public EternalEnigma.Core.World.DungeonVariant Variant;
     public bool UseBiomeLayout;
     public int LayoutTier;
     public EternalEnigma.Core.World.OverworldBiome LayoutBiome;

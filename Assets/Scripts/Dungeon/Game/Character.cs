@@ -636,7 +636,7 @@ disp: {displayedVitals}");
 					.Where(x => x.VisualObject.activeInHierarchy)
 					.Any(x => x.Position == new Vector3Int(i, j));
 				var movePenalty = game.CurrentDungeon.IsHazard(new Vector3Int(i,j)) ? 100 : containsCharacter || containsTrap ? 5 : 0;
-				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
+				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty) { CardinalOnly = game.CurrentDungeon.Floor.TownPlan?.IsDoorway(new EternalEnigma.Core.World.GridPoint(i,j)) ?? false };
 			}
 		}
 
@@ -672,7 +672,7 @@ disp: {displayedVitals}");
 
 				var containsCharacter = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
 				var movePenalty = game.CurrentDungeon.IsHazard(new Vector3Int(i,j)) ? 100 : containsCharacter ? 5 : 0;
-				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty);
+				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty) { CardinalOnly = game.CurrentDungeon.Floor.TownPlan?.IsDoorway(new EternalEnigma.Core.World.GridPoint(i,j)) ?? false };
 			}
 		}
 

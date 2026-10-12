@@ -38372,12 +38372,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 28
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 17
-  m_fontSizeMax: 72
+  m_fontSizeMin: 22
+  m_fontSizeMax: 28
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -53995,8 +53995,8 @@ MonoBehaviour:
   SlotViewer: {fileID: 1785576743}
   CampaignSlotViews:
   - {fileID: 1957450760}
-  - {fileID: 1839512184}
-  - {fileID: 1561151165}
+  - {fileID: 1839512185}
+  - {fileID: 1561151166}
 --- !u!1 &984209169
 GameObject:
   m_ObjectHideFlags: 0
@@ -62986,12 +62986,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 48
   m_fontSizeBase: 23
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 15
-  m_fontSizeMax: 72
+  m_fontSizeMin: 30
+  m_fontSizeMax: 48
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -78447,12 +78447,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 48
   m_fontSizeBase: 23
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 15
-  m_fontSizeMax: 72
+  m_fontSizeMin: 30
+  m_fontSizeMax: 48
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -83459,6 +83459,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 431274446}
     m_Modifications:
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: Label
+      value:
+      objectReference: {fileID: 1427288800}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: Artwork
+      value:
+      objectReference: {fileID: 617080314}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: 'Portraits.Array.data[0]'
+      value:
+      objectReference: {fileID: 1872485366}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: 'Portraits.Array.data[1]'
+      value:
+      objectReference: {fileID: 794761349}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: 'Portraits.Array.data[2]'
+      value:
+      objectReference: {fileID: 102200799}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: 'Portraits.Array.data[3]'
+      value:
+      objectReference: {fileID: 675005119}
     - target: {fileID: 4577867017743698083, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -83567,6 +83591,14 @@ PrefabInstance:
       propertyPath: m_Navigation.m_SelectOnRight
       value: 
       objectReference: {fileID: 1957450759}
+    - target: {fileID: 9178358729106878970, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9178358729106878970, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value:
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -83591,19 +83623,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4577867017743698083, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1427288799}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8395137042286762100, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1561151165}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
 --- !u!224 &1561151162 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
-  m_PrefabInstance: {fileID: 1561151161}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1561151163 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8395137042286762100, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
   m_PrefabInstance: {fileID: 1561151161}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1561151164 stripped
@@ -83611,33 +83635,23 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9178358729106878970, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
   m_PrefabInstance: {fileID: 1561151161}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561151163}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::SelectToActivateButton
---- !u!114 &1561151165
+--- !u!114 &1561151166 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+  m_PrefabInstance: {fileID: 1561151161}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561151163}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1bbc2ca77cbeb304497eafac11b030f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::CampaignSlotView
-  Button: {fileID: 1561151164}
-  Label: {fileID: 1427288800}
-  Artwork: {fileID: 617080314}
-  Portraits:
-  - {fileID: 1872485366}
-  - {fileID: 794761349}
-  - {fileID: 102200799}
-  - {fileID: 675005119}
-  SelectToActivateButton: {fileID: 1561151164}
 --- !u!1 &1562443297
 GameObject:
   m_ObjectHideFlags: 0
@@ -97847,8 +97861,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::CampaignSlots
   Slots:
   - {fileID: 1957450760}
-  - {fileID: 1839512184}
-  - {fileID: 1561151165}
+  - {fileID: 1839512185}
+  - {fileID: 1561151166}
   Title: {fileID: 0}
   BackButton: {fileID: 453001784}
   detail: {fileID: 620862466}
@@ -100643,6 +100657,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 431274446}
     m_Modifications:
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: Label
+      value:
+      objectReference: {fileID: 1938516709}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: Artwork
+      value:
+      objectReference: {fileID: 1964440026}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: 'Portraits.Array.data[0]'
+      value:
+      objectReference: {fileID: 1990833844}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: 'Portraits.Array.data[1]'
+      value:
+      objectReference: {fileID: 1583154154}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: 'Portraits.Array.data[2]'
+      value:
+      objectReference: {fileID: 1160693394}
+    - target: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: 'Portraits.Array.data[3]'
+      value:
+      objectReference: {fileID: 1115577119}
     - target: {fileID: 4577867017743698083, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -100751,6 +100789,14 @@ PrefabInstance:
       propertyPath: m_Navigation.m_SelectOnRight
       value: 
       objectReference: {fileID: 1561151164}
+    - target: {fileID: 9178358729106878970, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9178358729106878970, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value:
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -100775,19 +100821,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4577867017743698083, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1938516708}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8395137042286762100, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1839512184}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
 --- !u!224 &1839512181 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
-  m_PrefabInstance: {fileID: 1839512180}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1839512182 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8395137042286762100, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
   m_PrefabInstance: {fileID: 1839512180}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1839512183 stripped
@@ -100795,33 +100833,23 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9178358729106878970, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
   m_PrefabInstance: {fileID: 1839512180}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1839512182}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::SelectToActivateButton
---- !u!114 &1839512184
+--- !u!114 &1839512185 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 3210084579307623504, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+  m_PrefabInstance: {fileID: 1839512180}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1839512182}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1bbc2ca77cbeb304497eafac11b030f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::CampaignSlotView
-  Button: {fileID: 1839512183}
-  Label: {fileID: 1938516709}
-  Artwork: {fileID: 1964440026}
-  Portraits:
-  - {fileID: 1990833844}
-  - {fileID: 1583154154}
-  - {fileID: 1160693394}
-  - {fileID: 1115577119}
-  SelectToActivateButton: {fileID: 1839512183}
 --- !u!1 &1839863276
 GameObject:
   m_ObjectHideFlags: 0
@@ -105665,12 +105693,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 48
   m_fontSizeBase: 23
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 15
-  m_fontSizeMax: 72
+  m_fontSizeMin: 30
+  m_fontSizeMax: 48
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -106770,6 +106798,14 @@ PrefabInstance:
       propertyPath: m_Navigation.m_SelectOnRight
       value: 
       objectReference: {fileID: 1839512183}
+    - target: {fileID: 9178358729106878970, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9178358729106878970, guid: 6e24dddb89cb4c838690239c04e748e8, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value:
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

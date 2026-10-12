@@ -101,6 +101,7 @@ public sealed class FinaleRuntime
         var floor = Session.Floor;
         var reserved = new HashSet<Vector3Int>(floor.Reserved.Select(p => p.ToCell()));
         foreach (var p in floor.Enemies) reserved.Add(p.Position.ToCell());
+        foreach (var trap in floor.Traps) reserved.Add(trap.Cell.ToCell());
         foreach (var placement in floor.Enemies.Where(e => Session.Unlocked.Contains(e.RegionId) && !spawned.Contains(e.Id)))
         {
             if (placement.IsMimic)
@@ -168,6 +169,7 @@ public sealed class FinaleRuntime
         game.SetFinaleEncounter(new EncounterRuntime(game)); PlaceParty(Session.Floor.Start.ToCell());
         SpawnUnlockedRegions();
         game.CurrentDungeon.SetStairs(Session.Floor.Stairs.ToCell());
+        foreach (var trap in game.CurrentDungeon.Floor.Traps) game.CurrentDungeon.SetTrap(trap.Cell.ToCell(), trap.Roll);
         foreach (var cell in Session.Floor.Grid.Warps.SelectMany(w => new[] { Session.Floor.Grid.Locations[w.From], Session.Floor.Grid.Locations[w.To] })
                      .Append(Session.Floor.Start).Distinct().Where(p => !p.Equals(Session.Floor.Stairs)))
             FinalePortal.Create(game.CurrentDungeon, cell.ToCell(), "Choose a warp or leave the reverse world", () => RequestLocation(cell));

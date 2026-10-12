@@ -66,6 +66,8 @@ public class GameOverScreen : Dialog
 		CloseAction = victory ? () => { Common.Instance.Travel.ReturnToMenu(); } : null;
 		MessageText.text = victory ? $"Victory!\nFinal dungeon cleared\nTreasure: {playerController.Gold:N0}" :
 			$"Player Perished\nOn floor {playerController.Floor}\nTreasure: {playerController.Gold:N0}";
+		if (victory && Common.Instance.GameSaveData.Completion is { } record)
+			MessageText.text = "Hall of Fame\n" + record.Statistics;
 		var label = OkButton.GetComponentInChildren<TMP_Text>();
 		if (label != null)
 		{

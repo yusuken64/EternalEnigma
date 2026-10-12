@@ -25,6 +25,8 @@ internal class ExplosionAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		var game = Game.Instance;
+		Visuals.Configure(CombatVisualCatalog.Instance?.Explosion, attacker, attacker.TilemapPosition, 10);
+		GameMessages.ForCharacter(attacker, $"{GameMessages.Name(attacker)} unleashes an explosion!");
 
 		var inRange = game.AllCharacters.Where(other =>
 			other.TilemapPosition.x >= attacker.TilemapPosition.x - 10 &&
@@ -40,7 +42,7 @@ internal class ExplosionAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		if (skipAnimation) yield break;
+		if (skipAnimation || Visuals.Sequence != null || explosionParticleEffectPrefab == null) yield break;
 		var explosion = UnityEngine.Object.Instantiate(explosionParticleEffectPrefab);
 		explosion.transform.position = attacker.transform.position;
 		UnityEngine.Object.Destroy(explosion.gameObject, 5f);

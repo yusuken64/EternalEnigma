@@ -144,6 +144,13 @@ namespace EternalEnigma.Tests
                 }
                 animation.SetWeapon(null, null);
                 Assert.That(animation.CurrentStance, Is.EqualTo(Stance.NoWeapon), label);
+                foreach (bool throwing in new[] { true, false })
+                {
+                    Assert.That(animation.PlayItemGesture(throwing), Is.GreaterThan(0), label);
+                    animation.Animator.Update(0);
+                    Assert.That(animation.Animator.GetCurrentAnimatorClipInfo(0).Single().clip.name,
+                        Does.StartWith(throwing ? "CarryThrow_" : "InteractWithGateObject_"), label);
+                }
                 Assert.That(animation.RightHandObjects.Concat(animation.LeftHandObjects).Any(o => o.activeSelf), Is.False, label);
                 town.SetFacing(Facing.Down); animation.PlayWalkAnimation(); animation.PlayIdleAnimation();
 

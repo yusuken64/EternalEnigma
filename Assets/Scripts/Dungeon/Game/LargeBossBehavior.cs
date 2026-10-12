@@ -31,7 +31,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
         return new BossTurnAction(this);
     }
 
-    List<GameAction> TakeTurn()
+    List<GameAction> TakeTurn(GameAction turn)
     {
         turns++;
         var actions = TickFields();
@@ -42,7 +42,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
         if (target == null) return actions;
         if (warning > 0)
         {
-            if (--warning == 0) { actions.AddRange(ResolveSpecial()); ClearMarks(); cooldown = CooldownTurns; }
+            if (--warning == 0) { Feedback(turn, true); actions.AddRange(ResolveSpecial()); ClearMarks(); cooldown = CooldownTurns; }
             return actions;
         }
         if (combo > 0)
@@ -61,6 +61,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
             warning = Mathf.Max(1, WarningTurns);
             foreach (var cell in warned) marks.Add(EncounterRuntime.Marker(Game.Instance.CurrentDungeon, Family + " warning", cell, new Color(1,.25f,.05f), .04f));
             GameMessages.ForCharacter(owner, $"{GameMessages.Name(owner)} prepares {BossCatalog.All.Concat(FinaleRoster.Bosses).First(p => p.Family == Family).Ability}!");
+            Feedback(turn, false);
             if (Family == "Black Knight") ApplyEffect(owner,"Guard",EffectTurns+1);
             if (Family == "Metal Slime") ApplyEffect(owner,"Armored",EffectTurns);
             if (Family == "Chest Monster") actions.Add(new BossDisplaceAction(owner,target,true,2));
@@ -79,6 +80,26 @@ public sealed class LargeBossBehavior : MonoBehaviour
             }
         }
         return actions;
+    }
+
+    void Feedback(GameAction action, bool release)
+    {
+        var catalog = CombatVisualCatalog.Instance;
+        if (catalog == null) return;
+        var profile = !release ? catalog.Utility : Family switch
+        {
+            "Dragon" or "Bone Dragon" => catalog.FireBreath,
+            "Salamander" or "Flying Demon" or "Demon King" or "Castle Monster" => catalog.Explosion,
+            "Ice Golem" => catalog.Ice, "Stingray" => catalog.Lightning,
+            "Smiling Mushroom" or "Specter" => catalog.Heal,
+            "Beholder" or "Evil Mage" or "Bat" => catalog.Confusion,
+            "Spider" or "Monster Plant" or "Crab Monster" or "Angry Mushroom" => catalog.Root,
+            _ => catalog.Utility
+        };
+        action.Visuals.Configure(profile, owner, release ? markedCenter : owner.TilemapPosition);
+        if (action.Visuals.Sequence != null) action.Visuals.Sequence.SingleFlight = true;
+        action.Visuals.AddImpact(release ? markedTarget : owner, release ? markedCenter : owner.TilemapPosition, true);
+        if (release) GameMessages.ForCharacter(owner, $"{GameMessages.Name(owner)} uses {BossCatalog.All.Concat(FinaleRoster.Bosses).First(p => p.Family == Family).Ability}!");
     }
 
     IEnumerable<Vector3Int> Area(Vector3Int target)
@@ -129,7 +150,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
         {
             int damage = Mathf.Max(1,owner.FinalStats.Strength);
             if (Family == "Cyclops") damage *= 2;
-            var element = Family is "Dragon" or "Salamander" or "Flying Demon" or "Demon King" or "Castle Monster" ? DamageElement.Fire : Family == "Ice Golem" ? DamageElement.Ice : Family == "Stingray" ? DamageElement.Lightning : DamageElement.Physical;
+            var element = Family is "Dragon" or "Bone Dragon" or "Salamander" or "Flying Demon" or "Demon King" or "Castle Monster" ? DamageElement.Fire : Family == "Ice Golem" ? DamageElement.Ice : Family == "Stingray" ? DamageElement.Lightning : DamageElement.Physical;
             actions.Add(new TakeDamageAction(owner,target,damage,element:element));
             if (Family == "Rat Assassin")
                 for (int bolt=0;bolt<2;bolt++) actions.Add(new TakeDamageAction(owner,target,Mathf.Max(1,damage/2)));
@@ -207,9 +228,9 @@ public sealed class LargeBossBehavior : MonoBehaviour
         readonly LargeBossBehavior behavior;
         public BossTurnAction(LargeBossBehavior behavior) { this.behavior=behavior; }
         internal override bool IsValid(Character c) => behavior!=null && c.Vitals.HP>0;
-        internal override List<GameAction> ExecuteImmediate(Character c) => behavior.TakeTurn();
+        internal override List<GameAction> ExecuteImmediate(Character c) => behavior.TakeTurn(this);
         internal override IEnumerator ExecuteRoutine(Character c,bool skipAnimation=false)
-        { if (!skipAnimation && c is Enemy enemy) enemy.PlayOneShot("Attack"); yield break; }
+        { yield break; }
     }
 }
 

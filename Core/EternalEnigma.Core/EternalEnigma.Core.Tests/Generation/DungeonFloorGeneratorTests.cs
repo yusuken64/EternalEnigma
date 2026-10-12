@@ -234,9 +234,9 @@ public sealed class DungeonFloorGeneratorTests
     }
 
     [Fact]
-    public void GenerationVersionIsThree()
+    public void GenerationVersionIsFour()
     {
-        Assert.Equal(3, DungeonFloor.GenerationVersion);
+        Assert.Equal(4, DungeonFloor.GenerationVersion);
     }
 
     [Fact]

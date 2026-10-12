@@ -66,16 +66,15 @@ internal class RangedAttackAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation || Visuals.Sequence != null || projectilePrefab == null) yield break;
-		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
-			.WaitForCompletion();
+		character.PlayAttackAnimation();
+		yield return new WaitForSecondsRealtime(.25f);
+		character.PlayIdleAnimation();
 
 		var game = Game.Instance;
 		var projectile = UnityEngine.Object.Instantiate(projectilePrefab, null);
-        Vector3 startPosition = character.VisualParent.transform.position;
+        Vector3 startPosition = ThrowItemAction.CellCenter(game.CurrentDungeon, Visuals.OriginCell);
         projectile.transform.position = startPosition;
-		var attackerWorldPosition = game.CurrentDungeon.CellToWorld(character.TilemapPosition);
-		var offset = new Vector3(1.25f, 1.25f, 0);
-		var targetWorldPosition = game.CurrentDungeon.CellToWorld(rangedAttackTargetPosition) + offset;
+		var targetWorldPosition = ThrowItemAction.CellCenter(game.CurrentDungeon, rangedAttackTargetPosition);
 		projectile.transform.LookAt(targetWorldPosition);
 
 		float distance = Vector3.Distance(startPosition, targetWorldPosition);

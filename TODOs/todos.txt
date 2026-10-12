@@ -1,26 +1,182 @@
-dragon breathe fire
-ranged fireball ability invoked %50 of the time when valid
+Gameplay and presentation follow-ups
+Audited 2026-10-11 against source, serialized assets and related TODO plans.
 
-explosion use asset pack special effect instead of placeholder particles
+All original requests are retained; compound animation work is split into tasks.
+Implementation and verification began 2026-10-11. The original audit is retained
+below as historical context. Completed items have implementation notes.
+Section numbers group related work; they do not assign priority.
 
-mimic reveal to use a special effect
-overworld dungeon reveal should use it as well
 
-spider duplicate to use sound effect and sfx and event history
-all enemy abilities should use a special effect and sound with event entry
+1. Enemy abilities and turn behavior
+-----------------------------------
+[x] Make dragons breathe fire.
+[x] Invoke the ranged fireball ability 50% of the time when it is valid,
+    after checking targeting, range and cooldown.
+[x] Make pack-spawned werewolves move twice per turn, like Fishmen.
 
-make werewolves who spawn in packs move twice like fishman
+Implemented: ordinary dragons use a Fire-element projectile with a 50% roll
+after valid targeting/range/cooldown/silence/attack-budget checks. Physical
+Rat Assassin shots retain their existing behavior. Every werewolf pack member
+has two movement actions and one attack. Unity behavior checks pass.
 
-make town district have different entrance and exits.
+Original audit:
+- LargeBossBehavior already gives boss dragons cone-shaped fire damage.
+  The ordinary Enemy_Dragon prefab has no EnemyBehavior component; boss
+  mechanics alone do not complete ordinary dragon behavior or breath visuals.
+- EnemyBehavior.ChooseAction selects a valid ranged attack without a 50% roll.
+  The original note does not specify which enemies should use the fireball.
+- Enemy_Werewolf has PackSize = 3 and ActionsPerTurnMax = 1; Enemy_Fishman
+  has ActionsPerTurnMax = 2. The remaining request concerns movement cadence.
 
-the forest maze should be a regular dungeon generation footprint, then turned into a maze.
+Starting points: Assets/Scripts/Dungeon/Game/EnemyActions/EnemyBehavior.cs;
+Assets/Scripts/Dungeon/Game/LargeBossBehavior.cs;
+Assets/Prefabs/Dungeon/Enemies/Enemy_{Dragon,Werewolf,Fishman}.prefab.
 
-make sure every dungeon has traps.
 
-have an ability where an allied controlled scout paths straight to an exit.
+2. Ability effects, sound and event history
+-----------------------------------------
+[x] Replace placeholder explosion particles with an asset-pack effect.
+[x] Add a special effect to mimic reveals.
+[x] Reuse that effect for overworld dungeon reveals.
+[x] Add visual effects, sound and an event-history entry to spider duplication.
+[x] Audit every enemy ability for visual effects, sound and an event entry;
+    fill missing coverage, including the cases above.
 
-make the overworld signs interactable and they point out directions of nearby landmarks.
+Implemented: asset-pack explosions; shared chest/finale town/dungeon reveal
+effects; duplication, warp and boss cues with audio/history; boss status auras.
+"Overworld dungeon reveal" is the finale's disguised dungeon reveal. Ordinary
+overworld locations already remain visible. See Docs/EnemyBehaviors.md for
+the coverage matrix. Playback and serialized assignment checks pass.
 
-throw should be a an animation. check for any other animations placeholders that use tween. the thrown item should spawn in the middle of the square and fly straight to middle of target square.
+Original audit:
+- The explosion spell still references Assets/Prefabs/Dungeon/Effects/Explosion.prefab.
+  Enemy death explosions already configure CombatVisualCatalog.Fire, so inspect
+  the spell and enemy paths separately when replacing placeholders.
+- Ordinary mimics and finale location mimics already post reveal messages;
+  their reveal methods have no dedicated reveal-effect call.
+- SpiderActionResponse delegates to SpawnEnemyAction, which uses scale/movement
+  tweens without dedicated duplication effects, sound or a player event entry.
+- EnemyBehavior already configures effects for stealing, rooting, confusion
+  and ranged attacks. The broad ability item is a coverage audit, and the
+  specific items above are part of that work.
+- Scope to resolve: whether "overworld dungeon reveal" means a finale dungeon
+  mimic reveal or discovery of an ordinary overworld location.
 
-the end of the campaign should show a final summary of the game, like pokemon hall of fame entry.
+Starting points: Assets/Scripts/Dungeon/Item/ExplosionAction.cs;
+Assets/Scripts/Dungeon/Game/EnemyActions/EnemyBehavior.cs;
+Assets/Scripts/Dungeon/Game/FinaleRuntime.cs;
+Assets/Scripts/Dungeon/Actions/{SpiderActionResponse,SpawnEnemyAction}.cs.
+Related acceptance work: TODOs/05-feel-improvements.md.
+
+
+3. Throwing and remaining animation placeholders
+-----------------------------------------------
+[x] Replace the thrower's placeholder tween with an authored throw animation.
+[x] Spawn the thrown item at the center of the source square and fly it
+    straight to the center of the target square.
+[x] Audit other tween-based animation placeholders and replace those that
+    need authored character animations.
+
+Implemented: Tiny Hero throw and interact clips replace scale punches for
+throws, drops and interactions. Ranged fallback uses an attack clip; warp
+uses portal effects around an immediate teleport. Projectile and ordinary
+movement interpolation remain intentional. All 24 hero animation checks pass.
+
+Original audit: ThrowItemAction used DOPunchScale, started the projectile at
+VisualParent.position and conditionally adds a fixed target offset. Linear
+travel already exists, but the animation and center-to-center placement remain.
+Tween usage alone does not establish that an animation is a placeholder.
+
+Starting point: Assets/Scripts/Dungeon/Actions/ThrowItemAction.cs.
+Related acceptance work: TODOs/05-feel-improvements.md.
+
+
+4. Dungeon layouts and trap coverage
+-----------------------------------
+[x] Give town districts different entrances and exits.
+[x] Generate the forest maze from a regular dungeon-generation footprint,
+    then turn that footprint into a maze.
+[x] Ensure every dungeon has traps; audit generation coverage across variants
+    and encounter types while preserving reachable routes and puzzle solutions.
+
+Implemented: seeded district gates use different sides and matching visual
+orientation. Lost Woods carves a maze inside a regular Forest footprint.
+Legacy, biome, district, all encounter types and all five finale floors have
+traps. Safe entry/exit floors and explicit zero-trap options stay trap-free.
+Placement protects spawn/exit routes, doors, bosses and puzzle witnesses.
+All 427 Core tests pass, including deterministic generation and safe-route sweeps.
+
+Original audit:
+- TownDungeonGenerator already separates arrival and exit positions, but fixes
+  the spawn near the south and stairs near the north. The original note leaves
+  open whether the desired difference is gate placement, appearance or both.
+- EncounterFloorGenerator carves Lost Woods directly into a rectangular mask.
+  It does not first generate the requested regular dungeon footprint.
+- EncounterFloorGenerator sets trapCount = 0 and returns an empty trap list.
+  A lure-puzzle target is separate from ordinary dungeon trap placement.
+  The "every dungeon" requirement therefore still needs coverage work.
+
+Starting points: Core/EternalEnigma.Core/EternalEnigma.Core/Generation/
+TownDungeonGenerator.cs and EncounterFloorGenerator.cs.
+Related plan: TODOs/07-overworld-encounters-plan.txt. Its Lost Woods recipe
+specifies a large rectangular DFS maze; reconcile it with the newer footprint
+request when implementing this change.
+
+
+5. Scout navigation and overworld directions
+------------------------------------------
+[x] Add an ability that directs an allied Scout along a path straight to an exit.
+[x] Make overworld signs interactable and provide directions to nearby landmarks.
+
+Implemented: Find Exit is a tier-1, one-rank Scout skill costing 2 SP. It guides
+the caster (controlled or follower) to undiscovered stairs via normal turns,
+stops for danger/blocked routes/manual interruption and never exits the floor.
+Signs open road directions/distances to nearby towns and other landmarks.
+Controlled and follower navigation, interruption, full-control turns and sign
+interaction checks pass. The sign dialog was visually inspected.
+
+Original audit:
+- Scout's existing Pathfinder skill increases HungerMax; it does not navigate
+  to exits. Floor Sense already reveals layout/stairs, which may support this.
+  Define whether the new ability moves the currently controlled ally or an AI
+  follower, and whether it can target an undiscovered exit.
+- BiomeRoadSigns already plans directions/distances to towns and renders town
+  labels. Interaction and directions to other nearby landmarks remain.
+
+Starting points: Assets/Resources/Classes/Skills/Scout/Pathfinder.asset;
+Assets/Scripts/Dungeon/Actions/RevealActions.cs;
+Assets/Scripts/Environment/BiomeRoadSigns.cs;
+Assets/Scripts/Overworld/OverworldScene.cs.
+
+
+6. Campaign completion and final summary
+---------------------------------------
+[x] Show a final game summary at campaign completion, inspired by Pokemon's
+    Hall of Fame entry. Define the party details and campaign statistics shown.
+
+Implemented: homecoming opens a Hall of Fame with finishing party portraits,
+classes, levels, HP/SP and weapons, plus campaign counts, treasure, playtime
+and seed. Its record is captured in memory; saving uses the explicit Save
+completed campaign button. Five-floor completion, display, save and reload
+acceptance passed, and the captured Hall of Fame was visually inspected.
+
+Original audit: GameOverScreen showed victory, final-dungeon completion and
+treasure, with a button to save the completed campaign. The fuller summary
+presentation remains to be implemented.
+
+Starting point: Assets/Scripts/Dungeon/Game/GameOverScreen.cs.
+
+
+Verification completed 2026-10-12
+---------------------------------
+- Core: 427 passed, 0 failed (Release); includes generation and puzzle sweeps.
+  Report: Core/EternalEnigma.Core/EternalEnigma.Core.Tests/TestResults/todo-core-final.trx.
+- Unity EditMode combat effects/content: 30 passed, 0 failed.
+- Unity PlayMode focused gameplay/effect suite: 27 passed, 0 failed.
+- Unity acceptance: all boss variants, mimic/split feedback, all 24 heroes and
+  five-floor finale/homecoming/Hall of Fame/save/reload checks passed.
+- Final Unity regression suite: 5 passed, 0 failed, covering both Scout control
+  modes, full-control turns and town district gates.
+- Visually inspected road directions, mimic reveal and Hall of Fame captures.
+  Captures: Temp/TodoVerification/{road-sign,mimic-reveal,hall-of-fame}.png.
+- Unity compiled without errors; final git diff whitespace check passed.

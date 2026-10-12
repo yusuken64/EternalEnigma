@@ -5,7 +5,7 @@ namespace EternalEnigma.Core.World;
 /// <summary>Immutable, validated result type of dungeon-floor generation.</summary>
 public sealed class DungeonFloor
 {
-    public const int GenerationVersion = 3;
+    public const int GenerationVersion = 4;
     public DungeonVariant Variant => Overworld != null ? DungeonVariant.Overworld : TownPlan == null ? DungeonVariant.Standard : DungeonVariant.Town;
     public OverworldGrid? Overworld { get; }
     public TownPlan? TownPlan { get; }

@@ -113,10 +113,16 @@ public class Ally : Character
         if (IsDowned || Vitals.HP <= 0) { determinedActions = new(); return true; }
         var overrides = evaluateStatuses ? StatusEffects.Where(s => s != null && !s.IsExpired())
             .Select(s => s.GetActionOverride(this)).Where(a => a != null).ToList() : new List<GameAction>();
-        if (overrides.Count > 0) { global::PendingCast.Cancel(this, "action disabled"); (_forcedAction as SkillAction)?.AutoplayTrace?.Interrupt("action disabled"); _forcedAction = null; determinedActions = overrides; return true; }
+        if (overrides.Count > 0) { GetComponent<ScoutExitNavigation>()?.Stop("action disabled"); global::PendingCast.Cancel(this, "action disabled"); (_forcedAction as SkillAction)?.AutoplayTrace?.Interrupt("action disabled"); _forcedAction = null; determinedActions = overrides; return true; }
         if (PendingCast != null && (!global::PendingCast.Mobile(this) || this != Game.Instance.PlayerController.ControlledAlly || AutoplayRunner.BlocksPlayerInput))
         { determinedActions = new() { new AdvanceCastAction() }; _forcedAction = null; return true; }
-        if (_forcedAction == null) return false;
+        if (_forcedAction == null)
+        {
+            var step = GetComponent<ScoutExitNavigation>()?.NextAction();
+            if (step == null) return false;
+            determinedActions = new() { step }; return true;
+        }
+        GetComponent<ScoutExitNavigation>()?.Stop("new command");
         determinedActions = new() { _forcedAction }; _forcedAction = null; return true;
     }
 
@@ -176,6 +182,8 @@ public class Ally : Character
 
 	public override IEnumerable<GameAction> GetResponseTo(GameAction action)
 	{
+		if (action is TakeDamageAction damage && damage.Target == this && !damage.Missed)
+			GetComponent<ScoutExitNavigation>()?.Stop("under attack");
 		if (this == null ||
 			this.Vitals.HP <= 0)
 		{

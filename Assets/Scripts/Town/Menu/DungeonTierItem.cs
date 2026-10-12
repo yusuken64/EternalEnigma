@@ -18,7 +18,7 @@ public class DungeonTierItem : MonoBehaviour
     {
         campaignClick = null;
         _data = data;
-        TierText.text = $"Dungeon Level {data.StartFloor} - {data.EndFloor}";
+        TierText.text = $"Dungeon Floors {data.StartFloor} - {data.EndFloor}";
         var save = Common.Instance.GameSaveData.TownSaveData;
         if (save.CompletedTiers.Contains($"{Common.Instance.CurrentTownConfiguration.Id}/{data.StartFloor}-{data.EndFloor}"))
             TierText.text += " - Complete";
@@ -29,7 +29,7 @@ public class DungeonTierItem : MonoBehaviour
         var floors = EternalEnigma.Core.Progression.CampaignContext.Floors(location.Tier);
         string kind = location.Kind == EternalEnigma.Core.Progression.LocationKind.RepeatableDungeon ? "Repeatable dungeon" : "Story dungeon";
         if (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town) kind = "Town district";
-        TierText.text = $"{kind}: Level {floors.Start} - {floors.End}" + (completed ? " - Complete" : "");
+        TierText.text = $"{kind}: Floors {floors.Start} - {floors.End}" + (completed ? " - Complete" : "");
         campaignClick = onClick;
     }
 

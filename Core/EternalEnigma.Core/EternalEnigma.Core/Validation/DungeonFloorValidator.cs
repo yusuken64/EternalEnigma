@@ -88,7 +88,8 @@ public static class DungeonFloorValidator
             foreach (var enemy in floor.ObjectiveEnemies)
                 for (int dx = -enemy.Footprint / 2; dx <= enemy.Footprint / 2; dx++) for (int dy = -enemy.Footprint / 2; dy <= enemy.Footprint / 2; dy++)
                 { var p = new GridPoint(enemy.Position.X + dx, enemy.Position.Y + dy); Check(terrain.Contains(p) && occupied.Add(p) && !p.Equals(floor.Start) && !p.Equals(floor.Stairs), "encounter.footprint: Objective actor footprint is obstructed."); }
-            Check(floor.Enemies.Concat(floor.Gold).Concat(floor.Items).All(p => terrain.Contains(p.Cell) && occupied.Add(p.Cell)), "encounter.placements: Invalid or overlapping placement.");
+            Check(floor.Enemies.Concat(floor.Gold).Concat(floor.Items).Concat(floor.Traps).All(p => terrain.Contains(p.Cell) && occupied.Add(p.Cell)), "encounter.placements: Invalid or overlapping placement.");
+            Check(!floor.Traps.Any(p => DungeonTrapPlacement.ProtectedCells(floor).Contains(p.Cell)), "encounter.traps: Trap obstructs arrival, an objective or its solution.");
             if (floor.Objective.AllowsReset) Check(floor.SolutionWitness.Count > 0 && PuzzleState.ValidateWitness(floor), "encounter.witness: No valid production-action solution witness.");
             if (floor.Objective.Kind == DungeonObjectiveKind.DefeatEnemies || floor.Objective.Kind == DungeonObjectiveKind.DefeatBoss)
                 Check(floor.ObjectiveEnemies.Count > 0, "encounter.enemies: Defeat objective requires stable actors.");

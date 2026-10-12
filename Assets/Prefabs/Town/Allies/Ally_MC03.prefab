@@ -2923,6 +2923,10 @@ MonoBehaviour:
   HighestLevel: 1
   Level: 1
   Experience: 0
+  Attributes:
+    Str: 0
+    Int: 0
+    Agi: 0
   Hp: -1
   Sp: -1
   HasHunger: 0
@@ -3031,6 +3035,14 @@ MonoBehaviour:
     - AnimationName: DefendHit
       AnimationAction: 15
       Animations: []
+    - AnimationName: Throw
+      AnimationAction: 16
+      Animations:
+      - {fileID: 1827226128182048838, guid: 462b7ec3b84046c6b5e96f49b63fe70c, type: 3}
+    - AnimationName: Interact
+      AnimationAction: 17
+      Animations:
+      - {fileID: 1827226128182048838, guid: d69a8bf068e541fba3253fdedab83f5e, type: 3}
   - StanceName: SingleSword
     Stance: 1
     AnimatorController: {fileID: 9100000, guid: 60c1598b6e33483e9637b7c471af3633, type: 2}
@@ -3111,6 +3123,12 @@ MonoBehaviour:
       Animations: []
     - AnimationName: DefendHit
       AnimationAction: 15
+      Animations: []
+    - AnimationName: Throw
+      AnimationAction: 16
+      Animations: []
+    - AnimationName: Interact
+      AnimationAction: 17
       Animations: []
   - StanceName: SwordAndShield
     Stance: 2
@@ -3193,6 +3211,12 @@ MonoBehaviour:
     - AnimationName: DefendHit
       AnimationAction: 15
       Animations: []
+    - AnimationName: Throw
+      AnimationAction: 16
+      Animations: []
+    - AnimationName: Interact
+      AnimationAction: 17
+      Animations: []
   - StanceName: Spear
     Stance: 3
     AnimatorController: {fileID: 9100000, guid: 31f200a8502146c1903e2e9f490c79b4, type: 2}
@@ -3273,6 +3297,12 @@ MonoBehaviour:
       Animations: []
     - AnimationName: DefendHit
       AnimationAction: 15
+      Animations: []
+    - AnimationName: Throw
+      AnimationAction: 16
+      Animations: []
+    - AnimationName: Interact
+      AnimationAction: 17
       Animations: []
   - StanceName: DoubleSwordStance
     Stance: 4
@@ -3355,6 +3385,12 @@ MonoBehaviour:
     - AnimationName: DefendHit
       AnimationAction: 15
       Animations: []
+    - AnimationName: Throw
+      AnimationAction: 16
+      Animations: []
+    - AnimationName: Interact
+      AnimationAction: 17
+      Animations: []
   - StanceName: BowAndArrowStance
     Stance: 5
     AnimatorController: {fileID: 9100000, guid: 72782fb16fb047dbb82a01f6680fd5f8, type: 2}
@@ -3435,6 +3471,12 @@ MonoBehaviour:
       Animations: []
     - AnimationName: DefendHit
       AnimationAction: 15
+      Animations: []
+    - AnimationName: Throw
+      AnimationAction: 16
+      Animations: []
+    - AnimationName: Interact
+      AnimationAction: 17
       Animations: []
   - StanceName: TwoHandSword
     Stance: 6
@@ -3517,6 +3559,12 @@ MonoBehaviour:
     - AnimationName: DefendHit
       AnimationAction: 15
       Animations: []
+    - AnimationName: Throw
+      AnimationAction: 16
+      Animations: []
+    - AnimationName: Interact
+      AnimationAction: 17
+      Animations: []
   - StanceName: MagicWand
     Stance: 7
     AnimatorController: {fileID: 9100000, guid: e8892ed92f9a4079a3a789e7863095e6, type: 2}
@@ -3596,6 +3644,12 @@ MonoBehaviour:
       Animations: []
     - AnimationName: DefendHit
       AnimationAction: 15
+      Animations: []
+    - AnimationName: Throw
+      AnimationAction: 16
+      Animations: []
+    - AnimationName: Interact
+      AnimationAction: 17
       Animations: []
   RightHandObjects:
   - {fileID: 5847709675548795733}

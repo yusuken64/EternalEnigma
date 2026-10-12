@@ -4,13 +4,20 @@ using UnityEngine;
 
 public static class TownGateVisuals
 {
+    internal static float DistrictRotation(TownPlan plan, GridPoint cell, bool onward)
+    {
+        int[] edges = { cell.Y, plan.Width - 1 - cell.X, plan.Height - 1 - cell.Y, cell.X };
+        int side = 0; for (int i = 1; i < edges.Length; i++) if (edges[i] < edges[side]) side = i;
+        return side * 90 + (onward ? 180 : 0);
+    }
     public static void Create(EnvironmentKit kit, OverworldBiome biome, Transform parent,
-        GridPoint cell, float size, string label, bool dungeon, bool onward = false)
+        GridPoint cell, float size, string label, bool dungeon, bool onward = false, float rotation = 0)
     {
         var root = new GameObject(label);
         root.transform.SetParent(parent, false);
         root.transform.localPosition = new Vector3(cell.X + .5f, cell.Y + .5f, 0) * size;
         var gate = kit.Create(dungeon ? "DungeonPortal" : "Gate", biome, root.transform, Vector3.zero, size);
+        gate.transform.localRotation = Quaternion.Euler(0, 0, rotation) * gate.transform.localRotation;
         if (!dungeon)
         {
             // Span the three-cell approach while keeping the gate on the exit
@@ -28,6 +35,7 @@ public static class TownGateVisuals
         }
         var marker = new GameObject("Gate direction indicator");
         marker.transform.SetParent(root.transform, false);
+        marker.transform.localRotation = Quaternion.Euler(0, 0, rotation);
         float direction = dungeon || onward ? 1 : -1;
         var mesh = new Mesh { name = "Gate arrow" };
         mesh.vertices = new[] { new Vector3(-.28f, -.08f, -.035f) * size,

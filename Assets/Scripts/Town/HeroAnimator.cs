@@ -68,7 +68,8 @@ public class HeroAnimator : MonoBehaviour
 	{
 		PlayAnimation(statusLoop.HasValue && HasClip(statusLoop.Value) ? statusLoop.Value : AnimatedAction.Idle);
 	}
-	private bool HasClip(AnimatedAction action) => StanceAnimations?.FirstOrDefault(x => x.Stance == CurrentStance)?
+    private bool HasClip(AnimatedAction action) => StanceAnimations?.FirstOrDefault(x => x.Stance ==
+        (action is AnimatedAction.Throw or AnimatedAction.Interact ? Stance.NoWeapon : CurrentStance))?
 		.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations?.Any(c=>c!=null)==true;
 
 	internal void PlayWalkAnimation()
@@ -102,6 +103,9 @@ public class HeroAnimator : MonoBehaviour
 	{
 		duration = 0;
 		var stance = StanceAnimations?.FirstOrDefault(x => x.Stance == CurrentStance);
+		// Item gestures are authored without a weapon. Restore the equipped stance on idle.
+		if (action is AnimatedAction.Throw or AnimatedAction.Interact)
+			stance = StanceAnimations?.FirstOrDefault(x => x.Stance == Stance.NoWeapon);
 		var clips = stance?.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations;
 		if (Animator == null || stance?.AnimatorController == null || clips == null || clips.Count == 0) return false;
 		var clip = VisualRandom.Pick(clips);
@@ -112,6 +116,14 @@ public class HeroAnimator : MonoBehaviour
         LastPlayedAction=action;PlaybackCount++;
 		duration = clip.length;
 		return true;
+	}
+
+	internal float PlayItemGesture(bool throwing)
+	{
+		if (oneShot != null) { StopCoroutine(oneShot); oneShot = null; }
+		if (PlayClip(throwing ? AnimatedAction.Throw : AnimatedAction.Interact, out var duration)) return duration;
+		PlayAttackAnimation();
+		return .35f;
 	}
 
 	public bool PlayOneShot(AnimatedAction action)
@@ -278,6 +290,8 @@ public class HeroAnimator : MonoBehaviour
 		if (!name.EndsWith("_" + suffix, StringComparison.OrdinalIgnoreCase) &&
 			!(stance == Stance.SwordAndShield && name.EndsWith("_SwordAndShiled", StringComparison.OrdinalIgnoreCase))) return false;
 		if (action == AnimatedAction.GetHit && name.StartsWith("DefendHit", StringComparison.OrdinalIgnoreCase)) return false;
+		if (action == AnimatedAction.Throw) return name.StartsWith("CarryThrow_", StringComparison.OrdinalIgnoreCase);
+		if (action == AnimatedAction.Interact) return name.StartsWith("InteractWithGateObject_", StringComparison.OrdinalIgnoreCase);
 		return name.StartsWith(action.ToString(), StringComparison.OrdinalIgnoreCase);
 	}
 #endif
@@ -325,6 +339,8 @@ public enum AnimatedAction
 	Sleeping,
 	DrinkPotion,
 	DefendHit,
+	Throw,
+	Interact,
 }
 
 public enum Stance

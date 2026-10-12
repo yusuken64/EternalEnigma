@@ -147,8 +147,11 @@ namespace EternalEnigma.Tests
             var completedSlot=browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Slot 2");
             Assert.That(completedSlot.interactable,Is.True);
             completedSlot.onClick.Invoke();yield return null;
-            Assert.That(browser.gameObject.activeSelf,Is.True,"Completed campaigns remain inspectable but cannot continue.");
-            browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Back").onClick.Invoke();yield return null;
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"continue completed campaign");
+            Assert.That(SaveSystem.ActiveSlot,Is.EqualTo(1));
+            Assert.That(common.Travel.ReturnToMenu(),Is.True);
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<MainMenu>()?.IsReady==true,"return from completed campaign");
+            main=Object.FindFirstObjectByType<MainMenu>();
             SaveSystem.ActiveSlot=0;main.Continue_Clicked();yield return null;
             browser=Object.FindFirstObjectByType<CampaignSlots>();
             slotButton=browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Slot 1");

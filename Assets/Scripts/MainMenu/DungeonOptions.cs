@@ -36,6 +36,13 @@ public sealed class DungeonOptions : MonoBehaviour
     {
         var view=settings.GetComponent<DungeonOptions>();
         if(view==null)throw new System.InvalidOperationException("Settings requires authored Gameplay options.");
+        JuicyChickenGames.Menu.Dialog.Fit(view.control.transform,.06f,.67f,.94f,.80f);
+        JuicyChickenGames.Menu.Dialog.Fit(view.speed.transform,.06f,.50f,.94f,.63f);
+        JuicyChickenGames.Menu.Dialog.Fit(view.explanation.transform,.06f,.12f,.94f,.45f);
+        view.explanation.enableAutoSizing=true;
+        view.explanation.fontSizeMin=20;view.explanation.fontSizeMax=24;
+        var speedLabel=view.speed.GetComponentInChildren<TMP_Text>();
+        speedLabel.enableAutoSizing=true;speedLabel.fontSizeMin=20;speedLabel.fontSizeMax=26;
         view.control.onClick.RemoveAllListeners(); view.speed.onClick.RemoveAllListeners();
         view.control.onClick.AddListener(()=> { if(!AutoplayRunner.BlocksPlayerInput)DungeonPreferences.FullControl=!DungeonPreferences.FullControl;view.Refresh(); });
         view.speed.onClick.AddListener(()=> { if(!AutoplayRunner.BlocksPlayerInput)DungeonPreferences.AnimationMode=(DungeonAnimationMode)(((int)DungeonPreferences.AnimationMode+1)%4);view.Refresh(); });
@@ -48,11 +55,13 @@ public sealed class DungeonOptions : MonoBehaviour
         control.GetComponentInChildren<TMP_Text>().text = autoplayOwnsInput
             ? "Full Control: Off (Autoplay)"
             : "Full Control: " + (DungeonPreferences.FullControl ? "On" : "Off");
-        speed.GetComponentInChildren<TMP_Text>().text = "Game Speed: " + DungeonPreferences.SpeedLabel;
-        explanation.text = "Full Control asks for each hero's action. Press " + InputPrompts.ToggleFullControl + " to toggle it. Summons use AI. Changes take effect next round.\n\n" +
+        speed.GetComponentInChildren<TMP_Text>().text = "Game Speed: " +
+            (DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateAlliedActions ? "Allied actions" :
+             DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateControlledHeroActions ? "Controlled hero" : DungeonPreferences.SpeedLabel);
+        explanation.text = "Full Control: choose each hero's action. " + InputPrompts.ToggleFullControl + " toggles it next round. Summons use AI.\n\n" +
             (DungeonPreferences.AnimationMode == DungeonAnimationMode.Normal ? "Normal: animate visible actions." :
-             DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateAlliedActions ? "Animate allied actions: animate allies and summons, plus enemy actions affecting an ally." :
-             DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateControlledHeroActions ? "Animate only controlled hero actions: animate chains started by the hero you control when the action begins." :
+             DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateAlliedActions ? "Animate allies, summons, and enemy actions affecting allies." :
+             DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateControlledHeroActions ? "Animate action chains started by your controlled hero." :
              "No animations: actions and movement resolve instantly.");
     }
     private void OnEnable() { ControlDeviceState.Changed += Refresh; if (control != null) Refresh(); }

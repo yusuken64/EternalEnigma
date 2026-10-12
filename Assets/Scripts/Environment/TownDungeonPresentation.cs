@@ -42,7 +42,7 @@ public static class TownDungeonPresentation
         var kit = EnvironmentKit.Load();
         var biome = creator.GetComponent<TownBiomeStyle>().Current;
         TownGateVisuals.Create(kit, biome, creator.worldObject.transform, floor.Stairs,
-            creator.twcAsset.cellSize, "District gate", false, true);
+            creator.twcAsset.cellSize, "District exit", false, true, TownGateVisuals.DistrictRotation(floor.TownPlan, floor.Stairs, true));
         ScenePresentation.RegisterWorld(creator.worldObject.transform);
     }
 

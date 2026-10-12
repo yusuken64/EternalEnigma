@@ -1,125 +1,116 @@
 using System;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public sealed class CampaignSlots : MonoBehaviour
 {
     public CampaignSlotView[] Slots;
     public TMP_Text Title;
     public Button BackButton;
+    [SerializeField] private TMP_Text detail;
+    [SerializeField] private Image progress;
     private MainMenu menu;
     private bool newJourney;
     private int selected;
-    private GameSaveData[] saves = new GameSaveData[SaveSystem.SlotCount];
-    private string[] errors = new string[SaveSystem.SlotCount];
-    private Button[] cards = new Button[SaveSystem.SlotCount];
-    [SerializeField] private TMP_Text detail;
-    [SerializeField] private Image progress;
-    public static void Show(MainMenu menu,bool newJourney)
-    {
-        var view=AuthoredUI.Require<CampaignSlots>(menu.transform);
-        if(view.gameObject.activeSelf)return;
-        view.menu=menu;view.newJourney=newJourney;
-        view.selected=SaveSystem.ActiveSlot;
-        view.gameObject.SetActive(true);
-        //menu.NavigationHandler.gameObject.SetActive(false);
-        //view.Build();
+    private readonly string[] errors = new string[SaveSystem.SlotCount];
 
+    public static void Show(MainMenu menu, bool newJourney) => menu.CampaignStartMenu.Setup(newJourney);
+
+    internal void Setup(MainMenu owner, bool creating)
+    {
+        menu = owner;
+        newJourney = creating;
+        selected = Mathf.Clamp(SaveSystem.ActiveSlot, 0, Slots.Length - 1);
+        if (Title != null) Title.text = creating ? "New journey - choose a slot" : "Continue a campaign";
+        var catalog = Resources.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
+        for (int i = 0; i < Slots.Length; i++)
+        {
+            int slot = i;
+            var view = Slots[i];
+            var save = SaveSystem.Inspect(i, out errors[i]);
+            view.Setup(save, catalog, i, menu, errors[i]);
+            view.Selected = () => Select(slot);
+            view.ClickAction = () => Activate(slot);
+            // Replace serialized listeners too: old prefab callbacks could target
+            // a different CampaignSlotView from the one configured by the browser.
+            view.Button.onClick = new Button.ButtonClickedEvent();
+            view.Button.onClick.AddListener(view.Click);
+            view.Button.navigation = new Navigation
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnLeft = Slots[(i + Slots.Length - 1) % Slots.Length].Button,
+                selectOnRight = Slots[(i + 1) % Slots.Length].Button,
+                selectOnUp = BackButton, selectOnDown = BackButton
+            };
+        }
+        BackButton.onClick = new Button.ButtonClickedEvent();
+        BackButton.onClick.AddListener(Close);
+        Select(selected);
+        MenuUIInputModule.Active?.PushDialog(this, transform, Slots[selected].Button.gameObject, Close);
+        Slots[selected].Button.Select();
     }
 
-    //private void Build()
-    //{
-    //    Title.text = newJourney ? "New Journey — choose a slot" : "Campaigns";
-    //    var catalog = Resources.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
-    //    for (int i = 0; i < SaveSystem.SlotCount; i++)
-    //    {
-    //        int slot = i;
-    //        var save = saves[i] = SaveSystem.Inspect(i, out errors[i]);
-    //        var card = cards[i] = Slots[i].Button;
-    //        Slots[i].Selected = () => Select(slot);
-    //        card.onClick.RemoveAllListeners(); card.onClick.AddListener(() => Activate(slot));
-    //        Slots[i].Artwork.texture = catalog?.For(save?.Summary);
-    //        foreach (var portrait in Slots[i].Portraits) portrait.gameObject.SetActive(false);
-    //        string text = $"<b>Slot {i + 1}</b>\n";
-    //        if (errors[i] != null) text += "Unreadable save\n" + errors[i];
-    //        else if (save == null) text += "Empty — begin a new journey";
-    //        else if (save.Summary == null) { errors[i] = "Unsupported save summary."; text += errors[i]; }
-    //        else
-    //        {
-    //            var s = save.Summary;
-    //            string point = save.SavePointId?.EndsWith("/home") == true ? "Home" : save.SavePointId?.EndsWith("/inn") == true ? "Inn" : "Campaign completed";
-    //            string timestamp = DateTime.TryParse(save.SavedUtc, out var savedAt) ? savedAt.ToLocalTime().ToString("g") : save.SavedUtc;
-    //            text += (save.Campaign.Finished ? "Completed" : "In Progress") + $"\n{s.Town} ? {s.Biome}\n{point}\n{TimeSpan.FromSeconds(save.PlaytimeSeconds).TotalHours:0.0} hours ? {save.TownSaveData.Gold:N0} gold\n{timestamp}";
-    //            for (int j = 0; j < Mathf.Min(s.Party.Count, Slots[i].Portraits.Length); j++)
-    //            {
-    //                var portrait = Slots[i].Portraits[j]; portrait.gameObject.SetActive(true);
-    //                portrait.sprite = (menu.TownConfiguration ?? TownSceneLoader.Default).AllyCatalog.FirstOrDefault(a => a.Id == s.Party[j].PortraitId)?.Portrait;
+    private void Select(int slot)
+    {
+        selected = slot;
+        for (int i = 0; i < Slots.Length; i++)
+            Slots[i].Label.color = i == slot ? new Color(1f, .86f, .45f) : Color.white;
+        BackButton.navigation = new Navigation { mode = Navigation.Mode.Explicit,
+            selectOnUp = Slots[slot].Button, selectOnDown = Slots[slot].Button };
+        var save = Slots[slot].Data;
+        var summary = save?.Summary;
+        if (errors[slot] != null) detail.text = "<b>Unreadable save</b>\n" + errors[slot] +
+            (newJourney ? "\nChoose this slot to replace it. Canceling keeps the existing data." : "\nThis campaign cannot be continued.");
+        else if (save == null) detail.text = newJourney
+            ? "<b>Empty slot</b>\nChoose this slot to begin a new journey."
+            : "<b>Empty slot</b>\nNo campaign to continue here.";
+        else if (summary == null) detail.text = "<b>Campaign</b>\nSave details are unavailable.";
+        else
+        {
+            string point = save.SavePointId?.EndsWith("/home") == true ? "Home" :
+                save.SavePointId?.EndsWith("/inn") == true ? "Inn" : "Campaign";
+            string timestamp = DateTime.TryParse(save.SavedUtc, out var savedAt) ? savedAt.ToLocalTime().ToString("g") : save.SavedUtc;
+            detail.text = $"<b>{summary.Town} - {summary.Biome}</b>\n" +
+                $"{point} | {TimeSpan.FromSeconds(save.PlaytimeSeconds).TotalHours:0.0} hours | {save.TownSaveData.Gold:N0} gold\n" +
+                $"Saved: {timestamp}\n{summary.Region} | Dungeons cleared: {summary.RequiredCleared}/{summary.RequiredTotal}\n" +
+                string.Join("\n", summary.Party.Select(hero => $"{hero.Name} - {hero.PrimaryClass}" +
+                    (string.IsNullOrEmpty(hero.SecondaryClass) ? "" : " / " + hero.SecondaryClass) + $" - Lv {hero.Level}"));
+        }
+        progress.rectTransform.anchorMax = new Vector2(summary == null || summary.RequiredTotal == 0 ? 0 :
+            Mathf.Clamp01((float)summary.RequiredCleared / summary.RequiredTotal), 1);
+    }
 
-    //            }
-    //        }
-    //        Slots[i].Label.text = text;
-    //    }
-    //    BackButton.onClick.RemoveAllListeners(); BackButton.onClick.AddListener(Close);
-    //    for (int i = 0; i < cards.Length; i++)
-    //        cards[i].navigation = new Navigation
-    //        {
-    //            mode = Navigation.Mode.Explicit,
-    //            selectOnLeft = cards[(i + cards.Length - 1) % cards.Length],
-    //            selectOnRight = cards[(i + 1) % cards.Length],
-    //            selectOnDown = BackButton,
-    //            selectOnUp = BackButton
-    //        };
-    //    MenuUIInputModule.Active?.PushDialog(this, transform, cards[selected].gameObject, Close);
-    //    Select(selected);
-    //    cards[selected].Select();
-    //}
-    //private void Select(int slot)
-    //{
-    //    selected = slot; var save = saves[slot]; var s = save?.Summary;
-    //    for (int i = 0; i < cards.Length; i++)
-    //    {
-    //        cards[i].GetComponent<Image>().color = i == slot ? GameUITheme.Selected : Color.white;
-    //        Slots[i].Label.color = i == slot ? new Color(1f, .86f, .45f) : Color.white;
-    //    }
-    //    BackButton.navigation = new Navigation
-    //    {
-    //        mode = Navigation.Mode.Explicit,
-    //        selectOnUp = cards[slot],
-    //        selectOnDown = cards[slot]
-    //    };
-    //    detail.text = errors[slot] ?? (s == null ?
-    //        (newJourney ? "Choose an empty slot to begin." : "No campaign to continue in this slot.") :
-    //        $"<b>{s.Region}</b>    Regions visited: {s.RegionsVisited} / {s.RegionsTotal}\n" +
-    //        $"Required dungeons cleared: {s.RequiredCleared} / {s.RequiredTotal}\n" +
-    //        string.Join("\n", s.Party.Select(h => $"<b>{h.Name}</b> · {h.PrimaryClass}{(string.IsNullOrEmpty(h.SecondaryClass) ? "" : " / " + h.SecondaryClass)} · Lv {h.Level}    HP {h.Hp:N0}/{h.MaxHp:N0}    SP {h.Sp:N0}/{h.MaxSp:N0}    Strength {h.Strength:N0}    Defense {h.Defense:N0}    EXP {h.Experience:N0} ({h.ExperienceProgress:P0})")));
-    //    progress.rectTransform.anchorMax = new Vector2(s == null || s.RequiredTotal == 0 ? 0 : (float)s.RequiredCleared / s.RequiredTotal, 1);
-    //}
-    //private void Activate(int slot)
-    //{
-    //    Select(slot);
-    //    if (!newJourney && (errors[slot] != null || saves[slot]?.HasCampaign != true || saves[slot].Campaign.Finished)) return;
-    //    if (newJourney)
-    //    {
-    //        void Pick() { SaveSystem.ActiveSlot = selected; Close(); menu.ChooseHero(); }
-    //        if (saves[selected] != null || errors[selected] != null) CampaignChoice.Show("Replace this campaign? The replacement is saved after choosing a hero. Canceling hero selection keeps this save.", "Replace campaign", Pick);
-    //        else Pick();
-    //    }
-    //    else
-    //    {
-    //        SaveSystem.ActiveSlot = selected;
-    //        Common.Instance.GameSaveData = SaveSystem.LoadData(selected);
-    //        Close();
-    //        try { Common.Instance.Travel.Continue(); }
-    //        catch (Exception e) { CampaignChoice.Show("Unable to continue: " + e.Message, "OK", () => { }); }
-    //    }
-    //}
-    private void Close()
+    private void Activate(int slot)
+    {
+        Select(slot);
+        if (newJourney)
+        {
+            void Pick() { SaveSystem.ActiveSlot = slot; Close(); menu.ChooseHero(); }
+            if (Slots[slot].Data != null || errors[slot] != null)
+                CampaignChoice.Show("Replace this campaign? The replacement is saved after choosing a hero. Canceling hero selection keeps this save.", "Replace campaign", Pick);
+            else Pick();
+        }
+        else
+        {
+            if (errors[slot] != null || Slots[slot].Data?.HasCampaign != true) return;
+            SaveSystem.ActiveSlot = slot;
+            try
+            {
+                Common.Instance.GameSaveData = SaveSystem.LoadData(slot);
+                Close();
+                Common.Instance.Travel.Continue();
+            }
+            catch (Exception e) { CampaignChoice.Show("Unable to continue: " + e.Message, "OK", () => { }); }
+        }
+    }
+
+    internal void Close()
     {
         MenuUIInputModule.Active?.PopDialog(this);
-        menu.NavigationHandler.gameObject.SetActive(true);
         gameObject.SetActive(false);
+        menu.CampaignStartMenu.gameObject.SetActive(false);
+        menu.StartButton.GetComponent<Button>().Select();
     }
 }

@@ -59,10 +59,13 @@ public class MainMenu : MonoBehaviour
 		if (Common.Instance.Travel.IsTransitioning || heroPicker != null) return;
 		var configuration = TownConfiguration ?? TownSceneLoader.Default;
 		configuration.Validate();
+		// The authored hero picker shares the campaign-start container with the slots.
+		CampaignStartMenu.gameObject.SetActive(true);
+		CampaignStartMenu.SlotViewer.SetActive(false);
 		NavigationHandler.gameObject.SetActive(false);
 		heroPicker = ProtagonistHeroPicker.Show(configuration.AllyCatalog,
-			hero => { heroPicker = null; NavigationHandler.gameObject.SetActive(true); StartGame(hero); },
-			() => { heroPicker = null; NavigationHandler.gameObject.SetActive(true); StartButton.GetComponent<Button>().Select(); });
+			hero => { heroPicker = null; CampaignStartMenu.gameObject.SetActive(false); NavigationHandler.gameObject.SetActive(true); StartGame(hero); },
+			() => { heroPicker = null; CampaignStartMenu.gameObject.SetActive(false); NavigationHandler.gameObject.SetActive(true); StartButton.GetComponent<Button>().Select(); });
 	}
 
 	public void StartGame(TownAlly hero = null)

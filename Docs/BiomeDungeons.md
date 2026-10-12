@@ -42,6 +42,8 @@ No vendors, beds, recruitment or other town services are activated. Roof cutaway
 visibility; dungeon sight, targeting, minimap and cleanup use the same authoritative floor.
 Town doorways require cardinal movement in both friendly towns and districts.
 
+District generation version 2 chooses arrival and onward gates on different seeded sides of the street network, at least eight cells apart. Both retain clear 3×3 approaches. Their meshes and arrows face the selected boundary; the onward gate is labelled "District exit".
+
 The dungeon explorer cycles legacy, biome and town layouts. Automated floor sweeps include
 all town biome/tier/role combinations. CLI exports include the variant and town metadata.
 `Tools/Eternal Enigma/Town Dungeons/Capture Comparison` writes friendly/district views for
@@ -66,7 +68,11 @@ Screenshots, detailed timings and run reports are in `Temp/TownDungeon`. The
 
 ## Scenery and rewards
 
-Density is `clamp(sqrt(walkable / 322.13671875), 1, 2)`. The denominator is the mean of legacy 32×32 seeds 0 through 255, protected by a regression test. Enemy, supply and gathering counts round away from zero and retain their existing caps. Targets per reference floor are two containers, six destructibles and three hazards. Placement can reduce scenery counts when no safe cells remain.
+Density is `clamp(sqrt(walkable / 322.13671875), 1, 2)`. The denominator is the version-3 mean of legacy 32×32 seeds 0 through 255. Version 4 may retry cramped floors to fit safe traps; a regression test limits mean-area drift to 2%. Enemy, supply and gathering counts round away from zero and retain their existing caps. Targets per reference floor are two containers, six destructibles and three hazards. Placement can reduce scenery counts when no safe cells remain.
+
+Combat floors now include traps across legacy BSP, all eight biomes, town districts, every encounter type and all five reverse-world floors. Standard profiles request five traps, encounters three, and the finale five per region. Safe entry/exit floors and explicit zero-trap generation options remain trap-free. Placement reserves spawn clearance, an exit route, town doorways, boss footprints and puzzle objects; puzzle witness replay also protects every required player, boulder and enemy position. Gathering runs after safe trap placement in legacy floors so it cannot shift existing placements. Finale traps avoid roads and preserve dry approaches to each required enemy. The dungeon fingerprint version is 4 and finale plan version is 3.
+
+Lost Woods first generates a regular Forest dungeon footprint, then carves a connected winding maze inside it. The maze retains a safe arrival area, reaches every original room, and reserves side cells for traps before distributing rewards/enemies. Reflection and all choices remain seeded.
 
 Generated items, gold and scenery require a one-cell ring of walkable floor around their tile. This keeps raised walls clear of their footprint from the angled gameplay camera. Each blocking prop also retains a reachable cardinal interaction side after the other props are placed. The same wall clearance applies to loose loot in the starting dungeons' legacy layouts.
 

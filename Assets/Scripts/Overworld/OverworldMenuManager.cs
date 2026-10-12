@@ -75,6 +75,9 @@ public sealed class OverworldMenuManager : MonoBehaviour
         return true;
     }
     private void Awake()=>world=GetComponent<OverworldScene>();
+    private void Start()=>PartyMenuLauncher.Create(transform,
+        ()=>world.IsReady && !world.IsMoving && !world.Context.IsSandbox && !Opened && Interaction==null,
+        OpenPartyMenu,includeCapabilities:true);
     private void Update()
     {
         var common=Common.Instance;

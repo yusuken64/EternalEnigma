@@ -22,6 +22,11 @@ MonoBehaviour:
   Fire: {fileID: 11400000, guid: 57dafb7a2f4c4e84c8d5886147132753, type: 2}
   Ice: {fileID: 11400000, guid: 75974141b481a74468fb48ee0a9ac734, type: 2}
   Lightning: {fileID: 11400000, guid: 305d892d0a4e36c49b9090a5810817d5, type: 2}
+  FireBreath: {fileID: 11400000, guid: a21a4a79d35301444ba553d1c25e90a9, type: 2}
+  Explosion: {fileID: 11400000, guid: 02d57a179f265a04d82137bfcc2156cd, type: 2}
+  Reveal: {fileID: 11400000, guid: ca410afc98a5fe6459570561de45cfe6, type: 2}
+  Duplication: {fileID: 11400000, guid: d933fdb990fa8094b9497355889e28c8, type: 2}
+  Warp: {fileID: 11400000, guid: f4f1319a22422314aacd0107e91df48a, type: 2}
   BlazingArms: {fileID: 11400000, guid: 8e16c682818b3084abe6eef0ea0a7ac0, type: 2}
   FrostArms: {fileID: 11400000, guid: 23cde5c3c45c1d349a139695ba2f3256, type: 2}
   StormArms: {fileID: 11400000, guid: 8fc1949486d363147bb273138f3cf2fd, type: 2}
@@ -88,3 +93,5 @@ MonoBehaviour:
     Profile: {fileID: 11400000, guid: c33ab23af1862ef4d8a995f629a637b4, type: 2}
   - TypeName: DamageReductionStatusEffect
     Profile: {fileID: 11400000, guid: d94cd9da10414b64d855bb619e76507e, type: 2}
+  - TypeName: BossEffectStatus
+    Profile: {fileID: 11400000, guid: 6f76c5c709757f34b9bb30f593ef6438, type: 2}

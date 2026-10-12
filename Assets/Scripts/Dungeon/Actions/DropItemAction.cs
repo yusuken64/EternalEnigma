@@ -40,8 +40,7 @@ internal class DropItemAction : GameAction
 	{
 		if (skipAnimation) { yield break; }
 		AudioManager.Instance.SoundEffects.Unequip.PlayAsSound();
-		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
-			.WaitForCompletion();
+		yield return character.AnimateInteraction();
 	}
 
 	internal override bool IsValid(Character character)

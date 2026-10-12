@@ -93,6 +93,7 @@ public sealed class GameTestHarness
         if (save == null) SaveSystem.ClearData();
         yield return LoadScene("Common");
         yield return LoadScene("MainMenu");
+        yield return WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true, "main menu startup");
     }
 
     public IEnumerator LoadMainMenuDirect()

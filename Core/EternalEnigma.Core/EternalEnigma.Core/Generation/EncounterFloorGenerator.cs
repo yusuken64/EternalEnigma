@@ -22,7 +22,7 @@ public static class EncounterFloorGenerator
             _ => DungeonObjectiveKind.ReachExit };
         int size = kind == EncounterKind.LostWoods ? 49 + 4 * location.Tier : kind == EncounterKind.OvertakenCity ? 48 : 28;
         return new DungeonFloorOptions(CampaignContext.LocationSeed(campaignSeed, location.Id, number), size, size,
-            enemyCount: encounter.IsPuzzle ? 0 : 6 + 2 * location.Tier, goldCount: 3, itemCount: 3, trapCount: 0, gatheringCount: 0,
+            enemyCount: encounter.IsPuzzle ? 0 : 6 + 2 * location.Tier, goldCount: 3, itemCount: 3, trapCount: 3, gatheringCount: 0,
             biome: biome, tier: location.Tier, encounter: kind, objective: new DungeonObjectiveDefinition(objective), encounterFloor: number, finalEncounterFloor: number == encounter.FloorCount);
     }
 
@@ -45,18 +45,8 @@ public static class EncounterFloorGenerator
         void Rect(int x, int y, int w, int h) { var room = new GridRect(x, y, w, h); rooms.Add(room); foreach (var p in room.Cells()) mask[p.X, p.Y] = true; }
         if (kind == EncounterKind.LostWoods)
         {
-            // Iterative randomized DFS: at most (side/2)^2 stack entries, no recursion.
-            var stack = new Stack<GridPoint>(); var initial = new GridPoint(1, 1); stack.Push(initial); mask[1, 1] = true;
-            while (stack.Count > 0)
-            {
-                var current = stack.Peek();
-                var unvisited = PuzzleState.CardinalNeighbors(new GridPoint(0, 0)).Select(d => new GridPoint(current.X + 2 * d.X, current.Y + 2 * d.Y))
-                    .Where(p => p.X > 0 && p.Y > 0 && p.X < width - 1 && p.Y < height - 1 && !mask[p.X, p.Y]).ToArray();
-                if (unvisited.Length == 0) { stack.Pop(); continue; }
-                var next = unvisited[random.Range(unvisited.Length)];
-                mask[(current.X + next.X) / 2, (current.Y + next.Y) / 2] = true; mask[next.X, next.Y] = true; stack.Push(next);
-            }
-            Rect(1, 1, 4, 4); start = new GridPoint(2, 2);
+            (mask, start) = ForestMazeGenerator.Generate(options);
+            rooms.Add(new GridRect(start.X - 1, start.Y - 1, 3, 3));
         }
         else if (kind == EncounterKind.OvertakenCity)
         {
@@ -114,6 +104,14 @@ public static class EncounterFloorGenerator
         foreach (var stash in stashes) reserved.Add(stash.Position);
         foreach (var enemy in objectiveEnemies) reserved.Add(enemy.Position);
         foreach (var p in reachable.Keys.Where(p => Distance(p, start) <= 3)) reserved.Add(p);
+        if (kind == EncounterKind.LostWoods)
+        {
+            // A maze may have only a few dead-end cells off its safe exit route.
+            // Reserve the trap budget before dead-end loot and enemies claim them.
+            var route = GridSearch.Path(start, stairs, p => PuzzleState.CardinalNeighbors(p).Where(Open)).ToHashSet();
+            reserved.UnionWith(random.Shuffle(reachable.Keys.Where(p => !reserved.Contains(p) && !route.Contains(p))
+                .OrderBy(p => p.Y).ThenBy(p => p.X)).Take(options.TrapCount));
+        }
         var candidates = random.Shuffle(reachable.Keys.Where(p => !reserved.Contains(p)).OrderBy(p => p.Y).ThenBy(p => p.X));
         if (kind == EncounterKind.BossArena)
         {

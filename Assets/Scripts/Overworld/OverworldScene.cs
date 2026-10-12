@@ -61,6 +61,7 @@ public sealed class OverworldScene : MonoBehaviour
     private readonly Dictionary<GridPoint, GameObject> locationVisuals = new();
     private readonly Dictionary<string,GameObject> clearedVisuals = new();
     private Dictionary<GridPoint, CampaignLocation> locations;
+    private List<BiomeRoadSigns.Sign> roadSigns = new();
     private TileWorldCreator creator;
     private OverworldTerrainCache terrainCache;
     private bool restoredTerrain;
@@ -114,6 +115,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         Map.TerrainBuilt -= TerrainReady;
         RefreshBiomeMusic();
+        roadSigns = BiomeRoadSigns.Plan(Map.CurrentGrid);
         if (!restoredTerrain) terrainCache.Store(Context, Map, this);
         foreach (var location in Campaign.Locations.Where(l => l.ParentTownId == null))
         {
@@ -328,6 +330,7 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
             Message += route.KeyCondition == KeyAcquisition.AtLocation ? " | {Interact}: Collect " + route.KeyLabel : " | Clear this encounter to earn " + route.KeyLabel;
         foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
+        if (NearbySign() != null) Message += " | {Interact}: read road sign";
         walkHistory.Add(Position);
         if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
         heldWalk = manual;
@@ -466,6 +469,22 @@ public sealed class OverworldScene : MonoBehaviour
 
     public void ClaimRewards() => ClaimRewards(true);
 
+    internal BiomeRoadSigns.Sign NearbySign() => roadSigns
+        .Where(s => Mathf.Max(Mathf.Abs(s.Verge.x - Position.X), Mathf.Abs(s.Verge.y - Position.Y)) <= 1)
+        .OrderBy(s => (s.Verge - new Vector2Int(Position.X, Position.Y)).sqrMagnitude).ThenBy(s => s.Verge.x).ThenBy(s => s.Verge.y).FirstOrDefault();
+
+    internal bool ReadSign()
+    {
+        var sign = NearbySign();
+        if (sign == null) return false;
+        Message = BiomeRoadSigns.Directions(Context, sign);
+        var dialog = Common.Instance.MessageDialog;
+        dialog.PromptText.text = Message;
+        dialog.SetPortrait(null);
+        GetComponent<OverworldMenuManager>().Open(dialog);
+        return true;
+    }
+
     public void ClaimRewards(bool announceLocked)
     {
         StopHeldWalk();
@@ -474,6 +493,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (GetComponent<OverworldPickups>()?.TryCollect() == true) return;
         if (!locations.TryGetValue(Position, out var location))
         {
+            if (announceLocked && ReadSign()) return;
             if (announceLocked) OpenGate();
             return;
         }

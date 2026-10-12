@@ -28,8 +28,17 @@ public sealed class FinaleTests
             floor.ValidateRoute();
             Assert.Equal(floor.Start, floor.CreateFloor().Start); Assert.Equal(floor.Stairs, floor.CreateFloor().Stairs);
             Assert.Equal(floor.Campaign.Regions.Count, floor.Regions.Count);
+            Assert.Equal(floor.Regions.Count * 5, floor.Traps.Count);
+            var trapped = floor.Traps.Select(t => t.Cell).ToHashSet();
+            Assert.Equal(trapped.Count, floor.Traps.Count);
+            var unlocked = new HashSet<string>();
             foreach (var region in floor.Regions)
             {
+                unlocked.Add(region.RegionId);
+                var safe = GridSearch.VisitOrder(floor.Start, p => OverworldMovement.Neighbors(p)
+                    .Where(q => !trapped.Contains(q) && floor.CanStep(p, q, unlocked) &&
+                        (p.X == q.X || p.Y == q.Y || !trapped.Contains(new GridPoint(p.X, q.Y)) && !trapped.Contains(new GridPoint(q.X, p.Y))))).ToHashSet();
+                Assert.All(region.Enemies, e => Assert.Contains(e.Position, safe));
                 Assert.Equal(DungeonLayoutProfile.Options(floor.Seed, region.Biome, 4).EnemyCount, region.Enemies.Count(e => !e.IsMimic));
                 foreach (var enemy in region.Enemies)
                 {

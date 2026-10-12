@@ -11,11 +11,13 @@ public sealed class BiomeDungeonTests
     public BiomeDungeonTests(ITestOutputHelper output) { this.output = output; }
 
     [Fact]
-    public void LegacyReferenceArea()
+    public void LegacyReferenceAreaRemainsComparable()
     {
         double mean = Enumerable.Range(0, 256).Average(seed => Area(DungeonFloorGenerator.Generate(new DungeonFloorOptions(seed))));
         output.WriteLine($"Legacy reference area: {mean}");
-        Assert.Equal(BiomeDungeonGenerator.ReferenceArea,mean);
+        // Version 4 retries cramped legacy floors that cannot hold safe traps. The version 3
+        // reference remains the biome sizing baseline; reject material drift, not safe retries.
+        Assert.InRange(mean, BiomeDungeonGenerator.ReferenceArea * .98, BiomeDungeonGenerator.ReferenceArea * 1.02);
     }
 
     static int Area(DungeonFloor floor) => floor.Layers[DungeonLayers.Floor].ToArray().Cast<bool>().Count(v => v);

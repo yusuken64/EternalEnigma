@@ -9,6 +9,7 @@ tier 1
   skill     | Disarm | 5
   skill     | Pathfinder | 5
   skill     | Floor Sense | 1
+  skill     | Find Exit | 1
 
 tier 2
   mastery   | Scout Adept Training

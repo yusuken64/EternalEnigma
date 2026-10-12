@@ -21,6 +21,8 @@ public sealed class CampaignTravelService
             !town.TownPlayer.CameraController.enabled || common.ScreenTransition.BlockScreen.activeSelf || Context?.State.Finished != true) return;
         HomecomingPending = false; HomecomingCompleted = true;
         AutoplayRunner.FinaleEvent("HomecomingCompleted", town.Configuration.Id);
+        if (common.GameSaveData.Completion is { } record)
+            UnityEngine.Object.FindFirstObjectByType<TownMenuManager>().Open(CampaignSummaryDialog.Create(town.transform, record));
     }
     public bool ConsumeDungeonReturn(string townId)
     {
@@ -117,6 +119,7 @@ public sealed class CampaignTravelService
             ? Context.State.PendingDungeon : null;
         bool homecoming = victory && Context.State.PendingDungeon == Context.Campaign.FinalLocationId;
         if (!Context.CompleteDungeon(victory)) return false;
+        if (homecoming) common.GameSaveData.Completion = CampaignCompletionRecord.Capture(common, player);
         if (homecoming) { HomecomingPending = true; HomecomingCompleted = false; common.GameSaveData.HasArrival = false; }
         returnArrivalTown = !homecoming && Context.State.Scene == "Town" ? Context.State.LocationId : null;
         var newKeys = Context.Keys.Except(previousKeys).OrderBy(key => key).ToArray();

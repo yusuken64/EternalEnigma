@@ -12,6 +12,7 @@ internal class SpawnEnemyAction : GameAction
 	private Vector3Int spawnTilePosition;
 
 	private Enemy _spawnedEnemy;
+	private Vector3 visualPosition, visualScale;
 	internal Enemy SpawnedEnemy => _spawnedEnemy;
 
 	public SpawnEnemyAction()
@@ -42,11 +43,18 @@ internal class SpawnEnemyAction : GameAction
 		_spawnedEnemy.InitialzeVitalsFromStats();
 		_spawnedEnemy.TilemapPosition = spawnTilePosition;
         _spawnedEnemy.InitializeSpawn();
+		visualPosition = _spawnedEnemy.VisualParent.transform.localPosition;
+		visualScale = _spawnedEnemy.VisualParent.transform.localScale;
 		_spawnedEnemy.VisualParent.gameObject.SetActive(false);
 		_spawnedEnemy.VisualParent.transform.localScale = Vector3.zero;
 		_spawnedEnemy.VisualParent.transform.position = spawnSourceWorldLocation;
 		Game.Instance.Finale?.RegisterSummon(source ?? character, _spawnedEnemy);
 		Game.Instance.Enemies.Add(_spawnedEnemy);
+		Visuals.Configure(CombatVisualCatalog.Instance?.Duplication, source ?? character, spawnTilePosition);
+		Visuals.AddImpact(_spawnedEnemy, spawnTilePosition, true);
+        var parent = source ?? character;
+        GameMessages.ForCharacter(parent, parent.Vitals.HP > 0 ? $"{GameMessages.Name(parent)} split into two!" :
+            $"{GameMessages.Name(parent)} breaks apart, releasing {GameMessages.Name(_spawnedEnemy)}!");
 
 		return new();
 	}
@@ -56,16 +64,18 @@ internal class SpawnEnemyAction : GameAction
 		if (_spawnedEnemy == null) yield break;
 		_spawnedEnemy.VisualParent.gameObject.SetActive(true);
 
-		var endValue = Game.Instance.CurrentDungeon.CellToWorld(spawnTilePosition) + new Vector3(1.25f, 1.25f, 0);
+		var endValue = _spawnedEnemy.VisualParent.transform.parent.TransformPoint(visualPosition);
         if (skipAnimation)
         {
-            _spawnedEnemy.VisualParent.transform.localScale = Vector3.one * 2;
+            _spawnedEnemy.VisualParent.transform.localScale = visualScale;
             _spawnedEnemy.VisualParent.transform.position = endValue;
             yield break;
         }
-        _spawnedEnemy.VisualParent.transform.DOScale(Vector3.one * 2, 0.1f);
+        _spawnedEnemy.VisualParent.transform.localScale = visualScale;
+		_spawnedEnemy.PlayWalkAnimation();
 		var moveTween = _spawnedEnemy.VisualParent.transform.DOMove(endValue, 0.5f);
 		yield return moveTween.WaitForCompletion();
+		if (_spawnedEnemy != null) _spawnedEnemy.PlayIdleAnimation();
 	}
 
     internal override IEnumerable<Vector3Int> AnimationCells(Character actor)

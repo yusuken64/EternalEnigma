@@ -83,6 +83,10 @@ MonoBehaviour:
     Tier: 1
     MaxRank: 1
     Kind: 0
+  - Skill: {fileID: 11400000, guid: 7bfba0dbff1ea9047b3e3db4ec819db9, type: 2}
+    Tier: 1
+    MaxRank: 1
+    Kind: 0
   - Skill: {fileID: 11400000, guid: d910c7869b9b0274d9b287b712afec23, type: 2}
     Tier: 2
     MaxRank: 1

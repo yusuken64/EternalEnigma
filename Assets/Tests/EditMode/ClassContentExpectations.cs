@@ -215,6 +215,7 @@ namespace EternalEnigma.Tests
             new Row("scout", "Disarm", 1, SkillKind.Normal, 5),
             new Row("scout", "Pathfinder", 1, SkillKind.Normal, 5),
             new Row("scout", "Floor Sense", 1, SkillKind.Normal, 1),
+            new Row("scout", "Find Exit", 1, SkillKind.Normal, 1),
             new Row("scout", "Scout Adept Training", 2, SkillKind.Mastery, 1),
             new Row("scout", "Soft Step", 2, SkillKind.SingleRank, 1),
             new Row("scout", "Resourceful", 2, SkillKind.Normal, 5),

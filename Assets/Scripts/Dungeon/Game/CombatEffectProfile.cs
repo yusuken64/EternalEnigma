@@ -27,6 +27,7 @@ public sealed class CombatEffectProfile : ScriptableObject
     public CombatEffectStage Impact = new() { FitToTarget = true };
     public CombatEffectStage Area = new();
     public AudioClip AreaSound;
+    public AudioClip CastSound;
     [Min(0)] public float CastSeconds = .45f;
     [Min(0)] public float ImpactSeconds = .4f;
     [Min(.1f)] public float ProjectileSpeed = 20;

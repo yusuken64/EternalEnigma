@@ -53,7 +53,7 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Game.InventoryMenu,Is.SameAs(manager.InventoryMenu),"Authoring preserves scene references to the inventory picker.");
             int turns=actor.Vitals.ActionsPerTurnLeft,sp=actor.Vitals.SP;
             var camera=Camera.main.transform.position;
-            foreach(var resolution in new[]{new Vector2(1280,720),new Vector2(1920,1080),new Vector2(1280,800),new Vector2(2560,1080)})
+            foreach(var resolution in new[]{new Vector2(960,600),new Vector2(1280,720),new Vector2(1920,1080),new Vector2(1280,800),new Vector2(2560,1080)})
             {
                 view.GetType().GetMethod("SetCustomResolution",Flags).Invoke(view,new object[]{resolution,"Dungeon dock "+resolution});view.Repaint();
                 yield return new WaitForSecondsRealtime(.2f);
@@ -102,14 +102,27 @@ namespace EternalEnigma.Tests
                 menu.EntryButtons[0].Select();yield return null;
                 Canvas.ForceUpdateCanvases();
                 Assert.That(menu.HeroText.gameObject.activeSelf,Is.False);
-                Assert.That(menu.DetailsControl.Scroll.gameObject.activeSelf,Is.False);
+                Assert.That(menu.DetailsControl.Scroll.gameObject.activeInHierarchy,Is.True);
+                Assert.That(menu.Details.text,Does.Contain(longSkill.Description));
                 Assert.That(menu.Hints.gameObject.activeSelf,Is.False);
                 Assert.That(menu.BackButton.gameObject.activeSelf,Is.False);
                 Assert.That(menu.Panel.GetComponentsInChildren<DungeonDialogClose>(true).All(close=>!close.gameObject.activeSelf),Is.True);
                 var list=(RectTransform)menu.scrollView.transform;
-                Assert.That(list.anchorMin,Is.EqualTo(new Vector2(.035f,.025f)));
+                Assert.That(list.anchorMin,Is.EqualTo(new Vector2(.035f,.48f)));
                 Assert.That(list.anchorMax,Is.EqualTo(new Vector2(.965f,.975f)));
                 yield return Capture("skills",resolution);
+                float listPosition=menu.scrollView.verticalNormalizedPosition;
+                menu.DetailsControl.Select();
+                ExecuteEvents.Execute(menu.DetailsControl.gameObject,new AxisEventData(EventSystem.current){moveDir=MoveDirection.Down},ExecuteEvents.moveHandler);
+                Assert.That(menu.DetailsControl.Scroll.verticalNormalizedPosition,Is.LessThan(1));
+                Assert.That(menu.scrollView.verticalNormalizedPosition,Is.EqualTo(listPosition).Within(.001f));
+                menu.EntryButtons.First(button=>button.GetComponentInChildren<TMPro.TMP_Text>().text.Contains("Fire Bolt")).Select();
+                yield return null;Canvas.ForceUpdateCanvases();
+                Assert.That(menu.Details.text,Does.Contain("Fire Bolt"));
+                var viewport=menu.DetailsControl.Scroll.viewport;
+                var descriptionBounds=RectTransformUtility.CalculateRelativeRectTransformBounds(viewport,menu.Details.transform);
+                Assert.That(descriptionBounds.max.y,Is.EqualTo(viewport.rect.yMax).Within(1),"Changing skill returns the description to its top, including when the text fits without scrolling.");
+                yield return Capture("skill-description",resolution);
                 menu.Pick("Nested inventory target",new(){("Target item",()=>{})},false);yield return null;
                 yield return Capture("picker",resolution);
                 manager.OpenTargetingMenu(actor,actor.Skills.Single(s=>s.SkillName=="Fire Bolt"));yield return null;

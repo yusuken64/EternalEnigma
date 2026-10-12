@@ -10,6 +10,7 @@ current prefab assignments, including later changes to the original mapping.
 | Magician / まどうし | Enemy_EvilMage | Waits until attacked, then uses its existing combat policies |
 | Ice Sloth / イエティ | Enemy_Orc | Waits until attacked |
 | Lilypa / リリパット | Enemy_RatAssassin | Six-tile, eight-direction ranged attacks |
+| Green Dragon / ドラゴン | Enemy_Dragon | Six-tile fire breath; 50% chance after shot, attack budget, silence and cooldown checks |
 | Trick Bag / わらいぶくろ | Enemy_MonsterPlant | Steals 20% of carried gold, rounded up, then flees |
 | Demonite / ベビーサタン | Enemy_Salamander | Waits until attacked; steals an unequipped inventory entry, then flees |
 | Giant Eyeball / おおめだま | Enemy_Beholder | Five-tile confusion gaze; three affected turns |
@@ -18,13 +19,13 @@ current prefab assignments, including later changes to the original mapping.
 | Metal Babble / はぐれメタル | Enemy_MetalSlime | Silver recolored slime; 3 HP, 49 defense, 500 XP, two movement actions; flees, has spawn weight 1 versus the normal 20, and a 25% warp chance after surviving a hit |
 | Nessie (rooting behavior moved from Skeleton) | Enemy_WormMonster | Stationary; roots adjacent targets until this enemy dies, allowing attacks and item use |
 | Bomb Crag / ばくだんいわ | Enemy_TurtleShell | Explodes on death; silence suppresses both damage and the explosion effect |
-| Hork / くさったしたい | Enemy_Werewolf | Spawns in packs of three when valid placement cells are available |
+| Hork / くさったしたい | Enemy_Werewolf | Packs of three; each member has two movement actions and one attack per activation |
 
 Early combat floors (2–3 in the starter run) can contain a breakable Black Knight-shaped Stone Hulk statue where its full footprint fits. It is static scenery with 40 HP and no loot. Its baked south-facing idle pose retains the live enemy's size. Placement preserves connected movement and keeps the entire model clear of walls, stairs, props and characters. **Art > Build Enemy Statue** rebuilds it from the enemy prefab; **Art > Build Dungeon Door** rebuilds the textured, normalized door adapter.
 
 Dormancy is an enemy state, separate from the Sleep ailment. Nearby movement does not wake these attack-provoked archetypes. A missed attack still provokes them. Ordinary randomly dormant enemies retain their proximity wake behavior. Every spawned enemy receives a random initial facing, including dormant enemies and later summons, using visual randomness that does not advance gameplay RNG.
 
-Ranged attacks and confusion require a clear straight or diagonal line. Walls, blocked diagonal corners, scenery and intervening characters stop the shot. Ranged attacks use normal hit/critical resolution and consume an attack; confusion uses the status system and can be cleansed as an ailment. Cooldowns are two turns for ranged attacks and four for confusion.
+Ranged attacks and confusion require a clear straight or diagonal line. Walls, blocked diagonal corners, scenery and intervening characters stop the shot. Rat Assassin shots use normal physical hit/critical resolution; dragon breath deals Fire damage. Both consume an attack. Only dragons roll the 50% fireball chance; an invalid shot consumes no probability roll. Confusion uses the status system and can be cleansed as an ailment. Cooldowns are two turns for ranged attacks and four for confusion.
 
 Confused characters spend their turns attempting a random direction. They may walk, bump into an obstruction, or attack an adjacent character regardless of team. Expired confusion does not override input, and commands entered while confused are not queued for execution after recovery.
 
@@ -36,6 +37,25 @@ The inspector component `EnemyBehavior` controls these abilities; edit the commi
 prefabs directly. The one-time behavior authoring command was removed.
 `Tools > Eternal Enigma > Tests > Run Enemy Behaviors` runs behavior integration
 and prefab combat/animation regression checks.
+
+## Ability feedback coverage (2026-10-11)
+
+| Ability family | Visual/audio path | History entry |
+|---|---|---|
+| Melee, physical ranged | Character attack clips, melee/arrow profiles, existing hit sounds | Resolved attack/damage |
+| Dragon fireball | Fire Flight profile and fire cast sound | Breath plus resolved damage |
+| Theft, root, confusion | Steal/Root/Confusion profiles, profile cast sound and status auras | Stolen resource, grip or confusion cast/status |
+| Spider duplication | Summon profile and cast sound; spawned model retains its authored pose | Split into two, only after a successful spawn |
+| Large slime death split | Same spawn feedback for each successful child | Breaks apart and names the child |
+| Metal slime warp | Portal cast/arrival cue and sound; immediate teleport | Warped away, only when a destination exists |
+| Death explosion and explosion spell | Asset-pack Fire Direct Area profile and fire cast sound | Explosion plus resulting damage |
+| Ordinary chest and finale town/dungeon reveals | Shared Mimic Reveal profile with shadow cast sound | Existing chest/town/dungeon reveal message |
+| Every large boss family | Existing warning tiles/fields; preparation cue, family-specific release profile and cast sound | Named preparation and release, followed by damage/status results |
+| Dormancy, packs, extra actions, flee/stationary policies | Existing idle/walk/attack animations; these are behavior rules, not separate casts | Wake message when provoked; no repeated event for each AI decision |
+
+Reveal transitions are captured during action resolution and played once with the action replay. Hidden/offscreen and No Animations policies still apply. "Overworld dungeon reveal" refers to the finale's disguised dungeon locations; ordinary overworld locations remain visible under the existing exploration rules.
+
+**Tools > Eternal Enigma > Combat Effects > Complete Enemy Feedback** rebuilds these default bindings and the dragon/werewolf prefab settings. It is an explicit authoring operation, not a runtime migration.
 
 ## Original roster reference
 

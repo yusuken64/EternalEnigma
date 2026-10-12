@@ -10,6 +10,35 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Opening UI Fixes")]
+    public static void RunOpeningUIFixes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OpeningUIRegressionTests",
+        "EternalEnigma.Tests.CampaignPresentationTests.HeroPickerUsesRealArtworkAndBackDoesNotStartCampaign",
+        "EternalEnigma.Tests.CampaignPresentationTests.SelectedHeroConfirmsExactlyOnce",
+        "EternalEnigma.Tests.ControllerFlowTests.MainMenuHeroPickerAndBackUseControllerOnly",
+        "CoreBugfixTests.SaveSlotsSupportKeyboardSelectionAndSubmit",
+        "CoreBugfixTests.ReplaceCampaignConfirmationSupportsKeyboardNavigation",
+        "EternalEnigma.Tests.CampaignSleepTests.ThreeSeedsHaveAccessibleHomesAndSlotBrowserPreservesCanceledReplacement",
+        "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Final Checks")]
+    public static void RunGameplayFinalChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitGuidesAFollowerWhileTheLeaderMoves",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitWalksThroughProductionTurnsAndDoesNotChangeFloors",
+        "EternalEnigma.Tests.TownDungeonGameplayTests",
+        "EternalEnigma.Tests.DungeonControlTests.FullControlPromptsForEachActionAndRestoresLeader");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Acceptance")]
+    public static void RunGameplayAcceptance() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitGuidesAFollowerWhileTheLeaderMoves",
+        "EternalEnigma.Tests.GameplayFollowupTests.MimicRevealAndSpiderSplitReplayEffectsSoundAndHistory",
+        "EternalEnigma.Tests.HeroPrefabTests",
+        "EternalEnigma.Tests.EncounterGameplayTests.EveryBossVariantHasFootprintWarningSpecialAndNormalDeath",
+        "EternalEnigma.Tests.FinaleGameplayTests.AllFiveStairsPreservePartyAndWakeAtHomeWithoutSaving");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run GameplayFollowups")]
+    public static void RunGameplayFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameplayFollowupTests",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests",
+        "EternalEnigma.Tests.EnemyBehaviorTests",
+        "EternalEnigma.Tests.OverworldSceneTests.RoadSignOpensTownAndLandmarkDirectionsWithoutChangingProgression");
     [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleLoading")]
     public static void RunFinaleLoading() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.FinaleGameplayTests.AllFiveStairsPreservePartyAndWakeAtHomeWithoutSaving",

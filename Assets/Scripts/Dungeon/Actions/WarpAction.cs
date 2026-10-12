@@ -1,4 +1,3 @@
-using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +29,10 @@ internal class WarpAction : GameAction
 		if (cells.Count == 0) return new();
 		warpLoccation = cells[Random.Range(0, cells.Count)];
 		TrackAnimationTarget(attacker);
+		Visuals.Configure(CombatVisualCatalog.Instance?.Warp, attacker, warpLoccation);
+        Visuals.AddImpact(attacker, warpLoccation, true);
+        Visuals.AfterMovement = true;
+		GameMessages.ForCharacter(attacker, $"{GameMessages.Name(attacker)} warped away!");
 
 		attacker.TilemapPosition = warpLoccation;
 
@@ -38,19 +41,10 @@ internal class WarpAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(warpLoccation);
-
-		if (skipAnimation)
-		{
-			attacker.transform.position = worldPosition;
-			attacker.PlayIdleAnimation();
-			yield break;
-		}
-		attacker.PlayWalkAnimation();
-		yield return attacker.transform.DOMove(worldPosition, 0.1f)
-			.WaitForCompletion();
-
+        if (attacker == null) yield break;
+        attacker.transform.position = Game.Instance.CurrentDungeon.CellToWorld(warpLoccation);
 		attacker.PlayIdleAnimation();
+        yield break;
 	}
 
     internal override void AddDestinationSight(HashSet<Vector3Int> tiles)

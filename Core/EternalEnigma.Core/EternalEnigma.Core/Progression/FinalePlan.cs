@@ -6,7 +6,7 @@ namespace EternalEnigma.Core.Progression;
 /// <summary>Five immutable maps; the original campaign and its progression are never replaced.</summary>
 public sealed class FinalePlan
 {
-    public const int Version = 2, FloorCount = 5, CombatDifficulty = 38;
+    public const int Version = 3, FloorCount = 5, CombatDifficulty = 38;
     public Campaign Campaign { get; }
     public IReadOnlyList<FinaleFloorPlan> Floors { get; }
 
@@ -78,6 +78,7 @@ public sealed class FinaleFloorPlan
     public IReadOnlyList<FinaleRegionObjective> Regions { get; }
     public IReadOnlyList<FinaleEnemyPlacement> Enemies { get; }
     public IReadOnlyCollection<GridPoint> Reserved { get; }
+    public IReadOnlyList<Placement> Traps { get; }
     readonly string?[,] owners;
     readonly bool[,] dryGround, boatGround;
     readonly Dictionary<GridPoint, List<(string RouteId, GridPoint Destination)>> warpNeighbors = new();
@@ -126,6 +127,7 @@ public sealed class FinaleFloorPlan
                 location: location.Id, family: family, town: town));
         }
         var objectives = new List<FinaleRegionObjective>();
+        var traps = new List<Placement>();
         var unlocked = new HashSet<string>();
         foreach (var region in regions)
         {
@@ -146,9 +148,31 @@ public sealed class FinaleFloorPlan
                 if (++placed == budget) break;
             }
             if (placed != budget) throw new InvalidOperationException($"Finale {Seed}/{region.Id}: insufficient reachable spawn cells ({placed}/{budget}).");
+            // Keep the road network and a dry approach to every objective free of traps.
+            foreach (var destination in placements.Where(e => e.RegionId == region.Id).Select(e => e.Position)
+                         .Concat(region.Id == RegionAt(Stairs) ? new[] { Stairs } : Array.Empty<GridPoint>()))
+            {
+                var cell = destination;
+                while (reachable.TryGetValue(cell, out int distance) && distance > 0)
+                {
+                    reserved.Add(cell);
+                    var next = OverworldMovement.Neighbors(cell).Where(p => CanStep(cell, p, unlocked))
+                        .Concat(WarpDestinations(cell, unlocked).Select(w => w.Destination))
+                        .First(p => reachable.TryGetValue(p, out int d) && d == distance - 1);
+                    if (Math.Abs(next.X - cell.X) == 1 && Math.Abs(next.Y - cell.Y) == 1)
+                    { reserved.Add(new GridPoint(cell.X, next.Y)); reserved.Add(new GridPoint(next.X, cell.Y)); }
+                    cell = next;
+                }
+            }
+            var trapRandom = new SeedStream(CampaignContext.LocationSeed(Seed, region.Id), 2510);
+            var trapCells = trapRandom.Shuffle(reachable.Keys.Where(p => RegionAt(p) == region.Id && !reserved.Contains(p) &&
+                    !grid.Layers[OverworldLayers.Roads].At(p) && Square(p, 1).All(IsGround)).OrderBy(p => p.Y).ThenBy(p => p.X)).Take(5).ToArray();
+            if (trapCells.Length != 5) throw new InvalidOperationException($"Finale {Seed}/{region.Id}: insufficient safe trap cells.");
+            traps.AddRange(trapCells.Select(p => new Placement(p, trapRandom.Range(int.MaxValue))));
             objectives.Add(new FinaleRegionObjective(number, region, biome, placements.Where(e => e.RegionId == region.Id)));
         }
         Regions = Array.AsReadOnly(objectives.ToArray()); Enemies = Array.AsReadOnly(placements.ToArray());
+        Traps = Array.AsReadOnly(traps.ToArray());
         ValidateRoute();
         // Hash physical terrain and the complete planned population, independently of party capabilities.
         var canonical = new System.Text.StringBuilder(Grid.CampaignFingerprint).Append('/').Append(DungeonFloorFingerprint.Compute(CreateFloor()));
@@ -249,6 +273,6 @@ public sealed class FinaleFloorPlan
         { ground[x, y] = IsGround(new GridPoint(x, y)); walls[x, y] = !ground[x, y]; }
         return new DungeonFloor(Seed, false, new Dictionary<string, GridLayer> {
             [DungeonLayers.Floor] = new(ground), [DungeonLayers.Dungeon] = new(walls) }, Array.Empty<GridRect>(), Start, Stairs,
-            Array.Empty<Placement>(), Array.Empty<Placement>(), Array.Empty<Placement>(), Array.Empty<Placement>(), overworld: Grid);
+            Array.Empty<Placement>(), Array.Empty<Placement>(), Array.Empty<Placement>(), Traps, overworld: Grid);
     }
 }

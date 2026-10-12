@@ -26,6 +26,32 @@ namespace EternalEnigma.Tests
         private Keyboard keyboard;
         private Gamepad pad;
 
+        [UnityTest] public IEnumerator RoadSignOpensTownAndLandmarkDirectionsWithoutChangingProgression()
+        {
+            var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
+            Common.Instance.CampaignContext = context;
+            var sign = BiomeRoadSigns.Plan(context.Grid).First(s => s.Priority == 0);
+            context.Position = new GridPoint(sign.Verge.x, sign.Verge.y);
+            var position = context.Position; int collected = context.Keys.Count, completed = context.Completed.Count;
+            yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+            scene = SceneManager.GetSceneByName("Overworld");
+            var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+            yield return harness.WaitUntil(() => world.IsReady, "road sign world");
+            Assert.That(world.NearbySign(), Is.Not.Null);
+            world.ClaimRewards(); yield return null;
+            var menu = world.GetComponent<OverworldMenuManager>();
+            var dialog = Object.FindFirstObjectByType<MessageDialog>();
+            Assert.That(menu.Opened, Is.True); Assert.That(dialog, Is.Not.Null);
+            Assert.That(dialog.PromptText.text, Does.StartWith("Road sign"));
+            Assert.That(dialog.PromptText.text, Does.Contain("road steps"));
+            Assert.That(context.Campaign.Locations.Where(l => l.Kind == LocationKind.Town).Any(l => dialog.PromptText.text.Contains(context.GetTownDisplayName(l.Id))), Is.True);
+            Assert.That(dialog.PromptText.text.Split('\n').Count(s => s.Contains("road steps")), Is.GreaterThan(2), "Landmarks appear alongside at most two towns.");
+            Directory.CreateDirectory("Temp/TodoVerification"); ScreenCapture.CaptureScreenshot("Temp/TodoVerification/road-sign.png");
+            yield return new WaitForEndOfFrame();
+            Assert.That(context.Position, Is.EqualTo(position)); Assert.That(context.Keys.Count, Is.EqualTo(collected));
+            Assert.That(context.Completed.Count, Is.EqualTo(completed)); dialog.CloseDialog();
+        }
+
         [UnityTest]
         public IEnumerator CampaignHintChangesWithDeviceWhileMessageIsStored()
         {

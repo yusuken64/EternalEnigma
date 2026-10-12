@@ -12,6 +12,11 @@ internal class ThrowItemAction : GameAction
 	private InventoryItem item;
 	private GameObject projectilePrefab;
 	private Vector3Int rangedAttackTargetPosition;
+	private Vector3Int sourcePosition;
+	internal Vector3 ProjectileStart => CellCenter(Game.Instance.CurrentDungeon, sourcePosition);
+	internal Vector3 ProjectileEnd => CellCenter(Game.Instance.CurrentDungeon, rangedAttackTargetPosition);
+	internal static Vector3 CellCenter(TileWorldDungeon dungeon, Vector3Int cell) =>
+		dungeon.CellToWorld(cell) + (dungeon.CellToWorld(new Vector3Int(1, 1, 0)) - dungeon.CellToWorld(Vector3Int.zero)) * .5f;
 
 	public ThrowItemAction()
 	{
@@ -30,6 +35,7 @@ internal class ThrowItemAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		var game = Game.Instance;
+		sourcePosition = thrower.TilemapPosition;
 		GameMessages.ForCharacter(thrower, $"{GameMessages.Name(thrower)} threw {item.ItemName}.");
 
 		var ret = new List<GameAction>();
@@ -106,30 +112,25 @@ internal class ThrowItemAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
-		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
-			.WaitForCompletion();
-		if (projectilePrefab == null) yield break;
-
-		var game = Game.Instance;
-		var projectile = UnityEngine.Object.Instantiate(projectilePrefab, null);
-		Vector3 startPosition = character.VisualParent.transform.position;
-		projectile.transform.position = startPosition;
-		var targetWorldPosition = game.CurrentDungeon.CellToWorld(rangedAttackTargetPosition);
-
-		Vector3 offset = Vector3.zero;
-		if (LookAt)
+		float gesture = thrower.PlayItemGesture(true);
+		yield return new WaitForSecondsRealtime(gesture * .45f);
+		GameObject projectile = null;
+		try
 		{
-			offset = new Vector3(1.25f, 1.25f, 0);
-			projectile.transform.LookAt(targetWorldPosition + offset);
+			if (projectilePrefab != null)
+			{
+				projectile = UnityEngine.Object.Instantiate(projectilePrefab, ProjectileStart, Quaternion.identity);
+				if (LookAt && (ProjectileEnd - ProjectileStart).sqrMagnitude > .001f) projectile.transform.LookAt(ProjectileEnd, Vector3.back);
+				float duration = Vector3.Distance(ProjectileStart, ProjectileEnd) / ProjectileSpeed;
+				yield return projectile.transform.DOMove(ProjectileEnd, duration).SetEase(Ease.Linear).SetUpdate(true).WaitForCompletion();
+			}
+			yield return new WaitForSecondsRealtime(gesture * .55f);
 		}
-		float duration = Vector3.Distance(startPosition, targetWorldPosition + offset) / ProjectileSpeed;
-		yield return projectile.transform.DOMove(targetWorldPosition + offset, duration)
-			.SetEase(Ease.Linear)
-			.WaitForCompletion();
-
-		UnityEngine.Object.Destroy(projectile.gameObject);
-
-		yield return null;
+		finally
+		{
+			if (projectile != null) { projectile.transform.DOKill(); UnityEngine.Object.Destroy(projectile); }
+			if (thrower != null) thrower.PlayIdleAnimation();
+		}
 	}
 
     internal override IEnumerable<Vector3Int> AnimationCells(Character actor)

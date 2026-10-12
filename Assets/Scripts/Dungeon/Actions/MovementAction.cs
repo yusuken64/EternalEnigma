@@ -550,7 +550,7 @@ public class DeathAction : GameAction
         {
             if (behavior.CanExplode(enemy))
             {
-                Visuals.Configure(CombatVisualCatalog.Instance?.Fire, enemy, enemy.TilemapPosition, 1);
+                Visuals.Configure(CombatVisualCatalog.Instance?.Explosion, enemy, enemy.TilemapPosition, 1);
                 Visuals.Cast = false;
                 Visuals.AddImpact(enemy, enemy.TilemapPosition, true);
             }
@@ -690,8 +690,7 @@ public class InteractAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) yield break;
-		yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.2f)
-			.WaitForCompletion();
+		yield return character.AnimateInteraction();
 	}
 
 	internal override bool IsValid(Character character)
@@ -712,8 +711,6 @@ public class WaitAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (!skipAnimation) yield return null;
-		//yield return character.VisualParent.transform.DOPunchScale(Vector3.one * 2, 0.1f)
-		//	.WaitForCompletion();
 	}
 
 	internal override bool IsValid(Character character)

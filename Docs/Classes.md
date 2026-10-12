@@ -91,6 +91,8 @@ removed or replaced on load; subsequent equip attempts use these rules.
 
 ## Training
 
+Scout's tier-1 **Find Exit** costs 2 SP and has one rank. It guides the casting ally to undiscovered stairs through ordinary movement turns; the leader can continue issuing orders while a follower Scout guides itself. Visible enemies, damage, disabling statuses, blocked routes, opening a menu or a new command to that Scout interrupt travel. It avoids known traps and visible hazards and stops on the exit without changing floors. Pathfinder remains the existing hunger passive. The classless gold-learning price follows the standard tier-1 value of 50; class training uses the normal skill-point rules below.
+
 Core `SkillLearningRules` is shared by Unity trainer offers and the console editor.
 
 - Highest dungeon level earns `2 * max(1, level)` skill points, including two at level 1.

@@ -36,13 +36,14 @@ public static class HeroAnimationAuthoring
         var baseController = AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Art/RPGTinyHeroWavePolyart/Animator/NoWeaponStance.controller");
         var extra = AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Art/RPGTinyHeroWavePolyart/Animator/NoWeaponStanceExtraAnim.controller");
         var baseMachine = baseController.layers[0].stateMachine;
-        foreach (var name in new[] { "Sleeping_NoWeapon", "DrinkPotion_NoWeapon" })
+        foreach (var name in new[] { "Sleeping_NoWeapon", "DrinkPotion_NoWeapon", "CarryThrow_NoWeapon", "InteractWithGateObject_NoWeapon" })
         {
             if (baseMachine.states.Any(s => s.state.name == name)) continue;
-            var source = extra.layers[0].stateMachine.states.First(s => s.state.name == name).state;
+            var source = extra.layers[0].stateMachine.states.FirstOrDefault(s => s.state.name == name).state;
             var state = baseMachine.AddState(name);
-            state.motion = source.motion;
-            state.speed = source.speed;
+            state.motion = source != null ? source.motion : AssetDatabase.LoadAllAssetsAtPath(
+                "Assets/Art/RPGTinyHeroWavePolyart/Animation/NoWeapon/" + name + ".fbx").OfType<AnimationClip>().First(c => !c.name.StartsWith("__"));
+            state.speed = source != null ? source.speed : 1;
         }
         EditorUtility.SetDirty(baseController);
 
@@ -56,6 +57,8 @@ public static class HeroAnimationAuthoring
         int rebuilt = 0;
         foreach (var path in paths)
         {
+            // The dungeon template's clip pool is copied from TownPlayer below.
+            if (path == "Assets/Prefabs/Dungeon/Player.prefab") continue;
             var root = PrefabUtility.LoadPrefabContents(path);
             try
             {

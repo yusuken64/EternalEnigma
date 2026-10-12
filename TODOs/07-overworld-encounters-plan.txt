@@ -58,7 +58,7 @@ Cities, woods, caves, and prisons use **2, 2, 3, 3, and 4 playable floors** at t
 | Encounter | Layout and completion |
 |---|---|
 | Overtaken city | Reuse town street/building generation as dungeon terrain, populated with enemies and loot. Clearing each district unlocks its exit. No town services operate there. |
-| Lost woods | Generate a large seeded maze using iterative randomized depth-first carving. Use odd dimensions `49 + 4 × tier`, distant stairs, dead-end rewards, and safe party spawn clearance. |
+| Lost woods | Generate a regular Forest dungeon footprint at odd dimensions `49 + 4 × tier`, then carve a connected depth-first maze within its rooms and corridors. Retain distant stairs, dead-end rewards, safe party spawn clearance and reserved side cells for traps. This supersedes the original rectangular-mask recipe. |
 | Boulder-blocked cave | Use cavern layouts and an overworld boulder gate. Engineering is the guaranteed solution; Breach is an alternative when active. Place the cave after Engineering is obtainable. |
 | Prison | Escape cells, obtain basic supplies, reach a guarded possessions stash, and escape. Recovery is required before the final exit. |
 | Bridge | Wide causeways and platforms surrounded by water. Reaching the far exit completes the encounter, returns the party to the opposite overworld endpoint, and permanently opens the crossing. |

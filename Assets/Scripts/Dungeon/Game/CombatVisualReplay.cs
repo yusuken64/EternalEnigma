@@ -24,7 +24,9 @@ internal sealed class CombatVisualReplay
     readonly Dictionary<Character, Vector3Int> positions = new();
     readonly Dictionary<Character, CombatEffectProfile> castingAfter = new();
     readonly HashSet<Character> changedStatuses = new();
-    bool afterMovement;
+    readonly HashSet<Character> disguises = new();
+    readonly List<(Vector3 point, Bounds? bounds)> reveals = new();
+    internal bool AfterMovement;
     Character resolvingActor;
     internal Vector3Int OriginCell;
 
@@ -35,7 +37,10 @@ internal sealed class CombatVisualReplay
         var game = Game.Instance;
         if (game == null) return;
         foreach (var c in game.AllCharacters.Concat(game.DownedAllies.Cast<Character>()).Where(c => c != null).Distinct())
-        { before[c] = Snapshot(c); positions[c] = c.TilemapPosition; }
+        {
+            before[c] = Snapshot(c); positions[c] = c.TilemapPosition;
+            if (EnemyBehavior.IsDisguised(c)) disguises.Add(c);
+        }
     }
 
     internal static Dictionary<string, StatusVisualProfile> Snapshot(Character c)
@@ -63,6 +68,8 @@ internal sealed class CombatVisualReplay
     {
         var game = Game.Instance;
         if (game?.CurrentDungeon == null) return;
+        foreach (var c in disguises)
+            if (c != null && !EnemyBehavior.IsDisguised(c)) reveals.Add((CombatEffectPlayer.Body(c, c.TilemapPosition), CombatEffectPlayer.TargetBounds(c, c.TilemapPosition)));
         foreach (var c in game.AllCharacters.Concat(game.DownedAllies.Cast<Character>()).Where(c => c != null).Distinct())
         {
             var snapshot = Snapshot(c);
@@ -98,7 +105,7 @@ internal sealed class CombatVisualReplay
                 var targets = changedStatuses.Where(c => after[c].Count > 0).Concat(action is ApplyStatusEffectAction ? Enumerable.Empty<Character>() : action.VisualTargets)
                     .Where(c => c != null).Distinct().ToList();
                 foreach (var moved in positions.Where(p => p.Key != null && p.Key.TilemapPosition != p.Value))
-                { afterMovement = true; if (!targets.Contains(moved.Key)) targets.Add(moved.Key); }
+                { AfterMovement = true; if (!targets.Contains(moved.Key)) targets.Add(moved.Key); }
                 if (action is ApplyStatusEffectAction applied && applied.VisualAppliedTarget != null) targets.Add(applied.VisualAppliedTarget);
                 if (targets.Count == 0 && recipient != null && action is not ApplyStatusEffectAction) targets.Add(recipient);
                 foreach (var target in targets.Distinct()) AddImpact(target, target.TilemapPosition, true);
@@ -126,12 +133,19 @@ internal sealed class CombatVisualReplay
         if (!skip && action is SkillAction skillAction) skillAction.PlayCastSound();
         if (!skip && player != null && Sequence != null)
         {
-            if (Cast) yield return player.Cast(Sequence);
+            if (Cast || action is DeathAction)
+                if (action is not SkillAction) AudioManager.Instance?.PlaySoundEffect(Sequence.Profile.CastSound);
+            if (Cast)
+            {
+                yield return player.Cast(Sequence);
+            }
             bool secondaryStatus = (action is ApplyStatusEffectAction || action is ApplyStatusChanceAction) && BoundTarget != null && Sequence.DamageRecipients.Contains(BoundTarget);
-            if (!afterMovement && !secondaryStatus) foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds);
+            if (!AfterMovement && !secondaryStatus) foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds);
         }
+        if (!skip && player != null)
+            foreach (var reveal in reveals) yield return player.Cue(CombatVisualCatalog.Instance?.Reveal, reveal.point, reveal.bounds);
         yield return action.ExecuteRoutine(actor, skip);
-        if (!skip && player != null && Sequence != null && afterMovement)
+        if (!skip && player != null && Sequence != null && AfterMovement)
             foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds);
         // Even skipped playback advances the aura ledger; never consult future simulation state here.
         if (player != null)

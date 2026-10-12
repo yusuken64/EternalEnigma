@@ -301,6 +301,19 @@ public abstract class Character : MonoBehaviour, Actor
 	internal abstract void PlayTakeDamageAnimation();
 	internal abstract void PlayDeathAnimation();
 
+	internal float PlayItemGesture(bool throwing)
+	{
+		if (this is Ally ally && ally.HeroAnimator != null) return ally.HeroAnimator.PlayItemGesture(throwing);
+		PlayAttackAnimation();
+		return .35f;
+	}
+
+	internal IEnumerator AnimateInteraction()
+	{
+		yield return new WaitForSecondsRealtime(PlayItemGesture(false));
+		PlayIdleAnimation();
+	}
+
 	internal void SetFacing(Facing facing)
 	{
 		CurrentFacing = facing;

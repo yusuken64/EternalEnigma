@@ -51,7 +51,8 @@ public class TurnManager : MonoBehaviour
         if (autoplay != null && !autoplay.PlayerControlled && (autoplay.Paused || !autoplay.Running)) return;
         var game = Game.Instance;
         var controlled = game?.PlayerController?.ControlledAlly;
-        if (!IsProcessingTurn && game != null && game.IsReady && controlled?.PendingCast != null && !global::PendingCast.Mobile(controlled) &&
+        if (!IsProcessingTurn && game != null && game.IsReady && controlled != null &&
+            (controlled.PendingCast != null && !global::PendingCast.Mobile(controlled) || controlled.GetComponent<ScoutExitNavigation>()?.Active == true) &&
             !MenuManager.Instance.Opened && !Common.Instance.GlobalSettings.IsOpen)
         {
             if (controlled.PrepareManualAction()) { controlled.IsWaitingForPlayerInput = false; ProcessTurn(); }

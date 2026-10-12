@@ -18,7 +18,7 @@ public static class DungeonLayoutProfile
             bool district = role == DungeonFloorRole.Regular;
             int side = 52 + tier * 2;
             return new DungeonFloorOptions(seed, side, side, !district, district ? 10 : 0,
-                district ? 5 : 0, district ? 5 : 0, 0, district ? 3 : 0, CurrentVersion, biome, tier, role, variant: variant);
+                district ? 5 : 0, district ? 5 : 0, district ? 5 : 0, district ? 3 : 0, CurrentVersion, biome, tier, role, variant: variant);
         }
         if (version == 0 || IsStarter(locationId))
             return role == DungeonFloorRole.Regular ? new DungeonFloorOptions(seed) : DungeonFloorOptions.Throne(seed);
@@ -28,6 +28,6 @@ public static class DungeonLayoutProfile
         int width = regular ? minimum[tier] + (tier == 0 ? 0 : random.Range(5)) : 16 + tier * 2;
         int height = regular ? minimum[tier] + (tier == 0 ? 0 : random.Range(5)) : 16 + tier * 2;
         return new DungeonFloorOptions(seed, width, height, !regular, regular ? 10 : 0,
-            regular ? 5 : 0, regular ? 5 : 0, 0, regular ? 3 : 0, version, biome, tier, role);
+            regular ? 5 : 0, regular ? 5 : 0, regular ? 5 : 0, regular ? 3 : 0, version, biome, tier, role);
     }
 }

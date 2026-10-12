@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Spell_Explosion_ExplosionEffectDefinition
   m_EditorClassIdentifier: 
   Damage: 20
-  ExplosionParticleEffectPrefab: {fileID: 2546011540204404708, guid: 3299b3eeeb2799549936c9bb0b8ce4c9, type: 3}
+  ExplosionParticleEffectPrefab: {fileID: 1245121674842744595, guid: 0471e51b10e4c2544b543c0fe0461a06, type: 3}

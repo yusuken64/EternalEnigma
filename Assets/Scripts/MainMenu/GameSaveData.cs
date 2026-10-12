@@ -20,6 +20,7 @@ public class GameSaveData
     public Facing ArrivalFacing;
     public List<string> VisitedRegions = new();
     public CampaignSaveSummary Summary;
+    public CampaignCompletionRecord Completion;
     [NonSerialized] public bool NeedsInitialSave;
 	public TownSaveData TownSaveData = new();
 	public DungeonSaveData DungeonSaveData = new();

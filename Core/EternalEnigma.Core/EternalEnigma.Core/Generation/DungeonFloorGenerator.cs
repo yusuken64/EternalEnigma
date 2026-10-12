@@ -18,6 +18,14 @@ public static class DungeonFloorGenerator
 
     public static DungeonFloor Generate(DungeonFloorOptions options)
     {
+        var floor = GenerateTerrain(options);
+        // Legacy floors place safe traps before gathering and validate inside their retry loop.
+        return options.Variant == DungeonVariant.Standard && !options.Encounter.HasValue && options.LayoutVersion == 0
+            ? floor : DungeonTrapPlacement.Populate(floor, options);
+    }
+
+    private static DungeonFloor GenerateTerrain(DungeonFloorOptions options)
+    {
         if (options == null) throw new ArgumentNullException(nameof(options));
         if (options.Variant == DungeonVariant.Town) return TownDungeonGenerator.Generate(options);
 
@@ -139,17 +147,21 @@ public static class DungeonFloorGenerator
         var (startPos, stairsPos, enemies, gold, items, traps) =
             GeneratePlacements(options, place, floorLayer, rooms, W, H);
 
+        // Safe trap placement participates in the bounded legacy-layout retry, before gathering.
+        var floor = DungeonTrapPlacement.Populate(new DungeonFloor(seed, false, layers, rooms, startPos, stairsPos,
+            enemies, gold, items, traps), options);
+
         // Step 7: optional gathering sites. Own seed stream (900+attempt) drawn after every other stream,
         // so existing layers and placements are unchanged.
         var occupiedCells = new List<GridPoint> { startPos, stairsPos };
         occupiedCells.AddRange(enemies.Select(p => p.Cell));
         occupiedCells.AddRange(gold.Select(p => p.Cell));
         occupiedCells.AddRange(items.Select(p => p.Cell));
-        occupiedCells.AddRange(traps.Select(p => p.Cell));
+        occupiedCells.AddRange(floor.Traps.Select(p => p.Cell));
         var gatheringSites = GatheringPlacement.Place(floorLayer, startPos, stairsPos, occupiedCells, seed, options.GatheringCount, attempt);
 
         // Create and return the floor
-        var floor = new DungeonFloor(
+        floor = new DungeonFloor(
             seed: seed,
             isThroneFloor: false,
             layers: layers,
@@ -159,7 +171,7 @@ public static class DungeonFloorGenerator
             enemies: enemies,
             gold: gold,
             items: items,
-            traps: traps,
+            traps: floor.Traps,
             gatheringSites: gatheringSites
         );
 

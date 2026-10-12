@@ -164,6 +164,14 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         if (actor != null) actor.PlayIdleAnimation();
     }
 
+    // Reveal/discovery cues have no attack animation and reuse the same owned effects and mixer.
+    internal IEnumerator Cue(CombatEffectProfile profile, Vector3 point, Bounds? bounds = null)
+    {
+        if (profile == null || DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations) yield break;
+        AudioManager.Instance?.PlaySoundEffect(profile.CastSound);
+        yield return Deliver(new CombatVisualSequence { Profile = profile, Origin = point, Center = point }, point, true, bounds);
+    }
+
     internal IEnumerator Deliver(CombatVisualSequence sequence, Vector3 destination, bool hit, Bounds? targetBounds = null)
     {
         var profile = sequence.Profile;

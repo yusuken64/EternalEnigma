@@ -1785,6 +1785,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::EnemyBehavior
   WaitUntilAttacked: 0
   RangedAttack: 0
+  FireBreath: 0
+  RangedAttackChance: 1
   Range: 6
   Steals: 0
   AlwaysFlees: 0
@@ -1828,7 +1830,7 @@ MonoBehaviour:
     HPRegenAcccumlateThreshold: 0
     SPRegenAcccumlateThreshold: 0
     DropRate: 0
-    ActionsPerTurnMax: 1
+    ActionsPerTurnMax: 2
     AttacksPerTurnMax: 1
     FireResistance: 0
     IceResistance: 0

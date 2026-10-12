@@ -3,7 +3,7 @@
 Assignment, preview and validation tools remain for ongoing content editing. The save cleanup
 does not change combat effect profiles, playback ordering or current-schema item snapshots.
 
-Each `Skill` owns an explicit `VisualProfile` and `Icon` reference. Profiles are shared ScriptableObjects; editing one changes all skills using it. All 202 existing skill assets, including passives, have icons from `Assets/RPG_skills_and_abilities`. Passive profiles are available for authoring; passive training does not automatically play a cast animation.
+Each `Skill` owns an explicit `VisualProfile` and `Icon` reference. Profiles are shared ScriptableObjects; editing one changes all skills using it. Existing skill assets, including passives and Scout's Find Exit, have icons from `Assets/RPG_skills_and_abilities`. Passive profiles are available for authoring; passive training does not automatically play a cast animation.
 
 ## Authoring
 
@@ -14,6 +14,8 @@ Open **Tools → Eternal Enigma → Combat Effects → Assignments And Preview**
 3. **Impact** plays for successful results; **Area** plays once for an area activation.
 
 Stages are optional. Each has an independent prefab, offset, rotation, scale, delay, and lifetime. Cast and impact holds, projectile speed, and minimum/maximum flight times live on the profile. Ground effects use the dungeon's XY ground plane. Projectile rotations correct the source prefab's forward axis after aiming it at the target.
+
+Profiles also own a `CastSound` fallback for enemy and item actions. Skill casts retain their skill-specific sound and do not play this fallback twice. Death explosions play their cue without making a dead character perform a cast animation. Mimic reveals use one shared shadow effect for ordinary chests and finale town/dungeon disguises. See the [enemy coverage audit](EnemyBehaviors.md#ability-feedback-coverage-2026-10-11).
 
 All hit impact profiles enable `FitToTarget`: model bounds are captured with each resolved hit, excluding selection sprites and particles. Playback places body impacts in front of those bounds along the camera viewing direction, keeps them centered on screen, and scales them up for large bodies. Impacts with a ground footprint (circles, portals, and runes) scale with the target while staying on the dungeon floor. The authored scale remains the minimum for small targets. Characters without mesh bounds fall back to their grid footprint. Visibility is checked at the original hit position. New profiles and generated assignments also default to adaptive impacts.
 
@@ -48,6 +50,8 @@ avoiding a second audio source inside the particle variant. Legacy skill and pro
 Ability icons appear in dungeon skill menus, town skill lists, trainer rows, and purchase dialogs. The shared row helper creates a non-interactive icon slot for older menu prefabs.
 
 ## Checks
+
+The item-animation audit replaced throw, drop and interact scale punches with Tiny Hero `CarryThrow_NoWeapon` and `InteractWithGateObject_NoWeapon` clips. Equipped stance returns on idle. Throws use the source and destination cell centers and linear travel; visual model offsets and projectile facing do not change endpoints. Ranged fallback uses the attack clip, and warp uses portal effects around an immediate position change. Movement, split separation and projectile interpolation remain positional tweens. `PlayAnimationStep` now respects named hero actions or enemy clip states.
 
 - EditMode: `CombatEffectAssignmentTests`.
 - PlayMode: **Tools → Eternal Enigma → Tests → Run Combat Effects**.

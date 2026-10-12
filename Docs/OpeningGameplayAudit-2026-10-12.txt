@@ -1,0 +1,262 @@
+Opening gameplay audit: the first 20 minutes - 2026-10-12
+
+The opening needs a clearer path from choosing a hero to understanding that
+hero's abilities, surviving a first dungeon, and saving the reward. Fix the
+observed slot activation problem first, then restore decision-making information
+in the menus and teach one mechanic at a time.
+
+Scope and confidence
+--------------------
+Reviewed the current working tree, inspected the live Unity opening and menus
+at the configured 960 x 600 game resolution, captured a fresh bedroom start,
+ran an isolated normal-rules seed-42 autoplay probe, and ran focused existing
+Unity tests. This was a targeted opening audit, not an uninterrupted 20-minute
+blind human playtest. The timing targets below are proposed design targets.
+Audio quality, hardware controller feel, and standalone-build performance were
+not evaluated. Native keyboard injection was unreliable, so it is not evidence
+of a gameplay input defect. Existing user saves were not replaced.
+
+1. Highest priority: repair and finish the campaign-slot screen
+-------------------------------------------------------------
+Observed twice: with slots 1 and 2 occupied and slot 3 empty, Start opens the
+slot screen. Clicking slot 3 selects it; clicking the selected slot again does
+not open hero selection. Back works. The empty slot displays four white portrait
+rectangles, while the lower panel remains the literal text "Campaign details".
+Occupied cards also lack useful location, date, and playtime summaries.
+
+Runtime inspection found two CampaignSlotView components on Slot 3. One has a
+null Label and ClickAction; the other has Label "Text" and a populated callback.
+This is a concrete wiring lead, not a fully proven root cause. The source builds
+summary text without assigning it to a label and only hides unused portraits
+inside the nonempty-save branch.
+
+Polish: use one authoritative component and callback per slot; show an explicit
+"Empty - start a new journey" state; hide empty portraits; populate the selected
+campaign summary. Preserve the existing replacement confirmation.
+
+Acceptance: every empty slot reaches hero selection with mouse and controller;
+every occupied slot shows its summary and replacement confirmation; canceling
+does not write a save. Include the exact two-occupied/third-empty configuration.
+The passing controller test covers slot 1, so it does not clear this reproduction.
+
+Evidence: Assets/Scripts/MainMenu/CampaignSlotView.cs:33,
+Assets/Scripts/MainMenu/CampaignStartMenu.cs:23,
+Assets/Resources/UI/CampaignSlotButton.prefab, Assets/Scenes/MainMenu.unity;
+Temp/OpeningAudit/empty-slot3-no-activation.png and slot3-components.json.
+
+2. High priority: make skill effects visible before activation
+-------------------------------------------------------------
+The inspected Skills dock shows names, ranks, SP costs, and Passive labels, but
+no explanation of what the selected skill does. Cure and Double Strike were
+learned by the probe's town preparation; they were not the untouched starting
+loadout. PartyMenu still computes descriptions, but UseHudTabs hides the details
+scroll, hints, and description panel.
+
+Polish: add a compact focus/hover description with effect, range, target, SP
+cost, and any charge time. Keep that information visible while the player
+chooses. This also helps explain equipment and consumable choices in the shared
+menu. Allow long passive names to fit their rows.
+
+Acceptance: a player can explain Cure and Double Strike before spending a turn
+or SP, using either pointer selection or controller focus at 960 x 600.
+
+Evidence: Assets/Scripts/Dungeon/Game/Menu/PartyMenu.cs:46 and :176;
+Temp/OpeningAudit/trained-skills-no-description.png.
+
+3. High priority: give the bedroom-to-dungeon opening a visible objective
+-----------------------------------------------------------------------
+The fresh start places a small hero beside the bed in a furnished room, with
+menu tabs already present but no visible first objective or contextual movement,
+interaction, or saving instruction in the captured state. TownPlayer hides its
+old UIText. NPC conversations do provide gate guidance, but the player must
+already know to find and talk to an NPC to get it.
+
+Polish: introduce brief prompts in sequence: move, interact, understand the
+bed's Sleep and Save action, learn an active skill, then find the town dungeon.
+Keep one compact current objective visible, such as "Clear the town dungeon to
+open the town gate". Reuse the existing CampaignGuidance data. Highlight the
+relevant destination only until the player has found it.
+
+Class identity needs an early demonstration. Level 1 grants two skill points,
+while the default starting-skill rule grants primary Novice Training mastery.
+The inspected Rowan probe entered combat with no equipment. Guide the player
+through a first useful active skill and an understandable equipment choice, or
+provide a starter kit that immediately demonstrates the chosen class.
+
+Acceptance: a new player can state where to go and why within the first minute,
+and uses a class ability before meeting the first substantial enemy group.
+
+Evidence: Assets/Scripts/Town/TownPlayer.cs:107,
+Assets/Scripts/Town/TownNpc.cs:14, Assets/Scripts/Overworld/CampaignHUD.cs,
+Assets/Scripts/MainMenu/MainMenu.cs:115,
+Core/EternalEnigma.Core/EternalEnigma.Core/Classes/SkillLearningRules.cs:30 and :235;
+Temp/OpeningAudit/starting-bedroom.png.
+
+4. High priority: teach the save contract before the first valuable loss
+---------------------------------------------------------------------
+Purchases, training, travel, and dungeon rewards update the live session but do
+not write a durable save. The first dungeon clear therefore does not itself
+protect the newly earned key or progression. Home Sleep and Save and inn Save
+game are explicit save points. The quit warning and defeat's Load last save
+option already exist; the sleep/save tests passed.
+
+Polish: explain the bed once at the start, show the last saved location/time in
+pause, and give a short return-home reminder after the first clear. Make the
+successful save acknowledgement unmistakable. The player should learn this
+contract before losing a first reward.
+
+Acceptance: after the first clear, a new player knows whether the key is saved,
+where to save it, and what Load last save will restore.
+
+Evidence: Docs/CampaignSaves.md; Assets/Scripts/Overworld/CampaignTravelService.cs
+FinishDungeon uses SaveSystem.Capture; Temp/OpeningAudit/campaign-sleep-results.json.
+
+5. Medium priority: stage and validate the first combat lesson
+------------------------------------------------------------
+The normal-rules seed-42 probe reached floor 2 and was defeated after 15 dungeon
+turns: 26 damage taken, 1 healing received, no item uses, and no skill uses.
+Rowan had 25 maximum HP, 0 defense, no equipment, and retained 3 SP. Several
+enemy types were visible around the hero. Town preparation had spent the initial
+100 gold on Bread and the two skill points on Cure and Double Strike.
+
+This is a signal to inspect first-encounter teaching, not a general balance
+verdict. The bot navigates omnisciently and failed to use its learned abilities.
+Its roughly 67 seconds of wall time included accelerated automation and is not
+a player completion-time measurement. The normal run's DebugPlaythrough was
+false, which gates off the retained debug cheat options; InfiniteStrength was
+false and the report marked the run eligible for balance analysis.
+
+Polish: stage a readable first opponent, teach movement/attack and healing, then
+introduce groups and enemy-role differences. Make damage sources and targeting
+clear. Verify starter gear and recovery resources across several seeds before
+changing global damage or enemy counts.
+
+Acceptance: a novice can identify what hurt them, demonstrate their first
+ability, recover once, and explain what they would do differently after defeat.
+
+Evidence: Temp/OpeningAudit/normal-floor2-defeat.png;
+Logs/Playthroughs/20261012-142309-a0f16ecf/run-0001-seed-42-16d82a94/report.json.
+
+6. Medium priority: explain hero choices with concrete playstyle information
+-------------------------------------------------------------------------
+The picker exposes the roster and previews a hero's name, class pairing, and
+primary role. Its description does not include a signature starting action or
+a plain-language reason to choose one hero over another.
+
+Polish: add a short playstyle sentence and signature ability example, with a
+clear confirmation affordance. An optional recommended first hero can reduce
+decision load while keeping the full roster available.
+
+Acceptance: a first-time player can distinguish three heroes by how they play,
+not just their appearance and class names. This recommendation is source-based;
+the new artwork/back test failed before generating a fresh picker screenshot.
+
+Evidence: Assets/Scripts/MainMenu/ProtagonistHeroPicker.cs:172.
+
+7. Quick polish: fix compact layouts and clarify progression labels
+-----------------------------------------------------------------
+At 960 x 600, the Gameplay settings explanations for longer animation modes
+extend underneath Event history. The controlled-hero speed label also wraps.
+The campaign dungeon entry labels floor ranges as "Level 1 - 5", which can be
+read as a recommended hero level. The live floor indicator gives little context
+for the opening goal.
+
+Polish: reserve space or scroll the settings description, shorten the cycle
+labels, and label dungeon ranges "Floors 1-5". Show the town dungeon's current
+floor and total alongside its purpose. Reduce the footprint of empty event-log
+space during quiet exploration while retaining the existing history function.
+
+Acceptance: all four speed-mode descriptions remain readable and unobscured;
+the player can distinguish hero level from dungeon-floor progress.
+
+Evidence: Temp/OpeningAudit/settings-overlap-preference-restored.png;
+Assets/Scripts/Town/Menu/DungeonTierItem.cs:28.
+
+Suggested opening beats to validate with new players
+---------------------------------------------------
+0-2 minutes: choose a hero, move out of the bedroom, understand interaction/save.
+2-5 minutes: understand the town goal, learn a signature ability, check equipment.
+5-10 minutes: first readable fight, useful loot, one successful recovery action.
+10-15 minutes: a new encounter idea, clear progress toward the dungeon finish.
+15-20 minutes: first clear, town gate reward, return/save, glimpse the overworld.
+These are pacing goals, not measured results or a recommendation to force a timer.
+
+What is already worth preserving
+-------------------------------
+The title scene presents the heroes and enemies immediately. The persistent
+party tabs provide consistent access to core menus. NPC gate guidance exists.
+The first town-key reward explicitly says the town gate is now open and points
+to the overworld. Explicit save/rollback behavior is coherent and covered by
+the passing sleep tests. Preserve these while making the opening easier to read.
+
+Validation and handoff
+----------------------
+Controller start/hero-picker/back check: 1 passed.
+Campaign sleep/save checks: 2 passed.
+Hero-selection suite: 3 passed, 1 failed. The failing artwork/back test found no
+ProtagonistHeroPicker immediately after calling ChooseHero (line 30). The passing
+controller flow waits for MainMenu.IsReady; the direct artwork test does not.
+Review readiness/timing before attributing that test failure to missing artwork.
+An earlier sleep-test attempt was interrupted by an MCP WebSocket error; the
+completed two-test harness rerun above is the relevant product result.
+
+Evidence and test XML/JSON are in Temp/OpeningAudit. No gameplay code or authored
+assets were changed for this audit. Temporary autoplay options and the original
+No animations preference were restored. Unity was returned to MainMenu Edit mode.
+
+
+Bug-fix follow-up - 2026-10-12
+------------------------------
+Implemented the concrete opening UI repairs from this audit.
+
+Campaign slots now use one configured view and callback per card. Empty cards
+hide their unused portraits, occupied cards show location, save point, saved
+time, playtime, gold, progress, and party details, and unreadable saves retain
+the replacement confirmation. Both pointer and controller activation reach the
+hero picker. Confirmed an additional cause of the missing picker: its shared
+CampaignStartMenu parent was disabled. ChooseHero now activates that parent and
+closes it on confirmation or cancel. The earlier readiness hypothesis alone
+did not explain that failure. Canceling preserves existing save bytes.
+
+The Skills dock again displays the focused skill's authored effect, rank, SP
+cost, and available charge/ammunition information. Long descriptions scroll
+independently of the skill list; changing skill returns its description to the
+top. Keyboard/controller focus and pointer selection update the preview without
+spending SP or advancing a dungeon turn. Persistent HUD tabs remain available.
+
+Gameplay options reserve separate space for all four speed-mode explanations;
+compact labels fit at 960 x 600. Dungeon entry ranges now say Floors.
+
+Verification also exposed a removed InventoryPicker panel in DungeonScene and
+an uninitialized inventory row list. Restoring the prefab panel and initializing
+the list repairs item-target selection. The overworld HUD launcher also lacked
+its runtime initialization; it now wires the shared menus and Capabilities tab
+with the same readiness checks as the other scene menus.
+
+The initial tutorial/objective, save-teaching, playstyle, and encounter-pacing
+ideas above remain design recommendations; this follow-up addresses defects.
+
+Validation artifacts: Temp/OpeningUIFixes (focused test reports, slot/settings
+and town skill screenshots), Temp/DungeonDock (five supported resolutions,
+including skill previews and restored inventory targeting), Temp/UIValidation
+(hero picker), and Temp/EndgameDebug (shared scene menus).
+
+Final verification
+------------------
+Opening flow: 10 passing checks covering empty-third-slot activation, controller
+input, unreadable-save replacement/cancel, save preservation, hero confirmation,
+hero-picker artwork/back, all four settings speed modes, town skill focus, and
+the three-seed campaign-slot workflow. The dungeon dock check then passed after
+restoring the inventory panel and checking description scrolling at 960 x 600,
+1280 x 720, 1920 x 1080, 1280 x 800, and 2560 x 1080.
+
+The shared-menu suite passed 9 checks initially; its two overworld failures
+passed after wiring the missing launcher (final focused run:
+f29b1b3f227442249b4a5a271852b7b1, 2 passed / 0 failed). This also verifies
+equipment transactions and reload preservation after opening overworld menus.
+Two related event-history checks passed during the dungeon verification.
+Historical failure reports remain beside the successful follow-up reports.
+
+Unity script compilation succeeded; existing warnings remain outside these
+changes. git diff --check passed. Final editor state: MainMenu, Edit mode,
+scene not dirty. Test saves were isolated; user saves were preserved.

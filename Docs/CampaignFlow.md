@@ -26,12 +26,19 @@ staircase completes the campaign and returns the party to the original bedroom.
 `StartDungeon` captures live town state in memory and selects the run's biome, tier and visuals.
 The two starter locations use BSP/throne layouts. Seeds derive from campaign seed/location/floor.
 Completion commits rewards to memory once per run. Final victory restores vitals and
-plays a wake-only bed sequence without a dialog or automatic save. The existing home
-and inn save actions can explicitly save the completed adventure afterward. Completed
+plays a wake-only bed sequence, then opens the Hall of Fame. It records the finishing
+party's portraits, names, classes, levels, maximum HP/SP and weapons, with dungeon/town/
+recruit/key counts, treasure, playtime and campaign seed. **Save completed campaign**
+explicitly saves this record; **Continue exploring** closes it without writing a save.
+The existing home and inn save actions also save the completed adventure afterward. Completed
 slots can continue ordinary play; the finale cannot be replayed. Retreat retains loot
 and progression in memory, but resets the finale.
 
 ## Travel interactions
+
+Interact beside an overworld road sign to read directions to two nearby towns and up to
+three other nearby landmarks. Compass directions identify the first road branch and
+distances count road steps. Reading a sign does not spend keys or change progression.
 
 Overworld dungeon entry first shows a confirmation with campaign clear status. Town entry
 and direct `CampaignTravelService.EnterLocation` calls remain immediate. Returns to town
@@ -65,7 +72,7 @@ regressions; results are written to `Temp/HarnessResults/PlayMode.json` and `.xm
 Three new PlayerPrefs keys contain independent campaign snapshots, roster progression,
 active party, possessions, shops, playtime, save-point identity, awake arrival position and
 precomputed visual summaries. The legacy key is untouched and unavailable for Continue.
-Initial creation and explicit home/inn saves are the only persistent writes.
+Initial creation, explicit home/inn saves and the Hall of Fame save button are the persistent writes.
 Quit and defeat restore the selected slot without applying penalties. No nested checkpoint
 or pre-run recovery JSON is stored. Campaign generation/fingerprint validation occurs on
 Continue, never during slot browsing; overworld terrain remains lazy.

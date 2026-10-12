@@ -9,6 +9,8 @@ public sealed class EnemyBehavior : MonoBehaviour
 {
     public bool WaitUntilAttacked;
     public bool RangedAttack;
+    public bool FireBreath;
+    [Range(0, 1)] public float RangedAttackChance = 1;
     [Min(2)] public int Range = 6;
     public bool Steals;
     public bool AlwaysFlees;
@@ -118,13 +120,16 @@ public sealed class EnemyBehavior : MonoBehaviour
             { owner.SetFacingByTargetPosition(next); return new MovementAction(owner, owner.TilemapPosition, next); }
             return null; // Cornered thieves fight back.
         }
-        if (target == null || owner.Vitals.AttacksPerTurnLeft <= 0 || cooldown > 0) return null;
+        if (target == null || target.Vitals.HP <= 0 || owner.Vitals.AttacksPerTurnLeft <= 0 || cooldown > 0 ||
+            owner.StatusEffects.Any(s => s is SilenceStatusEffect && !s.IsExpired())) return null;
         if (RootsAdjacentTarget && AttackPolicy.CanAttack(Game.Instance,target,owner) &&
             !target.StatusEffects.OfType<GoopiRootStatusEffect>().Any(r=>r.Source==owner && r.Holding)) return new RootAttackAction(owner,target);
         if (Steals && AttackPolicy.CanAttack(Game.Instance, target, owner) && CanSteal()) return new StealAction(this, target);
         if (Confusion != null && !target.StatusEffects.Any(s => s is ConfusionStatusEffect && !s.IsExpired()) && ClearShot(target))
             return new EnemyAbilityAction(this, target, true);
-        if (RangedAttack && TileWorldDungeon.ChevDistance(owner.TilemapPosition, target.TilemapPosition) > 1 && ClearShot(target))
+        // Invalid targets and cooling abilities never consume the probability roll.
+        if (RangedAttack && TileWorldDungeon.ChevDistance(owner.TilemapPosition, target.TilemapPosition) > 1 && ClearShot(target) &&
+            (RangedAttackChance >= 1 || Random.value < RangedAttackChance))
             return new EnemyAbilityAction(this, target, false);
         return null;
     }
@@ -208,22 +213,31 @@ public sealed class EnemyBehavior : MonoBehaviour
     {
         readonly EnemyBehavior behavior; readonly Character target; readonly bool confuse;
         public EnemyAbilityAction(EnemyBehavior behavior, Character target, bool confuse) { this.behavior = behavior; this.target = target; this.confuse = confuse; }
-        internal override bool IsValid(Character c) => c == behavior.owner && c.Team == Team.Enemy && target != null && target.Team != c.Team && c.Vitals.AttacksPerTurnLeft > 0 && behavior.ClearShot(target);
+        internal override bool IsValid(Character c) => c == behavior.owner && c.Team == Team.Enemy && c.Vitals.HP > 0 &&
+            target != null && target.Vitals.HP > 0 && target.Team != c.Team && c.Vitals.AttacksPerTurnLeft > 0 && behavior.cooldown == 0 &&
+            !c.StatusEffects.Any(s => s is SilenceStatusEffect && !s.IsExpired()) && behavior.ClearShot(target) &&
+            (confuse ? behavior.Confusion != null : behavior.RangedAttack && TileWorldDungeon.ChevDistance(c.TilemapPosition, target.TilemapPosition) > 1);
         internal override List<GameAction> ExecuteImmediate(Character c)
         {
             if (!IsValid(c)) return new();
             AddMetricsModification(c, (s,v) => v.AttacksPerTurnLeft--);
             c.SetFacingByTargetPosition(target.TilemapPosition);
             behavior.cooldown = confuse ? 4 : 2;
-            Visuals.Configure(confuse ? c.GetComponent<CharacterCombatEffects>()?.Confusion ?? CombatVisualCatalog.Instance?.Confusion : CharacterCombatEffects.Attack(c, true), c, target.TilemapPosition);
             if (confuse)
             {
+                Visuals.Configure(c.GetComponent<CharacterCombatEffects>()?.Confusion ?? CombatVisualCatalog.Instance?.Confusion, c, target.TilemapPosition);
                 GameMessages.ForCharacter(c, $"{GameMessages.Name(c)} cast Confusion!");
                 return new() { new ApplyStatusEffectAction(target, behavior.Confusion, c) };
+            }
+            if (behavior.FireBreath)
+            {
+                Visuals.Configure(CombatVisualCatalog.Instance?.FireBreath, c, target.TilemapPosition);
+                GameMessages.ForCharacter(c, $"{GameMessages.Name(c)} breathes a fireball at {GameMessages.VisibleName(target)}!");
+                return new() { new TakeDamageAction(c, target, Mathf.Max(1, c.FinalStats.Strength), element: DamageElement.Fire) };
             }
             return new() { new RangedAttackAction(c, target, Mathf.Max(1,c.FinalStats.Strength), null) };
         }
         internal override IEnumerator ExecuteRoutine(Character c, bool skipAnimation = false)
-        { if (!skipAnimation && Visuals.Sequence == null) yield return MissileTargeting.Animate(c, target.TilemapPosition, null); }
+        { yield break; }
     }
 }

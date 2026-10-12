@@ -13,6 +13,60 @@ public static class CombatEffectAuthoring
     static readonly Dictionary<string, string> icons = new();
     static Dictionary<string, string> prefabs;
 
+    [MenuItem("Tools/Eternal Enigma/Combat Effects/Complete Enemy Feedback")]
+    public static void CompleteEnemyFeedback()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Exit Play Mode first.");
+        Initialize();
+        var catalog = Asset<CombatVisualCatalog>(Root + "/Catalog.asset");
+        catalog.FireBreath = Profile("Fire", true, false);
+        catalog.Explosion = Profile("Fire", false, true);
+        catalog.Warp = Profile("Portal", false, false);
+        catalog.Duplication = Profile("Summon", false, false);
+        catalog.Reveal = Asset<CombatEffectProfile>(Root + "/Profiles/Mimic Reveal.asset");
+        catalog.Reveal.Impact = Stage("ShadowExplosionSmall", .8f);
+        catalog.Reveal.Impact.FitToTarget = true;
+        catalog.Reveal.CastSeconds = 0;
+        catalog.Reveal.ImpactSeconds = .35f;
+        if (!catalog.Statuses.Any(e => e.TypeName == typeof(BossEffectStatus).FullName))
+            catalog.Statuses.Add(new CombatVisualCatalog.StatusEntry { TypeName = typeof(BossEffectStatus).FullName,
+                Profile = catalog.Statuses.First(e => e.TypeName == typeof(StrengthStatusEffect).FullName).Profile });
+        foreach (var guid in AssetDatabase.FindAssets("t:CombatEffectProfile", new[] { Root }))
+        {
+            var profile = AssetDatabase.LoadAssetAtPath<CombatEffectProfile>(AssetDatabase.GUIDToAssetPath(guid));
+            // SkillAction owns its own cast cue. Other actions use this fallback exactly once.
+            string family = profile.name.Contains("Fire") ? "fire" : profile.name.Contains("Frost") ? "frost" :
+                profile.name.Contains("Lightning") ? "lightning" : profile.name.Contains("Life") ? "life" :
+                profile.name.Contains("Shadow") || profile.name.Contains("Reveal") ? "shadow" : "generic";
+            if (!profile.name.StartsWith("Melee")) profile.CastSound = AssetDatabase.LoadAssetAtPath<AudioClip>(
+                "Assets/MagicArsenal/Effects/Sound/Cast/magic_cast_" + family + ".wav");
+            EditorUtility.SetDirty(profile);
+        }
+        foreach (var name in new[] { "Dragon", "Werewolf" })
+        {
+            string path = "Assets/Prefabs/Dungeon/Enemies/Enemy_" + name + ".prefab";
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                var enemy = root.GetComponent<Enemy>();
+                var behavior = root.GetComponent<EnemyBehavior>() ?? root.AddComponent<EnemyBehavior>();
+                if (name == "Dragon") { behavior.RangedAttack = true; behavior.FireBreath = true; behavior.Range = 6; behavior.RangedAttackChance = .5f; }
+                else { behavior.PackSize = 3; enemy.StartingStats.ActionsPerTurnMax = 2; enemy.StartingStats.AttacksPerTurnMax = 1; }
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+        foreach (var guid in AssetDatabase.FindAssets("t:ExplosionEffectDefinition"))
+        {
+            var effect = AssetDatabase.LoadAssetAtPath<ExplosionEffectDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+            effect.ExplosionParticleEffectPrefab = catalog.Explosion.Area.Prefab;
+            EditorUtility.SetDirty(effect);
+        }
+        EditorUtility.SetDirty(catalog);
+        NormalizeGroundStages();
+        AssetDatabase.SaveAssets();
+    }
+
     [MenuItem("Tools/Eternal Enigma/Combat Effects/Refresh Status Presentation")]
     public static void RefreshStatusPresentation()
     {

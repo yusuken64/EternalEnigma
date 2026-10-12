@@ -53,16 +53,13 @@ public sealed class PartyMenu : Dialog
         UseGameplayDock(Panel);
         HeroesRoot.gameObject.SetActive(false);
         HeroText.gameObject.SetActive(false);
-        DetailsControl.Scroll.gameObject.SetActive(false);
         Hints.gameObject.SetActive(false);
         foreach(var label in Panel.GetComponentsInChildren<TMP_Text>(true))
             if(label.transform.parent==Panel)label.gameObject.SetActive(false);
-        foreach(var name in new[]{"Description parchment","Heading ribbon"})
-            Panel.Find(name)?.gameObject.SetActive(false);
+        Panel.Find("Heading ribbon")?.gameObject.SetActive(false);
         BackButton.gameObject.SetActive(false);
         foreach(var close in Panel.GetComponentsInChildren<DungeonDialogClose>(true))
             close.gameObject.SetActive(false);
-        Fit(scrollView.transform,.035f,.025f,.965f,.975f);
         InventoryTab=HudTabs.ButtonFor(PartyMenuTab.Inventory);
         EquipmentTab=HudTabs.ButtonFor(PartyMenuTab.Equipment);
         SkillsTab=HudTabs.ButtonFor(PartyMenuTab.Skills);
@@ -117,6 +114,16 @@ public sealed class PartyMenu : Dialog
         StopAutoScroll();scrollView.StopMovement();
         Clear(HeroesRoot); Clear(RowsRoot); rows.Clear();
         bool compactStats=Tab==PartyMenuTab.Stats;
+        bool showDescription=Tab==PartyMenuTab.Skills;
+        DetailsControl.Scroll.gameObject.SetActive(showDescription);
+        var descriptionPaper=Panel.Find("Description parchment");
+        if(descriptionPaper!=null)
+        {
+            descriptionPaper.gameObject.SetActive(showDescription);
+            Fit(descriptionPaper,.035f,.025f,.965f,.46f);
+        }
+        Fit(DetailsControl.Scroll.transform,.055f,.045f,.945f,.44f);
+        Fit(scrollView.transform,.035f,showDescription ? .48f : .025f,.965f,.975f);
         var layout=RowsRoot.GetComponent<VerticalLayoutGroup>();
         listSpacing ??= layout.spacing;
         layout.spacing=compactStats?2:listSpacing.Value;
@@ -147,6 +154,12 @@ public sealed class PartyMenu : Dialog
                 FitStatRow(row.gameObject,row.Label,1,24);
             }
             var button=row.Button;
+            if(Tab==PartyMenuTab.Skills)
+            {
+                row.Label.enableAutoSizing=true;
+                row.Label.fontSizeMin=18;
+                row.Label.fontSizeMax=row.Label.fontSize;
+            }
             button.GetComponent<PartyMenuRow>().Selected = () => { selectedIndex = index; ShowDetails(); ScrollToSelected(button.gameObject); };
             rows.Add(button);
         }
@@ -167,7 +180,9 @@ public sealed class PartyMenu : Dialog
         var tab=Tab==PartyMenuTab.Inventory?InventoryTab:Tab==PartyMenuTab.Equipment?EquipmentTab:Tab==PartyMenuTab.Stats?StatsTab:Tab==PartyMenuTab.Capabilities?capabilitiesTab:SkillsTab;
         Selectable firstRow=rows.Count>0?rows[0]:tab;
         for(int i=0;i<rows.Count;i++)rows[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
-            selectOnUp=i>0?rows[i-1]:tab,selectOnDown=i+1<rows.Count?rows[i+1]:null};
+            selectOnUp=i>0?rows[i-1]:tab,selectOnDown=i+1<rows.Count?rows[i+1]:Tab==PartyMenuTab.Skills?DetailsControl:null};
+        DetailsControl.navigation=new Navigation {mode=Navigation.Mode.Explicit,
+            selectOnUp=rows.Count>0?rows[^1]:tab};
         InventoryTab.navigation=EquipmentTab.navigation=SkillsTab.navigation=StatsTab.navigation=
             new Navigation {mode=Navigation.Mode.Explicit,selectOnDown=firstRow};
         if(capabilitiesTab!=null && capabilitiesTab.gameObject.activeSelf)
@@ -186,8 +201,12 @@ public sealed class PartyMenu : Dialog
         var actions = Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? new List<PartyMenuAction>() : context.Actions(Hero,entry);
         string availability = string.Join("\n", actions.Select(a => a.Available ? a.Label : a.Label+": "+a.UnavailableReason));
         string restriction=Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? "" : context.Restriction(Hero,entry);
-        Details.text = $"<b>{entry.Title}</b>\n\n{entry.Description}\n\n{restriction}\n{availability}\n\n{result}";
+        Details.text = string.Join("\n\n",new[]{ $"<b>{entry.Title}</b>",entry.Description,restriction,availability,result }
+            .Where(text=>!string.IsNullOrWhiteSpace(text)));
         Details.rectTransform.anchoredPosition = Vector2.zero;
+        DetailsControl.Scroll.StopMovement();
+        if(Details.gameObject.activeInHierarchy)Canvas.ForceUpdateCanvases();
+        DetailsControl.Scroll.verticalNormalizedPosition=1;
     }
     private void OpenActions(int index)
     {

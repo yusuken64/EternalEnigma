@@ -5,7 +5,7 @@ namespace EternalEnigma.Core.Generation;
 /// <summary>Intact furnished towns adapted to enclosed, seamless combat districts.</summary>
 public static class TownDungeonGenerator
 {
-    public const int Version = 1;
+    public const int Version = 2;
 
     public static TownPlanOptions TownOptions(DungeonFloorOptions options)
     {
@@ -66,12 +66,23 @@ public static class TownDungeonGenerator
             layers[TownLayers.MainRoads][p.X, p.Y] = true;
             props[p.X, p.Y] = false;
         }
-        var stairs = new GridPoint(town.SpineX, h - 3);
+        // Choose different approaches to the district using an independent stream.
+        // Keep the building orientation intact: doorway movement remains cardinal.
+        var gates = new SeedStream(options.Seed, 1901);
+        var approaches = reachable.Where(p => layers[TownLayers.Roads][p.X, p.Y] &&
+            !layers[TownLayers.ShopFloor][p.X, p.Y] &&
+            new GridRect(p.X - 1, p.Y - 1, 3, 3).Cells().All(Open)).ToArray();
+        int side = gates.Range(4);
+        int Edge(GridPoint p, int direction) => direction switch { 0 => p.Y, 1 => w - 1 - p.X, 2 => h - 1 - p.Y, _ => p.X };
+        var arrival = approaches.OrderBy(p => Edge(p, side)).ThenBy(p => Math.Abs(p.X - w / 2) + Math.Abs(p.Y - h / 2)).ThenBy(p => p.X).First();
+        int exitSide = (side + 1 + gates.Range(3)) % 4;
+        var stairs = approaches.Where(p => Math.Max(Math.Abs(p.X - arrival.X), Math.Abs(p.Y - arrival.Y)) >= 8)
+            .OrderBy(p => Edge(p, exitSide)).ThenBy(p => Math.Abs(p.X - w / 2) + Math.Abs(p.Y - h / 2)).ThenBy(p => p.X).First();
         layers[TownLayers.Dungeon][town.DungeonEntrance.X, town.DungeonEntrance.Y] = false;
         layers[TownLayers.Dungeon][stairs.X, stairs.Y] = true;
         town = new TownPlan(town.Seed, layers.ToDictionary(p => p.Key, p => new GridLayer(p.Value), StringComparer.Ordinal),
-            town.BuildingSlots, town.AllySlots, town.ShopRooms, town.PartySpawn, town.Exit, stairs,
+            town.BuildingSlots, town.AllySlots, town.ShopRooms, arrival, arrival, stairs,
             town.SpineX, town.Footprints, town.Interiors);
-        return BiomeDungeonGenerator.Populate(options, walkable, new List<GridRect> { square }, town.PartySpawn, stairs, town);
+        return BiomeDungeonGenerator.Populate(options, walkable, new List<GridRect> { square }, arrival, stairs, town);
     }
 }

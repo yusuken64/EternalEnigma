@@ -18,7 +18,7 @@ public class InventoryMenu : Dialog
     public TextMeshProUGUI StatText;
     public InventoryItemPreview InventoryItemPreview;
     public GameObject EmptyMessage;
-    public List<InventoryMenuItem> InventoryMenuItems { get; private set; }
+    public List<InventoryMenuItem> InventoryMenuItems { get; private set; } = new();
     public FaceCamDisplay FaceCamDisplay;
 
     private GameObject followingObject;

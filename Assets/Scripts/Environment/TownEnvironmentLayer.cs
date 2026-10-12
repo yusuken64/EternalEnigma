@@ -138,7 +138,8 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             }
             if(diorama!=null)DioramaTownDressing.Build(batch,plan,biome,size,diorama);
             batch.Finish();
-            TownGateVisuals.Create(Kit, biome, root.transform, plan.Exit, size, district ? "District entrance" : "Town gate", false);
+            TownGateVisuals.Create(Kit, biome, root.transform, plan.Exit, size, district ? "District entrance" : "Town gate", false,
+                rotation: district ? TownGateVisuals.DistrictRotation(plan, plan.Exit, false) : 0);
         }
         finally { creator.executedBuildLayersCount += 1; }
     }

@@ -161,10 +161,10 @@ namespace EternalEnigma.Tests
             var partyMenu = Object.FindObjectsByType<PartyMenu>(FindObjectsInactive.Include, FindObjectsSortMode.None).Single(menu => menu.IsRoot);
             Assert.That(partyMenu.HeroesRoot.gameObject.activeSelf, Is.False);
             Assert.That(partyMenu.HeroText.gameObject.activeSelf, Is.False);
-            Assert.That(partyMenu.DetailsControl.Scroll.gameObject.activeSelf, Is.False);
+            Assert.That(partyMenu.DetailsControl.Scroll.gameObject.activeInHierarchy, Is.True);
             Assert.That(partyMenu.Hints.gameObject.activeSelf, Is.False);
             var list = (RectTransform)partyMenu.scrollView.transform;
-            Assert.That(list.anchorMax.y - list.anchorMin.y, Is.GreaterThan(.85f));
+            Assert.That(list.anchorMax.y - list.anchorMin.y, Is.GreaterThan(.45f));
             ScreenCapture.CaptureScreenshot($"Temp/EndgameDebug/{destination}.png");
             yield return new WaitForSecondsRealtime(.3f);
             partyMenu.CloseDialog();

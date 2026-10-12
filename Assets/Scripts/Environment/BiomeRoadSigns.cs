@@ -45,6 +45,42 @@ public static class BiomeRoadSigns
 {
     public sealed class Branch {public string TownId;public Vector2Int Direction,FirstCell;public int Distance;}
     public sealed class Sign {public Vector2Int Road,Verge;public OverworldBiome Biome;public Branch[] Branches;public int Priority;public HashSet<Vector2Int> JunctionCells;}
+
+    public static string Directions(CampaignContext context, Sign sign)
+    {
+        var grid = context.Grid;
+        var graph = BiomeRoadGraph.From(grid);
+        var distances = new Dictionary<Vector2Int, int> { [sign.Road] = 0 };
+        var directions = new Dictionary<Vector2Int, Vector2Int>();
+        var queue = new Queue<Vector2Int>(); queue.Enqueue(sign.Road);
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            if (!graph.Edges.TryGetValue(current, out var edges)) continue;
+            foreach (var next in edges.OrderBy(p => p.x).ThenBy(p => p.y))
+            {
+                if (distances.ContainsKey(next)) continue;
+                distances[next] = distances[current] + 1;
+                directions[next] = current == sign.Road ? next - current : directions[current];
+                queue.Enqueue(next);
+            }
+        }
+        string Compass(Vector2Int d) => d.x > 0 ? "East" : d.x < 0 ? "West" : d.y > 0 ? "North" : "South";
+        var entries = new List<(bool Town, string Id, int Distance, string Text)>();
+        foreach (var location in context.Campaign.Locations.Where(l => l.ParentTownId == null))
+        {
+            var cell = grid.TownFootprints.FirstOrDefault(t => t.LocationId == location.Id)?.Entrance ?? grid.Locations[location.Id];
+            var p = new Vector2Int(cell.X, cell.Y);
+            if (!distances.TryGetValue(p, out int distance) || distance == 0) continue;
+            bool town = location.Kind == LocationKind.Town;
+            string name = town ? context.GetTownDisplayName(location.Id) : location.Encounter?.DisplayName ??
+                (location.Kind == LocationKind.FinalDungeon ? "Final dungeon" : location.Variant == DungeonVariant.Town ? "Hostile town district" : location.Id.Replace('-', ' '));
+            entries.Add((town, location.Id, distance, $"{Compass(directions[p])} — {name} · {distance} road steps"));
+        }
+        var sorted = entries.OrderBy(e => e.Distance).ThenBy(e => e.Id, StringComparer.Ordinal).ToArray();
+        var selected = sorted.Where(e => e.Town).Take(2).Concat(sorted.Where(e => !e.Town).Take(3)).OrderBy(e => e.Distance);
+        return "Road sign\n\n" + string.Join("\n", selected.Select(e => e.Text));
+    }
     public static List<Sign> Plan(OverworldGrid grid)
     {
         var graph=BiomeRoadGraph.From(grid);var towns=grid.TownFootprints.Where(t=>!t.IsHostile).ToDictionary(t=>new Vector2Int(t.Entrance.X,t.Entrance.Y),t=>t.LocationId);

@@ -83,19 +83,10 @@ public class PlayAnimationStep : ActionStep
     public string AnimationName;
     public override IEnumerator Execute(Character caster, Character target)
     {
-        caster.PlayAttackAnimation(); //placeholder for now
+        if (caster is Ally ally && System.Enum.TryParse<AnimatedAction>(AnimationName, true, out var action))
+            ally.HeroAnimator?.PlayOneShot(action);
+        else if (caster is Enemy enemy && !string.IsNullOrEmpty(AnimationName)) enemy.PlayOneShot(AnimationName);
+        else caster.PlayAttackAnimation();
         yield return null;
-
-        //if (string.IsNullOrEmpty(AnimationName))
-        //yield break;
-
-        //caster.PlayAnimation(AnimationName);
-
-        //if (WaitForCompletion)
-        //{
-        //    // naive approach: wait until current state's length
-        //    var stateInfo = caster.Animator.GetCurrentAnimatorStateInfo(0);
-        //    yield return new WaitForSeconds(stateInfo.length);
-        //}
     }
 }

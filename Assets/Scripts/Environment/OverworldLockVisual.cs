@@ -35,6 +35,14 @@ public sealed class OverworldLockVisual : MonoBehaviour
             Capability.Remedy=>("ServiceInn","FlowerBox"),
             Capability.Diplomacy=>("CastleFlag","Signboard"),
             Capability.SacredRite=>("StoneBase","FlowerBox"),
+            Capability.MillwrightTraining=>("Chimney","Fence"),
+            Capability.ForestersWrit=>("PackTree03","Signboard"),
+            Capability.FerrymansFavor=>("Reeds","CornerPost"),
+            Capability.GravediggersCharge=>("StoneBase","FacadeDoor"),
+            Capability.SmugglersMark=>("FacadeDoor","Fence"),
+            Capability.BellkeepersOffice=>("CastleFlag","Chimney"),
+            Capability.FuneraryRites=>("RockCap","DeadTree"),
+            Capability.RoyalSurveyorsMaps=>("Signboard","StoneBase"),
             _=>("CastleGate",null)
         };
     }

@@ -7,14 +7,14 @@ namespace EternalEnigma.Core.Generation;
 public static class CampaignGenerator
 {
     public const int LegacyVersion = 11;
-    public const int Version = 12;
+    public const int Version = 13;
     public const int TierCount = 5;
 
     public static Campaign Generate(int seed) => GenerateVersion(seed, Version);
 
     public static Campaign GenerateVersion(int seed, int version)
     {
-        if (version != LegacyVersion && version != Version) throw new ArgumentOutOfRangeException(nameof(version));
+        if (version < LegacyVersion || version > Version) throw new ArgumentOutOfRangeException(nameof(version));
         // Stage identifiers are explicit: adding a new stage must not renumber existing streams.
         var activation = new SeedStream(seed, 0);
         var topology = new SeedStream(seed, 1);
@@ -22,8 +22,9 @@ public static class CampaignGenerator
         var personal = Select(activation, CapabilityKind.Personal, 3 + activation.Range(2), c => c.HasAreaForm());
         var vehicles = Select(activation, CapabilityKind.Vehicle, 2 + activation.Range(2), c => c == Capability.Boat);
         var utility = new List<Capability> { Capability.Engineering };
-        utility.Add(activation.Shuffle(CapabilityCatalog.All.Where(c => c.IsNarrative()))[0]);
-        utility.AddRange(activation.Shuffle(CapabilityCatalog.All.Where(c => c.Kind() == CapabilityKind.Utility && !utility.Contains(c)))
+        var vocabulary = CapabilityCatalog.All.Where(c => version >= 13 || c <= Capability.SacredRite).ToArray();
+        utility.Add(activation.Shuffle(vocabulary.Where(c => c.IsNarrative()))[0]);
+        utility.AddRange(activation.Shuffle(vocabulary.Where(c => c.Kind() == CapabilityKind.Utility && !utility.Contains(c)))
             .Take(2 + activation.Range(2)));
         var active = personal.Concat(vehicles).Concat(utility).ToArray();
         int minimum = Math.Max(5, active.Length - 6);
@@ -115,12 +116,13 @@ public static class CampaignGenerator
         {
             var capability = entry.Id;
             int index = sourceIndex[capability];
-            for (int provider = 0; provider < 2; provider++)
+            // A capability is a unique campaign reward, not a prize repeated at backup providers.
+            for (int provider = 0; provider < (version >= 13 ? 1 : 2); provider++)
             {
                 string id = $"source-{capability}-{provider}";
                 string location;
-                // Share existing destinations for ordinary rewards. Keep the return reward's
-                // two sites independent, and preserve Engineering-gated vehicle converters.
+                // Share existing destinations for ordinary rewards. The required return reward
+                // has its own sealed site; vehicle converters still require Engineering.
                 if (capability.Kind() != CapabilityKind.Vehicle && capability != critical[2] && index < 6)
                     location = provider == 0 ? $"checkpoint-{index}" : $"region-{index}-landmark";
                 else

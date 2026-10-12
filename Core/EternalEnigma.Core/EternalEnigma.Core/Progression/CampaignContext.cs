@@ -27,6 +27,8 @@ public sealed class CampaignSnapshot
     public string LastTownId = "town-0";
     public string PendingDungeon = "";
     public bool Finished;
+    // Enabled by the new-journey host. Existing saves and isolated starts have no prologue.
+    public bool RequiresOpeningPreparation, BoughtOpeningBread, LearnedOpeningSkill;
     public string[] Keys = Array.Empty<string>(), Opened = Array.Empty<string>(), Resolved = Array.Empty<string>(),
         Claimed = Array.Empty<string>(), Roster = Array.Empty<string>(), Active = Array.Empty<string>(),
         Towns = Array.Empty<string>(), Completed = Array.Empty<string>(), CollectedPickups = Array.Empty<string>();
@@ -84,6 +86,16 @@ public HashSet<string> Towns { get; }
 public HashSet<string> Completed { get; }
     public HashSet<string> CollectedPickups { get; }
     public bool ResetFloorUnlocked => Completed.Contains("repeatable-0");
+    public const string OpeningDayKey = "Opening day";
+    public bool IsPreparingForOpening => !IsSandbox && State.RequiresOpeningPreparation && !Keys.Contains(OpeningDayKey);
+    public bool ReadyForOpeningDay => IsPreparingForOpening && State.BoughtOpeningBread && State.LearnedOpeningSkill;
+    public bool CanEnterDungeon(string dungeonId) => dungeonId != "story-0" || !IsPreparingForOpening;
+    public string OpeningPreparationHint => ReadyForOpeningDay
+        ? "You're ready for tomorrow. Sleep and save in your bed at home to open the town dungeon."
+        : "The town dungeon opens tomorrow. " +
+            (!State.BoughtOpeningBread ? "Collect your free Bread (0G) at the bakery. " : "") +
+            (!State.LearnedOpeningSkill ? "Learn an active skill at the trainer. " : "") +
+            "Then sleep and save at home.";
     public CapabilitySet Permanent { get; private set; }
     public CapabilitySet Held => Permanent.Union(CapabilitySet.From(Campaign.Companions.Where(c => Active.Contains(c.Id)).Select(c => c.Capability)));
     public OverworldGates Gates => gates ??= new OverworldGates(Campaign, Grid, Resolved, Keys, Opened, Completed);
@@ -156,7 +168,7 @@ public HashSet<string> Completed { get; }
     {
         var location = Location;
         if (State.PendingDungeon.Length != 0 || location == null || (State.Finished && location.Id == Campaign.FinalLocationId) ||
-            !location.IsDungeon || (location.Encounter != null && !location.Encounter.CanEnter(Held, Completed))) return false;
+            !location.IsDungeon || !CanEnterDungeon(location.Id) || (location.Encounter != null && !location.Encounter.CanEnter(Held, Completed))) return false;
         State.PendingDungeon = location.Id; State.LocationId = location.Id; State.Scene = "DungeonScene"; return true;
     }
     public bool CanLeaveTown(string townId) => Campaign.Routes.Where(r => r.IsTownExit && r.From == townId)
@@ -165,7 +177,7 @@ public HashSet<string> Completed { get; }
     {
         var town = Location;
         var dungeon = Campaign.Locations.FirstOrDefault(l => l.Id == dungeonId);
-        if (State.PendingDungeon.Length != 0 || town?.Kind != LocationKind.Town || dungeon?.ParentTownId != town.Id ||
+        if (State.PendingDungeon.Length != 0 || town?.Kind != LocationKind.Town || dungeon?.ParentTownId != town.Id || !CanEnterDungeon(dungeonId) ||
             (!IsSandbox && (State.Scene != "Town" || State.LocationId != town.Id))) return false;
         State.LastTownId = town.Id;
         State.PendingDungeon = dungeon.Id; State.LocationId = dungeon.Id; State.Scene = "DungeonScene";

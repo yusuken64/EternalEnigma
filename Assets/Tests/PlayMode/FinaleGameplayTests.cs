@@ -35,7 +35,7 @@ namespace EternalEnigma.Tests
                 Assert.That(Time.realtimeSinceStartupAsDouble, Is.LessThan(deadline), "Finale initialization timed out.");
                 AssertCovered(common.ScreenTransition);
                 var title = common.ScreenTransition.ShutterScreen.GetComponentInChildren<TMPro.TMP_Text>(true);
-                if (harness.Game != null && harness.Game.Finale == null && title.text.Contains("Floor 1/5"))
+                if (harness.Game != null && harness.Game.Finale == null && title.text.Contains("Floor 1</size>"))
                 {
                     coveredPlanningFrames++;
                     if (coveredPlanningFrames == 1)
@@ -47,7 +47,7 @@ namespace EternalEnigma.Tests
                 yield return null;
             }
             Assert.That(coveredPlanningFrames, Is.GreaterThan(0),
-                "The labeled loading screen must get a frame before synchronous five-map planning begins.");
+                "The labeled loading screen must get a frame before synchronous two-map planning begins.");
             yield return harness.WaitUntil(() => !common.ScreenTransition.BlockScreen.activeSelf, "finale reveal");
             yield return harness.WaitForIdle();
         }
@@ -60,7 +60,7 @@ namespace EternalEnigma.Tests
             Assert.That(title, Is.Not.Null);
             Assert.That(title.gameObject.activeInHierarchy && title.alpha > .99f, Is.True);
             Assert.That(title.text, Does.StartWith("Loading..."));
-            if (floor > 0) Assert.That(title.text, Does.Contain($"Floor {floor}/5"));
+            if (floor > 0) Assert.That(title.text, Is.EqualTo($"Loading...\n<size=70%>The reverse world - Floor {floor}</size>"));
         }
         static void Resolve(Character actor, GameAction action)
         {
@@ -72,14 +72,31 @@ namespace EternalEnigma.Tests
                 next.UpdateDisplayedStats();
             }
         }
-        void Reveal(Enemy enemy)
+        Enemy Reveal(Enemy enemy)
         {
             var game = harness.Game;
+            var identity = enemy.GetComponent<FinaleActor>();
+            string id = identity.Id, region = identity.RegionId;
+            bool lastBuilding = game.Enemies.Count(e => e.GetComponent<FinaleActor>() is { Hidden: true } a && a.RegionId == region) == 1;
+            var position = enemy.TilemapPosition;
+            int population = game.Enemies.Count, defeated = game.Finale.Session.Defeated.Count;
             var cell = game.CurrentDungeon.GetWalkableNeighborhoodTiles(enemy.TilemapPosition)
                 .First(p => game.Finale.Session.CanReveal(enemy.GetComponent<FinaleActor>().Id, p.ToGridPoint()) &&
                     game.CurrentDungeon.OverlapsAnyOtherCharacter(harness.Ally, Character.ToBounds(p)) == null);
             harness.Ally.SetPosition(cell);
             Resolve(harness.Ally, new RevealMimicAction(enemy));
+            var revealed = game.Enemies.OfType<Enemy>().Single(e => e.GetComponent<FinaleActor>().Id == id);
+            Assert.That(revealed.TilemapPosition, Is.EqualTo(position));
+            Assert.That(revealed.GetComponent<FinaleActor>().Family, Is.EqualTo(game.Finale.Session.MimicFamily(id)));
+            Assert.That(revealed.GetComponent<FinaleActor>().Hidden, Is.False);
+            Assert.That(game.Finale.CanAct(revealed), Is.False);
+            Assert.That(game.Enemies.Count, Is.EqualTo(population)); Assert.That(game.Finale.Session.Defeated.Count, Is.EqualTo(defeated));
+            if (lastBuilding)
+            {
+                Assert.That(revealed.IsBoss, Is.True, "The last building in each biome must reveal a boss.");
+                Assert.That(revealed.GetComponent<LargeBossBehavior>(), Is.Not.Null);
+            }
+            return revealed;
         }
         void Kill(Enemy enemy)
         {
@@ -98,7 +115,7 @@ namespace EternalEnigma.Tests
             int hp = mimic.Vitals.HP;
             Kill(mimic); Assert.That(mimic.Vitals.HP, Is.EqualTo(hp)); Assert.That(session.Defeated, Is.Empty);
             Assert.That(game.Finale.CanAct(mimic), Is.False);
-            Reveal(mimic);
+            mimic = Reveal(mimic);
             Assert.That(mimic.GetComponent<FinaleActor>().Hidden, Is.False);
             Assert.That(game.Finale.CanAct(mimic), Is.False);
             game.Finale.EndTurn(); Assert.That(game.Finale.CanAct(mimic), Is.True);
@@ -126,8 +143,7 @@ namespace EternalEnigma.Tests
             Assert.That(session.EnemyRegions[childIdentity.Id], Is.EqualTo(session.EnemyRegions[sourceIdentity.Id]));
             foreach (var enemy in game.Enemies.OfType<Enemy>().Where(e => e != child).ToArray())
             {
-                if (enemy.GetComponent<FinaleActor>().Hidden) Reveal(enemy);
-                Kill(enemy);
+                if (enemy.Vitals.HP > 0) Kill(enemy.GetComponent<FinaleActor>().Hidden ? Reveal(enemy) : enemy);
             }
             game.Finale.EndTurn();
             Assert.That(session.Unlocked.Count, Is.EqualTo(1), "A living summon still owns the region.");
@@ -135,7 +151,7 @@ namespace EternalEnigma.Tests
             game.Finale.EndTurn(); Assert.That(session.Unlocked.Count, Is.EqualTo(2), "The boundary opens once.");
         }
         [UnityTest, Timeout(900000)]
-        public IEnumerator AllFiveStairsPreservePartyAndWakeAtHomeWithoutSaving()
+        public IEnumerator BothStairsPreservePartyAndWakeAtHomeWithoutSaving()
         {
             yield return LoadFinale();
             var common = Common.Instance; var context = common.CampaignContext; var game = harness.Game;
@@ -144,29 +160,44 @@ namespace EternalEnigma.Tests
             string checkpoint = harness.Store.Json;
             var roster = common.GameSaveData.Roster.Select(a => a.AllyId).ToArray();
             var inventory = game.PlayerController.Inventory.InventoryItems.ToArray();
+            var party = PartyRules.PartyMembers(game).Where(a => !a.IsSummon).ToArray();
+            Assert.That(party.Length, Is.GreaterThanOrEqualTo(3));
+            var expectedWeapons = party.ToDictionary(a => a.TownAllyId, a => a.Equipment.EquippedWeapon.ItemName);
+            // Cover both representations of an unarmed hero while retaining real weapons in the summary.
+            party[0].Equipment.EquippedWeapon = null;
+            JsonUtility.FromJsonOverwrite("{\"EquippedWeapon\":{\"ItemDefinition\":null}}", party[1].Equipment);
+            Assert.That(party[1].Equipment.EquippedWeapon, Is.Not.Null);
+            Assert.That(party[1].Equipment.EquippedWeapon.ItemDefinition, Is.Null);
+            expectedWeapons[party[0].TownAllyId] = expectedWeapons[party[1].TownAllyId] = "Unarmed";
             game.PlayerController.Gold = 4321;
-            for (int floor = 1; floor <= 5; floor++)
+            for (int floor = 1; floor <= 2; floor++)
             {
+                yield return null;
+                Assert.That(game.Finale.Title, Is.EqualTo($"The reverse world - Floor {floor}"));
+                Assert.That(Object.FindFirstObjectByType<DungeonHud>().GetComponentsInChildren<TMPro.TMP_Text>()
+                    .Any(t => t.text == $"Finale {floor}\n{session.Remaining} remaining"), Is.True);
                 var oldTerrain = game.CurrentDungeon;
                 for (int sweep = 0; !session.FloorCleared; sweep++)
                 {
                     Assert.That(sweep, Is.LessThan(100), "Finale clearance must make progress.");
-                    foreach (var enemy in game.Enemies.OfType<Enemy>().ToArray())
+                    // Deliberately visit boss buildings early to exercise deferred boss reveals.
+                    foreach (var enemy in game.Enemies.OfType<Enemy>().OrderByDescending(e => e.IsBoss).ToArray())
                     {
-                        if (enemy.GetComponent<FinaleActor>().Hidden) Reveal(enemy);
-                        Kill(enemy);
+                        if (enemy.Vitals.HP > 0) Kill(enemy.GetComponent<FinaleActor>().Hidden ? Reveal(enemy) : enemy);
                     }
                     game.Finale.EndTurn();
                 }
                 Assert.That(session.CurrentFloor, Is.EqualTo(floor));
                 Assert.That(context.State.Finished, Is.False);
-                Assert.That(session.Plan.Floors.Count, Is.EqualTo(5));
+                Assert.That(session.Plan.Floors.Count, Is.EqualTo(2));
+                var stairs = game.CurrentDungeon.Interactables.OfType<Stairs>().Single();
+                Assert.That(stairs.GetInteractionText(), Is.EqualTo(floor == 2 ? "Ascend and return home" : "Ascend to the next floor"));
                 harness.Ally.SetPosition(session.Floor.Stairs.ToCell());
                 harness.Ally.Vitals.SP = 1; harness.Ally.SyncDisplayedStats();
                 DungeonPreferences.AnimationOverride = floor % 2 == 1
                     ? DungeonAnimationMode.Normal : DungeonAnimationMode.NoAnimations;
                 Assert.That(game.Finale.RequestExit(), Is.True);
-                if (floor < 5)
+                if (floor < 2)
                 {
                     int loadingFrames = 0;
                     double deadline = Time.realtimeSinceStartupAsDouble + harness.TimeoutSeconds;
@@ -187,6 +218,7 @@ namespace EternalEnigma.Tests
                 }
             }
             yield return harness.WaitUntil(() => common.Travel.HomecomingCompleted, "homecoming wake and restored control");
+            Assert.That(session.StairTransitions, Is.EqualTo(new[] { 1, 2 }));
             var town = Object.FindFirstObjectByType<Town>(); var bed = town.GetComponentInChildren<HomeBed>();
             Assert.That(town.Configuration.Id, Is.EqualTo(context.Campaign.StartLocationId));
             Assert.That(town.TownPlayer.ControllingTownAlly.Id, Is.EqualTo(common.GameSaveData.ProtagonistId));
@@ -202,6 +234,7 @@ namespace EternalEnigma.Tests
             var summary = Object.FindFirstObjectByType<CampaignSummaryDialog>();
             Assert.That(summary, Is.Not.Null); Assert.That(common.GameSaveData.Completion.Gold, Is.EqualTo(4321));
             Assert.That(common.GameSaveData.Completion.Party.Length, Is.EqualTo(roster.Length));
+            Assert.That(common.GameSaveData.Completion.Party.ToDictionary(h => h.Id, h => h.Weapon), Is.EqualTo(expectedWeapons));
             Assert.That(summary.Heroes.Where(h => h.Root.gameObject.activeSelf).All(h => h.Portrait.sprite != null), Is.True);
             yield return null; Canvas.ForceUpdateCanvases();
             Assert.That(summary.GetComponentsInChildren<TMPro.TMP_Text>().Any(t => t.isTextOverflowing), Is.False);
@@ -210,6 +243,7 @@ namespace EternalEnigma.Tests
             summary.SaveButton.onClick.Invoke();
             Assert.That(harness.Store.Writes, Is.EqualTo(writes + 1)); Assert.That(summary.SaveButton.interactable, Is.False);
             Assert.That(SaveSystem.LoadData().Completion.Party.Select(h => h.Id), Is.EqualTo(common.GameSaveData.Completion.Party.Select(h => h.Id)));
+            Assert.That(SaveSystem.LoadData().Completion.Party.ToDictionary(h => h.Id, h => h.Weapon), Is.EqualTo(expectedWeapons));
             summary.ContinueButton.onClick.Invoke(); yield return null;
             common.Travel.Continue();
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true && !common.Travel.IsTransitioning, "completed save continues");

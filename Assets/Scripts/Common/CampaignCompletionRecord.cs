@@ -28,12 +28,14 @@ public sealed class CampaignCompletionRecord
             {
                 Id = a.TownAllyId, Name = GameMessages.Name(a), Level = a.Vitals.Level,
                 PrimaryClass = a.PrimaryClass?.DisplayName ?? "Adventurer", SecondaryClass = a.SecondaryClass?.DisplayName ?? "",
-                MaxHP = a.FinalStats.HPMax, MaxSP = a.FinalStats.SPMax, Weapon = a.Equipment.EquippedWeapon?.ItemName ?? "Unarmed"
+                MaxHP = a.FinalStats.HPMax, MaxSP = a.FinalStats.SPMax,
+                // Unity can deserialize an empty slot as an item with no definition.
+                Weapon = a.Equipment.Current().Weapon?.ItemName ?? "Unarmed"
             }).ToArray()
         };
     }
 
     internal string Statistics => $"{DungeonsCleared} dungeons cleared   ·   {TownsVisited} towns visited   ·   {CompanionsRecruited} companions recruited\n" +
         $"{KeysFound} keys found   ·   {Gold:N0} treasure   ·   {TimeSpan.FromSeconds(Math.Max(0, PlaytimeSeconds)).TotalHours:0.0} hours\n" +
-        $"Five floors of the reverse world conquered   ·   Journey seed {Seed}";
+        $"The reverse world conquered   ·   Journey seed {Seed}";
 }

@@ -21,10 +21,12 @@ public class BallistaDialog : Dialog
     private readonly float[] listPositions = { 1, 1 };
     private readonly float[] previewPositions = { 1, 1 };
     private SkillGridItem selected;
+    private bool firstLesson;
 
     public override void PrepareTown(TownInteractionContext context)
     {
-        Character = context.Player.ControllingTownAlly;
+        Character = context.Player.RecruitedAllies.FirstOrDefault(TrainerOffers.IsFirstLesson)
+            ?? context.Player.ControllingTownAlly;
         Show();
     }
 
@@ -102,6 +104,7 @@ public class BallistaDialog : Dialog
     private void BuildList()
     {
         StopAutoScroll();
+        firstLesson = TrainerOffers.IsFirstLesson(Character);
         selected = null;
         foreach (Transform child in SkillGridContainer)
         {
@@ -113,7 +116,7 @@ public class BallistaDialog : Dialog
         {
             var heading = Instantiate(Layout.HeadingTemplate, SkillGridContainer, false);
             heading.gameObject.SetActive(true);
-            heading.text = Character.PrimaryClass == null ? "Available skills" :
+            heading.text = firstLesson ? "Choose your first active skill" : Character.PrimaryClass == null ? "Available skills" :
                 $"Tier {tier.Key} - unlocks at level {tier.First().TierRequiredLevel}";
             foreach (var offer in tier)
             {
@@ -178,6 +181,12 @@ public class BallistaDialog : Dialog
 
     public void Refresh()
     {
+        if (firstLesson != TrainerOffers.IsFirstLesson(Character))
+        {
+            BuildList();
+            SetFirstSelect();
+            return;
+        }
         var offers = Offers().ToDictionary(o => o.Skill.SkillName);
         foreach (var row in SkillGridItems)
             if (offers.TryGetValue(row.GetSkill().SkillName, out var offer))

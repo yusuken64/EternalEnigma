@@ -8,8 +8,10 @@ the campaign and grid layouts; Unity runs the playable game.
 
 New Journey selects a save slot, then opens the authored hero roster. Choosing a hero chooses their model and fixed
 primary/secondary class combination; the normal menu does not offer arbitrary class reassignment.
-A new campaign begins with that protagonist in town-0 and grants starting supplies once.
-Recruit companions, equip the party, learn skills and enter the town's story dungeon.
+A new campaign begins with that protagonist at home in town-0 on preparation day.
+Buy the bakery's first Bread for 0G and choose an affordable active lesson at the trainer,
+in either order. Sleep and save at home to reach morning and open the town's story dungeon.
+Recruitment and equipment remain available while preparing; the bed can also save and quit early.
 Clearing it opens the town exit; clearing the outdoor opening dungeon supplies the area-gate key.
 Explore the six-region campaign, earn capabilities, use shortcuts and return to earlier regions,
 then finish the final dungeon. Finished campaigns no longer offer Continue.

@@ -79,6 +79,13 @@ captures, four interior types, vendor behavior, greetings, movement and revisit 
 
 ## Gameplay rules
 
+- New campaigns require one free Bread purchase at the town-0 bakery and an active lesson
+  for the protagonist before sleeping at home opens the first dungeon. Either errand can
+  come first. The normal shop confirmation and trainer confirmation record completion;
+  canceling does not. The first lesson uses normal learning points and initially hides
+  passive and unaffordable offers. After learning, the full trainer catalog returns.
+  Bread is no longer placed in the starting bag. The free offer is consumed once, survives
+  saving, and does not return on shop restock. The bed can save unfinished errands and quit.
 - Purchases, training, donations, recruitment, dismissal and equipment changes update captured
   live state. Explicit home/inn save actions write the checkpoint; `SaveSystem.Capture` itself
   does not write storage.

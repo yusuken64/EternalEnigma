@@ -26,6 +26,68 @@ namespace EternalEnigma.Tests
         private Keyboard keyboard;
         private Gamepad pad;
 
+        [UnityTest]
+        public IEnumerator UniqueCampaignRewardUsesTheSameNameInPopupMenuAndGateAction()
+        {
+            var context = Enumerable.Range(0, 32)
+                .Select(seed => new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed)))
+                .Where(c => c.Campaign.Sources.Any(s => s.Capability == Capability.RoyalSurveyorsMaps &&
+                    c.Campaign.Locations.Single(l => l.Id == s.LocationId).Kind == LocationKind.Checkpoint))
+                .OrderByDescending(c => CampaignRewardNames.Name(c, Capability.RoyalSurveyorsMaps).Length).First();
+            Common.Instance.CampaignContext = context;
+            var source = context.Campaign.Sources.Single(s => s.Capability == Capability.RoyalSurveyorsMaps);
+            context.State.Scene = "Overworld";
+            context.Position = context.Grid.Locations[source.LocationId];
+            string name = CampaignRewardNames.Name(context, source.Capability);
+            yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+            scene = SceneManager.GetSceneByName("Overworld");
+            var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+            yield return harness.WaitUntil(() => world.IsReady, "unique reward world");
+
+            world.ClaimRewards(false);
+            yield return null;
+            Assert.That(context.Held.Contains(source.Capability), Is.True);
+            Assert.That(Common.Instance.MessageDialog.PromptText.text, Does.Contain(name));
+            Assert.That(Common.Instance.MessageDialog.PromptText.text, Does.Contain(CampaignRewardNames.Purpose(source.Capability)));
+            Assert.That(context.Campaign.Sources.Count(s => s.Capability == source.Capability), Is.EqualTo(1));
+            yield return AcknowledgeKeyAnnouncement();
+            int claims = context.Claimed.Count;
+            world.ClaimRewards(false);
+            yield return null;
+            Assert.That(Common.Instance.Travel.IsTransitioning, Is.False, "Revisiting a provider must not repeat its reward popup.");
+            Assert.That(context.Claimed.Count, Is.EqualTo(claims));
+
+            var menu = world.GetComponent<OverworldMenuManager>();
+            menu.OpenPartyMenu(PartyMenuTab.Capabilities);
+            yield return null;
+            Assert.That(menu.PartyMenu.EntryButtons.SelectMany(b => b.GetComponentsInChildren<TMPro.TMP_Text>())
+                .Count(t => t.text.Contains(name)), Is.EqualTo(1));
+            menu.PartyMenu.CloseDialog();
+            yield return null;
+
+            var route = context.Campaign.Routes.First(r => r.Requirement.Alternatives.Count == 1 &&
+                r.Requirement.Alternatives[0].Equals(CapabilitySet.Of(source.Capability)) &&
+                context.Grid.Locks.Any(g => g.RouteId == r.Id));
+            var gate = context.Grid.Locks.Single(g => g.RouteId == route.Id);
+            context.Position = gate.Cells.SelectMany(OverworldMovement.Neighbors).First(p =>
+                context.Gates.IsWalkable(p, context.Held) && context.Gates.Nearby(p).Any(r => r.Id == route.Id));
+            Assert.That(menu.ChooseGate(route), Is.True);
+            yield return null;
+            var picker = menu.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p => p.Owner != null);
+            var button = picker.Rows.GetComponentsInChildren<AuthoredButton>()
+                .Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text == name);
+            Assert.That(button.Button.interactable, Is.True);
+            Directory.CreateDirectory("Temp/CampaignKeys");
+            ScreenCapture.CaptureScreenshot("Temp/CampaignKeys/named-gate-action.png");
+            yield return new WaitForEndOfFrame();
+            Assert.That(button.Label.isTextOverflowing, Is.False, "The long generated reward name must fit its action button.");
+            button.Button.onClick.Invoke();
+            yield return null;
+            Assert.That(context.Resolved.Contains(route.Id), Is.True);
+            Assert.That(Common.Instance.MessageDialog.PromptText.text, Does.Contain(name));
+            yield return AcknowledgeKeyAnnouncement();
+        }
+
         [UnityTest] public IEnumerator RoadSignOpensTownAndLandmarkDirectionsWithoutChangingProgression()
         {
             var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
@@ -365,6 +427,12 @@ namespace EternalEnigma.Tests
             Assert.That(world.IsReady, Is.True);
             Assert.That(world.Campaign.Seed, Is.EqualTo(seed));
             var c = world.Campaign; var grid = world.Map.CurrentGrid;
+            IEnumerator ClearBridge(CampaignRoute boundary)
+            {
+                if (boundary.CompletionLocationId == null || world.Context.Completed.Contains(boundary.CompletionLocationId)) yield break;
+                yield return WalkTo(world, grid.Locations[boundary.CompletionLocationId]);
+                Assert.That(world.SimulateDungeonVictory(), Is.True, "The bridge encounter must be cleared before crossing.");
+            }
             yield return WalkTo(world, grid.Locations["story-0"]);
             world.ClaimRewards(announceLocked: false); yield return AcknowledgeKeyAnnouncement();
             Assert.That(world.CollectedKeys, Is.Empty, "An ordinary claim cannot award the completion key.");
@@ -425,6 +493,8 @@ namespace EternalEnigma.Tests
                 yield return WalkTo(world, grid.PlayerStart);
                 if (reward.CompanionId != null) Assert.That(world.ToggleCompanion(reward.CompanionId), Is.True);
                 Assert.That(world.Held.Contains(objective.RewardCapability.Value), Is.True);
+                yield return ClearBridge(c.Routes.Single(r => r.IsProgressionBoundary && r.From == "checkpoint-1"));
+                yield return ClearBridge(c.Routes.Single(r => r.IsProgressionBoundary && r.From == "checkpoint-2"));
                 yield return WalkTo(world, grid.Locations["checkpoint-3"]);
                 Assert.That(world.Position, Is.EqualTo(grid.Locations["checkpoint-3"]));
                 // Reach each later biome normally, collect its key, and walk the passage both ways.
@@ -443,6 +513,7 @@ namespace EternalEnigma.Tests
                                 .Select(p => new { point = p, path = Path(world, p) }).Where(p => p.path != null).OrderBy(p => p.path.Count).First().point;
                             yield return WalkTo(world, town); Assert.That(world.ToggleCompanion(source.CompanionId), Is.True);
                         }
+                        yield return ClearBridge(boundary);
                         yield return WalkTo(world, grid.Locations["checkpoint-" + later]);
                     }
                     var shortcut = c.Routes.Single(r => r.ShortcutKind == ShortcutKind.Keyed && r.To == "checkpoint-" + later);
@@ -451,7 +522,14 @@ namespace EternalEnigma.Tests
                     Assert.That(world.Warp(shortcut.Id), Is.False);
                     Assert.That(world.Message, Does.Contain(shortcut.KeyLabel));
                     Assert.That(world.OpenShortcut(), Is.False);
-                    yield return WalkTo(world, grid.Locations[shortcut.KeyLocationId]); world.ClaimRewards(announceLocked: false); yield return AcknowledgeKeyAnnouncement();
+                    yield return WalkTo(world, grid.Locations[shortcut.KeyLocationId]);
+                    if (shortcut.KeyCondition == KeyAcquisition.DungeonCompletion)
+                    {
+                        world.ClaimRewards(announceLocked: false); yield return AcknowledgeKeyAnnouncement();
+                        Assert.That(world.CollectedKeys, Does.Not.Contain(shortcut.KeyId), "The shortcut key requires encounter completion.");
+                        Assert.That(world.SimulateDungeonVictory(), Is.True);
+                    }
+                    world.ClaimRewards(announceLocked: false); yield return AcknowledgeKeyAnnouncement();
                     Assert.That(world.CollectedKeys, Does.Contain(shortcut.KeyId));
                     yield return WalkTo(world, grid.Locations[shortcut.To]);
                     Assert.That(world.Warp(shortcut.Id), Is.False, "Collecting a key must leave the gate locked.");

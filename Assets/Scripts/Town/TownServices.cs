@@ -9,8 +9,16 @@ public sealed class TownServices
     private TownPlayer Player => town.TownPlayer;
     private TownSaveData Save => Common.Instance.GameSaveData.TownSaveData;
     public TownServices(Town town) { this.town = town; }
+    public bool OffersOpeningBread(TownBuildingDefinition building) =>
+        town.Configuration.Id == "town-0" && building.Id == "bakery" &&
+        Common.Instance.CampaignContext?.IsPreparingForOpening == true &&
+        !Common.Instance.CampaignContext.State.BoughtOpeningBread;
+
     public List<TownShopOffer> Catalog(TownBuildingDefinition building) =>
-        TownShopCatalog.Resolve(building, TownShopCatalog.Tier(town.Configuration.Id));
+        TownShopCatalog.Resolve(building, TownShopCatalog.Tier(town.Configuration.Id))
+            .Select(offer => OffersOpeningBread(building) && offer.Item.ItemName == "Bread"
+                ? new TownShopOffer { Item = offer.Item, Price = 0, Quantity = offer.Quantity, StackCount = 1, MinimumTier = offer.MinimumTier }
+                : offer).ToList();
 
     public TownShopSaveData Shop(TownBuildingDefinition building)
     {
@@ -42,6 +50,11 @@ public sealed class TownServices
         Player.Gold -= offer.Price;
         stock.Remaining--;
         Player.Inventory.Add(item);
+        if (OffersOpeningBread(building) && itemName == "Bread")
+        {
+            Common.Instance.CampaignContext.State.BoughtOpeningBread = true;
+            GameMessages.Post("The baker packs your first Bread for free. " + Common.Instance.CampaignContext.OpeningPreparationHint);
+        }
         town.SaveProgress();
         reason = null;
         return true;
@@ -80,6 +93,13 @@ public sealed class TownServices
             Player.Gold -= offer.NextCost;
         }
         ally.SetRank(offer.Skill.SkillName, offer.CurrentRank + 1);
+        var context = Common.Instance.CampaignContext;
+        if (context?.IsPreparingForOpening == true && town.Configuration.Id == "town-0" &&
+            ally.Id == Common.Instance.GameSaveData.ProtagonistId && offer.Skill.ActivationType == ActivationType.Active)
+        {
+            context.State.LearnedOpeningSkill = true;
+            GameMessages.Post("First active skill learned: " + offer.Skill.SkillName + ". " + context.OpeningPreparationHint);
+        }
         town.SaveProgress();
         reason = null;
         return true;

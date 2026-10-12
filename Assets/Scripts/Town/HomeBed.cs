@@ -41,9 +41,21 @@ public sealed class HomeBed : MonoBehaviour
     public void SleepAndSave()
     {
         if (IsSleeping || town.TownPlayer.IsBusy || activationFrame == Time.frameCount) return;
+        var context = Common.Instance.CampaignContext;
+        if (context?.IsPreparingForOpening == true && !context.ReadyForOpeningDay)
+        { TownMenu.ShowMessage(context.OpeningPreparationHint); return; }
         activationFrame = Time.frameCount;
         IsSleeping = true; town.TownPlayer.CutsceneLocked = true;
         StartCoroutine(Sleep());
+    }
+    public void SaveAndQuit()
+    {
+        if (IsSleeping || town.TownPlayer.IsBusy || town.TownPlayer.CutsceneLocked) return;
+        town.WriteSaveData();
+        var hero = town.TownPlayer.ControllingTownAlly;
+        if (!CampaignSaving.Commit(Common.Instance, "town-0/home", hero.TilemapPosition, hero.CurrentFacing, out var error))
+        { TownMenu.ShowMessage(error); return; }
+        Common.Instance.Travel.ReturnToMenu();
     }
     private IEnumerator Sleep()
     {
@@ -56,6 +68,7 @@ public sealed class HomeBed : MonoBehaviour
         var transition = Common.Instance.ScreenTransition;
         bool animated = DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations;
         string error = null;
+        bool openingMorning = Common.Instance.CampaignContext?.ReadyForOpeningDay == true;
         var bedEntry = SleepAnchor.position - (hero.VisualParent.transform.position - hero.transform.position);
         try
         {
@@ -76,7 +89,7 @@ public sealed class HomeBed : MonoBehaviour
             foreach (var ally in player.RecruitedAllies) { ally.Hp = -1; ally.Sp = -1; ally.HasHunger = false; ally.Hunger = 0; ally.HungerAccumulate = 0; }
             // Tile remains reserved at the awake position for the entire sequence.
             town.WriteSaveData();
-            CampaignSaving.Commit(Common.Instance, "town-0/home", tile, facing, out error);
+            CampaignSaving.Commit(Common.Instance, "town-0/home", tile, facing, out error, beginOpeningDay: openingMorning);
             if (animated)
             {
                 yield return new WaitForSecondsRealtime(.4f);
@@ -95,7 +108,9 @@ public sealed class HomeBed : MonoBehaviour
             camera.enabled = cameraEnabled; player.CutsceneLocked = false; IsSleeping = false;
             transition.ReleaseFade();
         }
-        TownMenu.ShowMessage(error ?? "Party rested. Game saved.");
+        TownMenu.ShowMessage(error ?? (openingMorning
+            ? "Morning has come. The town dungeon is open!\nYour party and preparations are saved."
+            : "Party rested. Game saved."));
     }
     // Homecoming only plays the wake half. It never commits a checkpoint or creates supplies.
     internal IEnumerator WakeOnly()

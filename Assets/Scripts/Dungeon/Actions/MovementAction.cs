@@ -656,8 +656,13 @@ internal sealed class RevealMimicAction : GameAction
     internal override List<GameAction> ExecuteImmediate(Character character)
     {
         if (!IsValid(character)) return new();
+        if (mimic.GetComponent<FinaleActor>() is { Hidden: true })
+        {
+            var revealed = Game.Instance.Finale.Reveal(mimic, character);
+            if (revealed != null) TrackAnimationTarget(revealed);
+            return new();
+        }
         TrackAnimationTarget(mimic);
-        if (mimic.GetComponent<FinaleActor>() is { Hidden: true }) { Game.Instance.Finale.Reveal(mimic, character); return new(); }
         mimic.Provoke();
         mimic.PursuitTarget = character;
         mimic.PursuitPosition = character.TilemapPosition;

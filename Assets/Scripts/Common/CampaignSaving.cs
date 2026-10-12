@@ -23,19 +23,25 @@ public class SavedHeroSummary
 }
 public static class CampaignSaving
 {
-    public static bool Commit(Common common, string point, Vector3Int? arrival, Facing facing, out string error)
+    public static bool Commit(Common common, string point, Vector3Int? arrival, Facing facing, out string error, bool beginOpeningDay = false)
     {
         error = null;
         if (common.CampaignContext == null || common.CampaignContext.IsSandbox || common.GameSaveData.IsSandbox)
         { error = "This session cannot save a campaign."; return false; }
         if (common.CampaignContext.Finale != null)
         { error = "Return to a town to save."; return false; }
+        if (beginOpeningDay && (point != "town-0/home" || common.CampaignContext.State.LocationId != "town-0" ||
+            common.CampaignContext.State.Scene != "Town" || !common.CampaignContext.ReadyForOpeningDay))
+        { error = common.CampaignContext.OpeningPreparationHint; return false; }
         try
         {
             SaveSystem.Capture(common);
             var regionId = common.CampaignContext.Campaign.Locations.Single(l => l.Id == common.GameSaveData.Campaign.LocationId).RegionId;
             if (!common.GameSaveData.VisitedRegions.Contains(regionId)) common.GameSaveData.VisitedRegions.Add(regionId);
             var snapshot = JsonUtility.FromJson<GameSaveData>(JsonUtility.ToJson(common.GameSaveData));
+            // Publish the opening key to live state only after the complete morning save succeeds.
+            if (beginOpeningDay)
+                snapshot.Campaign.Keys = snapshot.Campaign.Keys.Append(CampaignContext.OpeningDayKey).Distinct().ToArray();
             snapshot.SavePointId = point;
             snapshot.SavedUtc = DateTime.UtcNow.ToString("O");
             snapshot.HasArrival = arrival.HasValue;
@@ -44,6 +50,11 @@ public static class CampaignSaving
             if (arrival.HasValue) { snapshot.ArrivalX = arrival.Value.x; snapshot.ArrivalY = arrival.Value.y; snapshot.ArrivalFacing = facing; }
             snapshot.Summary = BuildSummary(common, snapshot);
             SaveSystem.SaveData(snapshot);
+            if (beginOpeningDay)
+            {
+                common.CampaignContext.Keys.Add(CampaignContext.OpeningDayKey);
+                SaveSystem.Capture(common);
+            }
             common.GameSaveData.SavedUtc = snapshot.SavedUtc;
             common.GameSaveData.Summary = snapshot.Summary;
             common.GameSaveData.SavePointId = point;

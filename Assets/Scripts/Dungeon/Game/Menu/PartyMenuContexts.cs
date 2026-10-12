@@ -206,8 +206,9 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         if(tab!=PartyMenuTab.Capabilities)return base.Entries(hero,tab);
         var context=world.Context;
         return EternalEnigma.Core.Progression.CampaignGuidance.Acquired(context).Select(capability=>new PartyMenuEntry {
-            Title=EternalEnigma.Core.Capabilities.CapabilityCatalog.DisplayName(capability), Section="Acquired capabilities",
-            Description="Source: "+EternalEnigma.Core.Progression.CampaignGuidance.CapabilitySource(context,capability,
+            Title=EternalEnigma.Core.Progression.CampaignRewardNames.Name(context,capability), Section="Acquired capabilities",
+            Description=EternalEnigma.Core.Capabilities.CapabilityCatalog.DisplayName(capability)+"\n"+
+                EternalEnigma.Core.Progression.CampaignRewardNames.Purpose(capability)+"\nSource: "+EternalEnigma.Core.Progression.CampaignGuidance.CapabilitySource(context,capability,
                 id=>CampaignParty.Resolve(id,TownSceneLoader.Default)?.Name??id)+"\n"+
                 (context.Held.Contains(capability)?"Available":"Unavailable: add the required companion to your travelling party at a town.")
         }).ToList();

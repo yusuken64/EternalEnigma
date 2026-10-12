@@ -60,8 +60,13 @@ public sealed class ReturnAndShortcutTests
         var c = CampaignGenerator.Generate(42);
         var objective = c.ReturnObjectives.Single(o => o.Required);
         var source = c.Sources.First(s => s.Capability == objective.EnablingCapability);
-        var moved = c.Sources.Select(s => s == source ? new CapabilitySource(s.Id, c.StartLocationId, s.Capability, s.CompanionId, prerequisites: s.Prerequisites) : s);
-        Assert.Contains(CampaignValidator.Validate(CampaignGeneratorTests.With(c, sources: moved)).Errors,
+        var site = c.Locations.Single(l => l.Id == source.LocationId);
+        // Keep the provider's tier and kind valid, including when the enabler is a vehicle.
+        var early = new CampaignLocation("early-enabler", objective.RegionId, site.Tier, site.Kind, stage: 0);
+        var entrance = new CampaignRoute("early-enabler-route", c.StartLocationId, early.Id, Requirement.Open, LockForm.None);
+        var moved = c.Sources.Select(s => s == source ? new CapabilitySource(s.Id, early.Id, s.Capability, s.CompanionId, prerequisites: s.Prerequisites) : s);
+        Assert.Contains(CampaignValidator.Validate(CampaignGeneratorTests.With(c, sources: moved,
+            locations: c.Locations.Append(early), routes: c.Routes.Append(entrance))).Errors,
             e => e.StartsWith("return.acquisitionStage:", StringComparison.Ordinal));
     }
 

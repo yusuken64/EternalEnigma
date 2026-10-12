@@ -24,7 +24,7 @@ namespace EternalEnigma.Tests
             yield return harness.Cleanup();
         }
         [UnityTest, Timeout(3600000)]
-        public IEnumerator DirectDebugClearsFiveFloorsAndWakesThroughProductionGameplay()
+        public IEnumerator DirectDebugClearsTwoFloorsAndWakesThroughProductionGameplay()
         {
             yield return harness.LoadMainMenu(new TestScenario { Gold = 321 }.CreateSave());
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true, "main menu");
@@ -36,10 +36,10 @@ namespace EternalEnigma.Tests
             Assert.That(run.Report.Finale?.PristineStart, Is.True, run.Report.Reason);
             run.SetPaused(true); int actions = run.Report.Actions;
             yield return null; yield return null; Assert.That(run.Report.Actions, Is.EqualTo(actions)); run.SetPaused(false);
-            yield return harness.WaitUntil(() => !run.SessionRunning, "all five production finale floors and homecoming");
+            yield return harness.WaitUntil(() => !run.SessionRunning, "both production finale floors and homecoming");
             Assert.That(run.Report.Outcome, Is.EqualTo("Victory"), run.Report.Reason);
             Assert.That(run.Report.Finale.HomecomingCompleted, Is.True);
-            Assert.That(run.Report.Finale.StairTransitions, Is.EqualTo(new[] { 1, 2, 3, 4, 5 }));
+            Assert.That(run.Report.Finale.StairTransitions, Is.EqualTo(new[] { 1, 2 }));
             Assert.That(run.Report.Finale.Floors.SelectMany(f => f.Regions).All(r => r.Cleared && r.Remaining == 0), Is.True);
             Assert.That(run.Report.Campaign.Finished, Is.True); Assert.That(run.Report.EligibleForBalance, Is.False);
             Assert.That(run.Report.InfiniteStrength, Is.False); Assert.That(run.Report.IssueCount, Is.Zero);

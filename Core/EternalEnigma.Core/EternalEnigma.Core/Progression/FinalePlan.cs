@@ -3,10 +3,10 @@ using EternalEnigma.Core.World;
 
 namespace EternalEnigma.Core.Progression;
 
-/// <summary>Five immutable maps; the original campaign and its progression are never replaced.</summary>
+/// <summary>Two immutable maps; the original campaign and its progression are never replaced.</summary>
 public sealed class FinalePlan
 {
-    public const int Version = 3, FloorCount = 5, CombatDifficulty = 38;
+    public const int Version = 4, FloorCount = 2, CombatDifficulty = 38;
     public Campaign Campaign { get; }
     public IReadOnlyList<FinaleFloorPlan> Floors { get; }
 
@@ -49,6 +49,7 @@ public sealed class FinaleEnemyPlacement
     public string? Family { get; }
     public bool IsTown { get; }
     public bool IsMimic => LocationId != null;
+    public bool IsBoss => IsMimic && FinaleRoster.IsBoss(Family);
     internal FinaleEnemyPlacement(string id, string region, GridPoint position, int roll = 0,
         string? location = null, string? family = null, bool town = false)
     { Id = id; RegionId = region; Position = position; Roll = roll; LocationId = location; Family = family; IsTown = town; }
@@ -172,6 +173,8 @@ public sealed class FinaleFloorPlan
             objectives.Add(new FinaleRegionObjective(number, region, biome, placements.Where(e => e.RegionId == region.Id)));
         }
         Regions = Array.AsReadOnly(objectives.ToArray()); Enemies = Array.AsReadOnly(placements.ToArray());
+        if (Regions.Any(r => !r.Enemies.Any(e => e.IsBoss)))
+            throw new InvalidOperationException($"Finale floor {number}: every region needs a building boss.");
         Traps = Array.AsReadOnly(traps.ToArray());
         ValidateRoute();
         // Hash physical terrain and the complete planned population, independently of party capabilities.

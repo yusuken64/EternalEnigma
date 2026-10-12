@@ -10,19 +10,19 @@ public sealed class FinaleTests
     [Theory]
     [InlineData(0)] [InlineData(1)] [InlineData(2)] [InlineData(3)] [InlineData(4)]
     [InlineData(5)] [InlineData(17)] [InlineData(42)] [InlineData(99)] [InlineData(2026)]
-    public void FiveMapsAreDeterministicAndReachableWithoutBoat(int seed)
+    public void TwoMapsAreDeterministicAndReachableWithoutBoat(int seed)
     {
         var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
         var plan = new FinalePlan(context.Campaign, context.Grid, false, Array.Empty<string>());
         var again = new FinalePlan(context.Campaign, context.Grid, false, Array.Empty<string>());
-        Assert.Equal(5, plan.Floors.Count); Assert.Same(context.Grid, plan.Floors[0].Grid);
-        Assert.Equal(5, plan.Floors.Select(f => f.Seed).Distinct().Count());
+        Assert.Equal(2, plan.Floors.Count); Assert.Same(context.Grid, plan.Floors[0].Grid);
+        Assert.Equal(2, plan.Floors.Select(f => f.Seed).Distinct().Count());
         Assert.Equal(plan.Floors.Select(f => f.Fingerprint), again.Floors.Select(f => f.Fingerprint));
         Assert.Equal(plan.Floors.SelectMany(f => f.Enemies).Select(e => (e.Id, e.Position, e.Roll, e.Family)),
             again.Floors.SelectMany(f => f.Enemies).Select(e => (e.Id, e.Position, e.Roll, e.Family)));
         var roster = plan.Floors.SelectMany(f => f.Enemies).Where(e => e.IsMimic).Select(e => e.Family).ToHashSet();
         Assert.All(FinaleRoster.Required, f => Assert.Contains(f, roster));
-        Assert.Equal("Castle Monster", plan.Floors[4].Enemies.Single(e => e.LocationId == plan.Floors[4].Campaign.StartLocationId).Family);
+        Assert.Equal("Castle Monster", plan.Floors[1].Enemies.Single(e => e.LocationId == plan.Floors[1].Campaign.StartLocationId).Family);
         foreach (var floor in plan.Floors)
         {
             floor.ValidateRoute();
@@ -34,6 +34,7 @@ public sealed class FinaleTests
             var unlocked = new HashSet<string>();
             foreach (var region in floor.Regions)
             {
+                Assert.Contains(region.Enemies, e => e.IsBoss);
                 unlocked.Add(region.RegionId);
                 var safe = GridSearch.VisitOrder(floor.Start, p => OverworldMovement.Neighbors(p)
                     .Where(q => !trapped.Contains(q) && floor.CanStep(p, q, unlocked) &&
@@ -103,7 +104,7 @@ public sealed class FinaleTests
         Assert.True(c.CompleteDungeon(false));
         c.State.PendingDungeon = c.Campaign.FinalLocationId;
         s = c.BeginFinale(); Assert.Single(s.Unlocked); Assert.Empty(s.Defeated);
-        Clear(s); Assert.Equal(new[] { 1, 2, 3, 4, 5 }, s.StairTransitions);
+        Clear(s); Assert.Equal(new[] { 1, 2 }, s.StairTransitions);
         Assert.False(s.UseStairs(s.Floor.Stairs)); Assert.True(c.CompleteDungeon(true));
         Assert.Equal("Town", c.State.Scene); Assert.Equal(c.Campaign.StartLocationId, c.State.LocationId);
         Assert.Null(c.Finale); Assert.True(c.State.Finished);
@@ -125,5 +126,44 @@ public sealed class FinaleTests
             Assert.All(s.WarpDestinations(from), w => Assert.Contains(s.Floor.RegionAt(w.Destination), s.Unlocked));
         var restored = new CampaignContext(new(OverworldLaunchMode.Campaign), c.Capture());
         Assert.Null(restored.Finale);
+    }
+
+    [Theory]
+    [InlineData(true)] [InlineData(false)]
+    public void LastBuildingInEveryRegionIsABossRegardlessOfRevealOrder(bool visitBossFirst)
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var s = new FinaleSession(new FinalePlan(c.Campaign, c.Grid));
+        var encountered = new List<string>();
+        while (!s.FinalExitCompleted)
+        {
+            foreach (var region in s.Floor.Regions)
+            {
+                foreach (var enemy in region.Enemies.Where(e => !e.IsMimic)) Assert.True(s.RecordDeath(enemy.Id));
+                var buildings = region.Enemies.Where(e => e.IsMimic)
+                    .OrderBy(e => e.IsBoss == visitBossFirst ? 0 : 1).ThenBy(e => e.Id).ToArray();
+                for (int i = 0; i < buildings.Length; i++)
+                {
+                    var building = buildings[i];
+                    string before = s.MimicFamily(building.Id);
+                    Assert.False(s.Reveal(building.Id, new GridPoint(-1, -1), out var rejectedSwap));
+                    Assert.Null(rejectedSwap); Assert.Equal(before, s.MimicFamily(building.Id));
+                    var from = GridSteps.EightWay.Select(d => new GridPoint(building.Position.X + d.X, building.Position.Y + d.Y))
+                        .First(p => s.CanReveal(building.Id, p));
+                    Assert.True(s.Reveal(building.Id, from));
+                    string family = s.MimicFamily(building.Id);
+                    encountered.Add(family);
+                    Assert.False(s.Reveal(building.Id, from)); Assert.Equal(family, s.MimicFamily(building.Id));
+                    if (i == buildings.Length - 1) Assert.True(FinaleRoster.IsBoss(family), region.Id);
+                    Assert.Empty(s.ReconcileClearance()); Assert.DoesNotContain(region.Id, s.ClearedRegions);
+                    Assert.True(s.RecordDeath(building.Id));
+                }
+                Assert.Equal(buildings.Select(e => e.Family).OrderBy(f => f), buildings.Select(e => s.MimicFamily(e.Id)).OrderBy(f => f));
+                s.ReconcileClearance(); Assert.Contains(region.Id, s.ClearedRegions);
+            }
+            Assert.True(s.UseStairs(s.Floor.Stairs));
+        }
+        Assert.Equal(new[] { 1, 2 }, s.StairTransitions);
+        Assert.All(FinaleRoster.Required, family => Assert.Contains(family, encountered));
     }
 }

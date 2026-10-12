@@ -40,6 +40,8 @@ public static class CampaignGuidance
 
     public static string TownHint(CampaignContext context, string townId, Func<string, string>? companionName = null)
     {
+        if (townId == context.Campaign.StartLocationId && context.IsPreparingForOpening)
+            return context.OpeningPreparationHint;
         var route = context.Campaign.Routes.Where(r => r.HasGate && (r.Required || r.IsTownExit && r.From == townId) && context.Gates.NeedsOpening(r))
             .OrderBy(r => r.IsTownExit && r.From == townId ? 0 : 1)
             .ThenBy(r => context.Campaign.Locations.Single(l => l.Id == r.To).Stage)
@@ -62,7 +64,7 @@ public static class CampaignGuidance
                     (route.KeyCondition == KeyAcquisition.DungeonCompletion ? "by clearing " : "at ") + Location(context, townId, route.KeyLocationId!) + ".");
         string Describe(Capability capability)
         {
-            string name = capability.DisplayName();
+            string name = CampaignRewardNames.Name(context, capability);
             if (Acquired(context).Contains(capability))
                 return context.Held.Contains(capability) ? name + " (already acquired; try it at the obstacle)" :
                     name + " (add " + CapabilitySource(context, capability, companionName) + " to your travelling party at a town)";

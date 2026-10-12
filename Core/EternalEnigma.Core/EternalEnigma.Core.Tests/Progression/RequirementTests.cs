@@ -29,7 +29,7 @@ public sealed class RequirementTests
     [Fact]
     public void InvalidVocabularyAndOversizedSolutionsAreRejected()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => CapabilitySet.Of((Capability)25));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CapabilitySet.Of((Capability)int.MaxValue));
         Assert.Throws<ArgumentException>(() => new Requirement());
         Assert.Throws<ArgumentException>(() => new Requirement(CapabilitySet.Of(Capability.Climb, Capability.Boat, Capability.Engineering)));
     }

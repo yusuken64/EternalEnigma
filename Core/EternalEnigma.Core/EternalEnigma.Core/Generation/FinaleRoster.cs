@@ -11,6 +11,7 @@ public static class FinaleRoster
     public static IReadOnlyList<string> Dungeons { get; } = Array.AsReadOnly(new[] {
         "Flame Knight", "Little Demon", "Skeleton Mage", "Blue Slime", "Crawler", "Flower Monster", "Star Fish" });
     public static IReadOnlyList<string> Required { get; } = Array.AsReadOnly(Towns.Concat(Dungeons).ToArray());
+    public static bool IsBoss(string? family) => family != null && Towns.Contains(family);
     public static bool IsReserved(string name) => Required.Any(f => name == f || name == "Enemy_" + PrefabStem(f) || name == "Boss_" + PrefabStem(f));
     public static string PrefabStem(string family) => family.Replace(" ", "");
 }

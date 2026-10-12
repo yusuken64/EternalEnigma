@@ -40,7 +40,7 @@ public sealed class CampaignGuidanceTests
         Assert.Contains("alternatively",hint);Assert.Contains("both",hint);
         foreach(var capability in route.Requirement.Alternatives.SelectMany(a=>a.Values).Distinct())
         {
-            Assert.Contains(capability.DisplayName(),hint);
+            Assert.Contains(CampaignRewardNames.Name(c,capability),hint);
             foreach(var source in c.Campaign.Sources.Where(s=>s.Capability==capability))
                 Assert.Contains(CampaignGuidance.Location(c,"town-0",source.LocationId),hint);
         }

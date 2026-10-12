@@ -74,13 +74,13 @@ public sealed class TownDungeonTests
     {
         for (int seed = 0; seed < 24; seed++)
         {
-            var campaign = CampaignGenerator.Generate(seed);
+            var campaign = CampaignGenerator.GenerateVersion(seed, 12);
             var legacy = CampaignGenerator.GenerateVersion(seed, CampaignGenerator.LegacyVersion);
             var eligible = campaign.Locations.Where(l => l.Kind == LocationKind.RepeatableDungeon && l.Encounter == null && !DungeonLayoutProfile.IsStarter(l.Id)).ToArray();
             var selected = campaign.Locations.Where(l => l.Variant == DungeonVariant.Town).ToArray();
             Assert.Equal((eligible.Length + 1) / 2, selected.Length);
             Assert.All(selected, l => Assert.Contains(l, eligible));
-            Assert.Equal(selected.Select(l => l.Id), CampaignGenerator.Generate(seed).Locations.Where(l => l.Variant == DungeonVariant.Town).Select(l => l.Id));
+            Assert.Equal(selected.Select(l => l.Id), CampaignGenerator.GenerateVersion(seed, 12).Locations.Where(l => l.Variant == DungeonVariant.Town).Select(l => l.Id));
             Assert.Equal(legacy.Routes.Select(r => (r.Id, r.From, r.To, r.Requirement.ToString(), r.KeyId)), campaign.Routes.Select(r => (r.Id, r.From, r.To, r.Requirement.ToString(), r.KeyId)));
             Assert.Equal(legacy.Sources.Select(s => (s.Id, s.LocationId, s.Capability)), campaign.Sources.Select(s => (s.Id, s.LocationId, s.Capability)));
             foreach (var location in selected)

@@ -129,7 +129,9 @@ public class MainMenu : MonoBehaviour
             new TownAllyData { AllyId = a.Id, AllyName = a.Name, Skills = a.Skills != null ? new(a.Skills) : new() })).ToList();
 		gameSaveData.TownSaveData.TownSeed = seed;
 
-        var supplies = Common.Instance.ItemManager.StartingItems.Select(i => i.AsInventoryItem(null)).ToList();
+        // The opening bakery transaction supplies the campaign's first bread.
+        var supplies = Common.Instance.ItemManager.StartingItems.Where(i => i.ItemName != "Bread")
+            .Select(i => i.AsInventoryItem(null)).ToList();
         gameSaveData.TownSaveData.InventoryItems = ItemSaveData.Capture(supplies);
 
         var catalog = ClassCatalog.Load();

@@ -24,6 +24,38 @@ public sealed class LockFictionTests
         new(c.Seed, c.GeneratorVersion, c.StartLocationId, c.FinalLocationId, c.Manifest, c.Regions, c.Locations, routes, c.Sources, c.Companions, c.ReturnObjectives);
 
     [Fact]
+    public void EveryUnlockHasExactlyOneProviderAndTheNewVocabularyAppearsAcrossCampaigns()
+    {
+        var seen = new HashSet<Capability>();
+        foreach (var campaign in Sweep.Value)
+        {
+            foreach (var entry in campaign.Manifest)
+            {
+                var provider = Assert.Single(campaign.Sources, s => s.Capability == entry.Id);
+                Assert.True(provider.Guaranteed);
+                if (entry.Id.Kind() == CapabilityKind.Personal)
+                    Assert.Single(campaign.Companions, c => c.Capability == entry.Id);
+                else Assert.Null(provider.CompanionId);
+                seen.Add(entry.Id);
+            }
+            foreach (var key in campaign.Routes.Where(r => r.KeyId != null).GroupBy(r => r.KeyId))
+                Assert.Single(key.Select(r => r.KeyLocationId).Distinct());
+        }
+        Assert.All(CapabilityCatalog.All, capability => Assert.Contains(capability, seen));
+    }
+
+    [Fact]
+    public void ValidatorRejectsASecondProviderEvenWhenBothSourcesAreReachable()
+    {
+        var campaign = Sweep.Value[42];
+        var source = campaign.Sources.Single(s => s.Capability == Capability.Engineering);
+        var duplicate = new CapabilitySource("duplicate-engineering", source.LocationId, source.Capability);
+        var errors = CampaignValidator.Validate(CampaignGeneratorTests.With(campaign,
+            sources: campaign.Sources.Append(duplicate))).Errors;
+        Assert.Contains(errors, error => error.StartsWith("source.providers:"));
+    }
+
+    [Fact]
     public void EveryCapabilityHasSkinsForItsNaturalFormAndAsASealedDoorInEveryTheme()
     {
         foreach (var capability in CapabilityCatalog.All)

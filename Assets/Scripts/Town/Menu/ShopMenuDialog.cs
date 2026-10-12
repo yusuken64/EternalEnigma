@@ -58,7 +58,8 @@ public class ShopMenuDialog : Dialog
             Remaining = stock.Stock.FirstOrDefault(s => s.ItemName == o.Item.ItemName)?.Remaining ?? 0
         }).ToList();
         StatusText.text = $"{context.Building.DisplayName} — {context.Player.Gold:N0}G" +
-            (Selling && ShopItemDatas.Count == 0 ? "\nNo items to sell." : Selling ? "\nSell a bag entry" : "\nBuy supplies");
+            (Selling && ShopItemDatas.Count == 0 ? "\nNo items to sell." : Selling ? "\nSell a bag entry" :
+                context.Services.OffersOpeningBread(context.Building) ? "\nYour first Bread is free (0G)." : "\nBuy supplies");
 		Action<ShopMenuItem, ShopItemData> action = (view, data) =>
 		{
 			view.Setup(data);

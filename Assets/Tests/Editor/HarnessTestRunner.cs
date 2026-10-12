@@ -10,6 +10,40 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign Keys UI")]
+    public static void RunCampaignKeysUI() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OverworldSceneTests.UniqueCampaignRewardUsesTheSameNameInPopupMenuAndGateAction");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run CampaignKeys")]
+    public static void RunCampaignKeys() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OverworldSceneTests.UniqueCampaignRewardUsesTheSameNameInPopupMenuAndGateAction",
+        "EternalEnigma.Tests.OverworldSceneTests.LockChooserOffersEveryAcquiredOptionAndCancelsWithoutOpening",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeed42",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeedNegativeOne",
+        "EternalEnigma.Tests.OverworldSceneTests.RequiredReturnTripSeedZero");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run OpeningPreparation")]
+    public static void RunOpeningPreparation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OpeningPreparationTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run OpeningRegressions")]
+    public static void RunOpeningRegressions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OpeningPreparationTests",
+        "EternalEnigma.Tests.CampaignSleepTests",
+        "EternalEnigma.Tests.CampaignTravelTests.InterruptedDungeonRestoresExplicitSaveWithoutLossRules",
+        "EternalEnigma.Tests.CampaignTravelTests.TownEntranceVictoryAndDuplicateCallbacksPersistKeyAndReturnInsideTown",
+        "EternalEnigma.Tests.CampaignTravelTests.TownToDungeonRemovesTransferredHeroPositionCircles",
+        "EternalEnigma.Tests.CampaignTravelTests.TownDistrictEntryFromOverworldPreservesRunVariant",
+        "EternalEnigma.Tests.CampaignTownServiceTests",
+        "EternalEnigma.Tests.EconomyGameplayTests.CampaignRepeatReturnsAndCheckpointRollbackPreserveStockAndHunger",
+        "EternalEnigma.Tests.EconomyGameplayTests.EveryWeaponTypeCanBeBoughtEquippedAndReportsClassRestriction",
+        "EternalEnigma.Tests.EconomyGameplayTests.SalesConfirmExactEntriesCancelAndCannotPayTwice",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "CoreBugfixTests.RecruitmentDoesNotCopyLeaderEquipmentAndClearAbilitiesSurviveReload",
+        "CoreBugfixTests.VictoryCarriesBalanceEquipmentAndAbilityThroughSaveLoad",
+        "CoreBugfixTests.DefeatHonorsLootPolicyThroughSaveLoad",
+        "EternalEnigma.Tests.CampaignPresentationTests.CampaignUsesTravelHudAndPartyCanCloseBeforeLeavingTown");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Opening UI Fixes")]
     public static void RunOpeningUIFixes() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.OpeningUIRegressionTests",
@@ -32,7 +66,7 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.GameplayFollowupTests.MimicRevealAndSpiderSplitReplayEffectsSoundAndHistory",
         "EternalEnigma.Tests.HeroPrefabTests",
         "EternalEnigma.Tests.EncounterGameplayTests.EveryBossVariantHasFootprintWarningSpecialAndNormalDeath",
-        "EternalEnigma.Tests.FinaleGameplayTests.AllFiveStairsPreservePartyAndWakeAtHomeWithoutSaving");
+        "EternalEnigma.Tests.FinaleGameplayTests.BothStairsPreservePartyAndWakeAtHomeWithoutSaving");
     [MenuItem("Tools/Eternal Enigma/Tests/Run GameplayFollowups")]
     public static void RunGameplayFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.GameplayFollowupTests",
@@ -41,7 +75,7 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.OverworldSceneTests.RoadSignOpensTownAndLandmarkDirectionsWithoutChangingProgression");
     [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleLoading")]
     public static void RunFinaleLoading() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.FinaleGameplayTests.AllFiveStairsPreservePartyAndWakeAtHomeWithoutSaving",
+        "EternalEnigma.Tests.FinaleGameplayTests.BothStairsPreservePartyAndWakeAtHomeWithoutSaving",
         "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
         "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady");
     [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleValidation")]
@@ -71,7 +105,7 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit");
     [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleAutoplay")]
     public static void RunFinaleAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.FinaleAutoplayTests.DirectDebugClearsFiveFloorsAndWakesThroughProductionGameplay");
+        "EternalEnigma.Tests.FinaleAutoplayTests.DirectDebugClearsTwoFloorsAndWakesThroughProductionGameplay");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Finale")]
     public static void RunFinale() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.FinaleGameplayTests");
 

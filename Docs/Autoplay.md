@@ -118,21 +118,21 @@ For developer runs, open **Tools > Eternal Enigma > Playthrough > Open** in Unit
 This supports starting seed, run count, normal/debug options, item/ability coverage,
 speed, time limit, stall timeout, pause/stop, and an optional goal of
 visiting every generated destination and completing every dungeon once. The
-default goal includes the campaign's Finished flag, all five cleared finale floors,
+default goal includes the campaign's Finished flag, both cleared finale floors,
 and completed homecoming with restored control. The editor retains its existing
 4x and cheat defaults; both launchers default to one run. Neither launcher is invoked
 by CI or by opening the game. Run Normal and Run Debug menu commands use seed 42.
 Programmatic `AutoplayOptions` remain single-run by default; `DebugCoverage` is an
 explicit option and only takes effect with `DebugPlaythrough`.
 
-Campaign autoplay completes the same five-floor production finale. It walks through
+Campaign autoplay completes the same two-floor production finale. It walks through
 unlocked regions, fights ordinary enemies, attempts adjacent entry to reveal mimics,
 and uses each cleared floor's staircase. It never awards kills or completion directly.
 This does not require `ExploreAll` or deliberate item/ability coverage.
 
 The `astar-objectives-v5-mimic-finale` report records floor seeds and fingerprints,
 per-region planned/registered/remaining populations, mimic reveals and families,
-actual enemy deaths, gate openings, stairs and homecoming. Victory requires all five
+actual enemy deaths, gate openings, stairs and homecoming. Victory requires both
 floors cleared, final stairs, the real campaign completion flag and wake-up with
 restored control. Evidence remains after the finale unloads.
 
@@ -142,7 +142,7 @@ Select **Finale** in the Playthrough window or use **Tools > Eternal Enigma >
 Playthrough > Run Debug Finale**. `AutoplayOptions.FinaleDebug()` defaults to seed 42,
 one run, floor 1, 4× speed, godmode and infinite resources. Infinite strength and
 deliberate item/ability coverage default off so enemies can exercise their attacks.
-All five floors remain mandatory. Existing cheats, limits, pause, stop and takeover
+Both floors remain mandatory. Existing cheats, limits, pause, stop and takeover
 controls apply. Serialized modes remain Campaign=0, FloorLootSweep=1, Finale=2.
 
 The endgame warrior/healer/elementalist/archer fixture is created with the requested
@@ -162,11 +162,11 @@ node Tools/debug-autoplay.mjs finale-status
 node Tools/debug-autoplay.mjs verify-finale
 ```
 
-The explicit manual harness runs through all five floors and waking, checks pause,
+The explicit manual harness runs through both floors and waking, checks pause,
 save isolation and artifacts, and restores the previous session. It is excluded
 from ordinary test batches. The independent finale audit rejects completion flags
 without every registered enemy's death, all ten mimic families, region clearances,
-the five production stair events and completed homecoming.
+the two production stair events and completed homecoming.
 
 ## Recorded finale verification
 
@@ -216,14 +216,14 @@ The repeat also passed the minimap/fog pixel comparison. Companion route work fe
 in the minimap total. This is an editor turn-processing comparison, not an FPS
 benchmark; initialization remained about 101–103 seconds. All runs used the uniform
 combat-scale enemy models. Initialization runs behind an opaque loading screen
-with the current finale floor. The screen renders before five-map planning or
+with the current finale floor. The screen renders before two-map planning or
 terrain construction begins and stays up until enemies, party, minimap and camera
 are ready. Disabling animations skips fades but preserves the loading cover.
 
 `node Tools/unity-mcp.mjs harness FinaleLoading` checks the initial planning cover,
-all five floor transitions with and without animations, homecoming, and ordinary
+both floor transitions with and without animations, homecoming, and ordinary
 town returns. It captures `Temp/FinaleDebug/loading-floor-1.png` through
-`loading-floor-5.png` for visual inspection. The 2026-10-12 verification passed
+`loading-floor-2.png` for visual inspection. The earlier five-floor 2026-10-12 verification passed
 all three cases (219.66 seconds); results are retained in
 `Temp/FinaleDebug/loading.json` and `loading.xml`.
 
@@ -250,7 +250,7 @@ and every issue. `verify` requires at least 100 distinct sequential seeds, each 
 a finalized Victory, the real campaign Finished flag, no warnings/errors, matching
 build identifiers, and complete save, screenshot and action artifacts. Merely
 launching a batch or reaching its time limits does not pass this verification.
-It also runs the shared five-floor finale audit and requires a normal campaign start;
+It also runs the shared two-floor finale audit and requires a normal campaign start;
 a direct-start finale run cannot satisfy this acceptance.
 Use `verify-run <batch-directory>` for the same evidence audit on a smaller manual
 batch; this does not satisfy the separate 100-seed acceptance requirement.

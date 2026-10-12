@@ -511,8 +511,8 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == location.Id && !claimed.Contains(s.Id)))
         {
             if (!Context.Claim(source.Id)) continue;
-            rewards.Add(source.Capability.ToString());
-            acquiredCapabilities.Add(CampaignTravelService.DescribeCapabilityReward(source));
+            rewards.Add(CampaignRewardNames.Name(Context, source.Capability));
+            acquiredCapabilities.Add(CampaignTravelService.DescribeCapabilityReward(Context, source));
         }
         SaveProgress();
         Message = rewards.Count == 0 ? "No eligible unclaimed rewards here." : "Acquired: " + string.Join(", ", rewards) + ". Equip companions at a town.";

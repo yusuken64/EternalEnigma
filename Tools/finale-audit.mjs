@@ -3,15 +3,15 @@ export function auditFinale(report, events, check) {
   const f = report.Finale;
   const families = ['Castle Monster', 'Bone Dragon', 'Ice Golem', 'Flame Knight', 'Little Demon',
     'Skeleton Mage', 'Blue Slime', 'Crawler', 'Flower Monster', 'Star Fish'];
-  check(report.Policy === 'astar-objectives-v5-mimic-finale' && f?.PlanVersion === 2, 'Current five-floor policy missing.');
+  check(report.Policy === 'astar-objectives-v5-mimic-finale' && f?.PlanVersion === 4, 'Current two-floor policy missing.');
   check(f?.PristineStart === true, 'Finale did not start with pristine objectives.');
   check(report.Campaign?.Finished === true && f?.FinalExitCompleted === true && f?.HomecomingCompleted === true,
     'Completion requires final stairs, the campaign flag, and wake-up with control restored.');
-  check(f?.Floors?.length === 5 && f.Floors.every((floor, i) => floor.Floor === i + 1 && floor.Fingerprint &&
+  check(f?.Floors?.length === 2 && f.Floors.every((floor, i) => floor.Floor === i + 1 && floor.Fingerprint &&
     floor.Regions?.length > 0 && floor.Regions.every(r => r.Planned > 0 && r.Registered >= r.Planned && r.Remaining === 0 && r.Cleared)),
-    'All five floor populations must be cleared.');
-  check(new Set(f?.Floors?.map(x => x.Seed)).size === 5, 'Expected five distinct deterministic floor seeds.');
-  check(JSON.stringify(f?.StairTransitions) === '[1,2,3,4,5]', 'Every ascending staircase must be used exactly once.');
+    'Both floor populations must be cleared.');
+  check(new Set(f?.Floors?.map(x => x.Seed)).size === 2, 'Expected two distinct deterministic floor seeds.');
+  check(JSON.stringify(f?.StairTransitions) === '[1,2]', 'Every ascending staircase must be used exactly once.');
   const spawned = events.filter(e => e.Kind === 'EnemySpawned').map(e => e.TargetId);
   const deaths = events.filter(e => e.Kind === 'EnemyDied').map(e => e.TargetId);
   const reveals = events.filter(e => e.Kind === 'MimicRevealed');
@@ -29,7 +29,7 @@ export function auditFinale(report, events, check) {
   check(expected.length > 0 && expected.length === gates.length && new Set(gates).size === gates.length &&
     expected.every(id => gates.includes(id) && f?.GateOpenings?.includes(id)), 'Region boundary openings missing or duplicated.');
   check(JSON.stringify(events.filter(e => e.Kind === 'StairsUsed').map(e => e.TargetId)) ===
-    JSON.stringify([1,2,3,4,5].map(n => 'floor-' + n)), 'Production stair events incomplete.');
+    JSON.stringify([1,2].map(n => 'floor-' + n)), 'Production stair events incomplete.');
   check(events.filter(e => e.Kind === 'HomecomingCompleted').length === 1 && f?.MapMovementCommands > 0,
     'Expected movement and one completed homecoming event.');
   for (const event of reveals) {

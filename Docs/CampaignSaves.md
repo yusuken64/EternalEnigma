@@ -12,6 +12,8 @@ Hero records contain campaign level and exact cumulative experience, including b
 
 In town-0, the first residential slot after the authored buildings is the home. Its generated walkable interior contains a bed instead of a vendor; the ordinary inn remains separate. New campaigns begin at the bedside and save after the camera is positioned. `HomeBed` exposes its tile, sleeping anchor and animation controller. The sleep sequence reserves the awake tile, locks gameplay, hides weapons, fades out, heals and commits, then wakes and restores equipment/facing/input. No-animation mode commits immediately. Failed saves still complete waking and report the error.
 
+New journeys begin on preparation day. The first Bread comes from a one-time 0G bakery transaction, and the protagonist must learn an active skill before sleeping. `RequiresOpeningPreparation`, `BoughtOpeningBread` and `LearnedOpeningSkill` persist with the campaign. Before the errands are complete the bed offers **Save and quit**, which writes partial progress without advancing the day. Once ready, **Sleep and save until morning** includes the permanent `Opening day` key in the same snapshot as the prepared party. The live key is granted only after storage succeeds; failed writes leave the previous save and closed entrance intact. Initial saves and inn saves never grant this key. Defeat or Continue restores the saved day, skills, inventory and completed errands. Older snapshots lacking the preparation flag remain playable without repeating the opening.
+
 Active playtime uses unscaled delta time and excludes unfocused applications, settings/pause, and scene loading. Completed adventures continue accumulating active playtime. It is persisted only with an explicit save.
 
 ## Background artwork
@@ -29,6 +31,7 @@ Run Core checks before Unity checks:
 - `dotnet test Core/EternalEnigma.Core/EternalEnigma.Core.slnx --configuration Release`
 - Unity menu **Tools > Eternal Enigma > Tests > Run Campaign Saves EditMode**
 - `node Tools/unity-mcp.mjs harness Campaign`
+- `node Tools/unity-mcp.mjs harness OpeningPreparation`
 - `node Tools/unity-mcp.mjs harness Town`
 
 `CampaignSlotStoreTests` covers isolation, selection scopes, failed writes, corrupt reads, progression round trips and all background mappings. `CampaignSleepTests` covers the real home, animated single-write saving, awake-state loading, progression rollback and immediate sleeping.

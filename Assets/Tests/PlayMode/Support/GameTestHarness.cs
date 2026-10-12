@@ -103,6 +103,26 @@ public sealed class GameTestHarness
         yield return WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true, "direct main menu startup");
     }
 
+    // Travel/save fixtures start after the opening, using the real transactions and save path.
+    public void PrepareOpening()
+    {
+        var common = Common.Instance;
+        if (common.CampaignContext?.IsPreparingForOpening != true) return;
+        var town = Object.FindFirstObjectByType<Town>();
+        if (!common.CampaignContext.State.BoughtOpeningBread)
+            Assert.That(town.Services.Buy(town.Configuration.Buildings.Single(b => b.Id == "bakery"), "Bread", out var buyReason), Is.True, buyReason);
+        if (!common.CampaignContext.State.LearnedOpeningSkill)
+        {
+            var hero = town.TownPlayer.RecruitedAllies.Single(a => a.Id == common.GameSaveData.ProtagonistId);
+            var offer = TrainerOffers.Build(hero, town.Configuration).First(o => o.CanLearn && o.Skill.ActivationType == ActivationType.Active);
+            Assert.That(town.Services.Learn(hero, offer.Skill, out var learnReason), Is.True, learnReason);
+        }
+        town.WriteSaveData();
+        var controlled = town.TownPlayer.ControllingTownAlly;
+        Assert.That(CampaignSaving.Commit(common, "town-0/home", controlled.TilemapPosition, controlled.CurrentFacing,
+            out var saveReason, beginOpeningDay: true), Is.True, saveReason);
+    }
+
     private void Begin(GameSaveData save)
     {
         if (started) throw new InvalidOperationException("Use a fresh harness for each scenario, after Cleanup.");

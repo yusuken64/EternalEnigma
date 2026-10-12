@@ -50,7 +50,7 @@ public sealed class CampaignGeneratorTests
     public void VersionTwelveSeed42HasStableGoldenFingerprint()
     {
         Assert.Equal("1676456bccafdc864d6bc4801eb2ad7418331992216c3c200ed0c5f6d69dd5c3",
-            CampaignFingerprint.Compute(CampaignGenerator.Generate(42)));
+            CampaignFingerprint.Compute(CampaignGenerator.GenerateVersion(42, 12)));
     }
 
     [Fact]
@@ -58,6 +58,13 @@ public sealed class CampaignGeneratorTests
     {
         var actual = CampaignFingerprint.Compute(CampaignGenerator.GenerateVersion(42, CampaignGenerator.LegacyVersion));
         Assert.Equal("c4da7117be88acad6b4d14703d1579d2db1c2d525e85c600daafa4215ef9980c", actual);
+    }
+
+    [Fact]
+    public void VersionThirteenSeed42HasStableGoldenFingerprint()
+    {
+        Assert.Equal("9b4a3a6ef33bc932c0559010713209696e5a102a7c5133cbd30568b17ba4e9ec",
+            CampaignFingerprint.Compute(CampaignGenerator.Generate(42)));
     }
 
     [Fact]
@@ -69,8 +76,9 @@ public sealed class CampaignGeneratorTests
         var sharedKey = new CampaignRoute(areaExit.Id, areaExit.From, areaExit.To, areaExit.Requirement, areaExit.Form,
             required: true, shortcutKind: ShortcutKind.Keyed, keyId: townExit.KeyId, keyLocationId: areaExit.KeyLocationId,
             keyCondition: KeyAcquisition.DungeonCompletion);
-        Assert.Contains(CampaignValidator.Validate(With(campaign, routes: campaign.Routes.Select(r => r == areaExit ? sharedKey : r))).Errors,
-            error => error.StartsWith("starter.keys:"));
+        var errors = CampaignValidator.Validate(With(campaign, routes: campaign.Routes.Select(r => r == areaExit ? sharedKey : r))).Errors;
+        Assert.Contains(errors, error => error.StartsWith("starter.keys:"));
+        Assert.Contains(errors, error => error.StartsWith("key.providers:"));
     }
 
     [Fact]

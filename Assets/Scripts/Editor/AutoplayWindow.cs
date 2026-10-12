@@ -83,7 +83,7 @@ public sealed class AutoplayWindow : EditorWindow
                 EditorGUILayout.HelpBox("Infinite resources replenishes gold, SP and hunger, and preserves used consumables. Keys, companions and abilities must still be earned. Debug runs are excluded from balance results.", MessageType.None);
             }
             if (options.Mode != AutoplayMode.Finale) options.ExploreAll = EditorGUILayout.Toggle("Visit all destinations", options.ExploreAll);
-            else EditorGUILayout.HelpBox("Direct start at floor 1 with an endgame party. All five floors and waking at home are required. Excluded from full-campaign acceptance.", MessageType.Info);
+            else EditorGUILayout.HelpBox("Direct start at floor 1 with an endgame party. Both floors and waking at home are required. Excluded from full-campaign acceptance.", MessageType.Info);
             options.NoAnimations = EditorGUILayout.Toggle("Disable animations for run", options.NoAnimations);
             }
             options.Speed = EditorGUILayout.Slider("Playback speed", options.Speed, .5f, 32);

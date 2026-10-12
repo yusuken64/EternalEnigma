@@ -97,7 +97,7 @@ public sealed class DungeonHud : MonoBehaviour
             DungeonPreferences.FullControl = !DungeonPreferences.FullControl;
         var player = game.PlayerController;
         var turns = game.TurnManager;
-        header.text = Game.Instance.Finale == null ? $"{player.Floor}F" : $"Finale {game.Finale.Session.CurrentFloor}/5\n{game.Finale.Session.Remaining} remaining";
+        header.text = Game.Instance.Finale == null ? $"{player.Floor}F" : $"Finale {game.Finale.Session.CurrentFloor}\n{game.Finale.Session.Remaining} remaining";
         control.GetComponentInChildren<TMP_Text>().text = "Full Control: " + (DungeonPreferences.FullControl ? "On" : "Off") +
             (turns.IsProcessingTurn && turns.FullControlThisRound != DungeonPreferences.FullControl ? " (next round)" : "");
         var ally = player.ControlledAlly;

@@ -1,5 +1,17 @@
 # Game test harness
 
+`node Tools/unity-mcp.mjs harness CampaignKeys` checks unique capability rewards, shared
+campaign-specific names in reward/menu/action UI, repeat-claim behavior, gate choices and
+required return trips for seeds 42, -1 and 0. The EditMode `CampaignGenerationTests` cover
+the imported generator and the new gate visuals. These fixtures use isolated save stores.
+
+`node Tools/unity-mcp.mjs harness OpeningPreparation` exercises the new-journey lock,
+0G bread confirmation and cancellation, active lesson choice, both errand orders,
+early Save and quit, failed morning writes, reload/defeat persistence, and every authored
+hero's affordable first lesson. Screenshots are written to `Temp/OpeningPreparation`.
+`harness OpeningRegressions` covers the affected campaign travel, sleep, town services,
+economy and party-menu fixtures. Both use isolated save stores.
+
 Retained post-cleanup results record 379 Core passes, 285 EditMode passes, and
 323 PlayMode passes with four explicit skips and no failures. See the
 [diorama verification reports](../../Docs/Art/DioramaStyle.md#verification-and-reproduction)
@@ -29,7 +41,7 @@ Core sweep and Unity results. These runs use the harness's isolated save storage
 
 `node Tools/unity-mcp.mjs harness Finale` checks production mimic protection,
 adjacent reveal and reveal-turn behavior, reserved roster exclusion, region movement
-restrictions, all five stair transitions, resource preservation, terrain cleanup,
+restrictions, bosses at each biome's last building reveal, both stair transitions, resource preservation, terrain cleanup,
 bedroom arrival, control/camera restoration, explicit saves, completed continuation
 and retreat. Test fixtures may position actors and resolve combat to isolate these
 contracts; they do not constitute an autoplay acceptance run.
@@ -43,16 +55,17 @@ The manual `FinaleControls` suite checks stop/takeover and restoration of saves,
 input, animation mode and playback speed. `FinalePerformance` measures 300 production
 commands and compares incremental minimap/fog pixels with a full redraw.
 `FinaleValidation` combines these with lifecycle and legacy floor-transition checks.
-`FinaleLoading` checks that the loading screen renders before five-map planning,
+`FinaleLoading` checks that the loading screen renders before two-map planning,
 covers every finale floor through camera readiness (with and without animations),
 and releases correctly for homecoming and ordinary town returns. Loading-screen
-captures are saved as `Temp/FinaleDebug/loading-floor-<1..5>.png`.
+captures are saved as `Temp/FinaleDebug/loading-floor-<1..2>.png`.
 Use `node Tools/unity-mcp.mjs harness <suite>`; these manual cases do not run in
 ordinary batches. See [performance measurements](../../Docs/Autoplay.md#finale-performance-measurement).
 
-Core `FinaleTests` sweeps ten campaign seeds (including no-Boat parties) for five-map
+Core `FinaleTests` sweeps ten campaign seeds (including no-Boat parties) for two-map
 determinism, reachable enemies and mimics, distinct region ownership, the complete
-ten-family roster, child accounting, locked movement/warps and all five required stairs.
+ten-family roster, child accounting, locked movement/warps and both required stairs.
+Reveal-order checks reserve each region's boss for its last building and preserve all families.
 The full Core suite currently contains 423 tests. The latest manual verification
 includes a passing five-floor direct run, an accepted full-campaign debug run and
 seven passing finale validation cases; see the [recorded evidence](../../Docs/Autoplay.md#recorded-finale-verification).

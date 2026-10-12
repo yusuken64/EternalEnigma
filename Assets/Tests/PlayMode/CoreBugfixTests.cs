@@ -88,6 +88,7 @@ public sealed class CoreBugfixTests
         yield return harness.WaitUntil(() => menu.IsReady, "menu ready");
         menu.StartGame();
         yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "campaign town");
+        harness.PrepareOpening();
         var common = Common.Instance;
         var town = Object.FindFirstObjectByType<Town>();
         town.TownPlayer.Gold = 10000;
@@ -200,6 +201,7 @@ public sealed class CoreBugfixTests
         yield return harness.WaitUntil(() => menu.IsReady, "menu ready");
         menu.StartGame();
         yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "campaign town");
+        harness.PrepareOpening();
         var common = Common.Instance;
         var town = Object.FindFirstObjectByType<Town>();
         town.TownPlayer.Gold = 731;
@@ -223,6 +225,8 @@ public sealed class CoreBugfixTests
         Assert.That(carriedSupply.StackStock, Is.EqualTo(3));
         carriedSupply.Decrement();
         game.PlayerController.Gold += 69;
+        // This fixture tests the return transaction; stage the final-floor requirement.
+        if (victory) game.PlayerController.Floor = common.GameSaveData.DungeonSaveData.EndFloor;
         Assert.That(common.Travel.FinishDungeon(victory, game.PlayerController), Is.True);
         Assert.That(common.Travel.FinishDungeon(victory, game.PlayerController), Is.False);
         if (victory)

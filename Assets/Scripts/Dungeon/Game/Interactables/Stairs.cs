@@ -23,7 +23,7 @@ public class Stairs : Interactable
 
 	internal override string GetInteractionText()
 	{
-        if (Game.Instance?.Finale != null) return Game.Instance.Finale.Session.CurrentFloor == 5 ? "Ascend and return home" : "Ascend to the next floor";
+        if (Game.Instance?.Finale != null) return Game.Instance.Finale.Session.CurrentFloor == EternalEnigma.Core.Progression.FinalePlan.FloorCount ? "Ascend and return home" : "Ascend to the next floor";
 		return Game.Instance?.CurrentDungeon?.Floor?.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? "Pass through gate" : "Take Stairs";
 	}
 }

@@ -10,6 +10,22 @@ using UnityEngine.UI;
 
 public static class OpeningUIAuthoring
 {
+    [MenuItem("Tools/Eternal Enigma/UI/Author Opening Preparation")]
+    public static void AuthorOpeningPreparation()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new System.InvalidOperationException("Author opening preparation outside Play mode.");
+        const string path = "Assets/Resources/UI/Authored/Home.prefab";
+        var contents = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            contents.GetComponent<HomeBedDialog>().AuthorPreparationLayout();
+            PrefabUtility.SaveAsPrefabAsset(contents, path);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(contents); }
+        Debug.Log("Authored the home preparation, save-for-later and morning dialog.");
+    }
+
     [MenuItem("Tools/Eternal Enigma/UI/Repair Campaign Slot Wiring")]
     public static void RepairCampaignSlots()
     {

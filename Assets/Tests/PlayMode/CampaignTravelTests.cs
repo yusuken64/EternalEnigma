@@ -40,6 +40,7 @@ namespace EternalEnigma.Tests
             yield return harness.LoadMainMenu(null);
             Object.FindFirstObjectByType<MainMenu>().StartGame();
             yield return WaitTown();
+            harness.PrepareOpening();
         }
 
         [UnityTest]
@@ -288,7 +289,7 @@ namespace EternalEnigma.Tests
             Assert.That(context.State.Scene, Is.EqualTo("Town"));
             Assert.That(context.Keys, Contains.Item("Town gate key"));
             Assert.That(context.Resolved, Does.Not.Contain("starter-exit"));
-            Assert.That(SaveSystem.LoadData().Campaign.Keys, Is.Empty);
+            Assert.That(SaveSystem.LoadData().Campaign.Keys, Is.EquivalentTo(new[] { CampaignContext.OpeningDayKey }));
             var saved = common.GameSaveData;
             Assert.That(saved.Campaign.Keys, Contains.Item("Town gate key"));
             Assert.That(saved.TownSaveData.Gold, Is.EqualTo(223));
@@ -321,7 +322,7 @@ namespace EternalEnigma.Tests
             common.Travel.Continue(); yield return WaitTown();
             Assert.That(JsonUtility.ToJson(common.GameSaveData.TownSaveData), Is.EqualTo(before));
             Assert.That(common.CampaignContext.Position, Is.EqualTo(context.Grid.Locations["story-0"]));
-            Assert.That(common.CampaignContext.Keys, Is.Empty);
+            Assert.That(common.CampaignContext.Keys, Is.EquivalentTo(new[] { CampaignContext.OpeningDayKey }));
             Assert.That(common.Travel.EnterTownDungeon(Object.FindFirstObjectByType<Town>(), "story-0"), Is.True); yield return harness.WaitForIdle();
             generator = Game.Instance.DungeonGenerator;
             Assert.That(generator.TileWorldCreator.GetMapOutputFromBlueprintLayer(generator.FloorLayerName).Cast<bool>(), Is.EqualTo(layout));
@@ -330,7 +331,7 @@ namespace EternalEnigma.Tests
             Assert.That(JsonUtility.ToJson(common.GameSaveData.TownSaveData), Is.EqualTo(before));
             Assert.That(common.CampaignContext.State.Scene, Is.EqualTo("Town"));
             Assert.That(common.CampaignContext.State.LocationId, Is.EqualTo("town-0"));
-            Assert.That(common.CampaignContext.Keys, Is.Empty);
+            Assert.That(common.CampaignContext.Keys, Is.EquivalentTo(new[] { CampaignContext.OpeningDayKey }));
             common.Travel.Continue(); yield return WaitTown();
             Assert.That(Object.FindFirstObjectByType<Town>().Configuration.Id, Is.EqualTo("town-0"));
         }

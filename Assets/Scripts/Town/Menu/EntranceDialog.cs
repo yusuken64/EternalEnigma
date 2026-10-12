@@ -33,7 +33,8 @@ public class EntranceDialog : Dialog
                 view.SetupCampaign(location, campaign.Completed.Contains(location.Id), () =>
                 {
                     if (!Common.Instance.Travel.EnterTownDungeon(town, location.Id))
-                        TownMenu.ShowMessage("This dungeon cannot be entered right now.");
+                        TownMenu.ShowMessage(!campaign.CanEnterDungeon(location.Id)
+                            ? campaign.OpeningPreparationHint : "This dungeon cannot be entered right now.");
                 }));
             return;
         }

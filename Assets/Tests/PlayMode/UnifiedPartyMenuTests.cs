@@ -202,6 +202,7 @@ namespace EternalEnigma.Tests
             var common=Common.Instance;common.GameSaveData=Object.FindFirstObjectByType<MainMenu>().CreateNewSave(12345);
             common.Travel.NewCampaign(12345);
             yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"campaign town");
+            harness.PrepareOpening();
             var town=Object.FindFirstObjectByType<Town>();var hero=town.TownPlayer.RecruitedAllies[0];
             hero.Level=3;
             Assert.That(AttributeSpending.TrySpend(hero,HeroAttribute.Str),Is.True);

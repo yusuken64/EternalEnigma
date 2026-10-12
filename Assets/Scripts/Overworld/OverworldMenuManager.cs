@@ -41,7 +41,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
         {
             var action=new CapabilityLockAction(capability);
             bool available=world.Held.Contains(capability);
-            options.Add((capability.DisplayName()+(available?"":" — Requires "+CampaignGuidance.CapabilitySource(world.Context,capability,CompanionName)),
+            options.Add((CampaignRewardNames.Name(world.Context,capability)+(available?"":" — Requires "+CampaignGuidance.CapabilitySource(world.Context,capability,CompanionName)),
                 available?(Action)(()=>Attempt(action)):null));
         }
         foreach(var key in world.CollectedKeys)options.Add((world.Campaign.KeyLabel(key),()=>Attempt(new KeyLockAction(key))));

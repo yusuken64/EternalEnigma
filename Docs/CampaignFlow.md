@@ -5,6 +5,19 @@ before transitions and blocks duplicate callbacks until the destination reports 
 New Journey chooses a slot and authored hero, then starts at the bed in town-0.
 See [campaign saves and artwork](CampaignSaves.md) for the explicit-save contract.
 
+The town dungeon opens the following morning. Before then, buy the bakery's one-time
+Bread offer for 0G and learn an active skill on the protagonist, in either order.
+The trainer initially offers affordable active lessons at their normal learning-point cost;
+the full catalog returns after the lesson. Then use **Sleep and save until morning** at home.
+The successful save grants the permanent `Opening day` campaign key. Both dungeon-entry
+paths enforce this key; the entrance displays **Opens tomorrow** until it is granted.
+The dungeon's victory still awards the separate town-exit key.
+
+Completed errands are saved flags, not inventory requirements: consuming or selling bread
+does not undo the purchase. Before both errands are complete, the bed offers **Save and quit**.
+Initial and inn saves preserve preparation day. Existing campaigns without the preparation
+flag, standalone towns and sandbox sessions retain their existing entry behavior.
+
 ## Campaign travel
 
 The overworld grid is lazy. Starting/continuing inside a town or its interior dungeon does
@@ -20,7 +33,7 @@ restores the selected slot's last explicit save, including its saved town and po
 Ordinary floor ranges by tier are 1-5, 5-10, 10-20, 20-30 and 30-40. The final dungeon
 uses the [reverse-world finale](CampaignGeneration.md#reverse-world-finale) instead
 of its former floor sequence. Every enemy and hidden mimic in each region must die
-before the next region opens. All five floors are mandatory; only the last ascending
+before the next region opens. Both floors are mandatory; only the second ascending
 staircase completes the campaign and returns the party to the original bedroom.
 
 `StartDungeon` captures live town state in memory and selects the run's biome, tier and visuals.
@@ -59,7 +72,9 @@ closing it or leaving the scene discards progress. No new save fields or resourc
 are introduced. Autoplay submits explicit actions through the same session API.
 
 The overworld party menu's Capabilities tab lists learned capabilities, sources and
-availability. Town greetings append the current town exit hint, or the next required
+availability. Each capability has one provider per campaign. Reward announcements, this
+list, gate actions and hints use the same town-qualified name from `CampaignRewardNames`.
+Town greetings append the current town exit hint, or the next required
 unopened lock. Hints describe alternative/paired requirements and acquisition locations
 with generated biomes and eight-way geographic bearings. Waiting allies occupy their
 tiles and require an adjacent, facing interaction to recruit.

@@ -6,7 +6,9 @@ public enum Capability
     Climb, Grapple, Icewalk, DeepDive, Breach, WaystoneStep, PhaseShift, HazardWard,
     Boat, Icebreaker, Airship, Tunneler,
     Engineering, Translation, RoyalAuthority, AncientAttunement, BeastSpeech,
-    GuildStanding, Remedy, Diplomacy, SacredRite
+    GuildStanding, Remedy, Diplomacy, SacredRite,
+    MillwrightTraining, ForestersWrit, FerrymansFavor, GravediggersCharge,
+    SmugglersMark, BellkeepersOffice, FuneraryRites, RoyalSurveyorsMaps
 }
 
 public enum CapabilityKind { Personal, Vehicle, Utility }
@@ -29,11 +31,22 @@ public static class CapabilityCatalog
         capability == Capability.PhaseShift || capability == Capability.HazardWard;
 
     /// <summary>The ability's name as words, such as "Waystone Step". Players know their own abilities by name; locks never use it.</summary>
-    public static string DisplayName(this Capability capability) =>
-        System.Text.RegularExpressions.Regex.Replace(capability.ToString(), "([a-z])([A-Z])", "$1 $2");
+    public static string DisplayName(this Capability capability) => capability switch
+    {
+        Capability.MillwrightTraining => "Millwright's Training",
+        Capability.ForestersWrit => "Forester's Writ",
+        Capability.FerrymansFavor => "Ferryman's Favor",
+        Capability.GravediggersCharge => "Gravedigger's Charge",
+        Capability.SmugglersMark => "Smuggler's Mark",
+        Capability.BellkeepersOffice => "Bellkeeper's Office",
+        Capability.FuneraryRites => "Funerary Rites",
+        Capability.RoyalSurveyorsMaps => "Royal Surveyor's Maps",
+        _ => System.Text.RegularExpressions.Regex.Replace(capability.ToString(), "([a-z])([A-Z])", "$1 $2")
+    };
 
     public static bool IsNarrative(this Capability capability) =>
-        capability == Capability.Remedy || capability == Capability.Diplomacy || capability == Capability.SacredRite;
+        capability == Capability.Remedy || capability == Capability.Diplomacy || capability == Capability.SacredRite ||
+        capability >= Capability.MillwrightTraining;
 }
 
 public readonly struct CapabilitySet : IEquatable<CapabilitySet>

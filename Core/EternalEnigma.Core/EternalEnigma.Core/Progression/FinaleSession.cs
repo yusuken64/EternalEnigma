@@ -1,3 +1,4 @@
+using EternalEnigma.Core.Generation;
 using EternalEnigma.Core.World;
 
 namespace EternalEnigma.Core.Progression;
@@ -9,6 +10,7 @@ public sealed class FinaleSession
     public int CurrentFloor { get; private set; } = 1;
     public FinaleFloorPlan Floor => Plan.Floors[CurrentFloor - 1];
     readonly Dictionary<string, string> enemies = new(StringComparer.Ordinal);
+    readonly Dictionary<string, string> mimicFamilies = new(StringComparer.Ordinal);
     readonly HashSet<string> defeated = new(StringComparer.Ordinal), revealed = new(StringComparer.Ordinal),
         unlocked = new(StringComparer.Ordinal), cleared = new(StringComparer.Ordinal);
     readonly List<int> exits = new();
@@ -26,7 +28,11 @@ public sealed class FinaleSession
     public FinaleSession(FinalePlan plan)
     {
         Plan = plan;
-        foreach (var floor in plan.Floors) foreach (var enemy in floor.Enemies) enemies.Add(enemy.Id, $"floor-{floor.Number}/{enemy.RegionId}");
+        foreach (var floor in plan.Floors) foreach (var enemy in floor.Enemies)
+        {
+            enemies.Add(enemy.Id, $"floor-{floor.Number}/{enemy.RegionId}");
+            if (enemy.IsMimic) mimicFamilies.Add(enemy.Id, enemy.Family!);
+        }
         unlocked.Add(Floor.Regions[0].RegionId);
     }
     public int RemainingIn(string regionId) => enemies.Count(p => p.Value == regionId && !defeated.Contains(p.Key));
@@ -38,7 +44,23 @@ public sealed class FinaleSession
         var mimic = Floor.Enemies.FirstOrDefault(e => e.Id == id && e.IsMimic);
         return mimic != null && !revealed.Contains(id) && CanStep(from, mimic.Position);
     }
-    public bool Reveal(string id, GridPoint from) => CanReveal(id, from) && revealed.Add(id);
+    public string MimicFamily(string id) => mimicFamilies[id];
+    public bool Reveal(string id, GridPoint from) => Reveal(id, from, out _);
+    public bool Reveal(string id, GridPoint from, out string? swappedWith)
+    {
+        swappedWith = null;
+        if (!CanReveal(id, from)) return false;
+        // Keep the region's bosses hidden until its ordinary building mimics have been revealed.
+        // Swap only unrevealed identities, preserving every planned family and required death.
+        if (FinaleRoster.IsBoss(mimicFamilies[id]))
+        {
+            swappedWith = Floor.Enemies.FirstOrDefault(e => e.IsMimic && enemies[e.Id] == enemies[id] &&
+                !revealed.Contains(e.Id) && !FinaleRoster.IsBoss(mimicFamilies[e.Id]))?.Id;
+            if (swappedWith != null)
+                (mimicFamilies[id], mimicFamilies[swappedWith]) = (mimicFamilies[swappedWith], mimicFamilies[id]);
+        }
+        return revealed.Add(id);
+    }
     public bool RegisterChild(string sourceId, string id)
     {
         if (enemies.ContainsKey(id) || !sourceId.StartsWith($"floor-{CurrentFloor}/", StringComparison.Ordinal) ||

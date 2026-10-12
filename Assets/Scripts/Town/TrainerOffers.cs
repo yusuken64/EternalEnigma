@@ -26,10 +26,19 @@ public sealed class TrainerOffer
 
 public static class TrainerOffers
 {
+    public static bool IsFirstLesson(TownAlly ally) => ally != null &&
+        Common.InstanceOrNull?.CampaignContext?.IsPreparingForOpening == true &&
+        !Common.Instance.CampaignContext.State.LearnedOpeningSkill &&
+        ally.Id == Common.Instance.GameSaveData.ProtagonistId;
+
     public static List<TrainerOffer> Build(TownAlly ally, TownConfiguration configuration)
     {
         if (ally == null || (ally.PrimaryClass == null && configuration == null)) return new List<TrainerOffer>();
-        return ally.PrimaryClass == null ? BuildFallback(ally, configuration) : BuildForClass(ally, configuration);
+        var offers = ally.PrimaryClass == null ? BuildFallback(ally, configuration) : BuildForClass(ally, configuration);
+        // Reserve the initial lesson for an affordable active skill. Its normal point cost
+        // still applies; passive spending cannot consume the points needed to leave town.
+        return IsFirstLesson(ally) ? offers.Where(o => o.CurrentRank == 0 && o.CanLearn &&
+            o.Skill.ActivationType == ActivationType.Active).ToList() : offers;
     }
 
     // Unspent skill points: earned from HighestLevel, minus what the learned ranks cost. 0 without a class.

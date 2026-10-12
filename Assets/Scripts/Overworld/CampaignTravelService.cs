@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using EternalEnigma.Core.Capabilities;
 using EternalEnigma.Core.Progression;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -39,6 +40,7 @@ public sealed class CampaignTravelService
         returnArrivalTown = null;
         HomecomingPending = HomecomingCompleted = false;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
+        Context.State.RequiresOpeningPreparation = true;
         var save = common.GameSaveData;
         save.ProtagonistId = save.TownSaveData.RecruitedAlliesData.First().AllyId;
         save.Roster = save.TownSaveData.RecruitedAlliesData.ToList();
@@ -124,7 +126,7 @@ public sealed class CampaignTravelService
         returnArrivalTown = !homecoming && Context.State.Scene == "Town" ? Context.State.LocationId : null;
         var newKeys = Context.Keys.Except(previousKeys).OrderBy(key => key).ToArray();
         var capabilities = Context.Campaign.Sources.Where(source => Context.Claimed.Contains(source.Id) && !previousClaims.Contains(source.Id))
-            .Select(DescribeCapabilityReward).ToArray();
+            .Select(source => DescribeCapabilityReward(Context, source)).ToArray();
         if (firstClear != null)
         {
             var ability = DungeonClearAbilities.ForDungeon(firstClear);
@@ -159,13 +161,14 @@ public sealed class CampaignTravelService
         common.StartCoroutine(ShowKeyRewards(keys, () => transitioning = false, false, capabilityRewards));
     }
 
-    public static string DescribeCapabilityReward(CapabilitySource source) =>
-        $"<b>{CapabilityName(source.Capability)}</b>\n" + (source.CompanionId != null
+    public static string DescribeCapabilityReward(CampaignContext context, CapabilitySource source) =>
+        $"<b>{CampaignRewardNames.Name(context, source.Capability)}</b>\n{source.Capability.DisplayName()}\n" +
+        CampaignRewardNames.Purpose(source.Capability) + "\n" + (source.CompanionId != null
             ? "Add the companion with this capability to your party at a town to use it."
             : "Permanently available for matching overworld obstacles and routes.");
 
-    private static string CapabilityName(EternalEnigma.Core.Capabilities.Capability capability) =>
-        EternalEnigma.Core.Capabilities.CapabilityCatalog.DisplayName(capability);
+    private string CapabilityName(EternalEnigma.Core.Capabilities.Capability capability) =>
+        CampaignRewardNames.Name(Context, capability);
 
     private IEnumerator ShowKeyRewards(string[] keys, Action continueTravel, bool inDungeon = true, string[] capabilityRewards = null)
     {

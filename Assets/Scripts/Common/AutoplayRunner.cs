@@ -280,7 +280,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (!Running || Paused) return;
         var now = Time.realtimeSinceStartupAsDouble;
         if (now - started - pausedSeconds > Options.TimeLimitMinutes * 60) { Finish(IsLootSweep ? "Failed" : "TimeLimit", "Active time limit reached."); return; }
-        // A validated five-map preflight and terrain builds can span several frames or block one frame.
+        // A validated two-map preflight and terrain builds can span several frames or block one frame.
         // The overall time limit still bounds generation; the combat stall clock starts when play is ready.
         if (Common.Instance?.Travel.IsTransitioning == true || Game.Instance is { IsReady: false }) lastProgress = now;
         if (now - lastProgress > Options.StallSeconds) { Finish(IsLootSweep ? "Failed" : "Stalled", "No meaningful progress: " + Status); return; }
@@ -337,7 +337,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (context == null) { Finish("Unsupported", "Campaign context disappeared."); return; }
         TrackProgress(context);
         if (context.State.Finished && Report.Finale?.FinalExitCompleted == true && common.Travel.HomecomingCompleted &&
-            Report.Finale.Floors.Count == 5 && Report.Finale.Floors.All(f => f.Regions.All(r => r.Cleared && r.Remaining == 0)) &&
+            Report.Finale.Floors.Count == FinalePlan.FloorCount && Report.Finale.Floors.All(f => f.Regions.All(r => r.Cleared && r.Remaining == 0)) &&
             (IsFinaleDebug || !Options.ExploreAll || context.Campaign.Locations.All(l =>
             IsDungeon(l) ? context.Completed.Contains(l.Id) : visited.Contains(l.Id))))
         { Finish("Victory", Options.ExploreAll ? "Campaign complete; every generated destination visited and dungeon completed once." : "Campaign Finished state reached."); return; }
@@ -366,7 +366,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     private void TownTick(Town town, CampaignContext context)
     {
         var player = town.TownPlayer;
-        if (player.IsBusy || player.ControllingTownAlly == null) return;
+        if (player.IsBusy || player.CutsceneLocked || player.ControllingTownAlly == null) return;
         visited.Add(town.Configuration.Id);
         if (Options.DebugPlaythrough && Options.InfiniteResources) player.Gold = 1000000;
         if (preparedTown != town)
@@ -387,9 +387,13 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             target = ServicePosition(town,shop);
             if (player.ControllingTownAlly.TilemapPosition == target)
             {
-                foreach (var offer in town.Services.Catalog(shop.Definition))
-                    while (Running && WantsOffer(town,shop.Definition,offer))
-                        if (!BuyOffer(town,shop.Definition,offer)) break;
+                foreach (var itemName in town.Services.Catalog(shop.Definition).Select(o => o.Item.ItemName).ToArray())
+                    while (Running)
+                    {
+                        // A one-time opening offer can change price after its purchase.
+                        var offer = town.Services.Catalog(shop.Definition).First(o => o.Item.ItemName == itemName);
+                        if (!WantsOffer(town,shop.Definition,offer) || !BuyOffer(town,shop.Definition,offer)) break;
+                    }
                 shopped.Add(shop); return;
             }
         }
@@ -398,6 +402,15 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             target = ServicePosition(town,trainer);
             if (player.ControllingTownAlly.TilemapPosition == target)
             { LearnOffer(town,training.ally,training.offer); return; }
+        }
+        else if (context.IsPreparingForOpening)
+        {
+            if (!context.ReadyForOpeningDay)
+            { Finish("Stalled", "Opening preparations are incomplete: " + context.OpeningPreparationHint); return; }
+            var bed = town.GetComponentInChildren<HomeBed>();
+            target = bed.Tile - Vector3Int.up;
+            if (player.ControllingTownAlly.TilemapPosition == target)
+            { bed.SleepAndSave(); Log("Sleep and save before opening day"); return; }
         }
         else if (interior != null)
         {

@@ -49,6 +49,22 @@ public sealed class DioramaPlayerValidation : MonoBehaviour
         yield return Wait(()=>!Common.Instance.ScreenTransition.BlockScreen.activeSelf,"town reveal");
         yield return Measure("Town");
         var town=FindFirstObjectByType<Town>();var common=Common.Instance;
+        if (common.CampaignContext.IsPreparingForOpening)
+        {
+            var bakery = town.Configuration.Buildings.Single(b => b.Id == "bakery");
+            if (!common.CampaignContext.State.BoughtOpeningBread && !town.Services.Buy(bakery, "Bread", out _))
+                throw new InvalidOperationException("Validation could not collect opening bread.");
+            if (!common.CampaignContext.State.LearnedOpeningSkill)
+            {
+                var hero = town.TownPlayer.RecruitedAllies.Single(a => a.Id == common.GameSaveData.ProtagonistId);
+                var offer = TrainerOffers.Build(hero, town.Configuration).First(o => o.CanLearn && o.Skill.ActivationType == ActivationType.Active);
+                if (!town.Services.Learn(hero, offer.Skill, out _)) throw new InvalidOperationException("Validation could not learn opening skill.");
+            }
+            var bed = town.GetComponentInChildren<HomeBed>();
+            bed.SleepAndSave();
+            yield return Wait(() => !bed.IsSleeping, "opening morning");
+            common.MessageDialog.Ok_Clicked();
+        }
         string dungeon=common.CampaignContext.Campaign.Locations.First(l=>l.ParentTownId==town.Configuration.Id).Id;
         if(!common.Travel.EnterTownDungeon(town,dungeon))throw new InvalidOperationException("Validation could not enter starter dungeon.");
         yield return Wait(()=>FindFirstObjectByType<Game>()?.IsReady==true&&!common.ScreenTransition.BlockScreen.activeSelf,"dungeon");

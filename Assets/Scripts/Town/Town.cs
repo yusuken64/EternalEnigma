@@ -337,6 +337,8 @@ public class Town : MonoBehaviour
 
         Debug.Log("Generate Buildings");
         GenerateInteractableBuildings();
+        if (Configuration.Id == "town-0" && Common.Instance.CampaignContext?.State.RequiresOpeningPreparation == true)
+            OpeningDungeonGate.Create(this);
         GenerateShopInteriors();
         GenerateRoofs();
         TownInteriorRendering.SpawnTownsfolk(this);
@@ -369,6 +371,8 @@ public class Town : MonoBehaviour
         if (Common.Instance.Travel.IsHomecoming(Configuration.Id))
             yield return GetComponentInChildren<HomeBed>().WakeOnly();
         else Common.Instance.ScreenTransition.DoOpen();
+        if (Configuration.Id == "town-0" && Common.Instance.CampaignContext?.IsPreparingForOpening == true)
+            GameMessages.Post(Common.Instance.CampaignContext.OpeningPreparationHint);
         finishingGeneration=false;
     }
 }

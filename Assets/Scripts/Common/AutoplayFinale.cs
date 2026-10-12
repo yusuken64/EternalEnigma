@@ -67,7 +67,7 @@ public sealed partial class AutoplayRunner
         report.RevealedMimics = session.Revealed.OrderBy(x => x, StringComparer.Ordinal).ToArray();
         report.ClearedRegions = session.ClearedRegions.OrderBy(x => x, StringComparer.Ordinal).ToArray();
         report.MimicFamilies = session.Plan.Floors.SelectMany(f => f.Enemies).Where(e => e.IsMimic && session.Revealed.Contains(e.Id))
-            .Select(e => e.Family).Distinct().OrderBy(x => x, StringComparer.Ordinal).ToArray();
+            .Select(e => session.MimicFamily(e.Id)).Distinct().OrderBy(x => x, StringComparer.Ordinal).ToArray();
         report.StairTransitions = session.StairTransitions.ToArray(); report.FinalExitCompleted = session.FinalExitCompleted;
         foreach (var region in report.Floors.SelectMany(f => f.Regions))
         {

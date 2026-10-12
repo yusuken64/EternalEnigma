@@ -245,8 +245,56 @@ public static class LockSkinCatalog
         S(Capability.SacredRite, Interaction, "A shrine blocks the road at {place}, and the way opens only for a proper rite.", Ruins, Desert);
         S(Capability.SacredRite, Interaction, "A sacred grove at {place} shuts its path to anyone who has not been blessed.", Forest, Highlands);
 
+        S(Capability.MillwrightTraining, Interaction, "The mill wheel at {place} has stopped, leaving its lifting platform stranded above the road.");
+        S(Capability.MillwrightTraining, Interaction, "A mill sluice at {place} feeds the wrong channel. Its wooden gearing must be set before the path drains.");
+        S(Capability.MillwrightTraining, Interaction, "The water-powered hoist at {place} has thrown its belt, and the crossing hangs out of reach.");
+        S(Capability.MillwrightTraining, Interaction, "The sawmill at {place} holds the only bridge raised. Its drive wheel needs a practiced hand.", Forest, Highlands);
+        S(Capability.MillwrightTraining, Interaction, "An old pumping wheel at {place} could empty the flooded causeway, but its linkage is out of time.", Marsh, Coast, Ruins);
+
+        S(Capability.ForestersWrit, Interaction, "Rangers bar the trail at {place}. Only someone carrying their woodland permit may pass.");
+        S(Capability.ForestersWrit, Interaction, "A wardens' lodge closes the path through {place}, reserving the trail for approved travelers.");
+        S(Capability.ForestersWrit, Interaction, "The protected hunting road at {place} is chained shut. Its keeper asks for the woodland seal.");
+        S(Capability.ForestersWrit, Interaction, "The old-growth reserve at {place} admits only travelers vouched for by the local rangers.", Forest, Marsh);
+        S(Capability.ForestersWrit, Interaction, "Wardens at {place} guard a sheltered ranger trail across the high country.", Highlands, Tundra);
+
+        S(Capability.FerrymansFavor, Interaction, "The private ferry at {place} takes no coin. Its keeper carries only those he owes a crossing.");
+        S(Capability.FerrymansFavor, Interaction, "A ferryman waits at {place}, but keeps his boat tied until a trusted passenger calls.");
+        S(Capability.FerrymansFavor, Interaction, "The last boat at {place} belongs to a boatman who will cross for a friend, and for no stranger.");
+        S(Capability.FerrymansFavor, Interaction, "A reed-hidden landing at {place} serves a private skiff whose owner must first be won over.", Marsh, Coast);
+        S(Capability.FerrymansFavor, Interaction, "The cable ferry at {place} is shuttered for the season, except for passengers owed a personal debt.", Highlands, Tundra);
+
+        S(Capability.GravediggersCharge, Interaction, "The burial gate at {place} is locked. Only the appointed keeper of the dead may open it.");
+        S(Capability.GravediggersCharge, Interaction, "A sexton guards the crypt stair at {place}, asking who has been entrusted with its care.");
+        S(Capability.GravediggersCharge, Interaction, "The cemetery passage at {place} is reserved for someone bearing the burial keeper's seal.");
+        S(Capability.GravediggersCharge, Interaction, "The old charnel vault at {place} is sealed to all but its commissioned caretaker.", Ruins, Desert);
+        S(Capability.GravediggersCharge, Interaction, "The walled barrows at {place} admit only a recognized keeper of the burial grounds.", Highlands, Forest, Tundra);
+
+        S(Capability.SmugglersMark, Interaction, "A lookout at {place} conceals the tunnel entrance and waits for the underworld's sign.");
+        S(Capability.SmugglersMark, Interaction, "A cellar door at {place} opens only to someone recognized by the hidden trade.");
+        S(Capability.SmugglersMark, Interaction, "The night passage through {place} is watched. Its sentry asks for a sign that cannot be bought.");
+        S(Capability.SmugglersMark, Interaction, "A concealed wharf at {place} admits only passengers known to the contraband runners.", Coast, Marsh);
+        S(Capability.SmugglersMark, Interaction, "An illicit caravan tunnel at {place} stays barred until its keeper recognizes a trusted courier.", Desert, Ruins, Highlands);
+
+        S(Capability.BellkeepersOffice, Interaction, "The signal bell at {place} controls the far gate. Only an appointed keeper knows the accepted peal.");
+        S(Capability.BellkeepersOffice, Interaction, "A distant lift serves {place}, but its crew answers only the tower's official signal.");
+        S(Capability.BellkeepersOffice, Interaction, "The watch at {place} waits for the authorized bell-call before lowering the crossing.");
+        S(Capability.BellkeepersOffice, Interaction, "The harbor boom at {place} opens for the bell tower's appointed signaler.", Coast, Marsh);
+        S(Capability.BellkeepersOffice, Interaction, "The mountain lift at {place} hangs across the gorge, waiting for the proper tower peal.", Highlands, Volcanic, Tundra);
+
+        S(Capability.FuneraryRites, Interaction, "Restless mourners crowd the road at {place}. Their dead have never been properly laid to rest.");
+        S(Capability.FuneraryRites, Interaction, "A pale procession crosses {place} without end, waiting for someone to complete its burial service.");
+        S(Capability.FuneraryRites, Interaction, "An unburied spirit bars {place}. The prayers offered so far have not brought it peace.");
+        S(Capability.FuneraryRites, Interaction, "Voices rise from the drowned graves at {place}, holding the causeway until the dead are commended.", Marsh, Coast);
+        S(Capability.FuneraryRites, Interaction, "The fallen soldiers of {place} still guard the road, awaiting the last words of their burial ceremony.", Ruins, Highlands, Desert);
+
+        S(Capability.RoyalSurveyorsMaps, Interaction, "The road at {place} disappears beneath shifting ground. Only the crown's old survey records its safe course.");
+        S(Capability.RoyalSurveyorsMaps, Interaction, "A buried entrance at {place} can be found only by matching the old survey marks.");
+        S(Capability.RoyalSurveyorsMaps, Interaction, "Every trail at {place} ends blindly. The crown's measured route is missing from ordinary charts.");
+        S(Capability.RoyalSurveyorsMaps, Interaction, "The causeway through {place} lies hidden under silt, its course preserved only in the royal charts.", Marsh, Coast, Desert);
+        S(Capability.RoyalSurveyorsMaps, Interaction, "The abandoned road at {place} is lost among foundations. Survey bearings could trace it again.", Ruins, Forest, Highlands);
+
         // A sealed door for abilities that are not normally interactions. Return gates are always interactions,
-        // whichever capability opens them, and a required return guards two sites, so each gets two skins.
+        // whichever capability opens them. Keep multiple variants for optional returns and older layouts.
         S(Capability.Climb, Interaction, "A watchtower door at {place} hangs high on the cliff, and its keeper lowers no rope.");
         S(Capability.Climb, Interaction, "A hermit's door at {place} is cut into a cliff face high above the ground.");
         S(Capability.Grapple, Interaction, "A sealed courtyard at {place} sits beyond a gap, with a hook-ring hanging on its far wall.");

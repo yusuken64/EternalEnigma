@@ -237,6 +237,7 @@ namespace EternalEnigma.Tests
             common.Travel.NewCampaign(42);
             yield return harness.WaitUntil(() => Town != null && Town.IsReady && !common.ScreenTransition.BlockScreen.activeSelf, "campaign town");
             Town.TownPlayer.Gold = 10000;
+            harness.PrepareOpening();
             foreach (var location in common.CampaignContext.Campaign.Locations.Where(l => l.Kind == EternalEnigma.Core.Progression.LocationKind.Town))
                 Assert.That(TownShopCatalog.Tier(location.Id), Is.EqualTo(location.Tier));
             string allyId = Town.Configuration.AllyCatalog.First(a => a.Id != common.GameSaveData.ProtagonistId).Id;
@@ -265,6 +266,7 @@ namespace EternalEnigma.Tests
                 yield return harness.WaitForIdle();
                 Assert.That(common.GameSaveData.DungeonSaveData.ReturnCommitted, Is.False);
                 var hero = harness.Ally; hero.Vitals.Hunger = 23 + run; hero.Vitals.HungerAccumulate = 4;
+                if (run < 2) harness.Game.PlayerController.Floor = common.GameSaveData.DungeonSaveData.EndFloor;
                 Assert.That(common.Travel.FinishDungeon(run < 2, harness.Game.PlayerController, keepLoot: run == 2), Is.True);
                 Assert.That(common.Travel.FinishDungeon(true, harness.Game.PlayerController), Is.False);
                 if (run == 0)

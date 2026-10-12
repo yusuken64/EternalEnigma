@@ -20,9 +20,9 @@ public sealed class FinaleRuntime
     public FinaleSession Session { get; }
     public bool OnOverworld => true;
     public bool IsTransitioning => transitioning;
-    public string Title => $"The reverse world - Floor {Session.CurrentFloor}/5";
+    public string Title => $"The reverse world - Floor {Session.CurrentFloor}";
     internal static string LoadingTitle(int floor) =>
-        $"Loading...\n<size=70%>The reverse world - Floor {floor}/{FinalePlan.FloorCount}</size>";
+        $"Loading...\n<size=70%>The reverse world - Floor {floor}</size>";
     public string ObjectiveText
     {
         get
@@ -36,21 +36,39 @@ public sealed class FinaleRuntime
     internal IEnumerator Start()
     {
         yield return LoadFloor();
-        GameMessages.Post("Clear every region on five floors. Towns and dungeons hide mimics; approach and try to enter them.");
+        GameMessages.Post("Clear every region. Towns and dungeons hide mimics; the last building revealed in each biome hides a boss.");
     }
     internal bool CanAct(Enemy enemy) => enemy.GetComponent<FinaleActor>() is not { } actor ||
         !actor.Hidden && Session.Unlocked.Contains(actor.RegionId) && actor.RevealedRound < round;
-    internal bool Reveal(Enemy enemy, Character from)
+    internal Enemy Reveal(Enemy enemy, Character from)
     {
         var actor = enemy.GetComponent<FinaleActor>();
-        if (actor == null || from != game.PlayerController.ControlledAlly || !Session.Reveal(actor.Id, from.TilemapPosition.ToGridPoint())) return false;
+        if (actor == null || from != game.PlayerController.ControlledAlly ||
+            !Session.Reveal(actor.Id, from.TilemapPosition.ToGridPoint(), out var swappedWith)) return null;
+        if (swappedWith != null)
+        {
+            // Both actors are still hidden. Move the existing prefabs with their combat behavior
+            // to the chosen buildings without adding actors or inventing death events.
+            var other = actors[swappedWith];
+            var otherEnemy = other.GetComponent<Enemy>();
+            var position = enemy.TilemapPosition;
+            (actor.Id, other.Id) = (other.Id, actor.Id);
+            (actor.IsTown, other.IsTown) = (other.IsTown, actor.IsTown);
+            var disguises = actor.Disguises.ToArray();
+            actor.Disguises.Clear(); actor.Disguises.AddRange(other.Disguises);
+            other.Disguises.Clear(); other.Disguises.AddRange(disguises);
+            enemy.SetPosition(otherEnemy.TilemapPosition); otherEnemy.SetPosition(position);
+            actors[actor.Id] = actor; actors[other.Id] = other;
+            actor = other; enemy = otherEnemy;
+        }
         actor.Hidden = false; actor.RevealedRound = round;
         foreach (var model in actor.Disguises) if (model != null) model.SetActive(false);
         enemy.VisualParent.SetActive(true);
         enemy.IsDormant = false; enemy.PursuitTarget = from; enemy.PursuitPosition = from.TilemapPosition;
-        GameMessages.Post(actor.IsTown ? "The town was a mimic!" : "The dungeon was a mimic!");
+        GameMessages.Post(enemy.IsBoss ? $"The building hides a boss: {actor.Family}!" :
+            actor.IsTown ? "The town was a mimic!" : "The dungeon was a mimic!");
         AutoplayRunner.FinaleEvent("MimicRevealed", actor.Id, actor.Family);
-        game.UpdateMiniMap(); return true;
+        game.UpdateMiniMap(); return enemy;
     }
     internal void OnDeath(Character enemy)
     {
@@ -106,10 +124,10 @@ public sealed class FinaleRuntime
         {
             if (placement.IsMimic)
             {
-                var prefab = FinaleEnemyStats.Prefab(placement.Family, placement.IsTown);
+                var prefab = FinaleEnemyStats.Prefab(placement.Family, placement.IsBoss);
                 if (prefab == null) throw new InvalidOperationException("Missing finale mimic: " + placement.Family);
                 var enemy = UnityEngine.Object.Instantiate(prefab, game.CurrentDungeon.transform);
-                FinaleEnemyStats.Apply(enemy, FinalePlan.CombatDifficulty, placement.IsTown);
+                FinaleEnemyStats.Apply(enemy, FinalePlan.CombatDifficulty, placement.IsBoss);
                 enemy.UpdateCachedStats(); enemy.InitialzeVitalsFromStats(); enemy.TilemapPosition = placement.Position.ToCell();
                 Register(enemy, placement.Id, placement.RegionId, placement.Family, placement);
                 enemy.InitializeSpawn(); game.Enemies.Add(enemy);

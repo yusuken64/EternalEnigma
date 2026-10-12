@@ -145,7 +145,8 @@ public static class CampaignValidator
         {
             Check(entry.Tier >= 0 && entry.Tier < 5 && Enum.IsDefined(typeof(CapabilityRole), entry.Role), $"manifest.tierRole: Invalid tier or role for {entry.Id}.");
             var providers = campaign.Sources.Where(s => s.Capability == entry.Id).ToArray();
-            Check(providers.Length >= 2 && providers.Any(s => s.Guaranteed), $"source.providers: {entry.Id} requires two providers and a guaranteed source.");
+            Check((campaign.GeneratorVersion >= 13 ? providers.Length == 1 : providers.Length >= 2) && providers.Any(s => s.Guaranteed),
+                $"source.providers: {entry.Id} requires {(campaign.GeneratorVersion >= 13 ? "exactly one guaranteed provider" : "two providers and a guaranteed source")}.");
             Check(providers.All(s => locations[s.LocationId].Tier >= entry.Tier) && providers.Any(s => locations[s.LocationId].Tier == entry.Tier),
                 $"source.tier: Providers of {entry.Id} violate tier ordering.");
             var uses = campaign.Routes.Where(r => r.Requirement.Alternatives.Any(a => a.Contains(entry.Id))).ToArray();
@@ -263,7 +264,8 @@ public static class CampaignValidator
                     if (objective.RewardCapability.HasValue)
                     {
                         var providers = campaign.Sources.Where(s => s.Capability == objective.RewardCapability.Value).ToArray();
-                        Check(providers.Length == 2 && providers.All(s => objective.DestinationIds.Contains(s.LocationId)), "return.providers: Both providers must require returning.");
+                        Check(providers.Length == (campaign.GeneratorVersion >= 13 ? 1 : 2) && providers.All(s => objective.DestinationIds.Contains(s.LocationId)),
+                            "return.providers: Every provider of the return reward must require returning.");
                         Check(!CampaignExplorer.Explore(campaign, excludedCapability: objective.RewardCapability).ReachableLocations.Contains(campaign.FinalLocationId),
                             "return.bypass: Completion can omit the return reward.");
                     }
@@ -286,8 +288,9 @@ public static class CampaignValidator
         for (int tier = 0; tier < 5; tier++)
             Check(campaign.Locations.Any(l => l.Tier == tier && l.Kind == LocationKind.RepeatableDungeon && guaranteed.ReachableLocations.Contains(l.Id)),
                 $"repeatable.tier: Tier {tier} lacks a reachable repeatable dungeon.");
-        // A capability check must never make one particular companion mandatory.
-        foreach (var companion in campaign.Companions)
+        // Older campaigns supplied interchangeable companions. Unique rewards can require a
+        // particular recruit; the guaranteed path above still proves one specialist is enough.
+        foreach (var companion in campaign.Companions.Where(_ => campaign.GeneratorVersion < 13))
         {
             var without = CampaignExplorer.Explore(campaign, true, true, 1, companion.Id);
             Check(campaign.Locations.Where(l => l.Required || l.Id == campaign.FinalLocationId).All(l => without.ReachableLocations.Contains(l.Id)),
@@ -295,6 +298,9 @@ public static class CampaignValidator
         }
         Check(campaign.Routes.Count(r => r.Other(campaign.FinalLocationId) != null) == 1,
             "final.endpoint: Final dungeon must have one entrance and no onward route.");
+        foreach (var key in campaign.Routes.Where(r => r.KeyId != null).GroupBy(r => r.KeyId))
+            Check(key.Select(r => r.KeyLocationId).Distinct().Count() == 1,
+                $"key.providers: {key.Key} must have exactly one reward location.");
         // Narrative checks come last so they never hide a structural error.
         if (campaign.GeneratorVersion >= 9)
         {

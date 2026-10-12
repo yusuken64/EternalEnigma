@@ -42,7 +42,8 @@ public sealed class CoreDungeonLayerGenerator : TWCBlueprintAction, ITWCAction
     public DungeonFloorOptions Options(TileWorldCreator twc) =>
         Throne && LayoutVersion == 0 ? DungeonFloorOptions.Throne(twc.currentSeed)
                : new DungeonFloorOptions(twc.currentSeed, twc.twcAsset.mapWidth, twc.twcAsset.mapHeight, Throne, EnemyCount, GoldCount, ItemCount, TrapCount, GatheringCount, LayoutVersion, Biome, Tier, Role,
-                   EncounterIndex < 0 ? null : (EternalEnigma.Core.Progression.EncounterKind?)EncounterIndex,
+                   // Older serialized templates have no encounter fields (EncounterFloor deserializes as zero).
+                   EncounterIndex < 0 || EncounterFloor < 1 ? null : (EternalEnigma.Core.Progression.EncounterKind?)EncounterIndex,
                    new DungeonObjectiveDefinition(ObjectiveKind), EncounterFloor, FinalEncounterFloor, BossFamily, Variant);
 
     public bool[,] Execute(bool[,] map, TileWorldCreator twc)

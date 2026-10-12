@@ -27,7 +27,7 @@ internal class MovementAction : GameAction
         if (Game.Instance.Encounter?.Blocks(newMapPosition) == true && !Game.Instance.Encounter.Push(character,newMapPosition))
         { blocked = true; newMapPosition = originalPosition; return new(); }
 
-        if (!FootprintCanStep(character,originalPosition,newMapPosition))
+        if (!FinaleActor.AllowsPosition(character, newMapPosition) || !FootprintCanStep(character,originalPosition,newMapPosition))
         { blocked = true; newMapPosition = originalPosition; return new(); }
 		bool excludeAllies = false;
 
@@ -104,7 +104,7 @@ internal class MovementAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		var canWalk = FootprintCanStep(character,originalPosition,newMapPosition) || Game.Instance.Encounter?.CanPush(character,newMapPosition) == true;
+		var canWalk = FinaleActor.AllowsPosition(character, newMapPosition) && FootprintCanStep(character,originalPosition,newMapPosition) || Game.Instance.Encounter?.CanPush(character,newMapPosition) == true;
 		// A blocked mover (rooted/stuck) is still a valid command: ExecuteImmediate cancels the step and the turn is spent.
 
 		bool excludeAllies = true;
@@ -185,7 +185,7 @@ internal class AttackAction : GameAction
 		bool critical;
 		GetAttackDamage(attacker, target, out hit, out damage, out critical);
 
-		if (hit && damage > 0 && !AutoplayRunner.GodmodeFor(attacker))
+		if (hit && damage > 0 && !AutoplayRunner.InfiniteStrengthFor(attacker))
 			damage = Mathf.Max(1, Mathf.RoundToInt(damage * ClassPassives.DamageMultiplier(
 				new OutgoingDamage(attacker, target, DamageCategory.Weapon, DamageElement.Physical, false))));
 
@@ -203,7 +203,7 @@ internal class AttackAction : GameAction
 	public static void GetAttackDamage(Character attacker, Character target, int strength, out bool hit, out int damage, out bool critical)
 	{
 		// Resolve infinite strength as lethal damage, avoiding overflowing integer stats or saved equipment.
-		if (AutoplayRunner.GodmodeFor(attacker)) { hit = true; damage = Math.Max(0, target.Vitals.HP); critical = false; return; }
+		if (AutoplayRunner.InfiniteStrengthFor(attacker)) { hit = true; damage = Math.Max(0, target.Vitals.HP); critical = false; return; }
 		hit = CombatMath.RollHit(attacker, target);
 		var baseDamage = strength * MathF.Pow((15f / 16f), target.FinalStats.Defense);
 		float n = (float)UnityEngine.Random.Range(112, 143);
@@ -513,6 +513,8 @@ public class DeathAction : GameAction
         if (resolved || target == null || Game.Instance.DeadUnits.Contains(target)) return new();
         if (EncounterActor.Protected(target)) { target.Vitals.HP = Mathf.Max(1,target.Vitals.HP); return new(); }
         resolved = true;
+        target.Vitals.HP = 0;
+        Game.Instance.Finale?.OnDeath(target);
         Game.Instance.Encounter?.OnDeath(target);
         TrackAnimationTarget(target);
         global::PendingCast.Cancel(target, "dead or downed");
@@ -575,7 +577,7 @@ public class DeathAction : GameAction
 		Game game = Game.Instance;
 		if (droppedItem)
 		{
-			var item = Common.Instance.ItemManager.GetRandomDrop(target as Enemy, Game.Instance.PlayerController.Floor);
+			var item = Common.Instance.ItemManager.GetRandomDrop(target as Enemy, (Game.Instance.Finale != null ? EternalEnigma.Core.Progression.FinalePlan.CombatDifficulty : Game.Instance.PlayerController.Floor));
 			game.CurrentDungeon.SetDroppedItem(dropPosition, item);
 		}
 	}
@@ -647,12 +649,15 @@ internal sealed class RevealMimicAction : GameAction
 
     internal override bool IsValid(Character character) => character is Ally && mimic != null &&
         EnemyBehavior.IsDisguised(mimic) &&
-        TileWorldDungeon.ChevDistance(character.TilemapPosition, mimic.TilemapPosition) == 1;
+        TileWorldDungeon.ChevDistance(character.TilemapPosition, mimic.TilemapPosition) == 1 &&
+        Game.Instance.CurrentDungeon.CanWalkTo(character.TilemapPosition, mimic.TilemapPosition) &&
+        (mimic.GetComponent<FinaleActor>() is not { Hidden: true } || character == Game.Instance.PlayerController.ControlledAlly);
 
     internal override List<GameAction> ExecuteImmediate(Character character)
     {
         if (!IsValid(character)) return new();
         TrackAnimationTarget(mimic);
+        if (mimic.GetComponent<FinaleActor>() is { Hidden: true }) { Game.Instance.Finale.Reveal(mimic, character); return new(); }
         mimic.Provoke();
         mimic.PursuitTarget = character;
         mimic.PursuitPosition = character.TilemapPosition;

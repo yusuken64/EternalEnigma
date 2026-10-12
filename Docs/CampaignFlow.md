@@ -16,12 +16,20 @@ Town-0 contains story-0. Its completion unlocks the town exit with the Town gate
 Repeatable-0 outside town awards the separate Town area key, used at starter-exit.
 Interior dungeons have `ParentTownId`, share their parent town's overworld tile, and return
 inside that town. Other victories return to the dungeon marker. Campaign defeat
-restores the selected slot's last explicit save, including its saved town and position. Floor ranges by tier are 1-5, 5-10, 10-20, 20-30 and 30-40.
+restores the selected slot's last explicit save, including its saved town and position.
+Ordinary floor ranges by tier are 1-5, 5-10, 10-20, 20-30 and 30-40. The final dungeon
+uses the [reverse-world finale](CampaignGeneration.md#reverse-world-finale) instead
+of its former floor sequence. Every enemy and hidden mimic in each region must die
+before the next region opens. All five floors are mandatory; only the last ascending
+staircase completes the campaign and returns the party to the original bedroom.
 
 `StartDungeon` captures live town state in memory and selects the run's biome, tier and visuals.
 The two starter locations use BSP/throne layouts. Seeds derive from campaign seed/location/floor.
-Completion commits rewards to memory once per run. Final victory offers an explicit
-**Save completed campaign** action. Retreat retains loot and progression in memory.
+Completion commits rewards to memory once per run. Final victory restores vitals and
+plays a wake-only bed sequence without a dialog or automatic save. The existing home
+and inn save actions can explicitly save the completed adventure afterward. Completed
+slots can continue ordinary play; the finale cannot be replayed. Retreat retains loot
+and progression in memory, but resets the finale.
 
 ## Travel interactions
 
@@ -57,7 +65,7 @@ regressions; results are written to `Temp/HarnessResults/PlayMode.json` and `.xm
 Three new PlayerPrefs keys contain independent campaign snapshots, roster progression,
 active party, possessions, shops, playtime, save-point identity, awake arrival position and
 precomputed visual summaries. The legacy key is untouched and unavailable for Continue.
-Initial creation and explicit home/inn/completion saves are the only persistent writes.
+Initial creation and explicit home/inn saves are the only persistent writes.
 Quit and defeat restore the selected slot without applying penalties. No nested checkpoint
 or pre-run recovery JSON is stored. Campaign generation/fingerprint validation occurs on
 Continue, never during slot browsing; overworld terrain remains lazy.

@@ -72,7 +72,9 @@ public sealed class ScenePresentation : MonoBehaviour
         if(viewCamera!=null)
         {
             bool grassland=game!=null
-                ? game.DungeonGenerator!=null && game.DungeonGenerator.CurrentVisuals.Biome==OverworldBiome.Grassland
+                ? game.Finale?.OnOverworld == true
+                    ? game.Finale.Session.Floor.Grid.BiomeAt(game.PlayerController.ControlledAlly.TilemapPosition.ToGridPoint())==OverworldBiome.Grassland
+                    : game.DungeonGenerator!=null && game.DungeonGenerator.CurrentVisuals.Biome==OverworldBiome.Grassland
                 : town!=null
                     ? town.WalkableMap!=null &&
                       (town.WalkableMap.TileWorldCreator?.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland)==OverworldBiome.Grassland

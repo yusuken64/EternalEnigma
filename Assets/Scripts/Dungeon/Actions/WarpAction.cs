@@ -26,7 +26,7 @@ internal class WarpAction : GameAction
 		var game = Game.Instance;
 		var reachable = DungeonPlacement.Reachable(game.CurrentDungeon, attacker.TilemapPosition);
 		var cells = DungeonPlacement.OpenCells(game.CurrentDungeon, attacker)
-			.Where(p => p != attacker.TilemapPosition && reachable.Contains(p)).ToList();
+			.Where(p => p != attacker.TilemapPosition && reachable.Contains(p) && FinaleActor.AllowsPosition(attacker, p)).ToList();
 		if (cells.Count == 0) return new();
 		warpLoccation = cells[Random.Range(0, cells.Count)];
 		TrackAnimationTarget(attacker);

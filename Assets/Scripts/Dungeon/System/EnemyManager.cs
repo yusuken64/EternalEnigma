@@ -22,6 +22,7 @@ public class EnemyManager : MonoBehaviour
 	{
 		floor = Mathf.Clamp(floor, 1, 27);
 		var candidates = SpawnDefinitions.Where(x => x.FloorMin <= floor && x.FloorMax >= floor)
+			.Where(x => x.EnemyCharacterPrefab != null && !EternalEnigma.Core.Generation.FinaleRoster.IsReserved(x.EnemyCharacterPrefab.name))
 			.Where(x => !footprint.HasValue || x.EnemyCharacterPrefab.FootPrint == footprint.Value)
 			.OrderBy(x => x.SpawnName, StringComparer.Ordinal).ToList();
 		if (candidates.Count == 0) throw new InvalidOperationException($"No spawn definitions cover floor {floor}.");
@@ -36,18 +37,18 @@ public class EnemyManager : MonoBehaviour
 		throw new InvalidOperationException("Invalid spawn weights.");
 	}
 
-    internal List<Enemy> SpawnPack(Enemy prefab, Vector3Int origin, ISet<Vector3Int> reserved)
+    internal List<Enemy> SpawnPack(Enemy prefab, Vector3Int origin, ISet<Vector3Int> reserved, Func<Vector3Int, bool> allowed = null)
     {
         var game = Game.Instance;
         var spawned = new List<Enemy>();
         var positions = new List<Vector3Int> { origin };
         int count = Mathf.Max(1, prefab.GetComponent<EnemyBehavior>()?.PackSize ?? 1);
         positions.AddRange(game.CurrentDungeon.GetWalkableNeighborhoodTiles(origin)
-            .Where(p => p != origin && !reserved.Contains(p) && SkillMovement.CanOccupy(prefab, p))
+            .Where(p => p != origin && (allowed == null || allowed(p)) && !reserved.Contains(p) && SkillMovement.CanOccupy(prefab, p))
             .OrderBy(p => p.x).ThenBy(p => p.y).Take(count - 1));
         foreach (var cell in positions)
         {
-            if (!SkillMovement.CanOccupy(prefab, cell)) continue;
+            if ((allowed != null && !allowed(cell)) || !SkillMovement.CanOccupy(prefab, cell)) continue;
             var enemy = Instantiate(prefab, game.transform);
             enemy.UpdateCachedStats();
             enemy.InitialzeVitalsFromStats();

@@ -28,6 +28,8 @@ public static class CampaignSaving
         error = null;
         if (common.CampaignContext == null || common.CampaignContext.IsSandbox || common.GameSaveData.IsSandbox)
         { error = "This session cannot save a campaign."; return false; }
+        if (common.CampaignContext.Finale != null)
+        { error = "Return to a town to save."; return false; }
         try
         {
             SaveSystem.Capture(common);

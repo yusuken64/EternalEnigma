@@ -109,10 +109,13 @@ public class ScaledDamageAction : GameAction, ISkillCastCondition
 
 		for (int i = 0; i < totalHits; i++)
 		{
-			int damage = Mathf.RoundToInt(RollDamage(out bool critical) * AmmunitionMultiplier);
+			// Match basic attacks: debug infinite strength also covers strength-based skills.
+			bool infiniteStrength = Scaling != DamageScaling.Magic && AutoplayRunner.InfiniteStrengthFor(caster);
+			bool critical = false;
+			int damage = infiniteStrength ? target.Vitals.HP : Mathf.RoundToInt(RollDamage(out critical) * AmmunitionMultiplier);
 			result.Add(new TakeDamageAction(caster, target, damage, true, false, Element)
 			{
-				RollToHit = RollToHit,
+				RollToHit = !infiniteStrength && RollToHit,
 				Critical = critical
 			});
 		}

@@ -6,7 +6,7 @@ public static class InnCheckpoint
     {
         if (common.GameSaveData?.IsSandbox == true || common.CampaignContext?.IsSandbox == true) return false;
         var restored = SaveSystem.Inspect(SaveSystem.ActiveSlot, out var error);
-        if (restored == null || !restored.HasCampaign || restored.Campaign.Finished) return false;
+        if (restored == null || !restored.HasCampaign) return false;
         var previous = common.GameSaveData;
         try
         {

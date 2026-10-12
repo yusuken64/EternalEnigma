@@ -1,0 +1,237 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6010776157945327255
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3713622911279128913}
+  m_Layer: 8
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3713622911279128913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6010776157945327255}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.25, y: 1.22, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3762426426639318610}
+  m_Father: {fileID: 3173618089241410518}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8982690348047690386
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3173618089241410518}
+  - component: {fileID: 6198608932969050963}
+  - component: {fileID: 7239826830693330230}
+  - component: {fileID: 1702997476094414562}
+  m_Layer: 8
+  m_Name: Enemy_LittleDemon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3173618089241410518
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8982690348047690386}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3713622911279128913}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6198608932969050963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8982690348047690386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40781a2fea77f664bbd567d1145efe0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilemapPosition: {x: 0, y: 0, z: 0}
+  Team: 1
+  VisualParent: {fileID: 6010776157945327255}
+  CurrentFacing: 0
+  StartingStats:
+    HPMax: 100
+    SPMax: 0
+    HungerMax: 0
+    Strength: 40
+    MagicPower: 0
+    Defense: 30
+    EXPOnKill: 200
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 1
+    AttacksPerTurnMax: 1
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  FootPrint: 0
+  StatusEffects: []
+  Equipment: {fileID: 0}
+  PursuitTarget: {fileID: 0}
+  Skills: []
+  DisplayName: Little Demon
+  CurrentEnemyState: 0
+  Animator: {fileID: 3154830632693178036}
+  IsBoss: 0
+  IsDormant: 0
+--- !u!114 &7239826830693330230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8982690348047690386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6616f7d00b5ae3743a0956be51d15f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::EnemyBehavior
+  WaitUntilAttacked: 0
+  RangedAttack: 1
+  Range: 6
+  Steals: 0
+  AlwaysFlees: 0
+  RootsAdjacentTarget: 0
+  Stationary: 0
+  ExplodesOnDeath: 0
+  ExplosionDamage: 20
+  WarpWhenHitChance: 0
+  SpawnWeight: 20
+  PackSize: 1
+  StealItems: 1
+  StealGold: 1
+  Confusion: {fileID: 0}
+  Mimic: 0
+  ChestVisualPrefab: {fileID: 0}
+--- !u!114 &1702997476094414562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8982690348047690386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d6e29da5e523ef4095d33db907ebee0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::CharacterCombatEffects
+  CastSocket: {fileID: 0}
+  Melee: {fileID: 11400000, guid: dc9fe5d4788120d4f87191d54a442ac1, type: 2}
+  Ranged: {fileID: 11400000, guid: 519e4abc4a2529f4a9f4e9926beeb64b, type: 2}
+  Confusion: {fileID: 11400000, guid: 2b92abebf9d42184d85bddc18a597328, type: 2}
+  Root: {fileID: 11400000, guid: 712257fc9038f5d44aea923b94c4d3b4, type: 2}
+  Steal: {fileID: 11400000, guid: f4f1319a22422314aacd0107e91df48a, type: 2}
+--- !u!1001 &8072549417620364240
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3713622911279128913}
+    m_Modifications:
+    - target: {fileID: 1741503748061855854, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.07179035
+      objectReference: {fileID: 0}
+    - target: {fileID: 1741503748061855854, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.041604187
+      objectReference: {fileID: 0}
+    - target: {fileID: 2701260230748763330, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_Name
+      value: LittleDemon
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.00000047683716
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.13242555
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3.8261065
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+--- !u!95 &3154830632693178036 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6615578198094562660, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+  m_PrefabInstance: {fileID: 8072549417620364240}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3762426426639318610 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4913891231532885378, guid: 68dc368a106e22e41a001215aac9dccc, type: 3}
+  m_PrefabInstance: {fileID: 8072549417620364240}
+  m_PrefabAsset: {fileID: 0}

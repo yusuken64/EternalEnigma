@@ -2,7 +2,7 @@
 
 Campaign sessions use three independent `CampaignSlot_v2_0` through `CampaignSlot_v2_2` PlayerPrefs entries. The legacy `SaveData` entry is never read, rewritten, or deleted. `SaveSystem.ActiveSlot` selects the session; scoped stores restore both storage and slot selection.
 
-`Town.WriteSaveData`, `Town.SaveProgress`, `CampaignParty.Capture` and `SaveSystem.Capture` update memory. Travel, purchases, training, recruitment, equipment, rest, retreat, and dungeon rewards do not write PlayerPrefs. `CampaignSaving.Commit` clones the captured state, adds summary metadata and an awake arrival position, and writes the entire snapshot once. Writes occur at initial creation, home Sleep and Save, inn Save game, and Save completed campaign. The storage contract requires a failed write to leave previous bytes intact.
+`Town.WriteSaveData`, `Town.SaveProgress`, `CampaignParty.Capture` and `SaveSystem.Capture` update memory. Travel, purchases, training, recruitment, equipment, rest, retreat, and dungeon rewards do not write PlayerPrefs. `CampaignSaving.Commit` clones the captured state, adds summary metadata and an awake arrival position, and writes the entire snapshot once. Writes occur at initial creation, home Sleep and Save, and inn Save game. Finale homecoming changes memory only; the existing home/inn actions can save the completed adventure afterward. The storage contract requires a failed write to leave previous bytes intact.
 
 The main-menu slot browser reads only serialized summaries and referenced art. It does not construct a campaign or terrain. Completed slots are inspectable but cannot Continue. Corrupt saves remain in storage and display an error. Replacement is confirmed before hero selection; canceling hero selection does not touch the stored campaign.
 
@@ -12,7 +12,7 @@ Hero records contain campaign level and exact cumulative experience, including b
 
 In town-0, the first residential slot after the authored buildings is the home. Its generated walkable interior contains a bed instead of a vendor; the ordinary inn remains separate. New campaigns begin at the bedside and save after the camera is positioned. `HomeBed` exposes its tile, sleeping anchor and animation controller. The sleep sequence reserves the awake tile, locks gameplay, hides weapons, fades out, heals and commits, then wakes and restores equipment/facing/input. No-animation mode commits immediately. Failed saves still complete waking and report the error.
 
-Active playtime uses unscaled delta time and excludes unfocused applications, settings/pause, scene loading and completed campaigns. It is persisted only with an explicit save.
+Active playtime uses unscaled delta time and excludes unfocused applications, settings/pause, and scene loading. Completed adventures continue accumulating active playtime. It is persisted only with an explicit save.
 
 ## Background artwork
 

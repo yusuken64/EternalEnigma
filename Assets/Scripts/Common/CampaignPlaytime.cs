@@ -14,7 +14,6 @@ public sealed class CampaignPlaytime : MonoBehaviour
         if (scene == "Town" && FindFirstObjectByType<Town>()?.IsReady != true) return;
         if (scene == "DungeonScene" && Game.Instance?.IsReady != true) return;
         if (scene == "Overworld" && FindFirstObjectByType<OverworldScene>()?.IsReady != true) return;
-        if (common.CampaignContext.State.Finished) return;
         if (common.ScreenTransition.BlockScreen.activeSelf) return;
         common.GameSaveData.PlaytimeSeconds += Time.unscaledDeltaTime;
         var context = common.CampaignContext;

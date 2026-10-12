@@ -1,5 +1,6 @@
 using JuicyChickenGames.Menu;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,10 @@ public class Minimap : MonoBehaviour
     private MinimapMode currentMode;
     private bool dockHidden;
     private bool terminalHidden;
+    private readonly HashSet<Vector3Int> previousVisible = new(), dirtyCells = new(), previousMarkers = new();
+    private bool fullRefresh, drawingMarkers;
+    private bool Incremental => _currentDungeon?.Floor?.Variant == EternalEnigma.Core.World.DungeonVariant.Overworld;
+    internal void InvalidateTerrain() => fullRefresh = true;
 
     public FogOverlay FogOverlay;
 
@@ -35,6 +40,7 @@ public class Minimap : MonoBehaviour
             Destroy(minimapTexture);
 
         _currentDungeon = currentDungeon;
+        previousVisible.Clear(); dirtyCells.Clear(); previousMarkers.Clear(); fullRefresh = true;
         minimapTexture = new Texture2D(_currentDungeon.dungeonWidth * 3, _currentDungeon.dungeonHeight * 3, TextureFormat.RGBA32, false);
         pixels = new Color32[minimapTexture.width * minimapTexture.height];
         minimapTexture.wrapMode = TextureWrapMode.Clamp;
@@ -58,15 +64,17 @@ public class Minimap : MonoBehaviour
 
     public void UpdateVision(HashSet<Vector3Int> visibleTiles)
     {
-        // Mark previous visible tiles as explored
-        for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
+        if (Incremental)
         {
-            for (int y = 0; y < _currentDungeon.dungeonHeight; y++)
-            {
-                if (dungeonMap[x, y].visibility == MinimapTileVisibility.Visible)
-                    dungeonMap[x, y].visibility = MinimapTileVisibility.Explored;
-            }
+            foreach (var cell in previousVisible)
+                if (!visibleTiles.Contains(cell))
+                { dungeonMap[cell.x, cell.y].visibility = MinimapTileVisibility.Explored; dirtyCells.Add(cell); }
         }
+        else
+            for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
+                for (int y = 0; y < _currentDungeon.dungeonHeight; y++)
+                    if (dungeonMap[x, y].visibility == MinimapTileVisibility.Visible)
+                        dungeonMap[x, y].visibility = MinimapTileVisibility.Explored;
 
         // Apply combined visibility
         foreach (var pos in visibleTiles)
@@ -74,15 +82,20 @@ public class Minimap : MonoBehaviour
             if (pos.x >= 0 && pos.x < _currentDungeon.dungeonWidth &&
                 pos.y >= 0 && pos.y < _currentDungeon.dungeonHeight)
             {
+                if (dungeonMap[pos.x, pos.y].visibility != MinimapTileVisibility.Visible) dirtyCells.Add(pos);
                 dungeonMap[pos.x, pos.y].visibility = MinimapTileVisibility.Visible;
             }
         }
+        previousVisible.Clear();
+        foreach (var pos in visibleTiles)
+            if (pos.x >= 0 && pos.y >= 0 && pos.x < _currentDungeon.dungeonWidth && pos.y < _currentDungeon.dungeonHeight) previousVisible.Add(pos);
     }
 
     // Floor Sense: every unseen walkable tile becomes Explored.
     public void RevealLayout()
     {
         if (_currentDungeon == null || dungeonMap == null) return;
+        fullRefresh = true;
         for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
             for (int y = 0; y < _currentDungeon.dungeonHeight; y++)
                 if (!dungeonMap[x, y].isWall && dungeonMap[x, y].visibility == MinimapTileVisibility.Unseen)
@@ -92,26 +105,21 @@ public class Minimap : MonoBehaviour
     public void UpdateMinimapWithVisibleTiles(HashSet<Vector3Int> visibleTiles)
     {
         var reveal = Game.Instance.FloorReveal;
-        for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
+        bool refreshAll = !Incremental || fullRefresh;
+        drawingMarkers = false;
+        if (refreshAll)
+            for (int x = 0; x < _currentDungeon.dungeonWidth; x++)
+                for (int y = 0; y < _currentDungeon.dungeonHeight; y++) PaintGround(new Vector3Int(x, y));
+        else
         {
-            for (int y = 0; y < _currentDungeon.dungeonHeight; y++)
-            {
-                Color pixelColor = Color.clear;
-
-                switch (dungeonMap[x, y].visibility)
-                {
-                    case MinimapTileVisibility.Unseen: pixelColor = Color.clear; break;
-                    case MinimapTileVisibility.Explored:
-                        pixelColor = dungeonMap[x, y].isWall ? Color.clear : ExploredGroundColor;
-                        break;
-                    case MinimapTileVisibility.Visible:
-                        pixelColor = dungeonMap[x, y].isWall ? Color.clear : VisibleGroundColor;
-                        break;
-                }
-
-                PaintCell(x, y, pixelColor);
-            }
+            foreach (var cell in dirtyCells) PaintGround(cell);
+            foreach (var cell in previousMarkers) PaintGround(cell);
         }
+        previousMarkers.Clear(); drawingMarkers = Incremental;
+
+        if (Game.Instance.Finale is { } finale)
+            foreach (var location in finale.Session.Floor.Enemies.Where(e => e.IsMimic && !finale.Session.Revealed.Contains(e.Id)))
+                PaintCell(location.Position.X, location.Position.Y, location.IsTown ? new Color(.95f,.85f,.45f) : new Color(.65f,.75f,1f));
 
         // Draw player
         var playerPos = _currentDungeon.WorldToCell(Game.Instance.PlayerController.ControlledAlly.transform.position);
@@ -134,7 +142,8 @@ public class Minimap : MonoBehaviour
                     }
                     break;
                 case Enemy enemy:
-                    if (DungeonSight.OverlapsVisible(visibleTiles, Character.ToBounds(enemy.FootPrint, displayedCell)) || (reveal != null && reveal.EnemiesRevealedTurns > 0))
+                    if (enemy.GetComponent<FinaleActor>()?.Hidden == true) break;
+                    if (DungeonSight.OverlapsVisible(visibleTiles, Character.ToBounds(enemy.FootPrint, displayedCell)) || Game.Instance.Finale?.Session.HiddenMimics == 0 || (reveal != null && reveal.EnemiesRevealedTurns > 0))
                     {
                         PaintCell(displayedCell.x, displayedCell.y, EnemyBehavior.IsDisguised(enemy) ? ItemColor : EnemyColor);
                     }
@@ -176,15 +185,25 @@ public class Minimap : MonoBehaviour
         var facing = Dungeon.GetFacingOffset(playerController.ControlledAlly.CurrentFacing);
         if (playerPos.x >= 0 && playerPos.y >= 0 && playerPos.x < _currentDungeon.dungeonWidth && playerPos.y < _currentDungeon.dungeonHeight)
             PaintPixel(playerPos.x*3+1+facing.x,playerPos.y*3+1+facing.y,Color.white);
+        drawingMarkers = false;
         minimapTexture.SetPixels32(pixels);
         minimapTexture.Apply(false);
 
-        FogOverlay.UpdateFog(dungeonMap);
+        FogOverlay.UpdateFog(dungeonMap, refreshAll ? null : dirtyCells);
+        dirtyCells.Clear(); fullRefresh = false;
+    }
+
+    private void PaintGround(Vector3Int cell)
+    {
+        var tile = dungeonMap[cell.x, cell.y];
+        PaintCell(cell.x, cell.y, tile.isWall || tile.visibility == MinimapTileVisibility.Unseen ? Color.clear :
+            tile.visibility == MinimapTileVisibility.Visible ? VisibleGroundColor : ExploredGroundColor);
     }
 
     private void PaintCell(int x,int y,Color color)
     {
         if(x<0||y<0||x>=_currentDungeon.dungeonWidth||y>=_currentDungeon.dungeonHeight) return;
+        if (drawingMarkers) previousMarkers.Add(new Vector3Int(x, y));
         Color32 value = color;
         int width = _currentDungeon.dungeonWidth * 3;
         for(int dy=0;dy<3;dy++)

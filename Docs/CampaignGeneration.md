@@ -59,6 +59,47 @@ fingerprint against regenerated content. Snapshots store `GeneratorVersion`; sna
 it regenerate version 11, retaining standard layouts. Version 12 assigns intact town districts
 to half of eligible repeatable dungeons. `GenerateVersion` preserves version-11 campaigns.
 
+## Reverse-world finale
+
+`FinalePlan` validates five overworld maps before play. Floor 1 is the campaign's
+exact grid; floors 2–5 use deterministic derived seeds and the same generator version.
+Incompatible derived maps retry deterministically. The original campaign is never
+replaced. Every floor travels from its final-dungeon marker back to its starting town,
+opening regions in reverse progression order. Region IDs keep equal-biome regions separate.
+
+Every region receives the normal tier-4 placement budget and normal endgame enemies,
+including packs, awareness, attacks, experience and drops. Populations are finite.
+Safe arrivals, location approaches, stairs and warps are reserved. Required placements
+are validated without Boat; former water-lock crossings become visible finale bridges.
+Campaign keys cannot bypass region boundaries; movement skills and warps enforce them too.
+
+Towns and external dungeons remain miniatures until an adjacent legal entry attempt
+reveals a one-tile mimic. Hidden mimics cannot act or take damage, and reveal grants no
+enemy attack that turn. The three town families are Castle Monster, Bone Dragon and
+Ice Golem; dungeon families are Flame Knight, Little Demon, Skeleton Mage, Blue Slime,
+Crawler, Flower Monster and Star Fish. All ten occur each run and are excluded from
+ordinary spawn pools. Floor 5's starting town is Castle Monster. No interior battles
+or scene transitions occur during a floor. Finale models use the same uniform combat
+scale as ordinary dungeon enemies, preserving the asset pack's native proportions.
+Their combat footprints remain one tile.
+
+Every enemy has a floor-qualified identity and fixed home region. Pack members and
+summons join that region's ledger. Only actual deaths count; hidden mimics, conversion
+and arbitrary despawning cannot satisfy clearance. Summons resolve before gates open.
+Enemies activate only in unlocked regions and cannot leave their home region.
+The HUD reports remaining enemies; hidden location markers remain visible, and the
+minimap reveals all surviving ordinary enemies after the last hidden mimic is revealed.
+
+Only a fully cleared floor enables its starting-town staircase. Ascending preserves
+party state and loot using normal floor rules, without a free rest. Previous terrain
+and actors are released. Using floor 5's staircase commits completion once and starts
+the wake-only sequence in the original bedroom, with restored vitals and nearby allies.
+Control and camera return after waking. No victory dialog, new-adventure reset,
+starting supplies, checkpoint or automatic save occurs. Retreat retains loot in memory
+and resets finale objectives; defeat and quit restore the last explicit save.
+Completed slots remain playable, track playtime and allow ordinary dungeons, while
+the completed finale stays closed.
+
 ## Commands
 
 From `Core/`:

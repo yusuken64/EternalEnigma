@@ -7,6 +7,6 @@ public sealed class EncounterActor : MonoBehaviour
     public string Id;
     public bool Invulnerable;
     public bool Resolved;
-    internal static bool Required(Character actor) => actor != null && actor.GetComponent<EncounterActor>() is { Resolved: false };
-    internal static bool Protected(Character actor) => actor != null && actor.GetComponent<EncounterActor>() is { Invulnerable: true, Resolved: false };
+    internal static bool Required(Character actor) => actor != null && (actor.GetComponent<FinaleActor>() != null || actor.GetComponent<EncounterActor>() is { Resolved: false });
+    internal static bool Protected(Character actor) => actor != null && (actor.GetComponent<FinaleActor>() is { Hidden: true } || actor.GetComponent<EncounterActor>() is { Invulnerable: true, Resolved: false });
 }

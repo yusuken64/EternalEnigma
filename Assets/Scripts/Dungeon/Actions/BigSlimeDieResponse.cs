@@ -23,7 +23,7 @@ public class BigSlimeDieResponse : GameActionResponse
 			for (int i = 0; i < slimesToSpawn; i++)
 			{
 				var possiblePositions = Game.Instance.CurrentDungeon.GetWalkableNeighborhoodTiles(deathDamageAction.target.TilemapPosition)
-					.Where(x => !Game.Instance.AllCharacters.Any(character => character.TilemapPosition == x));
+					.Where(x => FinaleActor.AllowsPosition(character, x) && !Game.Instance.AllCharacters.Any(character => character.TilemapPosition == x));
 
 				if (!possiblePositions.Any())
 				{
@@ -33,7 +33,7 @@ public class BigSlimeDieResponse : GameActionResponse
 				var spawnTilePosition = possiblePositions.Sample();
 				var spawnSourceWorldLocation = deathDamageAction.target.transform.position;
 
-				ret.Add(new SpawnEnemyAction(enemyToSpawnPrefab, spawnTilePosition, spawnSourceWorldLocation));
+				ret.Add(new SpawnEnemyAction(enemyToSpawnPrefab, spawnTilePosition, spawnSourceWorldLocation, character));
 			}
 
 			return ret;

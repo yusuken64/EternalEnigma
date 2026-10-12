@@ -137,7 +137,9 @@ public class Town : MonoBehaviour
         var startPosition = Configuration.PartySpawn;
         Facing arrivalFacing = Facing.Down;
         var campaignSave = Common.Instance.GameSaveData;
-        if (campaignSave.NeedsInitialSave && Configuration.Id == "town-0") startPosition = GetComponentInChildren<HomeBed>().Tile - Vector3Int.up;
+        if (Common.Instance.Travel.IsHomecoming(Configuration.Id))
+        { startPosition = GetComponentInChildren<HomeBed>().Tile - Vector3Int.up; arrivalHeroId = campaignSave.ProtagonistId; TownPlayer.CutsceneLocked = true; }
+        else if (campaignSave.NeedsInitialSave && Configuration.Id == "town-0") startPosition = GetComponentInChildren<HomeBed>().Tile - Vector3Int.up;
         else if (campaignSave.HasArrival && campaignSave.ArrivalTownId == Configuration.Id)
         {
             startPosition = new Vector3Int(campaignSave.ArrivalX, campaignSave.ArrivalY, 0);
@@ -364,7 +366,9 @@ public class Town : MonoBehaviour
         ScenePresentation.RegisterWorld(WalkableMap.TileWorldCreator.worldObject.transform);
 
         Debug.Log("Town done");
-        Common.Instance.ScreenTransition.DoOpen();
+        if (Common.Instance.Travel.IsHomecoming(Configuration.Id))
+            yield return GetComponentInChildren<HomeBed>().WakeOnly();
+        else Common.Instance.ScreenTransition.DoOpen();
         finishingGeneration=false;
     }
 }

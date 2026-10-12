@@ -36,7 +36,7 @@ public sealed class EnemyBehavior : MonoBehaviour
     public bool Disguised => Mimic && !revealed;
     public bool CarryingLoot => stolenItem != null || stolenGold > 0;
     public bool OnlyWakesWhenAttacked => WaitUntilAttacked || Mimic;
-    public static bool IsDisguised(Character character) => character is Enemy enemy && enemy.GetComponent<EnemyBehavior>()?.Disguised == true;
+    public static bool IsDisguised(Character character) => character is Enemy enemy && (enemy.GetComponent<FinaleActor>()?.Hidden == true || enemy.GetComponent<EnemyBehavior>()?.Disguised == true);
 
     internal void Initialize(Enemy enemy)
     {

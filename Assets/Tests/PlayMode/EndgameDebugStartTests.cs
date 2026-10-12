@@ -129,7 +129,7 @@ namespace EternalEnigma.Tests
             {
                 yield return harness.WaitForIdle();
                 Assert.That(Game.Instance.Allies, Has.Count.EqualTo(4));
-                Assert.That(Game.Instance.PlayerController.Floor, Is.EqualTo(30));
+                Assert.That(Game.Instance.PlayerController.Floor, Is.EqualTo(1));
                 Assert.That(context.State.PendingDungeon, Is.EqualTo(context.Campaign.FinalLocationId));
                 foreach (var hero in Game.Instance.Allies)
                 {

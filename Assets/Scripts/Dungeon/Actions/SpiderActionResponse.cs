@@ -33,7 +33,7 @@ public class SpiderActionResponse : GameActionResponse
 			}
 
 			var possiblePositions = Game.Instance.CurrentDungeon.GetWalkableNeighborhoodTiles(takeDamageAction.target.TilemapPosition)
-				.Where(x => !Game.Instance.AllCharacters.Any(character => character.TilemapPosition == x));
+				.Where(x => FinaleActor.AllowsPosition(character, x) && !Game.Instance.AllCharacters.Any(character => character.TilemapPosition == x));
 
 			if (!possiblePositions.Any())
 			{
@@ -45,7 +45,7 @@ public class SpiderActionResponse : GameActionResponse
 
 			return new()
 			{
-				new SpawnEnemyAction(enemyToSpawnPrefab, spawnTilePosition, spawnSourceWorldLocation)
+				new SpawnEnemyAction(enemyToSpawnPrefab, spawnTilePosition, spawnSourceWorldLocation, character)
 			};
 		}
 

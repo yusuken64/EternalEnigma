@@ -1,9 +1,10 @@
 // Read-only campaign evidence audit; never infers success from starting a run.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { auditFinale } from './finale-audit.mjs';
 
 const mode = process.argv[2] ?? 'status';
-if (!['status', 'verify', 'inspect'].includes(mode)) throw Error('Usage: node Tools/debug-autoplay.mjs status|verify [batch directory], or inspect <report.json>');
+if (!['status', 'verify', 'verify-run', 'inspect', 'finale-status', 'verify-finale'].includes(mode)) throw Error('Usage: node Tools/debug-autoplay.mjs status|verify|verify-run [batch directory], or inspect <report.json>');
 const read = path => JSON.parse(readFileSync(path, 'utf8').replace(/^\uFEFF/, ''));
 if (mode === 'inspect') {
   const r = read(resolve(process.argv[3]));
@@ -19,18 +20,19 @@ if (mode === 'inspect') {
   }) : [];
   console.log(JSON.stringify({ seed: r.Seed, outcome: r.Outcome, location: r.Location, floor: r.Floor,
     party: r.Party.map(p => ({ id: p.Id, name: p.Name, x: p.X, y: p.Y, hp: p.HP })),
-    enemies: r.Enemies, stairs: r.Stairs,
+    enemies: r.Enemies, stairs: r.Stairs, finale: r.Finale,
     mapLeftX: origin?.X - 8, map,
     nearbyFloor: (r.WalkableTiles ?? []).filter(p => r.Party.some(a => Math.max(Math.abs(p.x - a.X), Math.abs(p.y - a.Y)) <= 2)) }, null, 2));
   process.exit(0);
 }
-const logs = resolve(import.meta.dirname, '../Logs/Playthroughs');
+const directFinale = mode === 'finale-status' || mode === 'verify-finale';
+const logs = resolve(import.meta.dirname, directFinale ? '../Logs/FinaleDebug' : '../Logs/Playthroughs');
 const directory = process.argv[3] ? resolve(process.argv[3]) : readdirSync(logs).sort().reverse()
   .map(name => join(logs, name)).find(path => {
-    try { const batch = read(join(path, 'batch.json')); return batch.Mode === 0 && batch.RequestedRuns >= 100; }
+    try { const batch = read(join(path, 'batch.json')); return batch.Mode === (directFinale ? 2 : 0) && batch.RequestedRuns >= (directFinale || mode === 'verify-run' ? 1 : 100); }
     catch { return false; }
   });
-if (!directory) throw Error('No campaign batch requesting at least 100 runs found.');
+if (!directory) throw Error(`No campaign batch requesting at least ${mode === 'verify-run' ? 1 : 100} runs found.`);
 const suite = existsSync(join(directory, 'campaign-suite.json')) ? read(join(directory, 'campaign-suite.json')) : null;
 const batchDirectories = suite ? suite.Workers.map(worker => {
   const root = join(directory, worker, 'Playthroughs');
@@ -62,14 +64,20 @@ const summary = {
   actions: attempts.reduce((n, a) => n + a.report.Actions, 0),
   seconds: attempts.reduce((n, a) => n + a.report.Seconds, 0),
   recent: finalized.slice(-5).map(({ report: r }) => ({ seed: r.Seed, outcome: r.Outcome, actions: r.Actions, seconds: r.Seconds })),
-  active: active.map(({ report: r }) => ({ seed: r.Seed, actions: r.Actions, seconds: r.Seconds, location: r.Location, floor: r.Floor })),
+  active: active.map(({ report: r }) => ({ seed: r.Seed, actions: r.Actions, seconds: r.Seconds, location: r.Location, floor: r.Floor,
+    completedDungeons: r.Campaign?.Completed?.length,
+    finale: r.Finale?.PlanVersion > 0 ? { floor: r.Finale.CurrentFloor, deaths: r.Finale.DefeatedEnemies?.length,
+      clearedRegions: r.Finale.ClearedRegions?.length, revealedMimics: r.Finale.RevealedMimics?.length,
+      remainingOnFloor: r.Finale.Floors?.find(f => f.Floor === r.Finale.CurrentFloor)?.Regions.reduce((n, region) => n + region.Remaining, 0),
+      stairsUsed: r.Finale.StairTransitions, homecoming: r.Finale.HomecomingCompleted } : undefined })),
   issues: attempts.filter(a => a.report.IssueCount || !['Running', 'Victory'].includes(a.report.Outcome))
     .map(({ folder, report: r }) => ({ seed: r.Seed, outcome: r.Outcome, issues: r.IssueCount, reason: r.Reason, folder })),
 };
-if (mode === 'verify') {
+if (mode === 'verify' || mode === 'verify-run' || mode === 'verify-finale') {
   const errors = [];
   const check = (condition, message) => { if (!condition) errors.push(message); };
-  check(requested >= 100 && batches.every(b => b.batch.Mode === 0), 'Requires at least 100 campaign runs.');
+  const minimum = mode === 'verify' ? 100 : 1;
+  check(requested >= minimum && batches.every(b => b.batch.Mode === (directFinale ? 2 : 0)), `Requires at least ${minimum} campaign runs.`);
   check(summary.state === 'Completed', 'Batch is not complete.');
   check(victories.length === requested && summary.distinctSeeds === requested, 'Every distinct seed must reach Victory.');
   check(summary.builds.length === 1 && !!summary.builds[0], 'Runs must use the same build.');
@@ -83,10 +91,12 @@ if (mode === 'verify') {
     const { folder, batch, report: r } = attempt;
     const row = batch.Runs.find(row => row.Seed === seed);
     check(r.RunNumber === seed - batch.StartingSeed + 1 && r.Options.Seed === batch.StartingSeed &&
-      r.Options.RunCount === batch.RequestedRuns && r.Options.Mode === 0 && r.Options.DebugPlaythrough && !r.EligibleForBalance,
+      r.Options.RunCount === batch.RequestedRuns && r.Options.Mode === (directFinale ? 2 : 0) && r.Options.DebugPlaythrough && !r.EligibleForBalance,
       `Seed ${seed}: campaign debug identity mismatch.`);
     check(r.IssueCount === 0 && r.ErrorCount === 0 && r.WarningCount === 0, `Seed ${seed}: unresolved issues.`);
     check(r.Campaign?.Finished === true, `Seed ${seed}: campaign Finished flag missing.`);
+    const finale = r.Finale;
+    check(finale?.DirectStart === directFinale, 'Direct-start runs cannot satisfy full campaign acceptance.');
     check(row?.Outcome === 'Victory' && row.ArtifactsComplete && row.RunId === r.RunId && row.BuildId === r.BuildId,
       `Seed ${seed}: aggregate/report mismatch.`);
     for (const name of ['report.json', 'save.json', 'actions.jsonl', 'issues.jsonl', 'final.png'])
@@ -95,7 +105,8 @@ if (mode === 'verify') {
     if (!existsSync(join(folder, 'actions.jsonl'))) continue;
     const events = readFileSync(join(folder, 'actions.jsonl'), 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
     check(events.length > 0 && events.every(e => e.Seed === seed && e.RunId === r.RunId), `Seed ${seed}: action identity mismatch.`);
-    check(events.some(e => e.Kind === 'Action' && e.Message === 'New campaign'), `Seed ${seed}: campaign start missing.`);
+    auditFinale(r, events, check);
+    check(events.some(e => e.Kind === 'Action' && e.Message === (directFinale ? 'Direct-start debug finale' : 'New campaign')), `Seed ${seed}: campaign start missing.`);
     check(events.filter(e => e.Kind === 'Action').length === r.Actions, `Seed ${seed}: action count mismatch.`);
     check(readFileSync(join(folder, 'issues.jsonl'), 'utf8').trim() === '', `Seed ${seed}: issue log is not empty.`);
   }

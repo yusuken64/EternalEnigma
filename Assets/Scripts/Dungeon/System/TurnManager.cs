@@ -121,7 +121,7 @@ public class TurnManager : MonoBehaviour
 		var actors = new List<Actor> { controlledAlly };
 		actors.AddRange(Game.Instance.Allies.Where(a => a != controlledAlly && !PartyRules.IsSummon(a)));
         actors.AddRange(Game.Instance.Allies.Where(PartyRules.IsSummon));
-		actors.AddRange(Game.Instance.Enemies);
+		actors.AddRange(Game.Instance.Enemies.Where(e => e is not Enemy enemy || Game.Instance.Finale?.CanAct(enemy) != false));
 
 		interuptTurn = false;
 		List<ActorAction> actionReplays = new();
@@ -305,6 +305,7 @@ public class TurnManager : MonoBehaviour
 			yield break;
 		}
 
+        game.Finale?.EndTurn();
         if (FullControlThisRound) game.PlayerController.RestoreLeader();
 		Game.Instance.PlayerController.StartTurn();
 		foreach (var survivor in Game.Instance.AllCharacters.ToArray())

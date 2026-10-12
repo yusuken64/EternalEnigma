@@ -620,11 +620,21 @@ namespace EternalEnigma.Tests
             Assert.That(hit,Is.True); Assert.That(damage,Is.EqualTo(enemy.Vitals.HP));
             var ranged = new RangedAttackAction(harness.Ally,enemy,1,null).ExecuteImmediate(harness.Ally).OfType<TakeDamageAction>().Single();
             Assert.That(ranged.damage,Is.EqualTo(enemy.Vitals.HP));
+            enemy.BaseStats.HPMax = 1000; enemy.InvalidateCachedStats(); enemy.Vitals.HP = 1000;
+            var strengthSkill = new ScaledDamageAction { Scaling = DamageScaling.Strength, Percent = .1f, Hits = 2, RollToHit = true };
+            var hits = strengthSkill.AsTargetedSkill(harness.Ally, enemy).ExecuteImmediate(harness.Ally).OfType<TakeDamageAction>().ToArray();
+            Assert.That(hits.Length, Is.EqualTo(2));
+            Assert.That(hits.All(h => h.damage == enemy.Vitals.HP && !h.RollToHit), Is.True, "Strength skills must honor the same debug assist as basic attacks.");
+            var magic = new ScaledDamageAction { Scaling = DamageScaling.Magic, BaseDamage = 1, PerLevel = 0 };
+            Assert.That(magic.AsTargetedSkill(harness.Ally, enemy).ExecuteImmediate(harness.Ally).OfType<TakeDamageAction>().Single().damage,
+                Is.LessThan(enemy.Vitals.HP), "Infinite strength does not replace magic damage.");
             Assert.That(harness.Ally.FinalStats.Strength,Is.EqualTo(strength),"Infinite strength must not alter saved/base stats.");
             var stats = new Stats { HPMax = 10, SPMax = 4, HungerMax = 10 };
             var unrelated = new Vitals { LinkedStats = () => stats }; unrelated.HP = 0;
             Assert.That(unrelated.HP,Is.Zero,"Godmode cannot protect enemy/unrelated vitals.");
-            run.Options.Godmode = false; run.Options.InfiniteResources = false;
+            run.Options.Godmode = false; run.Options.InfiniteStrength = false; run.Options.InfiniteResources = false;
+            Assert.That(strengthSkill.AsTargetedSkill(harness.Ally, enemy).ExecuteImmediate(harness.Ally).OfType<TakeDamageAction>()
+                .All(h => h.damage < enemy.Vitals.HP && h.RollToHit), Is.True, "Turning the assist off restores normal skill damage and hit rolls.");
             harness.Ally.Vitals.HP = 3; harness.Ally.Vitals.SP = 0;
             Assert.That(harness.Ally.Vitals.HP,Is.EqualTo(3));
             Assert.That(harness.Ally.Vitals.SP,Is.Zero);

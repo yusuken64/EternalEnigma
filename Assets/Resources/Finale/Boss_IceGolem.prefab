@@ -1,0 +1,278 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6977478083753775000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2218889762010139971}
+  m_Layer: 8
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2218889762010139971
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6977478083753775000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.25, y: 1.22, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4541926727724597832}
+  m_Father: {fileID: 1799000660102145120}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8883013881815958808
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1799000660102145120}
+  - component: {fileID: 7921674359058338235}
+  - component: {fileID: 8576979357610233900}
+  - component: {fileID: 7370315995918772706}
+  - component: {fileID: 592365208438310431}
+  m_Layer: 8
+  m_Name: Boss_IceGolem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1799000660102145120
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8883013881815958808}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2218889762010139971}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7921674359058338235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8883013881815958808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40781a2fea77f664bbd567d1145efe0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilemapPosition: {x: 0, y: 0, z: 0}
+  Team: 1
+  VisualParent: {fileID: 6977478083753775000}
+  CurrentFacing: 0
+  StartingStats:
+    HPMax: 500
+    SPMax: 0
+    HungerMax: 0
+    Strength: 50
+    MagicPower: 0
+    Defense: 30
+    EXPOnKill: 1000
+    HungerAccumulateThreshold: 0
+    HPRegenAcccumlateThreshold: 0
+    SPRegenAcccumlateThreshold: 0
+    DropRate: 0
+    ActionsPerTurnMax: 1
+    AttacksPerTurnMax: 1
+    FireResistance: 0
+    IceResistance: 0
+    LightningResistance: 0
+    CritChance: 0
+    Evasion: 0
+    HitBonus: 0
+  FootPrint: 0
+  StatusEffects: []
+  Equipment: {fileID: 0}
+  PursuitTarget: {fileID: 0}
+  Skills: []
+  DisplayName: Ice Golem
+  CurrentEnemyState: 0
+  Animator: {fileID: 2905412066432187306}
+  IsBoss: 1
+  IsDormant: 0
+--- !u!114 &8576979357610233900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8883013881815958808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6616f7d00b5ae3743a0956be51d15f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::EnemyBehavior
+  WaitUntilAttacked: 0
+  RangedAttack: 0
+  Range: 6
+  Steals: 0
+  AlwaysFlees: 0
+  RootsAdjacentTarget: 0
+  Stationary: 0
+  ExplodesOnDeath: 0
+  ExplosionDamage: 20
+  WarpWhenHitChance: 0
+  SpawnWeight: 20
+  PackSize: 1
+  StealItems: 1
+  StealGold: 1
+  Confusion: {fileID: 0}
+  Mimic: 0
+  ChestVisualPrefab: {fileID: 0}
+--- !u!114 &7370315995918772706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8883013881815958808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d6e29da5e523ef4095d33db907ebee0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::CharacterCombatEffects
+  CastSocket: {fileID: 0}
+  Melee: {fileID: 11400000, guid: dc9fe5d4788120d4f87191d54a442ac1, type: 2}
+  Ranged: {fileID: 11400000, guid: 519e4abc4a2529f4a9f4e9926beeb64b, type: 2}
+  Confusion: {fileID: 11400000, guid: 2b92abebf9d42184d85bddc18a597328, type: 2}
+  Root: {fileID: 11400000, guid: 712257fc9038f5d44aea923b94c4d3b4, type: 2}
+  Steal: {fileID: 11400000, guid: f4f1319a22422314aacd0107e91df48a, type: 2}
+--- !u!114 &592365208438310431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8883013881815958808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69f22f9f986745a44897ba147133d772, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::LargeBossBehavior
+  Family: Ice Golem
+  WarningTurns: 1
+  CooldownTurns: 3
+  EffectTurns: 2
+--- !u!1001 &4760672679132992242
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2218889762010139971}
+    m_Modifications:
+    - target: {fileID: 1672277647072475471, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_Name
+      value: IceGolem
+      objectReference: {fileID: 0}
+    - target: {fileID: 4257247865165237552, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.47084168
+      objectReference: {fileID: 0}
+    - target: {fileID: 4257247865165237552, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5251486
+      objectReference: {fileID: 0}
+    - target: {fileID: 4257247865165237552, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.5439936
+      objectReference: {fileID: 0}
+    - target: {fileID: 4257247865165237552, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.45453075
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0000014305115
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.18834734
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.9699087
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9135005834340728414, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.54399353
+      objectReference: {fileID: 0}
+    - target: {fileID: 9135005834340728414, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.45453072
+      objectReference: {fileID: 0}
+    - target: {fileID: 9135005834340728414, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.47084165
+      objectReference: {fileID: 0}
+    - target: {fileID: 9135005834340728414, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.5251485
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+--- !u!95 &2905412066432187306 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7657058854562425176, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+  m_PrefabInstance: {fileID: 4760672679132992242}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4541926727724597832 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9014347039881924794, guid: 8afd0f00eaab09e4487d830845d622ba, type: 3}
+  m_PrefabInstance: {fileID: 4760672679132992242}
+  m_PrefabAsset: {fileID: 0}

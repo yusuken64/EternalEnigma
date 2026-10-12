@@ -10,6 +10,7 @@ public class Stairs : Interactable
 			new DynamicGameAction((character) =>
 			{
                 if (!Game.Instance.CheckFloorExit()) return new();
+                if (Game.Instance.Finale != null) { Game.Instance.Finale.RequestExit(); return new(); }
 				if (Game.Instance.CurrentDungeon.IsExitFloor) { GameOverScreen.GoBackToTown(true,Game.Instance.PlayerController); return new(); }
 				AudioManager.Instance.SoundEffects.Flee.PlayAsSound();
 				Game.Instance.AdvanceFloor();
@@ -22,6 +23,7 @@ public class Stairs : Interactable
 
 	internal override string GetInteractionText()
 	{
+        if (Game.Instance?.Finale != null) return Game.Instance.Finale.Session.CurrentFloor == 5 ? "Ascend and return home" : "Ascend to the next floor";
 		return Game.Instance?.CurrentDungeon?.Floor?.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? "Pass through gate" : "Take Stairs";
 	}
 }

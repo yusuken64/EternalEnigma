@@ -6,7 +6,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class Game : SingletonMonoBehaviour<Game>
+public partial class Game : SingletonMonoBehaviour<Game>
 {
 	public bool IsReady { get; private set; }
 	private DemoDungeonLoadout demoLoadout;
@@ -18,13 +18,13 @@ public class Game : SingletonMonoBehaviour<Game>
     private FloorEntrySnapshot entrySnapshot;
     private UnityEngine.Random.State floorGenerationRandom;
     private bool resettingFloor;
-    public bool CanExitFloor => Encounter == null || Encounter.CanExit;
+    public bool CanExitFloor => Finale != null ? Finale.Session.FloorCleared : Encounter == null || Encounter.CanExit;
     public bool CanResetFloor => IsReady && !resettingFloor && entrySnapshot != null && Encounter?.AllowsReset == true &&
         Common.Instance.CampaignContext?.Completed.Contains("repeatable-0") == true && !Common.Instance.Travel.IsTransitioning;
     public bool CheckFloorExit(bool announce = true)
     {
         if (CanExitFloor) return true;
-        if (announce) GameMessages.Post(Encounter.ObjectiveText);
+        if (announce) GameMessages.Post(Finale?.ObjectiveText ?? Encounter.ObjectiveText);
         return false;
     }
     internal bool ResetFloor()
@@ -88,8 +88,12 @@ public class Game : SingletonMonoBehaviour<Game>
 		while (FindFirstObjectByType<Common>() == null) yield return null;
 		PrepareEditorParty();
 #endif
-        Common.Instance.Travel.SceneReady();
-		Common.Instance.ScreenTransition.HoldClosed();
+        var common = Common.Instance;
+        bool finale = common.CampaignContext != null &&
+            common.CampaignContext.State.PendingDungeon == common.CampaignContext.Campaign.FinalLocationId;
+        common.ScreenTransition.HoldClosed(finale ? FinaleRuntime.LoadingTitle(1) : "Loading...");
+        yield return ScreenTransition.PresentLoadingScreen();
+        common.Travel.SceneReady();
 		ResetGame();
 		StartCoroutine(RevealDungeonWhenReady());
 		yield break;
@@ -144,6 +148,14 @@ public class Game : SingletonMonoBehaviour<Game>
 		DownedAllies.Clear();
         var context = Common.Instance.CampaignContext;
         RunPlan = context != null && context.State.PendingDungeon.Length > 0 ? context.RunPlan(context.State.PendingDungeon) : null;
+        if (context?.State.PendingDungeon == context?.Campaign.FinalLocationId && context != null)
+        {
+            Finale = new FinaleRuntime(this, context.BeginFinale());
+            if (CurrentDungeon != null) Destroy(CurrentDungeon.gameObject);
+            CurrentDungeon = null;
+            Common.Instance.GameSaveData.DungeonSaveData.StartFloor = 1;
+            Common.Instance.GameSaveData.DungeonSaveData.EndFloor = EternalEnigma.Core.Progression.FinalePlan.FloorCount;
+        }
 
         var hud = DungeonHud.Ensure(this);
         foreach(var slot in hud.PartySlots) slot.gameObject.SetActive(false);
@@ -236,6 +248,12 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void AdvanceFloor()
 	{
+        if (Finale != null)
+        {
+            if (CurrentDungeon == null) { PlayerController.Floor = 1; StartCoroutine(StartFinale()); }
+            else Finale.RequestExit();
+            return;
+        }
         if (CurrentDungeon != null && !CheckFloorExit()) return;
         if (resettingFloor || Common.Instance.Travel.IsTransitioning) return;
 		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
@@ -405,6 +423,7 @@ public class Game : SingletonMonoBehaviour<Game>
 
     public void UpdateMiniMap()
     {
+        using var measurement = new FinalePerformance.Scope("Minimap and sight");
         if (CurrentDungeon == null || !CurrentDungeon.EnsureRuntimeData()) return;
         sightDungeon = CurrentDungeon;
         PartyVisibleTiles.Clear();
@@ -427,7 +446,8 @@ public class Game : SingletonMonoBehaviour<Game>
 
 	public void UpdateUI()
 	{
-		if (PlayerController == null) { return; }
+        // The loading screen renders before party/HUD initialization.
+        if (PlayerController == null || PlayerController.ControlledAlly == null) return;
 		CharacterStatsDisplays.ForEach(x => x.UpdateUI());
 	}
 	

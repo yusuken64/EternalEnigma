@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FogOverlay : MonoBehaviour
@@ -82,28 +83,31 @@ public class FogOverlay : MonoBehaviour
         fogMaterial.SetTexture("_FogTex", fogTexture);
     }
 
-    internal void UpdateFog(Minimap.MinimapTileData[,] dungeonMap)
+    internal void UpdateFog(Minimap.MinimapTileData[,] dungeonMap, ICollection<Vector3Int> changed = null)
     {
+        using var measurement = new FinalePerformance.Scope("Fog texture");
+        bool initialize = visibilityMap != dungeonMap;
         visibilityMap = dungeonMap;
-        int width = dungeonMap.GetLength(0);
-        int height = dungeonMap.GetLength(1);
-        if (pixels == null || pixels.Length != width * height) pixels = new byte[width * height];
-
-        for (int y = 0; y < height; y++)
+        int width = dungeonMap.GetLength(0), height = dungeonMap.GetLength(1);
+        if (pixels == null || pixels.Length != width * height)
+        { pixels = new byte[width * height]; initialize = true; }
+        void Write(int x, int y)
         {
-            for (int x = 0; x < width; x++)
+            // The shader inverts this value to produce fog opacity.
+            pixels[y * width + x] = dungeonMap[x, y].visibility switch
             {
-                // The shader inverts this value to produce fog opacity.
-                float alpha = dungeonMap[x, y].visibility switch
-                {
-                    Minimap.MinimapTileVisibility.Visible => 1f,
-                    Minimap.MinimapTileVisibility.Explored => 0.5f,
-                    _ => 0f
-                };
-                pixels[y * width + x] = (byte)Mathf.RoundToInt(alpha * 255);
-            }
+                Minimap.MinimapTileVisibility.Visible => 255,
+                Minimap.MinimapTileVisibility.Explored => 128,
+                _ => 0
+            };
         }
-
+        if (changed == null || initialize)
+            for (int y = 0; y < height; y++) for (int x = 0; x < width; x++) Write(x, y);
+        else
+        {
+            if (changed.Count == 0) return;
+            foreach (var cell in changed) Write(cell.x, cell.y);
+        }
         fogTexture.SetPixelData(pixels, 0);
         fogTexture.Apply(false);
     }

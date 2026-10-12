@@ -201,7 +201,7 @@ public class Ally : Character
 
 	public override List<GameAction> GetInteractableSideEffects()
 	{
-        if (currentInteractable is not Trap and not DungeonProp and not null)
+        if (currentInteractable is not Trap and not DungeonProp and not FinalePortal and not null)
         {
 			if (currentInteractable is not Stairs)
 			{

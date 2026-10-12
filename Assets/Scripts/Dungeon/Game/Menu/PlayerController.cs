@@ -233,6 +233,8 @@ public class PlayerController : MonoBehaviour
                     ShowDoorPrompt(door);
                     return;
                 }
+                else if (Game.Instance.Finale?.OnOverworld == true && Game.Instance.Finale.GateHint(newMapPosition, newMapPosition + offset) is { } hint)
+                    GameMessages.Post(hint);
                 StopHeldWalk();
             }
         }

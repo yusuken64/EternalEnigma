@@ -47,7 +47,7 @@ internal class RangedAttackAction : GameAction
         {
             var recipient = hit.Character;
             GameMessages.ForCharacter(attacker, $"{GameMessages.Name(attacker)} attacked {GameMessages.VisibleName(recipient)}!");
-            bool godmode = AutoplayRunner.GodmodeFor(attacker);
+            bool godmode = AutoplayRunner.InfiniteStrengthFor(attacker);
             bool landed = godmode || CombatMath.RollHit(attacker, recipient);
             bool critical = !godmode && landed && CombatMath.RollCrit(attacker);
             int power = godmode ? recipient.Vitals.HP : Mathf.RoundToInt(damage * ammo * (bow ? ClassPassives.DamageMultiplier(

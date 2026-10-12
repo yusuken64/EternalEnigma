@@ -10,6 +10,54 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleLoading")]
+    public static void RunFinaleLoading() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.FinaleGameplayTests.AllFiveStairsPreservePartyAndWakeAtHomeWithoutSaving",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleValidation")]
+    public static void RunFinaleValidation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.FinalePerformanceTests.MeasureProductionFinaleTurns",
+        "EternalEnigma.Tests.FinaleAutoplayControlTests.StopKeepsIncompleteEvidenceAndRestoresOriginalSave",
+        "EternalEnigma.Tests.FinaleAutoplayControlTests.TakeoverRetainsTheLiveFinaleAndIsolatedSave",
+        "EternalEnigma.Tests.FinaleLifecycleTests",
+        "EternalEnigma.Tests.AllyAiRegressionTests.RealFloorTransitionClearsOldLeaderMemoryAndPendingCast");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleControls")]
+    public static void RunFinaleControls() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.FinaleAutoplayControlTests.StopKeepsIncompleteEvidenceAndRestoresOriginalSave",
+        "EternalEnigma.Tests.FinaleAutoplayControlTests.TakeoverRetainsTheLiveFinaleAndIsolatedSave");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run FinalePerformance")]
+    public static void RunFinalePerformance() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.FinalePerformanceTests.MeasureProductionFinaleTurns");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Finale Performance Baseline")]
+    public static void RunFinalePerformanceBaseline()
+    { SessionState.SetString("EternalEnigma.Finale.ProfileLabel", "baseline"); RunFinalePerformance(); }
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Finale Performance Optimized")]
+    public static void RunFinalePerformanceOptimized()
+    { SessionState.SetString("EternalEnigma.Finale.ProfileLabel", "optimized"); RunFinalePerformance(); }
+    [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleLifecycle")]
+    public static void RunFinaleLifecycle() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.FinaleLifecycleTests",
+        "EternalEnigma.Tests.EnemyBehaviorTests.ConfusionOverridesTurnsExpiresAndMimicOnlyRevealsWhenAttacked",
+        "EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleAutoplay")]
+    public static void RunFinaleAutoplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.FinaleAutoplayTests.DirectDebugClearsFiveFloorsAndWakesThroughProductionGameplay");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Finale")]
+    public static void RunFinale() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.FinaleGameplayTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Finale Autoplay Combat")]
+    public static void RunFinaleAutoplayCombat() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.FinaleGameplayTests.MimicsIgnoreDamageUntilAdjacentEntryAndSkipTheirRevealTurn",
+        "EternalEnigma.Tests.AutoplayTests.DebugProtectsOnlyPartyAndRestoresResourceRulesOnExit");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Finale Regression")]
+    public static void RunFinaleRegression() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.FinaleGameplayTests",
+        "EternalEnigma.Tests.EncounterGameplayTests.EveryBossVariantHasFootprintWarningSpecialAndNormalDeath",
+        "EternalEnigma.Tests.TownDungeonGameplayTests",
+        "EternalEnigma.Tests.EndgameDebugStartTests.DungeonButtonStartsFullEndgamePartyWithoutASave");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Endgame Debug Starts")]
     public static void RunEndgameDebugStarts()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.EndgameDebugStartTests",
@@ -617,6 +665,10 @@ public static class HarnessTestRunner
             throw new InvalidOperationException("A harness run is already active.");
         SessionState.SetBool("EternalEnigma.Autoplay.ManualChecks", Array.Exists(testFilters,
             name => name.StartsWith("EternalEnigma.Tests.AutoplayTests.", StringComparison.Ordinal)));
+        SessionState.SetBool("EternalEnigma.Finale.ManualChecks", Array.Exists(testFilters,
+            name => name.StartsWith("EternalEnigma.Tests.FinaleAutoplayTests.", StringComparison.Ordinal) ||
+                name.StartsWith("EternalEnigma.Tests.FinaleAutoplayControlTests.", StringComparison.Ordinal) ||
+                name.StartsWith("EternalEnigma.Tests.FinalePerformanceTests.", StringComparison.Ordinal)));
         var run = new RunSummary { runId = Guid.NewGuid().ToString("N"), mode = mode.ToString(), state = "Queued", filter = filter, testFilters = testFilters };
         Directory.CreateDirectory("Temp/HarnessResults");
         SessionState.SetString(SessionKey, JsonUtility.ToJson(run));
@@ -648,6 +700,7 @@ public static class HarnessTestRunner
             run.failed = 1;
             Write(run);
             SessionState.EraseString(SessionKey);
+            SessionState.EraseBool("EternalEnigma.Finale.ManualChecks");
             throw;
         }
     }
@@ -668,6 +721,7 @@ public static class HarnessTestRunner
         SessionState.EraseString(SessionKey);
         SessionState.EraseString(SessionKey + ".Job");
         SessionState.EraseBool("EternalEnigma.Autoplay.ManualChecks");
+        SessionState.EraseBool("EternalEnigma.Finale.ManualChecks");
     }
 
     private static void Write(RunSummary run) =>
@@ -741,6 +795,7 @@ public static class HarnessTestRunner
             SessionState.EraseString(SessionKey);
             SessionState.EraseString(SessionKey + ".Job");
             SessionState.EraseBool("EternalEnigma.Autoplay.ManualChecks");
+            SessionState.EraseBool("EternalEnigma.Finale.ManualChecks");
         }
     }
 }

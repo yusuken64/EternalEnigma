@@ -31,7 +31,7 @@ public sealed class AutoplaySetup : MonoBehaviour
         Seed.onValueChanged.AddListener(_ => Refresh()); RunCount.onValueChanged.AddListener(_ => Refresh());
         Launch.onClick.AddListener(StartBatch); Back.onClick.AddListener(Close);
         Speed.onClick.AddListener(() => { int index = System.Array.IndexOf(AutoplayPanel.Rates,options.Speed); options.Speed = AutoplayPanel.Rates[(index+1)%AutoplayPanel.Rates.Length]; Refresh(); });
-        Godmode.onClick.AddListener(() => { options.Godmode = !options.Godmode; Refresh(); });
+        Godmode.onClick.AddListener(() => { options.Godmode = !options.Godmode; options.InfiniteStrength = options.Godmode; Refresh(); });
         InfiniteResources.onClick.AddListener(() => { options.InfiniteResources = !options.InfiniteResources; Refresh(); });
         Coverage.onClick.AddListener(() => { options.DebugCoverage = !options.DebugCoverage; Refresh(); });
         Refresh();

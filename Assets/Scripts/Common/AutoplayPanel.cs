@@ -48,13 +48,13 @@ public sealed class AutoplayPanel : MonoBehaviour
         Collapsed.gameObject.SetActive(visible&&!runner.ReturnPromptOpen&&!runner.PanelVisible&&!runner.TakingControl);
         Prompt.gameObject.SetActive(visible&&runner.ReturnPromptOpen);
         if(!visible)return;
-        Title.text=runner.IsLootSweep?"Autoplay · Floor loot sweep":runner.Options.DebugPlaythrough?"Autoplay · Debug":"Autoplay";
+        Title.text=runner.IsFinaleDebug?"Autoplay · Direct finale debug":runner.IsLootSweep?"Autoplay · Floor loot sweep":runner.Options.DebugPlaythrough?"Autoplay · Debug":"Autoplay";
         Status.text=runner.TakingControl?"Finishing current action…":runner.Status;
         Counts.text=runner.ProgressLabel+"\n"+(runner.IsLootSweep?$"Loot: {runner.Report?.CollectedLoot??0}/{runner.Report?.ExpectedLoot??0}   ":$"Turns: {runner.Report?.DungeonTurns??0}   ")+$"Actions: {runner.Report?.Actions??0}";
         Playback.text=$"Playback: {runner.Options.Speed:0.#}×"+(runner.Paused?" (paused)":"");
         PauseLabel.text=runner.Paused?"Resume":"Pause";
         AnimationLabel.text="Animations: "+DungeonPreferences.SpeedLabel;
-        string root=Application.isEditor?"Logs/Playthroughs":System.IO.Path.GetDirectoryName(runner.BatchDirectoryPath);
+        string root=Application.isEditor?(runner.IsFinaleDebug?"Logs/FinaleDebug":"Logs/Playthroughs"):System.IO.Path.GetDirectoryName(runner.BatchDirectoryPath);
         Footer.text=(runner.Finalizing?"Saving run artifacts…":runner.SessionRunning?"Input outside controls opens stop options.":runner.Report?.ArtifactsComplete==true?"Report saved.":"Report incomplete; see status.")+"\n"+
             root+"/\n"+System.IO.Path.GetFileName(runner.BatchDirectoryPath)+"/\n"+System.IO.Path.GetFileName(runner.DirectoryPath);
         Pause.interactable=runner.SessionRunning&&!runner.TakingControl;

@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-public enum AutoplayMode { Campaign = 0, FloorLootSweep = 1 }
+public enum AutoplayMode { Campaign = 0, FloorLootSweep = 1, Finale = 2 }
 
 [Serializable]
 public sealed class AutoplayOptions
@@ -24,7 +24,10 @@ public sealed class AutoplayOptions
     public int RunCount = 1;
     public bool DebugCoverage;
     public bool DebugPlaythrough, Godmode = true, InfiniteResources = true;
+    public bool InfiniteStrength = true;
     public bool NoAnimations;
+    public static AutoplayOptions FinaleDebug() => new() { Mode = AutoplayMode.Finale, Seed = 42, RunCount = 1,
+        Speed = 4, DebugPlaythrough = true, Godmode = true, InfiniteResources = true, InfiniteStrength = false, DebugCoverage = false };
     public bool ExploreAll;
     public float Speed = 4, TimeLimitMinutes = 60, StallSeconds = 120;
 
@@ -59,7 +62,7 @@ public sealed class AutoplayReport
     public List<AutoplayLootRecord> Loot = new();
     public List<string> UnresolvedLoot = new(), PlacementIssues = new();
     public string Outcome = "Running", Reason, StartedUtc, EndedUtc, GameVersion, BuildId, UnityVersion;
-    public string Policy = "astar-objectives-v3-batch-coverage", Observation = "Full campaign graph and full dungeon map/stairs (omniscient navigation)";
+    public string Policy = "astar-objectives-v5-mimic-finale", Observation = "Full campaign graph, dungeon objectives and finale destinations (omniscient navigation)";
     public string RunId;
     public int Seed, RunNumber, IssueCount, WarningCount, ErrorCount;
     public bool ArtifactsComplete;
@@ -75,6 +78,7 @@ public sealed class AutoplayReport
     public string Location, Scene;
     public int Floor, Gold;
     public CampaignSnapshot Campaign;
+    public AutoplayFinaleReport Finale;
     public string[] Visited, Inventory;
     public List<AutoplayActor> Party = new();
     public List<AutoplayActor> Enemies = new();
@@ -194,8 +198,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         Time.fixedDeltaTime = originalFixedDeltaTime * Options.Speed;
         string root = !string.IsNullOrWhiteSpace(Options.ReportRoot) ? Options.ReportRoot :
             Application.isEditor ? "Logs" : Application.persistentDataPath;
-        BatchDirectoryPath = Path.GetFullPath(Path.Combine(root, "Playthroughs", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8)));
-        Batch = new AutoplayBatch { StartedUtc = DateTime.UtcNow.ToString("O"), StartingSeed = Options.Seed, RequestedRuns = Options.RunCount };
+        BatchDirectoryPath = Path.GetFullPath(Path.Combine(root, IsFinaleDebug ? "FinaleDebug" : "Playthroughs", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8)));
+        Batch = new AutoplayBatch { Mode = Options.Mode, StartedUtc = DateTime.UtcNow.ToString("O"), StartingSeed = Options.Seed, RequestedRuns = Options.RunCount };
         store = new AutoplayStore();
         saveScope = SaveSystem.UseStore(store);
         Application.logMessageReceived += OnLog;
@@ -226,6 +230,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         Game.Instance.Allies.Any(a => a != null && (ReferenceEquals(a.Vitals, vitals) || ReferenceEquals(a.DisplayedVitals, vitals)));
     public static bool InfiniteResourcesFor(Character actor) => Active != null && Active.Running &&
         Active.Options.DebugPlaythrough && Active.Options.InfiniteResources && actor is Ally;
+    public static bool InfiniteStrengthFor(Character actor) => Active != null && Active.Running &&
+        Active.Options.DebugPlaythrough && Active.Options.InfiniteStrength && actor is Ally;
     public static bool GodmodeFor(Character actor) => Active != null && Active.Running &&
         Active.Options.DebugPlaythrough && Active.Options.Godmode && actor is Ally;
     public static void RecordHPChange(Vitals vitals, int before, int after)
@@ -274,6 +280,9 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (!Running || Paused) return;
         var now = Time.realtimeSinceStartupAsDouble;
         if (now - started - pausedSeconds > Options.TimeLimitMinutes * 60) { Finish(IsLootSweep ? "Failed" : "TimeLimit", "Active time limit reached."); return; }
+        // A validated five-map preflight and terrain builds can span several frames or block one frame.
+        // The overall time limit still bounds generation; the combat stall clock starts when play is ready.
+        if (Common.Instance?.Travel.IsTransitioning == true || Game.Instance is { IsReady: false }) lastProgress = now;
         if (now - lastProgress > Options.StallSeconds) { Finish(IsLootSweep ? "Failed" : "Stalled", "No meaningful progress: " + Status); return; }
         if (Time.unscaledTime < nextTick) return;
         nextTick = Time.unscaledTime + .03f / Options.Speed;
@@ -309,6 +318,16 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             if (menu == null) return;
             if (!menu.IsReady) return;
             UnityEngine.Random.InitState(CurrentSeed);
+            if (IsFinaleDebug)
+            {
+                common.GameSaveData = EndgameDebugStart.Create(TownSceneLoader.Default, common.ItemManager, EndgameDebugDestination.Dungeon, CurrentSeed);
+                common.GameSaveData.IsSandbox = false;
+                // Save only the pre-finale fixture inside the already isolated store.
+                common.CampaignContext = null;
+                SaveSystem.SaveData(common.GameSaveData);
+                startedCampaign = true; common.Travel.Continue();
+                Log("Direct-start debug finale"); return;
+            }
             common.GameSaveData = menu.CreateNewSave(CurrentSeed);
             startedCampaign = true;
             common.Travel.NewCampaign(CurrentSeed);
@@ -317,9 +336,12 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         var context = common.CampaignContext;
         if (context == null) { Finish("Unsupported", "Campaign context disappeared."); return; }
         TrackProgress(context);
-        if (context.State.Finished && (!Options.ExploreAll || context.Campaign.Locations.All(l =>
+        if (context.State.Finished && Report.Finale?.FinalExitCompleted == true && common.Travel.HomecomingCompleted &&
+            Report.Finale.Floors.Count == 5 && Report.Finale.Floors.All(f => f.Regions.All(r => r.Cleared && r.Remaining == 0)) &&
+            (IsFinaleDebug || !Options.ExploreAll || context.Campaign.Locations.All(l =>
             IsDungeon(l) ? context.Completed.Contains(l.Id) : visited.Contains(l.Id))))
         { Finish("Victory", Options.ExploreAll ? "Campaign complete; every generated destination visited and dungeon completed once." : "Campaign Finished state reached."); return; }
+        if (context.State.Finished && common.Travel.HomecomingPending) return;
         var game = Game.Instance;
         if (game != null) { DungeonTick(game); return; }
         var town = FindFirstObjectByType<Town>();
@@ -331,7 +353,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     private void TrackProgress(CampaignContext context)
     {
         string signature = context.State.Scene + "/" + context.State.PendingDungeon + "/" + context.State.LocationId + "/" +
-            context.Completed.Count + "/" + context.Claimed.Count + "/" + context.Opened.Count;
+            context.Completed.Count + "/" + context.Claimed.Count + "/" + context.Opened.Count + "/" +
+            context.Finale?.CurrentFloor + "/" + context.Finale?.Defeated.Count + "/" + context.Finale?.Unlocked.Count;
         if (signature == progressSignature) return;
         progressSignature = signature; repetitions.Clear(); lastProgress = Time.realtimeSinceStartupAsDouble;
         Capture(); WriteReport();
@@ -564,14 +587,17 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             member.AttributePromptPending=false;
         }
         if (MenuManager.Instance.CurrentDialog is StairConfirm stairsPrompt) { stairsPrompt.YesClicked(); Log("Confirm stairs/exit"); return; }
+        if (game.Finale != null && MenuManager.Instance.Opened && SelectFinaleDestination(game.Finale)) return;
         if (MenuManager.Instance.Opened) { Finish("Unsupported", "Unhandled dungeon dialog: " + MenuManager.Instance.CurrentDialog.GetType().Name); return; }
         var player = game.PlayerController; var ally = player.ControlledAlly; var dungeon = game.CurrentDungeon;
         if (ally == null) return;
         if (Options.DebugPlaythrough && Options.InfiniteResources) player.Gold = 1000000;
-        string floor = Common.Instance.CampaignContext.State.PendingDungeon + "/" + player.Floor;
+        string floor = Common.Instance.CampaignContext.State.PendingDungeon + "/" + player.Floor +
+            (game.Finale == null ? "" : "/" + game.Finale.Session.CurrentFloor.ToString());
         if (floorIdentity != floor)
         {
             floorIdentity = floor; discovered.Clear(); repetitions.Clear(); dungeonRoute.Clear(); approachRoute.Clear(); combatObjective = null;
+            ResetFinaleRoute();
             // Deliberate demo assistance: route directly to objectives using the entire generated floor.
             for (int x=0;x<dungeon.dungeonWidth;x++) for (int y=0;y<dungeon.dungeonHeight;y++)
                 if (dungeon.IsWalkable(new Vector3Int(x,y))) discovered.Add(new Vector3Int(x,y));
@@ -591,6 +617,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             Act(ally, action, "Companion " + action.GetType().Name);
             return;
         }
+        if (game.Finale?.IsTransitioning == true) return;
+        if (game.Finale?.OnOverworld == true) { FinaleTick(game, ally); return; }
         var skills = new AllySkillPolicy(game, ally, 0) { IncludeControlledAlly = true };
         var puzzleAction = game.Encounter?.AutoplayPuzzleAction(ally);
         if (puzzleAction != null) { Act(ally,puzzleAction,"Solve puzzle through "+puzzleAction.GetType().Name); return; }
@@ -677,7 +705,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         repetitions.TryGetValue(signature,out var count); repetitions[signature] = count+1;
         if (!IsLootSweep && count > 30) { Finish("Stalled", "Repeated action/state loop: " + message); return; }
         if (!IsLootSweep) lastProgress = Time.realtimeSinceStartupAsDouble;
-        if (IsLootSweep && Report.Actions >= Options.ActionLimit) { Finish("Failed", "Floor action limit reached."); return; }
+        if (Report.Actions >= Options.ActionLimit) { Finish("Failed", "Floor action limit reached."); return; }
         if (Report.Actions % 50 == 0) { Capture(); WriteReport(); }
     }
 
@@ -831,6 +859,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         Report.Seconds = Time.realtimeSinceStartupAsDouble-started-pausedSeconds-(Paused ? Time.realtimeSinceStartupAsDouble-pausedAt : 0);
         Report.Scene = SceneManager.GetActiveScene().name; Report.Campaign = c?.Capture();
         Report.Location = c?.State.PendingDungeon.Length > 0 ? c.State.PendingDungeon : c?.Location?.Id;
+        CaptureFinale(c?.Finale);
         Report.Visited = visited.OrderBy(x => x).ToArray();
         if (startedCampaign && common?.GameSaveData != null)
         {

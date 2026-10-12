@@ -30,7 +30,7 @@ public static class SkillMovement
 	/// </summary>
 	public static bool CanOccupy(Character actor, Vector3Int destination)
 	{
-		if ((actor != null && actor.IsMovementBlocked)) return false;
+		if ((actor != null && actor.IsMovementBlocked) || !FinaleActor.AllowsPosition(actor, destination)) return false;
 		var dungeon = Game.Instance?.CurrentDungeon;
 		if (dungeon == null || actor == null)
 			return false;
@@ -129,7 +129,7 @@ public static class SkillMovement
 	/// </summary>
 	public static void Place(Character actor, Vector3Int destination)
 	{
-		if ((actor != null && actor.IsMovementBlocked)) return;
+		if ((actor != null && actor.IsMovementBlocked) || !FinaleActor.AllowsPosition(actor, destination)) return;
 		actor.TilemapPosition = destination;
 	}
 

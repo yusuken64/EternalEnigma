@@ -32,6 +32,7 @@ public sealed class AllySkillPolicy : PolicyBase
 
 	public AllySkillChoice Decide()
 	{
+        using var measurement = new FinalePerformance.Scope("Skill decisions");
 		if (game == null || ally == null || ally.Skills == null || ally.Skills.Count == 0)
 		{
 			return null;

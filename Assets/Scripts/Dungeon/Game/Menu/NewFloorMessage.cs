@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class NewFloorMessage : MonoBehaviour
 {
-    private static string Label(int floor) => Common.Instance?.GameSaveData?.DungeonSaveData?.Variant == EternalEnigma.Core.World.DungeonVariant.Town
+    private static string Label(int floor) => Game.Instance?.Finale != null ? Game.Instance.Finale.Title : Common.Instance?.GameSaveData?.DungeonSaveData?.Variant == EternalEnigma.Core.World.DungeonVariant.Town
         ? $"Town district · Floor {floor}" : $"Floor {floor}";
 	public Image BackgroundColor;
 	public TextMeshProUGUI FloorMessage;

@@ -118,11 +118,122 @@ For developer runs, open **Tools > Eternal Enigma > Playthrough > Open** in Unit
 This supports starting seed, run count, normal/debug options, item/ability coverage,
 speed, time limit, stall timeout, pause/stop, and an optional goal of
 visiting every generated destination and completing every dungeon once. The
-default goal is the campaign's actual Finished flag. The editor retains its existing
+default goal includes the campaign's Finished flag, all five cleared finale floors,
+and completed homecoming with restored control. The editor retains its existing
 4x and cheat defaults; both launchers default to one run. Neither launcher is invoked
 by CI or by opening the game. Run Normal and Run Debug menu commands use seed 42.
 Programmatic `AutoplayOptions` remain single-run by default; `DebugCoverage` is an
 explicit option and only takes effect with `DebugPlaythrough`.
+
+Campaign autoplay completes the same five-floor production finale. It walks through
+unlocked regions, fights ordinary enemies, attempts adjacent entry to reveal mimics,
+and uses each cleared floor's staircase. It never awards kills or completion directly.
+This does not require `ExploreAll` or deliberate item/ability coverage.
+
+The `astar-objectives-v5-mimic-finale` report records floor seeds and fingerprints,
+per-region planned/registered/remaining populations, mimic reveals and families,
+actual enemy deaths, gate openings, stairs and homecoming. Victory requires all five
+floors cleared, final stairs, the real campaign completion flag and wake-up with
+restored control. Evidence remains after the finale unloads.
+
+## Direct finale debug autoplay
+
+Select **Finale** in the Playthrough window or use **Tools > Eternal Enigma >
+Playthrough > Run Debug Finale**. `AutoplayOptions.FinaleDebug()` defaults to seed 42,
+one run, floor 1, 4× speed, godmode and infinite resources. Infinite strength and
+deliberate item/ability coverage default off so enemies can exercise their attacks.
+All five floors remain mandatory. Existing cheats, limits, pause, stop and takeover
+controls apply. Serialized modes remain Campaign=0, FloorLootSweep=1, Finale=2.
+
+The endgame warrior/healer/elementalist/archer fixture is created with the requested
+seed inside the runner's isolated save store. It establishes pre-finale campaign
+progress only. The production finale starts with no defeated/revealed enemies,
+one unlocked region and completion false. Player saves are restored on exit.
+
+For Unity MCP launches, write options to `Temp/FinaleDebug/options.json` and invoke
+**Tools > Eternal Enigma > Playthrough > Run Debug Finale From File**. Omitted
+fields retain the preset defaults. Reports, actions, issues, saves and screenshots
+live beneath `Logs/FinaleDebug`. These are labeled direct-start debug runs, excluded
+from balance statistics and full-campaign acceptance.
+
+```powershell
+node Tools/unity-mcp.mjs harness FinaleAutoplay
+node Tools/debug-autoplay.mjs finale-status
+node Tools/debug-autoplay.mjs verify-finale
+```
+
+The explicit manual harness runs through all five floors and waking, checks pause,
+save isolation and artifacts, and restores the previous session. It is excluded
+from ordinary test batches. The independent finale audit rejects completion flags
+without every registered enemy's death, all ten mimic families, region clearances,
+the five production stair events and completed homecoming.
+
+## Recorded finale verification
+
+On 2026-10-12, both seed-42 routes completed on game assembly
+`2847e0a4-17bd-4d9c-90bc-b2f1a1d1cbc3` with no issues:
+
+| Route | Commands | Seconds | Artifacts |
+| --- | ---: | ---: | --- |
+| Direct finale, normal attack strength | 9,654 | 787.70 | `Logs/FinaleDebug/20261012-020540-5c54c9fc` |
+| Fresh campaign, debug strength enabled | 17,488 | 1,331.32 | `Logs/Playthroughs/20261012-021936-48b93957` |
+
+Both passed the independent audit: 407 actual finale deaths, 107 mimic reveals
+covering all ten families, 25 gate openings, five stair transitions, campaign
+completion and waking with control restored. The direct `FinaleAutoplay` harness
+also passed its original-save restoration checks. The seven-case
+`FinaleValidation` suite passed stop/takeover, save/defeat/quit, completed-slot
+continuation, legacy floor transitions and minimap/fog equivalence.
+Results are retained in `Temp/FinaleDebug/autoplay.json`, `validation.json` and
+their XML companions. These are single-seed gameplay checks, not balance results
+or the separate 100-seed campaign acceptance run.
+
+## Finale performance measurement
+
+The explicit `FinalePerformance` harness measures initialization separately from
+300 production commands on the seed-42, 256×256 finale. It uses 32× playback with
+animations disabled, godmode and infinite resources, and normal attack strength.
+It also compares incremental minimap/fog pixels with a complete redraw.
+
+```powershell
+node Tools/unity-mcp.mjs harness FinalePerformance
+node Tools/unity-mcp.mjs harness FinaleControls
+node Tools/unity-mcp.mjs harness FinaleValidation
+```
+
+The Unity menus **Run Finale Performance Baseline / Optimized** choose the output
+label. Results are written to `Temp/FinaleDebug/performance-<label>.json`; isolated
+run artifacts are under `Temp/FinaleDebug/PerformanceRuns`. Instrumentation is off
+outside this manual measurement. The controls suite checks pause, stop, takeover,
+incomplete-run artifacts and restoration of the original save and pacing.
+`FinaleValidation` combines these checks with finale save/defeat/quit checks and
+the legacy dungeon floor-transition regression.
+
+On 2026-10-12, the baseline took 67.88 seconds for 300 commands; the optimized run
+took 20.78 seconds (3.27× throughput), and the validation repeat took 17.21 seconds.
+The repeat also passed the minimap/fog pixel comparison. Companion route work fell from 28.70 to
+0.53 seconds; minimap/sight work fell from 14.75 to 0.46 seconds. Fog work is included
+in the minimap total. This is an editor turn-processing comparison, not an FPS
+benchmark; initialization remained about 101–103 seconds. All runs used the uniform
+combat-scale enemy models. Initialization runs behind an opaque loading screen
+with the current finale floor. The screen renders before five-map planning or
+terrain construction begins and stays up until enemies, party, minimap and camera
+are ready. Disabling animations skips fades but preserves the loading cover.
+
+`node Tools/unity-mcp.mjs harness FinaleLoading` checks the initial planning cover,
+all five floor transitions with and without animations, homecoming, and ordinary
+town returns. It captures `Temp/FinaleDebug/loading-floor-1.png` through
+`loading-floor-5.png` for visual inspection. The 2026-10-12 verification passed
+all three cases (219.66 seconds); results are retained in
+`Temp/FinaleDebug/loading.json` and `loading.xml`.
+
+Companion navigation now settles only the shortest paths needed for its decision,
+caches walkability and known hazards for that decision, and keeps existing sight,
+hazard, occupancy and diagonal restrictions. Finale minimap/fog updates redraw
+changed visibility and previous marker cells; floor and region changes force a
+complete refresh.
+
+## Campaign debug artifacts
 
 For a scripted campaign debug batch, write `AutoplayOptions` JSON to
 `Temp/DebugAutoplay/options.json`, then invoke **Tools > Eternal Enigma > Playthrough >
@@ -139,6 +250,10 @@ and every issue. `verify` requires at least 100 distinct sequential seeds, each 
 a finalized Victory, the real campaign Finished flag, no warnings/errors, matching
 build identifiers, and complete save, screenshot and action artifacts. Merely
 launching a batch or reaching its time limits does not pass this verification.
+It also runs the shared five-floor finale audit and requires a normal campaign start;
+a direct-start finale run cannot satisfy this acceptance.
+Use `verify-run <batch-directory>` for the same evidence audit on a smaller manual
+batch; this does not satisfy the separate 100-seed acceptance requirement.
 `inspect <report.json>` prints the party, remaining enemies, stairs, and a local
 walkability map for investigating a stopped campaign.
 

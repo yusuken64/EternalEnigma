@@ -1,0 +1,26 @@
+dragon breathe fire
+ranged fireball ability invoked %50 of the time when valid
+
+explosion use asset pack special effect instead of placeholder particles
+
+mimic reveal to use a special effect
+overworld dungeon reveal should use it as well
+
+spider duplicate to use sound effect and sfx and event history
+all enemy abilities should use a special effect and sound with event entry
+
+make werewolves who spawn in packs move twice like fishman
+
+make town district have different entrance and exits.
+
+the forest maze should be a regular dungeon generation footprint, then turned into a maze.
+
+make sure every dungeon has traps.
+
+have an ability where an allied controlled scout paths straight to an exit.
+
+make the overworld signs interactable and they point out directions of nearby landmarks.
+
+throw should be a an animation. check for any other animations placeholders that use tween. the thrown item should spawn in the middle of the square and fly straight to middle of target square.
+
+the end of the campaign should show a final summary of the game, like pokemon hall of fame entry.

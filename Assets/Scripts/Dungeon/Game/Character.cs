@@ -14,6 +14,7 @@ public abstract class Character : MonoBehaviour, Actor
 		get => tilemapPosition;
 		set
 		{
+			if (!FinaleActor.AllowsPosition(this, value)) return;
 			if (tilemapPosition != value)
 			{
 				if (!VoluntaryCastMovement) global::PendingCast.Cancel(this, "displaced");
@@ -618,6 +619,7 @@ disp: {displayedVitals}");
 	internal List<AStar.Node> CalculatePursuitPath()
 	{
 		var game = Game.Instance;
+        if (game.Finale != null) return game.Finale.PursuitPath(this);
 
 		//TODO refactor cost out of the loop, do it in 2nd pass
 		//move to a different class

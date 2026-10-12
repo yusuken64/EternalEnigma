@@ -6,7 +6,8 @@ namespace EternalEnigma.Core.World;
 public sealed class DungeonFloor
 {
     public const int GenerationVersion = 3;
-    public DungeonVariant Variant => TownPlan == null ? DungeonVariant.Standard : DungeonVariant.Town;
+    public DungeonVariant Variant => Overworld != null ? DungeonVariant.Overworld : TownPlan == null ? DungeonVariant.Standard : DungeonVariant.Town;
+    public OverworldGrid? Overworld { get; }
     public TownPlan? TownPlan { get; }
     public DungeonObjectiveDefinition Objective { get; }
     public IReadOnlyList<PuzzleObjectPlacement> PuzzleObjects { get; }
@@ -34,7 +35,7 @@ public sealed class DungeonFloor
         GridPoint start, GridPoint stairs, IEnumerable<Placement> enemies, IEnumerable<Placement> gold,
         IEnumerable<Placement> items, IEnumerable<Placement> traps, IEnumerable<GatheringSite>? gatheringSites = null, IEnumerable<DungeonScenery>? scenery = null, IEnumerable<DungeonLock>? locks = null,
         DungeonObjectiveDefinition? objective = null, IEnumerable<PuzzleObjectPlacement>? puzzleObjects = null,
-        IEnumerable<ObjectiveEnemyPlacement>? objectiveEnemies = null, IEnumerable<RecoveryStashPlacement>? recoveryStashes = null, IEnumerable<GridPoint>? solutionWitness = null, TownPlan? townPlan = null)
+        IEnumerable<ObjectiveEnemyPlacement>? objectiveEnemies = null, IEnumerable<RecoveryStashPlacement>? recoveryStashes = null, IEnumerable<GridPoint>? solutionWitness = null, TownPlan? townPlan = null, OverworldGrid? overworld = null)
     {
         // Validate layers
         if (!layers.ContainsKey(DungeonLayers.Floor))
@@ -92,6 +93,7 @@ public sealed class DungeonFloor
         }
 
         TownPlan = townPlan;
+        Overworld = overworld;
         Scenery = Array.AsReadOnly((scenery ?? Enumerable.Empty<DungeonScenery>()).ToArray());
         Seed = seed;
         IsThroneFloor = isThroneFloor;

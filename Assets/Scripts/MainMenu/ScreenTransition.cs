@@ -28,9 +28,19 @@ public class ScreenTransition : MonoBehaviour
         CancelAnimation();
         if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
         {
-            ShutterScreen.gameObject.SetActive(false);
-            BlockScreen.gameObject.SetActive(false);
-            postTransition?.Invoke();
+            if (autoOpen)
+            {
+                ShutterScreen.gameObject.SetActive(false);
+                BlockScreen.gameObject.SetActive(false);
+                postTransition?.Invoke();
+            }
+            else
+            {
+                // Skipping the fade must not skip the loading screen or load
+                // synchronously before the cover has had a chance to render.
+                HoldClosed(destinationTitle ?? "Loading...");
+                StartCoroutine(DoInstantLoadRoutine(postTransition));
+            }
             return;
         }
         SetDestinationTitle(destinationTitle);
@@ -61,13 +71,29 @@ public class ScreenTransition : MonoBehaviour
         ShutterScreen.DOKill();
     }
 
-    internal void HoldClosed()
+    internal void HoldClosed(string destinationTitle = null)
     {
         CancelAnimation();
-        SetDestinationTitle(null);
+        SetDestinationTitle(destinationTitle);
         BlockScreen.SetActive(true);
         ShutterScreen.gameObject.SetActive(true);
         ShutterScreen.color = Color.black;
+        if (destinationLabel != null) destinationLabel.alpha = 1;
+    }
+
+    // Use frame yields rather than WaitForEndOfFrame so loading also advances
+    // in editor/headless runs. Two yields allow a complete covered frame even
+    // when the caller resumes late in Unity's coroutine update.
+    internal static IEnumerator PresentLoadingScreen()
+    {
+        yield return null;
+        yield return null;
+    }
+
+    private IEnumerator DoInstantLoadRoutine(Action postTransition)
+    {
+        yield return PresentLoadingScreen();
+        postTransition?.Invoke();
     }
 
     private IEnumerator DoTransitionRoutine(Action postTransition, bool autoOpen = true)

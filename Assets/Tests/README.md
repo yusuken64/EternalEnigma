@@ -25,6 +25,61 @@ combat, roof cutaways, loot, gate transitions, boss clearance and generated mesh
 See [town district verification](../../Docs/BiomeDungeons.md#town-districts) for the current
 Core sweep and Unity results. These runs use the harness's isolated save storage.
 
+## Finale
+
+`node Tools/unity-mcp.mjs harness Finale` checks production mimic protection,
+adjacent reveal and reveal-turn behavior, reserved roster exclusion, region movement
+restrictions, all five stair transitions, resource preservation, terrain cleanup,
+bedroom arrival, control/camera restoration, explicit saves, completed continuation
+and retreat. Test fixtures may position actors and resolve combat to isolate these
+contracts; they do not constitute an autoplay acceptance run.
+
+`node Tools/unity-mcp.mjs harness FinaleLifecycle` checks that finale saves are
+rejected, defeat restores the explicit checkpoint, completed slots support ordinary
+dungeon returns and quitting, and ordinary chest mimics still reveal in the finale.
+It also checks that debug survivability and infinite strength can be disabled.
+
+The manual `FinaleControls` suite checks stop/takeover and restoration of saves,
+input, animation mode and playback speed. `FinalePerformance` measures 300 production
+commands and compares incremental minimap/fog pixels with a full redraw.
+`FinaleValidation` combines these with lifecycle and legacy floor-transition checks.
+`FinaleLoading` checks that the loading screen renders before five-map planning,
+covers every finale floor through camera readiness (with and without animations),
+and releases correctly for homecoming and ordinary town returns. Loading-screen
+captures are saved as `Temp/FinaleDebug/loading-floor-<1..5>.png`.
+Use `node Tools/unity-mcp.mjs harness <suite>`; these manual cases do not run in
+ordinary batches. See [performance measurements](../../Docs/Autoplay.md#finale-performance-measurement).
+
+Core `FinaleTests` sweeps ten campaign seeds (including no-Boat parties) for five-map
+determinism, reachable enemies and mimics, distinct region ownership, the complete
+ten-family roster, child accounting, locked movement/warps and all five required stairs.
+The full Core suite currently contains 423 tests. The latest manual verification
+includes a passing five-floor direct run, an accepted full-campaign debug run and
+seven passing finale validation cases; see the [recorded evidence](../../Docs/Autoplay.md#recorded-finale-verification).
+
+The separate **Tools > Eternal Enigma > Tests > Run FinaleAutoplay** suite is explicit
+and manual. Invoke `node Tools/unity-mcp.mjs harness FinaleAutoplay` through Unity MCP;
+the client allows up to one hour. It uses the isolated direct-start fixture with
+production movement, combat, reveals, gates and stairs, and requires waking with
+control restored. It checks pause/resume and original-save restoration. Ordinary
+PlayMode batches do not run this full autoplay route.
+
+Artifacts are written beneath `Logs/FinaleDebug`. Run
+`node Tools/debug-autoplay.mjs verify-finale [batch-directory]` for independent
+population/death, mimic, gate, stair and homecoming evidence checks. A direct run is
+excluded from balance and full-campaign acceptance; normal campaign `verify-run`
+uses the same finale audit and additionally requires a normal campaign start.
+The audit's negative cases can run without Unity:
+`node --test Tools/tests/finale-audit.test.mjs`.
+
+Use **Tools > Eternal Enigma > Finale > Build Enemy Prefabs** to reproduce the
+existing Wave 4 mimic adapters without changing vendor assets. The models use the
+same combat scale as ordinary enemies and retain one-tile footprints.
+**Capture Combat Scale** renders pairs with a normal skeleton for visual comparison
+under `Temp/FinaleDebug/Scale`. See
+[autoplay](../../Docs/Autoplay.md) and
+[campaign generation](../../Docs/CampaignGeneration.md#reverse-world-finale).
+
 ## Skills
 
 `SkillRegressionTests` runs the production dungeon, skill assets, menu, input

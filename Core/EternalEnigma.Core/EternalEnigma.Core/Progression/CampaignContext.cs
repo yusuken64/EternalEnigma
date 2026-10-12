@@ -44,6 +44,13 @@ public sealed class TownDisplayName
 public sealed class CampaignContext
 {
     public Campaign Campaign { get; }
+    public FinaleSession? Finale { get; private set; }
+    public FinaleSession BeginFinale()
+    {
+        if (State.Finished || State.PendingDungeon != Campaign.FinalLocationId) throw new InvalidOperationException("The final dungeon is not active.");
+        return Finale ??= new FinaleSession(new FinalePlan(Campaign, Grid, Held.Contains(Capability.Boat),
+            Grid.Warps.Where(r => r.CanTraverse(Held, Resolved) || (r.KeyId != null && Keys.Contains(r.KeyId))).Select(r => r.Id)));
+    }
     private OverworldGrid? grid;
     private OverworldGates? gates;
     private bool positionInitialized;
@@ -148,7 +155,7 @@ public HashSet<string> Completed { get; }
     public bool BeginDungeon()
     {
         var location = Location;
-        if (State.PendingDungeon.Length != 0 || location == null ||
+        if (State.PendingDungeon.Length != 0 || location == null || (State.Finished && location.Id == Campaign.FinalLocationId) ||
             !location.IsDungeon || (location.Encounter != null && !location.Encounter.CanEnter(Held, Completed))) return false;
         State.PendingDungeon = location.Id; State.LocationId = location.Id; State.Scene = "DungeonScene"; return true;
     }
@@ -168,6 +175,7 @@ public HashSet<string> Completed { get; }
     {
         string id = State.PendingDungeon;
         if (id.Length == 0) return false;
+        if (victory && id == Campaign.FinalLocationId && Finale?.VictoryReady != true && !IsSandbox) return false;
         if (victory)
         {
             Completed.Add(id);
@@ -179,7 +187,8 @@ public HashSet<string> Completed { get; }
             foreach (var source in Campaign.Sources.Where(s => s.LocationId == id)) Claim(source.Id);
             State.Finished |= id == Campaign.FinalLocationId; State.Scene = "Overworld"; State.LocationId = id;
             var parent = Campaign.Locations.Single(l => l.Id == id).ParentTownId;
-            if (parent != null) ReturnToTown(parent);
+            if (id == Campaign.FinalLocationId) { State.LastTownId = Campaign.StartLocationId; ReturnToTown(Campaign.StartLocationId); }
+            else if (parent != null) ReturnToTown(parent);
             else
             {
                 var destination = Campaign.Locations.Single(l => l.Id == id).Encounter?.ReturnLocationId ?? id;
@@ -188,6 +197,7 @@ public HashSet<string> Completed { get; }
         }
         else ReturnToTown(State.LastTownId);
         State.PendingDungeon = "";
+        Finale = null;
         return true;
     }
     private void ReturnToTown(string id)
@@ -199,6 +209,7 @@ public HashSet<string> Completed { get; }
     public bool RecoverInterruptedRun()
     {
         if (State.PendingDungeon.Length == 0) return false;
+        Finale = null;
         var dungeon = Campaign.Locations.Single(l => l.Id == State.PendingDungeon);
         State.LocationId = dungeon.ParentTownId ?? dungeon.Id;
         if (dungeon.ParentTownId != null) ReturnToTown(dungeon.ParentTownId);
@@ -221,6 +232,7 @@ public HashSet<string> Completed { get; }
     }
     public DungeonFloor DungeonFloor(string locationId, int floor)
     {
+        if (locationId == Campaign.FinalLocationId) return new FinalePlan(Campaign, Grid).Floors[0].CreateFloor();
         return DungeonFloorGenerator.Generate(RunPlan(locationId).Floor(floor).Options);
     }
     public DungeonRunPlan RunPlan(string locationId)

@@ -6,7 +6,7 @@ using EternalEnigma.Core.Generation;
 using TWC;
 using UnityEngine;
 
-public class TileWorldDungeonGenerator : MonoBehaviour
+public partial class TileWorldDungeonGenerator : MonoBehaviour
 {
 	public TileWorldCreator TileWorldCreator;
 	public TileWorldCreator ThroneTileWorldCreator;

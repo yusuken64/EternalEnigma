@@ -77,6 +77,7 @@ public class Enemy : Character
 		}
 
         InitializeSpawn();
+        if (Game.Instance.Finale?.CanAct(this) == false) { determinedActions = new() { new WaitAction() }; return; }
 
         var encounterAction = Game.Instance.Encounter?.EnemyAction(this);
         if (encounterAction != null) { determinedActions = new() { encounterAction }; return; }
@@ -150,12 +151,14 @@ public class Enemy : Character
 
 	public override IEnumerable<GameAction> GetResponseTo(GameAction action)
 	{
+		if (GetComponent<FinaleActor>()?.Hidden == true) return Array.Empty<GameAction>();
 		WakeFrom(action);
 		return GetActionResponses(action);
 	}
 
 	internal void WakeFrom(GameAction action)
 	{
+		if (GetComponent<FinaleActor>()?.Hidden == true) return;
 		if (IsDormant)
 		{
 			if (action is TakeDamageAction damage && damage.Target == this) Provoke();
@@ -177,6 +180,7 @@ public class Enemy : Character
 
     internal void Provoke()
     {
+		if (GetComponent<FinaleActor>()?.Hidden == true) return;
 		bool wasDormant = IsDormant;
         var behavior = GetComponent<EnemyBehavior>();
         if (behavior != null) behavior.Provoke();
@@ -204,6 +208,7 @@ public class Enemy : Character
 			.Distinct().OrderBy(name => name.Length).ThenBy(name => name, StringComparer.Ordinal).ToArray();
 	}
 	internal string WalkAnimationState => AnimationStates("WalkFWD").FirstOrDefault()
+		?? AnimationStates("MoveFWD").FirstOrDefault()
 		?? AnimationStates("FlyFWD").FirstOrDefault() ?? AnimationStates("Walk").FirstOrDefault()
 		?? AnimationStates("IdleNormal").FirstOrDefault(); // Worm has no locomotion clip.
 	private void PlayState(string state)

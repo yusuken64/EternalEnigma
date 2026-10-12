@@ -48,6 +48,26 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             var decorationFaces=root.GetComponent<BiomeDecorationSurfaceSet>() ?? root.AddComponent<BiomeDecorationSurfaceSet>();
             decorationFaces.Faces.Clear();
             var grid = creator.GetComponent<CampaignOverworld>()?.CurrentGrid;
+            // Keep each overworld miniature independently hideable when it reveals as a finale mimic.
+            var townBatches = new System.Collections.Generic.Dictionary<string, EnvironmentBatch>();
+            EnvironmentBatch TownBatch(int x, int y)
+            {
+                var miniature = grid?.TownFootprints.FirstOrDefault(t => t.Cells.Contains(new GridPoint(x, y)));
+                if (miniature == null) return batch;
+                if (!townBatches.TryGetValue(miniature.LocationId, out var result))
+                {
+                    var townRoot = new GameObject("Town " + miniature.LocationId);
+                    townRoot.transform.SetParent(root.transform, false);
+                    result = new EnvironmentBatch(townRoot.transform);
+                    townBatches.Add(miniature.LocationId, result);
+                }
+                return result;
+            }
+            void FinishBatches()
+            {
+                batch.Finish();
+                foreach (var entry in townBatches.Values) entry.Finish();
+            }
             CoreLayoutCache.TryGetTown(creator, out var town);
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
             var townCatalog = TownPalette ? TownInteriorCatalog.Load() : null;
@@ -149,9 +169,9 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             {
                 var houses=creator.GetMapOutputFromBlueprintLayer(assignedGenerationLayerGuid);
                 for(int y=0;y<houses.GetLength(1);y++)for(int x=0;x<houses.GetLength(0);x++)if(houses[x,y])
-                    DioramaSettlementGeometry.House(batch,settlementKit,OverworldCosmetics.Biome(grid,x,y),
+                    DioramaSettlementGeometry.House(TownBatch(x,y),settlementKit,OverworldCosmetics.Biome(grid,x,y),
                         new Vector3(x+.5f,y+.5f,0)*size,size,OverworldCosmetics.Hash(grid.CampaignSeed,x,y));
-                batch.Finish();return;
+                FinishBatches();return;
             }
             // Solid houses retain their blocked front wall in the Core plan. Omit
             // only the facade panels in front of the entrance art to make a recess.
@@ -178,13 +198,17 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                     angle = -tile.yRotation;
                 }
                 if (prefab == null) continue; // Edge-only presets deliberately omit their interior fill.
+                var tileBatch = grid != null && wall ? TownBatch(x, y) : batch;
+                var tileFaces = tileBatch == batch ? decorationFaces :
+                    tileBatch.Owner.GetComponent<BiomeDecorationSurfaceSet>() ??
+                    tileBatch.Owner.gameObject.AddComponent<BiomeDecorationSurfaceSet>();
                 // Authored preset child rotates the XY mesh into TWC's canonical XZ plane.
                 var mesh = prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
                 bool alley = Road && town != null && town.Layers.TryGetValue(TownLayers.Alleys, out var alleys) && alleys[x,y];
                 if(!Road && (wall || tile.tileType==TileData.TileType.edge) && (Buildings || wall || mesh.bounds.size.z*HeightScale>.25f))
-                    decorationFaces.Add(mesh,Matrix4x4.TRS(new Vector3((tile.position.x+.5f)*unit,(tile.position.z+.5f)*unit,-Elevation*size),Quaternion.Euler(0,0,angle),new Vector3(unit,unit,unit*HeightScale)),palette,
+                    tileFaces.Add(mesh,Matrix4x4.TRS(new Vector3((tile.position.x+.5f)*unit,(tile.position.z+.5f)*unit,-Elevation*size),Quaternion.Euler(0,0,angle),new Vector3(unit,unit,unit*HeightScale)),palette,
                         Buildings && town!=null && town.Layers[TownLayers.ShopWalls].At(new GridPoint(x,y)) ? DecorationSurface.BuiltWall : Buildings?DecorationSurface.Facade:wall?DecorationSurface.BuiltWall:DecorationSurface.NaturalWall,size,Buildings?(town?.Footprints.FirstOrDefault(f=>f.Cells.Contains(new GridPoint(x,y)))?.Door.ToString()??x+","+y):null,splitPanels:wall && town!=null && town.Interiors.Count>0);
-                batch.Add(mesh, townCatalog != null ? townCatalog.Material(palette) : SurfaceMaterial != null ? SurfaceMaterial : Road ? (alley ? Kit.Paving : Kit.Road) : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
+                tileBatch.Add(mesh, townCatalog != null ? townCatalog.Material(palette) : SurfaceMaterial != null ? SurfaceMaterial : Road ? (alley ? Kit.Paving : Kit.Road) : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
                     new Vector3((tile.position.x + .5f) * unit, (tile.position.z + .5f) * unit, -Elevation * size),
                     new Vector3(unit, unit, unit * HeightScale), angle,
                     Road ? SilhouetteRole.Receiver : Buildings || wall ? SilhouetteRole.Caster : (SilhouetteRole?)null);
@@ -193,7 +217,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 foreach (var cell in solidEntrances)
                     batch.Add(Kit.Mesh("Wall"), Kit.BuildingMaterial(biome),
                         new Vector3(cell.X + .5f, cell.Y + .8f, 0) * size, Vector3.one * size);
-            batch.Finish();
+            FinishBatches();
         }
         finally { creator.executedBuildLayersCount += 1; }
     }

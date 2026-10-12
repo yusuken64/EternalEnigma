@@ -97,7 +97,7 @@ public sealed class DungeonHud : MonoBehaviour
             DungeonPreferences.FullControl = !DungeonPreferences.FullControl;
         var player = game.PlayerController;
         var turns = game.TurnManager;
-        header.text = $"{player.Floor}F";
+        header.text = Game.Instance.Finale == null ? $"{player.Floor}F" : $"Finale {game.Finale.Session.CurrentFloor}/5\n{game.Finale.Session.Remaining} remaining";
         control.GetComponentInChildren<TMP_Text>().text = "Full Control: " + (DungeonPreferences.FullControl ? "On" : "Off") +
             (turns.IsProcessingTurn && turns.FullControlThisRound != DungeonPreferences.FullControl ? " (next round)" : "");
         var ally = player.ControlledAlly;
@@ -107,7 +107,7 @@ public sealed class DungeonHud : MonoBehaviour
         if (selected == null && JuicyChickenGames.Menu.PlayerInputHandler.Instance.holdPosition)
             selected = game.AllCharacters.FirstOrDefault(c=>c!=null && c.OverlapsWith(Character.ToBounds(front)));
         target.text = selected != null && GameMessages.Visible(selected) ?
-            EnemyBehavior.IsDisguised(selected) ? "Treasure chest" : $"{GameMessages.Name(selected)}\n{StatusSummary(selected)}" : "";
+            EnemyBehavior.IsDisguised(selected) ? selected.GetComponent<FinaleActor>() is { } disguise ? disguise.IsTown ? "Town" : "Dungeon" : "Treasure chest" : $"{GameMessages.Name(selected)}\n{StatusSummary(selected)}" : "";
 		UpdateEnemyIcons(selected is Enemy visible && GameMessages.Visible(visible) && !EnemyBehavior.IsDisguised(visible) ? visible : null);
         var targeting = MenuManager.Instance.TargetDialog;
         if (player.CurrentControlMode == PlayerControlMode.TargetSelecting && !string.IsNullOrEmpty(targeting.RangeLabel))

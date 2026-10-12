@@ -65,7 +65,7 @@ internal class ThrowItemAction : GameAction
 			{
 				// A thrown weapon lands like a swing of that weapon, whether or not it was the one equipped.
 				AttackAction.GetAttackDamage(thrower, rangedAttackTarget, WeaponStrength(weapon), out bool hit, out int damage, out bool critical);
-				if (hit && damage > 0 && !AutoplayRunner.GodmodeFor(thrower))
+				if (hit && damage > 0 && !AutoplayRunner.InfiniteStrengthFor(thrower))
 					damage = Mathf.Max(1, Mathf.RoundToInt(damage * ClassPassives.DamageMultiplier(
 						new OutgoingDamage(thrower, rangedAttackTarget, DamageCategory.Weapon, DamageElement.Physical, false))));
 				ret.Add(new TakeDamageAction(thrower, rangedAttackTarget, damage, true, !hit) { Critical = critical });

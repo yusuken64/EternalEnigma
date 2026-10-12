@@ -11,6 +11,19 @@ namespace EternalEnigma.Tests
     public sealed class AutoplayRouteTests
     {
         [Test]
+        public void FinalePresetAppendsModeAndStartsPristineAtSeed42()
+        {
+            Assert.That((int)AutoplayMode.Campaign, Is.Zero);
+            Assert.That((int)AutoplayMode.FloorLootSweep, Is.EqualTo(1));
+            Assert.That((int)AutoplayMode.Finale, Is.EqualTo(2));
+            var options = AutoplayOptions.FinaleDebug();
+            Assert.That(options.Seed, Is.EqualTo(42)); Assert.That(options.RunCount, Is.EqualTo(1));
+            Assert.That(options.Speed, Is.EqualTo(4)); Assert.That(options.Godmode && options.InfiniteResources, Is.True);
+            Assert.That(options.InfiniteStrength || options.DebugCoverage, Is.False);
+            Assert.That(options.Validate(out _), Is.True);
+        }
+
+        [Test]
         public void WaterCrossingsAreNotGateOpeningObjectives()
         {
             var options = new OverworldLaunchOptions(OverworldLaunchMode.Sandbox, 42);

@@ -43,8 +43,8 @@ try {
     const name = process.argv[2] ?? 'get_scene_info';
     if (name === 'harness') {
         const mode = process.argv[3] ?? 'EditMode';
-        if (!['EditMode', 'PlayMode', 'Skills', 'Demo', 'Town', 'Overworld', 'Campaign', 'Presentation', 'ButtonStyles', 'Autoplay', 'FloorLootSweep', 'Enemies', 'Heroes', 'Classes', 'AllyAI'].includes(mode)) throw Error('Unknown harness suite: ' + mode);
-        const resultPath = join(root, `Temp/HarnessResults/${['Skills', 'Demo', 'Town', 'Overworld', 'Campaign', 'Presentation', 'ButtonStyles', 'Autoplay', 'FloorLootSweep', 'Enemies', 'Heroes', 'Classes', 'AllyAI'].includes(mode) ? 'PlayMode' : mode}.json`);
+        if (!['EditMode', 'PlayMode', 'Skills', 'Demo', 'Town', 'Overworld', 'Campaign', 'Presentation', 'ButtonStyles', 'Autoplay', 'FloorLootSweep', 'Finale', 'FinaleAutoplay', 'FinaleLifecycle', 'FinalePerformance', 'FinaleControls', 'FinaleValidation', 'FinaleLoading', 'Enemies', 'Heroes', 'Classes', 'AllyAI'].includes(mode)) throw Error('Unknown harness suite: ' + mode);
+        const resultPath = join(root, `Temp/HarnessResults/${['Skills', 'Demo', 'Town', 'Overworld', 'Campaign', 'Presentation', 'ButtonStyles', 'Autoplay', 'FloorLootSweep', 'Finale', 'FinaleAutoplay', 'FinaleLifecycle', 'FinalePerformance', 'FinaleControls', 'FinaleValidation', 'FinaleLoading', 'Enemies', 'Heroes', 'Classes', 'AllyAI'].includes(mode) ? 'PlayMode' : mode}.json`);
         const readSummary = () => {
             try { return JSON.parse(readFileSync(resultPath, 'utf8')); } catch { return null; }
         };
@@ -52,7 +52,7 @@ try {
         const started = await callUnity({ name: 'execute_menu_item',
             arguments: { menuPath: `Tools/Eternal Enigma/Tests/Run ${mode}` } });
         if (started.isError) throw Error(JSON.stringify(started));
-        const deadline = Date.now() + 600000;
+        const deadline = Date.now() + (mode === 'FinaleAutoplay' ? 3600000 : ['Finale', 'FinaleLifecycle', 'FinaleControls', 'FinaleValidation', 'FinaleLoading'].includes(mode) ? 1800000 : 600000);
         let summary;
         while (Date.now() < deadline) {
             summary = readSummary();

@@ -55,12 +55,13 @@ public sealed class EncounterRuntime
         foreach (var stash in floor.RecoveryStashes) EncounterStash.Create(game.CurrentDungeon, stash.Position.ToCell(), true);
         foreach (var placement in floor.ObjectiveEnemies)
         {
-            var prefab = placement.IsBoss ? LargeBossBehavior.Prefab(placement.Family) :
+            var prefab = FinaleEnemyStats.Prefab(placement.Family, placement.IsBoss) ?? (placement.IsBoss ? LargeBossBehavior.Prefab(placement.Family) :
                 game.EnemyManager.EnemyPrefabs.FirstOrDefault(e=>e!=null && e.name=="Enemy_"+placement.Family.Replace(" ","")) ??
                 game.EnemyManager.GetEnemyPrefab(difficulty, StableHash(placement.Id)^floor.Seed,
-                    placement.Footprint == 3 ? FootPrint.Size3x3 : FootPrint.Size1x1);
+                    placement.Footprint == 3 ? FootPrint.Size3x3 : FootPrint.Size1x1));
             if (prefab == null) throw new InvalidOperationException($"Missing objective enemy prefab: {placement.Family}");
-            var enemy = UnityEngine.Object.Instantiate(prefab, game.transform);
+            var enemy = UnityEngine.Object.Instantiate(prefab, game.CurrentDungeon.transform);
+            if (game.Finale != null) FinaleEnemyStats.Apply(enemy, difficulty, placement.IsBoss);
             enemy.UpdateCachedStats(); enemy.InitialzeVitalsFromStats();
             enemy.IsDormant = false; enemy.TilemapPosition = placement.Position.ToCell();
             if (!SkillMovement.CanOccupy(enemy,enemy.TilemapPosition))
@@ -89,6 +90,7 @@ public sealed class EncounterRuntime
         if (identity == null || identity.Resolved) return;
         identity.Resolved = true;
         bool before = CanExit; Progress.Defeat(identity.Id); AnnounceCompletion(before);
+
     }
 
     internal bool Blocks(Vector3Int cell) => Puzzle.Boulders.Values.Any(p => p.ToCell() == cell);

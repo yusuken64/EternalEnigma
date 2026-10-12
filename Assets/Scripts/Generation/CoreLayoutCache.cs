@@ -65,6 +65,13 @@ public static class CoreLayoutCache
 
     public static void Clear(TileWorldCreator twc) => slots.Remove(twc);
 
+    public static void SupplyDungeon(TileWorldCreator twc, DungeonFloorOptions options, DungeonFloor floor)
+    {
+        var slot = slots.GetOrCreateValue(twc);
+        slot.DungeonKey = options; slot.Dungeon = floor; slot.Town = floor.TownPlan;
+        slot.TownKey = options.Variant == DungeonVariant.Town ? TownDungeonGenerator.TownOptions(options) : null;
+    }
+
     /// TWC flags an all-false layer as failed; empty Carpet/ShopFloor layers are valid, so clear the flags after ExecuteAllBlueprintLayers (same as CampaignOverworld.Apply).
     public static void ClearResultFlags(TileWorldCreatorAsset asset)
     {

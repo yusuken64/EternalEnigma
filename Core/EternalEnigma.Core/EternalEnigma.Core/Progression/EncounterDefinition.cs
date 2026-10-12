@@ -57,6 +57,14 @@ public sealed class DungeonRunPlan
     {
         LocationId = location.Id; IsEncounter = location.Encounter != null;
         Variant = location.Variant;
+        if (location.Kind == LocationKind.FinalDungeon)
+        {
+            Variant = DungeonVariant.Overworld;
+            Floors = Array.AsReadOnly(new[] { new DungeonRunFloor(30, 38,
+                new DungeonFloorOptions(CampaignContext.LocationSeed(campaignSeed, location.Id), enemyCount: 0,
+                    goldCount: 0, itemCount: 0, trapCount: 0, gatheringCount: 0, tier: 4, variant: DungeonVariant.Overworld)) });
+            return;
+        }
         var range = IsEncounter ? (Start: 1, End: location.Encounter!.FloorCount) : CampaignContext.Floors(location.Tier);
         var floors = new List<DungeonRunFloor>();
         for (int number = range.Start; number <= range.End; number++)
@@ -64,9 +72,6 @@ public sealed class DungeonRunPlan
             int difficulty = IsEncounter ? Math.Min(CampaignContext.Floors(location.Tier).End - 1, CampaignContext.Floors(location.Tier).Start + number) : number;
             var options = IsEncounter ? EncounterFloorGenerator.Options(campaignSeed, location, number, biome) :
                 CampaignContext.DungeonFloorOptionsFor(campaignSeed, location.Id, number, location.Tier, biome, layoutVersion, Variant);
-            if (location.Kind == LocationKind.FinalDungeon && number == range.End - 1)
-                options = new DungeonFloorOptions(CampaignContext.LocationSeed(campaignSeed, location.Id, number), 36, 36, enemyCount: 0, goldCount: 3, itemCount: 3, trapCount: 0, gatheringCount: 0,
-                    biome: biome, tier: location.Tier, encounter: EncounterKind.BossArena, objective: new DungeonObjectiveDefinition(DungeonObjectiveKind.DefeatBoss), bossFamily: "Demon King");
             floors.Add(new DungeonRunFloor(number, difficulty, options));
         }
         Floors = Array.AsReadOnly(floors.ToArray());

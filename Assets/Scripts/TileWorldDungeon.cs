@@ -33,8 +33,10 @@ public class TileWorldDungeon : MonoBehaviour
 	[SerializeField] private TileWorldCreator _tileWorldCreator;
 	private bool[,] floorMask;
 	private bool[,] _isHallwayCache;
+    private float cellSize;
+    private GameObject presentationWorld;
     internal float PresentationWallHeight => runtimeFloor?.Variant == DungeonVariant.Town
-        ? _tileWorldCreator.worldObject.GetComponentsInChildren<Renderer>(true).Select(r => -r.bounds.min.z).DefaultIfEmpty(0).Max()
+        ? presentationWorld.GetComponentsInChildren<Renderer>(true).Select(r => -r.bounds.min.z).DefaultIfEmpty(0).Max()
         : _tileWorldCreator?.twcAsset.mapBuildLayers.OfType<DungeonBoundaryLayer>()
         .Where(l=>l.active&&l.SmartPreset!=null).Select(l=>l.WallHeight).DefaultIfEmpty(0).Max() ?? 0;
 
@@ -75,6 +77,8 @@ public class TileWorldDungeon : MonoBehaviour
 	internal void Setup(TileWorldCreator twc, DungeonFloor floor)
 	{
 		this._tileWorldCreator = twc;
+        cellSize = twc.twcAsset.cellSize;
+        presentationWorld = twc.worldObject;
 		this.Floor = floor;
 		this.floorMask = floor.Layers[DungeonLayers.Floor].ToArray();
 		this.IsThroneFloor = floor.IsThroneFloor;
@@ -127,6 +131,7 @@ public class TileWorldDungeon : MonoBehaviour
         var key = (origin, radius);
         if (!sightCache.TryGetValue(key, out var tiles))
         {
+            if (runtimeFloor.Variant == DungeonVariant.Overworld && sightCache.Count >= 512) sightCache.Clear();
             tiles = GridSight.VisibleTiles(SightLayer, origin.ToGridPoint(), radius).ToCellSet();
             sightCache[key] = tiles;
         }
@@ -141,6 +146,9 @@ public class TileWorldDungeon : MonoBehaviour
         {
             if (sightLayer != null) return sightLayer;
             var mask = (bool[,])floorMask.Clone();
+            if (runtimeFloor.Variant == DungeonVariant.Overworld && Game.Instance?.Finale != null)
+                for (int y = 0; y < runtimeFloor.Height; y++) for (int x = 0; x < runtimeFloor.Width; x++)
+                    mask[x, y] = Game.Instance.Finale.Session.IsWalkable(new EternalEnigma.Core.World.GridPoint(x,y));
             foreach (var door in Interactables.OfType<DungeonProp>().Where(p => p.IsClosedDoor)) mask[door.Position.x, door.Position.y] = false;
             return sightLayer = new GridLayer(mask);
         }
@@ -435,6 +443,7 @@ public class TileWorldDungeon : MonoBehaviour
 	}
 
     internal bool AllowsDoorwayStep(Vector3Int from, Vector3Int to) =>
+        Floor.Variant == DungeonVariant.Overworld ? Game.Instance.Finale.Session.CanStep(from.ToGridPoint(), to.ToGridPoint()) :
         Floor.TownPlan?.AllowsDoorwayStep(from.ToGridPoint(), to.ToGridPoint()) ?? true;
 
 	internal Vector3Int GetRangedAttackPosition(
@@ -473,7 +482,7 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal Vector3 CellToWorld(Vector3Int newMapPosition)
 	{
-		return GridMovement.CellToWorld(newMapPosition, _tileWorldCreator.twcAsset.cellSize);
+		return GridMovement.CellToWorld(newMapPosition, cellSize > 0 ? cellSize : _tileWorldCreator.twcAsset.cellSize);
 	}
 
 	internal Interactable GetInteractable(Vector3Int tilemapPosition)
@@ -556,6 +565,9 @@ public class TileWorldDungeon : MonoBehaviour
     }
 	internal bool IsWalkable(Vector3Int newMapPosition)
 	{
+
+        if (runtimeFloor?.Variant == DungeonVariant.Overworld && Game.Instance?.Finale != null)
+            return Game.Instance.Finale.Session.IsWalkable(newMapPosition.ToGridPoint());
 		return IsFloorCell(newMapPosition) && !Interactables.OfType<DungeonProp>().Any(p => p.Position == newMapPosition && p.BlocksMovement) &&
             (Game.Instance?.CurrentDungeon != this || Game.Instance.Encounter?.Blocks(newMapPosition) != true);
 	}

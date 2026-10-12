@@ -44,7 +44,7 @@ public sealed class AutoplayEvent
     public string CaseId, Profile, LootId;
     public int ExpectedAmount;
     public bool Removed;
-    public string Kind, RunId, Scene, Location, ActorId, TargetId, Message, Position, Severity, StackTrace;
+    public string Kind, RunId, Scene, Location, ActorId, TargetId, Message, Position, Severity, StackTrace, FinaleBattle;
     public string Item, Skill, Evaluator, Currency, Building, CastId;
     public int Seed, RunNumber, Action, Floor, HP, SP, Hunger, Gold, Cost, RankBefore, RankAfter, StockBefore, StockAfter;
     public double Seconds;
@@ -90,6 +90,7 @@ public sealed partial class AutoplayRunner
         actions?.Dispose(); issues?.Dispose(); actions = issues = null;
         visited.Clear(); triedParties.Clear(); discovered.Clear(); repetitions.Clear(); shopped.Clear(); worldSteps.Clear();
         townRoute.Clear(); dungeonRoute.Clear(); approachRoute.Clear();
+        ResetFinaleRoute();
         purchased.Clear(); failedPurchases.Clear(); failedTraining.Clear(); skipReasons.Clear(); castTraces.Clear();
         pathWorld = null; combatObjective = null; preparedTown = null;
         progressSignature = pendingError = floorIdentity = null;
@@ -101,8 +102,8 @@ public sealed partial class AutoplayRunner
         DirectoryPath = Path.Combine(BatchDirectoryPath,id);
         Report = new AutoplayReport { Options = JsonUtility.FromJson<AutoplayOptions>(JsonUtility.ToJson(Options)),
             RunId = id, Seed = CurrentSeed, RunNumber = RunNumber, ValidationOnly = validation,
-            EligibleForBalance = !Options.DebugPlaythrough && !validation,
-            InfiniteStrength = Options.DebugPlaythrough && Options.Godmode,
+            EligibleForBalance = !IsFinaleDebug && !Options.DebugPlaythrough && !validation,
+            InfiniteStrength = Options.DebugPlaythrough && Options.InfiniteStrength,
             StartedUtc = DateTime.UtcNow.ToString("O"), GameVersion = Application.version,
 #if UNITY_WEBGL && !UNITY_EDITOR
             BuildId = Application.buildGUID,
@@ -138,6 +139,7 @@ public sealed partial class AutoplayRunner
         entry.Action = Report.Actions; entry.Seconds = Elapsed;
         entry.Scene = SceneManager.GetActiveScene().name;
         entry.Location = !string.IsNullOrEmpty(c?.State.PendingDungeon) ? c.State.PendingDungeon : c?.Location?.Id;
+        entry.FinaleBattle = c?.Finale == null ? null : "floor-" + c.Finale.CurrentFloor;
         entry.Floor = game?.PlayerController?.Floor ?? 0;
         entry.ActorId ??= ally != null ? ActorId(ally) : town?.TownPlayer?.ControllingTownAlly?.Id;
         entry.Position ??= ally != null ? ally.TilemapPosition.ToString() : town?.TownPlayer?.ControllingTownAlly != null ?

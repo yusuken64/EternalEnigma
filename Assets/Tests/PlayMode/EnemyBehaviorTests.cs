@@ -209,6 +209,15 @@ namespace EternalEnigma.Tests
             Assert.That(behavior.Disguised,Is.False); Assert.That(mimic.IsDormant,Is.False);
             Assert.That(mimic.Animator.gameObject.activeInHierarchy,Is.True);
             ScreenCapture.CaptureScreenshot("Temp/EnemyBehaviorPreview/mimic-revealed.png"); yield return null;
+            Object.Destroy(mimic.gameObject); harness.Game.Enemies.Remove(mimic); yield return null;
+            yield return harness.SpawnEnemy("Enemy_ChestMonster", center + Vector3Int.right);
+            var ordinary = Last;
+            ordinary.gameObject.AddComponent<FinaleActor>().Hidden = false;
+            var enter = new RevealMimicAction(ordinary);
+            Assert.That(enter.IsValid(harness.Ally), Is.True);
+            Resolve(harness.Ally, enter);
+            Assert.That(EnemyBehavior.IsDisguised(ordinary), Is.False,
+                "An ordinary chest carrying a finale ledger identity must still use its normal reveal action.");
         }
     }
 }

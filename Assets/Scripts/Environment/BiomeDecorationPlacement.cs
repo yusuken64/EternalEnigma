@@ -41,6 +41,7 @@ public static class BiomeDecorationPlacement
     public static void Walls(Transform world,Transform root,BiomeDecorationCatalog catalog,int seed,string context,float cellSize,List<Vector2Int> posts=null,bool preview=false)
     {
         var batch=new EnvironmentBatch(root);var placed=new List<(Vector3 center,string house)>();var counts=new Dictionary<Vector2Int,int>();var houses=new HashSet<string>();
+        var miniatureBatches = new Dictionary<string, (EnvironmentBatch batch, Transform root)>();
         var faces=world.GetComponentsInChildren<BiomeDecorationSurfaceSet>().SelectMany(set=>set.Faces.Select(f=>(set,f))).ToList();
         foreach(var pair in faces.OrderBy(p=>Hash(seed,context,Id(p.set.transform.TransformPoint(p.f.Center)))).ThenBy(p=>Id(p.f.Center),StringComparer.Ordinal)) {
             var f=pair.f;var center=root.InverseTransformPoint(pair.set.transform.TransformPoint(f.Center));
@@ -64,10 +65,21 @@ public static class BiomeDecorationPlacement
             var rotation=Quaternion.LookRotation(-up,-normal);
             var position=center+normal*.025f*cellSize+rotation*asset.MountOffset*scale;
             if(context=="dungeon" && root.TransformPoint(position+Vector3.back*asset.Bounds.size.z*scale).z < -3.1f)continue;
-            Add(batch,root,catalog,asset,position,scale,rotation,context!="dungeon"||f.HasAdjacentFloor,
+            var decorationBatch = batch; var decorationRoot = root;
+            if (context == "overworld" && pair.set.name.StartsWith("Town ", StringComparison.Ordinal))
+            {
+                if (!miniatureBatches.TryGetValue(pair.set.name, out var miniature))
+                {
+                    var part = new GameObject(pair.set.name).transform; part.SetParent(root, false);
+                    miniature = (new EnvironmentBatch(part), part); miniatureBatches.Add(pair.set.name, miniature);
+                }
+                decorationBatch = miniature.batch; decorationRoot = miniature.root;
+            }
+            Add(decorationBatch,decorationRoot,catalog,asset,position,scale,rotation,context!="dungeon"||f.HasAdjacentFloor,
                 context=="dungeon"&&f.HasAdjacentFloor?root.InverseTransformPoint(f.VisibilityFloorWorld):(Vector3?)null,preview);
             placed.Add((center,f.HouseId));counts[chunk]=count+1;if(f.HouseId!=null)houses.Add(houseKey);
         }
         batch.Finish();
+        foreach (var miniature in miniatureBatches.Values) miniature.batch.Finish();
     }
 }

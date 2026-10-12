@@ -13,7 +13,7 @@ public static class EndgameDebugStart
 {
     public const int Seed = 42;
 
-    public static GameSaveData Create(TownConfiguration configuration, ItemManager items, EndgameDebugDestination destination)
+    public static GameSaveData Create(TownConfiguration configuration, ItemManager items, EndgameDebugDestination destination, int seed = Seed)
     {
         configuration.Validate();
         var party = new[] { "warrior", "healer", "elementalist", "archer" }
@@ -23,7 +23,7 @@ public static class EndgameDebugStart
                 .SelectMany(building => building.ShopCatalog).Select(offer => offer.Item))
             .OfType<EquipmentItemDefinition>().Where(item => !item.IsProgressionItem).Distinct().ToArray();
         var roster = party.Select(hero => CreateHero(hero, equipment)).ToList();
-        var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, Seed));
+        var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
         var campaign = context.Campaign;
         var town = campaign.Locations.Where(location => location.Kind == LocationKind.Town)
             .OrderByDescending(location => location.Tier).ThenBy(location => location.Id, StringComparer.Ordinal).First();

@@ -60,7 +60,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
             warned.Clear(); warned.AddRange(Area(markedCenter).Where(Game.Instance.CurrentDungeon.IsFloorCell).Distinct());
             warning = Mathf.Max(1, WarningTurns);
             foreach (var cell in warned) marks.Add(EncounterRuntime.Marker(Game.Instance.CurrentDungeon, Family + " warning", cell, new Color(1,.25f,.05f), .04f));
-            GameMessages.ForCharacter(owner, $"{GameMessages.Name(owner)} prepares {BossCatalog.All.First(p => p.Family == Family).Ability}!");
+            GameMessages.ForCharacter(owner, $"{GameMessages.Name(owner)} prepares {BossCatalog.All.Concat(FinaleRoster.Bosses).First(p => p.Family == Family).Ability}!");
             if (Family == "Black Knight") ApplyEffect(owner,"Guard",EffectTurns+1);
             if (Family == "Metal Slime") ApplyEffect(owner,"Armored",EffectTurns);
             if (Family == "Chest Monster") actions.Add(new BossDisplaceAction(owner,target,true,2));
@@ -84,8 +84,8 @@ public sealed class LargeBossBehavior : MonoBehaviour
     IEnumerable<Vector3Int> Area(Vector3Int target)
     {
         var center = owner.TilemapPosition;
-        bool aroundSelf = Family is "Bat" or "Cactus" or "Angry Mushroom" or "Smiling Mushroom" or "Turtle Shell" or "Golem" or "Orc" or "Black Knight";
-        int radius = Family is "Turtle Shell" or "Golem" or "Bat" ? 4 : Family is "Cyclops" or "Worm Monster" ? 1 : 2;
+        bool aroundSelf = Family is "Bat" or "Cactus" or "Angry Mushroom" or "Smiling Mushroom" or "Turtle Shell" or "Golem" or "Ice Golem" or "Orc" or "Black Knight";
+        int radius = Family is "Turtle Shell" or "Golem" or "Ice Golem" or "Bat" ? 4 : Family is "Cyclops" or "Worm Monster" ? 1 : 2;
         if (aroundSelf) target = center;
         var direction = SkillMovement.Step(center,target);
         for (int x = -8; x <= 8; x++) for (int y = -8; y <= 8; y++)
@@ -96,7 +96,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
             if (Family == "Bishop Knight") include = distance <= 7 && (x == 0 || y == 0);
             else if (Family is "Specter" or "Rat Assassin" or "Salamander" or "Battle Bee" or "Metal Slime")
                 include = distance <= 7 && x * direction.y == y * direction.x && x * direction.x + y * direction.y > 0;
-            else if (Family is "Dragon" or "Stingray" or "Fishman")
+            else if (Family is "Dragon" or "Bone Dragon" or "Stingray" or "Fishman")
                 include = distance <= 6 && x * direction.x + y * direction.y > 0 && Math.Abs(x * direction.y - y * direction.x) <= distance;
             else if (Family == "Cactus") include = distance <= 6 && (x == 0 || y == 0 || Math.Abs(x) == Math.Abs(y));
             else include = TileWorldDungeon.ChevDistance(cell,target) <= radius;
@@ -129,7 +129,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
         {
             int damage = Mathf.Max(1,owner.FinalStats.Strength);
             if (Family == "Cyclops") damage *= 2;
-            var element = Family is "Dragon" or "Salamander" or "Flying Demon" or "Demon King" ? DamageElement.Fire : Family == "Stingray" ? DamageElement.Lightning : DamageElement.Physical;
+            var element = Family is "Dragon" or "Salamander" or "Flying Demon" or "Demon King" or "Castle Monster" ? DamageElement.Fire : Family == "Ice Golem" ? DamageElement.Ice : Family == "Stingray" ? DamageElement.Lightning : DamageElement.Physical;
             actions.Add(new TakeDamageAction(owner,target,damage,element:element));
             if (Family == "Rat Assassin")
                 for (int bolt=0;bolt<2;bolt++) actions.Add(new TakeDamageAction(owner,target,Mathf.Max(1,damage/2)));
@@ -141,7 +141,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
                 if (destination.HasValue) actions.Add(new BossPlaceAction(target,destination.Value));
             }
             string ailment = Family switch {
-                "Bat" => "Silence", "Crab Monster" or "Monster Plant" or "Spider" => "Root",
+                "Bat" => "Silence", "Crab Monster" or "Monster Plant" or "Spider" or "Ice Golem" => "Root",
                 "Evil Mage" => "Sleep", "Rat Assassin" or "Battle Bee" or "Angry Mushroom" => "Poison",
                 "Werewolf" => "Bleed", "Beholder" => "Confusion", _ => null
             };

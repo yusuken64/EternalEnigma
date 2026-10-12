@@ -20,16 +20,20 @@ public sealed class OverworldSettlementLayer : TWCBuildLayer
             var root=creator.AddLayerObject(layerName,guid);root.transform.SetParent(creator.worldObject.transform,false);root.transform.localRotation=Quaternion.identity;
             foreach(var child in root.transform.Cast<Transform>().ToArray()){child.gameObject.SetActive(false);DungeonPresentation.Release(child.gameObject);}
             foreach(var owner in root.GetComponents<EnvironmentMeshOwner>())DungeonPresentation.Release(owner);
-            var batch=new EnvironmentBatch(root.transform);float size=creator.twcAsset.cellSize;
+            float size=creator.twcAsset.cellSize;
             foreach(var location in grid.Locations.OrderBy(p=>p.Key,StringComparer.Ordinal))
             {
                 if(grid.TownFootprints.Any(t=>t.LocationId==location.Key))continue;
+                var locationRoot = new GameObject("Location " + location.Key);
+                locationRoot.transform.SetParent(root.transform, false);
+                var batch = new EnvironmentBatch(locationRoot.transform);
                 var cell=location.Value;var biome=OverworldCosmetics.Biome(grid,cell.X,cell.Y);
                 var origin=new Vector3(cell.X+.5f,cell.Y+.5f,0)*size;
                 var footprint=grid.LocationFootprints.FirstOrDefault(f=>f.LocationId==location.Key);
                 if(footprint?.EncounterKind is { } kind)
                 {
                     BuildEncounter(batch,catalog,grid,footprint,kind,biome,size);
+                    batch.Finish();
                     continue;
                 }
                 bool dungeon=At(OverworldLayers.StoryDungeons)||At(OverworldLayers.RepeatableDungeons)||At(OverworldLayers.FinalDungeon);
@@ -48,9 +52,9 @@ public sealed class OverworldSettlementLayer : TWCBuildLayer
                     if(++placed==2)break;
                 }
                 catalog.Add(batch,"CastleFlag",biome,origin+new Vector3(size*.60f,size*.32f,-.1f),scale:Vector3.one*.70f);
+                batch.Finish();
                 bool At(string layer)=>OverworldCosmetics.InLayer(grid,layer,cell.X,cell.Y);
             }
-            batch.Finish();
             if(BiomeDecorations.Enabled)BiomeRoadSigns.Build(grid,root.transform,BiomeDecorationCatalog.Load(),size);
         }
         finally {creator.executedBuildLayersCount++;}

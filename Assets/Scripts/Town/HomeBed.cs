@@ -97,6 +97,52 @@ public sealed class HomeBed : MonoBehaviour
         }
         TownMenu.ShowMessage(error ?? "Party rested. Game saved.");
     }
+    // Homecoming only plays the wake half. It never commits a checkpoint or creates supplies.
+    internal IEnumerator WakeOnly()
+    {
+        var player = town.TownPlayer; var hero = player.ControllingTownAlly;
+        var position = hero.transform.position; var tile = hero.TilemapPosition; var facing = hero.CurrentFacing;
+        var camera = player.CameraController; bool cameraEnabled = camera.enabled;
+        var animation = hero.HeroAnimator; var controller = animation.Animator.runtimeAnimatorController;
+        var weapons = animation.RightHandObjects.Concat(animation.LeftHandObjects).Where(w => w != null).Distinct().ToArray();
+        var visible = weapons.Select(w => w.activeSelf).ToArray();
+        var transition = Common.Instance.ScreenTransition;
+        IsSleeping = true; player.CutsceneLocked = true; camera.enabled = false;
+        bool complete = false;
+        try
+        {
+            foreach (var ally in player.RecruitedAllies)
+            { ally.Hp = -1; ally.Sp = -1; ally.HasHunger = false; ally.Hunger = 0; ally.HungerAccumulate = 0; }
+            town.WriteSaveData();
+            if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
+            {
+                foreach (var weapon in weapons) weapon.SetActive(false);
+                hero.SetFacing(Facing.Up);
+                hero.transform.position = SleepAnchor.position - (hero.VisualParent.transform.position - hero.transform.position);
+                if (SleepingController != null)
+                {
+                    animation.Animator.runtimeAnimatorController = SleepingController;
+                    animation.Animator.Play("Sleeping_NoWeapon", 0, 0); animation.Animator.Update(0); AlignSleepingBody(hero);
+                }
+                yield return transition.FadeTo(0, .6f);
+                yield return new WaitForSecondsRealtime(.4f);
+                animation.Animator.runtimeAnimatorController = controller; animation.PlayWalkAnimation();
+                yield return Move(hero.transform, hero.transform.position, position, .6f);
+            }
+            complete = true;
+        }
+        finally
+        {
+            hero.transform.position = position; hero.TilemapPosition = tile; hero.SetFacing(facing);
+            animation.Animator.runtimeAnimatorController = controller; animation.PlayIdleAnimation();
+            for (int i = 0; i < weapons.Length; i++) weapons[i].SetActive(visible[i]);
+            camera.enabled = cameraEnabled; camera.SnapToFollowTarget();
+            player.CutsceneLocked = false; IsSleeping = false;
+            transition.ReleaseFade();
+        }
+        if (complete) Common.Instance.Travel.FinishHomecoming(town);
+    }
+
     private void AlignSleepingBody(TownAlly hero)
     {
         var mesh = new Mesh();

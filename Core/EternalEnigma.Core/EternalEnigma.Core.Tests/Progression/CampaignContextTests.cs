@@ -136,8 +136,8 @@ public sealed class CampaignContextTests
         Assert.NotEqual(context.LocationSeed("town-0"), context.LocationSeed("town-1"));
         Assert.Equal(new[] { (1, 5), (5, 10), (10, 20), (20, 30), (30, 40) }, Enumerable.Range(0, 5).Select(CampaignContext.Floors));
         restored.Position = restored.Grid.Locations[restored.Campaign.FinalLocationId];
-        restored.BeginDungeon(); Assert.True(restored.CompleteDungeon(true)); Assert.True(restored.State.Finished);
-        Assert.False(restored.CompleteDungeon(true));
+        restored.BeginDungeon(); Assert.False(restored.CompleteDungeon(true)); Assert.False(restored.State.Finished);
+        Assert.True(restored.CompleteDungeon(false)); Assert.False(restored.CompleteDungeon(true));
     }
     [Theory]
     [InlineData(true)]
@@ -148,6 +148,11 @@ public sealed class CampaignContextTests
         context.Position = context.Grid.Locations[context.Campaign.FinalLocationId];
         Assert.True(context.BeginDungeon());
         Assert.False(context.State.Finished);
+        if (victory)
+        {
+            var session = context.BeginFinale();
+            EternalEnigma.Core.Tests.Generation.FinaleTests.Clear(session);
+        }
         Assert.True(context.CompleteDungeon(victory));
         Assert.Equal(victory, context.State.Finished);
         Assert.Equal(victory, context.Completed.Contains(context.Campaign.FinalLocationId));

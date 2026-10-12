@@ -12,6 +12,16 @@ public sealed class CampaignTravelService
     private bool transitioning;
     public bool IsTransitioning => transitioning;
     private string returnArrivalTown;
+    public bool HomecomingPending { get; private set; }
+    public bool HomecomingCompleted { get; private set; }
+    internal bool IsHomecoming(string town) => HomecomingPending && town == Context?.Campaign.StartLocationId;
+    internal void FinishHomecoming(Town town)
+    {
+        if (!IsHomecoming(town.Configuration.Id) || !town.IsReady || town.TownPlayer.CutsceneLocked ||
+            !town.TownPlayer.CameraController.enabled || common.ScreenTransition.BlockScreen.activeSelf || Context?.State.Finished != true) return;
+        HomecomingPending = false; HomecomingCompleted = true;
+        AutoplayRunner.FinaleEvent("HomecomingCompleted", town.Configuration.Id);
+    }
     public bool ConsumeDungeonReturn(string townId)
     {
         if (returnArrivalTown != townId) return false;
@@ -25,6 +35,7 @@ public sealed class CampaignTravelService
     {
         if (transitioning) return;
         returnArrivalTown = null;
+        HomecomingPending = HomecomingCompleted = false;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
         var save = common.GameSaveData;
         save.ProtagonistId = save.TownSaveData.RecruitedAlliesData.First().AllyId;
@@ -41,7 +52,7 @@ public sealed class CampaignTravelService
         if (save == null) return;
         returnArrivalTown = null;
         if (!save.HasCampaign) { common.CampaignContext = null; transitioning = true; TownSceneLoader.Load(TownSceneLoader.ResolveSaved()); return; }
-        if (save.Campaign.Finished) return;
+        HomecomingPending = HomecomingCompleted = false;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
         CampaignParty.ClearLiveParty(common);
         if (Context.State.Scene == "Town") PrepareTown(Context.State.LocationId);
@@ -94,6 +105,7 @@ public sealed class CampaignTravelService
     public bool FinishDungeon(bool victory, PlayerController player, bool travel = true, bool keepLoot = false)
     {
         if (Context == null || Context.IsSandbox || transitioning || Context.State.PendingDungeon.Length == 0) return false;
+        if (victory && Context.State.PendingDungeon == Context.Campaign.FinalLocationId && Context.Finale?.VictoryReady != true) return false;
         if (victory && Game.Instance?.CurrentDungeon != null &&
             (!Game.Instance.CheckFloorExit() || player.Floor < common.GameSaveData.DungeonSaveData.EndFloor)) return false;
         if (!victory) Game.Instance?.Prison?.Recover(Game.Instance);
@@ -103,8 +115,10 @@ public sealed class CampaignTravelService
         var previousClaims = Context.Claimed.ToArray();
         string firstClear = victory && !Context.Completed.Contains(Context.State.PendingDungeon)
             ? Context.State.PendingDungeon : null;
-        Context.CompleteDungeon(victory);
-        returnArrivalTown = Context.State.Scene == "Town" ? Context.State.LocationId : null;
+        bool homecoming = victory && Context.State.PendingDungeon == Context.Campaign.FinalLocationId;
+        if (!Context.CompleteDungeon(victory)) return false;
+        if (homecoming) { HomecomingPending = true; HomecomingCompleted = false; common.GameSaveData.HasArrival = false; }
+        returnArrivalTown = !homecoming && Context.State.Scene == "Town" ? Context.State.LocationId : null;
         var newKeys = Context.Keys.Except(previousKeys).OrderBy(key => key).ToArray();
         var capabilities = Context.Campaign.Sources.Where(source => Context.Claimed.Contains(source.Id) && !previousClaims.Contains(source.Id))
             .Select(DescribeCapabilityReward).ToArray();
@@ -123,10 +137,9 @@ public sealed class CampaignTravelService
             void ContinueTravel()
             {
                 transitioning = false;
-                if (victory && Context.State.Finished) Game.Instance.ShowGameOver(victory: true);
-                else Load(Context.State.Scene);
+                Load(Context.State.Scene);
             }
-            if (newKeys.Length > 0 || capabilities.Length > 0)
+            if (!homecoming && (newKeys.Length > 0 || capabilities.Length > 0))
             {
                 transitioning = true;
                 common.StartCoroutine(ShowKeyRewards(newKeys, ContinueTravel, capabilityRewards: capabilities));

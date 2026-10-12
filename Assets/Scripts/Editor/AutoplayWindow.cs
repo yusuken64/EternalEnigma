@@ -41,7 +41,7 @@ public sealed class AutoplayWindow : EditorWindow
         var run = AutoplayRunner.Active;
         if (run != null)
         {
-            EditorGUILayout.LabelField(run.IsLootSweep ? "Floor loot sweep" : run.Options.DebugPlaythrough ? "Debug playthrough" : "Normal playthrough", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(run.IsLootSweep ? "Floor loot sweep" : run.IsFinaleDebug ? "Direct-start finale debug" : run.Options.DebugPlaythrough ? "Debug playthrough" : "Normal playthrough", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(run.Status, MessageType.Info);
             EditorGUILayout.LabelField(run.ProgressLabel,EditorStyles.boldLabel);
             if (run.IsLootSweep) EditorGUILayout.LabelField("Loot collected / expected", $"{run.Report?.CollectedLoot ?? 0} / {run.Report?.ExpectedLoot ?? 0}");
@@ -62,7 +62,7 @@ public sealed class AutoplayWindow : EditorWindow
         using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
         {
             var mode = (AutoplayMode)EditorGUILayout.EnumPopup("Mode", options.Mode);
-            if (mode != options.Mode) options = mode == AutoplayMode.FloorLootSweep ? AutoplayOptions.LootSweep() : new AutoplayOptions();
+            if (mode != options.Mode) options = mode == AutoplayMode.FloorLootSweep ? AutoplayOptions.LootSweep() : mode == AutoplayMode.Finale ? AutoplayOptions.FinaleDebug() : new AutoplayOptions();
             bool sweep = options.Mode == AutoplayMode.FloorLootSweep;
             options.Seed = EditorGUILayout.IntField("Starting seed", options.Seed);
             options.RunCount = EditorGUILayout.IntField(sweep ? "Floor count" : "Run count", options.RunCount);
@@ -76,18 +76,20 @@ public sealed class AutoplayWindow : EditorWindow
             options.DebugPlaythrough = EditorGUILayout.Toggle("Debug playthrough", options.DebugPlaythrough);
             if (options.DebugPlaythrough)
             {
-                options.Godmode = EditorGUILayout.Toggle("Godmode + infinite strength", options.Godmode);
+                options.Godmode = EditorGUILayout.Toggle("Godmode", options.Godmode);
+                options.InfiniteStrength = EditorGUILayout.Toggle("Infinite strength", options.InfiniteStrength);
                 options.InfiniteResources = EditorGUILayout.Toggle("Infinite resources", options.InfiniteResources);
                 options.DebugCoverage = EditorGUILayout.Toggle("Item and ability coverage", options.DebugCoverage);
                 EditorGUILayout.HelpBox("Infinite resources replenishes gold, SP and hunger, and preserves used consumables. Keys, companions and abilities must still be earned. Debug runs are excluded from balance results.", MessageType.None);
             }
-            options.ExploreAll = EditorGUILayout.Toggle("Visit all destinations", options.ExploreAll);
+            if (options.Mode != AutoplayMode.Finale) options.ExploreAll = EditorGUILayout.Toggle("Visit all destinations", options.ExploreAll);
+            else EditorGUILayout.HelpBox("Direct start at floor 1 with an endgame party. All five floors and waking at home are required. Excluded from full-campaign acceptance.", MessageType.Info);
             options.NoAnimations = EditorGUILayout.Toggle("Disable animations for run", options.NoAnimations);
             }
             options.Speed = EditorGUILayout.Slider("Playback speed", options.Speed, .5f, 32);
             options.TimeLimitMinutes = Mathf.Max(1, EditorGUILayout.FloatField("Time limit (minutes)", options.TimeLimitMinutes));
             options.StallSeconds = Mathf.Max(10, EditorGUILayout.FloatField("Stall timeout (seconds)", options.StallSeconds));
-            if (sweep) options.ActionLimit = EditorGUILayout.IntField("Action limit", options.ActionLimit);
+            options.ActionLimit = EditorGUILayout.IntField("Action limit", options.ActionLimit);
             EditorGUILayout.HelpBox("Manual only. Normal runs can lose. The policy reads the current campaign and uses full dungeon map knowledge with the shared A*. Optional coverage visits each destination and completes each dungeon once.", MessageType.Info);
             bool valid = options.Validate(out var reason);
             if (!valid) EditorGUILayout.HelpBox(reason,MessageType.Error);
@@ -121,6 +123,16 @@ public sealed class AutoplayWindow : EditorWindow
         SessionState.EraseBool(RestoreKey); SessionState.EraseString(AutoplayRunner.PendingKey);
     }
 
+    [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug Finale")]
+    public static void RunDebugFinale() => Launch(AutoplayOptions.FinaleDebug());
+    [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug Finale From File")]
+    public static void RunDebugFinaleFromFile()
+    {
+        var settings = AutoplayOptions.FinaleDebug();
+        JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText("Temp/FinaleDebug/options.json"), settings);
+        if (settings.Mode != AutoplayMode.Finale) throw new System.ArgumentException("Expected direct finale options.");
+        Launch(settings);
+    }
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Normal")]
     public static void RunNormal() => Launch(new AutoplayOptions());
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug")]

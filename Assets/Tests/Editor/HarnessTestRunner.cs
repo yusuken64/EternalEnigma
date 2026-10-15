@@ -10,6 +10,20 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Terminal Audit Captures")]
+    public static void RunTerminalAuditCaptures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalMainMenuSlotsHeroAndSettingsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalTownServicesPartyAndOverworldAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalDungeonLevelAndResultDialogsAcrossAspectRatios");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Terminal Audit Interactions")]
+    public static void RunTerminalAuditInteractions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TerminalPlayModeTests", "EternalEnigma.Tests.TerminalRuntimeAuditTests",
+        "EternalEnigma.Tests.TerminalDungeonAuditTests", "EternalEnigma.Tests.TerminalMenuInteractionTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Terminal Audit Edit Mode")]
+    public static void RunTerminalAuditEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.TerminalIntegrationTests", "EternalEnigma.Tests.TerminalMenuPresentationTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run UI Audit Captures")]
     public static void RunUIAuditCaptures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.UIScreenAuditTests.CaptureMainMenuSlotsHeroAndSettingsAcrossAspectRatios",

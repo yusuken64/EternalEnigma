@@ -29,6 +29,7 @@ namespace JuicyChickenGames.Menu
         private Vector2 lastMove;
         private float nextMoveTime;
         private bool pointerReady;
+        internal Vector3Int? TerminalPointerFocus { get; private set; }
         private Vector2 lastPointer;
         private bool? promptGamepad;
         private Image pointerShield;
@@ -136,6 +137,7 @@ namespace JuicyChickenGames.Menu
             lastMove = Vector2.zero;
             nextMoveTime = 0;
             pointerReady = false;
+            TerminalPointerFocus = null;
             lastPointer = MenuUIInputModule.Active?.UI.Point.ReadValue<Vector2>() ?? Vector2.zero;
         }
 
@@ -207,7 +209,7 @@ namespace JuicyChickenGames.Menu
             bool moved = (position-lastPointer).sqrMagnitude > 1;
             lastPointer = position;
             if (!clicked && !moved) return false;
-            if (TerminalMode.Effective || !TryPointTarget(position)) return false;
+            if (!(TerminalMode.Effective ? TryTerminalTarget(position) : TryPointTarget(position))) return false;
             if (clicked)
             {
                 ConfirmTarget();Common.Instance.MenuInputHandler.ClearInputThisFrame();return true;
@@ -215,18 +217,50 @@ namespace JuicyChickenGames.Menu
             return false;
         }
 
+        private bool PointerHitsControl(Vector2 position)
+        {
+            if (EventSystem.current == null) return false;
+            pointerHits.Clear();
+            EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position = position }, pointerHits);
+            return pointerHits.Any(hit => hit.module is GraphicRaycaster && hit.gameObject != pointerShield.gameObject);
+        }
+
+        private bool TryTerminalTarget(Vector2 position)
+        {
+            if (casterCharacter == null || targetingFloor == null || PointerHitsControl(position) ||
+                !TerminalRuntime.TryGetMapCell(position, out var cell)) return false;
+            // Freeze the currently displayed focus before changing the hover preview.
+            // Otherwise moving the target would move the map beneath the click.
+            var focus = TerminalPointerFocus ?? TerminalSelectedCell ?? casterCharacter.TilemapPosition;
+            if (missileRange > 0)
+            {
+                var delta = cell - casterCharacter.TilemapPosition;
+                if (delta == Vector3Int.zero) return false;
+                float angle = Mathf.Round(Mathf.Atan2(delta.y, delta.x) / (Mathf.PI * .25f)) * Mathf.PI * .25f;
+                Aim(new Vector3Int(Mathf.RoundToInt(Mathf.Cos(angle)), Mathf.RoundToInt(Mathf.Sin(angle)), 0));
+                TerminalPointerFocus = focus;
+                return true;
+            }
+            if (tiles.Count > 0)
+            {
+                if (!tiles.Contains(cell)) return false;
+                SelectTile(cell); TerminalPointerFocus = focus; return true;
+            }
+            var target = Targetables?.FirstOrDefault(character => character != null && GameMessages.Visible(character) &&
+                Character.ToBounds(character.FootPrint, character.TilemapPosition).Contains(cell));
+            if (target != null) { SelectTarget(target, false); TerminalPointerFocus = focus; return true; }
+            var prop = props.FirstOrDefault(candidate => candidate != null && candidate.Alive && candidate.Position == cell);
+            if (prop == null) return false;
+            SelectProp(prop, false); TerminalPointerFocus = focus; return true;
+        }
+
         internal bool TryPointTarget(Vector2 position)
         {
             var camera = Camera.main;
             if (camera == null || casterCharacter == null || targetingFloor == null || !camera.pixelRect.Contains(position)) return false;
-            if (EventSystem.current != null)
-            {
-                pointerHits.Clear();
-                EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position=position },pointerHits);
-                // Ignore only our event-draining surface; HUD graphics beneath it
-                // must still prevent a world cast through a control.
-                if (pointerHits.Any(hit=>hit.module is GraphicRaycaster && hit.gameObject != pointerShield.gameObject)) return false;
-            }
+            // Ignore only our event-draining surface; HUD graphics beneath it
+            // must still prevent a world cast through a control.
+            if (PointerHitsControl(position)) return false;
             var ray = camera.ScreenPointToRay(position);
             var ground = new Plane(Vector3.forward,new Vector3(0,0,DungeonPresentation.GroundPlaneZ));
             if (!ground.Raycast(ray,out float distance)) return false;
@@ -273,6 +307,7 @@ namespace JuicyChickenGames.Menu
             if (ProcessPointer()) return;
             var move = Common.Instance.MenuInputHandler.MoveInput;
             if (move.sqrMagnitude < 0.25f) { lastMove = Vector2.zero; return; }
+            TerminalPointerFocus = null;
             if (missileRange > 0)
             {
                 Aim(new Vector3Int(Mathf.Abs(move.x) > 0.25f ? (int)Mathf.Sign(move.x) : 0,
@@ -339,6 +374,7 @@ namespace JuicyChickenGames.Menu
             casterCharacter = null;
             createAction = null;
             missileRange = 0;
+            TerminalPointerFocus = null;
             Direction = Vector3Int.zero;
             Game.Instance.PlayerController.CurrentControlMode = PlayerControlMode.FollowAlly;
         }

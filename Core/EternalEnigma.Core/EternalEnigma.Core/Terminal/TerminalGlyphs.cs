@@ -10,15 +10,19 @@ public static class TerminalGlyphs
             else if (c >= 'a' && c <= 'z') return c;
         return 'e';
     }
-    public static char TownService(string? id)
+    public static char TownService(string? id, string? dialogId = null)
     {
-        if (string.IsNullOrWhiteSpace(id)) return '*';
-        string service = id.ToLowerInvariant();
+        string service = (id ?? string.Empty).ToLowerInvariant();
         if (service.Contains("bakery")) return 'b';
         if (service.Contains("consumable")) return 'c';
         if (service.Contains("item") || service.Contains("shop")) return 'i';
-        if (service.Contains("inn") || service.Contains("rest")) return 'n';
+        if (service.Contains("inn") || service.Contains("rest")) return 'I';
         if (service.Contains("trainer")) return 'R';
-        return '*';
+        if (service.Contains("home")) return 'h';
+        if (service.Contains("statue")) return 'S';
+        if (service.Contains("guild")) return 'G';
+        if (service.Contains("entrance")) return 'D';
+        if (service.Contains("exit")) return 'X';
+        return string.IsNullOrWhiteSpace(dialogId) ? '*' : TownService(dialogId);
     }
 }

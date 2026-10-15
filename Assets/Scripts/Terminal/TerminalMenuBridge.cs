@@ -50,9 +50,9 @@ public sealed class TerminalMenuBridge : MonoBehaviour
         }
         if (Time.unscaledTime >= nextStyle)
         {
-            var screen = Common.Instance != null ? Common.Instance.GetComponentInChildren<TerminalScreen>(true) : null;
+            var screen = Common.InstanceOrNull != null ? Common.InstanceOrNull.GetComponentInChildren<TerminalScreen>(true) : null;
             // MainMenu has its own reversible title/button treatment.
-            if (owner != mainMenu && screen != null) style.Refresh(root, screen.FontAsset);
+            if (owner != mainMenu && screen != null) style.Refresh(root, screen.FontAsset, opaqueBackdrop: true);
             nextStyle = Time.unscaledTime + .1f;
         }
 
@@ -72,13 +72,15 @@ public sealed class TerminalMenuBridge : MonoBehaviour
             if (validSelection) session.Confirm(Time.frameCount);
             else module.RestoreFocus();
             module.ConsumeInput();
-            return true;
+            // The parent module suppresses native navigation once input is consumed,
+            // but must still process pointer edges this frame (including held navigation).
+            return false;
         }
         session.Refresh();
         var move = module.UI.Navigate.ReadValue<Vector2>();
         if (move.sqrMagnitude < .1f) { lastMove = Vector2.zero; return false; }
         // Horizontal input remains available to party tabs, sliders and native widgets.
-        if (Mathf.Abs(move.x) >= Mathf.Abs(move.y)) return false;
+        if (Mathf.Abs(move.x) >= Mathf.Abs(move.y)) { lastMove = Vector2.zero; return false; }
         if (lastMove == Vector2.zero || Mathf.Sign(lastMove.y) != Mathf.Sign(move.y) || Time.unscaledTime >= nextMove)
         {
             if (selected == null || !module.Allows(selected.gameObject)) module.RestoreFocus();
@@ -97,7 +99,7 @@ public sealed class TerminalMenuBridge : MonoBehaviour
         }
         lastMove = move;
         module.ConsumeInput();
-        return true;
+        return false;
     }
 
     private void LateUpdate()

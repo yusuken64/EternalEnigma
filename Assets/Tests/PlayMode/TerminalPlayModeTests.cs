@@ -20,15 +20,13 @@ namespace EternalEnigma.Tests
     public sealed class TerminalPlayModeTests
     {
         private GameTestHarness harness;
-        private bool hadPreference;
-        private int oldPreference;
+        private System.IDisposable preferences;
         private TestInputScope inputScope;
         [UnitySetUp] public IEnumerator SetUp()
         {
             harness = new GameTestHarness();
             inputScope = new TestInputScope();
-            hadPreference = PlayerPrefs.HasKey(TerminalMode.PreferenceKey);
-            oldPreference = PlayerPrefs.GetInt(TerminalMode.PreferenceKey);
+            preferences = GamePreferences.Isolate();
             TerminalMode.SetRequested(false);
             yield return null;
         }
@@ -39,10 +37,8 @@ namespace EternalEnigma.Tests
                 TestContext.CurrentContext.Test.Name + ": " + result.Outcome.Status + " " + (result.Message ?? "").Split('\n')[0] + "\n");
             TerminalMode.SetRequested(false);
             yield return harness.Cleanup();
-            if (hadPreference) PlayerPrefs.SetInt(TerminalMode.PreferenceKey, oldPreference);
-            else PlayerPrefs.DeleteKey(TerminalMode.PreferenceKey);
-            PlayerPrefs.Save();
             inputScope.Dispose();
+            preferences.Dispose();
         }
         [UnityTest] public IEnumerator MainMenuToggleRestylesAndRestoresMenu()
         {
@@ -331,7 +327,7 @@ namespace EternalEnigma.Tests
                 var expected = MissileTargeting.TraceLine(caster, Vector3Int.right, 4, 1, true);
                 Assert.That(dialog.MissileEndpoint, Is.EqualTo(expected.Endpoint));
                 Assert.That(dialog.TerminalMissilePath.Last(), Is.EqualTo(expected.Endpoint));
-                Assert.That(dialog.TerminalLabel, Does.Contain("Aim E (1,0)"));
+                Assert.That(dialog.TerminalLabel, Does.Contain("Aiming east"));
                 Assert.That(dialog.TerminalAreaCells.Count(), Is.GreaterThan(1));
                 var snapshot = TerminalSceneSnapshots.Dungeon(game, Object.FindFirstObjectByType<Minimap>(), targetDialog: dialog);
                 Assert.That(snapshot.Target.Path.Count, Is.GreaterThan(0));
@@ -414,6 +410,8 @@ namespace EternalEnigma.Tests
                     "restored terminal/3D town");
                 town = Object.FindFirstObjectByType<Town>();
                 Assert.That(TerminalMode.Effective, Is.EqualTo(!sourceTerminal));
+                Assert.That(Object.FindFirstObjectByType<GameMessages>().GetComponentInChildren<Canvas>().enabled,
+                    Is.EqualTo(sourceTerminal), "The destination binds its event feed while travel is still covered.");
                 Assert.That(town.TownPlayer.Gold, Is.EqualTo(saved.TownSaveData.Gold));
                 Assert.That(ItemSaveData.Capture(town.TownPlayer.Inventory).Select(i => JsonUtility.ToJson(i)),
                     Is.EqualTo(saved.TownSaveData.InventoryItems.Select(i => JsonUtility.ToJson(i))));

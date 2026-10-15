@@ -6,6 +6,7 @@ public sealed class TerminalModeButton : MonoBehaviour
 {
     private Button button;
     private TextMeshProUGUI label;
+    private bool? lastPad;
     public static TerminalModeButton Ensure(Transform parent, TMP_Dropdown style = null)
     {
         var existing = parent.GetComponentInChildren<TerminalModeButton>(true);
@@ -52,5 +53,11 @@ public sealed class TerminalModeButton : MonoBehaviour
     }
     private void OnEnable() { TerminalMode.Changed += Refresh; Refresh(); }
     private void OnDisable() { TerminalMode.Changed -= Refresh; }
-    private void Refresh() { if (label != null) label.text = "Terminal mode " + (TerminalMode.Requested ? "On" : "Off") + ". Press F11 to switch."; }
+    private void Update() { if (lastPad != ControlDeviceState.Gamepad) Refresh(); }
+    private void Refresh()
+    {
+        lastPad = ControlDeviceState.Gamepad;
+        if (label != null) label.text = "Terminal mode " + (TerminalMode.Requested ? "On" : "Off") +
+            ". " + InputPrompts.Pick("F11", "View / Share") + " to switch.";
+    }
 }

@@ -13,7 +13,7 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         ['E'] = new[] { "#####", "##   ", "##   ", "#### ", "##   ", "##   ", "#####" },
         ['T'] = new[] { "#####", " ### ", " ### ", " ### ", " ### ", " ### ", " ### " },
         ['R'] = new[] { "#### ", "## ##", "## ##", "#### ", "## ##", "## ##", "## ##" },
-        ['N'] = new[] { "## ##", "### ##", "#####", "#####", "## ###", "## ##", "## ##" },
+        ['N'] = new[] { "## ##", "### #", "#####", "#####", "# ###", "## ##", "## ##" },
         ['A'] = new[] { " ### ", "## ##", "## ##", "#####", "## ##", "## ##", "## ##" },
         ['L'] = new[] { "##   ", "##   ", "##   ", "##   ", "##   ", "##   ", "#####" },
         ['I'] = new[] { "#####", " ### ", " ### ", " ### ", " ### ", " ### ", "#####" },
@@ -26,7 +26,12 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         const string name = "ETERNAL ENIGMA";
         const int glyphWidth = 5, glyphHeight = 7, depth = 2;
         int width = name.Count(letter => letter != ' ') * (glyphWidth + 1) + 3 - 1 + depth;
-        if (columns < width) return new[] { "    #### ETERNAL ####", "     ### ENIGMA ###" };
+        if (columns < width)
+        {
+            string Fit(string value) => value.Length > columns ? value.Substring(0, columns)
+                : new string(' ', (columns - value.Length) / 2) + value;
+            return new[] { Fit("ETERNAL"), Fit("ENIGMA") };
+        }
         var cells = new char[glyphHeight + depth, width];
         int x = 0;
         foreach (char letter in name)
@@ -86,17 +91,21 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         private readonly string value;
         private readonly TMP_FontAsset font;
         private readonly float size;
+        private readonly float minimum, maximum;
+        private readonly bool autoSize;
         private readonly Color color;
         private readonly TextAlignmentOptions alignment;
         public string Value => value;
         public TextState(TMP_Text text)
         {
             value = text.text; font = text.font; size = text.fontSize;
+            minimum = text.fontSizeMin; maximum = text.fontSizeMax; autoSize = text.enableAutoSizing;
             color = text.color; alignment = text.alignment;
         }
         public void Restore(TMP_Text text)
         {
             text.text = value; text.font = font; text.fontSize = size;
+            text.fontSizeMin = minimum; text.fontSizeMax = maximum; text.enableAutoSizing = autoSize;
             text.color = color; text.alignment = alignment;
         }
     }
@@ -108,6 +117,8 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         public TextState OriginalLabel;
         public Graphic Background;
         public Color OriginalBackground;
+        public Sprite OriginalSprite, OriginalOverride;
+        public Image.Type OriginalImageType;
         public ColorBlock OriginalColors;
         public bool OriginalSingleClick;
     }
@@ -127,6 +138,8 @@ public sealed class TerminalMainMenuView : MonoBehaviour
     private Graphic menuBacking;
     private bool originalBackingEnabled;
     private GameObject developerToggle;
+    private MainMenuDeveloperControls developerControls;
+    private bool originalDeveloperEnabled;
     private bool originalDeveloperToggleActive;
     private TMP_Text hint;
     private bool shown;
@@ -142,7 +155,7 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         {
             if (y > 0 && y <= visible) result.Append(titleRows[y - 1]);
             else result.Append("<color=#344D47>").Append(dungeon[y]).Append("</color>");
-            result.Append('\n');
+            if (y < dungeon.Length - 1) result.Append('\n');
         }
         return result.ToString();
     }
@@ -211,6 +224,9 @@ public sealed class TerminalMainMenuView : MonoBehaviour
                 OriginalLabel = label != null ? new TextState(label) : default,
                 Background = button.targetGraphic,
                 OriginalBackground = button.targetGraphic != null ? button.targetGraphic.color : Color.white,
+                OriginalSprite = button.targetGraphic is Image background ? background.sprite : null,
+                OriginalOverride = button.targetGraphic is Image graphic && graphic.overrideSprite != graphic.sprite ? graphic.overrideSprite : null,
+                OriginalImageType = button.targetGraphic is Image image ? image.type : Image.Type.Simple,
                 OriginalColors = button.colors,
                 OriginalSingleClick = button is SelectToActivateButton select && select.ActivateOnFirstPointerPress
             };
@@ -221,8 +237,9 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         var backing = owner.transform.Find("Menu button column/Backing");
         menuBacking = backing != null ? backing.GetComponent<Graphic>() : null;
         if (menuBacking != null) originalBackingEnabled = menuBacking.enabled;
-        var developer = owner.GetComponent<MainMenuDeveloperControls>();
-        developerToggle = developer != null && developer.Toggle != null ? developer.Toggle.gameObject : null;
+        developerControls = owner.GetComponent<MainMenuDeveloperControls>();
+        originalDeveloperEnabled = developerControls != null && developerControls.enabled;
+        developerToggle = developerControls != null && developerControls.Toggle != null ? developerControls.Toggle.gameObject : null;
         if (developerToggle != null) originalDeveloperToggleActive = developerToggle.activeSelf;
         var hintObject = new GameObject("Terminal menu hint", typeof(RectTransform), typeof(TextMeshProUGUI));
         hintObject.transform.SetParent(canvas.transform, false);
@@ -262,18 +279,29 @@ public sealed class TerminalMainMenuView : MonoBehaviour
                 option.Button.colors = new ColorBlock
                 {
                     normalColor = Color.clear, highlightedColor = Color.clear,
-                    pressedColor = Color.clear, selectedColor = Color.clear,
+                    pressedColor = new Color(.12f, .28f, .18f), selectedColor = Color.clear,
                     disabledColor = Color.clear, colorMultiplier = 1, fadeDuration = 0
                 };
-                if (option.Background != null) option.Background.color = Color.clear;
+                if (option.Background != null) option.Background.color = Color.white;
+                if (option.Background is Image background)
+                {
+                    background.sprite = null; background.overrideSprite = null; background.type = Image.Type.Simple;
+                }
                 if (option.Label == null) continue;
                 option.Label.font = font;
-                option.Label.fontSize = 26;
+                option.Label.enableAutoSizing = true;
+                option.Label.fontSize = option.Label.fontSizeMax = 40;
+                option.Label.fontSizeMin = 24;
                 option.Label.alignment = TextAlignmentOptions.Center;
             }
             if (arrowCanvas != null) arrowCanvas.enabled = false;
             if (menuBacking != null) menuBacking.enabled = false;
-            menu.GetComponent<MainMenuDeveloperControls>()?.Initialize();
+            if (developerControls != null)
+            {
+                developerControls.Close();
+                // Its LateUpdate would otherwise re-enable the button after we hide it.
+                developerControls.enabled = false;
+            }
             if (developerToggle != null) developerToggle.SetActive(false);
             if (hint != null) hint.gameObject.SetActive(true);
             RefreshSelection();
@@ -289,10 +317,16 @@ public sealed class TerminalMainMenuView : MonoBehaviour
                 if (option.Button is SelectToActivateButton select) select.ActivateOnFirstPointerPress = option.OriginalSingleClick;
                 option.Button.colors = option.OriginalColors;
                 if (option.Background != null) option.Background.color = option.OriginalBackground;
+                if (option.Background is Image background)
+                {
+                    background.sprite = option.OriginalSprite; background.overrideSprite = option.OriginalOverride;
+                    background.type = option.OriginalImageType;
+                }
                 if (option.Label != null) option.OriginalLabel.Restore(option.Label);
             }
             if (arrowCanvas != null) arrowCanvas.enabled = originalArrowEnabled;
             if (menuBacking != null) menuBacking.enabled = originalBackingEnabled;
+            if (developerControls != null) developerControls.enabled = originalDeveloperEnabled;
             if (developerToggle != null) developerToggle.SetActive(originalDeveloperToggleActive);
             if (hint != null) hint.gameObject.SetActive(false);
         }
@@ -303,6 +337,7 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         if (!shown || options == null || menu == null) return;
         if (developerToggle != null && developerToggle.activeSelf) developerToggle.SetActive(false);
         var module = MenuUIInputModule.Active;
+        if (hint != null) hint.gameObject.SetActive(module == null || !module.HasDialog);
         var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
         if (module != null && !module.HasDialog && menu.IsReady &&
             menu.NavigationHandler != null && menu.NavigationHandler.isActiveAndEnabled &&
@@ -322,7 +357,7 @@ public sealed class TerminalMainMenuView : MonoBehaviour
             bool focused = selected == option.Button.gameObject;
             string prefix = focused ? "> " : "  ";
             option.Label.text = prefix + option.OriginalLabel.Value.ToUpperInvariant();
-            option.Label.color = focused ? SelectedInk : Ink;
+            option.Label.color = !option.Button.IsInteractable() ? new Color(.36f, .48f, .41f) : focused ? SelectedInk : Ink;
         }
     }
 

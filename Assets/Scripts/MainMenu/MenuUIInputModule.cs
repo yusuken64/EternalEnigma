@@ -14,6 +14,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public DungeonControls.UIActions UI => controls.UI;
     public bool InputConsumed => consumedFrame == Time.frameCount;
     public bool HasDialog => scopes.Count > 0;
+    internal Transform FocusRoot => scopes.Count > 0 ? scopes[^1].Root : null;
     public bool OwnsFocus(MonoBehaviour owner) => scopes.Count > 0 && scopes[^1].Owner == owner;
     public InputAction NextHero { get; private set; }
     public InputAction PreviousHero { get; private set; }

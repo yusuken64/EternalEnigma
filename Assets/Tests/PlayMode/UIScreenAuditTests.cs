@@ -27,6 +27,7 @@ namespace EternalEnigma.Tests
         int size;
         DungeonAnimationMode? animation;
         bool? fullControl;
+        bool terminalAudit;
 
         [UnitySetUp] public IEnumerator Setup()
         {
@@ -45,7 +46,7 @@ namespace EternalEnigma.Tests
 
         [UnityTearDown] public IEnumerator Cleanup()
         {
-            try { yield return harness.Cleanup(); }
+            try { TerminalMode.SetRequested(false); yield return harness.Cleanup(); }
             finally
             {
                 DungeonPreferences.AnimationOverride = animation;
@@ -54,6 +55,24 @@ namespace EternalEnigma.Tests
                 input?.Dispose();
                 preferences?.Dispose();
             }
+        }
+
+        [UnityTest] public IEnumerator CaptureTerminalMainMenuSlotsHeroAndSettingsAcrossAspectRatios()
+        {
+            terminalAudit = true;
+            yield return CaptureMainMenuSlotsHeroAndSettingsAcrossAspectRatios();
+        }
+
+        [UnityTest] public IEnumerator CaptureTerminalTownServicesPartyAndOverworldAcrossAspectRatios()
+        {
+            terminalAudit = true;
+            yield return CaptureTownServicesPartyAndOverworldAcrossAspectRatios();
+        }
+
+        [UnityTest] public IEnumerator CaptureTerminalDungeonLevelAndResultDialogsAcrossAspectRatios()
+        {
+            terminalAudit = true;
+            yield return CaptureDungeonLevelAndResultDialogsAcrossAspectRatios();
         }
 
         [UnityTest] public IEnumerator CaptureMainMenuSlotsHeroAndSettingsAcrossAspectRatios()
@@ -285,6 +304,15 @@ namespace EternalEnigma.Tests
 
         IEnumerator CaptureSizes(string screen, Action verify = null)
         {
+            string directory = terminalAudit ? "Temp/TerminalAudit" : "Temp/UIScreenAudit";
+            Directory.CreateDirectory(directory);
+            if (terminalAudit)
+            {
+                TerminalMode.SetRequested(true);
+                yield return harness.WaitUntil(() => TerminalMode.Effective, "terminal presentation");
+                yield return new WaitForSecondsRealtime(.15f);
+                if (screen == "main-menu") yield return new WaitForSecondsRealtime(1.4f);
+            }
             foreach (var resolution in new[] { new Vector2(960, 600), new Vector2(1280, 720), new Vector2(1920, 1080), new Vector2(2560, 1080) })
             {
                 view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view, new object[] { resolution, "UI audit " + resolution });
@@ -306,8 +334,14 @@ namespace EternalEnigma.Tests
                             overflow = t.isTextOverflowing, x = corners[0].x, y = corners[0].y,
                             width = corners[2].x - corners[0].x, height = corners[2].y - corners[0].y };
                     }).ToArray();
-                string path = $"Temp/UIScreenAudit/{screen}-{resolution.x}x{resolution.y}";
+                string path = $"{directory}/{screen}-{resolution.x}x{resolution.y}";
                 File.WriteAllText(path + ".json", JsonUtility.ToJson(new ScreenReport { labels = labels }, true));
+                if (terminalAudit)
+                {
+                    var terminal = Common.Instance.GetComponentInChildren<TerminalScreen>(true);
+                    Assert.That(terminal.GetComponent<Canvas>().enabled, Is.True);
+                    File.WriteAllText(path + ".txt", terminal.GetComponentInChildren<TextMeshProUGUI>().GetParsedText());
+                }
                 ScreenCapture.CaptureScreenshot(path + ".png");
                 yield return new WaitForSecondsRealtime(.2f);
             }

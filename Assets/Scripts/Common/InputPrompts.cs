@@ -13,7 +13,7 @@ public static class InputPrompts
     public static string Stats => Pick("T", "LB / L1, then right");
     public static string Scroll => Pick("Up / Down", "Left stick / D-pad up / down");
     public static string Actions => Pick("Right", "Left stick / D-pad right");
-    public static string Presentation => Pick("Press F11 for 3D view", "Select 3D view in the menu");
+    public static string Presentation => Pick("Press F11 for 3D view", "Press View / Share for 3D view");
     public static string MenuHint => $"Use {Move} to select. Press {Confirm} to confirm. {Presentation}.";
     public static string DescriptionHint => $"Use {Scroll} to scroll. Press {Actions} for actions.";
 

@@ -140,12 +140,11 @@ internal static class TerminalSceneSnapshots
             ? new TerminalTargetSnapshot(Point(targetDialog.TerminalSelectedCell.Value), targetDialog.TerminalLabel,
                 targetDialog.TerminalAreaCells.Select(Point), targetDialog.TerminalValidCells.Select(Point),
                 targetDialog.TerminalMissilePath.Select(Point), Point(targetDialog.Direction)) : null;
-        var party = game.Allies.Where(a => a != null && a.Vitals != null).Select(a =>
-            new TerminalPartyStat(a.CharacterName, a.Vitals.Level, a.Vitals.HP, a.FinalStats.HPMax,
-                a.Vitals.SP, a.FinalStats.SPMax)).ToArray();
         return new DungeonTerminalSnapshot(width, height, Point(game.PlayerController.ControlledAlly.TilemapPosition),
-            (floor.Variant == DungeonVariant.Town ? "Town district · Floor " : "Dungeon floor ") + game.PlayerController.Floor, cache.Terrain, visibility, actors,
-            party, Tail(messages), target);
+            (floor.Variant == DungeonVariant.Town ? "Town district - Floor " : "Dungeon floor ") + game.PlayerController.Floor, cache.Terrain, visibility, actors,
+            null, Tail(messages), target, legend: new[] {
+                "@ you  a ally  s summon  x downed", "Red initials: enemies", "i item  $ gold  p prop",
+                "< entrance  > stairs", "^ trap  + door  # wall  . floor" });
     }
     private static TerminalCell DungeonTerrain(DungeonFloor floor, GridPoint p)
     {
@@ -178,7 +177,12 @@ internal static class TerminalSceneSnapshots
         var followers = scene.Followers.Where(a => a != null)
             .Select(a => new TerminalActor(a.GetInstanceID().ToString(), Point(a.TilemapPosition), TerminalActorKind.Ally));
         var actors = followers.Concat(new[] { new TerminalActor("player", scene.Position, TerminalActorKind.Player) }).ToArray();
-        return new OverworldTerminalSnapshot(grid.Width, grid.Height, scene.Position, "Overworld", p =>
+        var region = scene.Campaign.Regions.FirstOrDefault(r => At(grid.Layers, OverworldLayers.Region(r.Id), scene.Position));
+        var location = scene.Campaign.Locations.FirstOrDefault(l => grid.Locations.TryGetValue(l.Id, out var p) && p.Equals(scene.Position));
+        string place = location != null ? location.Kind == LocationKind.Town ? scene.Context.GetTownDisplayName(location.Id) : GameplayText.Format(location.Id) :
+            grid.BiomeAt(scene.Position)?.ToString() ?? "Wilderness";
+        return new OverworldTerminalSnapshot(grid.Width, grid.Height, scene.Position,
+            region == null ? "Overworld" : "Overworld - " + region.DisplayName, p =>
         {
             if (cache.Warps.Contains(p)) return Cell('O', TerminalPalette.Feature);
             if (keys.TryGetValue(p, out bool collected)) return Cell(collected ? 'k' : 'K', TerminalPalette.Item);
@@ -190,7 +194,10 @@ internal static class TerminalSceneSnapshots
             }, TerminalPalette.Feature);
             if (gateOpen.TryGetValue(p, out bool open)) return Cell(open ? '/' : '+', TerminalPalette.Feature);
             return cache.Ground(p);
-        }, actors, null, Tail(messages));
+        }, actors, null, Tail(messages), context: new[] {
+            HeroContext(scene.Player), "Here: " + place, $"Interact/travel: {InputPrompts.Interact}" },
+            legend: new[] { "@ you  a party", "T town  D story  R repeatable", "F finale  O warp  C converter",
+                "K key  k collected  + gate  / open", "? secret  * landmark", "~ water  \" trees  : road  # cliff" });
     }
 
     internal static TownTerminalSnapshot Town(Town town, GameMessages messages = null)
@@ -198,7 +205,7 @@ internal static class TerminalSceneSnapshots
         var plan = town.Plan;
         var focus = Point(town.TownPlayer.ControllingTownAlly.TilemapPosition);
         var actors = new List<TerminalActor>();
-        foreach (var ally in town.TownAllies)
+        foreach (var ally in town.TownAllies.Concat(town.TownPlayer.RecruitedAllies).Distinct())
             if (ally != null) actors.Add(new TerminalActor(ally.GetInstanceID().ToString(), Point(ally.TilemapPosition),
                 ally == town.TownPlayer.ControllingTownAlly ? TerminalActorKind.Player : TerminalActorKind.Ally));
         foreach (var vendor in town.ShopVendors)
@@ -211,11 +218,18 @@ internal static class TerminalSceneSnapshots
             cachedTown = town; cachedTownPlan = plan;
             var doors = town.TownBuildings.Where(b => b != null && b.Definition != null)
                 .GroupBy(b => Point(b.TilemapPosition)).ToDictionary(g => g.Key,
-                    g => TerminalGlyphs.TownService(g.First().Definition.Id ?? g.First().Definition.DialogId));
+                    g => TerminalGlyphs.TownService(g.First().Definition.Id, g.First().Definition.DialogId));
             cachedTownTerrain = CacheTerrain(plan.Width, plan.Height, p => TownTerrain(plan, doors, p));
         }
-        return new TownTerminalSnapshot(plan.Width, plan.Height, focus, "Town", cachedTownTerrain, actors, null, Tail(messages));
+        string title = Common.Instance.CampaignContext?.GetTownDisplayName(town.Configuration.Id) ?? town.Configuration.name;
+        return new TownTerminalSnapshot(plan.Width, plan.Height, focus, title, cachedTownTerrain, actors, null, Tail(messages),
+            context: new[] { HeroContext(town.TownPlayer.ControllingTownAlly),
+                "Facing " + town.TownPlayer.ControllingTownAlly.CurrentFacing, $"Talk/use: {InputPrompts.Interact}" },
+            legend: new[] { "@ you  a party/recruit", "n townsfolk  v vendor", "b bakery  i items  c supplies",
+                "I inn  R trainer  G guild", "h home  S statue  D dungeon  X exit", "H house  + wall  f furniture",
+                "T tree  = : - roads  . ground" });
     }
+    private static string HeroContext(TownAlly hero) => hero == null ? "" : $"{hero.Name} - level {hero.Level}";
     private static TerminalCell TownTerrain(TownPlan plan, IReadOnlyDictionary<GridPoint, char> doors, GridPoint p)
     {
         if (p.Equals(plan.Exit)) return Cell('X', TerminalPalette.Feature);
@@ -232,5 +246,5 @@ internal static class TerminalSceneSnapshots
         if (At(plan.Layers, TownLayers.Roads, p)) return Cell(':', TerminalPalette.Dim);
         return FloorCell;
     }
-    private static IEnumerable<string> Tail(GameMessages messages) => messages == null ? Array.Empty<string>() : messages.History.Skip(Math.Max(0, messages.History.Count - 2)).Select(InputPrompts.Format).ToArray();
+    private static IEnumerable<string> Tail(GameMessages messages) => messages == null ? Array.Empty<string>() : messages.History.Skip(Math.Max(0, messages.History.Count - 2)).Select(GameplayText.Plain).ToArray();
 }

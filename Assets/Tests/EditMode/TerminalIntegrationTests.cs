@@ -10,19 +10,14 @@ namespace EternalEnigma.Tests
 {
     public class TerminalIntegrationTests
     {
-        private bool hadSetting;
-        private int savedSetting;
+        private System.IDisposable preferences;
         [SetUp] public void SetUp()
         {
-            hadSetting = PlayerPrefs.HasKey(TerminalMode.PreferenceKey);
-            savedSetting = PlayerPrefs.GetInt(TerminalMode.PreferenceKey);
-            PlayerPrefs.DeleteKey(TerminalMode.PreferenceKey);
+            preferences = GamePreferences.Isolate();
         }
         [TearDown] public void TearDown()
         {
-            if (hadSetting) PlayerPrefs.SetInt(TerminalMode.PreferenceKey, savedSetting);
-            else PlayerPrefs.DeleteKey(TerminalMode.PreferenceKey);
-            PlayerPrefs.Save();
+            preferences.Dispose();
         }
         [Test] public void PreferenceDefaultsOffAndChangesOnlyOnce()
         {

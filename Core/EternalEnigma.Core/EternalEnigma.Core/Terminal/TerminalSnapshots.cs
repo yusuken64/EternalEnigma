@@ -93,11 +93,14 @@ public abstract class TerminalMapSnapshot
     public IReadOnlyList<TerminalPartyStat> Party { get; }
     public IReadOnlyList<string> Messages { get; }
     public TerminalTargetSnapshot? Target { get; }
+    public IReadOnlyList<string> Context { get; }
+    public IReadOnlyList<string> Legend { get; }
 
     protected TerminalMapSnapshot(int width, int height, GridPoint focus, string? title,
         Func<GridPoint, TerminalCell> terrain, TerminalKnowledge? visibility,
         IEnumerable<TerminalActor>? actors, IEnumerable<TerminalPartyStat>? party,
-        IEnumerable<string>? messages, TerminalTargetSnapshot? target)
+        IEnumerable<string>? messages, TerminalTargetSnapshot? target,
+        IEnumerable<string>? context = null, IEnumerable<string>? legend = null)
     {
         if (width < 1 || height < 1) throw new ArgumentOutOfRangeException(nameof(width));
         Width = width; Height = height; Focus = focus; Title = title ?? string.Empty;
@@ -109,6 +112,8 @@ public abstract class TerminalMapSnapshot
         Party = Array.AsReadOnly((party ?? Array.Empty<TerminalPartyStat>()).ToArray());
         Messages = Array.AsReadOnly((messages ?? Array.Empty<string>()).Select(s => s ?? string.Empty).ToArray());
         Target = target;
+        Context = Array.AsReadOnly((context ?? Array.Empty<string>()).Where(s => !string.IsNullOrWhiteSpace(s)).ToArray());
+        Legend = Array.AsReadOnly((legend ?? Array.Empty<string>()).Where(s => !string.IsNullOrWhiteSpace(s)).ToArray());
     }
     public TerminalCell TerrainAt(GridPoint p) => terrain(p);
     public TerminalVisibility VisibilityAt(GridPoint p) => visibility?.At(p) ?? TerminalVisibility.Visible;
@@ -118,26 +123,26 @@ public sealed class DungeonTerminalSnapshot : TerminalMapSnapshot
 {
     public DungeonTerminalSnapshot(int width, int height, GridPoint focus, string? title, Func<GridPoint, TerminalCell> terrain,
         TerminalVisibility[,] visibility, IEnumerable<TerminalActor>? actors = null, IEnumerable<TerminalPartyStat>? party = null,
-        IEnumerable<string>? messages = null, TerminalTargetSnapshot? target = null)
-        : base(width, height, focus, title, terrain, TerminalKnowledge.Copy(visibility), actors, party, messages, target) { }
+        IEnumerable<string>? messages = null, TerminalTargetSnapshot? target = null, IEnumerable<string>? context = null, IEnumerable<string>? legend = null)
+        : base(width, height, focus, title, terrain, TerminalKnowledge.Copy(visibility), actors, party, messages, target, context, legend) { }
     public DungeonTerminalSnapshot(int width, int height, GridPoint focus, string? title, Func<GridPoint, TerminalCell> terrain,
         TerminalKnowledge visibility, IEnumerable<TerminalActor>? actors = null, IEnumerable<TerminalPartyStat>? party = null,
-        IEnumerable<string>? messages = null, TerminalTargetSnapshot? target = null)
-        : base(width, height, focus, title, terrain, visibility, actors, party, messages, target) { }
+        IEnumerable<string>? messages = null, TerminalTargetSnapshot? target = null, IEnumerable<string>? context = null, IEnumerable<string>? legend = null)
+        : base(width, height, focus, title, terrain, visibility, actors, party, messages, target, context, legend) { }
 }
 
 public sealed class OverworldTerminalSnapshot : TerminalMapSnapshot
 {
     public OverworldTerminalSnapshot(int width, int height, GridPoint focus, string? title, Func<GridPoint, TerminalCell> terrain,
         IEnumerable<TerminalActor>? actors = null, IEnumerable<TerminalPartyStat>? party = null, IEnumerable<string>? messages = null,
-        TerminalTargetSnapshot? target = null)
-        : base(width, height, focus, title, terrain, null, actors, party, messages, target) { }
+        TerminalTargetSnapshot? target = null, IEnumerable<string>? context = null, IEnumerable<string>? legend = null)
+        : base(width, height, focus, title, terrain, null, actors, party, messages, target, context, legend) { }
 }
 
 public sealed class TownTerminalSnapshot : TerminalMapSnapshot
 {
     public TownTerminalSnapshot(int width, int height, GridPoint focus, string? title, Func<GridPoint, TerminalCell> terrain,
         IEnumerable<TerminalActor>? actors = null, IEnumerable<TerminalPartyStat>? party = null, IEnumerable<string>? messages = null,
-        TerminalTargetSnapshot? target = null)
-        : base(width, height, focus, title, terrain, null, actors, party, messages, target) { }
+        TerminalTargetSnapshot? target = null, IEnumerable<string>? context = null, IEnumerable<string>? legend = null)
+        : base(width, height, focus, title, terrain, null, actors, party, messages, target, context, legend) { }
 }

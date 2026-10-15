@@ -92,6 +92,8 @@ namespace EternalEnigma.Tests
             yield return harness.LoadTown(new TestScenario { Gold = 10000 }.CreateSave());
             var shop = (ShopMenuDialog)Object.FindFirstObjectByType<TownMenu>().OpenBuilding(Bakery, Town.TownPlayer, null);
             yield return null;
+            Assert.That(shop.BuyModeButton.GetComponentInChildren<TMPro.TMP_Text>().fontStyle.HasFlag(TMPro.FontStyles.Underline), Is.True);
+            Assert.That(shop.SellModeButton.GetComponentInChildren<TMPro.TMP_Text>().fontStyle.HasFlag(TMPro.FontStyles.Underline), Is.False);
             shop.ShopItems[0].BuyButton.onClick.Invoke();
             shop.BuyConfirmationDialog.Cancel_Clicked();
             shop.BuyConfirmationDialog.Ok_Clicked();
@@ -102,6 +104,8 @@ namespace EternalEnigma.Tests
             var bread = Town.TownPlayer.Inventory.Single();
             var duplicate = bread.ItemDefinition.AsInventoryItem(null); Town.TownPlayer.Inventory.Add(duplicate);
             shop.SellModeButton.onClick.Invoke();
+            Assert.That(shop.SellModeButton.GetComponentInChildren<TMPro.TMP_Text>().fontStyle.HasFlag(TMPro.FontStyles.Underline), Is.True);
+            Assert.That(shop.BuyModeButton.GetComponentInChildren<TMPro.TMP_Text>().fontStyle.HasFlag(TMPro.FontStyles.Underline), Is.False);
             Assert.That(shop.ShopItemDatas.Count, Is.EqualTo(2));
             shop.ShopItems[1].BuyButton.onClick.Invoke();
             shop.BuyConfirmationDialog.Cancel_Clicked();
@@ -134,6 +138,76 @@ namespace EternalEnigma.Tests
             Assert.That(Town.Services.Buy(Bakery, offer.Item.ItemName, out _), Is.False);
             Assert.That(Town.TownPlayer.Gold, Is.EqualTo(offer.Price - 1));
             Assert.That(Town.Services.Shop(Bakery).Stock[1].Remaining, Is.EqualTo(stockBefore));
+        }
+
+        [UnityTest]
+        public IEnumerator ShopConfirmationExplainsUnavailableOffersAndRejectsStalePurchases()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold = 0 }.CreateSave());
+            var shop = (ShopMenuDialog)Object.FindFirstObjectByType<TownMenu>().OpenBuilding(Bakery, Town.TownPlayer, null);
+            yield return null;
+            var stock = Town.Services.Shop(Bakery).Stock[0];
+            int originalStock = stock.Remaining;
+            int originalInventory = Town.TownPlayer.Inventory.Count;
+            shop.ShopItems[0].BuyButton.onClick.Invoke();
+            yield return null;
+            var confirmation = shop.BuyConfirmationDialog;
+            Assert.That(confirmation.OkButton.interactable, Is.False);
+            Assert.That(confirmation.PromptText.text, Does.Contain("Not enough gold"));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(confirmation.CancelButton.gameObject));
+            Assert.That(confirmation.CancelButton.navigation.selectOnRight, Is.Null);
+            confirmation.PromptText.ForceMeshUpdate();
+            Assert.That(confirmation.PromptText.isTextOverflowing, Is.False);
+            confirmation.Ok_Clicked();
+            Assert.That(confirmation.gameObject.activeSelf, Is.True);
+            Assert.That(Town.TownPlayer.Gold, Is.Zero);
+            Assert.That(stock.Remaining, Is.EqualTo(originalStock));
+            Assert.That(Town.TownPlayer.Inventory.Count, Is.EqualTo(originalInventory));
+
+            Town.TownPlayer.Gold = 1000;
+            yield return null;
+            Assert.That(confirmation.OkButton.interactable, Is.True);
+            confirmation.OkButton.Select();
+            stock.Remaining = 0;
+            confirmation.Ok_Clicked(); // Revalidate even before the next UI update.
+            Assert.That(confirmation.OkButton.interactable, Is.False);
+            Assert.That(confirmation.PromptText.text, Does.Contain("sold out"));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(confirmation.CancelButton.gameObject));
+            Assert.That(Town.TownPlayer.Gold, Is.EqualTo(1000));
+            Assert.That(Town.TownPlayer.Inventory.Count, Is.EqualTo(originalInventory));
+
+            stock.Remaining = originalStock;
+            yield return null;
+            Assert.That(confirmation.OkButton.interactable, Is.True);
+            Town.TownPlayer.Gold = 0;
+            confirmation.Ok_Clicked();
+            Assert.That(confirmation.OkButton.interactable, Is.False);
+            Assert.That(confirmation.PromptText.text, Does.Contain("Not enough gold"));
+            Assert.That(stock.Remaining, Is.EqualTo(originalStock));
+            confirmation.Cancel_Clicked();
+            Town.TownPlayer.Gold = 1000;
+            confirmation.Ok_Clicked();
+            Assert.That(Town.TownPlayer.Gold, Is.EqualTo(1000), "A cancelled callback cannot buy later.");
+
+            shop.ShopItems[0].BuyButton.onClick.Invoke();
+            confirmation.Ok_Clicked();
+            Assert.That(Town.TownPlayer.Gold, Is.EqualTo(900));
+            Assert.That(stock.Remaining, Is.EqualTo(originalStock - 1));
+            shop.SetMode(true);
+            shop.ShopItems[0].BuyButton.onClick.Invoke();
+            Town.TownPlayer.Inventory.Remove(shop.ShopItemDatas[0].BagItem);
+            confirmation.Ok_Clicked();
+            Assert.That(confirmation.OkButton.interactable, Is.False);
+            Assert.That(confirmation.PromptText.text, Does.Contain("cannot be sold"));
+            Assert.That(Town.TownPlayer.Gold, Is.EqualTo(900));
+            confirmation.Cancel_Clicked();
+
+            Canvas.ForceUpdateCanvases();
+            foreach (var hint in shop.GetComponentsInChildren<MenuControlHints>())
+            {
+                hint.Label.ForceMeshUpdate();
+                Assert.That(hint.Label.isTextOverflowing, Is.False, "Shop controls must fit the footer.");
+            }
         }
 
         [UnityTest]

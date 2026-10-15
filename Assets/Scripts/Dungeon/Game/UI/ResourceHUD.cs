@@ -30,14 +30,31 @@ public sealed class ResourceHUD : MonoBehaviour
         var hud = AuthoredUI.Require<ResourceHUD>(owner.transform);
         hud.town=owner as Town; hud.game=owner as Game; hud.world=owner as OverworldScene;
         hud.canvas=hud.GetComponent<Canvas>();
+        if (hud.town != null || hud.world != null) hud.FitSharedHeader();
         return hud;
+    }
+
+    private void FitSharedHeader()
+    {
+        // Match the dungeon resource strip: below shortcuts and above the right-hand dock.
+        JuicyChickenGames.Menu.Dialog.Fit(GoldText.transform.parent,.73f,.89f,.98f,.935f);
+        JuicyChickenGames.Menu.Dialog.Fit(GoldText.transform,.10f,.05f,.49f,.95f);
+        JuicyChickenGames.Menu.Dialog.Fit(BagText.transform,.60f,.05f,.98f,.95f);
+        JuicyChickenGames.Menu.Dialog.Fit(CoinIcon.transform,.015f,.15f,.09f,.85f);
+        JuicyChickenGames.Menu.Dialog.Fit(BagIcon.transform,.51f,.15f,.59f,.85f);
+        foreach (var label in new[] { GoldText, BagText })
+        {
+            label.fontSize=22;label.enableAutoSizing=true;label.fontSizeMin=18;label.fontSizeMax=22;
+        }
     }
 
     private void LateUpdate()
     {
         var common=Common.Instance;
         if(canvas==null)canvas=GetComponent<Canvas>();
-        bool ready=common!=null && !common.Travel.IsTransitioning && !common.GlobalSettings.IsOpen &&
+        // Prepare the destination HUD underneath its cover so it fades in with the scene.
+        bool ready=common!=null && !common.GlobalSettings.IsOpen &&
+            (town == null || FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud != true) &&
             (town!=null&&town.IsReady || game!=null&&game.IsReady || world!=null&&world.IsReady);
         canvas.enabled=ready;
         if(!ready)return;

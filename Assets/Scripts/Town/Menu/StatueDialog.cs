@@ -15,7 +15,7 @@ public class StatueDialog : Dialog
         get => Common.Instance.GameSaveData.TownSaveData.DonationTotal;
         set => Common.Instance.GameSaveData.TownSaveData.DonationTotal = value;
     }
-    public override void PrepareTown(TownInteractionContext context) => NumberInput.Setup(8);
+    public override void PrepareTown(TownInteractionContext context) => NumberInput.Setup(8, CancelButton);
     internal override void SetFirstSelect() => NumberInput.SelectableDigits[0].Select();
     private void Update()
     {

@@ -145,7 +145,14 @@ namespace EternalEnigma.Tests
             Assert.That(menus.CurrentDialog, Is.TypeOf<PartyMenu>());
             Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Skills));
             yield return Press(GamepadButton.South);
-            Assert.That(menus.DialogStack.Count, Is.EqualTo(1), "Unsupported town skills remain inspectable without a Cast action.");
+            var description = menus.CurrentDialog as PartyMenuPicker;
+            Assert.That(description, Is.Not.Null, "Unsupported town skills remain inspectable.");
+            Assert.That(description.Rows.GetComponentsInChildren<AuthoredButton>(), Is.Empty, "Inspecting an unavailable skill never offers Cast.");
+            Assert.That(description.Rows.GetComponentInChildren<TMPro.TMP_Text>().text, Is.Not.Empty);
+            Assert.That(description.GetComponentsInChildren<DungeonDialogClose>().Length, Is.EqualTo(1));
+            yield return Press(GamepadButton.East);
+            Assert.That(menus.CurrentDialog, Is.SameAs(menus.PartyMenu));
+            Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Skills));
             yield return Press(GamepadButton.East);
             Assert.That(menus.Opened, Is.False);
             yield return Press(GamepadButton.Start);
@@ -189,9 +196,32 @@ namespace EternalEnigma.Tests
             var trainer = (BallistaDialog)menu.OpenBuilding(town.Configuration.Buildings.First(b => b.Id == "trainer"), town.TownPlayer, null);
             yield return null; yield return null;
             first = EventSystem.current.currentSelectedGameObject;
+            Assert.That(first.GetComponentInParent<SkillGridItem>(), Is.Not.Null);
+            // A short preview has no separate scroll control or dead navigation stop.
+            trainer.Layout.Preview.text = "Short skill details.";
+            Canvas.ForceUpdateCanvases();
+            yield return null; yield return null;
+            Assert.That(trainer.Layout.PreviewControl.gameObject.activeSelf, Is.False);
             yield return Press(GamepadButton.DpadRight);
-            Assert.That(EventSystem.current.currentSelectedGameObject,Is.EqualTo(trainer.Layout.PreviewControl.gameObject));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(trainer.Layout.Close.gameObject));
             yield return Press(GamepadButton.DpadLeft);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
+
+            // Exercise the scrolling route without changing a shared skill asset.
+            trainer.Layout.Preview.text = string.Join("\n", Enumerable.Repeat("Long skill detail for scrolling.", 40));
+            Canvas.ForceUpdateCanvases();
+            yield return null; yield return null;
+            Assert.That(trainer.Layout.PreviewControl.gameObject.activeSelf, Is.True);
+            Assert.That(trainer.Layout.PreviewScroll.content.rect.height,
+                Is.GreaterThan(trainer.Layout.PreviewScroll.viewport.rect.height));
+            trainer.Layout.PreviewScroll.verticalNormalizedPosition = 1;
+            yield return Press(GamepadButton.DpadRight);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(trainer.Layout.PreviewControl.gameObject));
+            yield return Press(GamepadButton.DpadDown);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(trainer.Layout.PreviewControl.gameObject));
+            Assert.That(trainer.Layout.PreviewScroll.verticalNormalizedPosition, Is.LessThan(1));
+            yield return Press(GamepadButton.DpadLeft);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
             yield return Press(GamepadButton.DpadDown);
             row = EventSystem.current.currentSelectedGameObject;
             Assert.That(row, Is.Not.EqualTo(first));
@@ -252,6 +282,9 @@ namespace EternalEnigma.Tests
             var target = (Enemy)harness.Game.Enemies.Single();
             target.Policies.Clear();
             target.BaseStats.HPMax = 5000; target.InvalidateCachedStats(); target.Vitals.HP = 5000;
+            // This exercises controller targeting, not the independent random hit roll.
+            hero.BaseStats.HitBonus = 1; hero.InvalidateCachedStats();
+            Assert.That(CombatMath.HitChance(hero,target), Is.EqualTo(1));
             hero.SetFacing(System.Enum.GetValues(typeof(Facing)).Cast<Facing>()
                 .First(f => Dungeon.GetFacingOffset(f) == cell - hero.TilemapPosition));
             var hp = target.Vitals.HP;
@@ -270,7 +303,8 @@ namespace EternalEnigma.Tests
                 $"{reason}; hero={hero.TilemapPosition}, target={target.TilemapPosition}, hp={target.Vitals.HP}, " +
                 $"visible={harness.Game.CurrentDungeon.CanSee(hero, target)}, enemies={harness.Game.Enemies.Count}");
             var skillMenu = MenuManager.Instance.PartyMenu;
-            var damageButton = skillMenu.EntryButtons.Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text.StartsWith("Damage  "));
+            var damageButton = skillMenu.EntryButtons.Single(b => b.GetComponent<AuthoredButton>().Label.text.StartsWith(
+                GameplayText.Format(damage.DisplayName + "  Rank "), System.StringComparison.Ordinal));
             for (int i = 0; i < skillMenu.EntryButtons.Count && EventSystem.current.currentSelectedGameObject != damageButton.gameObject; i++)
                 yield return Press(GamepadButton.DpadDown);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(damageButton.gameObject));
@@ -301,7 +335,9 @@ namespace EternalEnigma.Tests
 
             // Missile abilities aim at cells instead of cycling character targets.
             yield return Press(GamepadButton.LeftShoulder);
-            var boltButton = skillMenu.EntryButtons.Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text.StartsWith("Fire Bolt  "));
+            var bolt = hero.Skills.Single(s => s.SkillName == "Fire Bolt");
+            var boltButton = skillMenu.EntryButtons.Single(b => b.GetComponent<AuthoredButton>().Label.text.StartsWith(
+                GameplayText.Format(bolt.DisplayName + "  Rank "), System.StringComparison.Ordinal));
             for (int i = 0; i < skillMenu.EntryButtons.Count && EventSystem.current.currentSelectedGameObject != boltButton.gameObject; i++)
                 yield return Press(GamepadButton.DpadDown);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(boltButton.gameObject));

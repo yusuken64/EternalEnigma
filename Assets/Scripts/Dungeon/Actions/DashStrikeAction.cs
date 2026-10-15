@@ -73,7 +73,7 @@ public class DashStrikeAction : GameAction
 		}
 		else
 		{
-			yield return SkillMovement.AnimateMove(caster, destination.Value);
+			yield return SkillMovement.AnimateMove(caster, destination.Value, movementAnimation: AnimatedAction.Dash);
 		}
 
 		if (target != null)

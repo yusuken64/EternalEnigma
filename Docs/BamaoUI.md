@@ -39,9 +39,31 @@ The initial asset audit found 1,182 images and 236 prefabs in the installed pack
 
 Run **Tools > Eternal Enigma > UI > Author Dungeon Dock** to regenerate the dungeon copies under `Assets/Resources/UI/Dungeon` and install them in DungeonScene. The party window uses the same compact dock geometry in town, overworld and dungeon. Stretchable roles use slicing; square icons and the cross preserve aspect ratio. `DungeonTextStyle` preserves brown text on paper and light text on wood during generic styling. Dense descriptions use the existing body font; decorative lettering is reserved for headings.
 
-The dock uses safe-area anchors `(0.73, 0.03)`–`(0.98, 0.88)`. Persistent HUD launcher tabs expose Inventory, Equipment, Skills and Stats, plus Capabilities on the overworld. The root dock hides its duplicate tabs, hero header, description pane, hint row and close button; the main list fills the panel. In the dungeon, inventory and skills belong to the controlled character. There is no party selector inside the dock. Tab/Shift+Tab or controller character-switch inputs change control while browsing, and the HUD portraits accept left clicks above the transparent input shield. Switching refreshes the current tab and retains each character's entry/scroll state. Nested actions and targeting keep their original actor. Browsing spends no turns or resources.
+The dock uses safe-area anchors `(0.73, 0.03)`–`(0.98, 0.88)`. Persistent HUD launcher tabs expose Inventory, Equipment, Skills and Stats, plus Capabilities on the overworld; the active tab has a gold highlight and underlined text. Town and overworld provide a rightmost Options button, while dungeon reuses its existing HUD Options control above the party dock. Full service dialogs and dungeon targeting hide the launcher tabs; the dungeon Options control remains visible but disabled while targeting. Options returns to the previous party tab and focus when closed.
 
-Only the top dungeon dialog canvas is visible; targeting hides underlying panels. Cancel restores selection and all scroll positions. Selecting an inventory item opens Use/Equip/Unequip, Throw, Drop, Cancel directly, retaining eligibility checks. The minimap hides while browsing and recent events fit to the dock's left. Both history entry points call `GameMessages.ShowHistory()`, sharing one dialog with duplicate-open protection, an empty state, newest-entry positioning, and keyboard/controller scrolling. History remains scene-local with existing coalescing and dungeon turn messages.
+The root dock shows the inspected hero's name and one keyboard/controller-reachable corner close button, without duplicate tabs or footer exits. The close target is 64 logical pixels; headings reserve space beside it. Skills retain a separate description pane; other lists use the available panel height. Section labels and wrapped rows grow to fit their text. In the dungeon, inventory and skills belong to the controlled character. Tab/Shift+Tab or controller character-switch inputs change control while browsing, and HUD portraits accept left clicks above the transparent input shield. Switching refreshes the current tab and retains each character's entry/scroll state. Nested actions and targeting keep their original actor. Browsing spends no turns or resources.
+
+Only the top dungeon dialog canvas is visible; targeting hides underlying panels. Cancel restores selection and scroll positions. Inventory entries open eligible Use/Equip/Unequip, Throw and Drop actions with one corner exit. Stat and equipment-total entries open descriptions without item commands. The minimap hides while browsing and recent events fit to the dock's left. Both history entry points call `GameMessages.ShowHistory()`, sharing one dialog with a single corner exit, duplicate-open protection, an empty state, newest-entry positioning, and keyboard/controller scrolling. History remains scene-local with existing coalescing and dungeon turn messages.
+
+Native 3D targeting supports pointer preview, left-click confirmation and right-click cancellation. A held opening click must be released before targeting accepts another click; HUD hits and invalid targets cannot confirm. Keyboard/controller targeting remains available, including in terminal presentation. Dungeon Wait uses **Period / left stick press**; Full Control uses **F / right stick press**, without spending a wait action.
+
+## UI audit workflow
+
+Options and service screens use one primary parchment surface. Details use plain
+insets, Hall of Fame cards use slate, and confirmations dim the parent screen.
+`GameUISkin.RibbonHeader` reuses the theme ribbon for screen and section titles,
+keeps lettering clear of its folded ends, and never intercepts input. Trainer rows
+separate ability names, rank/availability, and cost; the detail-scroll control
+appears only when the description needs scrolling.
+
+Run **Tools > Eternal Enigma > Tests > Run UI Audit Captures** for main menu, save slots, hero selection, settings, town/overworld docks and services, and dungeon dialogs. Captures cover 960×600, 1280×720, 1920×1080 and 2560×1080; dungeon adds 1280×800. Screenshots and text bounds/font/overflow reports are in `Temp/UIScreenAudit`; dungeon screenshots are in `Temp/DungeonDock`. Inspect these alongside layout assertions, since an overflow flag alone does not establish readability.
+
+Run **Tools > Eternal Enigma > Tests > Run UI Audit Controls** separately for keyboard, gamepad and mouse focus, nested cancellation, Options access, shortcuts, shop/travel guardrails and party state restoration. Both commands write `Temp/HarnessResults/PlayMode.json` and `.xml`. See [test instructions](../Assets/Tests/README.md#ui-audit) for MCP invocation. These are audit procedures; the dated verification below describes an earlier run.
+
+Supported gameplay schemes are Keyboard & Mouse and Gamepad. The incomplete
+Touch, Joystick, and XR template schemes are excluded from automatic switching.
+**Run UI Audit Devices** checks device switching and takeover prevention. See
+[the October 14 audit](UIAudit.md) for current corrections and verification.
 
 ## Overworld presentation
 
@@ -53,7 +75,7 @@ The grass source at `ArtSource/PaintedEnvironment/Ground_Grassland.png` and its 
 
 > Use case: precise-object-edit. Asset type: seamless square tileable grass albedo texture for an existing stylized fantasy game. Edit target: the supplied Grassland ground texture. Primary request: remove ALL exposed brown dirt patches and replace them with continuous healthy green grass. Make coverage even and less patchy: subtle small-scale variation only, no broad bright/dark islands or diagonal bands. Preserve the original hand-painted brushwork, tiny grass blade scale, and green palette but moderately soften contrast for readability under game characters. Orthographic top-down flat diffuse surface, evenly lit, opaque, seamless matching opposite edges. No soil, paths, rocks, flowers, checkerboard, grids, shadows, borders, text or objects. Output only the usable square grass texture.
 
-Run **Tools > Eternal Enigma > Author Overworld Presentation** to reapply grass, projection and gate authoring. Fixed-seed visual regression captures for seeds 42 and 12345, including restored maps, are in `Temp/OverworldPresentation/Before` and `After`. Dungeon captures at 1280×720, 1920×1080, 1280×800 and 2560×1080 are in `Temp/DungeonDock`. Unity MCP invokes the authoring and harness test menu commands; results are written to `Temp/HarnessResults`.
+Run **Tools > Eternal Enigma > Author Overworld Presentation** to reapply grass, projection and gate authoring. Fixed-seed visual regression captures for seeds 42 and 12345, including restored maps, are in `Temp/OverworldPresentation/Before` and `After`. Unity MCP invokes the authoring and harness test menu commands; results are written to `Temp/HarnessResults`.
 
 ## Verification — 2026-10-06
 

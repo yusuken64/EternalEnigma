@@ -27,6 +27,16 @@ public sealed class GameUITheme : ScriptableObject
     public static readonly Color Selected = new(1f, .88f, .59f);
     public static readonly Color LightInk = new(1f, .96f, .84f);
 
+    public static void StyleActiveTab(Button button, bool active)
+    {
+        if (button == null) return;
+        var colors = button.colors;
+        colors.normalColor = active ? Selected : Color.white;
+        button.colors = colors;
+        foreach (var label in button.GetComponentsInChildren<TMP_Text>(true))
+            label.fontStyle = active ? label.fontStyle | FontStyles.Underline : label.fontStyle & ~FontStyles.Underline;
+    }
+
     public void Surface(Image image, Sprite sprite, float scale = 4)
     {
         if (image == null) return;

@@ -15,6 +15,7 @@ public sealed class PartyMenu : Dialog
     public TMP_Text Details, Hints, HeroText;
     public Button InventoryTab, SkillsTab, EquipmentTab, StatsTab, BackButton;
     private Button capabilitiesTab;
+    private Button closeButton;
     public PartyMenuLauncher HudTabs { get; private set; }
     public TrainerPreviewScroll DetailsControl;
     public IReadOnlyList<Button> EntryButtons => rows;
@@ -25,6 +26,7 @@ public sealed class PartyMenu : Dialog
     private sealed class ViewState { public object Identity; public int Index; public float Scroll = 1; }
     private int heroIndex, selectedIndex;
     private float? listSpacing;
+    private float rowWidth;
     private string result;
     public PartyMenuTab Tab { get; private set; }
     public bool IsRoot => Owner?.Current == this;
@@ -52,14 +54,16 @@ public sealed class PartyMenu : Dialog
             if(button!=null)button.gameObject.SetActive(false);
         UseGameplayDock(Panel);
         HeroesRoot.gameObject.SetActive(false);
-        HeroText.gameObject.SetActive(false);
         Hints.gameObject.SetActive(false);
         foreach(var label in Panel.GetComponentsInChildren<TMP_Text>(true))
             if(label.transform.parent==Panel)label.gameObject.SetActive(false);
         Panel.Find("Heading ribbon")?.gameObject.SetActive(false);
         BackButton.gameObject.SetActive(false);
-        foreach(var close in Panel.GetComponentsInChildren<DungeonDialogClose>(true))
-            close.gameObject.SetActive(false);
+        closeButton = DungeonDialogClose.ShowSingle(Panel);
+        HeroText.gameObject.SetActive(true);
+        Fit(HeroText.transform,.05f,.905f,.80f,.975f);
+        HeroText.fontSize=26;HeroText.enableAutoSizing=true;HeroText.fontSizeMin=18;HeroText.fontSizeMax=26;
+        HeroText.textWrappingMode=TextWrappingModes.NoWrap;
         InventoryTab=HudTabs.ButtonFor(PartyMenuTab.Inventory);
         EquipmentTab=HudTabs.ButtonFor(PartyMenuTab.Equipment);
         SkillsTab=HudTabs.ButtonFor(PartyMenuTab.Skills);
@@ -123,7 +127,7 @@ public sealed class PartyMenu : Dialog
             Fit(descriptionPaper,.035f,.025f,.965f,.46f);
         }
         Fit(DetailsControl.Scroll.transform,.055f,.045f,.945f,.44f);
-        Fit(scrollView.transform,.035f,showDescription ? .48f : .025f,.965f,.975f);
+        Fit(scrollView.transform,.035f,showDescription ? .48f : .025f,.965f,.89f);
         var layout=RowsRoot.GetComponent<VerticalLayoutGroup>();
         listSpacing ??= layout.spacing;
         layout.spacing=compactStats?2:listSpacing.Value;
@@ -154,19 +158,37 @@ public sealed class PartyMenu : Dialog
                 FitStatRow(row.gameObject,row.Label,1,24);
             }
             var button=row.Button;
-            if(Tab==PartyMenuTab.Skills)
+            if(!compactStats)
             {
-                row.Label.enableAutoSizing=true;
-                row.Label.fontSizeMin=18;
-                row.Label.fontSizeMax=row.Label.fontSize;
+                row.Label.enableAutoSizing=false;
+                row.Label.textWrappingMode=TextWrappingModes.Normal;
             }
             button.GetComponent<PartyMenuRow>().Selected = () => { selectedIndex = index; ShowDetails(); ScrollToSelected(button.gameObject); };
             rows.Add(button);
         }
         if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=GameplayText.Format(Tab==PartyMenuTab.Inventory?"The bag is empty.":Tab==PartyMenuTab.Capabilities?"No acquired capabilities.":"No learned skills.");empty.gameObject.SetActive(true);}
-        Canvas.ForceUpdateCanvases(); scrollView.verticalNormalizedPosition = compactStats?1:state?.Scroll ?? 1;
+        Canvas.ForceUpdateCanvases(); FitEntryRows();
+        scrollView.verticalNormalizedPosition = compactStats?1:state?.Scroll ?? 1;
         WireNavigation();
         ShowDetails();
+    }
+    private void LateUpdate()
+    {
+        if(IsRoot && !Mathf.Approximately(rowWidth,((RectTransform)RowsRoot).rect.width))FitEntryRows();
+    }
+    private void FitEntryRows()
+    {
+        rowWidth=((RectTransform)RowsRoot).rect.width;
+        if(Tab==PartyMenuTab.Stats)return;
+        foreach(var button in rows)
+        {
+            var row=button.GetComponent<AuthoredButton>();
+            if(row!=null)PartyMenuRow.FitHeight(row);
+        }
+        foreach(Transform child in RowsRoot)
+            if(child.TryGetComponent<TMP_Text>(out var heading) && child.TryGetComponent<LayoutElement>(out var size))
+                size.preferredHeight=Mathf.Max(40,heading.GetPreferredValues(heading.text,Mathf.Max(1,heading.rectTransform.rect.width),0).y+8);
+        Canvas.ForceUpdateCanvases();
     }
     private static void FitStatRow(GameObject row,TMP_Text label,float heightWeight,float maxFontSize)
     {
@@ -184,13 +206,14 @@ public sealed class PartyMenu : Dialog
         DetailsControl.navigation=new Navigation {mode=Navigation.Mode.Explicit,
             selectOnUp=rows.Count>0?rows[^1]:tab};
         InventoryTab.navigation=EquipmentTab.navigation=SkillsTab.navigation=StatsTab.navigation=
-            new Navigation {mode=Navigation.Mode.Explicit,selectOnDown=firstRow};
+            new Navigation {mode=Navigation.Mode.Explicit,selectOnUp=closeButton,selectOnDown=firstRow};
         if(capabilitiesTab!=null && capabilitiesTab.gameObject.activeSelf)
-            capabilitiesTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnDown=firstRow};
+            capabilitiesTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnUp=closeButton,selectOnDown=firstRow};
+        if(closeButton!=null)closeButton.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnUp=tab,selectOnDown=firstRow};
     }
     private void ShowDetails()
     {
-        HeroText.text = GameplayText.Format(Hero == null ? "No party members" : context.HeroDetails(Hero));
+        HeroText.text = GameplayText.Format(Hero == null ? "No party members" : Hero.Name);
         if (entries.Count == 0)
         {
             Details.text = GameplayText.Format(context is DungeonPartyMenuContext ?
@@ -230,7 +253,7 @@ public sealed class PartyMenu : Dialog
             PickDetailed("Change "+entry.Title,options,entry.Description);return;
         }
         if (context is IPartyMenuEntryHandler handler && handler.OpenEntry(this, Hero, entry)) return;
-        var actions = entry.Slot.HasValue || entry.SpendAttribute ? new List<PartyMenuAction>() : context.Actions(Hero,entry);
+        var actions = Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? new List<PartyMenuAction>() : context.Actions(Hero,entry);
         if (!actions.Any(a=>a.Available))
         {
             if(!string.IsNullOrEmpty(entry.Description))
@@ -264,10 +287,12 @@ public sealed class PartyMenu : Dialog
     public void Complete(string message)
     {
         while(Owner!=null && Owner.Current!=this)Owner.Close(Owner.Current);
+        if(!string.IsNullOrWhiteSpace(message))GameMessages.Post(message);
         result = message; Refresh(); SetFirstSelect();
     }
     internal override void SetFirstSelect()
     {
+        Canvas.ForceUpdateCanvases();FitEntryRows();
         if (rows.Count > 0) rows[Mathf.Clamp(selectedIndex,0,rows.Count-1)].Select();
         else (Tab == PartyMenuTab.Inventory ? InventoryTab : Tab == PartyMenuTab.Equipment ? EquipmentTab : Tab == PartyMenuTab.Stats ? StatsTab : Tab == PartyMenuTab.Capabilities ? capabilitiesTab : SkillsTab).Select();
     }

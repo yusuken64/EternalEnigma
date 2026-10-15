@@ -96,6 +96,100 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator LungeAndShadowStepKeepDashClipsDuringTravel()
+        {
+            var previousAnimation = DungeonPreferences.AnimationOverride;
+            float previousTimeScale = Time.timeScale;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
+            Time.timeScale = 1;
+            try
+            {
+                var dungeon = harness.Game.CurrentDungeon;
+                var origin = Enumerable.Range(0, dungeon.dungeonWidth).SelectMany(x =>
+                    Enumerable.Range(0, dungeon.dungeonHeight).Select(y => new Vector3Int(x, y)))
+                    .First(p => Enumerable.Range(0, 5).All(i =>
+                    {
+                        var cell = p + Vector3Int.right * i;
+                        return dungeon.IsWalkable(cell) && !harness.Game.AllCharacters.Any(actor =>
+                            actor != caster && actor != first && actor.ToBounds().Contains(cell));
+                    }));
+                first.SetPosition(origin + Vector3Int.right * 3);
+                var animation = caster.HeroAnimator;
+                foreach (string name in new[] { "Lunge", "Shadow Step" })
+                {
+                    var skill = Learn(name);
+                    var effect = skill.ActionEffects.Single();
+                    foreach (bool skip in new[] { false, true })
+                    {
+                        caster.SetPosition(origin);
+                        animation.PlayIdleAnimation();
+                        var action = effect.AsTargetedSkill(caster, first);
+                        action.ExecuteImmediate(caster);
+                        var destination = caster.TilemapPosition;
+                        Assert.That(destination, Is.EqualTo(origin + Vector3Int.right * (name == "Lunge" ? 2 : 4)), name);
+                        int playbackCount = animation.PlaybackCount;
+                        int observed = 0;
+                        yield return ObserveMovementPlayback(action.ExecuteRoutine(caster, skip), () =>
+                        {
+                            observed++;
+                            AssertMovementClip(AnimatedAction.Dash, name);
+                        });
+                        Assert.That(Vector3.Distance(caster.transform.position, dungeon.CellToWorld(destination)),
+                            Is.LessThan(.001f), name);
+                        Assert.That(animation.LastPlayedAction, Is.EqualTo(AnimatedAction.Idle), name);
+                        if (skip) Assert.That(animation.PlaybackCount, Is.EqualTo(playbackCount), name + " skipped playback");
+                        else Assert.That(observed, Is.GreaterThan(0), name + " must animate its travel");
+                    }
+                }
+
+                // Another skill's displacement must retain the helper's ordinary walking default.
+                caster.SetPosition(origin + Vector3Int.right);
+                var retreat = new StepBackAction().AsTargetedSkill(caster, first);
+                retreat.ExecuteImmediate(caster);
+                Assert.That(caster.TilemapPosition, Is.EqualTo(origin));
+                int walkingFrames = 0;
+                yield return ObserveMovementPlayback(retreat.ExecuteRoutine(caster), () =>
+                {
+                    walkingFrames++;
+                    AssertMovementClip(AnimatedAction.MoveFWD, "retreat");
+                });
+                Assert.That(walkingFrames, Is.GreaterThan(0));
+                Assert.That(animation.LastPlayedAction, Is.EqualTo(AnimatedAction.Idle));
+                Assert.That(Vector3.Distance(caster.transform.position, dungeon.CellToWorld(origin)), Is.LessThan(.001f));
+            }
+            finally
+            {
+                DungeonPreferences.AnimationOverride = previousAnimation;
+                Time.timeScale = previousTimeScale;
+            }
+        }
+
+        private void AssertMovementClip(AnimatedAction expected, string label)
+        {
+            var animation = caster.HeroAnimator;
+            animation.Animator.Update(0);
+            Assert.That(animation.LastPlayedAction, Is.EqualTo(expected), label);
+            Assert.That(animation.Animator.GetCurrentAnimatorClipInfo(0).Single().clip.name,
+                Does.StartWith(expected.ToString()), label);
+        }
+
+        // Observe every yielded playback frame, including nested movement coroutines, so a
+        // short tween cannot finish between the test's first sample and its next frame.
+        private static IEnumerator ObserveMovementPlayback(IEnumerator routine, System.Action observe)
+        {
+            while (routine.MoveNext())
+            {
+                if (routine.Current is IEnumerator nested)
+                    yield return ObserveMovementPlayback(nested, observe);
+                else
+                {
+                    observe();
+                    yield return routine.Current;
+                }
+            }
+        }
+
+        [UnityTest]
         public IEnumerator ShadowStepLandsBehindTarget()
         {
             // Enemy 3 tiles east

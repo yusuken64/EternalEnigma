@@ -62,6 +62,23 @@ public static class GameUISkin
     public static Image PanelGraphic(Transform container) =>
         container.Find("GamePanelBackground")?.GetComponent<Image>() ?? container.GetComponent<Image>();
 
+    /// <summary>Decorates an existing title without changing its layout or input surface.</summary>
+    public static Image RibbonHeader(TMP_Text title)
+    {
+        if (title == null) return null;
+        HeaderRibbon ribbon = null;
+        foreach (var candidate in title.transform.parent.GetComponentsInChildren<HeaderRibbon>(true))
+            if (candidate.Title == title) { ribbon = candidate; break; }
+        if (ribbon == null)
+        {
+            var decoration = new GameObject(title.name + " ribbon", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
+            decoration.transform.SetParent(title.transform.parent, false);
+            ribbon = decoration.AddComponent<HeaderRibbon>();
+        }
+        ribbon.Initialize(title);
+        return ribbon.GetComponent<Image>();
+    }
+
 #if UNITY_EDITOR
     public static RectTransform Rect(string name, Transform parent, Vector2 min, Vector2 max)
     {

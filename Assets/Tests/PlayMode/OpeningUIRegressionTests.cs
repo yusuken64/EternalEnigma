@@ -124,7 +124,7 @@ namespace EternalEnigma.Tests
                     label.ForceMeshUpdate();
                     Assert.That(label.isTextOverflowing, Is.False, label.text);
                 }
-                var explanation = tab.Content.GetComponentsInChildren<TMP_Text>().Single(text => text.text.StartsWith("Full Control: choose"));
+                var explanation = tab.Content.GetComponentsInChildren<TMP_Text>().Single(text => text.text.StartsWith("Full Control lets"));
                 var history = tab.Content.GetComponentsInChildren<Button>().Single(button => button.GetComponentInChildren<TMP_Text>().text == "Event history");
                 var parent = (RectTransform)tab.Content.transform;
                 var descriptionBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(parent, explanation.transform);

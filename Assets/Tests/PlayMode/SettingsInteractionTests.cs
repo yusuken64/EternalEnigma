@@ -55,16 +55,144 @@ namespace EternalEnigma.Tests
             InputSystem.QueueStateEvent(mouse, new MouseState { position = pos }); yield return null;
         }
         private GameObject Selected => EventSystem.current.currentSelectedGameObject;
+
+        [UnityTest] public IEnumerator DungeonOptionsRemainsClickableAbovePartyDockAndResumeRestoresIt()
+        {
+            settings.Exit_Clicked();
+            yield return harness.Cleanup();
+            harness = new GameTestHarness();
+            yield return harness.LoadDungeon(new TestScenario { IncludeStartingItems = true, Skills = new[] { "Damage" } });
+            MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { pad, keyboard, mouse };
+            settings = Common.Instance.GlobalSettings;
+            var manager = MenuManager.Instance;
+            manager.OpenPartyMenu(PartyMenuTab.Skills);
+            yield return null;
+            var party = manager.PartyMenu;
+            var launcher = party.HudTabs;
+            var options = DungeonHud.Ensure(harness.Game).OptionsButton;
+            Assert.That(launcher.OptionsButton, Is.SameAs(options), "Use the existing HUD control, without an extra Options button.");
+            Assert.That(options.interactable, Is.True);
+            Assert.That(options.GetComponent<Canvas>().sortingOrder, Is.GreaterThan(party.GetComponent<Canvas>().sortingOrder));
+            Assert.That(MenuUIInputModule.Active.Allows(options.gameObject), Is.True, "Options belongs to the party's focus scope.");
+            var rect = (RectTransform)options.transform;
+            Assert.That(rect.anchorMin, Is.EqualTo(new Vector2(.87f, .935f)));
+            Assert.That(rect.anchorMax, Is.EqualTo(new Vector2(.985f, .985f)));
+            Canvas.ForceUpdateCanvases();
+            var pointer = new PointerEventData(EventSystem.current) {
+                position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center))
+            };
+            var hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, hits);
+            Assert.That(hits, Is.Not.Empty);
+            Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject), Is.EqualTo(options.gameObject),
+                "The party input shield must not intercept the visible Options control.");
+            int actions = harness.Ally.Vitals.ActionsPerTurnLeft;
+            yield return Click(options);
+            Assert.That(settings.IsOpen, Is.True, "One actual mouse click opens Options from the party dock.");
+            Assert.That(manager.CurrentDialog, Is.SameAs(party));
+            System.IO.Directory.CreateDirectory("Temp/Settings");
+            ScreenCapture.CaptureScreenshot("Temp/Settings/dungeon-options-over-party.png");
+            yield return null;
+            yield return Click(settings.ResumeButton);
+            Assert.That(settings.IsOpen, Is.False, "One Resume click returns to the open party dock.");
+            Assert.That(manager.CurrentDialog, Is.SameAs(party));
+            Assert.That(party.Tab, Is.EqualTo(PartyMenuTab.Skills));
+            Assert.That(MenuUIInputModule.Active.OwnsFocus(party), Is.True);
+            Assert.That(MenuUIInputModule.Active.Allows(Selected), Is.True);
+            Assert.That(harness.Ally.Vitals.ActionsPerTurnLeft, Is.EqualTo(actions));
+        }
+
+        [UnityTest] public IEnumerator ConfirmationFeedbackOnlyPlaysForAcceptedActivation()
+        {
+            var button = settings.TabGroup.TabContents[1].TabButton as SelectToActivateButton;
+            Assert.That(button, Is.Not.Null);
+            var audio = Common.Instance.AudioManager;
+            foreach (var source in audio.UIAudioSources) source.Stop();
+            settings.ResumeButton.Select();
+            var pointer = new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left, pointerId = -1 };
+            button.OnPointerDown(pointer); button.OnPointerClick(pointer);
+            Assert.That(audio.UIAudioSources.Any(s => s.isPlaying), Is.False, "A selection click is not an activation.");
+            button.OnPointerDown(pointer); button.OnPointerClick(pointer);
+            Assert.That(audio.UIAudioSources.Any(s => s.isPlaying), Is.True, "Accepted actions have confirmation feedback.");
+            foreach (var source in audio.UIAudioSources) source.Stop();
+            bool interactable = button.interactable;
+            button.interactable = false;
+            button.OnSubmit(new BaseEventData(EventSystem.current));
+            Assert.That(audio.UIAudioSources.Any(s => s.isPlaying), Is.False, "Disabled actions stay silent.");
+            button.interactable = interactable;
+            yield return null;
+        }
+
+        [UnityTest] public IEnumerator ControlsGuideScrollsAndReturnsToCategoryAt960By600()
+        {
+            const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+            var view = UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
+            var sizeProperty = view.GetType().GetProperty("selectedSizeIndex", flags);
+            int originalSize = (int)sizeProperty.GetValue(view);
+            try
+            {
+                view.GetType().GetMethod("SetCustomResolution", flags).Invoke(view, new object[] { new Vector2(960, 600), "Controls 960x600" });
+                var tab = settings.TabGroup.TabContents.Single(t => t.Content.name == "Controls");
+                tab.TabButton.Select(); yield return null; yield return null;
+                var reader = tab.Content.GetComponentInChildren<TrainerPreviewScroll>();
+                Assert.That(reader, Is.Not.Null);
+                var scroll = reader.Scroll;
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.content);
+                Assert.That(scroll.viewport.GetComponent<RectMask2D>(), Is.Not.Null);
+                Assert.That(scroll.content.rect.height, Is.GreaterThan(scroll.viewport.rect.height));
+                var labels = scroll.content.GetComponentsInChildren<TMP_Text>();
+                foreach (var label in labels)
+                {
+                    label.ForceMeshUpdate();
+                    Assert.That(label.isTextOverflowing, Is.False, label.text);
+                    Assert.That(label.fontSize, Is.GreaterThanOrEqualTo(24));
+                }
+                var viewportCorners = new Vector3[4];
+                scroll.viewport.GetWorldCorners(viewportCorners);
+                Assert.That(viewportCorners.All(corner => corner.x >= 0 && corner.x <= Screen.width && corner.y >= 0 && corner.y <= Screen.height), Is.True);
+
+                scroll.verticalNormalizedPosition = 1;
+                yield return Press(GamepadButton.DpadRight);
+                Assert.That(Selected, Is.EqualTo(reader.gameObject));
+                yield return Key(UnityEngine.InputSystem.Key.DownArrow);
+                Assert.That(scroll.verticalNormalizedPosition, Is.LessThan(1), "Keyboard arrows scroll the guide.");
+                for (int step = 0; step < 30 && scroll.verticalNormalizedPosition > .0001f; step++)
+                    yield return Press(GamepadButton.DpadDown);
+                Assert.That(scroll.verticalNormalizedPosition, Is.LessThanOrEqualTo(.0001f));
+                Canvas.ForceUpdateCanvases();
+                foreach (var label in labels)
+                {
+                    label.ForceMeshUpdate();
+                    var last = label.textInfo.characterInfo.Take(label.textInfo.characterCount).Last(character => character.isVisible);
+                    var point = RectTransformUtility.WorldToScreenPoint(null, label.transform.TransformPoint(last.bottomLeft));
+                    Assert.That(RectTransformUtility.RectangleContainsScreenPoint(scroll.viewport, point), Is.True,
+                        "The final guide line must be reachable inside the masked viewport.");
+                }
+                yield return Key(UnityEngine.InputSystem.Key.Escape);
+                Assert.That(Selected, Is.EqualTo(tab.TabButton.gameObject));
+
+                scroll.verticalNormalizedPosition = 1;
+                var pointerPosition = RectTransformUtility.WorldToScreenPoint(null, scroll.viewport.TransformPoint(scroll.viewport.rect.center));
+                InputSystem.QueueStateEvent(mouse, new MouseState { position = pointerPosition }); yield return null;
+                InputSystem.QueueStateEvent(mouse, new MouseState { position = pointerPosition, scroll = new Vector2(0, -120) });
+                yield return null; yield return null;
+                Assert.That(scroll.verticalNormalizedPosition, Is.LessThan(1), "Mouse wheel scrolls the guide without requiring directional navigation.");
+            }
+            finally { sizeProperty.SetValue(view, originalSize); }
+        }
+
         [UnityTest] public IEnumerator GameplayExplanationChangesWhileDialogRemainsOpen()
         {
             var gameplay = settings.TabGroup.TabContents.Single(t => t.TabButton.GetComponentInChildren<TMP_Text>().text == "Gameplay");
             gameplay.TabButton.Select(); yield return null;
             var explanation = gameplay.Content.GetComponentsInChildren<TMP_Text>(true)
-                .Single(t => t.text.Contains("Full Control asks"));
+                .Single(t => t.text.Contains("Full Control lets"));
             Assert.That(explanation.text, Does.Contain("Press F"));
             yield return Press(GamepadButton.South);
             Assert.That(settings.IsOpen, Is.True);
-            Assert.That(explanation.text, Does.Contain("Press Right stick (press)"));
+            Assert.That(explanation.text, Does.Contain("Press Right stick press"));
             Assert.That(explanation.text, Does.Not.Contain("Press F"));
             yield return Key(UnityEngine.InputSystem.Key.K);
             Assert.That(explanation.text, Does.Contain("Press F"));
@@ -97,7 +225,9 @@ namespace EternalEnigma.Tests
             Assert.That(arrow.gameObject.activeInHierarchy, Is.False);
             settings.ShowDialog(); yield return null;
             Assert.That(Selected, Is.EqualTo(settings.FirstSelected));
-            settings.ReturntoMainButton.Select(); yield return Press(GamepadButton.East);
+            Assert.That(settings.ReturntoMainButton.gameObject.activeSelf, Is.False);
+            Assert.That(settings.ResumeButton.GetComponentInChildren<TMP_Text>().text, Is.EqualTo("Close"));
+            tabs.Last().TabButton.Select(); yield return Press(GamepadButton.DpadDown);
             Assert.That(Selected, Is.EqualTo(settings.ResumeButton.gameObject));
             EventSystem.current.SetSelectedGameObject(null); yield return Press(GamepadButton.East);
             Assert.That(settings.IsOpen, Is.True); Assert.That(Selected, Is.EqualTo(settings.ResumeButton.gameObject));

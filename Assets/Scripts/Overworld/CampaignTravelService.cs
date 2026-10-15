@@ -11,7 +11,7 @@ public sealed class CampaignTravelService
 {
     private readonly Common common;
     private bool transitioning;
-    public bool IsTransitioning => transitioning;
+    public bool IsTransitioning => transitioning || common.ScreenTransition.BlocksInput;
     private string returnArrivalTown;
     public bool HomecomingPending { get; private set; }
     public bool HomecomingCompleted { get; private set; }
@@ -266,7 +266,7 @@ public sealed class CampaignTravelService
         else { common.GameSaveData = SaveSystem.Inspect(SaveSystem.ActiveSlot, out _); common.CampaignContext = null; }
         CampaignParty.ClearLiveParty(common);
         transitioning = true;
-        common.ScreenTransition.DoTransition(() => SceneManager.LoadScene("MainMenu"));
+        common.ScreenTransition.DoTransition(() => SceneManager.LoadScene("MainMenu"), autoOpen: false);
         return true;
     }
 

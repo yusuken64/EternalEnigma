@@ -175,6 +175,50 @@ namespace EternalEnigma.Tests
             }
         }
 
+        [UnityTest]
+        public IEnumerator ArmedHeroesUsePotionClipAndRestoreTheirEquippedStance()
+        {
+            var previousAnimation = DungeonPreferences.AnimationOverride;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
+            try
+            {
+                var animation = harness.Ally.HeroAnimator;
+                foreach (Stance stance in Enum.GetValues(typeof(Stance)))
+                {
+                    if (stance == Stance.NoWeapon) continue;
+                    animation.CurrentStance = stance;
+                    animation.PlayIdleAnimation();
+                    Assert.That(animation.PlayOneShot(AnimatedAction.DrinkPotion), Is.True, stance.ToString());
+                    animation.Animator.Update(0);
+                    Assert.That(animation.Animator.GetCurrentAnimatorClipInfo(0).Single().clip.name,
+                        Is.EqualTo("DrinkPotion_NoWeapon"), stance.ToString());
+                    Assert.That(animation.CurrentStance, Is.EqualTo(stance), "The gesture must not change equipped stance.");
+                    animation.PlayIdleAnimation();
+                    Assert.That(animation.Animator.runtimeAnimatorController,
+                        Is.SameAs(animation.StanceAnimations.Single(s => s.Stance == stance).AnimatorController));
+                }
+
+                var bow = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>()
+                    .First(item => item.WeaponType == WeaponType.BowAndArrow && !item.IsAmmunition);
+                animation.SetWeapon(bow, null);
+                animation.PlayIdleAnimation();
+                var equippedController = animation.Animator.runtimeAnimatorController;
+                var equippedModels = animation.RightHandObjects.Concat(animation.LeftHandObjects)
+                    .Where(model => model.activeSelf).ToArray();
+                Assert.That(equippedModels, Is.Not.Empty);
+                Assert.That(animation.PlayOneShot(AnimatedAction.DrinkPotion), Is.True);
+                animation.Animator.Update(0);
+                Assert.That(animation.LastPlayedAction, Is.EqualTo(AnimatedAction.DrinkPotion));
+                yield return harness.WaitUntil(() => animation.LastPlayedAction == AnimatedAction.Idle,
+                    "potion gesture restores equipped idle");
+                Assert.That(animation.CurrentStance, Is.EqualTo(Stance.BowAndArrowStance));
+                Assert.That(animation.Animator.runtimeAnimatorController, Is.SameAs(equippedController));
+                Assert.That(animation.RightHandObjects.Concat(animation.LeftHandObjects).Where(model => model.activeSelf),
+                    Is.EquivalentTo(equippedModels), "Using an unarmed gesture must preserve equipped models.");
+            }
+            finally { DungeonPreferences.AnimationOverride = previousAnimation; }
+        }
+
         [Test]
         public void AssignedHeroClassesAreValidAndStartingGearFits()
         {

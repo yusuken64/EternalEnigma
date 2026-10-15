@@ -135,16 +135,19 @@ public static class SkillMovement
 
 	/// <summary>
 	/// Coroutine that animates the actor's movement from current position to destination.
-	/// Plays walk animation during movement, then idle animation after.
+	/// Plays the requested hero movement clip (walk by default), then returns to idle.
 	/// </summary>
-	public static IEnumerator AnimateMove(Character actor, Vector3Int destination, float seconds = 0.1f)
+	public static IEnumerator AnimateMove(Character actor, Vector3Int destination, float seconds = 0.1f,
+		AnimatedAction movementAnimation = AnimatedAction.MoveFWD)
 	{
 		if ((actor != null && actor.IsMovementBlocked)) yield break;
 		if (actor == null)
 			yield break;
 
 		var world = Game.Instance.CurrentDungeon.CellToWorld(destination);
-		actor.PlayWalkAnimation();
+		if (movementAnimation == AnimatedAction.MoveFWD || actor is not Ally ally ||
+			ally.HeroAnimator?.PlayOneShot(movementAnimation) != true)
+			actor.PlayWalkAnimation();
 		yield return actor.transform.DOMove(world, seconds).WaitForCompletion();
 		actor.PlayIdleAnimation();
 	}

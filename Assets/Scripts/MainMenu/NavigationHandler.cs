@@ -24,6 +24,41 @@ public class NavigationHandler : MonoBehaviour
         if (selectionArrow != null)
             foreach (var graphic in selectionArrow.GetComponentsInChildren<UnityEngine.UI.Graphic>(true)) graphic.raycastTarget = false;
     }
+
+    public void ConfigureCompactPointer(MonoBehaviour owner)
+    {
+        FocusRoot = owner.transform;
+        FocusOwner = owner;
+        arrowAnchor = ArrowAnchor.Left;
+        arrowOffset = Vector3.zero;
+        edgeSpacing = 8;
+        if (selectionArrow == null) return;
+
+        selectionArrow.anchorMin = selectionArrow.anchorMax = new Vector2(.5f, .5f);
+        selectionArrow.pivot = new Vector2(.5f, .5f);
+        selectionArrow.sizeDelta = new Vector2(28, 28);
+        selectionArrow.localScale = Vector3.one;
+        // The shared dropdown triangle points down; turn its tip toward the selected row.
+        selectionArrow.localRotation = Quaternion.Euler(0, 0, 90);
+        var pointer = selectionArrow.GetComponent<UnityEngine.UI.Image>();
+        if (pointer != null)
+        {
+            pointer.sprite = GameUITheme.Current.Arrow;
+            pointer.overrideSprite = null;
+            pointer.type = UnityEngine.UI.Image.Type.Simple;
+            pointer.color = Color.white;
+            pointer.preserveAspect = true;
+            var outline = pointer.GetComponent<UnityEngine.UI.Outline>();
+            if (outline == null) outline = pointer.gameObject.AddComponent<UnityEngine.UI.Outline>();
+            outline.effectColor = new Color(.98f, .92f, .74f, 1);
+            outline.effectDistance = new Vector2(1.5f, -1.5f);
+            outline.useGraphicAlpha = true;
+            outline.enabled = true;
+        }
+        lastSelected = null;
+        selectionArrow.gameObject.SetActive(false);
+        Init();
+    }
     private void OnEnable() => Init();
     private void OnDisable()
     {

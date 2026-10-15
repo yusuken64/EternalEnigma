@@ -74,7 +74,7 @@ public class TeleportBehindAction : GameAction
 			yield break;
 		}
 
-		yield return SkillMovement.AnimateMove(caster, destination.Value);
+		yield return SkillMovement.AnimateMove(caster, destination.Value, movementAnimation: AnimatedAction.Dash);
 		caster.SetFacingByTargetPosition(target.TilemapPosition);
 	}
 

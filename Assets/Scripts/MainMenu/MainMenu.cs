@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -21,6 +22,33 @@ public class MainMenu : MonoBehaviour
     private readonly List<GameObject> suspendedEventSystems = new();
     public bool IsReady { get; private set; }
 
+    private void Awake()
+    {
+        foreach (var button in StartButton.transform.parent.GetComponentsInChildren<Button>(true))
+        {
+            var label = button.GetComponentInChildren<TMP_Text>(true);
+            if (label == null) continue;
+            if (label.text == "Option") label.text = "Options";
+            label.rectTransform.anchorMin = new Vector2(.08f, .06f);
+            label.rectTransform.anchorMax = new Vector2(.92f, .94f);
+            label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
+            FitMenuLabel(label, 28);
+        }
+        var title = StartButton.GetComponentInParent<Canvas>().rootCanvas.transform.Find("EternalEnigma")?.GetComponent<TMP_Text>();
+        if (title != null) FitMenuLabel(title, 48);
+    }
+
+    private static void FitMenuLabel(TMP_Text label, float minimum)
+    {
+        label.fontSizeMax = label.fontSize;
+        label.fontSizeMin = Mathf.Min(minimum, label.fontSizeMax);
+        label.enableAutoSizing = true;
+        label.textWrappingMode = TextWrappingModes.NoWrap;
+        label.alignment = TextAlignmentOptions.Center;
+        label.margin = Vector4.zero;
+        label.raycastTarget = false;
+    }
+
 	private IEnumerator Start()
 	{
         IsReady = false;
@@ -34,9 +62,31 @@ public class MainMenu : MonoBehaviour
         Common.Instance.EndSandbox();
         Common.Instance.Travel.SceneReady();
         ContinueButton.gameObject.SetActive(true);
+        NavigationHandler.FocusRoot = StartButton.transform.parent;
+        NavigationHandler.arrowAnchor = ArrowAnchor.Left;
+        NavigationHandler.arrowOffset = Vector3.zero;
+        NavigationHandler.edgeSpacing = 12;
         IsReady = true;
         StartButton.GetComponent<Button>().Select();
         CampaignStartMenu.gameObject.SetActive(false);
+        if (Common.Instance.ScreenTransition.BlockScreen.activeSelf) Common.Instance.ScreenTransition.DoOpen();
+    }
+
+    private void Update()
+    {
+        var selected = EventSystem.current?.currentSelectedGameObject;
+        NavigationHandler.FocusRoot = selected != null && selected.transform.IsChildOf(transform)
+            ? transform : StartButton.transform.parent;
+        var input = MenuUIInputModule.Active;
+        if (!IsReady || input == null || input.HasDialog || input.InputConsumed ||
+            Common.Instance.Travel.IsTransitioning) return;
+        if (input.UI.Cancel.WasPressedThisFrame() &&
+            GetComponent<MainMenuDeveloperControls>()?.Close() == true)
+        {
+            input.ConsumeInput();
+            return;
+        }
+        if (input.UI.Options.WasPressedThisFrame()) Options_Clicked();
     }
 
 	public void Continue_Clicked()
@@ -149,11 +199,13 @@ public class MainMenu : MonoBehaviour
 	public void Options_Clicked()
 	{
         if (!IsReady) return;
+		var returnSelection = EventSystem.current?.currentSelectedGameObject;
 		NavigationHandler.gameObject.SetActive(false);
 		Common.Instance.GlobalSettings.ShowDialog();
 		Common.Instance.GlobalSettings.CloseAction = () =>
 		{
 			NavigationHandler.gameObject.SetActive(true);
+			EventSystem.current?.SetSelectedGameObject(MenuUIInputModule.IsUsable(returnSelection) ? returnSelection : StartButton);
 		};
 	}
 

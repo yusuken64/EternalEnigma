@@ -53,8 +53,14 @@ public class BallistaPurchaseDialog : Dialog
 	internal void Setup(Skill skill, int nextRank, int cost, bool usesPoints = false)
 	{
         FindFirstObjectByType<TownMenuManager>().Open(this);
+        TownModalBackdrop.Ensure(this, true);
 
-        string price = usesPoints ? $"{cost} learning points" : $"{cost} gold";
+        TitleText.font = TMP_Settings.defaultFontAsset;
+        TitleText.enableAutoSizing = true; TitleText.fontSizeMin = 18; TitleText.fontSizeMax = 28;
+        TitleText.textWrappingMode = TextWrappingModes.Normal;
+        DescriptionText.enableAutoSizing = true; DescriptionText.fontSizeMin = 16; DescriptionText.fontSizeMax = 24;
+        DescriptionText.textWrappingMode = TextWrappingModes.Normal;
+        string price = usesPoints ? $"{cost} learning point{(cost == 1 ? "" : "s")}" : $"{cost} gold";
         TitleText.text = GameplayText.Format(nextRank <= 1
             ? $"Learn {skill.DisplayName} for {price}?"
             : $"Train {skill.DisplayName} to rank {nextRank} for {price}?");
@@ -75,4 +81,6 @@ public class BallistaPurchaseDialog : Dialog
     {
         CloseDialog();
     }
+
+    private void OnDisable() => PurcahseCallBack = null;
 }

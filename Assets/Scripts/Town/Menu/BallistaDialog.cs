@@ -82,6 +82,7 @@ public class BallistaDialog : Dialog
     {
         if(layoutBound)return;
         if(Layout==null)throw new System.InvalidOperationException("Trainer layout must be authored in its scene or prefab.");
+        Layout.ApplyPresentation();
         layoutBound=true;
         Layout.PrimaryTab.onClick.AddListener(()=>ChangeTab(ClassSource.Primary));
         Layout.SecondaryTab.onClick.AddListener(()=>ChangeTab(ClassSource.Secondary));
@@ -103,6 +104,8 @@ public class BallistaDialog : Dialog
 
     private void BuildList()
     {
+        GameUITheme.StyleActiveTab(Layout.PrimaryTab, source == ClassSource.Primary);
+        GameUITheme.StyleActiveTab(Layout.SecondaryTab, source == ClassSource.Secondary);
         StopAutoScroll();
         firstLesson = TrainerOffers.IsFirstLesson(Character);
         selected = null;
@@ -117,7 +120,8 @@ public class BallistaDialog : Dialog
             var heading = Instantiate(Layout.HeadingTemplate, SkillGridContainer, false);
             heading.gameObject.SetActive(true);
             heading.text = GameplayText.Format(firstLesson ? "Choose your first active skill" : Character.PrimaryClass == null ? "Available skills" :
-                $"Tier {tier.Key} - unlocks at level {tier.First().TierRequiredLevel}");
+                $"Tier {tier.Key} · Level {tier.First().TierRequiredLevel}");
+            GameUISkin.RibbonHeader(heading);
             foreach (var offer in tier)
             {
                 var row = Instantiate(SkillGridSelectablePrefab, SkillGridContainer, false);
@@ -139,6 +143,7 @@ public class BallistaDialog : Dialog
         else Layout.Preview.text = GameplayText.Format("No skills in this tree.");
         StopAutoScroll();
         Canvas.ForceUpdateCanvases();
+        RefreshPreviewControl();
         scrollView.verticalNormalizedPosition = listPositions[(int)source];
         Layout.PreviewScroll.verticalNormalizedPosition = previewPositions[(int)source];
     }
@@ -149,12 +154,14 @@ public class BallistaDialog : Dialog
         var first = SkillGridItems.FirstOrDefault()?.GridButton ?? Layout.Close;
         var last = SkillGridItems.LastOrDefault()?.GridButton ?? tab;
         var other = Layout.SecondaryTab.gameObject.activeSelf ? Layout.SecondaryTab : Layout.PrimaryTab;
+        Selectable details = Layout.PreviewControl.gameObject.activeSelf ? (Selectable)Layout.PreviewControl : Layout.Close;
         Link(Layout.PrimaryTab, Layout.Close, first, other, other);
         Link(Layout.SecondaryTab, Layout.Close, first, Layout.PrimaryTab, Layout.PrimaryTab);
         for (int i = 0; i < SkillGridItems.Count; i++)
             Link(SkillGridItems[i].GridButton, i == 0 ? tab : SkillGridItems[i - 1].GridButton,
-                i + 1 == SkillGridItems.Count ? Layout.Close : SkillGridItems[i + 1].GridButton, tab, Layout.PreviewControl);
-        Link(Layout.Close, last, tab, selected?.GridButton ?? first, Layout.PreviewControl);
+                i + 1 == SkillGridItems.Count ? Layout.Close : SkillGridItems[i + 1].GridButton, tab, details);
+        Link(Layout.Close, last, tab, selected?.GridButton ?? first,
+            Layout.PreviewControl.gameObject.activeSelf ? (Selectable)Layout.PreviewControl : selected?.GridButton ?? first);
         Link(Layout.PreviewControl, tab, Layout.Close, selected?.GridButton ?? first, Layout.Close);
     }
 
@@ -171,13 +178,31 @@ public class BallistaDialog : Dialog
         string status = o.IsMaxed ? "Already at maximum rank." : !o.CanLearn ? o.LockReason : "Ready to learn.";
         string requirements = $"Rank {o.CurrentRank} of {o.MaxRank}" + (o.HasClass
             ? $"\nTier {o.Tier} opens at level {o.TierRequiredLevel}." +
-                (o.IsMaxed ? "" : $"\nThe next rank requires level {o.NextRequiredLevel} and {o.NextCost} learning points.")
+                (o.IsMaxed ? "" : $"\nThe next rank requires level {o.NextRequiredLevel} and {o.NextCost} learning point{(o.NextCost == 1 ? "" : "s")}.")
             : o.IsMaxed ? "" : $"\nLearning costs {o.NextCost} gold.");
         Layout.Preview.text = GameplayText.Format($"<b>{o.Skill.DisplayName}</b>\n{requirements}\n\n{status}\n{o.Prerequisites}\n\n{o.Skill.Description}");
+        Canvas.ForceUpdateCanvases();
+        RefreshPreviewControl();
         if (changed) Layout.PreviewScroll.verticalNormalizedPosition = 1;
         WireNavigation();
         if (eventData is UnityEngine.EventSystems.PointerEventData) StopAutoScroll();
         else ScrollToSelected(row.gameObject);
+    }
+
+    private void LateUpdate()
+    {
+        if (layoutBound && Layout != null) RefreshPreviewControl();
+    }
+
+    private void RefreshPreviewControl()
+    {
+        bool overflow = Layout.Preview.preferredHeight > Layout.PreviewScroll.viewport.rect.height + 1;
+        if (Layout.PreviewControl.gameObject.activeSelf == overflow) return;
+        bool wasSelected = UnityEngine.EventSystems.EventSystem.current != null &&
+            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject == Layout.PreviewControl.gameObject;
+        Layout.PreviewControl.gameObject.SetActive(overflow);
+        WireNavigation();
+        if (!overflow && wasSelected) (selected != null ? selected.GridButton : Layout.Close).Select();
     }
 
     public void Refresh()
@@ -196,8 +221,12 @@ public class BallistaDialog : Dialog
         if (selected != null) Preview(selected, null);
     }
 
-    private void UpdateBalance() => SkillsText.text = GameplayText.Format(Character.PrimaryClass == null ? "Skill training - Gold purchases" :
-        $"{TrainerOffers.AvailablePoints(Character)} learning points available. Learning does not spend combat SP.");
+    private void UpdateBalance()
+    {
+        int points = TrainerOffers.AvailablePoints(Character);
+        SkillsText.text = GameplayText.Format(Character.PrimaryClass == null ? "Skill training · Gold purchases" :
+            $"Skill training · {points} learning point{(points == 1 ? "" : "s")} available");
+    }
     public void Close_Clicked() => CloseDialog();
     [ContextMenu("Force Select")] public void ForceSelect() => SetFirstSelect();
     internal List<string> GetActiveSkillsSave() => Character?.Skills.ToList() ?? new();

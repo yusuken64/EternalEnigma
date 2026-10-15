@@ -27,6 +27,76 @@ namespace EternalEnigma.Tests
         private Gamepad pad;
 
         [UnityTest]
+        public IEnumerator UnlockedWarpsAreAvailableToKeyboardAndGamepadAfterRewards()
+        {
+            var context = Enumerable.Range(0, 32)
+                .Select(seed => new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed)))
+                .First(c => c.Campaign.Sources.Any(s => s.LocationId == "checkpoint-1" && s.CompanionId == null));
+            Common.Instance.CampaignContext = context;
+            context.State.Scene = "Overworld";
+            context.Position = context.Grid.Locations["checkpoint-1"];
+            var route = context.Grid.WarpsAt(context.Position).First();
+            context.Resolved.Add(route.Id);
+            var pending = context.Campaign.Sources.Where(s => s.LocationId == "checkpoint-1").Select(s => s.Id).ToArray();
+            keyboard = InputSystem.AddDevice<Keyboard>();
+            pad = InputSystem.AddDevice<Gamepad>();
+            yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+            scene = SceneManager.GetSceneByName("Overworld");
+            var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+            yield return harness.WaitUntil(() => world.IsReady, "travel chooser world");
+            var menu = world.GetComponent<OverworldMenuManager>();
+            var origin = world.Position;
+            yield return null;
+            var interactionButton = world.GetComponentsInChildren<UnityEngine.UI.Button>()
+                .Single(b => b.GetComponentInChildren<TMPro.TMP_Text>()?.text == "Interact / Travel");
+            Assert.That(interactionButton.IsActive() && interactionButton.IsInteractable(), Is.True, "World interaction needs a visible mouse control.");
+
+            interactionButton.onClick.Invoke();
+            yield return null;
+            Assert.That(pending.All(context.Claimed.Contains), Is.True, "Interaction claims local rewards before offering travel.");
+            Assert.That(world.Position, Is.EqualTo(origin));
+            yield return AcknowledgeKeyAnnouncement();
+
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Enter));
+            yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            yield return null;
+            Assert.That(menu.Opened, Is.True, "Enter must expose unlocked warp destinations.");
+            var picker = menu.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p => p.Owner != null);
+            var resources = world.GetComponentInChildren<ResourceHUD>();
+            Assert.That(RectTransformUtility.CalculateRelativeRectTransformBounds(resources.transform, resources.GoldText.transform.parent).min.y,
+                Is.GreaterThan(RectTransformUtility.CalculateRelativeRectTransformBounds(resources.transform, picker.Title.transform.parent).max.y),
+                "Travel choices must leave the resource strip readable.");
+            var destinations = picker.Rows.GetComponentsInChildren<AuthoredButton>().Where(b => b.Label.text.StartsWith("Warp to ")).ToArray();
+            Assert.That(destinations.Length, Is.EqualTo(1), "Locked routes must not be offered as usable destinations.");
+            Assert.That(destinations[0].Label.text, Is.EqualTo(world.WarpLabel(route)));
+            var gates = context.Gates.Nearby(origin).Where(r => context.Gates.NeedsOpening(r) && r.ShortcutKind != ShortcutKind.FarSide).ToArray();
+            Assert.That(picker.Rows.GetComponentsInChildren<AuthoredButton>().Count(b => b.Label.text.StartsWith("Inspect gate to ")),
+                Is.EqualTo(gates.Length), "Each nearby locked gate must be independently accessible.");
+            Assert.That(world.TryMove(1, 0), Is.False, "A travel choice must block world movement.");
+
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Escape));
+            yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            yield return null;
+            Assert.That(menu.Opened, Is.False);
+            Assert.That(world.Position, Is.EqualTo(origin), "Back must leave travel unchanged.");
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.South));
+            yield return null;
+            InputSystem.QueueStateEvent(pad, new GamepadState());
+            yield return null;
+            Assert.That(menu.Opened, Is.True, "The gamepad interaction button must open the same destination chooser.");
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TMPro.TMP_Text>().text,
+                Is.EqualTo(world.WarpLabel(route)));
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.South));
+            yield return null;
+            InputSystem.QueueStateEvent(pad, new GamepadState());
+            yield return null;
+            Assert.That(menu.Opened, Is.False);
+            Assert.That(world.Position, Is.EqualTo(context.Grid.Locations[route.To]));
+        }
+
+        [UnityTest]
         public IEnumerator UniqueCampaignRewardUsesTheSameNameInPopupMenuAndGateAction()
         {
             var context = Enumerable.Range(0, 32)

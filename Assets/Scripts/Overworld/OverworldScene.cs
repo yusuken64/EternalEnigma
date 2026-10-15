@@ -191,10 +191,7 @@ public sealed class OverworldScene : MonoBehaviour
         Player.HeroAnimator?.PlayIdleAnimation();
         Player.TilemapPosition = new Vector3Int(Position.X, Position.Y, 0);
         walkHistory.Add(Position);
-        IsReady = true;
         gameObject.AddComponent<OverworldPickups>().Initialize(this);
-        Common.Instance.Travel.SceneReady();
-        Common.Instance.ScreenTransition.DoOpen();
         RebuildFollowers();
         ScenePresentation.RegisterWorld(creator.worldObject.transform);
         foreach (var data in Common.Instance.GameSaveData.TownSaveData.RecruitedAlliesData)
@@ -205,6 +202,11 @@ public sealed class OverworldScene : MonoBehaviour
         RefreshGates();
         Message = "Use {Move} to move. Press {Interact} to collect rewards or use a key at a gate.";
         FollowCamera();
+        // Start the reveal only after followers, saved stats and camera placement
+        // are complete, so their setup cannot consume part of the visible fade.
+        IsReady = true;
+        Common.Instance.Travel.SceneReady();
+        Common.Instance.ScreenTransition.DoOpen();
     }
 
     private void BuildLocationFootprint(GameObject marker, LocationKind kind, GridPoint cell)
@@ -427,7 +429,7 @@ public sealed class OverworldScene : MonoBehaviour
         PlaceFollowers();
         RefreshGates(); FollowCamera();
         SaveProgress();
-        Message = "Warp complete. Choose a destination below to return.";
+        Message = "Warp complete. Press {Interact} to choose a destination.";
         return true;
     }
 
@@ -515,6 +517,8 @@ public sealed class OverworldScene : MonoBehaviour
             acquiredCapabilities.Add(CampaignTravelService.DescribeCapabilityReward(Context, source));
         }
         SaveProgress();
+        // Claim local rewards first; once collected, the same interaction key exposes travel.
+        if (rewards.Count == 0 && announceLocked && GetComponent<OverworldMenuManager>().ChooseTravel()) return;
         Message = rewards.Count == 0 ? "No eligible unclaimed rewards here." : "Acquired " + string.Join(", ", rewards) + ". Equip companions at a town.";
         RefreshGates();
         Common.Instance.Travel.ShowRewardsAcquired(acquiredKeys.Distinct().ToArray(), acquiredCapabilities.ToArray());

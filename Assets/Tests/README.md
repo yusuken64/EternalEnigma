@@ -187,7 +187,12 @@ Dungeon controls: **R / left shoulder** opens or closes skills; **WASD, arrows,
 D-pad or left stick** selects a skill/target; **Enter, Space / south button**
 confirms; **Escape / east button** goes back. Self/untargeted skills cast on the
 first confirmation. Targeted skills require a second confirmation and can be
-cancelled without spending SP or a turn. Target selection enables its component
+cancelled without spending SP or a turn. Native 3D targeting also supports mouse
+preview, left-click confirmation and right-click cancellation. Opening with a
+held click requires a release before confirmation; HUD clicks and invalid targets
+cannot cast. Terminal presentation retains keyboard/controller target selection.
+**Period / left stick press** waits; **F / right stick press** toggles Full Control
+without spending a wait action. Target selection enables its component
 only while needed, and disables it after confirm/cancel. Gamepad/keyboard/mouse
 tests inject device events through the real Input System bindings; they do not
 test physical hardware. The current main-menu Test Dungeon uses the nine-skill
@@ -302,6 +307,46 @@ inside an already-running Common session. Run tests sequentially.
 A fixed seed controls generation, not every gameplay decision: code that uses
 `Guid.NewGuid()` for random selection is not seeded. Regression tests needing
 specific combat encounters should explicitly spawn those enemies.
+
+## UI audit
+
+Run these Editor menu commands sequentially after compilation, outside Play Mode:
+
+- **Tools > Eternal Enigma > Tests > Run UI Audit Captures** runs `UIScreenAuditTests`
+  and `DungeonDockTests`: main menu, slots, hero picker, settings, town/overworld
+  services and party docks, dungeon dialogs, and guarded mouse targeting. Screenshots
+  cover 960×600, 1280×720, 1920×1080 and 2560×1080; dungeon adds 1280×800.
+  `Temp/UIScreenAudit` contains screenshots and text bounds/font/overflow JSON;
+  `Temp/DungeonDock` contains dungeon screenshots.
+- **Tools > Eternal Enigma > Tests > Run UI Audit Controls** runs selection,
+  settings, device switching, controller flows, party menus, opening/main-menu
+  regressions and focused dungeon, town, shop, trainer and overworld guardrails.
+  Coverage includes one visible close control, hero identity, wrapped rows, active
+  tabs, pointer Options access in town/overworld/dungeon, modal focus restoration, and
+  separate Wait / Full Control stick bindings.
+- **Tools > Eternal Enigma > Tests > Run UI Audit Devices** focuses on supported
+  keyboard/mouse and gamepad switching, cursor/prompts, controller navigation,
+  and preventing incomplete template device schemes from taking control.
+- **Tools > Eternal Enigma > Tests > Run UI Audit Fades** checks paused and
+  interrupted fades, duplicate requests, input blocking, ready-before-reveal
+  scene travel, and opaque-before-mutation floor advance/reset. Scene traces and
+  frames are in `Temp/UIScreenAudit/Transitions`; floor traces and frames are in
+  `Temp/FloorTransitions`.
+- **Tools > Eternal Enigma > Tests > Run UI Audit Animations** runs hero animation
+  and transfer checks, including potion playback for every armed stance,
+  restoration of the equipped idle pose, dash clips during Lunge/Shadow Step,
+  ordinary walking displacement, and the real home sleep/save flow.
+- **Run UI Audit Followup** provides the focused controller, overworld, terminal,
+  and current homecoming/save checks used during this audit.
+
+For Unity MCP, call `execute_menu_item` with
+`{"menuPath":"Tools/Eternal Enigma/Tests/Run UI Audit Captures"}` or the corresponding
+`Run UI Audit Controls` path. The project client accepts the same call via
+`node Tools/unity-mcp.mjs execute_menu_item @path/to/arguments.json`.
+These audit names are not currently in the client's `harness` suite allowlist.
+Wait for the new run ID to finish in `Temp/HarnessResults/PlayMode.json`; NUnit XML
+is written alongside it. Review captures as well as assertions. See
+[UI behavior and styling](../../Docs/BamaoUI.md#shared-gameplay-dock).
 
 ## MCP / command line
 

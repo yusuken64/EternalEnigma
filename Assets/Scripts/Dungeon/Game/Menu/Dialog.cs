@@ -15,6 +15,7 @@ namespace JuicyChickenGames.Menu
         public Action CloseAction { get; internal set; }
         public DialogController Owner { get; internal set; }
         public void CloseDialog() => Owner?.Close(this);
+        internal virtual void OnBackRequested() => CloseDialog();
         public virtual void PrepareTown(TownInteractionContext context) { }
 
         internal void UseGameplayDock(Transform panel)

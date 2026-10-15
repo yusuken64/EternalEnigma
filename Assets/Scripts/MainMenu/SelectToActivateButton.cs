@@ -43,8 +43,11 @@ public class SelectToActivateButton : Button
             && EventSystem.current.currentSelectedGameObject == gameObject
             && (MenuUIInputModule.Active == null || MenuUIInputModule.Active.Allows(gameObject));
         canActivatePointer = false;
-        if (activate)
+        if (activate && IsActive() && IsInteractable())
+        {
+            PlayConfirm();
             base.OnPointerClick(eventData);
+        }
     }
 
     public override void OnDeselect(BaseEventData eventData)
@@ -56,8 +59,17 @@ public class SelectToActivateButton : Button
     public override void OnSubmit(BaseEventData eventData)
     {
         var module = MenuUIInputModule.Active;
-        if (module == null || (!module.InputConsumed && module.Allows(gameObject)))
+        if (IsActive() && IsInteractable() && (module == null || (!module.InputConsumed && module.Allows(gameObject))))
+        {
+            PlayConfirm();
             base.OnSubmit(eventData);
+        }
+    }
+
+    private static void PlayConfirm()
+    {
+        var audio = AudioManager.Instance;
+        if (audio != null) audio.PlayUISound(audio.SoundEffects?.Confirm);
     }
 
     protected override void OnDisable()

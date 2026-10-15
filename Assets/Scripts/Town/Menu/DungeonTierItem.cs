@@ -16,27 +16,43 @@ public class DungeonTierItem : MonoBehaviour
 
     public void Setup(DungeonTierData data)
     {
+        FitLabel();
         campaignClick = null;
+        Button.interactable = true;
         _data = data;
-        TierText.text = GameplayText.Format($"Dungeon Floors {data.StartFloor} - {data.EndFloor}");
+        TierText.text = GameplayText.Format($"Dungeon\nFloors {data.StartFloor} - {data.EndFloor}");
         var save = Common.Instance.GameSaveData.TownSaveData;
         if (save.CompletedTiers.Contains($"{Common.Instance.CurrentTownConfiguration.Id}/{data.StartFloor}-{data.EndFloor}"))
-            TierText.text += GameplayText.Format(" - Complete");
+            TierText.text += GameplayText.Format("\nComplete");
     }
 
     public void SetupCampaign(EternalEnigma.Core.Progression.CampaignLocation location, bool completed, Action onClick)
     {
+        FitLabel();
         var floors = EternalEnigma.Core.Progression.CampaignContext.Floors(location.Tier);
         string kind = location.Kind == EternalEnigma.Core.Progression.LocationKind.RepeatableDungeon ? "Repeatable dungeon" : "Story dungeon";
         if (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town) kind = "Town district";
-        TierText.text = GameplayText.Format($"{kind}: Floors {floors.Start} - {floors.End}" + (completed ? " - Complete" : ""));
-        if (Common.Instance.CampaignContext?.CanEnterDungeon(location.Id) == false)
-            TierText.text = GameplayText.Format("Town dungeon - opens tomorrow");
+        TierText.text = GameplayText.Format($"{kind}\nFloors {floors.Start} - {floors.End}" + (completed ? "\nComplete" : ""));
+        Button.interactable = Common.Instance.CampaignContext?.CanEnterDungeon(location.Id) != false;
+        if (!Button.interactable)
+            TierText.text = GameplayText.Format("Town dungeon\nOpens tomorrow");
         campaignClick = onClick;
+    }
+
+    private void FitLabel()
+    {
+        TierText.alignment = TextAlignmentOptions.Center;
+        TierText.margin = new Vector4(20, 20, 20, 20);
+        TierText.enableAutoSizing = true;
+        TierText.fontSizeMin = 24;
+        TierText.fontSizeMax = 52;
+        TierText.textWrappingMode = TextWrappingModes.Normal;
+        TierText.raycastTarget = false;
     }
 
     public void OnClick()
 	{
+        if (!Button.interactable) return;
         if (campaignClick != null) campaignClick(); else ClickCallback?.Invoke(_data);
     }
 }

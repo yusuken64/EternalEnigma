@@ -18,6 +18,7 @@ public sealed class PartyMenuPicker : Dialog
     private TMP_Text description;
     private string descriptionText;
     private bool descriptionGamepad;
+    private bool hasActions;
     #if UNITY_EDITOR
     public static PartyMenuPicker AuthorLayout(Transform parent, string title, List<(string Label, Action Execute)> choices,bool closeOnChoose=true)
     {
@@ -62,11 +63,11 @@ public sealed class PartyMenuPicker : Dialog
         var picker=parent.GetComponentsInChildren<PartyMenuPicker>(true).FirstOrDefault(p=>p.Owner==null);
         if(picker==null)throw new InvalidOperationException("No free authored party picker for this dialog stack.");
         picker.UseGameplayDock(picker.Title.transform.parent);
-        picker.BackButton.gameObject.SetActive(showBackButton);
-        foreach(var close in picker.Title.transform.parent.GetComponentsInChildren<DungeonDialogClose>(true))
-            close.gameObject.SetActive(showBackButton);
+        var closeButton=DungeonDialogClose.ShowSingle(picker.Title.transform.parent);
+        bool footerBack=closeButton==null;
+        picker.BackButton.gameObject.SetActive(footerBack);
         var viewport=(RectTransform)picker.scrollView.transform;
-        Fit(viewport,viewport.anchorMin.x,showBackButton ? .2f : .035f,viewport.anchorMax.x,viewport.anchorMax.y);
+        Fit(viewport,viewport.anchorMin.x,footerBack ? .2f : .035f,viewport.anchorMax.x,viewport.anchorMax.y);
         picker.committed=false;picker.submittedFrame=-1;picker.Title.text=GameplayText.Format(title);picker.Title.enableAutoSizing=true;picker.Title.fontSizeMin=18;picker.Title.fontSizeMax=30;picker.first=null;picker.description=null;
         if(picker.OptionDescription!=null)
         {
@@ -91,10 +92,11 @@ public sealed class PartyMenuPicker : Dialog
             if(picker.first==null && row.Button.interactable)picker.first=row.Button;
         }
         picker.BackButton.onClick.RemoveAllListeners();picker.BackButton.onClick.AddListener(picker.CloseDialog);
-        if(showBackButton)
+        picker.hasActions=buttons.Count>0;
+        var exit=closeButton!=null?closeButton:picker.BackButton;
         {
-            if(picker.first==null)picker.first=picker.BackButton;
-            buttons.Add(picker.BackButton);
+            if(picker.first==null)picker.first=exit;
+            buttons.Add(exit);
         }
         for(int i=0;i<buttons.Count;i++)buttons[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
             selectOnUp=buttons[(i+buttons.Count-1)%buttons.Count],selectOnDown=buttons[(i+1)%buttons.Count]};
@@ -112,8 +114,8 @@ public sealed class PartyMenuPicker : Dialog
         label.gameObject.AddComponent<LayoutElement>();
         var read=label.gameObject.AddComponent<TrainerPreviewScroll>();
         read.Scroll=scrollView;
-        read.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnLeft=BackButton.gameObject.activeSelf?BackButton:null,selectOnRight=first};
-        foreach(var button in Rows.GetComponentsInChildren<Button>().Append(BackButton).Where(b=>b!=read && b.gameObject.activeSelf))
+        read.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnRight=first,selectOnUp=first,selectOnDown=first};
+        foreach(var button in GetComponentsInChildren<Button>(true).Where(b=>b!=read && b.gameObject.activeSelf))
         {var nav=button.navigation;nav.selectOnLeft=read;button.navigation=nav;}
         first=read;
         label.gameObject.SetActive(true);
@@ -130,7 +132,8 @@ public sealed class PartyMenuPicker : Dialog
     private void RefreshDescription()
     {
         descriptionGamepad=ControlDeviceState.Gamepad;
-        description.text=GameplayText.Format(descriptionText+"\n\n<size=18>"+InputPrompts.DescriptionHint+"</size>");
+        string hint=hasActions?InputPrompts.DescriptionHint:$"Use {InputPrompts.Scroll} to scroll. Press {InputPrompts.Back} to return.";
+        description.text=GameplayText.Format(descriptionText+"\n\n<size=18>"+hint+"</size>");
     }
     internal override void SetFirstSelect()
     {
@@ -139,9 +142,7 @@ public sealed class PartyMenuPicker : Dialog
         if(description!=null)description.GetComponent<LayoutElement>().preferredHeight=description.GetPreferredValues(description.text,width,0).y+24;
         foreach(var row in Rows.GetComponentsInChildren<AuthoredButton>())
         {
-            var label=row.GetComponentInChildren<TMP_Text>();
-            var layout=row.GetComponent<LayoutElement>();
-            if(layout!=null && label!=null)layout.preferredHeight=Mathf.Max(64,label.GetPreferredValues(label.text,width-40,0).y+24);
+            PartyMenuRow.FitHeight(row);
         }
         Canvas.ForceUpdateCanvases();
         scrollView.verticalNormalizedPosition=1;

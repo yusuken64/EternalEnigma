@@ -38,6 +38,8 @@ public static class OpeningUIAuthoring
         if (scene.isDirty) throw new System.InvalidOperationException("Save MainMenu before repairing its slot wiring.");
         var menu = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<MainMenu>(true)).Single();
         var browser = menu.CampaignStartMenu.SlotViewer.GetComponent<CampaignSlots>();
+        browser.EnsureTitle(true);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(browser);
         for (int i = 0; i < browser.Slots.Length; i++)
         {
             var configured = browser.Slots[i];

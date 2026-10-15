@@ -35,6 +35,8 @@ namespace EternalEnigma.Tests
             Common.Instance.GlobalSettings.Exit_Clicked();
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False);
             Assert.That(menu.NavigationHandler.gameObject.activeInHierarchy, Is.True);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(menu.StartButton),
+                "Closing Options restores the opener after the main-menu root becomes active again.");
         }
 
         [UnityTest] public IEnumerator KeyboardConfirmActivatesMainMenuAndOptions()
@@ -71,6 +73,103 @@ namespace EternalEnigma.Tests
             finally { InputSystem.RemoveDevice(keyboard); }
         }
 
+        [UnityTest] public IEnumerator MainMenuCursorClearsButtonEdgesAndCampaignsRestoreTheirOpener()
+        {
+            using var inputScope = new TestInputScope();
+            using var preferences = GamePreferences.Isolate();
+            harness = new GameTestHarness();
+            yield return harness.LoadMainMenuDirect();
+            var menu = Object.FindFirstObjectByType<MainMenu>();
+            var developer = menu.GetComponent<MainMenuDeveloperControls>();
+            var arrow = menu.NavigationHandler.selectionArrow;
+            Canvas.ForceUpdateCanvases();
+            foreach (var label in menu.StartButton.GetComponentInParent<Canvas>().rootCanvas.GetComponentsInChildren<TMPro.TMP_Text>())
+            {
+                label.ForceMeshUpdate();
+                Assert.That(label.isTextOverflowing, Is.False, label.name + ": " + label.text);
+            }
+            Assert.That(menu.StartButton.transform.parent.GetComponentsInChildren<TMPro.TMP_Text>().Any(label => label.text == "Options"), Is.True);
+            foreach (var button in new[] { menu.StartButton.GetComponent<Button>(), developer.Toggle })
+            {
+                button.Select();
+                yield return new WaitForSecondsRealtime(.12f);
+                Canvas.ForceUpdateCanvases();
+                var buttonCorners = new Vector3[4];
+                var arrowCorners = new Vector3[4];
+                ((RectTransform)button.transform).GetWorldCorners(buttonCorners);
+                arrow.GetWorldCorners(arrowCorners);
+                Assert.That(arrow.gameObject.activeInHierarchy, Is.True);
+                Assert.That(arrowCorners.Max(corner => corner.x), Is.LessThan(buttonCorners.Min(corner => corner.x)),
+                    "The selection arrow must sit outside " + button.name + " even when button widths differ.");
+            }
+
+            menu.ContinueButton.GetComponent<Button>().Select();
+            menu.Continue_Clicked();
+            yield return null; yield return null;
+            var slots = Object.FindFirstObjectByType<CampaignSlots>();
+            Assert.That(arrow.gameObject.activeSelf, Is.False, "The main-menu arrow must not follow a campaign-dialog selection.");
+            slots.BackButton.onClick.Invoke();
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(menu.ContinueButton),
+                "Back from Campaigns must restore Campaigns, not New Journey.");
+            menu.StartGame_Clicked(); yield return null;
+            slots.BackButton.onClick.Invoke();
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(menu.StartButton));
+        }
+
+        [UnityTest] public IEnumerator MainMenuShortcutsOpenOptionsAndCancelDeveloperControls()
+        {
+            using var inputScope = new TestInputScope();
+            using var preferences = GamePreferences.Isolate();
+            harness = new GameTestHarness();
+            yield return harness.LoadMainMenuDirect();
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            var gamepad = InputSystem.AddDevice<Gamepad>();
+            try
+            {
+                var menu = Object.FindFirstObjectByType<MainMenu>();
+                var developer = menu.GetComponent<MainMenuDeveloperControls>();
+                MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { keyboard, gamepad };
+                yield return null;
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Escape));
+                yield return null; yield return null;
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True, "Escape opens Options from the main menu.");
+                yield return null;
+                Common.Instance.GlobalSettings.Exit_Clicked();
+                yield return null;
+
+                InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.Start));
+                yield return null; yield return null;
+                InputSystem.QueueStateEvent(gamepad, new GamepadState());
+                Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True, "Start opens Options from the main menu.");
+                yield return null;
+                Common.Instance.GlobalSettings.Exit_Clicked();
+                yield return null;
+
+                foreach (bool useGamepad in new[] { false, true })
+                {
+                    developer.Toggle.onClick.Invoke();
+                    Assert.That(developer.FirstControl.gameObject.activeInHierarchy, Is.True);
+                    Assert.That(developer.Toggle.GetComponentInChildren<TMPro.TMP_Text>().text, Is.EqualTo("Close developer"));
+                    yield return null;
+                    if (useGamepad) InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.East));
+                    else InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Escape));
+                    yield return null; yield return null;
+                    InputSystem.QueueStateEvent(gamepad, new GamepadState());
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    Assert.That(developer.Controls.All(control => !control.activeSelf), Is.True);
+                    Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(developer.Toggle.gameObject));
+                    Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False, "Cancel closes the drawer before opening Options.");
+                    yield return null;
+                }
+            }
+            finally
+            {
+                InputSystem.RemoveDevice(gamepad);
+                InputSystem.RemoveDevice(keyboard);
+            }
+        }
+
         [UnityTest] public IEnumerator MouseClicksReachMainMenuButtonsAndDialogs()
         {
             using var inputScope = new TestInputScope();
@@ -97,6 +196,7 @@ namespace EternalEnigma.Tests
                 Common.Instance.GlobalSettings.Exit_Clicked();
                 yield return null;
 
+                Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(options.gameObject));
                 yield return Click(mouse, menu.ContinueButton.GetComponent<Button>());
                 yield return Click(mouse, menu.ContinueButton.GetComponent<Button>());
                 Assert.That(Object.FindFirstObjectByType<CampaignSlots>(), Is.Not.Null,

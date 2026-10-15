@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace JuicyChickenGames.Menu
 {
@@ -26,6 +28,11 @@ namespace JuicyChickenGames.Menu
         public Vector3Int MissileEndpoint { get; private set; }
         private Vector2 lastMove;
         private float nextMoveTime;
+        private bool pointerReady;
+        private Vector2 lastPointer;
+        private bool? promptGamepad;
+        private Image pointerShield;
+        private readonly List<RaycastResult> pointerHits = new();
         public List<Character> Targetables { get; private set; }
         public Character CameraTarget { get; private set; }
         public Vector3Int? TerminalSelectedCell => missileRange > 0 ? MissileEndpoint :
@@ -78,6 +85,19 @@ namespace JuicyChickenGames.Menu
         private static string DirectionName(Vector3Int direction) =>
             (direction.y > 0 ? "north" : direction.y < 0 ? "south" : "") + (direction.x > 0 ? "east" : direction.x < 0 ? "west" : "");
 
+        private void Awake()
+        {
+            // Drain UI pointer events while world targeting owns the pointer. This
+            // surface sits above dungeon HUD controls and below Settings.
+            var canvas = GetComponent<Canvas>();
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = 150;
+            pointerShield = GetComponent<Image>();
+            if (pointerShield == null) pointerShield = gameObject.AddComponent<Image>();
+            pointerShield.color = Color.clear;
+            pointerShield.raycastTarget = true;
+        }
+
         internal void Setup(Character character, Skill skill)
         {
             targetingSkill = skill;
@@ -107,13 +127,27 @@ namespace JuicyChickenGames.Menu
             if (promptText != null)
             {
                 originalPrompt = promptText.text;
-                if (missileRange > 0) promptText.text = GameplayText.Format("Aim in a direction, then confirm");
+                promptGamepad = null;
+                RefreshPrompt();
             }
             if (tiles.Count > 0) SelectTile(tiles.Contains(selectedTile) ? selectedTile : tiles[0]);
             else if (missileRange > 0) Aim(Dungeon.GetFacingOffset(character.CurrentFacing));
             else if(Targetables.Count > 0) SelectTarget(Targetables[0]); else SelectProp(props[0]);
             lastMove = Vector2.zero;
             nextMoveTime = 0;
+            pointerReady = false;
+            lastPointer = MenuUIInputModule.Active?.UI.Point.ReadValue<Vector2>() ?? Vector2.zero;
+        }
+
+        private void RefreshPrompt()
+        {
+            if (promptText == null || promptGamepad == ControlDeviceState.Gamepad) return;
+            promptGamepad = ControlDeviceState.Gamepad;
+            string title = missileRange > 0 ? "Aim in a direction" : "Select a highlighted target";
+            string controls = InputPrompts.Pick("Click / Enter: cast   Right-click / Esc: cancel",
+                "A / Cross: cast   B / Circle: cancel");
+            promptText.text = GameplayText.Format(title + "\n" + controls);
+            promptText.enableAutoSizing = true;promptText.fontSizeMin = 18;promptText.fontSizeMax = 24;
         }
 
         private void Aim(Vector3Int direction)
@@ -136,27 +170,107 @@ namespace JuicyChickenGames.Menu
             TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellToWorld(cell);
             MenuManager.Instance.TargetArrow.transform.position = TargetIndicator.transform.position;
         }
-        private void SelectProp(DungeonProp prop)
+        private void SelectProp(DungeonProp prop, bool followCamera = true)
         {
             selectedProp = prop; CameraTarget = null;
             TargetIndicator.SetActive(true); TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellToWorld(prop.Position);
             MenuManager.Instance.TargetArrow.transform.position = TargetIndicator.transform.position;
-            Game.Instance.PlayerController.CameraController.SetFollowTarget(prop.transform);
+            if (followCamera) Game.Instance.PlayerController.CameraController.SetFollowTarget(prop.transform);
         }
-        private void SelectTarget(Character target)
+        private void SelectTarget(Character target, bool followCamera = true)
         {
             selectedProp = null;
             CameraTarget = target;
             TargetIndicator.SetActive(true);
             TargetIndicator.transform.position = target.transform.position;
             MenuManager.Instance.TargetArrow.transform.position = target.transform.position;
-            Game.Instance.PlayerController.CameraController.SetFollowTarget(target.transform);
+            if (followCamera) Game.Instance.PlayerController.CameraController.SetFollowTarget(target.transform);
+        }
+
+        private bool ProcessPointer()
+        {
+            var module = MenuUIInputModule.Active;
+            if (module == null) return false;
+            var ui = module.UI;
+            // A held button used to open targeting must be released before it can cast.
+            if (!pointerReady)
+            {
+                pointerReady = !ui.Click.IsPressed() && !ui.RightClick.IsPressed();
+                return false;
+            }
+            if (ui.RightClick.WasPressedThisFrame())
+            {
+                CloseDialog();Common.Instance.MenuInputHandler.ClearInputThisFrame();return true;
+            }
+            var position = ui.Point.ReadValue<Vector2>();
+            bool clicked = ui.Click.WasPressedThisFrame();
+            bool moved = (position-lastPointer).sqrMagnitude > 1;
+            lastPointer = position;
+            if (!clicked && !moved) return false;
+            if (TerminalMode.Effective || !TryPointTarget(position)) return false;
+            if (clicked)
+            {
+                ConfirmTarget();Common.Instance.MenuInputHandler.ClearInputThisFrame();return true;
+            }
+            return false;
+        }
+
+        internal bool TryPointTarget(Vector2 position)
+        {
+            var camera = Camera.main;
+            if (camera == null || casterCharacter == null || targetingFloor == null || !camera.pixelRect.Contains(position)) return false;
+            if (EventSystem.current != null)
+            {
+                pointerHits.Clear();
+                EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position=position },pointerHits);
+                // Ignore only our event-draining surface; HUD graphics beneath it
+                // must still prevent a world cast through a control.
+                if (pointerHits.Any(hit=>hit.module is GraphicRaycaster && hit.gameObject != pointerShield.gameObject)) return false;
+            }
+            var ray = camera.ScreenPointToRay(position);
+            var ground = new Plane(Vector3.forward,new Vector3(0,0,DungeonPresentation.GroundPlaneZ));
+            if (!ground.Raycast(ray,out float distance)) return false;
+            var cell = targetingFloor.WorldToCell(ray.GetPoint(distance));
+            if (missileRange > 0)
+            {
+                var delta = cell-casterCharacter.TilemapPosition;
+                if (delta == Vector3Int.zero) return false;
+                float angle = Mathf.Round(Mathf.Atan2(delta.y,delta.x)/(Mathf.PI*.25f))*Mathf.PI*.25f;
+                Aim(new Vector3Int(Mathf.RoundToInt(Mathf.Cos(angle)),Mathf.RoundToInt(Mathf.Sin(angle)),0));return true;
+            }
+            if (tiles.Count > 0)
+            {
+                if (!tiles.Contains(cell)) return false;
+                SelectTile(cell);return true;
+            }
+            // Elevated character meshes can project above their logical floor cell.
+            // Prefer the nearest visible body over another target's projected cell.
+            Character target = null;
+            float nearest = float.PositiveInfinity;
+            foreach (var candidate in Targetables ?? new List<Character>())
+            {
+                if (candidate == null || !GameMessages.Visible(candidate) || candidate.VisualParent == null) continue;
+                foreach (var renderer in candidate.VisualParent.GetComponentsInChildren<Renderer>())
+                    if ((renderer is MeshRenderer || renderer is SkinnedMeshRenderer || renderer is SpriteRenderer) &&
+                        renderer.enabled && !renderer.forceRenderingOff && renderer.bounds.IntersectRay(ray,out float hit) && hit < nearest)
+                    { target=candidate;nearest=hit; }
+            }
+            if (target != null) { SelectTarget(target,false);return true; }
+            target = Targetables?.FirstOrDefault(character=>character != null &&
+                GameMessages.Visible(character) && Character.ToBounds(character.FootPrint,character.TilemapPosition).Contains(cell));
+            if (target != null) { SelectTarget(target,false);return true; }
+            var prop = props.FirstOrDefault(candidate=>candidate != null && candidate.Alive && candidate.Position==cell);
+            if (prop == null) return false;
+            SelectProp(prop,false);return true;
         }
 
         private void Update()
         {
             if (Game.Instance.PlayerController.CurrentControlMode != PlayerControlMode.TargetSelecting ||
-                Common.Instance.GlobalSettings.IsOpen || MenuUIInputModule.Active?.InputConsumed == true) return;
+                Common.Instance.GlobalSettings.IsOpen || MenuUIInputModule.Active?.InputConsumed == true ||
+                Owner?.Current != this || AutoplayRunner.BlocksPlayerInput) return;
+            RefreshPrompt();
+            if (ProcessPointer()) return;
             var move = Common.Instance.MenuInputHandler.MoveInput;
             if (move.sqrMagnitude < 0.25f) { lastMove = Vector2.zero; return; }
             if (missileRange > 0)

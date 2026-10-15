@@ -23,7 +23,7 @@ public sealed class CampaignSlots : MonoBehaviour
         menu = owner;
         newJourney = creating;
         selected = Mathf.Clamp(SaveSystem.ActiveSlot, 0, Slots.Length - 1);
-        if (Title != null) Title.text = creating ? "New journey - choose a slot" : "Continue a campaign";
+        EnsureTitle(creating);
         var catalog = Resources.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
         for (int i = 0; i < Slots.Length; i++)
         {
@@ -50,6 +50,26 @@ public sealed class CampaignSlots : MonoBehaviour
         Select(selected);
         MenuUIInputModule.Active?.PushDialog(this, transform, Slots[selected].Button.gameObject, Close);
         Slots[selected].Button.Select();
+    }
+
+    public void EnsureTitle(bool creating)
+    {
+        if (Title == null)
+        {
+            var titleObject = new GameObject("Campaign slots title", typeof(RectTransform), typeof(TextMeshProUGUI));
+            titleObject.transform.SetParent(detail.transform.parent, false);
+            Title = titleObject.GetComponent<TextMeshProUGUI>();
+            Title.font = detail.font;
+        }
+        Title.text = creating ? "New journey - choose a slot" : "Continue a campaign";
+        Title.fontSize = Title.fontSizeMax = 36;
+        Title.enableAutoSizing = true;
+        Title.fontSizeMin = 24;
+        Title.textWrappingMode = TextWrappingModes.NoWrap;
+        Title.rectTransform.anchorMin = new Vector2(.04f, .89f);
+        Title.rectTransform.anchorMax = new Vector2(.96f, .99f);
+        Title.rectTransform.offsetMin = Title.rectTransform.offsetMax = Vector2.zero;
+        GameUISkin.RibbonHeader(Title);
     }
 
     private void Select(int slot)
@@ -111,6 +131,6 @@ public sealed class CampaignSlots : MonoBehaviour
         MenuUIInputModule.Active?.PopDialog(this);
         gameObject.SetActive(false);
         menu.CampaignStartMenu.gameObject.SetActive(false);
-        menu.StartButton.GetComponent<Button>().Select();
+        (newJourney ? menu.StartButton : menu.ContinueButton).GetComponent<Button>().Select();
     }
 }

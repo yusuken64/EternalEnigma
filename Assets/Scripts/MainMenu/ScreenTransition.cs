@@ -16,6 +16,11 @@ public class ScreenTransition : MonoBehaviour
     public float TransitionTimeSeconds;
     public float OpenDelayTimeSeconds;
     [SerializeField] private TMP_Text destinationLabel;
+    private Coroutine sceneRoutine;
+    private int animationVersion;
+    private bool loadPending;
+    public bool BlocksInput => BlockScreen.activeInHierarchy ||
+        Game.Instance?.NewFloorMessage != null && Game.Instance.NewFloorMessage.gameObject.activeInHierarchy;
 
     private void Awake()
     {
@@ -25,26 +30,19 @@ public class ScreenTransition : MonoBehaviour
 
     public void DoTransition(Action postTransition, bool autoOpen = true, string destinationTitle = null)
     {
+        // Repeated Submit/clicks must not replace a destination already being covered.
+        if (loadPending) return;
         CancelAnimation();
+        loadPending = true;
         if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
         {
-            if (autoOpen)
-            {
-                ShutterScreen.gameObject.SetActive(false);
-                BlockScreen.gameObject.SetActive(false);
-                postTransition?.Invoke();
-            }
-            else
-            {
-                // Skipping the fade must not skip the loading screen or load
-                // synchronously before the cover has had a chance to render.
-                HoldClosed(destinationTitle ?? "Loading...");
-                StartCoroutine(DoInstantLoadRoutine(postTransition));
-            }
+            ShowCover(1);
+            SetDestinationTitle(destinationTitle ?? "Loading...");
+            sceneRoutine = StartCoroutine(DoInstantLoadRoutine(postTransition, autoOpen, animationVersion));
             return;
         }
         SetDestinationTitle(destinationTitle);
-        StartCoroutine(DoTransitionRoutine(postTransition, autoOpen));
+        sceneRoutine = StartCoroutine(DoTransitionRoutine(postTransition, autoOpen, animationVersion));
     }
 
     private void SetDestinationTitle(string title)
@@ -67,17 +65,25 @@ public class ScreenTransition : MonoBehaviour
 
     private void CancelAnimation()
     {
-        StopAllCoroutines();
+        animationVersion++;
+        loadPending = false;
+        if (sceneRoutine != null) StopCoroutine(sceneRoutine);
+        sceneRoutine = null;
         ShutterScreen.DOKill();
+    }
+
+    private void ShowCover(float alpha)
+    {
+        BlockScreen.SetActive(true);
+        ShutterScreen.gameObject.SetActive(true);
+        ShutterScreen.color = new Color(0,0,0,alpha);
     }
 
     internal void HoldClosed(string destinationTitle = null)
     {
         CancelAnimation();
         SetDestinationTitle(destinationTitle);
-        BlockScreen.SetActive(true);
-        ShutterScreen.gameObject.SetActive(true);
-        ShutterScreen.color = Color.black;
+        ShowCover(1);
         if (destinationLabel != null) destinationLabel.alpha = 1;
     }
 
@@ -90,34 +96,32 @@ public class ScreenTransition : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator DoInstantLoadRoutine(Action postTransition)
+    private IEnumerator DoInstantLoadRoutine(Action postTransition, bool autoOpen, int version)
     {
         yield return PresentLoadingScreen();
+        if (version != animationVersion) yield break;
+        loadPending = false;
         postTransition?.Invoke();
+        if (autoOpen && version == animationVersion)
+        {
+            yield return PresentLoadingScreen();
+            if (version == animationVersion) ReleaseFade();
+        }
     }
 
-    private IEnumerator DoTransitionRoutine(Action postTransition, bool autoOpen = true)
+    private IEnumerator DoTransitionRoutine(Action postTransition, bool autoOpen, int version)
     {
-        BlockScreen.gameObject.SetActive(true);
-        ShutterScreen.gameObject.SetActive(true);
-        ShutterScreen.color = new Color(0, 0, 0, 0);
-
-        //AudioManager.Instance?.PlaySound(CloseClip);
-        var closeTween = ShutterScreen.DOFade(1, TransitionTimeSeconds);
-        yield return closeTween.WaitForCompletion();
-
+        ShowCover(ShutterScreen.gameObject.activeSelf ? ShutterScreen.color.a : 0);
+        yield return AnimateTo(1, TransitionTimeSeconds, version);
+        yield return PresentLoadingScreen();
+        if (version != animationVersion) yield break;
+        loadPending = false;
         postTransition?.Invoke();
-
-        if (autoOpen)
+        if (autoOpen && version == animationVersion)
         {
-            yield return new WaitForSeconds(OpenDelayTimeSeconds);
-
-            //AudioManager.Instance?.PlaySound(OpenClip);
-            var openTween = ShutterScreen.DOFade(0, TransitionTimeSeconds);
-            yield return openTween.WaitForCompletion();
-
-            ShutterScreen.gameObject.SetActive(false);
-            BlockScreen.gameObject.SetActive(false);
+            yield return new WaitForSecondsRealtime(Mathf.Max(0,OpenDelayTimeSeconds));
+            yield return AnimateTo(0, TransitionTimeSeconds, version);
+            if (version == animationVersion) ReleaseFade();
         }
     }
 
@@ -126,36 +130,55 @@ public class ScreenTransition : MonoBehaviour
         CancelAnimation();
         if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
         {
-            ShutterScreen.gameObject.SetActive(false);
-            BlockScreen.gameObject.SetActive(false);
+            ReleaseFade();
             return;
         }
-        StartCoroutine(DoOpenRoutine());
+        // Opening an already visible screen should never insert a new black frame.
+        if (!ShutterScreen.gameObject.activeSelf) { ReleaseFade(); return; }
+        // Dungeon entry already has a floor title beneath this cover. Hand the
+        // reveal to that label rather than fading two centered titles together.
+        if (Game.Instance?.NewFloorMessage != null && Game.Instance.NewFloorMessage.gameObject.activeInHierarchy)
+            SetDestinationTitle(null);
+        sceneRoutine = StartCoroutine(DoOpenRoutine(animationVersion));
     }
-    private IEnumerator DoOpenRoutine()
+    private IEnumerator DoOpenRoutine(int version)
     {
-        BlockScreen.gameObject.SetActive(true);
-        ShutterScreen.gameObject.SetActive(true);
-        ShutterScreen.color = new Color(0, 0, 0, 1);
-
-        var openTween = ShutterScreen.DOFade(0, TransitionTimeSeconds);
-        yield return openTween.WaitForCompletion();
-
-        ShutterScreen.gameObject.SetActive(false);
-        BlockScreen.gameObject.SetActive(false);
+        ShowCover(ShutterScreen.color.a);
+        // Let the destination finish its first rendered frame while opaque.
+        // Shader/UI initialization during that frame must not skip the reveal.
+        if (ShutterScreen.color.a >= .999f) yield return PresentLoadingScreen();
+        if (version != animationVersion) yield break;
+        yield return AnimateTo(0, TransitionTimeSeconds, version);
+        if (version == animationVersion) ReleaseFade();
     }
 
     public IEnumerator FadeTo(float alpha, float seconds)
     {
+        CancelAnimation();
+        int version = animationVersion;
         SetDestinationTitle(null);
-        BlockScreen.SetActive(true); ShutterScreen.gameObject.SetActive(true);
+        ShowCover(ShutterScreen.gameObject.activeSelf ? ShutterScreen.color.a : 0);
+        yield return AnimateTo(Mathf.Clamp01(alpha), seconds, version);
+    }
+
+    private IEnumerator AnimateTo(float alpha, float seconds, int version)
+    {
         float start = ShutterScreen.color.a;
-        for (float elapsed=0; elapsed<seconds; elapsed+=Time.unscaledDeltaTime)
-        { ShutterScreen.color = new Color(0,0,0,Mathf.Lerp(start,alpha,elapsed/seconds)); yield return null; }
-        ShutterScreen.color = new Color(0,0,0,alpha);
+        // The frame that starts a reveal may have spent seconds generating a
+        // scene. Its inherited delta must not consume the new fade's duration.
+        double started = Time.realtimeSinceStartupAsDouble;
+        for (double elapsed=0; elapsed<seconds; elapsed=Time.realtimeSinceStartupAsDouble-started)
+        {
+            if (version != animationVersion) yield break;
+            ShutterScreen.color = new Color(0,0,0,Mathf.Lerp(start,alpha,(float)(elapsed/seconds)));
+            yield return null;
+        }
+        if (version == animationVersion) ShutterScreen.color = new Color(0,0,0,alpha);
     }
     public void ReleaseFade()
     {
+        CancelAnimation();
+        SetDestinationTitle(null);
         ShutterScreen.color = Color.clear;
         ShutterScreen.gameObject.SetActive(false); BlockScreen.SetActive(false);
     }

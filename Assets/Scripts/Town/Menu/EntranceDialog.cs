@@ -24,6 +24,7 @@ public class EntranceDialog : Dialog
 
 	internal void Setup()
 	{
+        GetComponent<NavigationHandler>()?.ConfigureCompactPointer(this);
         var campaign = Common.Instance.CampaignContext;
         if (campaign != null)
         {
@@ -51,37 +52,20 @@ public class EntranceDialog : Dialog
 
 	internal override void SetFirstSelect()
 	{
-		if (items.Count > 0) items[0].Button.Select(); else CancelButton.Select();
+		(items?.FirstOrDefault(item => item.Button.interactable)?.Button ?? CancelButton).Select();
 	}
 
 	public void SetNavigation()
 	{
-		for (int i = 0; i < items.Count; i++)
-		{
-			var item = items[i];
-
-			Navigation customNav = new Navigation
-			{
-				mode = Navigation.Mode.Explicit
-			};
-
-			customNav.selectOnUp = items[(i - 1 + items.Count) % items.Count].Button;
-
-			if (i < items.Count - 1)
-				customNav.selectOnDown = items[i + 1].Button;
-			else
-				customNav.selectOnDown = CancelButton;
-
-			item.Button.navigation = customNav;
-		}
-
-		var cancelNav = new Navigation
-		{
-			mode = Navigation.Mode.Explicit,
-			selectOnUp = items.Count > 0 ? items[^1].Button : CancelButton,
-			selectOnDown = items.Count > 0 ? items[0].Button : CancelButton
-		};
-		CancelButton.navigation = cancelNav;
+        var available = items.Where(item => item.Button.interactable).Select(item => item.Button).ToList();
+        available.Add(CancelButton);
+        for (int i = 0; i < available.Count; i++)
+            available[i].navigation = new Navigation
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnUp = available[(i + available.Count - 1) % available.Count],
+                selectOnDown = available[(i + 1) % available.Count]
+            };
 	}
 
 	public void DungeonClicked(DungeonTierData data)

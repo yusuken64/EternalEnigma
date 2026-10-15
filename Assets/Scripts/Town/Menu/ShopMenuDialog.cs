@@ -13,6 +13,8 @@ public class ShopMenuDialog : Dialog
     private TownInteractionContext context;
     private string selectedItemName;
     private int selectedIndex;
+    private TMPro.TMP_Text[] controlHints;
+    private bool? hintGamepad;
     public override void PrepareTown(TownInteractionContext value)
     {
         context = value;
@@ -22,6 +24,17 @@ public class ShopMenuDialog : Dialog
         BuyModeButton.onClick.AddListener(() => SetMode(false));
         SellModeButton.onClick.AddListener(() => SetMode(true));
         BackButton.onClick.AddListener(Cancel_Clicked);
+        controlHints = GetComponentsInChildren<MenuControlHints>(true).Select(hint => {
+            hint.enabled = false;
+            var label = hint.Label != null ? hint.Label : hint.GetComponent<TMPro.TMP_Text>();
+            label.enableAutoSizing = true; label.fontSizeMin = 16; label.fontSizeMax = 18;
+            label.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+            label.raycastTarget = false;
+            Fit(label.transform, .05f, .015f, .70f, .115f);
+            return label;
+        }).ToArray();
+        hintGamepad = null;
+        Update();
         BuyConfirmationDialog.gameObject.SetActive(false);
         Setup();
     }
@@ -49,6 +62,8 @@ public class ShopMenuDialog : Dialog
 
 	public void Setup()
 	{
+        GameUITheme.StyleActiveTab(BuyModeButton, !Selling);
+        GameUITheme.StyleActiveTab(SellModeButton, Selling);
         float position=scrollView!=null && ShopItems?.Count>0?scrollView.verticalNormalizedPosition:1;
         var stock = context.Services.Shop(context.Building);
         ShopItemDatas = Selling ? context.Player.Inventory.Where(context.Services.CanSell)
@@ -68,7 +83,7 @@ public class ShopMenuDialog : Dialog
 			button.onClick.RemoveAllListeners();
 			button.onClick.AddListener(() =>
 			{
-				BuyConfirmationDialog.Setup(view, data);
+				BuyConfirmationDialog.Setup(view, data, () => UnavailableReason(data));
 				BuyConfirmationDialog.SetNavigation();
 				BuyConfirmationDialog.gameObject.SetActive(true);
 				BuyConfirmationDialog.BuyCallBack = Transact;
@@ -91,6 +106,34 @@ public class ShopMenuDialog : Dialog
         SetNavigation();
 
 	}
+
+    private void Update()
+    {
+        bool pad = ControlDeviceState.Gamepad;
+        if (hintGamepad == pad || controlHints == null) return;
+        hintGamepad = pad;
+        foreach (var label in controlHints)
+            label.text = InputPrompts.Pick("Up/Down: browse  |  Left/Right: tabs\nEnter / click: choose  |  Esc: back",
+                "Up/Down: browse  |  Left/Right: tabs\nA / Cross: choose  |  B / Circle: back");
+    }
+
+    private string UnavailableReason(ShopItemData item)
+    {
+        if (item.IsSale)
+        {
+            if (!context.Services.CanSell(item.BagItem)) return "This item cannot be sold.";
+            int price = TownServices.SellPrice(item.BagItem);
+            if (context.Player.Gold > int.MaxValue - price) return "Your gold is full.";
+            if (price != item.Cost || (item.BagItem.StackStock ?? 1) != item.Remaining)
+                return "This offer changed. Choose the item again.";
+            return null;
+        }
+        var offer = context.Services.Catalog(context.Building).FirstOrDefault(o => o.Item.ItemName == item.ItemName);
+        var stock = context.Services.Shop(context.Building).Stock.FirstOrDefault(s => s.ItemName == item.ItemName);
+        if (offer == null || stock == null || stock.Remaining <= 0) return "This item is sold out.";
+        if (offer.Price != item.Cost) return "The price changed. Choose the item again.";
+        return context.Player.Gold < offer.Price ? "Not enough gold." : null;
+    }
 
 	private void Transact(ShopMenuItem view, ShopItemData item)
 	{

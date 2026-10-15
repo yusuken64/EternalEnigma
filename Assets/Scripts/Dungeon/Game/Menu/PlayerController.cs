@@ -105,6 +105,7 @@ public class PlayerController : MonoBehaviour
     private bool ShouldBlockInput()
     {
         if (ControlledAlly == null || Game.Instance == null || !Game.Instance.IsReady) return true;
+        if (Common.Instance.ScreenTransition.BlocksInput) return true;
         if (AutoplayRunner.BlocksPlayerInput) return true;
         if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen)
 		{
@@ -550,7 +551,7 @@ public class PlayerController : MonoBehaviour
 
     internal bool CanOpenMenu()
     {
-        return Game.Instance.IsReady && (!Game.Instance.TurnManager.IsProcessingTurn || Game.Instance.TurnManager.AwaitingCommand) &&
+        return !Common.Instance.ScreenTransition.BlocksInput && Game.Instance.IsReady && (!Game.Instance.TurnManager.IsProcessingTurn || Game.Instance.TurnManager.AwaitingCommand) &&
             ControlledAlly != null && ControlledAlly.Vitals.HP > 0 && ControlledAlly.IsWaitingForPlayerInput &&
             !ControlledAlly.StatusEffects.Any(x => !x.IsExpired() && x.PreventsMenu());
     }

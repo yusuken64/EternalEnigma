@@ -170,6 +170,12 @@ public sealed class GameMessages : MonoBehaviour
     private void Update()
     {
         historyController.Tick();
+        if (Object.FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud == true)
+        {
+            group.alpha = 0;
+            group.blocksRaycasts = group.interactable = false;
+            return;
+        }
         bool showDock = MenuUIInputModule.Active?.HasDialog==true &&
             (Game.Instance==null || MenuManager.Instance==null || MenuManager.Instance.CurrentDialog!=MenuManager.Instance.TargetDialog);
         if (showDock != docked)

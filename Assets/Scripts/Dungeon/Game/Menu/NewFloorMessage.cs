@@ -1,5 +1,5 @@
 using DG.Tweening;
-using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +26,7 @@ public class NewFloorMessage : MonoBehaviour
 
 	public void ShowNewFloor(int floor)
 	{
+		FloorMessage.transform.DOKill();
 		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
 		{
 			gameObject.SetActive(false);
@@ -39,7 +40,7 @@ public class NewFloorMessage : MonoBehaviour
 
 		BackgroundColor.CrossFadeAlpha(0, 3f, true);
         if (decorativeFrame != null) decorativeFrame.CrossFadeAlpha(0, 3f, true);
-		FloorMessage.transform.DOKill();
+        FloorMessage.CrossFadeAlpha(0, 3f, true);
 		FloorMessage.transform.DOBlendablePunchRotation(Vector3.one * 3, 3f)
 			.SetUpdate(true)
 			.OnComplete(() => { this.gameObject.SetActive(false); });
@@ -51,13 +52,28 @@ public class NewFloorMessage : MonoBehaviour
 		FloorMessage.text = GameplayText.Format(Label(destinationFloor));
 		FloorMessage.transform.DOKill();
 		FloorMessage.transform.localRotation = Quaternion.identity;
-		this.gameObject.SetActive(true);
-		BackgroundColor.CrossFadeAlpha(1, 1.0f, true);
+		bool wasVisible = gameObject.activeSelf;
+		gameObject.SetActive(true);
 		BackgroundColor.sprite = null;
 		BackgroundColor.color = Color.black;
+        if (!wasVisible) BackgroundColor.CrossFadeAlpha(0, 0, true);
+        BackgroundColor.CrossFadeAlpha(1,
+            DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations ? 0 : 1f, true);
         FloorMessage.color = GameUITheme.LightInk;
+        FloorMessage.CrossFadeAlpha(1, 0, true);
         if (decorativeFrame != null) decorativeFrame.CrossFadeAlpha(1, 0, true);
 	}
+
+    internal IEnumerator CoverFloor(int destinationFloor)
+    {
+        HideScreen(destinationFloor);
+        if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
+            yield return new WaitForSecondsRealtime(1f);
+        // Pin the exact endpoint before rendering; Graphic's fade coroutine and
+        // this coroutine need not resume in the same order on the final frame.
+        BackgroundColor.CrossFadeAlpha(1, 0, true);
+        yield return ScreenTransition.PresentLoadingScreen();
+    }
 
 	[ContextMenu("Do Floor Message")]
 	public void DoFloorMeesage()

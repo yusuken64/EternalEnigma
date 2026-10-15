@@ -76,6 +76,7 @@ namespace EternalEnigma.Tests
             Assert.That(manager.CurrentDialog,Is.SameAs(menu));
             Assert.That(hero.Hp,Is.EqualTo(6));
             Assert.That(town.TownPlayer.Inventory.Contains(item),Is.False);
+            Assert.That(Object.FindFirstObjectByType<GameMessages>().History,Is.Not.Empty,"Party actions report their result in the visible event feed.");
 
             yield return PressNavigation(keyboard,Key.R);
             Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Skills));
@@ -248,6 +249,7 @@ namespace EternalEnigma.Tests
             yield return harness.LoadTown(new TestScenario().CreateSave());
             var town=Object.FindFirstObjectByType<Town>();var original=town.TownPlayer.RecruitedAllies[0];
             original.Level=LevelSystem.MaxLevel;original.Experience=LevelSystem.ExperienceAtLevel(LevelSystem.MaxLevel);
+            original.SetRank("Gatekeeper's Resolve",1);
             for(int i=1;i<4;i++)
             {
                 var clone=Object.Instantiate(original,town.transform);clone.Id="layout-"+i;clone.Name="Companion "+i;
@@ -258,6 +260,9 @@ namespace EternalEnigma.Tests
                 var definition=Asset<UsableItemDefinition>();definition.ItemName="Recovery item "+i;definition.Description=string.Join(" ",Enumerable.Repeat("A long description that can be read by scrolling the details panel.",20));
                 town.TownPlayer.Inventory.Add(definition.AsInventoryItem(null));
             }
+            var equipment=Asset<EquipmentItemDefinition>();equipment.ItemName="An exceptionally long equipment name that needs several lines";
+            equipment.EquipmentSlot=EquipmentSlot.MainHand;
+            original.Equipment.Equip(new EquipableInventoryItem(equipment));
             var manager=Object.FindFirstObjectByType<TownMenuManager>();manager.OpenPartyMenu(PartyMenuTab.Inventory);yield return null;
             var menu=manager.PartyMenu;var canvas=menu.GetComponent<Canvas>();
             var camera=new GameObject("Layout capture",typeof(Camera)).GetComponent<Camera>();owned.Add(camera.gameObject);
@@ -281,31 +286,38 @@ namespace EternalEnigma.Tests
                     if(control==menu.Details)continue;
                     Assert.That(bounds.min.x,Is.GreaterThanOrEqualTo(surface.rect.xMin-1));Assert.That(bounds.max.x,Is.LessThanOrEqualTo(surface.rect.xMax+1));
                 }
-                foreach(var tab in new[]{PartyMenuTab.Inventory,PartyMenuTab.Stats})
+                foreach(var tab in new[]{PartyMenuTab.Inventory,PartyMenuTab.Equipment,PartyMenuTab.Skills,PartyMenuTab.Stats})
                 {
                     menu.SwitchTab(tab);yield return null;Canvas.ForceUpdateCanvases();
                     if(tab==PartyMenuTab.Stats)VerifyStatsFit(menu);
-                    else
+                    else if(tab==PartyMenuTab.Inventory)
                     {
                         Assert.That(menu.scrollView.vertical,Is.True,"Inventory scrolling returns after leaving Stats.");
                         Assert.That(menu.scrollView.content.rect.height,Is.GreaterThan(menu.scrollView.viewport.rect.height));
                     }
+                    foreach(var label in menu.RowsRoot.GetComponentsInChildren<TMPro.TMP_Text>())
+                    {
+                        label.ForceMeshUpdate();
+                        Assert.That(label.isTextOverflowing,Is.False,label.text+" must fit its row without truncation.");
+                    }
+                    menu.HeroText.ForceMeshUpdate();Assert.That(menu.HeroText.isTextOverflowing,Is.False);
                     camera.Render();var previous=RenderTexture.active;RenderTexture.active=target;
                     var image=new Texture2D(size.x,size.y,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,size.x,size.y),0,0);image.Apply();
-                    string name=tab==PartyMenuTab.Stats?"stats":"menu";
+                    string name=tab==PartyMenuTab.Stats?"stats":tab==PartyMenuTab.Equipment?"equipment":tab==PartyMenuTab.Skills?"skills":"menu";
                     File.WriteAllBytes($"Temp/UnifiedPresentation/{name}-{size.x}x{size.y}.png",image.EncodeToPNG());RenderTexture.active=previous;Object.Destroy(image);
                 }
                 camera.targetTexture=null;
             }
             menu.SwitchTab(PartyMenuTab.Inventory);yield return null;
             Assert.That(menu.HeroesRoot.gameObject.activeSelf,Is.False);
-            Assert.That(menu.HeroText.gameObject.activeSelf,Is.False);
+            Assert.That(menu.HeroText.gameObject.activeSelf,Is.True);
             Assert.That(menu.DetailsControl.Scroll.gameObject.activeSelf,Is.False);
             Assert.That(menu.Hints.gameObject.activeSelf,Is.False);
             var list=(RectTransform)menu.scrollView.transform;
             Assert.That(list.anchorMin,Is.EqualTo(new Vector2(.035f,.025f)));
-            Assert.That(list.anchorMax,Is.EqualTo(new Vector2(.965f,.975f)));
+            Assert.That(list.anchorMax,Is.EqualTo(new Vector2(.965f,.89f)));
             var controlled=town.TownPlayer.ControllingTownAlly;menu.BrowseHero(1);Assert.That(town.TownPlayer.ControllingTownAlly,Is.SameAs(controlled));
+            Assert.That(menu.HeroText.text,Is.EqualTo(GameplayText.Format(menu.Hero.Name)),"The inspected hero remains visible when it differs from the world leader.");
         }
 
         private static void VerifyStatsFit(PartyMenu menu)
@@ -353,9 +365,41 @@ namespace EternalEnigma.Tests
             Assert.That(menu.HeadingTemplate,Is.SameAs(reference.HeadingTemplate));
             Assert.That(menu.EmptyTemplate,Is.SameAs(reference.EmptyTemplate));
             Assert.That(menu.BackButton.gameObject.activeSelf,Is.False);
-            Assert.That(menu.Panel.GetComponentsInChildren<DungeonDialogClose>(true).All(close=>!close.gameObject.activeSelf),Is.True);
+            Assert.That(menu.Panel.GetComponentsInChildren<DungeonDialogClose>().Length,Is.EqualTo(1),"Each party panel has one visible exit.");
             Assert.That(hud.enabled,Is.True,"The original HUD tabs stay visible when the menu opens.");
             Assert.That(hud.sortingOrder,Is.GreaterThan(menu.GetComponent<Canvas>().sortingOrder));
+            Assert.That(launcher.OptionsButton,Is.Not.Null,"Every gameplay scene exposes Options beside its party tabs.");
+            if(Game.Instance!=null)Assert.That(launcher.OptionsButton,Is.SameAs(DungeonHud.Ensure(Game.Instance).OptionsButton),
+                "Dungeon tabs reuse the existing HUD Options control.");
+            if(launcher.OptionsButton!=null)
+            {
+                var settings=Common.Instance.GlobalSettings;
+                var optionsTab=menu.Tab;
+                yield return ClickHudTab(mouse,launcher.OptionsButton);
+                Assert.That(settings.IsOpen,Is.True,"Pointer users can open Options from the party menu.");
+                Assert.That(module.OwnsFocus(settings),Is.True);
+                Assert.That(settings.SettingsCanvas.GetComponent<Canvas>().sortingOrder,Is.GreaterThan(hud.sortingOrder));
+                Directory.CreateDirectory("Temp/UIScreenAudit");
+                ScreenCapture.CaptureScreenshot("Temp/UIScreenAudit/settings-over-party-"+menu.gameObject.scene.name+".png");
+                yield return new WaitForSecondsRealtime(.15f);
+                if(Common.Instance.CampaignContext!=null)
+                {
+                    settings.MainMenu_Clicked();yield return null;yield return null;
+                    var quit=Object.FindFirstObjectByType<CampaignChoice>();
+                    Assert.That(quit,Is.Not.Null);
+                    Assert.That(quit.GetComponent<Canvas>().sortingOrder,Is.GreaterThan(settings.SettingsCanvas.GetComponent<Canvas>().sortingOrder));
+                    ScreenCapture.CaptureScreenshot("Temp/UIScreenAudit/settings-quit-confirmation-"+menu.gameObject.scene.name+".png");
+                    yield return new WaitForSecondsRealtime(.15f);
+                    yield return ClickHudTab(mouse,quit.Back);
+                    Assert.That(settings.IsOpen,Is.True,"Cancelling quit restores Settings.");
+                    Assert.That(module.OwnsFocus(settings),Is.True);
+                }
+                yield return ClickHudTab(mouse,settings.ResumeButton);
+                Assert.That(settings.IsOpen,Is.False);
+                Assert.That(owner.Current,Is.SameAs(menu));Assert.That(menu.Tab,Is.EqualTo(optionsTab));
+                Assert.That(module.Allows(EventSystem.current.currentSelectedGameObject),Is.True);
+                Assert.That(MenuUIInputModule.IsUsable(EventSystem.current.currentSelectedGameObject),Is.True);
+            }
             foreach(var shield in menu.GetComponentsInChildren<Image>().Where(i=>i.name=="Input shield"))
                 Assert.That(shield.color.a,Is.Zero,"The world remains visible behind the menu.");
             Assert.That(menu.Panel.GetComponentsInChildren<Button>().Any(b=>
@@ -377,7 +421,7 @@ namespace EternalEnigma.Tests
                 Assert.That(menu.Tab,Is.EqualTo(tab));
                 Assert.That(menu.Hero.Id,Is.EqualTo(hero));
                 if(tab==PartyMenuTab.Stats)VerifyStatsFit(menu);
-                Assert.That(button.GetComponentInChildren<TMPro.TMP_Text>().text,Does.StartWith("> "));
+                Assert.That((button.GetComponentInChildren<TMPro.TMP_Text>().fontStyle & TMPro.FontStyles.Underline)!=0,Is.True);
                 var label=button.GetComponentInChildren<TMPro.TMP_Text>();label.ForceMeshUpdate();
                 Assert.That(label.isTextOverflowing,Is.False,"HUD tab labels must fit, including the active marker and shortcut.");
                 Assert.That(((Image)button.targetGraphic).sprite,Is.EqualTo(GameUITheme.Current.DungeonWoodButton),"All scenes use the same wooden tab buttons.");
@@ -417,15 +461,18 @@ namespace EternalEnigma.Tests
             Assert.That(menu.InventoryTab.interactable,Is.True);
             menu.Pick("No available items",new());yield return null;yield return null;
             Assert.That(((PartyMenuPicker)owner.Current).BackButton.gameObject.activeSelf,Is.False);
-            yield return PressNavigation(keyboard,Key.Escape);
-            Assert.That(owner.Current,Is.SameAs(menu),"An empty inventory submenu still accepts Escape.");
+            var emptyExit=owner.Current.GetComponentsInChildren<DungeonDialogClose>().Single().GetComponent<Button>();
+            Assert.That(EventSystem.current.currentSelectedGameObject,Is.EqualTo(emptyExit.gameObject));
+            yield return ClickHudTab(mouse,emptyExit);
+            Assert.That(owner.Current,Is.SameAs(menu),"An empty inventory submenu has a working pointer exit.");
 
             GameMessages.Post("The party is ready to explore.");yield return null;
             GameMessages.ShowHistory();yield return null;yield return null;
             var history=owner.Current as EventHistoryDialog;
             Assert.That(history,Is.Not.Null,"History shares the scene's dialog stack.");
-            Assert.That(history.Panel.anchorMin,Is.EqualTo(menu.Panel.anchorMin));
-            Assert.That(history.Panel.anchorMax,Is.EqualTo(menu.Panel.anchorMax));
+            Assert.That(history.Panel.anchorMin,Is.EqualTo(Vector2.zero));
+            Assert.That(history.Panel.anchorMax,Is.EqualTo(Vector2.one),"History fills its safe-area reader instead of the compact party dock.");
+            Assert.That(history.Panel.GetComponentInParent<SafeAreaPanel>(),Is.Not.Null);
             Assert.That(history.Panel.GetComponent<Image>().sprite,Is.EqualTo(GameUITheme.Current.DungeonWood));
             Assert.That(menu.GetComponent<Canvas>().enabled,Is.False);
             Assert.That(history.Entries.text,Does.Contain("The party is ready to explore."));
@@ -571,7 +618,8 @@ namespace EternalEnigma.Tests
             var hits=new List<RaycastResult>();
             EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current){position=position},hits);
             Assert.That(hits.Count,Is.GreaterThan(0));
-            Assert.That(hits[0].gameObject.GetComponentInParent<Button>(),Is.SameAs(button),"The menu shield must not intercept its HUD header.");
+            Assert.That(hits[0].gameObject.GetComponentInParent<Button>(),Is.SameAs(button),
+                $"Pointer control {button.name} must receive its click; first hit was {hits[0].gameObject.name}.");
             InputSystem.QueueStateEvent(mouse,new MouseState{position=position});yield return null;yield return null;
             InputSystem.QueueStateEvent(mouse,new MouseState{position=position,buttons=1});yield return null;yield return null;
             InputSystem.QueueStateEvent(mouse,new MouseState{position=position});yield return null;yield return null;

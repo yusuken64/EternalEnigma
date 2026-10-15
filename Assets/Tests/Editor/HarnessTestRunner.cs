@@ -10,6 +10,56 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Audit Captures")]
+    public static void RunUIAuditCaptures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureMainMenuSlotsHeroAndSettingsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTownServicesPartyAndOverworldAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureDungeonLevelAndResultDialogsAcrossAspectRatios",
+        "EternalEnigma.Tests.DungeonDockTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Audit Fades")]
+    public static void RunUIAuditFades() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ScreenTransitionTests", "EternalEnigma.Tests.DungeonFloorTransitionTests",
+        "FloorMessageTests",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Audit Animations")]
+    public static void RunUIAuditAnimations() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.HeroPrefabTests", "EternalEnigma.Tests.SkillMovementTests",
+        "EternalEnigma.Tests.CampaignSleepTests.HomeSleepSavesOnceRestoresAwakePositionAndRollsBackProgression");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Audit Controls")]
+    public static void RunUIAuditControls() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MenuSelectionTests", "EternalEnigma.Tests.SettingsInteractionTests",
+        "EternalEnigma.Tests.ControlDeviceStateTests", "EternalEnigma.Tests.ControllerFlowTests",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests", "EternalEnigma.Tests.OpeningUIRegressionTests",
+        "EternalEnigma.Tests.MainMenuStartupTests",
+        "EternalEnigma.Tests.TerminalPlayModeTests.DungeonTerminalHidesDuplicateUiButKeepsMapAndHistory",
+        "EternalEnigma.Tests.DungeonControlTests.ControllerModeToggleDoesNotSpendWaitAction",
+        "EternalEnigma.Tests.OverworldSceneTests.UnlockedWarpsAreAvailableToKeyboardAndGamepadAfterRewards",
+        "EternalEnigma.Tests.TownGameplayTests.NumberEntryCanReachCancelAndPartyShortcutsRespectModalDialogs",
+        "EternalEnigma.Tests.TownGameplayTests.TownServicesHideGameplayHudAndRestorePartyDocks",
+        "EternalEnigma.Tests.EconomyGameplayTests.SalesConfirmExactEntriesCancelAndCannotPayTwice",
+        "EternalEnigma.Tests.EconomyGameplayTests.ShopConfirmationExplainsUnavailableOffersAndRejectsStalePurchases",
+        "EternalEnigma.Tests.TownTrainerRankTests.TrainerSelectionScrollingTabsAndModalFocus",
+        "EternalEnigma.Tests.TownTrainerRankTests.TrainerLayoutFitsSupportedResolutionsWithLongText",
+        "EternalEnigma.Tests.UIScreenAuditTests.ResultBackKeepsExplicitSaveOrRecoveryActionFocused",
+        "EternalEnigma.Tests.CampaignTravelTests.FinalDungeonHomecomingSavesOnceAndReturnsToMenu",
+        "EternalEnigma.Tests.CampaignTravelTests.DungeonEntryApprovalCancellationAndCapabilitiesUseOverworldDialogs");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Audit Devices")]
+    public static void RunUIAuditDevices() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControlDeviceStateTests", "EternalEnigma.Tests.ControllerFlowTests",
+        "EternalEnigma.Tests.DungeonControlTests.ControllerModeToggleDoesNotSpendWaitAction");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Audit Followup")]
+    public static void RunUIAuditFollowup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignTravelTests.FinalDungeonHomecomingSavesOnceAndReturnsToMenu",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.TerminalPlayModeTests.DungeonTerminalHidesDuplicateUiButKeepsMapAndHistory");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Campaign Keys UI")]
     public static void RunCampaignKeysUI() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.OverworldSceneTests.UniqueCampaignRewardUsesTheSameNameInPopupMenuAndGateAction");

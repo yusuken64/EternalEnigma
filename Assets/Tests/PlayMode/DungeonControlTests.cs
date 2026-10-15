@@ -5,6 +5,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEditor;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 namespace EternalEnigma.Tests
 {
@@ -34,6 +36,83 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Game.TurnManager.AwaitingCommand,Is.True);
             Assert.That(harness.Game.PlayerController.ControlledAlly,Is.SameAs(expected));
         }
+
+        [UnityTest] public IEnumerator ControllerModeToggleDoesNotSpendWaitAction()
+        {
+            using var inputScope = new TestInputScope();
+            using var preferences = GamePreferences.Isolate();
+            var gamepad = InputSystem.AddDevice<Gamepad>();
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            try
+            {
+                DungeonPreferences.FullControlOverride = null;
+                DungeonPreferences.FullControl = false;
+                var input = JuicyChickenGames.Menu.PlayerInputHandler.Instance;
+                input.PlayerInput.SwitchCurrentControlScheme("Gamepad", gamepad);
+                MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { gamepad, keyboard };
+                foreach (var ally in harness.Game.Allies) ally.AllyStrategy = AllyStrategy.HoldPosition;
+                var hero = harness.Ally;
+                int hunger = hero.Vitals.HungerAccumulate;
+                int actions = hero.Vitals.ActionsPerTurnLeft;
+                yield return null;
+
+                foreach (bool floorCover in new[] { false, true })
+                {
+                    if (floorCover) harness.Game.NewFloorMessage.HideScreen(harness.Game.PlayerController.Floor);
+                    else Common.Instance.ScreenTransition.HoldClosed("Loading...");
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.F));
+                    yield return null; yield return null;
+                    Assert.That(DungeonPreferences.FullControl, Is.False, "F must not toggle controls behind a loading cover.");
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    yield return null; yield return null;
+                    InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.RightStick));
+                    yield return null; yield return null;
+                    Assert.That(DungeonPreferences.FullControl, Is.False, "Right stick must not toggle controls behind a loading cover.");
+                    InputSystem.QueueStateEvent(gamepad, new GamepadState());
+                    yield return null; yield return null;
+                    Assert.That(hero.Vitals.HungerAccumulate, Is.EqualTo(hunger));
+                    Assert.That(hero.Vitals.ActionsPerTurnLeft, Is.EqualTo(actions));
+                    if (floorCover) harness.Game.NewFloorMessage.ShowNewFloor(harness.Game.PlayerController.Floor);
+                    else Common.Instance.ScreenTransition.DoOpen();
+                    yield return harness.WaitForIdle();
+                }
+
+                // The cover blocks gameplay timers. Let the normal .2-second command
+                // debounce elapse before comparing raw HUD shortcuts with a turn action.
+                yield return new WaitForSeconds(.25f);
+                Assert.That(input.PlayerInput.currentActionMap.name, Is.EqualTo("Player"));
+                var waitAction = input.PlayerInput.actions["Wait"];
+                Assert.That(waitAction.enabled, Is.True);
+                Assert.That(waitAction.controls.Contains(gamepad.leftStickButton), Is.True,
+                    "Wait must resolve to the synthetic controller's left stick press.");
+                Assert.That(waitAction.controls.Contains(gamepad.rightStickButton), Is.False,
+                    "The Full Control shortcut must not also resolve to Wait.");
+
+                InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.RightStick));
+                yield return null; yield return null;
+                Assert.That(DungeonPreferences.FullControl, Is.True, "Right stick press toggles Full Control.");
+                Assert.That(input.waitPressed, Is.False, "Changing the control mode must not issue Wait.");
+                InputSystem.QueueStateEvent(gamepad, new GamepadState());
+                yield return null; yield return null;
+                Assert.That(hero.Vitals.HungerAccumulate, Is.EqualTo(hunger));
+                Assert.That(hero.Vitals.ActionsPerTurnLeft, Is.EqualTo(actions));
+
+                InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.RightStick));
+                yield return null; yield return null;
+                InputSystem.QueueStateEvent(gamepad, new GamepadState());
+                yield return null; yield return null;
+                Assert.That(DungeonPreferences.FullControl, Is.False);
+
+                InputSystem.QueueStateEvent(gamepad, new GamepadState().WithButton(GamepadButton.LeftStick));
+                yield return null; yield return null;
+                InputSystem.QueueStateEvent(gamepad, new GamepadState());
+                yield return harness.WaitForIdle();
+                Assert.That(DungeonPreferences.FullControl, Is.False, "Left stick press waits without changing control mode.");
+                Assert.That(hero.Vitals.HungerAccumulate, Is.EqualTo(hunger + 1), "Left stick press spends one action.");
+            }
+            finally { InputSystem.RemoveDevice(gamepad); InputSystem.RemoveDevice(keyboard); }
+        }
+
         [UnityTest] public IEnumerator AutoplayFollowerDoesNotSwapLeaderBackward()
         {
             var game = harness.Game;

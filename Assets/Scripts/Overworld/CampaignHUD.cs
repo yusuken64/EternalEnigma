@@ -26,6 +26,17 @@ public sealed class CampaignHUD : MonoBehaviour
 
     private void Start()
     {
+        if (actions == null && Overworld != null)
+        {
+            // The authored scene supplies a styled button template, but no actions container.
+            // Keep the contextual mouse control on the same scaled HUD as party shortcuts.
+            var launcher = AuthoredUI.Require<PartyMenuLauncher>(Overworld.transform);
+            var holder = new GameObject("World interaction", typeof(RectTransform));
+            holder.transform.SetParent(launcher.transform, false);
+            var content = new GameObject("Actions", typeof(RectTransform));
+            content.transform.SetParent(holder.transform, false);
+            actions = content.transform;
+        }
         // Travel controls leave the shared event feed's bottom dock unobstructed.
         if (actions != null)
         {
@@ -36,7 +47,10 @@ public sealed class CampaignHUD : MonoBehaviour
     private Button Action(string label, System.Action callback)
     {
         var button=Instantiate(ActionTemplate,actions);button.gameObject.SetActive(true);
-        button.GetComponentInChildren<TMP_Text>().text=GameplayText.Format(label);button.onClick.AddListener(()=>callback());return button;
+        JuicyChickenGames.Menu.Dialog.Fit(button.transform,0,0,1,1);
+        var text=button.GetComponentInChildren<TMP_Text>();
+        text.text=GameplayText.Format(label);text.enableAutoSizing=true;text.fontSizeMin=20;text.fontSizeMax=32;
+        button.onClick.RemoveAllListeners();button.onClick.AddListener(()=>callback());return button;
     }
     private void PostStatus(string status)
     {
@@ -47,7 +61,8 @@ public sealed class CampaignHUD : MonoBehaviour
     private void Update()
     {
         var common = Common.Instance;
-        bool ready = common != null && !common.Travel.IsTransitioning && !AutoplayRunner.BlocksPlayerInput && !common.GlobalSettings.IsOpen;
+        // Visibility follows scene readiness; interaction remains locked throughout the reveal.
+        bool ready = common != null && !AutoplayRunner.BlocksPlayerInput && !common.GlobalSettings.IsOpen;
         if (Overworld != null)
         {
             ready &= Overworld.IsReady && MenuUIInputModule.Active?.HasDialog != true;
@@ -55,22 +70,21 @@ public sealed class CampaignHUD : MonoBehaviour
             if (!ready) return;
             if (Overworld.Context.State.Finished) PostStatus("Campaign complete!");
             if (actions == null) return;
-            var warps = Overworld.Map.CurrentGrid.WarpsAt(Overworld.Position).ToArray();
-            string key = string.Join("|", warps.Select(w => w.Id));
+            bool canTravel = Overworld.Map.CurrentGrid.WarpsAt(Overworld.Position)
+                .Any(route => route.CanTraverse(Overworld.Held, Overworld.Context.Resolved));
+            string key = canTravel ? "travel" : "interact";
             if (key != actionKey)
             {
                 actionKey = key;
                 foreach (Transform child in actions) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
-                Action("Interact", Overworld.ClaimRewards);
-                for (int i = 0; i < warps.Length; i++)
-                {
-                    var route = warps[i];
-                    Action(Overworld.WarpLabel(route), () => Overworld.Warp(route.Id));
-                }
+                // One contextual entry keeps the HUD compact; the modal supports every input device.
+                Action(canTravel ? "Interact / Travel" : "Interact", Overworld.ClaimRewards);
                 // Directional/submit input belongs to overworld movement and interaction.
                 foreach (var button in actions.GetComponentsInChildren<Button>())
                     button.navigation = new Navigation { mode = Navigation.Mode.None };
             }
+            foreach (var button in actions.GetComponentsInChildren<Button>())
+                button.interactable = !Overworld.IsMoving && !common.Travel.IsTransitioning;
         }
     }
 }

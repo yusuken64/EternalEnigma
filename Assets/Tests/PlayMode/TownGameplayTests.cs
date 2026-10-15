@@ -245,6 +245,91 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator NumberEntryCanReachCancelAndPartyShortcutsRespectModalDialogs()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold = 1000 }.CreateSave());
+            var statue = Menus.BuildingDialogs.Select(b => b.Dialog).OfType<StatueDialog>().Single();
+            statue.PrepareTown(null);
+            Manager.Open(statue);
+            yield return null;
+            var es = UnityEngine.EventSystems.EventSystem.current;
+            var digit = statue.NumberInput.SelectableDigits[0];
+            Assert.That(es.currentSelectedGameObject, Is.SameAs(digit.gameObject));
+            UnityEngine.EventSystems.ExecuteEvents.Execute(digit.gameObject,
+                new UnityEngine.EventSystems.AxisEventData(es) { moveDir = UnityEngine.EventSystems.MoveDirection.Right },
+                UnityEngine.EventSystems.ExecuteEvents.moveHandler);
+            Assert.That(es.currentSelectedGameObject, Is.SameAs(statue.OkButton.gameObject));
+            UnityEngine.EventSystems.ExecuteEvents.Execute(statue.OkButton.gameObject,
+                new UnityEngine.EventSystems.AxisEventData(es) { moveDir = UnityEngine.EventSystems.MoveDirection.Down },
+                UnityEngine.EventSystems.ExecuteEvents.moveHandler);
+            Assert.That(es.currentSelectedGameObject, Is.SameAs(statue.CancelButton.gameObject));
+            Manager.OpenPartyMenu(PartyMenuTab.Inventory);
+            Assert.That(Manager.CurrentDialog, Is.SameAs(statue));
+            statue.Cancel_Clicked();
+            Assert.That(World.TownPlayer.Gold, Is.EqualTo(1000));
+            Common.Instance.GlobalSettings.ShowDialog();
+            Manager.OpenPartyMenu(PartyMenuTab.Inventory);
+            Assert.That(Manager.Opened, Is.False, "Settings must retain exclusive focus.");
+            Common.Instance.GlobalSettings.Exit_Clicked();
+            yield return null;
+            Manager.OpenPartyMenu(PartyMenuTab.Inventory);
+            Assert.That(Manager.CurrentDialog, Is.SameAs(Manager.PartyMenu));
+        }
+
+        [UnityTest]
+        public IEnumerator TownServicesHideGameplayHudAndRestorePartyDocks()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold = 1000 }.CreateSave());
+            var resource = Object.FindFirstObjectByType<ResourceHUD>().GetComponent<Canvas>();
+            var resourcePanel = resource.GetComponent<ResourceHUD>().GoldText.transform.parent;
+            var launcher = Object.FindFirstObjectByType<PartyMenuLauncher>().GetComponent<Canvas>();
+            var feed = Object.FindFirstObjectByType<GameMessages>().GetComponentInChildren<CanvasGroup>();
+            GameMessages.Post("The town is ready.");
+            var shop = (ShopMenuDialog)Menus.OpenBuilding(World.Configuration.Buildings.First(b => b.DialogId == "shop"), World.TownPlayer, null);
+            yield return null;
+            Assert.That(resource.enabled, Is.False, "Resource text must not cover service content.");
+            Assert.That(launcher.enabled, Is.False, "Gameplay shortcuts must not cover full service dialogs.");
+            Assert.That(feed.alpha, Is.Zero);
+            Assert.That(feed.blocksRaycasts, Is.False, "The hidden event feed must not intercept service buttons.");
+            shop.ShopItems[0].BuyButton.onClick.Invoke(); yield return null;
+            Assert.That(resource.enabled || launcher.enabled || feed.blocksRaycasts, Is.False, "Nested confirmations keep the full service HUD hidden.");
+            shop.BuyConfirmationDialog.Cancel_Clicked();
+            shop.CloseDialog(); yield return null;
+            var talk = Menus.AllyRecruitDialog;
+            talk.Show(World.TownPlayer.RecruitedAllies[0], AllyRecruitDialogMode.Talk);
+            Manager.Open(talk); yield return null;
+            Assert.That(resource.enabled || launcher.enabled || feed.blocksRaycasts, Is.False);
+            Assert.That(talk.RemoveButton.interactable, Is.False, "The sole party member cannot be removed.");
+            Assert.That(talk.DescriptionText.text, Does.Contain("Keep at least one party member"));
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(talk.CancelButton2.gameObject));
+            Assert.That(talk.transform.Find("CharacterBG_Board/FeatherObj").gameObject.activeSelf, Is.False);
+            talk.CloseDialog(); yield return null;
+            World.TownPlayer.Gold = 0;
+            var recruit = World.TownAllies.First(a => a.RecruitCost > 0);
+            talk.Show(recruit, AllyRecruitDialogMode.Recruit);
+            Manager.Open(talk); yield return null;
+            Assert.That(talk.RecruitButton.interactable, Is.False);
+            Assert.That(talk.DescriptionText.text, Does.Contain("Not enough gold"));
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(talk.CancelButton.gameObject));
+            talk.CloseDialog(); yield return null;
+            World.TownPlayer.Gold = 1000;
+            Manager.OpenPartyMenu(PartyMenuTab.Inventory);
+            GameMessages.Post("Party controls are available.");
+            yield return null;
+            Assert.That(resource.enabled && launcher.enabled && feed.blocksRaycasts, Is.True, "The party dock preserves shared HUD controls.");
+            Assert.That(RectTransformUtility.CalculateRelativeRectTransformBounds(resource.transform, resourcePanel).min.y,
+                Is.GreaterThan(RectTransformUtility.CalculateRelativeRectTransformBounds(resource.transform, Manager.PartyMenu.Panel).max.y),
+                "The complete resource strip must remain above the party panel.");
+            var picker = PartyMenuPicker.Build(Manager.PartyMenu.transform.parent, "Choose", new List<(string, System.Action)> { ("Example", () => { }) });
+            Manager.Open(picker); yield return null;
+            Assert.That(resource.enabled && launcher.enabled && feed.blocksRaycasts, Is.True, "Nested dock pickers preserve shared HUD controls.");
+            Assert.That(RectTransformUtility.CalculateRelativeRectTransformBounds(resource.transform, resourcePanel).min.y,
+                Is.GreaterThan(RectTransformUtility.CalculateRelativeRectTransformBounds(resource.transform, picker.Title.transform.parent).max.y),
+                "The complete resource strip must remain above picker panels.");
+            picker.CloseDialog(); Manager.PartyMenu.CloseDialog();
+        }
+
+        [UnityTest]
         public IEnumerator DungeonTiersAreAvailableWithoutDonations()
         {
             yield return harness.LoadTown(new TestScenario { Gold = 1000 }.CreateSave());

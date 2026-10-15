@@ -63,10 +63,11 @@ public class GameOverScreen : Dialog
 		_playerController = playerController;
 		_victory = victory;
         if(ResultIcon!=null){ResultIcon.sprite=victory?VictoryIcon:DefeatIcon;ResultIcon.enabled=ResultIcon.sprite!=null;}
-		CloseAction = victory ? () => { Common.Instance.Travel.ReturnToMenu(); } : null;
+		CloseAction = null;
 		MessageText.text = victory ? $"Victory!\nFinal dungeon cleared\nGold {playerController.Gold:N0}" :
 			$"Player Perished\nOn floor {playerController.Floor}\nGold {playerController.Gold:N0}";
-		if (victory && Common.Instance.GameSaveData.Completion is { } record)
+		// JsonUtility materializes an empty record for saves without a completion.
+		if (victory && Common.Instance.GameSaveData.Completion is { } record && !string.IsNullOrEmpty(record.CompletedUtc))
 			MessageText.text = "Hall of Fame\n" + GameplayText.Format(record.Statistics);
 		var label = OkButton.GetComponentInChildren<TMP_Text>();
 		if (label != null)
@@ -143,4 +144,7 @@ public class GameOverScreen : Dialog
 	{
 		OkButton.Select();
 	}
+
+    // Back must not discard an unsaved victory or resume a defeated party.
+    internal override void OnBackRequested() => OkButton.Select();
 }

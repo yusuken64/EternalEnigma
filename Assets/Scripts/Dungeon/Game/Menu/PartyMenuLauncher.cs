@@ -14,6 +14,8 @@ public sealed class PartyMenuLauncher : MonoBehaviour
     [SerializeField] private TMP_Text inventory,skills,equipment,stats;
     [SerializeField] private Button inventoryButton, skillsButton, equipmentButton, statsButton;
     private Button capabilitiesButton;
+    private Canvas externalOptionsCanvas;
+    public Button OptionsButton { get; private set; }
     private PartyMenuTab[] tabs;
     private bool? lastPad;
     private PartyMenuTab? lastTab;
@@ -48,6 +50,26 @@ public sealed class PartyMenuLauncher : MonoBehaviour
             view.capabilitiesButton=Instantiate(view.skillsButton,view.skillsButton.transform.parent);
             view.capabilitiesButton.name="Capabilities shortcut";
         }
+        if(Game.Instance!=null)
+        {
+            // Reuse the authored HUD control without moving its screen anchors.
+            // Its own canvas keeps it above the party dock's input shield while
+            // the launcher canvas can still hide its tabs during targeting.
+            view.OptionsButton=AuthoredUI.Require<DungeonHud>(Game.Instance.transform).OptionsButton;
+            view.externalOptionsCanvas=view.OptionsButton.GetComponent<Canvas>();
+            if(view.externalOptionsCanvas==null)view.externalOptionsCanvas=view.OptionsButton.gameObject.AddComponent<Canvas>();
+            view.externalOptionsCanvas.overrideSorting=true;
+            if(view.OptionsButton.GetComponent<GraphicRaycaster>()==null)view.OptionsButton.gameObject.AddComponent<GraphicRaycaster>();
+        }
+        else if(view.OptionsButton==null)
+        {
+            view.OptionsButton=Instantiate(view.statsButton,view.statsButton.transform.parent);
+            view.OptionsButton.name="Options shortcut";
+        }
+        view.OptionsButton.onClick.RemoveAllListeners();
+        view.OptionsButton.onClick.AddListener(()=>{
+            if(view.CanUseTabs)Common.Instance.GlobalSettings.ShowDialog();
+        });
         view.tabs=includeCapabilities
             ? new[]{PartyMenuTab.Inventory,PartyMenuTab.Equipment,PartyMenuTab.Skills,PartyMenuTab.Stats,PartyMenuTab.Capabilities}
             : new[]{PartyMenuTab.Inventory,PartyMenuTab.Equipment,PartyMenuTab.Skills,PartyMenuTab.Stats};
@@ -65,15 +87,26 @@ public sealed class PartyMenuLauncher : MonoBehaviour
     public void ApplyAppearance()
     {
         var buttons=new[]{inventoryButton,equipmentButton,skillsButton,statsButton,capabilitiesButton};
-        for(int i=0;i<buttons.Length;i++)if(buttons[i]!=null)StyleTab(buttons[i],i);
+        bool fiveTabs=capabilitiesButton!=null && OptionsButton!=null;
+        for(int i=0;i<buttons.Length;i++)if(buttons[i]!=null)StyleTab(buttons[i],i,fiveTabs);
+        if(OptionsButton!=null)
+        {
+            StyleTab(OptionsButton,0);
+            var rect=(RectTransform)OptionsButton.transform;
+            rect.anchorMin=new Vector2(.87f,.935f);rect.anchorMax=new Vector2(.985f,.985f);
+            rect.offsetMin=rect.offsetMax=Vector2.zero;
+            OptionsButton.GetComponentInChildren<TMP_Text>().text=GameplayText.Format("Options");
+            OptionsButton.navigation=new Navigation{mode=Navigation.Mode.None};
+        }
     }
 
-    private static void StyleTab(Button button,int index)
+    private static void StyleTab(Button button,int index,bool fiveTabs=false)
     {
         // Reserve the same space for each header, including overworld's fifth tab.
         var rect=(RectTransform)button.transform;
-        rect.anchorMin=new Vector2(.40f+index*.115f,.935f);
-        rect.anchorMax=new Vector2(.40f+(index+1)*.115f-.01f,.985f);
+        float start=fiveTabs?.27f:.40f,step=.115f;
+        rect.anchorMin=new Vector2(start+index*step,.935f);
+        rect.anchorMax=new Vector2(start+(index+1)*step-.01f,.985f);
         rect.offsetMin=rect.offsetMax=Vector2.zero;
         var theme=GameUITheme.Current;
         var background=(Image)button.targetGraphic;
@@ -130,16 +163,20 @@ public sealed class PartyMenuLauncher : MonoBehaviour
     }
 
     public bool Allows(GameObject obj) => canvas!=null && canvas.enabled && CanUseTabs &&
-        obj!=null && obj.transform.IsChildOf(transform);
+        obj!=null && (obj.transform.IsChildOf(transform) ||
+            OptionsButton!=null && obj.transform.IsChildOf(OptionsButton.transform));
 
     public void Refresh()
     {
         if(ready==null || tabs==null)return;
         bool partyOpen=PartyOpen;
-        //canvas.enabled=Available && (partyOpen || ready() && MenuUIInputModule.Active?.HasDialog!=true);
+        canvas.enabled = FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud != true &&
+            !(Game.Instance != null && MenuManager.Instance?.CurrentDialog is JuicyChickenGames.Menu.TargetDialog);
         // The same HUD buttons sit above the party menu's full-screen input shield.
         canvas.sortingOrder=partyOpen?menu.GetComponent<Canvas>().sortingOrder+1:defaultSortingOrder;
+        if(externalOptionsCanvas!=null)externalOptionsCanvas.sortingOrder=canvas.sortingOrder;
         bool interactable=CanUseTabs;
+        if(OptionsButton!=null)OptionsButton.interactable=interactable;
         foreach(var tab in tabs)
         {
             var button=ButtonFor(tab);
@@ -158,7 +195,7 @@ public sealed class PartyMenuLauncher : MonoBehaviour
                 !pad && tab==PartyMenuTab.Stats?"  "+InputPrompts.Stats:"";
             var button=ButtonFor(tab);
             button.GetComponentInChildren<TMP_Text>().text=GameplayText.Format(tab+shortcut);
-            var colors=button.colors;colors.normalColor=selected==tab?GameUITheme.Selected:Color.white;button.colors=colors;
+            GameUITheme.StyleActiveTab(button,selected==tab);
         }
     }
     private void Update()

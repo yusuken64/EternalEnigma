@@ -27,7 +27,7 @@ namespace JuicyChickenGames.Menu
             RefreshPresentation();
             Common.Instance.MenuInputHandler.ClearInputThisFrame();
             Common.Instance.MenuInputHandler.SwitchToUIInput();
-            MenuUIInputModule.Active?.PushDialog(dialog, dialog.transform, back: () => Close(dialog));
+            MenuUIInputModule.Active?.PushDialog(dialog, dialog.transform, back: dialog.OnBackRequested);
             LateAction = () => { if (Current == dialog) dialog.SetFirstSelect(); };
         }
 

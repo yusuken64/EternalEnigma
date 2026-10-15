@@ -49,9 +49,25 @@ public class AllyRecruitDialog : Dialog
 
 	private void UpdateUI()
 	{
+        var navigation = GetComponent<NavigationHandler>();
+        if (navigation != null) navigation.ConfigureCompactPointer(this);
+        // This retired decorative control still carries a migrated, empty parchment panel.
+        transform.Find("CharacterBG_Board/FeatherObj")?.gameObject.SetActive(false);
 		var classLabel = HeroClass.Label(_ally.PrimaryClass, _ally.SecondaryClass);
-		NameText.text = GameplayText.Format(string.IsNullOrEmpty(classLabel) ? _ally.Name : $"{_ally.Name} - {classLabel}");
-		DescriptionText.text = GameplayText.Format(_ally.Description);
+		NameText.text = GameplayText.Format(_ally.Name);
+        NameText.enableAutoSizing = true;
+        NameText.fontSizeMin = 32; NameText.fontSizeMax = 64;
+        NameText.textWrappingMode = TextWrappingModes.NoWrap;
+        NameText.alignment = TextAlignmentOptions.Center;
+		DescriptionText.text = GameplayText.Format((string.IsNullOrEmpty(classLabel) ? "" : classLabel + "\n\n") + _ally.Description);
+        DescriptionText.font = TMP_Settings.defaultFontAsset;
+        DescriptionText.enableAutoSizing = true;
+        DescriptionText.fontSizeMin = 16; DescriptionText.fontSizeMax = 22;
+        DescriptionText.textWrappingMode = TextWrappingModes.Normal;
+        DescriptionText.alignment = TextAlignmentOptions.TopLeft;
+        var town = FindFirstObjectByType<Town>();
+        var player = town.TownPlayer;
+        string blockedReason = null;
 
 		switch (AllyRecruitDialogMode)
 		{
@@ -59,14 +75,30 @@ public class AllyRecruitDialog : Dialog
 				RecruitButtons.gameObject.SetActive(true);
 				RemovelButtons.gameObject.SetActive(false);
 				RecruitButtonText.text = GameplayText.Format($"Recruit for {_ally.RecruitCost} gold");
+                RecruitButtonText.enableAutoSizing = true;
+                RecruitButtonText.fontSizeMin = 14;
+                RecruitButtonText.fontSizeMax = 24;
+                RecruitButtonText.margin = new Vector4(20, 3, 20, 3);
+                RecruitButtonText.textWrappingMode = TextWrappingModes.NoWrap;
+                RecruitButtonText.alignment = TextAlignmentOptions.Center;
+                RecruitButtonText.raycastTarget = false;
+                blockedReason = player.RecruitedAllies.Count >= town.Configuration.MaxPartySize ? $"Party limit is {town.Configuration.MaxPartySize}." :
+                    !town.TownAllies.Contains(_ally) ? "This ally is no longer available." :
+                    player.Gold < _ally.RecruitCost ? $"Not enough gold. You have {player.Gold:N0}." : null;
+                RecruitButton.interactable = blockedReason == null;
 				break;
 			case AllyRecruitDialogMode.Talk:
 				RecruitButtons.gameObject.SetActive(false);
 				RemovelButtons.gameObject.SetActive(true);
+                blockedReason = player.RecruitedAllies.Count <= 1 ? "Keep at least one party member." :
+                    !player.RecruitedAllies.Contains(_ally) ? "This ally is not in the party." :
+                    Common.Instance.CampaignContext != null && _ally.Id == Common.Instance.GameSaveData.ProtagonistId ? "The protagonist stays in the party." : null;
+                RemoveButton.interactable = blockedReason == null;
 				break;
 			case AllyRecruitDialogMode.Info:
 				break;
 		}
+        if (blockedReason != null) DescriptionText.text += GameplayText.Format("\n\n" + blockedReason);
 	}
 
 	public void Remove_Clicked()

@@ -232,7 +232,7 @@ public partial class Game : SingletonMonoBehaviour<Game>
 		if (demoLoadout != null) demoLoadout.Apply(this);
 
 		UpdateUI();
-		AdvanceFloor();
+		BeginNextFloor(initializing: true);
 	}
 
 	internal void ShowGameOver(bool victory = false)
@@ -246,8 +246,13 @@ public partial class Game : SingletonMonoBehaviour<Game>
 		MenuManager.Open(GameOverScreen);
 	}
 
-	public void AdvanceFloor()
+	public void AdvanceFloor() => BeginNextFloor(initializing: false);
+
+    private void BeginNextFloor(bool initializing)
 	{
+        // The scene contains a preview CurrentDungeon before runtime generation.
+        // Only startup may run beneath the scene's intentional loading cover.
+        if (resettingFloor || !initializing && Common.Instance.Travel.IsTransitioning) return;
         if (Finale != null)
         {
             if (CurrentDungeon == null) { PlayerController.Floor = 1; StartCoroutine(StartFinale()); }
@@ -255,20 +260,22 @@ public partial class Game : SingletonMonoBehaviour<Game>
             return;
         }
         if (CurrentDungeon != null && !CheckFloorExit()) return;
-        if (resettingFloor || Common.Instance.Travel.IsTransitioning) return;
 		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
 			foreach (var ally in Allies.Where(a => a != null && a.Vitals.HP > 0)) ally.HeroAnimator?.PlayOneShot(AnimatedAction.Victory);
-		PlayerController.Floor++;
 		IsReady = false;
+		resettingFloor = true;
 		TurnManager.InteruptTurn();
 		
 		StartCoroutine(AdvanceFloorRoutine());
-
-		NewFloorMessage.HideScreen(PlayerController.Floor);
 	}
 
 	private IEnumerator AdvanceFloorRoutine(bool reset = false)
 	{
+        // Both stairs and Reset Floor must present an opaque frame before any
+        // actors or terrain are removed, even when animation is disabled.
+        int destinationFloor = PlayerController.Floor + (reset ? 0 : 1);
+        yield return NewFloorMessage.CoverFloor(destinationFloor);
+        PlayerController.Floor = destinationFloor;
         if (reset) UnityEngine.Random.state = floorGenerationRandom;
         else { entrySnapshot?.Dispose(); entrySnapshot = null; floorGenerationRandom = UnityEngine.Random.state; }
         bool throneFloor = AutoplayRunner.SweepGeneration?.IsThroneFloor ?? (RunPlan != null ? RunPlan.Floor(PlayerController.Floor).Options.IsThroneFloor :
@@ -371,8 +378,8 @@ public partial class Game : SingletonMonoBehaviour<Game>
 
 		if (demoLoadout != null && PlayerController.Floor == Common.Instance.GameSaveData.DungeonSaveData.StartFloor)
 			yield return demoLoadout.PreparePracticeRoom(this);
-		if (!AutoplayRunner.SuppressesAnimations) yield return new WaitForSecondsRealtime(2.0f);
-		NewFloorMessage.ShowNewFloor(PlayerController.Floor);
+		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
+            yield return new WaitForSecondsRealtime(2.0f);
 
         if (!reset) ClassPassives.OnFloorStart(this);
         else entrySnapshot.Restore(this);
@@ -395,6 +402,7 @@ public partial class Game : SingletonMonoBehaviour<Game>
         if (!reset && Encounter.AllowsReset) entrySnapshot = new FloorEntrySnapshot(this);
         ScenePresentation.RegisterWorld(CurrentDungeon.transform);
         ScenePresentation.RegisterWorld(DungeonGenerator.transform);
+        NewFloorMessage.ShowNewFloor(PlayerController.Floor);
 	}
 
     internal readonly HashSet<Vector3Int> PartyVisibleTiles = new();

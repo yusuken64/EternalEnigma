@@ -32,6 +32,12 @@ public class GlobalSettings : MonoBehaviour
     private void Awake()
     {
         EnsureMasterVolume();
+        // Party/service dialogs use orders 100+, while quit confirmation uses 2100.
+        // Settings must own pointer raycasts as well as keyboard focus above them.
+        var canvas = SettingsCanvas.GetComponent<Canvas>();
+        canvas.overrideSorting = true;
+        canvas.sortingOrder = 2000;
+        if (ResumeButton is SelectToActivateButton resume) resume.ActivateOnFirstPointerPress = true;
         TabGroup.PreviewOnFocus = true;
         NavigationHandler.FocusRoot = SettingsCanvas.transform;
         NavigationHandler.FocusOwner = this;
@@ -80,6 +86,7 @@ public class GlobalSettings : MonoBehaviour
     {
         var tabs = TabGroup.TabContents;
         if (tabs.Count == 0) return;
+        var last = ReturntoMainButton.gameObject.activeSelf ? ReturntoMainButton : ResumeButton;
         ResumeButton.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnDown = tabs[0].TabButton };
         ReturntoMainButton.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnUp = tabs[^1].TabButton };
         for (int i = 0; i < tabs.Count; i++)
@@ -91,7 +98,7 @@ public class GlobalSettings : MonoBehaviour
             {
                 mode = Navigation.Mode.Explicit,
                 selectOnUp = i == 0 ? ResumeButton : tabs[i - 1].TabButton,
-                selectOnDown = i == tabs.Count - 1 ? ReturntoMainButton : tabs[i + 1].TabButton,
+                selectOnDown = i == tabs.Count - 1 ? last : tabs[i + 1].TabButton,
                 selectOnRight = tab == TabGroup.SelectedTab ? contents.FirstOrDefault() : null
             };
             for (int j = 0; j < contents.Length; j++)
@@ -101,7 +108,7 @@ public class GlobalSettings : MonoBehaviour
                 {
                     mode = Navigation.Mode.Explicit,
                     selectOnUp = j == 0 ? tab.TabButton : contents[j - 1],
-                    selectOnDown = j == contents.Length - 1 ? ReturntoMainButton : contents[j + 1],
+                    selectOnDown = j == contents.Length - 1 ? last : contents[j + 1],
                     // Horizontal sliders retain Left/Right for value adjustment.
                     selectOnLeft = selectable is Slider ? null : tab.TabButton
                 };
@@ -123,6 +130,9 @@ public class GlobalSettings : MonoBehaviour
         returnToGameplay = Common.Instance.MenuInputHandler.PlayerInput.currentActionMap?.name != "UI";
         gameObject.SetActive(true);
         SettingsCanvas.SetActive(true);
+        bool atMainMenu = SceneManager.GetActiveScene().name == "MainMenu";
+        ReturntoMainButton.gameObject.SetActive(!atMainMenu);
+        ResumeButton.GetComponentInChildren<TMP_Text>().text = atMainMenu ? "Close" : "Resume";
         TabGroup.Setup();
         SetupTabNavigation();
         NavigationHandler.Init();
@@ -152,6 +162,7 @@ public class GlobalSettings : MonoBehaviour
 
     public void MainMenu_Clicked()
     {
+        if (SceneManager.GetActiveScene().name == "MainMenu") { Exit_Clicked(); return; }
         if (AutoplayRunner.Active != null && AutoplayRunner.Active.PlayerControlled) { Exit_Clicked(); AutoplayRunner.Active.ExitDemo(); return; }
         if (Common.Instance.CampaignContext != null)
         { CampaignChoice.Show("Return to the main menu? Unsaved progress will be lost.", "Quit without saving", () => { Exit_Clicked(); Common.Instance.Travel.ReturnToMenu(); }); return; }

@@ -12,6 +12,8 @@ public class TownMenuManager : MonoBehaviour
     public bool Opened => dialogs.Opened;
     public Stack<Dialog> DialogStack => dialogs.Stack;
     public Dialog CurrentDialog => dialogs.Current;
+    public bool CoversGameplayHud => DialogStack.Any(dialog => dialog is not global::PartyMenu &&
+        dialog is not PartyMenuPicker && dialog is not EventHistoryDialog && dialog is not ActionDialog);
     private CampaignHUD campaignHUD;
     public PartyMenu PartyMenu { get; private set; }
 
@@ -19,12 +21,12 @@ public class TownMenuManager : MonoBehaviour
     {
         var town = GetComponentInParent<Town>();
         PartyMenuLauncher.Create(transform,
-            () => town.IsReady && !town.TownPlayer.CutsceneLocked && !Opened, OpenPartyMenu);
+            () => town.IsReady && !town.TownPlayer.CutsceneLocked && !Opened && MenuUIInputModule.Active?.HasDialog != true, OpenPartyMenu);
     }
 
 	private void Update()
 	{
-		if (AutoplayRunner.BlocksPlayerInput || FindFirstObjectByType<Town>()?.TownPlayer.CutsceneLocked == true) return;
+		if (AutoplayRunner.BlocksPlayerInput || Common.Instance.Travel.IsTransitioning || FindFirstObjectByType<Town>()?.TownPlayer.CutsceneLocked == true) return;
 		if (campaignHUD == null && Common.Instance.CampaignContext != null) campaignHUD = FindFirstObjectByType<CampaignHUD>();
 		if (MenuUIInputModule.Active?.InputConsumed == true || Common.Instance.GlobalSettings.IsOpen) return;
 		if (Opened && Common.Instance.MenuInputHandler.OptionInput && !Common.Instance.MenuInputHandler.CancelMenuInput)
@@ -36,13 +38,15 @@ public class TownMenuManager : MonoBehaviour
         {
             var tab = Common.Instance.MenuInputHandler.MenuOpenClosedInput ? PartyMenuTab.Inventory : PartyMenuTab.Skills;
             if (PartyMenu != null && CurrentDialog == PartyMenu) PartyMenu.Shortcut(tab);
-            else if (!Opened && FindFirstObjectByType<Town>().IsReady) OpenPartyMenu(tab);
+            else if (!Opened && MenuUIInputModule.Active?.HasDialog != true && FindFirstObjectByType<Town>().IsReady) OpenPartyMenu(tab);
         }
     }
     public void OpenPartyMenu(PartyMenuTab tab)
     {
         var town = FindFirstObjectByType<Town>();
-        if (town.TownPlayer.CutsceneLocked) return;
+        if (town == null || !town.IsReady || town.TownPlayer.CutsceneLocked || Common.Instance.Travel.IsTransitioning ||
+            Common.Instance.GlobalSettings.IsOpen || AutoplayRunner.BlocksPlayerInput ||
+            Opened && CurrentDialog != PartyMenu || !Opened && MenuUIInputModule.Active?.HasDialog == true) return;
         if (PartyMenu == null) PartyMenu = global::PartyMenu.Create(transform);
         PartyMenu.Setup(new TownPartyMenuContext(town), tab, town.TownPlayer.ControllingTownAlly?.Id);
         Open(PartyMenu);

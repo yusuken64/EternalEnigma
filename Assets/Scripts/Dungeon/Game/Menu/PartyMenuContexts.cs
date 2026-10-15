@@ -26,10 +26,13 @@ public abstract class PartyMenuContext : IPartyMenuContext
     }
     public virtual List<PartyMenuEntry> Entries(PartyMenuHero hero,PartyMenuTab tab)
     {
-        if(tab==PartyMenuTab.Skills)return Skills(hero).Where(s=>s!=null).OrderBy(s=>s.ActivationType).Select(s=>new PartyMenuEntry {
+        if(tab==PartyMenuTab.Skills)return Skills(hero).Where(s=>s!=null).OrderBy(s=>s.ActivationType).Select(s=> {
+            int charge=s.ActivationType==ActivationType.Active?(hero.DungeonActor!=null?s.InitialCastTime(hero.DungeonActor):s.CastTime):0;
+            return new PartyMenuEntry {
             Skill=s,Title=$"{s.DisplayName}  Rank {s.Rank}" + (s.ActivationType==ActivationType.Active?$"  {s.SPCost} SP":"  Passive"),
-            Description=s.Description+(s.ActivationType==ActivationType.Active?$"\nCharging takes {(hero.DungeonActor != null ? s.InitialCastTime(hero.DungeonActor) : s.CastTime)} actions.":"")+(s.UsesArrows?"\nRequires "+(s.ArrowCostMode==ArrowCostMode.PerTarget?"1 arrow per target.":$"{s.ArrowCost} arrows."):""),
-            Section=s.ActivationType==ActivationType.Active?"Active skills":"Passive skills",Icon=s.Icon }).ToList();
+            Description=s.Description+(s.ActivationType==ActivationType.Active?$"\nCharging takes {charge} {(charge==1?"action":"actions")}.":"")+(s.UsesArrows?"\nRequires "+(s.ArrowCostMode==ArrowCostMode.PerTarget?"1 arrow per target.":$"{s.ArrowCost} arrows."):""),
+            Section=s.ActivationType==ActivationType.Active?"Active skills":"Passive skills",Icon=s.Icon };
+        }).ToList();
         if(tab==PartyMenuTab.Stats)return StatEntries(hero);
         if(tab==PartyMenuTab.Equipment)return EquipmentEntries(hero);
         return Bag.Where(i=>i?.ItemDefinition!=null).Select(i=>new PartyMenuEntry {
@@ -91,7 +94,8 @@ public abstract class PartyMenuContext : IPartyMenuContext
         Add(EquipmentSlot.MainHand,"Weapon",loadout.Weapon);
         Add(EquipmentSlot.OffHand,"Off-hand",loadout.OffHand,loadout.Weapon?.EquipmentSlot==EquipmentSlot.TwoHand && loadout.Weapon?.EquipmentItemDefinition?.WeaponType!=WeaponType.BowAndArrow);
         Add(EquipmentSlot.Accessory,"Accessory",loadout.Accessory);
-        entries.Add(new PartyMenuEntry{Section="Totals",Title="Equipment bonuses",Description=string.Join("\n",loadout.Modification.DescribeEffect())});
+        var bonuses=string.Join("\n",loadout.Modification.DescribeEffect());
+        entries.Add(new PartyMenuEntry{Section="Totals",Title="Equipment bonuses",Description=string.IsNullOrWhiteSpace(bonuses)?"No equipment bonuses.":bonuses});
         return entries;
     }
     public virtual List<(string Label, InventoryItem Item, string Description, bool Enabled)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)

@@ -36,7 +36,7 @@ public sealed class LevelUpChoiceDialog : Dialog
         int pending=dungeon?.PendingAttributePoints ?? town.PendingAttributePoints;
         int level=dungeon?.Vitals.Level ?? town.Level;
         var preferred=dungeon?.PrimaryClass?.PreferredAttribute ?? town?.PrimaryClass?.PreferredAttribute ?? HeroAttribute.Str;
-        Heading.text=GameplayText.Format($"{hero.Name} — Lv {level}  •  {pending} points to spend");
+        Heading.text=GameplayText.Format($"{hero.Name} — Lv {level}  •  {pending} {(pending==1?"point":"points")} to spend");
         var before=dungeon!=null?dungeon.FinalStats:TownUtilityService.StatsFor(town);
         foreach(var (button,attribute) in new[]{(StrButton,HeroAttribute.Str),(IntButton,HeroAttribute.Int),(AgiButton,HeroAttribute.Agi)})
         {
@@ -52,7 +52,7 @@ public sealed class LevelUpChoiceDialog : Dialog
                 SPRegenAcccumlateThreshold=newBonus.SPRegenAcccumlateThreshold-oldBonus.SPRegenAcccumlateThreshold
             };
             button.GetComponentInChildren<TMP_Text>().text=GameplayText.Format($"{attribute.ToString().ToUpperInvariant()} {points.Get(attribute)}→{proposed.Get(attribute)}"+
-                (preferred==attribute?"  ★ Recommended":"")+"\n"+StatPreview.Diff(before,after));
+                (preferred==attribute?"  Recommended":"")+"\n"+StatPreview.Diff(before,after));
             button.onClick.RemoveAllListeners();button.onClick.AddListener(()=>{
                 if(!spend(attribute))return;
                 if((hero.DungeonActor?.PendingAttributePoints ?? hero.TownActor.PendingAttributePoints)>0)Configure();

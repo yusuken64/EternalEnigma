@@ -164,7 +164,8 @@ namespace EternalEnigma.Tests
                 dialog.BallistaPurchaseDialog.Purchase_Clicked();
 
                 Assert.That(hero.GetRank("T Novice"), Is.EqualTo(1));
-                Assert.That(noviceItem.SkillText.text, Does.Contain("1/1"));
+                Assert.That(noviceItem.RankText.text, Does.Contain("Rank 1 of 1"));
+                Assert.That(noviceItem.CostText.text, Is.EqualTo("Max rank"));
             }
             finally
             {
@@ -211,6 +212,7 @@ namespace EternalEnigma.Tests
                     dialog.SkillGridItems[1].GridButton.Select();
                     yield return new WaitForSecondsRealtime(.15f);
                     Canvas.ForceUpdateCanvases();
+                    foreach (var row in dialog.SkillGridItems) AssertRowLabelsFit(row);
                     var root = (RectTransform)canvas.transform;
                     foreach (var control in new Component[] { view.PrimaryTab, view.SecondaryTab, view.Balance, view.PreviewScroll, view.ListScroll, view.Close })
                     {
@@ -259,6 +261,8 @@ namespace EternalEnigma.Tests
             var dialog = (BallistaDialog)Manager.CurrentDialog;
             var view = dialog.Layout;
             Assert.That(dialog.SkillGridItems.Count, Is.EqualTo(7));
+            Assert.That(view.PrimaryTab.GetComponentInChildren<TMPro.TMP_Text>().fontStyle.HasFlag(TMPro.FontStyles.Underline), Is.True);
+            Assert.That(view.SecondaryTab.GetComponentInChildren<TMPro.TMP_Text>().fontStyle.HasFlag(TMPro.FontStyles.Underline), Is.False);
             var es = EventSystem.current;
             var first = dialog.SkillGridItems[0];
             Canvas.ForceUpdateCanvases();
@@ -283,6 +287,9 @@ namespace EternalEnigma.Tests
                 row.GridButton.Select();
                 yield return new WaitForSecondsRealtime(.12f);
                 Assert.That(view.Preview.text, Does.Contain(row.GetSkill().SkillName));
+                AssertRowLabelsFit(row);
+                Assert.That(row.RankText.text, Does.Contain("Rank"));
+                Assert.That(row.CostText.text, Does.Contain("pt"));
                 Assert.That(Manager.CurrentDialog, Is.SameAs(dialog), "Selection must only preview.");
                 var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(view.ListScroll.viewport, row.transform);
                 Assert.That(bounds.min.y, Is.GreaterThanOrEqualTo(view.ListScroll.viewport.rect.yMin - 1));
@@ -297,6 +304,8 @@ namespace EternalEnigma.Tests
             float primaryScroll = view.ListScroll.verticalNormalizedPosition;
             dialog.ChangeTab(ClassSource.Secondary);
             yield return null;
+            Assert.That(view.SecondaryTab.GetComponentInChildren<TMPro.TMP_Text>().fontStyle.HasFlag(TMPro.FontStyles.Underline), Is.True);
+            Assert.That(view.PrimaryTab.GetComponentInChildren<TMPro.TMP_Text>().fontStyle.HasFlag(TMPro.FontStyles.Underline), Is.False);
             Assert.That(dialog.SkillGridItems.Count, Is.EqualTo(4));
             dialog.ChangeTab(ClassSource.Primary);
             yield return new WaitForSecondsRealtime(.12f);
@@ -313,15 +322,18 @@ namespace EternalEnigma.Tests
             Assert.That(Manager.CurrentDialog, Is.SameAs(dialog.BallistaPurchaseDialog));
             dialog.BallistaPurchaseDialog.Cancel_ClickeD();
             yield return null;
+            dialog.BallistaPurchaseDialog.Purchase_Clicked();
             Assert.That(es.currentSelectedGameObject, Is.SameAs(first.gameObject));
-            Assert.That(hero.GetRank(first.GetSkill().SkillName), Is.Zero);
+            Assert.That(hero.GetRank(first.GetSkill().SkillName), Is.Zero, "A cancelled confirmation must discard its purchase callback.");
             yield return new WaitForSecondsRealtime(.45f);
             ExecuteEvents.Execute(first.gameObject, new BaseEventData(es), ExecuteEvents.submitHandler);
             yield return null;
             dialog.BallistaPurchaseDialog.Purchase_Clicked();
             yield return null;
             Assert.That(es.currentSelectedGameObject, Is.SameAs(first.gameObject));
-            Assert.That(view.Preview.text, Does.Contain("Rank 1/1"));
+            Assert.That(view.Preview.text, Does.Contain("Rank 1 of 1"));
+            Assert.That(first.CostText.text, Is.EqualTo("Max rank"));
+            Assert.That(first.RankText.text, Does.Contain("Complete"));
             Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000));
             first.GetSkill().Description = string.Join("\n", Enumerable.Repeat("A long description explaining this skill and its effects.", 40));
             dialog.Refresh();
@@ -335,6 +347,21 @@ namespace EternalEnigma.Tests
             World.TownBuildings.First(b => b.Definition.DialogId == "trainer").Interact(World.TownPlayer, null);
             yield return null;
             Assert.That(dialog.SkillGridItems[0].Offer.Source, Is.EqualTo(ClassSource.Primary));
+        }
+
+        static void AssertRowLabelsFit(SkillGridItem row)
+        {
+            foreach (var label in new[] { row.SkillText, row.RankText, row.CostText })
+            {
+                Assert.That(label, Is.Not.Null);
+                label.ForceMeshUpdate();
+                Assert.That(label.isTextOverflowing, Is.False, row.GetSkill().DisplayName + ": " + label.text);
+            }
+            var name = RectTransformUtility.CalculateRelativeRectTransformBounds(row.transform, row.SkillText.transform);
+            var rank = RectTransformUtility.CalculateRelativeRectTransformBounds(row.transform, row.RankText.transform);
+            var cost = RectTransformUtility.CalculateRelativeRectTransformBounds(row.transform, row.CostText.transform);
+            Assert.That(name.min.y, Is.GreaterThanOrEqualTo(rank.max.y - .1f), "Name and rank need separate readable lines.");
+            Assert.That(cost.min.x, Is.GreaterThan(name.max.x), "Cost must not overlap the ability name.");
         }
 
         [UnityTest]

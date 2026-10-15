@@ -8,7 +8,7 @@ public static class InputPrompts
     public static string ToggleFullControl => Pick("F", "Right stick press");
     public static string Inventory => Pick("Q", "X / Square");
     public static string Skills => Pick("R", "LB / L1");
-    public static string Party => Pick("P", "B / Circle");
+    public static string Party => Inventory;
     public static string Equipment => Pick("I", "X / Square, then right");
     public static string Stats => Pick("T", "LB / L1, then right");
     public static string Scroll => Pick("Up / Down", "Left stick / D-pad up / down");

@@ -69,7 +69,7 @@ public class HeroAnimator : MonoBehaviour
 		PlayAnimation(statusLoop.HasValue && HasClip(statusLoop.Value) ? statusLoop.Value : AnimatedAction.Idle);
 	}
     private bool HasClip(AnimatedAction action) => StanceAnimations?.FirstOrDefault(x => x.Stance ==
-        (action is AnimatedAction.Throw or AnimatedAction.Interact ? Stance.NoWeapon : CurrentStance))?
+        (action is AnimatedAction.Throw or AnimatedAction.Interact or AnimatedAction.DrinkPotion ? Stance.NoWeapon : CurrentStance))?
 		.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations?.Any(c=>c!=null)==true;
 
 	internal void PlayWalkAnimation()
@@ -104,7 +104,7 @@ public class HeroAnimator : MonoBehaviour
 		duration = 0;
 		var stance = StanceAnimations?.FirstOrDefault(x => x.Stance == CurrentStance);
 		// Item gestures are authored without a weapon. Restore the equipped stance on idle.
-		if (action is AnimatedAction.Throw or AnimatedAction.Interact)
+		if (action is AnimatedAction.Throw or AnimatedAction.Interact or AnimatedAction.DrinkPotion)
 			stance = StanceAnimations?.FirstOrDefault(x => x.Stance == Stance.NoWeapon);
 		var clips = stance?.NamedAnimations?.FirstOrDefault(x => x.AnimationAction == action)?.Animations;
 		if (Animator == null || stance?.AnimatorController == null || clips == null || clips.Count == 0) return false;

@@ -74,7 +74,7 @@ public class InventoryMenu : Dialog
         {
             var panel=scrollView.transform.parent;
             UseGameplayDock(panel);
-            foreach(var close in panel.GetComponentsInChildren<DungeonDialogClose>(true))close.gameObject.SetActive(false);
+            DungeonDialogClose.ShowSingle(panel);
         }
         if (followingObject != portrait)
         {
@@ -150,6 +150,7 @@ public class InventoryMenu : Dialog
 
     public void SetNavigation()
     {
+        var close=DungeonDock?DungeonDialogClose.ShowSingle(scrollView.transform.parent):null;
         for (int i = 0; i < InventoryMenuItems.Count; i++)
         {
             InventoryMenuItem item = InventoryMenuItems[i];
@@ -157,11 +158,12 @@ public class InventoryMenu : Dialog
             Navigation customNav = new Navigation();
             customNav.mode = Navigation.Mode.Explicit;
             customNav.selectOnDown = InventoryMenuItems[(i + 1) % InventoryMenuItems.Count];
-            customNav.selectOnUp = InventoryMenuItems[(i - 1 + InventoryMenuItems.Count) % InventoryMenuItems.Count];
+            customNav.selectOnUp = i==0 && close!=null ? close : InventoryMenuItems[(i - 1 + InventoryMenuItems.Count) % InventoryMenuItems.Count];
             if(DetailsControl!=null)customNav.selectOnRight=DetailsControl;
             item.navigation = customNav;
         }
         if(DetailsControl!=null)DetailsControl.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnLeft=InventoryMenuItems.FirstOrDefault()};
+        if(close!=null)close.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnDown=InventoryMenuItems.FirstOrDefault(),selectOnUp=InventoryMenuItems.LastOrDefault()};
     }
 
     internal override void SetFirstSelect()
@@ -170,5 +172,6 @@ public class InventoryMenu : Dialog
         {
             InventoryMenuItems[0].Select();
         }
+        else if(DungeonDock)DungeonDialogClose.ShowSingle(scrollView.transform.parent)?.Select();
     }
 }

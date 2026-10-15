@@ -93,14 +93,16 @@ public sealed class GameTestHarness
         if (save == null) SaveSystem.ClearData();
         yield return LoadScene("Common");
         yield return LoadScene("MainMenu");
-        yield return WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true, "main menu startup");
+        yield return WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true &&
+            !Common.Instance.ScreenTransition.BlocksInput, "main menu startup and reveal");
     }
 
     public IEnumerator LoadMainMenuDirect()
     {
         Begin(new TestScenario().CreateSave());
         yield return LoadScene("MainMenu");
-        yield return WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true, "direct main menu startup");
+        yield return WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true &&
+            !Common.Instance.ScreenTransition.BlocksInput, "direct main menu startup and reveal");
     }
 
     // Travel/save fixtures start after the opening, using the real transactions and save path.
@@ -258,7 +260,7 @@ public sealed class GameTestHarness
     public IEnumerator WaitForIdle()
     {
         yield return WaitUntil(() => Game != null && Game.IsReady && !Game.TurnManager.IsProcessingTurn
-            && !Game.NewFloorMessage.gameObject.activeSelf, "turn/floor animation completion");
+            && !Common.Instance.ScreenTransition.BlocksInput, "turn/floor animation and scene reveal completion");
     }
 
     public IEnumerator WaitUntil(Func<bool> condition, string description)

@@ -16,6 +16,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
     [SerializeField] private Transform choices;
     [SerializeField] private TextMeshProUGUI details;
     [SerializeField] private TextMeshProUGUI pageLabel;
+    [SerializeField] private TMP_Text title;
     [SerializeField] private RawImage portrait;
     [SerializeField] private Button previous;
     [SerializeField] private Button next;
@@ -31,6 +32,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         var picker=AuthoredUI.Require<ProtagonistHeroPicker>();
         picker.heroes=roster;picker.confirmed=confirmed;picker.cancelled=cancelled;picker.finished=false;picker.selected=null;
         picker.gameObject.SetActive(true);
+        picker.EnsureTitle();
         picker.BackButton.onClick.RemoveAllListeners();
         picker.BackButton.onClick.AddListener(picker.Back);
         picker.Select(roster[0]);picker.BuildChoices();
@@ -47,7 +49,8 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         picker.heroes = roster; picker.confirmed = confirmed; picker.cancelled = cancelled;
         GameUISkin.Panel(canvas.transform, Vector2.zero, Vector2.one).color = Color.white;
         GameUISkin.Label(canvas.transform, "ETERNAL ENIGMA  /  A NEW JOURNEY", new Vector2(.05f, .92f), new Vector2(.95f, .97f), 22);
-        GameUISkin.Label(canvas.transform, "Choose your hero", new Vector2(.05f, .82f), new Vector2(.95f, .92f), 48);
+        picker.title = GameUISkin.Label(canvas.transform, "Choose your hero", new Vector2(.05f, .82f), new Vector2(.95f, .92f), 48);
+        picker.EnsureTitle();
 
         var frame = GameUISkin.Panel(canvas.transform, new Vector2(.05f, .23f), new Vector2(.34f, .81f));
         picker.portrait = GameUISkin.Rect("Hero portrait", frame.transform, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
@@ -62,6 +65,12 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         return picker;
     }
 #endif
+
+    private void EnsureTitle()
+    {
+        if (title == null) title = GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(label => label.text == "Choose your hero");
+        if (title != null) GameUISkin.RibbonHeader(title);
+    }
 
     private void BuildChoices()
     {

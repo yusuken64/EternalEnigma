@@ -21,7 +21,11 @@ public sealed class DungeonOptions : MonoBehaviour
         var rect = (RectTransform)first.Content.transform;
         var panel = GameUISkin.Panel(rect.parent, rect.anchorMin, rect.anchorMax);
         panel.name = "Gameplay options"; panel.rectTransform.offsetMin = rect.offsetMin; panel.rectTransform.offsetMax = rect.offsetMax;
-        GameUISkin.Label(panel.transform, "DUNGEON", new Vector2(.06f,.83f),new Vector2(.94f,.94f),32);
+        panel.enabled = false;
+        panel.raycastTarget = false;
+        var heading = GameUISkin.Label(panel.transform, "GAMEPLAY", new Vector2(.14f,.86f),new Vector2(.86f,.99f),32);
+        heading.name = "Section heading";
+        GameUISkin.RibbonHeader(heading);
         script.control = GameUISkin.Button(panel.transform,"",new Vector2(.06f,.64f),new Vector2(.94f,.77f),
             () => { if (!AutoplayRunner.BlocksPlayerInput) DungeonPreferences.FullControl = !DungeonPreferences.FullControl; script.Refresh(); });
         script.speed = GameUISkin.Button(panel.transform,"",new Vector2(.06f,.43f),new Vector2(.94f,.56f),

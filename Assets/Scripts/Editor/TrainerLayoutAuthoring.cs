@@ -56,6 +56,7 @@ public static class TrainerLayoutAuthoring
             row.CostObject = row.CostText.gameObject;
             skillButton.gameObject.AddComponent<LayoutElement>().preferredHeight = 54;
             view.SkillTemplate = row;
+            view.ApplyPresentation();
             templates.gameObject.SetActive(false);
             PrefabUtility.SaveAsPrefabAsset(root.gameObject, Path);
         }

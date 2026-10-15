@@ -26,6 +26,7 @@ public static class ControlDeviceState
         polledFrame = Time.frameCount;
 
         var pad = UnityEngine.InputSystem.Gamepad.current;
+        if (pad != null && !pad.enabled) pad = null;
         bool padUsed = false;
         if (pad != null)
         {
@@ -33,16 +34,23 @@ public static class ControlDeviceState
             var right = pad.rightStick.ReadValue();
             var dpad = pad.dpad.ReadValue();
             if (pad == previousPad)
-                padUsed = DeliberateMovement(left, previousLeft) ||
-                    DeliberateMovement(right, previousRight) || DeliberateMovement(dpad, previousDpad);
+            {
+                // Keep a stable baseline so a deliberate slow sweep can accumulate,
+                // while small oscillations around an idle stick never become activity.
+                bool leftUsed = DeliberateMovement(left, ref previousLeft);
+                bool rightUsed = DeliberateMovement(right, ref previousRight);
+                bool dpadUsed = DeliberateMovement(dpad, ref previousDpad);
+                padUsed = leftUsed || rightUsed || dpadUsed;
+            }
+            else
+            {
+                previousLeft = left; previousRight = right; previousDpad = dpad;
+            }
             foreach (var control in pad.allControls)
                 // Stick directions are synthetic buttons; their thresholds can turn
                 // a small drift into a press even when the vector delta is too small.
                 if (control is ButtonControl button && button.parent is not StickControl && button.wasPressedThisFrame)
                     padUsed = true;
-            previousLeft = left;
-            previousRight = right;
-            previousDpad = dpad;
         }
         previousPad = pad;
 
@@ -57,11 +65,23 @@ public static class ControlDeviceState
                 if (key != null && key.wasPressedThisFrame) { keyboardUsed = true; break; }
 
         // Keyboard and mouse take priority if both kinds of device act this frame.
-        if (keyboardUsed || mouseUsed) Set(false);
+        if (keyboardUsed || mouseUsed)
+        {
+            Set(false);
+            if (pad != null)
+            {
+                previousLeft = pad.leftStick.ReadValue(); previousRight = pad.rightStick.ReadValue(); previousDpad = pad.dpad.ReadValue();
+            }
+        }
         else if (padUsed) Set(true);
+        else if (pad == null) Set(false);
     }
 
-    private static bool DeliberateMovement(Vector2 value, Vector2 previous) =>
-        value.sqrMagnitude >= 0.35f * 0.35f &&
-        (value - previous).sqrMagnitude >= 0.15f * 0.15f;
+    private static bool DeliberateMovement(Vector2 value, ref Vector2 previous)
+    {
+        bool active = value.sqrMagnitude >= 0.35f * 0.35f;
+        bool moved = active && (value - previous).sqrMagnitude >= 0.15f * 0.15f;
+        if (!active || moved) previous = value;
+        return moved;
+    }
 }

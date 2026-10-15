@@ -5,6 +5,7 @@ using EternalEnigma.Core.Progression;
 using EternalEnigma.Core.World;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
@@ -62,7 +63,26 @@ namespace EternalEnigma.Tests
             Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains("Not cleared")),Is.True);
             picker.BackButton.onClick.Invoke();
             Assert.That(JsonUtility.ToJson(context.Capture()),Is.EqualTo(before));
+            var puzzle = context.Campaign.Locations.Single(l => l.Encounter?.RequiresResetFloor == true);
+            context.Position = context.Grid.Locations[puzzle.Id];
+            Assert.That(menus.ConfirmEntry(), Is.True);
+            yield return null;
+            picker = menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p => p.Owner != null);
+            var unavailable = picker.Rows.GetComponentsInChildren<AuthoredButton>().Single();
+            Assert.That(unavailable.Button.interactable, Is.False, "Unavailable encounters must not offer a working Enter button.");
+            Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Any(t => t.text.Contains("Learn Reset Floor")), Is.True);
+            Assert.That(picker.BackButton.interactable, Is.True);
+            unavailable.Button.onClick.Invoke();
+            Assert.That(menus.Opened, Is.True, "Even a stale callback must not close the blocked entry explanation.");
+            Assert.That(context.State.PendingDungeon, Is.Empty);
+            picker.BackButton.onClick.Invoke();
             context.Completed.Add("repeatable-0");
+            Assert.That(menus.ConfirmEntry(), Is.True);
+            yield return null;
+            picker = menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p => p.Owner != null);
+            Assert.That(picker.Rows.GetComponentsInChildren<AuthoredButton>().Single().Button.interactable, Is.True);
+            picker.BackButton.onClick.Invoke();
+            context.Position = context.Grid.Locations["repeatable-0"];
             Assert.That(menus.ConfirmEntry(),Is.True);
             yield return null;
             picker=menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p=>p.Owner!=null);
@@ -125,8 +145,11 @@ namespace EternalEnigma.Tests
             Assert.That(targetingRing.gameObject.activeInHierarchy, Is.False);
         }
         [UnityTest]
-        public IEnumerator FinalDungeonVictoryIsSavedOnceAndReturnsToMenu()
+        public IEnumerator FinalDungeonHomecomingSavesOnceAndReturnsToMenu()
         {
+            using var input = new TestInputScope();
+            using var preferences = GamePreferences.Isolate();
+            DungeonPreferences.AnimationMode = DungeonAnimationMode.NoAnimations;
             yield return StartCampaign();
             var common = Common.Instance;
             var context = common.CampaignContext;
@@ -135,33 +158,75 @@ namespace EternalEnigma.Tests
             yield return harness.WaitForIdle();
             var game = Game.Instance;
             game.PlayerController.Gold += 123;
-            int gold = common.GameSaveData.TownSaveData.Gold;
+            int gold = game.PlayerController.Gold;
+            int writes = harness.Store.Writes;
+            string checkpoint = harness.Store.Json;
+            Assert.That(common.Travel.FinishDungeon(true, game.PlayerController), Is.False, "The finale still requires both cleared floors and stairs.");
+            StageFinaleClearance(context.Finale);
             StageServiceVictory();
-            MenuManager.Instance.ShowYesNoDialog("Exit Dungeon?",
-                () => GameOverScreen.GoBackToTown(true, game.PlayerController), () => { });
-            MenuManager.Instance.StairDialog.YesClicked();
-            yield return harness.WaitUntil(() => common.MessageDialog.gameObject.activeSelf, "final clear ability");
-            Assert.That(common.MessageDialog.PromptText.text, Does.Contain("Enigma's Legacy"));
-            common.MessageDialog.Ok_Clicked();
-            yield return null;
-            Assert.That(game.GameOverScreen.gameObject.activeSelf, Is.True);
-            Assert.That(game.GameOverScreen.MessageText.text, Does.Contain("Victory!"));
-            Assert.That(game.IsReady, Is.False);
-            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("DungeonScene"));
+            Assert.That(common.Travel.FinishDungeon(true, game.PlayerController), Is.True);
             Assert.That(common.Travel.FinishDungeon(true, game.PlayerController), Is.False);
+            yield return harness.WaitUntil(() => common.Travel.HomecomingCompleted, "homecoming and Hall of Fame");
+            yield return null;
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Town"));
+            var summary = Object.FindFirstObjectByType<CampaignSummaryDialog>();
+            Assert.That(summary, Is.Not.Null);
+            Assert.That(Object.FindFirstObjectByType<TownMenuManager>().CurrentDialog, Is.SameAs(summary));
+            Assert.That(harness.Store.Json, Is.EqualTo(checkpoint));
+            Assert.That(harness.Store.Writes, Is.EqualTo(writes));
             Assert.That(SaveSystem.LoadData().Campaign.Finished, Is.False);
             var saved = common.GameSaveData;
             Assert.That(saved.Campaign.Finished, Is.True);
             Assert.That(saved.Campaign.PendingDungeon, Is.Empty);
             Assert.That(saved.Campaign.Completed, Contains.Item(context.Campaign.FinalLocationId));
-            Assert.That(saved.TownSaveData.Gold, Is.EqualTo(gold + 123));
-            game.GameOverScreen.TryAgain_Clicked();
-            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>() != null, "victory menu");
+            Assert.That(saved.TownSaveData.Gold, Is.EqualTo(gold));
+            Assert.That(saved.Completion, Is.Not.Null);
+            summary.SaveButton.Select();
             yield return null;
+            ExecuteEvents.Execute(summary.SaveButton.gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.submitHandler);
+            Assert.That(harness.Store.Writes, Is.EqualTo(writes + 1));
+            Assert.That(summary.SaveButton.interactable, Is.False);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(summary.ContinueButton.gameObject));
+            ExecuteEvents.Execute(summary.SaveButton.gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.submitHandler);
+            Assert.That(harness.Store.Writes, Is.EqualTo(writes + 1), "The disabled Save action cannot write twice.");
+            Assert.That(SaveSystem.LoadData().Campaign.Finished, Is.True);
+            Assert.That(SaveSystem.LoadData().Completion.Gold, Is.EqualTo(gold));
+            summary.ContinueButton.onClick.Invoke();
+            Assert.That(common.Travel.ReturnToMenu(), Is.True);
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true &&
+                !common.ScreenTransition.BlockScreen.activeSelf, "completed campaign menu");
             Assert.That(Object.FindFirstObjectByType<MainMenu>().ContinueButton.activeSelf, Is.True);
             common.Travel.Continue();
-            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("MainMenu"));
-            Assert.That(SaveSystem.LoadData().Campaign.Finished, Is.True);
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true &&
+                !common.Travel.IsTransitioning, "completed campaign resumes in town");
+            Assert.That(common.CampaignContext.State.Finished, Is.True);
+            Assert.That(Object.FindFirstObjectByType<Town>().TownPlayer.Gold, Is.EqualTo(gold));
+            Assert.That(harness.Store.Writes, Is.EqualTo(writes + 1));
+        }
+
+        private static void StageFinaleClearance(FinaleSession session)
+        {
+            Assert.That(session, Is.Not.Null);
+            // Stage the same valid core ledger as FinaleTests.Clear. Real combat and rendered
+            // floor transitions are covered by FinaleGameplayTests; this fixture owns travel/save UI.
+            while (!session.FinalExitCompleted)
+            {
+                foreach (var region in session.Floor.Regions)
+                {
+                    foreach (var enemy in region.Enemies.Where(e => e.IsMimic))
+                    {
+                        var from = GridSteps.EightWay.Select(d => new GridPoint(enemy.Position.X + d.X, enemy.Position.Y + d.Y))
+                            .First(p => session.CanReveal(enemy.Id, p));
+                        Assert.That(session.Reveal(enemy.Id, from), Is.True);
+                    }
+                    foreach (var id in session.EnemyRegions.Where(entry => entry.Value == region.Id).Select(entry => entry.Key).ToArray())
+                        Assert.That(session.RecordDeath(id), Is.True);
+                    session.ReconcileClearance();
+                }
+                Assert.That(session.UseStairs(session.Floor.Stairs), Is.True);
+            }
+            Assert.That(session.VictoryReady, Is.True);
+            Assert.That(session.StairTransitions, Is.EqualTo(new[] { 1, 2 }));
         }
 
         [UnityTest]

@@ -116,18 +116,22 @@ namespace JuicyChickenGames.Menu
 
 		internal override void SetFirstSelect()
 		{
-			Buttons.FirstOrDefault(b => b.gameObject.activeSelf && b.interactable)?.Select();
+			(Buttons.FirstOrDefault(b => b.gameObject.activeSelf && b.interactable) ??
+                Panel.GetComponentsInChildren<DungeonDialogClose>().Select(c=>c.GetComponent<Button>()).FirstOrDefault())?.Select();
 		}
 
 		public void SetNavigation()
 		{
+
+            Button closeButton=null;
 			if(Panel.transform.parent.GetComponent<SafeAreaPanel>()!=null)
             {
                 UseGameplayDock(Panel.transform);
                 Buttons[^1].gameObject.SetActive(false);
-                foreach(var close in Panel.GetComponentsInChildren<DungeonDialogClose>(true))close.gameObject.SetActive(false);
+                closeButton=DungeonDialogClose.ShowSingle(Panel.transform);
             }
 			var active = Buttons.Where(b => b.gameObject.activeSelf && b.interactable).ToList();
+            if(closeButton!=null)active.Add(closeButton);
             for (int i = 0; i < active.Count; i++)
 			{
 				var item = active[i];

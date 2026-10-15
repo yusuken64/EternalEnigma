@@ -27,7 +27,7 @@ namespace JuicyChickenGames.Menu
         {
             var module = MenuUIInputModule.Active;
             ResetCommands();
-            if (module == null || module.InputConsumed) return;
+            if (module == null || module.InputConsumed || Common.Instance?.ScreenTransition?.BlocksInput == true) return;
             var ui = module.UI;
             NavigateActions = ui.Navigate;
             MenuOpenCloseAction = ui.OpenMenu;

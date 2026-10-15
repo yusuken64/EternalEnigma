@@ -9,6 +9,7 @@ public sealed class DungeonHud : MonoBehaviour
     public Transform PartyRoot;
     public CharacterStatsDisplay[] PartySlots;
     [SerializeField] private Button options;
+    public Button OptionsButton => options;
     private Game game;
     [SerializeField] private TMP_Text header, target;
     [SerializeField] private GameObject targetBackdrop;
@@ -21,7 +22,6 @@ public sealed class DungeonHud : MonoBehaviour
         if(hud.game==null)
         {
             hud.game=game;
-            hud.options.onClick.AddListener(()=>Common.Instance.GlobalSettings.ShowDialog());
             hud.control.onClick.AddListener(()=>DungeonPreferences.FullControl=!DungeonPreferences.FullControl);
             ResourceHUD.Ensure(game); ScenePresentation.Ensure(game);
         }
@@ -91,7 +91,7 @@ public sealed class DungeonHud : MonoBehaviour
     private void Update()
     {
         if (game == null || !game.IsReady || game.PlayerController.ControlledAlly == null) return;
-        if (!AutoplayRunner.BlocksPlayerInput && !Common.Instance.GlobalSettings.IsOpen &&
+        if (!AutoplayRunner.BlocksPlayerInput && !Common.Instance.GlobalSettings.IsOpen && !Common.Instance.Travel.IsTransitioning &&
             MenuUIInputModule.Active?.HasDialog != true &&
             (Keyboard.current?.fKey.wasPressedThisFrame == true || Gamepad.current?.rightStickButton.wasPressedThisFrame == true))
             DungeonPreferences.FullControl = !DungeonPreferences.FullControl;

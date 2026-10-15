@@ -108,6 +108,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public bool Allows(GameObject obj)
     {
+        if (Common.InstanceOrNull?.ScreenTransition?.BlocksInput == true) return false;
         if (AutoplayRunner.BlocksPlayerInput)
             return obj != null && AutoplayRunner.Active.ShowPlaybackUI && obj.GetComponentInParent<AutoplayPanel>() != null;
         return obj != null && (scopes.Count == 0 ||
@@ -213,10 +214,33 @@ public class MenuUIInputModule : InputSystemUIInputModule
             finally { eventSystem.sendNavigationEvents = navigation; }
             return;
         }
+        if (Common.InstanceOrNull?.ScreenTransition?.BlocksInput == true)
+        {
+            ConsumeInput();
+            Common.Instance.MenuInputHandler.ClearInputThisFrame();
+            // The authored full-screen cover catches pointer events. Keep processing
+            // them so the Input System clears its press/release cache each frame;
+            // skipping base.Process would replay covered clicks after the reveal.
+            bool navigation = eventSystem.sendNavigationEvents;
+            eventSystem.sendNavigationEvents = false;
+            try { base.Process(); }
+            finally { eventSystem.sendNavigationEvents = navigation; }
+            return;
+        }
         scopes.RemoveAll(s => s.Owner == null || s.Root == null || !s.Root.gameObject.activeInHierarchy);
         // World targets use directional/confirm input in TargetDialog and MenuManager.
         // Keep EventSystem enabled so a settings dialog pushed above targeting still works.
-        if (scopes.Count > 0 && scopes[^1].Owner is JuicyChickenGames.Menu.TargetDialog) return;
+        if (scopes.Count > 0 && scopes[^1].Owner is JuicyChickenGames.Menu.TargetDialog)
+        {
+            // TargetDialog's transparent shield absorbs UI clicks while its own
+            // world-target input reads the actions. Drain cached pointer edges so
+            // cancelling targeting cannot replay them against the restored HUD.
+            bool navigation = eventSystem.sendNavigationEvents;
+            eventSystem.sendNavigationEvents = false;
+            try { base.Process(); }
+            finally { eventSystem.sendNavigationEvents = navigation; }
+            return;
+        }
         if (TerminalMenuBridge.Process(this, scopes.Count > 0 ? scopes[^1].Owner : null,
             scopes.Count > 0 ? scopes[^1].Root : null, scopes.Count > 0 ? scopes[^1].Back : null)) return;
         RememberSelection();

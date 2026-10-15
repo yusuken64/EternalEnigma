@@ -22,6 +22,31 @@ public sealed class OverworldMenuManager : MonoBehaviour
         if(PartyMenu==null)PartyMenu=global::PartyMenu.Create(transform);
     }
 
+    public bool ChooseTravel()
+    {
+        if (Opened || world.IsMoving || !world.IsReady || Common.Instance.Travel.IsTransitioning ||
+            Common.Instance.GlobalSettings.IsOpen || MenuUIInputModule.Active?.HasDialog == true) return false;
+        var context = world.Context;
+        var position = world.Position;
+        var routes = world.Map.CurrentGrid.WarpsAt(position).Where(r => r.CanTraverse(world.Held, context.Resolved)).ToArray();
+        var gates = context.Gates.Nearby(position).Where(r => context.Gates.NeedsOpening(r) && r.ShortcutKind != ShortcutKind.FarSide).ToArray();
+        if (routes.Length == 0 && gates.Length < 2) return false;
+        EnsurePickers();
+        bool StillHere() => Common.Instance.CampaignContext == context && context.Position.Equals(position);
+        var choices = routes.Select(route => (world.WarpLabel(route), (Action)(() =>
+        {
+            if (StillHere()) world.Warp(route.Id);
+        }))).ToList();
+        foreach (var gate in gates)
+        {
+            string destination = world.Map.CurrentGrid.Locations[gate.From].Equals(position) ? gate.To : gate.From;
+            choices.Add(("Inspect gate to " + CampaignGuidance.LocationName(context, destination),
+                () => { if (StillHere()) world.OpenGate(gate.Id); }));
+        }
+        dialogs.Open(PartyMenuPicker.Build(PartyMenu.transform.parent, "Choose a destination", choices));
+        return true;
+    }
+
     public bool ChooseGate(CampaignRoute route)
     {
         if(Opened || world.IsMoving || !world.IsReady || Common.Instance.Travel.IsTransitioning)return false;
@@ -62,15 +87,23 @@ public sealed class OverworldMenuManager : MonoBehaviour
         if(location.Encounter==null && location.Kind!=LocationKind.StoryDungeon && location.Kind!=LocationKind.RepeatableDungeon && location.Kind!=LocationKind.FinalDungeon)return false;
         EnsurePickers();
         var position=world.Position;
-        var picker=PartyMenuPicker.Build(PartyMenu.transform.parent,location.Encounter==null?"Enter dungeon?":"Enter encounter?",new List<(string,Action)>{("Enter",()=>
+        string blockedReason = !context.CanEnterDungeon(location.Id) ? context.OpeningPreparationHint :
+            context.State.Finished && location.Id == context.Campaign.FinalLocationId ? "This final dungeon has already been completed." :
+            location.Encounter?.RequiresResetFloor == true && !context.ResetFloorUnlocked
+                ? "Learn Reset Floor by clearing the first repeatable dungeon before entering." :
+            location.Encounter != null && !location.Encounter.EntryRequirement.IsSatisfiedBy(context.Held)
+                ? "This encounter requires " + location.Encounter.EntryRequirement + "." : null;
+        Action enter = blockedReason == null ? () =>
         {
             if(Common.Instance.CampaignContext==context && context.Position.Equals(position) && context.Location==location)
                 Common.Instance.Travel.EnterLocation();
-        })});
+        } : null;
+        var picker=PartyMenuPicker.Build(PartyMenu.transform.parent,location.Encounter==null?"Enter dungeon?":"Enter encounter?",
+            new List<(string,Action)>{(blockedReason == null ? "Enter" : "Enter (unavailable)", enter)});
         picker.Description(CampaignGuidance.LocationName(context, location.Id)+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
             "\n" + location.DungeonDescription + (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? ". Hostile territory" : "") +
             (location.Encounter?.Kind==EncounterKind.Prison?"\nYour carried and equipped possessions will be confiscated temporarily. Recover them from the guarded stash before escaping. Gold and learned skills remain available.":"")+
-            (location.Encounter?.RequiresResetFloor==true && !context.ResetFloorUnlocked?"\nLearn Reset Floor by clearing the first repeatable dungeon before entering.":""));
+            (blockedReason == null ? "" : "\n" + blockedReason));
         dialogs.Open(picker);
         return true;
     }
@@ -92,7 +125,9 @@ public sealed class OverworldMenuManager : MonoBehaviour
     }
     public void OpenPartyMenu(PartyMenuTab tab)
     {
-        if(!world.IsReady || world.IsMoving || world.Context.IsSandbox || Interaction!=null)return;
+        if(!world.IsReady || world.IsMoving || world.Context.IsSandbox || Interaction!=null ||
+            Common.Instance.Travel.IsTransitioning || Common.Instance.GlobalSettings.IsOpen || AutoplayRunner.BlocksPlayerInput ||
+            Opened && dialogs.Current != PartyMenu || !Opened && MenuUIInputModule.Active?.HasDialog == true)return;
         if(PartyMenu==null)PartyMenu=global::PartyMenu.Create(transform);
         PartyMenu.Setup(new OverworldPartyMenuContext(world),tab,Common.Instance.GameSaveData.ProtagonistId);
         dialogs.Open(PartyMenu);

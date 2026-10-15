@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS03_Sword
   m_EditorClassIdentifier: 
   ItemName: Short Sword (Off-hand)
-  Description: Short Sword (Off-hand) grants 3 strength.
+  Description: "An off-hand Short Sword that grants 3 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

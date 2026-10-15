@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS08_Sword
   m_EditorClassIdentifier: 
   ItemName: Gilded Sword (Off-hand)
-  Description: Gilded Sword (Off-hand) grants 8 strength.
+  Description: "An off-hand Gilded Sword that grants 8 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 6

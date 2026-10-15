@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: 'Fear: the target flees and cannot attack (60%).'
+  Description: "Has a 60% chance to frighten the target, making it flee and preventing attacks."
   references:
     version: 2
     RefIds:

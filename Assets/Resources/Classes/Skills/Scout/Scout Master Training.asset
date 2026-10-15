@@ -60,7 +60,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Unlocks tier 3. Hunger drains slower.
+  Description: "Unlocks tier 3. Slows the loss of fullness."
   references:
     version: 2
     RefIds: []

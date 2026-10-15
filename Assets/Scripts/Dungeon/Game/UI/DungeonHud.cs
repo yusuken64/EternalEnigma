@@ -57,12 +57,12 @@ public sealed class DungeonHud : MonoBehaviour
 #endif
     public void Inspect(string text)
     {
-        target.text = text;
+        target.text = GameplayText.Format(text);
         if (targetBackdrop != null) targetBackdrop.SetActive(!string.IsNullOrWhiteSpace(text));
         detailUntil = Time.unscaledTime + 6;
     }
     public static string StatusSummary(Character c) => string.Join(", ", c.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).Select(s=>
-        s is GoopiRootStatusEffect ? "Rooted: defeat the holder" : $"{s.GetEffectName()} ({s.TurnsLeft})"));
+        s is GoopiRootStatusEffect ? "Rooted until the holder is defeated" : $"{GameplayText.Name(s.GetEffectName())}, {s.TurnsLeft} turns left"));
 	private void UpdateEnemyIcons(Enemy enemy)
 	{
 		if (enemyStatusIcons == null)
@@ -97,21 +97,21 @@ public sealed class DungeonHud : MonoBehaviour
             DungeonPreferences.FullControl = !DungeonPreferences.FullControl;
         var player = game.PlayerController;
         var turns = game.TurnManager;
-        header.text = Game.Instance.Finale == null ? $"{player.Floor}F" : $"Finale {game.Finale.Session.CurrentFloor}\n{game.Finale.Session.Remaining} remaining";
-        control.GetComponentInChildren<TMP_Text>().text = "Full Control: " + (DungeonPreferences.FullControl ? "On" : "Off") +
-            (turns.IsProcessingTurn && turns.FullControlThisRound != DungeonPreferences.FullControl ? " (next round)" : "");
+        header.text = GameplayText.Format(Game.Instance.Finale == null ? $"{player.Floor}F" : $"Finale {game.Finale.Session.CurrentFloor}\n{game.Finale.Session.Remaining} remaining");
+        control.GetComponentInChildren<TMP_Text>().text = GameplayText.Format("Full Control " + (DungeonPreferences.FullControl ? "On" : "Off") +
+            (turns.IsProcessingTurn && turns.FullControlThisRound != DungeonPreferences.FullControl ? " next round" : ""));
         var ally = player.ControlledAlly;
         var front = ally.TilemapPosition + Dungeon.GetFacingOffset(ally.CurrentFacing);
         if (Time.unscaledTime < detailUntil) return;
         var selected = MenuManager.Instance.TargetDialog.CameraTarget;
         if (selected == null && JuicyChickenGames.Menu.PlayerInputHandler.Instance.holdPosition)
             selected = game.AllCharacters.FirstOrDefault(c=>c!=null && c.OverlapsWith(Character.ToBounds(front)));
-        target.text = selected != null && GameMessages.Visible(selected) ?
-            EnemyBehavior.IsDisguised(selected) ? selected.GetComponent<FinaleActor>() is { } disguise ? disguise.IsTown ? "Town" : "Dungeon" : "Treasure chest" : $"{GameMessages.Name(selected)}\n{StatusSummary(selected)}" : "";
+        target.text = GameplayText.Format(selected != null && GameMessages.Visible(selected) ?
+            EnemyBehavior.IsDisguised(selected) ? selected.GetComponent<FinaleActor>() is { } disguise ? disguise.IsTown ? "Town" : "Dungeon" : "Treasure chest" : $"{GameMessages.Name(selected)}\n{StatusSummary(selected)}" : "");
 		UpdateEnemyIcons(selected is Enemy visible && GameMessages.Visible(visible) && !EnemyBehavior.IsDisguised(visible) ? visible : null);
         var targeting = MenuManager.Instance.TargetDialog;
         if (player.CurrentControlMode == PlayerControlMode.TargetSelecting && !string.IsNullOrEmpty(targeting.RangeLabel))
-            target.text += (string.IsNullOrWhiteSpace(target.text) ? "" : "\n") + targeting.RangeLabel;
+            target.text += GameplayText.Format((string.IsNullOrWhiteSpace(target.text) ? "" : "\n") + targeting.RangeLabel);
         if (targetBackdrop != null) targetBackdrop.SetActive(!string.IsNullOrWhiteSpace(target.text));
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Potion_FrailtyPotion
   m_EditorClassIdentifier: 
   ItemName: Frailty Potion
-  Description: Lose Strength
+  Description: "Reduces strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

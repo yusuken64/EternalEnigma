@@ -50,15 +50,15 @@ public class AllyRecruitDialog : Dialog
 	private void UpdateUI()
 	{
 		var classLabel = HeroClass.Label(_ally.PrimaryClass, _ally.SecondaryClass);
-		NameText.text = string.IsNullOrEmpty(classLabel) ? _ally.Name : $"{_ally.Name} - {classLabel}";
-		DescriptionText.text = _ally.Description;
+		NameText.text = GameplayText.Format(string.IsNullOrEmpty(classLabel) ? _ally.Name : $"{_ally.Name} - {classLabel}");
+		DescriptionText.text = GameplayText.Format(_ally.Description);
 
 		switch (AllyRecruitDialogMode)
 		{
 			case AllyRecruitDialogMode.Recruit:
 				RecruitButtons.gameObject.SetActive(true);
 				RemovelButtons.gameObject.SetActive(false);
-				RecruitButtonText.text = $"Recruit ({_ally.RecruitCost}g)";
+				RecruitButtonText.text = GameplayText.Format($"Recruit for {_ally.RecruitCost} gold");
 				break;
 			case AllyRecruitDialogMode.Talk:
 				RecruitButtons.gameObject.SetActive(false);

@@ -15,7 +15,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
     public bool Opened=>dialogs.Opened;
     internal void Open(Dialog dialog)=>dialogs.Open(dialog);
     public LockInteractionSession Interaction { get; private set; }
-    public string CompanionName(string id) => CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? id;
+    public string CompanionName(string id) => GameplayText.Name(CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? "a companion");
 
     private void EnsurePickers()
     {
@@ -35,18 +35,18 @@ public sealed class OverworldMenuManager : MonoBehaviour
         {
             var outcome=world.AttemptGate(session,action);
             if(session.Closed){picker.CloseDialog();return;}
-            picker.Title.text=outcome==LockOutcome.Progress?"Something changed, but the way is still blocked.":"This had no effect";
+            picker.Title.text=GameplayText.Format(outcome==LockOutcome.Progress?"Something changed, but the way is still blocked.":"This had no effect");
         }
         foreach(var capability in CampaignGuidance.Acquired(world.Context))
         {
             var action=new CapabilityLockAction(capability);
             bool available=world.Held.Contains(capability);
-            options.Add((CampaignRewardNames.Name(world.Context,capability)+(available?"":" — Requires "+CampaignGuidance.CapabilitySource(world.Context,capability,CompanionName)),
+            options.Add((CampaignRewardNames.Name(world.Context,capability)+(available?"":" requires "+CampaignGuidance.CapabilitySource(world.Context,capability,CompanionName)),
                 available?(Action)(()=>Attempt(action)):null));
         }
         foreach(var key in world.CollectedKeys)options.Add((world.Campaign.KeyLabel(key),()=>Attempt(new KeyLockAction(key))));
         picker=PartyMenuPicker.Build(PartyMenu.transform.parent,"Choose an action",options,false);
-        picker.Description((route.LockText??route.GateHint)+(options.Count==0?"\n\nNo acquired capabilities or held keys.":""));
+        picker.Description((route.LockText??route.GateHint)+(options.Count==0?"\n\nYou have no abilities or keys to use here.":""));
         picker.CloseAction=()=>{session.Dispose();Interaction=null;};
         dialogs.Open(picker);
         return true;
@@ -67,10 +67,10 @@ public sealed class OverworldMenuManager : MonoBehaviour
             if(Common.Instance.CampaignContext==context && context.Position.Equals(position) && context.Location==location)
                 Common.Instance.Travel.EnterLocation();
         })});
-        picker.Description(location.Id+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
-            "\n" + location.DungeonDescription + (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? " · Hostile" : "") +
+        picker.Description(CampaignGuidance.LocationName(context, location.Id)+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
+            "\n" + location.DungeonDescription + (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? ". Hostile territory" : "") +
             (location.Encounter?.Kind==EncounterKind.Prison?"\nYour carried and equipped possessions will be confiscated temporarily. Recover them from the guarded stash before escaping. Gold and learned skills remain available.":"")+
-            (location.Encounter?.RequiresResetFloor==true && !context.ResetFloorUnlocked?"\nRequires Reset Floor: clear repeatable-0 first.":""));
+            (location.Encounter?.RequiresResetFloor==true && !context.ResetFloorUnlocked?"\nLearn Reset Floor by clearing the first repeatable dungeon before entering.":""));
         dialogs.Open(picker);
         return true;
     }

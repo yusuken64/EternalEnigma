@@ -20,8 +20,8 @@ public sealed class TrainerOffer
     public bool UsesPoints => HasClass;
     public ClassSource Source = ClassSource.Primary;
     public bool IsMaxed => CurrentRank >= MaxRank;
-    public string Label => !HasClass ? Skill.SkillName
-        : $"{Skill.SkillName} {CurrentRank}/{MaxRank}" + (Tier > 1 ? $" (T{Tier})" : "");
+    public string Label => !HasClass ? Skill.DisplayName
+        : $"{Skill.DisplayName}  Rank {CurrentRank} of {MaxRank}";
 }
 
 public static class TrainerOffers
@@ -105,7 +105,7 @@ public static class TrainerOffers
     {
         if (offer.Tier <= 1) return "No tier prerequisites.";
         var mastery = kit.Primary.MasteryForTier(offer.Kind == SkillKind.Mastery ? offer.Tier - 1 : offer.Tier);
-        string text = mastery == null ? "" : $"Requires {mastery.SkillId}.";
+        string text = mastery == null ? "" : $"Requires {GameplayText.Name(mastery.SkillId)}.";
         if (offer.Kind == SkillKind.Mastery)
             text += $" Requires {SkillLearningRules.SkillsRequiredPerTier} tier {offer.Tier - 1} non-mastery skills.";
         return text.Trim();

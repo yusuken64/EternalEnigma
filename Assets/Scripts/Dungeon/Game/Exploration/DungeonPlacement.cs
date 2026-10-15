@@ -77,7 +77,7 @@ internal static class DungeonPlacement
             actor.TilemapPosition = cells[Random.Range(0, cells.Count)];
             actor.transform.position = dungeon.CellToWorld(actor.TilemapPosition);
             if (actor is Ally ally) ally.currentInteractable = null;
-            GameMessages.ForCharacter(actor, $"{GameMessages.Name(actor)} was inside a wall and warped to a random open spot.");
+            GameMessages.ForCharacter(actor, $"{GameMessages.Name(actor)} was moved to a safe place.");
             changed = true;
         }
         foreach (var item in dungeon.Interactables.Where(i => i is DroppedItem or Gold or SmallKey).ToArray())

@@ -95,18 +95,18 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
     {
         var primary = secondaryStep ? primaryClass : cls;
         var skills = TownAlly.StartingSkillNames(primary, secondaryStep ? cls : null);
-        string start = skills.Count > 0 ? string.Join(", ", skills) : "No class mastery";
+        string start = skills.Count > 0 ? string.Join(", ", skills.Select(GameplayText.Name)) : "No class mastery";
         if (cls == null)
         {
-            details.text = $"<size=36>{primary.DisplayName}</size>\n{primary.Role}\n\nStart with: {start}\nPrimary skills: all tiers, up to rank 5.\nYou can begin without a secondary class.";
+            details.text = $"<size=36>{primary.DisplayName}</size>\n{primary.Role}\n\nStart with {start}\nPrimary skills cover all tiers, up to rank 5.\nYou can begin without a secondary class.";
             return;
         }
-        string weapons = string.Join(", ", cls.AllowedWeapons);
-        string tierOne = string.Join(", ", cls.Skills.Where(s => s != null && s.Skill != null && s.Tier == 1).Select(s => s.Skill.SkillName));
-        details.text = $"<size=36>{cls.DisplayName}</size>  <color=#765535>{cls.Role}</color>\nWeapons: {weapons}\nSticks and needles: no proficiency required\n" +
-            (secondaryStep ? "Secondary: tiers 1-2, rank 3 maximum; no secondary masteries.\nPrimary keeps full progression.\n" :
-            "Sets starting stat bonuses and growth each level.\nPrimary skills: all tiers, up to rank 5.\n") +
-            $"Start with: {start}\n<size=22>Tier 1 training: {tierOne}</size>";
+        string weapons = string.Join(", ", cls.AllowedWeapons.Select(w => GameplayText.Name(w.ToString())));
+        string tierOne = string.Join(", ", cls.Skills.Where(s => s != null && s.Skill != null && s.Tier == 1).Select(s => s.Skill.DisplayName));
+        details.text = $"<size=36>{cls.DisplayName}</size>  <color=#765535>{cls.Role}</color>\nWeapons {weapons}\nSticks and needles require no proficiency.\n" +
+            (secondaryStep ? "Secondary skills cover tiers 1 and 2, up to rank 3, without masteries.\nPrimary keeps full progression.\n" :
+            "Sets starting stat bonuses and growth each level.\nPrimary skills cover all tiers, up to rank 5.\n") +
+            $"Start with {start}\n<size=22>Tier 1 training {tierOne}</size>";
     }
 
     private void Finish(Action callback)

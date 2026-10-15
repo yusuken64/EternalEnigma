@@ -50,7 +50,7 @@ public sealed class ResourceHUD : MonoBehaviour
     {
         if(initialized&&last.Equals(state))return;
         initialized=true;last=state;
-        GoldText.text=state.GoldLabel;BagText.text=state.BagLabel;
+        GoldText.text=GameplayText.Format(state.GoldLabel);BagText.text=GameplayText.Format(state.BagLabel);
         BagText.color=state.Capacity.HasValue&&state.ItemCount>=state.Capacity?new Color(.59f,.23f,.13f):
             state.Capacity.HasValue&&state.ItemCount==state.Capacity-1?new Color(.62f,.39f,.08f):GameUITheme.Ink;
     }

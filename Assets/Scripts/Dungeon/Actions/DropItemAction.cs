@@ -35,7 +35,7 @@ internal class DropItemAction : GameAction
 		return new();
 	}
 
-    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, dropped ? $"{GameMessages.Name(character)} dropped {item.ItemName} nearby; it can be recovered." : $"{item.ItemName} was kept: no free drop location."); }
+    internal override void RecordOutcome(Character character) { GameMessages.ForCharacter(character, dropped ? $"{GameMessages.Name(character)} dropped {item.DisplayName} nearby; it can be recovered." : $"Kept {item.DisplayName} because there is no room to drop it."); }
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) { yield break; }

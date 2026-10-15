@@ -32,7 +32,7 @@ internal class GatherAction : GameAction
 		if (added <= 0) { message = "Bag is full"; return new(); }
 
 		Game.Instance.CurrentDungeon.RemoveInteractable(point);
-		message = $"+{added} {material.ItemName}";
+		message = $"+{added} {material.DisplayName}";
 		color = Color.green;
 		return new();
 	}

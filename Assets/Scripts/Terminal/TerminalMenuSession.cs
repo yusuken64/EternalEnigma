@@ -25,7 +25,7 @@ internal sealed class TerminalMenuSession
     {
         this.root = root;
         this.ownsFocus = ownsFocus;
-        Model = new TerminalMenuModel(root != null ? root.name : "Menu", Array.Empty<TerminalMenuOption>());
+        Model = new TerminalMenuModel(root != null ? GameplayText.Name(root.name) : "Menu", Array.Empty<TerminalMenuOption>());
         Refresh();
     }
 
@@ -41,9 +41,9 @@ internal sealed class TerminalMenuSession
             var legacy = value.GetComponentInChildren<Text>();
             label = legacy != null ? legacy.text : value.name;
         }
-        if (value is Toggle toggle) label = (toggle.isOn ? "[x] " : "[ ] ") + label;
+        if (value is Toggle toggle) label = label + (toggle.isOn ? " enabled" : " disabled");
         if (value is Slider slider) label += $" {slider.value:0.##}";
-        return label;
+        return GameplayText.Format(label);
     }
 
     internal bool Refresh()
@@ -63,7 +63,7 @@ internal sealed class TerminalMenuSession
                 bool enabled = selectable.IsInteractable();
                 options.Add(new TerminalMenuOption(id, label, enabled, enabled ? null : "Unavailable"));
             }
-        Model.Replace(root != null ? root.name : "Menu", options);
+        Model.Replace(root != null ? GameplayText.Name(root.name) : "Menu", options);
         return selected != null && (!labels.TryGetValue(selected, out var currentLabel) || previousLabel != currentLabel);
     }
 

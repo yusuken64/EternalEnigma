@@ -496,7 +496,7 @@ public partial class Game : SingletonMonoBehaviour<Game>
         if (subject == null) return;
         if (DungeonPreferences.AnimationMode == DungeonAnimationMode.Normal)
             DungeonFloatingText.Show(this, message, color, subject);
-        GameMessages.ForCharacter(subject, $"{GameMessages.Name(subject)}: {message}");
+        GameMessages.ForCharacter(subject, $"{GameMessages.Name(subject)}\n{message}");
     }
 	public void DoFloatingText(string message, Color color, Vector3 worldPosition)
 	{
@@ -506,7 +506,7 @@ public partial class Game : SingletonMonoBehaviour<Game>
             .OrderBy(c => Vector3.SqrMagnitude((c.VisualParent != null ? c.VisualParent.transform.position : c.transform.position) - worldPosition))
             .FirstOrDefault();
         if (subject != null && Vector3.Distance((subject.VisualParent != null ? subject.VisualParent.transform.position : subject.transform.position), worldPosition) < 2f)
-            GameMessages.ForCharacter(subject, $"{GameMessages.Name(subject)}: {message}");
+            GameMessages.ForCharacter(subject, $"{GameMessages.Name(subject)}\n{message}");
         else if (FogOverlay.Instance == null || FogOverlay.Instance.IsCurrentlyVisible(worldPosition)) GameMessages.Post(message);
 	}
 }

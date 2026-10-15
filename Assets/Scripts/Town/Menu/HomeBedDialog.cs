@@ -49,15 +49,15 @@ public sealed class HomeBedDialog : Dialog
         var context = Common.Instance?.CampaignContext;
         bool preparing = context?.IsPreparingForOpening == true;
         bool ready = context?.ReadyForOpeningDay == true;
-        sleep.GetComponentInChildren<TMP_Text>().text = preparing
+        sleep.GetComponentInChildren<TMP_Text>().text = GameplayText.Format(preparing
             ? ready ? "Sleep and save until morning" : "Save and quit"
-            : "Sleep and Save";
+            : "Sleep and Save");
         if (description != null)
-            description.text = preparing
+            description.text = GameplayText.Format(preparing
                 ? ready ? "You're ready for tomorrow.\nSleep to save your preparations and open the dungeon.\nDefeat returns you to this save."
-                    : "Before morning:\n" + (!context.State.BoughtOpeningBread ? "Collect your free bread at the bakery.\n" : "") +
+                    : "Before morning\n" + (!context.State.BoughtOpeningBread ? "Collect your free bread at the bakery.\n" : "") +
                         (!context.State.LearnedOpeningSkill ? "Learn an active skill at the trainer.\n" : "") + "You can save and quit now."
-                : "Sleep to restore your party and save your progress.\nDefeat returns you to your last save.";
+                : "Sleep to restore your party and save your progress.\nDefeat returns you to your last save.");
     }
     private void Activate()
     {

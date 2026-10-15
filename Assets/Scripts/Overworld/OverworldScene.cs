@@ -203,7 +203,7 @@ public sealed class OverworldScene : MonoBehaviour
             if (live != null) OverworldPartyMenuContext.RestoreHero(live, data);
         }
         RefreshGates();
-        Message = "Move: {Move} | {Interact}: claim location rewards or use a key at a gate.";
+        Message = "Use {Move} to move. Press {Interact} to collect rewards or use a key at a gate.";
         FollowCamera();
     }
 
@@ -313,7 +313,7 @@ public sealed class OverworldScene : MonoBehaviour
         {
             StopHeldWalk();
             var gate = Map.CurrentGrid.LockAt(next);
-            Message = Map.CurrentGrid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "Requires: Boat to sail." :
+            Message = Map.CurrentGrid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "You need a boat to sail." :
                 gate == null ? "Blocked." : GateDescription(gate.RouteId);
             return false;
         }
@@ -324,13 +324,13 @@ public sealed class OverworldScene : MonoBehaviour
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
         SaveProgress();
         RefreshGates();
-        Message = locations.TryGetValue(Position, out var location) ? (location.Kind == LocationKind.Town ? Context.GetTownDisplayName(location.Id) : location.Id) + " — " + location.Kind + " | {Interact}: interact" : "";
+        Message = locations.TryGetValue(Position, out var location) ? (location.Kind == LocationKind.Town ? Context.GetTownDisplayName(location.Id) : location.Id) + " — " + location.Kind + ". Press {Interact} to interact." : "";
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
             if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) Message += " | " + GateDescription(id);
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
-            Message += route.KeyCondition == KeyAcquisition.AtLocation ? " | {Interact}: Collect " + route.KeyLabel : " | Clear this encounter to earn " + route.KeyLabel;
+            Message += route.KeyCondition == KeyAcquisition.AtLocation ? ". Press {Interact} to collect " + route.KeyLabel : " | Clear this encounter to earn " + route.KeyLabel;
         foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
-        if (NearbySign() != null) Message += " | {Interact}: read road sign";
+        if (NearbySign() != null) Message += ". Press {Interact} to read the road sign.";
         walkHistory.Add(Position);
         if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
         heldWalk = manual;
@@ -463,7 +463,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened || !locations.TryGetValue(Position, out var location)) return false;
         foreach (var route in Campaign.Routes)
-            if (route.TryUnlock(location.Id, resolved)) { Message = "Opened shortcut: " + route.Id; RefreshGates(); SaveProgress(); return true; }
+            if (route.TryUnlock(location.Id, resolved)) { Message = "Opened the shortcut to " + route.Id; RefreshGates(); SaveProgress(); return true; }
         return false;
     }
 
@@ -479,7 +479,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (sign == null) return false;
         Message = BiomeRoadSigns.Directions(Context, sign);
         var dialog = Common.Instance.MessageDialog;
-        dialog.PromptText.text = Message;
+        dialog.PromptText.text = GameplayText.Format(Message);
         dialog.SetPortrait(null);
         GetComponent<OverworldMenuManager>().Open(dialog);
         return true;
@@ -505,7 +505,7 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (var route in Campaign.Routes)
             if (gates.CollectKey(route, location.Id))
             {
-                rewards.Add(route.KeyLabel + " (use it at the gate)");
+                rewards.Add(route.KeyLabel + ". Use it at the gate.");
                 acquiredKeys.Add(route.KeyId);
             }
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == location.Id && !claimed.Contains(s.Id)))
@@ -515,7 +515,7 @@ public sealed class OverworldScene : MonoBehaviour
             acquiredCapabilities.Add(CampaignTravelService.DescribeCapabilityReward(Context, source));
         }
         SaveProgress();
-        Message = rewards.Count == 0 ? "No eligible unclaimed rewards here." : "Acquired: " + string.Join(", ", rewards) + ". Equip companions at a town.";
+        Message = rewards.Count == 0 ? "No eligible unclaimed rewards here." : "Acquired " + string.Join(", ", rewards) + ". Equip companions at a town.";
         RefreshGates();
         Common.Instance.Travel.ShowRewardsAcquired(acquiredKeys.Distinct().ToArray(), acquiredCapabilities.ToArray());
         if (rewards.Count == 0 && announceLocked) OpenGate();

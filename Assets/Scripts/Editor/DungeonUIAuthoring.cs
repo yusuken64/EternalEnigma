@@ -376,7 +376,7 @@ public static class DungeonUIAuthoring
             GameUISkin.Rect("Input shield",canvas.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>().color=Color.clear;
             var safe=GameUISkin.Rect("Safe area",canvas.transform,Vector2.zero,Vector2.one);safe.gameObject.AddComponent<SafeAreaPanel>();
             var dialog=canvas.gameObject.AddComponent<EventHistoryDialog>();
-            dialog.Panel=Surface(safe,"History panel",DungeonVisualRole.Wood,.73f,.03f,.98f,.88f).rectTransform;
+            dialog.Panel=Surface(safe,"History panel",DungeonVisualRole.Wood,0,0,1,1).rectTransform;
             Surface(dialog.Panel,"Heading ribbon",DungeonVisualRole.Heading,.04f,.88f,.89f,.98f);
             var title=GameUISkin.Label(dialog.Panel,"Event history",new Vector2(.08f,.885f),new Vector2(.85f,.975f),32);title.font=Theme.HeadingFont;title.alignment=TextAlignmentOptions.Center;
             var paper=Surface(dialog.Panel,"History parchment",DungeonVisualRole.Paper,.04f,.13f,.96f,.87f);

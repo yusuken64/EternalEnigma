@@ -56,7 +56,7 @@ public class TownMenu : MonoBehaviour
     public static void ShowMessage(string text,Sprite portrait=null)
     {
         var dialog = Common.Instance.MessageDialog;
-        dialog.PromptText.text = text;
+        dialog.PromptText.text = GameplayText.Format(text);
         dialog.SetPortrait(portrait);
         FindFirstObjectByType<TownMenuManager>().Open(dialog);
     }
@@ -66,7 +66,7 @@ public class TownMenu : MonoBehaviour
         if (item.ItemDefinition is MaterialItemDefinition)
         {
             var sellTown = FindFirstObjectByType<Town>();
-            ItemActionDialog.SetupActions(item.ItemName, $"Sell for {TownServices.SellPrice(item)} gold", () =>
+            ItemActionDialog.SetupActions(item.DisplayName, $"Sell for {TownServices.SellPrice(item)} gold", () =>
             {
                 if (!sellTown.Services.Sell(item, out var reason)) ShowMessage(reason);
                 ItemActionDialog.CloseDialog();
@@ -79,11 +79,11 @@ public class TownMenu : MonoBehaviour
         }
         if (item is not EquipableInventoryItem)
         {
-            ShowMessage($"{item.ItemName}\n{item.ItemDefinition.Description}\nUse this item in the dungeon.");
+            ShowMessage($"{item.DisplayName}\n{item.ItemDefinition.Description}\nUse this item in the dungeon.");
             return;
         }
         var town = FindFirstObjectByType<Town>();
-        ItemActionDialog.SetupActions(item.ItemName, character.Equipment.IsEquipped(item) ? "Unequip" : "Equip", () =>
+        ItemActionDialog.SetupActions(item.DisplayName, character.Equipment.IsEquipped(item) ? "Unequip" : "Equip", () =>
         {
             if (!town.Services.ToggleEquipment(character, item, out var reason) && !string.IsNullOrEmpty(reason))
             {

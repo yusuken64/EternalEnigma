@@ -40,6 +40,30 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator AbilitiesAndFloatingTextUseReadableCopy()
+        {
+            var skill = ScriptableObject.CreateInstance<Skill>();
+            try
+            {
+                harness.Ally.CharacterName = "Aria";
+                skill.SkillName = "Command: Advance";
+                GameMessages.AbilityCast(harness.Ally, skill, "Bow02");
+                var feed = Object.FindFirstObjectByType<GameMessages>();
+                Assert.That(feed.History.Last(), Is.EqualTo("Aria casts Advance Order using Hunter's Bow."));
+                harness.Game.DoFloatingText("[Info] HPMax +10 (3 turns)", Color.cyan, harness.Ally);
+                yield return null;
+                var callouts = Object.FindObjectsByType<DungeonFloatingText>(FindObjectsSortMode.None);
+                Assert.That(callouts.Any(c => c.GetComponentInChildren<TMP_Text>().text.Trim() == "maximum HP +10 for 3 turns"), Is.True);
+                Assert.That(feed.History.Last(), Does.Not.Match(@"[\[\]()_:{}]"));
+                Assert.That(skill.SkillName, Is.EqualTo("Command: Advance"));
+                System.IO.Directory.CreateDirectory("Temp/GameplayCopy");
+                ScreenCapture.CaptureScreenshot("Temp/GameplayCopy/readable-combat.png");
+                yield return null;
+            }
+            finally { Object.Destroy(skill); }
+        }
+
+        [UnityTest]
         public IEnumerator HiddenEnemiesDoNotPublishAndHistoryIsBounded()
         {
             yield return harness.SpawnEnemy("Enemy_Slime", harness.Ally.TilemapPosition + Vector3Int.right);

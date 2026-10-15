@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: 'Song, 3 turns: +1 action per turn.'
+  Description: "Sing to grant one extra action per turn for 3 turns."
   references:
     version: 2
     RefIds:

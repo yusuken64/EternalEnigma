@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Spell_Bolt
   m_EditorClassIdentifier: 
   ItemName: Bolt Spell
-  Description: Launch a bolt of lightning
+  Description: "Launches a bolt of lightning."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

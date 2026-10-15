@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Restores 2 SP to allies within 3 tiles (not the Bard).
+  Description: "Restores 2 SP to other allies within 3 tiles."
   references:
     version: 2
     RefIds:

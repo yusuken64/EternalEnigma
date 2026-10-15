@@ -60,7 +60,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: +10 HPMax.
+  Description: "Increases maximum HP by 10."
   references:
     version: 2
     RefIds: []

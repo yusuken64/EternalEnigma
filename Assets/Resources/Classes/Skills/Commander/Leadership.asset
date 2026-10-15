@@ -61,7 +61,7 @@ MonoBehaviour:
     HitBonus: 0
   PassiveResponses:
   - rid: 292415685818319174
-  Description: Commands last +3 turns.
+  Description: "Commands last 3 extra turns."
   references:
     version: 2
     RefIds:

@@ -19,7 +19,7 @@ public class SongStatusEffect : StatusEffect
 
 	public override GameAction GetActionOverride(Character character) => null;
 	internal override StatModification GetStatModification() => null; // applied through SongAura, not directly
-	internal override string GetEffectName() => $"Song: {SongName}";
+	internal override string GetEffectName() => GameplayText.Name(SongName);
 	internal override bool PreventsMenu() => false;
 
 	internal override List<GameAction> GetTickEffects(Character owner)

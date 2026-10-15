@@ -61,7 +61,7 @@ MonoBehaviour:
     HitBonus: 0
   PassiveResponses:
   - rid: 292415685818319078
-  Description: +2 Strength, +2 Defense while a song is active.
+  Description: "Increases strength and defense by 2 while a song is active."
   references:
     version: 2
     RefIds:

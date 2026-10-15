@@ -474,7 +474,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
         MenuManager.Instance.ShowYesNoDialog(
-            $"Use a small key to unlock the door? ({SmallKeys.Count} held)",
+            $"Use a small key to unlock the door? You have {SmallKeys.Count} keys.",
             () => ControlledAlly.SetAction(new InteractAction(door)),
             () => { });
     }

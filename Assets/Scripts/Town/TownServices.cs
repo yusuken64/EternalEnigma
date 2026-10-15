@@ -98,7 +98,7 @@ public sealed class TownServices
             ally.Id == Common.Instance.GameSaveData.ProtagonistId && offer.Skill.ActivationType == ActivationType.Active)
         {
             context.State.LearnedOpeningSkill = true;
-            GameMessages.Post("First active skill learned: " + offer.Skill.SkillName + ". " + context.OpeningPreparationHint);
+            GameMessages.Post("You learned your first active skill, " + offer.Skill.DisplayName + ". " + context.OpeningPreparationHint);
         }
         town.SaveProgress();
         reason = null;

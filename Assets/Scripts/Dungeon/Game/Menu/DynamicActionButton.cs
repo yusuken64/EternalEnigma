@@ -16,7 +16,7 @@ namespace JuicyChickenGames.Menu
 		{
 			this._data = data;
 			
-			ActionText.text = _data.ActionName + (string.IsNullOrEmpty(data.Description) ? "" : "\n<size=75%>" + data.Description + "</size>");
+			ActionText.text = GameplayText.Format(_data.ActionName + (string.IsNullOrEmpty(data.Description) ? "" : "\n<size=75%>" + data.Description + "</size>"));
 			SkillIcon = SkillIconView.Bind(SkillIcon, ActionText, _data.Icon);
 		}
 

@@ -48,15 +48,16 @@ public sealed class AutoplayPanel : MonoBehaviour
         Collapsed.gameObject.SetActive(visible&&!runner.ReturnPromptOpen&&!runner.PanelVisible&&!runner.TakingControl);
         Prompt.gameObject.SetActive(visible&&runner.ReturnPromptOpen);
         if(!visible)return;
-        Title.text=runner.IsFinaleDebug?"Autoplay · Direct finale debug":runner.IsLootSweep?"Autoplay · Floor loot sweep":runner.Options.DebugPlaythrough?"Autoplay · Debug":"Autoplay";
-        Status.text=runner.TakingControl?"Finishing current action…":runner.Status;
-        Counts.text=runner.ProgressLabel+"\n"+(runner.IsLootSweep?$"Loot: {runner.Report?.CollectedLoot??0}/{runner.Report?.ExpectedLoot??0}   ":$"Turns: {runner.Report?.DungeonTurns??0}   ")+$"Actions: {runner.Report?.Actions??0}";
-        Playback.text=$"Playback: {runner.Options.Speed:0.#}×"+(runner.Paused?" (paused)":"");
+        Title.text="Autoplay";
+        Status.text=runner.TakingControl?"Finishing the current action…":runner.Finalizing?"Saving the run report…":
+            runner.SessionRunning?(runner.Paused?"Paused":"Exploring the world…"):"Autoplay has ended.";
+        Counts.text=$"Run {System.Math.Min(runner.RunNumber,runner.Options.RunCount)} of {runner.Options.RunCount}\n"+
+            (runner.IsLootSweep?$"Found {runner.Report?.CollectedLoot??0} of {runner.Report?.ExpectedLoot??0} items. ":$"{runner.Report?.DungeonTurns??0} turns. ")+$"{runner.Report?.Actions??0} actions.";
+        Playback.text=$"Playback speed {runner.Options.Speed:0.#}×"+(runner.Paused?" paused":"");
         PauseLabel.text=runner.Paused?"Resume":"Pause";
-        AnimationLabel.text="Animations: "+DungeonPreferences.SpeedLabel;
-        string root=Application.isEditor?(runner.IsFinaleDebug?"Logs/FinaleDebug":"Logs/Playthroughs"):System.IO.Path.GetDirectoryName(runner.BatchDirectoryPath);
-        Footer.text=(runner.Finalizing?"Saving run artifacts…":runner.SessionRunning?"Input outside controls opens stop options.":runner.Report?.ArtifactsComplete==true?"Report saved.":"Report incomplete; see status.")+"\n"+
-            root+"/\n"+System.IO.Path.GetFileName(runner.BatchDirectoryPath)+"/\n"+System.IO.Path.GetFileName(runner.DirectoryPath);
+        AnimationLabel.text="Animations "+DungeonPreferences.SpeedLabel;
+        Footer.text=runner.Finalizing?"Saving the run report…":runner.SessionRunning?"Click outside these controls to stop or take control.":
+            runner.Report?.ArtifactsComplete==true?"The run report has been saved.":"The run report could not be completed.";
         Pause.interactable=runner.SessionRunning&&!runner.TakingControl;
         Animations.interactable=Pause.interactable&&!runner.IsLootSweep;
         Stop.gameObject.SetActive(runner.SessionRunning);

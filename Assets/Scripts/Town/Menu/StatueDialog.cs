@@ -21,14 +21,14 @@ public class StatueDialog : Dialog
     {
         var next = FindFirstObjectByType<Town>().Configuration.DungeonTiers
             .Where(t => t.RequiredDonation > DonatedAmount).OrderBy(t => t.RequiredDonation).FirstOrDefault();
-        DonatedAmountText.text = $"Donated {DonatedAmount}g" +
-            (next != null ? $"\nNext tier: {next.RequiredDonation}g" : "\nAll tiers unlocked");
+        DonatedAmountText.text = GameplayText.Format($"Donated {DonatedAmount}g" +
+            (next != null ? $"\nNext blessing at {next.RequiredDonation}g" : "\nAll tiers unlocked"));
     }
     public void Ok_Clicked()
     {
         var amount = FindFirstObjectByType<Town>().Services.Donate(NumberInput.GetNumber());
         CloseDialog();
-        TownMenu.ShowMessage(amount > 0 ? $"Donated {amount}g. Total: {DonatedAmount}g." : "Enter an amount you can afford.");
+        TownMenu.ShowMessage(amount > 0 ? $"Donated {amount} gold. You have donated {DonatedAmount} gold in total." : "Enter an amount you can afford.");
     }
     public void Cancel_Clicked() => CloseDialog();
 }

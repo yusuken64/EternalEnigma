@@ -7,6 +7,7 @@ using UnityEngine;
 public class Skill : ScriptableObject
 {
 	public string SkillName;
+	public string DisplayName => GameplayText.Name(SkillName);
 	public int LearnCost;
 	// Authoring default; the class entry's MaxRank is authoritative for learning.
 	[Min(1)] public int MaxRank = 5;

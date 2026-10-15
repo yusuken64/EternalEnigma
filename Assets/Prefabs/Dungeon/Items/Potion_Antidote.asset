@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Potion_Antidote
   m_EditorClassIdentifier: 
   ItemName: Antidote
-  Description: Cures harmful statuses
+  Description: "Cures harmful conditions."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

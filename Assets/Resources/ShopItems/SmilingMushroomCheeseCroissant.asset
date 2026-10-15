@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SmilingMushroomCheeseCroissant
   m_EditorClassIdentifier: 
   ItemName: Smiling Mushroom & Cheese Croissant
-  Description: Baked with real Smiling Mushroom and cheese. Restores 100 hunger.
+  Description: "Baked with real Smiling Mushroom and cheese. Restores 100 fullness."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

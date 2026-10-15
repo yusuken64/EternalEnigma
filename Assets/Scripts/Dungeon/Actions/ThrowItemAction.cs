@@ -36,7 +36,7 @@ internal class ThrowItemAction : GameAction
 	{
 		var game = Game.Instance;
 		sourcePosition = thrower.TilemapPosition;
-		GameMessages.ForCharacter(thrower, $"{GameMessages.Name(thrower)} threw {item.ItemName}.");
+		GameMessages.ForCharacter(thrower, $"{GameMessages.Name(thrower)} threw {item.DisplayName}.");
 
 		var ret = new List<GameAction>();
 		if (thrower.Equipment.IsEquipped(item))

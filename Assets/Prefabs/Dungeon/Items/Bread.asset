@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bread
   m_EditorClassIdentifier: 
   ItemName: Bread
-  Description: Eat to recover fullness
+  Description: "Eat to restore fullness."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

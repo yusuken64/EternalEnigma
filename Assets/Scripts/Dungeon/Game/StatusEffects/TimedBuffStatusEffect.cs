@@ -25,7 +25,7 @@ public class TimedBuffStatusEffect : StatusEffect
 
 	internal override string GetEffectName()
 	{
-		return BuffName;
+		return GameplayText.Name(BuffName);
 	}
 
 	public int Magnitude()

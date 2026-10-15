@@ -67,7 +67,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Fire damage to the party -75% until your next turn.
+  Description: "Reduces fire damage to the party by 75% until your next turn."
   references:
     version: 2
     RefIds:

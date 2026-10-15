@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: All damage to the party -50% until your next turn.
+  Description: "Reduces all damage to the party by 50% until your next turn."
   references:
     version: 2
     RefIds:

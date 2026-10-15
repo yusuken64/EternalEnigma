@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CactusPulpCaramelCoffee
   m_EditorClassIdentifier: 
   ItemName: Cactus Pulp Caramel Coffee
-  Description: Brewed with real Cactus pulp and caramel. Restores 0 HP and 5 SP.
+  Description: "Brewed with real Cactus pulp and caramel. Restores 5 SP."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

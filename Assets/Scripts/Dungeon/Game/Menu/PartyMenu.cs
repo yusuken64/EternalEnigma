@@ -144,7 +144,7 @@ public sealed class PartyMenu : Dialog
             if (section != entry.Section)
             {
                 section = entry.Section;
-                var heading=Instantiate(HeadingTemplate,RowsRoot);heading.text=section;heading.gameObject.SetActive(true);
+                var heading=Instantiate(HeadingTemplate,RowsRoot);heading.text=GameplayText.Format(section);heading.gameObject.SetActive(true);
                 if(compactStats)FitStatRow(heading.gameObject,heading,.7f,20);
             }
             var row=(entry.Icon!=null?EntryTemplate:PlainEntryTemplate).Spawn(RowsRoot,entry.Title,()=>OpenActions(index),entry.Icon);
@@ -163,7 +163,7 @@ public sealed class PartyMenu : Dialog
             button.GetComponent<PartyMenuRow>().Selected = () => { selectedIndex = index; ShowDetails(); ScrollToSelected(button.gameObject); };
             rows.Add(button);
         }
-        if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=Tab==PartyMenuTab.Inventory?"The bag is empty.":Tab==PartyMenuTab.Capabilities?"No acquired capabilities.":"No learned skills.";empty.gameObject.SetActive(true);}
+        if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=GameplayText.Format(Tab==PartyMenuTab.Inventory?"The bag is empty.":Tab==PartyMenuTab.Capabilities?"No acquired capabilities.":"No learned skills.");empty.gameObject.SetActive(true);}
         Canvas.ForceUpdateCanvases(); scrollView.verticalNormalizedPosition = compactStats?1:state?.Scroll ?? 1;
         WireNavigation();
         ShowDetails();
@@ -190,19 +190,19 @@ public sealed class PartyMenu : Dialog
     }
     private void ShowDetails()
     {
-        HeroText.text = Hero == null ? "No party members" : context.HeroDetails(Hero);
+        HeroText.text = GameplayText.Format(Hero == null ? "No party members" : context.HeroDetails(Hero));
         if (entries.Count == 0)
         {
-            Details.text = context is DungeonPartyMenuContext ?
-                "No entries for this character. Switch tabs, or click a HUD portrait to change characters." : "Select a hero or switch tabs.";
+            Details.text = GameplayText.Format(context is DungeonPartyMenuContext ?
+                "No entries for this character. Switch tabs, or click a HUD portrait to change characters." : "Select a hero or switch tabs.");
             return;
         }
         var entry = entries[selectedIndex];
         var actions = Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? new List<PartyMenuAction>() : context.Actions(Hero,entry);
         string availability = string.Join("\n", actions.Select(a => a.Available ? a.Label : a.Label+": "+a.UnavailableReason));
         string restriction=Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? "" : context.Restriction(Hero,entry);
-        Details.text = string.Join("\n\n",new[]{ $"<b>{entry.Title}</b>",entry.Description,restriction,availability,result }
-            .Where(text=>!string.IsNullOrWhiteSpace(text)));
+        Details.text = GameplayText.Format(string.Join("\n\n",new[]{ $"<b>{entry.Title}</b>",entry.Description,restriction,availability,result }
+            .Where(text=>!string.IsNullOrWhiteSpace(text))));
         Details.rectTransform.anchoredPosition = Vector2.zero;
         DetailsControl.Scroll.StopMovement();
         if(Details.gameObject.activeInHierarchy)Canvas.ForceUpdateCanvases();

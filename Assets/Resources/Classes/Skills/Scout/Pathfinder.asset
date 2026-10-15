@@ -60,7 +60,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: +10 HungerMax.
+  Description: "Increases maximum fullness by 10."
   references:
     version: 2
     RefIds: []

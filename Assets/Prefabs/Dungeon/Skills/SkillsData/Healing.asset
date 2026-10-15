@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Heal ally 10hp
+  Description: "Restores 10 HP to an ally."
   references:
     version: 2
     RefIds:

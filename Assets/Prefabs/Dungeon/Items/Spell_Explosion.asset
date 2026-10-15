@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Spell_Explosion
   m_EditorClassIdentifier: 
   ItemName: Explosion Spell
-  Description: Cause a large explosion
+  Description: "Causes a large explosion."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

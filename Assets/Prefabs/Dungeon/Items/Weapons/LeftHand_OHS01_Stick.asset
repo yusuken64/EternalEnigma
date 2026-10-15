@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS01_Stick
   m_EditorClassIdentifier: 
   ItemName: Stick (Off-hand)
-  Description: Stick (Off-hand) grants 1 strength.
+  Description: "An off-hand Stick that grants 1 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

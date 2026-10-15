@@ -155,7 +155,7 @@ namespace EternalEnigma.Tests
                 Assert.That(reader.scrollView.verticalNormalizedPosition,Is.GreaterThan(0));
                 yield return Capture("history",resolution);history.CloseDialog();yield return null;
                 reader.Setup(System.Array.Empty<string>());
-                Assert.That(reader.Panel.anchorMin,Is.EqualTo(new Vector2(.73f,.03f)));
+                Assert.That(reader.Panel.anchorMin,Is.EqualTo(Vector2.zero));
                 Assert.That(reader.Panel.GetComponent<Image>().sprite,Is.EqualTo(GameUITheme.Current.DungeonWood));
                 Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(turns));Assert.That(actor.Vitals.SP,Is.EqualTo(sp));
                 Assert.That(Camera.main.transform.position,Is.EqualTo(camera));

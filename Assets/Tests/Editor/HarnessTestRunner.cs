@@ -721,6 +721,21 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.CampaignTravelTests.TownDistrictEntryFromOverworldPreservesRunVariant",
         "EternalEnigma.Tests.TownGameplayTests.TownInventoryUsesSharedActionMenuAndSavesEquipment");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Copy EditMode")]
+    public static void RunGameplayCopyEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "GameplayTextTests", "HeroClassTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Copy PlayMode")]
+    public static void RunGameplayCopyPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameMessageTests", "EternalEnigma.Tests.DungeonDockTests",
+        "EternalEnigma.Tests.TownGameplayTests", "EternalEnigma.Tests.CampaignTravelTests.DungeonEntryApprovalCancellationAndCapabilitiesUseOverworldDialogs");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Copy Final Checks")]
+    public static void RunGameplayCopyFinalChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameMessageTests.AbilitiesAndFloatingTextUseReadableCopy",
+        "EternalEnigma.Tests.TownGameplayTests.TownInventoryUsesSharedActionMenuAndSavesEquipment",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests.EachValidCastCreatesAHistoryEventAndInvalidCastsDoNot",
+        "EternalEnigma.Tests.CastingAndPiercingTests.MultiplePrimaryActionsChargeAndReleaseInOneTurn");
+
     private static void Run(TestMode mode, string filter, params string[] testFilters)
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);

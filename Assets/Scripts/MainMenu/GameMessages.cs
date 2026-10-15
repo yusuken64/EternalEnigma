@@ -60,9 +60,9 @@ public sealed class GameMessages : MonoBehaviour
     {
         if (character == null) return "Unknown";
         if (EnemyBehavior.IsDisguised(character)) return "Treasure chest";
-        if (!string.IsNullOrWhiteSpace(character.CharacterName)) return character.CharacterName;
-        if (character is Enemy enemy) return string.IsNullOrWhiteSpace(enemy.DisplayName) ? "Enemy" : enemy.DisplayName;
-        return character.name.Replace("(Clone)", "").Trim();
+        if (!string.IsNullOrWhiteSpace(character.CharacterName)) return GameplayText.Name(character.CharacterName);
+        if (character is Enemy enemy) return string.IsNullOrWhiteSpace(enemy.DisplayName) ? "Enemy" : GameplayText.Name(enemy.DisplayName);
+        return GameplayText.Name(character.name);
     }
 
     public static bool Visible(Character character) => character != null &&
@@ -78,8 +78,8 @@ public sealed class GameMessages : MonoBehaviour
     public static void AbilityCast(Character caster, Skill skill, string itemName = null)
     {
         if (skill == null) return;
-        string source = string.IsNullOrEmpty(itemName) ? "" : $" using {itemName}";
-        ForCharacter(caster, $"[Cast] {Name(caster)} casts {skill.SkillName}{source}.");
+        string source = string.IsNullOrEmpty(itemName) ? "" : $" using {GameplayText.Name(itemName)}";
+        ForCharacter(caster, $"{Name(caster)} casts {skill.DisplayName}{source}.");
     }
 
     public static void Post(string message, bool coalesce = false)
@@ -158,6 +158,7 @@ public sealed class GameMessages : MonoBehaviour
 
     private void Add(string message, bool coalesce)
     {
+        message = GameplayText.Plain(message);
         // Holding movement against a locked gate should not flood the display.
         if (coalesce && history.Count > 0 && history[history.Count - 1] == message && Time.unscaledTime - lastMessage < 1f) return;
         history.Add(message);

@@ -21,6 +21,6 @@ public class DroppedItem : Interactable
 
 	internal override string GetInteractionText()
 	{
-		return !Opened ? $"Pick up {InventoryItem.ItemDefinition.ItemName}" : "";
+		return !Opened ? $"Pick up {InventoryItem.DisplayName}" : "";
 	}
 }

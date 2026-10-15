@@ -52,11 +52,11 @@ public class InventoryMenu : Dialog
                 if (selectItem != null)
                 {
                     InventoryItemPreview.Setup(data);
-                    StatText.text = selectionPrompt;
+                    StatText.text = GameplayText.Format(selectionPrompt);
                 }
                 else UpdateItemPreview(data, character);
             });
-        if (selectItem != null) StatText.text = selectionPrompt;
+        if (selectItem != null) StatText.text = GameplayText.Format(selectionPrompt);
     }
 
     public void SetupTown(List<InventoryItem> items, TownCharacter character)
@@ -98,7 +98,7 @@ public class InventoryMenu : Dialog
         if (items.Count == 0)
         {
             InventoryItemPreview.Setup(null);
-            StatText.text = "";
+            StatText.text = GameplayText.Format("");
         }
     }
 
@@ -109,18 +109,18 @@ public class InventoryMenu : Dialog
         if (data is EquipableInventoryItem item)
         {
             var simulated = StatPreview.Final(character,character.Equipment.Current().With(item));
-            StatText.text = StatPreview.Diff(current,simulated);
+            StatText.text = GameplayText.Format(StatPreview.Diff(current,simulated));
         }
-        else StatText.text = $"Attack: {current.Strength}\nDefense: {current.Defense}";
+        else StatText.text = GameplayText.Format($"Attack: {current.Strength}\nDefense: {current.Defense}");
     }
 
     private void UpdateItemPreview(InventoryItem data, TownAlly character)
     {
         InventoryItemPreview.Setup(data);
         var current=TownUtilityService.StatsFor(character);
-        StatText.text=data is EquipableInventoryItem item ?
+        StatText.text=GameplayText.Format(data is EquipableInventoryItem item ?
             StatPreview.Diff(current,TownUtilityService.StatsFor(character,character.Equipment.Current().With(item))) :
-            $"Attack: {current.Strength}\nDefense: {current.Defense}";
+            $"Attack: {current.Strength}\nDefense: {current.Defense}");
     }
 
     internal void Close()

@@ -86,25 +86,25 @@ public class StatModification : StartingStats
     {
         var parts = new List<string>();
 
-        if (HPMax != 0) parts.Add($"{(HPMax > 0 ? "+" : "")}{HPMax} HP Max");
-        if (SPMax != 0) parts.Add($"{(SPMax > 0 ? "+" : "")}{SPMax} SP Max");
-        if (HungerMax != 0) parts.Add($"{(HungerMax > 0 ? "+" : "")}{HungerMax} Hunger Max");
+        if (HPMax != 0) parts.Add($"{(HPMax > 0 ? "+" : "")}{HPMax} maximum HP");
+        if (SPMax != 0) parts.Add($"{(SPMax > 0 ? "+" : "")}{SPMax} maximum SP");
+        if (HungerMax != 0) parts.Add($"{(HungerMax > 0 ? "+" : "")}{HungerMax} maximum fullness");
         if (Strength != 0) parts.Add($"{(Strength > 0 ? "+" : "")}{Strength} Strength");
         if (MagicPower != 0) parts.Add($"{(MagicPower > 0 ? "+" : "")}{MagicPower} Magic Power");
         if (Defense != 0) parts.Add($"{(Defense > 0 ? "+" : "")}{Defense} Defense");
-        if (EXPOnKill != 0) parts.Add($"{(EXPOnKill > 0 ? "+" : "")}{EXPOnKill} EXP on Kill");
-        if (HungerAccumulateThreshold != 0) parts.Add($"{(HungerAccumulateThreshold > 0 ? "+" : "")}{HungerAccumulateThreshold} Hunger Threshold");
-        if (HPRegenAcccumlateThreshold != 0) parts.Add($"{(HPRegenAcccumlateThreshold > 0 ? "+" : "")}{HPRegenAcccumlateThreshold} HP Regen Threshold");
-        if (SPRegenAcccumlateThreshold != 0) parts.Add($"{(SPRegenAcccumlateThreshold > 0 ? "+" : "")}{SPRegenAcccumlateThreshold} SP Regen Threshold");
-        if (DropRate != 0) parts.Add($"{(DropRate > 0 ? "+" : "")}{DropRate} Drop Rate");
-        if (ActionsPerTurnMax != 0) parts.Add($"{(ActionsPerTurnMax > 0 ? "+" : "")}{ActionsPerTurnMax} Actions / Turn");
-        if (AttacksPerTurnMax != 0) parts.Add($"{(AttacksPerTurnMax > 0 ? "+" : "")}{AttacksPerTurnMax} Attacks / Turn");
+        if (EXPOnKill != 0) parts.Add($"{(EXPOnKill > 0 ? "+" : "")}{EXPOnKill} experience per defeat");
+        if (HungerAccumulateThreshold != 0) parts.Add($"{(HungerAccumulateThreshold > 0 ? "+" : "")}{HungerAccumulateThreshold} actions between hunger loss");
+        if (HPRegenAcccumlateThreshold != 0) parts.Add($"{(HPRegenAcccumlateThreshold > 0 ? "+" : "")}{HPRegenAcccumlateThreshold} actions between HP recovery");
+        if (SPRegenAcccumlateThreshold != 0) parts.Add($"{(SPRegenAcccumlateThreshold > 0 ? "+" : "")}{SPRegenAcccumlateThreshold} actions between SP recovery");
+        if (DropRate != 0) parts.Add($"{(DropRate > 0 ? "+" : "")}{DropRate} loot multiplier");
+        if (ActionsPerTurnMax != 0) parts.Add($"{(ActionsPerTurnMax > 0 ? "+" : "")}{ActionsPerTurnMax} actions per turn");
+        if (AttacksPerTurnMax != 0) parts.Add($"{(AttacksPerTurnMax > 0 ? "+" : "")}{AttacksPerTurnMax} attacks per turn");
         if (FireResistance != 0) parts.Add($"{(FireResistance > 0 ? "+" : "")}{FireResistance} Fire Resistance");
         if (IceResistance != 0) parts.Add($"{(IceResistance > 0 ? "+" : "")}{IceResistance} Ice Resistance");
         if (LightningResistance != 0) parts.Add($"{(LightningResistance > 0 ? "+" : "")}{LightningResistance} Lightning Resistance");
-        if (CritChance != 0) parts.Add($"{(CritChance > 0 ? "+" : "")}{CritChance * 100:0}% Crit");
+        if (CritChance != 0) parts.Add($"{(CritChance > 0 ? "+" : "")}{CritChance * 100:0}% critical chance");
         if (Evasion != 0) parts.Add($"{(Evasion > 0 ? "+" : "")}{Evasion * 100:0}% Evasion");
-        if (HitBonus != 0) parts.Add($"{(HitBonus > 0 ? "+" : "")}{HitBonus * 100:0}% Hit");
+        if (HitBonus != 0) parts.Add($"{(HitBonus > 0 ? "+" : "")}{HitBonus * 100:0}% hit chance");
 
         return parts;
     }

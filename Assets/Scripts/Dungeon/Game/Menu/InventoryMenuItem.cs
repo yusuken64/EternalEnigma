@@ -27,10 +27,10 @@ public class InventoryMenuItem : SelectToActivateButton
 		//var equipped = _character.Equipment.IsEquipped(_data);
 		var equipped = IsEquipped(_data);
 
-		var inventoryText = $"{_data.ItemName} " +
+		var inventoryText = $"{_data.DisplayName} " +
 			$"{ (_data.StackStock.HasValue ? $"x{_data.StackStock.Value}" : "") }" +
 			$"{ (equipped ? "(Equipped)" : "")}";
-		ItemText.text = inventoryText;
+		ItemText.text = GameplayText.Format(inventoryText);
 	}
 
 	public override void OnSelect(BaseEventData eventData)

@@ -20,7 +20,7 @@ namespace JuicyChickenGames.Menu
             {
                 return new DynamicActionInfo()
                 {
-                    ActionName = SkillLabel(skill) + $"  [charge {skill.InitialCastTime(character)}]",
+                    ActionName = SkillLabel(skill) + (skill.InitialCastTime(character) > 0 ? $"  Charges for {skill.InitialCastTime(character)} actions" : ""),
                     Icon = skill.Icon,
                     ClickAction = () =>
                     {
@@ -67,14 +67,14 @@ namespace JuicyChickenGames.Menu
             {
                 return new DynamicActionInfo()
                 {
-                    ActionName = controllingTownAlly.GetRank(skill) > 1 ? $"{skill} R{controllingTownAlly.GetRank(skill)}" : $"{skill}",
+                    ActionName = GameplayText.Name(skill) + (controllingTownAlly.GetRank(skill) > 1 ? $"  Rank {controllingTownAlly.GetRank(skill)}" : ""),
                     Icon = Common.Instance.SkillManager.GetSkillByName(skill)?.Icon,
                     ClickAction = () =>
                     {
                         var definition = Common.Instance.SkillManager.GetSkillByName(skill);
                         TownMenu.ShowMessage(definition != null
-                            ? $"{definition.SkillName} ({definition.SPCost} SP), rank {Mathf.Max(1, controllingTownAlly.GetRank(skill))}\n{definition.Description}\nUse active skills in the dungeon."
-                            : $"Unknown skill: {skill}");
+                            ? $"{definition.DisplayName}\nRank {Mathf.Max(1, controllingTownAlly.GetRank(skill))}, costs {definition.SPCost} SP\n{definition.Description}\nUse active skills in the dungeon."
+                            : "This skill is currently unavailable.");
                     }
                 };
             }).ToList();
@@ -113,11 +113,10 @@ namespace JuicyChickenGames.Menu
 
 		private static string SkillLabel(Skill skill)
 		{
-			if (!skill.UsesArrows)
-				return skill.Rank > 1 ? $"{skill.SkillName} R{skill.Rank}({skill.SPCost})" : $"{skill.SkillName}({skill.SPCost})";
-			string rankPrefix = skill.Rank > 1 ? $" R{skill.Rank}" : "";
-			string arrows = skill.ArrowCostMode == ArrowCostMode.PerTarget ? "1/target" : skill.ArrowCost.ToString();
-			return $"{skill.SkillName}{rankPrefix}({skill.SPCost} SP, {arrows} arrows)";
+			string rank = skill.Rank > 1 ? $"  Rank {skill.Rank}" : "";
+			string arrows = !skill.UsesArrows ? "" : skill.ArrowCostMode == ArrowCostMode.PerTarget
+                ? ", 1 arrow per target" : $", {skill.ArrowCost} arrows";
+			return $"{skill.DisplayName}{rank}  {skill.SPCost} SP{arrows}";
 		}
 	}
 }

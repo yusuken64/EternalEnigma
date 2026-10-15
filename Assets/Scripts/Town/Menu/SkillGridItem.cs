@@ -52,7 +52,7 @@ public class SkillGridItem : MonoBehaviour, ISelectHandler
 		if (!CanAfford())
 		{
 			var messageDialog = Common.Instance.MessageDialog;
-			messageDialog.PromptText.text = "Not enough gold to buy skill";
+			messageDialog.PromptText.text = GameplayText.Format("Not enough gold to buy skill");
 			messageDialog.gameObject.SetActive(true);
 			FindFirstObjectByType<TownMenuManager>().Open(messageDialog);
 			return;
@@ -81,7 +81,7 @@ public class SkillGridItem : MonoBehaviour, ISelectHandler
 	private void UpdateUI()
 	{
 		var offer = _data.Offer;
-		SkillText.text = offer != null ? offer.Label : $"{_data.Skill.SkillName}";
+		SkillText.text = GameplayText.Format(offer != null ? offer.Label : $"{_data.Skill.DisplayName}");
 		SkillIcon = SkillIconView.Bind(SkillIcon, SkillText, _data.Skill.Icon);
 		bool maxed = offer != null ? offer.IsMaxed : _data.Active;
 		if (maxed)
@@ -93,7 +93,7 @@ public class SkillGridItem : MonoBehaviour, ISelectHandler
 		{
 			bool locked = offer != null && !offer.CanLearn;
 			ActiveImage.color = locked ? Color.gray : (_data.Active ? Color.cyan : Color.white);
-			CostText.text = offer != null && offer.UsesPoints ? $"{offer.NextCost} pt" : $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)}";
+			CostText.text = GameplayText.Format(offer != null && offer.UsesPoints ? $"{offer.NextCost} pt" : $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)}");
 			CostObject.gameObject.SetActive(true);
 		}
 	}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Potion_SkillPotion
   m_EditorClassIdentifier: 
   ItemName: SP Potion
-  Description: Recover some Sp
+  Description: "Restores SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

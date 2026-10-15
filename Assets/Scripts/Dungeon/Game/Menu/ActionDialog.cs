@@ -81,22 +81,22 @@ namespace JuicyChickenGames.Menu
 			this._data = data;
 			this._view = view;
 			this._character = character;
-			ItemNameText.text = _data.ItemName;
+			ItemNameText.text = GameplayText.Format(_data.DisplayName);
 
 			if (data is EquipableInventoryItem equipableInventoryItem)
 			{
 				if (character.Equipment.IsEquipped(equipableInventoryItem))
 				{
-					UseItemText.text = "Unequip";
+					UseItemText.text = GameplayText.Format("Unequip");
 				}
 				else
 				{
-					UseItemText.text = "Equip";
+					UseItemText.text = GameplayText.Format("Equip");
 				}
 			}
 			else
 			{
-				UseItemText.text = "Use";
+				UseItemText.text = GameplayText.Format("Use");
 			}
 		}
 
@@ -106,8 +106,8 @@ namespace JuicyChickenGames.Menu
             ValidateActor = null;
             foreach (var button in Buttons) button.interactable = true;
             contextualUse = action;
-            ItemNameText.text = title;
-            UseItemText.text = actionLabel;
+            ItemNameText.text = GameplayText.Format(title);
+            UseItemText.text = GameplayText.Format(actionLabel);
             // Dungeon prefab order: Use, Throw, Drop, Cancel.
             for (int i = 0; i < Buttons.Count; i++)
                 Buttons[i].gameObject.SetActive(i == 0 || i == Buttons.Count - 1);

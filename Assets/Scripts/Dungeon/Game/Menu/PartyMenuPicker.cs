@@ -67,13 +67,13 @@ public sealed class PartyMenuPicker : Dialog
             close.gameObject.SetActive(showBackButton);
         var viewport=(RectTransform)picker.scrollView.transform;
         Fit(viewport,viewport.anchorMin.x,showBackButton ? .2f : .035f,viewport.anchorMax.x,viewport.anchorMax.y);
-        picker.committed=false;picker.submittedFrame=-1;picker.Title.text=title;picker.Title.enableAutoSizing=true;picker.Title.fontSizeMin=18;picker.Title.fontSizeMax=30;picker.first=null;picker.description=null;
+        picker.committed=false;picker.submittedFrame=-1;picker.Title.text=GameplayText.Format(title);picker.Title.enableAutoSizing=true;picker.Title.fontSizeMin=18;picker.Title.fontSizeMax=30;picker.first=null;picker.description=null;
         if(picker.OptionDescription!=null)
         {
             Fit(picker.OptionDescription.transform.parent,.285f,.22f,.59f,.78f);
             picker.OptionDescription.transform.parent.gameObject.SetActive(choices.Any(c=>!string.IsNullOrEmpty(c.Description)));
             picker.OptionDescription.gameObject.SetActive(true);
-            picker.OptionDescription.text="Select an option for its stat preview.";
+            picker.OptionDescription.text=GameplayText.Format("Select an option for its stat preview.");
         }
         foreach(Transform child in picker.Rows){child.gameObject.SetActive(false);Destroy(child.gameObject);}
         var buttons = new List<Button>();
@@ -85,7 +85,7 @@ public sealed class PartyMenuPicker : Dialog
                 picker.committed=closeOnChoose;if(closeOnChoose)picker.CloseDialog();
                 Common.Instance.MenuInputHandler.ClearInputThisFrame();choice.Execute();
             });
-            row.Button.GetComponent<PartyMenuRow>().Selected=()=>{picker.ScrollToSelected(row.gameObject);if(picker.OptionDescription!=null)picker.OptionDescription.text=choice.Description??"";};
+            row.Button.GetComponent<PartyMenuRow>().Selected=()=>{picker.ScrollToSelected(row.gameObject);if(picker.OptionDescription!=null)picker.OptionDescription.text=GameplayText.Format(choice.Description??"");};
             row.Button.interactable=choice.Execute!=null;
             if(row.Button.interactable)buttons.Add(row.Button);
             if(picker.first==null && row.Button.interactable)picker.first=row.Button;
@@ -130,7 +130,7 @@ public sealed class PartyMenuPicker : Dialog
     private void RefreshDescription()
     {
         descriptionGamepad=ControlDeviceState.Gamepad;
-        description.text=descriptionText+"\n\n<size=18>"+InputPrompts.DescriptionHint+"</size>";
+        description.text=GameplayText.Format(descriptionText+"\n\n<size=18>"+InputPrompts.DescriptionHint+"</size>");
     }
     internal override void SetFirstSelect()
     {

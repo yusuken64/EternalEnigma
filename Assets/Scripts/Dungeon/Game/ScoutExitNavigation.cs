@@ -36,7 +36,7 @@ public sealed class ScoutExitNavigation : MonoBehaviour
     {
         if (!Active) return;
         Active = false;
-        GameMessages.ForCharacter(scout, $"{GameMessages.Name(scout)} stopped guiding: {reason}.");
+        GameMessages.ForCharacter(scout, $"{GameMessages.Name(scout)} stopped guiding. {GameplayText.Name(reason)}.");
     }
 
     private void Update()

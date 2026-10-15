@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS11_Hammer
   m_EditorClassIdentifier: 
   ItemName: Mallet (Off-hand)
-  Description: Mallet (Off-hand) grants 11 strength.
+  Description: "An off-hand Mallet that grants 11 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 15

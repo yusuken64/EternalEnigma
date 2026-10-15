@@ -27,14 +27,14 @@ public class ShopMenuItem : MonoBehaviour, ISelectHandler
 	{
 		if (_data.IsSale)
 		{
-			ItemText.text = $"{_data.ItemName}\n<size=65%>Quantity: {_data.Remaining}</size>";
-			CostText.text = $"{_data.Cost}g";
+			ItemText.text = GameplayText.Format($"{GameplayText.Name(_data.ItemName)}\n<size=65%>Quantity {_data.Remaining}</size>");
+			CostText.text = GameplayText.Format($"{_data.Cost}g");
 			return;
 		}
-		ItemText.text = _data.Remaining > 0
-			? $"{_data.ItemName}\n<size=65%>{_data.Remaining} left</size>"
-			: _data.ItemName;
-		CostText.text = _data.Remaining > 0 ? $"{_data.Cost}g" : "Sold out";
+		ItemText.text = GameplayText.Format(_data.Remaining > 0
+			? $"{GameplayText.Name(_data.ItemName)}\n<size=65%>{_data.Remaining} left</size>"
+			: GameplayText.Name(_data.ItemName));
+		CostText.text = GameplayText.Format(_data.Remaining > 0 ? $"{_data.Cost}g" : "Sold out");
 	}
 
     public void OnSelect(BaseEventData eventData) => SelectCallBack?.Invoke();

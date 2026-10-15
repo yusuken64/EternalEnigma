@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: The target takes back 50% of the damage it deals (70%).
+  Description: "Has a 70% chance to curse the target, making it suffer half the damage it deals."
   references:
     version: 2
     RefIds:

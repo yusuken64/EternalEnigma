@@ -14,7 +14,7 @@ public class StairConfirm : Dialog
 
     public void Setup(string prompt, Action yesAction, Action noAction)
     {
-        PromptText.text = prompt;
+        PromptText.text = GameplayText.Format(prompt);
         _yesAction = yesAction;
         _noAction = noAction;
         

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS05_Sword
   m_EditorClassIdentifier: 
   ItemName: Steel Sword (Off-hand)
-  Description: Steel Sword (Off-hand) grants 5 strength.
+  Description: "An off-hand Steel Sword that grants 5 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

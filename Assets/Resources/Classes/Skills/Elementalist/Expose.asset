@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Target elemental resistances -1 step.
+  Description: "Lowers the target's elemental resistances by one level."
   references:
     version: 2
     RefIds:

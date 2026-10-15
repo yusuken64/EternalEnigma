@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: SalamanderFatCaramelColdBrew
   m_EditorClassIdentifier: 
   ItemName: Salamander-Fat Caramel Cold Brew
-  Description: Brewed with real Salamander fat and caramel. Restores 0 HP and 15
-    SP.
+  Description: "Brewed with real Salamander fat and caramel. Restores 15 SP."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

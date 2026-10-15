@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS16_Sword
   m_EditorClassIdentifier: 
   ItemName: Shadow Sword (Off-hand)
-  Description: Shadow Sword (Off-hand) grants 16 strength.
+  Description: "An off-hand Shadow Sword that grants 16 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

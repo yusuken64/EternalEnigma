@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: 'Song: +3 Strength to allies within 3 tiles.'
+  Description: "Sing to increase the strength of allies within 3 tiles by 3."
   references:
     version: 2
     RefIds:

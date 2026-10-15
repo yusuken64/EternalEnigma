@@ -13,7 +13,7 @@ internal sealed class PendingCast
     internal readonly Skill Skill;
     internal int Remaining;
     internal PendingCast(GameAction release, string name, int charge, Skill skill = null)
-    { Release = release; Name = name; Remaining = Math.Max(0, charge - 1); Skill = skill; Floor = Game.Instance?.CurrentDungeon; }
+    { Release = release; Name = GameplayText.Name(name); Remaining = Math.Max(0, charge - 1); Skill = skill; Floor = Game.Instance?.CurrentDungeon; }
     internal bool Reduce() { if (Remaining <= 0) return false; Remaining--; return true; }
     internal static bool Mobile(Character c) => c is Ally && c.Skills != null && c.Skills.Any(s => s != null && s.ActivationType == ActivationType.Passive && s.SkillName == "Mobile Casting");
     internal static void Cancel(Character c, string reason)
@@ -23,7 +23,7 @@ internal sealed class PendingCast
         (c.PendingCast.Release as SkillAction)?.AutoplayTrace?.Interrupt(reason);
         c.PendingCast = null;
         CombatEffectPlayer.Get()?.ClearCasting(c);
-        GameMessages.ForCharacter(c, $"[Cast] {GameMessages.Name(c)}'s {name} was interrupted: {reason}.");
+        GameMessages.ForCharacter(c, $"{GameMessages.Name(c)}'s {name} was interrupted. {GameplayText.Name(reason)}.");
     }
     internal static void Validate(Character c)
     {

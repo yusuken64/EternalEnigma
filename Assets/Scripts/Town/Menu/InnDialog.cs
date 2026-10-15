@@ -21,7 +21,7 @@ public class InnDialog : Dialog
         var dialog = panel.gameObject.AddComponent<InnDialog>();
         GameUISkin.Label(panel.transform, "Inn", new Vector2(.08f, .78f), new Vector2(.92f, .94f), 34);
         dialog.StatusText = GameUISkin.Label(panel.transform, "", new Vector2(.08f, .57f), new Vector2(.92f, .77f));
-        dialog.RestButton = GameUISkin.Button(panel.transform, "Rest (free)", new Vector2(.1f, .39f), new Vector2(.9f, .53f), dialog.Rest_Clicked);
+        dialog.RestButton = GameUISkin.Button(panel.transform, "Rest for free", new Vector2(.1f, .39f), new Vector2(.9f, .53f), dialog.Rest_Clicked);
         dialog.SaveButton = GameUISkin.Button(panel.transform, "Save game", new Vector2(.1f, .22f), new Vector2(.9f, .36f), dialog.Save_Clicked);
         dialog.CancelButton = GameUISkin.Button(panel.transform, "Back", new Vector2(.1f, .05f), new Vector2(.9f, .19f), dialog.Cancel_Clicked);
         panel.gameObject.SetActive(false);
@@ -37,7 +37,7 @@ public class InnDialog : Dialog
     public override void PrepareTown(TownInteractionContext context)
     {
         services = context.Services;
-        StatusText.text = services.NeedsRest ? "Rest to restore your party's HP, SP and hunger?" : "Your party is fully rested.";
+        StatusText.text = GameplayText.Format(services.NeedsRest ? "Rest to restore your party's HP, SP and hunger?" : "Your party is fully rested.");
     }
 
     internal override void SetFirstSelect() => (services != null && services.NeedsRest ? RestButton : SaveButton).Select();

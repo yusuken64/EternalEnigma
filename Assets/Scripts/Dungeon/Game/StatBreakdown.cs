@@ -29,10 +29,10 @@ public static class StatBreakdown
         int levels=Math.Max(0,hero.Vitals.Level-1);
         float built=Value(template,key)+Value(classStart,key)+Value(growth,key)*levels+Value(attribute,key);
         var contributions=new List<(string,float)> {
-            ("Template",Value(template,key)),("Class",Value(classStart,key)),
+            ("Base",Value(template,key)),("Class",Value(classStart,key)),
             ("Level growth",Value(growth,key)*levels),("Attributes",Value(attribute,key))};
         float extra=Value(hero.BaseStats,key)-built;
-        if(Math.Abs(extra)>.0001f)contributions.Add(("Other base",extra));
+        if(Math.Abs(extra)>.0001f)contributions.Add(("Other bonuses",extra));
         contributions.AddRange(StatPreview.Parts(hero,hero.Equipment.Current()).Select(p=>(p.Source,Value(p.Value,key))));
         return Format(key,Value(hero.FinalStats,key),contributions);
     }
@@ -43,7 +43,7 @@ public static class StatBreakdown
         var final=TownUtilityService.StatsFor(hero);
         var gear=hero.Equipment.Current().Modification;
         var contributions=new List<(string,float)> {
-            ("Template",Value(HeroStatRules.BaseStats(template,null,1,default),key)),
+            ("Base",Value(HeroStatRules.BaseStats(template,null,1,default),key)),
             ("Class",Value(hero.PrimaryClass?.StartingStatBonus,key)),
             ("Level growth",Value(HeroClass.Growth(hero.PrimaryClass),key)*Math.Max(0,hero.Level-1)),
             ("Attributes",Value(HeroAttributes.ToModification(hero.Attributes),key)),
@@ -55,8 +55,8 @@ public static class StatBreakdown
     {
         bool percent=key=="Hit" || key=="Evasion" || key=="Crit";
         string F(float value)=>percent?$"{value*100:0.#}%":$"{value:0.#}";
-        string prefix=key=="Hit"?"Base hit 80% · ":"";
-        string parts=string.Join(" · ",sources.Where(s=>Math.Abs(s.Amount)>.0001f).Select(s=>s.Source+" "+(s.Amount>0?"+":"")+F(s.Amount)));
+        string prefix=key=="Hit"?"Base hit 80%, ":"";
+        string parts=string.Join(", ",sources.Where(s=>Math.Abs(s.Amount)>.0001f).Select(s=>s.Source+" "+(s.Amount>0?"+":"")+F(s.Amount)));
         float shown=key=="Hit"?Math.Max(.05f,Math.Min(1f,total+.8f)):total;
         return $"{key} {F(shown)}\n{prefix}{parts}";
     }

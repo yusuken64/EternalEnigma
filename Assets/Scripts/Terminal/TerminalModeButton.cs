@@ -52,5 +52,5 @@ public sealed class TerminalModeButton : MonoBehaviour
     }
     private void OnEnable() { TerminalMode.Changed += Refresh; Refresh(); }
     private void OnDisable() { TerminalMode.Changed -= Refresh; }
-    private void Refresh() { if (label != null) label.text = "Terminal mode (F11): " + (TerminalMode.Requested ? "On" : "Off"); }
+    private void Refresh() { if (label != null) label.text = "Terminal mode " + (TerminalMode.Requested ? "On" : "Off") + ". Press F11 to switch."; }
 }

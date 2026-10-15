@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS13_Axe
   m_EditorClassIdentifier: 
   ItemName: Battle Axe (Off-hand)
-  Description: Battle Axe (Off-hand) grants 13 strength.
+  Description: "An off-hand Battle Axe that grants 13 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

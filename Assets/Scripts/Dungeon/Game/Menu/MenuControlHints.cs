@@ -19,11 +19,11 @@ public sealed class MenuControlHints : MonoBehaviour
         if(lastPad==pad)return;lastPad=pad;
         if(DungeonDock || Party)
         {
-            Label.text=InputPrompts.Pick("Left/Right: tabs   Up/Down: browse\nTab / Shift+Tab: hero\n{Confirm}: actions   {Back}: back",
-                "Left/Right: tabs   Up/Down: browse\nRB / LT: hero\n{Confirm}: actions   {Back}: back");
+            Label.text=GameplayText.Format(InputPrompts.Pick("Use Left or Right for tabs and Up or Down to browse.\nUse Tab or Shift+Tab to change heroes.\nPress {Confirm} for actions or {Back} to return.",
+                "Use Left or Right for tabs and Up or Down to browse.\nUse RB or LT to change heroes.\nPress {Confirm} for actions or {Back} to return."));
             Label.text=InputPrompts.Format(Label.text);
             return;
         }
-        Label.text=InputPrompts.Format("{Move}: browse   {Confirm}: choose   {Back}: Back");
+        Label.text=InputPrompts.Format("Use {Move} to browse. Press {Confirm} to choose or {Back} to return.");
     }
 }

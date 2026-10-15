@@ -22,7 +22,7 @@ public class StatsDisplay : MonoBehaviour
 	{
 		if (ValueText != null)
 		{
-			ValueText.text = _statValueStringFunce?.Invoke();
+			ValueText.text = GameplayText.Format(_statValueStringFunce?.Invoke());
 		}
 		if (_statValueSliderFunc != null)
 		{

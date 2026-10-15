@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: 'Song: enemy hit chance against allies -20%.'
+  Description: "Sing to reduce enemies' chance to hit your allies by 20%."
   references:
     version: 2
     RefIds:

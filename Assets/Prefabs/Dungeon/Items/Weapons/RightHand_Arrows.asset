@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Arrows
   m_EditorClassIdentifier: 
   ItemName: Arrows
-  Description: Legacy arrow definition; ammunition packs supply arrows.
+  Description: "Arrows for use with a bow."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

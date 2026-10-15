@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Deal Damage
+  Description: "Deals damage to an enemy."
   references:
     version: 2
     RefIds:

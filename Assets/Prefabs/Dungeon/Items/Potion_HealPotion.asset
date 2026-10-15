@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Potion_HealPotion
   m_EditorClassIdentifier: 
   ItemName: Potion
-  Description: Recover some Hp
+  Description: "Restores HP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

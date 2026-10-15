@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS02_Niddle
   m_EditorClassIdentifier: 
   ItemName: Needle (Off-hand)
-  Description: Needle (Off-hand) grants 2 strength.
+  Description: "An off-hand Needle that grants 2 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

@@ -24,7 +24,7 @@ internal class PickUpItemAction : GameAction
 		canAdd = game.PlayerController.Inventory.CanAdd();
 		if (canAdd)
 		{
-            GameMessages.Post($"Picked up {droppedItem.InventoryItem.ItemName}.");
+            GameMessages.Post($"Picked up {droppedItem.InventoryItem.DisplayName}.");
 			droppedItem.Opened = true;
 			game.PlayerController.Inventory.Add(droppedItem.InventoryItem);
 			game.CurrentDungeon.RemoveInteractable(droppedItem); //this should be removeimmediate, and remove routine

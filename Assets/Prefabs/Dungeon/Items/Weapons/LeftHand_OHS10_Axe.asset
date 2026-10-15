@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS10_Axe
   m_EditorClassIdentifier: 
   ItemName: Hand Axe (Off-hand)
-  Description: Hand Axe (Off-hand) grants 10 strength.
+  Description: "An off-hand Hand Axe that grants 10 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 15

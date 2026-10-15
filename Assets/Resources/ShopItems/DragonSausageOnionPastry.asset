@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DragonSausageOnionPastry
   m_EditorClassIdentifier: 
   ItemName: Dragon Sausage & Onion Pastry
-  Description: Baked with real Dragon sausage and onion. Restores 150 hunger.
+  Description: "Baked with real Dragon sausage and onion. Restores 150 fullness."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Potion_SleepPotion
   m_EditorClassIdentifier: 
   ItemName: Sleep Potion
-  Description: Become sleepy
+  Description: "Puts the target to sleep."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

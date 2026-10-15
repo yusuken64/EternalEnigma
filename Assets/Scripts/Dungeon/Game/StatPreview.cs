@@ -55,18 +55,18 @@ public static class StatPreview
     public static string Diff(Stats before, Stats after)
     {
         var lines = new List<string>();
-        void Add(string name, int a, int b) { if (a != b) lines.Add($"{name} {a}→{b}"); }
-        void Percent(string name, float a, float b) { if (Math.Abs(a-b) > .0001f) lines.Add($"{name} {a*100:0.#}%→{b*100:0.#}%"); }
+        void Add(string name, int a, int b) { if (a != b) lines.Add($"{name} {a} to {b}"); }
+        void Percent(string name, float a, float b) { if (Math.Abs(a-b) > .0001f) lines.Add($"{name} {a*100:0.#}% to {b*100:0.#}%"); }
         Add("HP",before.HPMax,after.HPMax);Add("SP",before.SPMax,after.SPMax);
         Add("Food",before.HungerMax,after.HungerMax);Add("Attack",before.Strength,after.Strength);
         Add("Magic",before.MagicPower,after.MagicPower);Add("Defense",before.Defense,after.Defense);
-        Add("EXP on kill",before.EXPOnKill,after.EXPOnKill);
-        Add("Food threshold",before.HungerAccumulateThreshold,after.HungerAccumulateThreshold);
-        if(Math.Abs(before.DropRate-after.DropRate)>.0001f)lines.Add($"Drop rate {before.DropRate:0.##}→{after.DropRate:0.##}");
+        Add("Experience per defeat",before.EXPOnKill,after.EXPOnKill);
+        Add("Actions between hunger loss",before.HungerAccumulateThreshold,after.HungerAccumulateThreshold);
+        if(Math.Abs(before.DropRate-after.DropRate)>.0001f)lines.Add($"Loot multiplier {before.DropRate:0.##} to {after.DropRate:0.##}");
         Percent("Hit",before.HitBonus,after.HitBonus);Percent("Evasion",before.Evasion,after.Evasion);Percent("Crit",before.CritChance,after.CritChance);
         Add("Actions",before.ActionsPerTurnMax,after.ActionsPerTurnMax);Add("Attacks",before.AttacksPerTurnMax,after.AttacksPerTurnMax);
-        Add("HP regen threshold",before.HPRegenAcccumlateThreshold,after.HPRegenAcccumlateThreshold);
-        Add("SP regen threshold",before.SPRegenAcccumlateThreshold,after.SPRegenAcccumlateThreshold);
+        Add("Actions between HP recovery",before.HPRegenAcccumlateThreshold,after.HPRegenAcccumlateThreshold);
+        Add("Actions between SP recovery",before.SPRegenAcccumlateThreshold,after.SPRegenAcccumlateThreshold);
         Add("Fire",before.FireResistance,after.FireResistance);Add("Ice",before.IceResistance,after.IceResistance);Add("Lightning",before.LightningResistance,after.LightningResistance);
         return lines.Count == 0 ? "No stat change" : string.Join("  ",lines);
     }

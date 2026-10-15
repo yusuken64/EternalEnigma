@@ -64,7 +64,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Damage + Weaken (-Strength).
+  Description: "Deals damage and reduces the target's strength."
   references:
     version: 2
     RefIds:

@@ -60,7 +60,7 @@ public sealed class TownUtilityService
         var u=new Utility {Skill=skill,Item=item,Rank=SkillRankContext.Unranked};
         if(skill!=null)
         {
-            if(skill.ActivationType!=ActivationType.Active) {reason="Passive skill: always applied; no Use action.";return false;}
+            if(skill.ActivationType!=ActivationType.Active) {reason="This passive skill is always active.";return false;}
             if(caster.GetRank(skill.SkillName)==0) {reason="Skill not learned.";return false;}
             if(skill.SPCost<0 || skill.UsesArrows) {reason="This skill requires dungeon combat resources.";return false;}
             u.Cost=skill.SPCost;u.Targeting=skill.Targeting;u.Selector=skill.TargetSelector;u.InventorySelector=skill.InventoryTargetSelector;

@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Prevent Enemy from casting spells
+  Description: "Silences an enemy, preventing it from casting spells."
   references:
     version: 2
     RefIds:

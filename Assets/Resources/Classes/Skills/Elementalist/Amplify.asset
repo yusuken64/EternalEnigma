@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Your next elemental spell deals +50%.
+  Description: "Your next elemental spell deals 50% more damage."
   references:
     version: 2
     RefIds:

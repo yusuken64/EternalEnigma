@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_Bow02
   m_EditorClassIdentifier: 
   ItemName: Bow02
-  Description: Bow02 grants 5 strength.
+  Description: "Hunter's Bow grants 5 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

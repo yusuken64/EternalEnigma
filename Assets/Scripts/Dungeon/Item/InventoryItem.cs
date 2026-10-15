@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public abstract class InventoryItem
 {
 	public string ItemName => ItemDefinition.ItemName;
+	public string DisplayName => ItemDefinition.DisplayName;
 	public bool IsConsumable => ItemDefinition.StackMax == 0;
 	public bool HasStacks => ItemDefinition.StackMax > 0;
 

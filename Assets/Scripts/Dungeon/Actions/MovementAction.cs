@@ -310,7 +310,7 @@ public class TakeDamageAction : GameAction
 			});
 		}
 
-        GameMessages.ForCharacter(target, miss ? $"{GameMessages.Name(target)} evaded the attack." : $"{GameMessages.Name(target)} took {damage} damage{(Critical ? " (critical)!" : ".")}");
+        GameMessages.ForCharacter(target, miss ? $"{GameMessages.Name(target)} evaded the attack." : $"{GameMessages.Name(target)} took {damage} damage{(Critical ? " from a critical hit!" : ".")}");
 		if (target.Vitals.HP <= 0)
 		{
 			return new List<GameAction>()
@@ -398,7 +398,7 @@ public class TakeHealAction : GameAction
 			});
 		}
 
-        GameMessages.ForCharacter(target, miss ? $"{GameMessages.Name(target)}: healing missed." : $"{GameMessages.Name(target)} recovered {healing} HP.");
+        GameMessages.ForCharacter(target, miss ? $"The healing spell missed {GameMessages.Name(target)}." : $"{GameMessages.Name(target)} recovered {healing} HP.");
 		if (target.Vitals.HP <= 0)
 		{
 			return new List<GameAction>()

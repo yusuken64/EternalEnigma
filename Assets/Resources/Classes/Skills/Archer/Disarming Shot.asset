@@ -64,7 +64,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Damage + Arm bind. Uses 1 arrow.
+  Description: "Deals damage and binds the target's arms. Uses 1 arrow."
   references:
     version: 2
     RefIds:

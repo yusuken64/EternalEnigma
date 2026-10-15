@@ -61,7 +61,7 @@ MonoBehaviour:
     HitBonus: 0
   PassiveResponses:
   - rid: 292415685818319184
-  Description: Unlocks tier 2. Commands +1 turn.
+  Description: "Unlocks tier 2. Commands last one extra turn."
   references:
     version: 2
     RefIds:

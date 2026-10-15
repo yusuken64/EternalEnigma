@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_Bow05
   m_EditorClassIdentifier: 
   ItemName: Bow05
-  Description: Bow05 grants 11 strength.
+  Description: "Royal Bow grants 11 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 15

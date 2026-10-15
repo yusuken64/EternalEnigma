@@ -19,7 +19,7 @@ public sealed class EncounterRuntime
     public bool CanExit => Progress.CanExit;
     public bool AllowsReset => floor.Objective.AllowsReset;
     public string ObjectiveText => floor.Objective.Kind switch {
-        DungeonObjectiveKind.DefeatEnemies => $"Defeat the required enemies ({Progress.RemainingEnemyIds.Count} remaining).",
+        DungeonObjectiveKind.DefeatEnemies => $"Defeat the required enemies. {Progress.RemainingEnemyIds.Count} remain.",
         DungeonObjectiveKind.DefeatBoss => "Defeat the arena boss.",
         DungeonObjectiveKind.PositionObjects => "Push every boulder onto a marked goal. Reset Floor restores the entry state.",
         DungeonObjectiveKind.MatchLights => "Step on lights to match the target board.",

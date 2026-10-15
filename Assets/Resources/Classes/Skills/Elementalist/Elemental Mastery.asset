@@ -61,7 +61,7 @@ MonoBehaviour:
     HitBonus: 0
   PassiveResponses:
   - rid: 292415685818319039
-  Description: Elemental hits can inflict Burn (fire), Stuck (ice) or Paralysis (lightning).
+  Description: "Fire hits can burn, ice hits can freeze enemies in place, and lightning hits can paralyze."
   references:
     version: 2
     RefIds:

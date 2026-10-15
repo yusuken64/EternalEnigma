@@ -83,7 +83,7 @@ internal class SkillAction : GameAction
                     targetTeam = target != null ? target.Team : caster.Team,
                     captured = skill.SkillName == "Mass Revive" ? skill.GetTargetCharacters(caster).ToList() : null };
                 caster.PendingCast = new PendingCast(release, skill.SkillName, charge, skill);
-                GameMessages.ForCharacter(caster, $"[Cast] {GameMessages.Name(caster)} starts {skill.SkillName} ({charge} charging actions).");
+                GameMessages.ForCharacter(caster, $"{GameMessages.Name(caster)} starts charging {skill.DisplayName}. The spell takes {charge} actions to charge.");
                 return new();
             }
             GameMessages.AbilityCast(caster, skill);
@@ -95,11 +95,11 @@ internal class SkillAction : GameAction
                 captured != null && !captured.Any(Eligible) || sceneryTarget != null && !sceneryTarget.Alive ||
                 skill.Targeting == SkillTargeting.InventoryItem && !skill.GetInventoryTargets(caster).Contains(inventoryTarget))
             {
-                GameMessages.ForCharacter(caster, $"[Cast] {GameMessages.Name(caster)}'s {skill.SkillName} fizzled: invalid target.");
+                GameMessages.ForCharacter(caster, $"{GameMessages.Name(caster)}'s {skill.DisplayName} fizzled because the target is no longer available.");
                 AutoplayTrace?.Interrupt("Cast fizzled: invalid target or floor");
                 return new();
             }
-            GameMessages.ForCharacter(caster, $"[Cast] {GameMessages.Name(caster)} releases {skill.SkillName}.");
+            GameMessages.ForCharacter(caster, $"{GameMessages.Name(caster)} releases {skill.DisplayName}.");
         }
         resolved = true;
         float ammunitionMultiplier = skill.UsesArrows ? ArrowSupply.DamageMultiplier(caster) : 1f;

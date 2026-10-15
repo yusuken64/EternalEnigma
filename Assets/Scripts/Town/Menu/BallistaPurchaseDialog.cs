@@ -54,11 +54,11 @@ public class BallistaPurchaseDialog : Dialog
 	{
         FindFirstObjectByType<TownMenuManager>().Open(this);
 
-        string price = usesPoints ? $"{cost} learning points" : $"{cost}g";
-        TitleText.text = nextRank <= 1
-            ? $"Learn {skill.SkillName} ({price})?"
-            : $"Train {skill.SkillName} to rank {nextRank} ({price})?";
-        DescriptionText.text = skill.Description;
+        string price = usesPoints ? $"{cost} learning points" : $"{cost} gold";
+        TitleText.text = GameplayText.Format(nextRank <= 1
+            ? $"Learn {skill.DisplayName} for {price}?"
+            : $"Train {skill.DisplayName} to rank {nextRank} for {price}?");
+        DescriptionText.text = GameplayText.Format(skill.Description);
         SkillIcon = SkillIconView.Bind(SkillIcon, TitleText, skill.Icon);
         SetNavigation();
 	}

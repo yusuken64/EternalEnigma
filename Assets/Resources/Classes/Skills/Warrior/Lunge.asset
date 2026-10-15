@@ -67,7 +67,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Dash to the first enemy in a line (3 tiles) and strike at 150%.
+  Description: "Dash up to 3 tiles to the first enemy in a straight line and deal 150% weapon damage."
   references:
     version: 2
     RefIds:

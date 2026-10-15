@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Weaken (-Strength) (90%).
+  Description: "Has a 90% chance to reduce the target's strength."
   references:
     version: 2
     RefIds:

@@ -108,7 +108,7 @@ namespace EternalEnigma.Tests
                 GameMessages.BeginTurn();
                 new SkillAction(actor, skill, actor).ExecuteImmediate(actor);
                 feed = Object.FindFirstObjectByType<GameMessages>();
-                const string message = "[Cast] Tester casts Test ability.";
+                const string message = "Tester casts Test ability.";
                 Assert.That(feed.History.Count(s => s == message), Is.EqualTo(1));
                 GameMessages.BeginTurn();
                 new SkillAction(actor, skill, actor).ExecuteImmediate(actor);

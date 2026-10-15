@@ -17,7 +17,7 @@ public class BuyConfirmationDialog : Dialog
 	{
 		this._view = view;
 		this._data = data;
-		PromptText.text = data.IsSale ? $"Sell {data.ItemName} (quantity {data.Remaining}) for {data.Cost}G?" : $"Purchase {data.ItemName} for {data.Cost}G?";
+		PromptText.text = GameplayText.Format(data.IsSale ? $"Sell {data.Remaining} {GameplayText.Name(data.ItemName)} for {data.Cost} gold?" : $"Purchase {GameplayText.Name(data.ItemName)} for {data.Cost} gold?");
 	}
 
 	internal override void SetFirstSelect()

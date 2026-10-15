@@ -11,11 +11,10 @@ public sealed class EventHistoryDialog : Dialog
     public Button Back;
     public void Setup(System.Collections.Generic.IReadOnlyList<string> entries)
     {
-        UseGameplayDock(Panel);
         foreach(var role in GetComponentsInChildren<DungeonUIRole>(true))role.Apply();
         foreach(var style in GetComponentsInChildren<DungeonTextStyle>(true))
             style.GetComponent<TMP_Text>().color=style.OnWood?GameUITheme.LightInk:GameUITheme.Ink;
-        Entries.text = entries.Count == 0 ? "No events yet." : InputPrompts.Format(string.Join("\n\n", entries));
+        Entries.text = GameplayText.Plain(entries.Count == 0 ? "No events yet." : string.Join("\n\n", entries));
         Entries.richText = false;
         Back.onClick.RemoveAllListeners(); Back.onClick.AddListener(CloseDialog);
         Canvas.ForceUpdateCanvases();

@@ -52,7 +52,7 @@ internal class UseInventoryItemAction : GameAction
 		if (item is EquipableInventoryItem equipment)
 			return new() { character.Equipment.IsEquipped(equipment)
 				? new UnEquipAction(character, equipment) : new EquipAction(character, equipment) };
-        GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} used {item.ItemName}.");
+        GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} used {item.DisplayName}.");
 		var definition = Definition;
 		List<GameAction> effects;
 		if (definition?.Targeting == SkillTargeting.InventoryItem)
@@ -71,7 +71,7 @@ internal class UseInventoryItemAction : GameAction
 			!(UnityEngine.Random.value < ClassPassives.ConsumableSaveChance(character));
         if (item.ItemDefinition.ItemEffectDefinition is SkillItemEffectDefinition skillEffect && skillEffect.EffectSkill != null)
         {
-            GameMessages.AbilityCast(character, skillEffect.EffectSkill, item.ItemName);
+            GameMessages.AbilityCast(character, skillEffect.EffectSkill, item.DisplayName);
             var center = definition?.Targeting == SkillTargeting.Missile ? missileHit.Cell : target != null ? target.TilemapPosition : character.TilemapPosition;
             Visuals.Configure(skillEffect.EffectSkill.VisualProfile, character, center, definition != null ? definition.AreaRadius : 0);
             if (Visuals.Sequence != null) Visuals.Sequence.SingleFlight = definition?.Targeting == SkillTargeting.Missile;

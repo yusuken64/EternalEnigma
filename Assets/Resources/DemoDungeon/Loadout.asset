@@ -67,7 +67,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Choose one visible ally (including yourself) to heal.
+  Description: "Heal yourself or one visible ally."
   references:
     version: 2
     RefIds:
@@ -194,8 +194,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Inspect Item'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Inspect Item'
-  Description: Choose any inventory item to inspect its stock or stats. Does not
-    consume the selected item. Use spends one scroll, no SP. Cancel spends nothing.
+  Description: "Choose any inventory item to inspect its quantity and properties. Does not consume the selected item. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -244,8 +243,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Inspect Weapon'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Inspect Weapon'
-  Description: Choose a weapon to inspect its stats. Does not consume or enchant
-    the selected weapon. Use spends one scroll, no SP. Cancel spends nothing.
+  Description: "Choose a weapon to inspect its stats. Does not consume or enchant the selected weapon. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -307,8 +305,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Single Hit'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Single Hit'
-  Description: Choose one visible enemy to damage. Use spends one scroll, no SP.
-    Cancel spends nothing.
+  Description: "Choose one visible enemy to damage. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -366,8 +363,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Ally Mend'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Ally Mend'
-  Description: Choose one visible ally (including yourself) to heal. Use spends one
-    scroll, no SP. Cancel spends nothing.
+  Description: "Heal yourself or one visible ally. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -412,8 +408,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Party Mend'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Party Mend'
-  Description: Cast immediately on all visible allies. Use spends one scroll, no
-    SP. Cancel spends nothing.
+  Description: "Cast immediately on all visible allies. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -458,8 +453,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Area Burst'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Area Burst'
-  Description: Choose an enemy. Hits enemies within one tile of it; allies are excluded.
-    Use spends one scroll, no SP. Cancel spends nothing.
+  Description: "Choose an enemy. Hits enemies within one tile of it; allies are excluded. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -720,8 +714,7 @@ MonoBehaviour:
   m_Name: Demo Training Sword
   m_EditorClassIdentifier: 
   ItemName: Demo Training Sword
-  Description: Use Inspect Item or Inspect Weapon on this sword to try inventory
-    targeting. It can also be equipped.
+  Description: "A practice sword. Equip it or inspect it to learn more about its properties."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -780,9 +773,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Arrow Shot'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Arrow Shot'
-  Description: Aim in eight directions. Hits the first enemy in the path, up to 8
-    tiles. Walls and allies block shots. Use spends one scroll, no SP. Cancel spends
-    nothing.
+  Description: "Aim in eight directions. Hits the first enemy in the path, up to 8 tiles. Walls and allies block shots. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -1156,8 +1147,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Choose any inventory item to inspect its stock or stats. Does not
-    consume the selected item.
+  Description: "Choose any inventory item to inspect its quantity and properties. Does not consume the selected item."
   references:
     version: 2
     RefIds:
@@ -1190,8 +1180,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Enemy Pulse'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Enemy Pulse'
-  Description: Cast immediately on all visible enemies. Use spends one scroll, no
-    SP. Cancel spends nothing.
+  Description: "Cast immediately on all visible enemies. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -1236,8 +1225,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Self Focus'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Self Focus'
-  Description: Cast immediately on yourself. Applies the Anger status. Use spends
-    one scroll, no SP. Cancel spends nothing.
+  Description: "Cast immediately on yourself. Applies the Anger status. Using this consumes one scroll and costs no SP."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

@@ -64,7 +64,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Damage + Sleep. Uses 1 arrow.
+  Description: "Deals damage and puts the target to sleep. Uses 1 arrow."
   references:
     version: 2
     RefIds:

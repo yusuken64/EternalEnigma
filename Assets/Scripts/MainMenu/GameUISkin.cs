@@ -103,7 +103,7 @@ public static class GameUISkin
     public static TextMeshProUGUI Label(Transform parent, string text, Vector2 min, Vector2 max, float size = 26)
     {
         var label = Rect("Text", parent, min, max).gameObject.AddComponent<TextMeshProUGUI>();
-        label.text = text; label.fontSize = size; label.color = Ink; label.raycastTarget = false;
+        label.text = GameplayText.Format(text); label.fontSize = size; label.color = Ink; label.raycastTarget = false;
         label.textWrappingMode = TextWrappingModes.Normal;
         return label;
     }
@@ -121,7 +121,7 @@ public static class GameUISkin
         var rect = (RectTransform)button.transform;
         rect.anchorMin = min; rect.anchorMax = max;
         rect.offsetMin = rect.offsetMax = Vector2.zero;
-        button.GetComponentInChildren<TMP_Text>().text = text;
+        button.GetComponentInChildren<TMP_Text>().text = GameplayText.Format(text);
         button.onClick.AddListener(() => clicked?.Invoke());
         return button;
     }

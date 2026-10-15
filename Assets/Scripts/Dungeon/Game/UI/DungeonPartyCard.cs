@@ -75,11 +75,11 @@ public sealed class DungeonPartyCard : MonoBehaviour
         if (display == null || display.Character is not Ally ally || Game.Instance == null) return;
         portraitHighlight.enabled = ally.IsTurnHighlighted;
         portraitHighlight.color = ally.TurnHighlightColor;
-        order.text = ally == Game.Instance.PlayerController.PartyLeader ? "Leader" :
-            ally.AllyStrategy.ToString().Replace("Aggresive","Aggressive").Replace("HoldPosition","Hold");
-        if (ally.PendingCast != null) order.text = ally.PendingCast.Name + (ally.PendingCast.Remaining == 0 ? " ready" : $" ({ally.PendingCast.Remaining} charge)");
-        if (ArrowSupply.HasBow(ally)) order.text += $"\n{ally.Equipment.EquippedShield?.ItemName ?? "Arrows"} x{ArrowSupply.Count(ally)}";
-        if (ally.PendingAttributePoints > 0) order.text += $"  ▲ {ally.PendingAttributePoints}";
+        order.text = GameplayText.Format(ally == Game.Instance.PlayerController.PartyLeader ? "Leader" :
+            ally.AllyStrategy.ToString().Replace("Aggresive","Aggressive").Replace("HoldPosition","Hold"));
+        if (ally.PendingCast != null) order.text = GameplayText.Format(ally.PendingCast.Name + (ally.PendingCast.Remaining == 0 ? " ready" : $"  Charging for {ally.PendingCast.Remaining} more actions"));
+        if (ArrowSupply.HasBow(ally)) order.text += GameplayText.Format($"\n{ally.Equipment.EquippedShield?.DisplayName ?? "Arrows"} x{ArrowSupply.Count(ally)}");
+        if (ally.PendingAttributePoints > 0) order.text += GameplayText.Format($"  ▲ {ally.PendingAttributePoints}");
         order.enableAutoSizing = true; order.fontSizeMin = 10; order.fontSizeMax = 18;
         string key=DungeonHud.StatusSummary(ally);
         if (key==statusKey) return; statusKey=key;
@@ -104,7 +104,7 @@ public sealed class DungeonPartyCard : MonoBehaviour
 				label.transform.SetAsLastSibling();
 			}
 			if (icon != null) { icon.enabled=sprite != null; icon.sprite=sprite; }
-			label.text=sprite != null ? effect.TurnsLeft.ToString() : badge;
+			label.text=GameplayText.Format(sprite != null ? effect.TurnsLeft.ToString() : badge);
 			var labelRect=(RectTransform)label.transform;
 			labelRect.anchorMin=sprite != null ? new Vector2(.52f,0) : Vector2.zero;
 			labelRect.anchorMax=Vector2.one;

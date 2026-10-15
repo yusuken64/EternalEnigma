@@ -50,10 +50,10 @@ public sealed class AutoplaySetup : MonoBehaviour
     {
         Launch.interactable = Read(out var reason);
         Validation.text = reason ?? $"Seeds {options.Seed} to {options.SeedForRun(options.RunCount-1)} · isolated campaigns";
-        SpeedLabel.text = $"Speed: {options.Speed:0.#}×";
-        GodmodeLabel.text = "Godmode + infinite strength: " + (options.Godmode ? "On" : "Off");
-        ResourcesLabel.text = "Infinite resources: " + (options.InfiniteResources ? "On" : "Off");
-        CoverageLabel.text = "Item and ability coverage: " + (options.DebugCoverage ? "On" : "Off");
+        SpeedLabel.text = $"Speed {options.Speed:0.#}×";
+        GodmodeLabel.text = "Invincibility and unlimited strength " + (options.Godmode ? "On" : "Off");
+        ResourcesLabel.text = "Unlimited resources " + (options.InfiniteResources ? "On" : "Off");
+        CoverageLabel.text = "Try items and abilities " + (options.DebugCoverage ? "On" : "Off");
     }
 
     public void StartBatch()

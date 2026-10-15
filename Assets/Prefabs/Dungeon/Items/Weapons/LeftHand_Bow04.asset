@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_Bow04
   m_EditorClassIdentifier: 
   ItemName: Bow04
-  Description: Bow04 grants 9 strength.
+  Description: "Composite Bow grants 9 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 6

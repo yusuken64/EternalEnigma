@@ -61,7 +61,7 @@ MonoBehaviour:
     HitBonus: 0
   PassiveResponses:
   - rid: 292415685818318984
-  Description: 25% chance for a normal bow attack to fire twice (uses a second arrow).
+  Description: "Normal bow attacks have a 25% chance to fire a second arrow."
   references:
     version: 2
     RefIds:

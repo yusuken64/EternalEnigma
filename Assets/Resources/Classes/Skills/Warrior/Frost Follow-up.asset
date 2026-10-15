@@ -64,7 +64,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: 'Hit + Ice mark: party hits on the target add an ice strike.'
+  Description: "Strike and mark the target. Party attacks against it trigger an extra ice strike."
   references:
     version: 2
     RefIds:

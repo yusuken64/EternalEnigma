@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS15_Sword
   m_EditorClassIdentifier: 
   ItemName: Flame Sword (Off-hand)
-  Description: Flame Sword (Off-hand) grants 15 strength.
+  Description: "An off-hand Flame Sword that grants 15 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

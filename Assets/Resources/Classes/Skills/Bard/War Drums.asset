@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Enemies within 3 tiles -3 Defense.
+  Description: "Reduces the defense of enemies within 3 tiles by 3."
   references:
     version: 2
     RefIds:

@@ -67,7 +67,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
     {
         if (previous != null) previous.gameObject.SetActive(false);
         if (next != null) next.gameObject.SetActive(false);
-        pageLabel.text = $"{heroes.Count} HEROES     MOVE: PREVIEW     CONFIRM: CHOOSE";
+        pageLabel.text = $"{heroes.Count} heroes. Move to preview, then confirm your choice.";
         pageLabel.fontSize = 20;
         pageLabel.rectTransform.anchorMin = new Vector2(.39f, .08f);
         pageLabel.rectTransform.anchorMax = new Vector2(.95f, .16f);

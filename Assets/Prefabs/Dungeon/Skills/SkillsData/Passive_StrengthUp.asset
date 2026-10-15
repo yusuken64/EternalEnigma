@@ -61,7 +61,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Passive Strength Up
+  Description: "Increases strength."
   references:
     version: 2
     RefIds:

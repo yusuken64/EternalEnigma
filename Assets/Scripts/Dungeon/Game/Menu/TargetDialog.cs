@@ -19,7 +19,7 @@ namespace JuicyChickenGames.Menu
         private List<Vector3Int> tiles = new();
         private Vector3Int selectedTile;
         private int EffectiveMissileRange => missileRange + (targetingSkill != null && targetingSkill.UsesArrows && casterCharacter != null ? ClassPassives.MissileRangeBonus(casterCharacter) : 0);
-        public string RangeLabel => missileRange > 0 ? $"Range: {EffectiveMissileRange} tiles" : targetingSkill != null ? "Choose a highlighted valid target" : "";
+        public string RangeLabel => missileRange > 0 ? $"Range {EffectiveMissileRange} tiles" : targetingSkill != null ? "Choose a highlighted target" : "";
         private TMPro.TMP_Text promptText;
         private string originalPrompt;
         public Vector3Int Direction { get; private set; }
@@ -62,21 +62,21 @@ namespace JuicyChickenGames.Menu
         {
             get
             {
-                string name = targetingSkill != null ? targetingSkill.SkillName : targetingItem != null ? targetingItem.ItemName : "Select target";
+                string name = targetingSkill != null ? targetingSkill.DisplayName : targetingItem != null ? targetingItem.DisplayName : "Select target";
                 var cell = TerminalSelectedCell;
-                string target = cell.HasValue ? $"Tile ({cell.Value.x},{cell.Value.y})" : "No target";
+                string target = cell.HasValue ? "Selected ground tile" : "No target selected";
                 if (selectedProp != null) target = selectedProp.GetInteractionText();
                 else if (CameraTarget != null && (CameraTarget is Ally || DungeonSight.OverlapsVisible(Game.Instance.PartyVisibleTiles,
                     Character.ToBounds(CameraTarget.FootPrint, CameraTarget.TilemapPosition))))
-                    target = CameraTarget is Enemy enemy && EnemyBehavior.IsDisguised(enemy) ? "Item" : CameraTarget.CharacterName;
+                    target = CameraTarget is Enemy enemy && EnemyBehavior.IsDisguised(enemy) ? "Item" : GameMessages.Name(CameraTarget);
                 int radius = targetingSkill != null ? targetingSkill.AreaRadius : targetingItem != null ? targetingItem.AreaRadius : 0;
-                string direction = missileRange > 0 ? $"\nAim {DirectionName(Direction)} ({Direction.x},{Direction.y}) range {EffectiveMissileRange}" : "";
-                return name + "\n" + target + direction + (radius > 0 ? $"\nArea radius {radius}" : "") +
-                    $"\n{InputPrompts.Confirm}: confirm\n{InputPrompts.Back}: cancel";
+                string direction = missileRange > 0 ? $"\nAiming {DirectionName(Direction)}, up to {EffectiveMissileRange} tiles away" : "";
+                return GameplayText.Format(name + "\n" + target + direction + (radius > 0 ? $"\nAffects an area within {radius} tiles" : "") +
+                    $"\nPress {InputPrompts.Confirm} to confirm or {InputPrompts.Back} to cancel.");
             }
         }
         private static string DirectionName(Vector3Int direction) =>
-            (direction.y > 0 ? "N" : direction.y < 0 ? "S" : "") + (direction.x > 0 ? "E" : direction.x < 0 ? "W" : "");
+            (direction.y > 0 ? "north" : direction.y < 0 ? "south" : "") + (direction.x > 0 ? "east" : direction.x < 0 ? "west" : "");
 
         internal void Setup(Character character, Skill skill)
         {
@@ -107,7 +107,7 @@ namespace JuicyChickenGames.Menu
             if (promptText != null)
             {
                 originalPrompt = promptText.text;
-                if (missileRange > 0) promptText.text = "Aim in a direction, then confirm";
+                if (missileRange > 0) promptText.text = GameplayText.Format("Aim in a direction, then confirm");
             }
             if (tiles.Count > 0) SelectTile(tiles.Contains(selectedTile) ? selectedTile : tiles[0]);
             else if (missileRange > 0) Aim(Dungeon.GetFacingOffset(character.CurrentFacing));
@@ -217,7 +217,7 @@ namespace JuicyChickenGames.Menu
             enabled = false;
             TargetIndicator.SetActive(false);
             SelectTargetPrompt.SetActive(false);
-            if (promptText != null) promptText.text = originalPrompt;
+            if (promptText != null) promptText.text = GameplayText.Format(originalPrompt);
             promptText = null;
             props.Clear(); tiles.Clear(); selectedProp=null; targetingSkill=null; targetingItem=null; targetingFloor=null;
             Targetables = null;

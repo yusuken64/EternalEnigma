@@ -94,7 +94,7 @@ public class HeroClassTests
                 var item = Item(slot, type);
                 Assert.That(HeroClass.AllowsItem(cls, null, item), Is.EqualTo(expected), cls.Id + " " + type);
                 Assert.That(HeroClass.AllowsItem(Class("none"), cls, item), Is.EqualTo(expected), "secondary " + cls.Id);
-                if (!expected) Assert.That(HeroClass.EquipmentRestriction(cls, null, item), Does.Contain(type + " proficiency"));
+                if (!expected) Assert.That(HeroClass.EquipmentRestriction(cls, null, item), Does.Contain(GameplayText.Name(type.ToString()) + " proficiency"));
             }
         }
         var healer = classes.Single(c => c.Id == "healer");

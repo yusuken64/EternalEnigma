@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Blind around the impact point (80%).
+  Description: "Has an 80% chance to blind enemies around the impact point."
   references:
     version: 2
     RefIds:

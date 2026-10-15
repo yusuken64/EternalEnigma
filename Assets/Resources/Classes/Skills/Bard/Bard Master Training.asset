@@ -61,7 +61,7 @@ MonoBehaviour:
     HitBonus: 0
   PassiveResponses:
   - rid: 292415685818319072
-  Description: Unlocks tier 3. Songs +1 turn.
+  Description: "Unlocks tier 3. Songs last one extra turn."
   references:
     version: 2
     RefIds:

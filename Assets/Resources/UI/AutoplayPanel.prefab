@@ -259,14 +259,14 @@ MonoBehaviour:
   Title: {fileID: 1533633810279798196}
   Status: {fileID: 3692959951451188723}
   Counts: {fileID: 1233672295771339844}
-  Playback: {fileID: 1935292124898382984}
+  Playback speed {fileID: 1935292124898382984}
   Footer: {fileID: 1067740589791431770}
   PauseLabel: {fileID: 3543860050639045726}
   AnimationLabel: {fileID: 4527484272910990950}
   Hide: {fileID: 2954123883150668615}
   Show: {fileID: 2981123130463538536}
   Pause: {fileID: 140029997389097923}
-  Animations: {fileID: 1012174737331819003}
+  Animations {fileID: 1012174737331819003}
   Stop: {fileID: 4211419913755137480}
   Return: {fileID: 8345339911200843254}
   TakeControl: {fileID: 2075892342868394885}
@@ -925,7 +925,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Playback: 4\xD7"
+  m_text: "Playback speed 4\xD7"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1061,7 +1061,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Run 1/1 \xB7 Seed 42\nActions: 0   Turns: 0"
+  m_text: ""
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3044,7 +3044,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_text
-      value: 'Animations: Standard'
+      value: 'Animations Standard'
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSize
@@ -3060,7 +3060,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
-      value: 'Animations: Standard'
+      value: 'Animations Standard'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

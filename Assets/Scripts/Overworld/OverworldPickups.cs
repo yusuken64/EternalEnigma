@@ -57,6 +57,6 @@ public sealed class OverworldPickups : MonoBehaviour
         });
         if(!collected)return false;
         if(markers.TryGetValue(pickup.Id,out var marker)){Destroy(marker);markers.Remove(pickup.Id);}
-        SaveSystem.Capture(Common.Instance);GameMessages.Post("Found "+definition.ItemName+".");return true;
+        SaveSystem.Capture(Common.Instance);GameMessages.Post("Found "+definition.DisplayName+".");return true;
     }
 }

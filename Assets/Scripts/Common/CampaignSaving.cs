@@ -61,7 +61,7 @@ public static class CampaignSaving
             common.GameSaveData.NeedsInitialSave = false;
             return true;
         }
-        catch (Exception e) { error = "Saving failed. Your previous save is intact. " + e.Message; return false; }
+        catch (Exception e) { Debug.LogWarning("Saving campaign failed. " + e); error = "Saving failed. Your previous save is intact. Please try again."; return false; }
     }
     public static CampaignSaveSummary BuildSummary(Common common, GameSaveData save)
     {

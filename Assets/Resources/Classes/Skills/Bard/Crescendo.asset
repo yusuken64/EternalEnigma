@@ -61,7 +61,7 @@ MonoBehaviour:
     HitBonus: 0
   PassiveResponses:
   - rid: 292415685818319094
-  Description: Song effects +50%.
+  Description: "Makes song effects 50% stronger."
   references:
     version: 2
     RefIds:

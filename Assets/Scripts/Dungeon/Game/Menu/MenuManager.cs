@@ -107,7 +107,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		if (skill.Targeting != SkillTargeting.InventoryItem || !character.CanCast(skill, out _)) return;
 		OpenInventoryPicker(character, skill.GetInventoryTargets(character),
 			item => SkillAction.ForInventoryItem(character, skill, item),
-			$"Choose an item for {skill.SkillName} ({skill.SPCost} SP)");
+			$"Choose an item for {skill.DisplayName}, costing {skill.SPCost} SP");
 	}
 
 	private void OpenInventoryPicker(Character character, List<InventoryItem> targets,
@@ -115,8 +115,8 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	{
         if (PartyMenu != null && DialogStack.Contains(PartyMenu))
         {
-            PartyMenu.Pick(prompt, targets.Select(item => (item.ItemName + (item.HasStacks ? $" x{item.StackStock}" : "") +
-                (character.Equipment.IsEquipped(item) ? " [Equipped]" : ""), (Action)(() =>
+            PartyMenu.Pick(prompt, targets.Select(item => (item.DisplayName + (item.HasStacks ? $" x{item.StackStock}" : "") +
+                (character.Equipment.IsEquipped(item) ? "  Equipped" : ""), (Action)(() =>
             {
                 var action = createAction(item);
                 if (!action.IsValid(character)) { PartyMenu.Complete("That item can no longer be targeted."); return; }
@@ -202,7 +202,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			if (definition.Targeting == SkillTargeting.InventoryItem)
 			{
 				OpenInventoryPicker(character, definition.GetInventoryTargets(character), selected => Create().WithItem(selected),
-					$"Choose an item for {item.ItemName}");
+					$"Choose an item for {item.DisplayName}");
 				return;
 			}
 			if (definition.Targeting == SkillTargeting.Missile || definition.TargetingRules.RequiresSelection)

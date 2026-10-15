@@ -37,7 +37,7 @@ public static class SaveSystem
     public static GameSaveData Inspect(int slot, out string error)
     {
         try { var data = LoadData(slot); error = null; return data; }
-        catch (Exception e) { error = "Unable to read this save: " + e.Message; return null; }
+        catch (Exception e) { Debug.LogWarning("Unable to read campaign save. " + e); error = "This save could not be read. Please choose another save."; return null; }
     }
     // Capturing never writes; writing never consults live state.
     public static void Capture(Common common)

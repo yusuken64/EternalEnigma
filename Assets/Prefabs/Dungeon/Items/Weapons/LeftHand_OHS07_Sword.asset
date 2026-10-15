@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS07_Sword
   m_EditorClassIdentifier: 
   ItemName: Silver Sword (Off-hand)
-  Description: Silver Sword (Off-hand) grants 7 strength.
+  Description: "An off-hand Silver Sword that grants 7 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 6

@@ -6,6 +6,7 @@ using System.Linq;
 public abstract class ItemDefinition : ScriptableObject
 {
 	public string ItemName;
+	public string DisplayName => GameplayText.Name(ItemName);
 	public string Description;
 	public bool ShopOnly;
 	public bool IsProgressionItem;

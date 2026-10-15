@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: 'Song: allies within 3 tiles regain 2 HP each turn.'
+  Description: "Sing to restore 2 HP each turn to allies within 3 tiles."
   references:
     version: 2
     RefIds:

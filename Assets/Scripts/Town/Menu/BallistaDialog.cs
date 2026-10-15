@@ -47,12 +47,12 @@ public class BallistaDialog : Dialog
             selectedSkills[i] = null;
             listPositions[i] = previewPositions[i] = 1;
         }
-        Layout.PrimaryTab.GetComponentInChildren<TMP_Text>().text = Character.PrimaryClass == null
-            ? "Skills" : "Primary - " + Character.PrimaryClass.DisplayName;
+        Layout.PrimaryTab.GetComponentInChildren<TMP_Text>().text = GameplayText.Format(Character.PrimaryClass == null
+            ? "Skills" : "Primary - " + Character.PrimaryClass.DisplayName);
         bool secondary = Character.PrimaryClass != null && Character.SecondaryClass != null &&
             Character.PrimaryClass.Id != Character.SecondaryClass.Id;
         Layout.SecondaryTab.gameObject.SetActive(secondary);
-        if (secondary) Layout.SecondaryTab.GetComponentInChildren<TMP_Text>().text = "Secondary - " + Character.SecondaryClass.DisplayName;
+        if (secondary) Layout.SecondaryTab.GetComponentInChildren<TMP_Text>().text = GameplayText.Format("Secondary - " + Character.SecondaryClass.DisplayName);
         BuildList();
     }
 
@@ -116,8 +116,8 @@ public class BallistaDialog : Dialog
         {
             var heading = Instantiate(Layout.HeadingTemplate, SkillGridContainer, false);
             heading.gameObject.SetActive(true);
-            heading.text = firstLesson ? "Choose your first active skill" : Character.PrimaryClass == null ? "Available skills" :
-                $"Tier {tier.Key} - unlocks at level {tier.First().TierRequiredLevel}";
+            heading.text = GameplayText.Format(firstLesson ? "Choose your first active skill" : Character.PrimaryClass == null ? "Available skills" :
+                $"Tier {tier.Key} - unlocks at level {tier.First().TierRequiredLevel}");
             foreach (var offer in tier)
             {
                 var row = Instantiate(SkillGridSelectablePrefab, SkillGridContainer, false);
@@ -136,7 +136,7 @@ public class BallistaDialog : Dialog
         WireNavigation();
         UpdateBalance();
         if (selected != null) Preview(selected, null);
-        else Layout.Preview.text = "No skills in this tree.";
+        else Layout.Preview.text = GameplayText.Format("No skills in this tree.");
         StopAutoScroll();
         Canvas.ForceUpdateCanvases();
         scrollView.verticalNormalizedPosition = listPositions[(int)source];
@@ -169,10 +169,11 @@ public class BallistaDialog : Dialog
         selectedSkills[(int)source] = row.GetSkill().SkillName;
         var o = row.Offer;
         string status = o.IsMaxed ? "Already at maximum rank." : !o.CanLearn ? o.LockReason : "Ready to learn.";
-        string requirements = o.HasClass ? $"{o.Kind} - Rank {o.CurrentRank}/{o.MaxRank}\nTier level: {o.TierRequiredLevel}" +
-            (o.IsMaxed ? "" : $" - Next rank level: {o.NextRequiredLevel}\nNext rank: {o.NextCost} learning points") :
-            $"Rank {o.CurrentRank}/{o.MaxRank}" + (o.IsMaxed ? "" : $" - Cost: {o.NextCost} gold");
-        Layout.Preview.text = $"<b>{o.Skill.SkillName}</b>\n{requirements}\n\n{status}\n{o.Prerequisites}\n\n{o.Skill.Description}";
+        string requirements = $"Rank {o.CurrentRank} of {o.MaxRank}" + (o.HasClass
+            ? $"\nTier {o.Tier} opens at level {o.TierRequiredLevel}." +
+                (o.IsMaxed ? "" : $"\nThe next rank requires level {o.NextRequiredLevel} and {o.NextCost} learning points.")
+            : o.IsMaxed ? "" : $"\nLearning costs {o.NextCost} gold.");
+        Layout.Preview.text = GameplayText.Format($"<b>{o.Skill.DisplayName}</b>\n{requirements}\n\n{status}\n{o.Prerequisites}\n\n{o.Skill.Description}");
         if (changed) Layout.PreviewScroll.verticalNormalizedPosition = 1;
         WireNavigation();
         if (eventData is UnityEngine.EventSystems.PointerEventData) StopAutoScroll();
@@ -195,8 +196,8 @@ public class BallistaDialog : Dialog
         if (selected != null) Preview(selected, null);
     }
 
-    private void UpdateBalance() => SkillsText.text = Character.PrimaryClass == null ? "Skill training - Gold purchases" :
-        $"Skill training - {TrainerOffers.AvailablePoints(Character)} learning points available (separate from combat SP)";
+    private void UpdateBalance() => SkillsText.text = GameplayText.Format(Character.PrimaryClass == null ? "Skill training - Gold purchases" :
+        $"{TrainerOffers.AvailablePoints(Character)} learning points available. Learning does not spend combat SP.");
     public void Close_Clicked() => CloseDialog();
     [ContextMenu("Force Select")] public void ForceSelect() => SetFirstSelect();
     internal List<string> GetActiveSkillsSave() => Character?.Skills.ToList() ?? new();

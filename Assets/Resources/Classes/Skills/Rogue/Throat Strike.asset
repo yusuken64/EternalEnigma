@@ -64,7 +64,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Damage + Head bind (Silence).
+  Description: "Deals damage and silences the target."
   references:
     version: 2
     RefIds:

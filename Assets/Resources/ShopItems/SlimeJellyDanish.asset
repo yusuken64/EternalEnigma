@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SlimeJellyDanish
   m_EditorClassIdentifier: 
   ItemName: Slime Jelly Danish
-  Description: Baked with real Slime jelly. Restores 75 hunger.
+  Description: "Baked with real Slime jelly. Restores 75 fullness."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

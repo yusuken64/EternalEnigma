@@ -10,27 +10,27 @@ public class InventoryItemPreview : MonoBehaviour
     {
         if (inventoryItem == null)
 		{
-            ItemText.text = "No Item Selected";
+            ItemText.text = GameplayText.Format("No Item Selected");
             return;
 		}
 
-        ItemText.text = $"{inventoryItem.ItemDefinition.Description}";
+        ItemText.text = GameplayText.Format($"{inventoryItem.ItemDefinition.Description}");
 
         if (inventoryItem is EquipableInventoryItem equipableInventoryItem)
 		{
             string slot = equipableInventoryItem.EquipmentSlot switch
             {
-                EquipmentSlot.MainHand => " (Main Hand)",
-                EquipmentSlot.TwoHand => " (Two-Handed)",
-                EquipmentSlot.OffHand => " (Off-Hand)",
-                EquipmentSlot.Accessory => " (Accessory)",
+                EquipmentSlot.MainHand => "\nMain hand",
+                EquipmentSlot.TwoHand => "\nTwo-handed weapon",
+                EquipmentSlot.OffHand => "\nOff hand",
+                EquipmentSlot.Accessory => "\nAccessory",
                 _ => ""
             };
-            ItemText.text += slot;
+            ItemText.text += GameplayText.Format(slot);
             List<string> effects = equipableInventoryItem.GetEquipmentStatModification().DescribeEffect();
             foreach(var effect in effects)
             {
-                ItemText.text += "\n" + effect;
+                ItemText.text += GameplayText.Format("\n" + effect);
             }
         }
 	}

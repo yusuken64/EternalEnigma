@@ -29,7 +29,7 @@ public sealed class FinaleRuntime
         {
             var region = Session.Floor.Regions.FirstOrDefault(r => !Session.ClearedRegions.Contains(r.Id));
             return region == null ? "Floor cleared. Ascend at the starting town." :
-                $"{region.Name}: {Session.RemainingIn(region.Id)} enemies remaining. Floor: {Session.Remaining}.";
+                $"{region.Name} has {Session.RemainingIn(region.Id)} enemies remaining. {Session.Remaining} remain on this floor.";
         }
     }
     internal FinaleRuntime(Game game, FinaleSession session) { this.game = game; Session = session; }
@@ -65,7 +65,7 @@ public sealed class FinaleRuntime
         foreach (var model in actor.Disguises) if (model != null) model.SetActive(false);
         enemy.VisualParent.SetActive(true);
         enemy.IsDormant = false; enemy.PursuitTarget = from; enemy.PursuitPosition = from.TilemapPosition;
-        GameMessages.Post(enemy.IsBoss ? $"The building hides a boss: {actor.Family}!" :
+        GameMessages.Post(enemy.IsBoss ? $"{GameMessages.Name(enemy)} was hiding in the building!" :
             actor.IsTown ? "The town was a mimic!" : "The dungeon was a mimic!");
         AutoplayRunner.FinaleEvent("MimicRevealed", actor.Id, actor.Family);
         game.UpdateMiniMap(); return enemy;

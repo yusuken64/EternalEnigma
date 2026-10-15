@@ -63,8 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Returns the party to town under victory rules. Not usable on boss
-    floors.
+  Description: "Return safely to town with the party's belongings. Cannot be used on boss floors."
   references:
     version: 2
     RefIds:

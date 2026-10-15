@@ -25,12 +25,12 @@ internal class CastSpellAction : GameAction
             var release = new CastSpellAction { releasing = true, SpellName = SpellName, Target = Target,
                 originalTeam = Target.Team, floor = Game.Instance.CurrentDungeon, GetActionsFunc = GetActionsFunc };
             character.PendingCast = new PendingCast(release, SpellName, 1);
-            GameMessages.ForCharacter(character, $"[Cast] {GameMessages.Name(character)} starts {SpellName} (1 charging action).");
+            GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} starts charging {GameplayText.Name(SpellName)}. It will be released on the next action.");
             return new();
         }
         if (floor != Game.Instance.CurrentDungeon || Target == null || Target.Vitals.HP <= 0 || Target.Team != originalTeam || !Game.Instance.AllCharacters.Contains(Target))
-        { GameMessages.ForCharacter(character, $"[Cast] {GameMessages.Name(character)}'s {SpellName} fizzled: invalid target."); return new(); }
-        GameMessages.ForCharacter(character, $"[Cast] {GameMessages.Name(character)} releases {SpellName}.");
+        { GameMessages.ForCharacter(character, $"{GameMessages.Name(character)}'s {GameplayText.Name(SpellName)} fizzled because the target is no longer available."); return new(); }
+        GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} releases {GameplayText.Name(SpellName)}.");
         return GetActionsFunc?.Invoke();
 	}
 

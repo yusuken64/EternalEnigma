@@ -13,7 +13,7 @@ public sealed class AuthoredButton : MonoBehaviour
     {
         var row=Instantiate(this,parent);
         row.gameObject.SetActive(true);
-        row.Label.text=caption;
+        row.Label.text=GameplayText.Format(caption);
         row.Button.onClick.RemoveAllListeners();
         row.Button.onClick.AddListener(()=>clicked?.Invoke());
         if(row.Icon!=null){row.Icon.sprite=icon;row.Icon.gameObject.SetActive(icon!=null);}

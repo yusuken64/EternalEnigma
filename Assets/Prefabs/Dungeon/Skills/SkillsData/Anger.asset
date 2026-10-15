@@ -62,7 +62,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Deal Extra Damage
+  Description: "Increases damage dealt."
   references:
     version: 2
     RefIds:

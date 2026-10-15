@@ -28,7 +28,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 		if (character is Ally ally)
 		{
 			baseName = ally.CharacterName;
-			NameText.text = ally.CharacterName;
+			NameText.text = GameplayText.Format(ally.CharacterName);
 		}
 
 		var game = FindObjectOfType<Game>();
@@ -53,7 +53,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 		if (Character is Ally ally && baseName != null)
 		{
 			string label = ally.IsDowned ? $"{baseName} (Downed)" : $"{baseName} - Lv {ally.DisplayedVitals.Level}";
-            if (NameText.text != label) NameText.text = label;
+            if (NameText.text != label) NameText.text = GameplayText.Format(label);
 		}
 
 		LevelDisplay.UpdateUI();

@@ -152,12 +152,12 @@ public sealed class PartyMenuLauncher : MonoBehaviour
         lastPad=pad;lastTab=selected;
         foreach(var tab in tabs)
         {
-            string shortcut=tab==PartyMenuTab.Inventory?" ["+InputPrompts.Inventory+"]":
-                tab==PartyMenuTab.Skills?" ["+InputPrompts.Skills+"]":
-                !pad && tab==PartyMenuTab.Equipment?" ["+InputPrompts.Equipment+"]":
-                !pad && tab==PartyMenuTab.Stats?" ["+InputPrompts.Stats+"]":"";
+            string shortcut=tab==PartyMenuTab.Inventory?"  "+InputPrompts.Inventory:
+                tab==PartyMenuTab.Skills?"  "+InputPrompts.Skills:
+                !pad && tab==PartyMenuTab.Equipment?"  "+InputPrompts.Equipment:
+                !pad && tab==PartyMenuTab.Stats?"  "+InputPrompts.Stats:"";
             var button=ButtonFor(tab);
-            button.GetComponentInChildren<TMP_Text>().text=(selected==tab?"> ":"")+tab+shortcut;
+            button.GetComponentInChildren<TMP_Text>().text=GameplayText.Format(tab+shortcut);
             var colors=button.colors;colors.normalColor=selected==tab?GameUITheme.Selected:Color.white;button.colors=colors;
         }
     }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CrabMonsterMeatCroquette
   m_EditorClassIdentifier: 
   ItemName: Crab Monster Meat Croquette
-  Description: Baked with real Crab Monster meat. Restores 125 hunger.
+  Description: "Baked with real Crab Monster meat. Restores 125 fullness."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

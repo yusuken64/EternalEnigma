@@ -53,16 +53,16 @@ public sealed class DungeonOptions : MonoBehaviour
         autoplayOwnsInput = AutoplayRunner.BlocksPlayerInput;
         control.interactable = !autoplayOwnsInput;
         control.GetComponentInChildren<TMP_Text>().text = autoplayOwnsInput
-            ? "Full Control: Off (Autoplay)"
-            : "Full Control: " + (DungeonPreferences.FullControl ? "On" : "Off");
-        speed.GetComponentInChildren<TMP_Text>().text = "Game Speed: " +
+            ? "Full Control off during autoplay"
+            : "Full Control " + (DungeonPreferences.FullControl ? "On" : "Off");
+        speed.GetComponentInChildren<TMP_Text>().text = "Game Speed " +
             (DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateAlliedActions ? "Allied actions" :
              DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateControlledHeroActions ? "Controlled hero" : DungeonPreferences.SpeedLabel);
-        explanation.text = "Full Control: choose each hero's action. " + InputPrompts.ToggleFullControl + " toggles it next round. Summons use AI.\n\n" +
-            (DungeonPreferences.AnimationMode == DungeonAnimationMode.Normal ? "Normal: animate visible actions." :
+        explanation.text = "Full Control lets you choose each hero's action. Press " + InputPrompts.ToggleFullControl + " to change it next round. Summons act on their own.\n\n" +
+            (DungeonPreferences.AnimationMode == DungeonAnimationMode.Normal ? "Normal speed shows visible actions." :
              DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateAlliedActions ? "Animate allies, summons, and enemy actions affecting allies." :
-             DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateControlledHeroActions ? "Animate action chains started by your controlled hero." :
-             "No animations: actions and movement resolve instantly.");
+             DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateControlledHeroActions ? "Show your controlled hero's actions and their effects." :
+             "With animations off, actions and movement happen instantly.");
     }
     private void OnEnable() { ControlDeviceState.Changed += Refresh; if (control != null) Refresh(); }
     private void OnDisable() { ControlDeviceState.Changed -= Refresh; }

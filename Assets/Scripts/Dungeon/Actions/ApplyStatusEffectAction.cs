@@ -44,7 +44,7 @@ public class ApplyStatusEffectAction : GameAction
 		TrackAnimationTarget(target);
 		statusInstance = target.ApplyStatusEffect(statusEffectPrefab);
         VisualAppliedTarget = statusEffectPrefab != null && !ClassPassives.IsImmune(target, statusEffectPrefab) && target.StatusEffects.Any(s => s != null && s.StackKey == statusEffectPrefab.StackKey) ? target : null;
-        if (statusInstance != null) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)}: {statusEffectPrefab.GetEffectName()}!");
+        if (statusInstance != null) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} is affected by {statusEffectPrefab.GetEffectName()}!");
         if (durationDelta != 0 && statusEffectPrefab != null && !ClassPassives.IsImmune(target, statusEffectPrefab))
         {
             var applied = statusInstance ?? target.StatusEffects.FirstOrDefault(x => x != null && x.StackKey == statusEffectPrefab.StackKey);

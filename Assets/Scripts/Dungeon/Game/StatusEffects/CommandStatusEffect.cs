@@ -18,7 +18,7 @@ public class CommandStatusEffect : StatusEffect
 
 	public override GameAction GetActionOverride(Character character) => null;
 	internal override StatModification GetStatModification() => null; // applied through ModificationFor
-	internal override string GetEffectName() => $"Command: {CommandName}";
+	internal override string GetEffectName() => GameplayText.Name(CommandName);
 	internal override bool PreventsMenu() => false;
 
 	// Per-stat strongest across this character's active commands (each scaled by its Multiplier).

@@ -25,17 +25,24 @@ public static class CampaignGuidance
         return names[(sector + 8) % 8];
     }
 
-    public static string Location(CampaignContext context, string townId, string locationId)
+    public static string LocationName(CampaignContext context, string locationId)
     {
         var location = context.Campaign.Locations.Single(l => l.Id == locationId);
         string anchor = location.ParentTownId ?? location.Id;
         var region = context.Campaign.Regions.Single(r => r.Id == location.RegionId);
-        string name = location.Kind == LocationKind.Town ? context.GetTownDisplayName(location.Id) :
+        return location.Kind == LocationKind.Town ? context.GetTownDisplayName(location.Id) :
             location.Encounter != null ? region.DisplayName + " " + location.Encounter.DisplayName.ToLowerInvariant() :
             location.ParentTownId != null ? "the dungeon in " + context.GetTownDisplayName(anchor) : region.DisplayName + " " + location.Kind.ToString().Replace("Dungeon", " dungeon").ToLowerInvariant();
-        if (anchor == townId) return name + " here in town (" + context.Grid.RegionBiomes[location.RegionId] + ")";
-        return name + " (" + context.Grid.RegionBiomes[location.RegionId] + ", " +
-            Bearing(context.Grid.Locations[townId], context.Grid.Locations[anchor]) + " from here)";
+    }
+
+    public static string Location(CampaignContext context, string townId, string locationId)
+    {
+        var location = context.Campaign.Locations.Single(l => l.Id == locationId);
+        string anchor = location.ParentTownId ?? location.Id;
+        string name = LocationName(context, locationId);
+        if (anchor == townId) return name + " here in town, in the " + context.Grid.RegionBiomes[location.RegionId];
+        return name + " in the " + context.Grid.RegionBiomes[location.RegionId] + ", " +
+            Bearing(context.Grid.Locations[townId], context.Grid.Locations[anchor]) + " from here";
     }
 
     public static string TownHint(CampaignContext context, string townId, Func<string, string>? companionName = null)
@@ -66,10 +73,10 @@ public static class CampaignGuidance
         {
             string name = CampaignRewardNames.Name(context, capability);
             if (Acquired(context).Contains(capability))
-                return context.Held.Contains(capability) ? name + " (already acquired; try it at the obstacle)" :
-                    name + " (add " + CapabilitySource(context, capability, companionName) + " to your travelling party at a town)";
+                return context.Held.Contains(capability) ? name + ", which you already have" :
+                    name + ", available by adding " + CapabilitySource(context, capability, companionName) + " to your travelling party at a town";
             var sources = context.Campaign.Sources.Where(s => s.Capability == capability).Select(s => Location(context, townId, s.LocationId)).Distinct();
-            return name + " (acquire at " + string.Join(" or ", sources) + ")";
+            return name + ", found at " + string.Join(" or ", sources);
         }
         return obstacle + "Try " + string.Join("; alternatively, ", route.Requirement.Alternatives.Select(a =>
             (a.Count > 1 ? "both " : "") + string.Join(" and ", a.Values.Select(Describe)))) + ".";

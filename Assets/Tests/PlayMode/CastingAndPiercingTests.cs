@@ -223,7 +223,7 @@ namespace EternalEnigma.Tests
             Assert.That(caster.PendingCast,Is.Null); Assert.That(friend.Vitals.HP,Is.GreaterThan(50));
             Assert.That(caster.Vitals.SP,Is.EqualTo(sp-heal.SPCost));
             var history=Object.FindFirstObjectByType<GameMessages>().History;
-            Assert.That(history.Count(x=>x.Contains("starts Heal")),Is.EqualTo(1));
+            Assert.That(history.Count(x=>x.Contains("starts charging Heal")),Is.EqualTo(1));
             Assert.That(history.Count(x=>x.Contains("releases Heal")),Is.EqualTo(1));
         }
         [Test] public void FinalArrowCapturesSkillDamageBonusAndEmptyRetreatStillSteps()

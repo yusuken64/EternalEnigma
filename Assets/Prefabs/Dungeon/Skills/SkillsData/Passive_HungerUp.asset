@@ -61,7 +61,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Passive Hunger Up
+  Description: "Increases maximum fullness."
   references:
     version: 2
     RefIds:

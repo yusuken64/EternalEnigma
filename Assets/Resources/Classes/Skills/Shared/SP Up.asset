@@ -60,7 +60,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: +2 SPMax.
+  Description: "Increases maximum SP by 2."
   references:
     version: 2
     RefIds: []

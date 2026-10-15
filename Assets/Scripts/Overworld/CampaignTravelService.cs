@@ -130,7 +130,7 @@ public sealed class CampaignTravelService
         if (firstClear != null)
         {
             var ability = DungeonClearAbilities.ForDungeon(firstClear);
-            if (ability != null) capabilities = capabilities.Append($"<b>{ability.SkillName}</b>\n{ability.Description}").ToArray();
+            if (ability != null) capabilities = capabilities.Append($"<b>{ability.DisplayName}</b>\n{ability.Description}").ToArray();
             if (firstClear == "repeatable-0") capabilities = capabilities.Append("<b>Reset Floor</b>\nPermanently restore puzzle floors to their entry state at no SP cost.").ToArray();
         }
         CampaignParty.ClearLiveParty(common);
@@ -226,7 +226,7 @@ public sealed class CampaignTravelService
         yield return null;
         if (Context != rewardContext) { transitioning = false; yield break; }
         var dialog = common.MessageDialog;
-        dialog.PromptText.text = message;
+        dialog.PromptText.text = GameplayText.Format(message);
         var canvas = dialog.GetComponent<Canvas>();
         int previousOrder = canvas.sortingOrder;
         canvas.sortingOrder = 2000;

@@ -63,7 +63,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Sleep (70%).
+  Description: "Has a 70% chance to put the target to sleep."
   references:
     version: 2
     RefIds:

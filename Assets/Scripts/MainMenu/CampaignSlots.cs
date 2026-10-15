@@ -71,10 +71,10 @@ public sealed class CampaignSlots : MonoBehaviour
         {
             string point = save.SavePointId?.EndsWith("/home") == true ? "Home" :
                 save.SavePointId?.EndsWith("/inn") == true ? "Inn" : "Campaign";
-            string timestamp = DateTime.TryParse(save.SavedUtc, out var savedAt) ? savedAt.ToLocalTime().ToString("g") : save.SavedUtc;
+            string timestamp = DateTime.TryParse(save.SavedUtc, out var savedAt) ? savedAt.ToLocalTime().ToString("g") : "Date unavailable";
             detail.text = $"<b>{summary.Town} - {summary.Biome}</b>\n" +
                 $"{point} | {TimeSpan.FromSeconds(save.PlaytimeSeconds).TotalHours:0.0} hours | {save.TownSaveData.Gold:N0} gold\n" +
-                $"Saved: {timestamp}\n{summary.Region} | Dungeons cleared: {summary.RequiredCleared}/{summary.RequiredTotal}\n" +
+                $"Saved {timestamp}\n{summary.Region}\nDungeons cleared {summary.RequiredCleared}/{summary.RequiredTotal}\n" +
                 string.Join("\n", summary.Party.Select(hero => $"{hero.Name} - {hero.PrimaryClass}" +
                     (string.IsNullOrEmpty(hero.SecondaryClass) ? "" : " / " + hero.SecondaryClass) + $" - Lv {hero.Level}"));
         }
@@ -102,7 +102,7 @@ public sealed class CampaignSlots : MonoBehaviour
                 Close();
                 Common.Instance.Travel.Continue();
             }
-            catch (Exception e) { CampaignChoice.Show("Unable to continue: " + e.Message, "OK", () => { }); }
+            catch (Exception e) { Debug.LogWarning("Unable to continue campaign. " + e); CampaignChoice.Show("This campaign could not be loaded. Please choose another save.", "OK", () => { }); }
         }
     }
 

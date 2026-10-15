@@ -93,7 +93,7 @@ public HashSet<string> Completed { get; }
     public string OpeningPreparationHint => ReadyForOpeningDay
         ? "You're ready for tomorrow. Sleep and save in your bed at home to open the town dungeon."
         : "The town dungeon opens tomorrow. " +
-            (!State.BoughtOpeningBread ? "Collect your free Bread (0G) at the bakery. " : "") +
+            (!State.BoughtOpeningBread ? "Collect your free bread at the bakery. " : "") +
             (!State.LearnedOpeningSkill ? "Learn an active skill at the trainer. " : "") +
             "Then sleep and save at home.";
     public CapabilitySet Permanent { get; private set; }

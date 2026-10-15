@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_OHS14_Hammer
   m_EditorClassIdentifier: 
   ItemName: War Hammer (Off-hand)
-  Description: War Hammer (Off-hand) grants 14 strength.
+  Description: "An off-hand War Hammer that grants 14 strength."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

@@ -35,7 +35,7 @@ public class NewFloorMessage : MonoBehaviour
 		BackgroundColor.sprite = null;
 		BackgroundColor.color = Color.black;
         FloorMessage.color = GameUITheme.LightInk;
-		FloorMessage.text = Label(floor);
+		FloorMessage.text = GameplayText.Format(Label(floor));
 
 		BackgroundColor.CrossFadeAlpha(0, 3f, true);
         if (decorativeFrame != null) decorativeFrame.CrossFadeAlpha(0, 3f, true);
@@ -48,7 +48,7 @@ public class NewFloorMessage : MonoBehaviour
 	internal void HideScreen(int destinationFloor)
 	{
 		// Show the destination while its layout is being generated.
-		FloorMessage.text = Label(destinationFloor);
+		FloorMessage.text = GameplayText.Format(Label(destinationFloor));
 		FloorMessage.transform.DOKill();
 		FloorMessage.transform.localRotation = Quaternion.identity;
 		this.gameObject.SetActive(true);

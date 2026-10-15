@@ -36,7 +36,7 @@ public sealed class CampaignHUD : MonoBehaviour
     private Button Action(string label, System.Action callback)
     {
         var button=Instantiate(ActionTemplate,actions);button.gameObject.SetActive(true);
-        button.GetComponentInChildren<TMP_Text>().text=label;button.onClick.AddListener(()=>callback());return button;
+        button.GetComponentInChildren<TMP_Text>().text=GameplayText.Format(label);button.onClick.AddListener(()=>callback());return button;
     }
     private void PostStatus(string status)
     {

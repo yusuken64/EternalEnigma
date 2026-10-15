@@ -7,9 +7,9 @@ using UnityEngine;
 public class InspectInventoryItemEffect : InventorySkillEffect
 {
     public static string Describe(InventoryItem item) => item == null ? "No item selected" :
-        item.ItemName + ": " + (item is EquipableInventoryItem equipment ?
-        $"{equipment.EquipmentSlot}: Strength +{equipment.GetEquipmentStatModification().Strength}" :
-        item.HasStacks ? $"Stock: {item.StackStock}" : "Single-use item");
+        item.DisplayName + "\n" + (item is EquipableInventoryItem equipment ?
+        GameplayText.Name(equipment.EquipmentSlot.ToString()) + "\n" + string.Join(", ", equipment.GetEquipmentStatModification().DescribeEffect()) :
+        item.HasStacks ? $"{item.StackStock} remaining" : "Single-use item");
     internal override GameAction Bind(Character caster, InventoryItem item) => new DynamicGameAction(
         _ =>
         {

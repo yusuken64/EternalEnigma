@@ -60,7 +60,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: +2 Strength, +2 Defense.
+  Description: "Increases strength and defense by 2."
   references:
     version: 2
     RefIds: []

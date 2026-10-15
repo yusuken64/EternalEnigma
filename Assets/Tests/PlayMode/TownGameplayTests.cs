@@ -279,7 +279,7 @@ namespace EternalEnigma.Tests
             Assert.That(SaveSystem.LoadData().TownSaveData.RecruitedAlliesData[0].Equipment[0].ItemName, Is.EqualTo(item.ItemName));
             menu.SwitchTab(PartyMenuTab.Equipment);
             yield return null;
-            menu.EntryButtons.Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text.Contains(item.ItemName)).onClick.Invoke();
+            menu.EntryButtons.Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text.Contains(item.DisplayName)).onClick.Invoke();
             yield return null;
             ((PartyMenuPicker)Manager.CurrentDialog).Rows.GetComponentsInChildren<AuthoredButton>()
                 .Single(b => b.Label.text == "Unequip").Button.onClick.Invoke();

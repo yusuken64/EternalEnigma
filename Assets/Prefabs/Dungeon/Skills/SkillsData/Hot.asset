@@ -62,7 +62,7 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Heal over time to ally
+  Description: "Restores an ally's HP over time."
   references:
     version: 2
     RefIds:

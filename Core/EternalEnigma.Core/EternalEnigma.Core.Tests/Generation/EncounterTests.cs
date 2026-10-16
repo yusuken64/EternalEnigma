@@ -127,14 +127,14 @@ public sealed class EncounterTests
     }
 
     [Fact]
-    public void FinalDungeonUsesReverseWorldAndUsesFiveFloorsAndEndsWithStartingTownCastleMimic()
+    public void FinalDungeonUsesReverseWorldAndUsesTwoFloorsAndEndsWithStartingTownCastleMimic()
     {
         var campaign = CampaignGenerator.Generate(42); var location = campaign.Locations.Single(l => l.Id == campaign.FinalLocationId);
         var plan = new DungeonRunPlan(campaign.Seed, location);
         Assert.Equal(DungeonVariant.Overworld, plan.Variant); Assert.Single(plan.Floors);
         var finale = new FinalePlan(campaign, OverworldGridGenerator.Generate(campaign));
-        Assert.Equal(5, finale.Floors.Count);
-        var last = finale.Floors[4];
+        Assert.Equal(2, finale.Floors.Count);
+        var last = finale.Floors.Last();
         Assert.Equal("Castle Monster", last.Enemies.Single(e => e.LocationId == last.Campaign.StartLocationId).Family);
         Assert.False(last.CreateFloor().IsThroneFloor);
         Assert.Equal(32, BossCatalog.All.Count); Assert.Equal(32, BossCatalog.All.Select(p => p.Family).Distinct().Count());

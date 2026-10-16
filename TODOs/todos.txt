@@ -128,12 +128,15 @@ request when implementing this change.
 [x] Add an ability that directs an allied Scout along a path straight to an exit.
 [x] Make overworld signs interactable and provide directions to nearby landmarks.
 
-Implemented: Find Exit is a tier-1, one-rank Scout skill costing 2 SP. It guides
-the caster (controlled or follower) to undiscovered stairs via normal turns,
-stops for danger/blocked routes/manual interruption and never exits the floor.
+Implemented: Find Exit is a tier-1, one-rank Scout skill costing 2 SP plus
+2 gold per collectible 1-gold coin placed. It marks up to 15 safe steps toward
+the stairs (at most 30 gold per cast), or the closest reachable tile when the
+stairs are unreachable. Short trails stop at the exit. Coins obey normal fog;
+the player controls movement and floor changes. Every recast pays for its new
+coins, including overlapping piles, so collecting a trail cannot make a profit.
 Signs open road directions/distances to nearby towns and other landmarks.
-Controlled and follower navigation, interruption, full-control turns and sign
-interaction checks pass. The sign dialog was visually inspected.
+The sign dialog was visually inspected; historical navigation checks below
+describe the automatic walking implementation replaced by the coin trail.
 
 Original audit:
 - Scout's existing Pathfinder skill increases HungerMax; it does not navigate

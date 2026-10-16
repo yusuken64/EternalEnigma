@@ -18,6 +18,14 @@ public class Skill : ScriptableObject
 	public ActivationType ActivationType;
 
 	public int SPCost;
+	internal string CostText(Character caster = null)
+	{
+		string cost = $"{SPCost} SP";
+		if (ActionEffects?.Any(effect => effect is FindExitAction) != true) return cost;
+		return caster is Ally ally
+			? $"{cost}, {FindExitAction.GoldCost(ally)} gold"
+			: $"{cost}, up to 30 gold";
+	}
 	[Min(0)] public int CastTime;
 	// Zero denotes unlimited penetration. Existing missiles stop at one encounter.
 	[Min(0)] public int MissileTargets = 1;

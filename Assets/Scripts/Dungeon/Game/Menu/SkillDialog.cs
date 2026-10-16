@@ -20,7 +20,7 @@ namespace JuicyChickenGames.Menu
             {
                 return new DynamicActionInfo()
                 {
-                    ActionName = SkillLabel(skill) + (skill.InitialCastTime(character) > 0 ? $"  Charges for {skill.InitialCastTime(character)} actions" : ""),
+                    ActionName = SkillLabel(skill, character) + (skill.InitialCastTime(character) > 0 ? $"  Charges for {skill.InitialCastTime(character)} actions" : ""),
                     Icon = skill.Icon,
                     ClickAction = () =>
                     {
@@ -73,7 +73,7 @@ namespace JuicyChickenGames.Menu
                     {
                         var definition = Common.Instance.SkillManager.GetSkillByName(skill);
                         TownMenu.ShowMessage(definition != null
-                            ? $"{definition.DisplayName}\nRank {Mathf.Max(1, controllingTownAlly.GetRank(skill))}, costs {definition.SPCost} SP\n{definition.Description}\nUse active skills in the dungeon."
+                            ? $"{definition.DisplayName}\nRank {Mathf.Max(1, controllingTownAlly.GetRank(skill))}, costs {definition.CostText()}\n{definition.Description}\nUse active skills in the dungeon."
                             : "This skill is currently unavailable.");
                     }
                 };
@@ -111,12 +111,12 @@ namespace JuicyChickenGames.Menu
             }
         }
 
-		private static string SkillLabel(Skill skill)
+		private static string SkillLabel(Skill skill, Character caster)
 		{
 			string rank = skill.Rank > 1 ? $"  Rank {skill.Rank}" : "";
 			string arrows = !skill.UsesArrows ? "" : skill.ArrowCostMode == ArrowCostMode.PerTarget
                 ? ", 1 arrow per target" : $", {skill.ArrowCost} arrows";
-			return $"{skill.DisplayName}{rank}  {skill.SPCost} SP{arrows}";
+			return $"{skill.DisplayName}{rank}  {skill.CostText(caster)}{arrows}";
 		}
 	}
 }

@@ -155,6 +155,7 @@ public class Minimap : MonoBehaviour
 
         foreach (var interactable in Game.Instance.CurrentDungeon.Interactables)
         {
+            if (interactable is TrailCoin) continue;
             if (interactable is Trap trap)
             {
                 if (trap.VisualObject.activeSelf)

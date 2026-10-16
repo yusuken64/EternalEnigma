@@ -66,9 +66,9 @@ MonoBehaviour:
     Evasion: 0
     HitBonus: 0
   PassiveResponses: []
-  Description: Guide this Scout to the exit, even when undiscovered. Walks one step
-    per turn; stops at enemies, blocked paths or manual input. Does not leave the
-    floor automatically.
+  Description: Leave 1-gold coins along up to 15 safe steps toward the exit, even
+    when undiscovered. If the exit is unreachable, the trail ends as close as possible.
+    Costs 2 gold per coin placed (up to 30 gold), plus 2 SP. Follow the trail yourself.
   references:
     version: 2
     RefIds:

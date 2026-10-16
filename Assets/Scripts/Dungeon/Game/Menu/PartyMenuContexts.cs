@@ -29,7 +29,7 @@ public abstract class PartyMenuContext : IPartyMenuContext
         if(tab==PartyMenuTab.Skills)return Skills(hero).Where(s=>s!=null).OrderBy(s=>s.ActivationType).Select(s=> {
             int charge=s.ActivationType==ActivationType.Active?(hero.DungeonActor!=null?s.InitialCastTime(hero.DungeonActor):s.CastTime):0;
             return new PartyMenuEntry {
-            Skill=s,Title=$"{s.DisplayName}  Rank {s.Rank}" + (s.ActivationType==ActivationType.Active?$"  {s.SPCost} SP":"  Passive"),
+            Skill=s,Title=$"{s.DisplayName}  Rank {s.Rank}" + (s.ActivationType==ActivationType.Active?$"  {s.CostText(hero.DungeonActor)}":"  Passive"),
             Description=s.Description+(s.ActivationType==ActivationType.Active?$"\nCharging takes {charge} {(charge==1?"action":"actions")}.":"")+(s.UsesArrows?"\nRequires "+(s.ArrowCostMode==ArrowCostMode.PerTarget?"1 arrow per target.":$"{s.ArrowCost} arrows."):""),
             Section=s.ActivationType==ActivationType.Active?"Active skills":"Passive skills",Icon=s.Icon };
         }).ToList();

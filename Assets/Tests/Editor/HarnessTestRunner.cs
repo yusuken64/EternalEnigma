@@ -129,17 +129,25 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Final Checks")]
     public static void RunGameplayFinalChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.GameplayFollowupTests.FindExitGuidesAFollowerWhileTheLeaderMoves",
-        "EternalEnigma.Tests.GameplayFollowupTests.FindExitWalksThroughProductionTurnsAndDoesNotChangeFloors",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitPlacesBoundedTrailWithoutMovingOrTakingAutomaticTurns",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitStopsAtStairsAndCollectsTheirCoinWithoutChangingFloors",
         "EternalEnigma.Tests.TownDungeonGameplayTests",
         "EternalEnigma.Tests.DungeonControlTests.FullControlPromptsForEachActionAndRestoresLeader");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Gameplay Acceptance")]
     public static void RunGameplayAcceptance() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.GameplayFollowupTests.FindExitGuidesAFollowerWhileTheLeaderMoves",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitPlacesBoundedTrailWithoutMovingOrTakingAutomaticTurns",
         "EternalEnigma.Tests.GameplayFollowupTests.MimicRevealAndSpiderSplitReplayEffectsSoundAndHistory",
         "EternalEnigma.Tests.HeroPrefabTests",
         "EternalEnigma.Tests.EncounterGameplayTests.EveryBossVariantHasFootprintWarningSpecialAndNormalDeath",
         "EternalEnigma.Tests.FinaleGameplayTests.BothStairsPreservePartyAndWakeAtHomeWithoutSaving");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Find Exit")]
+    public static void RunFindExit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitPlacesBoundedTrailWithoutMovingOrTakingAutomaticTurns",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitRejectsInsufficientFundsOrSPWithoutSpendingEither",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitRepeatCastsStackCoinsAndAlwaysLoseGoldAfterCollection",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitStopsAtStairsAndCollectsTheirCoinWithoutChangingFloors",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitAvoidsRevealedTrapsAndCoinsPreserveOtherPickups",
+        "EternalEnigma.Tests.TerminalPlayModeTests.ExitTrailUsesNormalFogAndPreservesStairsGlyph");
     [MenuItem("Tools/Eternal Enigma/Tests/Run GameplayFollowups")]
     public static void RunGameplayFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.GameplayFollowupTests",

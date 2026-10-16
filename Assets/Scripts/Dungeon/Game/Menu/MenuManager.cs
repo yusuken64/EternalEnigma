@@ -107,7 +107,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		if (skill.Targeting != SkillTargeting.InventoryItem || !character.CanCast(skill, out _)) return;
 		OpenInventoryPicker(character, skill.GetInventoryTargets(character),
 			item => SkillAction.ForInventoryItem(character, skill, item),
-			$"Choose an item for {skill.DisplayName}, costing {skill.SPCost} SP");
+			$"Choose an item for {skill.DisplayName}, costing {skill.CostText(character)}");
 	}
 
 	private void OpenInventoryPicker(Character character, List<InventoryItem> targets,

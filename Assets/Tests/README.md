@@ -95,6 +95,12 @@ under `Temp/FinaleDebug/Scale`. See
 
 ## Skills
 
+**Tools > Eternal Enigma > Tests > Run Find Exit** runs the coin trail's
+production casts, costs, repeat-cast economy, pickup overlap, fog, minimap and
+terminal checks. `FindExitPathTests` covers shortest routes, the 15-step limit
+and unreachable-exit fallback in EditMode. The gameplay capture is written to
+`Temp/FindExitTrail/trail.png`.
+
 `SkillRegressionTests` runs the production dungeon, skill assets, menu, input
 bindings and turn pipeline. It checks single-target damage/healing, healing caps,
 self buffs, ally/enemy selection, dead and out-of-range targets, area effects,

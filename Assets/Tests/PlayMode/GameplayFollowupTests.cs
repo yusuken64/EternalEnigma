@@ -5,8 +5,6 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.LowLevel;
 
 namespace EternalEnigma.Tests
 {
@@ -150,59 +148,178 @@ namespace EternalEnigma.Tests
             Object.Destroy(projectile);
         }
 
-        [UnityTest] public IEnumerator FindExitWalksThroughProductionTurnsAndDoesNotChangeFloors()
+        Skill PrepareFindExit(int gold = 1000, int sp = 20)
         {
             var skill = Resources.Load<Skill>("Classes/Skills/Scout/Find Exit");
-            harness.Ally.Skills.Add(skill); harness.Ally.Vitals.SP = 20; harness.Ally.SyncDisplayedStats();
-            var floor = harness.Game.CurrentDungeon; int number = harness.Game.PlayerController.Floor;
-            Assert.That(ScoutExitNavigation.CanBegin(harness.Ally), Is.True);
+            harness.Ally.BaseStats.SPMax = 100;
+            harness.Ally.BaseStats.SPRegenAcccumlateThreshold = 10000;
+            harness.Ally.InvalidateCachedStats();
+            harness.Ally.Skills.Add(skill); harness.Ally.Vitals.SP = sp; harness.Ally.SyncDisplayedStats();
+            harness.Game.PlayerController.Gold = gold;
+            return skill;
+        }
+
+        [UnityTest] public IEnumerator FindExitPlacesBoundedTrailWithoutMovingOrTakingAutomaticTurns()
+        {
+            var skill = PrepareFindExit();
+            var game = harness.Game; var floor = game.CurrentDungeon;
+            int number = game.PlayerController.Floor;
+            int sp = harness.Ally.Vitals.SP;
+            var route = FindExitAction.Route(harness.Ally).ToArray();
+            Assert.That(route.Length, Is.InRange(1, 15));
+            Assert.That(TrailCoin.Prefab, Is.Not.Null);
+            Assert.That(skill.CostText(harness.Ally), Is.EqualTo($"2 SP, {route.Length * 2} gold"));
+            game.FloorReveal.TreasureRevealed = true;
+            game.UpdateMiniMap();
+            var map = game.PlayerController.Minimap;
+            var beforeMap = map.minimapTexture.GetPixels32();
             yield return harness.ExecuteAction(new SkillAction(harness.Ally, skill, harness.Ally));
-            yield return harness.WaitUntil(() => harness.Ally.GetComponent<ScoutExitNavigation>()?.Active == false, "Scout reaches exit");
-            yield return harness.WaitForIdle();
-            Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(floor.Floor.Stairs.ToCell()));
-            Assert.That(harness.Game.CurrentDungeon, Is.SameAs(floor)); Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(number));
-            Assert.That(harness.Ally.Vitals.SP, Is.LessThanOrEqualTo(18));
-        }
-
-        [UnityTest] public IEnumerator FindExitRejectsDangerAndStopsForDamageOrManualCommands()
-        {
-            var skill = Resources.Load<Skill>("Classes/Skills/Scout/Find Exit"); harness.Ally.Skills.Add(skill);
-            var navigate = new FindExitAction(); navigate.ExecuteImmediate(harness.Ally);
-            var guide = harness.Ally.GetComponent<ScoutExitNavigation>(); Assert.That(guide.Active, Is.True);
-            harness.Ally.GetResponseTo(new TakeDamageAction(harness.Ally, harness.Ally, 1)).ToList(); Assert.That(guide.Active, Is.False);
-            navigate.ExecuteImmediate(harness.Ally); harness.Ally.SetAction(new WaitAction());
-            harness.Ally.PrepareManualAction(); Assert.That(guide.Active, Is.False);
-            yield return harness.SpawnEnemy("Enemy_Slime", center + Vector3Int.right);
-            int mana = harness.Ally.Vitals.SP;
-            var cast = new SkillAction(harness.Ally, skill, harness.Ally);
-            Assert.That(cast.IsValid(harness.Ally), Is.False); Assert.That(cast.ExecuteImmediate(harness.Ally), Is.Empty);
-            Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(mana));
-        }
-
-        [UnityTest] public IEnumerator FindExitGuidesAFollowerWhileTheLeaderMoves()
-        {
-            var town = Object.Instantiate(TownSceneLoader.Default.AllyCatalog.First(h => h.Id != harness.Ally.TownAllyId));
-            var follower = Object.Instantiate(harness.Game.AllyPrefab, harness.Game.transform);
-            follower.InitialzeModel(town); follower.InitialzeVitalsFromStats(); follower.SyncDisplayedStats();
-            follower.SetPosition(center + Vector3Int.right * 2); harness.Game.Allies.Add(follower);
-            Object.Destroy(town.gameObject); yield return null;
-            new FindExitAction().ExecuteImmediate(follower);
-            var guide = follower.GetComponent<ScoutExitNavigation>(); Assert.That(guide.Active, Is.True);
-            var start = follower.TilemapPosition;
-            var keyboard = InputSystem.AddDevice<Keyboard>();
-            try
+            var coins = floor.Interactables.OfType<TrailCoin>().ToArray();
+            Assert.That(coins.Select(c => c.Position), Is.EquivalentTo(route));
+            Assert.That(coins.All(c => c.SeededAmount == 1), Is.True);
+            Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(center));
+            Assert.That(game.PlayerController.Gold, Is.EqualTo(1000 - 2 * route.Length));
+            Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(sp - 2));
+            for (int frame = 0; frame < 4; frame++)
             {
-                JuicyChickenGames.Menu.PlayerInputHandler.Instance.PlayerInput.SwitchCurrentControlScheme(keyboard);
-                yield return null; // Release the command before the leader moves.
-                var leaderStart = harness.Ally.TilemapPosition;
-                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.LeftArrow));
-                yield return harness.WaitUntil(() => harness.Ally.TilemapPosition != leaderStart, "leader keyboard movement");
-                InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
-                yield return harness.WaitForIdle();
-                Assert.That(follower.TilemapPosition, Is.Not.EqualTo(start));
-                Assert.That(guide.Active, Is.True, "The leader's input must not cancel a different Scout's route.");
+                yield return null;
+                Assert.That(game.TurnManager.IsProcessingTurn, Is.False, "The trail must wait for the next player command.");
+                Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(center));
             }
-            finally { InputSystem.RemoveDevice(keyboard); }
+            game.UpdateMiniMap();
+            CollectionAssert.AreEqual(beforeMap, map.minimapTexture.GetPixels32(), "Trail coins must not add minimap markers.");
+            foreach (var coin in coins)
+            {
+                var renderers = coin.GetComponentsInChildren<Renderer>(true);
+                Assert.That(renderers, Is.Not.Empty, "Trail coins need an authored visible model.");
+                bool visible = FogOverlay.Instance.IsCurrentlyVisible(coin.transform.position, FootPrint.Size1x1);
+                Assert.That(renderers.All(r => r.forceRenderingOff == !visible), Is.True, "Coins obey ordinary dungeon fog.");
+            }
+            Assert.That(game.CurrentDungeon, Is.SameAs(floor));
+            Assert.That(game.PlayerController.Floor, Is.EqualTo(number));
+            System.IO.Directory.CreateDirectory("Temp/FindExitTrail");
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot("Temp/FindExitTrail/trail.png");
+            yield return null;
+        }
+
+        [UnityTest] public IEnumerator FindExitRejectsInsufficientFundsOrSPWithoutSpendingEither()
+        {
+            var skill = PrepareFindExit();
+            int price = FindExitAction.GoldCost(harness.Ally);
+            Assert.That(price, Is.GreaterThan(0));
+            foreach (var resources in new[] { (gold: price - 1, sp: 20), (gold: price, sp: 1) })
+            {
+                harness.Game.PlayerController.Gold = resources.gold;
+                harness.Ally.Vitals.SP = resources.sp;
+                var cast = new SkillAction(harness.Ally, skill, harness.Ally);
+                Assert.That(cast.IsValid(harness.Ally), Is.False);
+                Assert.That(cast.ExecuteImmediate(harness.Ally), Is.Empty);
+                Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(resources.gold));
+                Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(resources.sp));
+                Assert.That(harness.Game.CurrentDungeon.Interactables.OfType<TrailCoin>(), Is.Empty);
+            }
+            yield return null;
+        }
+
+        [UnityTest] public IEnumerator FindExitRepeatCastsStackCoinsAndAlwaysLoseGoldAfterCollection()
+        {
+            var skill = PrepareFindExit();
+            var floor = harness.Game.CurrentDungeon;
+            int count = FindExitAction.Route(harness.Ally).Count;
+            int sp = harness.Ally.Vitals.SP;
+            Assert.That(count, Is.GreaterThan(0));
+            Assert.That(sp, Is.GreaterThanOrEqualTo(12));
+            for (int cycle = 1; cycle <= 3; cycle++)
+            {
+                var report = new AutoplayReport();
+                var ledger = new AutoplayLootLedger(report, _ => { });
+                yield return harness.ExecuteAction(new SkillAction(harness.Ally, skill, harness.Ally));
+                foreach (var coin in floor.Interactables.OfType<TrailCoin>()) ledger.Observe(coin);
+                yield return harness.ExecuteAction(new SkillAction(harness.Ally, skill, harness.Ally));
+                var coins = floor.Interactables.OfType<TrailCoin>().ToArray();
+                foreach (var coin in coins) ledger.Observe(coin);
+                Assert.That(coins.Length, Is.EqualTo(count), "Overlapping casts reuse one pile per tile.");
+                Assert.That(coins.All(c => c.SeededAmount == 2), Is.True);
+                Assert.That(report.Loot.Count, Is.EqualTo(count));
+                Assert.That(report.Loot.All(r => r.ExpectedAmount == 2), Is.True, "Loot tracking updates the value of an existing trail pile.");
+                Assert.That(report.PlacementIssues, Is.Empty, "Coin art stays inside its logical pickup tile.");
+                foreach (var coin in coins)
+                {
+                    using (ledger.Pickup(coin, harness.Ally, 2)) coin.GetInteractionSideEffects(harness.Ally);
+                    coin.GetInteractionSideEffects(harness.Ally); // Deferred destruction must never award twice.
+                }
+                ledger.Audit();
+                Assert.That(ledger.Failed, Is.False);
+                Assert.That(report.CollectedLoot, Is.EqualTo(count));
+                Assert.That(floor.Interactables.OfType<TrailCoin>(), Is.Empty);
+                Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(1000 - cycle * count * 2));
+            }
+            Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(sp - 12));
+            int beforeReplay = harness.Game.PlayerController.Gold;
+            var effect = new FindExitAction();
+            effect.ExecuteImmediate(harness.Ally);
+            effect.ExecuteImmediate(harness.Ally);
+            Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(beforeReplay - count * 2));
+            var replayCoins = floor.Interactables.OfType<TrailCoin>().ToArray();
+            Assert.That(replayCoins.Sum(c => c.SeededAmount.Value), Is.EqualTo(count), "Replaying one resolved effect cannot mint another trail.");
+            foreach (var coin in replayCoins) coin.GetInteractionSideEffects(harness.Ally);
+            Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(beforeReplay - count));
+        }
+
+        [UnityTest] public IEnumerator FindExitStopsAtStairsAndCollectsTheirCoinWithoutChangingFloors()
+        {
+            var skill = PrepareFindExit();
+            harness.PlaceBesideStairs();
+            var floor = harness.Game.CurrentDungeon;
+            var stairs = floor.Interactables.OfType<Stairs>().Single();
+            int number = harness.Game.PlayerController.Floor;
+            var start = harness.Ally.TilemapPosition;
+            Assert.That(FindExitAction.Route(harness.Ally), Is.EqualTo(new[] { stairs.Position }));
+            yield return harness.ExecuteAction(new SkillAction(harness.Ally, skill, harness.Ally));
+            Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(998));
+            var stairsCoin = floor.Interactables.OfType<TrailCoin>().Single();
+            Assert.That(stairsCoin.Position, Is.EqualTo(stairs.Position));
+            var report = new AutoplayReport();
+            new AutoplayLootLedger(report, _ => { }).Observe(stairsCoin);
+            Assert.That(report.PlacementIssues, Is.Empty, "Moving the coin art aside for the stairs preserves its tile bounds.");
+            yield return harness.ExecuteAction(new MovementAction(harness.Ally, start, stairs.Position));
+            Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(stairs.Position));
+            Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(999));
+            Assert.That(floor.Interactables.OfType<TrailCoin>(), Is.Empty);
+            Assert.That(floor.GetInteractable(stairs.Position), Is.SameAs(stairs));
+            Assert.That(harness.Game.CurrentDungeon, Is.SameAs(floor));
+            Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(number));
+            int sp = harness.Ally.Vitals.SP;
+            var emptyCast = new SkillAction(harness.Ally, skill, harness.Ally);
+            Assert.That(emptyCast.IsValid(harness.Ally), Is.False);
+            Assert.That(emptyCast.ExecuteImmediate(harness.Ally), Is.Empty);
+            Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(999));
+            Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(sp));
+        }
+
+        [UnityTest] public IEnumerator FindExitAvoidsRevealedTrapsAndCoinsPreserveOtherPickups()
+        {
+            var skill = PrepareFindExit();
+            var floor = harness.Game.CurrentDungeon;
+            var firstStep = FindExitAction.Route(harness.Ally).First();
+            floor.SetTrap(firstStep, 0);
+            var trap = floor.Interactables.OfType<Trap>().Last();
+            trap.VisualObject.SetActive(true);
+            var safeRoute = FindExitAction.Route(harness.Ally).ToArray();
+            Assert.That(safeRoute, Is.Not.Empty);
+            Assert.That(safeRoute, Has.No.Member(firstStep));
+            Assert.That(safeRoute.All(cell => !floor.IsHazard(cell)), Is.True);
+            var pickupCell = safeRoute[0];
+            foreach (var existing in floor.Interactables.Where(i => i.Position == pickupCell && i is Gold or DroppedItem).ToArray())
+                floor.RemoveInteractable(existing);
+            floor.SetGoldAmount(pickupCell, 7);
+            yield return harness.ExecuteAction(new SkillAction(harness.Ally, skill, harness.Ally));
+            int paid = harness.Game.PlayerController.Gold;
+            yield return harness.ExecuteAction(new MovementAction(harness.Ally, harness.Ally.TilemapPosition, pickupCell));
+            Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(paid + 8), "The ordinary pickup and trail coin both collect.");
+            Assert.That(floor.Interactables.OfType<Gold>().Any(g => g.Position == pickupCell), Is.False);
+            Assert.That(floor.Interactables, Has.Member(trap));
         }
     }
 }

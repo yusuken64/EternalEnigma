@@ -116,7 +116,9 @@ internal static class TerminalSceneSnapshots
         }
         foreach (var ally in game.DownedAllies)
             if (ally != null) actors.Add(new TerminalActor(ally.GetInstanceID().ToString(), Point(ally.TilemapPosition), TerminalActorKind.Downed, visibleInFog: true));
-        foreach (var interactable in live.Interactables)
+        // Item glyphs share a render priority. Draw trail coins first so stairs
+        // and other visible interactions on the same tile remain legible.
+        foreach (var interactable in live.Interactables.OrderBy(item => item is TrailCoin ? 0 : 1))
         {
             if (interactable == null) continue;
             var p = Point(interactable.Position);
@@ -124,8 +126,8 @@ internal static class TerminalSceneSnapshots
             bool visible = game.PartyVisibleTiles.Contains(interactable.Position);
             bool knownHazard = interactable is DungeonProp hazard && hazard.Definition != null &&
                 hazard.Definition.Kind == DungeonSceneryKind.Hazard && visibility.At(p) != TerminalVisibility.Unseen;
-            bool treasure = interactable is Gold or DroppedItem || interactable is DungeonProp container &&
-                container.Definition != null && container.Definition.Kind == DungeonSceneryKind.Container;
+            bool treasure = interactable is not TrailCoin && (interactable is Gold or DroppedItem || interactable is DungeonProp container &&
+                container.Definition != null && container.Definition.Kind == DungeonSceneryKind.Container);
             // Match the minimap's knowledge rules, including Farsight trap identification.
             bool revealed = game.FloorReveal != null &&
                 ((game.FloorReveal.LayoutRevealed && interactable is Stairs) ||

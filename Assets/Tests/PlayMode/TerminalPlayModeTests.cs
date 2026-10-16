@@ -313,6 +313,40 @@ namespace EternalEnigma.Tests
             Assert.That(Contains(unseen, hazard), Is.False, "Earlier captures do not mutate when knowledge changes.");
         }
 
+        [UnityTest] public IEnumerator ExitTrailUsesNormalFogAndPreservesStairsGlyph()
+        {
+            yield return harness.LoadDungeon(new TestScenario());
+            var game = harness.Game;
+            var dungeon = game.CurrentDungeon;
+            var minimap = Object.FindFirstObjectByType<Minimap>();
+            var stairs = dungeon.Interactables.OfType<Stairs>().Single();
+            var cell = Enumerable.Range(1, dungeon.dungeonWidth - 2).SelectMany(x =>
+                Enumerable.Range(1, dungeon.dungeonHeight - 2).Select(y => new Vector3Int(x, y)))
+                .First(p => dungeon.IsWalkable(p) && dungeon.GetInteractable(p) == null &&
+                    !game.AllCharacters.Any(c => c.TilemapPosition == p));
+            TrailCoin.Place(dungeon, cell);
+            TrailCoin.Place(dungeon, stairs.Position);
+            var coins = dungeon.Interactables.OfType<TrailCoin>().ToArray();
+            game.PartyVisibleTiles.Clear();
+            game.FloorReveal.TreasureRevealed = true;
+            bool Contains(DungeonTerminalSnapshot snapshot, Object value) => snapshot.Actors.Any(a => a.Id == value.GetInstanceID().ToString());
+            var hidden = TerminalSceneSnapshots.Dungeon(game, minimap);
+            Assert.That(coins.All(coin => !Contains(hidden, coin)), Is.True,
+                "Treasure Sense must not reveal the trail through fog.");
+
+            game.PartyVisibleTiles.UnionWith(new[] { cell, stairs.Position });
+            var visible = TerminalSceneSnapshots.Dungeon(game, minimap);
+            Assert.That(coins.All(coin => Contains(visible, coin)), Is.True);
+            Assert.That(visible.Actors.Where(a => coins.Any(coin => a.Id == coin.GetInstanceID().ToString()))
+                .All(a => !a.VisibleInFog), Is.True);
+            var renderer = new DungeonTerminalRenderer();
+            var exit = new GridPoint(stairs.Position.x, stairs.Position.y);
+            renderer.Render(visible, 40, 20, exit);
+            Assert.That(renderer.TryFrameCell(exit, out int column, out int row), Is.True);
+            Assert.That(renderer.Frame[column, row].Glyph, Is.EqualTo('>'),
+                "The trail's last coin must not obscure the exit.");
+        }
+
         [UnityTest] public IEnumerator TargetPreviewSharesMissileTraceAndCancelOrStaleConfirmSpendsNothing()
         {
             yield return harness.LoadDungeon(new TestScenario { SP = 20 });

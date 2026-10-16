@@ -113,16 +113,10 @@ public class Ally : Character
         if (IsDowned || Vitals.HP <= 0) { determinedActions = new(); return true; }
         var overrides = evaluateStatuses ? StatusEffects.Where(s => s != null && !s.IsExpired())
             .Select(s => s.GetActionOverride(this)).Where(a => a != null).ToList() : new List<GameAction>();
-        if (overrides.Count > 0) { GetComponent<ScoutExitNavigation>()?.Stop("action disabled"); global::PendingCast.Cancel(this, "action disabled"); (_forcedAction as SkillAction)?.AutoplayTrace?.Interrupt("action disabled"); _forcedAction = null; determinedActions = overrides; return true; }
+        if (overrides.Count > 0) { global::PendingCast.Cancel(this, "action disabled"); (_forcedAction as SkillAction)?.AutoplayTrace?.Interrupt("action disabled"); _forcedAction = null; determinedActions = overrides; return true; }
         if (PendingCast != null && (!global::PendingCast.Mobile(this) || this != Game.Instance.PlayerController.ControlledAlly || AutoplayRunner.BlocksPlayerInput))
         { determinedActions = new() { new AdvanceCastAction() }; _forcedAction = null; return true; }
-        if (_forcedAction == null)
-        {
-            var step = GetComponent<ScoutExitNavigation>()?.NextAction();
-            if (step == null) return false;
-            determinedActions = new() { step }; return true;
-        }
-        GetComponent<ScoutExitNavigation>()?.Stop("new command");
+        if (_forcedAction == null) return false;
         determinedActions = new() { _forcedAction }; _forcedAction = null; return true;
     }
 
@@ -182,8 +176,6 @@ public class Ally : Character
 
 	public override IEnumerable<GameAction> GetResponseTo(GameAction action)
 	{
-		if (action is TakeDamageAction damage && damage.Target == this && !damage.Missed)
-			GetComponent<ScoutExitNavigation>()?.Stop("under attack");
 		if (this == null ||
 			this.Vitals.HP <= 0)
 		{
@@ -209,18 +201,26 @@ public class Ally : Character
 
 	public override List<GameAction> GetInteractableSideEffects()
 	{
+        var effects = new List<GameAction>();
+        var dungeon = Game.Instance?.CurrentDungeon;
+        // Coins can share a tile with another pickup, a trap, or the exit.
+        if (dungeon != null)
+            foreach (var coin in dungeon.Interactables.OfType<TrailCoin>()
+                .Where(coin => coin != null && coin.Position == TilemapPosition).ToArray())
+                effects.AddRange(coin.GetInteractionSideEffects(this));
+        if (currentInteractable is TrailCoin) currentInteractable = null;
+
         if (currentInteractable is not Trap and not DungeonProp and not FinalePortal and not null)
         {
 			if (currentInteractable is not Stairs)
 			{
 				//Game.Instance.DoFloatingText(currentInteractable.GetInteractionText(), Color.yellow, this.VisualParent.transform.position);
-				var effects = currentInteractable.GetInteractionSideEffects(this);
+				effects.AddRange(currentInteractable.GetInteractionSideEffects(this));
 				currentInteractable = null;
-				return effects;
 			}
         }
 
-        return new();
+        return effects;
     }
 
 	public override void StartTurn()

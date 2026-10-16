@@ -487,7 +487,9 @@ public class TileWorldDungeon : MonoBehaviour
 
 	internal Interactable GetInteractable(Vector3Int tilemapPosition)
 	{
-		return Interactables.FirstOrDefault(x => x.Position == tilemapPosition);
+		// Trail pickups must not hide the stairs, traps, or other interactions beneath them.
+		return Interactables.FirstOrDefault(x => x != null && x.Position == tilemapPosition && x is not TrailCoin)
+			?? Interactables.FirstOrDefault(x => x != null && x.Position == tilemapPosition);
 	}
 
 	internal bool[,] GetFloorMask() => (bool[,])floorMask.Clone();

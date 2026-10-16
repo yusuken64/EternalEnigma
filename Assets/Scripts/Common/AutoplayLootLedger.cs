@@ -50,7 +50,12 @@ internal sealed class AutoplayLootLedger
             return;
         }
         var kind = Kind(value);
-        if (kind == null || pickups.ContainsKey(value)) return;
+        if (kind == null) return;
+        if (pickups.TryGetValue(value, out var observed))
+        {
+            if (value is TrailCoin coin) observed.ExpectedAmount = coin.SeededAmount ?? 1;
+            return;
+        }
         AutoplayLootRecord row = null;
         if (releasing != null && rewards.TryGetValue(releasing, out var expected)) row = expected.FirstOrDefault(r => r.Kind == kind && !r.Spawned);
         row ??= New(kind, value.Position, "Loose");
@@ -151,7 +156,12 @@ internal sealed class AutoplayLootLedger
             if (pickups.TryGetValue(value, out var row)) row.VisualCenter = bounds.center;
             float size = dungeon.CellToWorld(Vector3Int.right).x - dungeon.CellToWorld(Vector3Int.zero).x;
             var center = dungeon.CellToWorld(value.Position) + new Vector3(size * .5f, size * .5f);
-            if (Mathf.Abs(center.x - bounds.center.x) > size * .05f || Mathf.Abs(center.y - bounds.center.y) > size * .05f)
+            // A trail coin moves aside for the stairs or another pickup, within the same tile.
+            bool misaligned = value is TrailCoin
+                ? bounds.min.x < center.x - size * .5f - .001f || bounds.max.x > center.x + size * .5f + .001f ||
+                  bounds.min.y < center.y - size * .5f - .001f || bounds.max.y > center.y + size * .5f + .001f
+                : Mathf.Abs(center.x - bounds.center.x) > size * .05f || Mathf.Abs(center.y - bounds.center.y) > size * .05f;
+            if (misaligned)
                 PlacementFailure(value, "Visible mesh does not align with logical pickup cell");
     }
     internal void PlacementFailure(Interactable value, string reason)

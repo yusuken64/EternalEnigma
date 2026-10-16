@@ -29,8 +29,8 @@ public static class HeroAttributes
         int strength = Math.Max(0, points.Str), intellect = Math.Max(0, points.Int), agility = Math.Max(0, points.Agi);
         return new StatModification {
             Strength = strength, HPMax = strength * 3, Defense = strength / 4,
-            SPMax = intellect * 2, MagicPower = intellect,
-            SPRegenAcccumlateThreshold = -Math.Min(400, intellect * 15),
+            ManaMax = intellect * 2, MagicPower = intellect,
+            ManaRegenThreshold = -Math.Min(400, intellect * 15),
             HitBonus = agility * .01f, Evasion = Math.Min(25, agility) * .01f,
             CritChance = Math.Min(25, agility) * .01f, HungerMax = agility * 2
         };

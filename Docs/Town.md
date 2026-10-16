@@ -82,7 +82,7 @@ captures, four interior types, vendor behavior, greetings, movement and revisit 
 - New campaigns require one free Bread purchase at the town-0 bakery and an active lesson
   for the protagonist before sleeping at home opens the first dungeon. Either errand can
   come first. The normal shop confirmation and trainer confirmation record completion;
-  canceling does not. The first lesson uses normal learning points and initially hides
+  canceling does not. The first lesson uses normal Skill Points and initially hides
   passive and unaffordable offers. After learning, the full trainer catalog returns.
   Bread is no longer placed in the starting bag. The free offer is consumed once, survives
   saving, and does not return on shop restock. The bed can save unfinished errands and quit.
@@ -94,8 +94,8 @@ captures, four interior types, vendor behavior, greetings, movement and revisit 
 - Class heroes train with skill points derived from highest level and learned ranks. The shared
   trainer shows their class kit; `LearnableSkills` can filter it. Classless configured heroes
   retain gold-priced single-rank training.
-- The inn provides free HP/SP restoration and a separate Save action that records an inn checkpoint.
-- Successful returns preserve remaining bag/equipment stock and carried HP/SP in memory. In a
+- The inn provides free HP/Mana restoration and a separate Save action that records an inn checkpoint.
+- Successful returns preserve remaining bag/equipment stock and carried HP/Mana in memory. In a
   campaign, defeat loads the selected slot's last explicit save and quit discards unsaved progress;
   neither applies a new penalty. Standalone configured runs retain `DungeonReturnService` rules
   (by default, losing items/equipment and retaining gold on defeat).
@@ -115,15 +115,15 @@ Skills/ranks, level/EXP, attributes, highest level and carried vitals live in ea
 ## Inventory and recovery
 
 The shared Inventory/Equipment/Skills/Stats window uses the controls in [Dungeon controls](DungeonControls.md).
-Town supports equipment changes, material selling, positive HP/SP recovery, and compatible
+Town supports equipment changes, material selling, positive HP/Mana recovery, and compatible
 inventory inspection. `TownUtilityService` validates the complete effect list, living
-beneficiaries, item-instance ownership, and SP costs before committing once through
+beneficiaries, item-instance ownership, and Mana costs before committing once through
 `Town.SaveProgress`. Cancelling a picker changes nothing. Successful actions keep the
 window open and display their result.
 
 Recovery skills use learned rank, class healing/consumable passives, and persisted
-`HighestLevel`. Saved -1 vitals mean full health/SP. Recovery clamps to calculated maxima;
-full targets, insufficient SP, revival, food, damage, movement, status changes, buffs,
+`HighestLevel`. Saved -1 vitals mean full health/Mana. Recovery clamps to calculated maxima;
+full targets, insufficient Mana, revival, food, damage, movement, status changes, buffs,
 permanent stat changes, and mixed unsupported effects cannot be used. Inventory utilities
 honor their filters and equipped-item eligibility. Normal transactions capture live state without
 rewriting the selected slot's checkpoint; there is no separate dungeon rollback snapshot.

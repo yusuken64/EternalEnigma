@@ -24,6 +24,7 @@ namespace JuicyChickenGames.Menu
                     Icon = skill.Icon,
                     ClickAction = () =>
                     {
+                        if (!MenuManager.CanAttemptAction(character, out var restriction)) { GameMessages.Reject(restriction); return; }
                         if (character.CanCast(skill, out string reason))
                         {
                             if (skill.Targeting == SkillTargeting.InventoryItem)
@@ -32,13 +33,15 @@ namespace JuicyChickenGames.Menu
                                 MenuManager.Instance.OpenTargetingMenu(character, skill);
                             else
                             {
+                                var action = new SkillAction(character, skill, character);
+                                if (!action.ValidateCommand(character, out var failure)) { GameMessages.Reject(failure); return; }
                                 MenuManager.Instance.CloseAllMenus();
-                                character.SetAction(new SkillAction(character, skill, character));
+                                character.SetAction(action);
                             }
                         }
 						else
 						{
-                            GameMessages.Post(reason, true);
+                            GameMessages.Reject(reason);
 						}
                     }
                 };

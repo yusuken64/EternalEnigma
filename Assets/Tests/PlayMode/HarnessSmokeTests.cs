@@ -22,7 +22,7 @@ public class HarnessSmokeTests
     [UnityTest]
     public IEnumerator DungeonScenarioLoadsRealSceneAndPlacesAlly()
     {
-        yield return harness.LoadDungeon(new TestScenario { HP = 7, SP = 3 });
+        yield return harness.LoadDungeon(new TestScenario { HP = 7, Mana = 3 });
         Assert.That(harness.Game.IsReady, Is.True);
         Assert.That(harness.Ally.CharacterName, Is.EqualTo("Rowan"));
         Assert.That(harness.Ally.Vitals.HP, Is.EqualTo(7));

@@ -51,11 +51,11 @@ namespace EternalEnigma.Tests
 			// Set HPMax 100 / HP 100 and huge regen thresholds
 			foreach (var actor in harness.Game.AllCharacters)
 			{
-				actor.BaseStats.HPMax = actor.BaseStats.SPMax = 100;
-				actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
+				actor.BaseStats.HPMax = actor.BaseStats.ManaMax = 100;
+				actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.ManaRegenThreshold = 10000;
 				actor.InvalidateCachedStats();
 				actor.Vitals.HP = 100;
-				actor.Vitals.SP = 100;
+				actor.Vitals.Mana = 100;
 				actor.SyncDisplayedStats();
 			}
 
@@ -92,7 +92,7 @@ namespace EternalEnigma.Tests
 			var skill = ScriptableObject.CreateInstance<Skill>();
 			skill.SkillName = name;
 			skill.ActivationType = ActivationType.Active;
-			skill.SPCost = 0;
+			skill.ManaCost = 0;
 			skill.Targeting = targeting;
 			skill.TargetSelector = new TargetSelector { Team = team, Area = area };
 			skill.ActionEffects = effects.ToList();

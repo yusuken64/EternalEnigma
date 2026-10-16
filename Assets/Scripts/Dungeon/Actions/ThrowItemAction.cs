@@ -34,6 +34,7 @@ internal class ThrowItemAction : GameAction
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		if (!ValidateCommand(character, out _)) return new();
 		var game = Game.Instance;
 		sourcePosition = thrower.TilemapPosition;
         QueueSound(SoundCue.Throw);
@@ -140,8 +141,18 @@ internal class ThrowItemAction : GameAction
         foreach (var cell in AnimationPath(actor, rangedAttackTargetPosition)) yield return cell;
     }
 
-	internal override bool IsValid(Character character)
+	internal override bool IsValid(Character character) => ValidateCommand(character, out _);
+
+	internal override bool ValidateCommand(Character character, out string reason)
 	{
-		return inventory.InventoryItems.Contains(item);
+		reason = null;
+		if (character == null || character != thrower || character.Vitals.HP <= 0)
+		{ reason = "This hero cannot throw items right now."; return false; }
+		if (inventory == null || item?.ItemDefinition == null || !inventory.InventoryItems.Contains(item))
+		{ reason = "This item is no longer in your inventory."; return false; }
+		if (item.HasStacks && item.StackIsEmpty()) { reason = "This item has no uses remaining."; return false; }
+		var status = character.StatusEffects.FirstOrDefault(s => !s.IsExpired() && (s.PreventsMenu() || s.Interupts(this)));
+		if (status != null) { reason = $"Cannot throw items while affected by {GameplayText.Name(status.GetEffectName())}."; return false; }
+		return true;
 	}
 }

@@ -33,8 +33,8 @@ public class DungeonTierItem : MonoBehaviour
         string kind = location.Kind == EternalEnigma.Core.Progression.LocationKind.RepeatableDungeon ? "Repeatable dungeon" : "Story dungeon";
         if (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town) kind = "Town district";
         TierText.text = GameplayText.Format($"{kind}\nFloors {floors.Start} - {floors.End}" + (completed ? "\nComplete" : ""));
-        Button.interactable = Common.Instance.CampaignContext?.CanEnterDungeon(location.Id) != false;
-        if (!Button.interactable)
+        Button.interactable = true;
+        if (Common.Instance.CampaignContext?.CanEnterDungeon(location.Id) == false)
             TierText.text = GameplayText.Format("Town dungeon\nOpens tomorrow");
         campaignClick = onClick;
     }

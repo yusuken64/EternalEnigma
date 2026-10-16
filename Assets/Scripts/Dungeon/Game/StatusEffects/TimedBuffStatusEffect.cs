@@ -37,7 +37,7 @@ public class TimedBuffStatusEffect : StatusEffect
 
 		// Sum of absolute values of int fields
 		result += Math.Abs(Modification.HPMax);
-		result += Math.Abs(Modification.SPMax);
+		result += Math.Abs(Modification.ManaMax);
 		result += Math.Abs(Modification.HungerMax);
 		result += Math.Abs(Modification.Strength);
 		result += Math.Abs(Modification.MagicPower);
@@ -45,7 +45,7 @@ public class TimedBuffStatusEffect : StatusEffect
 		result += Math.Abs(Modification.EXPOnKill);
 		result += Math.Abs(Modification.HungerAccumulateThreshold);
 		result += Math.Abs(Modification.HPRegenAcccumlateThreshold);
-		result += Math.Abs(Modification.SPRegenAcccumlateThreshold);
+		result += Math.Abs(Modification.ManaRegenThreshold);
 		result += Math.Abs(Modification.ActionsPerTurnMax);
 		result += Math.Abs(Modification.AttacksPerTurnMax);
 		result += Math.Abs(Modification.FireResistance);
@@ -100,8 +100,8 @@ public class TimedBuffStatusEffect : StatusEffect
 		if (Modification.HungerMax != 0) names.Add("HungerMax");
 		if (Modification.IceResistance != 0) names.Add("IceResistance");
 		if (Modification.LightningResistance != 0) names.Add("LightningResistance");
-		if (Modification.SPMax != 0) names.Add("SPMax");
-		if (Modification.SPRegenAcccumlateThreshold != 0) names.Add("SPRegenAcccumlateThreshold");
+		if (Modification.ManaMax != 0) names.Add("ManaMax");
+		if (Modification.ManaRegenThreshold != 0) names.Add("ManaRegenThreshold");
 		if (Modification.Strength != 0) names.Add("Strength");
 		if (Modification.MagicPower != 0) names.Add("MagicPower");
 

@@ -78,7 +78,7 @@ namespace EternalEnigma.Tests
             var nativePromptFont = promptLabel.font;
             var nativePromptPanel = promptPanel.sprite;
             manager.CloseAllMenus(); yield return null;
-            int hunger = actor.Vitals.HungerAccumulate, sp = actor.Vitals.SP, writes = harness.Store.Writes;
+            int hunger = actor.Vitals.HungerAccumulate, mana = actor.Vitals.Mana, writes = harness.Store.Writes;
             TerminalMode.SetRequested(true); yield return new WaitForSecondsRealtime(.25f);
             foreach (var size in new[] { new Vector2(960, 600), new Vector2(1280, 720), new Vector2(1920, 1080), new Vector2(2560, 1080) })
             {
@@ -146,7 +146,7 @@ namespace EternalEnigma.Tests
                 Assert.That(manager.Opened, Is.False);
             }
             Assert.That(actor.Vitals.HungerAccumulate, Is.EqualTo(hunger));
-            Assert.That(actor.Vitals.SP, Is.EqualTo(sp));
+            Assert.That(actor.Vitals.Mana, Is.EqualTo(mana));
             Assert.That(harness.Store.Writes, Is.EqualTo(writes), "Browsing and mode changes never save implicitly.");
             manager.OpenPartyMenu(PartyMenuTab.Inventory); yield return null;
             TerminalMode.SetRequested(false); yield return new WaitForSecondsRealtime(.2f);
@@ -163,13 +163,13 @@ namespace EternalEnigma.Tests
             view.Repaint();
             yield return new WaitForSecondsRealtime(.25f);
             var manager = MenuManager.Instance; var actor = harness.Ally;
-            // A zero-effect instant spell isolates real command/SP accounting from combat RNG.
+            // A zero-effect instant spell isolates real command/Mana accounting from combat RNG.
             testSpell = Object.Instantiate(actor.Skills.Single(skill => skill.SkillName == "Fire Bolt"));
-            testSpell.CastTime = 0; testSpell.SPCost = 1; testSpell.ActionEffects.Clear(); testSpell.AreaRadius = 0;
+            testSpell.CastTime = 0; testSpell.ManaCost = 1; testSpell.ActionEffects.Clear(); testSpell.AreaRadius = 0;
             actor.Skills.Add(testSpell);
-            actor.BaseStats.SPMax = 30; actor.InvalidateCachedStats(); actor.Vitals.SP = 30; actor.SyncDisplayedStats();
+            actor.BaseStats.ManaMax = 30; actor.InvalidateCachedStats(); actor.Vitals.Mana = 30; actor.SyncDisplayedStats();
             TerminalMode.SetRequested(true); yield return new WaitForSecondsRealtime(.25f);
-            int sp = actor.Vitals.SP, hunger = actor.Vitals.HungerAccumulate;
+            int mana = actor.Vitals.Mana, hunger = actor.Vitals.HungerAccumulate;
             manager.OpenPartyMenu(PartyMenuTab.Skills); yield return null;
             var menu = manager.PartyMenu;
             var target = manager.TargetDialog;
@@ -183,7 +183,7 @@ namespace EternalEnigma.Tests
             Assert.That(target.Direction, Is.EqualTo(Vector3Int.right));
             yield return PadPress(GamepadButton.East);
             Assert.That(manager.CurrentDialog, Is.SameAs(menu));
-            Assert.That(actor.Vitals.SP, Is.EqualTo(sp));
+            Assert.That(actor.Vitals.Mana, Is.EqualTo(mana));
             Assert.That(actor.Vitals.HungerAccumulate, Is.EqualTo(hunger));
 
             manager.OpenTargetingMenu(actor, testSpell);
@@ -205,7 +205,7 @@ namespace EternalEnigma.Tests
             yield return Pointer(point, 2); yield return Pointer(point, 0);
             Assert.That(manager.CurrentDialog, Is.SameAs(menu));
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False, "Cancellation cannot replay the earlier Options click.");
-            Assert.That(actor.Vitals.SP, Is.EqualTo(sp));
+            Assert.That(actor.Vitals.Mana, Is.EqualTo(mana));
             var selected = EventSystem.current.currentSelectedGameObject;
             yield return Click(options);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True);
@@ -229,7 +229,7 @@ namespace EternalEnigma.Tests
                 }
                 yield return harness.WaitForIdle(); yield return new WaitForSecondsRealtime(.25f);
                 Assert.That(manager.Opened, Is.False);
-                Assert.That(actor.Vitals.SP, Is.EqualTo(sp - scheme - 1), "Each confirmation spends the spell's SP exactly once.");
+                Assert.That(actor.Vitals.Mana, Is.EqualTo(mana - scheme - 1), "Each confirmation spends the spell's Mana exactly once.");
                 Assert.That(actor.Vitals.HungerAccumulate, Is.EqualTo(hunger + scheme + 1), "Each confirmation spends exactly one action.");
             }
         }

@@ -47,7 +47,7 @@ namespace EternalEnigma.Tests
                 bool food = offer.Item.IsFood;
                 Assert.That(offer.Quantity, Is.EqualTo(food ? 6 : 3));
                 Assert.That(effect.VitalModification.Hunger, Is.EqualTo(food ? 50 + 25*t : 0));
-                Assert.That(effect.VitalModification.Sp, Is.EqualTo(food ? 0 : 5*(t+1)));
+                Assert.That(effect.VitalModification.Mana, Is.EqualTo(food ? 0 : 5*(t+1)));
                 Assert.That(effect.VitalModification.Hp, Is.EqualTo(offer.Item.ItemName.Contains("Latte") ? 20*(t+1) : 0));
                 Assert.That(offer.Price, Is.EqualTo(food ? 100+50*t : (offer.Item.ItemName.Contains("Latte") ? 250 : 150)*(t+1)));
                 Assert.That((int)offer.Item.DroppedItemVisual, Is.EqualTo(food ? 1 : 4));

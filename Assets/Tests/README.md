@@ -1,5 +1,14 @@
 # Game test harness
 
+## Action feedback and resource naming
+
+`node Tools/unity-mcp.mjs harness ActionFeedback` covers mandatory attribute allocation,
+selectable blocked actions, equipment proficiency, Mana and targeting failures, purchases,
+Skill Points, recruitment, overworld keys, and retrying after eligibility changes.
+Failed attempts retain the current menu and focus without spending resources or turns.
+The EditMode save tests cover format 3, renamed Mana fields, and explicit rejection of
+older save payloads. Existing campaign slots are intentionally incompatible.
+
 `node Tools/unity-mcp.mjs harness CampaignKeys` checks unique capability rewards, shared
 campaign-specific names in reward/menu/action UI, repeat-claim behavior, gate choices and
 required return trips for seeds 42, -1 and 0. The EditMode `CampaignGenerationTests` cover
@@ -104,7 +113,7 @@ and unreachable-exit fallback in EditMode. The gameplay capture is written to
 `SkillRegressionTests` runs the production dungeon, skill assets, menu, input
 bindings and turn pipeline. It checks single-target damage/healing, healing caps,
 self buffs, ally/enemy selection, dead and out-of-range targets, area effects,
-untargeted effects, SP costs, passive/unknown skills, silence, status coexistence,
+untargeted effects, Mana costs, passive/unknown skills, silence, status coexistence,
 reapplication and expiry, and casting on behalf of another party member.
 
 Skill authoring uses `Targeting` (`SelectedTarget`, `Self`, or `AllTargets`) and
@@ -112,13 +121,13 @@ Skill authoring uses `Targeting` (`SelectedTarget`, `Self`, or `AllTargets`) and
 default to selected single-target behavior; self-only selectors cast immediately.
 `Self` centers an area on the caster. `AllTargets` casts immediately on every
 living character allowed by the team/range selector. Area effects retain the
-selector's team and range restrictions, and charge SP once per cast, regardless
+selector's team and range restrictions, and charge Mana once per cast, regardless
 of recipient count. `Custom` range has no geometry implementation and therefore
 offers no targets. AoE and untargeted tests use clones of production skills to
 exercise these settings without changing the existing skill balance.
 
 The main menu's **Test Dungeon** supplies all three allies with these nine demo
-skills (1 SP each), plus 20 of each matching scroll in the shared bag:
+skills (1 Mana each), plus 20 of each matching scroll in the shared bag:
 
 | Demo skill / scroll | Demonstrates |
 | --- | --- |
@@ -133,10 +142,10 @@ skills (1 SP each), plus 20 of each matching scroll in the shared bag:
 | Arrow Shot | Eight-direction missile, 8-tile range |
 
 The opening room includes three stationary 500-HP practice targets, partly injured
-allies, and 100 SP per ally. Allies hold position. A training sword and 20 Wooden
+allies, and 100 Mana per ally. Allies hold position. A training sword and 20 Wooden
 Arrows are also provided. Inspect effects display the selected item's stock or
 weapon stats; they do not enchant or consume that target. Scroll use consumes one
-scroll with no SP cost. **R / left shoulder** opens skills, **Q / west button**
+scroll with no Mana cost. **R / left shoulder** opens skills, **Q / west button**
 opens the inventory. Later floors retain normal encounters.
 
 The content is stored in `Assets/Resources/DemoDungeon/Loadout.asset` with skill,
@@ -162,7 +171,7 @@ or save-data model. Empty/mixed character-effect lists offer no eligible items.
 
 Casting opens a filtered inventory picker with the usual keyboard/controller/mouse
 controls. Confirm casts on the chosen copy; Back returns to the skill list without
-spending SP or a turn. Ownership, eligibility, status restrictions and SP are
+spending Mana or a turn. Ownership, eligibility, status restrictions and Mana are
 checked again on confirm/execution. Item-skill animations play on the caster.
 `InventorySkillTargetingTests` covers filters, duplicate-name item identity,
 equipped-item inclusion, cancellation, stale targets, costs, mouse confirmation,
@@ -174,7 +183,7 @@ uses dispatch `ItemEffectDefinition` to each selected recipient; inventory-targe
 uses bind the `InventoryEffects` list of `InventorySkillEffect` templates. Using an
 item invokes the same picker and confirmation flow as a skill. A successful use
 consumes one stack unit (or the single consumable) and one turn, regardless of AoE
-size, without charging skill SP or requiring a learned skill. Cancel and invalid
+size, without charging skill Mana or requiring a learned skill. Cancel and invalid
 source/target checks consume nothing. A nested item picker preserves the original
 inventory and Use menu when backing out.
 
@@ -186,14 +195,14 @@ the endpoint. Shots stop at the first living character, wall, blocked diagonal
 corner, or range limit. Team/range filters determine whether the first character
 receives effects; excluded characters still block the shot. Missile effects are
 single-target (`AreaRadius` does not create splash damage). Confirmed empty shots
-still consume ammunition/skill SP and a turn. Wooden Arrows and Spell Bolt now use
+still consume ammunition/skill Mana and a turn. Wooden Arrows and Spell Bolt now use
 this mode, preserving their existing 40-tile range and projectile visuals.
 
 Dungeon controls: **R / left shoulder** opens or closes skills; **WASD, arrows,
 D-pad or left stick** selects a skill/target; **Enter, Space / south button**
 confirms; **Escape / east button** goes back. Self/untargeted skills cast on the
 first confirmation. Targeted skills require a second confirmation and can be
-cancelled without spending SP or a turn. Native 3D targeting also supports mouse
+cancelled without spending Mana or a turn. Native 3D targeting also supports mouse
 preview, left-click confirmation and right-click cancellation. Opening with a
 held click requires a release before confirmation; HUD clicks and invalid targets
 cannot cast. Terminal presentation supports keyboard/controller selection and
@@ -278,7 +287,7 @@ public IEnumerator TearDown() => harness.Cleanup();
   It deliberately does not compensate for missing inventory restoration.
 - `TestScenario.Items` uses **ItemDefinition.ItemName**, not asset filenames.
   StartingItems are excluded unless `IncludeStartingItems` is true. The game still
-  applies its usual starting stats and passive skills; optional HP/SP override vitals.
+  applies its usual starting stats and passive skills; optional HP/Mana override vitals.
 - `AddItem(name)`, `PlaceAlly(tile)` and `PlaceBesideStairs()` establish explicit
   starting conditions. Placement is a teleport, not a movement/interaction test.
 - `SpawnEnemy(prefabName, tile)` loads a prefab from `Assets/Prefabs/Dungeon/Enemies`
@@ -398,7 +407,7 @@ the user's terminal presentation preference after checking the 3D menu inputs.
 
 The search fixture uses disposable runtime terrain masks to exercise exact walls,
 doors, corridors, blocked routes and dead ends without modifying scenes or assets.
-Authored skill instances execute real effects and charging actions, checking SP,
+Authored skill instances execute real effects and charging actions, checking Mana,
 ammunition, food, immunity, recipient eligibility and restoration.
 
 The project installs a pinned MCP Unity package. Its bridge is localhost-only,

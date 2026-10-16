@@ -40,7 +40,7 @@ staircase completes the campaign and returns the party to the original bedroom.
 The two starter locations use BSP/throne layouts. Seeds derive from campaign seed/location/floor.
 Completion commits rewards to memory once per run. Final victory restores vitals and
 plays a wake-only bed sequence, then opens the Hall of Fame. It records the finishing
-party's portraits, names, classes, levels, maximum HP/SP and weapons, with dungeon/town/
+party's portraits, names, classes, levels, maximum HP/Mana and weapons, with dungeon/town/
 recruit/key counts, treasure, playtime and campaign seed. **Save completed campaign**
 explicitly saves this record; **Continue exploring** closes it without writing a save.
 The existing home and inn save actions also save the completed adventure afterward. Completed

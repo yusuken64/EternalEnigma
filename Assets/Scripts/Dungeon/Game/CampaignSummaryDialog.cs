@@ -39,7 +39,7 @@ public sealed class CampaignSummaryDialog : Dialog
             card.Portrait.enabled = card.Portrait.sprite != null;
             card.Details.text = $"<b>Level {hero.Level} · {hero.PrimaryClass}</b>" +
                 (string.IsNullOrEmpty(hero.SecondaryClass) ? "" : " / " + hero.SecondaryClass) +
-                $"\nHP {hero.MaxHP}   SP {hero.MaxSP}\n{hero.Weapon}";
+                $"\nHP {hero.MaxHP}   Mana {hero.MaxMana}\n{hero.Weapon}";
         }
         dialog.CloseAction = () => Destroy(dialog.gameObject);
         return dialog;

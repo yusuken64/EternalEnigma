@@ -21,7 +21,7 @@ namespace EternalEnigma.Tests
             { "warrior", "guardian", "archer", "elementalist", "healer", "bard", "occultist", "rogue", "commander", "scout" };
 
         // Skills that are one shared asset across classes (their LearnCost is not tier-based).
-        public static readonly HashSet<string> SharedSkills = new() { "Mining", "Harvesting", "Foraging", "SP Up", "Vigor", "HP Up" };
+        public static readonly HashSet<string> SharedSkills = new() { "Mining", "Harvesting", "Foraging", "Mana Up", "Vigor", "HP Up" };
 
         public static readonly IReadOnlyList<Row> Rows = new[]
         {
@@ -90,7 +90,7 @@ namespace EternalEnigma.Tests
             new Row("elementalist", "Fire Bolt", 1, SkillKind.Normal, 5),
             new Row("elementalist", "Ice Bolt", 1, SkillKind.Normal, 5),
             new Row("elementalist", "Lightning Bolt", 1, SkillKind.Normal, 5),
-            new Row("elementalist", "SP Up", 1, SkillKind.Normal, 5),
+            new Row("elementalist", "Mana Up", 1, SkillKind.Normal, 5),
             new Row("elementalist", "Focus", 1, SkillKind.Normal, 5),
             new Row("elementalist", "Elementalist Adept Training", 2, SkillKind.Mastery, 1),
             new Row("elementalist", "Fireball", 2, SkillKind.Normal, 5),
@@ -167,7 +167,7 @@ namespace EternalEnigma.Tests
             new Row("occultist", "Plague", 3, SkillKind.Normal, 1),
             new Row("occultist", "Dominate", 3, SkillKind.Normal, 1),
             new Row("occultist", "Siphon", 3, SkillKind.Normal, 5),
-            new Row("occultist", "SP Up", 3, SkillKind.Normal, 5),
+            new Row("occultist", "Mana Up", 3, SkillKind.Normal, 5),
             new Row("occultist", "Grim Harvest", 3, SkillKind.Normal, 5),
             new Row("rogue", "Rogue Novice Training", 1, SkillKind.Mastery, 1),
             new Row("rogue", "Foraging", 1, SkillKind.Gathering, 1),

@@ -90,7 +90,7 @@ public sealed class AutoplayReport
 public sealed class AutoplayActor
 {
     public string Name, Id;
-    public int HP, MaxHP, SP, Hunger, Level, Strength, Defense, X, Y;
+    public int HP, MaxHP, Mana, Hunger, Level, Strength, Defense, X, Y;
     public string[] Equipment, Skills;
     public string Class;
 }
@@ -445,7 +445,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     }
 
     private static float EquipmentScore(EquipmentItemDefinition item) => item.StatModification.Strength + item.StatModification.MagicPower +
-        item.StatModification.Defense + item.StatModification.HPMax*.1f + item.StatModification.SPMax*.2f;
+        item.StatModification.Defense + item.StatModification.HPMax*.1f + item.StatModification.ManaMax*.2f;
     private static bool IsUpgrade(TownAlly ally, EquipmentItemDefinition item)
     {
         if (!HeroClass.AllowsItem(ally.PrimaryClass,ally.SecondaryClass,(EquipableInventoryItem)item.AsInventoryItem(null))) return false;
@@ -895,7 +895,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             Report.Gold = town != null ? town.TownPlayer.Gold : common?.GameSaveData?.TownSaveData.Gold ?? 0;
             Report.Inventory = town != null ? town.TownPlayer.Inventory.Select(ItemLabel).ToArray() : Array.Empty<string>();
             if (town != null) Report.Party = town.TownPlayer.RecruitedAllies.Select(a => new AutoplayActor {
-                Id = a.Id, Name = a.Name, Level = a.Level, HP = a.Hp, SP = a.Sp, X = a.TilemapPosition.x, Y = a.TilemapPosition.y,
+                Id = a.Id, Name = a.Name, Level = a.Level, HP = a.Hp, Mana = a.Mana, X = a.TilemapPosition.x, Y = a.TilemapPosition.y,
                 Equipment = a.Equipment.GetEquippedItems().Select(ItemLabel).ToArray(), Skills = a.Skills.ToArray(), Class = HeroClass.Label(a.PrimaryClass, a.SecondaryClass) }).ToList();
             return;
         }
@@ -903,7 +903,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         Report.Inventory = game.PlayerController.Inventory.InventoryItems.Select(ItemLabel).ToArray();
         Report.Party = game.Allies.Concat(game.DownedAllies).Concat(game.DeadUnits.OfType<Ally>()).Where(a => a != null && !PartyRules.IsSummon(a)).Distinct().Select(a => new AutoplayActor {
             Id = a.TownAllyId, Name = common.GameSaveData.Roster.FirstOrDefault(r => r.AllyId == a.TownAllyId)?.AllyName ?? a.name,
-            HP = a.Vitals.HP, MaxHP = a.FinalStats.HPMax, SP = a.Vitals.SP, Hunger = a.Vitals.Hunger,
+            HP = a.Vitals.HP, MaxHP = a.FinalStats.HPMax, Mana = a.Vitals.Mana, Hunger = a.Vitals.Hunger,
             Level = a.Vitals.Level, Strength = a.FinalStats.Strength, Defense = a.FinalStats.Defense, X = a.TilemapPosition.x, Y = a.TilemapPosition.y,
             Equipment = a.Equipment.GetEquippedItems().Select(i => i.ItemName).ToArray(), Skills = a.Skills.Select(s => s.SkillName).ToArray(), Class = HeroClass.Label(a.PrimaryClass, a.SecondaryClass) }).ToList();
         Report.Enemies = game.Enemies.Where(e => e != null).Select(e => new AutoplayActor { Name = e.name, HP = e.Vitals.HP,

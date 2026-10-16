@@ -26,10 +26,18 @@ internal class SkillAction : GameAction
     internal static SkillAction ForTile(Character caster, Skill skill, Vector3Int cell) => new(caster, skill, null) { tile = cell };
     internal override bool ValidateCommand(Character character, out string reason)
     {
-        if (skill != null && skill.UsesArrows && (!ArrowSupply.HasBow(character) || ArrowSupply.Count(character) < ArrowSupply.RequiredToCast(skill)))
-        { reason = "no arrows"; return false; }
+        if (character == null || character != caster)
+        { reason = "That hero cannot cast this ability."; return false; }
+        if (!character.CanCast(skill, out reason)) return false;
+        if (!IsValid(character))
+        {
+            reason = skill.Targeting == SkillTargeting.InventoryItem
+                ? "That inventory item is no longer a valid target."
+                : "That target is no longer available or is out of range.";
+            return false;
+        }
         reason = null;
-        return IsValid(character);
+        return true;
     }
     private bool Eligible(Character recipient) => skill.TargetSelector.Eligible(caster, recipient) &&
         Game.Instance.AllCharacters.Concat(Game.Instance.DownedAllies).Contains(recipient);
@@ -75,7 +83,7 @@ internal class SkillAction : GameAction
             GameInputDiagnostics.Record("SkillStarted", caster, skill);
             castSucceeded = true;
             QueueSound(SoundCue.AbilityStart);
-            AddMetricsModification(caster, (stats, vitals) => vitals.SP -= skill.SPCost);
+            AddMetricsModification(caster, (stats, vitals) => vitals.Mana -= skill.ManaCost);
             int charge = skill.InitialCastTime(caster);
             if (charge > 0)
             {

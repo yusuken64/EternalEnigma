@@ -153,14 +153,15 @@ namespace EternalEnigma.Tests
                 {
                     AssertServiceLayout(dialog);
                     if (dialog is EntranceDialog entrance)
-                        AssertCompactPointer(entrance.GetComponent<NavigationHandler>(), entrance.CancelButton);
+                        AssertCompactPointer(entrance.GetComponent<NavigationHandler>(),
+                            entrance.Container.GetComponentsInChildren<DungeonTierItem>().First().Button);
                 });
                 if (dialog is EntranceDialog lockedEntrance)
                 {
                     var rows = lockedEntrance.Container.GetComponentsInChildren<DungeonTierItem>();
                     Assert.That(rows, Is.Not.Empty);
-                    Assert.That(rows.All(row => !row.Button.interactable), Is.True, "Tomorrow's dungeon must look unavailable.");
-                    Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(lockedEntrance.CancelButton.gameObject));
+                    Assert.That(rows.All(row => row.Button.interactable), Is.True, "Locked dungeons remain selectable so an attempt explains the requirement.");
+                    Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(rows[0].Button.gameObject));
                     rows[0].OnClick(); yield return null;
                     Assert.That(menus.CurrentDialog, Is.SameAs(lockedEntrance), "A stale callback cannot enter a locked dungeon.");
                     Assert.That(Common.Instance.Travel.IsTransitioning, Is.False);
@@ -178,7 +179,7 @@ namespace EternalEnigma.Tests
                 }
                 else if (dialog is BallistaDialog trainer)
                 {
-                    var skill = trainer.SkillGridItems.FirstOrDefault(row => row.GridButton.IsInteractable());
+                    var skill = trainer.SkillGridItems.FirstOrDefault(row => row.Offer?.CanLearn == true && !row.Offer.IsMaxed);
                     if (skill != null)
                     {
                         skill.GridButton.onClick.Invoke(); yield return null;
@@ -218,7 +219,7 @@ namespace EternalEnigma.Tests
                     Party = champions.Take(count).Select(hero => new CampaignCompletionRecord.Hero {
                         Id = hero.Id, Name = hero.Name, Level = 99,
                         PrimaryClass = hero.PrimaryClass?.DisplayName ?? "Adventurer", SecondaryClass = secondaryClass,
-                        MaxHP = 9999, MaxSP = 999, Weapon = weapon
+                        MaxHP = 9999, MaxMana = 999, Weapon = weapon
                     }).ToArray()
                 };
                 var summary = CampaignSummaryDialog.Create(town.transform, record);

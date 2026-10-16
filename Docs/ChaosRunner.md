@@ -79,7 +79,7 @@ respects `Inventory.DefaultCapacity`, and equipment respects class proficiency a
 slot conflicts. Required equipment and inventory are reserved before random
 selection. Unresolvable prerequisites fail explicitly; they are never replaced by
 random choices. A targeted fixture can guarantee its controlled hero, rank, level,
-HP, SP, equipment and inventory. These guarantees are labelled in the manifest.
+HP, Mana, equipment and inventory. These guarantees are labelled in the manifest.
 
 `fixture.json` contains exact saved hero IDs/classes/ranks/loadouts, inventory,
 controlled hero, seeds, Unity random state, canonical save JSON, and a hash. Replay
@@ -114,7 +114,7 @@ observed movement or accepted gameplay commands do.
 
 Full mode executes declared scenarios and leaves missing cases unverified. A small
 built-in baseline checks **Heal at every supported rank using keyboard/controller**
-with a wounded, prepared healer, verifying an actual release, HP increase, exact SP
+with a wounded, prepared healer, verifying an actual release, HP increase, exact Mana
 cost, a turn, and returned control. Other cases require authored input scenarios
 and effect oracles. This includes other active effects, passives, exploration,
 probabilistic effects, specialized target fixtures, mouse world targeting, defeat
@@ -130,7 +130,7 @@ unambiguous. Raw inputs record keys and pad buttons by enum name, pointer positi
 mouse buttons, scroll, both sticks, hold frames and settle frames.
 
 Assertions explicitly classify effect, cost, turn, and passive trigger evidence.
-Available numeric metrics include HP/SP/hunger, max HP/SP, strength/defense,
+Available numeric metrics include HP/Mana/hunger, max HP/Mana, strength/defense,
 position, ammunition, status count, pending charge, actor count, gold, floor,
 accepted commands, turns and cast starts/releases. Comparisons are `EqualDelta`,
 `MinimumDelta`, `MaximumDelta`, `Changed`, and `Equal`. Passive checks require a

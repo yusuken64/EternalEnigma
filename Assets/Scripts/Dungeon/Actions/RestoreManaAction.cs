@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class RestoreSPAction : GameAction
+public class RestoreManaAction : GameAction
 {
 	public int Amount = 2;
 	public bool ExcludeCaster;
@@ -12,8 +12,8 @@ public class RestoreSPAction : GameAction
 	[NonSerialized] private Character target;
 	[NonSerialized] private int resolved;
 
-	public static RestoreSPAction Bound(Character caster, Character target, int amount) =>
-		new RestoreSPAction { Amount = amount, caster = caster, target = target };
+	public static RestoreManaAction Bound(Character caster, Character target, int amount) =>
+		new RestoreManaAction { Amount = amount, caster = caster, target = target };
 
 	internal override GameAction AsTargetedSkill(Character caster, Character target)
 	{
@@ -36,14 +36,14 @@ public class RestoreSPAction : GameAction
 	{
 		if (!IsValid(character)) return new List<GameAction>();
 
-		int cap = target.FinalStats.SPMax;
-		resolved = Math.Max(0, Math.Min(Amount, cap - target.Vitals.SP));
+		int cap = target.FinalStats.ManaMax;
+		resolved = Math.Max(0, Math.Min(Amount, cap - target.Vitals.Mana));
 		if (resolved > 0) QueueSound(SoundCue.Status);
-		AddMetricsModification(target, (stats, vitals) => vitals.SP = Math.Min(vitals.SP + resolved, cap));
+		AddMetricsModification(target, (stats, vitals) => vitals.Mana = Math.Min(vitals.Mana + resolved, cap));
 		return new List<GameAction>();
 	}
 
-    internal override void RecordOutcome(Character character) { if (resolved > 0) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} recovered {resolved} SP."); }
+    internal override void RecordOutcome(Character character) { if (resolved > 0) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} recovered {resolved} Mana."); }
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{

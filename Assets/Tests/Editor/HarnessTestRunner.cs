@@ -10,6 +10,34 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Action Feedback Captures")]
+    public static void RunActionFeedbackCaptures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureDungeonLevelAndResultDialogsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTownServicesPartyAndOverworldAcrossAspectRatios");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Resource Naming EditMode")]
+    public static void RunResourceNamingEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "SaveStoreTests", "CampaignSlotStoreTests", "HeroClassTests", "HeroAttributeTests",
+        "CombatMathTests", "GameplayTextTests", "TrainerOfferTests",
+        "EternalEnigma.Tests.ClassContentTests", "EternalEnigma.Tests.CoreIntegration.CampaignSaveTests",
+        "EternalEnigma.Tests.TerminalIntegrationTests", "EternalEnigma.Tests.TerminalMenuPresentationTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run ActionFeedback")]
+    public static void RunActionFeedback() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ActionRejectionTests",
+        "EternalEnigma.Tests.GameplayCorrectnessTests",
+        "EternalEnigma.Tests.SkillRegressionTests",
+        "EternalEnigma.Tests.InventorySkillTargetingTests",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests",
+        "EternalEnigma.Tests.EconomyGameplayTests",
+        "EternalEnigma.Tests.TownGameplayTests",
+        "EternalEnigma.Tests.TownTrainerRankTests",
+        "EternalEnigma.Tests.CampaignTravelTests.DungeonEntryApprovalCancellationAndCapabilitiesUseOverworldDialogs",
+        "EternalEnigma.Tests.OverworldSceneTests.GateUnlockAudioOnlyPlaysForANewUnlock",
+        "EternalEnigma.Tests.OverworldSceneTests.LockChooserOffersEveryAcquiredOptionAndCancelsWithoutOpening",
+        "EternalEnigma.Tests.OverworldSceneTests.UniqueCampaignRewardUsesTheSameNameInPopupMenuAndGateAction",
+        "EternalEnigma.Tests.OpeningPreparationTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Terminal Audit Captures")]
     public static void RunTerminalAuditCaptures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalMainMenuSlotsHeroAndSettingsAcrossAspectRatios",
@@ -143,7 +171,7 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Find Exit")]
     public static void RunFindExit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.GameplayFollowupTests.FindExitPlacesBoundedTrailWithoutMovingOrTakingAutomaticTurns",
-        "EternalEnigma.Tests.GameplayFollowupTests.FindExitRejectsInsufficientFundsOrSPWithoutSpendingEither",
+        "EternalEnigma.Tests.GameplayFollowupTests.FindExitRejectsInsufficientFundsOrManaWithoutManaendingEither",
         "EternalEnigma.Tests.GameplayFollowupTests.FindExitRepeatCastsStackCoinsAndAlwaysLoseGoldAfterCollection",
         "EternalEnigma.Tests.GameplayFollowupTests.FindExitStopsAtStairsAndCollectsTheirCoinWithoutChangingFloors",
         "EternalEnigma.Tests.GameplayFollowupTests.FindExitAvoidsRevealedTrapsAndCoinsPreserveOtherPickups",

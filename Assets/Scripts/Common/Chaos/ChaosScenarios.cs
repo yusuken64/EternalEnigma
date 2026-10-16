@@ -159,16 +159,16 @@ public sealed partial class ChaosRunner
             string key = assertion.Actor + "/" + assertion.Metric;
             var actors = snapshot.Actors.Where(a => assertion.Actor == "all" || assertion.Actor == "controlled" && a.Id == snapshot.ControlledHero || a.Id == assertion.Actor).ToArray();
             result[key] = assertion.Metric switch {
-                "HP" => actors.Sum(a => a.HP), "SP" => actors.Sum(a => a.SP), "Hunger" => actors.Sum(a => a.Hunger),
+                "HP" => actors.Sum(a => a.HP), "Mana" => actors.Sum(a => a.Mana), "Hunger" => actors.Sum(a => a.Hunger),
                 "Gold" => snapshot.Gold, "Turns" => turnCount, "Commands" => commandCount,
                 "StartedCasts" => startedCasts, "ReleasedCasts" => releasedCasts,
                 "Actors" => snapshot.Actors.Count, "Control" => snapshot.CanControl ? 1 : 0,
                 "X" => actors.Sum(a => a.X), "Y" => actors.Sum(a => a.Y), "Arrows" => actors.Sum(a => a.Arrows),
-                "MaxHP" => actors.Sum(a => a.MaxHP), "MaxSP" => actors.Sum(a => a.MaxSP), "Strength" => actors.Sum(a => a.Strength),
+                "MaxHP" => actors.Sum(a => a.MaxHP), "MaxMana" => actors.Sum(a => a.MaxMana), "Strength" => actors.Sum(a => a.Strength),
                 "Defense" => actors.Sum(a => a.Defense), "CastRemaining" => actors.Sum(a => a.CastRemaining),
                 "Statuses" => actors.Sum(a => a.Status.Split('|').Count(s => !string.IsNullOrEmpty(s))), "Floor" => snapshot.Floor,
                 _ => throw new InvalidDataException("Unknown read-only metric: " + assertion.Metric) };
-            if (assertion.Metric is "HP" or "SP" or "Hunger" && actors.Length == 0) throw new InvalidDataException("Assertion actor is absent: " + assertion.Actor);
+            if (assertion.Metric is "HP" or "Mana" or "Hunger" && actors.Length == 0) throw new InvalidDataException("Assertion actor is absent: " + assertion.Actor);
         }
         return result;
     }
@@ -193,7 +193,7 @@ public sealed partial class ChaosRunner
                 Level = LevelSystem.MaxLevel, HP = 12, ControlRequiredHero = true } };
         if (row.Device == "Mouse") scenario.Steps.Add(new ChaosScenarioStep { TargetLabel = "Skills" });
         else scenario.Steps.Add(new ChaosScenarioStep { Input = Button("R", row.Device) });
-        scenario.Steps.Add(new ChaosScenarioStep { TargetLabel = $"{skill.SkillName}  R{row.Rank}  {skill.SPCost} SP" });
+        scenario.Steps.Add(new ChaosScenarioStep { TargetLabel = $"{skill.SkillName}  R{row.Rank}  {skill.ManaCost} Mana" });
         if (skill.RequiresTargetSelection)
         {
             // Targeting mouse input is world-based. Until its fixture supplies a target screen point, do not guess.
@@ -203,7 +203,7 @@ public sealed partial class ChaosRunner
         scenario.Steps.Add(new ChaosScenarioStep { WaitForControl = true });
         scenario.Assertions.AddRange(new[] {
             new ChaosAssertion { Category = "Effect", Metric = "HP", Comparison = "MinimumDelta", Expected = 1 },
-            new ChaosAssertion { Category = "Cost", Metric = "SP", Expected = -skill.SPCost },
+            new ChaosAssertion { Category = "Cost", Metric = "Mana", Expected = -skill.ManaCost },
             new ChaosAssertion { Category = "Turn", Metric = "Turns", Comparison = "MinimumDelta", Expected = 1 },
             new ChaosAssertion { Category = "Effect", Metric = "ReleasedCasts", Expected = 1 }
         });

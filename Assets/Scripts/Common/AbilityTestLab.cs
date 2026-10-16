@@ -94,14 +94,14 @@ public sealed class AbilityTestLab : MonoBehaviour
         foreach (var source in Abilities.Concat(Resources.LoadAll<Skill>("Classes/Skills")).Distinct().OrderBy(s => s.SkillName))
         {
             var copy = Instantiate(source);
-            copy.SPCost = 0; // Unlimited mana only on lab-owned skill instances.
+            copy.ManaCost = 0; // Unlimited mana only on lab-owned skill instances.
             learned.Add(copy);
             if (copy.SkillName != "Quick Casting") Caster.Skills.Add(copy);
         }
         foreach (var ally in Game.Allies)
         {
             ally.BaseStats.HPMax = 10000;
-            ally.BaseStats.SPMax = 10000;
+            ally.BaseStats.ManaMax = 10000;
             ally.AllyStrategy = AllyStrategy.HoldPosition;
             ally.InvalidateCachedStats();
         }
@@ -129,7 +129,7 @@ public sealed class AbilityTestLab : MonoBehaviour
     void Update()
     {
         if (!Ready || Game == null || Caster == null || Caster.Vitals == null) return;
-        Caster.Vitals.SP = Caster.FinalStats.SPMax;
+        Caster.Vitals.Mana = Caster.FinalStats.ManaMax;
         // Reset spawns targets during a coroutine; their Start may not have initialized AI yet.
         foreach (var dummy in dummies) if (dummy != null) dummy.Policies?.Clear();
     }
@@ -156,8 +156,8 @@ public sealed class AbilityTestLab : MonoBehaviour
         Friend.SetPosition(center + Vector3Int.left);
         Caster.Vitals.HP = Caster.FinalStats.HPMax / 2;
         Friend.Vitals.HP = Friend.FinalStats.HPMax / 2;
-        Friend.Vitals.SP = Friend.FinalStats.SPMax / 4;
-        Caster.Vitals.SP = Caster.FinalStats.SPMax;
+        Friend.Vitals.Mana = Friend.FinalStats.ManaMax / 4;
+        Caster.Vitals.Mana = Caster.FinalStats.ManaMax;
         Caster.PlayIdleAnimation(); Friend.PlayIdleAnimation();
         int actualDistance = Enumerable.Range(1, distance).TakeWhile(n => Game.CurrentDungeon.IsWalkable(center + Vector3Int.right * n)).Count();
         var targetCell = center + Vector3Int.right * Mathf.Max(1, actualDistance);
@@ -349,7 +349,7 @@ public sealed class AbilityTestLab : MonoBehaviour
             // Retreat can be exercised without leaving the test floor.
             Game.PlayerController.PendingRetreat = false;
             foreach (var action in replay) yield return Caster.ExecuteActionRoutine(action);
-            Caster.Vitals.SP = Caster.FinalStats.SPMax;
+            Caster.Vitals.Mana = Caster.FinalStats.ManaMax;
             foreach (var actor in Game.AllCharacters) actor.SyncDisplayedStats();
             Game.RefreshSight(); Game.UpdateMiniMap(); GameMessages.FinishAction();
         }
@@ -579,7 +579,7 @@ public sealed class AbilityTestLab : MonoBehaviour
             if (!learned.Any(s => s.SkillName == name)) continue;
             yield return CastAbility(name);
             if (!tested.Any(s => s.SkillName == name)) throw new InvalidOperationException(name + ": " + lastResult);
-            if (Caster.Vitals.SP != Caster.FinalStats.SPMax) throw new InvalidOperationException("Mana was not replenished.");
+            if (Caster.Vitals.Mana != Caster.FinalStats.ManaMax) throw new InvalidOperationException("Mana was not replenished.");
         }
         ResetArena();
         System.IO.Directory.CreateDirectory("Temp/AbilityTestLab");

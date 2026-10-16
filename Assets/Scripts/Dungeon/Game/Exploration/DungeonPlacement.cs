@@ -53,13 +53,26 @@ internal static class DungeonPlacement
     internal static bool TryDrop(TileWorldDungeon dungeon, Vector3Int origin, InventoryItem item, out DroppedItem dropped)
     {
         dropped = null;
-        if (item?.ItemDefinition == null || item.ItemDefinition.ResolveDroppedPrefab(dungeon.DroppedItemPrefabs)==null) return false;
+        if (!TryDropCell(dungeon, origin, item, out var cell, out _)) return false;
+        dropped = dungeon.SetDroppedItem(cell, item.ItemDefinition, item.StackStock);
+        dropped.InventoryItem = item;
+        return true;
+    }
+
+    internal static bool CanDrop(TileWorldDungeon dungeon, Vector3Int origin, InventoryItem item, out string reason) =>
+        TryDropCell(dungeon, origin, item, out _, out reason);
+
+    private static bool TryDropCell(TileWorldDungeon dungeon, Vector3Int origin, InventoryItem item, out Vector3Int cell, out string reason)
+    {
+        cell = default;
+        reason = null;
+        if (dungeon == null || item?.ItemDefinition == null || item.ItemDefinition.ResolveDroppedPrefab(dungeon.DroppedItemPrefabs)==null)
+        { reason = "This item cannot be dropped on this floor."; return false; }
         var reachable = Reachable(dungeon, origin);
         var cells = OpenCells(dungeon, items: true).Where(reachable.Contains)
             .OrderBy(p => TileWorldDungeon.ChevDistance(origin, p)).ThenBy(p => p.y).ThenBy(p => p.x).ToList();
-        if (cells.Count == 0) return false;
-        dropped = dungeon.SetDroppedItem(cells[0], item.ItemDefinition, item.StackStock);
-        dropped.InventoryItem = item;
+        if (cells.Count == 0) { reason = "There is no room nearby to drop this item."; return false; }
+        cell = cells[0];
         return true;
     }
 

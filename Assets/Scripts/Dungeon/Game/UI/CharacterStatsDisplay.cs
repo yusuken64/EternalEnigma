@@ -9,7 +9,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 	public Image PortraitImage;
 	public StatsDisplay LevelDisplay;
 	public StatsDisplay HpDisplay;
-	public StatsDisplay SpDisplay;
+	public StatsDisplay ManaDisplay;
 	public StatsDisplay HungerDisplay;
 
 	public Character Character;
@@ -40,9 +40,9 @@ public class CharacterStatsDisplay : MonoBehaviour
 		HpDisplay.Setup("HP",
 			() => $"HP  {character.DisplayedVitals.HP}/{character.DisplayedStats.HPMax}",
 			() => (float)character.DisplayedVitals.HP / character.DisplayedStats.HPMax);
-		SpDisplay.Setup("SP",
-			() => $"SP  {character.DisplayedVitals.SP}/{character.DisplayedStats.SPMax}",
-			() => (float)character.DisplayedVitals.SP / character.DisplayedStats.SPMax);
+		ManaDisplay.Setup("Mana",
+			() => $"Mana  {character.DisplayedVitals.Mana}/{character.DisplayedStats.ManaMax}",
+			() => (float)character.DisplayedVitals.Mana / character.DisplayedStats.ManaMax);
 		HungerDisplay.Setup("Full",
 			() => $"Food  {character.DisplayedVitals.Hunger}/{character.DisplayedStats.HungerMax}",
 			() => (float)character.DisplayedVitals.Hunger / character.DisplayedStats.HungerMax);
@@ -58,7 +58,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 
 		LevelDisplay.UpdateUI();
 		HpDisplay.UpdateUI();
-		SpDisplay.UpdateUI();
+		ManaDisplay.UpdateUI();
 		HungerDisplay.UpdateUI();
 	}
 }

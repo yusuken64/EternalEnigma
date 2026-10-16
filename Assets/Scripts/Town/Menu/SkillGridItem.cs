@@ -43,48 +43,33 @@ public class SkillGridItem : MonoBehaviour, ISelectHandler, IDeselectHandler
 		}
 
 		clickCooldownSeconds = 0.4f;
-		var offer = _data.Offer;
-        if (offer == null) return;
-        if (offer.IsMaxed)
+		var town = FindFirstObjectByType<Town>();
+        if (!town.Services.CanLearn(Character, _data.Skill, out var offer, out var unavailable))
         {
-            AudioManager.Instance?.PlayCue(SoundCue.Denied);
-            TownMenu.ShowMessage("Already at maximum rank.");
+            GetComponentInParent<BallistaDialog>()?.Reject(unavailable);
             return;
         }
-		if (!offer.CanLearn)
-		{
-			AudioManager.Instance?.PlayCue(SoundCue.Denied);
-			TownMenu.ShowMessage(string.IsNullOrEmpty(offer.LockReason) ? "This skill cannot be learned." : offer.LockReason);
-			return;
-		}
-		if (!CanAfford())
-		{
-			AudioManager.Instance?.PlayCue(SoundCue.Denied);
-			var messageDialog = Common.Instance.MessageDialog;
-			messageDialog.PromptText.text = GameplayText.Format("Not enough gold to buy skill");
-			messageDialog.gameObject.SetActive(true);
-			FindFirstObjectByType<TownMenuManager>().Open(messageDialog);
-			return;
-		}
 		BallistaPurchaseDialog.Setup(offer.Skill, offer.CurrentRank + 1, offer.NextCost, offer.UsesPoints);
         BallistaPurchaseDialog.CloseAction = () => SkillToggledCallback?.Invoke();
 		BallistaPurchaseDialog.PurcahseCallBack = () =>
 		{
-			var town = FindFirstObjectByType<Town>();
-			if (!town.Services.Learn(Character, offer.Skill, out var reason))
+			if (!town.Services.CanLearn(Character, offer.Skill, out var current, out var unavailableNow))
 			{
-				TownMenu.ShowMessage(reason);
+				BallistaPurchaseDialog.Reject(unavailableNow);
 				return;
 			}
-            SkillToggledCallback?.Invoke();
+            if (current.CurrentRank != offer.CurrentRank || current.NextCost != offer.NextCost || current.UsesPoints != offer.UsesPoints)
+            {
+                BallistaPurchaseDialog.Reject("This skill offer changed. Choose the skill again.");
+                return;
+            }
+			if (!town.Services.Learn(Character, offer.Skill, out var reason))
+			{
+				BallistaPurchaseDialog.Reject(reason);
+				return;
+			}
+            BallistaPurchaseDialog.CloseDialog();
 		};
-	}
-
-	private bool CanAfford()
-	{
-		if (_data.Offer != null && _data.Offer.UsesPoints) return true; // CanLearn already covers skill points
-		var town = FindFirstObjectByType<Town>();
-		return _data.Offer != null ? _data.Offer.NextCost <= town.TownPlayer.Gold : _data.Skill.LearnCost <= town.TownPlayer.Gold;
 	}
 
 	private void UpdateUI()
@@ -119,7 +104,9 @@ public class SkillGridItem : MonoBehaviour, ISelectHandler, IDeselectHandler
         Fit(CostText.rectTransform, new Vector2(.77f, .15f), new Vector2(.97f, .85f));
         CostText.fontSizeMin = 13; CostText.fontSizeMax = 17; CostText.enableAutoSizing = true;
         CostText.alignment = TextAlignmentOptions.Center; CostText.raycastTarget = false;
-        CostText.text = GameplayText.Format(maxed ? "Max rank" : offer != null && offer.UsesPoints ? $"{offer.NextCost} pt" : $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)} gold");
+        CostText.textWrappingMode = TextWrappingModes.Normal;
+        CostText.text = GameplayText.Format(maxed ? "Max rank" : offer != null && offer.UsesPoints ? $"{offer.NextCost}\nSkill Points" : $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)} gold");
+        GridButton.interactable = true;
         CostObject.SetActive(true);
         ActiveImage.color = new Color(.55f, .30f, .08f, 1);
         ActiveImage.enabled = EventSystem.current != null && EventSystem.current.currentSelectedGameObject == GridButton.gameObject;

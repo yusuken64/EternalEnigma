@@ -4,7 +4,7 @@ using System.Linq;
 public class SaveStoreTests
 {
     [Test]
-    public void CurrentSchemaPreservesStockAndDoesNotWriteFormatMetadata()
+    public void CurrentSchemaPreservesStockAndStampsExplicitFormatVersion()
     {
         var store = new Store();
         using (SaveSystem.UseStore(store))
@@ -14,7 +14,7 @@ public class SaveStoreTests
             data.TownSaveData.Gold = 731;
             data.TownSaveData.DonationTotal = 1200;
             data.TownSaveData.InventoryItems.Add(new ItemSaveData { ItemName = "Wooden Arrow", HasStock = true, Stock = 7 });
-            data.TownSaveData.RecruitedAlliesData.Add(new TownAllyData { AllyName = "Rowan", Skills = new() { "Healing" } });
+            data.TownSaveData.RecruitedAlliesData.Add(new TownAllyData { AllyName = "Rowan", Mana = 7, Skills = new() { "Healing" } });
             SaveSystem.SaveData(data);
             var save = SaveSystem.LoadData();
             Assert.That(save.TownSaveData.TownSeed, Is.EqualTo(123));
@@ -24,13 +24,33 @@ public class SaveStoreTests
             Assert.That(save.TownSaveData.InventoryItems.Single().HasStock, Is.True);
             Assert.That(save.TownSaveData.InventoryItems.Single().Stock, Is.EqualTo(7));
             Assert.That(save.TownSaveData.RecruitedAlliesData[0].Skills, Does.Contain("Healing"));
+            Assert.That(save.TownSaveData.RecruitedAlliesData[0].Mana, Is.EqualTo(7));
+            Assert.That(save.FormatVersion, Is.EqualTo(SaveSystem.CurrentFormatVersion));
+            Assert.That(data.FormatVersion, Is.EqualTo(SaveSystem.CurrentFormatVersion));
             SaveSystem.SaveData(save);
             Assert.That(store.Json, Does.Contain("TownSaveData"));
             Assert.That(store.Json, Does.Not.Contain("OverworldSaveData"));
-            Assert.That(store.Json, Does.Not.Contain("FormatVersion"));
+            Assert.That(store.Json, Does.Contain("\"FormatVersion\":" + SaveSystem.CurrentFormatVersion));
+            Assert.That(store.Json, Does.Contain("\"Mana\":7"));
+            Assert.That(store.Json, Does.Not.Contain("\"Sp\":"));
             Assert.That(store.Json, Does.Not.Contain("LayoutVersion"));
             Assert.That(store.Json, Does.Not.Contain("VisualSelectionVersion"));
             Assert.That(store.Json, Does.Not.Contain("\"Inventory\":"));
+        }
+    }
+
+    [TestCase("{\"TownSaveData\":{\"Gold\":731}}")]
+    [TestCase("{\"FormatVersion\":2,\"TownSaveData\":{\"Gold\":731}}")]
+    [TestCase("{\"FormatVersion\":4,\"TownSaveData\":{\"Gold\":731}}")]
+    public void UnsupportedFormatsAreRejectedWithoutMigrationOrOverwriting(string json)
+    {
+        var store = new Store { Json = json };
+        using (SaveSystem.UseStore(store))
+        {
+            Assert.That(() => SaveSystem.LoadData(), Throws.InstanceOf<System.InvalidOperationException>());
+            Assert.That(SaveSystem.Inspect(0, out var error), Is.Null);
+            Assert.That(error, Does.Contain("unsupported format").And.Contain("Start a new campaign"));
+            Assert.That(store.Json, Is.EqualTo(json));
         }
     }
 

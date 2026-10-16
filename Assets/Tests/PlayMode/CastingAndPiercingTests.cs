@@ -24,7 +24,7 @@ namespace EternalEnigma.Tests
                 .First(p=>Enumerable.Range(-1,3).All(x=>Enumerable.Range(-1,3).All(y=>d.IsWalkable(p+new Vector3Int(x,y)))));
             caster.SetPosition(cell); friend.SetPosition(cell+Vector3Int.left);
             foreach(var c in harness.Game.AllCharacters)
-            { c.BaseStats.HPMax=100; c.BaseStats.SPMax=100; c.InvalidateCachedStats(); c.Vitals.HP=50; c.Vitals.SP=100; c.SyncDisplayedStats(); }
+            { c.BaseStats.HPMax=100; c.BaseStats.ManaMax=100; c.InvalidateCachedStats(); c.Vitals.HP=50; c.Vitals.Mana=100; c.SyncDisplayedStats(); }
             caster.AllyStrategy = friend.AllyStrategy = AllyStrategy.HoldPosition;
             caster.Equipment.ClassFilter = null;
         }
@@ -53,13 +53,13 @@ namespace EternalEnigma.Tests
         [Test] public void CastTimeCountsChargingThenSeparateReleaseAndPaysOnce()
         {
             var heal=Learn("Heal"); heal.CastTime=2;
-            int hp=friend.Vitals.HP,sp=caster.Vitals.SP;
+            int hp=friend.Vitals.HP,mana=caster.Vitals.Mana;
             Resolve(new SkillAction(caster,heal,friend));
             Assert.That(caster.PendingCast.Remaining,Is.EqualTo(1)); Assert.That(friend.Vitals.HP,Is.EqualTo(hp));
-            Assert.That(caster.Vitals.SP,Is.EqualTo(sp-heal.SPCost));
+            Assert.That(caster.Vitals.Mana,Is.EqualTo(mana-heal.ManaCost));
             Resolve(new AdvanceCastAction()); Assert.That(caster.PendingCast.Remaining,Is.Zero); Assert.That(friend.Vitals.HP,Is.EqualTo(hp));
             Resolve(new AdvanceCastAction()); Assert.That(caster.PendingCast,Is.Null); Assert.That(friend.Vitals.HP,Is.GreaterThan(hp));
-            Assert.That(caster.Vitals.SP,Is.EqualTo(sp-heal.SPCost));
+            Assert.That(caster.Vitals.Mana,Is.EqualTo(mana-heal.ManaCost));
         }
 
         [Test] public void AutoplayTraceDistinguishesChargingCompletionAndInterruption()
@@ -90,10 +90,10 @@ namespace EternalEnigma.Tests
         }
         [Test] public void InvalidLockedTargetFizzlesWithoutRefund()
         {
-            var heal=Learn("Heal"); int sp=caster.Vitals.SP;
+            var heal=Learn("Heal"); int mana=caster.Vitals.Mana;
             Resolve(new SkillAction(caster,heal,friend)); friend.Vitals.HP=0; PartyRules.MarkDowned(harness.Game,friend);
             Resolve(new AdvanceCastAction()); Assert.That(friend.Vitals.HP,Is.Zero); Assert.That(caster.PendingCast,Is.Null);
-            Assert.That(caster.Vitals.SP,Is.EqualTo(sp-heal.SPCost));
+            Assert.That(caster.Vitals.Mana,Is.EqualTo(mana-heal.ManaCost));
         }
         [Test] public void ForcedMovementCancelsAndQuickCastingCanBeInstant()
         {
@@ -218,10 +218,10 @@ namespace EternalEnigma.Tests
         {
             var heal=Learn("Heal");
             caster.BaseStats.ActionsPerTurnMax=2; caster.InvalidateCachedStats(); caster.StartTurn(); caster.SyncDisplayedStats();
-            int sp=caster.Vitals.SP;
+            int mana=caster.Vitals.Mana;
             yield return harness.ExecuteAction(new SkillAction(caster,heal,friend));
             Assert.That(caster.PendingCast,Is.Null); Assert.That(friend.Vitals.HP,Is.GreaterThan(50));
-            Assert.That(caster.Vitals.SP,Is.EqualTo(sp-heal.SPCost));
+            Assert.That(caster.Vitals.Mana,Is.EqualTo(mana-heal.ManaCost));
             var history=Object.FindFirstObjectByType<GameMessages>().History;
             Assert.That(history.Count(x=>x.Contains("starts charging Heal")),Is.EqualTo(1));
             Assert.That(history.Count(x=>x.Contains("releases Heal")),Is.EqualTo(1));
@@ -252,7 +252,7 @@ namespace EternalEnigma.Tests
         {
             var go=new GameObject("Second charging ally"); var third=go.AddComponent<Ally>();
             third.enabled=false; third.Equipment=go.AddComponent<Equipment>(); third.Skills=new();
-            third.Team=caster.Team; third.BaseStats=new Stats { HPMax=100,SPMax=100 }; third.Vitals=new Vitals(); third.Vitals.HP=100; third.Vitals.SP=100;
+            third.Team=caster.Team; third.BaseStats=new Stats { HPMax=100,ManaMax=100 }; third.Vitals=new Vitals(); third.Vitals.HP=100; third.Vitals.Mana=100;
             third.DisplayedVitals=new Vitals(); third.SyncDisplayedStats(); third.SetPosition(caster.TilemapPosition+Vector3Int.right);
             harness.Game.Allies.Add(third);
             try
@@ -264,9 +264,9 @@ namespace EternalEnigma.Tests
                 Assert.That(evaluator.Evaluate(AllySkillContext.Build(caster,harness.Game)).Option.Skill,Is.SameAs(chorus));
                 third.PendingCast=null;
                 Assert.That(evaluator.Evaluate(AllySkillContext.Build(caster,harness.Game)).Option.Skill,Is.SameAs(dance));
-                caster.Vitals.SP=1;
+                caster.Vitals.Mana=1;
                 Assert.That(evaluator.Evaluate(AllySkillContext.Build(caster,harness.Game)).Option.Skill,Is.SameAs(dance));
-                caster.Vitals.SP=0; Assert.That(evaluator.Evaluate(AllySkillContext.Build(caster,harness.Game)),Is.Null);
+                caster.Vitals.Mana=0; Assert.That(evaluator.Evaluate(AllySkillContext.Build(caster,harness.Game)),Is.Null);
                 Learn("Mobile Casting",friend); var position=friend.TilemapPosition; friend.DetermineAction();
                 Assert.That(friend.determinedActions.Single(),Is.TypeOf<AdvanceCastAction>());
                 Resolve(friend.determinedActions.Single(),friend); Assert.That(friend.TilemapPosition,Is.EqualTo(position));

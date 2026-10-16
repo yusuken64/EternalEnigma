@@ -35,15 +35,15 @@ namespace EternalEnigma.Tests
             inputScope = new TestInputScope();
             harness = new GameTestHarness();
             yield return harness.LoadDungeon(new TestScenario());
-            caster.BaseStats.SPMax = 30;
-            caster.BaseStats.SPRegenAcccumlateThreshold = 10000;
+            caster.BaseStats.ManaMax = 30;
+            caster.BaseStats.ManaRegenThreshold = 10000;
             caster.InvalidateCachedStats();
-            caster.Vitals.SP = 20;
+            caster.Vitals.Mana = 20;
             caster.SyncDisplayedStats();
             skill = ScriptableObject.CreateInstance<Skill>();
             assets.Add(skill);
             skill.SkillName = "Item targeting test";
-            skill.SPCost = 2;
+            skill.ManaCost = 2;
             skill.Targeting = SkillTargeting.InventoryItem;
             skill.TargetSelector = null; // Inventory skills do not need world-target settings.
             effect = new MarkItemEffect();
@@ -181,15 +181,15 @@ namespace EternalEnigma.Tests
             yield return Press(Key.Escape);
             Assert.That(MenuManager.Instance.CurrentDialog,Is.SameAs(MenuManager.Instance.PartyMenu));
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(skillButton));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
             Assert.That(effect.Marked, Is.Empty);
             yield return Press(Key.Enter);
             yield return Press(Key.DownArrow);
             yield return Press(Key.Enter);
             yield return harness.WaitForIdle();
             Assert.That(effect.Marked, Is.EquivalentTo(new[] { second }));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(18));
-            Assert.That(caster.DisplayedVitals.SP, Is.EqualTo(18));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(18));
+            Assert.That(caster.DisplayedVitals.Mana, Is.EqualTo(18));
             Assert.That(bag.InventoryItems, Is.EqualTo(new[] { first, second }));
             Assert.That(MenuManager.Instance.Opened, Is.False);
             yield return Press(Key.Q);
@@ -215,12 +215,12 @@ namespace EternalEnigma.Tests
             yield return ClickRow(row);
             yield return harness.WaitForIdle();
             Assert.That(effect.Marked, Is.EquivalentTo(new[] { sword }));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(18));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(18));
             Assert.That(MenuManager.Instance.Opened, Is.False);
         }
 
         [UnityTest]
-        public IEnumerator EmptyIneligibleRemovedAndUnaffordableTargetsCannotSpendSp()
+        public IEnumerator EmptyIneligibleRemovedAndUnaffordableTargetsCannotManaendMana()
         {
             Assert.That(caster.CanCast(skill, out _), Is.False);
             var item = AddEquipment(EquipmentSlot.MainHand);
@@ -229,20 +229,20 @@ namespace EternalEnigma.Tests
             var replacement = item.ItemDefinition.AsInventoryItem(null);
             bag.Remove(item); bag.Add(replacement);
             Assert.That(queued.ExecuteImmediate(caster), Is.Empty, "A same-named replacement is not the selected item.");
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
             bag.Add(item);
             effect.Marked.Add(item);
             Assert.That(queued.ExecuteImmediate(caster), Is.Empty, "Eligibility must be rechecked before execution.");
             effect.Marked.Clear();
-            caster.Vitals.SP = 1; caster.SyncDisplayedStats();
+            caster.Vitals.Mana = 1; caster.SyncDisplayedStats();
             yield return Press(Key.R);
             yield return Press(Key.Enter);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(MenuManager.Instance.PartyMenu));
             Assert.That(queued.ExecuteImmediate(caster), Is.Empty);
-            Assert.That(caster.Vitals.SP, Is.EqualTo(1));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(1));
             Assert.That(effect.Marked, Is.Empty);
             Assert.That(harness.Game.TurnManager.IsProcessingTurn, Is.False);
-            caster.Vitals.SP = 20; caster.SyncDisplayedStats();
+            caster.Vitals.Mana = 20; caster.SyncDisplayedStats();
             skill.ActionEffects = new List<GameAction> { new TakeDamageAction { damage = 5 } };
             Assert.That(caster.CanCast(skill, out _), Is.False, "Character effects must not be dispatched to inventory items.");
             yield return Press(Key.Escape);
@@ -276,7 +276,7 @@ namespace EternalEnigma.Tests
             yield return harness.WaitForIdle();
             Assert.That(effect.Marked, Is.EquivalentTo(new[] { sword }));
             Assert.That(scroll.StackStock, Is.EqualTo(1));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
             Assert.That(MenuManager.Instance.DialogStack, Is.Empty);
             yield return Press(Key.Q);
             Assert.That(MenuManager.Instance.PartyMenu.EntryButtons.Count, Is.EqualTo(2));

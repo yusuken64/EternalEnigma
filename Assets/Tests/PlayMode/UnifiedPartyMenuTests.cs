@@ -107,7 +107,7 @@ namespace EternalEnigma.Tests
             menu.Shortcut(PartyMenuTab.Skills);Assert.That(manager.Opened,Is.False);
 
             var caster=town.TownPlayer.RecruitedAllies[0];var stats=TownUtilityService.StatsFor(caster);
-            Assert.That(stats.HPMax,Is.GreaterThan(5));caster.Hp=1;caster.Sp=-1;
+            Assert.That(stats.HPMax,Is.GreaterThan(5));caster.Hp=1;caster.Mana=-1;
             var effect=Asset<ModifyStatsItemEffectDefinition>();effect.VitalModification=new VitalModification{Hp=5};
             var definition=Asset<UsableItemDefinition>();definition.ItemName="Recovery test";definition.ItemEffectDefinition=effect;
             var first=definition.AsInventoryItem(null);var duplicate=definition.AsInventoryItem(null);
@@ -137,13 +137,13 @@ namespace EternalEnigma.Tests
         {
             yield return harness.LoadTown(new TestScenario().CreateSave());
             var town=Object.FindFirstObjectByType<Town>();var caster=town.TownPlayer.RecruitedAllies[0];
-            var skill=Asset<Skill>();skill.SkillName="Town test heal";skill.SPCost=2;skill.Targeting=SkillTargeting.Self;
+            var skill=Asset<Skill>();skill.SkillName="Town test heal";skill.ManaCost=2;skill.Targeting=SkillTargeting.Self;
             skill.TargetSelector=new TargetSelector{Team=TargetTeam.Self,Area=TargetArea.Self};skill.ActionEffects=new(){new ScaledHealAction{BaseHeal=3,PerLevel=1}};
-            caster.SetRank(skill.SkillName,3);caster.Hp=1;caster.Sp=0;caster.Level=5;
+            caster.SetRank(skill.SkillName,3);caster.Hp=1;caster.Mana=0;caster.Level=5;
             int saves=0;var service=new TownUtilityService(town.TownPlayer.RecruitedAllies,town.TownPlayer.Inventory,()=>saves++);
             Assert.That(service.Execute(caster,skill,null,caster,null,out _),Is.False);Assert.That(caster.Hp,Is.EqualTo(1));Assert.That(saves,Is.Zero);
-            caster.Sp=-1;skill.ActionEffects.Add(new RestoreSPAction{Amount=-1});
-            Assert.That(service.Execute(caster,skill,null,caster,null,out _),Is.False);Assert.That(caster.Sp,Is.EqualTo(-1));
+            caster.Mana=-1;skill.ActionEffects.Add(new RestoreManaAction{Amount=-1});
+            Assert.That(service.Execute(caster,skill,null,caster,null,out _),Is.False);Assert.That(caster.Mana,Is.EqualTo(-1));
             skill.ActionEffects.RemoveAt(1);Assert.That(service.Execute(caster,skill,null,caster,null,out _),Is.True);
             Assert.That(caster.Hp,Is.GreaterThan(4));Assert.That(saves,Is.EqualTo(1));
         }
@@ -153,28 +153,28 @@ namespace EternalEnigma.Tests
             yield return harness.LoadTown(new TestScenario().CreateSave());
             var town=Object.FindFirstObjectByType<Town>();var caster=town.TownPlayer.RecruitedAllies[0];
             var ally=Object.Instantiate(caster,town.transform);ally.Id="utility-target";town.TownPlayer.RecruitedAllies.Add(ally);
-            var skill=Asset<Skill>();skill.SkillName="Party SP recovery";skill.SPCost=2;skill.Targeting=SkillTargeting.AllTargets;
+            var skill=Asset<Skill>();skill.SkillName="Party Mana recovery";skill.ManaCost=2;skill.Targeting=SkillTargeting.AllTargets;
             skill.TargetSelector=new TargetSelector{Team=TargetTeam.Allies,Area=TargetArea.All};
-            skill.ActionEffects=new(){new RestoreSPAction{Amount=5,ExcludeCaster=true}};
-            caster.SetRank(skill.SkillName,1);caster.Hp=-1;caster.Sp=-1;ally.Hp=0;ally.Sp=0;
+            skill.ActionEffects=new(){new RestoreManaAction{Amount=5,ExcludeCaster=true}};
+            caster.SetRank(skill.SkillName,1);caster.Hp=-1;caster.Mana=-1;ally.Hp=0;ally.Mana=0;
             int saves=0;var service=new TownUtilityService(town.TownPlayer.RecruitedAllies,town.TownPlayer.Inventory,()=>saves++);
-            Assert.That(service.Execute(caster,skill,null,null,null,out _),Is.False);Assert.That(caster.Sp,Is.EqualTo(-1));
+            Assert.That(service.Execute(caster,skill,null,null,null,out _),Is.False);Assert.That(caster.Mana,Is.EqualTo(-1));
             ally.Hp=-1;Assert.That(service.Execute(caster,skill,null,null,null,out _),Is.True);
-            Assert.That(ally.Sp,Is.EqualTo(Mathf.Min(5,TownUtilityService.StatsFor(ally).SPMax)));
-            Assert.That(caster.Sp,Is.EqualTo(TownUtilityService.StatsFor(caster).SPMax-2));Assert.That(saves,Is.EqualTo(1));
+            Assert.That(ally.Mana,Is.EqualTo(Mathf.Min(5,TownUtilityService.StatsFor(ally).ManaMax)));
+            Assert.That(caster.Mana,Is.EqualTo(TownUtilityService.StatsFor(caster).ManaMax-2));Assert.That(saves,Is.EqualTo(1));
 
             var equipment=Asset<EquipmentItemDefinition>();equipment.ItemName="Inspected weapon";equipment.EquipmentSlot=EquipmentSlot.MainHand;
             var equipped=new EquipableInventoryItem(equipment);caster.Equipment.Equip(equipped);
-            var inspect=Asset<Skill>();inspect.SkillName="Town inspection";inspect.SPCost=1;inspect.Targeting=SkillTargeting.InventoryItem;
+            var inspect=Asset<Skill>();inspect.SkillName="Town inspection";inspect.ManaCost=1;inspect.Targeting=SkillTargeting.InventoryItem;
             inspect.InventoryTargetSelector=new InventoryTargetSelector{ItemType=InventoryTargetType.Weapon,IncludeEquipped=false};
             inspect.ActionEffects=new(){new InspectInventoryItemEffect()};caster.SetRank(inspect.SkillName,1);
-            int before=caster.Sp;
-            Assert.That(service.Execute(caster,inspect,null,null,equipped,out _),Is.False);Assert.That(caster.Sp,Is.EqualTo(before));
+            int before=caster.Mana;
+            Assert.That(service.Execute(caster,inspect,null,null,equipped,out _),Is.False);Assert.That(caster.Mana,Is.EqualTo(before));
             inspect.InventoryTargetSelector.IncludeEquipped=true;
             Assert.That(service.Describe(caster,inspect,null,out var utility,out _),Is.True);
             Assert.That(service.InventoryTargets(caster,utility),Does.Contain(equipped));
             Assert.That(service.Execute(caster,inspect,null,null,equipped,out var description),Is.True);
-            Assert.That(description,Does.Contain(equipment.ItemName));Assert.That(caster.Sp,Is.EqualTo(before-1));
+            Assert.That(description,Does.Contain(equipment.ItemName));Assert.That(caster.Mana,Is.EqualTo(before-1));
             Assert.That(caster.Equipment.IsEquipped(equipped),Is.True);Assert.That(saves,Is.EqualTo(2));
         }
 

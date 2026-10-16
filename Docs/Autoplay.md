@@ -283,7 +283,7 @@ The next campaign never resumes or reuses the previous campaign's progress.
 
 Normal runs retain damage, consumable costs, gold limits and defeat. Debug runs
 optionally protect all party members from HP loss, give melee/ranged attacks
-infinite strength (lethal damage without integer overflow), and replenish gold, SP, hunger,
+infinite strength (lethal damage without integer overflow), and replenish gold, Mana, hunger,
 and preserve consumables used by the bot. Debug runs never grant progression
 keys/capabilities or fabricate dungeon victories. Every debug run is marked
 ineligible for balance statistics, including one with both cheat switches off.
@@ -320,7 +320,7 @@ still apply. Subsequent town visits reconsider offers as the party progresses.
 In debug coverage mode, both leaders and companions retain revival, emergency
 healing and cure priorities, then prefer unexercised abilities with appropriate
 targets and useful effects. Damage abilities need not outperform a basic attack
-to be exercised, but use ordinary targeting, SP, arrows, cooldowns and actions.
+to be exercised, but use ordinary targeting, Mana, arrows, cooldowns and actions.
 The normal AI path is unchanged. Coverage never fabricates injuries, levels or
 skill points, so conditional abilities can remain unexercised. Passive abilities
 are listed separately from active casting coverage. Optional destination coverage
@@ -344,7 +344,7 @@ Each run contains:
   party and enemies, and completed/visited objectives. `report.json` also lists
   each actor's class, stable actor IDs, purchase and training attempts, learned ranks,
   ability coverage and unexercised reasons. `SkillUses.Selected` records selections,
-  `Started` records SP-paid casts, `Casts` records resolved releases, and `Interrupted`
+  `Started` records Mana-paid casts, `Casts` records resolved releases, and `Interrupted`
   records canceled, invalid or unfinished casts. A resolved release schedules its
   ordinary effects; it is not a guarantee of a hit or damage.
 - `actions.jsonl`: chronological actions with location, floor, position, party

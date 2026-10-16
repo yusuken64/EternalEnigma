@@ -8,7 +8,7 @@ public sealed class GameUITheme : ScriptableObject
     public Sprite Button, Panel, Field, Track, Knob, Toggle, Check, Arrow;
     public TMP_FontAsset HeadingFont;
     public Sprite DungeonWood, DungeonHeading, DungeonPaper, DungeonWoodButton, DungeonPrimary, DungeonSecondary,
-        DungeonClose, DungeonIconFrame, DungeonSelection, DungeonTrack, DungeonHP, DungeonSP, DungeonHunger;
+        DungeonClose, DungeonIconFrame, DungeonSelection, DungeonTrack, DungeonHP, DungeonMana, DungeonHunger;
     public GameObject DungeonMenuPrefab, DungeonPickerPrefab, DungeonActionsPrefab, DungeonInventoryPrefab;
     public EventHistoryDialog HistoryPrefab;
     public GameObject[] DungeonRolePrefabs;
@@ -19,7 +19,7 @@ public sealed class GameUITheme : ScriptableObject
         DungeonVisualRole.Primary => DungeonPrimary, DungeonVisualRole.Secondary => DungeonSecondary,
         DungeonVisualRole.Close => DungeonClose, DungeonVisualRole.IconFrame => DungeonIconFrame,
         DungeonVisualRole.Selection => DungeonSelection, DungeonVisualRole.Track => DungeonTrack,
-            DungeonVisualRole.HP => DungeonHP, DungeonVisualRole.SP => DungeonSP, DungeonVisualRole.InputSurface => null, _ => DungeonHunger
+            DungeonVisualRole.HP => DungeonHP, DungeonVisualRole.Mana => DungeonMana, DungeonVisualRole.InputSurface => null, _ => DungeonHunger
     };
     private static GameUITheme instance;
     public static GameUITheme Current => instance != null ? instance : instance = Resources.Load<GameUITheme>("UI/BamaoTheme");

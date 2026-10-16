@@ -40,7 +40,7 @@ public sealed class DungeonPartyCard : MonoBehaviour
         display.NameText=GameUISkin.Label(card.panel.transform,"",new Vector2(.37f,.79f),new Vector2(.99f,.99f),26);
         DungeonHud.WorldLabel(display.NameText);
         display.HpDisplay=Bar(card.panel.transform,.49f,new Color(.37f,.80f,.20f));
-        display.SpDisplay=Bar(card.panel.transform,.31f,new Color(.19f,.53f,.86f));
+        display.ManaDisplay=Bar(card.panel.transform,.31f,new Color(.19f,.53f,.86f));
         display.HungerDisplay=Bar(card.panel.transform,.13f,new Color(.92f,.61f,.14f));
         display.LevelDisplay=Bar(card.panel.transform,.02f,new Color(.63f,.49f,.28f),.06f);
         display.LevelDisplay.ValueText.gameObject.SetActive(false);

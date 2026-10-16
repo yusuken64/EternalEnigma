@@ -5,7 +5,11 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 namespace EternalEnigma.Tests
 {
@@ -61,14 +65,81 @@ namespace EternalEnigma.Tests
             Assert.That(recipient.AttributePromptPending,Is.True);
             yield return null;
             Assert.That(MenuManager.Instance.CurrentDialog,Is.TypeOf<LevelUpChoiceDialog>());
-            ((LevelUpChoiceDialog)MenuManager.Instance.CurrentDialog).LaterButton.onClick.Invoke();
+            var choice = (LevelUpChoiceDialog)MenuManager.Instance.CurrentDialog;
+            choice.StrButton.onClick.Invoke();
             yield return null;
-            Assert.That(recipient.AttributePromptPending,Is.False);
-            Assert.That(recipient.PendingAttributePoints,Is.EqualTo(2));
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(choice));
+            Assert.That(recipient.AttributePromptPending, Is.True);
+            Assert.That(recipient.PendingAttributePoints, Is.EqualTo(1));
+            choice.IntButton.onClick.Invoke();
+            yield return null;
+            Assert.That(recipient.AttributePromptPending, Is.False);
+            Assert.That(recipient.PendingAttributePoints, Is.Zero);
             Assert.That(MenuManager.Instance.CurrentDialog,Is.Not.TypeOf<LevelUpChoiceDialog>());
-            Assert.That(AttributeSpending.TrySpend(recipient,HeroAttribute.Str),Is.True);
-            Assert.That(recipient.PendingAttributePoints,Is.EqualTo(1));
+            Assert.That(AttributeSpending.TrySpend(recipient,HeroAttribute.Str),Is.False);
             Resolve(actor, new AddXPAction(null, 30));
+        }
+
+        [UnityTest] public IEnumerator LevelUpChoiceIgnoresKeyboardAndControllerCancelAndWrapsThreeStats()
+        {
+            using var input = new TestInputScope();
+            var keyboard = InputSystem.AddDevice<Keyboard>();
+            var pad = InputSystem.AddDevice<Gamepad>();
+            MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { keyboard, pad };
+            var hero = harness.Ally;
+            hero.Vitals.Level = 3; hero.Attributes = default; hero.AttributePromptPending = true;
+            int completed = 0;
+            var choice = LevelUpChoiceDialog.Open(hero, () => completed++);
+            yield return null;
+            Assert.That(choice.GetComponentsInChildren<Button>(true), Has.Length.EqualTo(3));
+            var expected = (hero.PrimaryClass?.PreferredAttribute ?? HeroAttribute.Str) switch {
+                HeroAttribute.Int => choice.IntButton, HeroAttribute.Agi => choice.AgiButton, _ => choice.StrButton };
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(expected.gameObject));
+
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Escape)); yield return null; yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null; yield return null;
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(choice));
+            Assert.That(hero.PendingAttributePoints, Is.EqualTo(2));
+            Assert.That(hero.AttributePromptPending, Is.True);
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.East)); yield return null; yield return null;
+            InputSystem.QueueStateEvent(pad, new GamepadState()); yield return null; yield return null;
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(choice));
+            Assert.That(hero.PendingAttributePoints, Is.EqualTo(2));
+            Assert.That(hero.AttributePromptPending, Is.True);
+            Assert.That(completed, Is.Zero);
+
+            choice.AgiButton.Select();
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.DpadDown)); yield return null; yield return null;
+            InputSystem.QueueStateEvent(pad, new GamepadState()); yield return null; yield return null;
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(choice.StrButton.gameObject));
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.UpArrow)); yield return null; yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null; yield return null;
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(choice.AgiButton.gameObject));
+
+            choice.StrButton.onClick.Invoke(); yield return null;
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(choice));
+            Assert.That(completed, Is.Zero);
+            choice.IntButton.onClick.Invoke(); yield return null;
+            Assert.That(hero.PendingAttributePoints, Is.Zero);
+            Assert.That(hero.AttributePromptPending, Is.False);
+            Assert.That(completed, Is.EqualTo(1));
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.Not.TypeOf<LevelUpChoiceDialog>());
+        }
+
+        [UnityTest] public IEnumerator FailedAttributeSpendingKeepsChoiceAndPendingPromptOpen()
+        {
+            var hero = harness.Ally;
+            hero.Vitals.Level = 2; hero.Attributes = default; hero.AttributePromptPending = true;
+            int completed = 0;
+            var choice = LevelUpChoiceDialog.Build(MenuManager.Instance.transform,
+                new PartyMenuHero { Name = hero.CharacterName, DungeonActor = hero }, _ => false, () => completed++);
+            MenuManager.Open(choice);
+            yield return null;
+            choice.StrButton.onClick.Invoke(); yield return null;
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(choice));
+            Assert.That(hero.PendingAttributePoints, Is.EqualTo(1));
+            Assert.That(hero.AttributePromptPending, Is.True);
+            Assert.That(completed, Is.Zero);
         }
 
         [UnityTest] public IEnumerator TurtleDeathExplodesOnceAndSilenceSuppressesIt()
@@ -175,19 +246,19 @@ namespace EternalEnigma.Tests
             var skill = Object.Instantiate(Common.Instance.SkillManager.GetSkillByName("Damage"));
             try
             {
-                skill.Targeting = SkillTargeting.Missile; skill.SPCost = 1;
-                actor.Skills = new() { skill }; actor.Vitals.SP = actor.FinalStats.SPMax;
-                int sp = actor.Vitals.SP;
+                skill.Targeting = SkillTargeting.Missile; skill.ManaCost = 1;
+                actor.Skills = new() { skill }; actor.Vitals.Mana = actor.FinalStats.ManaMax;
+                int mana = actor.Vitals.Mana;
                 var manager = MenuManager.Instance;
                 manager.OpenPartyMenu(PartyMenuTab.Skills); yield return null;
                 int actions = actor.Vitals.ActionsPerTurnLeft;
                 manager.PartyMenu.EntryButtons.Single().onClick.Invoke();
                 yield return null;
                 Assert.That(manager.TargetDialog.gameObject.activeInHierarchy, Is.True);
-                Assert.That(actor.Vitals.SP, Is.EqualTo(sp));
+                Assert.That(actor.Vitals.Mana, Is.EqualTo(mana));
                 manager.TargetDialog.CloseDialog(); yield return null;
                 Assert.That(manager.PartyMenu.IsRoot, Is.True);
-                Assert.That(actor.Vitals.SP, Is.EqualTo(sp));
+                Assert.That(actor.Vitals.Mana, Is.EqualTo(mana));
                 Assert.That(actor.Vitals.ActionsPerTurnLeft, Is.EqualTo(actions));
                 manager.CloseAllMenus();
             }

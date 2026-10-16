@@ -80,7 +80,7 @@ public sealed class AutoplayWindow : EditorWindow
                 options.InfiniteStrength = EditorGUILayout.Toggle("Infinite strength", options.InfiniteStrength);
                 options.InfiniteResources = EditorGUILayout.Toggle("Infinite resources", options.InfiniteResources);
                 options.DebugCoverage = EditorGUILayout.Toggle("Item and ability coverage", options.DebugCoverage);
-                EditorGUILayout.HelpBox("Infinite resources replenishes gold, SP and hunger, and preserves used consumables. Keys, companions and abilities must still be earned. Debug runs are excluded from balance results.", MessageType.None);
+                EditorGUILayout.HelpBox("Infinite resources replenishes gold, Mana and hunger, and preserves used consumables. Keys, companions and abilities must still be earned. Debug runs are excluded from balance results.", MessageType.None);
             }
             if (options.Mode != AutoplayMode.Finale) options.ExploreAll = EditorGUILayout.Toggle("Visit all destinations", options.ExploreAll);
             else EditorGUILayout.HelpBox("Direct start at floor 1 with an endgame party. Both floors and waking at home are required. Excluded from full-campaign acceptance.", MessageType.Info);

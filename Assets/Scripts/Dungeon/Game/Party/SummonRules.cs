@@ -75,7 +75,7 @@ public static class SummonRules
 		clone.Vitals = new Vitals();
 		clone.DisplayedVitals = new Vitals();
 		clone.Vitals.HP = clone.FinalStats.HPMax;
-		clone.Vitals.SP = 0;
+		clone.Vitals.Mana = 0;
 		clone.Vitals.Hunger = clone.FinalStats.HungerMax;
 		clone.Vitals.Level = summoner.Vitals.Level;
 

@@ -18,7 +18,7 @@ public class CampaignSaveSummary
 public class SavedHeroSummary
 {
     public string Id, Name, PrimaryClass, SecondaryClass, PortraitId;
-    public int Level, Experience, Hp, MaxHp, Sp, MaxSp, Strength, Defense;
+    public int Level, Experience, Hp, MaxHp, Mana, MaxMana, Strength, Defense;
     public float ExperienceProgress;
 }
 public static class CampaignSaving
@@ -91,7 +91,7 @@ public static class CampaignSaving
             result.Party.Add(new SavedHeroSummary { Id = hero.AllyId, PortraitId = prefab?.Id, Name = hero.AllyName,
                 PrimaryClass = primary?.DisplayName ?? "", SecondaryClass = catalog?.Get(hero.SecondaryClassId)?.DisplayName ?? "",
                 Level = hero.Level, Experience = hero.Experience, ExperienceProgress = LevelSystem.Progress(hero.Level, hero.Experience),
-                Hp = hero.Hp < 0 ? stats.HPMax : hero.Hp, MaxHp = stats.HPMax, Sp = hero.Sp < 0 ? stats.SPMax : hero.Sp, MaxSp = stats.SPMax,
+                Hp = hero.Hp < 0 ? stats.HPMax : hero.Hp, MaxHp = stats.HPMax, Mana = hero.Mana < 0 ? stats.ManaMax : hero.Mana, MaxMana = stats.ManaMax,
                 Strength = stats.Strength, Defense = stats.Defense });
         }
         return result;

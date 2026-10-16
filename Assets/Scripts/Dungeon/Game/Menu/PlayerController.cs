@@ -340,9 +340,9 @@ public class PlayerController : MonoBehaviour
                     vitals.HPRegenAcccumlate++;
                 }
 
-                if (vitals.SP < stats.SPMax)
+                if (vitals.Mana < stats.ManaMax)
                 {
-                    vitals.SPRegenAcccumlate++;
+                    vitals.ManaRegenAccumulator++;
                 }
             },
             false));
@@ -380,7 +380,7 @@ public class PlayerController : MonoBehaviour
                 false));
         }
 
-        if (character.Vitals.SPRegenAcccumlate > character.FinalStats.SPRegenAcccumlateThreshold &&
+        if (character.Vitals.ManaRegenAccumulator > character.FinalStats.ManaRegenThreshold &&
             character.Vitals.Hunger > 0)
         {
             turnSideEffects.Add(new ModifyStatAction(
@@ -388,8 +388,8 @@ public class PlayerController : MonoBehaviour
                 character,
                 (stats, vitals) =>
                 {
-                    vitals.SPRegenAcccumlate = 0;
-                    vitals.SP++;
+                    vitals.ManaRegenAccumulator = 0;
+                    vitals.Mana++;
                 },
                 false));
         }

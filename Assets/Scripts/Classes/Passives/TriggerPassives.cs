@@ -55,7 +55,7 @@ public class SecondWindPassive : ClassPassive
 [Serializable]
 public class GrimHarvestPassive : ClassPassive
 {
-	public int SP = 1;
+	public int Mana = 1;
 
 	internal override void ModifyIncomingDamage(Character owner, Skill skill, DamageContext context)
 	{
@@ -70,7 +70,7 @@ public class GrimHarvestPassive : ClassPassive
 
 		if (action is TakeDamageAction t && t.Target != null && t.Target.Team != owner.Team && t.Target.Team != Team.Neutral && !t.Missed && t.Target.Vitals.HP <= 0 && StatusCategories.CountAilments(t.Target) > 0)
 		{
-			return new List<GameAction> { RestoreSPAction.Bound(owner, owner, SP + (r >= 3 ? 1 : 0) + (r >= 5 ? 1 : 0)) };
+			return new List<GameAction> { RestoreManaAction.Bound(owner, owner, Mana + (r >= 3 ? 1 : 0) + (r >= 5 ? 1 : 0)) };
 		}
 
 		return Enumerable.Empty<GameAction>();
@@ -210,7 +210,7 @@ public class AuraOfCommandPassive : ClassPassive
 		{
 			if (a != null && a.Vitals != null && a.Vitals.HP > 0 && TileWorldDungeon.ChevDistance(a.TilemapPosition, owner.TilemapPosition) <= Radius)
 			{
-				a.Vitals.SP = Math.Min(a.FinalStats.SPMax, a.Vitals.SP + 1);
+				a.Vitals.Mana = Math.Min(a.FinalStats.ManaMax, a.Vitals.Mana + 1);
 				a.SyncDisplayedStats();
 			}
 		}

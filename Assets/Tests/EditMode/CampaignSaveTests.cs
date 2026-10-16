@@ -16,7 +16,7 @@ namespace EternalEnigma.Tests.CoreIntegration
         [Test]
         public void StandaloneRunRoundTripsWithoutBecomingACampaign()
         {
-            var data = new GameSaveData();
+            var data = new GameSaveData { FormatVersion = SaveSystem.CurrentFormatVersion };
             data.TownSaveData.TownSeed = 123;
             var store = new Store { Json = UnityEngine.JsonUtility.ToJson(data) };
             using (SaveSystem.UseStore(store))
@@ -39,8 +39,8 @@ namespace EternalEnigma.Tests.CoreIntegration
                 SaveSystem.SaveData(new GameSaveData { Campaign = context.Capture() });
                 var save = SaveSystem.LoadData();
                 Assert.That(save.HasCampaign, Is.True);
-                Assert.That(store.Json, Does.Not.Contain("\"Version\":"));
-                Assert.That(store.Json, Does.Not.Contain("GeneratorVersion"));
+                Assert.That(save.FormatVersion, Is.EqualTo(SaveSystem.CurrentFormatVersion));
+                Assert.That(save.Campaign.GeneratorVersion, Is.EqualTo(context.Capture().GeneratorVersion));
                 Assert.That(store.Json, Does.Not.Contain("GridVersion"));
                 var restored = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
                 Assert.That(restored.Keys, Contains.Item("Town gate key"));

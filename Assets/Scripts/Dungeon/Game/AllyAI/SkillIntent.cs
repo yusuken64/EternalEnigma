@@ -127,7 +127,7 @@ public static class SkillIntents
 			{
 				result |= SkillIntent.Heal;
 			}
-			else if (effect is RestoreSPAction)
+			else if (effect is RestoreManaAction)
 			{
 				result |= SkillIntent.Buff;
 			}

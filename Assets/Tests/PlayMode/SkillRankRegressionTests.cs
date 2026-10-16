@@ -40,10 +40,10 @@ namespace EternalEnigma.Tests
             foreach (var enemy in harness.Game.Enemies.Cast<Enemy>()) enemy.Policies.Clear();
             foreach (var actor in harness.Game.AllCharacters)
             {
-                actor.BaseStats.HPMax = actor.BaseStats.SPMax = 100;
-                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
+                actor.BaseStats.HPMax = actor.BaseStats.ManaMax = 100;
+                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.ManaRegenThreshold = 10000;
                 actor.InvalidateCachedStats();
-                actor.Vitals.HP = 60; actor.Vitals.SP = 20;
+                actor.Vitals.HP = 60; actor.Vitals.Mana = 20;
                 actor.SyncDisplayedStats();
             }
             harness.Game.UpdateMiniMap();

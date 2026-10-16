@@ -80,7 +80,7 @@ public abstract class Character : MonoBehaviour, Actor
 		}
 
 		bool inventoryTargeting = skill.Targeting == SkillTargeting.InventoryItem;
-		if (skill.SPCost < 0 || !skill.TargetingRules.IsConfigured || skill.ActionEffects == null ||
+		if (skill.ManaCost < 0 || !skill.TargetingRules.IsConfigured || skill.ActionEffects == null ||
 			(!inventoryTargeting && skill.ActionEffects.Any(effect => effect is InventorySkillEffect)))
 		{
 			reason = "Invalid skill configuration";
@@ -96,9 +96,9 @@ public abstract class Character : MonoBehaviour, Actor
 			}
 		}
 
-		if (Vitals.SP < skill.SPCost)
+		if (Vitals.Mana < skill.ManaCost)
 		{
-			reason = "Not enough SP";
+			reason = $"Requires {skill.ManaCost} Mana; you have {Vitals.Mana}.";
 			return false;
 		}
 
@@ -134,7 +134,7 @@ public abstract class Character : MonoBehaviour, Actor
             hasTargets = ScenerySkillTargets.Candidates(this,skill).Any();
 		if (!hasTargets)
 		{
-			reason = "No valid targets";
+			reason = inventoryTargeting ? "No valid inventory item targets." : "No valid targets in range.";
 			return false;
 		}
 
@@ -196,7 +196,7 @@ public abstract class Character : MonoBehaviour, Actor
 		Vitals = new();
 		DisplayedVitals = new();
 		Vitals.HP = FinalStats.HPMax;
-		Vitals.SP = FinalStats.SPMax;
+		Vitals.Mana = FinalStats.ManaMax;
 		Vitals.Hunger = FinalStats.HungerMax;
 		Vitals.Level = 1;
 	}

@@ -8,7 +8,7 @@ public sealed class CampaignCompletionRecord
     public sealed class Hero
     {
         public string Id, Name, PrimaryClass, SecondaryClass, Weapon;
-        public int Level, MaxHP, MaxSP;
+        public int Level, MaxHP, MaxMana;
     }
     public Hero[] Party = Array.Empty<Hero>();
     public int Seed, DungeonsCleared, TownsVisited, CompanionsRecruited, KeysFound, Gold;
@@ -28,7 +28,7 @@ public sealed class CampaignCompletionRecord
             {
                 Id = a.TownAllyId, Name = GameMessages.Name(a), Level = a.Vitals.Level,
                 PrimaryClass = a.PrimaryClass?.DisplayName ?? "Adventurer", SecondaryClass = a.SecondaryClass?.DisplayName ?? "",
-                MaxHP = a.FinalStats.HPMax, MaxSP = a.FinalStats.SPMax,
+                MaxHP = a.FinalStats.HPMax, MaxMana = a.FinalStats.ManaMax,
                 // Unity can deserialize an empty slot as an item with no definition.
                 Weapon = a.Equipment.Current().Weapon?.ItemName ?? "Unarmed"
             }).ToArray()

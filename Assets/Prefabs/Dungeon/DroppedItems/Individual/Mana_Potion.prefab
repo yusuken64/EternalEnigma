@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 3289692036609025052}
   - component: {fileID: 957754649593690325}
   m_Layer: 0
-  m_Name: SP_Potion
+  m_Name: Mana_Potion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

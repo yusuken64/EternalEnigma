@@ -1098,7 +1098,7 @@ MonoBehaviour:
     BakedScale: 1.2168425
     ProjectedRatio: 0.57999986
     WorldHeightRatio: 0.4422659
-  - Name: SP Potion
+  - Name: Mana Potion
     Source: potion_blue
     Prefab: {fileID: 8374135149450611696, guid: 4207ce02b22ae39439c2b292169d5234, type: 3}
     SizeReference: {fileID: 0}

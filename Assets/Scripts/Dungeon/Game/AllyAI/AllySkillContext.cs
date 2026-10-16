@@ -11,7 +11,7 @@ public sealed class AllySkillContext
 	public IReadOnlyList<Character> VisibleEnemies { get; private set; }
 	public IReadOnlyList<Ally> Party { get; private set; }
 	public IReadOnlyList<Ally> Downed { get; private set; }
-	public int SpReserve { get; private set; }
+	public int ManaReserve { get; private set; }
 	public bool AllowMovement { get; private set; }
 	public bool SearchFirst { get; private set; }
 	public float NormalAttackValue { get; private set; }
@@ -25,7 +25,7 @@ public sealed class AllySkillContext
         return subset;
     }
 
-	public bool CanAfford(Skill skill) => AllySkillBudget.CanAfford(Ally.Vitals.SP, skill, SpReserve);
+	public bool CanAfford(Skill skill) => AllySkillBudget.CanAfford(Ally.Vitals.Mana, skill, ManaReserve);
 
 	public IEnumerable<Skill> WithIntent(SkillIntent intent) =>
 		Castable.Where(s => SkillIntents.Classify(s).Has(intent) && CanAfford(s));
@@ -74,8 +74,8 @@ public sealed class AllySkillContext
 
 		context.Castable = castableSkills;
 
-		// Reserve learned recovery costs even when SP, range, targets or statuses prevent casting now.
-		context.SpReserve = AllySkillBudget.SpReserve(allSkills, ally.AllyStrategy);
+		// Reserve learned recovery costs even when Mana, range, targets or statuses prevent casting now.
+		context.ManaReserve = AllySkillBudget.ManaReserve(allSkills, ally.AllyStrategy);
 		context.NormalAttackValue = AllyCombat.AttacksFrom(game, ally, ally.TilemapPosition)
 			.Select(a => a.Value).DefaultIfEmpty(0f).Max();
 

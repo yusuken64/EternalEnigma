@@ -36,7 +36,7 @@ public class EntranceDialog : Dialog
                 view.SetupCampaign(location, campaign.Completed.Contains(location.Id), () =>
                 {
                     if (!Common.Instance.Travel.EnterTownDungeon(town, location.Id))
-                        TownMenu.ShowMessage(!campaign.CanEnterDungeon(location.Id)
+                        Reject(!campaign.CanEnterDungeon(location.Id)
                             ? campaign.OpeningPreparationHint : "This dungeon cannot be entered right now.");
                 }));
             return;
@@ -113,7 +113,7 @@ public class EntranceDialog : Dialog
         if (Common.Instance.CampaignContext != null) return;
         if (!town.Services.CanEnter(data))
         {
-            TownMenu.ShowMessage("This dungeon tier is unavailable.");
+            Reject("This dungeon tier is unavailable.");
             return;
         }
         town.WriteSaveData();
@@ -132,6 +132,17 @@ public class EntranceDialog : Dialog
 	{
 		CloseDialog();
 	}
+
+    private void Reject(string reason)
+    {
+        var prompt = transform.Find("Prompt")?.GetComponent<TMP_Text>();
+        if (prompt != null)
+        {
+            prompt.textWrappingMode = TextWrappingModes.Normal;
+            prompt.text = GameplayText.Format(reason);
+        }
+        GameMessages.Reject(reason);
+    }
 
 	internal void Show()
 	{

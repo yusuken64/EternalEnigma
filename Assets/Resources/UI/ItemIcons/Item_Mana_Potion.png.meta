@@ -4,7 +4,7 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 2609418408833940037
-    second: Item_SP_Potion_0
+    second: Item_Mana_Potion_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Item_SP_Potion_0
+      name: Item_Mana_Potion_0
       rect:
         serializedVersion: 2
         x: 32
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Item_SP_Potion_0: 2609418408833940037
+      Item_Mana_Potion_0: 2609418408833940037
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

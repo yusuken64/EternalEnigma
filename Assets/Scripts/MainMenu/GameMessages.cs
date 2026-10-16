@@ -89,6 +89,14 @@ public sealed class GameMessages : MonoBehaviour
         instance.Add(message, coalesce);
     }
 
+    /// <summary>Explain an attempted action without dismissing its menu or changing focus.</summary>
+    public static void Reject(string reason)
+    {
+        AudioManager.Instance?.PlayCue(SoundCue.Denied);
+        Post(string.IsNullOrWhiteSpace(reason) ? "That action is no longer available." : reason, true);
+        Common.Instance?.MenuInputHandler?.ClearInputThisFrame();
+    }
+
     #if UNITY_EDITOR
     public void AuthorLayout(bool dungeon)
     {

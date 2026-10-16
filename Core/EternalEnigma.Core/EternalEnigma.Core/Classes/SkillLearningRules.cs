@@ -26,17 +26,17 @@ public static class SkillLearningRules
         return TierUnlockLevel(tier) + 3 * (rank - 1);
     }
 
-    public const int PointsPerLevel = 2;
+    public const int SkillPointsPerLevel = 2;
 
     // Skill points a hero has earned at this level (level 1 already grants a first batch).
-    public static int EarnedPoints(int level) => Math.Max(1, level) * PointsPerLevel;
+    public static int EarnedSkillPoints(int level) => Math.Max(1, level) * SkillPointsPerLevel;
 
     // Rank n costs n points, so a rank 5 skill costs 15 in total.
-    public static int PointCost(int rank) => RankCost(1, rank);
+    public static int SkillPointCost(int rank) => RankCost(1, rank);
 
     // Points spent on learned skills of the kit (skills outside it, e.g. from old saves, are free).
     // The free starting skills (Novice Training) cost nothing at rank 1.
-    public static int SpentPoints(ClassKit kit, IEnumerable<LearnedSkill> learned)
+    public static int SpentSkillPoints(ClassKit kit, IEnumerable<LearnedSkill> learned)
     {
         if (kit == null)
             throw new ArgumentNullException(nameof(kit));
@@ -57,14 +57,14 @@ public static class SkillLearningRules
         foreach (var (id, rank) in ranks)
         {
             for (int r = free.Contains(id) ? 2 : 1; r <= rank; r++)
-                spent += PointCost(r);
+                spent += SkillPointCost(r);
         }
 
         return spent;
     }
 
-    public static int AvailablePoints(ClassKit kit, IEnumerable<LearnedSkill> learned, int level) =>
-        Math.Max(0, EarnedPoints(level) - SpentPoints(kit, learned));
+    public static int AvailableSkillPoints(ClassKit kit, IEnumerable<LearnedSkill> learned, int level) =>
+        Math.Max(0, EarnedSkillPoints(level) - SpentSkillPoints(kit, learned));
 
     public static int RankCost(int learnCost, int rank)
     {
@@ -153,7 +153,7 @@ public static class SkillLearningRules
         return maxRank;
     }
 
-    public static LearnCheck CheckNextRank(ClassKit kit, IEnumerable<LearnedSkill> learned, int level, string skillId, int learnCost, int? availablePoints = null)
+    public static LearnCheck CheckNextRank(ClassKit kit, IEnumerable<LearnedSkill> learned, int level, string skillId, int learnCost, int? availableSkillPoints = null)
     {
         if (kit == null)
             throw new ArgumentNullException(nameof(kit));
@@ -182,7 +182,7 @@ public static class SkillLearningRules
             return new LearnCheck(LearnRefusal.MaxRankReached, "Already at max rank.", next, 0, 0);
 
         // Compute cost and required level for remaining checks
-        var cost = availablePoints.HasValue ? PointCost(next) : RankCost(learnCost, next);
+        var cost = availableSkillPoints.HasValue ? SkillPointCost(next) : RankCost(learnCost, next);
         var required = RequiredLevel(offer.Tier, next);
 
         // Step 4: If mastery and tier > 1, check prerequisites
@@ -224,9 +224,9 @@ public static class SkillLearningRules
         if (level < required)
             return new LearnCheck(LearnRefusal.LevelTooLow, $"Requires level {required}.", next, cost, required);
 
-        // Step 6b: Skill-point mode charges PointCost(next) instead of gold
-        if (availablePoints is int points && points < cost)
-            return new LearnCheck(LearnRefusal.NotEnoughPoints, $"Needs {cost} skill points.", next, cost, required);
+        // Step 6b: Skill-point mode charges SkillPointCost(next) instead of gold
+        if (availableSkillPoints is int points && points < cost)
+            return new LearnCheck(LearnRefusal.NotEnoughPoints, $"Requires {cost} Skill Points; you have {points}.", next, cost, required);
 
         // Step 7: Success
         return new LearnCheck(LearnRefusal.None, "", next, cost, required);

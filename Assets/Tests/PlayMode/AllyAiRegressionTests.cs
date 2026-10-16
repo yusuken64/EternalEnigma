@@ -52,11 +52,11 @@ namespace EternalEnigma.Tests
             foreach (var actor in game.AllCharacters)
             {
                 actor.Skills.Clear();
-                actor.BaseStats.HPMax = actor.BaseStats.SPMax = actor.BaseStats.HungerMax = 100;
+                actor.BaseStats.HPMax = actor.BaseStats.ManaMax = actor.BaseStats.HungerMax = 100;
                 actor.BaseStats.Strength = 10;
                 actor.BaseStats.HitBonus = 1;
                 actor.InvalidateCachedStats();
-                actor.Vitals.HP = actor.Vitals.SP = actor.Vitals.Hunger = 100;
+                actor.Vitals.HP = actor.Vitals.Mana = actor.Vitals.Hunger = 100;
                 actor.SyncDisplayedStats();
             }
             ally.AllyStrategy = AllyStrategy.HoldPosition;
@@ -110,7 +110,7 @@ namespace EternalEnigma.Tests
         {
             var choice = Choice();
             Assert.That(choice, Is.Not.Null);
-            int sp = ally.Vitals.SP;
+            int mana = ally.Vitals.Mana;
             Resolve(choice.ToAction(ally));
             while (ally.PendingCast != null)
             {
@@ -118,7 +118,7 @@ namespace EternalEnigma.Tests
                 Assert.That(ally.determinedActions.Single(), Is.TypeOf<AdvanceCastAction>());
                 Resolve(ally.determinedActions.Single());
             }
-            Assert.That(ally.Vitals.SP, Is.EqualTo(sp - choice.Option.Skill.SPCost));
+            Assert.That(ally.Vitals.Mana, Is.EqualTo(mana - choice.Option.Skill.ManaCost));
             return choice;
         }
         private GameAction Decide() { ally.DetermineAction(); return ally.determinedActions.Single(); }
@@ -419,23 +419,23 @@ namespace EternalEnigma.Tests
             Assert.That(Choice(), Is.Null);
         }
 
-        [Test] public void AuthoredSpRestorationRequiresEffectiveRecipientsAndPaysItsCost()
+        [Test] public void AuthoredManaRestorationRequiresEffectiveRecipientsAndPaysItsCost()
         {
             NoEnemies();
             var inspire = Learn("Inspire");
             Assert.That(Choice(), Is.Null);
-            third.Vitals.SP = 80;
-            int sp = ally.Vitals.SP;
+            third.Vitals.Mana = 80;
+            int mana = ally.Vitals.Mana;
             var choice = Cast();
             Assert.That(choice.Option.Target, Is.SameAs(third));
-            Assert.That(third.Vitals.SP, Is.EqualTo(82));
-            Assert.That(ally.Vitals.SP, Is.EqualTo(sp-inspire.SPCost));
+            Assert.That(third.Vitals.Mana, Is.EqualTo(82));
+            Assert.That(ally.Vitals.Mana, Is.EqualTo(mana-inspire.ManaCost));
             ally.Skills.Clear();
             Learn("Rousing Chorus");
-            leader.Vitals.SP = third.Vitals.SP = 80;
+            leader.Vitals.Mana = third.Vitals.Mana = 80;
             Cast();
-            Assert.That(leader.Vitals.SP, Is.EqualTo(82));
-            Assert.That(third.Vitals.SP, Is.EqualTo(82));
+            Assert.That(leader.Vitals.Mana, Is.EqualTo(82));
+            Assert.That(third.Vitals.Mana, Is.EqualTo(82));
         }
 
         [Test] public void AuthoredEnemyBuffRemovalAndAilmentSpreadScoreActualEffects()
@@ -455,24 +455,24 @@ namespace EternalEnigma.Tests
             Assert.That(Choice(), Is.Null);
         }
 
-        [Test] public void LearnedRecoveryReservesSurviveNoTargetsAndInsufficientSp()
+        [Test] public void LearnedRecoveryReservesSurviveNoTargetsAndInsufficientMana()
         {
             var revive = Learn("Revive");
             var blast = Learn("Fire Bolt");
-            ally.Vitals.SP = 2;
+            ally.Vitals.Mana = 2;
             foreach (var strategy in new[] { AllyStrategy.Follow, AllyStrategy.HoldPosition })
             {
                 ally.AllyStrategy = strategy;
                 var context = AllySkillContext.Build(ally,game);
                 Assert.That(context.Castable.Contains(revive), Is.False);
-                Assert.That(context.SpReserve, Is.EqualTo(revive.SPCost));
+                Assert.That(context.ManaReserve, Is.EqualTo(revive.ManaCost));
                 Assert.That(Choice(), Is.Null);
             }
             ally.AllyStrategy = AllyStrategy.Aggresive;
-            Assert.That(AllySkillContext.Build(ally,game).SpReserve, Is.EqualTo(revive.SPCost/2));
+            Assert.That(AllySkillContext.Build(ally,game).ManaReserve, Is.EqualTo(revive.ManaCost/2));
             Assert.That(Choice(), Is.Not.Null);
             Cast();
-            Assert.That(ally.Vitals.SP, Is.EqualTo(2-blast.SPCost));
+            Assert.That(ally.Vitals.Mana, Is.EqualTo(2-blast.ManaCost));
         }
 
         [Test] public void CommandsRefreshOnlyRecipientsTheyCanReach()

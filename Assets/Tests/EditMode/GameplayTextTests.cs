@@ -32,7 +32,7 @@ public sealed class GameplayTextTests
     {
         Assert.That(GameplayText.Format("\n<b>Restores 40 HP</b>\nCosts 25G. Hit chance +12.5%. Saved at 10:30."),
             Is.EqualTo("\n<b>Restores 40 HP</b>\nCosts 25 gold. Hit chance +12.5%. Saved at 10:30."));
-        Assert.That(GameplayText.Format("[Cast] Aria casts Heal (5 SP)."), Is.EqualTo("Aria casts Heal 5 SP."));
+        Assert.That(GameplayText.Format("[Cast] Aria casts Heal (5 Mana)."), Is.EqualTo("Aria casts Heal 5 Mana."));
         Assert.That(GameplayText.Plain("<b>Guard</b> (1 turn)"), Is.EqualTo("Guard for 1 turn"));
         Assert.That(GameplayText.Format("Press {Confirm} to choose or {Back} to return."),
             Is.EqualTo($"Press {InputPrompts.Confirm} to choose or {InputPrompts.Back} to return."));
@@ -46,7 +46,7 @@ public sealed class GameplayTextTests
         void Check(string value, string asset)
         {
             string plain = Regex.Replace(value ?? "", "<[^>]+>", "");
-            Assert.That(plain, Does.Not.Match(@"[\[\]()_:{}]|HPMax|SPMax|New Text|placeholder|TODO"), asset);
+            Assert.That(plain, Does.Not.Match(@"[\[\]()_:{}]|HPMax|ManaMax|New Text|placeholder|TODO"), asset);
         }
         foreach (var id in AssetDatabase.FindAssets("t:ItemDefinition", roots))
         {

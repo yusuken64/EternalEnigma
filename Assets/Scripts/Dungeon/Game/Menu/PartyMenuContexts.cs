@@ -56,13 +56,13 @@ public abstract class PartyMenuContext : IPartyMenuContext
         Add("Level",$"Level {level}",$"EXP {exp}. Progress to the next level {LevelSystem.Progress(level,exp)*100:0.#}%.");
         Add("Level",$"EXP {exp}",$"{LevelSystem.ExperienceToNext(level,exp)} EXP to next level.");
         Add("Attributes",$"STR {points.Str}","Each point grants +1 Attack, +3 maximum HP; +1 Defense every four points.");
-        Add("Attributes",$"INT {points.Int}","Each point grants +2 maximum SP, +1 Magic Power, faster SP regeneration.");
+        Add("Attributes",$"INT {points.Int}","Each point grants +2 maximum Mana, +1 Magic Power, faster Mana regeneration.");
         Add("Attributes",$"AGI {points.Agi}","Each point grants +1% Hit, Evasion and Crit, +2 maximum Food. AGI's Evasion and Crit bonuses cap at 25%.");
         int hp=actor?.Vitals.HP ?? RecoveryMath.SavedVital(town.Hp,stats.HPMax);
-        int sp=actor?.Vitals.SP ?? RecoveryMath.SavedVital(town.Sp,stats.SPMax);
+        int mana=actor?.Vitals.Mana ?? RecoveryMath.SavedVital(town.Mana,stats.ManaMax);
         int food=actor?.Vitals.Hunger ?? (town.HasHunger?town.Hunger:stats.HungerMax);
         Add("Vitals",$"HP {hp}/{stats.HPMax}",Sources("HP"));
-        Add("Vitals",$"SP {sp}/{stats.SPMax}",Sources("SP")+$"\nActions between SP recovery {stats.SPRegenAcccumlateThreshold}.");
+        Add("Vitals",$"Mana {mana}/{stats.ManaMax}",Sources("Mana")+$"\nActions between Mana recovery {stats.ManaRegenThreshold}.");
         Add("Vitals",$"Food {food}/{stats.HungerMax}",Sources("Food"));
         Add("Combat",$"Attack {stats.Strength}",Sources("Attack"));
         Add("Combat",$"Magic Power {stats.MagicPower}",Sources("Magic Power")+"\nEach point increases magic damage and scaled healing by 5%.");
@@ -129,8 +129,8 @@ public abstract class PartyMenuContext : IPartyMenuContext
     {
         var stats=hero.DungeonActor!=null?hero.DungeonActor.FinalStats:TownUtilityService.StatsFor(hero.TownActor);
         int hp=hero.DungeonActor!=null?hero.DungeonActor.Vitals.HP:RecoveryMath.SavedVital(hero.TownActor.Hp,stats.HPMax);
-        int sp=hero.DungeonActor!=null?hero.DungeonActor.Vitals.SP:RecoveryMath.SavedVital(hero.TownActor.Sp,stats.SPMax);
-        return $"{hero.Name}   HP {hp}/{stats.HPMax}   SP {sp}/{stats.SPMax}\nAttack {stats.Strength}   Defense {stats.Defense}";
+        int mana=hero.DungeonActor!=null?hero.DungeonActor.Vitals.Mana:RecoveryMath.SavedVital(hero.TownActor.Mana,stats.ManaMax);
+        return $"{hero.Name}   HP {hp}/{stats.HPMax}   Mana {mana}/{stats.ManaMax}\nAttack {stats.Strength}   Defense {stats.Defense}";
     }
     public virtual void Dispose()
     {
@@ -167,23 +167,23 @@ public sealed class TownPartyMenuContext : PartyMenuContext
         {
             string reason=!hero.Equipment.IsEquipped(equipment) && !HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment)?HeroClass.EquipmentRestriction(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment):null;
             return new(){new PartyMenuAction {Label=entry.Equipped?"Unequip":"Equip",UnavailableReason=reason,Execute=menu=>
-                {town.Services.ToggleEquipment(hero.TownActor,entry.Item,out var failure);menu.Complete(failure??"Equipment updated.");}}};
+                {if(town.Services.ToggleEquipment(hero.TownActor,entry.Item,out var failure))menu.Complete("Equipment updated.");else menu.Reject(failure);}}};
         }
         if(entry.Item?.ItemDefinition is MaterialItemDefinition)return new(){new PartyMenuAction {Label=$"Sell for {TownServices.SellPrice(entry.Item):N0} gold",Execute=menu=>
-            {town.Services.Sell(entry.Item,out var reason);menu.Complete(reason??"Sold.");}}};
+            {if(town.Services.Sell(entry.Item,out var reason))menu.Complete("Sold.");else menu.Reject(reason);}}};
         if(entry.Skill?.ActivationType==ActivationType.Passive)return new();
         utilities.Describe(hero.TownActor,entry.Skill,entry.Item,out _,out string unavailable);
         return new(){new PartyMenuAction {Label=entry.Skill!=null?"Cast":"Use",UnavailableReason=unavailable,Execute=menu=>Begin(menu,hero,entry)}};
     }
     private void Begin(PartyMenu menu,PartyMenuHero hero,PartyMenuEntry entry)
     {
-        if(!utilities.Describe(hero.TownActor,entry.Skill,entry.Item,out var utility,out var reason)){menu.Complete(reason);return;}
+        if(!utilities.Describe(hero.TownActor,entry.Skill,entry.Item,out var utility,out var reason)){menu.Reject(reason);return;}
         void Commit(TownAlly target,InventoryItem item)
-        {utilities.Execute(hero.TownActor,entry.Skill,entry.Item,target,item,out var message);menu.Complete(message);}
+        {if(utilities.Execute(hero.TownActor,entry.Skill,entry.Item,target,item,out var message))menu.Complete(message);else menu.Reject(message);}
         if(utility.Targeting==SkillTargeting.InventoryItem)
-            menu.Pick("Choose an item",utilities.InventoryTargets(hero.TownActor,utility).Select(i=>(i.DisplayName+(i.HasStacks?$" x{i.StackStock}":"")+(hero.Equipment.IsEquipped(i)?"  Equipped":""),(Action)(()=>Commit(null,i)))).ToList());
+            menu.Pick("Choose an item",utilities.InventoryTargets(hero.TownActor,utility).Select(i=>(i.DisplayName+(i.HasStacks?$" x{i.StackStock}":"")+(hero.Equipment.IsEquipped(i)?"  Equipped":""),(Action)(()=>Commit(null,i)))).ToList(),false);
         else if(utility.Targeting==SkillTargeting.SelectedTarget)
-            menu.Pick("Choose a party member",utilities.Targets(hero.TownActor,utility).Select(h=>(h.Name,(Action)(()=>Commit(h,null)))).ToList());
+            menu.Pick("Choose a party member",utilities.Targets(hero.TownActor,utility).Select(h=>(h.Name,(Action)(()=>Commit(h,null)))).ToList(),false);
         else Commit(hero.TownActor,null);
     }
 }
@@ -219,7 +219,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
     }
     public static void RestoreHero(TownAlly live,TownAllyData data, Action<InventoryItem> displaced = null)
     {
-        live.Id=data.AllyId;live.Name=data.AllyName;live.Hp=data.Hp;live.Sp=data.Sp;live.HighestLevel=data.HighestLevel;live.Level=data.Level;live.Experience=data.Experience;live.Attributes=data.Attributes;
+        live.Id=data.AllyId;live.Name=data.AllyName;live.Hp=data.Hp;live.Mana=data.Mana;live.HighestLevel=data.HighestLevel;live.Level=data.Level;live.Experience=data.Experience;live.Attributes=data.Attributes;
         live.Skills=data.Skills?.ToList()??new();live.SkillRanks=data.SkillRanks?.Select(r=>new SkillRankSaveData{SkillName=r.SkillName,Rank=r.Rank}).ToList()??new();
         HeroClassBinding.Apply(live,data,Common.Instance.GameSaveData);
         live.Equipment.RestoreSaved(data.Equipment, Common.Instance.ItemManager,
@@ -233,20 +233,25 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         if(!AttributeSpending.TrySpend(hero.TownActor,attribute))return false;
         var common=Common.Instance;
         var data=common.GameSaveData.TownSaveData.RecruitedAlliesData.Single(h=>h.AllyId==hero.Id);
-        data.Attributes=hero.TownActor.Attributes;data.Hp=hero.TownActor.Hp;data.Sp=hero.TownActor.Sp;
+        data.Attributes=hero.TownActor.Attributes;data.Hp=hero.TownActor.Hp;data.Mana=hero.TownActor.Mana;
         CampaignParty.Capture(common);SaveSystem.Capture(common);return true;
     }
     public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Item==null && entry.Skill==null?"Choose a capability when interacting with an obstacle.":entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
         entry.Skill?.ActivationType==ActivationType.Passive?base.Restriction(hero,entry):"Inspect only while travelling. Use items and recovery skills in town, or actions in a dungeon.";
     public override List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry)
     {
-        if(entry.Item is not EquipableInventoryItem equipment)return new();
+        if(entry.Item is not EquipableInventoryItem equipment)
+        {
+            if(entry.Item==null && entry.Skill==null || entry.Skill?.ActivationType==ActivationType.Passive)return new();
+            string restriction="Use items and recovery abilities in town, or actions in a dungeon.";
+            return new(){new PartyMenuAction {Label=entry.Skill!=null?"Cast":"Use",UnavailableReason=restriction,Execute=menu=>menu.Reject(restriction)}};
+        }
         string reason=!hero.Equipment.IsEquipped(equipment)&&!HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment)?HeroClass.EquipmentRestriction(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment):null;
         return new(){new PartyMenuAction {Label=entry.Equipped?"Unequip":"Equip",UnavailableReason=reason,Execute=menu=>
         {
             bool wasEquipped = hero.Equipment.IsEquipped(entry.Item);
             if(!EquipmentTransferService.Toggle(hero.Equipment,bag,entry.Item,hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,out var failure))
-            {AudioManager.Instance?.PlayCue(SoundCue.Denied);menu.Complete(failure);return;}
+            {menu.Reject(failure);return;}
             var common=Common.Instance;var save=common.GameSaveData;
             save.TownSaveData.InventoryItems=ItemSaveData.Capture(bag);
             var data=save.TownSaveData.RecruitedAlliesData.Single(h=>h.AllyId==hero.Id);
@@ -270,8 +275,16 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext, IPartyMenuEntryH
         foreach(var ally in PartyRules.PartyMembers(game))heroes.Add(new PartyMenuHero {Id=ally.TownAllyId,Name=ally.CharacterName,Portrait=ally.Portrait,DungeonActor=ally});
     }
     public override bool Spend(PartyMenuHero hero, HeroAttribute attribute) => AttributeSpending.TrySpend(hero.DungeonActor,attribute);
-    private string Eligibility(PartyMenuHero hero)=>hero.DungeonActor!=game.PlayerController.ControlledAlly || !game.PlayerController.CanOpenMenu() ?
-        "Only the controlled hero awaiting an action can act this turn.":null;
+    private string Eligibility(PartyMenuHero hero)
+    {
+        var actor=hero.DungeonActor;
+        if(actor==null || actor.Vitals.HP<=0)return "A downed hero cannot act.";
+        if(actor!=game.PlayerController.ControlledAlly)return "Select this hero as the controlled party member before acting.";
+        var status=actor.StatusEffects.FirstOrDefault(s=>!s.IsExpired() && s.PreventsMenu());
+        if(status!=null)return $"Cannot act while affected by {GameplayText.Name(status.GetEffectName())}.";
+        if(!MenuManager.CanAttemptAction(actor,out var restriction))return restriction;
+        return game.PlayerController.CanOpenMenu()?null:"Wait until this hero is ready for another action.";
+    }
     public override List<(string Label, InventoryItem Item, string Description, bool Enabled)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)
     {
         var options=base.EquipmentOptions(hero,slot);
@@ -284,7 +297,7 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext, IPartyMenuEntryH
         if (entry.Item == null) return false;
         var dialog = MenuManager.Instance.ActionDialog;
         dialog.Setup(null, entry.Item, hero.DungeonActor);
-        dialog.ValidateActor = () => Eligibility(hero) == null;
+        dialog.ActorRestriction = () => Eligibility(hero);
         dialog.RefreshAvailability();
         MenuManager.Open(dialog);
         return true;
@@ -298,18 +311,25 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext, IPartyMenuEntryH
             if(unavailable==null&&!actor.CanCast(entry.Skill,out unavailable)){}
             return new(){new PartyMenuAction {Label="Cast",UnavailableReason=unavailable,Execute=menu=>
             {
-                if(Eligibility(hero)!=null || !actor.CanCast(entry.Skill,out var reason)){menu.Complete("That hero cannot cast now.");return;}
+                var eligibility=Eligibility(hero);
+                if(eligibility!=null){menu.Reject(eligibility);return;}
+                if(!actor.CanCast(entry.Skill,out var reason)){menu.Reject(reason);return;}
                 var manager=MenuManager.Instance;
                 if(entry.Skill.Targeting==SkillTargeting.InventoryItem)manager.OpenInventoryTargetingMenu(actor,entry.Skill);
                 else if(entry.Skill.RequiresTargetSelection)manager.OpenTargetingMenu(actor,entry.Skill);
-                else {manager.CloseAllMenus();actor.SetAction(new SkillAction(actor,entry.Skill,actor));}
+                else
+                {
+                    var action=new SkillAction(actor,entry.Skill,actor);
+                    if(!action.ValidateCommand(actor,out var failure)){menu.Reject(failure);return;}
+                    manager.CloseAllMenus();actor.SetAction(action);
+                }
             }}};
         }
         if (unavailable == null && entry.Item is EquipableInventoryItem equipment && !actor.Equipment.IsEquipped(equipment))
             unavailable = HeroClass.EquipmentRestriction(actor.PrimaryClass, actor.SecondaryClass, equipment);
-        if(unavailable==null && !new UseInventoryItemAction(game.PlayerController.Inventory,actor,entry.Item).CanBegin(actor))unavailable="This item cannot be used now.";
+        if(unavailable==null)new UseInventoryItemAction(game.PlayerController.Inventory,actor,entry.Item).CanBegin(actor,out unavailable);
         var actions=new List<PartyMenuAction>{new() {Label=entry.Item is EquipableInventoryItem?(entry.Equipped?"Unequip":"Equip"):"Use",UnavailableReason=unavailable,
-            Execute=menu=>{if(Eligibility(hero)==null)MenuManager.Instance.UseInventoryItem(actor,entry.Item);else menu.Complete(Eligibility(hero));}}};
+            Execute=menu=>{if(Eligibility(hero)==null)MenuManager.Instance.UseInventoryItem(actor,entry.Item);else menu.Reject(Eligibility(hero));}}};
         // Preserve the dungeon's throw/drop commands and their existing validation/replay.
         foreach(string label in new[]{"Throw","Drop"})
             actions.Add(new PartyMenuAction{Label=label,UnavailableReason=Eligibility(hero) ?? (entry.Equipped?"Unequip this item first.":null),Execute=menu=>OpenEntry(menu,hero,entry)});

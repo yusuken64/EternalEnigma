@@ -27,22 +27,28 @@ and non-mastery skills through tier 2, capped at rank 3. Duplicate skills use th
 
 ## Attributes and level growth
 
-Each level grants one attribute point. Unspent points equal `max(0, level - 1 - spent points)`;
-older heroes therefore receive their full allotment when loaded. Spending is free in the Stats
-tab in town, the overworld, or a dungeon. A dungeon level-up offers a one-time choice; Later
-defers it until the next level-up. Autoplay chooses the primary class's preferred attribute.
+Each level grants one attribute point. Unspent points equal `max(0, level - 1 - spent points)`.
+Spending is free in the Stats tab in town, the overworld, or a dungeon. Once the level-up
+picker opens, all pending points must be allocated before it closes; Back and Cancel do
+not dismiss it. Autoplay chooses the primary class's preferred attribute.
+
+Mana pays casting costs. Skill Points pay for learning and upgrading class abilities;
+attribute points buy STR, INT, and AGI. These resources are separate in code, saved data,
+and player-facing text. Gameplay actions remain selectable when their requirements are
+unmet. Attempts explain missing proficiency, Mana, Skill Points, gold, or targets, retain
+the current menu, and spend no turn or resources on rejection.
 
 | Attribute | Each point grants |
 |---|---|
 | STR | +1 Attack, +3 maximum HP, and +1 Defense every four STR points |
-| INT | +2 maximum SP, +1 Magic Power, and 15 less SP regeneration threshold (up to 400 less) |
+| INT | +2 maximum Mana, +1 Magic Power, and 15 less Mana regeneration threshold (up to 400 less) |
 | AGI | +1% Hit, +1% Evasion, +1% Crit, and +2 maximum Food; its Evasion and Crit contributions cap at 25% |
 
 Magic Power multiplies magic damage and scaled healing by `max(0, 1 + 0.05 × Magic Power)`.
 Archer bow damage and Rogue weapon damage gain 1% per AGI point. Class starting stat bonuses
 remain in effect; no class starts with spent attribute points.
 
-| Class | HP / level | SP / level | Attack / level | Recommended |
+| Class | HP / level | Mana / level | Attack / level | Recommended |
 |---|---:|---:|---:|---|
 | Warrior | 2 | 0 | 2 | STR |
 | Guardian | 4 | 0 | 0 | STR |
@@ -91,7 +97,7 @@ removed or replaced on load; subsequent equip attempts use these rules.
 
 ## Training
 
-Scout's tier-1 **Find Exit** has one rank and leaves a collectible coin trail along up to 15 safe steps toward the stairs, even when undiscovered. It searches for a shortest route, avoiding blocked tiles, revealed traps and hazards; if the stairs cannot be reached, the trail heads to the reachable tile closest to them. A shorter route ends at the stairs, with a coin on the exit tile. Casting costs 2 SP plus 2 gold per 1-gold coin actually placed (at most 30 gold), paid before the coins appear; no possible step or insufficient resources spends nothing. Recasting calculates a new trail and pays for every new coin, including coins added to existing piles, so collecting the entire trail always returns less gold than the cast costs. Coins obey normal dungeon fog, have no minimap markers, and last until collected or the floor is left. The player controls all movement and chooses when to leave the floor. Pathfinder remains the existing hunger passive. The classless gold-learning price follows the standard tier-1 value of 50; class training uses the normal skill-point rules below.
+Scout's tier-1 **Find Exit** has one rank and leaves a collectible coin trail along up to 15 safe steps toward the stairs, even when undiscovered. It searches for a shortest route, avoiding blocked tiles, revealed traps and hazards; if the stairs cannot be reached, the trail heads to the reachable tile closest to them. A shorter route ends at the stairs, with a coin on the exit tile. Casting costs 2 Mana plus 2 gold per 1-gold coin actually placed (at most 30 gold), paid before the coins appear; no possible step or insufficient resources spends nothing. Recasting calculates a new trail and pays for every new coin, including coins added to existing piles, so collecting the entire trail always returns less gold than the cast costs. Coins obey normal dungeon fog, have no minimap markers, and last until collected or the floor is left. The player controls all movement and chooses when to leave the floor. Pathfinder remains the existing hunger passive. The classless gold-learning price follows the standard tier-1 value of 50; class training uses the normal skill-point rules below.
 
 Core `SkillLearningRules` is shared by Unity trainer offers and the console editor.
 
@@ -116,7 +122,7 @@ Unity has elemental damage/resistances, hit/critical/evasion rules, binds and ai
 threat/taunt, stealth, barriers, multi-hit/follow-up actions, songs, commands, summons,
 movement skills, gathering, exploration reveals and ranked passives. Arrow skills spend arrows.
 Dominate excludes bosses. Downed allies leave the active list and can be revived; the party
-continues fighting while any ally remains alive. Carried HP/SP persists until rest/recovery.
+continues fighting while any ally remains alive. Carried HP/Mana persists until rest/recovery.
 
 Ally AI uses each companion's personal sight for leaders, enemies and support recipients.
 The three session-only strategies retain their serialized values (Follow 0, Aggressive 1,
@@ -139,13 +145,13 @@ Memory is runtime-only, with no save migration. Explicit commands, displacement 
 overrides retain precedence; already-started casts follow the normal casting rules.
 
 Skill priorities are revival, emergency healing below 30% HP, cleansing, casting support,
-buff/SP upkeep, control, damage and useful out-of-combat utility. Effects determine intent.
+buff/Mana upkeep, control, damage and useful out-of-combat utility. Effects determine intent.
 Scoring accounts for immunity, existing effects, chance, actual recipients and effective
 restoration. Commands refresh only reachable recipients. Field Kitchen requires a visible
 standing party member to lack at least one full rank-scaled restoration amount.
 
-Follow and Hold reserve the largest SP cost among learned active healing/revival skills;
-Aggressive reserves half (rounded down). This reserve survives temporary lack of SP or
+Follow and Hold reserve the largest Mana cost among learned active healing/revival skills;
+Aggressive reserves half (rounded down). This reserve survives temporary lack of Mana or
 eligible targets. Recovery skills may spend it. Arrow skills leave three arrows in reserve.
 Basic attacks and damage scoring share ammunition, sight, target and firing-line checks.
 Aggressive ranged allies keep valid firing positions or choose the cheapest legal route

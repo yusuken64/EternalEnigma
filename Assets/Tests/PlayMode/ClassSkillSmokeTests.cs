@@ -40,11 +40,11 @@ namespace EternalEnigma.Tests
             foreach (var enemy in harness.Game.Enemies.Cast<Enemy>()) enemy.Policies.Clear();
             foreach (var actor in harness.Game.AllCharacters)
             {
-                actor.BaseStats.HPMax = actor.BaseStats.SPMax = 100;
+                actor.BaseStats.HPMax = actor.BaseStats.ManaMax = 100;
                 actor.BaseStats.HitBonus = 1; // Damage smoke cases exercise effects, with hit chance covered separately.
-                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
+                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.ManaRegenThreshold = 10000;
                 actor.InvalidateCachedStats();
-                actor.Vitals.HP = 60; actor.Vitals.SP = 20;
+                actor.Vitals.HP = 60; actor.Vitals.Mana = 20;
                 actor.SyncDisplayedStats();
             }
             harness.Game.UpdateMiniMap();
@@ -150,16 +150,16 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator CleanseAndSpSupport()
+        public IEnumerator CleanseAndManaSupport()
         {
             ResetHp();
             friend.ApplyStatusEffect(StatusEffectRegistry.GetByName("Dot"));
             yield return Cast(Learn("Cure"), friend);
             Assert.That(friend.StatusEffects.Any(s => s.GetEffectName() == "Dot"), Is.False, "Cure");
-            friend.Vitals.SP = 10;
+            friend.Vitals.Mana = 10;
             friend.SyncDisplayedStats();
             yield return Cast(Learn("Inspire"), friend);
-            Assert.That(friend.Vitals.SP, Is.EqualTo(12), "Inspire");
+            Assert.That(friend.Vitals.Mana, Is.EqualTo(12), "Inspire");
         }
 
         [UnityTest]

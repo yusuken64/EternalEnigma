@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public sealed class LevelUpChoiceDialog : Dialog
 {
     public TMP_Text Heading;
-    public Button StrButton, IntButton, AgiButton, LaterButton;
+    public Button StrButton, IntButton, AgiButton;
     private PartyMenuHero hero;
     private Func<HeroAttribute,bool> spend;
     private Action finished;
@@ -44,12 +44,12 @@ public sealed class LevelUpChoiceDialog : Dialog
             var oldBonus=HeroAttributes.ToModification(points);
             var newBonus=HeroAttributes.ToModification(proposed);
             var after=before+new StatModification {
-                HPMax=newBonus.HPMax-oldBonus.HPMax,SPMax=newBonus.SPMax-oldBonus.SPMax,
+                HPMax=newBonus.HPMax-oldBonus.HPMax,ManaMax=newBonus.ManaMax-oldBonus.ManaMax,
                 HungerMax=newBonus.HungerMax-oldBonus.HungerMax,Strength=newBonus.Strength-oldBonus.Strength,
                 MagicPower=newBonus.MagicPower-oldBonus.MagicPower,Defense=newBonus.Defense-oldBonus.Defense,
                 HitBonus=newBonus.HitBonus-oldBonus.HitBonus,Evasion=newBonus.Evasion-oldBonus.Evasion,
                 CritChance=newBonus.CritChance-oldBonus.CritChance,
-                SPRegenAcccumlateThreshold=newBonus.SPRegenAcccumlateThreshold-oldBonus.SPRegenAcccumlateThreshold
+                ManaRegenThreshold=newBonus.ManaRegenThreshold-oldBonus.ManaRegenThreshold
             };
             button.GetComponentInChildren<TMP_Text>().text=GameplayText.Format($"{attribute.ToString().ToUpperInvariant()} {points.Get(attribute)}→{proposed.Get(attribute)}"+
                 (preferred==attribute?"  Recommended":"")+"\n"+StatPreview.Diff(before,after));
@@ -59,13 +59,13 @@ public sealed class LevelUpChoiceDialog : Dialog
                 else CloseDialog();
             });
         }
-        LaterButton.onClick.RemoveAllListeners();LaterButton.onClick.AddListener(CloseDialog);
-        StrButton.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnDown=IntButton,selectOnUp=LaterButton};
+        StrButton.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnDown=IntButton,selectOnUp=AgiButton};
         IntButton.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnDown=AgiButton,selectOnUp=StrButton};
-        AgiButton.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnDown=LaterButton,selectOnUp=IntButton};
-        LaterButton.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnDown=StrButton,selectOnUp=AgiButton};
+        AgiButton.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnDown=StrButton,selectOnUp=IntButton};
         CloseAction=()=>{if(hero?.DungeonActor!=null)hero.DungeonActor.AttributePromptPending=false;finished?.Invoke();Destroy(gameObject);};
     }
+    // Attribute allocation is mandatory, including when opened from the party menu.
+    internal override void OnBackRequested() { }
     internal override void SetFirstSelect() => ((hero?.DungeonActor?.PrimaryClass?.PreferredAttribute ?? hero?.TownActor?.PrimaryClass?.PreferredAttribute ?? HeroAttribute.Str) switch {
         HeroAttribute.Int => IntButton, HeroAttribute.Agi => AgiButton, _ => StrButton }).Select();
 }

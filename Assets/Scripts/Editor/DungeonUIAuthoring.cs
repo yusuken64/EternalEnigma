@@ -112,7 +112,7 @@ public static class DungeonUIAuthoring
         Theme.DungeonPrimary=Sprite("Button/paper button green",16);Theme.DungeonSecondary=Sprite("Button/paper button white",16);
         Theme.DungeonClose=Sprite("Character sheet/Button_cross_B",0);Theme.DungeonIconFrame=Sprite("Equipment 2/F_Brown",0);
         Theme.DungeonSelection=Sprite("Equipment 2/F_select frame",0);Theme.DungeonTrack=Sprite("Select Character/State_blank",8);
-        Theme.DungeonHP=Sprite("Select Character/State_HP",8);Theme.DungeonSP=Sprite("Select Character/State_blue",8);Theme.DungeonHunger=Sprite("Select Character/State_yellow",8);
+        Theme.DungeonHP=Sprite("Select Character/State_HP",8);Theme.DungeonMana=Sprite("Select Character/State_blue",8);Theme.DungeonHunger=Sprite("Select Character/State_yellow",8);
         Theme.DungeonRolePrefabs=Enum.GetValues(typeof(DungeonVisualRole)).Cast<DungeonVisualRole>().Select(role=>
         {
             var image=Surface(null,role.ToString(),role,0,0,1,1);
@@ -206,7 +206,7 @@ public static class DungeonUIAuthoring
             {
                 Role(GameUISkin.PanelGraphic(slider.transform),DungeonVisualRole.Track);
                 var display=slider.GetComponentInParent<CharacterStatsDisplay>(true);
-                Role(slider.fillRect.GetComponent<Image>(),slider==display.HpDisplay.StatValueSlider?DungeonVisualRole.HP:slider==display.SpDisplay.StatValueSlider?DungeonVisualRole.SP:DungeonVisualRole.Hunger);
+                Role(slider.fillRect.GetComponent<Image>(),slider==display.HpDisplay.StatValueSlider?DungeonVisualRole.HP:slider==display.ManaDisplay.StatValueSlider?DungeonVisualRole.Mana:DungeonVisualRole.Hunger);
             }
             foreach(var hud in scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<DungeonHud>(true)))
             {

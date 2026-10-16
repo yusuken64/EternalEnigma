@@ -1,7 +1,6 @@
 using JuicyChickenGames.Menu;
 using System;
 using TMPro;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class BuyConfirmationDialog : Dialog
@@ -32,17 +31,15 @@ public class BuyConfirmationDialog : Dialog
 
 	internal override void SetFirstSelect()
 	{
-		(RefreshAvailability() ? OkButton : CancelButton).Select();
+		RefreshAvailability();
+		OkButton.Select();
 	}
 
 	public void Ok_Clicked()
 	{
         if (BuyCallBack == null || !gameObject.activeInHierarchy) return;
-        if (!RefreshAvailability()) { AudioManager.Instance?.PlayCue(SoundCue.Denied); CancelButton.Select(); return; }
-        var callback = BuyCallBack;
-        BuyCallBack = null;
-        CloseDialog();
-        callback?.Invoke(_view, _data);
+        if (!RefreshAvailability()) { GameMessages.Reject(unavailableReason()); return; }
+        BuyCallBack(_view, _data);
 	}
 
 	public void Cancel_Clicked()
@@ -63,11 +60,15 @@ public class BuyConfirmationDialog : Dialog
         string reason = unavailableReason?.Invoke();
         bool available = string.IsNullOrEmpty(reason);
         PromptText.text = GameplayText.Format(prompt + (available ? "" : "\n" + reason));
-        OkButton.interactable = available;
+        OkButton.interactable = true;
         SetNavigation();
-        if (!available && EventSystem.current?.currentSelectedGameObject == OkButton.gameObject)
-            CancelButton.Select();
         return available;
+    }
+
+    public void Reject(string reason)
+    {
+        PromptText.text = GameplayText.Format(prompt + "\n" + reason);
+        GameMessages.Reject(reason);
     }
 
 	internal void SetNavigation()
@@ -80,8 +81,8 @@ public class BuyConfirmationDialog : Dialog
 
 		Navigation cancelNavigation = new Navigation();
 		cancelNavigation.mode = Navigation.Mode.Explicit;
-		cancelNavigation.selectOnRight = OkButton.interactable ? OkButton : null;
-		cancelNavigation.selectOnLeft = OkButton.interactable ? OkButton : null;
+		cancelNavigation.selectOnRight = OkButton;
+		cancelNavigation.selectOnLeft = OkButton;
 		CancelButton.navigation = cancelNavigation;
 	}
 }

@@ -64,11 +64,11 @@ namespace EternalEnigma.Tests
                 actor.BaseStats.HPMax = 100;
                 actor.BaseStats.Strength = 20;
                 actor.BaseStats.Defense = 10;
-                actor.BaseStats.SPMax = 100;
-                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
+                actor.BaseStats.ManaMax = 100;
+                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.ManaRegenThreshold = 10000;
                 actor.InvalidateCachedStats();
                 actor.Vitals.HP = actor.FinalStats.HPMax;
-                actor.Vitals.SP = actor.FinalStats.SPMax;
+                actor.Vitals.Mana = actor.FinalStats.ManaMax;
                 actor.SyncDisplayedStats();
             }
 
@@ -103,7 +103,7 @@ namespace EternalEnigma.Tests
             skill.SkillName = name;
             skill.Targeting = SkillTargeting.Self;
             skill.TargetSelector = new TargetSelector { Team = TargetTeam.Self, Area = TargetArea.All };
-            skill.SPCost = 0;
+            skill.ManaCost = 0;
             skill.MissileRange = 0;
             skill.AreaRadius = 0;
             skill.ActionEffects = new List<GameAction> { action };
@@ -120,7 +120,7 @@ namespace EternalEnigma.Tests
             skill.ActivationType = ActivationType.Passive;
             skill.PassiveResponses = responses.ToList();
             skill.ActionEffects = new List<GameAction>();
-            skill.SPCost = 0;
+            skill.ManaCost = 0;
             return skill;
         }
 

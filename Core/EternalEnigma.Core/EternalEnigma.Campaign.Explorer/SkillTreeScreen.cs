@@ -72,7 +72,7 @@ public static class SkillTreeScreen
         if (entry.Kind == SkillKind.Normal)
         {
             int lastLevel = SkillLearningRules.RequiredLevel(entry.Tier, entry.MaxRank);
-            int points = Enumerable.Range(1, entry.MaxRank).Sum(SkillLearningRules.PointCost);
+            int points = Enumerable.Range(1, entry.MaxRank).Sum(SkillLearningRules.SkillPointCost);
             return $"{kind} {name} ranks 1-{entry.MaxRank}  lv {firstLevel}-{lastLevel}  {points} pt";
         }
 

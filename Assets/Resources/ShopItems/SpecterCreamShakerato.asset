@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SpecterCreamShakerato
   m_EditorClassIdentifier: 
   ItemName: Specter Cream Shakerato
-  Description: "Brewed with real Specter cream. Restores 20 SP."
+  Description: "Brewed with real Specter cream. Restores 20 Mana."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

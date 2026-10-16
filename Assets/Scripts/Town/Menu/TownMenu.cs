@@ -68,7 +68,7 @@ public class TownMenu : MonoBehaviour
             var sellTown = FindFirstObjectByType<Town>();
             ItemActionDialog.SetupActions(item.DisplayName, $"Sell for {TownServices.SellPrice(item)} gold", () =>
             {
-                if (!sellTown.Services.Sell(item, out var reason)) ShowMessage(reason);
+                if (!sellTown.Services.Sell(item, out var reason)) { RejectItemAction(item, reason); return; }
                 ItemActionDialog.CloseDialog();
                 inventory.SetupTown(character.Equipment.GetEquippedItems().Cast<InventoryItem>().Concat(sellTown.TownPlayer.Inventory).ToList(), character);
                 inventory.SetNavigation();
@@ -87,8 +87,7 @@ public class TownMenu : MonoBehaviour
         {
             if (!town.Services.ToggleEquipment(character, item, out var reason) && !string.IsNullOrEmpty(reason))
             {
-                ItemActionDialog.CloseDialog();
-                ShowMessage(reason);
+                RejectItemAction(item, reason);
                 return;
             }
             ItemActionDialog.CloseDialog();
@@ -97,6 +96,15 @@ public class TownMenu : MonoBehaviour
             inventory.SetFirstSelect();
         });
         FindFirstObjectByType<TownMenuManager>().Open(ItemActionDialog);
+    }
+
+    private void RejectItemAction(InventoryItem item, string reason)
+    {
+        ItemActionDialog.ItemNameText.text = GameplayText.Format(item.DisplayName + "\n" + reason);
+        ItemActionDialog.ItemNameText.textWrappingMode = TMPro.TextWrappingModes.Normal;
+        ItemActionDialog.ItemNameText.enableAutoSizing = true;
+        ItemActionDialog.ItemNameText.fontSizeMin = 16;
+        GameMessages.Reject(reason);
     }
 }
 

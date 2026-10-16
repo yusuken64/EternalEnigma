@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Battle Bee Butter Honey Latte
   Description: Brewed with real roasted Battle Bee and butter honey. Restores 40
-    HP and 10 SP.
+    HP and 10 Mana.
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

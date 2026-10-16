@@ -2,7 +2,7 @@
 {
     public string Name => "vitals";
 
-    public string HelpText => "Usage: vitals [hp <value>] [sp <value>] [hunger <value>] [level <value>]";
+    public string HelpText => "Usage: vitals [hp <value>] [mana <value>] [hunger <value>] [level <value>]";
 
     public void Execute(string[] args, CheatConsole console)
     {
@@ -31,7 +31,7 @@
             switch (key)
             {
                 case "hp": player.Vitals.HP = value; break;
-                case "sp": player.Vitals.SP = value; break;
+                case "mana": player.Vitals.Mana = value; break;
                 case "hunger": player.Vitals.Hunger = value; break;
                 case "level": player.Vitals.Level = value; break;
                 default: console.Log($"Unknown vitals key: {key}"); break;

@@ -191,7 +191,7 @@ public class HeroClassTests
         var growth = HeroClass.Growth(null);
         Assert.That(growth.Strength, Is.EqualTo(2));
         Assert.That(growth.HPMax, Is.EqualTo(5));
-        Assert.That(growth.SPMax, Is.EqualTo(0));
+        Assert.That(growth.ManaMax, Is.EqualTo(0));
         Assert.That(growth.Defense, Is.EqualTo(0));
     }
 

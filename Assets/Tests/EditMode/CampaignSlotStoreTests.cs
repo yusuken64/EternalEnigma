@@ -40,7 +40,7 @@ public sealed class CampaignSlotStoreTests
         using(SaveSystem.UseStore(new Store()))
         {
             var data=new GameSaveData { SavePointId="town-0/home",HasArrival=true,ArrivalX=7,ArrivalY=11,ArrivalFacing=Facing.Left };
-            data.Roster.Add(new TownAllyData { AllyId="benched",Level=9,Experience=583,Hp=17,Sp=3 });
+            data.Roster.Add(new TownAllyData { AllyId="benched",Level=9,Experience=583,Hp=17,Mana=3 });
             SaveSystem.SaveData(data);data.Roster[0].Experience=999;
             var saved=SaveSystem.LoadData();Assert.That(saved.Roster[0].Experience,Is.EqualTo(583));Assert.That(saved.Roster[0].Level,Is.EqualTo(9));
             Assert.That(saved.ArrivalFacing,Is.EqualTo(Facing.Left));Assert.That(saved.ArrivalY,Is.EqualTo(11));

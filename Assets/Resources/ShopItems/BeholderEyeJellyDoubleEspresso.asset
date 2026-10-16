@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BeholderEyeJellyDoubleEspresso
   m_EditorClassIdentifier: 
   ItemName: Beholder Eye Jelly Double Espresso
-  Description: "Brewed with real Beholder eye jelly and cream. Restores 25 SP."
+  Description: "Brewed with real Beholder eye jelly and cream. Restores 25 Mana."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

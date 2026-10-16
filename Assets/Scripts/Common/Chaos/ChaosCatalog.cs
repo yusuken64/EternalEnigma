@@ -32,7 +32,7 @@ public static class ChaosCatalog
                 }
                 var variants = new List<string> { "execute-" + skill.Targeting, "status-restriction" };
                 if (skill.RequiresTargetSelection) variants.AddRange(new[] { "cancel-targeting", "invalid-target", "range-restriction" });
-                if (skill.SPCost > 0 || skill.UsesArrows) variants.Add("insufficient-resources");
+                if (skill.ManaCost > 0 || skill.UsesArrows) variants.Add("insufficient-resources");
                 if (skill.CastTime > 0) variants.Add("delayed-release");
                 if (skill.AreaRadius > 0 || skill.Targeting == SkillTargeting.AllTargets) variants.Add("multiple-targets");
                 foreach (var variant in variants) foreach (var device in Devices) Add(kind, skill.SkillName, source, rank, variant, device, demo);

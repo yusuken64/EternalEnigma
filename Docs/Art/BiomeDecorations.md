@@ -136,7 +136,7 @@ options to those source actions while preserving their derived action stacks.
 This changes no Core generation algorithm or generator version.
 
 Unity's test runner saved the already-dirty MainMenu scene when entering Play
-Mode. Its serialized UI prefab overrides and HP/SP defaults have been preserved;
+Mode. Its serialized UI prefab overrides and HP/Mana defaults have been preserved;
 no biome integration was added to that scene.
 
 The Core suite passed 343 tests and the decoration Edit Mode suite passed 11.

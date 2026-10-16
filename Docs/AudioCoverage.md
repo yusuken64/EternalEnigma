@@ -24,7 +24,7 @@ All one-shot source pools are 2D, have autoplay disabled, and receive their corr
 | Basic swing / ranged attack / thrown item | Attack / profile release / Throw | Effects |
 | Health loss, including traps and status ticks | Damage on resolved positive damage | Effects |
 | Miss / zero-damage block | Miss / Block | Effects |
-| Healing / SP restoration / status change | Heal / quiet Status | Effects |
+| Healing / Mana restoration / status change | Heal / quiet Status | Effects |
 | Death / revival | Death / Revive | Effects |
 | Item use / equip / unequip / drop / pickup | Respective committed action cue | Effects |
 | Gold / keys / encounter supplies / recovered possessions | Pickup only on receipt | Effects |

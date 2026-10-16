@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 
-/// <summary>Free inn: rest to restore the party's HP/SP (damage persists between runs) or save the game.</summary>
+/// <summary>Free inn: rest to restore the party's HP/Mana (damage persists between runs) or save the game.</summary>
 public class InnDialog : Dialog
 {
     public TextMeshProUGUI StatusText;
@@ -37,14 +37,19 @@ public class InnDialog : Dialog
     public override void PrepareTown(TownInteractionContext context)
     {
         services = context.Services;
-        StatusText.text = GameplayText.Format(services.NeedsRest ? "Rest to restore your party's HP, SP and hunger?" : "Your party is fully rested.");
+        StatusText.text = GameplayText.Format(services.NeedsRest ? "Rest to restore your party's HP, Mana and hunger?" : "Your party is fully rested.");
     }
 
     internal override void SetFirstSelect() => (services != null && services.NeedsRest ? RestButton : SaveButton).Select();
 
     public void Rest_Clicked()
     {
-        services.Rest(out var reason);
+        if (!services.Rest(out var reason))
+        {
+            StatusText.text = GameplayText.Format(reason);
+            GameMessages.Reject(reason);
+            return;
+        }
         CloseDialog();
         TownMenu.ShowMessage(reason ?? "Your party is fully restored.");
     }
@@ -52,6 +57,12 @@ public class InnDialog : Dialog
     public void Save_Clicked()
     {
         bool saved = services.SaveGame(out var error);
+        if (!saved)
+        {
+            StatusText.text = GameplayText.Format(error);
+            GameMessages.Reject(error);
+            return;
+        }
         CloseDialog();
         TownMenu.ShowMessage(saved ? "Game saved." : error);
     }

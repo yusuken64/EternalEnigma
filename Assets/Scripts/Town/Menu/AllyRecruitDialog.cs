@@ -84,8 +84,8 @@ public class AllyRecruitDialog : Dialog
                 RecruitButtonText.raycastTarget = false;
                 blockedReason = player.RecruitedAllies.Count >= town.Configuration.MaxPartySize ? $"Party limit is {town.Configuration.MaxPartySize}." :
                     !town.TownAllies.Contains(_ally) ? "This ally is no longer available." :
-                    player.Gold < _ally.RecruitCost ? $"Not enough gold. You have {player.Gold:N0}." : null;
-                RecruitButton.interactable = blockedReason == null;
+                    player.Gold < _ally.RecruitCost ? $"Costs {_ally.RecruitCost} gold; you have {player.Gold}." : null;
+                RecruitButton.interactable = true;
 				break;
 			case AllyRecruitDialogMode.Talk:
 				RecruitButtons.gameObject.SetActive(false);
@@ -93,7 +93,7 @@ public class AllyRecruitDialog : Dialog
                 blockedReason = player.RecruitedAllies.Count <= 1 ? "Keep at least one party member." :
                     !player.RecruitedAllies.Contains(_ally) ? "This ally is not in the party." :
                     Common.Instance.CampaignContext != null && _ally.Id == Common.Instance.GameSaveData.ProtagonistId ? "The protagonist stays in the party." : null;
-                RemoveButton.interactable = blockedReason == null;
+                RemoveButton.interactable = true;
 				break;
 			case AllyRecruitDialogMode.Info:
 				break;
@@ -105,7 +105,7 @@ public class AllyRecruitDialog : Dialog
 	{
         if (!FindFirstObjectByType<Town>().Services.Dismiss(_ally, out var reason))
         {
-            TownMenu.ShowMessage(reason);
+            Reject(reason);
             return;
         }
         CloseDialog();
@@ -115,10 +115,17 @@ public class AllyRecruitDialog : Dialog
     {
         if (!FindFirstObjectByType<Town>().Services.Recruit(_ally, out var reason))
         {
-            TownMenu.ShowMessage(reason);
+            Reject(reason);
             return;
         }
         CloseDialog();
+    }
+
+    private void Reject(string reason)
+    {
+        UpdateUI();
+        if (!DescriptionText.text.Contains(reason)) DescriptionText.text += GameplayText.Format("\n\n" + reason);
+        GameMessages.Reject(reason);
     }
 
 	public static void Recruit(Town town, TownAlly ally)

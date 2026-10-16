@@ -22,7 +22,7 @@ namespace EternalEnigma.Tests
             inputs = new TestInputScope(); oldAnimations = DungeonPreferences.AnimationOverride;
             oldControl = DungeonPreferences.FullControlOverride; DungeonPreferences.FullControlOverride = false;
             DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;
-            harness = new GameTestHarness(); yield return harness.LoadDungeon(new TestScenario { SP = 50 });
+            harness = new GameTestHarness(); yield return harness.LoadDungeon(new TestScenario { Mana = 50 });
             foreach (var enemy in harness.Game.Enemies.ToArray()) Object.Destroy(enemy.gameObject);
             harness.Game.Enemies.Clear();
             var dungeon = harness.Game.CurrentDungeon;
@@ -148,13 +148,13 @@ namespace EternalEnigma.Tests
             Object.Destroy(projectile);
         }
 
-        Skill PrepareFindExit(int gold = 1000, int sp = 20)
+        Skill PrepareFindExit(int gold = 1000, int mana = 20)
         {
             var skill = Resources.Load<Skill>("Classes/Skills/Scout/Find Exit");
-            harness.Ally.BaseStats.SPMax = 100;
-            harness.Ally.BaseStats.SPRegenAcccumlateThreshold = 10000;
+            harness.Ally.BaseStats.ManaMax = 100;
+            harness.Ally.BaseStats.ManaRegenThreshold = 10000;
             harness.Ally.InvalidateCachedStats();
-            harness.Ally.Skills.Add(skill); harness.Ally.Vitals.SP = sp; harness.Ally.SyncDisplayedStats();
+            harness.Ally.Skills.Add(skill); harness.Ally.Vitals.Mana = mana; harness.Ally.SyncDisplayedStats();
             harness.Game.PlayerController.Gold = gold;
             return skill;
         }
@@ -164,11 +164,11 @@ namespace EternalEnigma.Tests
             var skill = PrepareFindExit();
             var game = harness.Game; var floor = game.CurrentDungeon;
             int number = game.PlayerController.Floor;
-            int sp = harness.Ally.Vitals.SP;
+            int mana = harness.Ally.Vitals.Mana;
             var route = FindExitAction.Route(harness.Ally).ToArray();
             Assert.That(route.Length, Is.InRange(1, 15));
             Assert.That(TrailCoin.Prefab, Is.Not.Null);
-            Assert.That(skill.CostText(harness.Ally), Is.EqualTo($"2 SP, {route.Length * 2} gold"));
+            Assert.That(skill.CostText(harness.Ally), Is.EqualTo($"2 Mana, {route.Length * 2} gold"));
             game.FloorReveal.TreasureRevealed = true;
             game.UpdateMiniMap();
             var map = game.PlayerController.Minimap;
@@ -179,7 +179,7 @@ namespace EternalEnigma.Tests
             Assert.That(coins.All(c => c.SeededAmount == 1), Is.True);
             Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(center));
             Assert.That(game.PlayerController.Gold, Is.EqualTo(1000 - 2 * route.Length));
-            Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(sp - 2));
+            Assert.That(harness.Ally.Vitals.Mana, Is.EqualTo(mana - 2));
             for (int frame = 0; frame < 4; frame++)
             {
                 yield return null;
@@ -203,20 +203,20 @@ namespace EternalEnigma.Tests
             yield return null;
         }
 
-        [UnityTest] public IEnumerator FindExitRejectsInsufficientFundsOrSPWithoutSpendingEither()
+        [UnityTest] public IEnumerator FindExitRejectsInsufficientFundsOrManaWithoutManaendingEither()
         {
             var skill = PrepareFindExit();
             int price = FindExitAction.GoldCost(harness.Ally);
             Assert.That(price, Is.GreaterThan(0));
-            foreach (var resources in new[] { (gold: price - 1, sp: 20), (gold: price, sp: 1) })
+            foreach (var resources in new[] { (gold: price - 1, mana: 20), (gold: price, mana: 1) })
             {
                 harness.Game.PlayerController.Gold = resources.gold;
-                harness.Ally.Vitals.SP = resources.sp;
+                harness.Ally.Vitals.Mana = resources.mana;
                 var cast = new SkillAction(harness.Ally, skill, harness.Ally);
                 Assert.That(cast.IsValid(harness.Ally), Is.False);
                 Assert.That(cast.ExecuteImmediate(harness.Ally), Is.Empty);
                 Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(resources.gold));
-                Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(resources.sp));
+                Assert.That(harness.Ally.Vitals.Mana, Is.EqualTo(resources.mana));
                 Assert.That(harness.Game.CurrentDungeon.Interactables.OfType<TrailCoin>(), Is.Empty);
             }
             yield return null;
@@ -227,9 +227,9 @@ namespace EternalEnigma.Tests
             var skill = PrepareFindExit();
             var floor = harness.Game.CurrentDungeon;
             int count = FindExitAction.Route(harness.Ally).Count;
-            int sp = harness.Ally.Vitals.SP;
+            int mana = harness.Ally.Vitals.Mana;
             Assert.That(count, Is.GreaterThan(0));
-            Assert.That(sp, Is.GreaterThanOrEqualTo(12));
+            Assert.That(mana, Is.GreaterThanOrEqualTo(12));
             for (int cycle = 1; cycle <= 3; cycle++)
             {
                 var report = new AutoplayReport();
@@ -255,7 +255,7 @@ namespace EternalEnigma.Tests
                 Assert.That(floor.Interactables.OfType<TrailCoin>(), Is.Empty);
                 Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(1000 - cycle * count * 2));
             }
-            Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(sp - 12));
+            Assert.That(harness.Ally.Vitals.Mana, Is.EqualTo(mana - 12));
             int beforeReplay = harness.Game.PlayerController.Gold;
             var effect = new FindExitAction();
             effect.ExecuteImmediate(harness.Ally);
@@ -290,12 +290,12 @@ namespace EternalEnigma.Tests
             Assert.That(floor.GetInteractable(stairs.Position), Is.SameAs(stairs));
             Assert.That(harness.Game.CurrentDungeon, Is.SameAs(floor));
             Assert.That(harness.Game.PlayerController.Floor, Is.EqualTo(number));
-            int sp = harness.Ally.Vitals.SP;
+            int mana = harness.Ally.Vitals.Mana;
             var emptyCast = new SkillAction(harness.Ally, skill, harness.Ally);
             Assert.That(emptyCast.IsValid(harness.Ally), Is.False);
             Assert.That(emptyCast.ExecuteImmediate(harness.Ally), Is.Empty);
             Assert.That(harness.Game.PlayerController.Gold, Is.EqualTo(999));
-            Assert.That(harness.Ally.Vitals.SP, Is.EqualTo(sp));
+            Assert.That(harness.Ally.Vitals.Mana, Is.EqualTo(mana));
         }
 
         [UnityTest] public IEnumerator FindExitAvoidsRevealedTrapsAndCoinsPreserveOtherPickups()

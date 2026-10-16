@@ -141,7 +141,7 @@ public sealed class CampaignTravelService
         {
             var ability = DungeonClearAbilities.ForDungeon(firstClear);
             if (ability != null) capabilities = capabilities.Append($"<b>{ability.DisplayName}</b>\n{ability.Description}").ToArray();
-            if (firstClear == "repeatable-0") capabilities = capabilities.Append("<b>Reset Floor</b>\nPermanently restore puzzle floors to their entry state at no SP cost.").ToArray();
+            if (firstClear == "repeatable-0") capabilities = capabilities.Append("<b>Reset Floor</b>\nPermanently restore puzzle floors to their entry state at no Mana cost.").ToArray();
         }
         CampaignParty.ClearLiveParty(common);
         CampaignParty.Capture(common);

@@ -152,10 +152,10 @@ namespace EternalEnigma.Tests
             shop.ShopItems[0].BuyButton.onClick.Invoke();
             yield return null;
             var confirmation = shop.BuyConfirmationDialog;
-            Assert.That(confirmation.OkButton.interactable, Is.False);
-            Assert.That(confirmation.PromptText.text, Does.Contain("Not enough gold"));
-            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(confirmation.CancelButton.gameObject));
-            Assert.That(confirmation.CancelButton.navigation.selectOnRight, Is.Null);
+            Assert.That(confirmation.OkButton.interactable, Is.True);
+            Assert.That(confirmation.PromptText.text, Does.Contain("Costs 100 gold; you have 0"));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(confirmation.OkButton.gameObject));
+            Assert.That(confirmation.CancelButton.navigation.selectOnRight, Is.SameAs(confirmation.OkButton));
             confirmation.PromptText.ForceMeshUpdate();
             Assert.That(confirmation.PromptText.isTextOverflowing, Is.False);
             confirmation.Ok_Clicked();
@@ -170,9 +170,9 @@ namespace EternalEnigma.Tests
             confirmation.OkButton.Select();
             stock.Remaining = 0;
             confirmation.Ok_Clicked(); // Revalidate even before the next UI update.
-            Assert.That(confirmation.OkButton.interactable, Is.False);
+            Assert.That(confirmation.OkButton.interactable, Is.True);
             Assert.That(confirmation.PromptText.text, Does.Contain("sold out"));
-            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(confirmation.CancelButton.gameObject));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(confirmation.OkButton.gameObject));
             Assert.That(Town.TownPlayer.Gold, Is.EqualTo(1000));
             Assert.That(Town.TownPlayer.Inventory.Count, Is.EqualTo(originalInventory));
 
@@ -181,8 +181,8 @@ namespace EternalEnigma.Tests
             Assert.That(confirmation.OkButton.interactable, Is.True);
             Town.TownPlayer.Gold = 0;
             confirmation.Ok_Clicked();
-            Assert.That(confirmation.OkButton.interactable, Is.False);
-            Assert.That(confirmation.PromptText.text, Does.Contain("Not enough gold"));
+            Assert.That(confirmation.OkButton.interactable, Is.True);
+            Assert.That(confirmation.PromptText.text, Does.Contain("Costs 100 gold; you have 0"));
             Assert.That(stock.Remaining, Is.EqualTo(originalStock));
             confirmation.Cancel_Clicked();
             Town.TownPlayer.Gold = 1000;
@@ -197,8 +197,8 @@ namespace EternalEnigma.Tests
             shop.ShopItems[0].BuyButton.onClick.Invoke();
             Town.TownPlayer.Inventory.Remove(shop.ShopItemDatas[0].BagItem);
             confirmation.Ok_Clicked();
-            Assert.That(confirmation.OkButton.interactable, Is.False);
-            Assert.That(confirmation.PromptText.text, Does.Contain("cannot be sold"));
+            Assert.That(confirmation.OkButton.interactable, Is.True);
+            Assert.That(confirmation.PromptText.text, Does.Contain("no longer in your bag"));
             Assert.That(Town.TownPlayer.Gold, Is.EqualTo(900));
             confirmation.Cancel_Clicked();
 
@@ -273,12 +273,12 @@ namespace EternalEnigma.Tests
             var ally = harness.Ally;
             Assert.That(ally.Vitals.Hunger, Is.Zero); Assert.That(ally.Vitals.HungerAccumulate, Is.EqualTo(3));
             var drink = harness.Game.PlayerController.Inventory.InventoryItems.Single();
-            ally.Vitals.HP = ally.FinalStats.HPMax - 1; ally.Vitals.SP = ally.FinalStats.SPMax - 1;
+            ally.Vitals.HP = ally.FinalStats.HPMax - 1; ally.Vitals.Mana = ally.FinalStats.ManaMax - 1;
             ally.Vitals.Hunger = ally.FinalStats.HungerMax;
             yield return harness.ExecuteAction(new UseInventoryItemAction(harness.Game.PlayerController.Inventory, ally, drink));
             Assert.That(harness.Game.PlayerController.Inventory.InventoryItems.Contains(drink), Is.False);
             Assert.That(ally.Vitals.HP, Is.EqualTo(ally.FinalStats.HPMax));
-            Assert.That(ally.Vitals.SP, Is.EqualTo(ally.FinalStats.SPMax));
+            Assert.That(ally.Vitals.Mana, Is.EqualTo(ally.FinalStats.ManaMax));
             ally.Vitals.Hunger = 12; ally.Vitals.HungerAccumulate = 4;
             GameOverScreen.Retreat(harness.Game.PlayerController);
             yield return harness.WaitUntil(() => Town != null && Town.IsReady, "retreat");
@@ -386,11 +386,11 @@ namespace EternalEnigma.Tests
             yield return harness.LoadDungeon(new TestScenario());
             var ally = harness.Ally;
             Assert.That(ally.Vitals.Hunger, Is.EqualTo(ally.FinalStats.HungerMax), "Old saves start full.");
-            ally.Vitals.HP = 1; ally.Vitals.SP = 0; ally.Vitals.Hunger = 0; ally.Vitals.HungerAccumulate = 3;
+            ally.Vitals.HP = 1; ally.Vitals.Mana = 0; ally.Vitals.Hunger = 0; ally.Vitals.HungerAccumulate = 3;
             GameOverScreen.GoBackToTown(false, harness.Game.PlayerController);
             yield return harness.WaitUntil(() => Town != null && Town.IsReady, "defeat return");
             var hero = Town.TownPlayer.ControllingTownAlly;
-            Assert.That(hero.Hp, Is.EqualTo(-1)); Assert.That(hero.Sp, Is.EqualTo(-1));
+            Assert.That(hero.Hp, Is.EqualTo(-1)); Assert.That(hero.Mana, Is.EqualTo(-1));
             Assert.That(hero.HasHunger, Is.False); Assert.That(hero.HungerAccumulate, Is.Zero);
             Assert.That(Common.Instance.GameSaveData.TownSaveData.RestockCycle, Is.Zero);
         }

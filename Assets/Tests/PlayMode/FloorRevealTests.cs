@@ -43,10 +43,10 @@ namespace EternalEnigma.Tests
             caster.SetPosition(center);
             foreach (var actor in harness.Game.AllCharacters)
             {
-                actor.BaseStats.HPMax = actor.BaseStats.SPMax = 100;
-                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
+                actor.BaseStats.HPMax = actor.BaseStats.ManaMax = 100;
+                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.ManaRegenThreshold = 10000;
                 actor.InvalidateCachedStats();
-                actor.Vitals.HP = 60; actor.Vitals.SP = 20;
+                actor.Vitals.HP = 60; actor.Vitals.Mana = 20;
                 actor.SyncDisplayedStats();
             }
             harness.Game.UpdateMiniMap();
@@ -78,7 +78,7 @@ namespace EternalEnigma.Tests
             var skill = ScriptableObject.CreateInstance<Skill>();
             skill.SkillName = name;
             skill.ActivationType = ActivationType.Active;
-            skill.SPCost = 0;
+            skill.ManaCost = 0;
             skill.Targeting = targeting;
             skill.TargetSelector = new TargetSelector { Team = team, Area = area };
             skill.ActionEffects = effects.ToList();
@@ -94,7 +94,7 @@ namespace EternalEnigma.Tests
             var skill = ScriptableObject.CreateInstance<Skill>();
             skill.SkillName = name;
             skill.ActivationType = ActivationType.Passive;
-            skill.SPCost = 0;
+            skill.ManaCost = 0;
             skill.Targeting = SkillTargeting.Self;
             skill.TargetSelector = new TargetSelector { Team = TargetTeam.Self, Area = TargetArea.Self };
             skill.PassiveResponses = responses.ToList();
@@ -200,7 +200,7 @@ namespace EternalEnigma.Tests
             var treasureSkill = ScriptableObject.CreateInstance<Skill>();
             treasureSkill.SkillName = "Treasure Hunter";
             treasureSkill.ActivationType = ActivationType.Passive;
-            treasureSkill.SPCost = 0;
+            treasureSkill.ManaCost = 0;
             treasureSkill.Targeting = SkillTargeting.Self;
             treasureSkill.TargetSelector = new TargetSelector { Team = TargetTeam.Self, Area = TargetArea.Self };
             treasureSkill.PassiveResponses = new List<PassiveResponse> { treasurePassive };

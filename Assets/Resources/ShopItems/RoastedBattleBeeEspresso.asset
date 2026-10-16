@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RoastedBattleBeeEspresso
   m_EditorClassIdentifier: 
   ItemName: Roasted Battle Bee Espresso
-  Description: "Brewed with real roasted Battle Bee and butter honey. Restores 10 SP."
+  Description: "Brewed with real roasted Battle Bee and butter honey. Restores 10 Mana."
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

@@ -24,18 +24,31 @@ namespace JuicyChickenGames.Menu
 		private InventoryMenuItem _view;
         private Character _character;
         private Action contextualUse;
-        public Func<bool> ValidateActor;
-        private bool CanAct => ValidateActor == null || ValidateActor();
+        public Func<string> ActorRestriction;
         public void RefreshAvailability()
         {
-            Buttons[0].interactable = CanAct && new UseInventoryItemAction(Game.Instance.PlayerController.Inventory, _character, _data).CanBegin(_character);
-            Buttons[1].interactable = Buttons[2].interactable = CanAct && !_character.Equipment.IsEquipped(_data);
+            foreach (var button in Buttons) button.interactable = true;
             SetNavigation();
+        }
+
+        private bool ValidateAttempt(bool movingItem = false)
+        {
+            string restriction = ActorRestriction?.Invoke();
+            if (restriction != null) { GameMessages.Reject(restriction); return false; }
+            if (contextualUse != null) return true;
+            if (!MenuManager.CanAttemptAction(_character, out restriction)) { GameMessages.Reject(restriction); return false; }
+            if (_character == null || _character.Vitals.HP <= 0)
+            { GameMessages.Reject("A downed hero cannot use items."); return false; }
+            if (_data?.ItemDefinition == null || !Game.Instance.PlayerController.Inventory.InventoryItems.Contains(_data) && !_character.Equipment.IsEquipped(_data))
+            { GameMessages.Reject("This item is no longer in your inventory."); return false; }
+            if (movingItem && _character.Equipment.IsEquipped(_data))
+            { GameMessages.Reject("Unequip this item before throwing or dropping it."); return false; }
+            return true;
         }
 
 		public void Use_Clicked()
 		{
-            if (!CanAct) return;
+            if (!ValidateAttempt()) return;
             if (contextualUse != null) { contextualUse(); return; }
 			if (_character is Ally ally)
 			{
@@ -45,7 +58,7 @@ namespace JuicyChickenGames.Menu
 
 		public void Throw_Clicked()
 		{
-            if (!CanAct || _character.Equipment.IsEquipped(_data)) return;
+            if (!ValidateAttempt(movingItem: true)) return;
 			var droppedItem = _data.ItemDefinition.ResolveDroppedPrefab(Game.Instance.CurrentDungeon.DroppedItemPrefabs);
 			var droppedItemPrefab = droppedItem != null
 				? droppedItem.gameObject
@@ -54,6 +67,7 @@ namespace JuicyChickenGames.Menu
 			{
 				LookAt = false
 			};
+			if (!action.ValidateCommand(_character, out var reason)) { GameMessages.Reject(reason); return; }
 
 			MenuManager.Instance.CloseAllMenus();
             _character.SetAction(action);
@@ -61,8 +75,9 @@ namespace JuicyChickenGames.Menu
 
 		public void Drop_Clicked()
 		{
-            if (!CanAct || _character.Equipment.IsEquipped(_data)) return;
+            if (!ValidateAttempt(movingItem: true)) return;
 			var action = new DropItemAction(Game.Instance.PlayerController.Inventory, _data, _character.TilemapPosition);
+			if (!action.ValidateCommand(_character, out var reason)) { GameMessages.Reject(reason); return; }
 
 			MenuManager.Instance.CloseAllMenus();
             _character.SetAction(action);
@@ -75,7 +90,7 @@ namespace JuicyChickenGames.Menu
 		internal void Setup(InventoryMenuItem view, InventoryItem data, Character character)
 		{
             contextualUse = null;
-            ValidateActor = null;
+            ActorRestriction = null;
             foreach (var button in Buttons) button.gameObject.SetActive(true);
             foreach (var button in Buttons) button.interactable = true;
 			this._data = data;
@@ -103,7 +118,7 @@ namespace JuicyChickenGames.Menu
         public void SetupActions(string title, string actionLabel, Action action)
         {
             _character = null;
-            ValidateActor = null;
+            ActorRestriction = null;
             foreach (var button in Buttons) button.interactable = true;
             contextualUse = action;
             ItemNameText.text = GameplayText.Format(title);

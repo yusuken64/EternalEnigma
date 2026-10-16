@@ -5,7 +5,7 @@ using UnityEngine;
 public class Stats
 {
 	private int hPMax;
-	private int sPMax;
+	private int manaMax;
 	private int hungerMax;
 	private int strength;
 	private int magicPower;
@@ -14,7 +14,7 @@ public class Stats
 
 	private int hungerAccumulateThreshold;
 	private int hPRegenAcccumlateThreshold;
-	private int sPRegenAcccumlateThreshold;
+	private int manaRegenThreshold;
 	private float dropRate;
 	private int actionsPerTurnMax;
 	private int attacksPerTurnMax;
@@ -36,12 +36,12 @@ public class Stats
 		}
 	}
 
-	public int SPMax
+	public int ManaMax
 	{
-		get => sPMax;
+		get => manaMax;
 		set
 		{
-			sPMax = value;
+			manaMax = value;
 			OnStatChanged?.Invoke();
 		}
 	}
@@ -107,12 +107,12 @@ public class Stats
 		}
 	}
 	
-	public int SPRegenAcccumlateThreshold
+	public int ManaRegenThreshold
 	{
-		get => sPRegenAcccumlateThreshold;
+		get => manaRegenThreshold;
 		set
 		{
-			sPRegenAcccumlateThreshold = value;
+			manaRegenThreshold = value;
 			OnStatChanged?.Invoke();
 		}
 	}
@@ -200,7 +200,7 @@ public class Stats
 	internal void FromStartingStats(StartingStats startingStats)
 	{
 		HPMax = startingStats.HPMax;
-		SPMax = startingStats.SPMax;
+		ManaMax = startingStats.ManaMax;
 		HungerMax = startingStats.HungerMax;
 		Strength = startingStats.Strength;
 		MagicPower = startingStats.MagicPower;
@@ -208,7 +208,7 @@ public class Stats
 		EXPOnKill = startingStats.EXPOnKill;
 		HungerAccumulateThreshold = startingStats.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = startingStats.HPRegenAcccumlateThreshold;
-		SPRegenAcccumlateThreshold = startingStats.SPRegenAcccumlateThreshold;
+		ManaRegenThreshold = startingStats.ManaRegenThreshold;
 		DropRate = startingStats.DropRate;
 		ActionsPerTurnMax = startingStats.ActionsPerTurnMax;
 		AttacksPerTurnMax = startingStats.AttacksPerTurnMax;
@@ -240,7 +240,7 @@ public class Stats
 	public Stats(Stats other)
 	{
 		HPMax = other.HPMax;
-		SPMax = other.SPMax;
+		ManaMax = other.ManaMax;
 		HungerMax = other.HungerMax;
 		Strength = other.Strength;
 		MagicPower = other.MagicPower;
@@ -248,7 +248,7 @@ public class Stats
 		EXPOnKill = other.EXPOnKill;
 		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
-		SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
+		ManaRegenThreshold = other.ManaRegenThreshold;
 		DropRate = other.DropRate;
 		ActionsPerTurnMax = other.ActionsPerTurnMax;
 		AttacksPerTurnMax = other.AttacksPerTurnMax;
@@ -268,7 +268,7 @@ public class Stats
 		Stats retStats = new(stats);
 
 		retStats.HPMax += modification.HPMax;
-		retStats.SPMax += modification.SPMax;
+		retStats.ManaMax += modification.ManaMax;
 		retStats.HungerMax += modification.HungerMax;
 		retStats.Strength += modification.Strength;
 		retStats.MagicPower += modification.MagicPower;
@@ -276,7 +276,7 @@ public class Stats
 		retStats.EXPOnKill += modification.EXPOnKill;
 		retStats.HungerAccumulateThreshold += modification.HungerAccumulateThreshold;
 		retStats.HPRegenAcccumlateThreshold += modification.HPRegenAcccumlateThreshold;
-		retStats.SPRegenAcccumlateThreshold += modification.SPRegenAcccumlateThreshold;
+		retStats.ManaRegenThreshold += modification.ManaRegenThreshold;
 		retStats.DropRate += modification.DropRate;
 		retStats.ActionsPerTurnMax += modification.ActionsPerTurnMax;
 		retStats.AttacksPerTurnMax += modification.AttacksPerTurnMax;
@@ -293,7 +293,7 @@ public class Stats
 	internal void Sync(Stats other)
 	{
 		HPMax = other.HPMax;
-		SPMax = other.SPMax;
+		ManaMax = other.ManaMax;
 		HungerMax = other.HungerMax;
 		Strength = other.Strength;
 		MagicPower = other.MagicPower;
@@ -301,7 +301,7 @@ public class Stats
 		EXPOnKill = other.EXPOnKill;
 		HungerAccumulateThreshold = other.HungerAccumulateThreshold;
 		HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
-		SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
+		ManaRegenThreshold = other.ManaRegenThreshold;
 		DropRate = other.DropRate;
 		ActionsPerTurnMax = other.ActionsPerTurnMax;
 		AttacksPerTurnMax = other.AttacksPerTurnMax;
@@ -319,7 +319,7 @@ public class Stats
 		{
 			int hash = 17;
 			hash = hash * 23 + HPMax.GetHashCode();
-			hash = hash * 23 + SPMax.GetHashCode();
+			hash = hash * 23 + ManaMax.GetHashCode();
 			hash = hash * 23 + HungerMax.GetHashCode();
 			hash = hash * 23 + Strength.GetHashCode();
 			hash = hash * 23 + MagicPower.GetHashCode();
@@ -327,7 +327,7 @@ public class Stats
 			hash = hash * 23 + EXPOnKill.GetHashCode();
 			hash = hash * 23 + HungerAccumulateThreshold.GetHashCode();
 			hash = hash * 23 + HPRegenAcccumlateThreshold.GetHashCode();
-			hash = hash * 23 + SPRegenAcccumlateThreshold.GetHashCode();
+			hash = hash * 23 + ManaRegenThreshold.GetHashCode();
 			hash = hash * 23 + DropRate.GetHashCode();
 			hash = hash * 23 + ActionsPerTurnMax.GetHashCode();
 			hash = hash * 23 + AttacksPerTurnMax.GetHashCode();
@@ -344,7 +344,7 @@ public class Stats
 	internal string ToDebugString()
 	{
 		return $"HPMax: {HPMax} " +
-			$"SPMax: {SPMax} " +
+			$"ManaMax: {ManaMax} " +
 			$"HungerMax: {HungerMax} " +
 			$"Strength: {Strength} " +
 			$"MagicPower: {MagicPower} " +
@@ -352,7 +352,7 @@ public class Stats
 			$"EXPOnKill: {EXPOnKill} " +
 			$"HungerAccumulateThreshold: {HungerAccumulateThreshold} " +
 			$"HPRegenAcccumlateThreshold: {HPRegenAcccumlateThreshold} " +
-			$"SPRegenAcccumlateThreshold: {SPRegenAcccumlateThreshold} " +
+			$"ManaRegenThreshold: {ManaRegenThreshold} " +
 			$"DropRate: {DropRate} " +
 			$"ActionsPerTurnMax: {ActionsPerTurnMax} " +
 			$"AttacksPerTurnMax: {AttacksPerTurnMax} " +

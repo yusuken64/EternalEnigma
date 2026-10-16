@@ -193,7 +193,7 @@ namespace EternalEnigma.Tests
             Assert.That(next.offer.CurrentRank,Is.Zero);
             Assert.That(run.LearnOffer(town,next.ally,next.offer),Is.True);
             while((next=run.NextTraining(town)).ally!=null) Assert.That(run.LearnOffer(town,next.ally,next.offer),Is.True);
-            Assert.That(TrainerOffers.AvailablePoints(hero),Is.Zero);
+            Assert.That(TrainerOffers.AvailableSkillPoints(hero),Is.Zero);
             Assert.That(hero.Level,Is.EqualTo(1),"Autoplay never grants progression to learn a skill.");
             Assert.That(TrainerOffers.Build(hero,town.Configuration).Where(o=>o.Tier>1).All(o=>!o.CanLearn),Is.True);
             hero.Level=50; // Synthetic earned progression; report is validation-only.
@@ -204,7 +204,7 @@ namespace EternalEnigma.Tests
                 Assert.That(run.LearnOffer(town,next.ally,next.offer),Is.True);
             }
             Assert.That(run.Report.Training.Any(t=>t.RankAfter>1),Is.True);
-            Assert.That(TrainerOffers.AvailablePoints(hero),Is.GreaterThanOrEqualTo(0));
+            Assert.That(TrainerOffers.AvailableSkillPoints(hero),Is.GreaterThanOrEqualTo(0));
         }
 
         [UnityTest]
@@ -604,9 +604,9 @@ namespace EternalEnigma.Tests
             AutoplayRunner.WatchDemo(new AutoplayOptions { DebugPlaythrough = true });
             var run = AutoplayRunner.Active; run.SetPaused(true);
             run.Report.ValidationOnly = true;
-            harness.Ally.Vitals.HP = 0; harness.Ally.Vitals.SP = 0; harness.Ally.Vitals.Hunger = 0;
+            harness.Ally.Vitals.HP = 0; harness.Ally.Vitals.Mana = 0; harness.Ally.Vitals.Hunger = 0;
             Assert.That(harness.Ally.Vitals.HP,Is.EqualTo(harness.Ally.FinalStats.HPMax));
-            Assert.That(harness.Ally.Vitals.SP,Is.EqualTo(harness.Ally.FinalStats.SPMax));
+            Assert.That(harness.Ally.Vitals.Mana,Is.EqualTo(harness.Ally.FinalStats.ManaMax));
             Assert.That(harness.Ally.Vitals.Hunger,Is.EqualTo(harness.Ally.FinalStats.HungerMax));
             Assert.That(run.Report.EligibleForBalance,Is.False);
             int strength = harness.Ally.FinalStats.Strength;
@@ -629,15 +629,15 @@ namespace EternalEnigma.Tests
             Assert.That(magic.AsTargetedSkill(harness.Ally, enemy).ExecuteImmediate(harness.Ally).OfType<TakeDamageAction>().Single().damage,
                 Is.LessThan(enemy.Vitals.HP), "Infinite strength does not replace magic damage.");
             Assert.That(harness.Ally.FinalStats.Strength,Is.EqualTo(strength),"Infinite strength must not alter saved/base stats.");
-            var stats = new Stats { HPMax = 10, SPMax = 4, HungerMax = 10 };
+            var stats = new Stats { HPMax = 10, ManaMax = 4, HungerMax = 10 };
             var unrelated = new Vitals { LinkedStats = () => stats }; unrelated.HP = 0;
             Assert.That(unrelated.HP,Is.Zero,"Godmode cannot protect enemy/unrelated vitals.");
             run.Options.Godmode = false; run.Options.InfiniteStrength = false; run.Options.InfiniteResources = false;
             Assert.That(strengthSkill.AsTargetedSkill(harness.Ally, enemy).ExecuteImmediate(harness.Ally).OfType<TakeDamageAction>()
                 .All(h => h.damage < enemy.Vitals.HP && h.RollToHit), Is.True, "Turning the assist off restores normal skill damage and hit rolls.");
-            harness.Ally.Vitals.HP = 3; harness.Ally.Vitals.SP = 0;
+            harness.Ally.Vitals.HP = 3; harness.Ally.Vitals.Mana = 0;
             Assert.That(harness.Ally.Vitals.HP,Is.EqualTo(3));
-            Assert.That(harness.Ally.Vitals.SP,Is.Zero);
+            Assert.That(harness.Ally.Vitals.Mana,Is.Zero);
             run.ExitDemo(); yield return harness.WaitUntil(() => AutoplayRunner.Active == null,"debug cleanup");
             Assert.That(harness.Store.Json,Is.EqualTo(original));
         }

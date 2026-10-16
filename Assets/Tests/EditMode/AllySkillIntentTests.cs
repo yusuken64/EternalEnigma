@@ -52,7 +52,7 @@ namespace EternalEnigma.Tests
 			var s = ScriptableObject.CreateInstance<Skill>();
 			created.Add(s);
 			s.ActivationType = ActivationType.Active;
-			s.SPCost = 2;
+			s.ManaCost = 2;
 			s.Targeting = targeting;
 			s.TargetSelector = new TargetSelector { Team = team, Area = TargetArea.Visible };
 			s.ActionEffects = new List<GameAction>(effects);
@@ -184,52 +184,52 @@ namespace EternalEnigma.Tests
 		}
 
 		[Test]
-		public void SpReserveIsHighestHealCostAndHalvedWhenAggressive()
+		public void ManaReserveIsHighestHealCostAndHalvedWhenAggressive()
 		{
-			// Create heal skill with SPCost 4
+			// Create heal skill with ManaCost 4
 			var healSkill = MakeSkill(TargetTeam.Allies, SkillTargeting.SelectedTarget, new TakeHealAction { healing = 10 });
-			healSkill.SPCost = 4;
+			healSkill.ManaCost = 4;
 
-			// Create damage skill with SPCost 9
+			// Create damage skill with ManaCost 9
 			var damageSkill = MakeSkill(TargetTeam.Enemies, SkillTargeting.SelectedTarget, new TakeDamageAction { damage = 5 });
-			damageSkill.SPCost = 9;
+			damageSkill.ManaCost = 9;
 
 			var skills = new List<Skill> { healSkill, damageSkill };
 
 			// Follow strategy: reserve should be 4 (highest heal/revive cost)
-			Assert.That(AllySkillBudget.SpReserve(skills, AllyStrategy.Follow), Is.EqualTo(4));
+			Assert.That(AllySkillBudget.ManaReserve(skills, AllyStrategy.Follow), Is.EqualTo(4));
 
 			// Aggressive strategy: reserve should be 2 (4 / 2)
-			Assert.That(AllySkillBudget.SpReserve(skills, AllyStrategy.Aggresive), Is.EqualTo(2));
+			Assert.That(AllySkillBudget.ManaReserve(skills, AllyStrategy.Aggresive), Is.EqualTo(2));
 
 			// No heal skills: reserve should be 0
 			var damageOnlySkills = new List<Skill> { damageSkill };
-			Assert.That(AllySkillBudget.SpReserve(damageOnlySkills, AllyStrategy.Follow), Is.EqualTo(0));
+			Assert.That(AllySkillBudget.ManaReserve(damageOnlySkills, AllyStrategy.Follow), Is.EqualTo(0));
 		}
 
 		[Test]
 		public void CanAffordRespectsReserve()
 		{
-			// Create a damage skill with SPCost 2
+			// Create a damage skill with ManaCost 2
 			var damageSkill = MakeSkill(TargetTeam.Enemies, SkillTargeting.SelectedTarget, new TakeDamageAction { damage = 5 });
-			damageSkill.SPCost = 2;
+			damageSkill.ManaCost = 2;
 
-			// Create a heal skill with SPCost 4
+			// Create a heal skill with ManaCost 4
 			var healSkill = MakeSkill(TargetTeam.Allies, SkillTargeting.SelectedTarget, new TakeHealAction { healing = 10 });
-			healSkill.SPCost = 4;
+			healSkill.ManaCost = 4;
 
 			int reserve = 4;
 
-			// Damage skill with SP 5 and reserve 4: 5 - 2 = 3, which is < 4, so false
+			// Damage skill with Mana 5 and reserve 4: 5 - 2 = 3, which is < 4, so false
 			Assert.That(AllySkillBudget.CanAfford(5, damageSkill, reserve), Is.False);
 
-			// Damage skill with SP 6 and reserve 4: 6 - 2 = 4, which is >= 4, so true
+			// Damage skill with Mana 6 and reserve 4: 6 - 2 = 4, which is >= 4, so true
 			Assert.That(AllySkillBudget.CanAfford(6, damageSkill, reserve), Is.True);
 
-			// Heal skill with SP 4 and reserve 4: heal is reserve skill, so true
+			// Heal skill with Mana 4 and reserve 4: heal is reserve skill, so true
 			Assert.That(AllySkillBudget.CanAfford(4, healSkill, reserve), Is.True);
 
-			// Damage skill with SP below cost: false
+			// Damage skill with Mana below cost: false
 			Assert.That(AllySkillBudget.CanAfford(1, damageSkill, reserve), Is.False);
 		}
 

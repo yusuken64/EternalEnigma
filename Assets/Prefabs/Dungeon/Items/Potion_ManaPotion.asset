@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9f4216b11db72445ae94113933a368a, type: 3}
-  m_Name: Potion_SkillPotion
+  m_Name: Potion_ManaPotion
   m_EditorClassIdentifier: 
-  ItemName: SP Potion
-  Description: "Restores SP."
+  ItemName: Mana Potion
+  Description: "Restores Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

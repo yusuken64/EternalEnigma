@@ -113,6 +113,6 @@ public static class EndgameDebugStart
         var stats = item.StatModification ?? new StatModification();
         bool magic = hero.PrimaryClass.PreferredAttribute == HeroAttribute.Int;
         return stats.Strength * (magic ? 1 : 3) + stats.MagicPower * (magic ? 3 : 1) +
-            stats.Defense * 2 + (stats.HPMax + stats.SPMax) * .1f;
+            stats.Defense * 2 + (stats.HPMax + stats.ManaMax) * .1f;
     }
 }

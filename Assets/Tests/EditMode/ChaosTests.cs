@@ -69,11 +69,11 @@ namespace EternalEnigma.Tests
             var skill = hero.PrimaryClass.Skills.First(e => e.Skill != null);
             var item = ChaosFixtures.Items(manager).First(i => i.StackMax > 0);
             var required = new ChaosPrerequisites { HeroId = hero.Id, ClassId = hero.PrimaryClass.Id, SkillName = skill.Skill.SkillName,
-                Rank = skill.MaxRank, Level = 20, HP = 12, SP = 0, Inventory = new() { new ItemSaveData { ItemName = item.ItemName, HasStock = true, Stock = item.StackMax } } };
+                Rank = skill.MaxRank, Level = 20, HP = 12, Mana = 0, Inventory = new() { new ItemSaveData { ItemName = item.ItemName, HasStock = true, Stock = item.StackMax } } };
             var fixture = ChaosFixtures.Create(72, TownSceneLoader.Default, manager, required: required);
             var data = fixture.Party.Single(h => h.AllyId == hero.Id);
             Assert.That(data.SkillRanks.Single(s => s.SkillName == skill.Skill.SkillName).Rank, Is.EqualTo(skill.MaxRank));
-            Assert.That(data.Sp, Is.Zero); Assert.That(data.Hp, Is.EqualTo(12));
+            Assert.That(data.Mana, Is.Zero); Assert.That(data.Hp, Is.EqualTo(12));
             Assert.That(fixture.Inventory.Single(i => i.ItemName == item.ItemName).Stock, Is.EqualTo(item.StackMax));
             Assert.That(fixture.Guaranteed, Has.Count.EqualTo(1)); fixture.Validate();
         }

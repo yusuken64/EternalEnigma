@@ -293,9 +293,9 @@
 //					vitals.HPRegenAcccumlate++;
 //				}
 
-//				if (vitals.SP < stats.SPMax)
+//				if (vitals.Mana < stats.ManaMax)
 //				{
-//					vitals.SPRegenAcccumlate++;
+//					vitals.ManaRegenAccumulator++;
 //				}
 //			},
 //			false));
@@ -332,7 +332,7 @@
 //				false));
 //		}
 
-//		if (Vitals.SPRegenAcccumlate > FinalStats.SPRegenAcccumlateThreshold &&
+//		if (Vitals.ManaRegenAccumulator > FinalStats.ManaRegenThreshold &&
 //			Vitals.Hunger > 0)
 //		{
 //			DeterminedActions.Add(new ModifyStatAction(
@@ -340,8 +340,8 @@
 //				this,
 //				(stats, vitals) =>
 //				{
-//					vitals.SPRegenAcccumlate = 0;
-//					vitals.SP++;
+//					vitals.ManaRegenAccumulator = 0;
+//					vitals.Mana++;
 //				},
 //				false));
 //		}

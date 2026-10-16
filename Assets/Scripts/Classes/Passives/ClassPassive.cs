@@ -297,7 +297,7 @@ public static class StatScaling
 		var result = new StatModification();
 
 		result.HPMax = scaling.ScaleBuff(mod.HPMax, rank);
-		result.SPMax = scaling.ScaleBuff(mod.SPMax, rank);
+		result.ManaMax = scaling.ScaleBuff(mod.ManaMax, rank);
 		result.HungerMax = scaling.ScaleBuff(mod.HungerMax, rank);
 		result.Strength = scaling.ScaleBuff(mod.Strength, rank);
 		result.MagicPower = scaling.ScaleBuff(mod.MagicPower, rank);
@@ -305,7 +305,7 @@ public static class StatScaling
 		result.EXPOnKill = scaling.ScaleBuff(mod.EXPOnKill, rank);
 		result.HungerAccumulateThreshold = scaling.ScaleBuff(mod.HungerAccumulateThreshold, rank);
 		result.HPRegenAcccumlateThreshold = scaling.ScaleBuff(mod.HPRegenAcccumlateThreshold, rank);
-		result.SPRegenAcccumlateThreshold = scaling.ScaleBuff(mod.SPRegenAcccumlateThreshold, rank);
+		result.ManaRegenThreshold = scaling.ScaleBuff(mod.ManaRegenThreshold, rank);
 		result.ActionsPerTurnMax = scaling.ScaleBuff(mod.ActionsPerTurnMax, rank);
 		result.AttacksPerTurnMax = scaling.ScaleBuff(mod.AttacksPerTurnMax, rank);
 		result.FireResistance = scaling.ScaleBuff(mod.FireResistance, rank);

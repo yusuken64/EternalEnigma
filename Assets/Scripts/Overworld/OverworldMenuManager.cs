@@ -56,25 +56,61 @@ public sealed class OverworldMenuManager : MonoBehaviour
         EnsurePickers();
         PartyMenuPicker picker=null;
         var options=new List<(string Label,Action Execute)>();
+        var applied=new HashSet<Capability>();
         void Attempt(LockAction action)
         {
-            var outcome=world.AttemptGate(session,action);
+            var outcome=world.AttemptGate(session,action,false);
             if(session.Closed){picker.CloseDialog();return;}
-            picker.Title.text=GameplayText.Format(outcome==LockOutcome.Progress?"Something changed, but the way is still blocked.":"This had no effect");
+            string reason;
+            if(outcome==LockOutcome.Progress)
+            {
+                if(action is CapabilityLockAction progress)applied.Add(progress.Capability);
+                reason="Something changed, but the way is still blocked. " + (route.LockText??route.GateHint);
+                GameMessages.Post(reason);
+                AudioManager.Instance?.PlayCue(SoundCue.Status);
+            }
+            else
+            {
+                reason=GateRejection(route,action,applied);
+                GameMessages.Reject(reason);
+            }
+            picker.Title.text=GameplayText.Format(reason);
         }
         foreach(var capability in CampaignGuidance.Acquired(world.Context))
         {
             var action=new CapabilityLockAction(capability);
             bool available=world.Held.Contains(capability);
             options.Add((CampaignRewardNames.Name(world.Context,capability)+(available?"":" requires "+CampaignGuidance.CapabilitySource(world.Context,capability,CompanionName)),
-                available?(Action)(()=>Attempt(action)):null));
+                ()=>Attempt(action)));
         }
-        foreach(var key in world.CollectedKeys)options.Add((world.Campaign.KeyLabel(key),()=>Attempt(new KeyLockAction(key))));
+        var keys=world.CollectedKeys.ToList();
+        if(route.ShortcutKind==ShortcutKind.Keyed && !keys.Contains(route.KeyId))keys.Add(route.KeyId);
+        foreach(var key in keys)options.Add((world.Campaign.KeyLabel(key),()=>Attempt(new KeyLockAction(key))));
         picker=PartyMenuPicker.Build(PartyMenu.transform.parent,"Choose an action",options,false);
         picker.Description((route.LockText??route.GateHint)+(options.Count==0?"\n\nYou have no abilities or keys to use here.":""));
         picker.CloseAction=()=>{session.Dispose();Interaction=null;};
         dialogs.Open(picker);
         return true;
+    }
+
+    private string GateRejection(CampaignRoute route, LockAction action, HashSet<Capability> applied)
+    {
+        if(action is KeyLockAction key)
+        {
+            if(!world.CollectedKeys.Contains(key.KeyId))return "Requires " + world.Campaign.KeyLabel(key.KeyId) + "; you do not have it.";
+            return route.ShortcutKind==ShortcutKind.Keyed
+                ? world.Campaign.KeyLabel(key.KeyId) + " does not fit. Requires " + world.Campaign.KeyLabel(route.KeyId) + "."
+                : "This gate does not use that key. " + (route.LockText??route.GateHint);
+        }
+        if(action is CapabilityLockAction use)
+        {
+            string name=CampaignRewardNames.Name(world.Context,use.Capability);
+            if(!world.Held.Contains(use.Capability))return name + " requires " + CampaignGuidance.CapabilitySource(world.Context,use.Capability,CompanionName) + " in the active party.";
+            if(route.ShortcutKind==ShortcutKind.Keyed)return "This gate requires " + world.Campaign.KeyLabel(route.KeyId) + ".";
+            if(applied.Contains(use.Capability))return name + " has already been used. Another ability is needed. " + (route.LockText??route.GateHint);
+            return name + " cannot open this gate. " + (route.LockText??route.GateHint);
+        }
+        return "Choose an ability or key for this gate.";
     }
 
     public bool ConfirmEntry()
@@ -87,19 +123,26 @@ public sealed class OverworldMenuManager : MonoBehaviour
         if(location.Encounter==null && location.Kind!=LocationKind.StoryDungeon && location.Kind!=LocationKind.RepeatableDungeon && location.Kind!=LocationKind.FinalDungeon)return false;
         EnsurePickers();
         var position=world.Position;
-        string blockedReason = !context.CanEnterDungeon(location.Id) ? context.OpeningPreparationHint :
+        string BlockedReason() => !context.CanEnterDungeon(location.Id) ? context.OpeningPreparationHint :
             context.State.Finished && location.Id == context.Campaign.FinalLocationId ? "This final dungeon has already been completed." :
             location.Encounter?.RequiresResetFloor == true && !context.ResetFloorUnlocked
                 ? "Learn Reset Floor by clearing the first repeatable dungeon before entering." :
             location.Encounter != null && !location.Encounter.EntryRequirement.IsSatisfiedBy(context.Held)
                 ? "This encounter requires " + location.Encounter.EntryRequirement + "." : null;
-        Action enter = blockedReason == null ? () =>
+        var blockedReason=BlockedReason();
+        PartyMenuPicker picker=null;
+        Action enter = () =>
         {
-            if(Common.Instance.CampaignContext==context && context.Position.Equals(position) && context.Location==location)
-                Common.Instance.Travel.EnterLocation();
-        } : null;
-        var picker=PartyMenuPicker.Build(PartyMenu.transform.parent,location.Encounter==null?"Enter dungeon?":"Enter encounter?",
-            new List<(string,Action)>{(blockedReason == null ? "Enter" : "Enter (unavailable)", enter)});
+            string reason=BlockedReason();
+            if(Common.Instance.CampaignContext!=context || !context.Position.Equals(position) || context.Location!=location)
+                reason="Return to this entrance before entering.";
+            if(reason==null && Common.Instance.Travel.EnterLocation()) {picker.CloseDialog();return;}
+            reason??="This dungeon cannot be entered right now.";
+            picker.Title.text=GameplayText.Format(reason);
+            GameMessages.Reject(reason);
+        };
+        picker=PartyMenuPicker.Build(PartyMenu.transform.parent,location.Encounter==null?"Enter dungeon?":"Enter encounter?",
+            new List<(string,Action)>{("Enter", enter)},false);
         picker.Description(CampaignGuidance.LocationName(context, location.Id)+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
             "\n" + location.DungeonDescription + (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? ". Hostile territory" : "") +
             (location.Encounter?.Kind==EncounterKind.Prison?"\nYour carried and equipped possessions will be confiscated temporarily. Recover them from the guarded stash before escaping. Gold and learned skills remain available.":"")+

@@ -147,7 +147,7 @@ namespace EternalEnigma.Tests
             Assert.That(player.Inventory.InventoryItems,Is.EqualTo(items));
             Assert.That(DungeonFloorFingerprint.Compute(game.CurrentDungeon.Floor),Is.EqualTo(fingerprint));
             Assert.That(game.Encounter.Puzzle.Player,Is.EqualTo(game.CurrentDungeon.Floor.Start));
-            Assert.That(harness.Ally.Skills.Single(s=>s.SkillName=="Reset Floor").SPCost,Is.Zero);
+            Assert.That(harness.Ally.Skills.Single(s=>s.SkillName=="Reset Floor").ManaCost,Is.Zero);
         }
 
         [UnityTest] public IEnumerator PrisonEscrowRetainsOwnersStacksAndOriginalItemsBeforeTemporaryLoot()

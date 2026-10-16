@@ -28,10 +28,10 @@ public readonly struct TerminalPartyStat
     public int Level { get; }
     public int Hp { get; }
     public int MaxHp { get; }
-    public int Sp { get; }
-    public int MaxSp { get; }
-    public TerminalPartyStat(string name, int level, int hp, int maxHp, int sp, int maxSp)
-    { Name = name ?? string.Empty; Level = level; Hp = hp; MaxHp = maxHp; Sp = sp; MaxSp = maxSp; }
+    public int Mana { get; }
+    public int MaxMana { get; }
+    public TerminalPartyStat(string name, int level, int hp, int maxHp, int mana, int maxMana)
+    { Name = name ?? string.Empty; Level = level; Hp = hp; MaxHp = maxHp; Mana = mana; MaxMana = maxMana; }
 }
 
 public sealed class TerminalTargetSnapshot

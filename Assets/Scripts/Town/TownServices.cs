@@ -43,9 +43,9 @@ public sealed class TownServices
         var offer = Catalog(building).FirstOrDefault(o => o.Item.ItemName == itemName);
         var stock = Shop(building).Stock.FirstOrDefault(s => s.ItemName == itemName);
         reason = "This item is sold out.";
-        if (offer == null || stock == null || stock.Remaining <= 0) return Denied();
-        reason = "Not enough gold.";
-        if (Player.Gold < offer.Price) return Denied();
+        if (offer == null || stock == null || stock.Remaining <= 0) return false;
+        reason = $"Costs {offer.Price} gold; you have {Player.Gold}.";
+        if (Player.Gold < offer.Price) return false;
         var item = offer.Item.AsInventoryItem(offer.Item.StackMax > 0 ? offer.StackCount : null);
         Player.Gold -= offer.Price;
         stock.Remaining--;
@@ -66,11 +66,19 @@ public sealed class TownServices
     public bool CanSell(InventoryItem item) => item != null && Player.Inventory.Contains(item) &&
         !Player.RecruitedAllies.Any(a => a.Equipment.IsEquipped(item)) && SellPrice(item) > 0;
 
+    public string SellRestriction(InventoryItem item)
+    {
+        if (item == null || !Player.Inventory.Contains(item)) return "This item is no longer in your bag.";
+        if (Player.RecruitedAllies.Any(a => a.Equipment.IsEquipped(item))) return "Unequip this item before selling it.";
+        if (SellPrice(item) <= 0) return "This item has no sale value.";
+        return Player.Gold > int.MaxValue - SellPrice(item) ? "Your gold is full." : null;
+    }
+
     public bool Sell(InventoryItem item, out string reason)
     {
-        reason = "This item cannot be sold.";
+        reason = SellRestriction(item);
         int price = SellPrice(item);
-        if (!CanSell(item) || Player.Gold > int.MaxValue - price) return Denied();
+        if (reason != null) return false;
         Player.Inventory.Remove(item);
         Player.Gold += price;
         town.SaveProgress();
@@ -79,19 +87,28 @@ public sealed class TownServices
         return true;
     }
 
+    public bool CanLearn(TownAlly ally, Skill skill, out TrainerOffer offer, out string reason)
+    {
+        offer = null;
+        reason = "This skill cannot be learned.";
+        if (ally == null || !Player.RecruitedAllies.Contains(ally)) { reason = "This hero is not in the party."; return false; }
+        if (skill == null) return false;
+        offer = TrainerOffers.Find(ally, town.Configuration, skill);
+        if (offer == null) { reason = "This hero's class cannot learn this skill."; return false; }
+        if (offer.IsMaxed) { reason = offer.MaxRank <= 1 ? "Already learned." : "Already at maximum rank."; return false; }
+        if (!offer.CanLearn) { reason = string.IsNullOrEmpty(offer.LockReason) ? "This skill cannot be learned." : offer.LockReason; return false; }
+        if (!offer.UsesPoints && (offer.NextCost < 0 || Player.Gold < offer.NextCost))
+        { reason = $"Costs {offer.NextCost} gold; you have {Player.Gold}."; return false; }
+        reason = null;
+        return true;
+    }
+
     public bool Learn(TownAlly ally, Skill skill, out string reason)
     {
-        reason = "This skill cannot be learned.";
-        if (ally == null || skill == null || !Player.RecruitedAllies.Contains(ally)) return Denied();
-        var offer = TrainerOffers.Find(ally, town.Configuration, skill);
-        if (offer == null) return Denied();
-        if (offer.IsMaxed) { reason = offer.MaxRank <= 1 ? "Already learned." : "Already at max rank."; return Denied(); }
-        if (!offer.CanLearn) { reason = string.IsNullOrEmpty(offer.LockReason) ? "This skill cannot be learned." : offer.LockReason; return Denied(); }
+        if (!CanLearn(ally, skill, out var offer, out reason)) return false;
         // Class heroes pay in skill points, which are derived from the learned ranks (nothing to deduct).
         if (!offer.UsesPoints)
         {
-            reason = "Not enough gold.";
-            if (offer.NextCost < 0 || Player.Gold < offer.NextCost) return Denied();
             Player.Gold -= offer.NextCost;
         }
         ally.SetRank(offer.Skill.SkillName, offer.CurrentRank + 1);
@@ -109,14 +126,14 @@ public sealed class TownServices
     }
 
     /// <summary>True when any party member has carried vitals to reset.</summary>
-    public bool NeedsRest => Player.RecruitedAllies.Any(a => a.Hp >= 0 || a.Sp >= 0 || a.HasHunger);
+    public bool NeedsRest => Player.RecruitedAllies.Any(a => a.Hp >= 0 || a.Mana >= 0 || a.HasHunger);
 
-    /// <summary>Free rest restores HP, SP and hunger and resets hunger accumulation.</summary>
+    /// <summary>Free rest restores HP, Mana and hunger and resets hunger accumulation.</summary>
     public bool Rest(out string reason)
     {
         reason = "Everyone is already fully rested.";
-        if (!NeedsRest) return Denied();
-        foreach (var ally in Player.RecruitedAllies) { ally.Hp = -1; ally.Sp = -1; ally.HasHunger = false; ally.Hunger = 0; ally.HungerAccumulate = 0; }
+        if (!NeedsRest) return false;
+        foreach (var ally in Player.RecruitedAllies) { ally.Hp = -1; ally.Mana = -1; ally.HasHunger = false; ally.Hunger = 0; ally.HungerAccumulate = 0; }
         town.SaveProgress();
         reason = null;
         AudioManager.Instance?.PlayCue(SoundCue.Rest);
@@ -128,18 +145,25 @@ public sealed class TownServices
     {
         town.WriteSaveData();
         var hero = Player.ControllingTownAlly;
-        return CampaignSaving.Commit(Common.Instance, town.Configuration.Id + "/inn", hero.TilemapPosition, hero.CurrentFacing, out reason) || Denied();
+        return CampaignSaving.Commit(Common.Instance, town.Configuration.Id + "/inn", hero.TilemapPosition, hero.CurrentFacing, out reason);
     }
 
-    public int Donate(int requested)
+    public int Donate(int requested) => Donate(requested, out _);
+
+    public int Donate(int requested, out string reason)
     {
-        int amount = Math.Min(Math.Max(0, requested), Math.Min(Player.Gold, int.MaxValue - Save.DonationTotal));
-        Player.Gold -= amount;
-        Save.DonationTotal += amount;
+        reason = "Enter a donation greater than zero.";
+        if (requested <= 0) return 0;
+        reason = $"Requires {requested} gold; you have {Player.Gold}.";
+        if (requested > Player.Gold) return 0;
+        reason = "The donation total is full.";
+        if (requested > int.MaxValue - Save.DonationTotal) return 0;
+        Player.Gold -= requested;
+        Save.DonationTotal += requested;
         town.SaveProgress();
-        if (amount > 0) AudioManager.Instance?.PlayCue(SoundCue.Purchase);
-        else if (requested > 0) Denied();
-        return amount;
+        AudioManager.Instance?.PlayCue(SoundCue.Purchase);
+        reason = null;
+        return requested;
     }
 
     public bool CanEnter(DungeonTierData tier) => tier != null &&
@@ -148,11 +172,11 @@ public sealed class TownServices
     public bool Recruit(TownAlly ally, out string reason)
     {
         reason = $"Party limit is {town.Configuration.MaxPartySize}.";
-        if (Player.RecruitedAllies.Count >= town.Configuration.MaxPartySize) return Denied();
+        if (Player.RecruitedAllies.Count >= town.Configuration.MaxPartySize) return false;
         reason = "This ally is no longer available.";
-        if (!town.TownAllies.Contains(ally)) return Denied();
-        reason = "Not enough gold.";
-        if (Player.Gold < ally.RecruitCost) return Denied();
+        if (!town.TownAllies.Contains(ally)) return false;
+        reason = $"Costs {ally.RecruitCost} gold; you have {Player.Gold}.";
+        if (Player.Gold < ally.RecruitCost) return false;
         var context = Common.Instance.CampaignContext;
         if (context != null) { context.Roster.Add(ally.Id); context.Active.Add(ally.Id); }
         Player.Gold -= ally.RecruitCost;
@@ -170,13 +194,13 @@ public sealed class TownServices
     public bool Dismiss(TownAlly ally, out string reason)
     {
         reason = "Keep at least one party member.";
-        if (Player.RecruitedAllies.Count <= 1) return Denied();
+        if (Player.RecruitedAllies.Count <= 1) return false;
         reason = "This ally is not in the party.";
-        if (!Player.RecruitedAllies.Contains(ally)) return Denied();
+        if (!Player.RecruitedAllies.Contains(ally)) return false;
         var context = Common.Instance.CampaignContext;
         if (context != null)
         {
-            if (ally.Id == Common.Instance.GameSaveData.ProtagonistId) { reason = "The protagonist stays in the party."; return Denied(); }
+            if (ally.Id == Common.Instance.GameSaveData.ProtagonistId) { reason = "The protagonist stays in the party."; return false; }
             town.WriteSaveData(); context.Active.Remove(ally.Id);
             GameMessages.Post($"{ally.Name} left the party.");
             town.RefreshCampaignParty(); reason = null; return true;
@@ -199,19 +223,14 @@ public sealed class TownServices
     public bool ToggleEquipment(TownAlly ally, InventoryItem item, out string reason)
     {
         reason = "This hero is not in the party.";
-        if (!Player.RecruitedAllies.Contains(ally)) return Denied();
+        if (!Player.RecruitedAllies.Contains(ally)) return false;
         bool wasEquipped = ally.Equipment.IsEquipped(item);
         if (!EquipmentTransferService.Toggle(ally.Equipment, Player.Inventory, item,
-            ally.PrimaryClass, ally.SecondaryClass, out reason)) return Denied();
+            ally.PrimaryClass, ally.SecondaryClass, out reason)) return false;
         ally.RefreshEquipmentVisuals();
         town.SaveProgress();
         AudioManager.Instance?.PlayCue(wasEquipped ? SoundCue.Unequip : SoundCue.Equip);
         return true;
     }
 
-    private static bool Denied()
-    {
-        AudioManager.Instance?.PlayCue(SoundCue.Denied);
-        return false;
-    }
 }

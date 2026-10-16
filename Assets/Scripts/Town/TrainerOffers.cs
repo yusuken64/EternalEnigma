@@ -35,17 +35,21 @@ public static class TrainerOffers
     {
         if (ally == null || (ally.PrimaryClass == null && configuration == null)) return new List<TrainerOffer>();
         var offers = ally.PrimaryClass == null ? BuildFallback(ally, configuration) : BuildForClass(ally, configuration);
-        // Reserve the initial lesson for an affordable active skill. Its normal point cost
-        // still applies; passive spending cannot consume the points needed to leave town.
-        return IsFirstLesson(ally) ? offers.Where(o => o.CurrentRank == 0 && o.CanLearn &&
-            o.Skill.ActivationType == ActivationType.Active).ToList() : offers;
+        // Keep blocked offers inspectable while reserving the first lesson's points for a new active skill.
+        if (IsFirstLesson(ally))
+            foreach (var offer in offers.Where(o => o.CurrentRank > 0 || o.Skill.ActivationType != ActivationType.Active))
+            {
+                offer.CanLearn = false;
+                offer.LockReason = "Learn a new active skill for your first lesson before training other skills.";
+            }
+        return offers;
     }
 
     // Unspent skill points: earned from HighestLevel, minus what the learned ranks cost. 0 without a class.
-    public static int AvailablePoints(TownAlly ally)
+    public static int AvailableSkillPoints(TownAlly ally)
     {
         if (ally == null || ally.PrimaryClass == null) return 0;
-        return SkillLearningRules.AvailablePoints(HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass), ally.ToLearnedSkills(), ally.Level);
+        return SkillLearningRules.AvailableSkillPoints(HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass), ally.ToLearnedSkills(), ally.Level);
     }
 
     public static TrainerOffer Find(TownAlly ally, TownConfiguration configuration, Skill skill) =>
@@ -74,7 +78,7 @@ public static class TrainerOffers
     {
         var kit = HeroClass.ToKit(ally.PrimaryClass, ally.SecondaryClass);
         var learned = ally.ToLearnedSkills();
-        int points = SkillLearningRules.AvailablePoints(kit, learned, ally.Level);
+        int points = SkillLearningRules.AvailableSkillPoints(kit, learned, ally.Level);
         var rows = new List<(int order, TrainerOffer offer)>();
         int order = 0;
         foreach (var offer in SkillLearningRules.Offers(kit))

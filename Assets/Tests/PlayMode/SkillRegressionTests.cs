@@ -51,10 +51,10 @@ namespace EternalEnigma.Tests
             foreach (var enemy in harness.Game.Enemies.Cast<Enemy>()) enemy.Policies.Clear();
             foreach (var actor in harness.Game.AllCharacters)
             {
-                actor.BaseStats.HPMax = actor.BaseStats.SPMax = 100;
-                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
+                actor.BaseStats.HPMax = actor.BaseStats.ManaMax = 100;
+                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.ManaRegenThreshold = 10000;
                 actor.InvalidateCachedStats();
-                actor.Vitals.HP = 60; actor.Vitals.SP = 20;
+                actor.Vitals.HP = 60; actor.Vitals.Mana = 20;
                 actor.SyncDisplayedStats();
             }
             harness.Game.UpdateMiniMap();
@@ -129,7 +129,7 @@ namespace EternalEnigma.Tests
             Assert.That(MenuManager.Instance.TargetDialog.Direction, Is.EqualTo(new Vector3Int(1, 1)));
             Assert.That(MenuManager.Instance.TargetDialog.CameraTarget, Is.SameAs(second));
             yield return Press(Key.Escape);
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
             yield return Press(Key.Enter);
             yield return Press(GamepadButton.DpadRight);
             Assert.That(MenuManager.Instance.TargetDialog.Direction, Is.EqualTo(Vector3Int.right));
@@ -138,7 +138,7 @@ namespace EternalEnigma.Tests
             yield return harness.WaitForIdle();
             Assert.That(first.Vitals.HP, Is.EqualTo(55));
             Assert.That(second.Vitals.HP, Is.EqualTo(60));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(19));
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
         }
 
@@ -152,7 +152,7 @@ namespace EternalEnigma.Tests
             friend.SetAction(new WaitAction());
             yield return harness.ExecuteAction(SkillAction.ForMissile(caster, skill, Vector3Int.left));
             Assert.That(friend.Vitals.HP, Is.EqualTo(60), "Team filter prevents damage, but the ally blocks the shot.");
-            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(19));
             Assert.That(MissileTargeting.Trace(caster, Vector3Int.up, 1).Cell, Is.EqualTo(caster.TilemapPosition + Vector3Int.up));
             var hit = MissileTargeting.Trace(caster, Vector3Int.up, 1000);
             Assert.That(hit.Character, Is.Null);
@@ -160,7 +160,7 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Game.CurrentDungeon.IsWalkable(hit.Cell + Vector3Int.up), Is.False);
             friend.SetAction(new WaitAction());
             yield return harness.ExecuteAction(SkillAction.ForMissile(caster, skill, Vector3Int.up));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(18), "A confirmed miss still spends energy.");
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(18), "A confirmed miss still spends energy.");
             Assert.That(SkillAction.ForMissile(caster, skill, Vector3Int.zero).IsValid(caster), Is.False);
             skill.MissileRange = 0;
             Assert.That(caster.CanCast(skill, out _), Is.False);
@@ -184,7 +184,7 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator ItemSelectedAllyWorkflowCancelsThenHealsWithoutSpCost()
+        public IEnumerator ItemSelectedAllyWorkflowCancelsThenHealsWithoutManaCost()
         {
             var item = HealingItem(SkillTargeting.SelectedTarget, TargetTeam.Allies);
             yield return Press(Key.Q);
@@ -202,7 +202,7 @@ namespace EternalEnigma.Tests
             Assert.That(friend.Vitals.HP, Is.EqualTo(70));
             Assert.That(caster.Vitals.HP, Is.EqualTo(60));
             Assert.That(item.StackStock, Is.EqualTo(2));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
         }
 
         [UnityTest]
@@ -228,7 +228,7 @@ namespace EternalEnigma.Tests
             Assert.That(caster.Vitals.HP, Is.EqualTo(90));
             Assert.That(friend.Vitals.HP, Is.EqualTo(80));
             Assert.That(inventory.InventoryItems, Has.No.Member(item));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
         }
 
         [UnityTest]
@@ -246,7 +246,7 @@ namespace EternalEnigma.Tests
             friend.SetAction(new WaitAction());
             yield return harness.ExecuteAction(new RangedAttackAction(caster,null,5,null));
             Assert.That(item.StackStock, Is.EqualTo(2));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
         }
 
         [UnityTest]
@@ -280,7 +280,7 @@ namespace EternalEnigma.Tests
             yield return Cast(damage, first);
             Assert.That(first.Vitals.HP, Is.EqualTo(55));
             Assert.That(second.Vitals.HP, Is.EqualTo(60));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(19));
             var healing = Learn("Healing");
             yield return Cast(healing, friend);
             Assert.That(friend.Vitals.HP, Is.EqualTo(70));
@@ -289,8 +289,8 @@ namespace EternalEnigma.Tests
             Assert.That(friend.Vitals.HP, Is.EqualTo(100));
             yield return Cast(healing, caster);
             Assert.That(caster.Vitals.HP, Is.EqualTo(70));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(16));
-            Assert.That(caster.DisplayedVitals.SP, Is.EqualTo(16));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(16));
+            Assert.That(caster.DisplayedVitals.Mana, Is.EqualTo(16));
         }
 
         [UnityTest]
@@ -305,13 +305,13 @@ namespace EternalEnigma.Tests
             Assert.That(distant.Vitals.HP, Is.EqualTo(60));
             Assert.That(caster.Vitals.HP, Is.EqualTo(60));
             Assert.That(friend.Vitals.HP, Is.EqualTo(60));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(19));
             skill.Targeting = SkillTargeting.AllTargets;
             yield return Cast(skill, null);
             Assert.That(first.Vitals.HP, Is.EqualTo(50));
             Assert.That(second.Vitals.HP, Is.EqualTo(50));
             Assert.That(distant.Vitals.HP, Is.EqualTo(55));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(18));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(18));
             var heal = Learn("Healing");
             heal.Targeting = SkillTargeting.Self; heal.AreaRadius = 1;
             yield return Cast(heal, null);
@@ -324,23 +324,26 @@ namespace EternalEnigma.Tests
         public IEnumerator RequirementsRejectInvalidCastsWithoutSpendingEnergyOrATurn()
         {
             var skill = Learn("Damage");
-            caster.Vitals.SP = 0; caster.SyncDisplayedStats();
-            Assert.That(caster.CanCast(skill, out _), Is.False);
+            caster.Vitals.Mana = 0; caster.SyncDisplayedStats();
+            Assert.That(caster.CanCast(skill, out var manaReason), Is.False);
+            Assert.That(manaReason, Is.EqualTo($"Requires {skill.ManaCost} Mana; you have 0."));
+            Assert.That(new SkillAction(caster, skill, first).ValidateCommand(caster, out var commandReason), Is.False);
+            Assert.That(commandReason, Is.EqualTo(manaReason));
             caster.SetAction(new SkillAction(caster, skill, first));
             Assert.That(harness.Game.TurnManager.IsProcessingTurn, Is.False);
             Assert.That(first.Vitals.HP, Is.EqualTo(60));
-            caster.Vitals.SP = 1; caster.SyncDisplayedStats();
+            caster.Vitals.Mana = 1; caster.SyncDisplayedStats();
             Assert.That(caster.CanCast(skill, out _), Is.True);
             yield return Cast(skill, first);
-            Assert.That(caster.Vitals.SP, Is.Zero);
-            caster.Vitals.SP = 20; caster.SyncDisplayedStats();
+            Assert.That(caster.Vitals.Mana, Is.Zero);
+            caster.Vitals.Mana = 20; caster.SyncDisplayedStats();
             var passive = Learn("Strength Up");
             Assert.That(caster.CanCast(passive, out _), Is.False);
             var silence = Learn("ShieldBash").ActionEffects.OfType<ApplyStatusEffectAction>().Single().StatusEffect;
             var instance = caster.ApplyStatusEffect(silence);
             Assert.That(caster.CanCast(skill, out _), Is.False);
             Assert.That(new SkillAction(caster, skill, first).ExecuteImmediate(caster), Is.Empty);
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
             caster.RemoveStatusEffect(instance); Object.Destroy(instance.gameObject);
             caster.Skills.Remove(skill);
             Assert.That(caster.CanCast(skill, out _), Is.False);
@@ -349,14 +352,14 @@ namespace EternalEnigma.Tests
             Assert.That(queued.IsValid(caster), Is.True);
             first.Vitals.HP = 0;
             Assert.That(queued.ExecuteImmediate(caster), Is.Empty);
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
             first.Vitals.HP = 60;
-            skill.SPCost = 0;
-            caster.Vitals.SP = 0; caster.SyncDisplayedStats();
+            skill.ManaCost = 0;
+            caster.Vitals.Mana = 0; caster.SyncDisplayedStats();
             Assert.That(caster.CanCast(skill, out _), Is.True);
             yield return Cast(skill, first);
-            Assert.That(caster.Vitals.SP, Is.Zero);
-            skill.SPCost = -1;
+            Assert.That(caster.Vitals.Mana, Is.Zero);
+            skill.ManaCost = -1;
             Assert.That(caster.CanCast(skill, out _), Is.False);
         }
 
@@ -417,13 +420,13 @@ namespace EternalEnigma.Tests
             Assert.That(dialog.TargetIndicator.activeSelf, Is.False);
             Assert.That(dialog.enabled, Is.False);
             Assert.That(dialog.SelectTargetPrompt.activeSelf, Is.False);
-            Assert.That(caster.Vitals.SP, Is.EqualTo(20));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(20));
             yield return Press(GamepadButton.South);
             friend.SetAction(new WaitAction());
             yield return Press(GamepadButton.South);
             yield return harness.WaitForIdle();
             Assert.That(first.Vitals.HP, Is.EqualTo(55));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(19));
             Assert.That(MenuManager.Instance.Opened, Is.False);
             Assert.That(EventSystem.current.enabled, Is.True);
             Assert.That(dialog.enabled, Is.False);
@@ -442,7 +445,7 @@ namespace EternalEnigma.Tests
             Assert.That(caster.FinalStats.Strength, Is.EqualTo(caster.BaseStats.Strength + 5));
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
             Assert.That(MenuManager.Instance.Opened, Is.False);
-            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(19));
             caster.Skills.Remove(anger);
             var damage = Learn("Damage"); damage.Targeting = SkillTargeting.AllTargets;
             damage.TargetSelector.Area = TargetArea.All;
@@ -451,7 +454,7 @@ namespace EternalEnigma.Tests
             yield return Press(Key.Space);
             yield return harness.WaitForIdle();
             Assert.That(harness.Game.Enemies.All(e => e.Vitals.HP == 55), Is.True);
-            Assert.That(caster.Vitals.SP, Is.EqualTo(18));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(18));
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
             damage.Targeting = SkillTargeting.SelectedTarget;
             yield return Press(Key.R);
@@ -479,20 +482,20 @@ namespace EternalEnigma.Tests
             Assert.That(MenuManager.Instance.TargetDialog.CameraTarget,Is.SameAs(original));
             original.SetAction(new WaitAction()); yield return Press(GamepadButton.South);
             yield return harness.WaitForIdle();
-            Assert.That(original.Vitals.HP,Is.EqualTo(70)); Assert.That(friend.Vitals.SP,Is.EqualTo(19));
+            Assert.That(original.Vitals.HP,Is.EqualTo(70)); Assert.That(friend.Vitals.Mana,Is.EqualTo(19));
         }
 
         [UnityTest]
         public IEnumerator MouseInvokesAreaSkillAndInvalidMenuCastsKeepTheirEnergy()
         {
             var skill = Learn("Damage"); skill.AreaRadius = 1;
-            caster.Vitals.SP = 0; caster.SyncDisplayedStats();
+            caster.Vitals.Mana = 0; caster.SyncDisplayedStats();
             yield return Press(Key.R);
             yield return Press(Key.Enter);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(MenuManager.Instance.PartyMenu));
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
             Assert.That(first.Vitals.HP, Is.EqualTo(60));
-            caster.Vitals.SP = 20; caster.SyncDisplayedStats();
+            caster.Vitals.Mana = 20; caster.SyncDisplayedStats();
             var button = MenuManager.Instance.PartyMenu.EntryButtons[0];
             var canvas = button.GetComponentInParent<Canvas>();
             var position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
@@ -507,12 +510,12 @@ namespace EternalEnigma.Tests
             yield return harness.WaitForIdle();
             Assert.That(first.Vitals.HP, Is.EqualTo(55));
             Assert.That(second.Vitals.HP, Is.EqualTo(55));
-            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(19));
             foreach (var enemy in harness.Game.Enemies) enemy.Vitals.HP = 0;
             yield return Press(Key.R);
             yield return Press(Key.Enter);
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
-            Assert.That(caster.Vitals.SP, Is.EqualTo(19));
+            Assert.That(caster.Vitals.Mana, Is.EqualTo(19));
             yield return Press(Key.Escape);
             Assert.That(MenuManager.Instance.Opened, Is.False);
         }
@@ -527,7 +530,7 @@ namespace EternalEnigma.Tests
             foreach (var effect in effects) first.ExecuteActionImmediate(effect);
             yield return first.ExecuteActionRoutine(action);
             foreach (var effect in effects) yield return first.ExecuteActionRoutine(effect);
-            Assert.That(first.Vitals.SP, Is.EqualTo(19));
+            Assert.That(first.Vitals.Mana, Is.EqualTo(19));
             Assert.That(caster.Vitals.HP, Is.EqualTo(55));
             Assert.That(new SkillAction(first, skill, second).IsValid(first), Is.False);
             var sleep = AssetDatabase.LoadAssetAtPath<SleepStatusEffect>("Assets/Prefabs/Dungeon/StatusEffects/SleepStatus.prefab");
@@ -535,7 +538,7 @@ namespace EternalEnigma.Tests
             first.ApplyStatusEffect(sleep);
             Assert.That(first.CanCast(skill, out _), Is.False);
             Assert.That(new SkillAction(first, skill, caster).ExecuteImmediate(first), Is.Empty);
-            Assert.That(first.Vitals.SP, Is.EqualTo(19));
+            Assert.That(first.Vitals.Mana, Is.EqualTo(19));
         }
     }
 }

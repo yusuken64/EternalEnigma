@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SpecterCreamTiramisuLatte
   m_EditorClassIdentifier: 
   ItemName: Specter Cream Tiramisu Latte
-  Description: Brewed with real Specter cream. Restores 80 HP and 20 SP.
+  Description: Brewed with real Specter cream. Restores 80 HP and 20 Mana.
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

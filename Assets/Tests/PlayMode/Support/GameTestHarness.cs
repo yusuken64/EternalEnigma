@@ -64,7 +64,7 @@ public sealed class GameTestHarness
         finally { SceneManager.sceneLoaded -= Configure; }
         yield return WaitUntil(() => Game != null && Game.IsReady, "dungeon initialization");
         if (scenario.HP.HasValue) Ally.Vitals.HP = scenario.HP.Value;
-        if (scenario.SP.HasValue) Ally.Vitals.SP = scenario.SP.Value;
+        if (scenario.Mana.HasValue) Ally.Vitals.Mana = scenario.Mana.Value;
         Ally.SyncDisplayedStats();
         yield return WaitForIdle();
     }

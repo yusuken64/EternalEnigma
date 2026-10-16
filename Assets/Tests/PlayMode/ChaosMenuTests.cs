@@ -45,8 +45,8 @@ namespace EternalEnigma.Tests
         }
         [UnityTest] public IEnumerator MissileTargetCancelPreservesCostsAndRestoresControl()
         {
-            yield return harness.LoadDungeon(new TestScenario { Skills = new[] { "Fire Bolt" }, SP = 50 });
-            var actor = harness.Ally; int before = actor.Vitals.SP;
+            yield return harness.LoadDungeon(new TestScenario { Skills = new[] { "Fire Bolt" }, Mana = 50 });
+            var actor = harness.Ally; int before = actor.Vitals.Mana;
             yield return Input(ChaosInput.Pad(GamepadButton.LeftShoulder));
             var menu = MenuManager.Instance.PartyMenu;
             var target = menu.EntryButtons.Single(b => ChaosUI.Label(b).StartsWith("Fire Bolt", System.StringComparison.Ordinal));
@@ -56,7 +56,7 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Game.PlayerController.CurrentControlMode, Is.EqualTo(PlayerControlMode.TargetSelecting));
             yield return Input(ChaosInput.Key(Key.Escape));
             for (int i = 0; i < 6 && MenuManager.Instance.Opened; i++) yield return Input(ChaosInput.Key(Key.Escape));
-            Assert.That(actor.Vitals.SP, Is.EqualTo(before));
+            Assert.That(actor.Vitals.Mana, Is.EqualTo(before));
             Assert.That(harness.Game.PlayerController.CurrentControlMode, Is.Not.EqualTo(PlayerControlMode.TargetSelecting));
             Assert.That(harness.Game.TurnManager.IsProcessingTurn, Is.False);
         }

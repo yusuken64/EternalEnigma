@@ -3291,7 +3291,7 @@ MonoBehaviour:
   PortraitImage: {fileID: 7726262844766168581}
   LevelDisplay: {fileID: 3064430571700896997}
   HpDisplay: {fileID: 3698105093577052096}
-  SpDisplay: {fileID: 8366111873569597556}
+  ManaDisplay: {fileID: 8366111873569597556}
   HungerDisplay: {fileID: 3762725343626009643}
   Character: {fileID: 0}
 --- !u!114 &2073311744347549616

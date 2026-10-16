@@ -193,7 +193,7 @@ namespace EternalEnigma.Tests
                 var stairs = game.CurrentDungeon.Interactables.OfType<Stairs>().Single();
                 Assert.That(stairs.GetInteractionText(), Is.EqualTo(floor == 2 ? "Ascend and return home" : "Ascend to the next floor"));
                 harness.Ally.SetPosition(session.Floor.Stairs.ToCell());
-                harness.Ally.Vitals.SP = 1; harness.Ally.SyncDisplayedStats();
+                harness.Ally.Vitals.Mana = 1; harness.Ally.SyncDisplayedStats();
                 DungeonPreferences.AnimationOverride = floor % 2 == 1
                     ? DungeonAnimationMode.Normal : DungeonAnimationMode.NoAnimations;
                 Assert.That(game.Finale.RequestExit(), Is.True);
@@ -214,7 +214,7 @@ namespace EternalEnigma.Tests
                     Assert.That(oldTerrain == null, Is.True, "Previous terrain must be released.");
                     Assert.That(game.PlayerController.Gold, Is.EqualTo(4321));
                     Assert.That(game.PlayerController.Inventory.InventoryItems, Is.EquivalentTo(inventory));
-                    Assert.That(harness.Ally.Vitals.SP, Is.LessThan(harness.Ally.FinalStats.SPMax), "Ascending must not give a free rest.");
+                    Assert.That(harness.Ally.Vitals.Mana, Is.LessThan(harness.Ally.FinalStats.ManaMax), "Ascending must not give a free rest.");
                 }
             }
             yield return harness.WaitUntil(() => common.Travel.HomecomingCompleted, "homecoming wake and restored control");
@@ -225,7 +225,7 @@ namespace EternalEnigma.Tests
             Assert.That(town.TownPlayer.ControllingTownAlly.TilemapPosition, Is.EqualTo(bed.Tile - Vector3Int.up));
             Assert.That(town.TownPlayer.CutsceneLocked || bed.IsSleeping || common.ScreenTransition.BlockScreen.activeSelf, Is.False);
             Assert.That(town.TownPlayer.CameraController.enabled, Is.True);
-            Assert.That(town.TownPlayer.RecruitedAllies.All(a => a.Hp == -1 && a.Sp == -1), Is.True);
+            Assert.That(town.TownPlayer.RecruitedAllies.All(a => a.Hp == -1 && a.Mana == -1), Is.True);
             Assert.That(context.Grid, Is.SameAs(originalGrid)); Assert.That(context.State.Finished, Is.True);
             Assert.That(common.GameSaveData.Roster.Select(a => a.AllyId), Is.EquivalentTo(roster));
             Assert.That(town.TownPlayer.Gold, Is.EqualTo(4321));

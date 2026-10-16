@@ -15,7 +15,7 @@ MonoBehaviour:
   MaxRank: 1
   LearnCost: 200
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   TargetSelector:
     Team: 2
     Area: 1

@@ -138,7 +138,7 @@ namespace EternalEnigma.Tests
         {
             yield return harness.LoadTown(new TestScenario {Skills = new[] {"Cure", "Double Strike"}}.CreateSave());
             var hero = Object.FindFirstObjectByType<Town>().TownPlayer.ControllingTownAlly;
-            int sp = hero.Sp;
+            int mana = hero.Mana;
             var manager = Object.FindFirstObjectByType<TownMenuManager>();
             manager.OpenPartyMenu(PartyMenuTab.Skills); yield return null;
             var menu = manager.PartyMenu;
@@ -149,7 +149,7 @@ namespace EternalEnigma.Tests
                 yield return null;
                 Assert.That(menu.Details.text, Does.Contain(Common.Instance.SkillManager.GetSkillByName(name).Description));
                 Assert.That(menu.Details.text, Does.Contain(name));
-                Assert.That(hero.Sp, Is.EqualTo(sp));
+                Assert.That(hero.Mana, Is.EqualTo(mana));
                 yield return Capture("town-skill-" + name.Replace(" ", "-"));
             }
         }

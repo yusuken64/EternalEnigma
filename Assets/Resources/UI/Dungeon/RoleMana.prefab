@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8740806278961009608}
   - component: {fileID: 4205479271272899902}
   m_Layer: 0
-  m_Name: RoleSP
+  m_Name: RoleMana
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

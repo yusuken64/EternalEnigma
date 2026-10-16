@@ -136,7 +136,8 @@ public class BallistaDialog : Dialog
                 SkillGridItems.Add(row);
             }
         }
-        selected = SkillGridItems.FirstOrDefault(i => i.GetSkill().SkillName == selectedSkills[(int)source]) ?? SkillGridItems.FirstOrDefault();
+        selected = SkillGridItems.FirstOrDefault(i => i.GetSkill().SkillName == selectedSkills[(int)source]) ??
+            (firstLesson ? SkillGridItems.FirstOrDefault(i => i.Offer.CanLearn) : null) ?? SkillGridItems.FirstOrDefault();
         WireNavigation();
         UpdateBalance();
         if (selected != null) Preview(selected, null);
@@ -178,7 +179,7 @@ public class BallistaDialog : Dialog
         string status = o.IsMaxed ? "Already at maximum rank." : !o.CanLearn ? o.LockReason : "Ready to learn.";
         string requirements = $"Rank {o.CurrentRank} of {o.MaxRank}" + (o.HasClass
             ? $"\nTier {o.Tier} opens at level {o.TierRequiredLevel}." +
-                (o.IsMaxed ? "" : $"\nThe next rank requires level {o.NextRequiredLevel} and {o.NextCost} learning point{(o.NextCost == 1 ? "" : "s")}.")
+                (o.IsMaxed ? "" : $"\nThe next rank requires level {o.NextRequiredLevel} and {o.NextCost} Skill Point{(o.NextCost == 1 ? "" : "s")}.")
             : o.IsMaxed ? "" : $"\nLearning costs {o.NextCost} gold.");
         Layout.Preview.text = GameplayText.Format($"<b>{o.Skill.DisplayName}</b>\n{requirements}\n\n{status}\n{o.Prerequisites}\n\n{o.Skill.Description}");
         Canvas.ForceUpdateCanvases();
@@ -221,11 +222,19 @@ public class BallistaDialog : Dialog
         if (selected != null) Preview(selected, null);
     }
 
+    public void Reject(string reason)
+    {
+        Refresh();
+        Layout.Preview.text = GameplayText.Format(reason + "\n\n") + Layout.Preview.text;
+        Layout.PreviewScroll.verticalNormalizedPosition = 1;
+        GameMessages.Reject(reason);
+    }
+
     private void UpdateBalance()
     {
-        int points = TrainerOffers.AvailablePoints(Character);
+        int points = TrainerOffers.AvailableSkillPoints(Character);
         SkillsText.text = GameplayText.Format(Character.PrimaryClass == null ? "Skill training · Gold purchases" :
-            $"Skill training · {points} learning point{(points == 1 ? "" : "s")} available");
+            $"Skill training · {points} Skill Point{(points == 1 ? "" : "s")} available");
     }
     public void Close_Clicked() => CloseDialog();
     [ContextMenu("Force Select")] public void ForceSelect() => SetFirstSelect();

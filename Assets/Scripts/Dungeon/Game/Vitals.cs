@@ -5,13 +5,13 @@ using UnityEngine;
 public class Vitals
 {
 	[SerializeField] private int hp;
-	[SerializeField] private int sp;
+	[SerializeField] private int mana;
 	[SerializeField] private int level;
 	[SerializeField] private int exp;
 	[SerializeField] private int hunger;
 	[SerializeField] private int hungerAccumulate;
 	[SerializeField] private int hpRegenAcccumlate;
-	[SerializeField] private int spRegenAcccumlate;
+	[SerializeField] private int manaRegenAccumulator;
 	[SerializeField] private int actionsPerTurnLeft;
 	[SerializeField] private int attacksPerTurnLeft;
 
@@ -32,15 +32,15 @@ public class Vitals
 	}
 
 
-	public int SP
+	public int Mana
 	{
-		get { return sp; }
+		get { return mana; }
 		set
 		{
-			if (AutoplayRunner.Replenishes(this)) value = LinkedStats().SPMax;
-			if (sp != value)
+			if (AutoplayRunner.Replenishes(this)) value = LinkedStats().ManaMax;
+			if (mana != value)
 			{
-				sp = value;
+				mana = value;
 				ClampVitals();
 			}
 		}
@@ -111,14 +111,14 @@ public class Vitals
 			}
 		}
 	}
-	public int SPRegenAcccumlate
+	public int ManaRegenAccumulator
 	{
-		get { return spRegenAcccumlate; }
+		get { return manaRegenAccumulator; }
 		set
 		{
-			if (spRegenAcccumlate != value)
+			if (manaRegenAccumulator != value)
 			{
-				spRegenAcccumlate = value;
+				manaRegenAccumulator = value;
 				ClampVitals();
 			}
 		}
@@ -166,13 +166,13 @@ public class Vitals
 	internal void Sync(Vitals vitals)
 	{
 		HP = vitals.HP;
-		SP = vitals.SP;
+		Mana = vitals.Mana;
 		Level = vitals.Level;
 		Exp = vitals.Exp;
 		Hunger = vitals.Hunger;
 		HungerAccumulate = vitals.HungerAccumulate;
 		HPRegenAcccumlate = vitals.HPRegenAcccumlate;
-		SPRegenAcccumlate = vitals.SPRegenAcccumlate;
+		ManaRegenAccumulator = vitals.ManaRegenAccumulator;
 		ActionsPerTurnLeft = vitals.ActionsPerTurnLeft;
 		AttacksPerTurnLeft = vitals.AttacksPerTurnLeft;
 	}
@@ -181,7 +181,7 @@ public class Vitals
 	{
 		Stats stats = LinkedStats();
 		HP = Math.Clamp(HP, 0, stats.HPMax);
-		SP = Math.Clamp(SP, 0, stats.SPMax);
+		Mana = Math.Clamp(Mana, 0, stats.ManaMax);
 		Hunger = Math.Clamp(Hunger, 0, stats.HungerMax);
 	}
 
@@ -191,13 +191,13 @@ public class Vitals
 		{
 			int hash = 17;
 			hash = hash * 23 + hp.GetHashCode();
-			hash = hash * 23 + sp.GetHashCode();
+			hash = hash * 23 + mana.GetHashCode();
 			hash = hash * 23 + level.GetHashCode();
 			hash = hash * 23 + exp.GetHashCode();
 			hash = hash * 23 + hunger.GetHashCode();
 			hash = hash * 23 + hungerAccumulate.GetHashCode();
 			hash = hash * 23 + hpRegenAcccumlate.GetHashCode();
-			hash = hash * 23 + spRegenAcccumlate.GetHashCode();
+			hash = hash * 23 + manaRegenAccumulator.GetHashCode();
 			hash = hash * 23 + actionsPerTurnLeft.GetHashCode();
 			hash = hash * 23 + attacksPerTurnLeft.GetHashCode();
 			return hash;
@@ -207,13 +207,13 @@ public class Vitals
 	internal string ToDebugString()
 	{
 		return $"hp:{hp} " +
-			$"sp:{sp} " +
+			$"mana:{mana} " +
 			$"level:{level} " +
 			$"exp:{exp} " +
 			$"hunger:{hunger} " +
 			$"hungerAccumulate:{hungerAccumulate} " +
 			$"hpRegenAcccumlate:{hpRegenAcccumlate}" +
-			$"spRegenAcccumlate:{spRegenAcccumlate}" +
+			$"manaRegenAccumulator:{manaRegenAccumulator}" +
 			$"actionsPerTurnLeft:{actionsPerTurnLeft}" +
 			$"attacksPerTurnLeft:{attacksPerTurnLeft}";
 	}
@@ -223,13 +223,13 @@ public class Vitals
 		if (modification == null) { modification = new(); }
 
 		vitals.HP += modification.Hp;
-		vitals.SP += modification.Sp;
+		vitals.Mana += modification.Mana;
 		vitals.Level += modification.Level;
 		vitals.Exp += modification.Exp;
 		vitals.Hunger += modification.Hunger;
 		vitals.HungerAccumulate += modification.HungerAccumulate;
 		vitals.HPRegenAcccumlate += modification.HpRegenAcccumlate;
-		vitals.SPRegenAcccumlate += modification.SpRegenAcccumlate;
+		vitals.ManaRegenAccumulator += modification.ManaRegenAccumulator;
 		vitals.ActionsPerTurnLeft += modification.ActionsPerTurnLeft;
 		vitals.AttacksPerTurnLeft += modification.AttacksPerTurnLeft;
 

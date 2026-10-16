@@ -4,7 +4,7 @@
 public class VitalModification
 {
 	public int Hp;
-	public int Sp;
+	public int Mana;
 	public int Level;
 	public int Exp;
 	public int Floor;
@@ -12,7 +12,7 @@ public class VitalModification
 	public int Gold;
 	public int HungerAccumulate;
 	public int HpRegenAcccumlate;
-	public int SpRegenAcccumlate;
+	public int ManaRegenAccumulator;
 	public int ActionsPerTurnLeft;
 	public int AttacksPerTurnLeft;
 }

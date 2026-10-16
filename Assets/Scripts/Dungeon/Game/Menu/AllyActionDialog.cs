@@ -101,7 +101,7 @@ namespace JuicyChickenGames.Menu
 
 		public void Talk_Clicked()
 		{
-			Game.Instance.DoFloatingText($"{_ally.Vitals.HP}HP, {_ally.Vitals.SP}SP", Color.white, _ally);
+			Game.Instance.DoFloatingText($"{_ally.Vitals.HP}HP, {_ally.Vitals.Mana}Mana", Color.white, _ally);
 			FaceCamDisplay.Unfollow(_ally.VisualParent);
 			MenuManager.Close(this);
 		}

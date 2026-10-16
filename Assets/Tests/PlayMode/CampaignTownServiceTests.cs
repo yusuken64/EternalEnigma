@@ -49,10 +49,10 @@ namespace EternalEnigma.Tests
             var inn = town.TownBuildings.Single(b => b.Definition.Id == "inn");
             var menu = Object.FindFirstObjectByType<TownMenu>();
             var hero = town.TownPlayer.ControllingTownAlly;
-            hero.Hp = 1; hero.Sp = 0;
+            hero.Hp = 1; hero.Mana = 0;
             var dialog = (InnDialog)menu.OpenBuilding(inn.Definition, town.TownPlayer, null);
             dialog.RestButton.onClick.Invoke();
-            Assert.That(hero.Hp, Is.EqualTo(-1)); Assert.That(hero.Sp, Is.EqualTo(-1));
+            Assert.That(hero.Hp, Is.EqualTo(-1)); Assert.That(hero.Mana, Is.EqualTo(-1));
             common.MessageDialog.Ok_Clicked();
             town.TownPlayer.Gold = 345;
             dialog = (InnDialog)menu.OpenBuilding(inn.Definition, town.TownPlayer, null);

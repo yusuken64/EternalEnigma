@@ -42,7 +42,6 @@ public static class AttributeUIAuthoring
         dialog.StrButton=GameUISkin.Button(panel.transform,"STR",new Vector2(.06f,.64f),new Vector2(.94f,.81f),null);
         dialog.IntButton=GameUISkin.Button(panel.transform,"INT",new Vector2(.06f,.45f),new Vector2(.94f,.62f),null);
         dialog.AgiButton=GameUISkin.Button(panel.transform,"AGI",new Vector2(.06f,.26f),new Vector2(.94f,.43f),null);
-        dialog.LaterButton=GameUISkin.Button(panel.transform,"Later",new Vector2(.36f,.06f),new Vector2(.64f,.22f),null);
         foreach(var button in new[]{dialog.StrButton,dialog.IntButton,dialog.AgiButton})
         {var label=button.GetComponentInChildren<TMP_Text>();label.fontSize=21;label.enableAutoSizing=true;label.fontSizeMin=16;label.fontSizeMax=24;}
         dialog.gameObject.SetActive(false);

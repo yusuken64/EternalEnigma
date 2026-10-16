@@ -12,9 +12,9 @@ public class HeroAttributeTests
         Assert.That(three.Defense,Is.Zero);
         Assert.That(four.Defense,Is.EqualTo(1));
         Assert.That(four.HPMax,Is.EqualTo(12));
-        Assert.That(four.SPMax,Is.EqualTo(80));
+        Assert.That(four.ManaMax,Is.EqualTo(80));
         Assert.That(four.MagicPower,Is.EqualTo(40));
-        Assert.That(four.SPRegenAcccumlateThreshold,Is.EqualTo(-400));
+        Assert.That(four.ManaRegenThreshold,Is.EqualTo(-400));
         Assert.That(four.HitBonus,Is.EqualTo(.4f).Within(.0001f));
         Assert.That(four.Evasion,Is.EqualTo(.25f).Within(.0001f));
         Assert.That(four.CritChance,Is.EqualTo(.25f).Within(.0001f));
@@ -132,7 +132,7 @@ public class HeroAttributeTests
         try
         {
             var hero=owner.AddComponent<Ally>();hero.Equipment=owner.AddComponent<Equipment>();
-            hero.Skills=new List<Skill>();hero.BaseStats=new Stats{HPMax=20,SPMax=5,HungerMax=100};
+            hero.Skills=new List<Skill>();hero.BaseStats=new Stats{HPMax=20,ManaMax=5,HungerMax=100};
             hero.TownAllyId="test";hero.Attributes=restored.Attributes;
             hero.Vitals=new Vitals();hero.Vitals.Level=5;hero.Vitals.Exp=105;
             var save=new GameSaveData();save.TownSaveData.RecruitedAlliesData.Add(restored);

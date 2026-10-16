@@ -994,7 +994,7 @@ SpriteAtlas:
   - Bard
   - shop owner_shade
   - Item_Needle_0
-  - Item_SP_Potion_0
+  - Item_Mana_Potion_0
   - Character_color ver
   - Item_Sage_s_Wand_0
   - Item_Needle__Off_hand__0

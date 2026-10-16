@@ -4,6 +4,8 @@ using System.Collections.Generic;
 [Serializable]
 public class GameSaveData
 {
+    // Zero means unstamped/unsupported. SaveSystem stamps the current format on write.
+    public int FormatVersion;
     [NonSerialized] public bool IsSandbox;
     public EternalEnigma.Core.Progression.CampaignSnapshot Campaign;
     // JsonUtility can materialize an empty snapshot for standalone test runs.
@@ -75,7 +77,7 @@ public class TownAllyData
 	public AttributePoints Attributes;
 	// Persisted vitals carried between dungeon runs; -1 means full (never set, or restored by the inn).
 	public int Hp = -1;
-	public int Sp = -1;
+	public int Mana = -1;
     // Explicit presence flag distinguishes old saves from genuine zero hunger.
     public bool HasHunger;
     public int Hunger;

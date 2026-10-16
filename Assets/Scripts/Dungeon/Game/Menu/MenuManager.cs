@@ -102,10 +102,20 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
     public void OpenSkillsMenu(Character character) => OpenPartyMenu(PartyMenuTab.Skills, character as Ally);
 
+    // Item and ability menus issue new actions; only waiting or permitted movement advances an existing cast.
+    // Keep this UI preflight separate from skill validation, which is also used to release that cast.
+    internal static bool CanAttemptAction(Character character, out string reason)
+    {
+        reason = character?.PendingCast is { } pending
+            ? $"Finish charging {pending.Name} before taking another action." : null;
+        return reason == null;
+    }
+
 	public void OpenInventoryTargetingMenu(Character character, Skill skill)
 	{
-		if (skill.Targeting != SkillTargeting.InventoryItem || !character.CanCast(skill, out _))
-        { AudioManager.Instance?.PlayCue(SoundCue.Denied); return; }
+		if (skill.Targeting != SkillTargeting.InventoryItem)
+        { GameMessages.Reject("This ability does not target inventory items."); return; }
+		if (!CanAttemptAction(character, out var reason) || !character.CanCast(skill, out reason)) { GameMessages.Reject(reason); return; }
 		OpenInventoryPicker(character, skill.GetInventoryTargets(character),
 			item => SkillAction.ForInventoryItem(character, skill, item),
 			$"Choose an item for {skill.DisplayName}, costing {skill.CostText(character)}");
@@ -114,15 +124,16 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	private void OpenInventoryPicker(Character character, List<InventoryItem> targets,
 		Func<InventoryItem, GameAction> createAction, string prompt)
 	{
+        if (targets.Count == 0) { GameMessages.Reject("No valid inventory items can be targeted."); return; }
         if (PartyMenu != null && DialogStack.Contains(PartyMenu))
         {
             PartyMenu.Pick(prompt, targets.Select(item => (item.DisplayName + (item.HasStacks ? $" x{item.StackStock}" : "") +
                 (character.Equipment.IsEquipped(item) ? "  Equipped" : ""), (Action)(() =>
             {
                 var action = createAction(item);
-				if (!action.IsValid(character)) { AudioManager.Instance?.PlayCue(SoundCue.Denied); PartyMenu.Complete("That item can no longer be targeted."); return; }
+				if (!CanAttemptAction(character, out var reason) || !action.ValidateCommand(character, out reason)) { PartyMenu.Reject(reason ?? "That item can no longer be targeted."); return; }
                 CloseAllMenus(); character.SetAction(action);
-            }))).ToList());
+            }))).ToList(),false);
             return;
         }
 		Common.Instance.MenuInputHandler.SwitchToUIInput();
@@ -137,10 +148,9 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		picker.Setup(targets, character, item =>
 		{
 			var action = createAction(item);
-			if (!action.IsValid(character))
+			if (!CanAttemptAction(character, out var reason) || !action.ValidateCommand(character, out reason))
 			{
-				AudioManager.Instance?.PlayCue(SoundCue.Denied);
-				Game.Instance.DoFloatingText("That item can no longer be targeted", Color.yellow, character);
+				GameMessages.Reject(reason ?? "That item can no longer be targeted.");
 				return;
 			}
 			CloseAllMenus();
@@ -159,7 +169,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	public void OpenTargetingMenu(Character character, Skill skill)
 	{
-		if (!character.CanCast(skill, out var reason)) { AudioManager.Instance?.PlayCue(SoundCue.Denied); GameMessages.Post(reason, true); return; }
+		if (!CanAttemptAction(character, out var reason) || !character.CanCast(skill, out reason)) { GameMessages.Reject(reason); return; }
 		OpenWorldTargeting(character, skill.GetTargetCharacters(character),
 			(target, direction) => skill.Targeting == SkillTargeting.Missile ?
 				SkillAction.ForMissile(character, skill, direction) : new SkillAction(character, skill, target),
@@ -190,13 +200,9 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	{
 		var inventory = Game.Instance.PlayerController.Inventory;
 		UseInventoryItemAction Create() => new(inventory, character, item);
-		if (!Create().CanBegin(character))
+		if (!CanAttemptAction(character, out var reason) || !Create().CanBegin(character, out reason))
 		{
-			AudioManager.Instance?.PlayCue(SoundCue.Denied);
-			var reason = item is EquipableInventoryItem equipment && character is Ally hero
-				? HeroClass.EquipmentRestriction(hero.PrimaryClass, hero.SecondaryClass, equipment) : null;
-			Game.Instance.DoFloatingText(reason ?? "That item cannot be used now", Color.yellow, character);
-			Common.Instance.MenuInputHandler.ClearInputThisFrame();
+			GameMessages.Reject(reason);
 			return;
 		}
 		if (item.ItemDefinition is UsableItemDefinition definition)
@@ -216,7 +222,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			}
 		}
 		var action = Create();
-		if (!action.IsValid(character)) { AudioManager.Instance?.PlayCue(SoundCue.Denied); return; }
+		if (!action.ValidateCommand(character, out reason)) { GameMessages.Reject(reason); return; }
 		CloseAllMenus();
 		character.SetAction(action);
 	}

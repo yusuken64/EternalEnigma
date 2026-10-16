@@ -1492,7 +1492,7 @@ MonoBehaviour:
   CurrentFacing: 0
   StartingStats:
     HPMax: 23
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 10
     MagicPower: 0
@@ -1500,7 +1500,7 @@ MonoBehaviour:
     EXPOnKill: 15
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 1
     AttacksPerTurnMax: 1

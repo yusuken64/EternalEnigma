@@ -130,10 +130,12 @@ namespace EternalEnigma.Tests
             trainer.Interact(Town.TownPlayer, null); yield return null;
             var lesson = Object.FindFirstObjectByType<BallistaDialog>();
             Assert.That(lesson.SkillGridItems, Is.Not.Empty);
-            Assert.That(lesson.SkillGridItems.All(i => i.Offer.CanLearn && i.Offer.Skill.ActivationType == ActivationType.Active), Is.True);
+            Assert.That(lesson.SkillGridItems.Any(i => i.Offer.CanLearn && i.Offer.Skill.ActivationType == ActivationType.Active), Is.True);
+            Assert.That(lesson.SkillGridItems.All(i => i.GridButton.interactable), Is.True);
+            Assert.That(lesson.SkillGridItems.Where(i => i.Offer.Skill.ActivationType == ActivationType.Passive).All(i => !i.Offer.CanLearn), Is.True);
             yield return Capture("first-lesson");
-            var row = lesson.SkillGridItems[0]; string skillName = row.Offer.Skill.SkillName;
-            int points = TrainerOffers.AvailablePoints(Hero), cost = row.Offer.NextCost;
+            var row = lesson.SkillGridItems.First(i => i.Offer.CanLearn); string skillName = row.Offer.Skill.SkillName;
+            int points = TrainerOffers.AvailableSkillPoints(Hero), cost = row.Offer.NextCost;
             row.ToggleOn_Clicked(); yield return null;
             lesson.BallistaPurchaseDialog.Cancel_ClickeD();
             Assert.That(Context.State.LearnedOpeningSkill, Is.False);
@@ -141,7 +143,7 @@ namespace EternalEnigma.Tests
             row.ToggleOn_Clicked(); yield return null;
             lesson.BallistaPurchaseDialog.Purchase_Clicked(); yield return null;
             Assert.That(Context.State.LearnedOpeningSkill, Is.True);
-            Assert.That(TrainerOffers.AvailablePoints(Hero), Is.EqualTo(points - cost));
+            Assert.That(TrainerOffers.AvailableSkillPoints(Hero), Is.EqualTo(points - cost));
             Assert.That(lesson.SkillGridItems.Any(i => i.Offer.Skill.ActivationType == ActivationType.Passive), Is.True);
             lesson.Close_Clicked();
             Assert.That(Town.Services.SaveGame(out var innError), Is.True, innError);
@@ -221,8 +223,9 @@ namespace EternalEnigma.Tests
                     hero.EnsureStartingSkills();
                     var offers = TrainerOffers.Build(hero, Town.Configuration);
                     Assert.That(offers, Is.Not.Empty, hero.Name);
-                    Assert.That(offers.All(o => o.CanLearn && o.CurrentRank == 0 && o.Skill.ActivationType == ActivationType.Active &&
-                        o.UsesPoints && o.NextCost <= TrainerOffers.AvailablePoints(hero)), Is.True, hero.Name);
+                    Assert.That(offers.Any(o => o.CanLearn && o.CurrentRank == 0 && o.Skill.ActivationType == ActivationType.Active &&
+                        o.UsesPoints && o.NextCost <= TrainerOffers.AvailableSkillPoints(hero)), Is.True, hero.Name);
+                    Assert.That(offers.Where(o => o.CanLearn).All(o => o.CurrentRank == 0 && o.Skill.ActivationType == ActivationType.Active), Is.True, hero.Name);
                     checkedHeroes++;
                 }
                 finally { Object.Destroy(hero.gameObject); }

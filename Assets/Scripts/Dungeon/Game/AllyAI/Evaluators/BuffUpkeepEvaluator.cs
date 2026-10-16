@@ -25,13 +25,13 @@ public sealed class BuffUpkeepEvaluator : IAllySkillEvaluator
         float score = 0;
         foreach (var effect in skill.ActionEffects)
         {
-            if (effect is RestoreSPAction restore)
+            if (effect is RestoreManaAction restore)
             {
                 int amount = skill.RankContext.Scaling.ScalePower(restore.Amount, skill.RankContext.Rank);
                 float restored = option.Affected.Where(c => context.Party.Contains(c) && !(restore.ExcludeCaster && c == context.Ally))
-                    .Sum(c => Math.Max(0, Math.Min(amount, c.FinalStats.SPMax - c.Vitals.SP + (c == context.Ally ? skill.SPCost : 0))));
-                // Do not spend SP merely to buy back the same (or a smaller) amount.
-                score += Math.Max(0, restored - skill.SPCost);
+                    .Sum(c => Math.Max(0, Math.Min(amount, c.FinalStats.ManaMax - c.Vitals.Mana + (c == context.Ally ? skill.ManaCost : 0))));
+                // Do not spend Mana merely to buy back the same (or a smaller) amount.
+                score += Math.Max(0, restored - skill.ManaCost);
                 continue;
             }
             if (context.VisibleEnemies.Count == 0) continue;

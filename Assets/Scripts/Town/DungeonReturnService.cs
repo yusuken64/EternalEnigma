@@ -31,7 +31,7 @@ public static class DungeonReturnService
                 member.HighestLevel = System.Math.Max(System.Math.Max(1, member.HighestLevel), ally.Vitals.Level);
                 // Damage persists after a successful return; a defeat resets the party to full.
                 member.Hp = loot ? System.Math.Max(1, ally.Vitals.HP) : -1;
-                member.Sp = loot ? ally.Vitals.SP : -1;
+                member.Mana = loot ? ally.Vitals.Mana : -1;
                 member.HasHunger = loot;
                 member.Hunger = loot ? ally.Vitals.Hunger : 0;
                 member.HungerAccumulate = loot ? ally.Vitals.HungerAccumulate : 0;

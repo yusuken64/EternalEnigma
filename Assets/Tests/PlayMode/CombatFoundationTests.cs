@@ -52,10 +52,10 @@ namespace EternalEnigma.Tests
             foreach (var enemy in harness.Game.Enemies.Cast<Enemy>()) enemy.Policies.Clear();
             foreach (var actor in harness.Game.AllCharacters)
             {
-                actor.BaseStats.HPMax = actor.BaseStats.SPMax = 100;
-                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
+                actor.BaseStats.HPMax = actor.BaseStats.ManaMax = 100;
+                actor.BaseStats.HPRegenAcccumlateThreshold = actor.BaseStats.ManaRegenThreshold = 10000;
                 actor.InvalidateCachedStats();
-                actor.Vitals.HP = 60; actor.Vitals.SP = 20;
+                actor.Vitals.HP = 60; actor.Vitals.Mana = 20;
                 actor.SyncDisplayedStats();
             }
             harness.Game.UpdateMiniMap();
@@ -206,7 +206,7 @@ namespace EternalEnigma.Tests
             arrowSkill.name = damageSkill.name;
             arrowSkill.SkillName = damageSkill.SkillName;
             arrowSkill.ActivationType = damageSkill.ActivationType;
-            arrowSkill.SPCost = damageSkill.SPCost;
+            arrowSkill.ManaCost = damageSkill.ManaCost;
             arrowSkill.TargetSelector = new TargetSelector(damageSkill.TargetSelector);
             arrowSkill.Targeting = damageSkill.Targeting;
             arrowSkill.MissileRange = damageSkill.MissileRange;
@@ -254,7 +254,7 @@ namespace EternalEnigma.Tests
             allTargetSkill.name = damageSkill.name + "_AllTargets";
             allTargetSkill.SkillName = damageSkill.SkillName;
             allTargetSkill.ActivationType = damageSkill.ActivationType;
-            allTargetSkill.SPCost = damageSkill.SPCost;
+            allTargetSkill.ManaCost = damageSkill.ManaCost;
             allTargetSkill.Targeting = SkillTargeting.AllTargets;
             allTargetSkill.TargetSelector = new TargetSelector { Team = TargetTeam.Enemies, Area = TargetArea.Visible };
             allTargetSkill.ArrowCost = 1;

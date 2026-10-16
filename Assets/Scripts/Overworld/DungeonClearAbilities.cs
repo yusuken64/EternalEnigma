@@ -17,12 +17,12 @@ public static class DungeonClearAbilities
             "story-2" => ("Ember Ward", new StatModification { FireResistance = 10 }),
             "story-3" => ("Storm Ward", new StatModification { LightningResistance = 10 }),
             "repeatable-0" => ("Trail Rations", new StatModification { HungerMax = 10 }),
-            "repeatable-1" => ("Focused Breath", new StatModification { SPMax = 4 }),
+            "repeatable-1" => ("Focused Breath", new StatModification { ManaMax = 4 }),
             "repeatable-2" => ("Steady Hand", new StatModification { HitBonus = .03f }),
             "repeatable-3" => ("Winter Ward", new StatModification { IceResistance = 10 }),
             "repeatable-4" => ("Keen Edge", new StatModification { CritChance = .03f }),
             "repeatable-5" => ("Lightfoot", new StatModification { Evasion = .03f }),
-            "repeatable-6" => ("Deep Reserves", new StatModification { HPMax = 3, SPMax = 2 }),
+            "repeatable-6" => ("Deep Reserves", new StatModification { HPMax = 3, ManaMax = 2 }),
             "final-dungeon" => ("Enigma's Legacy", new StatModification { Strength = 3, Defense = 1 }),
             _ => ((string)null, (StatModification)null)
         };

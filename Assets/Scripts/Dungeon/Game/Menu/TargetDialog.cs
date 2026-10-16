@@ -122,7 +122,8 @@ namespace JuicyChickenGames.Menu
             createAction = factory;
             missileRange = range;
             Targetables = targets;
-            if (missileRange == 0 && Targetables.Count == 0 && props.Count == 0 && tiles.Count == 0) { MenuManager.Close(this); return; }
+            if (missileRange == 0 && Targetables.Count == 0 && props.Count == 0 && tiles.Count == 0)
+            { GameMessages.Reject("No valid targets are available for this action."); MenuManager.Close(this); return; }
             enabled = true;
             Game.Instance.PlayerController.CurrentControlMode = PlayerControlMode.TargetSelecting;
             SelectTargetPrompt.SetActive(true);
@@ -366,10 +367,11 @@ namespace JuicyChickenGames.Menu
             var caster = casterCharacter;
             if (Game.Instance == null || Game.Instance.CurrentDungeon != targetingFloor || caster.Vitals == null || caster.Vitals.HP <= 0 ||
                 !Game.Instance.AllCharacters.Contains(caster))
-            { AudioManager.Instance?.PlayCue(SoundCue.Denied); MenuManager.Close(this); return; }
+            { GameMessages.Reject("This hero is no longer able to act on this floor."); return; }
+            if (!MenuManager.CanAttemptAction(caster, out var restriction)) { GameMessages.Reject(restriction); return; }
             var action = selectedProp != null && targetingSkill != null ? SkillAction.ForScenery(caster,targetingSkill,selectedProp) : createAction(CameraTarget, Direction);
-            if (action == null) { AudioManager.Instance?.PlayCue(SoundCue.Denied); MenuManager.Close(this); return; }
-            if (!action.ValidateCommand(caster, out var reason)) { AudioManager.Instance?.PlayCue(SoundCue.Denied); if (reason != null) GameMessages.Post(reason, true); MenuManager.Close(this); return; }
+            if (action == null) { GameMessages.Reject("Choose a valid target for this action."); return; }
+            if (!action.ValidateCommand(caster, out var reason)) { GameMessages.Reject(reason ?? "That target is no longer eligible."); return; }
             AudioManager.Instance?.PlayCue(SoundCue.Confirm);
             MenuManager.Instance.CloseAllMenus();
             caster.SetAction(action);

@@ -19,7 +19,7 @@ MonoBehaviour:
   AllowedWeapons: 0000000005000000
   GrowthPerLevel:
     HPMax: 5
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 2
     MagicPower: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -39,7 +39,7 @@ MonoBehaviour:
     HitBonus: 0
   StartingStatBonus:
     HPMax: 2
-    SPMax: 2
+    ManaMax: 2
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0

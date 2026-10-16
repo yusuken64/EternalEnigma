@@ -46,7 +46,7 @@ public sealed class AutoplayEvent
     public bool Removed;
     public string Kind, RunId, Scene, Location, ActorId, TargetId, Message, Position, Severity, StackTrace, FinaleBattle;
     public string Item, Skill, Evaluator, Currency, Building, CastId;
-    public int Seed, RunNumber, Action, Floor, HP, SP, Hunger, Gold, Cost, RankBefore, RankAfter, StockBefore, StockAfter;
+    public int Seed, RunNumber, Action, Floor, HP, Mana, Hunger, Gold, Cost, RankBefore, RankAfter, StockBefore, StockAfter;
     public double Seconds;
     public bool Success;
 }
@@ -144,7 +144,7 @@ public sealed partial class AutoplayRunner
         entry.ActorId ??= ally != null ? ActorId(ally) : town?.TownPlayer?.ControllingTownAlly?.Id;
         entry.Position ??= ally != null ? ally.TilemapPosition.ToString() : town?.TownPlayer?.ControllingTownAlly != null ?
             town.TownPlayer.ControllingTownAlly.TilemapPosition.ToString() : c?.Position.ToString();
-        entry.HP = ally?.Vitals?.HP ?? 0; entry.SP = ally?.Vitals?.SP ?? 0; entry.Hunger = ally?.Vitals?.Hunger ?? 0;
+        entry.HP = ally?.Vitals?.HP ?? 0; entry.Mana = ally?.Vitals?.Mana ?? 0; entry.Hunger = ally?.Vitals?.Hunger ?? 0;
         entry.Gold = game?.PlayerController?.Gold ?? town?.TownPlayer?.Gold ?? 0;
         return entry;
     }

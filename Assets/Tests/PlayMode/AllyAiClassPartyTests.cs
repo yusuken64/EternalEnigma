@@ -58,10 +58,10 @@ namespace EternalEnigma.Tests
             {
                 enemy.Policies.Clear();
                 enemy.BaseStats.HPMax = 1000;
-                enemy.BaseStats.SPMax = 1000;
+                enemy.BaseStats.ManaMax = 1000;
                 enemy.InvalidateCachedStats();
                 enemy.Vitals.HP = 1000;
-                enemy.Vitals.SP = 1000;
+                enemy.Vitals.Mana = 1000;
                 enemy.SyncDisplayedStats();
             }
 
@@ -69,10 +69,10 @@ namespace EternalEnigma.Tests
             foreach (var ally in harness.Game.Allies)
             {
                 ally.BaseStats.HPMax = 100;
-                ally.BaseStats.SPMax = 100;
+                ally.BaseStats.ManaMax = 100;
                 ally.InvalidateCachedStats();
                 ally.Vitals.HP = 100;
-                ally.Vitals.SP = 100;
+                ally.Vitals.Mana = 100;
                 ally.SyncDisplayedStats();
             }
 
@@ -107,7 +107,7 @@ namespace EternalEnigma.Tests
             skills.Add(s);
             s.SkillName = name;
             s.ActivationType = ActivationType.Active;
-            s.SPCost = 1;
+            s.ManaCost = 1;
             s.Targeting = targeting;
             s.TargetSelector = new TargetSelector { Team = team, Area = TargetArea.Visible };
             s.ActionEffects = new List<GameAction>(effects);

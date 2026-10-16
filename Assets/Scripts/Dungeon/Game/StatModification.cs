@@ -9,7 +9,7 @@ public class StatModification : StartingStats
     public StatModification(Stats other)
     {
         HPMax = other.HPMax;
-        SPMax = other.SPMax;
+        ManaMax = other.ManaMax;
         HungerMax = other.HungerMax;
         Strength = other.Strength;
         MagicPower = other.MagicPower;
@@ -17,7 +17,7 @@ public class StatModification : StartingStats
         EXPOnKill = other.EXPOnKill;
         HungerAccumulateThreshold = other.HungerAccumulateThreshold;
         HPRegenAcccumlateThreshold = other.HPRegenAcccumlateThreshold;
-        SPRegenAcccumlateThreshold = other.SPRegenAcccumlateThreshold;
+        ManaRegenThreshold = other.ManaRegenThreshold;
         DropRate = other.DropRate;
         ActionsPerTurnMax = other.ActionsPerTurnMax;
         AttacksPerTurnMax = other.AttacksPerTurnMax;
@@ -33,14 +33,14 @@ public class StatModification : StartingStats
     {
         HPMax = stats.HPMax;
         HungerMax = stats.HungerMax;
-        SPMax = stats.SPMax;
+        ManaMax = stats.ManaMax;
         Strength = stats.Strength;
         MagicPower = stats.MagicPower;
         Defense = stats.Defense;
         EXPOnKill = stats.EXPOnKill;
         HungerAccumulateThreshold = stats.HungerAccumulateThreshold;
         HPRegenAcccumlateThreshold = stats.HPRegenAcccumlateThreshold;
-        SPRegenAcccumlateThreshold = stats.SPRegenAcccumlateThreshold;
+        ManaRegenThreshold = stats.ManaRegenThreshold;
         DropRate = stats.DropRate;
         ActionsPerTurnMax = stats.ActionsPerTurnMax;
         AttacksPerTurnMax = stats.AttacksPerTurnMax;
@@ -61,14 +61,14 @@ public class StatModification : StartingStats
 
         result.HPMax += b.HPMax;
         result.HungerMax += b.HungerMax;
-        result.SPMax += b.SPMax;
+        result.ManaMax += b.ManaMax;
         result.Strength += b.Strength;
         result.MagicPower += b.MagicPower;
         result.Defense += b.Defense;
         result.EXPOnKill += b.EXPOnKill;
         result.HungerAccumulateThreshold += b.HungerAccumulateThreshold;
         result.HPRegenAcccumlateThreshold += b.HPRegenAcccumlateThreshold;
-        result.SPRegenAcccumlateThreshold += b.SPRegenAcccumlateThreshold;
+        result.ManaRegenThreshold += b.ManaRegenThreshold;
         result.DropRate += b.DropRate;
         result.ActionsPerTurnMax += b.ActionsPerTurnMax;
         result.AttacksPerTurnMax += b.AttacksPerTurnMax;
@@ -87,7 +87,7 @@ public class StatModification : StartingStats
         var parts = new List<string>();
 
         if (HPMax != 0) parts.Add($"{(HPMax > 0 ? "+" : "")}{HPMax} maximum HP");
-        if (SPMax != 0) parts.Add($"{(SPMax > 0 ? "+" : "")}{SPMax} maximum SP");
+        if (ManaMax != 0) parts.Add($"{(ManaMax > 0 ? "+" : "")}{ManaMax} maximum Mana");
         if (HungerMax != 0) parts.Add($"{(HungerMax > 0 ? "+" : "")}{HungerMax} maximum fullness");
         if (Strength != 0) parts.Add($"{(Strength > 0 ? "+" : "")}{Strength} Strength");
         if (MagicPower != 0) parts.Add($"{(MagicPower > 0 ? "+" : "")}{MagicPower} Magic Power");
@@ -95,7 +95,7 @@ public class StatModification : StartingStats
         if (EXPOnKill != 0) parts.Add($"{(EXPOnKill > 0 ? "+" : "")}{EXPOnKill} experience per defeat");
         if (HungerAccumulateThreshold != 0) parts.Add($"{(HungerAccumulateThreshold > 0 ? "+" : "")}{HungerAccumulateThreshold} actions between hunger loss");
         if (HPRegenAcccumlateThreshold != 0) parts.Add($"{(HPRegenAcccumlateThreshold > 0 ? "+" : "")}{HPRegenAcccumlateThreshold} actions between HP recovery");
-        if (SPRegenAcccumlateThreshold != 0) parts.Add($"{(SPRegenAcccumlateThreshold > 0 ? "+" : "")}{SPRegenAcccumlateThreshold} actions between SP recovery");
+        if (ManaRegenThreshold != 0) parts.Add($"{(ManaRegenThreshold > 0 ? "+" : "")}{ManaRegenThreshold} actions between Mana recovery");
         if (DropRate != 0) parts.Add($"{(DropRate > 0 ? "+" : "")}{DropRate} loot multiplier");
         if (ActionsPerTurnMax != 0) parts.Add($"{(ActionsPerTurnMax > 0 ? "+" : "")}{ActionsPerTurnMax} actions per turn");
         if (AttacksPerTurnMax != 0) parts.Add($"{(AttacksPerTurnMax > 0 ? "+" : "")}{AttacksPerTurnMax} attacks per turn");

@@ -173,13 +173,13 @@ public class TrainerOfferTests
         Assert.IsTrue(offers[1].CanLearn);
         Assert.IsTrue(offers[1].UsesPoints);
         Assert.AreEqual(1, offers[1].NextCost);
-        Assert.AreEqual("T Strike 0/5", offers[1].Label);
+        Assert.AreEqual("T Strike  Rank 0 of 5", offers[1].Label);
 
         // T Cleave.CanLearn == false, LockReason non-empty, Label == "T Cleave 0/5 (T2)"
         var cleaveOffer = offers.First(o => o.Skill.SkillName == "T Cleave");
         Assert.IsFalse(cleaveOffer.CanLearn);
         Assert.IsNotEmpty(cleaveOffer.LockReason);
-        Assert.AreEqual("T Cleave 0/5 (T2)", cleaveOffer.Label);
+        Assert.AreEqual("T Cleave  Rank 0 of 5", cleaveOffer.Label);
     }
 
     [Test]
@@ -212,21 +212,21 @@ public class TrainerOfferTests
         ally.PrimaryClass = MakeClass();
         ally.Level = 10; // Rank four is level-eligible; test the point gate independently.
         ally.EnsureStartingSkills();
-        Assert.AreEqual(20, TrainerOffers.AvailablePoints(ally)); // Novice Training is free
+        Assert.AreEqual(20, TrainerOffers.AvailableSkillPoints(ally)); // Novice Training is free
 
         ally.SetRank("T Strike", 3); // 1 + 2 + 3
         ally.SetRank("T Guard", 3);
         ally.SetRank("T Parry", 3);
-        Assert.AreEqual(2, TrainerOffers.AvailablePoints(ally));
+        Assert.AreEqual(2, TrainerOffers.AvailableSkillPoints(ally));
         var offers = TrainerOffers.Build(ally, MakeTown());
         var strike = offers.First(o => o.Skill.SkillName == "T Strike");
         Assert.AreEqual(4, strike.NextCost);
         Assert.IsFalse(strike.CanLearn);
-        StringAssert.Contains("skill points", strike.LockReason);
+        StringAssert.Contains("Requires 4 Skill Points; you have 2", strike.LockReason);
 
         // Forgetting clears everything but the starting skill: all points are back.
         ally.ForgetAllSkills();
-        Assert.AreEqual(20, TrainerOffers.AvailablePoints(ally));
+        Assert.AreEqual(20, TrainerOffers.AvailableSkillPoints(ally));
         Assert.AreEqual(1, ally.GetRank("T Novice"));
         Assert.AreEqual(0, ally.GetRank("T Strike"));
     }

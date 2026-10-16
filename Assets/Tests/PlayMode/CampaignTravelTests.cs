@@ -69,11 +69,12 @@ namespace EternalEnigma.Tests
             yield return null;
             picker = menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p => p.Owner != null);
             var unavailable = picker.Rows.GetComponentsInChildren<AuthoredButton>().Single();
-            Assert.That(unavailable.Button.interactable, Is.False, "Unavailable encounters must not offer a working Enter button.");
+            Assert.That(unavailable.Button.interactable, Is.True, "Entry remains selectable so blocked requirements can be explained.");
             Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Any(t => t.text.Contains("Learn Reset Floor")), Is.True);
             Assert.That(picker.BackButton.interactable, Is.True);
             unavailable.Button.onClick.Invoke();
             Assert.That(menus.Opened, Is.True, "Even a stale callback must not close the blocked entry explanation.");
+            Assert.That(picker.Title.text, Does.Contain("Learn Reset Floor"));
             Assert.That(context.State.PendingDungeon, Is.Empty);
             picker.BackButton.onClick.Invoke();
             context.Completed.Add("repeatable-0");

@@ -60,7 +60,7 @@ public class BallistaPurchaseDialog : Dialog
         TitleText.textWrappingMode = TextWrappingModes.Normal;
         DescriptionText.enableAutoSizing = true; DescriptionText.fontSizeMin = 16; DescriptionText.fontSizeMax = 24;
         DescriptionText.textWrappingMode = TextWrappingModes.Normal;
-        string price = usesPoints ? $"{cost} learning point{(cost == 1 ? "" : "s")}" : $"{cost} gold";
+        string price = usesPoints ? $"{cost} Skill Point{(cost == 1 ? "" : "s")}" : $"{cost} gold";
         TitleText.text = GameplayText.Format(nextRank <= 1
             ? $"Learn {skill.DisplayName} for {price}?"
             : $"Train {skill.DisplayName} to rank {nextRank} for {price}?");
@@ -71,10 +71,14 @@ public class BallistaPurchaseDialog : Dialog
 
     public void Purchase_Clicked()
     {
-        var callback = PurcahseCallBack;
-        PurcahseCallBack = null;
-        CloseDialog();
-        callback?.Invoke();
+        if (!gameObject.activeInHierarchy) return;
+        PurcahseCallBack?.Invoke();
+    }
+
+    public void Reject(string reason)
+    {
+        DescriptionText.text = GameplayText.Format(reason);
+        GameMessages.Reject(reason);
     }
 
     public void Cancel_ClickeD()

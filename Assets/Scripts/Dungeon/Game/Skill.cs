@@ -17,10 +17,10 @@ public class Skill : ScriptableObject
 	internal SkillRankContext RankContext => new(Rank, RankScaling);
 	public ActivationType ActivationType;
 
-	public int SPCost;
+	public int ManaCost;
 	internal string CostText(Character caster = null)
 	{
-		string cost = $"{SPCost} SP";
+		string cost = $"{ManaCost} Mana";
 		if (ActionEffects?.Any(effect => effect is FindExitAction) != true) return cost;
 		return caster is Ally ally
 			? $"{cost}, {FindExitAction.GoldCost(ally)} gold"

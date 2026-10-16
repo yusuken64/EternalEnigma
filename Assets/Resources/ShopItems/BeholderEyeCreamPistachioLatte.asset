@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Beholder Eye Cream Pistachio Latte
   Description: Brewed with real Beholder eye jelly and cream. Restores 100 HP and
-    25 SP.
+    25 Mana.
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

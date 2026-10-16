@@ -54,7 +54,7 @@ public sealed class ChaosRandom
 public sealed class ChaosPrerequisites
 {
     public string HeroId, ClassId, SkillName;
-    public int Rank = 1, Level = 1, HP = -1, SP = -1;
+    public int Rank = 1, Level = 1, HP = -1, Mana = -1;
     public bool ControlRequiredHero;
     public List<ItemSaveData> Equipment = new(), Inventory = new();
 }

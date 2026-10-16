@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public enum DungeonVisualRole { Wood, Heading, Paper, WoodButton, Primary, Secondary, Close, IconFrame, Selection, Track, HP, SP, Hunger, InputSurface }
+public enum DungeonVisualRole { Wood, Heading, Paper, WoodButton, Primary, Secondary, Close, IconFrame, Selection, Track, HP, Mana, Hunger, InputSurface }
 
 // Serialized visual intent survives generic UI baking and background migration.
 [RequireComponent(typeof(Image))]

@@ -18,7 +18,7 @@ public sealed class TestScenario
     public EternalEnigma.Core.World.OverworldBiome Biome;
     public int Tier;
     public int? HP;
-    public int? SP;
+    public int? Mana;
 
     public GameSaveData CreateSave()
     {

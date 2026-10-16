@@ -101,7 +101,7 @@ public sealed partial class AutoplayRunner
             if (kind == "CastInterrupted") { use.Interrupted++; row.Interrupted++; row.Reason = reason; }
             WriteEvent(new AutoplayEvent { Kind = kind, CastId = id, ActorId = actor, Skill = skill,
                 TargetId = ActorId(choice.Option.Target), Evaluator = choice.Evaluator, Message = reason ?? choice.Reason,
-                Cost = choice.Option.Skill.SPCost, Currency = "SP", Success = kind == "CastCompleted",
+                Cost = choice.Option.Skill.ManaCost, Currency = "Mana", Success = kind == "CastCompleted",
                 Position = ally != null ? ally.TilemapPosition.ToString() : null });
         }
         Record("CastSelected",choice.Reason);

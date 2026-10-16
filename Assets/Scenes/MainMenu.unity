@@ -88183,7 +88183,7 @@ MonoBehaviour:
       Int: 0
       Agi: 0
     Hp: -1
-    Sp: -1
+    Mana: -1
     HasHunger: 0
     Hunger: 0
     HungerAccumulate: 0
@@ -88204,7 +88204,7 @@ MonoBehaviour:
       Int: 0
       Agi: 0
     Hp: -1
-    Sp: -1
+    Mana: -1
     HasHunger: 0
     Hunger: 0
     HungerAccumulate: 0
@@ -88225,7 +88225,7 @@ MonoBehaviour:
       Int: 0
       Agi: 0
     Hp: -1
-    Sp: -1
+    Mana: -1
     HasHunger: 0
     Hunger: 0
     HungerAccumulate: 0

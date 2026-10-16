@@ -361,15 +361,15 @@ public sealed class SkillLearningRulesTests
     [InlineData(0, 2)]
     public void EarnedPointsScaleWithLevel(int level, int expected)
     {
-        Assert.Equal(expected, SkillLearningRules.EarnedPoints(level));
+        Assert.Equal(expected, SkillLearningRules.EarnedSkillPoints(level));
     }
 
     [Fact]
     public void StartingSkillIsFreeAtRankOne()
     {
         var kit = new ClassKit(Warrior());
-        Assert.Equal(0, SkillLearningRules.SpentPoints(kit, new[] { L("Novice Training") }));
-        Assert.Equal(2, SkillLearningRules.SpentPoints(kit, new[] { L("Novice Training", 2) }));
+        Assert.Equal(0, SkillLearningRules.SpentSkillPoints(kit, new[] { L("Novice Training") }));
+        Assert.Equal(2, SkillLearningRules.SpentSkillPoints(kit, new[] { L("Novice Training", 2) }));
     }
 
     [Fact]
@@ -377,8 +377,8 @@ public sealed class SkillLearningRulesTests
     {
         var kit = new ClassKit(Warrior());
         var learned = new[] { L("Novice Training"), L("Double Strike", 3), L("Vanguard", 1) };
-        Assert.Equal(6 + 1, SkillLearningRules.SpentPoints(kit, learned));
-        Assert.Equal(20 - 7, SkillLearningRules.AvailablePoints(kit, learned, level: 10));
+        Assert.Equal(6 + 1, SkillLearningRules.SpentSkillPoints(kit, learned));
+        Assert.Equal(20 - 7, SkillLearningRules.AvailableSkillPoints(kit, learned, level: 10));
     }
 
     [Fact]
@@ -387,26 +387,27 @@ public sealed class SkillLearningRulesTests
         var kit = new ClassKit(Warrior());
         var learned = new[] { L("Novice Training"), L("Double Strike", 1) };
 
-        var affordable = SkillLearningRules.CheckNextRank(kit, learned, 13, "Double Strike", 999, availablePoints: 2);
+        var affordable = SkillLearningRules.CheckNextRank(kit, learned, 13, "Double Strike", 999, availableSkillPoints: 2);
         Assert.True(affordable.Allowed);
         Assert.Equal(2, affordable.Cost);
 
-        var broke = SkillLearningRules.CheckNextRank(kit, learned, 13, "Double Strike", 999, availablePoints: 1);
+        var broke = SkillLearningRules.CheckNextRank(kit, learned, 13, "Double Strike", 999, availableSkillPoints: 1);
         Assert.Equal(LearnRefusal.NotEnoughPoints, broke.Refusal);
+        Assert.Equal("Requires 2 Skill Points; you have 1.", broke.Reason);
     }
 
     [Fact]
     public void SkillsOutsideTheKitCostNothing()
     {
         var kit = new ClassKit(Warrior());
-        Assert.Equal(0, SkillLearningRules.SpentPoints(kit, new[] { L("Healing", 5) }));
+        Assert.Equal(0, SkillLearningRules.SpentSkillPoints(kit, new[] { L("Healing", 5) }));
     }
 
     [Fact]
     public void AvailablePointsNeverNegative()
     {
         var kit = new ClassKit(Warrior());
-        Assert.Equal(0, SkillLearningRules.AvailablePoints(kit, new[] { L("Double Strike", 5) }, level: 1));
+        Assert.Equal(0, SkillLearningRules.AvailableSkillPoints(kit, new[] { L("Double Strike", 5) }, level: 1));
     }
 
     [Fact]

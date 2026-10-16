@@ -32,7 +32,7 @@ MonoBehaviour:
   DungeonSelection: {fileID: 21300000, guid: 905499b3fb7b0be429ba8db5bc933148, type: 3}
   DungeonTrack: {fileID: 21300000, guid: d1de50b9b2e1d3840ad8bd3b5045b8c1, type: 3}
   DungeonHP: {fileID: 21300000, guid: c78ca4bfaf96aa34ca0f51e8b9916b25, type: 3}
-  DungeonSP: {fileID: 21300000, guid: 7890fd0707bc1ae4bb2108f4c03ae773, type: 3}
+  DungeonMana: {fileID: 21300000, guid: 7890fd0707bc1ae4bb2108f4c03ae773, type: 3}
   DungeonHunger: {fileID: 21300000, guid: f50cb5f7550362349b0cc1f023ad61f0, type: 3}
   DungeonMenuPrefab: {fileID: 2082147411466713991, guid: 77dc0f6facdbdaa43b52cae4877ed7bb, type: 3}
   DungeonPickerPrefab: {fileID: 8163759335565579158, guid: 76f73a7dffc774b43ae31f197c0007cb, type: 3}

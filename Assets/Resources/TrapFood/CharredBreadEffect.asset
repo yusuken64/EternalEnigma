@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::ModifyStatsItemEffectDefinition
   StatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -33,7 +33,7 @@ MonoBehaviour:
     HitBonus: 0
   VitalModification:
     Hp: 0
-    Sp: 0
+    Mana: 0
     Level: 0
     Exp: 0
     Floor: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
     Gold: 0
     HungerAccumulate: 0
     HpRegenAcccumlate: 0
-    SpRegenAcccumlate: 0
+    ManaRegenAccumulator: 0
     ActionsPerTurnLeft: 0
     AttacksPerTurnLeft: 0
   DoDamageAnimation: 0

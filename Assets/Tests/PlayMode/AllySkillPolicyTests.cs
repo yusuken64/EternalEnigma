@@ -58,10 +58,10 @@ namespace EternalEnigma.Tests
             foreach (var actor in harness.Game.AllCharacters)
             {
                 actor.BaseStats.HPMax = 100;
-                actor.BaseStats.SPMax = 100;
+                actor.BaseStats.ManaMax = 100;
                 actor.InvalidateCachedStats();
                 actor.Vitals.HP = 100;
-                actor.Vitals.SP = 50;
+                actor.Vitals.Mana = 50;
                 actor.SyncDisplayedStats();
             }
 
@@ -86,13 +86,13 @@ namespace EternalEnigma.Tests
             created.Clear();
         }
 
-        private Skill Make(string name, int sp, TargetTeam team, SkillTargeting targeting, params GameAction[] effects)
+        private Skill Make(string name, int mana, TargetTeam team, SkillTargeting targeting, params GameAction[] effects)
         {
             var s = ScriptableObject.CreateInstance<Skill>();
             created.Add(s);
             s.SkillName = name;
             s.ActivationType = ActivationType.Active;
-            s.SPCost = sp;
+            s.ManaCost = mana;
             s.Targeting = targeting;
             s.TargetSelector = new TargetSelector { Team = team, Area = TargetArea.Visible };
             s.ActionEffects = new List<GameAction>(effects);
@@ -118,9 +118,9 @@ namespace EternalEnigma.Tests
             Assert.That(Coverage().Evaluator,Is.EqualTo("EmergencyHeal"));
             Assert.That(Coverage().Option.Target,Is.SameAs(leader));
             leader.Vitals.HP=100;leader.SyncDisplayedStats();
-            friend.Vitals.SP=0;friend.SyncDisplayedStats();
+            friend.Vitals.Mana=0;friend.SyncDisplayedStats();
             Assert.That(Coverage(),Is.Null,"Coverage cannot bypass costs.");
-            friend.Vitals.SP=50;friend.SyncDisplayedStats();
+            friend.Vitals.Mana=50;friend.SyncDisplayedStats();
             weak.Vitals.HP=strong.Vitals.HP=0;weak.SyncDisplayedStats();strong.SyncDisplayedStats();
             Assert.That(Coverage(),Is.Null,"No valid hostile targets and nobody needs healing.");
         }
@@ -159,12 +159,12 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator SpReserveBlocksDamageUnlessAggressive()
+        public IEnumerator ManaReserveBlocksDamageUnlessAggressive()
         {
             var heal = Make("Heal", 3, TargetTeam.Allies, SkillTargeting.SelectedTarget, new TakeHealAction { healing = 20 });
             var blast = Make("Blast", 2, TargetTeam.Enemies, SkillTargeting.SelectedTarget, new TakeDamageAction { damage = 100 });
 
-            friend.Vitals.SP = 3;
+            friend.Vitals.Mana = 3;
             friend.SyncDisplayedStats();
             friend.AllyStrategy = AllyStrategy.Follow;
 

@@ -4,6 +4,7 @@ using UnityEngine;
 public static class SaveSystem
 {
     public const int SlotCount = 3;
+    public const int CurrentFormatVersion = 3;
     private static ISaveStore store = new PlayerPrefsSaveStore();
     private static int activeSlot;
     public static int ActiveSlot 
@@ -32,11 +33,14 @@ public static class SaveSystem
         var data = JsonUtility.FromJson<GameSaveData>(json);
         if (data == null || data.TownSaveData == null || !json.Contains("\"TownSaveData\""))
             throw new InvalidOperationException("Unreadable campaign save.");
+        if (data.FormatVersion != CurrentFormatVersion)
+            throw new UnsupportedSaveFormatException();
         return data;
     }
     public static GameSaveData Inspect(int slot, out string error)
     {
         try { var data = LoadData(slot); error = null; return data; }
+        catch (UnsupportedSaveFormatException) { error = "This save uses an unsupported format. Start a new campaign."; return null; }
         catch (Exception e) { Debug.LogWarning("Unable to read campaign save. " + e); error = "This save could not be read. Please choose another save."; return null; }
     }
     // Capturing never writes; writing never consults live state.
@@ -50,6 +54,7 @@ public static class SaveSystem
     {
         ValidateSlot(slot);
         if (data == null || data.IsSandbox || UnityEngine.Object.FindFirstObjectByType<Common>()?.CampaignContext?.IsSandbox == true) return;
+        data.FormatVersion = CurrentFormatVersion;
         store.Write(slot, JsonUtility.ToJson(data));
     }
     public static void ClearData()
@@ -59,7 +64,7 @@ public static class SaveSystem
     }
     private sealed class PlayerPrefsSaveStore : ISaveStore
     {
-        private static string Key(int slot) => "CampaignSlot_v2_" + slot;
+        private static string Key(int slot) => $"CampaignSlot_v{CurrentFormatVersion}_" + slot;
         public string Read(int slot) => PlayerPrefs.HasKey(Key(slot)) ? PlayerPrefs.GetString(Key(slot)) : null;
         public void Write(int slot, string json)
         {
@@ -68,6 +73,10 @@ public static class SaveSystem
             catch { if (previous == null) PlayerPrefs.DeleteKey(Key(slot)); else PlayerPrefs.SetString(Key(slot), previous); throw; }
         }
         public void Clear(int slot) { PlayerPrefs.DeleteKey(Key(slot)); PlayerPrefs.Save(); }
+    }
+    private sealed class UnsupportedSaveFormatException : InvalidOperationException
+    {
+        public UnsupportedSaveFormatException() : base("Unsupported campaign save format. Start a new campaign.") { }
     }
     private sealed class StoreScope : IDisposable
     {

@@ -135,7 +135,7 @@ namespace EternalEnigma.Tests
                 {
                     Assert.That(hero.Vitals.Level, Is.EqualTo(40));
                     Assert.That(hero.Vitals.HP, Is.EqualTo(hero.FinalStats.HPMax));
-                    Assert.That(hero.Vitals.SP, Is.EqualTo(hero.FinalStats.SPMax));
+                    Assert.That(hero.Vitals.Mana, Is.EqualTo(hero.FinalStats.ManaMax));
                     Assert.That(hero.Vitals.Hunger, Is.EqualTo(hero.FinalStats.HungerMax));
                     Assert.That(hero.Equipment.GetEquippedItems().Select(item => item.ItemName),
                         Is.EquivalentTo(save.Roster.Single(member => member.AllyId == hero.TownAllyId).Equipment.Select(item => item.ItemName)));

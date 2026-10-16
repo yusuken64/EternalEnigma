@@ -86,11 +86,11 @@ namespace EternalEnigma.Tests
                     var skill = entry.Skill;
                     var skillName = skill.SkillName;
 
-                    // Check SPCost
+                    // Check ManaCost
                     if (skill.ActivationType == ActivationType.Active)
                     {
-                        Assert.That(skill.SPCost, Is.GreaterThanOrEqualTo(1).And.LessThanOrEqualTo(3),
-                            $"{classId}/{skillName} active skill should have SPCost 1-3");
+                        Assert.That(skill.ManaCost, Is.GreaterThanOrEqualTo(1).And.LessThanOrEqualTo(3),
+                            $"{classId}/{skillName} active skill should have ManaCost 1-3");
                         Assert.That(skill.ActionEffects, Is.Not.Null.And.Not.Empty,
                             $"{classId}/{skillName} active skill should have ActionEffects");
                         Assert.That(skill.ActionEffects.All(a => a != null), Is.True,
@@ -98,8 +98,8 @@ namespace EternalEnigma.Tests
                     }
                     else
                     {
-                        Assert.That(skill.SPCost, Is.EqualTo(0),
-                            $"{classId}/{skillName} passive skill should have SPCost 0");
+                        Assert.That(skill.ManaCost, Is.EqualTo(0),
+                            $"{classId}/{skillName} passive skill should have ManaCost 0");
                     }
 
                     // Check LearnCost and MaxRank for non-shared skills

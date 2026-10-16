@@ -12,7 +12,7 @@ using UnityEngine.UI;
 public sealed class ChaosActorState
 {
     public string Id, Name, Position, Status, Equipment, Skills;
-    public int HP, SP, Hunger, Level, X, Y, MaxHP, MaxSP, Strength, Defense, Arrows, CastRemaining;
+    public int HP, Mana, Hunger, Level, X, Y, MaxHP, MaxMana, Strength, Defense, Arrows, CastRemaining;
 }
 
 [Serializable]
@@ -58,9 +58,9 @@ public sealed class ChaosSnapshot
             result.Inventory = JsonUtility.ToJson(new InventoryEnvelope { Items = ItemSaveData.Capture(game.PlayerController.Inventory.InventoryItems) });
             foreach (var actor in game.AllCharacters.Concat(game.DownedAllies).Where(a => a != null).Distinct())
                 result.Actors.Add(new ChaosActorState { Id = ActorId(actor),
-                    Name = actor.CharacterName, Position = actor.TilemapPosition.ToString(), HP = actor.Vitals.HP, SP = actor.Vitals.SP,
+                    Name = actor.CharacterName, Position = actor.TilemapPosition.ToString(), HP = actor.Vitals.HP, Mana = actor.Vitals.Mana,
                     Hunger = actor.Vitals.Hunger, Level = actor.Vitals.Level, Status = string.Join("|", actor.StatusEffects.Where(s => s != null && !s.IsExpired()).Select(s => s.GetType().Name)),
-                    X = actor.TilemapPosition.x, Y = actor.TilemapPosition.y, MaxHP = actor.FinalStats.HPMax, MaxSP = actor.FinalStats.SPMax,
+                    X = actor.TilemapPosition.x, Y = actor.TilemapPosition.y, MaxHP = actor.FinalStats.HPMax, MaxMana = actor.FinalStats.ManaMax,
                     Strength = actor.FinalStats.Strength, Defense = actor.FinalStats.Defense, Arrows = ArrowSupply.Count(actor), CastRemaining = actor.PendingCast?.Remaining ?? 0,
                     Equipment = string.Join("|", actor.Equipment.GetEquippedItems().Select(i => i.ItemName + ":" + i.StackStock)),
                     Skills = string.Join("|", actor.Skills.Where(s => s != null).Select(s => s.SkillName + ":" + s.Rank)) });

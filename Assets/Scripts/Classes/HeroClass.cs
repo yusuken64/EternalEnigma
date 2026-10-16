@@ -7,7 +7,7 @@ public static class HeroClass
     {
         var growth=Growth(primary);
         levels=System.Math.Max(0,levels);
-        stats.HPMax+=growth.HPMax*levels;stats.SPMax+=growth.SPMax*levels;stats.HungerMax+=growth.HungerMax*levels;
+        stats.HPMax+=growth.HPMax*levels;stats.ManaMax+=growth.ManaMax*levels;stats.HungerMax+=growth.HungerMax*levels;
         stats.Strength+=growth.Strength*levels;stats.MagicPower+=growth.MagicPower*levels;stats.Defense+=growth.Defense*levels;
     }
 	// Null when the hero has no class yet (unassigned prefab).
@@ -30,12 +30,15 @@ public static class HeroClass
 	{
 		var definition = item?.EquipmentItemDefinition;
 		if (definition == null || definition.EquipmentSlot == EquipmentSlot.Accessory) return true;
-		return AllowsWeapon(primary, secondary, definition.IsAmmunition ? WeaponType.BowAndArrow : definition.WeaponType);
+		return AllowsWeapon(primary, secondary, RequiredProficiency(definition));
 	}
+
+	private static WeaponType RequiredProficiency(EquipmentItemDefinition definition) =>
+		definition.IsAmmunition ? WeaponType.BowAndArrow : definition.WeaponType;
 
 	public static string EquipmentRestriction(ClassDefinition primary, ClassDefinition secondary, EquipableInventoryItem item) =>
 		AllowsItem(primary, secondary, item) ? null :
-		$"Requires {GameplayText.Name(item.EquipmentItemDefinition.WeaponType.ToString())} proficiency. {Label(primary, secondary)} cannot equip this item.";
+		$"Requires {GameplayText.Name(RequiredProficiency(item.EquipmentItemDefinition).ToString())} proficiency. {Label(primary, secondary)} cannot equip this item.";
 
 	// "Warrior", "Warrior / Scout", or "" when there is no class.
 	public static string Label(ClassDefinition primary, ClassDefinition secondary)

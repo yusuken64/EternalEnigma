@@ -194,10 +194,10 @@ public partial class Game : SingletonMonoBehaviour<Game>
             ally.BaseStats = HeroStatRules.BaseStats(ally.StartingStats, ally.PrimaryClass, ally.Vitals.Level, ally.Attributes);
             ally.InvalidateCachedStats();
             ally.Vitals.HP = ally.FinalStats.HPMax;
-            ally.Vitals.SP = ally.FinalStats.SPMax;
+            ally.Vitals.Mana = ally.FinalStats.ManaMax;
 			// Damage carries over between runs; the inn resets it. -1 (never hurt) and downed allies start at a sane value.
 			if (townAlly.Hp >= 0) ally.Vitals.HP = Mathf.Max(1, townAlly.Hp);
-			if (townAlly.Sp >= 0) ally.Vitals.SP = townAlly.Sp;
+			if (townAlly.Mana >= 0) ally.Vitals.Mana = townAlly.Mana;
             ally.Vitals.Hunger = townAlly.HasHunger ? Mathf.Clamp(townAlly.Hunger, 0, ally.FinalStats.HungerMax) : ally.FinalStats.HungerMax;
             ally.Vitals.HungerAccumulate = townAlly.HasHunger ? Mathf.Max(0, townAlly.HungerAccumulate) : 0;
 

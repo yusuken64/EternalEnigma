@@ -173,7 +173,7 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Game.Enemies.Count, Is.EqualTo(3));
             Assert.That(harness.Game.Enemies.All(e => e.Vitals.HP == 500), Is.True);
             Assert.That(harness.Game.Enemies.Cast<Enemy>().All(e => e.Policies.Count == 0), Is.True);
-            Assert.That(harness.Game.Allies.All(a => a.Vitals.HP < a.FinalStats.HPMax && a.Vitals.SP >= 50), Is.True);
+            Assert.That(harness.Game.Allies.All(a => a.Vitals.HP < a.FinalStats.HPMax && a.Vitals.Mana >= 50), Is.True);
             var inventory = harness.Game.PlayerController.Inventory;
             Assert.That(inventory.Count(), Is.EqualTo(loadout.Items.Count));
             foreach (var definition in loadout.Items)

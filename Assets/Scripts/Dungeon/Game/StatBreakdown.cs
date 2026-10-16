@@ -5,7 +5,7 @@ using System.Linq;
 public static class StatBreakdown
 {
     private static float Value(Stats stats,string key) => key switch {
-        "HP"=>stats.HPMax,"SP"=>stats.SPMax,"Food"=>stats.HungerMax,
+        "HP"=>stats.HPMax,"Mana"=>stats.ManaMax,"Food"=>stats.HungerMax,
         "Attack"=>stats.Strength,"Magic Power"=>stats.MagicPower,"Defense"=>stats.Defense,
         "Hit"=>stats.HitBonus,"Evasion"=>stats.Evasion,"Crit"=>stats.CritChance,
         "Actions"=>stats.ActionsPerTurnMax,"Attacks"=>stats.AttacksPerTurnMax,
@@ -13,7 +13,7 @@ public static class StatBreakdown
         _=>0
     };
     private static float Value(StartingStats stats,string key) => stats==null?0:key switch {
-        "HP"=>stats.HPMax,"SP"=>stats.SPMax,"Food"=>stats.HungerMax,
+        "HP"=>stats.HPMax,"Mana"=>stats.ManaMax,"Food"=>stats.HungerMax,
         "Attack"=>stats.Strength,"Magic Power"=>stats.MagicPower,"Defense"=>stats.Defense,
         "Hit"=>stats.HitBonus,"Evasion"=>stats.Evasion,"Crit"=>stats.CritChance,
         "Actions"=>stats.ActionsPerTurnMax,"Attacks"=>stats.AttacksPerTurnMax,

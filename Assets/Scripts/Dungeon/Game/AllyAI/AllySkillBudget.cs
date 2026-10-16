@@ -13,19 +13,19 @@ public static class AllySkillBudget
 		return intent.Has(SkillIntent.Revive) || intent.Has(SkillIntent.Heal);
 	}
 
-	// Highest SP cost among heal/revive skills; halved (integer division) for Aggresive.
-	public static int SpReserve(IEnumerable<Skill> skills, AllyStrategy strategy)
+	// Highest Mana cost among heal/revive skills; halved (integer division) for Aggresive.
+	public static int ManaReserve(IEnumerable<Skill> skills, AllyStrategy strategy)
 	{
 		if (skills == null) return 0;
-		int reserve = skills.Where(s => s != null && s.ActivationType == ActivationType.Active && IsReserveSkill(s)).Select(s => Math.Max(0, s.SPCost)).DefaultIfEmpty(0).Max();
+		int reserve = skills.Where(s => s != null && s.ActivationType == ActivationType.Active && IsReserveSkill(s)).Select(s => Math.Max(0, s.ManaCost)).DefaultIfEmpty(0).Max();
 		return strategy == AllyStrategy.Aggresive ? reserve / 2 : reserve;
 	}
 
 	// Heal/revive skills may spend the reserve; everything else must leave it untouched.
-	public static bool CanAfford(int currentSp, Skill skill, int reserve)
+	public static bool CanAfford(int currentMana, Skill skill, int reserve)
 	{
-		if (skill == null || currentSp < skill.SPCost) return false;
-		return IsReserveSkill(skill) || currentSp - skill.SPCost >= Math.Max(0, reserve);
+		if (skill == null || currentMana < skill.ManaCost) return false;
+		return IsReserveSkill(skill) || currentMana - skill.ManaCost >= Math.Max(0, reserve);
 	}
 
 	public static bool ArrowsAllow(int available, int required) => required <= 0 || available - required >= ArrowReserve;

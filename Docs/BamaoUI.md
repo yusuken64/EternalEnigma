@@ -35,7 +35,7 @@ The initial asset audit found 1,182 images and 236 prefabs in the installed pack
 | Square icon frame | `Equipment 2/F_Brown` |
 | Selected icon | `Equipment 2/F_select frame` |
 | Resource track | `Select Character/State_blank` |
-| HP/SP/hunger fills | `Select Character/State_HP`, `State_blue`, `State_yellow` |
+| HP/Mana/hunger fills | `Select Character/State_HP`, `State_blue`, `State_yellow` |
 
 Run **Tools > Eternal Enigma > UI > Author Dungeon Dock** to regenerate the dungeon copies under `Assets/Resources/UI/Dungeon` and install them in DungeonScene. The party window uses the same compact dock geometry in town, overworld and dungeon. Stretchable roles use slicing; square icons and the cross preserve aspect ratio. `DungeonTextStyle` preserves brown text on paper and light text on wood during generic styling. Dense descriptions use the existing body font; decorative lettering is reserved for headings.
 

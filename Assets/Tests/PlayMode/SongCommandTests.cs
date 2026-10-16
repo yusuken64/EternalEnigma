@@ -46,12 +46,12 @@ namespace EternalEnigma.Tests
                 actor.BaseStats.Strength = 10;
                 actor.BaseStats.Defense = 5;
                 actor.BaseStats.HPMax = 100;
-                actor.BaseStats.SPMax = 100;
+                actor.BaseStats.ManaMax = 100;
                 actor.BaseStats.HPRegenAcccumlateThreshold = 10000;
-                actor.BaseStats.SPRegenAcccumlateThreshold = 10000;
+                actor.BaseStats.ManaRegenThreshold = 10000;
                 actor.InvalidateCachedStats();
                 actor.Vitals.HP = 60;
-                actor.Vitals.SP = 20;
+                actor.Vitals.Mana = 20;
                 actor.SyncDisplayedStats();
             }
             enemy.Vitals.HP = 500;
@@ -80,7 +80,7 @@ namespace EternalEnigma.Tests
             skill.Targeting = SkillTargeting.Self;
             skill.TargetSelector = new TargetSelector { Team = TargetTeam.Allies, Area = TargetArea.All };
             skill.ActionEffects = effects ?? new List<GameAction>();
-            skill.SPCost = 1;
+            skill.ManaCost = 1;
             return skill;
         }
 

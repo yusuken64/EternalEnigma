@@ -66,7 +66,7 @@ public class ShopMenuDialog : Dialog
         GameUITheme.StyleActiveTab(SellModeButton, Selling);
         float position=scrollView!=null && ShopItems?.Count>0?scrollView.verticalNormalizedPosition:1;
         var stock = context.Services.Shop(context.Building);
-        ShopItemDatas = Selling ? context.Player.Inventory.Where(context.Services.CanSell)
+        ShopItemDatas = Selling ? context.Player.Inventory
             .Select(i => new ShopItemData(i.ItemName, TownServices.SellPrice(i)) {
                 IsSale = true, BagItem = i, Remaining = i.StackStock ?? 1 }).ToList()
             : context.Services.Catalog(context.Building).Select(o => new ShopItemData(o.Item.ItemName, o.Price) {
@@ -121,7 +121,8 @@ public class ShopMenuDialog : Dialog
     {
         if (item.IsSale)
         {
-            if (!context.Services.CanSell(item.BagItem)) return "This item cannot be sold.";
+            var restriction = context.Services.SellRestriction(item.BagItem);
+            if (restriction != null) return restriction;
             int price = TownServices.SellPrice(item.BagItem);
             if (context.Player.Gold > int.MaxValue - price) return "Your gold is full.";
             if (price != item.Cost || (item.BagItem.StackStock ?? 1) != item.Remaining)
@@ -132,15 +133,17 @@ public class ShopMenuDialog : Dialog
         var stock = context.Services.Shop(context.Building).Stock.FirstOrDefault(s => s.ItemName == item.ItemName);
         if (offer == null || stock == null || stock.Remaining <= 0) return "This item is sold out.";
         if (offer.Price != item.Cost) return "The price changed. Choose the item again.";
-        return context.Player.Gold < offer.Price ? "Not enough gold." : null;
+        return context.Player.Gold < offer.Price ? $"Costs {offer.Price} gold; you have {context.Player.Gold}." : null;
     }
 
 	private void Transact(ShopMenuItem view, ShopItemData item)
 	{
         string reason;
         bool success = item.IsSale ? context.Services.Sell(item.BagItem, out reason) : context.Services.Buy(context.Building, item.ItemName, out reason);
+        if (!success) { BuyConfirmationDialog.Reject(reason); return; }
+        BuyConfirmationDialog.CloseDialog();
         Setup();
-        if (!success) TownMenu.ShowMessage(reason);
+        SetFirstSelect();
     }
 
     private void SetNavigation()

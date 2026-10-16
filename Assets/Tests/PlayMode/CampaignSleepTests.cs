@@ -30,7 +30,7 @@ namespace EternalEnigma.Tests
             Assert.That(hero.TilemapPosition,Is.EqualTo(bed.Tile-Vector3Int.up));Assert.That(common.CampaignContext.IsGridGenerated,Is.False);
             Assert.That(SaveSystem.LoadData().SavePointId,Is.EqualTo("town-0/home"));
             harness.PrepareOpening();
-            hero.Hp=1;hero.Sp=0;hero.Level=4;hero.Experience=77;town.TownPlayer.Gold=321;hero.SetFacing(Facing.Left);
+            hero.Hp=1;hero.Mana=0;hero.Level=4;hero.Experience=77;town.TownPlayer.Gold=321;hero.SetFacing(Facing.Left);
             var position=hero.TilemapPosition;var world=hero.transform.position;int writes=harness.Store.Writes;
             DungeonPreferences.AnimationOverride=DungeonAnimationMode.Normal;
             bed.SleepAndSave();bed.SleepAndSave();Assert.That(town.TownPlayer.CutsceneLocked,Is.True);

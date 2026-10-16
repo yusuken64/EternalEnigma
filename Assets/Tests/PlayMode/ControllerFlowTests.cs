@@ -250,7 +250,7 @@ namespace EternalEnigma.Tests
 
         [UnityTest] public IEnumerator CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly()
         {
-            yield return harness.LoadDungeon(new TestScenario { Skills = new[] { "Damage", "Fire Bolt" }, SP = 50 });
+            yield return harness.LoadDungeon(new TestScenario { Skills = new[] { "Damage", "Fire Bolt" }, Mana = 50 });
             foreach (var enemy in harness.Game.Enemies.ToArray()) Object.Destroy(enemy.gameObject);
             harness.Game.Enemies.Clear();
             yield return null;
@@ -310,7 +310,7 @@ namespace EternalEnigma.Tests
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(damageButton.gameObject));
             yield return Press(GamepadButton.South);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<TargetDialog>());
-            int mana = hero.Vitals.SP;
+            int mana = hero.Vitals.Mana;
             Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.False,"World targets must remain visible.");
             yield return Press(GamepadButton.Start);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True);
@@ -322,7 +322,7 @@ namespace EternalEnigma.Tests
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False);
             yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.SameAs(skillMenu));
-            Assert.That(hero.Vitals.SP, Is.EqualTo(mana), "Cancel must not cast.");
+            Assert.That(hero.Vitals.Mana, Is.EqualTo(mana), "Cancel must not cast.");
             Assert.That(skillMenu.GetComponent<Canvas>().enabled,Is.True,"Cancel returns to the skill list.");
             Assert.That(MenuManager.Instance.CurrentDialog.GetComponent<Canvas>().enabled,Is.True);
             yield return Press(GamepadButton.South);
@@ -331,7 +331,7 @@ namespace EternalEnigma.Tests
             yield return harness.WaitForIdle();
             Assert.That(MenuManager.Instance.Opened, Is.False);
             Assert.That(target.Vitals.HP, Is.LessThan(hp));
-            Assert.That(hero.Vitals.SP, Is.EqualTo(mana - hero.Skills.Single(s => s.SkillName == "Damage").SPCost));
+            Assert.That(hero.Vitals.Mana, Is.EqualTo(mana - hero.Skills.Single(s => s.SkillName == "Damage").ManaCost));
 
             // Missile abilities aim at cells instead of cycling character targets.
             yield return Press(GamepadButton.LeftShoulder);
@@ -348,11 +348,11 @@ namespace EternalEnigma.Tests
             var aim = target.TilemapPosition - hero.TilemapPosition;
             yield return Send(Direction(aim, false));
             Assert.That(MenuManager.Instance.TargetDialog.CameraTarget, Is.SameAs(target));
-            mana = hero.Vitals.SP;
+            mana = hero.Vitals.Mana;
             yield return Press(GamepadButton.South);
             yield return harness.WaitForIdle();
             Assert.That(MenuManager.Instance.Opened, Is.False);
-            Assert.That(hero.Vitals.SP, Is.EqualTo(mana - hero.Skills.Single(s => s.SkillName == "Fire Bolt").SPCost));
+            Assert.That(hero.Vitals.Mana, Is.EqualTo(mana - hero.Skills.Single(s => s.SkillName == "Fire Bolt").ManaCost));
             yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<AllyActionDialog>());
             yield return Press(GamepadButton.East);

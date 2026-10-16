@@ -21,7 +21,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 3
+  ManaCost: 3
   TargetSelector:
     Team: 1
     Area: 1
@@ -46,14 +46,14 @@ MonoBehaviour:
   Icon: {fileID: 21300000, guid: a9da0889d1e5e8241bec48533605c3cd, type: 3}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     Defense: 0
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0

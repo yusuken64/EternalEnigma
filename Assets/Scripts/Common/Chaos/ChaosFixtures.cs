@@ -16,7 +16,7 @@ public static class ChaosFixtures
         string previousComposition = null, ChaosPrerequisites required = null, ChaosCoverage coverage = null)
     {
         configuration.Validate();
-        if (required != null && (required.Level < 1 || required.Level > LevelSystem.MaxLevel || required.HP < -1 || required.SP < -1))
+        if (required != null && (required.Level < 1 || required.Level > LevelSystem.MaxLevel || required.HP < -1 || required.Mana < -1))
             throw new InvalidDataException("Prerequisite level/resources are outside supported limits.");
         var fixture = new ChaosFixture { Seed = seed, HeroSeed = ChaosRandom.Derive(seed, "heroes"),
             InventorySeed = ChaosRandom.Derive(seed, "inventory"), InputSeed = ChaosRandom.Derive(seed, "input"), Entry = entry };
@@ -74,7 +74,7 @@ public static class ChaosFixtures
             {
                 data.Level = data.HighestLevel = Math.Max(1, required.Level);
                 data.Experience = LevelSystem.ExperienceAtLevel(data.Level);
-                data.Hp = required.HP; data.Sp = required.SP;
+                data.Hp = required.HP; data.Mana = required.Mana;
                 if (!string.IsNullOrEmpty(required.SkillName))
                 {
                     var offers = new[] { hero.PrimaryClass, hero.SecondaryClass }.Where(c => c != null)

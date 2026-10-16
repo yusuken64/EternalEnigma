@@ -24,7 +24,7 @@ public class TownAlly : TownCharacter
 	public int PendingAttributePoints => HeroAttributes.Pending(Level, Attributes);
 	// Vitals carried between dungeon runs; -1 means full.
 	public int Hp = -1;
-	public int Sp = -1;
+	public int Mana = -1;
     // Explicit presence flag distinguishes old saves from genuine zero hunger.
     public bool HasHunger;
     public int Hunger;

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Potion_ForgetSkills
   m_EditorClassIdentifier: 
   ItemName: Oblivion Draught
-  Description: "Forget every learned skill. All spent skill points are returned when you reach town."
+  Description: "Forget every learned skill. All spent Skill Points are returned when you reach town."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

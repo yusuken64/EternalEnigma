@@ -29,21 +29,43 @@ internal class UseInventoryItemAction : GameAction
 	internal UseInventoryItemAction WithItem(InventoryItem selected) { inventoryTarget = selected; return this; }
 	internal UseInventoryItemAction WithDirection(Vector3Int selected) { direction = selected; return this; }
 
-	internal bool CanBegin(Character character)
+	internal bool CanBegin(Character character) => CanBegin(character, out _);
+
+	internal bool CanBegin(Character character, out string reason)
 	{
-		if (character == null || character != user || item?.ItemDefinition == null || inventory == null ||
-			(!inventory.InventoryItems.Contains(item) && !character.Equipment.IsEquipped(item)) ||
-			(item.HasStacks && item.StackIsEmpty()) || character.Vitals.HP <= 0 ||
-			character.StatusEffects.Any(s => !s.IsExpired() && (s.PreventsMenu() || s.Interupts(this)))) return false;
+		reason = null;
+		if (character == null || character != user) { reason = "Select the hero who will use this item."; return false; }
+		if (item?.ItemDefinition == null || inventory == null ||
+			(!inventory.InventoryItems.Contains(item) && !character.Equipment.IsEquipped(item)))
+		{ reason = "This item is no longer in your inventory."; return false; }
+		if (item.HasStacks && item.StackIsEmpty()) { reason = "This item has no uses remaining."; return false; }
+		if (character.Vitals.HP <= 0) { reason = "A downed hero cannot use items or change equipment."; return false; }
+		var status = character.StatusEffects.FirstOrDefault(s => !s.IsExpired() && (s.PreventsMenu() || s.Interupts(this)));
+		if (status != null) { reason = $"Cannot use this item while affected by {GameplayText.Name(status.GetEffectName())}."; return false; }
 		if (item is EquipableInventoryItem equipment)
-			return character.Equipment.IsEquipped(equipment) || character.Equipment.CanEquip(equipment);
+		{
+			if (character.Equipment.IsEquipped(equipment) || character.Equipment.CanEquip(equipment)) return true;
+			reason = character is Ally hero ? HeroClass.EquipmentRestriction(hero.PrimaryClass, hero.SecondaryClass, equipment) : null;
+			reason ??= "This hero cannot equip that item.";
+			return false;
+		}
 		var definition = Definition;
-		if (definition == null) return item.ItemDefinition.ItemEffectDefinition != null;
-		if (!definition.TargetingRules.IsConfigured) return false;
-		if (definition.Targeting == SkillTargeting.InventoryItem) return definition.GetInventoryTargets(character).Any();
-		return definition.ItemEffectDefinition != null && (definition.Targeting == SkillTargeting.Missile ||
+		if (definition == null)
+		{
+			if (item.ItemDefinition.ItemEffectDefinition != null) return true;
+			reason = "This item cannot be used directly."; return false;
+		}
+		if (!definition.TargetingRules.IsConfigured) { reason = "This item has no usable target rules."; return false; }
+		if (definition.Targeting == SkillTargeting.InventoryItem)
+		{
+			if (definition.GetInventoryTargets(character).Any()) return true;
+			reason = "No valid inventory items can be targeted by this item."; return false;
+		}
+		if (definition.ItemEffectDefinition == null) { reason = "This item cannot be used directly."; return false; }
+		if (definition.Targeting == SkillTargeting.Missile ||
 			(definition.TargetingRules.RequiresSelection ? definition.TargetingRules.GetCharacters(character) :
-			definition.TargetingRules.GetAffected(character, character)).Any());
+			definition.TargetingRules.GetAffected(character, character)).Any()) return true;
+		reason = "No valid characters can be targeted by this item."; return false;
 	}
 
 	internal override List<GameAction> ExecuteImmediate(Character character)
@@ -104,17 +126,22 @@ internal class UseInventoryItemAction : GameAction
 		yield return new WaitForSecondsRealtime(1f);
 	}
 
-	internal override bool IsValid(Character character)
+	internal override bool IsValid(Character character) => ValidateCommand(character, out _);
+
+	internal override bool ValidateCommand(Character character, out string reason)
 	{
-		if (!CanBegin(character)) return false;
+		if (!CanBegin(character, out reason)) return false;
 		var definition = Definition;
 		if (definition == null) return true;
-		return definition.Targeting switch
+		bool valid = definition.Targeting switch
 		{
 			SkillTargeting.InventoryItem => definition.GetInventoryTargets(character).Contains(inventoryTarget),
 			SkillTargeting.Missile => MissileTargeting.IsDirection(direction),
 			_ => definition.TargetingRules.GetAffected(character, target).Any()
 		};
+		if (!valid) reason = definition.Targeting == SkillTargeting.InventoryItem ? "That inventory item is no longer a valid target." :
+			definition.Targeting == SkillTargeting.Missile ? "Choose a direction to use this item." : "That character is no longer a valid target.";
+		return valid;
 	}
 
 	internal override IEnumerable<Vector3Int> AnimationCells(Character actor)

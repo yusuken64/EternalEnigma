@@ -428,7 +428,7 @@ MonoBehaviour:
     Prefab: {fileID: 3147952208486580253, guid: 2b3227b9ec770114689d493615ae2752, type: 3}
     Icon: {fileID: 4099451163204422659, guid: 072533e5c25fdf742bc92d292efc2ac0, type: 3}
     Tint: {r: 0.86, g: 0.84853333, b: 0.7224, a: 1}
-  - Name: SP Potion
+  - Name: Mana Potion
     Source: potion_blue
     Prefab: {fileID: 957754649593690325, guid: 4207ce02b22ae39439c2b292169d5234, type: 3}
     Icon: {fileID: 2609418408833940037, guid: edeb89daee3f87044a7536cec989bf29, type: 3}

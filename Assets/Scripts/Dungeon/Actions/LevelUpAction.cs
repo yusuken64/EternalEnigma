@@ -24,7 +24,7 @@ internal class LevelUpAction : GameAction
 				{
 					HeroClass.ApplyLevelGrowth(stats, character is Ally hero ? hero.PrimaryClass : null, 1);
 					vitals.HP += growth.HPMax;
-					vitals.SP += growth.SPMax;
+					vitals.Mana += growth.ManaMax;
 				},
 				false)
 		};

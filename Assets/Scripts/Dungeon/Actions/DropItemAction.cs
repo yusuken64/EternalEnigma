@@ -44,13 +44,16 @@ internal class DropItemAction : GameAction
 		yield return character.AnimateInteraction();
 	}
 
-	internal override bool IsValid(Character character)
-	{
-		if (!inventory.InventoryItems.Contains(item))
-		{
-			return false;
-		}
+	internal override bool IsValid(Character character) => ValidateCommand(character, out _);
 
-		return true;
+	internal override bool ValidateCommand(Character character, out string reason)
+	{
+		reason = null;
+		if (character == null || character.Vitals.HP <= 0) { reason = "A downed hero cannot drop items."; return false; }
+		if (inventory == null || item == null || !inventory.InventoryItems.Contains(item))
+		{ reason = "This item is no longer in your inventory."; return false; }
+		var status = character.StatusEffects.FirstOrDefault(s => !s.IsExpired() && (s.PreventsMenu() || s.Interupts(this)));
+		if (status != null) { reason = $"Cannot drop items while affected by {GameplayText.Name(status.GetEffectName())}."; return false; }
+		return DungeonPlacement.CanDrop(Game.Instance?.CurrentDungeon, dropPosition, item, out reason);
 	}
 }

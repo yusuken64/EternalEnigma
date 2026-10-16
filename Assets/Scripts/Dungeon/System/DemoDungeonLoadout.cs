@@ -21,10 +21,10 @@ public class DemoDungeonLoadout : ScriptableObject
             ally.Skills.AddRange(Skills.Select(Instantiate));
             ally.AllyStrategy = AllyStrategy.HoldPosition;
             ally.BaseStats.HPMax = 100;
-            ally.BaseStats.SPMax = 100;
+            ally.BaseStats.ManaMax = 100;
             ally.InvalidateCachedStats();
             ally.Vitals.HP = 60;
-            ally.Vitals.SP = ally.FinalStats.SPMax;
+            ally.Vitals.Mana = ally.FinalStats.ManaMax;
             ally.SyncDisplayedStats();
         }
     }

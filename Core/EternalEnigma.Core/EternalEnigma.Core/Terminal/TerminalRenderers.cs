@@ -110,7 +110,7 @@ public abstract class TerminalMapRenderer
         for (int i = 0; i < partyRows; i++)
         {
             var stat = snapshot.Party[i];
-            WriteLine(1, hudY + i, innerWidth, $"{stat.Name} L{stat.Level} HP {stat.Hp}/{stat.MaxHp} SP {stat.Sp}/{stat.MaxSp}", TerminalPalette.Ally);
+            WriteLine(1, hudY + i, innerWidth, $"{stat.Name} L{stat.Level} HP {stat.Hp}/{stat.MaxHp} Mana {stat.Mana}/{stat.MaxMana}", TerminalPalette.Ally);
         }
         int textY = hudY + partyRows;
         WriteLines(1, textY, innerWidth, contextRows, context, TerminalPalette.Ally); textY += contextRows;

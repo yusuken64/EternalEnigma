@@ -349,7 +349,7 @@ namespace EternalEnigma.Tests
 
         [UnityTest] public IEnumerator TargetPreviewSharesMissileTraceAndCancelOrStaleConfirmSpendsNothing()
         {
-            yield return harness.LoadDungeon(new TestScenario { SP = 20 });
+            yield return harness.LoadDungeon(new TestScenario { Mana = 20 });
             var game = harness.Game;
             var caster = harness.Ally;
             var dungeon = game.CurrentDungeon;
@@ -367,7 +367,7 @@ namespace EternalEnigma.Tests
             {
                 skill.Targeting = SkillTargeting.Missile; skill.MissileRange = 4; skill.AreaRadius = 1;
                 skill.TargetSelector.Area = TargetArea.All; caster.Skills.Add(skill);
-                int sp = caster.Vitals.SP, gold = game.PlayerController.Gold;
+                int mana = caster.Vitals.Mana, gold = game.PlayerController.Gold;
                 MenuManager.Instance.OpenTargetingMenu(caster, skill);
                 var dialog = MenuManager.Instance.TargetDialog;
                 var expected = MissileTargeting.TraceLine(caster, Vector3Int.right, 4, 1, true);
@@ -379,7 +379,7 @@ namespace EternalEnigma.Tests
                 Assert.That(snapshot.Target.Path.Count, Is.GreaterThan(0));
                 Assert.That(snapshot.Target.Area.Count, Is.GreaterThan(1));
                 MenuManager.Close(dialog);
-                Assert.That(caster.Vitals.SP, Is.EqualTo(sp));
+                Assert.That(caster.Vitals.Mana, Is.EqualTo(mana));
                 Assert.That(game.PlayerController.Gold, Is.EqualTo(gold));
 
                 skill.Targeting = SkillTargeting.SelectedTarget;
@@ -387,7 +387,7 @@ namespace EternalEnigma.Tests
                 enemy.Vitals.HP = 0;
                 dialog.ConfirmTarget();
                 Assert.That(dialog.enabled, Is.False);
-                Assert.That(caster.Vitals.SP, Is.EqualTo(sp));
+                Assert.That(caster.Vitals.Mana, Is.EqualTo(mana));
                 Assert.That(game.TurnManager.IsProcessingTurn, Is.False);
             }
             finally { caster.Skills.Remove(skill); Object.Destroy(skill); }

@@ -95,7 +95,7 @@ namespace EternalEnigma.Tests
                 CollectionAssert.AreEqual(new[] { start, release }, played);
                 yield return action.Visuals.Play(action, actor, true);
                 Assert.That(played.Count, Is.EqualTo(2), "Replaying the same action must not duplicate its audio.");
-                skill.SPCost = 1;
+                skill.ManaCost = 1;
                 yield return ResolveAndReplay(new SkillAction(actor, skill, actor));
                 Assert.That(played.Count, Is.EqualTo(2), "Invalid casts do not start or release.");
             }
@@ -295,7 +295,7 @@ namespace EternalEnigma.Tests
                 new SkillAction(actor, skill, actor).ExecuteImmediate(actor);
                 Assert.That(feed.History.Count(s => s == message), Is.EqualTo(2));
                 Assert.That(feed.TurnEvents.Count(s => s == message), Is.EqualTo(1));
-                skill.SPCost = 1; // Fixture has no mana.
+                skill.ManaCost = 1; // Fixture has no mana.
                 new SkillAction(actor, skill, actor).ExecuteImmediate(actor);
                 Assert.That(feed.History.Count(s => s == message), Is.EqualTo(2));
             }

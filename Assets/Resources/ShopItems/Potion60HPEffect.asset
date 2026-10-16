@@ -23,7 +23,7 @@ MonoBehaviour:
     DropRate: 0
   VitalModification:
     Hp: 60
-    Sp: 0
+    Mana: 0
     Level: 0
     Exp: 0
     Floor: 0

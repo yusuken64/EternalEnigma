@@ -23,10 +23,10 @@ public static class GameplayText
         {
             "Bow02" => "Hunter's Bow", "Bow03" => "Longbow", "Bow04" => "Composite Bow", "Bow05" => "Royal Bow",
             "Potion 40HP" => "Lesser Healing Potion", "Potion 60HP" => "Healing Potion", "Potion 80HP" => "Greater Healing Potion", "Potion 100HP" => "Superior Healing Potion",
-            "Demo Training Sword" => "Training Sword", "Sp Up" => "SP Up", "Hunger Up" => "Fullness Up",
+            "Demo Training Sword" => "Training Sword", "Hunger Up" => "Fullness Up",
             "Dot" => "Damage over Time", "Hot" => "Regeneration", "MainHand" => "Main hand", "OffHand" => "Off hand",
             "TwoHand" => "Two-handed weapon", "BowAndArrow" => "bows and arrows", "SwordAndShiled" => "swords and shields",
-            "HPMax" => "Maximum HP", "SPMax" => "Maximum SP", "HungerMax" => "Maximum fullness", _ => value
+            "HPMax" => "Maximum HP", "ManaMax" => "Maximum Mana", "HungerMax" => "Maximum fullness", _ => value
         };
         return Format(CamelWords.Replace(value, " ")).Trim();
     }
@@ -42,7 +42,7 @@ public static class GameplayText
         {
             string plain = DebugTag.Replace(parts[i], "").Replace("(Clone)", "");
             plain = Regex.Replace(plain, @"\bHPMax\b", "maximum HP");
-            plain = Regex.Replace(plain, @"\bSPMax\b", "maximum SP");
+            plain = Regex.Replace(plain, @"\bManaMax\b", "maximum Mana");
             plain = Regex.Replace(plain, @"\bHungerMax\b", "maximum fullness");
             plain = Regex.Replace(plain, @"\b(\d+)[gG]\b", "$1 gold");
             plain = Regex.Replace(plain, @"\((\d+) (turns?)\)", "for $1 $2");

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CactusPulpCaramelCloudLatte
   m_EditorClassIdentifier: 
   ItemName: Cactus Pulp Caramel Cloud Latte
-  Description: Brewed with real Cactus pulp and caramel. Restores 20 HP and 5 SP.
+  Description: Brewed with real Cactus pulp and caramel. Restores 20 HP and 5 Mana.
   ShopOnly: 1
   IsProgressionItem: 0
   MinFloor: 1

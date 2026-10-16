@@ -248,16 +248,16 @@ public sealed class PartyMenu : Dialog
         if(entry.Slot.HasValue)
         {
             var options=((PartyMenuContext)context).EquipmentOptions(Hero,entry.Slot.Value)
-                .Select(option=>(option.Label+(option.Enabled?"":"  "+option.Description),option.Description,(Action)(option.Enabled?()=>{
+                .Select(option=>(option.Label,option.Description,(Action)(()=>{
                     var itemEntry=new PartyMenuEntry{Item=option.Item,Equipped=Hero.Equipment.IsEquipped(option.Item)};
-                    var action=context.Actions(Hero,itemEntry).FirstOrDefault(a=>a.Available);
+                    var action=context.Actions(Hero,itemEntry).FirstOrDefault();
                     action?.Execute(this);
-                }:null))).ToList();
+                }))).ToList();
             PickDetailed("Change "+entry.Title,options,entry.Description);return;
         }
         if (context is IPartyMenuEntryHandler handler && handler.OpenEntry(this, Hero, entry)) return;
         var actions = Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? new List<PartyMenuAction>() : context.Actions(Hero,entry);
-        if (!actions.Any(a=>a.Available))
+        if (actions.Count == 0)
         {
             if(!string.IsNullOrEmpty(entry.Description))
             {
@@ -273,7 +273,7 @@ public sealed class PartyMenu : Dialog
             actions[0].Execute(this);
             return;
         }
-        Pick(entry.Title, actions.Where(a=>a.Available).Select(a => (a.Label, (Action)(() => a.Execute(this)))).ToList(),false);
+        Pick(entry.Title, actions.Select(a => (a.Label, (Action)(() => a.Execute(this)))).ToList(),false);
     }
     public void Pick(string title, List<(string Label, Action Execute)> options,bool closeOnChoose=true)
     {
@@ -283,9 +283,14 @@ public sealed class PartyMenu : Dialog
     }
     public void PickDetailed(string title,List<(string Label,string Description,Action Execute)> options,string description=null)
     {
-        var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options,showBackButton:false);
+        var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options,closeOnChoose:false,showBackButton:false);
         if(!string.IsNullOrEmpty(description))picker.Description(description);
         picker.CloseAction=null;Owner.Open(picker);
+    }
+    public void Reject(string message)
+    {
+        result = message;
+        GameMessages.Reject(message);
     }
     public void Complete(string message)
     {

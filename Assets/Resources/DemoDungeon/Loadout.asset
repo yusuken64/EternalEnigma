@@ -21,7 +21,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -49,7 +49,7 @@ MonoBehaviour:
   Icon: {fileID: 21300000, guid: 69c75029972e0924b927a0f528d2cf66, type: 3}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -119,7 +119,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -147,7 +147,7 @@ MonoBehaviour:
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Inspect Item'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Inspect Item'
-  Description: "Choose any inventory item to inspect its quantity and properties. Does not consume the selected item. Using this consumes one scroll and costs no SP."
+  Description: "Choose any inventory item to inspect its quantity and properties. Does not consume the selected item. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Inspect Weapon'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Inspect Weapon'
-  Description: "Choose a weapon to inspect its stats. Does not consume or enchant the selected weapon. Using this consumes one scroll and costs no SP."
+  Description: "Choose a weapon to inspect its stats. Does not consume or enchant the selected weapon. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Single Hit'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Single Hit'
-  Description: "Choose one visible enemy to damage. Using this consumes one scroll and costs no SP."
+  Description: "Choose one visible enemy to damage. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Ally Mend'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Ally Mend'
-  Description: "Heal yourself or one visible ally. Using this consumes one scroll and costs no SP."
+  Description: "Heal yourself or one visible ally. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -410,7 +410,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Party Mend'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Party Mend'
-  Description: "Cast immediately on all visible allies. Using this consumes one scroll and costs no SP."
+  Description: "Cast immediately on all visible allies. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -455,7 +455,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Area Burst'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Area Burst'
-  Description: "Choose an enemy. Hits enemies within one tile of it; allies are excluded. Using this consumes one scroll and costs no SP."
+  Description: "Choose an enemy. Hits enemies within one tile of it; allies are excluded. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -508,7 +508,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -535,7 +535,7 @@ MonoBehaviour:
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -543,7 +543,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -624,7 +624,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -652,7 +652,7 @@ MonoBehaviour:
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -660,7 +660,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -738,7 +738,7 @@ MonoBehaviour:
   EquipmentSlot: 0
   StatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 5
     MagicPower: 0
@@ -746,7 +746,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -777,7 +777,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Arrow Shot'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Arrow Shot'
-  Description: "Aim in eight directions. Hits the first enemy in the path, up to 8 tiles. Walls and allies block shots. Using this consumes one scroll and costs no SP."
+  Description: "Aim in eight directions. Hits the first enemy in the path, up to 8 tiles. Walls and allies block shots. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -830,7 +830,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -858,7 +858,7 @@ MonoBehaviour:
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -866,7 +866,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -932,7 +932,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -960,7 +960,7 @@ MonoBehaviour:
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -968,7 +968,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -1034,7 +1034,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -1061,7 +1061,7 @@ MonoBehaviour:
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -1069,7 +1069,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -1109,7 +1109,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -1136,7 +1136,7 @@ MonoBehaviour:
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -1144,7 +1144,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0
@@ -1188,7 +1188,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Enemy Pulse'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Enemy Pulse'
-  Description: "Cast immediately on all visible enemies. Using this consumes one scroll and costs no SP."
+  Description: "Cast immediately on all visible enemies. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -1233,7 +1233,7 @@ MonoBehaviour:
   m_Name: 'Demo Scroll: Self Focus'
   m_EditorClassIdentifier: EternalEnigma.Game::UsableItemDefinition
   ItemName: 'Demo Scroll: Self Focus'
-  Description: "Cast immediately on yourself. Applies the Anger status. Using this consumes one scroll and costs no SP."
+  Description: "Cast immediately on yourself. Applies the Anger status. Using this consumes one scroll and costs no Mana."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -1286,7 +1286,7 @@ MonoBehaviour:
     BuffStepPerRank: 1
     DurationBonusAtRanks3And5: 1
   ActivationType: 0
-  SPCost: 1
+  ManaCost: 1
   CastTime: 0
   MissileTargets: 1
   TargetSelector:
@@ -1313,7 +1313,7 @@ MonoBehaviour:
   Icon: {fileID: 0}
   PassiveStatModification:
     HPMax: 0
-    SPMax: 0
+    ManaMax: 0
     HungerMax: 0
     Strength: 0
     MagicPower: 0
@@ -1321,7 +1321,7 @@ MonoBehaviour:
     EXPOnKill: 0
     HungerAccumulateThreshold: 0
     HPRegenAcccumlateThreshold: 0
-    SPRegenAcccumlateThreshold: 0
+    ManaRegenThreshold: 0
     DropRate: 0
     ActionsPerTurnMax: 0
     AttacksPerTurnMax: 0

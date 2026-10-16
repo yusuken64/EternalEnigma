@@ -6,7 +6,7 @@ Its refresh/capture tools are retained; completed production asset installers ar
 In Unity, choose **Tools > Eternal Enigma > Combat Effects > Play Ability Test Scene**.
 Alternatively open `Assets/Scenes/AbilityTestLab.unity` and press Play. This is an Editor playground; it loads the real Common and Dungeon scenes at runtime.
 
-- The tester learns all available skill assets, including passives. Quick Casting is opt-in so the default demonstration preserves authored charge times. Lab-owned copies cost zero mana, and SP is replenished continuously.
+- The tester learns all available skill assets, including passives. Quick Casting is opt-in so the default demonstration preserves authored charge times. Lab-owned copies cost zero mana, and Mana is replenished continuously.
 - Search the list on the left and select an ability. The right panel offers **Cast ability**, rank 1–5, target distance, and **Preview effects only**.
 - **Cast all abilities** runs every active ability alphabetically, then previews each passive's effects. It ignores list filters, resets between demonstrations, and uses adjacent targets. Progress is shown in the panel; **Stop after current ability** safely ends the run. Unavailable or failed abilities are skipped with reasons in the Console. Your reset and target-distance settings are restored afterward.
 - **Events / History** records instant casts as `[Cast] Caster casts Ability.` Delayed casts record their start and release separately. Effect-only previews, including passive previews during the routine, appear as `[Preview]` entries and do not count as casts.
@@ -26,7 +26,7 @@ Exit Play Mode to finish. The lab uses an isolated save store, temporary prefere
 
 **Cast ability** starts a delayed cast. **Advance casting action** spends one charging action, or releases an already ready cast. A cast time of N always requires N charging actions (including start) and one release action. **Cast all abilities** steps these actions automatically. **Enable Quick Casting passive** subtracts one initial charging action and can make a spell instant.
 
-The live dungeon uses the same pending state: SP is paid once at start, arrows are consumed on firing, and generated effects/status ticks do not advance a cast. Mobile Casting permits walking and initiating an ally swap while charging; release is stationary. Displacement, incapacitation, silence, death and floor transitions interrupt; damage alone does not. Casting Dance/Chorus can make a cast ready but cannot release it.
+The live dungeon uses the same pending state: Mana is paid once at start, arrows are consumed on firing, and generated effects/status ticks do not advance a cast. Mobile Casting permits walking and initiating an ally swap while charging; release is stationary. Displacement, incapacitation, silence, death and floor transitions interrupt; damage alone does not. Casting Dance/Chorus can make a cast ready but cannot release it.
 
 Arrows occupy the offhand beside a main-hand bow. Wooden/Iron/Steel stacks have 20 capacity, damage multipliers 1/1.25/1.5, and straight-shot target caps 1/2/3. Aimed Shot and Ice Bolt pierce two targets, Lightning Bolt three, and Piercing Arrow has no cap. Allies do not consume penetration; scenery and diagonal corners stop shots. Splash missiles detonate at first impact and affect their entire radius.
 

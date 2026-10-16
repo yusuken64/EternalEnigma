@@ -79,16 +79,16 @@ namespace EternalEnigma.Tests
 
                 Assert.That(World.Services.Learn(hero, strikeSkill, out _), Is.True);
                 Assert.That(hero.GetRank("T Strike"), Is.EqualTo(1));
-                int points = SkillLearningRules.EarnedPoints(20);
-                Assert.That(TrainerOffers.AvailablePoints(hero), Is.EqualTo(points - 1));
+                int points = SkillLearningRules.EarnedSkillPoints(20);
+                Assert.That(TrainerOffers.AvailableSkillPoints(hero), Is.EqualTo(points - 1));
 
                 Assert.That(World.Services.Learn(hero, strikeSkill, out _), Is.True);
                 Assert.That(hero.GetRank("T Strike"), Is.EqualTo(2));
-                Assert.That(TrainerOffers.AvailablePoints(hero), Is.EqualTo(points - 1 - 2));
+                Assert.That(TrainerOffers.AvailableSkillPoints(hero), Is.EqualTo(points - 1 - 2));
 
                 Assert.That(World.Services.Learn(hero, strikeSkill, out _), Is.True);
                 Assert.That(hero.GetRank("T Strike"), Is.EqualTo(3));
-                Assert.That(TrainerOffers.AvailablePoints(hero), Is.EqualTo(points - 1 - 2 - 3));
+                Assert.That(TrainerOffers.AvailableSkillPoints(hero), Is.EqualTo(points - 1 - 2 - 3));
                 Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000), "Skills cost points, not gold.");
 
                 SaveSystem.SaveData(Common.Instance.GameSaveData); // Explicit checkpoint persists the captured ranks.
@@ -133,6 +133,55 @@ namespace EternalEnigma.Tests
             {
                 World.Configuration.LearnableSkills = original;
             }
+        }
+
+        [UnityTest]
+        public IEnumerator NoSkillPointsAndStaleLearningKeepSelectionAndAllowRetry()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold = 0 }.CreateSave());
+            var hero = World.TownPlayer.ControllingTownAlly;
+            hero.PrimaryClass = MakeClass();
+            hero.Level = 1;
+            hero.SetRank("T Strike", 1);
+            hero.SetRank("T Guard", 1);
+            var mana = hero.Mana;
+            Assert.That(TrainerOffers.AvailableSkillPoints(hero), Is.Zero);
+            World.TownBuildings.First(b => b.Definition.DialogId == "trainer").Interact(World.TownPlayer, null);
+            yield return null;
+            var dialog = (BallistaDialog)Manager.CurrentDialog;
+            var row = dialog.SkillGridItems.Single(i => i.GetSkill().SkillName == "T Parry");
+            Assert.That(row.GridButton.interactable, Is.True);
+            row.GridButton.Select();
+            row.ToggleOn_Clicked();
+            Assert.That(Manager.CurrentDialog, Is.SameAs(dialog));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(row.GridButton.gameObject));
+            Assert.That(dialog.Layout.Preview.text, Does.Contain("Requires 1 Skill Points; you have 0"));
+            Assert.That(hero.GetRank("T Parry"), Is.Zero);
+            Assert.That(hero.Mana, Is.EqualTo(mana));
+            Assert.That(World.TownPlayer.Gold, Is.Zero);
+
+            hero.SetRank("T Guard", 0);
+            yield return new WaitForSecondsRealtime(.45f);
+            row.ToggleOn_Clicked();
+            yield return null;
+            var confirmation = dialog.BallistaPurchaseDialog;
+            Assert.That(Manager.CurrentDialog, Is.SameAs(confirmation));
+            confirmation.PurchaseButton.Select();
+            hero.SetRank("T Guard", 1);
+            confirmation.Purchase_Clicked();
+            Assert.That(Manager.CurrentDialog, Is.SameAs(confirmation));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(confirmation.PurchaseButton.gameObject));
+            Assert.That(confirmation.DescriptionText.text, Does.Contain("Requires 1 Skill Points; you have 0"));
+            Assert.That(hero.GetRank("T Parry"), Is.Zero);
+            hero.SetRank("T Guard", 0);
+            confirmation.Purchase_Clicked();
+            Assert.That(Manager.CurrentDialog, Is.SameAs(dialog));
+            Assert.That(hero.GetRank("T Parry"), Is.EqualTo(1));
+            Assert.That(TrainerOffers.AvailableSkillPoints(hero), Is.Zero);
+            Assert.That(hero.Mana, Is.EqualTo(mana));
+            Assert.That(World.TownPlayer.Gold, Is.Zero);
+            confirmation.Purchase_Clicked();
+            Assert.That(hero.GetRank("T Parry"), Is.EqualTo(1));
         }
 
         [UnityTest]
@@ -289,7 +338,7 @@ namespace EternalEnigma.Tests
                 Assert.That(view.Preview.text, Does.Contain(row.GetSkill().SkillName));
                 AssertRowLabelsFit(row);
                 Assert.That(row.RankText.text, Does.Contain("Rank"));
-                Assert.That(row.CostText.text, Does.Contain("pt"));
+                Assert.That(row.CostText.text, Does.Contain("Skill Points"));
                 Assert.That(Manager.CurrentDialog, Is.SameAs(dialog), "Selection must only preview.");
                 var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(view.ListScroll.viewport, row.transform);
                 Assert.That(bounds.min.y, Is.GreaterThanOrEqualTo(view.ListScroll.viewport.rect.yMin - 1));
@@ -383,7 +432,9 @@ namespace EternalEnigma.Tests
             yield return null;
             Assert.That(hero.GetRank("T Strike"), Is.Zero);
             Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000));
-            Assert.That(dialog.Layout.Preview.text, Does.Contain("Needs 1 skill points"));
+            Assert.That(Manager.CurrentDialog, Is.SameAs(dialog.BallistaPurchaseDialog));
+            Assert.That(dialog.BallistaPurchaseDialog.DescriptionText.text, Does.Contain("Requires 1 Skill Points; you have 0"));
+            dialog.BallistaPurchaseDialog.Cancel_ClickeD();
             hero.PrimaryClass = null;
             hero.SecondaryClass = null;
             var skill = MakeSkill("Classless gold skill", 75);

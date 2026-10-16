@@ -81,7 +81,9 @@ namespace EternalEnigma.Tests
 
                 player.Gold = 0;
                 heard.Clear();
-                Assert.That(town.Services.Buy(building, offer.Item.ItemName, out _), Is.False);
+                Assert.That(town.Services.Buy(building, offer.Item.ItemName, out var reason), Is.False);
+                Assert.That(heard, Is.Empty, "Validation is silent until the attempted action presents its rejection.");
+                GameMessages.Reject(reason);
                 Assert.That(heard.Select(e => e.cue), Is.EqualTo(new[] { SoundCue.Denied }));
                 Assert.That(heard.Single().group, Is.SameAs(audio.UIAudioMixerGroup));
             }
@@ -338,6 +340,53 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator LegacyEquipmentAndDonationRejectionsStayVisibleAndKeepFocus()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold = 5 }.CreateSave());
+            var hero = World.TownPlayer.ControllingTownAlly;
+            var restriction = ScriptableObject.CreateInstance<ClassDefinition>();
+            restriction.Id = "restricted-test";
+            restriction.DisplayName = "Restricted Test";
+            assets.Add(restriction);
+            hero.PrimaryClass = restriction;
+            hero.SecondaryClass = null;
+            var item = Common.Instance.ItemManager.ItemDefinitions.OfType<EquipmentItemDefinition>()
+                .Select(d => new EquipableInventoryItem(d)).First(i => !HeroClass.AllowsItem(restriction, null, i));
+            World.TownPlayer.Inventory.Add(item);
+            Menus.OpenItemActions(null, hero, item);
+            yield return null;
+            var actions = Menus.ItemActionDialog;
+            actions.Buttons[0].Select();
+            actions.Use_Clicked();
+            Assert.That(Manager.CurrentDialog, Is.SameAs(actions));
+            Assert.That(actions.ItemNameText.text, Does.Contain("Requires").And.Contain("proficiency"));
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(actions.Buttons[0].gameObject));
+            Assert.That(World.TownPlayer.Inventory, Does.Contain(item));
+            Assert.That(hero.Equipment.IsEquipped(item), Is.False);
+            actions.CloseDialog();
+
+            var statue = Menus.BuildingDialogs.Select(b => b.Dialog).OfType<StatueDialog>().Single();
+            statue.PrepareTown(null);
+            Manager.Open(statue);
+            yield return null;
+            statue.NumberInput.SelectableDigits[1].DisplayedDigit = 1;
+            statue.NumberInput.SelectableDigits[1].UpdateUI();
+            statue.OkButton.Select();
+            int total = statue.DonatedAmount;
+            statue.Ok_Clicked();
+            Assert.That(Manager.CurrentDialog, Is.SameAs(statue));
+            Assert.That(statue.DonatedAmountText.text, Does.Contain("Requires 10 gold; you have 5"));
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(statue.OkButton.gameObject));
+            Assert.That(World.TownPlayer.Gold, Is.EqualTo(5));
+            Assert.That(statue.DonatedAmount, Is.EqualTo(total));
+            Assert.That(statue.NumberInput.GetNumber(), Is.EqualTo(10));
+            World.TownPlayer.Gold = 10;
+            statue.Ok_Clicked();
+            Assert.That(World.TownPlayer.Gold, Is.Zero);
+            Assert.That(statue.DonatedAmount, Is.EqualTo(total + 10));
+        }
+
+        [UnityTest]
         public IEnumerator TownServicesHideGameplayHudAndRestorePartyDocks()
         {
             yield return harness.LoadTown(new TestScenario { Gold = 1000 }.CreateSave());
@@ -360,18 +409,29 @@ namespace EternalEnigma.Tests
             talk.Show(World.TownPlayer.RecruitedAllies[0], AllyRecruitDialogMode.Talk);
             Manager.Open(talk); yield return null;
             Assert.That(resource.enabled || launcher.enabled || feed.blocksRaycasts, Is.False);
-            Assert.That(talk.RemoveButton.interactable, Is.False, "The sole party member cannot be removed.");
+            Assert.That(talk.RemoveButton.interactable, Is.True, "Blocked actions stay selectable to explain their requirements.");
             Assert.That(talk.DescriptionText.text, Does.Contain("Keep at least one party member"));
             Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(talk.CancelButton2.gameObject));
             Assert.That(talk.transform.Find("CharacterBG_Board/FeatherObj").gameObject.activeSelf, Is.False);
+            talk.RemoveButton.Select();
+            talk.Remove_Clicked();
+            Assert.That(Manager.CurrentDialog, Is.SameAs(talk));
+            Assert.That(World.TownPlayer.RecruitedAllies.Count, Is.EqualTo(1));
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(talk.RemoveButton.gameObject));
             talk.CloseDialog(); yield return null;
             World.TownPlayer.Gold = 0;
             var recruit = World.TownAllies.First(a => a.RecruitCost > 0);
             talk.Show(recruit, AllyRecruitDialogMode.Recruit);
             Manager.Open(talk); yield return null;
-            Assert.That(talk.RecruitButton.interactable, Is.False);
-            Assert.That(talk.DescriptionText.text, Does.Contain("Not enough gold"));
+            Assert.That(talk.RecruitButton.interactable, Is.True);
+            Assert.That(talk.DescriptionText.text, Does.Contain($"Costs {recruit.RecruitCost} gold; you have 0"));
             Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(talk.CancelButton.gameObject));
+            talk.RecruitButton.Select();
+            talk.Recruit_Clicked();
+            Assert.That(Manager.CurrentDialog, Is.SameAs(talk));
+            Assert.That(World.TownPlayer.Gold, Is.Zero);
+            Assert.That(World.TownAllies, Does.Contain(recruit));
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(talk.RecruitButton.gameObject));
             talk.CloseDialog(); yield return null;
             World.TownPlayer.Gold = 1000;
             Manager.OpenPartyMenu(PartyMenuTab.Inventory);

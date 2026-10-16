@@ -123,7 +123,7 @@ public static class DioramaItemAuthoring
         }
         return name switch {
             "Bread"=>("waffle",Color.white),"Charred Bread"=>("waffle",new Color(.23f,.15f,.12f)),"Spoiled Bread"=>("waffle",new Color(.5f,.70f,.28f)),
-            "Potion"=>("potion_red",Color.white),"SP Potion"=>("potion_blue",Color.white),"Antidote"=>("jar",new Color(.38f,.86f,.43f)),
+            "Potion"=>("potion_red",Color.white),"Mana Potion"=>("potion_blue",Color.white),"Antidote"=>("jar",new Color(.38f,.86f,.43f)),
             "Sleep Potion"=>("potion_blue",new Color(.75f,.48f,.95f)),"Frailty Potion"=>("potion_red",new Color(.40f,.30f,.44f)),"Oblivion Draught"=>("ink",new Color(.7f,.62f,.86f)),
             "Bolt Spell"=>("book2",new Color(1,.92f,.38f)),"Explosion Spell"=>("book2",new Color(1,.42f,.31f)),"Warp Spell"=>("book",new Color(.68f,.42f,1)),
             "Iron Ore"=>("jewel",new Color(.48f,.56f,.65f)),"Healing Herb"=>("leaf",new Color(.55f,.85f,.48f)),"Timber"=>("log",Color.white),"Trap Parts"=>("wheel",new Color(.66f,.71f,.75f)),

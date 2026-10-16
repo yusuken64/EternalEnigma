@@ -32,14 +32,14 @@ public class CombatMathTests
 		var stats = new Stats
 		{
 			HPMax = 1,
-			SPMax = 2,
+			ManaMax = 2,
 			HungerMax = 3,
 			Strength = 4,
 			Defense = 5,
 			EXPOnKill = 6,
 			HungerAccumulateThreshold = 7,
 			HPRegenAcccumlateThreshold = 8,
-			SPRegenAcccumlateThreshold = 9,
+			ManaRegenThreshold = 9,
 			DropRate = 10f,
 			ActionsPerTurnMax = 11,
 			AttacksPerTurnMax = 12,
@@ -54,14 +54,14 @@ public class CombatMathTests
 		var modification = new StatModification
 		{
 			HPMax = 101,
-			SPMax = 102,
+			ManaMax = 102,
 			HungerMax = 103,
 			Strength = 104,
 			Defense = 105,
 			EXPOnKill = 106,
 			HungerAccumulateThreshold = 107,
 			HPRegenAcccumlateThreshold = 108,
-			SPRegenAcccumlateThreshold = 109,
+			ManaRegenThreshold = 109,
 			DropRate = 110f,
 			ActionsPerTurnMax = 111,
 			AttacksPerTurnMax = 112,
@@ -76,14 +76,14 @@ public class CombatMathTests
 		var result = stats + modification;
 
 		Assert.That(result.HPMax, Is.EqualTo(102));
-		Assert.That(result.SPMax, Is.EqualTo(104));
+		Assert.That(result.ManaMax, Is.EqualTo(104));
 		Assert.That(result.HungerMax, Is.EqualTo(106));
 		Assert.That(result.Strength, Is.EqualTo(108));
 		Assert.That(result.Defense, Is.EqualTo(110));
 		Assert.That(result.EXPOnKill, Is.EqualTo(112));
 		Assert.That(result.HungerAccumulateThreshold, Is.EqualTo(114));
 		Assert.That(result.HPRegenAcccumlateThreshold, Is.EqualTo(116));
-		Assert.That(result.SPRegenAcccumlateThreshold, Is.EqualTo(118));
+		Assert.That(result.ManaRegenThreshold, Is.EqualTo(118));
 		Assert.That(result.DropRate, Is.EqualTo(120f));
 		Assert.That(result.ActionsPerTurnMax, Is.EqualTo(122));
 		Assert.That(result.AttacksPerTurnMax, Is.EqualTo(124));
@@ -96,18 +96,18 @@ public class CombatMathTests
 	}
 
 	[Test]
-	public void StatModificationCopiesSPMaxAndNewFields()
+	public void StatModificationCopiesManaMaxAndNewFields()
 	{
-		var modification = new StatModification { SPMax = 3, CritChance = 0.2f, FireResistance = 1 };
+		var modification = new StatModification { ManaMax = 3, CritChance = 0.2f, FireResistance = 1 };
 		var copy = new StatModification(modification);
 
-		Assert.That(copy.SPMax, Is.EqualTo(3));
+		Assert.That(copy.ManaMax, Is.EqualTo(3));
 		Assert.That(copy.CritChance, Is.EqualTo(0.2f));
 		Assert.That(copy.FireResistance, Is.EqualTo(1));
 
-		var stats = new Stats { SPMax = 5 };
+		var stats = new Stats { ManaMax = 5 };
 		var statsCopy = new StatModification(stats);
-		Assert.That(statsCopy.SPMax, Is.EqualTo(5));
+		Assert.That(statsCopy.ManaMax, Is.EqualTo(5));
 	}
 
 	[Test]

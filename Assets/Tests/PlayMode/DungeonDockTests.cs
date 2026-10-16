@@ -51,7 +51,7 @@ namespace EternalEnigma.Tests
         {
             var manager=MenuManager.Instance;var actor=harness.Ally;
             Assert.That(harness.Game.InventoryMenu,Is.SameAs(manager.InventoryMenu),"Authoring preserves scene references to the inventory picker.");
-            int turns=actor.Vitals.ActionsPerTurnLeft,sp=actor.Vitals.SP;
+            int turns=actor.Vitals.ActionsPerTurnLeft,mana=actor.Vitals.Mana;
             var camera=Camera.main.transform.position;
             foreach(var resolution in new[]{new Vector2(960,600),new Vector2(1280,720),new Vector2(1920,1080),new Vector2(1280,800),new Vector2(2560,1080)})
             {
@@ -166,7 +166,7 @@ namespace EternalEnigma.Tests
                 reader.Setup(System.Array.Empty<string>());
                 Assert.That(reader.Panel.anchorMin,Is.EqualTo(Vector2.zero));
                 Assert.That(reader.Panel.GetComponent<Image>().sprite,Is.EqualTo(GameUITheme.Current.DungeonWood));
-                Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(turns));Assert.That(actor.Vitals.SP,Is.EqualTo(sp));
+                Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(turns));Assert.That(actor.Vitals.Mana,Is.EqualTo(mana));
                 Assert.That(Camera.main.transform.position,Is.EqualTo(camera));
             }
         }
@@ -211,7 +211,7 @@ namespace EternalEnigma.Tests
             module.actionsAsset.devices=new InputDevice[]{keyboard,pad,mouse};
             var manager=MenuManager.Instance;var actor=harness.Ally;
             var target=manager.TargetDialog;
-            int sp=actor.Vitals.SP,actions=actor.Vitals.ActionsPerTurnLeft;
+            int mana=actor.Vitals.Mana,actions=actor.Vitals.ActionsPerTurnLeft;
             try
             {
                 manager.OpenPartyMenu(PartyMenuTab.Skills);yield return null;
@@ -223,7 +223,7 @@ namespace EternalEnigma.Tests
                 point=Camera.main.WorldToScreenPoint(harness.Game.CurrentDungeon.CellToWorld(actor.TilemapPosition+Vector3Int.left*2));
                 InputSystem.QueueStateEvent(mouse,new MouseState{position=point});yield return null;yield return null;
                 Assert.That(target.Direction,Is.EqualTo(Vector3Int.left),"Mouse motion previews missile aim.");
-                Assert.That(actor.Vitals.SP,Is.EqualTo(sp));
+                Assert.That(actor.Vitals.Mana,Is.EqualTo(mana));
                 // Party headers are hidden during targeting; probe the visible Options
                 // control instead of treating their former position as a dead zone.
                 var options=Object.FindFirstObjectByType<DungeonHud>().OptionsButton;
@@ -243,7 +243,7 @@ namespace EternalEnigma.Tests
                 InputSystem.QueueStateEvent(mouse,new MouseState{position=hudPoint});yield return null;yield return null;
                 InputSystem.QueueStateEvent(mouse,new MouseState{position=hudPoint,buttons=2});yield return null;yield return null;
                 Assert.That(manager.CurrentDialog,Is.SameAs(manager.PartyMenu),"Right-click returns to the skill menu.");
-                Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));Assert.That(actor.Vitals.SP,Is.EqualTo(sp));
+                Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));Assert.That(actor.Vitals.Mana,Is.EqualTo(mana));
                 InputSystem.QueueStateEvent(mouse,new MouseState{position=hudPoint});yield return null;yield return null;
 
                 // A valid target click enters the ordinary validated action path once.
@@ -298,7 +298,7 @@ namespace EternalEnigma.Tests
             var rect=(RectTransform)options.transform;
             Canvas.ForceUpdateCanvases();
             var point=RectTransformUtility.WorldToScreenPoint(null,rect.TransformPoint(rect.rect.center));
-            int sp=actor.Vitals.SP,actions=actor.Vitals.ActionsPerTurnLeft,opened=0;
+            int mana=actor.Vitals.Mana,actions=actor.Vitals.ActionsPerTurnLeft,opened=0;
             UnityEngine.Events.UnityAction countOpen=()=>opened++;
             options.onClick.AddListener(countOpen);
             try
@@ -329,7 +329,7 @@ namespace EternalEnigma.Tests
                         Assert.That(manager.PartyMenu.Tab,Is.EqualTo(PartyMenuTab.Skills));
                     }
                     else Assert.That(manager.Opened,Is.False,"Quick-skill targeting returns to gameplay.");
-                    Assert.That(actor.Vitals.SP,Is.EqualTo(sp));Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
+                    Assert.That(actor.Vitals.Mana,Is.EqualTo(mana));Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
 
                     // Fresh input works in gameplay and over the restored party dock.
                     InputSystem.QueueStateEvent(mouse,new MouseState{position=point,buttons=1});yield return null;yield return null;

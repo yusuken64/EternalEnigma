@@ -21,7 +21,7 @@ public sealed partial class AutoplayRunner
             return town.TownPlayer.RecruitedAllies.Any(a => IsUpgrade(a,equipment));
         }
         return offer.Item.ItemEffectDefinition is ModifyStatsItemEffectDefinition effect &&
-            (effect.VitalModification.Hp > 0 || effect.VitalModification.Sp > 0 || effect.VitalModification.Hunger > 0) &&
+            (effect.VitalModification.Hp > 0 || effect.VitalModification.Mana > 0 || effect.VitalModification.Hunger > 0) &&
             town.TownPlayer.Inventory.Count(i => i.ItemName == offer.Item.ItemName) < 3;
     }
 

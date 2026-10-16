@@ -19,7 +19,7 @@ internal class GatherAction : GameAction
 		if (point == null || !Game.Instance.CurrentDungeon.Interactables.Contains(point)) return new();
 		string skill = ExplorationSkillNames.ForKind(point.Kind);
 		int rank = Mathf.Max(ExplorationPassives.PartyBestRank(skill), ExplorationPassives.PartyBestRank(ExplorationSkillNames.Survey));
-		if (rank <= 0) { message = "Needs " + skill; return new(); }
+		if (rank <= 0) { QueueSound(SoundCue.Denied); message = "Needs " + skill; return new(); }
 
 		int amount = Yield(rank);
 		var rng = new System.Random(point.Roll);
@@ -29,9 +29,10 @@ internal class GatherAction : GameAction
 		var material = MaterialCatalog.ForKind(point.Kind);
         using var receipt = AutoplayRunner.LootPickup(point, gatherer ?? character, amount, material);
 		int added = MaterialCatalog.AddToInventory(Game.Instance.PlayerController.Inventory, material, amount);
-		if (added <= 0) { message = "Bag is full"; return new(); }
+		if (added <= 0) { QueueSound(SoundCue.Denied); message = "Bag is full"; return new(); }
 
 		Game.Instance.CurrentDungeon.RemoveInteractable(point);
+        QueueSound(SoundCue.Gather);
 		message = $"+{added} {material.DisplayName}";
 		color = Color.green;
 		return new();

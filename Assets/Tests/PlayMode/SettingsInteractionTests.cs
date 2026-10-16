@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -48,7 +49,7 @@ namespace EternalEnigma.Tests
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); yield return null;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
         }
-        private IEnumerator Click(Button button)
+        private IEnumerator Click(Selectable button)
         {
             var pos = RectTransformUtility.WorldToScreenPoint(null, button.transform.position);
             InputSystem.QueueStateEvent(mouse, new MouseState { position = pos, buttons = 1 }); yield return null;
@@ -121,6 +122,225 @@ namespace EternalEnigma.Tests
             Assert.That(audio.UIAudioSources.Any(s => s.isPlaying), Is.False, "Disabled actions stay silent.");
             button.interactable = interactable;
             yield return null;
+        }
+
+        [UnityTest] public IEnumerator NavigationSoundsOnceForInputAndFocusRestorationStaysSilent()
+        {
+            var audio = Common.Instance.AudioManager;
+            var cues = new List<SoundCue>();
+            void Heard(SoundCue cue, AudioClip clip, AudioMixerGroup group)
+            {
+                Assert.That(group, Is.SameAs(audio.UIAudioMixerGroup));
+                cues.Add(cue);
+            }
+            audio.CuePlayed += Heard;
+            try
+            {
+                settings.ResumeButton.Select();
+                yield return null;
+                EventSystem.current.SetSelectedGameObject(null);
+                MenuUIInputModule.Active.RestoreFocus(settings.ResumeButton.gameObject);
+                yield return null;
+                Assert.That(cues, Is.Empty, "Programmatic focus and arrow updates are silent.");
+                settings.ResumeButton.Select();
+                yield return new WaitForSecondsRealtime(.06f);
+                yield return Press(GamepadButton.DpadDown);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Navigate }), "One input change emits one navigation cue regardless of arrows.");
+            }
+            finally { audio.CuePlayed -= Heard; }
+        }
+
+        [UnityTest] public IEnumerator PointerSelectionAndActivationHaveSeparateCues()
+        {
+            var audio = Common.Instance.AudioManager;
+            var cues = new List<SoundCue>();
+            var button = settings.TabGroup.TabContents[1].TabButton;
+            settings.ResumeButton.Select();
+            yield return new WaitForSecondsRealtime(.06f);
+            void Heard(SoundCue cue, AudioClip clip, AudioMixerGroup group) => cues.Add(cue);
+            audio.CuePlayed += Heard;
+            try
+            {
+                yield return Click(button);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Navigate }), "A selection-only click still sounds navigation.");
+                cues.Clear();
+                yield return Click(button);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Confirm }), "The next click activates without another navigation cue.");
+            }
+            finally { audio.CuePlayed -= Heard; }
+        }
+
+        [UnityTest] public IEnumerator AuthoredNativeButtonsPreserveOneClickAndPlaySemanticCues()
+        {
+            var audio = Common.Instance.AudioManager;
+            var cues = new List<SoundCue>();
+            void Heard(SoundCue cue, AudioClip clip, AudioMixerGroup group) => cues.Add(cue);
+            audio.CuePlayed += Heard;
+            try
+            {
+                bool confirmed = false;
+                CampaignChoice.Show("Audio test", "Confirm", () => confirmed = true);
+                yield return null;
+                var choice = AuthoredUI.Require<CampaignChoice>();
+                Assert.That(choice.Confirm, Is.TypeOf<SelectToActivateButton>());
+                Assert.That(((SelectToActivateButton)choice.Confirm).ActivateOnFirstPointerPress, Is.True,
+                    "Migrating a native Button must preserve its one-click behavior.");
+                cues.Clear();
+                yield return Click(choice.Confirm);
+                Assert.That(confirmed, Is.True);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Confirm }));
+                CampaignChoice.Show("Audio test", "Confirm", () => { });
+                yield return null;
+                cues.Clear();
+                yield return Click(choice.Back);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Cancel }));
+            }
+            finally { audio.CuePlayed -= Heard; }
+        }
+
+        [UnityTest] public IEnumerator NativeDropdownPointerOpeningHasOnlyConfirmFeedback()
+        {
+            var tab = settings.TabGroup.TabContents.Single(t => t.Content.GetComponent<DisplayOptions>() != null);
+            tab.TabButton.Select();
+            yield return null;
+            var display = tab.Content.GetComponent<DisplayOptions>();
+            var audio = Common.Instance.AudioManager;
+            var cues = new List<SoundCue>();
+            void Heard(SoundCue cue, AudioClip clip, AudioMixerGroup group) => cues.Add(cue);
+            audio.CuePlayed += Heard;
+            try
+            {
+                yield return Click(display.WindowMode);
+                Assert.That(display.WindowMode.IsExpanded, Is.True);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Confirm }));
+                cues.Clear();
+                yield return Press(GamepadButton.East);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Cancel }));
+            }
+            finally { audio.CuePlayed -= Heard; }
+        }
+
+        [UnityTest] public IEnumerator TerminalToggleUsesOneUICueForButtonAndShortcuts()
+        {
+            bool original = TerminalMode.Requested;
+            var audio = Common.Instance.AudioManager;
+            var cues = new List<SoundCue>();
+            void Heard(SoundCue cue, AudioClip clip, AudioMixerGroup group)
+            {
+                Assert.That(group, Is.SameAs(audio.UIAudioMixerGroup));
+                cues.Add(cue);
+            }
+            try
+            {
+                TerminalMode.SetRequested(false);
+                var tab = settings.TabGroup.TabContents.Single(t => t.Content.GetComponent<DisplayOptions>() != null);
+                tab.TabButton.Select();
+                yield return null;
+                var button = tab.Content.GetComponentInChildren<TerminalModeButton>().GetComponent<SelectToActivateButton>();
+                Assert.That(button, Is.Not.Null);
+                Assert.That(button.ActivateOnFirstPointerPress, Is.True);
+                audio.CuePlayed += Heard;
+                yield return Click(button);
+                Assert.That(TerminalMode.Requested, Is.True);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Confirm }));
+                cues.Clear();
+                yield return Key(UnityEngine.InputSystem.Key.F11);
+                Assert.That(TerminalMode.Requested, Is.False);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Confirm }));
+                cues.Clear();
+                yield return Press(GamepadButton.Select);
+                Assert.That(TerminalMode.Requested, Is.True);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Confirm }));
+            }
+            finally { audio.CuePlayed -= Heard; TerminalMode.SetRequested(original); }
+        }
+
+        [UnityTest] public IEnumerator TerminalHistoryButtonAndShortcutHaveOneUICue()
+        {
+            bool original = TerminalMode.Requested;
+            settings.Exit_Clicked();
+            yield return harness.Cleanup();
+            harness = new GameTestHarness();
+            yield return harness.LoadDungeon(new TestScenario { IncludeStartingItems = true });
+            MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { pad, keyboard, mouse };
+            var audio = Common.Instance.AudioManager;
+            var cues = new List<SoundCue>();
+            void Heard(SoundCue cue, AudioClip clip, AudioMixerGroup group)
+            {
+                Assert.That(group, Is.SameAs(audio.UIAudioMixerGroup));
+                cues.Add(cue);
+            }
+            try
+            {
+                TerminalMode.SetRequested(true);
+                yield return new WaitForSecondsRealtime(.2f);
+                var runtime = Common.Instance.GetComponent<TerminalRuntime>();
+                var button = runtime.GetComponentsInChildren<SelectToActivateButton>().Single(b => b.name == "History");
+                Assert.That(button.ActivateOnFirstPointerPress, Is.True);
+                audio.CuePlayed += Heard;
+                yield return Click(button);
+                Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<EventHistoryDialog>());
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Confirm }));
+                MenuManager.Instance.CurrentDialog.CloseDialog();
+                yield return null;
+                cues.Clear();
+                yield return Key(UnityEngine.InputSystem.Key.H);
+                Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<EventHistoryDialog>());
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.MenuOpen }));
+            }
+            finally { audio.CuePlayed -= Heard; TerminalMode.SetRequested(original); }
+        }
+
+        [UnityTest] public IEnumerator ResumeAndBackUseOnlyCancelFeedback()
+        {
+            var audio = Common.Instance.AudioManager;
+            var cues = new List<SoundCue>();
+            void Heard(SoundCue cue, AudioClip clip, AudioMixerGroup group) => cues.Add(cue);
+            audio.CuePlayed += Heard;
+            try
+            {
+                Assert.That(((SelectToActivateButton)settings.ResumeButton).AudioRole,
+                    Is.EqualTo(SelectToActivateButton.SoundRole.Cancel));
+                yield return Click(settings.ResumeButton);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Cancel }), "Resume must not also confirm or play a duplicate close.");
+                settings.ShowDialog();
+                settings.ResumeButton.Select();
+                yield return null;
+                cues.Clear();
+                yield return Key(UnityEngine.InputSystem.Key.Escape);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Cancel }));
+            }
+            finally { audio.CuePlayed -= Heard; }
+        }
+
+        [UnityTest] public IEnumerator VolumeRefreshIsSilentAndAdjustmentUsesUIChannel()
+        {
+            var slider = settings.GetComponentsInChildren<VolumeSlider>(true).First(s => s.VolumeParameterName == "EffectVolume");
+            var audio = Common.Instance.AudioManager;
+            var cues = new List<SoundCue>();
+            float original = AudioPreferences.Read(slider.AudioMixerGroup, slider.VolumeParameterName);
+            bool hadPreference = PlayerPrefs.HasKey(AudioPreferences.Key(slider.VolumeParameterName));
+            void Heard(SoundCue cue, AudioClip clip, AudioMixerGroup group)
+            {
+                Assert.That(group, Is.SameAs(audio.UIAudioMixerGroup));
+                cues.Add(cue);
+            }
+            audio.CuePlayed += Heard;
+            try
+            {
+                slider.Refresh();
+                Assert.That(cues, Is.Empty);
+                yield return new WaitForSecondsRealtime(.06f);
+                slider.OnSliderChanged(original > .5f ? .4f : .6f);
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Navigate }));
+            }
+            finally
+            {
+                audio.CuePlayed -= Heard;
+                AudioPreferences.Set(slider.AudioMixerGroup, slider.VolumeParameterName, original);
+                if (!hadPreference) PlayerPrefs.DeleteKey(AudioPreferences.Key(slider.VolumeParameterName));
+                slider.Refresh();
+            }
         }
 
         [UnityTest] public IEnumerator ControlsGuideScrollsAndReturnsToCategoryAt960By600()

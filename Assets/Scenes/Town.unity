@@ -2446,6 +2446,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!1 &104150882
 GameObject:
   m_ObjectHideFlags: 0
@@ -4516,6 +4517,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!114 &162240809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5071,6 +5073,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!114 &196753438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6085,6 +6088,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!114 &209105881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6445,9 +6449,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
 --- !u!1 &224848091
 GameObject:
   m_ObjectHideFlags: 0
@@ -7045,9 +7049,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
 --- !u!1 &268970139
 GameObject:
   m_ObjectHideFlags: 0
@@ -7926,9 +7930,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
 --- !u!1 &306120447
 GameObject:
   m_ObjectHideFlags: 0
@@ -8817,6 +8821,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!114 &335187730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15350,6 +15355,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!1 &578466578
 GameObject:
   m_ObjectHideFlags: 0
@@ -16965,6 +16971,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!1 &620217894
 GameObject:
   m_ObjectHideFlags: 0
@@ -19010,6 +19017,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!1 &702052408
 GameObject:
   m_ObjectHideFlags: 0
@@ -19281,6 +19289,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!1 &706269949
 GameObject:
   m_ObjectHideFlags: 0
@@ -29281,6 +29290,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!1 &917183439
 GameObject:
   m_ObjectHideFlags: 0
@@ -29984,6 +29994,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!114 &933261600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31260,6 +31271,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!114 &1007157482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38023,6 +38035,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!1 &1341667204
 GameObject:
   m_ObjectHideFlags: 0
@@ -38714,6 +38727,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 702052412}
     m_Modifications:
+    - target: {fileID: 470839586586807327, guid: 6a65003b8589baf4aa18e006c7b4e994, type: 3}
+      propertyPath: soundRole
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4354078447514816035, guid: 6a65003b8589baf4aa18e006c7b4e994, type: 3}
       propertyPath: m_Name
       value: TownItemActions
@@ -51980,6 +51997,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!1 &1708064901
 GameObject:
   m_ObjectHideFlags: 0

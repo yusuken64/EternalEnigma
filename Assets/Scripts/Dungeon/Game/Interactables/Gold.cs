@@ -13,7 +13,7 @@ public class Gold : Interactable
         using var receipt = AutoplayRunner.LootPickup(this, character, goldAmount);
         Opened = true;
 		game.CurrentDungeon.RemoveInteractable(this);
-		AudioManager.Instance.SoundEffects.BuySell.PlayAsSound();
+		AudioManager.Instance?.PlayCue(SoundCue.Pickup);
 		GameMessages.Post($"Picked up {goldAmount} gold.");
 		game.PlayerController.Gold += goldAmount;
 

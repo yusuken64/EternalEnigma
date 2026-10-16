@@ -28,5 +28,6 @@ public class VolumeSlider : MonoBehaviour
     {
         AudioPreferences.Set(AudioMixerGroup, VolumeParameterName, value);
         UpdateLabel(value);
+        AudioManager.Instance?.PlayCue(SoundCue.Navigate);
     }
 }

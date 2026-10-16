@@ -236,6 +236,7 @@ public class PlayerController : MonoBehaviour
                 }
                 else if (Game.Instance.Finale?.OnOverworld == true && Game.Instance.Finale.GateHint(newMapPosition, newMapPosition + offset) is { } hint)
                     GameMessages.Post(hint);
+                AudioManager.Instance?.PlayCue(SoundCue.Denied);
                 StopHeldWalk();
             }
         }
@@ -267,6 +268,7 @@ public class PlayerController : MonoBehaviour
             if (targetAlly != null && !ControlledAlly.IsRangedAttack(out _))
 			{
                 //FindObjectOfType<MenuManager>().OpenAllyMenu(targetAlly);
+                AudioManager.Instance?.PlayCue(SoundCue.Denied);
                 return;
             }
             else if (ControlledAlly.IsRangedAttack(out GameObject projectilePrefab))
@@ -527,6 +529,7 @@ public class PlayerController : MonoBehaviour
         }
 
         var nextAlly = allies[nextIndex];
+        if (nextAlly != ControlledAlly) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
         TakeControl(nextAlly);
     }
 

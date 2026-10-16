@@ -27,6 +27,69 @@ namespace EternalEnigma.Tests
         private Gamepad pad;
 
         [UnityTest]
+        public IEnumerator GateUnlockAudioOnlyPlaysForANewUnlock()
+        {
+            var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 0));
+            Common.Instance.CampaignContext = context;
+            context.State.Scene = "Overworld";
+            var route = context.Campaign.Routes.First(r => r.ShortcutKind == ShortcutKind.Keyed && r.IsWarp);
+            context.Position = context.Grid.Locations[route.From];
+            context.Keys.Add(route.KeyId);
+            var audio = AudioManager.Instance;
+            var heard = new List<(SoundCue cue, UnityEngine.Audio.AudioMixerGroup group)>();
+            void Heard(SoundCue cue, AudioClip _, UnityEngine.Audio.AudioMixerGroup group) => heard.Add((cue, group));
+            audio.CuePlayed += Heard;
+            try
+            {
+                yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+                scene = SceneManager.GetSceneByName("Overworld");
+                var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+                yield return harness.WaitUntil(() => world.IsReady && !Common.Instance.Travel.IsTransitioning, "gate audio world");
+                Assert.That(heard.Any(e => e.cue == SoundCue.GateUnlock), Is.False, "Loading the world is not an unlock.");
+                using var session = world.BeginGateInteraction(route.Id);
+                Assert.That(session, Is.Not.Null);
+                Assert.That(world.AttemptGate(session, new KeyLockAction("missing-key")), Is.EqualTo(LockOutcome.NoEffect));
+                Assert.That(heard.Any(e => e.cue == SoundCue.GateUnlock), Is.False);
+                Assert.That(world.AttemptGate(session, new KeyLockAction(route.KeyId)), Is.EqualTo(LockOutcome.Opened));
+                Assert.That(heard.Count(e => e.cue == SoundCue.GateUnlock), Is.EqualTo(1));
+                Assert.That(heard.Single(e => e.cue == SoundCue.GateUnlock).group, Is.SameAs(audio.EffectAudioMixerGroup));
+                Assert.That(world.AttemptGate(session, new KeyLockAction(route.KeyId)), Is.EqualTo(LockOutcome.NoEffect));
+                Assert.That(world.Warp(route.Id), Is.True);
+                Assert.That(heard.Count(e => e.cue == SoundCue.GateUnlock), Is.EqualTo(1), "Crossing and refreshing an open gate must stay silent.");
+                Assert.That(heard.Single(e => e.cue == SoundCue.Teleport).group, Is.SameAs(audio.EffectAudioMixerGroup));
+
+                yield return SceneManager.UnloadSceneAsync(scene);
+                yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+                scene = SceneManager.GetSceneByName("Overworld");
+                world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+                yield return harness.WaitUntil(() => world.IsReady && !Common.Instance.Travel.IsTransitioning, "restored gate audio world");
+                Assert.That(heard.Count(e => e.cue == SoundCue.GateUnlock), Is.EqualTo(1), "Restoring an opened gate must not replay its glissando.");
+
+                var arrival = context.Position;
+                GridPoint? emptyGround = null;
+                foreach (var cell in Enumerable.Range(0, context.Grid.Width).SelectMany(x =>
+                    Enumerable.Range(0, context.Grid.Height).Select(y => new GridPoint(x, y))))
+                {
+                    if (!context.Gates.IsWalkable(cell, context.Held) || context.Grid.Locations.Values.Contains(cell) ||
+                        context.Grid.Pickups.Any(p => p.Position.Equals(cell)) || context.Gates.Nearby(cell).Any()) continue;
+                    context.Position = cell;
+                    if (world.NearbySign() != null) continue;
+                    emptyGround = cell;
+                    break;
+                }
+                Assert.That(emptyGround.HasValue, Is.True, "Fixture needs ordinary ground without an interaction.");
+                heard.Clear();
+                world.ClaimRewards(announceLocked: false);
+                Assert.That(heard, Is.Empty, "Automated interaction probes must stay silent.");
+                world.ClaimRewards();
+                Assert.That(heard.Select(e => e.cue), Is.EqualTo(new[] { SoundCue.Denied }));
+                Assert.That(heard[0].group, Is.SameAs(audio.UIAudioMixerGroup));
+                context.Position = arrival;
+            }
+            finally { audio.CuePlayed -= Heard; }
+        }
+
+        [UnityTest]
         public IEnumerator UnlockedWarpsAreAvailableToKeyboardAndGamepadAfterRewards()
         {
             var context = Enumerable.Range(0, 32)

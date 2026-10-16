@@ -40,7 +40,7 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
         if (IsDoor)
         {
             // Without a key the door can still be bashed open; it is never required.
-            if (!SmallKeys.TrySpend()) { GameMessages.Post("The door is locked."); return new(); }
+            if (!SmallKeys.TrySpend()) { AudioManager.Instance?.PlayCue(SoundCue.Denied); GameMessages.Post("The door is locked."); return new(); }
             GameMessages.Post("Unlocked the door.");
         }
         ReleaseReward();
@@ -62,6 +62,7 @@ public sealed class DungeonProp : Interactable, IDungeonDamageTarget
     {
         if (Opened) return;
         using var evidence = AutoplayRunner.LootReward(this);
+        if (Game.Instance.PartyVisibleTiles.Contains(Position)) AudioManager.Instance?.PlayCue(IsDoor ? SoundCue.DoorOpen : SoundCue.ContainerOpen);
         Opened = true; // Commit before any drop callback; duplicate actions cannot award twice.
         var dungeon = Game.Instance.CurrentDungeon;
         dungeon.Interactables.Remove(this);
@@ -142,6 +143,6 @@ internal sealed class PropDamageAction : GameAction
     readonly int damage;
     internal PropDamageAction(DungeonProp target, int damage) { this.target = target; this.damage = damage; }
     internal override bool IsValid(Character character) => target != null && target.Alive;
-    internal override List<GameAction> ExecuteImmediate(Character character) { if (IsValid(character)) target.ApplyDamage(damage); return new(); }
+    internal override List<GameAction> ExecuteImmediate(Character character) { if (IsValid(character)) { target.ApplyDamage(damage); if (damage > 0) QueueSound(SoundCue.Damage); } return new(); }
     internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false) { yield break; }
 }

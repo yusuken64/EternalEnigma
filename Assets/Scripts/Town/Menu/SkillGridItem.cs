@@ -47,16 +47,19 @@ public class SkillGridItem : MonoBehaviour, ISelectHandler, IDeselectHandler
         if (offer == null) return;
         if (offer.IsMaxed)
         {
+            AudioManager.Instance?.PlayCue(SoundCue.Denied);
             TownMenu.ShowMessage("Already at maximum rank.");
             return;
         }
 		if (!offer.CanLearn)
 		{
+			AudioManager.Instance?.PlayCue(SoundCue.Denied);
 			TownMenu.ShowMessage(string.IsNullOrEmpty(offer.LockReason) ? "This skill cannot be learned." : offer.LockReason);
 			return;
 		}
 		if (!CanAfford())
 		{
+			AudioManager.Instance?.PlayCue(SoundCue.Denied);
 			var messageDialog = Common.Instance.MessageDialog;
 			messageDialog.PromptText.text = GameplayText.Format("Not enough gold to buy skill");
 			messageDialog.gameObject.SetActive(true);

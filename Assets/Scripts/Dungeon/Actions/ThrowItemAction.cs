@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +36,7 @@ internal class ThrowItemAction : GameAction
 	{
 		var game = Game.Instance;
 		sourcePosition = thrower.TilemapPosition;
+        QueueSound(SoundCue.Throw);
 		GameMessages.ForCharacter(thrower, $"{GameMessages.Name(thrower)} threw {item.DisplayName}.");
 
 		var ret = new List<GameAction>();

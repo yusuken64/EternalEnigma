@@ -424,7 +424,23 @@ namespace EternalEnigma.Tests
             Assert.That(context.BeginTownDungeon("story-0"), Is.True);
             Assert.That(context.CompleteDungeon(true), Is.True);
             common.Travel.ExitTown(town); yield return WaitWorld();
-            common.Travel.EnterLocation(); yield return WaitTown();
+            var audio = common.AudioManager;
+            int doorCues = 0;
+            void Heard(SoundCue cue, AudioClip _, UnityEngine.Audio.AudioMixerGroup group)
+            {
+                if (cue != SoundCue.DoorOpen) return;
+                doorCues++;
+                Assert.That(group, Is.SameAs(audio.EffectAudioMixerGroup));
+            }
+            audio.CuePlayed += Heard;
+            try
+            {
+                Assert.That(common.Travel.EnterLocation(), Is.True);
+                Assert.That(common.Travel.EnterLocation(), Is.False, "A duplicate entry is blocked while travelling.");
+                yield return WaitTown();
+                Assert.That(doorCues, Is.EqualTo(1), "Town entry commits one door cue; scene initialization must not repeat it.");
+            }
+            finally { audio.CuePlayed -= Heard; }
             town = Object.FindFirstObjectByType<Town>();
             Assert.That(common.GameSaveData.TownSaveData.TownSeed, Is.EqualTo(seed));
             Assert.That(town.WalkableMap.TileWorldCreator.GetMapOutputFromBlueprintLayer("Houses").Cast<bool>(), Is.EqualTo(floor));

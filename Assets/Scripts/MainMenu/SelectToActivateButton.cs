@@ -10,8 +10,13 @@ using UnityEngine.UI;
 [AddComponentMenu("UI/Select To Activate Button")]
 public class SelectToActivateButton : Button
 {
-    public bool ActivateOnFirstPointerPress { get; set; }
+    public enum SoundRole { Confirm, Cancel, Silent }
+    [SerializeField] private SoundRole soundRole;
+    public SoundRole AudioRole { get => soundRole; set => soundRole = value; }
+    [SerializeField] private bool activateOnFirstPointerPress;
+    public bool ActivateOnFirstPointerPress { get => activateOnFirstPointerPress; set => activateOnFirstPointerPress = value; }
     private bool canActivatePointer;
+    internal bool PointerActivationPending => canActivatePointer;
     private int pressedPointerId;
 
     public override void OnPointerDown(PointerEventData eventData)
@@ -45,7 +50,7 @@ public class SelectToActivateButton : Button
         canActivatePointer = false;
         if (activate && IsActive() && IsInteractable())
         {
-            PlayConfirm();
+            PlayActivation();
             base.OnPointerClick(eventData);
         }
     }
@@ -61,15 +66,20 @@ public class SelectToActivateButton : Button
         var module = MenuUIInputModule.Active;
         if (IsActive() && IsInteractable() && (module == null || (!module.InputConsumed && module.Allows(gameObject))))
         {
-            PlayConfirm();
+            PlayActivation();
             base.OnSubmit(eventData);
         }
     }
 
-    private static void PlayConfirm()
+    private void PlayActivation()
     {
-        var audio = AudioManager.Instance;
-        if (audio != null) audio.PlayUISound(audio.SoundEffects?.Confirm);
+        if (soundRole != SoundRole.Silent)
+            AudioManager.Instance?.PlayCue(soundRole == SoundRole.Cancel ? SoundCue.Cancel : SoundCue.Confirm);
+    }
+
+    public static void MarkCancel(Button button)
+    {
+        if (button is SelectToActivateButton control) control.AudioRole = SoundRole.Cancel;
     }
 
     protected override void OnDisable()

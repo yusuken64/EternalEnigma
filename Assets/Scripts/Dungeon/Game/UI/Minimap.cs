@@ -224,6 +224,7 @@ public class Minimap : MonoBehaviour
         if (PlayerInputHandler.Instance.mapPressed)
         {
             currentMode = (MinimapMode)(((int)currentMode + 1) % System.Enum.GetValues(typeof(MinimapMode)).Length);
+            AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             UpdateMinimapMode();
         }
     }

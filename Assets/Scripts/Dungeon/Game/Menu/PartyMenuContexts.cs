@@ -244,8 +244,9 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         string reason=!hero.Equipment.IsEquipped(equipment)&&!HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment)?HeroClass.EquipmentRestriction(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment):null;
         return new(){new PartyMenuAction {Label=entry.Equipped?"Unequip":"Equip",UnavailableReason=reason,Execute=menu=>
         {
+            bool wasEquipped = hero.Equipment.IsEquipped(entry.Item);
             if(!EquipmentTransferService.Toggle(hero.Equipment,bag,entry.Item,hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,out var failure))
-            {menu.Complete(failure);return;}
+            {AudioManager.Instance?.PlayCue(SoundCue.Denied);menu.Complete(failure);return;}
             var common=Common.Instance;var save=common.GameSaveData;
             save.TownSaveData.InventoryItems=ItemSaveData.Capture(bag);
             var data=save.TownSaveData.RecruitedAlliesData.Single(h=>h.AllyId==hero.Id);
@@ -253,6 +254,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
             CampaignParty.Capture(common);
             hero.TownActor.RefreshEquipmentVisuals();
             SaveSystem.Capture(Common.Instance);
+            AudioManager.Instance?.PlayCue(wasEquipped ? SoundCue.Unequip : SoundCue.Equip);
             menu.Complete("Equipment changed.");
         }}};
     }

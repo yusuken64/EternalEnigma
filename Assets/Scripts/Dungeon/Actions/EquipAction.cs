@@ -16,6 +16,7 @@ internal class EquipAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		character.Equipment.Equip(equipableInventoryItem);
+        QueueSound(SoundCue.Equip);
 		return new();
 	}
 
@@ -23,7 +24,7 @@ internal class EquipAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) { yield break; }
-		AudioManager.Instance.SoundEffects.Equip.PlayAsSound();
+
 		yield return null;
 	}
 

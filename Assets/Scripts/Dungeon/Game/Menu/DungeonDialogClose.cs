@@ -5,7 +5,12 @@ using UnityEngine.UI;
 
 public sealed class DungeonDialogClose : MonoBehaviour
 {
-    private void Awake() => GetComponent<Button>().onClick.AddListener(() => GetComponentInParent<Dialog>().CloseDialog());
+    private void Awake()
+    {
+        var button = GetComponent<Button>();
+        SelectToActivateButton.MarkCancel(button);
+        button.onClick.AddListener(() => GetComponentInParent<Dialog>().CloseDialog());
+    }
 
     // Dock variants can contain a legacy footer Back as well as their corner close.
     // Keep one visible exit, including when there are no available actions.

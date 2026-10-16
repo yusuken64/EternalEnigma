@@ -54,6 +54,8 @@ public sealed class MainMenuDeveloperControls : MonoBehaviour
 
     private void RefreshLabel()
     {
+        if (Toggle is SelectToActivateButton button)
+            button.AudioRole = open ? SelectToActivateButton.SoundRole.Cancel : SelectToActivateButton.SoundRole.Confirm;
         if (toggleLabel != null) toggleLabel.text = open ? "Close developer" : "Developer";
     }
 }

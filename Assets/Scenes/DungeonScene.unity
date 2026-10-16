@@ -5888,6 +5888,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!1 &1049492897
 GameObject:
   m_ObjectHideFlags: 0
@@ -8637,6 +8638,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!114 &1204557031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10575,6 +10577,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!114 &1544246156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11701,9 +11704,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
 --- !u!1 &1678521387 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 377822725832712305, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -12715,6 +12718,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!114 &1776162886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13779,9 +13783,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
 --- !u!224 &1814503285 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -14218,6 +14222,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!114 &1865861871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15629,6 +15634,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!114 &2039450985
 MonoBehaviour:
   m_ObjectHideFlags: 0

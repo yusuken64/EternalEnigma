@@ -31,6 +31,7 @@ internal class RetreatAction : GameAction, ISkillEffectPrecondition
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		Game.Instance.PlayerController.PendingRetreat = true;
+		QueueSound(SoundCue.Retreat);
 		return new();
 	}
 

@@ -227,7 +227,25 @@ namespace EternalEnigma.Tests
             manager.PartyMenu.Shortcut(PartyMenuTab.Stats);Assert.That(manager.PartyMenu.Tab,Is.EqualTo(PartyMenuTab.Stats));
             manager.PartyMenu.Shortcut(PartyMenuTab.Capabilities);Assert.That(manager.PartyMenu.Tab,Is.EqualTo(PartyMenuTab.Capabilities));
             manager.PartyMenu.Setup(adapter,PartyMenuTab.Inventory,inspected.Id);
-            adapter.Actions(inspected,copies[1]).Single().Execute(manager.PartyMenu);
+            var audio = AudioManager.Instance;
+            var equipmentCues = new List<(SoundCue cue, UnityEngine.Audio.AudioMixerGroup group)>();
+            void Heard(SoundCue cue, AudioClip _, UnityEngine.Audio.AudioMixerGroup group) => equipmentCues.Add((cue, group));
+            audio.CuePlayed += Heard;
+            try
+            {
+                adapter.Actions(inspected,copies[1]).Single().Execute(manager.PartyMenu);
+                adapter.Actions(inspected,copies[1]).Single().Execute(manager.PartyMenu);
+                adapter.Actions(inspected,copies[1]).Single().Execute(manager.PartyMenu);
+                Assert.That(equipmentCues.Where(e => e.cue == SoundCue.Equip || e.cue == SoundCue.Unequip).Select(e => e.cue),
+                    Is.EqualTo(new[] { SoundCue.Equip, SoundCue.Unequip, SoundCue.Equip }));
+                Assert.That(equipmentCues.Where(e => e.cue == SoundCue.Equip || e.cue == SoundCue.Unequip)
+                    .All(e => e.group == audio.EffectAudioMixerGroup), Is.True);
+                var missingItem = new PartyMenuEntry { Item = authored.AsInventoryItem(null) };
+                adapter.Actions(inspected,missingItem).Single().Execute(manager.PartyMenu);
+                Assert.That(equipmentCues.Count(e => e.cue == SoundCue.Denied), Is.EqualTo(1));
+                Assert.That(equipmentCues.Single(e => e.cue == SoundCue.Denied).group, Is.SameAs(audio.UIAudioMixerGroup));
+            }
+            finally { audio.CuePlayed -= Heard; }
             Assert.That(inspected.Equipment.IsEquipped(copies[1].Item),Is.True);Assert.That(inspected.Equipment.IsEquipped(copies[0].Item),Is.False);
             var saved=common.GameSaveData;Assert.That(saved.TownSaveData.InventoryItems.Count(i=>i.ItemName==authored.ItemName),Is.EqualTo(1));
             Assert.That(saved.TownSaveData.RecruitedAlliesData[0].Equipment.Count(i=>i.ItemName==authored.ItemName),Is.EqualTo(1));

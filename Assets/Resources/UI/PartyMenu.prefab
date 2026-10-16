@@ -785,9 +785,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2994697315685978142}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -820,6 +820,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  activateOnFirstPointerPress: 1
+  soundRole: 0
 --- !u!1 &3400455123659369552
 GameObject:
   m_ObjectHideFlags: 0
@@ -1211,9 +1213,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4227270065055771833}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -1246,6 +1248,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  activateOnFirstPointerPress: 1
+  soundRole: 0
 --- !u!1 &4535584225359527759
 GameObject:
   m_ObjectHideFlags: 0
@@ -2439,9 +2443,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7408061458864610745}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -2474,6 +2478,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  activateOnFirstPointerPress: 1
+  soundRole: 0
 --- !u!1 &7542809433007921740
 GameObject:
   m_ObjectHideFlags: 0
@@ -2561,9 +2567,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7542809433007921740}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -2596,6 +2602,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  activateOnFirstPointerPress: 1
+  soundRole: 0
 --- !u!1 &7666471337700864252
 GameObject:
   m_ObjectHideFlags: 0
@@ -2732,9 +2740,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8241764520600098250}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -2767,6 +2775,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  activateOnFirstPointerPress: 1
+  soundRole: 0
 --- !u!1 &8718747655381219678
 GameObject:
   m_ObjectHideFlags: 0

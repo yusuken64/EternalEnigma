@@ -5,6 +5,22 @@ using UnityEngine;
 
 public sealed class CombatEffectAssignmentTests
 {
+    [Test] public void EveryActiveAbilityIncludingDemoSubassetsHasAnExplicitReleaseSound()
+    {
+        var skills = AssetDatabase.FindAssets("t:Skill").Select(AssetDatabase.GUIDToAssetPath).Distinct()
+            .SelectMany(AssetDatabase.LoadAllAssetsAtPath).OfType<Skill>().Where(s => s.ActivationType == ActivationType.Active).ToArray();
+        Assert.That(skills.Length, Is.GreaterThanOrEqualTo(107));
+        foreach (var skill in skills)
+        {
+            Assert.That(skill.SoundFamily, Is.Not.EqualTo(AbilitySoundFamily.Unassigned), skill.SkillName);
+            Assert.That(skill.CastSound, Is.Not.Null, skill.SkillName);
+            Assert.That(AssetDatabase.GetAssetPath(skill.CastSound), Does.StartWith("Assets/Sounds/RPG_Essentials_Free/"), skill.SkillName);
+        }
+        var elemental = new[] { AbilitySoundFamily.Fire, AbilitySoundFamily.Frost, AbilitySoundFamily.Lightning, AbilitySoundFamily.Poison }
+            .Select(family => skills.First(s => s.SoundFamily == family).CastSound).ToArray();
+        Assert.That(elemental.Distinct().Count(), Is.EqualTo(4), "Elements need audibly distinct release clips.");
+    }
+
     [Test] public void EverySkillHasAnExplicitProfileAndRpgPackIcon()
     {
         var skills = AssetDatabase.FindAssets("t:Skill").Select(g => AssetDatabase.LoadAssetAtPath<Skill>(AssetDatabase.GUIDToAssetPath(g))).Where(s => s != null).ToArray();

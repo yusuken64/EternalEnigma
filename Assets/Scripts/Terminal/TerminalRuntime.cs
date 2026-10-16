@@ -127,6 +127,7 @@ public sealed class TerminalRuntime : MonoBehaviour
     {
         if (Keyboard.current?.f11Key.wasPressedThisFrame == true || Gamepad.current?.selectButton.wasPressedThisFrame == true)
         {
+            AudioManager.Instance?.PlayCue(SoundCue.Confirm);
             TerminalMode.SetRequested(!TerminalMode.Requested);
             MenuUIInputModule.Active?.ConsumeInput();
             Common.InstanceOrNull?.MenuInputHandler?.ClearInputThisFrame();
@@ -230,9 +231,10 @@ public sealed class TerminalRuntime : MonoBehaviour
         var owner = new GameObject("Terminal history", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         owner.transform.SetParent(transform, false);
         var canvas = owner.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 90;
-        var control = new GameObject("History", typeof(RectTransform), typeof(Image), typeof(Button)); control.transform.SetParent(owner.transform, false);
+        var control = new GameObject("History", typeof(RectTransform), typeof(Image), typeof(SelectToActivateButton)); control.transform.SetParent(owner.transform, false);
         var rect = (RectTransform)control.transform; rect.anchorMin = new Vector2(.79f, .012f); rect.anchorMax = new Vector2(.985f, .065f); rect.offsetMin = rect.offsetMax = Vector2.zero;
         historyButton = control.GetComponent<Button>(); historyButton.targetGraphic = control.GetComponent<Image>();
+        ((SelectToActivateButton)historyButton).ActivateOnFirstPointerPress = true;
         historyButton.navigation = new Navigation { mode = Navigation.Mode.None };
         historyButton.onClick.AddListener(OpenHistory);
         var label = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI)); label.transform.SetParent(control.transform, false);

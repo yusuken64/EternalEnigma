@@ -266,13 +266,18 @@ public sealed class EncounterStash : Interactable
             var game = Game.Instance;
             if (recovery)
             {
-                game.Prison?.Recover(game); game.Prison?.TakeOverflow(game);
+                bool recovered = game.Prison?.Recover(game) == true;
+                int overflow = game.Prison?.Overflow.Count ?? 0;
+                game.Prison?.TakeOverflow(game);
+                if (recovered || (game.Prison?.Overflow.Count ?? 0) < overflow) AudioManager.Instance?.PlayCue(SoundCue.Pickup);
                 if (game.Prison?.Recovered == true) game.Encounter?.Recovered();
             }
             else if (!Opened)
             {
                 var supplies = Common.Instance.ItemManager.StartingItems.Where(i => i != null).Take(4).ToArray();
-                foreach (var item in supplies) if (game.PlayerController.Inventory.CanAdd()) game.PlayerController.Inventory.Add(item.AsInventoryItem(null));
+                bool collected = false;
+                foreach (var item in supplies) if (game.PlayerController.Inventory.CanAdd()) { game.PlayerController.Inventory.Add(item.AsInventoryItem(null)); collected = true; }
+                AudioManager.Instance?.PlayCue(collected ? SoundCue.Pickup : SoundCue.Denied);
                 Opened = true; GameMessages.Post("The party found basic escape supplies.");
             }
             return new();

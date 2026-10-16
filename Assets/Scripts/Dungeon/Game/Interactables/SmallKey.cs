@@ -27,7 +27,7 @@ public sealed class SmallKey : Interactable
         using var receipt = AutoplayRunner.LootPickup(this, character, 1);
         Opened = true;
         Game.Instance.CurrentDungeon.RemoveInteractable(this);
-        AudioManager.Instance.SoundEffects.BuySell.PlayAsSound();
+        AudioManager.Instance?.PlayCue(SoundCue.Pickup);
         SmallKeys.Add();
         GameMessages.Post("Picked up a small key.");
         return new();

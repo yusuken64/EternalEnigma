@@ -243,7 +243,8 @@ public static class GameUIButtonAuthoring
         try
         {
             var image = rect.gameObject.AddComponent<Image>();
-            var button = rect.gameObject.AddComponent<Button>(); button.targetGraphic = image;
+            var button = rect.gameObject.AddComponent<SelectToActivateButton>(); button.targetGraphic = image;
+            button.ActivateOnFirstPointerPress = true;
             var label = GameUISkin.Label(rect, "Button", new Vector2(.08f, .12f), new Vector2(.92f, .88f));
             label.alignment = TextAlignmentOptions.Center;
             label.enableAutoSizing = true; label.fontSizeMin = 16; label.fontSizeMax = 26;

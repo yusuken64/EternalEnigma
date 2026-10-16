@@ -52,6 +52,187 @@ namespace EternalEnigma.Tests
             internal override IEnumerator ExecuteRoutine(Character c, bool skipAnimation = false) { yield break; }
         }
 
+        AudioManager AudioFixture(out List<AudioClip> played, out AudioClip start, out AudioClip release)
+        {
+            var go = new GameObject("Ability audio fixture"); go.transform.SetParent(root.transform);
+            var audio = go.AddComponent<AudioManager>(); audio.enabled = false;
+            audio.SoundEffects = go.AddComponent<SoundEffects>();
+            audio.EffectAudioSources = new() { go.AddComponent<AudioSource>(), go.AddComponent<AudioSource>() };
+            start = AudioClip.Create("Universal cast start", 2205, 1, 22050, false);
+            release = AudioClip.Create("Elemental release", 2205, 1, 22050, false);
+            audio.SoundEffects.AbilityCast = start;
+            var observed = new List<AudioClip>(); played = observed;
+            audio.SoundPlayed += (clip, group) => observed.Add(clip);
+            return audio;
+        }
+
+        Skill AudioSkill(AudioClip release, int charge = 0)
+        {
+            var skill = ScriptableObject.CreateInstance<Skill>();
+            skill.SkillName = "Audio test spell"; skill.Targeting = SkillTargeting.Self;
+            skill.TargetSelector = new TargetSelector { Team = TargetTeam.Self, Area = TargetArea.Self };
+            skill.CastSound = release; skill.CastTime = charge; actor.Skills.Add(skill);
+            return skill;
+        }
+
+        IEnumerator ResolveAndReplay(GameAction action)
+        {
+            action.SetPlaybackContext(DungeonAnimationMode.NoAnimations, true, actor, actor);
+            action.Visuals.Begin(actor);
+            var children = action.ExecuteImmediate(actor);
+            action.Visuals.End(action, actor, children);
+            yield return action.Visuals.Play(action, actor, true);
+        }
+
+        [UnityTest] public IEnumerator InstantSkillHasOneUniversalStartAndOneReleaseEvenWithAnimationsSkipped()
+        {
+            AudioFixture(out var played, out var start, out var release);
+            var skill = AudioSkill(release);
+            try
+            {
+                var action = new SkillAction(actor, skill, actor);
+                yield return ResolveAndReplay(action);
+                CollectionAssert.AreEqual(new[] { start, release }, played);
+                yield return action.Visuals.Play(action, actor, true);
+                Assert.That(played.Count, Is.EqualTo(2), "Replaying the same action must not duplicate its audio.");
+                skill.SPCost = 1;
+                yield return ResolveAndReplay(new SkillAction(actor, skill, actor));
+                Assert.That(played.Count, Is.EqualTo(2), "Invalid casts do not start or release.");
+            }
+            finally { actor.Skills.Remove(skill); Object.Destroy(skill); Object.Destroy(start); Object.Destroy(release); }
+        }
+
+        [UnityTest] public IEnumerator ChargedSkillReleasesOnceAndInterruptedChargeNeverReleases()
+        {
+            AudioFixture(out var played, out var start, out var release);
+            var skill = AudioSkill(release, 1);
+            try
+            {
+                yield return ResolveAndReplay(new SkillAction(actor, skill, actor));
+                CollectionAssert.AreEqual(new[] { start }, played);
+                var releaseAction = new AdvanceCastAction().ExecuteImmediate(actor).Single();
+                yield return ResolveAndReplay(releaseAction);
+                CollectionAssert.AreEqual(new[] { start, release }, played);
+                yield return ResolveAndReplay(new SkillAction(actor, skill, actor));
+                PendingCast.Cancel(actor, "test interruption");
+                Assert.That(new AdvanceCastAction().ExecuteImmediate(actor), Is.Empty);
+                CollectionAssert.AreEqual(new[] { start, release, start }, played);
+            }
+            finally { actor.Skills.Remove(skill); Object.Destroy(skill); Object.Destroy(start); Object.Destroy(release); }
+        }
+
+        [UnityTest] public IEnumerator LegacyEnemySpellRetainsItsReleaseClipAndFizzleIsSilent()
+        {
+            AudioFixture(out var played, out var start, out var release);
+            try
+            {
+                CastSpellAction Spell() => new() { Target = actor, CastSound = release, GetActionsFunc = () => new() };
+                yield return ResolveAndReplay(Spell());
+                CollectionAssert.AreEqual(new[] { start }, played);
+                var released = new AdvanceCastAction().ExecuteImmediate(actor).Single();
+                yield return ResolveAndReplay(released);
+                CollectionAssert.AreEqual(new[] { start, release }, played);
+                yield return ResolveAndReplay(Spell());
+                var fizzled = new AdvanceCastAction().ExecuteImmediate(actor).Single();
+                actor.Vitals.HP = 0;
+                yield return ResolveAndReplay(fizzled);
+                CollectionAssert.AreEqual(new[] { start, release, start }, played);
+            }
+            finally { Object.Destroy(start); Object.Destroy(release); }
+        }
+
+        [UnityTest] public IEnumerator ImportedEffectAudioSourcesAreDisabledBeforeActivation()
+        {
+            var source = particle.AddComponent<AudioSource>(); source.playOnAwake = true;
+            profile.Projectile.Prefab = null; profile.Area.Prefab = null;
+            yield return CombatEffectPlayer.Get().Deliver(new CombatVisualSequence { Profile = profile }, actor.transform.position, true);
+            var spawned = CombatEffectPlayer.Get().GetComponentsInChildren<AudioSource>(true).Single();
+            Assert.That(spawned.enabled, Is.False);
+            Assert.That(spawned.playOnAwake, Is.False);
+            Assert.That(spawned.isPlaying, Is.False);
+        }
+
+        [UnityTest] public IEnumerator AreaSoundSurvivesSkippedAnimationsAndMultipleRecipientsDoNotRepeatIt()
+        {
+            AudioFixture(out var played, out var start, out var release);
+            profile.AreaSound = release;
+            try
+            {
+                var action = new EmptyAction();
+                action.SetPlaybackContext(DungeonAnimationMode.NoAnimations, true, actor, actor);
+                action.Visuals.Begin(actor); action.Visuals.Configure(profile, actor, actor.TilemapPosition);
+                action.Visuals.AddImpact(actor, actor.TilemapPosition, true);
+                action.Visuals.AddImpact(actor, actor.TilemapPosition + Vector3Int.right, true);
+                action.Visuals.End(action, actor, new());
+                yield return action.Visuals.Play(action, actor, true);
+                CollectionAssert.AreEqual(new[] { release }, played);
+                yield return CombatEffectPlayer.Get().Deliver(action.Visuals.Sequence, actor.transform.position, true, audible: true);
+                CollectionAssert.AreEqual(new[] { release }, played);
+            }
+            finally { Object.Destroy(start); Object.Destroy(release); }
+        }
+
+        [UnityTest] public IEnumerator DamageAndHealingSoundsWaitForProjectileImpact()
+        {
+            var audio = AudioFixture(out var played, out var start, out var release);
+            audio.SoundEffects.Impact_flesh = release; audio.SoundEffects.Impact_heal = release;
+            profile.FlightSeconds = new Vector2(.3f, .3f);
+            profile.Area.Prefab = null;
+            var times = new List<float>();
+            audio.SoundPlayed += (clip, group) => times.Add(Time.unscaledTime);
+            try
+            {
+                foreach (var action in new GameAction[] { new TakeDamageAction(actor, actor, 5, false), new TakeHealAction(actor, actor, 5, false) })
+                {
+                    action.SetPlaybackContext(DungeonAnimationMode.Normal, true, actor, actor);
+                    action.Visuals.Begin(actor);
+                    action.Visuals.Sequence = new CombatVisualSequence { Profile = profile, Actor = actor,
+                        Origin = CombatEffectPlayer.Body(actor, actor.TilemapPosition) - Vector3.right * 10 };
+                    var children = action.ExecuteImmediate(actor); action.Visuals.End(action, actor, children);
+                    float began = Time.unscaledTime;
+                    yield return action.Visuals.Play(action, actor, false);
+                    Assert.That(times.Last() - began, Is.GreaterThanOrEqualTo(.25f), "Outcome audio belongs at arrival, after the flight.");
+                }
+                Assert.That(played.Count, Is.EqualTo(2));
+            }
+            finally { Object.Destroy(start); Object.Destroy(release); }
+        }
+
+        [UnityTest] public IEnumerator PiercingProjectileSoundsEachContactOnceInFlightOrder()
+        {
+            var audio = AudioFixture(out var played, out var start, out var release);
+            audio.SoundEffects.Impact_flesh = release;
+            profile.FlightSeconds = new Vector2(1.2f, 1.2f); profile.Area.Prefab = null;
+            var go = new GameObject("Far audio target"); go.transform.SetParent(root.transform);
+            var far = go.AddComponent<Ally>(); far.enabled = false; far.Equipment = go.AddComponent<Equipment>(); far.Skills = new();
+            far.BaseStats = new Stats { HPMax = 100 }; far.Vitals = new Vitals(); far.Vitals.HP = 100;
+            far.DisplayedVitals = new Vitals(); far.DisplayedStats.Sync(far.FinalStats); far.DisplayedVitals.HP = 100;
+            far.TilemapPosition = actor.TilemapPosition + Vector3Int.right * 2;
+            far.transform.position = game.CurrentDungeon.CellToWorld(far.TilemapPosition); game.Allies.Add(far);
+            var times = new List<float>(); audio.SoundPlayed += (clip, group) => times.Add(Time.unscaledTime);
+            try
+            {
+                var sequence = new CombatVisualSequence { Profile = profile, Actor = actor, SingleFlight = true, ContinuousFlight = true,
+                    Origin = CombatEffectPlayer.Body(actor, actor.TilemapPosition) - Vector3.right * 5,
+                    Center = CombatEffectPlayer.Body(far, far.TilemapPosition) + Vector3.right * 5 };
+                var hits = new[] { new TakeDamageAction(actor, actor, 5, false), new TakeDamageAction(actor, far, 5, false) };
+                foreach (var hit in hits)
+                {
+                    hit.SetPlaybackContext(DungeonAnimationMode.Normal, true, actor, actor);
+                    hit.Visuals.Begin(actor); hit.Visuals.Sequence = sequence;
+                    var children = hit.ExecuteImmediate(actor); hit.Visuals.End(hit, actor, children);
+                }
+                float began = Time.unscaledTime;
+                yield return hits[0].Visuals.Play(hits[0], actor, false);
+                Assert.That(times.Count, Is.EqualTo(2), "Both contacts sound while the single projectile travels.");
+                Assert.That(times[0] - began, Is.GreaterThan(.2f));
+                Assert.That(times[1] - times[0], Is.GreaterThan(.15f), "Distant contacts must not sound together at the end.");
+                yield return hits[1].Visuals.Play(hits[1], actor, false);
+                Assert.That(played.Count, Is.EqualTo(2), "Later action playback does not repeat a contact already sounded in flight.");
+            }
+            finally { Object.Destroy(start); Object.Destroy(release); }
+        }
+
         [TestCase(.5f)] [TestCase(1f)] [TestCase(3f)] [TestCase(6f)]
         public void AdaptiveImpactClearsSmallAndLargeTargets(float size)
         {

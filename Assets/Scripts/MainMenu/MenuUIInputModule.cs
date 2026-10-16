@@ -121,12 +121,42 @@ public class MenuUIInputModule : InputSystemUIInputModule
         Action back = null, Action options = null)
     {
         if (scopes.Exists(s => s.Owner == owner)) return;
+        ConfigureCancelRole(owner);
         RememberSelection();
         scopes.Add(new Scope { Owner = owner, Root = root, First = first,
             ReturnTo = eventSystem.currentSelectedGameObject, Back = back, Options = options });
+        AudioManager.Instance?.PlayCue(SoundCue.MenuOpen);
         ConsumeInput();
         eventSystem.SetSelectedGameObject(null);
         if (IsUsable(first)) eventSystem.SetSelectedGameObject(first);
+    }
+
+    private static void ConfigureCancelRole(MonoBehaviour owner)
+    {
+        // Bind runtime listeners and their semantic audio together. This also
+        // covers legacy authored views whose button roles predate sound authoring.
+        Button back = owner switch
+        {
+            GlobalSettings view => view.ResumeButton,
+            CampaignChoice view => view.Back,
+            CampaignSlots view => view.BackButton,
+            ProtagonistHeroPicker view => view.BackButton,
+            ProtagonistClassPicker view => view.BackButton,
+            PartyMenu view => view.BackButton,
+            PartyMenuPicker view => view.BackButton,
+            ShopMenuDialog view => view.BackButton,
+            BuyConfirmationDialog view => view.CancelButton,
+            BallistaPurchaseDialog view => view.CancelButton,
+            EntranceDialog view => view.CancelButton,
+            InnDialog view => view.CancelButton,
+            StatueDialog view => view.CancelButton,
+            AllyRecruitDialog view => view.CancelButton,
+            StairConfirm view => view.NoButton,
+            EventHistoryDialog view => view.Back,
+            _ => null
+        };
+        SelectToActivateButton.MarkCancel(back);
+        if (owner is AllyRecruitDialog recruit) SelectToActivateButton.MarkCancel(recruit.CancelButton2);
     }
 
     public void PopDialog(MonoBehaviour owner)
@@ -137,6 +167,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
         bool wasTop = index == scopes.Count - 1;
         scopes.RemoveAt(index);
         if (!wasTop) return;
+        AudioManager.Instance?.PlayCue(SoundCue.MenuClose);
         ConsumeInput();
         // External party headers were disabled while the upper modal owned focus.
         // Refresh them before choosing ReturnTo, rather than losing the opener
@@ -205,6 +236,24 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public override void Process()
     {
+        // Only an input-driven selection change is navigation. Arrow presentation,
+        // opening dialogs and restoring focus must never produce their own cues.
+        var previous = eventSystem.currentSelectedGameObject;
+        bool navigating = !InputConsumed && IsUsable(previous) && Allows(previous) &&
+            (UI.Navigate.ReadValue<Vector2>().sqrMagnitude > .1f || UI.Click.WasPressedThisFrame());
+        ProcessInput();
+        var selected = eventSystem.currentSelectedGameObject;
+        // Single-press controls select on pointer-down, then activate on release
+        // (often the following frame). Their click gets only the activation cue.
+        bool activatingPointer = UI.Click.WasPressedThisFrame() && selected != null &&
+            ((selected.TryGetComponent<SelectToActivateButton>(out var button) && button.PointerActivationPending) ||
+             selected.GetComponent<MenuDropdownAudio>() != null);
+        if (navigating && !activatingPointer && previous != selected && IsUsable(selected) && Allows(selected))
+            AudioManager.Instance?.PlayCue(SoundCue.Navigate);
+    }
+
+    private void ProcessInput()
+    {
         ControlDeviceState.Poll();
         if (AutoplayRunner.BlocksPlayerInput)
         {
@@ -254,6 +303,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
             var scope = scopes[^1];
             if (UI.Cancel.WasPressedThisFrame())
             {
+                AudioManager.Instance?.PlayCue(SoundCue.Cancel);
                 // Let native widgets (e.g. an expanded dropdown) handle Back first.
                 var data = new BaseEventData(eventSystem);
                 var selected = eventSystem.currentSelectedGameObject;
@@ -271,6 +321,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
             }
             else if (UI.Options.WasPressedThisFrame() && scope.Options != null)
             {
+                AudioManager.Instance?.PlayCue(SoundCue.Cancel);
                 scope.Options();
                 ConsumeInput();
             }

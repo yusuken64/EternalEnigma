@@ -30,6 +30,7 @@ public class SelectableDigit : Selectable, ISubmitHandler
 		DisplayedDigit++;
 		DisplayedDigit %= 10;
 		UpdateUI();
+        AudioManager.Instance?.PlayCue(SoundCue.Navigate);
 	}
 
 	public void Down_Pressed()
@@ -38,6 +39,7 @@ public class SelectableDigit : Selectable, ISubmitHandler
 		DisplayedDigit += 10;
 		DisplayedDigit %= 10;
 		UpdateUI();
+        AudioManager.Instance?.PlayCue(SoundCue.Navigate);
 	}
 
 	public void UpdateUI()

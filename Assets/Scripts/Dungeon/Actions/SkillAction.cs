@@ -18,6 +18,7 @@ internal class SkillAction : GameAction
     private bool releasing;
     private bool charging;
     private bool resolved;
+    private bool releaseSoundPlayed;
     private List<Character> captured;
     private UnityEngine.Object floor;
     private Team targetTeam;
@@ -73,6 +74,7 @@ internal class SkillAction : GameAction
             AutoplayTrace?.Start();
             GameInputDiagnostics.Record("SkillStarted", caster, skill);
             castSucceeded = true;
+            QueueSound(SoundCue.AbilityStart);
             AddMetricsModification(caster, (stats, vitals) => vitals.SP -= skill.SPCost);
             int charge = skill.InitialCastTime(caster);
             if (charge > 0)
@@ -170,7 +172,6 @@ internal class SkillAction : GameAction
 				_ => AnimatedAction.Attack
 			};
 			if (action != AnimatedAction.Attack) hero.HeroAnimator?.PlayOneShot(action);
-			if (action == AnimatedAction.Dash) AudioManager.Instance?.PlayDashSounds();
 		}
         if (castSucceeded && Visuals.Sequence == null) yield return new WaitForSecondsRealtime(.12f);
 		if (Visuals.Sequence != null) yield break;
@@ -180,14 +181,20 @@ internal class SkillAction : GameAction
 			if (recipient != null) yield return skill.ExecuteRoutine(caster, recipient);
 	}
 
-	internal void PlayCastSound()
+	internal void ShowCasting(bool skipAnimation)
 	{
 		if (releasing) CombatEffectPlayer.Get()?.ClearCasting(caster);
-        if (!castSucceeded) return;
-        if (charging || Visuals.Sequence == null || skill.VisualProfile.GroundCircle.Prefab == null && skill.VisualProfile.Muzzle.Prefab == null) CombatEffectPlayer.Get()?.ShowCasting(caster, skill.VisualProfile, charging);
-		var audio = AudioManager.Instance;
-		audio?.PlaySoundEffect(skill.CastSound != null ? skill.CastSound : audio.SoundEffects?.AbilityCast);
+        if (skipAnimation || !castSucceeded) return;
+        if (charging || Visuals.Sequence == null || skill.VisualProfile.GroundCircle.Prefab == null && skill.VisualProfile.Muzzle.Prefab == null)
+            CombatEffectPlayer.Get()?.ShowCasting(caster, skill.VisualProfile, charging);
 	}
+
+    internal void PlayReleaseSound(Character actor)
+    {
+        if (releaseSoundPlayed || !resolved) return;
+        releaseSoundPlayed = true;
+        if (ShouldPlayAudio(actor)) AudioManager.Instance?.PlaySoundEffect(skill.CastSound);
+    }
 
     internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
     {

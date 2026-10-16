@@ -25,7 +25,8 @@ internal class DropItemAction : GameAction
 		Game game = Game.Instance;
 		if (!inventory.InventoryItems.Contains(item)) return new();
 		dropped = DungeonPlacement.TryDrop(game.CurrentDungeon, dropPosition, item, out _);
-		if (!dropped) return new();
+		if (!dropped) { QueueSound(SoundCue.Denied); return new(); }
+        QueueSound(SoundCue.Drop);
 
 		// Equipped items are listed in the inventory too; dropping one must not leave it equipped.
 		if (item is EquipableInventoryItem equipable && character.Equipment.IsEquipped(equipable))
@@ -39,7 +40,7 @@ internal class DropItemAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
 		if (skipAnimation) { yield break; }
-		AudioManager.Instance.SoundEffects.Unequip.PlayAsSound();
+
 		yield return character.AnimateInteraction();
 	}
 

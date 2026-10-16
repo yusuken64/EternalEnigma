@@ -34,12 +34,7 @@ public static class CombatEffectAuthoring
         foreach (var guid in AssetDatabase.FindAssets("t:CombatEffectProfile", new[] { Root }))
         {
             var profile = AssetDatabase.LoadAssetAtPath<CombatEffectProfile>(AssetDatabase.GUIDToAssetPath(guid));
-            // SkillAction owns its own cast cue. Other actions use this fallback exactly once.
-            string family = profile.name.Contains("Fire") ? "fire" : profile.name.Contains("Frost") ? "frost" :
-                profile.name.Contains("Lightning") ? "lightning" : profile.name.Contains("Life") ? "life" :
-                profile.name.Contains("Shadow") || profile.name.Contains("Reveal") ? "shadow" : "generic";
-            if (!profile.name.StartsWith("Melee")) profile.CastSound = AssetDatabase.LoadAssetAtPath<AudioClip>(
-                "Assets/MagicArsenal/Effects/Sound/Cast/magic_cast_" + family + ".wav");
+            // Audio is assigned consistently with skills below by AbilitySoundAuthoring.
             EditorUtility.SetDirty(profile);
         }
         foreach (var name in new[] { "Dragon", "Werewolf" })
@@ -65,6 +60,7 @@ public static class CombatEffectAuthoring
         EditorUtility.SetDirty(catalog);
         NormalizeGroundStages();
         AssetDatabase.SaveAssets();
+        AbilitySoundAuthoring.Author();
     }
 
     [MenuItem("Tools/Eternal Enigma/Combat Effects/Refresh Status Presentation")]
@@ -257,6 +253,7 @@ public static class CombatEffectAuthoring
         NormalizeGroundStages();
         AssetDatabase.SaveAssets();
         Validate();
+        AbilitySoundAuthoring.Author();
         Debug.Log($"Combat effects assigned: {skillCount} skills with icons, {characterCount} characters, {statusCount} status components, {catalog.Statuses.Count} runtime status types. Both effect packs are in the catalog.");
     }
 

@@ -43,6 +43,7 @@ public class FieldKitchenAction : GameAction, ISkillCastCondition
 		if (!IsValid(character)) return new();
 
 		var food = FindFood();
+		QueueSound(SoundCue.Rest);
 		var inventory = Game.Instance.PlayerController.Inventory;
 
 		if (!AutoplayRunner.InfiniteResourcesFor(caster))

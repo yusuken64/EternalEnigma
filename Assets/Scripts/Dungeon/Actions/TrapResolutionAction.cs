@@ -29,7 +29,7 @@ internal sealed class TrapResolutionAction : GameAction
         action.RecordOutcome(victim);
         foreach (var child in children) Run(child);
     }
-    void Text(string text, string explanation = null) => Run(new TrapFeedbackAction(victim, text, explanation));
+    void Text(string text, string explanation = null, SoundCue? cue = null) => Run(new TrapFeedbackAction(victim, text, explanation, cue));
     void Damage(Character target, int percent)
     {
         TrackAnimationTarget(target);
@@ -40,8 +40,8 @@ internal sealed class TrapResolutionAction : GameAction
         if (current == null || !current.CanTrigger(victim) || victim.Vitals.HP <= 0 || visited.Count >= 8 || !visited.Add(current)) return;
         current.VisualObject?.SetActive(true);
         if (Random.value >= current.ActivationChance)
-        { Text("Evaded", $"{GameMessages.Name(victim)} evaded the {current.GetInteractionText()}; no trap effects occurred."); return; }
-        Text(current.GetInteractionText(), $"{GameMessages.Name(victim)} triggered the {current.GetInteractionText()}.");
+        { Text("Evaded", $"{GameMessages.Name(victim)} evaded the {current.GetInteractionText()}; no trap effects occurred.", SoundCue.Miss); return; }
+        Text(current.GetInteractionText(), $"{GameMessages.Name(victim)} triggered the {current.GetInteractionText()}.", SoundCue.Trap);
         var dungeon = Game.Instance.CurrentDungeon;
         switch (current.Kind)
         {
@@ -141,7 +141,7 @@ internal sealed class TrapResolutionAction : GameAction
         var candidates = DungeonPlacement.OpenCells(dungeon, victim).Where(p => p != victim.TilemapPosition && reachable.Contains(p)).ToList();
         if (candidates.Count == 0) { Text("No effect", $"{GameMessages.Name(victim)} could not teleport because there is nowhere safe to land."); return; }
         var destination = candidates[Random.Range(0, candidates.Count)];
-        Text("Warped", $"{GameMessages.Name(victim)} warped to another open spot on the same floor.");
+        Text("Warped", $"{GameMessages.Name(victim)} warped to another open spot on the same floor.", SoundCue.Teleport);
         Arrive(destination, direction);
     }
     Inventory Bag => victim is Ally ? Game.Instance.PlayerController.Inventory : victim.GetComponent<Inventory>();
@@ -218,14 +218,14 @@ internal sealed class TrapResolutionAction : GameAction
                 Text("Item animated", $"{item.InventoryItem.DisplayName} became {GameMessages.Name(action.SpawnedEnemy)}; defeat it to recover the item.");
                 dungeon.RemoveInteractable(item);
             }
-            else Text("Monster summoned", $"The trap summoned {GameMessages.Name(action.SpawnedEnemy)} nearby.");
+            else Text("Monster summoned", $"The trap summoned {GameMessages.Name(action.SpawnedEnemy)} nearby.", SoundCue.Status);
         }
         if (!spawned) Text("No effect", "No monster appeared because the surrounding area is blocked.");
     }
     internal override IEnumerator ExecuteRoutine(Character c, bool skipAnimation = false)
     {
         foreach (var action in replay)
-        { action.UpdateDisplayedStats(); yield return action.ExecuteRoutine(victim, skipAnimation); }
+        { action.UpdateDisplayedStats(); action.PlayQueuedSounds(victim); yield return action.ExecuteRoutine(victim, skipAnimation); }
     }
     internal override void AddDestinationSight(HashSet<Vector3Int> tiles)
     { foreach (var action in replay) action.AddDestinationSight(tiles); }
@@ -238,11 +238,12 @@ internal sealed class TrapFeedbackAction : GameAction
     readonly Character target;
     internal readonly string Message;
     internal readonly string HistoryMessage;
-    internal TrapFeedbackAction(Character target, string message, string explanation = null)
-    { this.target = target; Message = message; HistoryMessage = explanation ?? $"{GameMessages.Name(target)}\n{message}"; }
+    readonly SoundCue? cue;
+    internal TrapFeedbackAction(Character target, string message, string explanation = null, SoundCue? cue = null)
+    { this.target = target; Message = message; HistoryMessage = explanation ?? $"{GameMessages.Name(target)}\n{message}"; this.cue = cue; }
     internal override bool IsValid(Character c) => true;
     internal override List<GameAction> ExecuteImmediate(Character c)
-    { GameMessages.ForCharacter(target, HistoryMessage); return new(); }
+    { if (cue.HasValue) QueueSound(cue.Value); GameMessages.ForCharacter(target, HistoryMessage); return new(); }
     internal override IEnumerator ExecuteRoutine(Character c, bool skipAnimation = false)
     {
         if (!skipAnimation) DungeonFloatingText.Show(Game.Instance, Message, Message == "Evaded" ? Color.white : Color.yellow, target);

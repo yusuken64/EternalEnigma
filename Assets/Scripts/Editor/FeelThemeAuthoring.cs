@@ -42,10 +42,8 @@ public static class FeelThemeAuthoring
         {
             var sounds = common.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<SoundEffects>(true)).First();
             const string movement = "Assets/Sounds/RPG_Essentials_Free/12_Player_Movement_SFX/";
-            sounds.StepGrass = AssetDatabase.LoadAssetAtPath<AudioClip>(movement + "03_Step_grass_03.wav");
-            sounds.StepRock = AssetDatabase.LoadAssetAtPath<AudioClip>(movement + "08_Step_rock_02.wav");
-            sounds.StepWood = AssetDatabase.LoadAssetAtPath<AudioClip>(movement + "12_Step_wood_03.wav");
-            sounds.StepWater = AssetDatabase.LoadAssetAtPath<AudioClip>(movement + "14_Step_water_02.wav");
+            // Walking is intentionally silent in every scene.
+            sounds.StepGrass = sounds.StepRock = sounds.StepWood = sounds.StepWater = null;
             sounds.Jump = AssetDatabase.LoadAssetAtPath<AudioClip>(movement + "30_Jump_03.wav");
             sounds.Landing = AssetDatabase.LoadAssetAtPath<AudioClip>(movement + "45_Landing_01.wav");
             sounds.Ambush = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sounds/Music/Ambush Transition.mp3");

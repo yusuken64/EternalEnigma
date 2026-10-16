@@ -19,6 +19,8 @@ public sealed class DisplayOptions : MonoBehaviour
         TerminalModeButton.Ensure(transform, Resolution);
         WindowMode.onValueChanged.AddListener(ChangeMode);
         Resolution.onValueChanged.AddListener(ChangeResolution);
+        MenuDropdownAudio.Ensure(WindowMode);
+        MenuDropdownAudio.Ensure(Resolution);
     }
     private void OnEnable() => Refresh();
     private void OnDisable() { if (pending != null) StopCoroutine(pending); pending = null; }
@@ -55,6 +57,7 @@ public sealed class DisplayOptions : MonoBehaviour
     private void Apply(Vector2Int size, FullScreenMode mode)
     {
         DisplayPreferences.Current.Commit(size, mode);
+        AudioManager.Instance?.PlayCue(SoundCue.Confirm);
         if (pending != null) StopCoroutine(pending);
         pending = StartCoroutine(RefreshAfterApply());
     }

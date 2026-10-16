@@ -23,7 +23,7 @@ public class InnDialog : Dialog
         dialog.StatusText = GameUISkin.Label(panel.transform, "", new Vector2(.08f, .57f), new Vector2(.92f, .77f));
         dialog.RestButton = GameUISkin.Button(panel.transform, "Rest for free", new Vector2(.1f, .39f), new Vector2(.9f, .53f), dialog.Rest_Clicked);
         dialog.SaveButton = GameUISkin.Button(panel.transform, "Save game", new Vector2(.1f, .22f), new Vector2(.9f, .36f), dialog.Save_Clicked);
-        dialog.CancelButton = GameUISkin.Button(panel.transform, "Back", new Vector2(.1f, .05f), new Vector2(.9f, .19f), dialog.Cancel_Clicked);
+        dialog.CancelButton = GameUISkin.Button(panel.transform, "Back", new Vector2(.1f, .05f), new Vector2(.9f, .19f), dialog.Cancel_Clicked, SelectToActivateButton.SoundRole.Cancel);
         panel.gameObject.SetActive(false);
         return dialog;
     }

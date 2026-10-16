@@ -21,8 +21,12 @@ public sealed class TrainerPreviewScroll : SelectToActivateButton
                 return;
             }
             if (overflow > 0)
+            {
+                float previous = Scroll.verticalNormalizedPosition;
                 Scroll.verticalNormalizedPosition = Mathf.Clamp01(Scroll.verticalNormalizedPosition +
                     (eventData.moveDir == MoveDirection.Up ? 1 : -1) * 100 / overflow);
+                if (!Mathf.Approximately(previous, Scroll.verticalNormalizedPosition)) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
+            }
             eventData.Use();
         }
         else base.OnMove(eventData);

@@ -52,6 +52,7 @@ internal class UseInventoryItemAction : GameAction
 		if (item is EquipableInventoryItem equipment)
 			return new() { character.Equipment.IsEquipped(equipment)
 				? new UnEquipAction(character, equipment) : new EquipAction(character, equipment) };
+        QueueSound(SoundCue.UseItem);
         GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} used {item.DisplayName}.");
 		var definition = Definition;
 		List<GameAction> effects;
@@ -71,6 +72,7 @@ internal class UseInventoryItemAction : GameAction
 			!(UnityEngine.Random.value < ClassPassives.ConsumableSaveChance(character));
         if (item.ItemDefinition.ItemEffectDefinition is SkillItemEffectDefinition skillEffect && skillEffect.EffectSkill != null)
         {
+            QueueSound(SoundCue.AbilityStart);
             GameMessages.AbilityCast(character, skillEffect.EffectSkill, item.DisplayName);
             var center = definition?.Targeting == SkillTargeting.Missile ? missileHit.Cell : target != null ? target.TilemapPosition : character.TilemapPosition;
             Visuals.Configure(skillEffect.EffectSkill.VisualProfile, character, center, definition != null ? definition.AreaRadius : 0);
@@ -97,7 +99,7 @@ internal class UseInventoryItemAction : GameAction
 		if (Definition?.Targeting == SkillTargeting.Missile)
 			yield return MissileTargeting.Animate(character, missileHit.Cell, Definition.MissileProjectilePrefab);
 		//TODO get sound from item
-		AudioManager.Instance.SoundEffects.UseItem.PlayAsSound();
+
 
 		yield return new WaitForSecondsRealtime(1f);
 	}

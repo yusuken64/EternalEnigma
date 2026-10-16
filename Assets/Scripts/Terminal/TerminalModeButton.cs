@@ -11,7 +11,7 @@ public sealed class TerminalModeButton : MonoBehaviour
     {
         var existing = parent.GetComponentInChildren<TerminalModeButton>(true);
         if (existing != null) return existing;
-        var root = new GameObject("Terminal mode", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement), typeof(TerminalModeButton));
+        var root = new GameObject("Terminal mode", typeof(RectTransform), typeof(Image), typeof(SelectToActivateButton), typeof(LayoutElement), typeof(TerminalModeButton));
         root.transform.SetParent(parent, false);
         var rect = (RectTransform)root.transform;
         if (style != null)
@@ -39,6 +39,10 @@ public sealed class TerminalModeButton : MonoBehaviour
         if (style != null) { textRect.offsetMin = new Vector2(18, 4); textRect.offsetMax = new Vector2(-18, -4); }
         var component = root.GetComponent<TerminalModeButton>();
         component.button = root.GetComponent<Button>();
+        var activate = (SelectToActivateButton)component.button;
+        activate.ActivateOnFirstPointerPress = true;
+        // Changing either direction is a settings confirmation; Back remains cancel.
+        activate.AudioRole = SelectToActivateButton.SoundRole.Confirm;
         component.button.targetGraphic = image;
         component.label = textObject.GetComponent<TextMeshProUGUI>();
         component.label.font = style != null ? style.captionText.font : TMP_Settings.defaultFontAsset;

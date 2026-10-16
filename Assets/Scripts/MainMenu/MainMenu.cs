@@ -83,6 +83,7 @@ public class MainMenu : MonoBehaviour
         if (input.UI.Cancel.WasPressedThisFrame() &&
             GetComponent<MainMenuDeveloperControls>()?.Close() == true)
         {
+            AudioManager.Instance?.PlayCue(SoundCue.Cancel);
             input.ConsumeInput();
             return;
         }

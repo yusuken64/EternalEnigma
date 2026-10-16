@@ -116,7 +116,7 @@ public static class AuthoredUIMigration
         var panel=GameUISkin.Panel(choice.transform,new Vector2(.22f,.3f),new Vector2(.78f,.7f));
         choice.Prompt=GameUISkin.Label(panel.transform,"Confirm action",new Vector2(.08f,.43f),new Vector2(.92f,.91f),30);
         choice.Confirm=GameUISkin.Button(panel.transform,"Confirm",new Vector2(.08f,.12f),new Vector2(.58f,.32f),null);
-        choice.Back=GameUISkin.Button(panel.transform,"Back",new Vector2(.62f,.12f),new Vector2(.92f,.32f),null);choice.gameObject.SetActive(false);Save(choice,"Confirm");
+        choice.Back=GameUISkin.Button(panel.transform,"Back",new Vector2(.62f,.12f),new Vector2(.92f,.32f),null,SelectToActivateButton.SoundRole.Cancel);choice.gameObject.SetActive(false);Save(choice,"Confirm");
         foreach(bool dungeon in new[]{false,true})
         {
             var messages=new GameObject("Game messages").AddComponent<GameMessages>();messages.AuthorLayout(dungeon);
@@ -188,7 +188,7 @@ public static class AuthoredUIMigration
         var detail=GameUISkin.Label(panel.transform,"Campaign details",new Vector2(.04f,.16f),new Vector2(.96f,.52f),24);detail.enableAutoSizing=true;detail.fontSizeMin=17;Set(view,"detail",detail);
         var bar=GameUISkin.Rect("Required dungeon progress",panel.transform,new Vector2(.04f,.13f),new Vector2(.96f,.145f)).gameObject.AddComponent<Image>();bar.color=new Color(.2f,.2f,.2f);
         var progress=GameUISkin.Rect("Progress",bar.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>();progress.color=new Color(.8f,.65f,.25f);Set(view,"progress",progress);
-        view.BackButton=GameUISkin.Button(panel.transform,"Back",new Vector2(.04f,.03f),new Vector2(.3f,.10f),null);view.gameObject.SetActive(false);
+        view.BackButton=GameUISkin.Button(panel.transform,"Back",new Vector2(.04f,.03f),new Vector2(.3f,.10f),null,SelectToActivateButton.SoundRole.Cancel);view.gameObject.SetActive(false);
     }
     static void GameplayScene(Scene scene,string name)
     {

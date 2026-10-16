@@ -492,6 +492,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  soundRole: 0
 --- !u!114 &8610432457653193956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -943,6 +944,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  soundRole: 0
 --- !u!1 &3257695806793376454
 GameObject:
   m_ObjectHideFlags: 0
@@ -1116,6 +1118,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  soundRole: 0
 --- !u!1 &3385957546831489667
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,6 +1475,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  soundRole: 0
   Scroll: {fileID: 8097350465750240721}
 --- !u!1 &4500729195547750261
 GameObject:
@@ -2030,6 +2034,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  soundRole: 1
 --- !u!1 &6578148248277969583
 GameObject:
   m_ObjectHideFlags: 0

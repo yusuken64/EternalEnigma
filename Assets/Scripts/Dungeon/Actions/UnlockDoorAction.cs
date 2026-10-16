@@ -20,7 +20,7 @@ public class UnlockDoorAction : GameAction
     internal override List<GameAction> ExecuteImmediate(Character character)
     {
         if (!IsValid(character)) return new();
-        if (UnityEngine.Random.value >= SuccessChance) { GameMessages.Post("The lock held."); return new(); }
+        if (UnityEngine.Random.value >= SuccessChance) { QueueSound(SoundCue.Denied); GameMessages.Post("The lock held."); return new(); }
         GameMessages.Post("The lock clicked open.");
         door.Unlock();
         return new();

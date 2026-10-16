@@ -14,7 +14,7 @@ public sealed class HomeBedDialog : Dialog
         var dialog = panel.gameObject.AddComponent<HomeBedDialog>();
         GameUISkin.Label(panel.transform,"Home",new Vector2(.1f,.7f),new Vector2(.9f,.94f),34);
         dialog.sleep = GameUISkin.Button(panel.transform,"Sleep and Save",new Vector2(.1f,.4f),new Vector2(.9f,.6f), dialog.Activate);
-        dialog.back=GameUISkin.Button(panel.transform,"Back",new Vector2(.1f,.1f),new Vector2(.9f,.3f),dialog.CloseDialog);
+        dialog.back=GameUISkin.Button(panel.transform,"Back",new Vector2(.1f,.1f),new Vector2(.9f,.3f),dialog.CloseDialog,SelectToActivateButton.SoundRole.Cancel);
         dialog.AuthorPreparationLayout();
         panel.gameObject.SetActive(false); return dialog;
     }
@@ -41,6 +41,7 @@ public sealed class HomeBedDialog : Dialog
     public static HomeBedDialog Create(Transform parent)=>AuthoredUI.Require<HomeBedDialog>(parent);
     private void Awake()
     {
+        SelectToActivateButton.MarkCancel(back);
         sleep.onClick.AddListener(Activate);
         back.onClick.AddListener(CloseDialog);
     }

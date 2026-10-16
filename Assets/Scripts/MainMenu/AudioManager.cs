@@ -15,6 +15,31 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
     private int uiClipIndex;
     private Coroutine musicTransition;
     private const float MusicFadeSeconds = 0.4f;
+    public event System.Action<AudioClip, AudioMixerGroup> SoundPlayed;
+    public event System.Action<SoundCue, AudioClip, AudioMixerGroup> CuePlayed;
+    private readonly Dictionary<SoundCue, float> lastCueTime = new();
+    private readonly Dictionary<AudioClip, int> uiFrames = new();
+    private int lastUIActionFrame = -1;
+
+    public void PlayCue(SoundCue cue)
+    {
+        var clip = SoundEffects?.For(cue);
+        if (clip == null) return;
+        bool ui = global::SoundEffects.IsUI(cue);
+        if ((cue == SoundCue.Navigate || cue == SoundCue.MenuOpen || cue == SoundCue.MenuClose) && lastUIActionFrame == Time.frameCount) return;
+        float interval = cue switch
+        {
+            SoundCue.Navigate => .04f, SoundCue.Denied => .16f, SoundCue.Wait => .12f,
+            SoundCue.LevelUp => .18f, SoundCue.Status => .06f, _ => 0
+        };
+        if (lastCueTime.TryGetValue(cue, out float last) && Time.unscaledTime - last < interval) return;
+        var group = ui ? UIAudioMixerGroup : EffectAudioMixerGroup;
+        bool played = ui ? PlayUI(clip, global::SoundEffects.Gain(cue), true) : PlayEffect(clip, global::SoundEffects.Gain(cue));
+        if (!played) return;
+        lastCueTime[cue] = Time.unscaledTime;
+        if (ui && cue != SoundCue.Navigate) lastUIActionFrame = Time.frameCount;
+        CuePlayed?.Invoke(cue, clip, group);
+    }
 
     private void Start()
     {
@@ -29,8 +54,16 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
 
     public void PlayUISound(AudioClip soundClip)
     {
-        if (soundClip == null || UIAudioSources.Count == 0) return;
-        PlayFromPool(UIAudioSources, ref uiClipIndex, soundClip, UIAudioMixerGroup);
+        PlayUI(soundClip, .36f);
+    }
+
+    private bool PlayUI(AudioClip clip, float gain, bool deduplicate = false)
+    {
+        if (clip == null || UIAudioSources.Count == 0 || deduplicate && uiFrames.TryGetValue(clip, out int frame) && frame == Time.frameCount) return false;
+        if (!PlayFromPool(UIAudioSources, ref uiClipIndex, clip, UIAudioMixerGroup, gain)) return false;
+        uiFrames[clip] = Time.frameCount;
+        SoundPlayed?.Invoke(clip, UIAudioMixerGroup);
+        return true;
     }
 
 	public SoundEffects SoundEffects;
@@ -78,53 +111,39 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
         MusicAudioSource.volume = target;
     }
 
-    private static void PlayFromPool(List<AudioSource> sources, ref int index, AudioClip clip, AudioMixerGroup group)
+    private static bool PlayFromPool(List<AudioSource> sources, ref int index, AudioClip clip, AudioMixerGroup group, float gain)
     {
+        AudioSource fallback = null;
         for (int attempt = 0; attempt < sources.Count; attempt++)
         {
-            var source = sources[index++ % sources.Count];
-            if (source == null || source.isPlaying) continue;
+            var source = sources[index % sources.Count];
+            index = (index + 1) % sources.Count;
+            if (source == null) continue;
+            fallback ??= source;
+            if (source.isPlaying) continue;
             source.outputAudioMixerGroup = group;
-            source.PlayOneShot(clip);
-            return;
+            source.pitch = 1;
+            source.PlayOneShot(clip, gain);
+            return true;
         }
         // A busy pool should not cut short a prior cue.
-        var fallback = sources[index++ % sources.Count];
-        if (fallback != null) { fallback.outputAudioMixerGroup = group; fallback.PlayOneShot(clip); }
+        if (fallback == null) return false;
+        fallback.outputAudioMixerGroup = group;
+        fallback.pitch = 1;
+        fallback.PlayOneShot(clip, gain);
+        return true;
     }
 
 	private int effectClipIndex;
-	private float nextFootstep;
-	private float nextAmbushCue;
-
-	internal void PlayFootstep(AudioClip clip, int seed, int x, int y)
-	{
-		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations || clip == null ||
-			Time.unscaledTime < nextFootstep || EffectAudioSources.Count == 0) return;
-		nextFootstep = Time.unscaledTime + .075f;
-		var source = EffectAudioSources[effectClipIndex++ % EffectAudioSources.Count];
-		if (source == null || source.isPlaying) return;
-		uint hash = DungeonPresentation.Hash(seed, x, y);
-		source.outputAudioMixerGroup = EffectAudioMixerGroup;
-		source.pitch = .94f + (hash % 13) * .01f;
-		source.PlayOneShot(clip, .45f);
-	}
-	internal void PlayDashSounds()
-	{
-		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations) return;
-		PlaySoundEffect(SoundEffects?.Jump);
-		StartCoroutine(CompleteDashSound());
-	}
-	private IEnumerator CompleteDashSound()
-	{
-		yield return new WaitForSecondsRealtime(.15f);
-		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations) PlaySoundEffect(SoundEffects?.Landing);
-	}
-
 	internal void PlaySoundEffect(AudioClip soundClip)
 	{
-        if (soundClip == null || EffectAudioSources.Count == 0) return;
-        foreach (var source in EffectAudioSources) if (source != null && !source.isPlaying) source.pitch = 1;
-        PlayFromPool(EffectAudioSources, ref effectClipIndex, soundClip, EffectAudioMixerGroup);
+        PlayEffect(soundClip, .6f);
 	}
+
+    private bool PlayEffect(AudioClip clip, float gain)
+    {
+        if (clip == null || EffectAudioSources.Count == 0 || !PlayFromPool(EffectAudioSources, ref effectClipIndex, clip, EffectAudioMixerGroup, gain)) return false;
+        SoundPlayed?.Invoke(clip, EffectAudioMixerGroup);
+        return true;
+    }
 }

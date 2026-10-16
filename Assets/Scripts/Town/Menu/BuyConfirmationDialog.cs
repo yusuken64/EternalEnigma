@@ -38,7 +38,7 @@ public class BuyConfirmationDialog : Dialog
 	public void Ok_Clicked()
 	{
         if (BuyCallBack == null || !gameObject.activeInHierarchy) return;
-        if (!RefreshAvailability()) { CancelButton.Select(); return; }
+        if (!RefreshAvailability()) { AudioManager.Instance?.PlayCue(SoundCue.Denied); CancelButton.Select(); return; }
         var callback = BuyCallBack;
         BuyCallBack = null;
         CloseDialog();

@@ -34,6 +34,7 @@ internal class RangedAttackAction : GameAction
     {
         var ret = new List<GameAction>();
         if (!ValidateCommand(character, out _)) return ret;
+        if (CharacterCombatEffects.Attack(attacker, true)?.CastSound == null) QueueSound(SoundCue.Throw);
         bool bow = ArrowSupply.HasBow(attacker);
         var direction = target != null ? target.TilemapPosition - attacker.TilemapPosition : Dungeon.GetFacingOffset(attacker.CurrentFacing);
         direction = new Vector3Int(Math.Sign(direction.x), Math.Sign(direction.y));

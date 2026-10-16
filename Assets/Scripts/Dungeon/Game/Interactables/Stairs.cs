@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 public class Stairs : Interactable
 {
@@ -12,7 +12,7 @@ public class Stairs : Interactable
                 if (!Game.Instance.CheckFloorExit()) return new();
                 if (Game.Instance.Finale != null) { Game.Instance.Finale.RequestExit(); return new(); }
 				if (Game.Instance.CurrentDungeon.IsExitFloor) { GameOverScreen.GoBackToTown(true,Game.Instance.PlayerController); return new(); }
-				AudioManager.Instance.SoundEffects.Flee.PlayAsSound();
+				AudioManager.Instance?.PlayCue(SoundCue.Retreat);
 				Game.Instance.AdvanceFloor();
 				return new();
 			},

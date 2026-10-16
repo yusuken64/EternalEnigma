@@ -45,4 +45,32 @@ public class SoundEffects : MonoBehaviour
 	public AudioClip Teleport;
 	public AudioClip AbilityCast;
 	public AudioClip LevelUp;
+	public AudioClip DoorOpen, GateUnlock, Purchase, Sell, Wait, Rest, Gather, ContainerOpen, Trap, Throw, Status, Revive;
+
+    public AudioClip For(SoundCue cue) => cue switch
+    {
+        SoundCue.Navigate => Hover, SoundCue.Confirm => Confirm, SoundCue.Cancel => Decline,
+        SoundCue.Denied => Denied, SoundCue.MenuOpen => Pause, SoundCue.MenuClose => Unpause,
+        SoundCue.Attack => Slash, SoundCue.Damage => Impact_flesh, SoundCue.Heal => Impact_heal,
+        SoundCue.Miss => Miss_Evade, SoundCue.Block => Block, SoundCue.Death => Enemy_death,
+        SoundCue.UseItem => UseItem, SoundCue.Equip => Equip, SoundCue.Unequip => Unequip,
+        SoundCue.Pickup => BuySell, SoundCue.Drop => Unequip, SoundCue.Purchase => Purchase,
+        SoundCue.Sell => Sell, SoundCue.DoorOpen => DoorOpen, SoundCue.GateUnlock => GateUnlock,
+        SoundCue.LevelUp => LevelUp, SoundCue.Wait => Wait, SoundCue.Rest => Rest,
+        SoundCue.Gather => Gather, SoundCue.ContainerOpen => ContainerOpen, SoundCue.Trap => Trap,
+        SoundCue.Throw => Throw, SoundCue.Status => Status, SoundCue.Revive => Revive,
+        SoundCue.Teleport => Teleport, SoundCue.Retreat => Flee, SoundCue.AbilityStart => AbilityCast,
+        _ => null
+    };
+
+    public static bool IsUI(SoundCue cue) => cue <= SoundCue.MenuClose;
+    public static float Gain(SoundCue cue) => cue switch
+    {
+        SoundCue.Navigate => .12f, SoundCue.Wait => .10f, SoundCue.Rest => .22f,
+        SoundCue.Denied => .28f, SoundCue.Status => .28f, SoundCue.AbilityStart => .32f,
+        SoundCue.Confirm or SoundCue.Cancel or SoundCue.MenuOpen or SoundCue.MenuClose => .36f,
+        SoundCue.Pickup or SoundCue.Drop or SoundCue.Equip or SoundCue.Unequip => .42f,
+        SoundCue.GateUnlock or SoundCue.LevelUp or SoundCue.Revive => .72f,
+        _ => .6f
+    };
 }

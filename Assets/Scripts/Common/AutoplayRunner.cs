@@ -489,9 +489,9 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             using var session = world.BeginGateInteraction(route.Id);
             if (session == null) continue;
             foreach (var key in world.CollectedKeys)
-                if (world.AttemptGate(session, new KeyLockAction(key)) == LockOutcome.Opened) return true;
+                if (world.AttemptGate(session, new KeyLockAction(key), feedback: false) == LockOutcome.Opened) return true;
             foreach (var capability in world.Held.Values)
-                if (world.AttemptGate(session, new CapabilityLockAction(capability)) == LockOutcome.Opened) return true;
+                if (world.AttemptGate(session, new CapabilityLockAction(capability), feedback: false) == LockOutcome.Opened) return true;
         }
         return false;
     }

@@ -19,6 +19,7 @@ internal class UnEquipAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		this.character.Equipment.UnEquip(equipableInventoryItem);
+        QueueSound(SoundCue.Unequip);
 		return new();
 	}
 

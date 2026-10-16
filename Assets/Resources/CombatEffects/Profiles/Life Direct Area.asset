@@ -63,7 +63,7 @@ MonoBehaviour:
     MinimumDiameterCells: 3
     ReferenceDiameter: 15.000004
   AreaSound: {fileID: 8300000, guid: 31e41ba2e4d8e334081ae2e2d1fe8d19, type: 3}
-  CastSound: {fileID: 8300000, guid: 1f5fbd822190c4f42b7786a5bd5f1fe8, type: 3}
+  CastSound: {fileID: 8300000, guid: cfce0cea076109f478783201b2a9f57f, type: 3}
   CastSeconds: 0.45
   ImpactSeconds: 0.4
   ProjectileSpeed: 20

@@ -20,6 +20,8 @@ public class RemoveStatusEffectAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		removedInstance = target.RemoveStatusEffect(statusEffectPrefab);
+        TrackAnimationTarget(target);
+        if (removedInstance != null) QueueSound(SoundCue.Status);
         if (removedInstance != null) GameMessages.ForCharacter(target, $"{GameMessages.Name(target)}'s {removedInstance.GetEffectName()} has ended.");
 		var effects = removedInstance != null ? removedInstance.GetExpiryEffects(target) : null;
 		return effects ?? new();

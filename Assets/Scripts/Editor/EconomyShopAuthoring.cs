@@ -33,7 +33,7 @@ public static class EconomyShopAuthoring
             shop.StatusText = GameUISkin.Label(panel.transform, "Shop", new Vector2(.05f,.82f), new Vector2(.95f,.97f), 30);
             shop.BuyModeButton = GameUISkin.Button(panel.transform, "Buy", new Vector2(.05f,.72f), new Vector2(.48f,.8f), null);
             shop.SellModeButton = GameUISkin.Button(panel.transform, "Sell", new Vector2(.52f,.72f), new Vector2(.95f,.8f), null);
-            shop.BackButton = GameUISkin.Button(panel.transform, "Back", new Vector2(.72f,.02f), new Vector2(.95f,.10f), null);
+            shop.BackButton = GameUISkin.Button(panel.transform, "Back", new Vector2(.72f,.02f), new Vector2(.95f,.10f), null, SelectToActivateButton.SoundRole.Cancel);
             MenuControlHints.Bind(GameUISkin.Label(panel.transform, "", new Vector2(.05f,.02f), new Vector2(.7f,.10f), 18));
             var viewport = GameUISkin.Rect("Shop inventory", panel.transform, new Vector2(.05f,.13f), new Vector2(.95f,.69f));
             viewport.gameObject.AddComponent<Image>().color = new Color(1,1,1,.03f);

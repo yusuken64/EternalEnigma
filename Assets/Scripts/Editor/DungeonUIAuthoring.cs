@@ -363,7 +363,7 @@ public static class DungeonUIAuthoring
             var scroll=viewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=viewport;scroll.content=text.rectTransform;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=40;
             menu.DetailsControl=viewport.gameObject.AddComponent<TrainerPreviewScroll>();menu.DetailsControl.Scroll=scroll;menu.DetailsControl.targetGraphic=hit;
             ButtonRole(menu.DetailsControl,DungeonVisualRole.InputSurface);
-            var back=GameUISkin.Button(panel,"Back",new Vector2(.04f,.025f),new Vector2(.30f,.10f),null);ButtonRole(back,DungeonVisualRole.Secondary);back.gameObject.AddComponent<DungeonDialogClose>();
+            var back=GameUISkin.Button(panel,"Back",new Vector2(.04f,.025f),new Vector2(.30f,.10f),null,SelectToActivateButton.SoundRole.Cancel);ButtonRole(back,DungeonVisualRole.Secondary);back.gameObject.AddComponent<DungeonDialogClose>();
             var hint=GameUISkin.Label(panel,"Select: choose item\nCancel: back   Right: details",new Vector2(.34f,.025f),new Vector2(.96f,.105f),20);hint.color=GameUITheme.LightInk;
             CloseButton(panel,menu);
         });
@@ -386,7 +386,7 @@ public static class DungeonUIAuthoring
             var scroll=dialog.scrollView=viewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=viewport;scroll.content=dialog.Entries.rectTransform;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=40;
             dialog.Reader=viewport.gameObject.AddComponent<TrainerPreviewScroll>();dialog.Reader.Scroll=scroll;dialog.Reader.targetGraphic=hit;
             ButtonRole(dialog.Reader,DungeonVisualRole.InputSurface);
-            dialog.Back=GameUISkin.Button(dialog.Panel,"Back",new Vector2(.04f,.03f),new Vector2(.30f,.11f),null);ButtonRole(dialog.Back,DungeonVisualRole.Secondary);
+            dialog.Back=GameUISkin.Button(dialog.Panel,"Back",new Vector2(.04f,.03f),new Vector2(.30f,.11f),null,SelectToActivateButton.SoundRole.Cancel);ButtonRole(dialog.Back,DungeonVisualRole.Secondary);
             var hint=GameUISkin.Label(dialog.Panel,"Up / Down: scroll\nCancel: back",new Vector2(.34f,.025f),new Vector2(.96f,.115f),20);hint.color=GameUITheme.LightInk;
             dialog.Reader.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnRight=dialog.Back};
             dialog.Back.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnLeft=dialog.Reader,selectOnUp=dialog.Reader};

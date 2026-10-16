@@ -61,7 +61,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         picker.choices = GameUISkin.Rect("Heroes", canvas.transform, new Vector2(.38f, .2f), new Vector2(.95f, .81f));
         picker.pageLabel = GameUISkin.Label(canvas.transform, "", new Vector2(.39f, .08f), new Vector2(.95f, .16f), 22);
         picker.pageLabel.alignment = TextAlignmentOptions.Center;
-        picker.BackButton=GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back);
+        picker.BackButton=GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back, SelectToActivateButton.SoundRole.Cancel);
         return picker;
     }
 #endif

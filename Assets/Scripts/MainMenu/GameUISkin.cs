@@ -125,7 +125,8 @@ public static class GameUISkin
         return label;
     }
 
-    public static Button Button(Transform parent, string text, Vector2 min, Vector2 max, Action clicked)
+    public static Button Button(Transform parent, string text, Vector2 min, Vector2 max, Action clicked,
+        SelectToActivateButton.SoundRole soundRole = SelectToActivateButton.SoundRole.Confirm)
     {
         if (buttonPrefab == null) buttonPrefab = Resources.Load<Button>("UI/GameButton");
         Button button;
@@ -135,6 +136,7 @@ public static class GameUISkin
 #endif
         button = UnityEngine.Object.Instantiate(buttonPrefab, parent, false);
         button.name = text;
+        if (button is SelectToActivateButton control) control.AudioRole = soundRole;
         var rect = (RectTransform)button.transform;
         rect.anchorMin = min; rect.anchorMax = max;
         rect.offsetMin = rect.offsetMax = Vector2.zero;

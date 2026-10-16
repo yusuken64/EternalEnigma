@@ -32,6 +32,67 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator RoomAndTransactionAudioPlaysOnceOnTheCorrectChannelWithoutAnimations()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold = 10000 }.CreateSave());
+            var town = World;
+            var player = town.TownPlayer;
+            Assert.That(town.Services.Recruit(town.TownAllies.First(), out _), Is.True);
+            player.Gold = 10000;
+            var audio = AudioManager.Instance;
+            var heard = new List<(SoundCue cue, UnityEngine.Audio.AudioMixerGroup group)>();
+            void Heard(SoundCue cue, AudioClip _, UnityEngine.Audio.AudioMixerGroup group) => heard.Add((cue, group));
+            var previousAnimation = DungeonPreferences.AnimationOverride;
+            audio.CuePlayed += Heard;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;
+            try
+            {
+                var door = town.Plan.ShopRooms.First().Door.ToCell();
+                var threshold = door + Vector3Int.up;
+                var inside = door + Vector3Int.up * 2;
+                var hero = player.ControllingTownAlly;
+                hero.TilemapPosition = door;
+                hero.transform.position = town.WalkableMap.CellToWorld(door);
+                town.RefreshRoofs();
+                Assert.That(heard, Is.Empty, "A roof refresh or spawn must not sound like a door opening.");
+                player.SetAction(new TownMovement(player, door, threshold));
+                yield return harness.WaitUntil(() => !player.IsBusy, "audio doorway threshold");
+                player.SetAction(new TownMovement(player, threshold, inside));
+                yield return harness.WaitUntil(() => !player.IsBusy, "audio room entry");
+                Assert.That(heard.Count(e => e.cue == SoundCue.DoorOpen), Is.EqualTo(1));
+                Assert.That(heard.Single(e => e.cue == SoundCue.DoorOpen).group, Is.SameAs(audio.EffectAudioMixerGroup));
+                player.SetAction(new TownMovement(player, inside, threshold));
+                yield return harness.WaitUntil(() => !player.IsBusy, "audio room exit threshold");
+                player.SetAction(new TownMovement(player, threshold, door));
+                yield return harness.WaitUntil(() => !player.IsBusy, "audio room exit");
+                town.RefreshRoofs();
+                Assert.That(heard.Count(e => e.cue == SoundCue.DoorOpen), Is.EqualTo(1), "Followers, exit and refresh must not replay entry audio.");
+
+                var building = town.Configuration.Buildings.First(b => town.Services.Catalog(b).Any(o => o.Price > 0));
+                var offer = town.Services.Catalog(building).First(o => o.Price > 0);
+                heard.Clear();
+                Assert.That(town.Services.Buy(building, offer.Item.ItemName, out _), Is.True);
+                var bought = player.Inventory.Last();
+                Assert.That(heard.Count(e => e.cue == SoundCue.Purchase), Is.EqualTo(1));
+                Assert.That(heard.Single(e => e.cue == SoundCue.Purchase).group, Is.SameAs(audio.EffectAudioMixerGroup));
+                Assert.That(town.Services.Sell(bought, out _), Is.True);
+                Assert.That(heard.Count(e => e.cue == SoundCue.Sell), Is.EqualTo(1));
+                Assert.That(heard.Single(e => e.cue == SoundCue.Sell).group, Is.SameAs(audio.EffectAudioMixerGroup));
+
+                player.Gold = 0;
+                heard.Clear();
+                Assert.That(town.Services.Buy(building, offer.Item.ItemName, out _), Is.False);
+                Assert.That(heard.Select(e => e.cue), Is.EqualTo(new[] { SoundCue.Denied }));
+                Assert.That(heard.Single().group, Is.SameAs(audio.UIAudioMixerGroup));
+            }
+            finally
+            {
+                audio.CuePlayed -= Heard;
+                DungeonPreferences.AnimationOverride = previousAnimation;
+            }
+        }
+
+        [UnityTest]
         public IEnumerator PartyWithoutAnimationComponentCanWalk()
         {
             yield return harness.LoadTown(new TestScenario().CreateSave());

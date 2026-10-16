@@ -19,7 +19,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public Dialog CurrentDialog => dialogs.Current;
 	public StairConfirm StairDialog;
 
-	private readonly DialogController dialogs = new(() => AudioManager.Instance.SoundEffects.Unpause.PlayAsUI());
+	private readonly DialogController dialogs = new();
     public Stack<Dialog> DialogStack => dialogs.Stack;
 
 	public GameObject TargetArrow;
@@ -65,6 +65,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
             Game.Instance.PlayerController.CurrentControlMode == PlayerControlMode.TargetSelecting)
         {
 			var top = DialogStack.Peek();
+			AudioManager.Instance?.PlayCue(SoundCue.Cancel);
 			Close(top);
 			return;
         }
@@ -94,7 +95,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			AllyActionDialog.Close();
 		};
 		AllyActionDialog.SetNavigation();
-		AudioManager.Instance.SoundEffects.Pause.PlayAsUI();
 
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
@@ -104,7 +104,8 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	public void OpenInventoryTargetingMenu(Character character, Skill skill)
 	{
-		if (skill.Targeting != SkillTargeting.InventoryItem || !character.CanCast(skill, out _)) return;
+		if (skill.Targeting != SkillTargeting.InventoryItem || !character.CanCast(skill, out _))
+        { AudioManager.Instance?.PlayCue(SoundCue.Denied); return; }
 		OpenInventoryPicker(character, skill.GetInventoryTargets(character),
 			item => SkillAction.ForInventoryItem(character, skill, item),
 			$"Choose an item for {skill.DisplayName}, costing {skill.CostText(character)}");
@@ -119,7 +120,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
                 (character.Equipment.IsEquipped(item) ? "  Equipped" : ""), (Action)(() =>
             {
                 var action = createAction(item);
-                if (!action.IsValid(character)) { PartyMenu.Complete("That item can no longer be targeted."); return; }
+				if (!action.IsValid(character)) { AudioManager.Instance?.PlayCue(SoundCue.Denied); PartyMenu.Complete("That item can no longer be targeted."); return; }
                 CloseAllMenus(); character.SetAction(action);
             }))).ToList());
             return;
@@ -138,6 +139,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			var action = createAction(item);
 			if (!action.IsValid(character))
 			{
+				AudioManager.Instance?.PlayCue(SoundCue.Denied);
 				Game.Instance.DoFloatingText("That item can no longer be targeted", Color.yellow, character);
 				return;
 			}
@@ -157,7 +159,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 
 	public void OpenTargetingMenu(Character character, Skill skill)
 	{
-		if (!character.CanCast(skill, out var reason)) { GameMessages.Post(reason, true); return; }
+		if (!character.CanCast(skill, out var reason)) { AudioManager.Instance?.PlayCue(SoundCue.Denied); GameMessages.Post(reason, true); return; }
 		OpenWorldTargeting(character, skill.GetTargetCharacters(character),
 			(target, direction) => skill.Targeting == SkillTargeting.Missile ?
 				SkillAction.ForMissile(character, skill, direction) : new SkillAction(character, skill, target),
@@ -179,7 +181,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			//CloseAllMenus();
 		};
 		TargetDialog.SetNavigation();
-		AudioManager.Instance.SoundEffects.Pause.PlayAsUI();
 
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();
@@ -191,6 +192,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		UseInventoryItemAction Create() => new(inventory, character, item);
 		if (!Create().CanBegin(character))
 		{
+			AudioManager.Instance?.PlayCue(SoundCue.Denied);
 			var reason = item is EquipableInventoryItem equipment && character is Ally hero
 				? HeroClass.EquipmentRestriction(hero.PrimaryClass, hero.SecondaryClass, equipment) : null;
 			Game.Instance.DoFloatingText(reason ?? "That item cannot be used now", Color.yellow, character);
@@ -214,7 +216,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 			}
 		}
 		var action = Create();
-		if (!action.IsValid(character)) return;
+		if (!action.IsValid(character)) { AudioManager.Instance?.PlayCue(SoundCue.Denied); return; }
 		CloseAllMenus();
 		character.SetAction(action);
 	}
@@ -226,7 +228,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		MenuManager.Open(StairDialog);
 		StairDialog.Setup(prompt, yesAction, noAction);
 
-		AudioManager.Instance.SoundEffects.Pause.PlayAsUI();
 
 		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
 		Common.Instance.MenuInputHandler.ClearInputThisFrame();

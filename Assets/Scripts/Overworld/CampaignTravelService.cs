@@ -70,8 +70,13 @@ public sealed class CampaignTravelService
         if (location == null || (Context.State.Scene != "Town" && !Context.Gates.IsWalkable(Context.Position, Context.Held))) return false;
         if (location.Kind == LocationKind.Town)
         {
+            bool enteringFromOverworld = Context.State.Scene == "Overworld";
             Context.State.LastTownId = location.Id; Context.Towns.Add(location.Id);
-            Context.State.LocationId = location.Id; PrepareTown(location.Id); Load("Town"); return true;
+            Context.State.LocationId = location.Id;
+            PrepareTown(location.Id);
+            if (enteringFromOverworld) common.AudioManager?.PlayCue(SoundCue.DoorOpen);
+            Load("Town");
+            return true;
         }
         if (!Context.BeginDungeon()) return false;
         StartDungeon(location, visuals);
@@ -103,7 +108,7 @@ public sealed class CampaignTravelService
     {
         if (transitioning || Context == null || Context.IsSandbox || Context.State.Scene != "Town") return false;
         if (!Context.CanLeaveTown(Context.State.LocationId))
-        { TownMenu.ShowMessage("Clear the dungeon inside town to unlock the town gate."); return false; }
+        { common.AudioManager?.PlayCue(SoundCue.Denied); TownMenu.ShowMessage("Clear the dungeon inside town to unlock the town gate."); return false; }
         town.WriteSaveData(); CampaignParty.ClearLiveParty(common); Context.Position = Context.Grid.Locations[Context.State.LocationId]; Load("Overworld", "Overworld"); return true;
     }
     public bool FinishDungeon(bool victory, PlayerController player, bool travel = true, bool keepLoot = false)
@@ -117,10 +122,15 @@ public sealed class CampaignTravelService
             player.Gold, player.Inventory.InventoryItems, PartyRules.PartyMembers(Game.Instance), keepLoot);
         var previousKeys = Context.Keys.ToArray();
         var previousClaims = Context.Claimed.ToArray();
+        var previousOpenedGates = Context.Opened.ToArray();
         string firstClear = victory && !Context.Completed.Contains(Context.State.PendingDungeon)
             ? Context.State.PendingDungeon : null;
         bool homecoming = victory && Context.State.PendingDungeon == Context.Campaign.FinalLocationId;
         if (!Context.CompleteDungeon(victory)) return false;
+        // Town exits and encounter-controlled crossings open at the successful
+        // completion commit, rather than when the next scene redraws their gates.
+        if (victory && Context.Opened.Except(previousOpenedGates).Any())
+            common.AudioManager?.PlayCue(SoundCue.GateUnlock);
         if (homecoming) common.GameSaveData.Completion = CampaignCompletionRecord.Capture(common, player);
         if (homecoming) { HomecomingPending = true; HomecomingCompleted = false; common.GameSaveData.HasArrival = false; }
         returnArrivalTown = !homecoming && Context.State.Scene == "Town" ? Context.State.LocationId : null;

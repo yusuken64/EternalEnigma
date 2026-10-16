@@ -11,6 +11,8 @@ public sealed class ResetFloorAction : GameAction, ISkillEffectPrecondition
         var skill = ScriptableObject.CreateInstance<Skill>();
         skill.SkillName = skill.name = "Reset Floor"; skill.ActivationType = ActivationType.Active;
         skill.SPCost = 0; skill.MaxRank = 1; skill.Targeting = SkillTargeting.Self;
+        skill.SoundFamily = AbilitySoundFamily.Utility;
+        skill.CastSound = AudioManager.Instance?.SoundEffects?.UseItem;
         skill.TargetSelector = new TargetSelector { Team = TargetTeam.Self, Area = TargetArea.Self };
         skill.Description = "Restore a puzzle floor and the party to their floor-entry state. No SP cost.";
         skill.ActionEffects = new List<GameAction> { new ResetFloorAction() }; return skill;

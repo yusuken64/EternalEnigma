@@ -32,9 +32,10 @@ internal class DisarmTrapAction : GameAction, ISkillEffectPrecondition
 		var who = caster ?? character;
 		var dungeon = Game.Instance.CurrentDungeon;
 		var trap = dungeon?.FindAdjacentRevealedTrap(who.TilemapPosition, who.CurrentFacing);
-		if (trap == null) { message = "Nothing to disarm"; return new(); }
+		if (trap == null) { QueueSound(SoundCue.Denied); message = "Nothing to disarm"; return new(); }
 		dungeon.RemoveInteractable(trap);
 		message = "Disarmed!";
+        QueueSound(SoundCue.Gather);
 		if (UnityEngine.Random.value < RecoverChance(rank) &&
 			MaterialCatalog.AddToInventory(Game.Instance.PlayerController.Inventory, MaterialCatalog.Find(MaterialCatalog.TrapParts), 1) > 0)
 			message = "Disarmed! +1 " + MaterialCatalog.TrapParts;

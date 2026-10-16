@@ -29,6 +29,7 @@ namespace JuicyChickenGames.Menu
         private Vector2 lastMove;
         private float nextMoveTime;
         private bool pointerReady;
+        private bool audioReady;
         internal Vector3Int? TerminalPointerFocus { get; private set; }
         private Vector2 lastPointer;
         private bool? promptGamepad;
@@ -114,6 +115,7 @@ namespace JuicyChickenGames.Menu
         internal void Setup(Character character, List<Character> targets,
             System.Func<Character, Vector3Int, GameAction> factory, int range = 0, UsableItemDefinition item = null)
         {
+            audioReady = false;
             casterCharacter = character;
             targetingItem = item;
             targetingFloor = Game.Instance.CurrentDungeon;
@@ -139,6 +141,7 @@ namespace JuicyChickenGames.Menu
             pointerReady = false;
             TerminalPointerFocus = null;
             lastPointer = MenuUIInputModule.Active?.UI.Point.ReadValue<Vector2>() ?? Vector2.zero;
+            audioReady = true;
         }
 
         private void RefreshPrompt()
@@ -154,6 +157,7 @@ namespace JuicyChickenGames.Menu
 
         private void Aim(Vector3Int direction)
         {
+            if (audioReady && direction != Direction) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             Direction = direction;
             var line = targetingSkill != null ? MissileTargeting.TraceLine(casterCharacter, direction, EffectiveMissileRange, targetingSkill.AreaRadius > 0 ? 1 : ArrowSupply.Penetration(casterCharacter, targetingSkill), targetingSkill.AreaRadius > 0) : null;
             var hit = line != null ? new MissileTargeting.Hit(line.Endpoint, line.Encounters.LastOrDefault().Character) : MissileTargeting.Trace(casterCharacter, direction, missileRange);
@@ -167,6 +171,7 @@ namespace JuicyChickenGames.Menu
 
         private void SelectTile(Vector3Int cell)
         {
+            if (audioReady && cell != selectedTile) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             selectedTile = cell;
             TargetIndicator.SetActive(true);
             TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellToWorld(cell);
@@ -174,6 +179,7 @@ namespace JuicyChickenGames.Menu
         }
         private void SelectProp(DungeonProp prop, bool followCamera = true)
         {
+            if (audioReady && prop != selectedProp) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             selectedProp = prop; CameraTarget = null;
             TargetIndicator.SetActive(true); TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellToWorld(prop.Position);
             MenuManager.Instance.TargetArrow.transform.position = TargetIndicator.transform.position;
@@ -181,6 +187,7 @@ namespace JuicyChickenGames.Menu
         }
         private void SelectTarget(Character target, bool followCamera = true)
         {
+            if (audioReady && target != CameraTarget) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             selectedProp = null;
             CameraTarget = target;
             TargetIndicator.SetActive(true);
@@ -202,6 +209,7 @@ namespace JuicyChickenGames.Menu
             }
             if (ui.RightClick.WasPressedThisFrame())
             {
+                AudioManager.Instance?.PlayCue(SoundCue.Cancel);
                 CloseDialog();Common.Instance.MenuInputHandler.ClearInputThisFrame();return true;
             }
             var position = ui.Point.ReadValue<Vector2>();
@@ -209,7 +217,13 @@ namespace JuicyChickenGames.Menu
             bool moved = (position-lastPointer).sqrMagnitude > 1;
             lastPointer = position;
             if (!clicked && !moved) return false;
-            if (!(TerminalMode.Effective ? TryTerminalTarget(position) : TryPointTarget(position))) return false;
+            // A direct target click confirms once; pointer hover alone is navigation.
+            bool wasAudioReady = audioReady;
+            if (clicked) audioReady = false;
+            bool valid;
+            try { valid = TerminalMode.Effective ? TryTerminalTarget(position) : TryPointTarget(position); }
+            finally { audioReady = wasAudioReady; }
+            if (!valid) return false;
             if (clicked)
             {
                 ConfirmTarget();Common.Instance.MenuInputHandler.ClearInputThisFrame();return true;
@@ -352,10 +366,11 @@ namespace JuicyChickenGames.Menu
             var caster = casterCharacter;
             if (Game.Instance == null || Game.Instance.CurrentDungeon != targetingFloor || caster.Vitals == null || caster.Vitals.HP <= 0 ||
                 !Game.Instance.AllCharacters.Contains(caster))
-            { MenuManager.Close(this); return; }
+            { AudioManager.Instance?.PlayCue(SoundCue.Denied); MenuManager.Close(this); return; }
             var action = selectedProp != null && targetingSkill != null ? SkillAction.ForScenery(caster,targetingSkill,selectedProp) : createAction(CameraTarget, Direction);
-            if (action == null) { MenuManager.Close(this); return; }
-            if (!action.ValidateCommand(caster, out var reason)) { if (reason != null) GameMessages.Post(reason, true); MenuManager.Close(this); return; }
+            if (action == null) { AudioManager.Instance?.PlayCue(SoundCue.Denied); MenuManager.Close(this); return; }
+            if (!action.ValidateCommand(caster, out var reason)) { AudioManager.Instance?.PlayCue(SoundCue.Denied); if (reason != null) GameMessages.Post(reason, true); MenuManager.Close(this); return; }
+            AudioManager.Instance?.PlayCue(SoundCue.Confirm);
             MenuManager.Instance.CloseAllMenus();
             caster.SetAction(action);
         }
@@ -363,6 +378,7 @@ namespace JuicyChickenGames.Menu
         internal void CancelTargetSelection() => Close();
         internal void Close()
         {
+            audioReady = false;
             enabled = false;
             TargetIndicator.SetActive(false);
             SelectTargetPrompt.SetActive(false);

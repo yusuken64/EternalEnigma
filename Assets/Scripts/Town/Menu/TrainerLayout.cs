@@ -12,6 +12,8 @@ public sealed class TrainerLayout : MonoBehaviour
     public SkillGridItem SkillTemplate;
     public TextMeshProUGUI HeadingTemplate;
 
+    private void Awake() => SelectToActivateButton.MarkCancel(Close);
+
     public void ApplyPresentation()
     {
         // The parchment is the page; the preview is a quiet inset on that page.

@@ -12,6 +12,7 @@ internal class LevelUpAction : GameAction
 		character = recipient != null ? recipient : character;
 		if (character is Ally prompted && !prompted.IsSummon) prompted.AttributePromptPending = true;
 		TrackAnimationTarget(character);
+        QueueSound(SoundCue.LevelUp);
 		// Allies grow by class; enemies and classless heroes keep the flat +2 Strength / +5 HPMax.
 		var growth = HeroClass.Growth(character is Ally ally ? ally.PrimaryClass : null);
 		return new()
@@ -36,7 +37,7 @@ internal class LevelUpAction : GameAction
 		character = recipient != null ? recipient : character;
 		if (skipAnimation) yield break;
 		(character as Ally)?.HeroAnimator?.PlayOneShot(AnimatedAction.LevelUp);
-		AudioManager.Instance.SoundEffects.LevelUp.PlayAsSound();
+
         DungeonFloatingText.Show(Game.Instance, "Level Up", new Color(.84f,.76f,1f), character, true);
 
 		yield return new WaitForSecondsRealtime(1.0f);

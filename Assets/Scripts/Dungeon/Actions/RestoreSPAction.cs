@@ -38,6 +38,7 @@ public class RestoreSPAction : GameAction
 
 		int cap = target.FinalStats.SPMax;
 		resolved = Math.Max(0, Math.Min(Amount, cap - target.Vitals.SP));
+		if (resolved > 0) QueueSound(SoundCue.Status);
 		AddMetricsModification(target, (stats, vitals) => vitals.SP = Math.Min(vitals.SP + resolved, cap));
 		return new List<GameAction>();
 	}

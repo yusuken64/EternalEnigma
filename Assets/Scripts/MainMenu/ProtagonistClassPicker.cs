@@ -56,7 +56,7 @@ public sealed class ProtagonistClassPicker : MonoBehaviour
         GameUISkin.Label(canvas.transform,
             "Your choice shapes the protagonist's combat style. Explore the same campaign, recruit companions, and unlock routes through their abilities and your discoveries.",
             new Vector2(.05f, .095f), new Vector2(.72f, .18f), 24);
-        picker.BackButton=GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back);
+        picker.BackButton=GameUISkin.Button(canvas.transform, "Back", new Vector2(.05f, .025f), new Vector2(.2f, .087f), picker.Back, SelectToActivateButton.SoundRole.Cancel);
         return picker;
     }
 #endif

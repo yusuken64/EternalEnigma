@@ -25,13 +25,13 @@ public class TurnManager : MonoBehaviour
         {
             if (actor.PendingCast.Remaining == 0 && actor.PendingCast.Skill?.UsesArrows == true &&
                 (!ArrowSupply.HasBow(actor) || ArrowSupply.Count(actor) < ArrowSupply.RequiredToCast(actor.PendingCast.Skill)))
-            { global::PendingCast.Cancel(actor, "no arrows"); GameMessages.Post("no arrows", true); return false; }
+            { global::PendingCast.Cancel(actor, "no arrows"); GameMessages.Post("no arrows", true); AudioManager.Instance?.PlayCue(SoundCue.Denied); return false; }
             if (action is WaitAction) action = new AdvanceCastAction();
             else if (!global::PendingCast.Mobile(actor) || action is not MovementAction && action is not SwapAllyPositionAction)
-                return false;
+                { AudioManager.Instance?.PlayCue(SoundCue.Denied); return false; }
         }
         if (!action.ValidateCommand(actor, out var reason))
-        { if (!string.IsNullOrEmpty(reason)) GameMessages.Post(reason, true); player.StopHeldWalk(); return false; }
+        { if (!string.IsNullOrEmpty(reason)) GameMessages.Post(reason, true); AudioManager.Instance?.PlayCue(SoundCue.Denied); player.StopHeldWalk(); return false; }
         actor._forcedAction = action;
         GameInputDiagnostics.Record("CommandAccepted", actor, (action as SkillAction)?.Skill);
         if (actor != player.ControlledAlly) return true;
@@ -490,6 +490,24 @@ public abstract class GameAction
 	abstract internal IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false);
 	abstract internal List<GameAction> ExecuteImmediate(Character character);
     internal virtual void RecordOutcome(Character character) { }
+    private readonly List<SoundCue> sounds = new();
+    private bool soundsPlayed;
+    protected void QueueSound(SoundCue cue) => sounds.Add(cue);
+    internal void PlayQueuedSounds(Character actor)
+    {
+        if (soundsPlayed) return;
+        soundsPlayed = true;
+        if (sounds.Count == 0 || !ShouldPlayAudio(actor)) return;
+        foreach (var cue in sounds) AudioManager.Instance?.PlayCue(cue);
+    }
+
+    // Animation preferences affect visual timing, never whether an audible action has feedback.
+    internal bool ShouldPlayAudio(Character actor)
+    {
+        var game = Game.Instance;
+        if (game?.CurrentDungeon == null || actor == null) return false;
+        return IsVisibleForAnimation(actor);
+    }
 
 	virtual internal bool CanBeCombined(GameAction action)
 	{
@@ -547,11 +565,11 @@ public abstract class GameAction
     internal bool IsVisibleForAnimation(Character actor)
     {
         var game = Game.Instance;
-        var focus = playback?.Focus ?? game.PlayerController.ControlledAlly;
+        var focus = playback?.Focus ?? game.PlayerController?.ControlledAlly;
         if (actor == focus || animationTargets.Contains(focus) || playback?.Targets.Contains(focus) == true)
             return true;
         game.RefreshSight();
-        var camera = game.PlayerController.CameraController?.Camera;
+        var camera = game.PlayerController?.CameraController?.Camera;
         if (camera == null) return true;
         var planes = GeometryUtility.CalculateFrustumPlanes(camera);
         float size = game.CurrentDungeon.CellToWorld(Vector3Int.right).x;

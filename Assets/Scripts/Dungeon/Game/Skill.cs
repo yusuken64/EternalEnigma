@@ -49,7 +49,8 @@ public class Skill : ScriptableObject
 
 	public SkillAnimation SkillAnimation;
 	public CombatEffectProfile VisualProfile;
-	[Tooltip("Played once when a successful active skill begins, through the effects mixer.")]
+	public AbilitySoundFamily SoundFamily;
+	[Tooltip("Played once when this skill successfully releases, through the effects mixer. Cast start uses the universal cue.")]
 	public AudioClip CastSound;
 	public Sprite Icon;
 
@@ -112,6 +113,12 @@ public class Skill : ScriptableObject
 
 	[TextArea]
 	public string Description;
+}
+
+public enum AbilitySoundFamily
+{
+	Unassigned, Physical, Ranged, Fire, Frost, Lightning, Poison, Heal, Revive,
+	Buff, Protection, Debuff, Sleep, Absorb, Teleport, Speed, Utility
 }
 
 public enum ActivationType

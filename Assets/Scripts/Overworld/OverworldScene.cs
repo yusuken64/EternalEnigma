@@ -309,7 +309,12 @@ public sealed class OverworldScene : MonoBehaviour
         if (!manual) StopHeldWalk();
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened) return false;
         if (Context.Location?.Kind == LocationKind.Town && !Context.CanLeaveTown(Context.Location.Id))
-        { StopHeldWalk(); Message = "Clear the dungeon inside town to unlock the town gate."; return false; }
+        {
+            StopHeldWalk();
+            Message = "Clear the dungeon inside town to unlock the town gate.";
+            if (manual) AudioManager.Instance?.PlayCue(SoundCue.Denied);
+            return false;
+        }
         var next = new GridPoint(Position.X + dx, Position.Y + dy);
         if (!CanStep(Position, next))
         {
@@ -317,6 +322,7 @@ public sealed class OverworldScene : MonoBehaviour
             var gate = Map.CurrentGrid.LockAt(next);
             Message = Map.CurrentGrid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "You need a boat to sail." :
                 gate == null ? "Blocked." : GateDescription(gate.RouteId);
+            if (manual) AudioManager.Instance?.PlayCue(SoundCue.Denied);
             return false;
         }
         Position = next;
@@ -343,12 +349,6 @@ public sealed class OverworldScene : MonoBehaviour
     private IEnumerator Walk()
     {
         moving = true;
-		if (DungeonPreferences.AnimationMode != DungeonAnimationMode.NoAnimations)
-		{
-			var effects=Common.Instance.AudioManager?.SoundEffects;
-			var biome=Map.CurrentGrid.BiomeAt(Position) ?? OverworldBiome.Grassland;
-			Common.Instance.AudioManager?.PlayFootstep(effects?.StepFor(biome),Campaign.Seed,Position.X,Position.Y);
-		}
         var party = new[] { Player }.Concat(followers).ToArray();
         var from = party.Select(ally => ally.transform.position).ToArray();
         var to = new Vector3[party.Length];
@@ -418,6 +418,7 @@ public sealed class OverworldScene : MonoBehaviour
         {
             var blocked = Map.CurrentGrid.WarpsAt(Position).FirstOrDefault(r => r.Id == routeId);
             Message = blocked != null ? gates.Hint(blocked, Held) : "Stand on a warp gate.";
+            AudioManager.Instance?.PlayCue(SoundCue.Denied);
             return false;
         }
         Position = destination;
@@ -430,6 +431,7 @@ public sealed class OverworldScene : MonoBehaviour
         RefreshGates(); FollowCamera();
         SaveProgress();
         Message = "Warp complete. Press {Interact} to choose a destination.";
+        AudioManager.Instance?.PlayCue(SoundCue.Teleport);
         return true;
     }
 
@@ -441,7 +443,7 @@ public sealed class OverworldScene : MonoBehaviour
             () => isActiveAndEnabled && IsReady && Common.Instance.CampaignContext == context && !moving && !Common.Instance.Travel.IsTransitioning);
     }
 
-    public LockOutcome AttemptGate(LockInteractionSession session, LockAction action)
+    public LockOutcome AttemptGate(LockInteractionSession session, LockAction action, bool feedback = true)
     {
         var outcome = session.Attempt(action);
         if (outcome == LockOutcome.Opened)
@@ -449,7 +451,9 @@ public sealed class OverworldScene : MonoBehaviour
             Message = "The way is now open!";
             RefreshGates();
             SaveProgress();
+            AudioManager.Instance?.PlayCue(SoundCue.GateUnlock);
         }
+        else if (feedback) AudioManager.Instance?.PlayCue(outcome == LockOutcome.Progress ? SoundCue.Status : SoundCue.Denied);
         return outcome;
     }
 
@@ -465,7 +469,14 @@ public sealed class OverworldScene : MonoBehaviour
     {
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened || !locations.TryGetValue(Position, out var location)) return false;
         foreach (var route in Campaign.Routes)
-            if (route.TryUnlock(location.Id, resolved)) { Message = "Opened the shortcut to " + route.Id; RefreshGates(); SaveProgress(); return true; }
+            if (route.TryUnlock(location.Id, resolved))
+            {
+                Message = "Opened the shortcut to " + route.Id;
+                RefreshGates();
+                SaveProgress();
+                AudioManager.Instance?.PlayCue(SoundCue.GateUnlock);
+                return true;
+            }
         return false;
     }
 
@@ -496,7 +507,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (!locations.TryGetValue(Position, out var location))
         {
             if (announceLocked && ReadSign()) return;
-            if (announceLocked) OpenGate();
+            if (announceLocked && !OpenGate()) AudioManager.Instance?.PlayCue(SoundCue.Denied);
             return;
         }
         if (OpenShortcut()) return;
@@ -520,9 +531,10 @@ public sealed class OverworldScene : MonoBehaviour
         // Claim local rewards first; once collected, the same interaction key exposes travel.
         if (rewards.Count == 0 && announceLocked && GetComponent<OverworldMenuManager>().ChooseTravel()) return;
         Message = rewards.Count == 0 ? "No eligible unclaimed rewards here." : "Acquired " + string.Join(", ", rewards) + ". Equip companions at a town.";
+        if (rewards.Count > 0) AudioManager.Instance?.PlayCue(SoundCue.Pickup);
         RefreshGates();
         Common.Instance.Travel.ShowRewardsAcquired(acquiredKeys.Distinct().ToArray(), acquiredCapabilities.ToArray());
-        if (rewards.Count == 0 && announceLocked) OpenGate();
+        if (rewards.Count == 0 && announceLocked && !OpenGate()) AudioManager.Instance?.PlayCue(SoundCue.Denied);
     }
 
     public bool ToggleCompanion(string id)
@@ -556,7 +568,9 @@ public sealed class OverworldScene : MonoBehaviour
         if (!IsReady || moving || Common.Instance.Travel.IsTransitioning || GetComponent<OverworldMenuManager>().Opened || !Context.IsSandbox) return false;
         var interior = Context.Campaign.Locations.FirstOrDefault(l => l.ParentTownId != null && l.ParentTownId == Context.Location?.Id);
         if (!(interior != null ? Context.BeginTownDungeon(interior.Id) : Context.BeginDungeon())) return false;
+        var previousOpenedGates = Context.Opened.ToArray();
         Context.CompleteDungeon(true); RefreshGates();
+        if (Context.Opened.Except(previousOpenedGates).Any()) AudioManager.Instance?.PlayCue(SoundCue.GateUnlock);
         Message = Context.State.Scene == "Town" ? "Town dungeon cleared. The town gate is unlocked."
             : "Dungeon victory committed. Use any awarded key at its exit gate."; return true;
     }

@@ -223,6 +223,7 @@ public sealed class EnemyBehavior : MonoBehaviour
             AddMetricsModification(c, (s,v) => v.AttacksPerTurnLeft--);
             c.SetFacingByTargetPosition(target.TilemapPosition);
             behavior.cooldown = confuse ? 4 : 2;
+            if (confuse || behavior.FireBreath) QueueSound(SoundCue.AbilityStart);
             if (confuse)
             {
                 Visuals.Configure(c.GetComponent<CharacterCombatEffects>()?.Confusion ?? CombatVisualCatalog.Instance?.Confusion, c, target.TilemapPosition);

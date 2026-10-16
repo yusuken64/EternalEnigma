@@ -22,6 +22,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     readonly Dictionary<Character, Dictionary<StatusVisualProfile, GameObject>> auras = new();
     readonly Dictionary<Character, AnimatedAction?> loops = new();
     readonly Dictionary<Character, GameObject> casting = new();
+    Transform inactiveStaging;
     internal void ClearCasting(Character c)
     {
         if (casting.TryGetValue(c, out var effect)) Release(effect);
@@ -102,12 +103,23 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         if (available.Count > 0) item = available.Pop();
         else
         {
-            var go = Instantiate(stage.Prefab, transform);
+            // Instantiate under an inactive parent: an imported play-on-awake source must
+            // never get one frame of un-routed audio before it can be disabled.
+            if (inactiveStaging == null)
+            {
+                var staging = new GameObject("Inactive effect staging");
+                staging.SetActive(false);
+                staging.transform.SetParent(transform, false);
+                inactiveStaging = staging.transform;
+            }
+            var go = Instantiate(stage.Prefab, inactiveStaging);
+            go.SetActive(false);
             foreach (var source in go.GetComponentsInChildren<AudioSource>(true)) { source.playOnAwake = false; source.Stop(); source.enabled = false; }
             var effectsGroup = AudioManager.Instance?.EffectAudioMixerGroup;
             if (effectsGroup != null)
                 foreach (var source in go.GetComponentsInChildren<AudioSource>(true))
                     source.outputAudioMixerGroup = effectsGroup;
+            go.transform.SetParent(transform, false);
             item = new Instance { Object = go, Prefab = stage.Prefab,
                 Particles = go.GetComponentsInChildren<ParticleSystem>(true), Renderers = go.GetComponentsInChildren<Renderer>(true) };
         }
@@ -168,11 +180,10 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     internal IEnumerator Cue(CombatEffectProfile profile, Vector3 point, Bounds? bounds = null)
     {
         if (profile == null || DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations) yield break;
-        AudioManager.Instance?.PlaySoundEffect(profile.CastSound);
         yield return Deliver(new CombatVisualSequence { Profile = profile, Origin = point, Center = point }, point, true, bounds);
     }
 
-    internal IEnumerator Deliver(CombatVisualSequence sequence, Vector3 destination, bool hit, Bounds? targetBounds = null)
+    internal IEnumerator Deliver(CombatVisualSequence sequence, Vector3 destination, bool hit, Bounds? targetBounds = null, bool audible = false, System.Action impactSound = null)
     {
         var profile = sequence.Profile;
         var stage = profile.Projectile;
@@ -194,13 +205,16 @@ public sealed class CombatEffectPlayer : MonoBehaviour
                 {
                     projectile.transform.position = Vector3.Lerp(sequence.Origin, flightDestination, elapsed / duration) + stage.Offset;
                     while (nextImpact < contacts.Count && Vector3.Dot(contacts[nextImpact].point - sequence.Origin, delta) <= delta.sqrMagnitude * elapsed / duration)
-                    { var contact = contacts[nextImpact++]; if (contact.hit) StartCoroutine(Burst(profile.Impact, contact.point, visibilityPosition: contact.point)); }
+                    { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) StartCoroutine(Burst(profile.Impact, contact.point, visibilityPosition: contact.point)); }
                     yield return null;
                 }
             }
             finally { Release(projectile); }
-            while (nextImpact < contacts.Count) { var contact = contacts[nextImpact++]; if (contact.hit) StartCoroutine(Burst(profile.Impact, contact.point, visibilityPosition: contact.point)); }
+            while (nextImpact < contacts.Count) { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) StartCoroutine(Burst(profile.Impact, contact.point, visibilityPosition: contact.point)); }
         }
+        // Continuous flight invokes every recorded recipient at contact. The action's
+        // queue guard makes this fallback safe for later recipients and ordinary shots.
+        impactSound?.Invoke();
         if (hit && !(sequence.ContinuousFlight && stage?.Prefab != null))
         {
             var point = destination; float size = 1;
@@ -216,10 +230,10 @@ public sealed class CombatEffectPlayer : MonoBehaviour
             if (profile.Impact.MinimumDiameterCells > 0) point = Ground(destination);
             StartCoroutine(Burst(profile.Impact, point, size, visibilityPosition: destination));
         }
+        sequence.PlayAreaSound(audible);
         if (!sequence.AreaPlayed && profile.Area.Prefab != null)
         {
             sequence.AreaPlayed = true;
-            AudioManager.Instance?.PlaySoundEffect(profile.AreaSound);
             StartCoroutine(Burst(profile.Area, Ground(sequence.Center), profile.ScaleAreaToRadius ? Mathf.Max(1, sequence.Radius * 2 + 1) : 1));
         }
         yield return new WaitForSecondsRealtime(Mathf.Max(profile.ImpactSeconds, Mathf.Max(profile.Impact.Delay, profile.Area.Delay)));

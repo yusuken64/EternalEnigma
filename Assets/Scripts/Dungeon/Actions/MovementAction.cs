@@ -53,7 +53,8 @@ internal class MovementAction : GameAction
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(newMapPosition);
 		if (blocked || originalPosition == newMapPosition)
 		{
-			(character as Ally)?.HeroAnimator?.StopWalkContinuation();
+			if (blocked && character == Game.Instance.PlayerController?.ControlledAlly) AudioManager.Instance?.PlayCue(SoundCue.Denied);
+            (character as Ally)?.HeroAnimator?.StopWalkContinuation();
 			yield break;
 		}
 		if (skipAnimation)
@@ -61,14 +62,6 @@ internal class MovementAction : GameAction
 			character.PlayIdleAnimation();
 			character.transform.position = worldPosition;
 			yield break;
-		}
-		if (character == Game.Instance.PlayerController?.PartyLeader)
-		{
-			var theme=Game.Instance.DungeonGenerator.ThemeCatalog.Get(Game.Instance.DungeonGenerator.CurrentVisuals);
-			var effects=AudioManager.Instance?.SoundEffects;
-			var clip=theme.Biome is EternalEnigma.Core.World.OverworldBiome.Water or EternalEnigma.Core.World.OverworldBiome.Marsh
-				? effects?.StepWater : theme.Environment==DungeonEnvironmentKind.Interior ? effects?.StepRock : effects?.StepFor(theme.Biome);
-			AudioManager.Instance?.PlayFootstep(clip,Game.Instance.CurrentDungeon.Floor.Seed,newMapPosition.x,newMapPosition.y);
 		}
 
 		bool continuous = character is Ally && Game.Instance.PlayerController?.CanContinueHeldWalk == true;
@@ -160,6 +153,7 @@ internal class AttackAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		var target = Game.Instance.CurrentDungeon.OverlapsAnyOtherCharacter(attacker, Character.ToBounds(attackPosition));
+        QueueSound(SoundCue.Attack); // A deliberate swing also sounds when it hits empty space.
         if (Visuals.Sequence == null) Visuals.Configure(CharacterCombatEffects.Attack(attacker, false), attacker, attackPosition);
 
 		if (target == null)
@@ -219,8 +213,7 @@ internal class AttackAction : GameAction
 			character.PlayIdleAnimation();
 			yield break;
 		}
-		//TODO choose fallback attack audio by weapon/attack type.
-		AudioManager.Instance.SoundEffects.Slash.PlayAsSound();
+		// Attack sound is queued when the swing resolves.
 		if (Visuals.Sequence != null) yield break;
 		character.PlayAttackAnimation();
 
@@ -302,6 +295,9 @@ public class TakeDamageAction : GameAction
 		}
 
         TrackAnimationTarget(target);
+        if (miss) QueueSound(SoundCue.Miss);
+        else if (damage > 0 && target.Vitals.HP > 0) QueueSound(SoundCue.Damage);
+        else QueueSound(SoundCue.Block);
 		if (!miss)
 		{
 			AddMetricsModification(target, (metrics, vitals) =>
@@ -333,16 +329,7 @@ public class TakeDamageAction : GameAction
 		if (skipAnimation) { yield break; }
 		Game game = Game.Instance;
         DungeonFloatingText.Show(game, miss ? "Miss" : damage.ToString(), miss ? Color.white : new Color(1f,.38f,.35f), target);
-		if (!miss)
-		{
-			AudioManager.Instance.SoundEffects.Impact_flesh.PlayAsSound();
 
-		}
-		else
-		{
-			AudioManager.Instance.SoundEffects.Miss_Evade.PlayAsSound();
-
-		}
 
 		if (doDamageAnimation && !miss)
 		{
@@ -390,6 +377,8 @@ public class TakeHealAction : GameAction
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
         TrackAnimationTarget(target);
+        if (miss) QueueSound(SoundCue.Miss);
+        else if (healing > 0) QueueSound(SoundCue.Heal);
 		if (!miss)
 		{
 			AddMetricsModification(target, (metrics, vitals) =>
@@ -416,14 +405,7 @@ public class TakeHealAction : GameAction
 		if (skipAnimation) { yield break; }
 		Game game = Game.Instance;
         DungeonFloatingText.Show(game, miss ? "Miss" : "+" + healing, new Color(.55f,1f,.5f), target);
-		if (!miss)
-		{
-			AudioManager.Instance.SoundEffects.Impact_heal.PlayAsSound();
-		}
-		else
-		{
-			AudioManager.Instance.SoundEffects.Miss_Evade.PlayAsSound();
-		}
+
 
 		if (doHealAnimation && !miss)
 		{
@@ -512,6 +494,7 @@ public class DeathAction : GameAction
 	{
         if (resolved || target == null || Game.Instance.DeadUnits.Contains(target)) return new();
         if (EncounterActor.Protected(target)) { target.Vitals.HP = Mathf.Max(1,target.Vitals.HP); return new(); }
+        QueueSound(SoundCue.Death);
         resolved = true;
         target.Vitals.HP = 0;
         Game.Instance.Finale?.OnDeath(target);
@@ -564,7 +547,6 @@ public class DeathAction : GameAction
 	{
         if (!skipAnimation)
         {
-            AudioManager.Instance.SoundEffects.Enemy_death.PlayAsSound();
             target.PlayDeathAnimation();
             if (target is Ally)
                 foreach (var enemy in Game.Instance.Enemies.Where(e => e != null && e.Vitals.HP > 0 &&
@@ -710,6 +692,7 @@ public class WaitAction : GameAction
     internal override void RecordOutcome(Character character) { if (character is Ally) GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} waited."); }
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
+		if (Playback?.Commanded == true && character == Playback.Focus) QueueSound(SoundCue.Wait);
 		return new();
 	}
 

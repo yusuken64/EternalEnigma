@@ -50,13 +50,15 @@ public sealed class OverworldPickups : MonoBehaviour
         var pickup=world.Context.Grid.Pickups.FirstOrDefault(p=>p.Position.Equals(world.Position)&&!world.Context.CollectedPickups.Contains(p.Id));
         if(pickup==null)return false;
         var bag=Common.Instance.GameSaveData.TownSaveData.InventoryItems;
-        if(bag.Count>=Inventory.DefaultCapacity){GameMessages.Post("Inventory full. The pickup remains here.");return false;}
+        if(bag.Count>=Inventory.DefaultCapacity){GameMessages.Post("Inventory full. The pickup remains here.");AudioManager.Instance?.PlayCue(SoundCue.Denied);return false;}
         var definition=Definition(world.Context,pickup,Common.Instance.ItemManager);
         bool collected=world.Context.TryCollectPickup(pickup.Id,_=>{
             bag.Add(ItemSaveData.From(definition.AsInventoryItem(definition.StackMax>0?Mathf.Max(1,definition.StackStartMin):null)));return true;
         });
         if(!collected)return false;
         if(markers.TryGetValue(pickup.Id,out var marker)){Destroy(marker);markers.Remove(pickup.Id);}
-        SaveSystem.Capture(Common.Instance);GameMessages.Post("Found "+definition.DisplayName+".");return true;
+        SaveSystem.Capture(Common.Instance);GameMessages.Post("Found "+definition.DisplayName+".");
+        AudioManager.Instance?.PlayCue(SoundCue.Pickup);
+        return true;
     }
 }

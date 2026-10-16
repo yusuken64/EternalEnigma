@@ -85,8 +85,6 @@ public class NavigationHandler : MonoBehaviour
             lastSelected = current;
             arrowStartedAt = Time.unscaledTime;
             if (selectionArrow != null) arrowStart = selectionArrow.position;
-            var audio = AudioManager.Instance;
-            if (audio != null) audio.PlayUISound(audio.SoundEffects.Hover);
         }
 
         if (selectionArrow == null) return;

@@ -43,9 +43,10 @@ public sealed class HomeBed : MonoBehaviour
         if (IsSleeping || town.TownPlayer.IsBusy || activationFrame == Time.frameCount) return;
         var context = Common.Instance.CampaignContext;
         if (context?.IsPreparingForOpening == true && !context.ReadyForOpeningDay)
-        { TownMenu.ShowMessage(context.OpeningPreparationHint); return; }
+        { AudioManager.Instance?.PlayCue(SoundCue.Denied); TownMenu.ShowMessage(context.OpeningPreparationHint); return; }
         activationFrame = Time.frameCount;
         IsSleeping = true; town.TownPlayer.CutsceneLocked = true;
+        AudioManager.Instance?.PlayCue(SoundCue.Rest);
         StartCoroutine(Sleep());
     }
     public void SaveAndQuit()
@@ -54,7 +55,7 @@ public sealed class HomeBed : MonoBehaviour
         town.WriteSaveData();
         var hero = town.TownPlayer.ControllingTownAlly;
         if (!CampaignSaving.Commit(Common.Instance, "town-0/home", hero.TilemapPosition, hero.CurrentFacing, out var error))
-        { TownMenu.ShowMessage(error); return; }
+        { AudioManager.Instance?.PlayCue(SoundCue.Denied); TownMenu.ShowMessage(error); return; }
         Common.Instance.Travel.ReturnToMenu();
     }
     private IEnumerator Sleep()

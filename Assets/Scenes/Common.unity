@@ -426,7 +426,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -933,9 +933,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
 --- !u!1 &94226101
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,7 +1016,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -1477,6 +1477,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  soundRole: 0
   Scroll: {fileID: 139128186}
 --- !u!114 &139128186
 MonoBehaviour:
@@ -3122,6 +3123,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!114 &346614572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4210,7 +4212,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -5037,7 +5039,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -6729,6 +6731,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!114 &1031372518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6876,6 +6879,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!114 &1038770026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7282,6 +7286,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 1
 --- !u!114 &1120309038
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7582,18 +7587,30 @@ MonoBehaviour:
   BuySell: {fileID: 8300000, guid: abdbbfd33a46f4549987385f85c536b5, type: 3}
   Pause: {fileID: 8300000, guid: b83bf8726a7fac349a54389f0c57cda6, type: 3}
   Unpause: {fileID: 8300000, guid: e58d8bd078f188a4ba314e933b98528b, type: 3}
-  StepGrass: {fileID: 8300000, guid: df7087e4d8a8bb546bc08ce68632903f, type: 3}
-  StepRock: {fileID: 8300000, guid: 023ea3ddeaa8dd146b7633a0800e5a0e, type: 3}
-  StepWood: {fileID: 8300000, guid: 2352822feb4caa14ebdbc0c713289f8d, type: 3}
-  StepWater: {fileID: 8300000, guid: 60f9efe3d97bc8f47bea1af7f7093d41, type: 3}
+  StepGrass: {fileID: 0}
+  StepRock: {fileID: 0}
+  StepWood: {fileID: 0}
+  StepWater: {fileID: 0}
   Jump: {fileID: 8300000, guid: 4e349dc959014a845b9aa317d1c2b7f0, type: 3}
   Landing: {fileID: 8300000, guid: eaae8fe8d600e1f459f34aa5757fa3b8, type: 3}
   Ambush: {fileID: 8300000, guid: 24824003490a8c648a139e7e900ad2fd, type: 3}
   Sleep: {fileID: 8300000, guid: aa967a280457c054bb646d57611f5bd0, type: 3}
   Debuff: {fileID: 8300000, guid: acbcb75601b0082458fda8807f67c813, type: 3}
   Teleport: {fileID: 8300000, guid: 8ff2a2d7e79f81c40ac447512f879374, type: 3}
-  AbilityCast: {fileID: 8300000, guid: d1afd3f4d23c24f418ffc315afb04965, type: 3}
-  LevelUp: {fileID: 8300000, guid: 6cf9c85b5a3b88c468b21b9d21250adf, type: 3}
+  AbilityCast: {fileID: 8300000, guid: 67d8bbb9589d53540a2bf7441651150b, type: 3}
+  LevelUp: {fileID: 8300000, guid: ccfda7a26c5ba384fb4e49e9e273a49f, type: 3}
+  DoorOpen: {fileID: 8300000, guid: b839cf7ca7d0e2c46b93afdbeca05a3d, type: 3}
+  GateUnlock: {fileID: 8300000, guid: 2b6a2f235c22c2c45aba60c4d6a5df3b, type: 3}
+  Purchase: {fileID: 8300000, guid: f1952126c7fa3f241bd27e7425d990ee, type: 3}
+  Sell: {fileID: 8300000, guid: 1445acb9f5fa74a4183ddb7c0533fb05, type: 3}
+  Wait: {fileID: 8300000, guid: bba39ded7248df74fa025b5111fe9159, type: 3}
+  Rest: {fileID: 8300000, guid: b7e5a6952b03be6469565f927f0df661, type: 3}
+  Gather: {fileID: 8300000, guid: 490bfbc72255342408984f60044487de, type: 3}
+  ContainerOpen: {fileID: 8300000, guid: b839cf7ca7d0e2c46b93afdbeca05a3d, type: 3}
+  Trap: {fileID: 8300000, guid: 56703418e3aed4c47a5f6622816b8e41, type: 3}
+  Throw: {fileID: 8300000, guid: 88b1cbe3caa3fee4b8b103b5edd7aba9, type: 3}
+  Status: {fileID: 8300000, guid: 54cac506faa49ad499016de7836e9498, type: 3}
+  Revive: {fileID: 8300000, guid: d654174ef194bd7479bf4b8d8f753318, type: 3}
 --- !u!1 &1166024315
 GameObject:
   m_ObjectHideFlags: 0
@@ -8473,6 +8490,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  soundRole: 0
 --- !u!114 &1237269017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8620,6 +8638,7 @@ MonoBehaviour:
           m_StringArgument:
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
 --- !u!114 &1247342651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9271,9 +9290,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_EditorClassIdentifier:
 --- !u!1001 &1336429708
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9703,7 +9722,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -10890,7 +10909,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -11826,7 +11845,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -13414,7 +13433,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -13960,6 +13979,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+  soundRole: 0
 --- !u!114 &1895193522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14839,7 +14859,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -15634,7 +15654,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3214383766812126704, guid: ecbbcbe59ef56cd499b85aace53c353b, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

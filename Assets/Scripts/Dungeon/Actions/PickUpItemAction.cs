@@ -22,6 +22,7 @@ internal class PickUpItemAction : GameAction
         if (droppedItem == null || droppedItem.Opened || !game.CurrentDungeon.Interactables.Contains(droppedItem)) return new();
         using var receipt = AutoplayRunner.LootPickup(droppedItem, character, droppedItem.InventoryItem.StackStock ?? 1);
 		canAdd = game.PlayerController.Inventory.CanAdd();
+        QueueSound(canAdd ? SoundCue.Pickup : SoundCue.Denied);
 		if (canAdd)
 		{
             GameMessages.Post($"Picked up {droppedItem.InventoryItem.DisplayName}.");
@@ -38,7 +39,7 @@ internal class PickUpItemAction : GameAction
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
         if (skipAnimation) yield break;
-        if (canAdd) AudioManager.Instance.SoundEffects.Unequip.PlayAsSound();
+
 		if (!canAdd)
 		{
 

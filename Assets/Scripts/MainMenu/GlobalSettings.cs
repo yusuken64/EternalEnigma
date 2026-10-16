@@ -38,6 +38,7 @@ public class GlobalSettings : MonoBehaviour
         canvas.overrideSorting = true;
         canvas.sortingOrder = 2000;
         if (ResumeButton is SelectToActivateButton resume) resume.ActivateOnFirstPointerPress = true;
+        SelectToActivateButton.MarkCancel(ResumeButton);
         TabGroup.PreviewOnFocus = true;
         NavigationHandler.FocusRoot = SettingsCanvas.transform;
         NavigationHandler.FocusOwner = this;

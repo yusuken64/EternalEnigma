@@ -57,6 +57,7 @@ public class ReviveAction : GameAction, ISkillCastCondition
 			TrackAnimationTarget(ally);
 			AddMetricsModification(ally, (stats, vitals) => vitals.HP = hp);
 			revived.Add(ally);
+            QueueSound(SoundCue.Revive);
 		}
 		return new();
 	}

@@ -339,5 +339,5 @@ public sealed class FinalePortal : Interactable
     }
     internal override string GetInteractionText() => label;
     internal override List<GameAction> GetInteractionSideEffects(Character character) => character != Game.Instance.PlayerController.ControlledAlly ? new() :
-        new() { new DynamicGameAction(_ => { activate(); return new(); }, null, () => character == Game.Instance.PlayerController.ControlledAlly) };
+        new() { new DynamicGameAction(_ => { AudioManager.Instance?.PlayCue(activate() ? SoundCue.Teleport : SoundCue.Denied); return new(); }, null, () => character == Game.Instance.PlayerController.ControlledAlly) };
 }

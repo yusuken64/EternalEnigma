@@ -50,7 +50,7 @@ public sealed class PartyMenuPicker : Dialog
             button.gameObject.AddComponent<PartyMenuRow>().Selected=()=>picker.ScrollToSelected(button.gameObject);
             if(picker.first==null)picker.first=button;
         }
-        var back=picker.BackButton=GameUISkin.Button(panel.transform,"Back",new Vector2(.3f,.035f),new Vector2(.7f,.16f),picker.CloseDialog);
+        var back=picker.BackButton=GameUISkin.Button(panel.transform,"Back",new Vector2(.3f,.035f),new Vector2(.7f,.16f),picker.CloseDialog,SelectToActivateButton.SoundRole.Cancel);
         if(picker.first==null)picker.first=back;
         return picker;
     }

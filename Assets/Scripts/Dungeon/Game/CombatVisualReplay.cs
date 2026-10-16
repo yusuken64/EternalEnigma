@@ -9,9 +9,16 @@ internal sealed class CombatVisualSequence
     internal Character Actor;
     internal Vector3 Origin, Center;
     internal int Radius;
-    internal bool AreaPlayed, SingleFlight, FlightPlayed, ContinuousFlight;
-    internal readonly List<(Vector3 point, bool hit, Bounds? bounds)> FlightImpacts = new();
+    internal bool AreaPlayed, SingleFlight, FlightPlayed, ContinuousFlight, CastSoundPlayed, AreaSoundPlayed;
+    internal readonly List<(Vector3 point, bool hit, Bounds? bounds, System.Action sound)> FlightImpacts = new();
     internal readonly HashSet<Character> DamageRecipients = new();
+
+    internal void PlayAreaSound(bool audible)
+    {
+        if (AreaSoundPlayed) return;
+        AreaSoundPlayed = true;
+        if (audible) AudioManager.Instance?.PlaySoundEffect(Profile.AreaSound);
+    }
 }
 
 internal sealed class CombatVisualReplay
@@ -27,6 +34,7 @@ internal sealed class CombatVisualReplay
     readonly HashSet<Character> disguises = new();
     readonly List<(Vector3 point, Bounds? bounds)> reveals = new();
     internal bool AfterMovement;
+    bool revealSoundsPlayed;
     Character resolvingActor;
     internal Vector3Int OriginCell;
 
@@ -92,12 +100,12 @@ internal sealed class CombatVisualReplay
             if (action is TakeDamageAction hit)
             {
                 if (hit.Target != null) Sequence.DamageRecipients.Add(hit.Target);
-                AddImpact(hit.Target, hit.Target != null ? hit.Target.TilemapPosition : OriginCell, !hit.Missed);
+                AddImpact(hit.Target, hit.Target != null ? hit.Target.TilemapPosition : OriginCell, !hit.Missed, () => action.PlayQueuedSounds(actor));
             }
             else if (action is TakeHealAction)
-                AddImpact(recipient, recipient != null ? recipient.TilemapPosition : OriginCell, true);
+                AddImpact(recipient, recipient != null ? recipient.TilemapPosition : OriginCell, true, () => action.PlayQueuedSounds(actor));
             else if (action is PropDamageAction prop)
-                AddImpact(null, prop.Cell, true);
+                AddImpact(null, prop.Cell, true, () => action.PlayQueuedSounds(actor));
             else if (action is ApplyStatusChanceAction && children.Count == 0 && recipient != null)
                 AddImpact(recipient, recipient.TilemapPosition, false);
             else if (!Cast && children.Count == 0 && action is not RemoveStatusEffectAction && action is not DeathAction && action is not ApplyStatusChanceAction && action is not ScaledDamageAction && action is not RandomHitsAction)
@@ -119,34 +127,54 @@ internal sealed class CombatVisualReplay
         }
     }
 
-    internal void AddImpact(Character target, Vector3Int cell, bool hit)
+    internal void AddImpact(Character target, Vector3Int cell, bool hit, System.Action impactSound = null)
     {
         var impact = (CombatEffectPlayer.Body(target, cell), hit, Sequence?.Profile.Impact.FitToTarget == true ? CombatEffectPlayer.TargetBounds(target, cell) : null);
         Impacts.Add(impact);
-        if (Sequence?.ContinuousFlight == true) Sequence.FlightImpacts.Add(impact);
+        if (Sequence?.ContinuousFlight == true) Sequence.FlightImpacts.Add((impact.Item1, impact.Item2, impact.Item3, impactSound));
     }
 
     internal IEnumerator Play(GameAction action, Character actor, bool skip)
     {
+        bool audible = action.ShouldPlayAudio(actor);
         var player = CombatEffectPlayer.Get();
+        bool hasImpactAudio = action is TakeDamageAction or TakeHealAction or PropDamageAction;
+        System.Action impactSound = hasImpactAudio && !skip && player != null && Sequence != null && Impacts.Count > 0
+            ? () => action.PlayQueuedSounds(actor) : null;
+        if (impactSound == null) action.PlayQueuedSounds(actor);
         if (action is AdvanceCastAction && actor.PendingCast == null) player?.ClearCasting(actor);
-        if (!skip && action is SkillAction skillAction) skillAction.PlayCastSound();
+        if (action is SkillAction skillAction) skillAction.ShowCasting(skip);
+        // Non-skill cues (splitting, revealing, enemy attacks) announce the visual as it
+        // begins. SkillAction separately owns its universal start and successful release.
+        if (Sequence != null && Cast && !Sequence.CastSoundPlayed)
+        {
+            Sequence.CastSoundPlayed = true;
+            if (audible && action is not SkillAction && action is not CastSpellAction)
+                AudioManager.Instance?.PlaySoundEffect(Sequence.Profile.CastSound);
+        }
+        if (!skip && player != null && Sequence != null && Cast) yield return player.Cast(Sequence);
+        if (action is SkillAction releasingSkill) releasingSkill.PlayReleaseSound(actor);
+        if (action is CastSpellAction releasingSpell) releasingSpell.PlayReleaseSound(actor);
+        if (Sequence != null)
+        {
+            // With animation the delivery owns impact timing; skipping particles must not mute it.
+            if ((skip || player == null) && Impacts.Count > 0) Sequence.PlayAreaSound(audible);
+        }
         if (!skip && player != null && Sequence != null)
         {
-            if (Cast || action is DeathAction)
-                if (action is not SkillAction) AudioManager.Instance?.PlaySoundEffect(Sequence.Profile.CastSound);
-            if (Cast)
-            {
-                yield return player.Cast(Sequence);
-            }
             bool secondaryStatus = (action is ApplyStatusEffectAction || action is ApplyStatusChanceAction) && BoundTarget != null && Sequence.DamageRecipients.Contains(BoundTarget);
-            if (!AfterMovement && !secondaryStatus) foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds);
+            if (!AfterMovement && !secondaryStatus) foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds, audible, impactSound);
+        }
+        if (!revealSoundsPlayed && reveals.Count > 0)
+        {
+            revealSoundsPlayed = true;
+            if (audible) AudioManager.Instance?.PlaySoundEffect(CombatVisualCatalog.Instance?.Reveal?.CastSound);
         }
         if (!skip && player != null)
             foreach (var reveal in reveals) yield return player.Cue(CombatVisualCatalog.Instance?.Reveal, reveal.point, reveal.bounds);
         yield return action.ExecuteRoutine(actor, skip);
         if (!skip && player != null && Sequence != null && AfterMovement)
-            foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds);
+            foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds, audible, impactSound);
         // Even skipped playback advances the aura ledger; never consult future simulation state here.
         if (player != null)
         {

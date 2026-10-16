@@ -73,18 +73,20 @@ public sealed class PartyMenu : Dialog
     public void Shortcut(PartyMenuTab tab)
     {
         if (!IsRoot) return;
-        if (Tab == tab) CloseDialog(); else SwitchTab(tab);
+        if (Tab == tab) { AudioManager.Instance?.PlayCue(SoundCue.Cancel); CloseDialog(); } else SwitchTab(tab);
         Common.Instance.MenuInputHandler.ClearInputThisFrame();
     }
     public void SwitchTab(PartyMenuTab tab)
     {
         if (!IsRoot || tab == Tab || (tab == PartyMenuTab.Capabilities && context is not OverworldPartyMenuContext)) return;
+        AudioManager.Instance?.PlayCue(SoundCue.Navigate);
         Remember(); Tab = tab; result = null; Refresh(); SetFirstSelect();
         Common.Instance.MenuInputHandler.ClearInputThisFrame();
     }
     public void BrowseHero(int delta)
     {
         if (!IsRoot || context.Heroes.Count == 0) return;
+        int previousHero = heroIndex;
         Remember();
         if(context is DungeonPartyMenuContext)
         {
@@ -92,6 +94,7 @@ public sealed class PartyMenu : Dialog
             heroIndex=Math.Max(0,context.Heroes.ToList().FindIndex(h=>h.DungeonActor==Game.Instance.PlayerController.ControlledAlly));
         }
         else heroIndex = (heroIndex + delta + context.Heroes.Count) % context.Heroes.Count;
+        if (heroIndex != previousHero) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
         result = null; Refresh(); SetFirstSelect();
         Common.Instance.MenuInputHandler.ClearInputThisFrame();
     }

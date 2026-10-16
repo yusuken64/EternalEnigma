@@ -35,6 +35,10 @@ public static class TownInteriorGenerator
         var occupied = new HashSet<GridPoint>(); var counters = new List<GridPoint>();
         var props = new List<TownPropPlacement>();
         GridPoint At(int x, int y) => new(mirror ? left + right - x : x, y);
+        // A rear corner can be cut away while the room still holds a full 7x7
+        // floor. Anchor furnishings against the actual rear wall of their column,
+        // after mirroring, rather than silently losing them in the missing corner.
+        int Rear(int x, int inset = 0) => floor.Where(c => c.X == At(x, 0).X).Max(c => c.Y) - inset;
         void Add(string asset, int x, int y, int turns = 0)
         {
             var c = At(x,y);
@@ -47,32 +51,32 @@ public static class TownInteriorGenerator
             if (!floor.Contains(c) || reserved.Contains(c) || !occupied.Add(c)) return;
             counters.Add(c);
         }
-        int shift = compact ? 0 : arrangement;
+        int shift = compact ? 0 : Math.Min(arrangement, Math.Max(0, Rear(left) - bottom - 4));
         if (spec.Kind == TownInteriorKind.Residential || spec.Kind == TownInteriorKind.Inn)
         {
-            Add("Bed",left,top); Add("Bedside",left+1,top);
-            Add("Cupboard",right,top); Add("Hearth",right,bottom);
+            Add("Bed",left,Rear(left)); Add("Bedside",left+1,Rear(left+1));
+            Add("Cupboard",right,Rear(right)); Add("Hearth",right,bottom);
             Add("Table",left,bottom+shift); Add("Chair",left,bottom+shift+1,2);
             if (spec.Kind == TownInteriorKind.Inn)
-            { Add("Bed",left,top-2); Add("Luggage",left+1,top-2); Counter(right,top-2); Counter(right-1,top-2); }
-            if (!compact) { Add("Chest",right,top-2); Add("Plant",left,top-2); }
+            { Add("Bed",left,Rear(left,2)); Add("Luggage",left+1,Rear(left+1,2)); Counter(right,Rear(right,2)); Counter(right-1,Rear(right-1,2)); }
+            if (!compact) { Add("Chest",right,Rear(right,2)); Add("Plant",left,Rear(left,2)); }
         }
         else if (spec.Kind == TownInteriorKind.Trainer)
         {
-            Add("Dummy",left,bottom+shift); Add("Target",left,top);
-            Add("Rack",left+1,top); Add("Bookcase",right,top);
-            Add("Lectern",right,bottom); Add("ArcanePedestal",right,top-2);
+            Add("Dummy",left,bottom+shift); Add("Target",left,Rear(left));
+            Add("Rack",left+1,Rear(left+1)); Add("Bookcase",right,Rear(right));
+            Add("Lectern",right,bottom); Add("ArcanePedestal",right,Rear(right,2));
             if (!compact) Add("Bench",left,bottom+shift+2);
         }
         else if (spec.Kind == TownInteriorKind.Shop)
         {
-            for (int y=bottom+1; y<=top-1; y++) Counter(left,y);
-            if (arrangement >= 1) Counter(left+1,top-1);
+            for (int y=bottom+1; y<=Rear(left,1); y++) Counter(left,y);
+            if (arrangement >= 1) Counter(left+1,Rear(left+1,1));
             if (arrangement == 2) Counter(left+1,bottom+1);
-            Add("Shelf",right,top); Add("Crate",right,bottom); Add("Barrel",right,bottom+2);
+            Add("Shelf",right,Rear(right)); Add("Crate",right,bottom); Add("Barrel",right,bottom+2);
             string goods = spec.Theme == TownShopTheme.Bakery ? "Basket" : spec.Theme == TownShopTheme.Equipment ? "Equipment" : "Potions";
             foreach (var c in counters.Where((_,i)=>i%2==0)) props.Add(new TownPropPlacement(goods,c,elevation:.72f,blocks:false));
-            if (!compact) Add("Sack",right,top-2);
+            if (!compact) Add("Sack",right,Rear(right,2));
         }
         var carpet = floor.Where(c => c.Y >= bottom && c.Y < top && Math.Abs(c.X-room.Door.X)<=1 && !occupied.Contains(c)).ToArray();
         return new TownInterior(room.Door,spec,arrangement,mirror,props,occupied.OrderBy(c=>c.Y).ThenBy(c=>c.X),carpet,counters,reserved.OrderBy(c=>c.Y).ThenBy(c=>c.X));

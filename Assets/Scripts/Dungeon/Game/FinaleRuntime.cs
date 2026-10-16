@@ -93,7 +93,10 @@ public sealed class FinaleRuntime
     internal void RegisterSummon(Character source, Enemy enemy)
     {
         var parent = source?.GetComponent<FinaleActor>();
-        if (parent == null) throw new InvalidOperationException("Finale summon has no source identity.");
+        // Traps execute with their victim as the source, which may be an ally.
+        // Only descendants of required finale enemies belong to the death ledger;
+        // incidental monsters and their descendants have no finale identity.
+        if (parent == null) return;
         string id = parent.Id + "/summon-" + ++parent.Children;
         if (!Session.RegisterChild(parent.Id, id)) throw new InvalidOperationException("Cannot register finale summon " + id);
         Register(enemy, id, parent.RegionId, enemy.DisplayName);

@@ -179,10 +179,30 @@ public static class TownHouseTiles
         }
     }
 
-    public static Mesh RoofTile(float left, float right, float center, float halfWidth, bool ridge,bool frontEdge=false,bool backEdge=false)
+    public static (float center, float halfWidth, float rise) RoofProfile(IEnumerable<GridPoint> body, uint style)
     {
-        float Height(float x) => RoofHeight(x, center, halfWidth);
+        int left = body.Min(c => c.X), right = body.Max(c => c.X);
+        return ((left + right + 1) * .5f, (right - left + 1) * .5f, .54f + .12f * (style % 3));
+    }
+
+    // Details occupy the middle of a real roof cell, including on a notched footprint.
+    public static Vector2 RoofDetailAnchor(IEnumerable<GridPoint> body, Vector2 preferred)
+    {
+        var cell = body.OrderBy(c => (new Vector2(c.X + .5f, c.Y + .5f) - preferred).sqrMagnitude)
+            .ThenBy(c => c.Y).ThenBy(c => c.X).First();
+        return new Vector2(cell.X + .5f, cell.Y + .5f);
+    }
+
+    public static Mesh RoofTile(float left, float right, float center, float halfWidth, bool ridge,
+        bool frontEdge=false, bool backEdge=false, float rise=.63f, bool leftEdge=false, bool rightEdge=false)
+    {
+        float Height(float x) => RoofHeight(x, center, halfWidth, rise);
         var vertices = new List<Vector3>(); var indices = new List<int>();
+        var columns = new List<float>();
+        for (int col = 0; col <= 4; col++) columns.Add(Mathf.Lerp(left, right, col / 4f));
+        if (center > left && center < right && !columns.Any(x => Mathf.Abs(x - center) < .0001f))
+            columns.Add(center);
+        columns.Sort();
         void Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
         {
             int i = vertices.Count;
@@ -190,25 +210,28 @@ public static class TownHouseTiles
             indices.AddRange(new[] { i, i + 1, i + 2, i, i + 2, i + 3 });
         }
         // Continuous underlayment closes the tiny depth gaps between shingle courses.
-        for (int col = 0; col < 4; col++)
+        float edgeFront = frontEdge ? -.10f : 0, edgeBack = backEdge ? 1.10f : 1;
+        for (int col = 0; col < columns.Count - 1; col++)
         {
-            float x0 = Mathf.Lerp(left, right, col / 4f);
-            float x1 = Mathf.Lerp(left, right, (col + 1) / 4f);
-            float y0=frontEdge?-.10f:0,y1=backEdge?1.10f:1;
+            float x0 = columns[col], x1 = columns[col + 1];
+            float y0 = edgeFront, y1 = edgeBack;
             Quad(new Vector3(x0, y0, Height(x0) + .04f), new Vector3(x0, y1, Height(x0) + .04f),
                 new Vector3(x1, y1, Height(x1) + .04f), new Vector3(x1, y0, Height(x1) + .04f));
             if(frontEdge)Quad(new Vector3(x0,y0,Height(x0)),new Vector3(x1,y0,Height(x1)),new Vector3(x1,y0,Height(x1)+.09f),new Vector3(x0,y0,Height(x0)+.09f));
             if(backEdge)Quad(new Vector3(x1,y1,Height(x1)),new Vector3(x0,y1,Height(x0)),new Vector3(x0,y1,Height(x0)+.09f),new Vector3(x1,y1,Height(x1)+.09f));
         }
+        if (leftEdge) Quad(new Vector3(left, edgeBack, Height(left)), new Vector3(left, edgeFront, Height(left)),
+            new Vector3(left, edgeFront, Height(left) + .09f), new Vector3(left, edgeBack, Height(left) + .09f));
+        if (rightEdge) Quad(new Vector3(right, edgeFront, Height(right)), new Vector3(right, edgeBack, Height(right)),
+            new Vector3(right, edgeBack, Height(right) + .09f), new Vector3(right, edgeFront, Height(right) + .09f));
         // Split at the ridge and at every course, creating a visible shingle rhythm.
         for (int row = 0; row < 5; row++)
         {
             float y0 = row / 5f, y1 = (row + 1) / 5f;
             if(row==0&&frontEdge)y0=-.10f;if(row==4&&backEdge)y1=1.10f;
-            for (int col = 0; col < 4; col++)
+            for (int col = 0; col < columns.Count - 1; col++)
             {
-                float x0 = Mathf.Lerp(left, right, col / 4f);
-                float x1 = Mathf.Lerp(left, right, (col + 1) / 4f);
+                float x0 = columns[col], x1 = columns[col + 1];
                 float offset = row % 2 == 0 ? 0 : .012f;
                 Quad(new Vector3(x0, y0, Height(x0) - offset), new Vector3(x0, y1, Height(x0) - offset),
                     new Vector3(x1, y1, Height(x1) - offset), new Vector3(x1, y0, Height(x1) - offset));
@@ -221,24 +244,41 @@ public static class TownHouseTiles
         return mesh;
     }
 
-    public static float RoofHeight(float x, float center, float halfWidth) =>
-        -(DioramaScale.Eaves/2+.07f) - .63f * (1f - Mathf.Abs(x - center) / halfWidth);
+    public static float RoofHeight(float x, float center, float halfWidth, float rise=.63f) =>
+        -(DioramaScale.Eaves/2+.07f) - rise * (1f - Mathf.Abs(x - center) / halfWidth);
 
-    public static Mesh GableTile(float left, float center, float halfWidth)
+    public static Mesh GableTile(float left, float center, float halfWidth) =>
+        RoofEdgeTile(left, 0, -1, center, halfWidth);
+
+    // Close every exposed wall to the same continuous roof plane. Recessed edges
+    // in an L-shaped house need a taller closure than the outermost eaves.
+    public static Mesh RoofEdgeTile(float left, int dx, int dy, float center, float halfWidth, float rise=.63f)
     {
         var vertices = new List<Vector3>();
         var triangles = new List<int>();
-        for (int half = 0; half < 2; half++)
+        Vector2 start, end;
+        if (dy < 0) { start = new Vector2(left, .04f); end = new Vector2(left + 1, .04f); }
+        else if (dy > 0) { start = new Vector2(left + 1, .96f); end = new Vector2(left, .96f); }
+        else if (dx < 0) { start = new Vector2(left + .04f, 1); end = new Vector2(left + .04f, 0); }
+        else { start = new Vector2(left + .96f, 0); end = new Vector2(left + .96f, 1); }
+        var spans = new List<float> { 0, .5f, 1 };
+        if (dy != 0 && center > left && center < left + 1)
         {
-            float x0 = left + half * .5f, x1 = x0 + .5f;
+            float split = (center - start.x) / (end.x - start.x);
+            if (Mathf.Abs(split - .5f) > .0001f) { spans.Add(split); spans.Sort(); }
+        }
+        for (int span = 0; span < spans.Count - 1; span++)
+        {
+            var a = Vector2.Lerp(start, end, spans[span]);
+            var b = Vector2.Lerp(start, end, spans[span + 1]);
             int i = vertices.Count;
-            vertices.Add(new Vector3(x0, .04f, -DioramaScale.Eaves/2));
-            vertices.Add(new Vector3(x0, .04f, RoofHeight(x0, center, halfWidth)));
-            vertices.Add(new Vector3(x1, .04f, RoofHeight(x1, center, halfWidth)));
-            vertices.Add(new Vector3(x1, .04f, -DioramaScale.Eaves/2));
+            vertices.Add(new Vector3(a.x, a.y, -DioramaScale.Eaves/2));
+            vertices.Add(new Vector3(a.x, a.y, RoofHeight(a.x, center, halfWidth, rise)));
+            vertices.Add(new Vector3(b.x, b.y, RoofHeight(b.x, center, halfWidth, rise)));
+            vertices.Add(new Vector3(b.x, b.y, -DioramaScale.Eaves/2));
             triangles.AddRange(new[] { i, i + 1, i + 2, i, i + 2, i + 3 });
         }
-        var mesh = new Mesh { name = "House gable tile" };
+        var mesh = new Mesh { name = dy != 0 ? "House gable tile" : "House roof side closure" };
         mesh.SetVertices(vertices); mesh.SetTriangles(triangles, 0);
         mesh.RecalculateNormals(); mesh.RecalculateBounds();
         return mesh;

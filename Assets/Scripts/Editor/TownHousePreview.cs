@@ -15,6 +15,7 @@ public static class TownHousePreview
     public static void CaptureAll()
     {
         const string folder = "Temp/TownHouseCaptures";
+        const int seed = 5; // Includes square, wide, long and notched furnished houses.
         Directory.CreateDirectory(folder);
         foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome)))
         {
@@ -29,10 +30,10 @@ public static class TownHousePreview
             style.Biome = biome;
             try
             {
-                var options = TownLayout.Create(42, TownServiceCatalog.All, 2, 3,
+                var options = TownLayout.Create(seed, TownServiceCatalog.All, 2, 3,
                     CampaignContext.ResidentialTownBuildings).Options;
                 CoreTownLayerGenerator.Configure(template, options);
-                creator.SetCustomRandomSeed(42);
+                creator.SetCustomRandomSeed(seed);
                 creator.ExecuteAllBlueprintLayers();
                 CoreLayoutCache.ClearResultFlags(template);
                 creator.ExecuteAllBuildLayers(true);
@@ -50,6 +51,24 @@ public static class TownHousePreview
                 var overview = new Vector3(plan.Width / 2f, plan.Height / 2f, 0) * size;
                 TownInteriorPreview.Capture(creator.worldObject, overview, size * 24,
                     $"{folder}/{biome}_Gameplay.png");
+                if (biome == OverworldBiome.Grassland)
+                {
+                    var examples = plan.Footprints.Where(f => f.Cells.Count > 0)
+                        .GroupBy(f => (f.Bounds.Width, f.Depth, f.HasNotch))
+                        .Select(g => g.First()).OrderByDescending(f => f.HasNotch)
+                        .ThenBy(f => f.Bounds.Width).ThenBy(f => f.Depth).Take(6).ToArray();
+                    foreach (var footprint in examples)
+                    {
+                        var bounds = footprint.Bounds;
+                        var center = new Vector3(bounds.X + bounds.Width * .5f,
+                            bounds.Y + footprint.Depth * .5f, -.6f) * size;
+                        string shape = footprint.HasNotch ? "L" : "Rectangle";
+                        TownInteriorPreview.Capture(creator.worldObject, center, size * 7,
+                            $"{folder}/{biome}_{shape}_{bounds.Width}x{footprint.Depth}.png");
+                    }
+                    File.WriteAllLines($"{folder}/Footprints.txt", plan.Footprints.Select(f =>
+                        $"Door {f.Door}: {f.Bounds.Width}x{f.Depth}, {(f.HasNotch ? "L-shaped" : "rectangular")}"));
+                }
             }
             finally
             {

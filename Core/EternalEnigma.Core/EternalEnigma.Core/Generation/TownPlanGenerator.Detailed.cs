@@ -43,6 +43,10 @@ public static partial class TownPlanGenerator
         bool InsideTown(GridPoint c) => c.X >= 1 && c.X <= W - 2 && c.Y >= 1 && c.Y <= H - 2;
         bool Fits(BuildingFootprint fp)
         {
+            // A rear notch against both enclosing district walls would create an
+            // outdoor pocket with no exit. Leave access around at least one side.
+            if (fp.HasNotch && fp.Bounds.Top == H - 2 && (fp.Bounds.X == 1 || fp.Bounds.Right == W - 2))
+                return false;
             foreach (var cell in fp.Cells)
             {
                 if (!InsideTown(cell) || mainRoad[cell.X, cell.Y] || bodyCells.Contains(cell) ||
@@ -59,6 +63,9 @@ public static partial class TownPlanGenerator
             for (int y = 1; y <= H - 2; y++)
             {
                 var door = new GridPoint(x, y);
+                // Furnished districts enclose the map border; the south-facing
+                // doorway still needs its approach cell inside that enclosure.
+                if (options.Furnished && y == 1) continue;
                 if (mainRoad[x, y] || TownPlan.IsReservedCorridor(door, H, options.SpineX)) continue;
                 if (door.Equals(options.PartySpawn) || door.Equals(options.Exit)) continue;
                 candidates.Add(door);
@@ -73,12 +80,12 @@ public static partial class TownPlanGenerator
             BuildingFootprint? placed = null;
             for (int attempt = 0; attempt < 3 && placed == null; attempt++)
             {
-                var shape = options.Furnished ? BuildingFootprint.Rectangle(door,4,9) : BuildingShapes.Random(shapes, door);
+                var shape = options.Furnished ? BuildingShapes.FurnishedRandom(shapes, door) : BuildingShapes.Random(shapes, door);
                 if (Fits(shape)) placed = shape;
             }
             if (placed == null)
             {
-                var fallback = options.Furnished ? BuildingFootprint.Rectangle(door,4,9) : BuildingShapes.Default(door);
+                var fallback = options.Furnished ? BuildingShapes.FurnishedDefault(door) : BuildingShapes.Default(door);
                 if (Fits(fallback)) placed = fallback;
             }
             if (placed == null) continue;
@@ -197,7 +204,17 @@ public static partial class TownPlanGenerator
             {
                 if (roads[cell.X, cell.Y]) continue; // never reclassify an existing road
                 roads[cell.X, cell.Y] = true;
-                alleys[cell.X, cell.Y] = true;
+                // A turn or a join between neighbouring lanes can complete a 2x2
+                // junction. Keep that connector as a street, not a widened alley.
+                bool junction = false;
+                for (int dx = -1; dx <= 1; dx += 2)
+                    for (int dy = -1; dy <= 1; dy += 2)
+                    {
+                        int x = cell.X + dx, row = cell.Y + dy;
+                        if (x >= 0 && x < W && row >= 0 && row < H &&
+                            alleys[x, cell.Y] && alleys[cell.X, row] && alleys[x, row]) junction = true;
+                    }
+                alleys[cell.X, cell.Y] = !junction;
             }
         }
     }

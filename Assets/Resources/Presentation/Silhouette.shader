@@ -7,7 +7,7 @@ Shader "Hidden/EternalEnigma/GroundSilhouette"
         float4x4 _SilhouetteVP;
         float3 _SilhouetteOrigin, _SilhouetteDirection;
         sampler2D _SilhouetteDepth, _SilhouetteFog, _SilhouetteMaskTexture;
-        float4 _SilhouetteFogBounds, _SilhouetteColor;
+        float4 _SilhouetteFogBounds, _SilhouetteColor, _SilhouetteMaskInvSize;
         float _SilhouetteDynamic;
         struct MeshInput { float4 vertex:POSITION; float3 normal:NORMAL; };
         struct Pixel { float4 position:SV_POSITION; float3 world:TEXCOORD0; float3 normal:TEXCOORD1; };
@@ -41,6 +41,11 @@ Shader "Hidden/EternalEnigma/GroundSilhouette"
             clip(-normalize(i.normal).z-.45);
             float4 light=mul(_SilhouetteVP,float4(i.world,1));
             float2 uv=light.xy/light.w*.5+.5;
+            // The light matrix is already in GPU clip space. Match the depth
+            // texture's origin on Direct3D/Metal without changing OpenGL.
+            #if UNITY_UV_STARTS_AT_TOP
+            uv.y=1-uv.y;
+            #endif
             clip(uv);clip(1-uv);
             float depth=DecodeFloatRGBA(tex2D(_SilhouetteDepth,uv));
             float receiver=dot(i.world-_SilhouetteOrigin,_SilhouetteDirection)/240;
@@ -48,7 +53,12 @@ Shader "Hidden/EternalEnigma/GroundSilhouette"
             return 1;
         }
         fixed4 Composite(v2f_img i):SV_Target
-        { return float4(_SilhouetteColor.rgb,_SilhouetteColor.a*tex2D(_SilhouetteMaskTexture,i.uv).r); }
+        {
+            // The mask shares the camera depth buffer. Sample the same raster
+            // pixel, independent of Blit's backbuffer/render-texture UV flip.
+            float2 uv=i.pos.xy*_SilhouetteMaskInvSize.xy;
+            return float4(_SilhouetteColor.rgb,_SilhouetteColor.a*tex2D(_SilhouetteMaskTexture,uv).r);
+        }
         ENDCG
         Pass
         {

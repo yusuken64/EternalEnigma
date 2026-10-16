@@ -9,6 +9,7 @@ public sealed class SilhouetteRenderer : MonoBehaviour
     private Material material;
     private RenderTexture depth;
     private CommandBuffer commands;
+    private bool originalForceIntoRenderTexture,ownsCameraTarget;
     internal RenderTexture InspectionMask;
     private readonly Plane[] planes=new Plane[6];
     private static readonly int Mask=Shader.PropertyToID("_SilhouetteMask");
@@ -19,6 +20,10 @@ public sealed class SilhouetteRenderer : MonoBehaviour
         view=GetComponent<Camera>();
         var shader=Resources.Load<Shader>("Presentation/Silhouette");
         if(shader==null || !shader.isSupported){enabled=false;return;}
+        // Sharing camera depth with the mask requires matching render-target
+        // orientation, including cameras that would otherwise draw directly to screen.
+        originalForceIntoRenderTexture=view.forceIntoRenderTexture;
+        ownsCameraTarget=true;view.forceIntoRenderTexture=true;
         material=new Material(shader){hideFlags=HideFlags.HideAndDontSave};
         depth=new RenderTexture(1024,1024,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear)
             {name="Silhouette depth",filterMode=FilterMode.Point,wrapMode=TextureWrapMode.Clamp,hideFlags=HideFlags.HideAndDontSave};depth.Create();
@@ -43,6 +48,7 @@ public sealed class SilhouetteRenderer : MonoBehaviour
         material.SetVector("_SilhouetteOrigin",projection.transform.position);
         material.SetVector("_SilhouetteDirection",Direction);
         material.SetTexture("_SilhouetteDepth",depth);
+        material.SetVector("_SilhouetteMaskInvSize",new Vector4(1f/view.pixelWidth,1f/view.pixelHeight,0,0));
         material.SetColor("_SilhouetteColor",GamePresentationProfile.Current!=null?GamePresentationProfile.Current.Silhouette:new Color(.12f,.17f,.21f,.24f));
         var fog=FogOverlay.Instance;
         material.SetTexture("_SilhouetteFog",fog!=null?fog.VisibilityTexture:Texture2D.whiteTexture);
@@ -74,11 +80,13 @@ public sealed class SilhouetteRenderer : MonoBehaviour
         commands.Blit(Mask,BuiltinRenderTextureType.CameraTarget,material,2);
         commands.ReleaseTemporaryRT(Mask);
     }
-    private static bool Eligible(SilhouetteParticipant p,SilhouetteRole role)=>p!=null && p.Role==role && p.Source!=null &&
-        p.Source.enabled && !p.Source.forceRenderingOff && p.Source.gameObject.activeInHierarchy;
+    private bool Eligible(SilhouetteParticipant p,SilhouetteRole role)=>p!=null && p.Role==role && p.Source!=null &&
+        p.Source.enabled && !p.Source.forceRenderingOff && p.Source.gameObject.activeInHierarchy &&
+        (view.cullingMask & (1<<p.Source.gameObject.layer))!=0;
     private void OnDisable()
     {
         if(commands!=null){if(view!=null)view.RemoveCommandBuffer(CameraEvent.AfterForwardOpaque,commands);commands.Release();commands=null;}
+        if(ownsCameraTarget){if(view!=null)view.forceIntoRenderTexture=originalForceIntoRenderTexture;ownsCameraTarget=false;}
         if(depth!=null){depth.Release();Destroy(depth);depth=null;}
         if(material!=null)Destroy(material);
         if(projection!=null)Destroy(projection.gameObject);

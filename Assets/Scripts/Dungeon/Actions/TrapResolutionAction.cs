@@ -211,7 +211,9 @@ internal sealed class TrapResolutionAction : GameAction
             var cells = DungeonPlacement.OpenCells(dungeon, prefab).Where(p => TileWorldDungeon.ChevDistance(p, victim.TilemapPosition) <= 2 && (dungeon.GetInteractable(p) == null || dungeon.GetInteractable(p) == item)).ToList();
             if (cells.Count == 0) continue;
             var action = new SpawnEnemyAction(prefab, cells[Random.Range(0, cells.Count)], dungeon.CellToWorld(victim.TilemapPosition));
-            Run(action); spawned = true;
+            Run(action);
+            if (action.SpawnedEnemy == null) continue;
+            spawned = true;
             if (transform)
             {
                 action.SpawnedEnemy.gameObject.AddComponent<TrapCarriedItem>().Item = item.InventoryItem;

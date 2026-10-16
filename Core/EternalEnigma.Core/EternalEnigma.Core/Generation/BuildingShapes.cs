@@ -9,9 +9,34 @@ internal static class BuildingShapes
     public const int MinDepth = 7, MaxDepth = 8;    // a 5x5 floor needs front wall + 5 rows + back wall
     public const int MinRoomSide = 5;
     private const int NotchPercent = 40;
+    private const int FurnishedRoomSide = 7;
 
     /// <summary>The smallest block: 7x7, holding a 5x5 room.</summary>
     public static BuildingFootprint Default(GridPoint door) => BuildingFootprint.Rectangle(door, MinHalf, MinDepth);
+
+    /// <summary>The compact furnished block can hold any service, including an inn or trainer.</summary>
+    public static BuildingFootprint FurnishedDefault(GridPoint door) => BuildingFootprint.Rectangle(door, 4, 9);
+
+    public static BuildingFootprint FurnishedRandom(SeedStream random, GridPoint door)
+    {
+        // Services are assigned after doors are sorted, so every plot must accommodate
+        // the largest room recipe. Keep the door and vendor column fixed as wings vary.
+        int half = 4 + random.Range(2);
+        int depth = 9 + random.Range(4);
+        bool wantsNotch = random.Range(100) < NotchPercent;
+        bool left = random.Range(2) == 0;
+        int notchWidth = 2 + random.Range(half - 2);
+        // Keep five usable cells along the short wing for complete furnishing
+        // recipes, while still consuming the same draw for every candidate.
+        int notchDepth = Math.Min(2 + random.Range(3), depth - 7);
+
+        if (wantsNotch)
+        {
+            var notched = BuildingFootprint.Notched(door, half, depth, left, notchWidth, notchDepth);
+            if (HasOpenArea(notched.TryBuildRoom(), FurnishedRoomSide)) return notched;
+        }
+        return BuildingFootprint.Rectangle(door, half, depth);
+    }
 
     public static BuildingFootprint Random(SeedStream random, GridPoint door)
     {
@@ -33,16 +58,16 @@ internal static class BuildingShapes
         return HasOpenArea(rectangle.TryBuildRoom()) ? rectangle : Default(door);
     }
 
-    /// <summary>True when the room's floor holds a square of at least MinRoomSide x MinRoomSide cells.</summary>
-    private static bool HasOpenArea(ShopRoom? room)
+    /// <summary>True when the room's floor holds the required open square.</summary>
+    private static bool HasOpenArea(ShopRoom? room, int minimumSide = MinRoomSide)
     {
         if (room == null) return false;
         var floor = new HashSet<GridPoint>(room.Floor);
         foreach (var origin in room.Floor)
         {
             bool open = true;
-            for (int dx = 0; dx < MinRoomSide && open; dx++)
-                for (int dy = 0; dy < MinRoomSide; dy++)
+            for (int dx = 0; dx < minimumSide && open; dx++)
+                for (int dy = 0; dy < minimumSide; dy++)
                     if (!floor.Contains(new GridPoint(origin.X + dx, origin.Y + dy))) { open = false; break; }
             if (open) return true;
         }

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EternalEnigma.Core.Generation;
+using EternalEnigma.Core.Progression;
+using EternalEnigma.Core.World;
 using NUnit.Framework;
 using TWC;
 using UnityEditor;
@@ -94,8 +96,18 @@ namespace EternalEnigma.Tests.CoreIntegration
             TownAndPropVisualTests.Capture(gallery, new Vector3(7.5f,4,0), 15, "FantasyTraps");
         }
 
-        [Test] public void SummoningAndTransformationUseFreeCellsAndReturnExactItem()
+        [TestCase(false), TestCase(true)]
+        public void SummoningAndTransformationUseFreeCellsAndReturnExactItem(bool finale)
         {
+            if (finale)
+            {
+                var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
+                var session = new FinaleSession(new FinalePlan(context.Campaign, context.Grid));
+                typeof(Game).GetProperty("Finale").SetValue(game, new FinaleRuntime(game, session));
+                dungeon.Setup(root.GetComponent<TileWorldCreator>(), session.Floor.CreateFloor());
+                ally.TilemapPosition = session.Floor.Start.ToCell();
+            }
+            int? remaining = game.Finale?.Session.Remaining;
             var template = Actor<Enemy>(new Vector3Int(28,28));
             template.StartingStats = new StartingStats { HPMax = 50, Strength = 5, ActionsPerTurnMax = 1 };
             game.EnemyManager = root.AddComponent<EnemyManager>();
@@ -111,6 +123,29 @@ namespace EternalEnigma.Tests.CoreIntegration
             Assert.That(carrier.Item, Is.SameAs(item)); Assert.That(dungeon.Interactables.Contains(dropped), Is.False);
             Assert.That(carrier.TryDrop(true), Is.True); Assert.That(carrier.TryDrop(true), Is.False);
             Assert.That(dungeon.Interactables.OfType<DroppedItem>().Single().InventoryItem, Is.SameAs(item));
+            if (finale)
+            {
+                Assert.That(game.Enemies.All(e => e.GetComponent<FinaleActor>() == null), Is.True);
+                var source = (Enemy)game.Enemies[0];
+                var cell = DungeonPlacement.OpenCells(dungeon, source).First(p => FinaleActor.AllowsPosition(source, p));
+                var split = new SpawnEnemyAction(source, cell, source.transform.position, source);
+                split.ExecuteImmediate(source);
+                Assert.That(split.SpawnedEnemy, Is.Not.Null);
+                Assert.That(split.SpawnedEnemy.GetComponent<FinaleActor>(), Is.Null);
+                Assert.That(game.Finale.Session.Remaining, Is.EqualTo(remaining));
+                // Required enemies still contribute their children to region clearance.
+                var placement = game.Finale.Session.Floor.Regions[0].Enemies.First(e => !e.IsMimic);
+                var identity = source.gameObject.AddComponent<FinaleActor>();
+                identity.Id = placement.Id; identity.RegionId = placement.RegionId;
+                game.Finale.RegisterSummon(source, split.SpawnedEnemy);
+                var child = split.SpawnedEnemy.GetComponent<FinaleActor>();
+                Assert.That(child.Id, Is.EqualTo(placement.Id + "/summon-1"));
+                Assert.That(child.RegionId, Is.EqualTo(placement.RegionId));
+                Assert.That(game.Finale.Session.Remaining, Is.EqualTo(remaining + 1));
+                split.SpawnedEnemy.Vitals.HP = 0;
+                game.Finale.OnDeath(split.SpawnedEnemy);
+                Assert.That(game.Finale.Session.Remaining, Is.EqualTo(remaining));
+            }
         }
 
         [Test] public void MovementEntersOnceStandingDoesNotAndReentryCanTriggerAgain()

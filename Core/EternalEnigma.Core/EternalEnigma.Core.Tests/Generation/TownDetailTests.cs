@@ -33,6 +33,41 @@ public class TownDetailTests
         Assert.True(notched, "No notched (L-shaped) building was generated.");
     }
 
+    [Fact]
+    public void FurnishedCampaignBuildingsVaryWithoutShrinkingServiceRooms()
+    {
+        var sizes = new HashSet<(int Width, int Height)>();
+        int notchedTowns = 0;
+        for (int seed = 0; seed < 30; seed++)
+        {
+            var options = TownLayout.Create(seed, TownServiceCatalog.All,
+                CampaignContext.AuthoredTownBuildings, 3, CampaignContext.ResidentialTownBuildings).Options;
+            var plan = TownPlanGenerator.Generate(options);
+            var repeat = TownPlanGenerator.Generate(options);
+            var inTown = plan.Footprints.Select(f => (f.Bounds.Width, f.Bounds.Height)).Distinct().ToArray();
+            Assert.True(inTown.Length >= 3, $"Seed {seed}: only {inTown.Length} furnished building sizes.");
+            foreach (var size in inTown) sizes.Add(size);
+            if (plan.Footprints.Any(f => f.HasNotch)) notchedTowns++;
+            for (int i = 0; i < plan.Footprints.Count; i++)
+            {
+                var footprint = plan.Footprints[i];
+                Assert.Equal(footprint.Door, repeat.Footprints[i].Door);
+                Assert.Equal(footprint.Cells, repeat.Footprints[i].Cells);
+                var room = footprint.TryBuildRoom();
+                Assert.NotNull(room);
+                var floor = room.Floor.ToHashSet();
+                Assert.Contains(room.Floor, origin => Enumerable.Range(0, 49)
+                    .All(cell => floor.Contains(new GridPoint(origin.X + cell % 7, origin.Y + cell / 7))));
+            }
+            Assert.True(TownPlanValidator.Validate(plan, options).IsValid);
+        }
+        Assert.Contains(sizes, size => size.Width == size.Height);
+        Assert.Contains(sizes, size => size.Width > size.Height);
+        Assert.Contains(sizes, size => size.Width < size.Height);
+        Assert.True(sizes.Count >= 6, $"Only {sizes.Count} furnished building sizes across seeds.");
+        Assert.True(notchedTowns >= 15, $"Only {notchedTowns} of 30 furnished towns have an L-shaped building.");
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(42)]

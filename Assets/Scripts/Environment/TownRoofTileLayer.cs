@@ -66,48 +66,53 @@ public sealed class TownRoofTileLayer : TWCBuildLayer
                 alternate.mainTexture = shingles;
                 var gable = TownHouseTiles.ColorMaterial(Kit.BuildingMaterial(biome),
                     TownHouseTiles.Palette(biome).plaster, batch.Owner, "Gable plaster");
+                uint hash = OverworldCosmetics.Hash(plan.Seed ^ 37811, door.X, door.Y);
+                var profile = TownHouseTiles.RoofProfile(body, hash);
+                float center = profile.center, halfWidth = profile.halfWidth, rise = profile.rise;
+                float Height(float x) => TownHouseTiles.RoofHeight(x, center, halfWidth, rise);
+                var edges = new[] { new GridPoint(-1, 0), new GridPoint(1, 0), new GridPoint(0, -1), new GridPoint(0, 1) };
                 foreach (var cell in body)
                 {
-                    int left = cell.X, right = cell.X;
-                    while (body.Contains(new GridPoint(left - 1, cell.Y))) left--;
-                    while (body.Contains(new GridPoint(right + 1, cell.Y))) right++;
-                    float center = (left + right + 1) * .5f;
-                    float halfWidth = (right - left + 1) * .5f;
+                    bool leftEdge = !body.Contains(new GridPoint(cell.X - 1, cell.Y));
+                    bool rightEdge = !body.Contains(new GridPoint(cell.X + 1, cell.Y));
                     bool frontEdge=!body.Contains(new GridPoint(cell.X,cell.Y-1)),backEdge=!body.Contains(new GridPoint(cell.X,cell.Y+1));
-                    var tile = TownHouseTiles.RoofTile(cell.X-(cell.X==left?.10f:0),cell.X+1+(cell.X==right?.10f:0), center, halfWidth,
-                        cell.X == Mathf.FloorToInt(center),frontEdge,backEdge);
+                    var tile = TownHouseTiles.RoofTile(cell.X - (leftEdge ? .10f : 0), cell.X + 1 + (rightEdge ? .10f : 0), center, halfWidth,
+                        cell.X == Mathf.FloorToInt(center), frontEdge, backEdge, rise, leftEdge, rightEdge);
                     batch.Owner.Meshes.Add(tile);
                     batch.Add(tile, (cell.X + cell.Y) % 3 == 0 ? alternate : material,
                         new Vector3(0, cell.Y, 0) * size, Vector3.one * size, role: SilhouetteRole.Caster);
-                    if (!body.Contains(new GridPoint(cell.X, cell.Y - 1)))
+                    foreach (var edge in edges)
                     {
-                        var face = TownHouseTiles.GableTile(cell.X, center, halfWidth);
+                        if (body.Contains(new GridPoint(cell.X + edge.X, cell.Y + edge.Y))) continue;
+                        var face = TownHouseTiles.RoofEdgeTile(cell.X, edge.X, edge.Y, center, halfWidth, rise);
                         batch.Owner.Meshes.Add(face);
                         batch.Add(face, gable, new Vector3(0, cell.Y, 0) * size,
                             Vector3.one * size, role: SilhouetteRole.Caster);
                     }
                     if(diorama!=null)
                     {
-                        if(cell.X==left||cell.X==right)
-                            diorama.Add(batch,"RoofEave",biome,new Vector3(cell.X==left?left-.06f:right+1.06f,cell.Y+.5f,-DioramaScale.Eaves/size)*size,
-                                90,scale:new Vector3(size,size,.85f));
+                        foreach (int dx in new[] { -1, 1 })
+                        {
+                            if (body.Contains(new GridPoint(cell.X + dx, cell.Y))) continue;
+                            float eaveX = cell.X + .5f + dx * .56f;
+                            diorama.Add(batch, "RoofEave", biome, new Vector3(eaveX, cell.Y + .5f, Height(eaveX) + .07f) * size,
+                                90, scale: new Vector3(size, size, .85f));
+                        }
                         if(cell.X==Mathf.FloorToInt(center))
-                            diorama.Add(batch,"RoofRidge",biome,new Vector3(center,cell.Y+.5f,TownHouseTiles.RoofHeight(center,center,halfWidth))*size,
+                            diorama.Add(batch,"RoofRidge",biome,new Vector3(center,cell.Y+.5f,Height(center))*size,
                                 scale:new Vector3(size*.65f,size,size*.65f));
                     }
                 }
                 if(diorama!=null)
                 {
-                    uint hash=OverworldCosmetics.Hash(plan.Seed^37811,door.X,door.Y);
                     int firstRow=body.Min(c=>c.Y),lastRow=body.Max(c=>c.Y);
-                    int left=body.Where(c=>c.Y==firstRow).Min(c=>c.X),right=body.Where(c=>c.Y==firstRow).Max(c=>c.X);
-                    float center=(left+right+1)*.5f,halfWidth=(right-left+1)*.5f;
-                    float chimneyX=center+(hash%2==0?-.55f:.55f)*halfWidth;
-                    diorama.Add(batch,"Chimney",biome,new Vector3(chimneyX,Mathf.Lerp(firstRow+.6f,lastRow+.4f,.67f),TownHouseTiles.RoofHeight(chimneyX,center,halfWidth)+.05f)*size,scale:Vector3.one*1.15f);
-                    if(hash%3!=0 && right-left>=2)
+                    var chimney = TownHouseTiles.RoofDetailAnchor(body, new Vector2(center + (hash % 2 == 0 ? -.55f : .55f) * halfWidth,
+                        Mathf.Lerp(firstRow + .6f, lastRow + .4f, .67f)));
+                    diorama.Add(batch,"Chimney",biome,new Vector3(chimney.x,chimney.y,Height(chimney.x)+.05f)*size,scale:Vector3.one*1.15f);
+                    if(hash%3!=0 && halfWidth>=1.5f)
                     {
-                        float dormerX=center-halfWidth*.38f;
-                        diorama.Add(batch,"Dormer",biome,new Vector3(dormerX,firstRow+.4f,TownHouseTiles.RoofHeight(dormerX,center,halfWidth)+.04f)*size,scale:Vector3.one*1.35f);
+                        var dormer = TownHouseTiles.RoofDetailAnchor(body, new Vector2(center - halfWidth * .38f, firstRow + .4f));
+                        diorama.Add(batch,"Dormer",biome,new Vector3(dormer.x,dormer.y,Height(dormer.x)+.04f)*size,scale:Vector3.one*1.35f);
                     }
                 }
                 batch.Finish();

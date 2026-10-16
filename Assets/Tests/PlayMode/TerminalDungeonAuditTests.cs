@@ -72,6 +72,11 @@ namespace EternalEnigma.Tests
             var options = Object.FindFirstObjectByType<DungeonHud>().OptionsButton;
             var optionsLabel = options.GetComponentInChildren<TMP_Text>();
             var nativeOptionsFont = optionsLabel.font;
+            var targetPrompt = manager.TargetDialog.SelectTargetPrompt;
+            var promptLabel = targetPrompt.GetComponentInChildren<TMP_Text>(true);
+            var promptPanel = targetPrompt.GetComponent<Image>();
+            var nativePromptFont = promptLabel.font;
+            var nativePromptPanel = promptPanel.sprite;
             manager.CloseAllMenus(); yield return null;
             int hunger = actor.Vitals.HungerAccumulate, sp = actor.Vitals.SP, writes = harness.Store.Writes;
             TerminalMode.SetRequested(true); yield return new WaitForSecondsRealtime(.25f);
@@ -114,6 +119,10 @@ namespace EternalEnigma.Tests
                 yield return new WaitForSecondsRealtime(.25f);
                 var target = manager.TargetDialog;
                 Assert.That(target.TerminalMissilePath.Any(), Is.True);
+                Assert.That(promptLabel.font, Is.SameAs(ScreenView.FontAsset), "The production targeting prompt shares the terminal presentation.");
+                Assert.That(promptPanel.sprite, Is.Null, "Targeting cannot retain a parchment panel over the terminal HUD.");
+                promptLabel.ForceMeshUpdate();
+                Assert.That(promptLabel.isTextOverflowing, Is.False, "Target controls remain visible at every captured window size.");
                 Ascii.ForceMeshUpdate();
                 Assert.That(Ascii.GetParsedText(), Does.Contain("Fire Bolt"), "The live runtime must discover the initially inactive target dialog.");
                 Assert.That(Ascii.GetParsedText(), Does.Contain("cancel"), "A narrow target panel retains the final cancel instruction.");
@@ -144,10 +153,15 @@ namespace EternalEnigma.Tests
             Assert.That(menu.HeroText.font, Is.SameAs(nativeFont));
             Assert.That(menu.Panel.GetComponent<Image>().sprite, Is.SameAs(nativePanel));
             Assert.That(optionsLabel.font, Is.SameAs(nativeOptionsFont));
+            Assert.That(promptLabel.font, Is.SameAs(nativePromptFont));
+            Assert.That(promptPanel.sprite, Is.SameAs(nativePromptPanel));
         }
 
         [UnityTest] public IEnumerator KeyboardGamepadAndTerminalMouseTargetWithoutLeakingHudClicks()
         {
+            view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view, new object[] { new Vector2(1280, 720), "Terminal input 1280x720" });
+            view.Repaint();
+            yield return new WaitForSecondsRealtime(.25f);
             var manager = MenuManager.Instance; var actor = harness.Ally;
             // A zero-effect instant spell isolates real command/SP accounting from combat RNG.
             testSpell = Object.Instantiate(actor.Skills.Single(skill => skill.SkillName == "Fire Bolt"));
@@ -178,6 +192,8 @@ namespace EternalEnigma.Tests
             Assert.That(manager.CurrentDialog, Is.SameAs(target), "An opening click held into targeting cannot cast.");
             InputSystem.QueueStateEvent(mouse, new MouseState { position = new Vector2(400, 200) }); yield return null; yield return null;
             Assert.That(TerminalRuntime.TryGetCellScreenPosition(actor.TilemapPosition + Vector3Int.left, out var left), Is.True);
+            Assert.That(TerminalRuntime.TryGetMapCell(left, out var leftCell), Is.True, "The center of a terrain cell accepts the pointer even when its glyph is a dot or blank.");
+            Assert.That(leftCell, Is.EqualTo(actor.TilemapPosition + Vector3Int.left));
             InputSystem.QueueStateEvent(mouse, new MouseState { position = left }); yield return null; yield return null;
             Assert.That(target.Direction, Is.EqualTo(Vector3Int.left), "Mouse hover uses the displayed ASCII cell, not the hidden 3D camera.");
             var options = Object.FindFirstObjectByType<DungeonHud>().OptionsButton;

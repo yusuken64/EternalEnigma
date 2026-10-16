@@ -332,6 +332,12 @@ public sealed class TerminalMainMenuView : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        // Options suspends the menu owner, but this hint lives on the sibling UI canvas.
+        if (hint != null) hint.gameObject.SetActive(false);
+    }
+
     private void Update()
     {
         if (!shown || options == null || menu == null) return;

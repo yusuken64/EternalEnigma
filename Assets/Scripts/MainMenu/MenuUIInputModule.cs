@@ -138,6 +138,10 @@ public class MenuUIInputModule : InputSystemUIInputModule
         scopes.RemoveAt(index);
         if (!wasTop) return;
         ConsumeInput();
+        // External party headers were disabled while the upper modal owned focus.
+        // Refresh them before choosing ReturnTo, rather than losing the opener
+        // because their next Update has not run yet.
+        if (scopes.Count > 0 && scopes[^1].Owner is PartyMenu party) party.HudTabs?.Refresh();
         if (IsUsable(scope.ReturnTo) && Allows(scope.ReturnTo))
             eventSystem.SetSelectedGameObject(scope.ReturnTo);
         else

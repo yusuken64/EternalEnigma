@@ -190,7 +190,8 @@ first confirmation. Targeted skills require a second confirmation and can be
 cancelled without spending SP or a turn. Native 3D targeting also supports mouse
 preview, left-click confirmation and right-click cancellation. Opening with a
 held click requires a release before confirmation; HUD clicks and invalid targets
-cannot cast. Terminal presentation retains keyboard/controller target selection.
+cannot cast. Terminal presentation supports keyboard/controller selection and
+mouse hover/confirmation on ASCII map cells with the same input guards.
 **Period / left stick press** waits; **F / right stick press** toggles Full Control
 without spending a wait action. Target selection enables its component
 only while needed, and disables it after confirm/cancel. Gamepad/keyboard/mouse
@@ -347,6 +348,35 @@ These audit names are not currently in the client's `harness` suite allowlist.
 Wait for the new run ID to finish in `Temp/HarnessResults/PlayMode.json`; NUnit XML
 is written alongside it. Review captures as well as assertions. See
 [UI behavior and styling](../../Docs/BamaoUI.md#shared-gameplay-dock).
+
+## Terminal UI audit
+
+Run these Editor menu commands sequentially after compilation, outside Play Mode:
+
+- **Tools > Eternal Enigma > Tests > Run Terminal Audit Edit Mode** checks menu
+  ownership, stale/duplicate submissions, literal frame layout, and reversible
+  styling of real controls, including the shared close-button artwork.
+- **Tools > Eternal Enigma > Tests > Run Terminal Audit Interactions** checks
+  keyboard, mouse and virtual gamepad input, party tabs, targeting, history,
+  presentation restoration, scene/floor covers, knowledge rules, and shared-save
+  Continue in both directions with an isolated progressed fixture.
+- **Tools > Eternal Enigma > Tests > Run Terminal Audit Captures** captures the
+  main menu, slots, hero picker, Settings, town services, party panels, overworld,
+  level-up and results at 960x600, 1280x720, 1920x1080 and 2560x1080. Dungeon
+  map/dock/target/history captures are produced by the interaction suite. The
+  capture route also checks shared town-service layouts in the normal view;
+  those comparison captures are under `Temp/UIScreenAudit`.
+- **Tools > Eternal Enigma > Tests > Run Terminal Audit Followup** checks terminal
+  pointer aiming, external party controls and scene cover handling alongside the
+  shared Settings and party-menu regressions.
+
+Invoke these through Unity MCP `execute_menu_item`, as for the regular UI audit;
+the `harness` CLI allowlist does not include these names. Wait for the new run ID
+in `Temp/HarnessResults/EditMode.json` or `PlayMode.json` to reach `Completed` and
+preserve the matching JSON/XML before starting the next suite. Captures and
+diagnostics are in `Temp/TerminalAudit`; review the PNGs as well as the assertions.
+See [terminal audit results](../../Docs/TerminalUIAudit.md) and the
+[remaining acceptance checklist](../../TODOs/11-terminal-mode.md).
 
 ## MCP / command line
 

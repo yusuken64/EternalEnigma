@@ -42,10 +42,10 @@ public class DungeonTierItem : MonoBehaviour
     private void FitLabel()
     {
         TierText.alignment = TextAlignmentOptions.Center;
-        TierText.margin = new Vector4(20, 20, 20, 20);
+        TierText.margin = new Vector4(10, 10, 10, 10);
         TierText.enableAutoSizing = true;
-        TierText.fontSizeMin = 24;
-        TierText.fontSizeMax = 52;
+        TierText.fontSizeMin = 16;
+        TierText.fontSizeMax = 32;
         TierText.textWrappingMode = TextWrappingModes.Normal;
         TierText.raycastTarget = false;
     }

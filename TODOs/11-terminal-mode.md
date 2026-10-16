@@ -1,6 +1,6 @@
 # Remaining terminal-mode integration and acceptance
 
-Audited 2026-10-08; implementation updated 2026-10-09. Terminal mode is a presentation option in the Unity game.
+Audited 2026-10-08; implementation and UI audit updated 2026-10-15. Terminal mode is a presentation option in the Unity game.
 Normal campaign objects, input, combat, services and saves remain authoritative;
 there is no separate full-game terminal simulation.
 
@@ -10,7 +10,7 @@ there is no separate full-game terminal simulation.
   viewports, glyph rules, three map renderers and `TerminalMenuModel`.
 - `Assets/Scripts/Terminal/` contains the persistent runtime owner, off-by-default
   preference, bundled monospace font, screen, scene snapshots and toggle controls.
-  Main-menu/settings buttons and F11 select the presentation; switching is deferred
+  Main-menu/settings buttons, F11 and controller View/Share select the presentation; switching is deferred
   while dungeon turns, town actions or overworld movement are busy.
 - Town, overworld and dungeon snapshots read live actors and logical cells.
   Dungeon rendering reads minimap knowledge and party sight, includes reveal and
@@ -20,7 +20,7 @@ there is no separate full-game terminal simulation.
   are preserved; world cameras and generation remain active.
 - `TerminalMainMenuView` supplies an animated ASCII title/backdrop and
   restyles the existing main-menu buttons, restoring them on mode exit.
-  Its footer follows the active input device.
+  Its footer follows the active input device and hides when the menu owner is suspended.
 - `TerminalMenuBridge` binds `TerminalMenuModel` to the current menu scope's
   live controls. `TerminalMenuSession` uses stable row IDs, refreshes on submit,
   checks ownership/active/interactable state and changed labels, and rejects
@@ -67,23 +67,27 @@ These checkmarks describe implementation, not a completed player acceptance pass
 | Overworld party/capabilities, warps, gates, confirmations, history | Shared scoped menu adapter; live map facts retained. |
 | Level-up and game-over/victory | Shared adapter/style through existing DialogController scopes. |
 
-## Remaining acceptance
+## Verification and remaining acceptance
 
-- [ ] Run the current seven `TerminalIntegrationTests` and ten
-  `TerminalPlayModeTests`, including stale/duplicate menu submits, focus and shop
-  transaction revalidation, knowledge parity, target preview/cancel and stale
-  target confirm, main-menu restoration, duplicate-UI hide/restore, desktop/small
-  grid resizing and both directions of shared-save continue. The eight
-  Core terminal tests include immutable knowledge reuse and preview marker/fog
-  coverage. Earlier reports do not verify these newly expanded fixtures.
-- [ ] Verify clean startup, direct scene launch, repeated travel, floor replacement,
-  teardown and domain reload disabled: one owner/screen and no stale state.
-- [ ] Exercise targeting, toggles during movement/replay/loading/open menus,
-  input consumption, cursor/focus, and mouse interaction with retained uGUI.
-- [ ] Inspect 1280x720, 1920x1080, a small window and live resizing for aligned
-  glyphs, literal text, unclipped HUD/log and transition/modal ordering.
-  A deterministic font/frame resize test covers the computed grids; it does not
-  replace screenshots and live-window visual inspection.
+- [x] Run the expanded terminal integration, presentation, interaction and Core
+  fixtures, covering stale/duplicate submits, shop revalidation, knowledge and
+  disguise parity, target preview/cancel/confirm, font/style restoration,
+  duplicate-UI hide/restore, grid resizing and shared-save Continue in both
+  directions. Current run counts and evidence are in the
+  [terminal UI audit](../Docs/TerminalUIAudit.md).
+- [x] Exercise scene/floor covers, destination binding, return to the main menu,
+  and one runtime/screen owner using the editor harness with domain reload
+  disabled. This does not replace cold-start player testing.
+- [x] Exercise keyboard, mouse and simulated gamepad targeting, guarded HUD
+  clicks, deferred toggles, modal focus and external party-header controls.
+- [x] Capture menus, services, party docks, maps, targeting, history, level-up and
+  results at 960x600, 1280x720, 1920x1080 and 2560x1080. Inspect each screen at
+  the smallest size and representative wide captures; automated viewport changes
+  and resize checks supplement pixel review.
+- [ ] Verify cold startup and sustained repeated travel/floor replacement in a
+  player, including toggles during replay and manual live-window resizing.
+- [ ] Smoke-test physical controllers; automated device-event injection does not
+  verify hardware-specific behavior.
 - [ ] Complete a shared-save playthrough: terminal New Journey -> town -> overworld
   -> dungeon; fight, target a skill/item, descend, transact and explicitly save.
   Continue in 3D and compare party, inventory, gold and progression; repeat in

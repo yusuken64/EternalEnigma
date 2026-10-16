@@ -46,14 +46,18 @@ internal sealed class TerminalMenuStyle
                 foreach (var graphic in slider.fillRect.GetComponentsInChildren<Graphic>()) indicators.Add(graphic);
             var colors = selectable.colors;
             bool handle = selectable is Slider || selectable is Scrollbar;
+            // The authored dungeon close button uses its cross artwork as the
+            // tint target. Dark panel colors would hide the symbol itself.
+            bool symbol = selectable.targetGraphic != null &&
+                selectable.targetGraphic.TryGetComponent<DungeonUIRole>(out var role) && role.Role == DungeonVisualRole.Close;
             bool active = false;
             foreach (var label in selectable.GetComponentsInChildren<TMP_Text>())
                 active |= (label.fontStyle & FontStyles.Underline) != 0;
-            colors.normalColor = handle ? new Color(.36f, .60f, .45f) : active
+            colors.normalColor = symbol ? Indicator : handle ? new Color(.36f, .60f, .45f) : active
                 ? new Color(.12f, .27f, .19f) : new Color(.055f, .12f, .08f);
-            colors.highlightedColor = colors.selectedColor = handle ? Indicator : new Color(.18f, .39f, .26f);
+            colors.highlightedColor = colors.selectedColor = symbol ? Color.white : handle ? Indicator : new Color(.18f, .39f, .26f);
             colors.pressedColor = new Color(.43f, .65f, .42f);
-            colors.disabledColor = new Color(.12f, .15f, .13f);
+            colors.disabledColor = symbol ? new Color(.36f, .48f, .41f) : new Color(.12f, .15f, .13f);
             colors.colorMultiplier = 1;
             selectable.colors = colors;
             appliedControlColors[selectable] = colors;
@@ -74,12 +78,16 @@ internal sealed class TerminalMenuStyle
             // checkmark retains its shape and its CanvasRenderer-controlled on/off alpha.
             if (backdrops.ContainsValue(image) || image.color.a == 0) continue;
             bool target = targetGraphics.Contains(image), indicator = indicators.Contains(image);
-            if (!target && !indicator && (image.preserveAspect || image.type == Image.Type.Filled)) continue;
+            bool textPanel = image.preserveAspect && BacksReadableText(image);
+            // A border-only image carries live turn/selection feedback. Removing
+            // its sprite would fill its center, and styling would fight its tint.
+            if (!target && !indicator && (image.preserveAspect && !textPanel || image.type == Image.Type.Filled ||
+                image.type == Image.Type.Sliced && !image.fillCenter)) continue;
             // Small authored symbols (dropdown arrows and close icons) are not panels.
             if (!target && image.sprite != null && image.GetComponentInParent<Selectable>() != null) indicator = true;
             if (!images.ContainsKey(image)) images.Add(image, (image.sprite,
                 image.overrideSprite != image.sprite ? image.overrideSprite : null, image.type, image.color));
-            if (!indicator && !image.preserveAspect)
+            if (!indicator && (!image.preserveAspect || textPanel))
             {
                 image.overrideSprite = null;
                 image.sprite = null;
@@ -89,6 +97,15 @@ internal sealed class TerminalMenuStyle
             // pressed states visible rather than multiplying two near-black colors.
             image.color = target ? Color.white : indicator ? Indicator : Panel;
         }
+    }
+
+    private static bool BacksReadableText(Image image)
+    {
+        // Imported dialog sheets also preserve their aspect ratio. Unlike a
+        // portrait/icon, a sheet carrying text needs a dark terminal surface.
+        foreach (var text in image.GetComponentsInChildren<TMP_Text>())
+            if (text.isActiveAndEnabled && !string.IsNullOrWhiteSpace(text.text)) return true;
+        return false;
     }
 
     private static Color ReadableInk(Color original)

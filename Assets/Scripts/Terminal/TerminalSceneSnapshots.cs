@@ -107,10 +107,11 @@ internal static class TerminalSceneSnapshots
                 Character.ToBounds(character.FootPrint, character.TilemapPosition));
             bool visible = character is Ally || overlapsSight || revealed;
             if (!visible) continue;
-            char glyph = character is Enemy disguise && EnemyBehavior.IsDisguised(disguise) ? 'i' :
+            bool disguised = character is Enemy disguise && EnemyBehavior.IsDisguised(disguise);
+            char glyph = disguised ? 'i' :
                 character is Enemy ? TerminalGlyphs.Enemy(character.CharacterName) : '\0';
             foreach (var occupied in Character.ToBounds(character.FootPrint, character.TilemapPosition).allPositionsWithin)
-                actors.Add(new TerminalActor(character.GetInstanceID().ToString(), Point(occupied), glyph == 'i' ? TerminalActorKind.Item : kind, glyph,
+                actors.Add(new TerminalActor(character.GetInstanceID().ToString(), Point(occupied), disguised ? TerminalActorKind.Item : kind, glyph,
                     character is Ally || revealed || overlapsSight));
         }
         foreach (var ally in game.DownedAllies)

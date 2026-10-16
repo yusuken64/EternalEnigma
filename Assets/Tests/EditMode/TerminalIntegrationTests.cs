@@ -137,6 +137,58 @@ namespace EternalEnigma.Tests
             finally { Object.DestroyImmediate(root); Object.DestroyImmediate(events); }
         }
 
+        [Test] public void TerminalPointerUsesWholeCellsForSmallGlyphsAndWhitespace()
+        {
+            var root = new GameObject("Terminal pointer cells");
+            try
+            {
+                var screen = root.AddComponent<TerminalScreen>();
+                Assert.That(screen.Initialize(), Is.True);
+                var frame = new TerminalFrame();
+                frame.Begin(8, 2);
+                frame.Write(0, 0, ". ,_i@# ", TerminalPalette.White);
+                frame.Write(0, 1, "  .:;<> ", TerminalPalette.Selected);
+                frame.Commit(); screen.Show(true);
+                var text = root.GetComponentInChildren<TextMeshProUGUI>();
+                var bundledFont = screen.FontAsset;
+                var ownedFontField = typeof(TerminalScreen).GetField("ownedFont",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                Assert.That(TMP_Settings.defaultFontAsset, Is.Not.Null);
+                foreach (bool fallback in new[] { false, true })
+                {
+                    try
+                    {
+                        ownedFontField.SetValue(screen, fallback ? null : bundledFont);
+                        text.font = fallback ? TMP_Settings.defaultFontAsset : bundledFont;
+                        screen.SetText(frame.RichText);
+                        Canvas.ForceUpdateCanvases(); text.ForceMeshUpdate();
+                        float cellWidth = fallback ? text.fontSize : bundledFont.characterLookupTable['M'].glyph.metrics.horizontalAdvance *
+                            text.fontSize / bundledFont.faceInfo.pointSize;
+                        float left = text.rectTransform.rect.xMin + text.margin.x;
+                        for (int row = 0; row < 2; row++)
+                        for (int column = 0; column < 8; column++)
+                        {
+                            var line = text.textInfo.lineInfo[row];
+                            float middle = (line.ascender + line.descender) * .5f;
+                            Vector2 At(float fraction) => RectTransformUtility.WorldToScreenPoint(null,
+                                text.transform.TransformPoint(new Vector3(left + (column + fraction) * cellWidth, middle)));
+                            Assert.That(screen.TryGetFramePosition(column, row, out var center), Is.True);
+                            Assert.That(Vector2.Distance(center, At(.5f)), Is.LessThan(.01f),
+                                "The cell center must follow the fixed grid rather than the centered glyph's origin.");
+                            foreach (float fraction in new[] { .25f, .75f })
+                            {
+                                Assert.That(screen.TryGetFrameCell(At(fraction), out int hitColumn, out int hitRow), Is.True,
+                                    $"{(fallback ? "Fallback" : "Bundled")} cell {column},{row} ({frame[column, row].Glyph}) accepts both halves.");
+                                Assert.That((hitColumn, hitRow), Is.EqualTo((column, row)));
+                            }
+                        }
+                    }
+                    finally { ownedFontField.SetValue(screen, bundledFont); }
+                }
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
         [Test] public void TerminalFontAndFramesStayAlignedAcrossDesktopAndSmallResizes()
         {
             var root = new GameObject("Terminal resize test");

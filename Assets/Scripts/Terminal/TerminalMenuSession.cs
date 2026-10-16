@@ -15,16 +15,18 @@ internal sealed class TerminalMenuSession
 {
     private readonly Transform root;
     private readonly Func<bool> ownsFocus;
+    private readonly Func<IEnumerable<Selectable>> additionalControls;
     private readonly Dictionary<string, Selectable> controls = new();
     private readonly Dictionary<string, string> labels = new();
     private long lastInputSequence = long.MinValue;
     internal TerminalMenuModel Model { get; }
     internal Selectable Selected => Model.SelectedId != null && controls.TryGetValue(Model.SelectedId, out var value) ? value : null;
 
-    internal TerminalMenuSession(Transform root, Func<bool> ownsFocus)
+    internal TerminalMenuSession(Transform root, Func<bool> ownsFocus, Func<IEnumerable<Selectable>> additionalControls = null)
     {
         this.root = root;
         this.ownsFocus = ownsFocus;
+        this.additionalControls = additionalControls;
         Model = new TerminalMenuModel(root != null ? GameplayText.Name(root.name) : "Menu", Array.Empty<TerminalMenuOption>());
         Refresh();
     }
@@ -54,9 +56,10 @@ internal sealed class TerminalMenuSession
         labels.Clear();
         var options = new List<TerminalMenuOption>();
         if (root != null && root.gameObject.activeInHierarchy)
-            foreach (var selectable in root.GetComponentsInChildren<Selectable>())
+            foreach (var selectable in root.GetComponentsInChildren<Selectable>()
+                .Concat(additionalControls?.Invoke() ?? Enumerable.Empty<Selectable>()).Distinct())
             {
-                if (!selectable.isActiveAndEnabled) continue;
+                if (selectable == null || !selectable.isActiveAndEnabled) continue;
                 string id = Id(selectable), label = Label(selectable);
                 controls[id] = selectable;
                 labels[id] = label;

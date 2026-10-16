@@ -2,6 +2,7 @@ using JuicyChickenGames.Menu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -24,6 +25,7 @@ public class EntranceDialog : Dialog
 
 	internal void Setup()
 	{
+        FitLayout();
         GetComponent<NavigationHandler>()?.ConfigureCompactPointer(this);
         var campaign = Common.Instance.CampaignContext;
         if (campaign != null)
@@ -49,6 +51,43 @@ public class EntranceDialog : Dialog
 		};
 		items = Container.RePopulateObjects(DungeonTierItemPrefab, DungeonTierDatas, setupAction);
 	}
+
+    private void FitLayout()
+    {
+        var prompt = transform.Find("Prompt")?.GetComponent<TMP_Text>();
+        if (prompt != null)
+        {
+            Fit(prompt.transform, .15f, .84f, .85f, .95f);
+            prompt.enableAutoSizing = true;
+            prompt.fontSizeMin = 24;
+            prompt.fontSizeMax = 42;
+            prompt.textWrappingMode = TextWrappingModes.NoWrap;
+            prompt.margin = Vector4.zero;
+            prompt.raycastTarget = false;
+        }
+        Fit(Container, .24f, .22f, .76f, .79f);
+        var rows = Container.GetComponent<VerticalLayoutGroup>();
+        if (rows != null) rows.spacing = 8;
+        // Keep the authored illustration in the space beside the choices. Its
+        // original fixed rectangle extends over the centered Cancel action.
+        if (transform.Find("Illustration") is RectTransform illustration)
+        {
+            illustration.anchorMin = illustration.anchorMax = new Vector2(.12f, .5f);
+            illustration.anchoredPosition = Vector2.zero;
+            illustration.sizeDelta = new Vector2(160, 160);
+        }
+        Fit(CancelButton.transform.parent, .30f, .055f, .70f, .155f);
+        var buttons = CancelButton.transform.parent.GetComponent<HorizontalLayoutGroup>();
+        if (buttons != null)
+        {
+            buttons.childControlWidth = buttons.childControlHeight = true;
+            buttons.childForceExpandWidth = buttons.childForceExpandHeight = true;
+        }
+        var label = CancelButton.GetComponentInChildren<TMP_Text>();
+        label.enableAutoSizing = true;
+        label.fontSizeMin = 18;
+        label.fontSizeMax = 28;
+    }
 
 	internal override void SetFirstSelect()
 	{

@@ -71,8 +71,11 @@ namespace EternalEnigma.Tests
             var hint = menu.StartButton.GetComponentInParent<Canvas>().transform.Find("Terminal menu hint");
             Assert.That(hint.gameObject.activeSelf, Is.False);
             var settings = Common.Instance.GlobalSettings;
+            Assert.That(settings.IsOpen, Is.True);
             Assert.That(settings.SettingsCanvas.transform.Find("Terminal modal background"), Is.Not.Null);
             settings.Exit_Clicked();
+            yield return null;
+            Assert.That(hint.gameObject.activeSelf, Is.True, "Closing Options restores the terminal menu footer.");
             TerminalMode.SetRequested(false);
             yield return null;
             Assert.That(label.font, Is.SameAs(font));

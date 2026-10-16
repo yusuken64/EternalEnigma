@@ -109,8 +109,9 @@ records the text diagnostics for inspection.
 
 Input coverage uses Unity Input System keyboard, mouse, and gamepad events.
 Physical controllers, touch devices, and platform-specific builds were not
-exercised. The existing theme and native OS mouse cursor are retained. Terminal
-view continues to use its keyboard/controller targeting flow.
+exercised. The existing theme and native OS mouse cursor are retained. The
+[terminal follow-up audit](TerminalUIAudit.md) also covers ASCII mouse targeting
+alongside keyboard/controller input.
 
 The input asset also contained incomplete Touch, Joystick, and XR template
 schemes. They lacked essential gameplay actions, and PlayerInput automatic

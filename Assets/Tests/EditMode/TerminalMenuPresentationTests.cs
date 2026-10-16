@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using TMPro;
@@ -72,6 +73,108 @@ namespace EternalEnigma.Tests
                 Object.DestroyImmediate(sprite);
                 Object.DestroyImmediate(texture);
             }
+        }
+
+        [Test]
+        public void AuthoredDungeonCloseSymbolKeepsReadableFeedbackAndRestores()
+        {
+            var source = GameUITheme.Current.DungeonMenuPrefab.GetComponentsInChildren<DungeonDialogClose>(true).Single();
+            var root = Object.Instantiate(source.gameObject);
+            var style = new TerminalMenuStyle();
+            try
+            {
+                var button = root.GetComponent<Button>();
+                var symbol = (UnityEngine.UI.Image)button.targetGraphic;
+                var sprite = symbol.sprite;
+                var colors = button.colors;
+                var color = symbol.color;
+                Assert.That(symbol.GetComponent<DungeonUIRole>().Role, Is.EqualTo(DungeonVisualRole.Close));
+                Assert.That(sprite, Is.Not.Null);
+
+                style.Refresh(root.transform, TMP_Settings.defaultFontAsset);
+                style.Refresh(root.transform, TMP_Settings.defaultFontAsset);
+                Assert.That(symbol.sprite, Is.SameAs(sprite), "The shared close artwork remains the button's visible symbol.");
+                Assert.That(symbol.color, Is.EqualTo(Color.white));
+                Assert.That(button.colors.normalColor.g, Is.GreaterThan(.8f), "The cross cannot inherit the near-black tint of a plain button panel.");
+                Assert.That(button.colors.selectedColor, Is.Not.EqualTo(button.colors.normalColor));
+                Assert.That(button.colors.pressedColor, Is.Not.EqualTo(button.colors.selectedColor));
+                Assert.That(button.colors.disabledColor.g, Is.GreaterThan(.4f));
+
+                style.Restore();
+                Assert.That(button.colors, Is.EqualTo(colors));
+                Assert.That(symbol.sprite, Is.SameAs(sprite));
+                Assert.That(symbol.color, Is.EqualTo(color));
+            }
+            finally { style.Restore(); Object.DestroyImmediate(root); }
+        }
+
+        [Test]
+        public void AuthoredPartyTurnHighlightKeepsItsBorderAndLiveColor()
+        {
+            var card = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Dungeon/UI/CharacterStatsDisplay-3e44211b.prefab");
+            Assert.That(card.GetComponent<DungeonPartyCard>(), Is.Not.Null);
+            var source = card.GetComponentsInChildren<UnityEngine.UI.Image>(true).Single(image => image.name == "Turn highlight");
+            var border = Object.Instantiate(source);
+            var style = new TerminalMenuStyle();
+            try
+            {
+                var sprite = border.sprite;
+                Assert.That(sprite, Is.Not.Null);
+                Assert.That(border.type, Is.EqualTo(UnityEngine.UI.Image.Type.Sliced));
+                Assert.That(border.fillCenter, Is.False);
+                border.enabled = true;
+                border.color = new Color(1f, .84f, .30f, 1f);
+                style.Refresh(border.transform, TMP_Settings.defaultFontAsset);
+                Assert.That(border.sprite, Is.SameAs(sprite));
+                Assert.That(border.type, Is.EqualTo(UnityEngine.UI.Image.Type.Sliced), "A live portrait outline must not become a filled rectangle.");
+                Assert.That(border.fillCenter, Is.False);
+                Assert.That(border.color, Is.EqualTo(new Color(1f, .84f, .30f, 1f)));
+
+                var liveColor = new Color(1f, .84f, .30f, .78f);
+                border.color = liveColor;
+                style.Refresh(border.transform, TMP_Settings.defaultFontAsset);
+                Assert.That(border.color, Is.EqualTo(liveColor), "Periodic styling cannot replace the turn indicator's live pulse.");
+                style.Restore();
+                Assert.That(border.sprite, Is.SameAs(sprite));
+                Assert.That(border.type, Is.EqualTo(UnityEngine.UI.Image.Type.Sliced));
+                Assert.That(border.color, Is.EqualTo(liveColor), "Mode exit cannot restore a stale turn highlight color.");
+                Assert.That(border.enabled, Is.True);
+            }
+            finally { style.Restore(); Object.DestroyImmediate(border.gameObject); }
+        }
+
+        [Test]
+        public void AspectPreservingTextPanelsBecomeDarkAndRestoreWhilePortraitsStayIntact()
+        {
+            var source = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Bamao/BamaoUIPack/Prefabs/Frame/ItemSheetFrame.prefab");
+            var root = Object.Instantiate(source);
+            var style = new TerminalMenuStyle();
+            try
+            {
+                var sheet = root.GetComponent<UnityEngine.UI.Image>();
+                var sprite = sheet.sprite;
+                var color = sheet.color;
+                Assert.That(sheet.preserveAspect, Is.True, "The recruitment description uses this aspect-preserving sheet.");
+                var label = new GameObject("Recruitment description", typeof(RectTransform), typeof(TextMeshProUGUI)).GetComponent<TMP_Text>();
+                label.transform.SetParent(root.transform, false);
+                label.text = "Bard / Rogue\nNot enough gold.";
+                var portrait = Image("Portrait", root.transform);
+                portrait.sprite = sprite;
+                portrait.preserveAspect = true;
+                var portraitColor = portrait.color;
+
+                style.Refresh(root.transform, TMP_Settings.defaultFontAsset);
+                Assert.That(sheet.sprite, Is.Null, "A parchment text surface cannot remain behind light terminal ink.");
+                Assert.That(sheet.color.r + sheet.color.g + sheet.color.b, Is.LessThan(.15f));
+                Assert.That(sheet.color.a, Is.EqualTo(1));
+                Assert.That(portrait.sprite, Is.SameAs(sprite));
+                Assert.That(portrait.color, Is.EqualTo(portraitColor));
+                style.Restore();
+                Assert.That(sheet.sprite, Is.SameAs(sprite));
+                Assert.That(sheet.color, Is.EqualTo(color));
+                Assert.That(sheet.preserveAspect, Is.True);
+            }
+            finally { style.Restore(); Object.DestroyImmediate(root); }
         }
 
         [Test]

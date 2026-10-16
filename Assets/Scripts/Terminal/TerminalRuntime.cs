@@ -100,10 +100,15 @@ public sealed class TerminalRuntime : MonoBehaviour
     private void PreferenceChanged()
     {
         bool supported = dungeon != null || town != null || overworld != null || mainMenu != null;
+        // Single-scene travel briefly has no loaded gameplay scene. Keep the
+        // applied mode across that gap so the destination can bind under its cover.
+        if (!supported && hasPresentedMode && Common.InstanceOrNull?.ScreenTransition?.BlocksInput == true)
+        { dirty = true; return; }
         // A covered destination still needs its HUD bound to the current presentation.
         // Only changing presentation waits for the cover or gameplay action to finish.
-        if (supported && TerminalMode.Requested != TerminalMode.Effective && UnsafeToSwitch()) { dirty = true; return; }
-        TerminalMode.Effective = TerminalMode.Requested && screen != null && screen.IsReady && supported;
+        bool deferSwitch = supported && TerminalMode.Requested != TerminalMode.Effective && UnsafeToSwitch();
+        if (!deferSwitch)
+            TerminalMode.Effective = TerminalMode.Requested && screen != null && screen.IsReady && supported;
         hasPresentedMode |= supported;
         if (!TerminalMode.Effective) hudStyle.Restore();
         if (screen != null) screen.Show(TerminalMode.Effective);
@@ -198,7 +203,12 @@ public sealed class TerminalRuntime : MonoBehaviour
         nextHudStyle = Time.unscaledTime + .1f;
         if (launcher != null) hudStyle.Refresh(launcher.transform, screen.FontAsset);
         if (resources != null) hudStyle.Refresh(resources.transform, screen.FontAsset);
-        if (dungeonHud != null) hudStyle.Refresh(dungeonHud.transform, screen.FontAsset);
+        // DungeonHud lives on Game, which also owns dialogs. Styling that whole
+        // hierarchy overlaps the menu bridge and captures already-terminal fonts.
+        if (dungeonHud != null && dungeonHud.PartyRoot != null)
+            hudStyle.Refresh(dungeonHud.PartyRoot.parent, screen.FontAsset);
+        if (targetDialog != null && targetDialog.isActiveAndEnabled)
+            hudStyle.Refresh(targetDialog.transform, screen.FontAsset);
         if (historyButton != null)
         {
             historyButton.GetComponentInChildren<TMP_Text>().fontSizeMax = screen.FontSize;

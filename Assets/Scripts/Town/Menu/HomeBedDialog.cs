@@ -22,7 +22,7 @@ public sealed class HomeBedDialog : Dialog
     public void AuthorPreparationLayout()
     {
         Fit(transform, .22f, .20f, .78f, .80f);
-        var title = transform.Find("Home");
+        var title = transform.Find("Home") ?? transform.Find("Text");
         if (title != null) Fit(title, .08f, .82f, .92f, .96f);
         if (description == null)
             description = GameUISkin.Label(transform, "Rest and save your progress.", new Vector2(.08f,.42f), new Vector2(.92f,.79f), 24);

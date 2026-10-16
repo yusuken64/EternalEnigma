@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using EternalEnigma.Core.Terminal;
 using TMPro;
 using UnityEngine;
@@ -45,7 +46,8 @@ public sealed class TerminalMenuBridge : MonoBehaviour
             Release();
             owner = currentOwner; root = currentRoot;
             session = new TerminalMenuSession(root, () => owner != null && root != null &&
-                root.gameObject.activeInHierarchy && (!module.HasDialog ? owner == mainMenu : module.OwnsFocus(owner)));
+                root.gameObject.activeInHierarchy && (!module.HasDialog ? owner == mainMenu : module.OwnsFocus(owner)),
+                () => AdditionalControls(module));
             nextMove = 0; lastMove = Vector2.zero;
         }
         if (Time.unscaledTime >= nextStyle)
@@ -105,6 +107,16 @@ public sealed class TerminalMenuBridge : MonoBehaviour
     private void LateUpdate()
     {
         if (!TerminalMode.Effective || owner == null || root == null || !root.gameObject.activeInHierarchy) Release();
+    }
+    private IEnumerable<Selectable> AdditionalControls(MenuUIInputModule module)
+    {
+        // Party tabs and Options belong to the party focus scope but are retained
+        // in the scene HUD, outside the dialog's transform hierarchy.
+        if (owner is not PartyMenu party || party.HudTabs == null) yield break;
+        foreach (var control in party.HudTabs.GetComponentsInChildren<Selectable>())
+            if (module.Allows(control.gameObject)) yield return control;
+        var options = party.HudTabs.OptionsButton;
+        if (options != null && module.Allows(options.gameObject)) yield return options;
     }
     private void Release()
     {

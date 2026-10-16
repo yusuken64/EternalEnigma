@@ -31,6 +31,7 @@ namespace EternalEnigma.Tests
 
         [UnitySetUp] public IEnumerator Setup()
         {
+            terminalAudit = false;
             input = new TestInputScope();
             preferences = GamePreferences.Isolate();
             harness = new GameTestHarness { TimeoutSeconds = 120 };
@@ -120,12 +121,27 @@ namespace EternalEnigma.Tests
             {
                 var ally = mode == AllyRecruitDialogMode.Recruit ? town.TownAllies.FirstOrDefault() : town.TownPlayer.RecruitedAllies.FirstOrDefault();
                 if (ally == null) continue;
+                var recruit = services.AllyRecruitDialog;
+                var board = recruit.NameText.GetComponentInParent<Image>(true);
+                var sheet = recruit.DescriptionText.GetComponentInParent<Image>(true);
+                var boardSprite = board.sprite;
+                var sheetSprite = sheet.sprite;
                 services.AllyRecruitDialog.Show(ally, mode);
                 menus.Open(services.AllyRecruitDialog); yield return null;
-                yield return CaptureSizes("town-" + mode.ToString().ToLowerInvariant(), () =>
+                yield return CaptureSizes("town-" + mode.ToString().ToLowerInvariant(), () => {
                     AssertCompactPointer(services.AllyRecruitDialog.GetComponent<NavigationHandler>(),
-                        mode == AllyRecruitDialogMode.Recruit ? services.AllyRecruitDialog.CancelButton : services.AllyRecruitDialog.CancelButton2));
+                        mode == AllyRecruitDialogMode.Recruit ? services.AllyRecruitDialog.CancelButton : services.AllyRecruitDialog.CancelButton2);
+                    if (TerminalMode.Effective)
+                        foreach (var surface in new[] { board, sheet })
+                        {
+                            Assert.That(surface.sprite, Is.Null, "Recruitment text must sit on a terminal surface, including aspect-preserving sheets.");
+                            Assert.That(surface.color.r + surface.color.g + surface.color.b, Is.LessThan(.15f));
+                            Assert.That(surface.color.a, Is.EqualTo(1));
+                        }
+                });
                 services.AllyRecruitDialog.CloseDialog(); yield return null;
+                Assert.That(board.sprite, Is.SameAs(boardSprite), "Closing recruitment restores its authored board.");
+                Assert.That(sheet.sprite, Is.SameAs(sheetSprite));
             }
             foreach (var building in town.Configuration.Buildings)
             {
@@ -133,8 +149,12 @@ namespace EternalEnigma.Tests
                 var dialog = services.OpenBuilding(building, town.TownPlayer, null);
                 if (dialog == null) continue;
                 yield return null;
-                yield return CaptureSizes("town-service-" + id, dialog is EntranceDialog entrance
-                    ? () => AssertCompactPointer(entrance.GetComponent<NavigationHandler>(), entrance.CancelButton) : null);
+                yield return CaptureSizes("town-service-" + id, () =>
+                {
+                    AssertServiceLayout(dialog);
+                    if (dialog is EntranceDialog entrance)
+                        AssertCompactPointer(entrance.GetComponent<NavigationHandler>(), entrance.CancelButton);
+                });
                 if (dialog is EntranceDialog lockedEntrance)
                 {
                     var rows = lockedEntrance.Container.GetComponentsInChildren<DungeonTierItem>();
@@ -176,7 +196,11 @@ namespace EternalEnigma.Tests
             yield return null;
             var availableEntry = readyEntrance.Container.GetComponentsInChildren<DungeonTierItem>().First(row => row.Button.interactable);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(availableEntry.Button.gameObject));
-            yield return CaptureSizes("town-entrance-ready", () => AssertCompactPointer(readyEntrance.GetComponent<NavigationHandler>(), availableEntry.Button));
+            yield return CaptureSizes("town-entrance-ready", () =>
+            {
+                AssertServiceLayout(readyEntrance);
+                AssertCompactPointer(readyEntrance.GetComponent<NavigationHandler>(), availableEntry.Button);
+            });
             readyEntrance.CloseDialog(); yield return null;
             var champions = TownSceneLoader.Default.AllyCatalog.Where(hero => hero.Portrait != null)
                 .OrderByDescending(hero => hero.Name.Length).Take(4).ToArray();
@@ -286,6 +310,45 @@ namespace EternalEnigma.Tests
                     Assert.That(Common.Instance.Travel.IsTransitioning, Is.False, "Back must not leave an unsaved result.");
                     Assert.That(harness.Store.Writes, Is.EqualTo(writes), "Back must not implicitly save or load.");
                 }
+            }
+        }
+
+        static void AssertServiceLayout(JuicyChickenGames.Menu.Dialog dialog)
+        {
+            if (dialog is EntranceDialog entrance)
+            {
+                var title = entrance.transform.Find("Prompt").GetComponent<TMP_Text>();
+                AssertLabelFits(title);
+                Assert.That(title.textInfo.lineCount, Is.EqualTo(1), "The entrance title stays on its own line.");
+                var titleBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(entrance.transform, title.transform);
+                var rows = RectTransformUtility.CalculateRelativeRectTransformBounds(entrance.transform, entrance.Container);
+                var cancel = RectTransformUtility.CalculateRelativeRectTransformBounds(entrance.transform, entrance.CancelButton.transform);
+                Assert.That(titleBounds.min.y, Is.GreaterThan(rows.max.y), "Dungeon choices cannot cover the title.");
+                Assert.That(rows.min.y, Is.GreaterThan(cancel.max.y), "Dungeon choices and Cancel need separate rows.");
+                var background = RectTransformUtility.CalculateRelativeRectTransformBounds(entrance.transform, entrance.transform.Find("Background"));
+                var dialogRect = ((RectTransform)entrance.transform).rect;
+                Assert.That(background.size.x, Is.EqualTo(dialogRect.width).Within(.1f), "The authored backdrop must still cover the dialog.");
+                Assert.That(background.size.y, Is.EqualTo(dialogRect.height).Within(.1f));
+                Assert.That(Vector2.Distance(background.center, dialogRect.center), Is.LessThan(.1f));
+                var illustration = RectTransformUtility.CalculateRelativeRectTransformBounds(entrance.transform, entrance.transform.Find("Illustration"));
+                Assert.That(illustration.max.x, Is.LessThan(rows.min.x), "The illustration belongs beside the dungeon choices.");
+                Assert.That(illustration.min.y, Is.GreaterThan(cancel.max.y), "The illustration must not obscure Cancel's selection feedback.");
+                foreach (var item in entrance.Container.GetComponentsInChildren<DungeonTierItem>()) AssertLabelFits(item.TierText);
+            }
+            else if (dialog is HomeBedDialog home)
+            {
+                var description = home.transform.Find("Preparation description").GetComponent<TMP_Text>();
+                AssertLabelFits(description);
+                var save = home.transform.Find("Sleep and Save");
+                var descriptionBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(home.transform, description.transform);
+                var saveBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(home.transform, save);
+                Assert.That(descriptionBounds.min.y, Is.GreaterThan(saveBounds.max.y), "Home instructions cannot overlap Save.");
+            }
+
+            static void AssertLabelFits(TMP_Text label)
+            {
+                label.ForceMeshUpdate();
+                Assert.That(label.isTextOverflowing, Is.False, $"{label.name} must fit at {Screen.width}x{Screen.height}: {label.text}");
             }
         }
 

@@ -14,15 +14,24 @@ public static class HarnessTestRunner
     public static void RunTerminalAuditCaptures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalMainMenuSlotsHeroAndSettingsAcrossAspectRatios",
         "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalTownServicesPartyAndOverworldAcrossAspectRatios",
-        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalDungeonLevelAndResultDialogsAcrossAspectRatios");
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalDungeonLevelAndResultDialogsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTownServicesPartyAndOverworldAcrossAspectRatios");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Terminal Audit Interactions")]
     public static void RunTerminalAuditInteractions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.TerminalPlayModeTests", "EternalEnigma.Tests.TerminalRuntimeAuditTests",
-        "EternalEnigma.Tests.TerminalDungeonAuditTests", "EternalEnigma.Tests.TerminalMenuInteractionTests");
+        "EternalEnigma.Tests.TerminalDungeonAuditTests", "EternalEnigma.Tests.TerminalMenuInteractionTests",
+        "EternalEnigma.Tests.TerminalPartyInputTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Terminal Audit Edit Mode")]
     public static void RunTerminalAuditEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.TerminalIntegrationTests", "EternalEnigma.Tests.TerminalMenuPresentationTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Terminal Audit Followup")]
+    public static void RunTerminalAuditFollowup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TerminalDungeonAuditTests.KeyboardGamepadAndTerminalMouseTargetWithoutLeakingHudClicks",
+        "EternalEnigma.Tests.TerminalPartyInputTests",
+        "EternalEnigma.Tests.TerminalRuntimeAuditTests.SceneCoverDefersModeSwitchAndDestinationRetainsOneTerminalOwner",
+        "EternalEnigma.Tests.SettingsInteractionTests", "EternalEnigma.Tests.UnifiedPartyMenuTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run UI Audit Captures")]
     public static void RunUIAuditCaptures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

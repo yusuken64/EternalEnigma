@@ -92,11 +92,24 @@ public sealed class TerminalScreen : MonoBehaviour
         column = row = -1;
         if (text == null || canvas == null || !canvas.enabled || !RectTransformUtility.RectangleContainsScreenPoint(text.rectTransform, position)) return false;
         text.ForceMeshUpdate();
-        int index = TMP_TextUtilities.FindIntersectingCharacter(text, position, null, false);
-        if (index < 0) return false;
-        row = text.textInfo.characterInfo[index].lineNumber;
-        column = index - text.textInfo.lineInfo[row].firstCharacterIndex;
-        return column >= 0 && column < Columns && row >= 0 && row < Rows;
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(text.rectTransform, position, null, out var local)) return false;
+        // TMP's character hit test uses the visible glyph quad. A period, comma
+        // or blank floor cell must accept its whole grid cell, not just its ink.
+        for (int lineIndex = 0; lineIndex < Mathf.Min(Rows, text.textInfo.lineCount); lineIndex++)
+        {
+            var line = text.textInfo.lineInfo[lineIndex];
+            if (local.y > line.ascender || local.y < line.descender) continue;
+            for (int index = line.firstCharacterIndex; index <= line.lastCharacterIndex && index < text.textInfo.characterCount; index++)
+            {
+                var character = text.textInfo.characterInfo[index];
+                int cellColumn = index - line.firstCharacterIndex;
+                if (cellColumn >= Columns || character.character == '\n' || character.character == '\r') break;
+                if (local.x < CellLeft(character) || local.x >= character.xAdvance) continue;
+                column = cellColumn; row = lineIndex;
+                return true;
+            }
+        }
+        return false;
     }
     internal bool TryGetFramePosition(int column, int row, out Vector2 position)
     {
@@ -108,9 +121,13 @@ public sealed class TerminalScreen : MonoBehaviour
         if (index >= text.textInfo.characterCount) return false;
         var character = text.textInfo.characterInfo[index];
         position = RectTransformUtility.WorldToScreenPoint(null, text.transform.TransformPoint(
-            new Vector3((character.origin + character.xAdvance) * .5f, (character.ascender + character.descender) * .5f)));
+            new Vector3((CellLeft(character) + character.xAdvance) * .5f, (character.ascender + character.descender) * .5f)));
         return true;
     }
+    // <mspace> shifts a proportional glyph's origin to center its ink inside
+    // the fixed cell. Its final advance still marks the actual cell boundary.
+    private float CellLeft(TMP_CharacterInfo character) =>
+        ownedFont == null ? character.xAdvance - text.fontSize : character.origin;
     public void Show(bool visible) { if (canvas != null) canvas.enabled = visible; }
     public void SetText(string markup)
     {

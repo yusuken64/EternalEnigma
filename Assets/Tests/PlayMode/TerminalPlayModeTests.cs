@@ -291,7 +291,19 @@ namespace EternalEnigma.Tests
             Assert.That(Contains(known, trap), Is.False, "A trap in sight still needs to be discovered.");
             var footprint = known.Actors.Where(a => a.Id == enemy.GetInstanceID().ToString()).ToArray();
             Assert.That(footprint.Length, Is.EqualTo(9));
-            Assert.That(footprint.All(a => a.Glyph == 'i' && a.VisibleInFog), Is.True);
+            Assert.That(footprint.All(a => a.Glyph == 'i' && a.Kind == TerminalActorKind.Item && a.VisibleInFog), Is.True);
+            behavior.Mimic = false;
+            enemy.CharacterName = "Ice Golem";
+            var undisguised = TerminalSceneSnapshots.Dungeon(game, minimap);
+            var enemyFootprint = undisguised.Actors.Where(a => a.Id == enemy.GetInstanceID().ToString()).ToArray();
+            Assert.That(enemyFootprint.Length, Is.EqualTo(9));
+            Assert.That(enemyFootprint.All(a => a.Glyph == 'i' && a.Kind == TerminalActorKind.Enemy), Is.True,
+                "An enemy's initial can match the item glyph without disguising it as loot.");
+            var renderer = new DungeonTerminalRenderer();
+            var enemyCell = new GridPoint(enemy.TilemapPosition.x, enemy.TilemapPosition.y);
+            renderer.Render(undisguised, 40, 20, enemyCell);
+            Assert.That(renderer.TryFrameCell(enemyCell, out int enemyColumn, out int enemyRow), Is.True);
+            Assert.That(renderer.Frame[enemyColumn, enemyRow].Color, Is.EqualTo(TerminalPalette.Enemy));
             trap.VisualObject.SetActive(true);
             Assert.That(Contains(TerminalSceneSnapshots.Dungeon(game, minimap), trap), Is.True);
             game.PartyVisibleTiles.Remove(cells[2]);
@@ -394,7 +406,8 @@ namespace EternalEnigma.Tests
                 int writes = harness.Store.Writes;
                 Assert.That(saved.SavePointId, Does.EndWith("/inn"));
                 TerminalMode.SetRequested(!sourceTerminal);
-                yield return new WaitForSecondsRealtime(.15f);
+                yield return harness.WaitUntil(() => TerminalMode.Effective == !sourceTerminal,
+                    "selected presentation before returning to the menu");
                 Assert.That(town.TownPlayer.Gold, Is.EqualTo(saved.TownSaveData.Gold));
                 Assert.That(harness.Store.Json, Is.EqualTo(savedJson), "Changing presentation cannot write a save.");
                 Assert.That(common.Travel.ReturnToMenu(), Is.True);
@@ -406,12 +419,16 @@ namespace EternalEnigma.Tests
                 yield return null;
                 yield return Press(keyboard, Key.Enter);
                 yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>() != town &&
-                    Object.FindFirstObjectByType<Town>()?.IsReady == true && !common.ScreenTransition.BlockScreen.activeSelf,
-                    "restored terminal/3D town");
+                    Object.FindFirstObjectByType<Town>()?.IsReady == true, "restored terminal/3D town under its cover");
                 town = Object.FindFirstObjectByType<Town>();
-                Assert.That(TerminalMode.Effective, Is.EqualTo(!sourceTerminal));
+                Assert.That(common.ScreenTransition.BlockScreen.activeSelf, Is.True,
+                    "Inspect the restored presentation before the destination is revealed.");
+                Assert.That(TerminalMode.Effective, Is.EqualTo(!sourceTerminal),
+                    "A scene replacement must retain the selected presentation beneath its cover.");
                 Assert.That(Object.FindFirstObjectByType<GameMessages>().GetComponentInChildren<Canvas>().enabled,
                     Is.EqualTo(sourceTerminal), "The destination binds its event feed while travel is still covered.");
+                yield return harness.WaitUntil(() => !common.ScreenTransition.BlocksInput, "restored town reveal");
+                Assert.That(TerminalMode.Effective, Is.EqualTo(!sourceTerminal));
                 Assert.That(town.TownPlayer.Gold, Is.EqualTo(saved.TownSaveData.Gold));
                 Assert.That(ItemSaveData.Capture(town.TownPlayer.Inventory).Select(i => JsonUtility.ToJson(i)),
                     Is.EqualTo(saved.TownSaveData.InventoryItems.Select(i => JsonUtility.ToJson(i))));

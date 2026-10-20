@@ -215,6 +215,8 @@ internal static class TerminalSceneSnapshots
             if (vendor != null) actors.Add(new TerminalActor(vendor.GetInstanceID().ToString(), Point(vendor.TilemapPosition), TerminalActorKind.Npc, 'v'));
         foreach (var npc in town.Townsfolk)
             if (npc != null) actors.Add(new TerminalActor(npc.GetInstanceID().ToString(), Point(npc.Cell), TerminalActorKind.Npc));
+        if (town.DungeonBook != null)
+            actors.Add(new TerminalActor("adventure-book", Point(town.DungeonBook.Tile), TerminalActorKind.Item, 'B'));
         actors.Add(new TerminalActor("player", focus, TerminalActorKind.Player));
         if (cachedTown != town || !ReferenceEquals(cachedTownPlan, plan))
         {
@@ -229,7 +231,7 @@ internal static class TerminalSceneSnapshots
             context: new[] { HeroContext(town.TownPlayer.ControllingTownAlly),
                 "Facing " + town.TownPlayer.ControllingTownAlly.CurrentFacing, $"Talk/use: {InputPrompts.Interact}" },
             legend: new[] { "@ you  a party/recruit", "n townsfolk  v vendor", "b bakery  i items  c supplies",
-                "I inn  R trainer  G guild", "h home  S statue  D dungeon  X exit", "H house  + wall  f furniture",
+                "I inn  R trainer  G guild", "h home  S statue  D dungeon  X exit", "H house  B book  + wall  f furniture",
                 "T tree  = : - roads  . ground" });
     }
     private static string HeroContext(TownAlly hero) => hero == null ? "" : $"{hero.Name} - level {hero.Level}";

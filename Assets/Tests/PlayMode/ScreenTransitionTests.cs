@@ -40,6 +40,7 @@ namespace EternalEnigma.Tests
             DungeonPreferences.FullControlOverride = false;
             harness = new GameTestHarness { TimeoutSeconds = 120 };
             Directory.CreateDirectory(Output);
+            Directory.CreateDirectory("Temp/BookTravel");
             view = UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
             previousSize = (int)view.GetType().GetProperty("selectedSizeIndex", Flags).GetValue(view);
             view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view, new object[] { new Vector2(960, 600), "Fade audit" });
@@ -126,6 +127,9 @@ namespace EternalEnigma.Tests
             calls = 0; transition.DoTransition(() => calls++);
             Assert.That(calls, Is.Zero, "No animations still presents the cover before loading.");
             Assert.That(transition.ShutterScreen.color.a, Is.EqualTo(1));
+            var loadingTitle = (TMPro.TMP_Text)typeof(ScreenTransition).GetField("destinationLabel", Flags).GetValue(transition);
+            Assert.That(loadingTitle.gameObject.activeInHierarchy && loadingTitle.alpha >= .999f, Is.True,
+                "An instant opaque cover must display its title immediately, before LateUpdate.");
             yield return harness.WaitUntil(() => !transition.BlockScreen.activeSelf, "instant covered load");
             Assert.That(calls, Is.EqualTo(1));
         }
@@ -173,8 +177,10 @@ namespace EternalEnigma.Tests
             var common = Common.Instance; var context = common.CampaignContext;
             harness.PrepareOpening();
             context.Resolved.UnionWith(context.Campaign.Routes.Where(r => r.IsTownExit).Select(r => r.Id));
+            var town = Object.FindFirstObjectByType<Town>();
+            PositionTownPartyNear(town, town.Plan.Exit.ToCell());
             yield return Travel("town-overworld", "Overworld", () => Assert.That(common.Travel.ExitTown(Object.FindFirstObjectByType<Town>()), Is.True),
-                () => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true);
+                () => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true, expectedZoom: true);
             context.Position = context.Grid.Locations["repeatable-0"];
             // Stage an earlier clear through the campaign domain so this return
             // has no first-clear rewards awaiting acknowledgement during capture.
@@ -186,10 +192,17 @@ namespace EternalEnigma.Tests
             yield return Travel("dungeon-overworld", "Overworld", () => Assert.That(common.Travel.FinishDungeon(true, Game.Instance.PlayerController), Is.True),
                 () => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true);
             context.Position = context.Grid.Locations[context.Campaign.StartLocationId];
-            yield return Travel("overworld-town", "Town", () => Assert.That(common.Travel.EnterLocation(), Is.True), TownReady);
+            var world = Object.FindFirstObjectByType<OverworldScene>();
+            world.Player.transform.position = world.CellToWorld(context.Position);
+            world.Player.TilemapPosition = context.Position.ToCell();
+            yield return null; // Let the real follow camera settle on the miniature.
+            yield return Travel("overworld-town", "Town", () => Assert.That(common.Travel.EnterLocation(), Is.True), TownReady, expectedZoom: true);
+            town = Object.FindFirstObjectByType<Town>();
+            PositionTownPartyNear(town, town.TownBuildings.Single(b => b.Definition.DialogId == "entrance").TilemapPosition);
             yield return Travel("town-dungeon", "DungeonScene", () => Assert.That(common.Travel.EnterTownDungeon(Object.FindFirstObjectByType<Town>(), "story-0"), Is.True),
-                () => Game.Instance?.IsReady == true);
-            yield return Travel("dungeon-town", "Town", () => Assert.That(common.Travel.FinishDungeon(false, Game.Instance.PlayerController), Is.True), TownReady);
+                () => Game.Instance?.IsReady == true, expectedZoom: true);
+            yield return Travel("dungeon-town", "Town", () => Assert.That(common.Travel.FinishDungeon(false, Game.Instance.PlayerController, keepLoot: true), Is.True),
+                TownReady, expectedZoom: true);
             yield return Travel("town-menu", "MainMenu", () => Assert.That(common.Travel.ReturnToMenu(), Is.True),
                 () => Object.FindFirstObjectByType<MainMenu>()?.IsReady == true);
         }
@@ -198,6 +211,102 @@ namespace EternalEnigma.Tests
         {
             DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;
             yield return StartCampaign("no-animation");
+        }
+
+        [UnityTest] public IEnumerator TravelZoomRetainsReadinessOwnershipAndRestoresCameraAndHud()
+        {
+            yield return harness.LoadMainMenu(null);
+            var transition = Common.Instance.ScreenTransition;
+            var cameraObject = new GameObject("Travel camera probe", typeof(Camera), typeof(CameraController));
+            var camera = cameraObject.GetComponent<Camera>();
+            camera.orthographic = true; camera.orthographicSize = 5;
+            var target = new GameObject("Travel target probe");
+            var follow = cameraObject.GetComponent<CameraController>();
+            follow.Camera = camera; follow.SetFollowTarget(target.transform);
+            var hud = GameUISkin.Canvas("Travel HUD probe", Common.Instance.transform, 100);
+            var hiddenHud = GameUISkin.Canvas("Disabled HUD probe", Common.Instance.transform, 101);
+            hiddenHud.enabled = false;
+            yield return null;
+            follow.SnapToFollowTarget();
+            var position = camera.transform.position; var rotation = camera.transform.rotation;
+            float size = camera.orthographicSize;
+            int loaded = 0, duplicate = 0, resolved = 0;
+            var travel = new SceneTravelPresentation(SceneTravelKind.TownToDungeon, target.transform.position, "probe", () =>
+            {
+                resolved++;
+                return new SceneTravelArrival(camera, target.transform.position);
+            }) { SourceCamera = camera };
+            try
+            {
+                transition.DoTransition(() =>
+                {
+                    loaded++;
+                    Assert.That(transition.ShutterScreen.color.a, Is.EqualTo(1));
+                    transition.HoldClosed("Destination building");
+                }, autoOpen: false, travel: travel);
+                transition.DoTransition(() => duplicate++);
+                yield return harness.WaitUntil(() => camera.orthographicSize < size * .95f, "zoom departure");
+                Assert.That(hud.enabled, Is.False);
+                Assert.That(Quaternion.Angle(camera.transform.rotation, rotation), Is.LessThan(.001f));
+                yield return harness.WaitUntil(() => loaded == 1, "opaque travel callback");
+                Assert.That(duplicate, Is.Zero);
+                Assert.That(resolved, Is.Zero, "Arrival must wait for the destination's ready signal.");
+                Assert.That(transition.HasTravelPresentation, Is.True, "Scene startup must retain the travel request.");
+                System.Threading.Thread.Sleep(400);
+                transition.DoOpen(); transition.DoOpen();
+                yield return harness.WaitUntil(() => resolved == 1, "arrival anchor resolution");
+                Assert.That(camera.orthographicSize, Is.GreaterThan(size * 1.5f), "The generation stall must not consume the arrival zoom.");
+                Assert.That(transition.BlocksInput, Is.True);
+                yield return harness.WaitUntil(() => !transition.BlocksInput, "zoom arrival completion");
+                Assert.That(resolved, Is.EqualTo(1));
+                Assert.That(camera.orthographicSize, Is.EqualTo(size).Within(.0001f));
+                Assert.That(Vector3.Distance(camera.transform.position, position), Is.LessThan(.0001f));
+                Assert.That(Quaternion.Angle(camera.transform.rotation, rotation), Is.LessThan(.001f));
+                Assert.That(hud.enabled, Is.True);
+                Assert.That(hiddenHud.enabled, Is.False);
+                Assert.That(transition.HasTravelPresentation, Is.False);
+
+                transition.DoTransition(() => loaded++, autoOpen: false, travel: travel);
+                yield return harness.WaitUntil(() => camera.orthographicSize < size * .95f, "cancelled departure");
+                transition.ReleaseFade();
+                Assert.That(camera.orthographicSize, Is.EqualTo(size).Within(.0001f));
+                Assert.That(hud.enabled, Is.True);
+                Assert.That(transition.CameraMotionActive, Is.False);
+                yield return new WaitForSecondsRealtime(.5f);
+                Assert.That(loaded, Is.EqualTo(1), "Cancelled travel must not execute its scene load.");
+
+                DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;
+                transition.DoTransition(() => loaded++, travel: travel);
+                Assert.That(transition.HasTravelPresentation, Is.False);
+                yield return harness.WaitUntil(() => !transition.BlocksInput, "nonanimated travel fallback");
+                Assert.That(loaded, Is.EqualTo(2));
+                Assert.That(camera.orthographicSize, Is.EqualTo(size).Within(.0001f));
+            }
+            finally
+            {
+                transition.ReleaseFade();
+                Object.Destroy(cameraObject); Object.Destroy(target);
+                Object.Destroy(hud.gameObject); Object.Destroy(hiddenHud.gameObject);
+            }
+        }
+
+        [Test] public void TravelEasesAccelerateAndDecelerateWithoutOvershooting()
+        {
+            Assert.That(SceneTravelPresentation.DepartureEase(0), Is.Zero);
+            Assert.That(SceneTravelPresentation.DepartureEase(1), Is.EqualTo(1));
+            Assert.That(SceneTravelPresentation.ArrivalEase(0), Is.Zero);
+            Assert.That(SceneTravelPresentation.ArrivalEase(1), Is.EqualTo(1));
+            Assert.That(SceneTravelPresentation.DepartureEase(.5f), Is.LessThan(.05f));
+            Assert.That(SceneTravelPresentation.ArrivalEase(.5f), Is.GreaterThan(.95f));
+            float departure = 0, arrival = 0;
+            for (int i = 1; i <= 100; i++)
+            {
+                float nextDeparture = SceneTravelPresentation.DepartureEase(i / 100f);
+                float nextArrival = SceneTravelPresentation.ArrivalEase(i / 100f);
+                Assert.That(nextDeparture, Is.InRange(departure, 1));
+                Assert.That(nextArrival, Is.InRange(arrival, 1));
+                departure = nextDeparture; arrival = nextArrival;
+            }
         }
 
         IEnumerator StartCampaign(string name)
@@ -210,12 +319,38 @@ namespace EternalEnigma.Tests
 
         static bool TownReady() => Object.FindFirstObjectByType<Town>()?.IsReady == true;
 
-        IEnumerator Travel(string name, string destination, Action start, Func<bool> ready)
+        static void PositionTownPartyNear(Town town, Vector3Int anchor)
+        {
+            var stand = new[] { Vector3Int.down, Vector3Int.left, Vector3Int.right, Vector3Int.up }
+                .Select(direction => anchor + direction).First(town.CanEnter);
+            var leader = town.TownPlayer.ControllingTownAlly;
+            leader.TilemapPosition = stand; leader.transform.position = town.WalkableMap.CellToWorld(stand);
+            town.TownPlayer.StopHeldWalk(); town.RefreshRoofs(); town.TownPlayer.CameraController.SnapToFollowTarget();
+        }
+
+        IEnumerator Travel(string name, string destination, Action start, Func<bool> ready, bool expectedZoom = false)
         {
             var transition = Common.Instance.ScreenTransition;
             var frames = new List<Frame>(); var captured = new HashSet<string>();
             float deadline = Time.realtimeSinceStartup + 120;
+            bool firstWorldDeparture = expectedZoom && destination == "Overworld" &&
+                !Common.Instance.CampaignContext.IsGridGenerated;
+            double departureStarted = Time.realtimeSinceStartupAsDouble, arrivalStarted = -1;
             start();
+            if (firstWorldDeparture)
+            {
+                Assert.That(Common.Instance.CampaignContext.IsGridGenerated, Is.False,
+                    "ExitTown must start its zoom before generating the first overworld.");
+                Assert.That(Common.Instance.CampaignContext.State.Scene, Is.EqualTo("Town"),
+                    "Town presentation must keep its cheap location lookup until covered.");
+                Assert.That(transition.CameraMotionActive, Is.True);
+            }
+            var request = (SceneTravelPresentation)typeof(ScreenTransition).GetField("travelPresentation", Flags).GetValue(transition);
+            if (expectedZoom) Assert.That(request, Is.Not.Null, name + " must use the dramatic travel presentation.");
+            var sourceCamera = request?.SourceCamera;
+            float sourceSize = sourceCamera != null ? sourceCamera.orthographicSize : 0;
+            var sourceRotation = sourceCamera != null ? sourceCamera.transform.rotation : Quaternion.identity;
+            bool verifiedAnchor = false;
             bool complete = false;
             try
             {
@@ -224,6 +359,21 @@ namespace EternalEnigma.Tests
                     bool arrived = SceneManager.GetActiveScene().name == destination;
                     bool destinationReady = arrived && ready();
                     var frame = Sample(destinationReady); frames.Add(frame);
+                    if (firstWorldDeparture && !arrived && frame.alpha < .999f)
+                        Assert.That(frame.overworldGenerated, Is.False, "World generation must wait for an opaque rendered frame.");
+                    if (expectedZoom && !arrived && sourceCamera != null)
+                    {
+                        Assert.That(Quaternion.Angle(sourceCamera.transform.rotation, sourceRotation), Is.LessThan(.01f),
+                            name + " must preserve viewing orientation.");
+                        if (frame.alpha >= .999f && !verifiedAnchor)
+                        {
+                            var center = sourceCamera.WorldToViewportPoint(request.SourceAnchor);
+                            Assert.That(center.x, Is.EqualTo(.5f).Within(.001f), name + " source anchor must be centered.");
+                            Assert.That(center.y, Is.EqualTo(.5f).Within(.001f), name + " source anchor must be centered.");
+                            Assert.That(sourceCamera.orthographicSize / sourceSize, Is.EqualTo(request.DepartureScale).Within(.001f));
+                            verifiedAnchor = true;
+                        }
+                    }
                     Assert.That(Time.realtimeSinceStartup, Is.LessThan(deadline), name + " timed out.");
                     if (arrived && !destinationReady)
                     {
@@ -235,8 +385,9 @@ namespace EternalEnigma.Tests
                         Assert.That(frame.sceneTitleVisible, Is.False, "The floor title must own the dungeon entry reveal without overlapping loading text.");
                     if (destinationReady && frame.alpha > .1f && frame.alpha < .8f && destination != "MainMenu")
                     {
-                        Assert.That(frame.resourceHudVisible, Is.True, name + " must reveal the HUD with the scene, without a late pop.");
-                        if (destination == "Overworld")
+                        Assert.That(frame.resourceHudVisible, Is.EqualTo(!frame.travelZoom),
+                            name + " hides gameplay HUDs while the travel camera is moving and reveals them with ordinary fades.");
+                        if (destination == "Overworld" && !frame.travelZoom)
                         {
                             Assert.That(frame.travelActionsVisible, Is.True, "Travel controls should fade in with the overworld.");
                             Assert.That(frame.travelActionsEnabled, Is.False, "Visible travel controls must remain disabled until the cover releases.");
@@ -244,14 +395,32 @@ namespace EternalEnigma.Tests
                     }
                     string phase = frame.alpha >= .999f ? "covered" : frame.alpha > .1f && frame.alpha < .9f ? (arrived ? "revealing" : "closing") : null;
                     if (phase != null && captured.Add(phase)) ScreenCapture.CaptureScreenshot(Output + "/" + name + "-" + phase + ".png");
+                    if (expectedZoom && frame.cameraMotion)
+                    {
+                        if (arrived && arrivalStarted < 0) arrivalStarted = Time.realtimeSinceStartupAsDouble;
+                        double elapsed = Time.realtimeSinceStartupAsDouble - (arrived ? arrivalStarted : departureStarted);
+                        string zoomPhase = (arrived ? "arrival-" : "departure-") + Mathf.FloorToInt((float)elapsed * 10).ToString("00");
+                        if (captured.Add(zoomPhase)) ScreenCapture.CaptureScreenshot("Temp/BookTravel/" + name + "-" + zoomPhase + ".png");
+                    }
                     complete = destinationReady && !transition.BlocksInput;
                     if (!complete) yield return null;
                 }
                 Assert.That(captured.Contains("covered"), Is.True, name + " must present at least one opaque frame.");
-                ScreenCapture.CaptureScreenshot(Output + "/" + name + "-ready.png");
+                if (expectedZoom)
+                {
+                    Assert.That(verifiedAnchor, Is.True, name + " must reach its exact anchor before scene loading.");
+                    Assert.That(captured.Any(p => p.StartsWith("arrival-")), Is.True, name + " must animate its destination camera.");
+                    ScreenCapture.CaptureScreenshot("Temp/BookTravel/" + name + "-ready.png");
+                }
+                else ScreenCapture.CaptureScreenshot(Output + "/" + name + "-ready.png");
                 yield return null;
             }
-            finally { File.WriteAllText(Output + "/" + name + ".json", JsonUtility.ToJson(new Trace { frames = frames.ToArray() }, true)); }
+            finally
+            {
+                var trace = JsonUtility.ToJson(new Trace { frames = frames.ToArray() }, true);
+                File.WriteAllText(Output + "/" + name + ".json", trace);
+                if (expectedZoom) File.WriteAllText("Temp/BookTravel/" + name + ".json", trace);
+            }
         }
 
         static Frame Sample(bool ready)
@@ -262,10 +431,16 @@ namespace EternalEnigma.Tests
             var campaignHud = Object.FindFirstObjectByType<CampaignHUD>();
             var actions = campaignHud == null ? null : (Transform)typeof(CampaignHUD).GetField("actions", Flags).GetValue(campaignHud);
             var buttons = actions == null ? Array.Empty<UnityEngine.UI.Button>() : actions.GetComponentsInChildren<UnityEngine.UI.Button>();
+            var camera = Camera.main;
             return new Frame { frame = Time.frameCount, time = Time.realtimeSinceStartup, scene = SceneManager.GetActiveScene().name,
                 alpha = transition.ShutterScreen.gameObject.activeInHierarchy ? transition.ShutterScreen.color.a : 0,
                 covered = transition.BlockScreen.activeInHierarchy, blocksInput = transition.BlocksInput,
                 inputConsumed = MenuUIInputModule.Active?.InputConsumed == true, destinationReady = ready,
+                travelZoom = transition.HasTravelPresentation,
+                cameraMotion = transition.CameraMotionActive,
+                cameraSize = camera != null ? camera.orthographicSize : 0,
+                cameraPosition = camera != null ? camera.transform.position : Vector3.zero,
+                overworldGenerated = Common.Instance.CampaignContext?.IsGridGenerated == true,
                 sceneTitleVisible = title != null && title.gameObject.activeInHierarchy,
                 sceneTitle = title == null ? "" : title.text,
                 floorTitle = Game.Instance?.NewFloorMessage?.FloorMessage?.text ?? "",
@@ -277,8 +452,9 @@ namespace EternalEnigma.Tests
         [Serializable] sealed class Trace { public Frame[] frames; }
         [Serializable] sealed class Frame
         {
-            public int frame; public float time, alpha; public string scene;
-            public bool covered, blocksInput, inputConsumed, destinationReady, floorCover;
+            public int frame; public float time, alpha, cameraSize; public string scene;
+            public Vector3 cameraPosition;
+            public bool covered, blocksInput, inputConsumed, destinationReady, floorCover, travelZoom, cameraMotion, overworldGenerated;
             public bool resourceHudVisible, travelActionsVisible, travelActionsEnabled;
             public bool sceneTitleVisible; public string sceneTitle, floorTitle;
         }

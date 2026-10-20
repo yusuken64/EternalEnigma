@@ -3,7 +3,7 @@
 `CampaignGenerator.Generate(seed)` returns an immutable logical campaign after validation.
 Independent seeded streams control activation, topology, identities and lock narration.
 Core does not depend on Unity or global random state. Current generator metadata is defined
-by `CampaignGenerator.Version` (13); grid metadata is `OverworldGrid.GenerationVersion` (12).
+by `CampaignGenerator.Version` (13); grid metadata is `OverworldGrid.GenerationVersion` (13).
 These identify generated content and diagnostics, not a player-save schema.
 
 ## Generated content
@@ -71,6 +71,29 @@ fingerprint against regenerated content. Snapshots store `GeneratorVersion`; sna
 it regenerate version 11, retaining standard layouts. Version 12 assigns intact town districts
 to half of eligible repeatable dungeons. Version 13 expands the capability pool and removes
 duplicate providers. `GenerateVersion` retains the earlier version-11 and version-12 layouts.
+
+## Optional book dungeon
+
+`CampaignContext.BookDungeon` derives **The Other Country** (`book-0`) independently of the
+base campaign graph. Its parent is the starting town, its tier is zero, and clearing `story-0`
+is its entry prerequisite. `ResolveDungeonLocation` resolves both ordinary dungeons and this
+optional interior; it is used for entry, active location, run planning, completion and recovery.
+`Campaign.Locations`, routes and sources remain unchanged, so overworld markers, base
+fingerprints and both finale floors retain their original content.
+
+The version-one definition selects one of the eight supported biomes, excluding the host
+town's biome, from an independent stable seed stream. Its biome is explicit on the book
+definition and on every `RunPlan` floor option; the location's region still identifies the
+host town. The ordinary tier-zero run has five floors, standard encounters, enemies, loot,
+and retreat behavior, using outdoor presentation for its chosen biome. No campaign gate key
+or traversal capability is awarded. Clearing it records completion but permits replay,
+including after the campaign finale.
+
+`BookContentVersion` upgrades from zero to one only after validating a loaded campaign's
+base fingerprint. It is independent of generator, town-layout and outer save-format versions;
+see [campaign saves](CampaignSaves.md). `BookDungeonTests` checks deterministic generation,
+five valid floors, prerequisite and reward isolation, replay/recovery, and supported snapshots
+using generator versions 11–13 without changes to town or overworld layers.
 
 ## Reverse-world finale
 

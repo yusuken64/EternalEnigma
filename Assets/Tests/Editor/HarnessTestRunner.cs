@@ -10,6 +10,23 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Book Travel")]
+    public static void RunBookTravel() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.BookDungeonTravelTests", "EternalEnigma.Tests.ScreenTransitionTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Book Travel EditMode")]
+    public static void RunBookTravelEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.CoreIntegration.TownDungeonBookTests", "EternalEnigma.Tests.CoreIntegration.CampaignSaveTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Book Travel Regressions")]
+    public static void RunBookTravelRegressions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CampaignTravelTests", "EternalEnigma.Tests.CampaignSleepTests",
+        "EternalEnigma.Tests.CampaignTownServiceTests",
+        "EternalEnigma.Tests.ScreenTransitionTests.AnimatedCampaignTravelStaysCoveredUntilEachDestinationIsReady",
+        "EternalEnigma.Tests.BookDungeonTravelTests.SlotStylePromptLocksUntilClearAndScalesAtThreeResolutions",
+        "EternalEnigma.Tests.FinaleGameplayTests.BothStairsPreservePartyAndWakeAtHomeWithoutSaving",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Action Feedback Captures")]
     public static void RunActionFeedbackCaptures() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.UIScreenAuditTests.CaptureDungeonLevelAndResultDialogsAcrossAspectRatios",
@@ -186,7 +203,8 @@ public static class HarnessTestRunner
     public static void RunFinaleLoading() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.FinaleGameplayTests.BothStairsPreservePartyAndWakeAtHomeWithoutSaving",
         "EternalEnigma.Tests.MenuSceneNavigationTests.ContinueKeepsTownCoveredUntilHeroCameraIsReady",
-        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady");
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DungeonReturnKeepsTownCoveredUntilHeroCameraIsReady",
+        "EternalEnigma.Tests.ScreenTransitionTests.PausedFadesCompleteOnceAndInterruptedDriversCannotFlash");
     [MenuItem("Tools/Eternal Enigma/Tests/Run FinaleValidation")]
     public static void RunFinaleValidation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.FinalePerformanceTests.MeasureProductionFinaleTurns",

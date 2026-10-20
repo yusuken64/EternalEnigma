@@ -36,7 +36,8 @@ public static class CampaignSaving
         try
         {
             SaveSystem.Capture(common);
-            var regionId = common.CampaignContext.Campaign.Locations.Single(l => l.Id == common.GameSaveData.Campaign.LocationId).RegionId;
+            var regionId = (common.CampaignContext.ResolveDungeonLocation(common.GameSaveData.Campaign.LocationId) ??
+                common.CampaignContext.Campaign.Locations.Single(l => l.Id == common.GameSaveData.Campaign.LocationId)).RegionId;
             if (!common.GameSaveData.VisitedRegions.Contains(regionId)) common.GameSaveData.VisitedRegions.Add(regionId);
             var snapshot = JsonUtility.FromJson<GameSaveData>(JsonUtility.ToJson(common.GameSaveData));
             snapshot.Campaign.OpeningClearNeedsSave = false;
@@ -68,7 +69,8 @@ public static class CampaignSaving
     public static CampaignSaveSummary BuildSummary(Common common, GameSaveData save)
     {
         var campaign = common.CampaignContext.Campaign;
-        var location = campaign.Locations.Single(l => l.Id == save.Campaign.LocationId);
+        var location = common.CampaignContext.ResolveDungeonLocation(save.Campaign.LocationId) ??
+            campaign.Locations.Single(l => l.Id == save.Campaign.LocationId);
         var region = campaign.Regions.Single(r => r.Id == location.RegionId);
         var required = campaign.Locations.Where(l => l.Required && (l.Kind == LocationKind.StoryDungeon || l.Kind == LocationKind.FinalDungeon || l.Kind == LocationKind.RepeatableDungeon)).ToArray();
         var result = new CampaignSaveSummary {

@@ -29,6 +29,7 @@ public class CameraController : MonoBehaviour
 
 	internal void SnapToFollowTarget()
 	{
+		if (ScreenTransition.ControlsCamera(Camera)) return;
 		if (_followTarget != null && Camera != null)
 		{
 			Camera.transform.position = _followTarget.position + CameraOffset;

@@ -110,6 +110,16 @@ public sealed class GameTestHarness
     {
         var common = Common.Instance;
         if (common.CampaignContext?.IsPreparingForOpening != true) return;
+        var context = common.CampaignContext;
+        // These fixtures begin after the tutorial. Complete its domain actions
+        // too, so the real sleep/save transaction has every current prerequisite.
+        if (context.HasHomeLesson)
+        {
+            context.ReadOpeningBook();
+            context.ClaimHomeKey();
+            context.UnlockHomeDoor();
+            Assert.That(context.State.HomeDoorUnlocked, Is.True, "Opening fixture must unlock the home door.");
+        }
         var town = Object.FindFirstObjectByType<Town>();
         if (!common.CampaignContext.State.BoughtOpeningBread)
             Assert.That(town.Services.Buy(town.Configuration.Buildings.Single(b => b.Id == "bakery"), "Bread", out var buyReason), Is.True, buyReason);

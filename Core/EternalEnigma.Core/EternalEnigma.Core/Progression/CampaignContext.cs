@@ -19,6 +19,8 @@ public sealed class CampaignSnapshot
     public int NamingVersion;
     // Versioned separately from campaign generation so saved town arrivals keep their geometry.
     public int TownLayoutVersion;
+    // Optional content never changes the original campaign graph, fingerprint, or town geometry.
+    public int BookContentVersion;
     public TownDisplayName[] TownNames = Array.Empty<TownDisplayName>();
     public int Seed;
     public string Identity = "";
@@ -54,6 +56,10 @@ public sealed class TownDisplayName
 public sealed class CampaignContext
 {
     public Campaign Campaign { get; }
+    public BookDungeonDefinition BookDungeon { get; }
+    /// <summary>Resolves playable locations without adding optional interiors to the overworld graph.</summary>
+    public CampaignLocation? ResolveDungeonLocation(string locationId) => locationId == BookDungeon.Id
+        ? BookDungeon.Location : Campaign.Locations.FirstOrDefault(l => l.Id == locationId && l.IsDungeon);
     public FinaleSession? Finale { get; private set; }
     public FinaleSession BeginFinale()
     {
@@ -74,7 +80,7 @@ public sealed class CampaignContext
                 grid = OverworldGridGenerator.Generate(Campaign);
                 if (!positionInitialized)
                 {
-                    var location = Campaign.Locations.Single(l => l.Id == State.LocationId);
+                    var location = ResolveDungeonLocation(State.LocationId) ?? Campaign.Locations.Single(l => l.Id == State.LocationId);
                     Position = grid.Locations[location.ParentTownId ?? location.Id];
                 }
             }
@@ -102,7 +108,8 @@ public HashSet<string> Completed { get; }
     private string HomeLessonObjective => HasHomeKey ? "Use the Home Key to unlock your front door." :
         !State.ReadHomeBook ? "Read the book in your home." : "Open the chest to find your Home Key.";
     public bool ReadyForOpeningDay => !HomeDoorIsLocked && IsPreparingForOpening && State.BoughtOpeningBread && State.LearnedOpeningSkill;
-    public bool CanEnterDungeon(string dungeonId) => !HomeDoorIsLocked && (dungeonId != "story-0" || !IsPreparingForOpening);
+    public bool CanEnterDungeon(string dungeonId) => !HomeDoorIsLocked && (dungeonId != "story-0" || !IsPreparingForOpening) &&
+        (dungeonId != BookDungeon.Id || Completed.Contains(BookDungeon.RequiredCompletionId));
     public bool HasOpeningLesson => !IsSandbox && State.RequiresOpeningPreparation && State.OpeningLessonVersion > 0;
     public string OpeningObjective => !State.RequiresOpeningPreparation || IsSandbox ? "" :
         HomeDoorIsLocked ? HomeLessonObjective :
@@ -126,7 +133,7 @@ public HashSet<string> Completed { get; }
         set { State.X = value.X; State.Y = value.Y; positionInitialized = true; }
     }
     public CampaignLocation? Location => State.PendingDungeon.Length != 0
-        ? Campaign.Locations.First(l => l.Id == State.PendingDungeon)
+        ? ResolveDungeonLocation(State.PendingDungeon) ?? Campaign.Locations.First(l => l.Id == State.PendingDungeon)
         : !positionInitialized && State.Scene == "Town" ? Campaign.Locations.First(l => l.Id == State.LocationId)
         : Campaign.Locations.FirstOrDefault(l => l.ParentTownId == null && Grid.Locations[l.Id].Equals(Position));
 
@@ -137,11 +144,16 @@ public HashSet<string> Completed { get; }
         Campaign = CampaignGenerator.GenerateVersion(State.Seed, State.GeneratorVersion == 0 ? CampaignGenerator.LegacyVersion : State.GeneratorVersion);
         var fingerprint = CampaignFingerprint.Compute(Campaign);
         if (snapshot != null && State.Fingerprint != fingerprint) throw new InvalidOperationException("Campaign save fingerprint mismatch.");
+        if (State.BookContentVersion < 0 || State.BookContentVersion > BookDungeonDefinition.CurrentVersion)
+            throw new InvalidOperationException("Unsupported book content version.");
+        // Upgrade only a validated, actively loaded campaign. Hosts persist this through normal explicit saving.
+        State.BookContentVersion = BookDungeonDefinition.CurrentVersion;
+        BookDungeon = new BookDungeonDefinition(Campaign);
         State.Fingerprint = fingerprint;
         State.GeneratorVersion = Campaign.GeneratorVersion;
         BackfillTownNames();
         positionInitialized = snapshot != null && State.Scene != "Town" &&
-            !Campaign.Locations.Any(l => l.Id == State.PendingDungeon && l.ParentTownId != null);
+            ResolveDungeonLocation(State.PendingDungeon)?.ParentTownId == null;
         Keys = new(State.Keys); Opened = new(State.Opened); Resolved = new(State.Resolved); Claimed = new(State.Claimed);
         Roster = new(State.Roster); Active = new(State.Active); Towns = new(State.Towns); Completed = new(State.Completed);
         CollectedPickups = new(State.CollectedPickups ?? Array.Empty<string>());
@@ -215,7 +227,7 @@ public HashSet<string> Completed { get; }
     public bool BeginTownDungeon(string dungeonId)
     {
         var town = Location;
-        var dungeon = Campaign.Locations.FirstOrDefault(l => l.Id == dungeonId);
+        var dungeon = ResolveDungeonLocation(dungeonId);
         if (State.PendingDungeon.Length != 0 || town?.Kind != LocationKind.Town || dungeon?.ParentTownId != town.Id || !CanEnterDungeon(dungeonId) ||
             (!IsSandbox && (State.Scene != "Town" || State.LocationId != town.Id))) return false;
         State.LastTownId = town.Id;
@@ -226,6 +238,7 @@ public HashSet<string> Completed { get; }
     {
         string id = State.PendingDungeon;
         if (id.Length == 0) return false;
+        var dungeon = ResolveDungeonLocation(id) ?? throw new InvalidOperationException("Unknown active dungeon.");
         if (victory && id == Campaign.FinalLocationId && Finale?.VictoryReady != true && !IsSandbox) return false;
         if (victory)
         {
@@ -239,12 +252,12 @@ public HashSet<string> Completed { get; }
             { Resolved.Add(route.Id); Opened.Add(route.Id); }
             foreach (var source in Campaign.Sources.Where(s => s.LocationId == id)) Claim(source.Id);
             State.Finished |= id == Campaign.FinalLocationId; State.Scene = "Overworld"; State.LocationId = id;
-            var parent = Campaign.Locations.Single(l => l.Id == id).ParentTownId;
+            var parent = dungeon.ParentTownId;
             if (id == Campaign.FinalLocationId) { State.LastTownId = Campaign.StartLocationId; ReturnToTown(Campaign.StartLocationId); }
             else if (parent != null) ReturnToTown(parent);
             else
             {
-                var destination = Campaign.Locations.Single(l => l.Id == id).Encounter?.ReturnLocationId ?? id;
+                var destination = dungeon.Encounter?.ReturnLocationId ?? id;
                 State.LocationId = destination; Position = Grid.Locations[destination];
             }
         }
@@ -263,7 +276,7 @@ public HashSet<string> Completed { get; }
     {
         if (State.PendingDungeon.Length == 0) return false;
         Finale = null;
-        var dungeon = Campaign.Locations.Single(l => l.Id == State.PendingDungeon);
+        var dungeon = ResolveDungeonLocation(State.PendingDungeon) ?? throw new InvalidOperationException("Unknown active dungeon.");
         State.LocationId = dungeon.ParentTownId ?? dungeon.Id;
         if (dungeon.ParentTownId != null) ReturnToTown(dungeon.ParentTownId);
         else Position = Grid.Locations[State.LocationId];
@@ -290,8 +303,9 @@ public HashSet<string> Completed { get; }
     }
     public DungeonRunPlan RunPlan(string locationId)
     {
-        var location = Campaign.Locations.FirstOrDefault(l => l.Id == locationId) ?? throw new ArgumentException("Unknown location.", nameof(locationId));
-        return new DungeonRunPlan(State.Seed, location, OverworldGridGenerator.BiomeForRegion(Campaign, location.RegionId));
+        var location = ResolveDungeonLocation(locationId) ?? throw new ArgumentException("Unknown dungeon.", nameof(locationId));
+        return new DungeonRunPlan(State.Seed, location, locationId == BookDungeon.Id ? BookDungeon.Biome :
+            OverworldGridGenerator.BiomeForRegion(Campaign, location.RegionId));
     }
     /// <summary>Host inventory acceptance and persistent identity are committed together; a full bag leaves the pickup available.</summary>
     public bool TryCollectPickup(string pickupId, Func<OverworldPickup, bool> acceptItem)

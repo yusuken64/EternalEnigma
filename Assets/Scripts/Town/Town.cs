@@ -21,6 +21,7 @@ public class Town : MonoBehaviour
     public readonly List<TownNpc> Townsfolk = new();
     public bool IsOccupied(Vector3Int cell) => TownAllies.Any(a=>a!=null && a.TilemapPosition==cell) || ShopVendors.Any(v=>v!=null && v.TilemapPosition==cell) || Townsfolk.Any(n=>n!=null && n.Cell==cell) || GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell);
     public OpeningHomeLesson HomeLesson { get; private set; }
+    public TownDungeonBook DungeonBook { get; private set; }
     public bool CanEnter(Vector3Int cell) => Plan != null && Plan.IsWalkable(cell.ToGridPoint()) && !IsOccupied(cell) &&
         (HomeLesson == null || HomeLesson.AllowsEntry(cell));
     private readonly List<GameObject> shopWalls = new();
@@ -148,7 +149,15 @@ public class Town : MonoBehaviour
             arrivalFacing = campaignSave.ArrivalFacing; arrivalHeroId = campaignSave.ArrivalHeroId;
             campaignSave.HasArrival = false;
         }
-        if (Common.Instance.Travel.ConsumeDungeonReturn(Configuration.Id))
+        if (Common.Instance.Travel.TryConsumeBookReturn(Configuration.Id, out var bookTile, out var bookFacing, out var bookLeader))
+        {
+            if (CanEnter(bookTile)) startPosition = bookTile;
+            else if (DungeonBook != null && DungeonBook.TryGetStandCell(out var standCell)) startPosition = standCell;
+            arrivalFacing = bookFacing;
+            arrivalHeroId = bookLeader;
+            DungeonBook?.SetOpen(true);
+        }
+        else if (Common.Instance.Travel.ConsumeDungeonReturn(Configuration.Id))
         {
             var entrance = TownBuildings.First(b => b.Definition.DialogId == "entrance").TilemapPosition;
             var arrival = new[]{Vector3Int.down,Vector3Int.left,Vector3Int.right,Vector3Int.up}
@@ -343,6 +352,7 @@ public class Town : MonoBehaviour
             OpeningDungeonGate.Create(this);
         GenerateShopInteriors();
         HomeLesson = OpeningHomeLesson.Create(this);
+        DungeonBook = TownDungeonBook.Create(this);
         GenerateRoofs();
         TownInteriorRendering.SpawnTownsfolk(this);
 

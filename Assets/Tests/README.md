@@ -1,5 +1,21 @@
 # Game test harness
 
+## Book dungeons and zoom travel
+
+**Tools > Eternal Enigma > Tests > Run Book Travel** exercises optional book entry,
+the save-slot-style prompt at three resolutions, all five floor replacements,
+party/loot return, replay/retreat, defeat checkpoint restore, terminal preference
+and supported existing-save upgrades. It also
+runs the camera transition lifecycle and input-blocking fixtures. The book journey
+fixture advances floors directly and does not establish combat balance.
+**Run Book Travel EditMode** covers placement over 100 campaign seeds, prompt
+authoring, 24 legacy layouts and campaign-save contracts. The 100-seed stress
+fixture has a ten-minute timeout for slower editor generation. Generate the prompt with **Tools > Eternal
+Enigma > UI > Build Book Dungeon Prompt** before running its prefab assertions.
+Captures are stored under `Temp/BookTravel`. See [book dungeons](../../Docs/BookDungeons.md).
+**Run Book Travel Regressions** checks ordinary campaign travel, sleep/services,
+card scaling, covered lazy overworld generation and finale/continue loading.
+
 ## Action feedback and resource naming
 
 `node Tools/unity-mcp.mjs harness ActionFeedback` covers mandatory attribute allocation,

@@ -27,6 +27,7 @@ public static class CampaignGuidance
 
     public static string LocationName(CampaignContext context, string locationId)
     {
+        if (locationId == context.BookDungeon.Id) return context.BookDungeon.Title;
         var location = context.Campaign.Locations.Single(l => l.Id == locationId);
         string anchor = location.ParentTownId ?? location.Id;
         var region = context.Campaign.Regions.Single(r => r.Id == location.RegionId);
@@ -37,7 +38,7 @@ public static class CampaignGuidance
 
     public static string Location(CampaignContext context, string townId, string locationId)
     {
-        var location = context.Campaign.Locations.Single(l => l.Id == locationId);
+        var location = context.ResolveDungeonLocation(locationId) ?? context.Campaign.Locations.Single(l => l.Id == locationId);
         string anchor = location.ParentTownId ?? location.Id;
         string name = LocationName(context, locationId);
         if (anchor == townId) return name + " here in town, in the " + context.Grid.RegionBiomes[location.RegionId];

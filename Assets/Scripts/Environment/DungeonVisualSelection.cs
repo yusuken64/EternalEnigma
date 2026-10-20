@@ -26,14 +26,17 @@ public struct DungeonVisualSelection
     public static DungeonVisualSelection Resolve(CampaignContext context, DungeonEncounterVisualSettings settings = null)
     {
         var biome = OverworldBiome.Grassland;
+        bool book = false;
         if (context != null)
         {
             string id = string.IsNullOrEmpty(context.State.PendingDungeon) ? context.State.LocationId : context.State.PendingDungeon;
-            var location = context.Campaign.Locations.FirstOrDefault(l => l.Id == id);
-            if (location != null) biome = OverworldGridGenerator.BiomeForRegion(context.Campaign, location.RegionId);
+            book = id == context.BookDungeon.Id;
+            var location = context.ResolveDungeonLocation(id) ?? context.Campaign.Locations.FirstOrDefault(l => l.Id == id);
+            if (book) biome = context.BookDungeon.Biome;
+            else if (location != null) biome = OverworldGridGenerator.BiomeForRegion(context.Campaign, location.RegionId);
         }
-        return new DungeonVisualSelection { Biome = settings?.OverrideBiome == true ? settings.Biome : biome,
-            Environment = settings?.Environment ?? DungeonEnvironmentKind.Interior, UseBiomePresentation = true };
+        return new DungeonVisualSelection { Biome = !book && settings?.OverrideBiome == true ? settings.Biome : biome,
+            Environment = book ? DungeonEnvironmentKind.Outdoor : settings?.Environment ?? DungeonEnvironmentKind.Interior, UseBiomePresentation = true };
     }
 
 }

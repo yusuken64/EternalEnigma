@@ -20,8 +20,10 @@ namespace EternalEnigma.Tests
         private bool? previousControl;
         [UnitySetUp] public IEnumerator Setup() { previousControl=DungeonPreferences.FullControlOverride;DungeonPreferences.FullControlOverride=false;harness = new GameTestHarness { TimeoutSeconds = 100 }; yield return null; }
         [UnityTearDown] public IEnumerator Cleanup() { yield return harness.Cleanup();DungeonPreferences.FullControlOverride=previousControl; }
-        private IEnumerator WaitTown() => harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "campaign town");
-        private IEnumerator WaitWorld() => harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true, "shared overworld");
+        private IEnumerator WaitTown() => harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true &&
+            !Common.Instance.Travel.IsTransitioning, "campaign town and arrival reveal");
+        private IEnumerator WaitWorld() => harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true &&
+            !Common.Instance.Travel.IsTransitioning, "shared overworld and arrival reveal");
         // These tests exercise travel commits and reward UI; encounter tests cover gameplay to the final exit.
         private static void StageServiceVictory() => Game.Instance.PlayerController.Floor = Common.Instance.GameSaveData.DungeonSaveData.EndFloor;
         private IEnumerator AcknowledgeKey(string key)
@@ -411,9 +413,10 @@ namespace EternalEnigma.Tests
             int seed = common.GameSaveData.TownSaveData.TownSeed;
             town.TownPlayer.Gold = 5000;
             var recruit = town.TownAllies.First(); string id = recruit.Id;
+            var heldBeforeRecruit = context.Held.Values.ToArray();
             Assert.That(town.Services.Recruit(recruit, out _), Is.True);
             Assert.That(context.Active, Contains.Item(id));
-            Assert.That(context.Held.Count, Is.EqualTo(0), "Paid ordinary recruits grant no traversal capabilities.");
+            Assert.That(context.Held.Values, Is.EquivalentTo(heldBeforeRecruit), "Paid ordinary recruits grant no traversal capabilities.");
             recruit.Skills.Add("Persistent bench record");
             Assert.That(town.Services.Dismiss(recruit, out _), Is.True);
             yield return null;

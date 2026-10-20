@@ -355,7 +355,8 @@ namespace EternalEnigma.Tests
                 Assert.That(Town.TownPlayer.ControllingTownAlly.HungerAccumulate, Is.EqualTo(4));
             }
             Assert.That(common.Travel.ExitTown(Town), Is.True);
-            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true, "travel out of town");
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true &&
+                !common.Travel.IsTransitioning, "travel out of town and arrival reveal");
             Assert.That(common.Travel.EnterLocation(), Is.True);
             yield return harness.WaitUntil(() => Town != null && Town.IsReady && !common.ScreenTransition.BlockScreen.activeSelf, "travel back to town");
             Assert.That(Town.TownPlayer.ControllingTownAlly.Hunger, Is.EqualTo(25));

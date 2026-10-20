@@ -39,6 +39,10 @@ public static class TownInteriorRendering
         float size=creator.twcAsset.cellSize;
         var biome=creator.GetComponent<TownBiomeStyle>()?.Current??OverworldBiome.Grassland;
         var batch=new EnvironmentBatch(root);var perches=new List<(Vector3 position,bool inside)>();
+        var town = Object.FindFirstObjectByType<Town>();
+        TownPropPlacement bookTable = null;
+        if (town != null && town.WalkableMap.TileWorldCreator == creator && TownDungeonBook.IsHostTown(town))
+            TownDungeonBook.TryFindTable(plan, out bookTable, town.Configuration);
         foreach (var interior in plan.Interiors.Where(i => i.Spec.Kind == TownInteriorKind.Home && i.Carpet.Count > 0))
         {
             if (catalog.HomeSurface == null || catalog.HomeRug == null) continue;
@@ -68,6 +72,7 @@ public static class TownInteriorRendering
                 perches.Add((position+Vector3.back*1.295f*size,true));
             if(p.Asset is "Table" or "Bedside" or "Lectern")
             {
+                if (p == bookTable) continue;
                 string goods=p.Asset=="Lectern"?"Books":p.Asset=="Bedside"?"Candles":"Tableware";
                 batch.Add(catalog.Get(goods).Mesh,furnitureMaterial,position+Vector3.back*(p.Asset=="Lectern"?.885f:.67f)*size,Vector3.one*size*.8f);
             }

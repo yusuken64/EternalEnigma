@@ -607,6 +607,7 @@ public sealed class OverworldScene : MonoBehaviour
     private void LateUpdate() { FlushMessage(); if (IsReady) FollowCamera(); }
     private void FollowCamera()
     {
+        if (ScreenTransition.ControlsCamera(ViewCamera)) return;
         var target = Player.transform.position + CellVisualOffset;
         ViewCamera.transform.position = target + CameraOffset;
         ViewCamera.transform.LookAt(target);

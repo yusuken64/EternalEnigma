@@ -193,6 +193,7 @@ public class TownPlayer : MonoBehaviour
 
             var npc = FindFirstObjectByType<Town>().Townsfolk.FirstOrDefault(n=>n.Cell==targetMapPosition);
             if (FindFirstObjectByType<Town>().HomeLesson?.TryInteract(targetMapPosition) == true) return;
+            if (FindFirstObjectByType<Town>().DungeonBook?.TryInteract(targetMapPosition) == true) return;
             if(npc!=null){npc.Greet(originalPosition);return;}
             var bed = FindObjectsByType<HomeBed>(FindObjectsSortMode.None).FirstOrDefault(b => b.Tile == targetMapPosition);
             if (bed != null) { bed.Interact(); return; }

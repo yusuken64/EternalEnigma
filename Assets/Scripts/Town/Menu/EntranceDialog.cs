@@ -31,7 +31,8 @@ public class EntranceDialog : Dialog
         if (campaign != null)
         {
             var town = FindFirstObjectByType<Town>();
-            var dungeons = campaign.Campaign.Locations.Where(l => l.ParentTownId == town.Configuration.Id).ToList();
+            var dungeons = campaign.Campaign.Locations.Where(l => l.ParentTownId == town.Configuration.Id &&
+                l.Id != campaign.BookDungeon?.Id).ToList();
             items = Container.RePopulateObjects(DungeonTierItemPrefab, dungeons, (view, location) =>
                 view.SetupCampaign(location, campaign.Completed.Contains(location.Id), () =>
                 {

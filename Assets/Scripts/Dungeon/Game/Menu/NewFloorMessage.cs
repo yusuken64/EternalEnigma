@@ -27,7 +27,8 @@ public class NewFloorMessage : MonoBehaviour
 	public void ShowNewFloor(int floor)
 	{
 		FloorMessage.transform.DOKill();
-		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations)
+		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations ||
+            Common.Instance?.ScreenTransition?.HasTravelPresentation == true)
 		{
 			gameObject.SetActive(false);
 			return;

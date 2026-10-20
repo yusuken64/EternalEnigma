@@ -42,7 +42,8 @@ namespace EternalEnigma.Tests
             common.MessageDialog.Ok_Clicked();hero.Level=9;hero.Experience=600;town.TownPlayer.Gold=1;town.SaveProgress();
             Assert.That(SaveSystem.LoadData().TownSaveData.Gold,Is.EqualTo(321));
             Assert.That(InnCheckpoint.TryRestore(common),Is.True);
-            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()!=town && Object.FindFirstObjectByType<Town>()?.IsReady==true,"awake load");
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()!=town && Object.FindFirstObjectByType<Town>()?.IsReady==true &&
+                !common.Travel.IsTransitioning,"awake load and reveal");
             town=Object.FindFirstObjectByType<Town>();hero=town.TownPlayer.ControllingTownAlly;
             Assert.That(hero.Level,Is.EqualTo(4));Assert.That(hero.Experience,Is.EqualTo(77));Assert.That(hero.TilemapPosition,Is.EqualTo(position));
             Assert.That(Object.FindFirstObjectByType<HomeBed>().IsSleeping,Is.False);
@@ -62,7 +63,8 @@ namespace EternalEnigma.Tests
             var dungeonHero=Game.Instance.Allies[0];Assert.That(dungeonHero.Vitals.Level,Is.EqualTo(4));Assert.That(dungeonHero.Vitals.Exp,Is.EqualTo(77));
             int strength=dungeonHero.BaseStats.Strength;
             GameOverScreen.Retreat(Game.Instance.PlayerController);
-            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"retreat");
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true &&
+                !common.Travel.IsTransitioning,"retreat and arrival reveal");
             town=Object.FindFirstObjectByType<Town>();Assert.That(common.Travel.EnterTownDungeon(town,"story-0"),Is.True);yield return harness.WaitForIdle();
             Assert.That(Game.Instance.Allies[0].BaseStats.Strength,Is.EqualTo(strength),"Repeated entry must not duplicate growth.");
 
@@ -81,7 +83,8 @@ namespace EternalEnigma.Tests
                 common.GameSaveData=menu.CreateNewSave(new[]{42,12345,73421}[slot],catalog[0]);
                 foreach(var prefab in catalog.Skip(1).Take(3)) common.GameSaveData.TownSaveData.RecruitedAlliesData.Add(HeroClassBinding.FromPrefab(prefab,new TownAllyData { AllyId=prefab.Id,AllyName=prefab.Name,Skills=prefab.Skills.ToList() }));
                 common.Travel.NewCampaign(common.GameSaveData.TownSaveData.TownSeed);
-                yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"four-member home");
+                yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true &&
+                    !common.Travel.IsTransitioning,"four-member home and reveal");
                 var town=Object.FindFirstObjectByType<Town>();var bed=Object.FindFirstObjectByType<HomeBed>();
                 var party=town.TownPlayer.RecruitedAllies;
                 Assert.That(party.Count,Is.EqualTo(4),"active party");Assert.That(party.Select(h=>h.TilemapPosition).Distinct().Count(),Is.EqualTo(4),"unique arrival tiles");
@@ -100,7 +103,8 @@ namespace EternalEnigma.Tests
                 Assert.That(SaveSystem.LoadData(slot).Summary.Party.Count,Is.EqualTo(4));
                 Assert.That(common.CampaignContext.IsGridGenerated,Is.False);
                 Assert.That(common.Travel.ReturnToMenu(),Is.True);
-                yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<MainMenu>()?.IsReady==true,"menu");
+                yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<MainMenu>()?.IsReady==true &&
+                    !common.Travel.IsTransitioning,"menu and reveal");
             }
             SaveSystem.ActiveSlot=0;
             var stress=SaveSystem.LoadData(0);stress.TownSaveData.Gold=int.MaxValue;stress.PlaytimeSeconds=1234567;
@@ -148,10 +152,12 @@ namespace EternalEnigma.Tests
             var completedSlot=browser.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="Slot 2");
             Assert.That(completedSlot.interactable,Is.True);
             completedSlot.onClick.Invoke();yield return null;
-            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"continue completed campaign");
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true &&
+                !common.Travel.IsTransitioning,"continue completed campaign and reveal");
             Assert.That(SaveSystem.ActiveSlot,Is.EqualTo(1));
             Assert.That(common.Travel.ReturnToMenu(),Is.True);
-            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<MainMenu>()?.IsReady==true,"return from completed campaign");
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<MainMenu>()?.IsReady==true &&
+                !common.Travel.IsTransitioning,"return from completed campaign and reveal");
             main=Object.FindFirstObjectByType<MainMenu>();
             SaveSystem.ActiveSlot=0;main.Continue_Clicked();yield return null;
             browser=Object.FindFirstObjectByType<CampaignSlots>();
@@ -162,7 +168,8 @@ namespace EternalEnigma.Tests
             Assert.That(browser.gameObject.activeSelf,Is.True,"First Continue click only selects the slot.");
             ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerDownHandler);
             ExecuteEvents.Execute(slotButton.gameObject,pointer,ExecuteEvents.pointerClickHandler);
-            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"continue selected campaign");
+            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true &&
+                !common.Travel.IsTransitioning,"continue selected campaign and reveal");
         }
     }
 }

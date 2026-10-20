@@ -13,6 +13,14 @@ public sealed class CampaignTravelService
     private bool transitioning;
     public bool IsTransitioning => transitioning || common.ScreenTransition.BlocksInput;
     private string returnArrivalTown;
+    private BookReturnArrival bookReturn;
+    private bool bookReturnPending;
+    private sealed class BookReturnArrival
+    {
+        public string TownId, LeaderId;
+        public Vector3Int Tile;
+        public Facing Facing;
+    }
     public bool HomecomingPending { get; private set; }
     public bool HomecomingCompleted { get; private set; }
     internal bool OpeningGateRevealPending { get; private set; }
@@ -33,6 +41,14 @@ public sealed class CampaignTravelService
         returnArrivalTown = null;
         return true;
     }
+    public bool TryConsumeBookReturn(string townId, out Vector3Int tile, out Facing facing, out string leaderId)
+    {
+        tile = default; facing = Facing.Down; leaderId = null;
+        if (!bookReturnPending || bookReturn == null || bookReturn.TownId != townId) return false;
+        tile = bookReturn.Tile; facing = bookReturn.Facing; leaderId = bookReturn.LeaderId;
+        bookReturnPending = false; bookReturn = null;
+        return true;
+    }
     private CampaignContext Context => common.CampaignContext;
     public CampaignTravelService(Common common) { this.common = common; }
     public void SceneReady() => transitioning = false;
@@ -40,6 +56,7 @@ public sealed class CampaignTravelService
     {
         if (transitioning) return;
         returnArrivalTown = null;
+        bookReturn = null; bookReturnPending = false;
         HomecomingPending = HomecomingCompleted = false;
         OpeningGateRevealPending = false;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
@@ -60,6 +77,7 @@ public sealed class CampaignTravelService
         var save = common.GameSaveData;
         if (save == null) return;
         returnArrivalTown = null;
+        bookReturn = null; bookReturnPending = false;
         if (!save.HasCampaign) { common.CampaignContext = null; transitioning = true; TownSceneLoader.Load(TownSceneLoader.ResolveSaved()); return; }
         HomecomingPending = HomecomingCompleted = false;
         OpeningGateRevealPending = false;
@@ -71,17 +89,20 @@ public sealed class CampaignTravelService
     }
     public bool EnterLocation(DungeonEncounterVisualSettings visuals = null)
     {
-        if (transitioning || Context == null || Context.IsSandbox) return false;
+        if (IsTransitioning || Context == null || Context.IsSandbox) return false;
         var location = Context.Location;
         if (location == null || (Context.State.Scene != "Town" && !Context.Gates.IsWalkable(Context.Position, Context.Held))) return false;
         if (location.Kind == LocationKind.Town)
         {
             bool enteringFromOverworld = Context.State.Scene == "Overworld";
+            var world = enteringFromOverworld ? UnityEngine.Object.FindFirstObjectByType<OverworldScene>() : null;
+            var presentation = world != null ? CampaignTravelPresentation.Create(SceneTravelKind.OverworldToTown,
+                world.CellCenterToWorld(Context.Grid.Locations[location.Id]), world.ViewCamera, location.Id) : null;
             Context.State.LastTownId = location.Id; Context.Towns.Add(location.Id);
             Context.State.LocationId = location.Id;
             PrepareTown(location.Id);
             if (enteringFromOverworld) common.AudioManager?.PlayCue(SoundCue.DoorOpen);
-            Load("Town");
+            Load("Town", travel: presentation);
             return true;
         }
         if (!Context.BeginDungeon()) return false;
@@ -90,15 +111,42 @@ public sealed class CampaignTravelService
     }
     public bool EnterTownDungeon(Town town, string dungeonId, DungeonEncounterVisualSettings visuals = null)
     {
-        if (transitioning || Context == null || Context.IsSandbox || town == null ||
+        if (Context == null || dungeonId == Context.BookDungeon.Id) return false;
+        return EnterTownDungeonInternal(town, dungeonId, visuals, null);
+    }
+    public bool EnterBookDungeon(Town town, TownDungeonBook book)
+    {
+        if (IsTransitioning || Context == null || town == null || book == null || town.DungeonBook != book ||
+            town.Configuration.Id != Context.BookDungeon.ParentTownId || !Context.CanEnterDungeon(Context.BookDungeon.Id)) return false;
+        var leader = town.TownPlayer.ControllingTownAlly;
+        if (leader == null || town.TownPlayer.IsBusy || town.TownPlayer.CutsceneLocked ||
+            Mathf.Max(Mathf.Abs(leader.TilemapPosition.x - book.Tile.x), Mathf.Abs(leader.TilemapPosition.y - book.Tile.y)) != 1) return false;
+        var arrival = new BookReturnArrival { TownId = town.Configuration.Id, Tile = leader.TilemapPosition,
+            Facing = leader.CurrentFacing, LeaderId = leader.Id };
+        var presentation = CampaignTravelPresentation.Create(SceneTravelKind.HouseToBookDungeon,
+            book.PageAnchor.position, town.TownPlayer.CameraController.Camera, Context.BookDungeon.Id);
+        presentation.PrepareDeparture = book.Open;
+        if (!EnterTownDungeonInternal(town, Context.BookDungeon.Id, null, presentation)) return false;
+        bookReturn = arrival; bookReturnPending = false;
+        return true;
+    }
+    private bool EnterTownDungeonInternal(Town town, string dungeonId, DungeonEncounterVisualSettings visuals, SceneTravelPresentation presentation)
+    {
+        if (IsTransitioning || Context == null || Context.IsSandbox || town == null ||
             Context.State.Scene != "Town" || town.Configuration.Id != Context.State.LocationId) return false;
         if (Context.HasHomeLesson && !Context.State.HomeDoorUnlocked) return false;
         town.WriteSaveData();
         if (!Context.BeginTownDungeon(dungeonId)) return false;
-        StartDungeon(Context.Campaign.Locations.Single(l => l.Id == dungeonId), visuals);
+        if (presentation == null)
+        {
+            var entrance = town.TownBuildings.FirstOrDefault(b => b.Definition.DialogId == "entrance");
+            if (entrance != null) presentation = CampaignTravelPresentation.Create(SceneTravelKind.TownToDungeon,
+                CampaignTravelPresentation.TownCellAnchor(town, entrance.TilemapPosition), town.TownPlayer.CameraController.Camera, dungeonId);
+        }
+        StartDungeon(Context.ResolveDungeonLocation(dungeonId), visuals, presentation);
         return true;
     }
-    private void StartDungeon(CampaignLocation location, DungeonEncounterVisualSettings visuals)
+    private void StartDungeon(CampaignLocation location, DungeonEncounterVisualSettings visuals, SceneTravelPresentation presentation = null)
     {
         var floors = Context.RunPlan(location.Id);
         common.GameSaveData.DungeonSaveData = new DungeonSaveData { StartFloor = floors.StartFloor, EndFloor = floors.EndFloor };
@@ -107,21 +155,31 @@ public sealed class CampaignTravelService
         run.Variant = floors.Variant;
         run.UseBiomeLayout = !EternalEnigma.Core.Generation.DungeonLayoutProfile.IsStarter(location.Id);
         run.LayoutTier = location.Tier;
-        run.LayoutBiome = EternalEnigma.Core.Generation.OverworldGridGenerator.BiomeForRegion(Context.Campaign, location.RegionId);
-        CampaignParty.BuildDungeonParty(common);
-        Load("DungeonScene");
+        run.LayoutBiome = location.Id == Context.BookDungeon.Id ? Context.BookDungeon.Biome :
+            EternalEnigma.Core.Generation.OverworldGridGenerator.BiomeForRegion(Context.Campaign, location.RegionId);
+        Load("DungeonScene", location.Id == Context.BookDungeon.Id ? Context.BookDungeon.Title : null, presentation,
+            () => CampaignParty.BuildDungeonParty(common));
     }
     public bool ExitTown(Town town)
     {
-        if (transitioning || Context == null || Context.IsSandbox || Context.State.Scene != "Town") return false;
+        if (IsTransitioning || Context == null || Context.IsSandbox || Context.State.Scene != "Town") return false;
         if (Context.HasHomeLesson && !Context.State.HomeDoorUnlocked) return false;
         if (!Context.CanLeaveTown(Context.State.LocationId))
         { common.AudioManager?.PlayCue(SoundCue.Denied); TownMenu.ShowMessage("Clear the dungeon inside town to unlock the town gate."); return false; }
-        town.WriteSaveData(); CampaignParty.ClearLiveParty(common); Context.Position = Context.Grid.Locations[Context.State.LocationId]; Load("Overworld", "Overworld"); return true;
+        var townId = Context.State.LocationId;
+        var presentation = CampaignTravelPresentation.Create(SceneTravelKind.TownToOverworld,
+            CampaignTravelPresentation.TownCellAnchor(town, town.Plan.Exit.ToCell()), town.TownPlayer.CameraController.Camera, townId);
+        town.WriteSaveData();
+        Load("Overworld", "Overworld", presentation, () =>
+        {
+            Context.Position = Context.Grid.Locations[townId];
+            CampaignParty.ClearLiveParty(common);
+        }, deferDestinationState: true);
+        return true;
     }
     public bool FinishDungeon(bool victory, PlayerController player, bool travel = true, bool keepLoot = false)
     {
-        if (Context == null || Context.IsSandbox || transitioning || Context.State.PendingDungeon.Length == 0) return false;
+        if (Context == null || Context.IsSandbox || IsTransitioning || Context.State.PendingDungeon.Length == 0) return false;
         if (victory && Context.State.PendingDungeon == Context.Campaign.FinalLocationId && Context.Finale?.VictoryReady != true) return false;
         if (victory && Game.Instance?.CurrentDungeon != null &&
             (!Game.Instance.CheckFloorExit() || player.Floor < common.GameSaveData.DungeonSaveData.EndFloor)) return false;
@@ -134,6 +192,12 @@ public sealed class CampaignTravelService
         string firstClear = victory && !Context.Completed.Contains(Context.State.PendingDungeon)
             ? Context.State.PendingDungeon : null;
         bool homecoming = victory && Context.State.PendingDungeon == Context.Campaign.FinalLocationId;
+        var finishedLocation = Context.ResolveDungeonLocation(Context.State.PendingDungeon);
+        bool leavingBook = Context.State.PendingDungeon == Context.BookDungeon.Id;
+        SceneTravelPresentation presentation = null;
+        if (!homecoming && (victory || keepLoot) && finishedLocation?.ParentTownId != null && player?.ControlledAlly != null)
+            presentation = CampaignTravelPresentation.Create(leavingBook ? SceneTravelKind.BookDungeonToHouse : SceneTravelKind.DungeonToTown,
+                player.ControlledAlly.transform.position, player.CameraController.Camera, finishedLocation.ParentTownId);
         if (!Context.CompleteDungeon(victory)) return false;
         if (firstClear == "story-0") OpeningGateRevealPending = true;
         // Town exits and encounter-controlled crossings open at the successful
@@ -142,7 +206,9 @@ public sealed class CampaignTravelService
             common.AudioManager?.PlayCue(SoundCue.GateUnlock);
         if (homecoming) common.GameSaveData.Completion = CampaignCompletionRecord.Capture(common, player);
         if (homecoming) { HomecomingPending = true; HomecomingCompleted = false; common.GameSaveData.HasArrival = false; }
-        returnArrivalTown = !homecoming && Context.State.Scene == "Town" ? Context.State.LocationId : null;
+        bookReturnPending = leavingBook && !homecoming && (victory || keepLoot) && bookReturn != null;
+        returnArrivalTown = !bookReturnPending && !homecoming && Context.State.Scene == "Town" ? Context.State.LocationId : null;
+        if (!bookReturnPending) bookReturn = null;
         var newKeys = Context.Keys.Except(previousKeys).OrderBy(key => key).ToArray();
         var capabilities = Context.Campaign.Sources.Where(source => Context.Claimed.Contains(source.Id) && !previousClaims.Contains(source.Id))
             .Select(source => DescribeCapabilityReward(Context, source)).ToArray();
@@ -161,7 +227,7 @@ public sealed class CampaignTravelService
             void ContinueTravel()
             {
                 transitioning = false;
-                Load(Context.State.Scene);
+                Load(Context.State.Scene, travel: presentation);
             }
             if (!homecoming && (newKeys.Length > 0 || capabilities.Length > 0))
             {
@@ -281,6 +347,7 @@ public sealed class CampaignTravelService
     {
         if (AutoplayRunner.Active != null) { AutoplayRunner.Active.ExitDemo(); return true; }
         if (transitioning || Context == null) return false;
+        bookReturn = null; bookReturnPending = false;
         if (Context.IsSandbox) common.EndSandbox();
         else { common.GameSaveData = SaveSystem.Inspect(SaveSystem.ActiveSlot, out _); common.CampaignContext = null; }
         CampaignParty.ClearLiveParty(common);
@@ -299,12 +366,23 @@ public sealed class CampaignTravelService
         CampaignParty.PrepareActive(common, configuration);
         TownSceneLoader.Configure(configuration);
     }
-    private void Load(string scene, string destinationTitle = null)
+    private void Load(string scene, string destinationTitle = null, SceneTravelPresentation travel = null, Action beforeLoad = null,
+        bool deferDestinationState = false)
     {
         if (transitioning) return;
-        transitioning = true; Context.State.Scene = scene;
-        SaveSystem.Capture(common);
+        transitioning = true;
+        void CommitDestination() { Context.State.Scene = scene; SaveSystem.Capture(common); }
+        if (!deferDestinationState) CommitDestination();
         if(scene=="Town")destinationTitle=Context.GetTownDisplayName(Context.State.LocationId);
-        common.ScreenTransition.DoTransition(() => SceneManager.LoadScene(scene), autoOpen: false, destinationTitle: destinationTitle);
+        common.ScreenTransition.DoTransition(() =>
+        {
+            // First departure keeps town presentation on its cheap location lookup.
+            // Switching Scene earlier lets TownBiomeStyle force lazy world generation
+            // during the zoom, before a covered frame has actually been presented.
+            beforeLoad?.Invoke();
+            if (deferDestinationState) CommitDestination();
+            SceneManager.LoadScene(scene);
+        },
+            autoOpen: false, destinationTitle: destinationTitle, travel: travel);
     }
 }

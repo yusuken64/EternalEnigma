@@ -17,7 +17,8 @@ public sealed class CampaignPlaytime : MonoBehaviour
         if (common.ScreenTransition.BlockScreen.activeSelf) return;
         common.GameSaveData.PlaytimeSeconds += Time.unscaledDeltaTime;
         var context = common.CampaignContext;
-        var location = context.Campaign.Locations.FirstOrDefault(l => l.Id == context.State.LocationId);
+        var location = context.ResolveDungeonLocation(context.State.LocationId) ??
+            context.Campaign.Locations.FirstOrDefault(l => l.Id == context.State.LocationId);
         var region = location?.RegionId;
         if (scene == "Overworld" && context.IsGridGenerated) region = context.Campaign.Regions.FirstOrDefault(r => context.Grid.Layers[EternalEnigma.Core.World.OverworldLayers.Region(r.Id)][context.Position.X, context.Position.Y])?.Id;
         if (region != null && !common.GameSaveData.VisitedRegions.Contains(region)) common.GameSaveData.VisitedRegions.Add(region);

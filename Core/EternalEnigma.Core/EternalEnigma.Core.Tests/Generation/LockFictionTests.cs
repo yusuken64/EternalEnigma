@@ -41,7 +41,8 @@ public sealed class LockFictionTests
             foreach (var key in campaign.Routes.Where(r => r.KeyId != null).GroupBy(r => r.KeyId))
                 Assert.Single(key.Select(r => r.KeyLocationId).Distinct());
         }
-        Assert.All(CapabilityCatalog.All, capability => Assert.Contains(capability, seen));
+        Assert.All(CapabilityCatalog.CampaignVocabulary, capability => Assert.Contains(capability, seen));
+        Assert.DoesNotContain(Capability.HomeKey, seen);
     }
 
     [Fact]
@@ -58,7 +59,7 @@ public sealed class LockFictionTests
     [Fact]
     public void EveryCapabilityHasSkinsForItsNaturalFormAndAsASealedDoorInEveryTheme()
     {
-        foreach (var capability in CapabilityCatalog.All)
+        foreach (var capability in CapabilityCatalog.CampaignVocabulary)
             foreach (var form in new[] { CampaignGenerator.Form(capability), LockForm.Interaction })
                 foreach (var theme in Themes)
                     Assert.True(LockSkinCatalog.For(capability, form, theme).Count >= (form == LockForm.Interaction && CampaignGenerator.Form(capability) != LockForm.Interaction ? 2 : 3),

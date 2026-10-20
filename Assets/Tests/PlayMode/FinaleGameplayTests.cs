@@ -172,10 +172,12 @@ namespace EternalEnigma.Tests
             game.PlayerController.Gold = 4321;
             for (int floor = 1; floor <= 2; floor++)
             {
-                yield return null;
+                yield return harness.WaitForIdle(); // The floor title also owns input after the scene cover opens.
                 Assert.That(game.Finale.Title, Is.EqualTo($"The reverse world - Floor {floor}"));
-                Assert.That(Object.FindFirstObjectByType<DungeonHud>().GetComponentsInChildren<TMPro.TMP_Text>()
-                    .Any(t => t.text == $"Finale {floor}\n{session.Remaining} remaining"), Is.True);
+                var hud = Object.FindFirstObjectByType<DungeonHud>();
+                var header = (TMPro.TMP_Text)typeof(DungeonHud).GetField("header",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(hud);
+                Assert.That(header.text, Is.EqualTo(GameplayText.Format($"Finale {floor} · {session.Remaining} left")));
                 var oldTerrain = game.CurrentDungeon;
                 for (int sweep = 0; !session.FloorCleared; sweep++)
                 {

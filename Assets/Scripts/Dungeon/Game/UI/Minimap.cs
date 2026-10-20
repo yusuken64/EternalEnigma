@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Minimap : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Minimap : MonoBehaviour
     private Color32[] pixels;
     public RawImage minimapImage;
     public Image Frame;
+    [SerializeField] private TMP_Text locationLabel;
+    [SerializeField] private GameObject locationPanel;
     public Color OverlapMapColor;
     public Color FullMapColor;
 
@@ -145,7 +148,8 @@ public class Minimap : MonoBehaviour
                     if (enemy.GetComponent<FinaleActor>()?.Hidden == true) break;
                     if (DungeonSight.OverlapsVisible(visibleTiles, Character.ToBounds(enemy.FootPrint, displayedCell)) || Game.Instance.Finale?.Session.HiddenMimics == 0 || (reveal != null && reveal.EnemiesRevealedTurns > 0))
                     {
-                        PaintCell(displayedCell.x, displayedCell.y, EnemyBehavior.IsDisguised(enemy) ? ItemColor : EnemyColor);
+                        PaintCell(displayedCell.x, displayedCell.y, enemy.Team == Team.Player ? AllyColor :
+                            EnemyBehavior.IsDisguised(enemy) ? ItemColor : EnemyColor);
                     }
                     break;
                 default:
@@ -222,15 +226,21 @@ public class Minimap : MonoBehaviour
         if (hide != dockHidden) { dockHidden = hide; UpdateMinimapMode(); }
         if (dockHidden || terminalHidden) return;
         if (PlayerInputHandler.Instance.mapPressed)
-        {
-            currentMode = (MinimapMode)(((int)currentMode + 1) % System.Enum.GetValues(typeof(MinimapMode)).Length);
-            AudioManager.Instance?.PlayCue(SoundCue.Navigate);
-            UpdateMinimapMode();
-        }
+            CycleMode();
+    }
+
+    public void CycleMode()
+    {
+        currentMode = (MinimapMode)(((int)currentMode + 1) % System.Enum.GetValues(typeof(MinimapMode)).Length);
+        AudioManager.Instance?.PlayCue(SoundCue.Navigate);
+        UpdateMinimapMode();
     }
 
     private void UpdateMinimapMode()
     {
+        // The location belongs to the map. Keep it available when only the map
+        // texture is toggled off, and hide the whole group for menus/terminal mode.
+        if (locationPanel != null) locationPanel.SetActive(!dockHidden && !terminalHidden);
         if (dockHidden || terminalHidden)
         {
             foreach (var panel in GetComponentsInChildren<Image>(true)) panel.enabled = false;
@@ -238,6 +248,8 @@ public class Minimap : MonoBehaviour
             return;
         }
         foreach (var panel in GetComponentsInChildren<Image>(true)) panel.enabled = currentMode == MinimapMode.Full;
+        if (locationPanel != null)
+            foreach (var panel in locationPanel.GetComponentsInChildren<Image>(true)) panel.enabled = true;
         if (Frame != null) Frame.enabled = currentMode != MinimapMode.Hidden;
         switch (currentMode)
         {
@@ -254,6 +266,31 @@ public class Minimap : MonoBehaviour
                 break;
         }
     }
+
+#if UNITY_EDITOR
+    public void AuthorLocationLabel(TMP_Text label)
+    {
+        locationLabel = label;
+        var existing = transform.Find("Map location");
+        var panel = existing != null ? (RectTransform)existing :
+            GameUISkin.Rect("Map location", transform, Vector2.up, Vector2.one);
+        panel.anchorMin = new Vector2(0, 1); panel.anchorMax = Vector2.one;
+        panel.pivot = new Vector2(.5f, 0);
+        panel.offsetMin = new Vector2(0, 8); panel.offsetMax = new Vector2(0, 62);
+        locationPanel = panel.gameObject;
+        var backing = panel.GetComponent<Image>() ?? panel.gameObject.AddComponent<Image>();
+        backing.color = new Color(.10f, .15f, .17f, .92f); backing.raycastTarget = false;
+        label.transform.SetParent(panel, false);
+        label.name = "Floor location";
+        label.rectTransform.anchorMin = Vector2.zero; label.rectTransform.anchorMax = Vector2.one;
+        label.rectTransform.offsetMin = new Vector2(16, 7); label.rectTransform.offsetMax = new Vector2(-16, -7);
+        label.margin = Vector4.zero; label.fontSize = 26; label.fontSizeMin = 22; label.fontSizeMax = 26;
+        label.enableAutoSizing = true; label.alignment = TextAlignmentOptions.Center;
+        label.color = GameUITheme.LightInk; label.raycastTarget = false;
+        label.text = "Floor 2 / 5";
+        UnityEditor.EditorUtility.SetDirty(this);
+    }
+#endif
 
     public void SetTerminalPresentation(bool hidden)
     {

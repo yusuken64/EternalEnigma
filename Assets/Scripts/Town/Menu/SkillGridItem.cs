@@ -88,24 +88,30 @@ public class SkillGridItem : MonoBehaviour, ISelectHandler, IDeselectHandler
         }
         var layout = GetComponent<LayoutElement>();
         if (layout == null) layout = gameObject.AddComponent<LayoutElement>();
-        layout.preferredHeight = 72;
-        Fit(SkillText.rectTransform, new Vector2(.07f, .39f), new Vector2(.76f, .94f));
+        layout.preferredHeight = 84;
+        Fit(SkillText.rectTransform, new Vector2(0, .40f), new Vector2(.76f, 1));
+        SkillText.rectTransform.offsetMin = new Vector2(24, 0);
+        SkillText.rectTransform.offsetMax = new Vector2(-12, -10);
         SkillText.fontSizeMin = 14; SkillText.fontSizeMax = 20; SkillText.enableAutoSizing = true;
         SkillText.alignment = TextAlignmentOptions.MidlineLeft;
         SkillText.textWrappingMode = TextWrappingModes.Normal;
         SkillText.raycastTarget = false;
-        Fit(RankText.rectTransform, new Vector2(.07f, .08f), new Vector2(.76f, .39f));
+        Fit(RankText.rectTransform, new Vector2(0, 0), new Vector2(.76f, .40f));
+        RankText.rectTransform.offsetMin = new Vector2(24, 10);
+        RankText.rectTransform.offsetMax = new Vector2(-12, 0);
         RankText.fontSize = 16; RankText.enableAutoSizing = true; RankText.fontSizeMin = 13; RankText.fontSizeMax = 16;
         RankText.alignment = TextAlignmentOptions.MidlineLeft; RankText.raycastTarget = false;
         RankText.color = GameUITheme.Ink;
         RankText.margin = SkillText.margin;
         RankText.text = GameplayText.Format(offer == null ? (maxed ? "Learned" : "Available") :
             $"Rank {offer.CurrentRank} of {offer.MaxRank}" + (maxed ? " · Complete" : locked ? " · Locked" : " · Available"));
-        Fit(CostText.rectTransform, new Vector2(.77f, .15f), new Vector2(.97f, .85f));
+        Fit(CostText.rectTransform, new Vector2(.76f, 0), Vector2.one);
+        CostText.rectTransform.offsetMin = new Vector2(0, 12);
+        CostText.rectTransform.offsetMax = new Vector2(-20, -12);
         CostText.fontSizeMin = 13; CostText.fontSizeMax = 17; CostText.enableAutoSizing = true;
         CostText.alignment = TextAlignmentOptions.Center; CostText.raycastTarget = false;
         CostText.textWrappingMode = TextWrappingModes.Normal;
-        CostText.text = GameplayText.Format(maxed ? "Max rank" : offer != null && offer.UsesPoints ? $"{offer.NextCost}\nSkill Points" : $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)} gold");
+        CostText.text = GameplayText.Format(maxed ? "Max rank" : offer != null && offer.UsesPoints ? $"{offer.NextCost}\npoint{(offer.NextCost == 1 ? "" : "s")}" : $"{(offer != null ? offer.NextCost : _data.Skill.LearnCost)} gold");
         GridButton.interactable = true;
         CostObject.SetActive(true);
         ActiveImage.color = new Color(.55f, .30f, .08f, 1);

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class SelectionRing
 {
-    private static readonly Dictionary<Sprite,Sprite> variants=new();
+    private static readonly Dictionary<(Sprite, bool),Sprite> variants=new();
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Reset()
     {
@@ -15,11 +15,11 @@ public static class SelectionRing
         variants.Clear();
         Application.quitting-=Reset;Application.quitting+=Reset;
     }
-    public static void Apply(SpriteRenderer renderer)
+    public static void Apply(SpriteRenderer renderer, bool hostile = false)
     {
-        if(renderer==null || renderer.sprite==null || renderer.sprite.name=="Jade selection ring")return;
+        if(renderer==null || renderer.sprite==null || renderer.sprite.name=="Jade selection ring" || renderer.sprite.name=="Hostile outline")return;
         var original=renderer.sprite;
-        if(!variants.TryGetValue(original,out var ring))
+        if(!variants.TryGetValue((original, hostile),out var ring))
         {
             const int size=128;
             var texture=new Texture2D(size,size,TextureFormat.RGBA32,false){name="Selection ring",hideFlags=HideFlags.HideAndDontSave,wrapMode=TextureWrapMode.Clamp};
@@ -27,11 +27,14 @@ public static class SelectionRing
             for(int y=0;y<size;y++)for(int x=0;x<size;x++)
             {
                 float r=new Vector2(x+.5f-size*.5f,y+.5f-size*.5f).magnitude;
-                pixels[y*size+x]=new Color(1,1,1,Mathf.Clamp01(63-r)*Mathf.Clamp01(r-55));
+                float angle = Mathf.Atan2(y+.5f-size*.5f, x+.5f-size*.5f);
+                // Four small gaps distinguish threats from the continuous allied ring.
+                float gap = hostile ? Mathf.Clamp01((Mathf.Abs(Mathf.Sin(angle * 2)) - .12f) * 12) : 1;
+                pixels[y*size+x]=new Color(1,1,1,Mathf.Clamp01(63-r)*Mathf.Clamp01(r-(hostile ? 58 : 55))*gap);
             }
             texture.SetPixels(pixels);texture.Apply(false,true);
             ring=Sprite.Create(texture,new Rect(0,0,size,size),new Vector2(.5f,.5f),size/original.bounds.size.x);
-            ring.name="Jade selection ring";ring.hideFlags=HideFlags.HideAndDontSave;variants.Add(original,ring);
+            ring.name=hostile ? "Hostile outline" : "Jade selection ring";ring.hideFlags=HideFlags.HideAndDontSave;variants.Add((original,hostile),ring);
         }
         renderer.sprite=ring;
     }

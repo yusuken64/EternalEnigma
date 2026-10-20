@@ -26,6 +26,7 @@ public sealed class CampaignHUD : MonoBehaviour
 
     private void Start()
     {
+        if (Overworld != null) OpeningGuidance.Ensure(Overworld);
         if (actions == null && Overworld != null)
         {
             // The authored scene supplies a styled button template, but no actions container.

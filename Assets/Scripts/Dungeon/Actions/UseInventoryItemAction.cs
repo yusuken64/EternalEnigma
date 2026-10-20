@@ -76,6 +76,7 @@ internal class UseInventoryItemAction : GameAction
 				? new UnEquipAction(character, equipment) : new EquipAction(character, equipment) };
         QueueSound(SoundCue.UseItem);
         GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} used {item.DisplayName}.");
+		bool usefulRecovery = OpeningDungeonLesson.UsefulRecovery(target ?? character, item);
 		var definition = Definition;
 		List<GameAction> effects;
 		if (definition?.Targeting == SkillTargeting.InventoryItem)
@@ -109,6 +110,7 @@ internal class UseInventoryItemAction : GameAction
 		{
 			inventory.Remove(item);
 		}
+		OpeningDungeonLesson.RecoveryUsed(character, item, usefulRecovery && effects.Count > 0);
 		return effects;
 	}
 

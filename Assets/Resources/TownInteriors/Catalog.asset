@@ -185,6 +185,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: e63825f6644e82a498171469d781f6ab, type: 2}
   - {fileID: 2100000, guid: efbae77bd4784484996d4b6146d724d3, type: 2}
   CharacterMaterial: {fileID: 2100000, guid: f81db87ebb09e1b49a01966f6dc2edde, type: 2}
+  HomeFurniture: {fileID: 2100000, guid: 5567837b810985d49b909aa97aabf986, type: 2}
+  HomeWood: {fileID: 2100000, guid: df61ee8a73d9f7c44b058cd9bc6664e6, type: 2}
+  HomeRug: {fileID: 2100000, guid: 1398d1fa4e93e3c419984fb5216d5e14, type: 2}
+  HomeSurface: {fileID: 4300000, guid: e7609f97823525c4995c1013af02f628, type: 2}
   Carpet: {fileID: 11400000, guid: 9f2eace421a4b2341bee06f6211fc261, type: 2}
   Counter: {fileID: 11400000, guid: eeb3d9828ac5d2f43921871e01f1596e, type: 2}
   Characters:

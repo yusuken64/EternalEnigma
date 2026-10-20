@@ -20,6 +20,7 @@ public static class CampaignTownLayout
             var service = layout.SlotServices[i];
             if (service == null)
             {
+                if (layout.Options.Interiors[i].Kind == EternalEnigma.Core.World.TownInteriorKind.Home) continue;
                 if (nextAuthored < authored.Length) slots[i] = authored[nextAuthored++];
                 continue; // Remaining slots are residential geometry, without an interaction.
             }
@@ -30,7 +31,8 @@ public static class CampaignTownLayout
         }
         if (configuration.Id == "town-0")
         {
-            int home = Array.FindIndex(slots, d => d == null);
+            int home = Array.FindIndex(layout.Options.Interiors.ToArray(), i => i.Kind == EternalEnigma.Core.World.TownInteriorKind.Home);
+            if (home < 0) home = Array.FindIndex(slots, d => d == null);
             if (home < 0) throw new InvalidOperationException("Starting town requires a residential home.");
             var definition = UnityEngine.Object.Instantiate(definitions.Single(d => d.Id == "inn"));
             definition.Id = "home"; definition.DisplayName = "Home"; definition.DialogId = "home";

@@ -10,7 +10,7 @@ public static class PaintedGroundMesh
     public const float DryDepth = .02f, WaterDepth = .045f, BridgeDepth = -.005f;
 
     public static PaintedGroundOutput Build(Transform parent, GroundSurface[,] cells, PaintedGroundStyle style,
-        float cellSize, int seed, int originX = 0, int originY = 0)
+        float cellSize, int seed, int originX = 0, int originY = 0, Material groundMaterial = null)
     {
         if (style == null || style.DryGround == null || style.Water == null || style.Bridge == null)
             throw new ArgumentException("Painted ground requires all three surface materials.");
@@ -48,7 +48,7 @@ public static class PaintedGroundMesh
             owner.Meshes.Add(mesh); owner.TriangleCount += triangles.Count/3;
             var chunk = new GameObject(mesh.name); chunk.transform.SetParent(root.transform,false);
             chunk.AddComponent<MeshFilter>().sharedMesh = mesh;
-            var renderer = chunk.AddComponent<MeshRenderer>(); renderer.sharedMaterial = kind == 1 ? style.Water : kind == 2 ? style.Bridge : style.DryGround;
+            var renderer = chunk.AddComponent<MeshRenderer>(); renderer.sharedMaterial = kind == 1 ? style.Water : kind == 2 ? style.Bridge : groundMaterial ?? style.DryGround;
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             chunk.AddComponent<SilhouetteParticipant>().Role = kind == 1 ? SilhouetteRole.None : SilhouetteRole.Receiver;
 

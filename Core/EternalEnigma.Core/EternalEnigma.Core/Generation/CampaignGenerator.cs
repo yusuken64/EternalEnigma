@@ -22,7 +22,7 @@ public static class CampaignGenerator
         var personal = Select(activation, CapabilityKind.Personal, 3 + activation.Range(2), c => c.HasAreaForm());
         var vehicles = Select(activation, CapabilityKind.Vehicle, 2 + activation.Range(2), c => c == Capability.Boat);
         var utility = new List<Capability> { Capability.Engineering };
-        var vocabulary = CapabilityCatalog.All.Where(c => version >= 13 || c <= Capability.SacredRite).ToArray();
+        var vocabulary = CapabilityCatalog.CampaignVocabulary.Where(c => version >= 13 || c <= Capability.SacredRite).ToArray();
         utility.Add(activation.Shuffle(vocabulary.Where(c => c.IsNarrative()))[0]);
         utility.AddRange(activation.Shuffle(vocabulary.Where(c => c.Kind() == CapabilityKind.Utility && !utility.Contains(c)))
             .Take(2 + activation.Range(2)));
@@ -258,7 +258,7 @@ public static class CampaignGenerator
 
     private static List<Capability> Select(SeedStream random, CapabilityKind kind, int count, Func<Capability, bool> mandatory)
     {
-        var pool = CapabilityCatalog.All.Where(c => c.Kind() == kind).ToArray();
+        var pool = CapabilityCatalog.CampaignVocabulary.Where(c => c.Kind() == kind).ToArray();
         var chosen = new List<Capability> { random.Shuffle(pool.Where(mandatory))[0] };
         chosen.AddRange(random.Shuffle(pool.Where(c => !chosen.Contains(c))).Take(count - 1));
         return chosen;

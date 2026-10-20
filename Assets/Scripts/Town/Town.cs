@@ -20,7 +20,9 @@ public class Town : MonoBehaviour
     public List<ShopVendor> ShopVendors = new();
     public readonly List<TownNpc> Townsfolk = new();
     public bool IsOccupied(Vector3Int cell) => TownAllies.Any(a=>a!=null && a.TilemapPosition==cell) || ShopVendors.Any(v=>v!=null && v.TilemapPosition==cell) || Townsfolk.Any(n=>n!=null && n.Cell==cell) || GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell);
-    public bool CanEnter(Vector3Int cell) => Plan != null && Plan.IsWalkable(cell.ToGridPoint()) && !IsOccupied(cell);
+    public OpeningHomeLesson HomeLesson { get; private set; }
+    public bool CanEnter(Vector3Int cell) => Plan != null && Plan.IsWalkable(cell.ToGridPoint()) && !IsOccupied(cell) &&
+        (HomeLesson == null || HomeLesson.AllowsEntry(cell));
     private readonly List<GameObject> shopWalls = new();
     private readonly List<TownRoofVisual> roofs = new();
     public IReadOnlyList<TownRoofVisual> Roofs => roofs;
@@ -340,6 +342,7 @@ public class Town : MonoBehaviour
         if (Configuration.Id == "town-0" && Common.Instance.CampaignContext?.State.RequiresOpeningPreparation == true)
             OpeningDungeonGate.Create(this);
         GenerateShopInteriors();
+        HomeLesson = OpeningHomeLesson.Create(this);
         GenerateRoofs();
         TownInteriorRendering.SpawnTownsfolk(this);
 
@@ -373,6 +376,8 @@ public class Town : MonoBehaviour
         else Common.Instance.ScreenTransition.DoOpen();
         if (Configuration.Id == "town-0" && Common.Instance.CampaignContext?.IsPreparingForOpening == true)
             GameMessages.Post(Common.Instance.CampaignContext.OpeningPreparationHint);
+        OpeningGuidance.Ensure(this);
+        if (Configuration.Id == "town-0") yield return OpeningGuidance.RevealOpenedGate(this);
         finishingGeneration=false;
     }
 }

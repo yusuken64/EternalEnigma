@@ -15,6 +15,8 @@ public sealed class CampaignTravelService
     private string returnArrivalTown;
     public bool HomecomingPending { get; private set; }
     public bool HomecomingCompleted { get; private set; }
+    internal bool OpeningGateRevealPending { get; private set; }
+    internal bool ConsumeOpeningGateReveal() { bool pending = OpeningGateRevealPending; OpeningGateRevealPending = false; return pending; }
     internal bool IsHomecoming(string town) => HomecomingPending && town == Context?.Campaign.StartLocationId;
     internal void FinishHomecoming(Town town)
     {
@@ -39,8 +41,11 @@ public sealed class CampaignTravelService
         if (transitioning) return;
         returnArrivalTown = null;
         HomecomingPending = HomecomingCompleted = false;
+        OpeningGateRevealPending = false;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
         Context.State.RequiresOpeningPreparation = true;
+        Context.State.OpeningLessonVersion = 1;
+        Context.State.HomeLessonVersion = 1;
         var save = common.GameSaveData;
         save.ProtagonistId = save.TownSaveData.RecruitedAlliesData.First().AllyId;
         save.Roster = save.TownSaveData.RecruitedAlliesData.ToList();
@@ -57,6 +62,7 @@ public sealed class CampaignTravelService
         returnArrivalTown = null;
         if (!save.HasCampaign) { common.CampaignContext = null; transitioning = true; TownSceneLoader.Load(TownSceneLoader.ResolveSaved()); return; }
         HomecomingPending = HomecomingCompleted = false;
+        OpeningGateRevealPending = false;
         common.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign), save.Campaign);
         CampaignParty.ClearLiveParty(common);
         if (Context.State.Scene == "Town") PrepareTown(Context.State.LocationId);
@@ -86,6 +92,7 @@ public sealed class CampaignTravelService
     {
         if (transitioning || Context == null || Context.IsSandbox || town == null ||
             Context.State.Scene != "Town" || town.Configuration.Id != Context.State.LocationId) return false;
+        if (Context.HasHomeLesson && !Context.State.HomeDoorUnlocked) return false;
         town.WriteSaveData();
         if (!Context.BeginTownDungeon(dungeonId)) return false;
         StartDungeon(Context.Campaign.Locations.Single(l => l.Id == dungeonId), visuals);
@@ -107,6 +114,7 @@ public sealed class CampaignTravelService
     public bool ExitTown(Town town)
     {
         if (transitioning || Context == null || Context.IsSandbox || Context.State.Scene != "Town") return false;
+        if (Context.HasHomeLesson && !Context.State.HomeDoorUnlocked) return false;
         if (!Context.CanLeaveTown(Context.State.LocationId))
         { common.AudioManager?.PlayCue(SoundCue.Denied); TownMenu.ShowMessage("Clear the dungeon inside town to unlock the town gate."); return false; }
         town.WriteSaveData(); CampaignParty.ClearLiveParty(common); Context.Position = Context.Grid.Locations[Context.State.LocationId]; Load("Overworld", "Overworld"); return true;
@@ -127,6 +135,7 @@ public sealed class CampaignTravelService
             ? Context.State.PendingDungeon : null;
         bool homecoming = victory && Context.State.PendingDungeon == Context.Campaign.FinalLocationId;
         if (!Context.CompleteDungeon(victory)) return false;
+        if (firstClear == "story-0") OpeningGateRevealPending = true;
         // Town exits and encounter-controlled crossings open at the successful
         // completion commit, rather than when the next scene redraws their gates.
         if (victory && Context.Opened.Except(previousOpenedGates).Any())
@@ -186,7 +195,7 @@ public sealed class CampaignTravelService
         {
             bool townGate = Context.Campaign.Routes.Any(route => route.KeyId == key && route.IsTownExit);
             return $"<b>{Context.Campaign.KeyLabel(key)}</b>\n" + (townGate && inDungeon
-                ? "The town gate is now open. You can leave for the overworld!"
+                ? "The town gate is now open. Rest at home to save your victory, then follow the gate to the overworld!"
                 : "Unlocks its matching locked gate on the overworld.");
         });
         string heading = keys.Length == 1 ? "KEY ACQUIRED!" : "KEYS ACQUIRED!";

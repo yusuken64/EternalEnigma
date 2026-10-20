@@ -219,6 +219,7 @@ public static class AuthoredUIMigration
         }
         game.CharacterStatsDisplayContainer=hud.PartyRoot;
         var minimap=Find<Minimap>(scene);Fit((RectTransform)minimap.transform,new Vector2(.80f,.22f),new Vector2(.985f,.48f));
+        minimap.AuthorLocationLabel((TMP_Text)new SerializedObject(hud).FindProperty("header").objectReferenceValue);
         var outline=minimap.minimapImage.GetComponent<Outline>()??minimap.minimapImage.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.7f,.53f,.25f,.9f);outline.effectDistance=new Vector2(2,-2);
         var result=Find<GameOverScreen>(scene);result.AuthorCanvas();result.AuthorLayout();
         var back=GameUISkin.Button(result.transform,"Main menu",new Vector2(.35f,.08f),new Vector2(.65f,.16f),null);back.name="Campaign main menu";UnityEventTools.AddPersistentListener(back.onClick,result.Quit_Clicked);

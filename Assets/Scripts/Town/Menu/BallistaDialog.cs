@@ -108,6 +108,10 @@ public class BallistaDialog : Dialog
         GameUITheme.StyleActiveTab(Layout.SecondaryTab, source == ClassSource.Secondary);
         StopAutoScroll();
         firstLesson = TrainerOffers.IsFirstLesson(Character);
+        Layout.PrimaryTab.GetComponentInChildren<TMP_Text>().text = firstLesson ? "Your first lesson" :
+            GameplayText.Format(Character.PrimaryClass == null ? "Skills" : "Primary - " + Character.PrimaryClass.DisplayName);
+        Layout.SecondaryTab.gameObject.SetActive(!firstLesson && Character.PrimaryClass != null && Character.SecondaryClass != null &&
+            Character.PrimaryClass.Id != Character.SecondaryClass.Id);
         selected = null;
         foreach (Transform child in SkillGridContainer)
         {
@@ -115,11 +119,14 @@ public class BallistaDialog : Dialog
             Destroy(child.gameObject);
         }
         SkillGridItems.Clear();
-        foreach (var tier in Offers().Where(o => o.Source == source).GroupBy(o => o.Tier))
+        var displayed = Offers().Where(o => o.Source == source);
+        if (firstLesson) displayed = displayed.Where(o => o.CanLearn && o.CurrentRank == 0 && o.Skill.ActivationType == ActivationType.Active)
+            .OrderBy(o => Character.PrimaryClass?.Id == "scout" && o.Skill.SkillName == "Floor Sense" ? 0 : 1).Take(1);
+        foreach (var tier in displayed.GroupBy(o => o.Tier))
         {
             var heading = Instantiate(Layout.HeadingTemplate, SkillGridContainer, false);
             heading.gameObject.SetActive(true);
-            heading.text = GameplayText.Format(firstLesson ? "Choose your first active skill" : Character.PrimaryClass == null ? "Available skills" :
+            heading.text = GameplayText.Format(firstLesson ? "Recommended first skill" : Character.PrimaryClass == null ? "Available skills" :
                 $"Tier {tier.Key} · Level {tier.First().TierRequiredLevel}");
             GameUISkin.RibbonHeader(heading);
             foreach (var offer in tier)
@@ -176,12 +183,7 @@ public class BallistaDialog : Dialog
         selected = row;
         selectedSkills[(int)source] = row.GetSkill().SkillName;
         var o = row.Offer;
-        string status = o.IsMaxed ? "Already at maximum rank." : !o.CanLearn ? o.LockReason : "Ready to learn.";
-        string requirements = $"Rank {o.CurrentRank} of {o.MaxRank}" + (o.HasClass
-            ? $"\nTier {o.Tier} opens at level {o.TierRequiredLevel}." +
-                (o.IsMaxed ? "" : $"\nThe next rank requires level {o.NextRequiredLevel} and {o.NextCost} Skill Point{(o.NextCost == 1 ? "" : "s")}.")
-            : o.IsMaxed ? "" : $"\nLearning costs {o.NextCost} gold.");
-        Layout.Preview.text = GameplayText.Format($"<b>{o.Skill.DisplayName}</b>\n{requirements}\n\n{status}\n{o.Prerequisites}\n\n{o.Skill.Description}");
+        Layout.Preview.text = GameplayText.Format(SkillPreviewText.Offer(o, firstLesson));
         Canvas.ForceUpdateCanvases();
         RefreshPreviewControl();
         if (changed) Layout.PreviewScroll.verticalNormalizedPosition = 1;
@@ -210,8 +212,15 @@ public class BallistaDialog : Dialog
     {
         if (firstLesson != TrainerOffers.IsFirstLesson(Character))
         {
+            string learned = firstLesson ? selected?.GetSkill().DisplayName : null;
             BuildList();
             SetFirstSelect();
+            if (!string.IsNullOrEmpty(learned))
+            {
+                string nextStep = Common.InstanceOrNull?.CampaignContext?.OpeningObjective ?? "Rest before your next adventure.";
+                Layout.Preview.text = GameplayText.Format($"<b>{learned} learned!</b>\n{nextStep}\nPractise {learned} at the dungeon entrance tomorrow.\n\n") + Layout.Preview.text;
+                Layout.PreviewScroll.verticalNormalizedPosition = 1;
+            }
             return;
         }
         var offers = Offers().ToDictionary(o => o.Skill.SkillName);

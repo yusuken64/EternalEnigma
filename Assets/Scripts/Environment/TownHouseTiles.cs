@@ -80,7 +80,7 @@ public static class TownHouseTiles
     // front panel, so the door's approach cell stays unobstructed and walkable.
     public static void Facade(EnvironmentBatch batch, Material plaster, Material timber, Material door,
         Material glass, float size, GridPoint cell, int dx, int dy, bool entrance, bool window,
-        OverworldBiome biome=OverworldBiome.Grassland,BiomeDecorationSurfaceSet faces=null,string service="",bool openEntrance=false)
+        OverworldBiome biome=OverworldBiome.Grassland,BiomeDecorationSurfaceSet faces=null,string service="",bool openEntrance=false,bool dynamicEntrance=false)
     {
         var catalog=DioramaCatalog.Load();
         if(catalog!=null)
@@ -89,7 +89,7 @@ public static class TownHouseTiles
             float angle=dx==1?90:dy==1?180:dx==-1?270:0;
             var position=new Vector3(cell.X+.5f+dx*.46f,cell.Y+.5f+dy*.46f,0)*size;
             var scale=new Vector3(size*.5f,size*.5f,1);
-            if (entrance && openEntrance) OpenDoor(batch, catalog, biome, position, angle, scale);
+            if (entrance && (openEntrance || dynamicEntrance)) OpenDoor(batch, catalog, biome, position, angle, scale, dynamicEntrance);
             else catalog.Add(batch,id,biome,position,angle,scale:scale);
             var matrix=Matrix4x4.TRS(position,Quaternion.Euler(0,0,angle),scale);
             foreach(var socket in catalog.Get(id).Sockets)
@@ -121,9 +121,9 @@ public static class TownHouseTiles
             Part(timber, -.30f, -.52f, .055f, 1.05f);
             Part(timber, .30f, -.52f, .055f, 1.05f);
             Part(timber, 0, -1.04f, .66f, .075f);
-            if (!openEntrance) Part(door, 0, -.47f, .54f, .90f);
+            if (!openEntrance && !dynamicEntrance) Part(door, 0, -.47f, .54f, .90f);
             Part(timber, 0, -.03f, .60f, .07f);
-            if (!openEntrance) Part(timber, .17f, -.48f, .045f, .045f);
+            if (!openEntrance && !dynamicEntrance) Part(timber, .17f, -.48f, .045f, .045f);
         }
         else
         {
@@ -152,7 +152,7 @@ public static class TownHouseTiles
     // Open the slab and its handle in runtime copies of the shared authored facade.
     // The frame, canopy, threshold and service identity retain the friendly-town art.
     private static void OpenDoor(EnvironmentBatch batch, DioramaCatalog catalog, OverworldBiome biome,
-        Vector3 position, float angle, Vector3 scale)
+        Vector3 position, float angle, Vector3 scale, bool omitSlab = false)
     {
         var prefab = catalog.Get("FacadeDoor").Prefab;
         var source = prefab.GetComponent<MeshFilter>().sharedMesh;
@@ -160,17 +160,22 @@ public static class TownHouseTiles
         for (int sub = 0; sub < source.subMeshCount; sub++)
         {
             string role = materials[sub].name.Split('_').Last();
-            string name = "Open town doorway " + sub;
+            if (omitSlab && role == "Door") continue;
+            string name = (omitSlab ? "Dynamic town doorway " : "Open town doorway ") + sub;
             var mesh = batch.Owner.Meshes.FirstOrDefault(m => m != null && m.name == name);
             if (mesh == null)
             {
                 mesh = UnityEngine.Object.Instantiate(source); mesh.name = name;
                 var indices = source.GetTriangles(sub);
                 var vertices = mesh.vertices;
+                if (omitSlab && role == "Metal")
+                    indices = Enumerable.Range(0, indices.Length / 3).Where(t =>
+                        !Enumerable.Range(t * 3, 3).All(i => vertices[indices[i]].x < .4f))
+                        .SelectMany(t => indices.Skip(t * 3).Take(3)).ToArray();
                 var hinge = new Vector3(-.49f, .012f, 0);
                 var swing = Quaternion.Euler(0, 0, 95);
                 foreach (int i in indices.Distinct())
-                    if (role == "Door" || role == "Metal" && vertices[i].x < .4f)
+                    if (!omitSlab && (role == "Door" || role == "Metal" && vertices[i].x < .4f))
                         vertices[i] = hinge + swing * (vertices[i] - hinge);
                 mesh.vertices = vertices; mesh.subMeshCount = 1; mesh.SetTriangles(indices, 0);
                 mesh.RecalculateNormals(); mesh.RecalculateBounds(); batch.Owner.Meshes.Add(mesh);

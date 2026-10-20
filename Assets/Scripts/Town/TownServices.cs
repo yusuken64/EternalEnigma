@@ -40,6 +40,7 @@ public sealed class TownServices
 
     public bool Buy(TownBuildingDefinition building, string itemName, out string reason)
     {
+        if (Common.Instance.CampaignContext is { } context) context.State.InteractedInOpening = true;
         var offer = Catalog(building).FirstOrDefault(o => o.Item.ItemName == itemName);
         var stock = Shop(building).Stock.FirstOrDefault(s => s.ItemName == itemName);
         reason = "This item is sold out.";
@@ -53,7 +54,7 @@ public sealed class TownServices
         if (OffersOpeningBread(building) && itemName == "Bread")
         {
             Common.Instance.CampaignContext.State.BoughtOpeningBread = true;
-            GameMessages.Post("The baker packs your first Bread for free. " + Common.Instance.CampaignContext.OpeningPreparationHint);
+            GameMessages.Post("The baker packs your first Bread for free. Bread restores Hunger so you can keep exploring. " + Common.Instance.CampaignContext.OpeningPreparationHint);
         }
         town.SaveProgress();
         reason = null;
@@ -113,11 +114,13 @@ public sealed class TownServices
         }
         ally.SetRank(offer.Skill.SkillName, offer.CurrentRank + 1);
         var context = Common.Instance.CampaignContext;
-        if (context?.IsPreparingForOpening == true && town.Configuration.Id == "town-0" &&
+        if (context != null) context.State.InteractedInOpening = true;
+        if (context?.IsPreparingForOpening == true && !context.State.LearnedOpeningSkill && town.Configuration.Id == "town-0" &&
             ally.Id == Common.Instance.GameSaveData.ProtagonistId && offer.Skill.ActivationType == ActivationType.Active)
         {
             context.State.LearnedOpeningSkill = true;
-            GameMessages.Post("You learned your first active skill, " + offer.Skill.DisplayName + ". " + context.OpeningPreparationHint);
+            context.State.OpeningSkillId = offer.Skill.SkillName;
+            GameMessages.Post("You learned " + offer.Skill.DisplayName + ". Tomorrow, practise it safely in the dungeon entrance. " + context.OpeningPreparationHint);
         }
         town.SaveProgress();
         reason = null;

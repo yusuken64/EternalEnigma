@@ -28,6 +28,8 @@ internal class TownMovement : TownAction
         if(town!=null && (!town.CanEnter(newMapPosition) || !town.WalkableMap.CanWalkTo(originalPosition,newMapPosition)))return new();
         // Move the currently controlled ally
 		townPlayer.ControllingTownAlly.TilemapPosition = newMapPosition;
+        if (originalPosition != newMapPosition && Common.InstanceOrNull?.CampaignContext is { } context)
+            context.State.MovedInOpening = true;
 		// Only a committed leader movement can open a room. Roof refreshes,
 		// loading a save inside, and followers crossing the threshold stay silent.
 		if (town?.Plan != null && town.Plan.ShopRooms.Any(room =>

@@ -9,6 +9,8 @@ public sealed class CombatEffectStage
     public Vector3 Rotation;
     [Tooltip("Place impacts in front of the target's model and enlarge them for bigger targets.")]
     public bool FitToTarget;
+    [Tooltip("Grow the impact with the target silhouette. Disable for small, readable weapon hits.")]
+    public bool ScaleWithTarget = true;
     [Min(.01f)] public float Scale = 1;
     [Min(0)] public float Delay;
     [Min(.1f)] public float Lifetime = 2;

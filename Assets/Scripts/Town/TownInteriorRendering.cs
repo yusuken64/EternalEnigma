@@ -39,23 +39,40 @@ public static class TownInteriorRendering
         float size=creator.twcAsset.cellSize;
         var biome=creator.GetComponent<TownBiomeStyle>()?.Current??OverworldBiome.Grassland;
         var batch=new EnvironmentBatch(root);var perches=new List<(Vector3 position,bool inside)>();
+        foreach (var interior in plan.Interiors.Where(i => i.Spec.Kind == TownInteriorKind.Home && i.Carpet.Count > 0))
+        {
+            if (catalog.HomeSurface == null || catalog.HomeRug == null) continue;
+            int left = interior.Carpet.Min(c => c.X), right = interior.Carpet.Max(c => c.X);
+            int bottom = interior.Carpet.Min(c => c.Y), top = interior.Carpet.Max(c => c.Y);
+            batch.Add(catalog.HomeSurface, catalog.HomeRug,
+                new Vector3((left + right + 1) * .5f, (bottom + top + 1) * .5f, -.075f) * size,
+                new Vector3(right - left + .82f, top - bottom + .82f, 1) * size);
+        }
         foreach(var interior in plan.Interiors)
         foreach(var p in interior.Props)
         {
+            // OpeningHomeProps owns these meshes and their persistent presentation,
+            // including unlocked presentation for homes from before the lesson.
+            if (interior.Spec.Kind == TownInteriorKind.Home && p.Asset is "Lectern" or "Chest") continue;
             if(DioramaItemCatalog.Load()!=null&&interior.Spec.Kind==TownInteriorKind.Shop&&
                 interior.Spec.Theme is TownShopTheme.Bakery or TownShopTheme.Consumables&&p.Asset is "Basket" or "Potions")continue;
-            var asset=catalog.Get(p.Asset);if(asset==null)throw new InvalidOperationException("Missing interior asset "+p.Asset);
+            // Older cached plans may still name decorative beds. Only HomeBed
+            // instantiates the special bed; preserve these cells as seating.
+            string propAsset = p.Asset == "Bed" ? "Bench" : p.Asset;
+            var asset=catalog.Get(propAsset);if(asset==null)throw new InvalidOperationException("Missing interior asset "+propAsset);
+            var furnitureMaterial = interior.Spec.Kind == TownInteriorKind.Home && catalog.HomeFurniture != null
+                ? catalog.HomeFurniture : catalog.Material(biome);
             var position=new Vector3(p.Cell.X+.5f,p.Cell.Y+.5f,-p.Elevation)*size;
-            batch.Add(asset.Mesh,catalog.Material(biome),position,Vector3.one*size,p.QuarterTurns*90);
+            batch.Add(asset.Mesh,furnitureMaterial,position,Vector3.one*size,p.QuarterTurns*90);
             if(p.Asset is "Shelf" or "Cupboard" or "Bookcase")
                 perches.Add((position+Vector3.back*1.295f*size,true));
             if(p.Asset is "Table" or "Bedside" or "Lectern")
             {
                 string goods=p.Asset=="Lectern"?"Books":p.Asset=="Bedside"?"Candles":"Tableware";
-                batch.Add(catalog.Get(goods).Mesh,catalog.Material(biome),position+Vector3.back*(p.Asset=="Lectern"?.885f:.67f)*size,Vector3.one*size*.8f);
+                batch.Add(catalog.Get(goods).Mesh,furnitureMaterial,position+Vector3.back*(p.Asset=="Lectern"?.885f:.67f)*size,Vector3.one*size*.8f);
             }
             if(p.Asset=="Hearth")
-                batch.Add(catalog.Get("Cookware").Mesh,catalog.Material(biome),position+new Vector3(0,-.04f,-.695f)*size,Vector3.one*size*.8f);
+                batch.Add(catalog.Get("Cookware").Mesh,furnitureMaterial,position+new Vector3(0,-.04f,-.695f)*size,Vector3.one*size*.8f);
         }
         MountWalls(creator,plan,catalog,root,batch,perches,size,biome,audit);
         // Use the enclosure's horizontal cap. District boundaries occupy the edge cells;

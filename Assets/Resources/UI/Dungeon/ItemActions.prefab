@@ -953,7 +953,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -986,8 +986,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &8762763338893866019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1341,7 +1341,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -1374,8 +1374,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &8449585702493614473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1749,6 +1749,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   soundRole: 0
+  activateOnFirstPointerPress: 0
 --- !u!114 &6304430362762303777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2344,7 +2345,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -2377,8 +2378,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &3228020666608971036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2592,7 +2593,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -2625,8 +2626,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &3523778069383334446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3339,7 +3340,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 16, y: 4.7999997, z: 16, w: 4.7999997}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -4045,7 +4046,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -4078,8 +4079,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &5320124867467982959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4565,6 +4566,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   soundRole: 0
+  activateOnFirstPointerPress: 0
 --- !u!114 &2674832737884858513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5470,6 +5472,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   soundRole: 0
+  activateOnFirstPointerPress: 0
 --- !u!114 &137841929712853609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5760,7 +5763,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 16, y: 4.7999997, z: 16, w: 4.7999997}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5869,7 +5872,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -5902,8 +5905,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &7387695563187065143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6862,7 +6865,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 16, y: 4.7999997, z: 16, w: 4.7999997}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -7535,7 +7538,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -7568,8 +7571,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &3459676951034122197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7672,7 +7675,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -7705,8 +7708,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &2714484934128535001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8111,7 +8114,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -8144,8 +8147,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &1312905741794051206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8549,7 +8552,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 16, y: 4.7999997, z: 16, w: 4.7999997}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -8658,7 +8661,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -8691,8 +8694,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &3409518489813129634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9447,6 +9450,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   soundRole: 1
+  activateOnFirstPointerPress: 0
 --- !u!114 &8477890897705395639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9557,7 +9561,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -9590,8 +9594,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &5357630818014841300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9694,7 +9698,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -9727,8 +9731,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  activateOnFirstPointerPress: 1
   soundRole: 0
+  activateOnFirstPointerPress: 1
 --- !u!114 &4277020361150557511
 MonoBehaviour:
   m_ObjectHideFlags: 0

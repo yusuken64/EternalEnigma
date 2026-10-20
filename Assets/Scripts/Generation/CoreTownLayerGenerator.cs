@@ -24,6 +24,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     public int ExitX = 10, ExitY = 0;
     public int SpineX = TownPlan.DefaultSpineX;
     public bool Detailed;
+    public bool OpeningNeighborhood;
     public string InteriorKinds = "", ShopThemes = "";
     // Hostile districts publish the same plan to both the town renderer and dungeon gameplay.
     public CoreDungeonLayerGenerator DungeonSource;
@@ -44,7 +45,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         ExitX = ExitX,
         ExitY = ExitY,
         SpineX = SpineX,
-        Detailed = Detailed, InteriorKinds = InteriorKinds, ShopThemes = ShopThemes,
+        Detailed = Detailed, OpeningNeighborhood = OpeningNeighborhood, InteriorKinds = InteriorKinds, ShopThemes = ShopThemes,
         DungeonSource = (CoreDungeonLayerGenerator)DungeonSource?.Clone()
     };
 
@@ -60,7 +61,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         for (int i = 0; i < flags.Length; i++) flags[i] = i < ShopFlags.Length && ShopFlags[i] == '1';
         return new TownPlanOptions(twc.currentSeed, twc.twcAsset.mapWidth, twc.twcAsset.mapHeight, flags, AllyCount,
             new GridPoint(PartySpawnX, PartySpawnY), new GridPoint(ExitX, ExitY), SpineX, Detailed,
-            InteriorKinds.Length == flags.Length ? Enumerable.Range(0,flags.Length).Select(i=>new TownInteriorSpec((TownInteriorKind)(InteriorKinds[i]-'0'),i<ShopThemes.Length?(TownShopTheme)(ShopThemes[i]-'0'):TownShopTheme.General)).ToArray() : null);
+            InteriorKinds.Length == flags.Length ? Enumerable.Range(0,flags.Length).Select(i=>new TownInteriorSpec((TownInteriorKind)(InteriorKinds[i]-'0'),i<ShopThemes.Length?(TownShopTheme)(ShopThemes[i]-'0'):TownShopTheme.General)).ToArray() : null, OpeningNeighborhood);
     }
 
     public bool[,] Execute(bool[,] map, TileWorldCreator twc)
@@ -82,6 +83,10 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         }
         if (!town.Layers.TryGetValue(LayerName, out var layer)) { Debug.LogWarning($"Core town has no layer '{LayerName}'."); return map; }
         var cells = layer.ToArray();
+        // The home uses one inset woven rug, instead of the service-room quarter-tile carpet.
+        if (LayerName == TownLayers.Carpet)
+            foreach (var interior in town.Interiors.Where(i => i.Spec.Kind == TownInteriorKind.Home))
+                foreach (var cell in interior.Carpet) cells[cell.X, cell.Y] = false;
         if (cells.GetLength(0) != map.GetLength(0) || cells.GetLength(1) != map.GetLength(1))
             throw new InvalidOperationException($"Core layer is {cells.GetLength(0)}x{cells.GetLength(1)} but the TWC asset is {map.GetLength(0)}x{map.GetLength(1)}.");
         return TileWorldCreatorUtilities.MergeMap(map, cells);
@@ -98,9 +103,9 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
             var options = configuration.Layout.Options;
             var interiorFlags = configuration.SlotBuildings.Select(b => b != null && b.HasInterior).ToArray();
             var interiors = options.Interiors.ToArray();
-            for(int i=0;i<interiors.Length;i++) if(configuration.SlotBuildings[i]?.Id=="home") interiors[i]=new TownInteriorSpec(TownInteriorKind.Residential);
+            for(int i=0;i<interiors.Length;i++) if(configuration.SlotBuildings[i]?.Id=="home" && interiors[i].Kind != TownInteriorKind.Home) interiors[i]=new TownInteriorSpec(TownInteriorKind.Residential);
             Configure(asset, new TownPlanOptions(options.Seed, options.Width, options.Height, interiorFlags, options.AllyCount,
-                options.PartySpawn, options.Exit, options.SpineX, options.Detailed, interiors));
+                options.PartySpawn, options.Exit, options.SpineX, options.Detailed, interiors, options.OpeningNeighborhood));
             return;
         }
         int count = configuration.Buildings.Count;
@@ -125,7 +130,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
                     g.ExitX = spawn.x;
                     g.ExitY = 0;
                     g.SpineX = TownPlan.DefaultSpineX;
-                    g.Detailed = false;g.InteriorKinds="";g.ShopThemes="";
+                    g.Detailed = false;g.OpeningNeighborhood = false;g.InteriorKinds="";g.ShopThemes="";
                 }
         ConfigureRoofTiles(asset);
         ConfigureHouseLayers(asset);
@@ -149,7 +154,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
                     LayerName = name, BuildingCount = options.BuildingCount,
                     ShopFlags = string.Concat(options.ShopFlags.Select(f => f ? '1' : '0')),
                     AllyCount = options.AllyCount, PartySpawnX = options.PartySpawn.X, PartySpawnY = options.PartySpawn.Y,
-                    ExitX = options.Exit.X, ExitY = options.Exit.Y, SpineX = options.SpineX, Detailed = options.Detailed,
+                    ExitX = options.Exit.X, ExitY = options.Exit.Y, SpineX = options.SpineX, Detailed = options.Detailed, OpeningNeighborhood = options.OpeningNeighborhood,
                     InteriorKinds=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Kind))),ShopThemes=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Theme)))
                 })
             };
@@ -163,6 +168,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
             generator.BuildingCount=options.BuildingCount;generator.ShopFlags=string.Concat(options.ShopFlags.Select(f=>f?'1':'0'));
             generator.AllyCount=options.AllyCount;generator.PartySpawnX=options.PartySpawn.X;generator.PartySpawnY=options.PartySpawn.Y;
             generator.ExitX=options.Exit.X;generator.ExitY=options.Exit.Y;generator.SpineX=options.SpineX;generator.Detailed=options.Detailed;
+            generator.OpeningNeighborhood=options.OpeningNeighborhood;
             generator.InteriorKinds=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Kind)));generator.ShopThemes=string.Concat(options.Interiors.Select(i=>(char)('0'+(int)i.Theme)));
         }
         TownInteriorRendering.Configure(asset);

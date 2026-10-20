@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using EternalEnigma.Core.World;
 using TWC;
 using TWC.Actions;
 using UnityEngine;
@@ -28,11 +30,20 @@ public sealed class TownFloorTileLayer : TWCBuildLayer
             DungeonPresentation.ClearOutput(root);
             foreach (var owner in root.GetComponents<EnvironmentMeshOwner>()) DungeonPresentation.Release(owner);
             var batch = new EnvironmentBatch(root.transform);
+            var catalog = TownInteriorCatalog.Load();
+            var homeFloor = CoreLayoutCache.TryGetTown(creator, out var plan)
+                ? plan.Interiors.Where(i => i.Spec.Kind == TownInteriorKind.Home)
+                    .SelectMany(i => plan.Footprints.First(f => f.Door.Equals(i.Door)).Cells).ToHashSet()
+                : new System.Collections.Generic.HashSet<GridPoint>();
             float size = creator.twcAsset.cellSize;
             for (int x = 0; x < mask.GetLength(0); x++)
             for (int y = 0; y < mask.GetLength(1); y++)
-                if (mask[x, y]) batch.Add(Kit.Mesh("Paving"), Material,
-                    new Vector3(x + .5f, y + .5f, -.01f) * size, Vector3.one * size);
+                if (mask[x, y])
+                {
+                    bool home = homeFloor.Contains(new GridPoint(x, y)) && catalog?.HomeSurface != null && catalog.HomeWood != null;
+                    batch.Add(home ? catalog.HomeSurface : Kit.Mesh("Paving"), home ? catalog.HomeWood : Material,
+                        new Vector3(x + .5f, y + .5f, -.01f) * size, Vector3.one * size);
+                }
             batch.Finish();
         }
         finally { creator.executedBuildLayersCount++; }

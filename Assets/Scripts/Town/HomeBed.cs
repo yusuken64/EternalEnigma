@@ -15,6 +15,17 @@ public sealed class HomeBed : MonoBehaviour
     private int activationFrame = -1;
     public static HomeBed Create(Town town, Vector3Int tile)
     {
+        if (town == null || town.Configuration == null || town.Configuration.Id != "town-0")
+            throw new System.InvalidOperationException("The special bed belongs only in the first town's home.");
+        var home = town.TownBuildings.SingleOrDefault(b => b.Definition.Id == "home");
+        if (home == null || !town.Plan.TryGetVendorAnchor(home.TilemapPosition.ToGridPoint(), out var anchor) || anchor.ToCell() != tile)
+            throw new System.InvalidOperationException("The special bed must use the first home's reserved anchor.");
+        var existing = town.GetComponentInChildren<HomeBed>();
+        if (existing != null)
+        {
+            if (existing.Tile != tile) throw new System.InvalidOperationException("The first home already has its bed.");
+            return existing;
+        }
         var root = new GameObject("Home bed"); root.transform.SetParent(town.transform);
         root.transform.position = town.WalkableMap.CellToWorld(tile);
         var bed = root.AddComponent<HomeBed>(); bed.town = town; bed.Tile = tile;
@@ -25,7 +36,8 @@ public sealed class HomeBed : MonoBehaviour
         var model=Object.Instantiate(catalog.Get("Bed").Prefab,root.transform);
         model.name="Authored bed";model.transform.localScale=Vector3.one*size;
         foreach(var renderer in model.GetComponentsInChildren<Renderer>())
-            renderer.sharedMaterial=catalog.Material(town.WalkableMap.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current??EternalEnigma.Core.World.OverworldBiome.Grassland);
+            renderer.sharedMaterial=catalog.HomeFurniture != null ? catalog.HomeFurniture :
+                catalog.Material(town.WalkableMap.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current??EternalEnigma.Core.World.OverworldBiome.Grassland);
         bed.SleepAnchor = new GameObject("Sleeping pose anchor").transform;
         bed.SleepAnchor.SetParent(root.transform, false); bed.SleepAnchor.localPosition = new Vector3(0,0,-.42f)*size;
         bed.SleepingController = Resources.Load<RuntimeAnimatorController>("HomeSleeping");
@@ -34,6 +46,7 @@ public sealed class HomeBed : MonoBehaviour
     public void Interact()
     {
         if (IsSleeping || town.TownPlayer.CutsceneLocked) return;
+        if (Common.Instance.CampaignContext is { } context) context.State.InteractedInOpening = true;
         var menu = Object.FindFirstObjectByType<TownMenu>();
         var dialog = menu.BuildingDialogs.First(b => b.Id == "home").Dialog;
         Object.FindFirstObjectByType<TownMenuManager>().Open(dialog);

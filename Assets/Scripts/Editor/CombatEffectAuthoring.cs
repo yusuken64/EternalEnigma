@@ -299,7 +299,10 @@ public static class CombatEffectAuthoring
         profile.Impact.FitToTarget = true;
         if (family == "Melee")
         {
-            profile.Impact.Scale = 1.5f;
+            profile.Impact.Scale = .65f;
+            profile.Impact.Lifetime = .3f;
+            profile.Impact.ScaleWithTarget = false;
+            profile.ImpactSeconds = .2f;
         }
         if (area) profile.Area = Stage(family switch
         { "Fire" => "AreaDamageFire", "Frost" => "IceCloud", "Lightning" => "StormCloud", "Poison" => "Swamp", "Melee" => "LightCleave", "Arrow" => "RainLight", _ => "Nova" + element }, .4f, true);

@@ -1,6 +1,6 @@
 namespace EternalEnigma.Core.World;
 
-public enum TownInteriorKind { None, Residential, Shop, Inn, Trainer }
+public enum TownInteriorKind { None, Residential, Shop, Inn, Trainer, Home }
 public enum TownShopTheme { General, Bakery, Consumables, Equipment }
 
 public sealed class TownInteriorSpec : IEquatable<TownInteriorSpec>

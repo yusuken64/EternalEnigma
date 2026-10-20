@@ -22,6 +22,11 @@ public class BuyConfirmationDialog : Dialog
 		this._data = data;
 		unavailableReason = validate;
 		prompt = data.IsSale ? $"Sell {data.Remaining} {GameplayText.Name(data.ItemName)} for {data.Cost} gold?" : $"Purchase {GameplayText.Name(data.ItemName)} for {data.Cost} gold?";
+        if (!data.IsSale && data.Cost == 0 && data.ItemName == "Bread")
+            prompt = "Take your free bread?\n\nFood restores Hunger. In the dungeon, open your bag, choose Bread, then Eat.";
+        OkButton.GetComponentInChildren<TMP_Text>().text = !data.IsSale && data.Cost == 0 && data.ItemName == "Bread" ? "Take bread" : data.IsSale ? "Sell" : "Buy";
+        GameUISkin.PadButtonLabel(OkButton);
+        GameUISkin.PadButtonLabel(CancelButton);
 		PromptText.enableAutoSizing = true;
 		PromptText.fontSizeMin = 22;
 		PromptText.fontSizeMax = 28;

@@ -12,6 +12,33 @@ public static class GameUISkin
     private static GUIStyle legacyButtonLabel;
     public static Color Ink => GameUITheme.Ink;
 
+    // Respect authored geometry, adding only the inset missing from the decorative face.
+    public static void PadButtonLabel(Button button)
+    {
+        if (button == null) return;
+        var labels = button.GetComponentsInChildren<TMP_Text>(true);
+        if (labels.Length != 1) return; // Rows with price/icon columns own their content rectangles.
+        var label = labels[0];
+        if (label.text.Length <= 2 || label.transform.parent != button.transform) return;
+        var bounds = (RectTransform)button.transform;
+        if (bounds.rect.width < 80 || bounds.rect.height < 28) return; // Compact icon/resource controls.
+        float horizontal = Mathf.Min(24, bounds.rect.width * .10f);
+        float vertical = Mathf.Min(10, bounds.rect.height * .16f);
+        PadInside(label, horizontal, vertical);
+    }
+
+    public static void PadInside(TMP_Text label, float horizontal, float vertical)
+    {
+        if (label == null || label.transform.parent is not RectTransform parent) return;
+        var rect = label.rectTransform;
+        var margin = label.margin;
+        margin.x = Mathf.Max(margin.x, horizontal - rect.anchorMin.x * parent.rect.width - rect.offsetMin.x);
+        margin.z = Mathf.Max(margin.z, horizontal - (1 - rect.anchorMax.x) * parent.rect.width + rect.offsetMax.x);
+        margin.y = Mathf.Max(margin.y, vertical - (1 - rect.anchorMax.y) * parent.rect.height + rect.offsetMax.y);
+        margin.w = Mathf.Max(margin.w, vertical - rect.anchorMin.y * parent.rect.height - rect.offsetMin.y);
+        label.margin = margin;
+    }
+
     public static void UseLegacySkin()
     {
         if (legacySkin == null) legacySkin = Resources.Load<GUISkin>("UI/GameSkin");
@@ -21,7 +48,7 @@ public static class GameUISkin
     public static void LegacyBeginArea(UnityEngine.Rect rect)
     {
         if (Event.current.type == EventType.Repaint) DrawLegacySprite(rect, GameUITheme.Current.Panel, 8);
-        GUILayout.BeginArea(rect, new GUIStyle { padding = new RectOffset(16,16,12,12) });
+        GUILayout.BeginArea(rect, new GUIStyle { padding = new RectOffset(24,24,18,18) });
     }
     private static void DrawLegacySprite(UnityEngine.Rect rect, Sprite sprite, float thickness)
     {
@@ -141,6 +168,7 @@ public static class GameUISkin
         rect.anchorMin = min; rect.anchorMax = max;
         rect.offsetMin = rect.offsetMax = Vector2.zero;
         button.GetComponentInChildren<TMP_Text>().text = GameplayText.Format(text);
+        PadButtonLabel(button);
         button.onClick.AddListener(() => clicked?.Invoke());
         return button;
     }

@@ -212,8 +212,7 @@ public static class DungeonUIAuthoring
             {
                 foreach(var button in hud.PartyRoot.parent.GetComponentsInChildren<Button>(true))ButtonRole(button,DungeonVisualRole.WoodButton);
                 var header=(TMP_Text)new SerializedObject(hud).FindProperty("header").objectReferenceValue;
-                header.transform.SetParent(hud.PartyRoot.parent,false);
-                Fit(header.transform,.61f,.90f,.72f,.94f);header.fontSize=28;header.alignment=TextAlignmentOptions.Center;header.color=GameUITheme.LightInk;
+                scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<Minimap>(true)).Single().AuthorLocationLabel(header);
                 var backing=hud.PartyRoot.parent.GetComponentsInChildren<RectTransform>(true).FirstOrDefault(t=>t.name=="Floor label parchment");
                 if(backing!=null)backing.gameObject.SetActive(false);
                 var serialized=new SerializedObject(hud);

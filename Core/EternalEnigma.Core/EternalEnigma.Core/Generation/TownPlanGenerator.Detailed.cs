@@ -58,6 +58,35 @@ public static partial class TownPlanGenerator
             return !footprints.Any(other => other.Bounds.Intersects(fp.Bounds, margin: 1) || fp.Bounds.Contains(other.Door) || other.Bounds.Contains(fp.Door));
         }
 
+        void Place(BuildingFootprint footprint)
+        {
+            doors.Add(footprint.Door);
+            footprints.Add(footprint);
+            layers[TownLayers.Buildings][footprint.Door.X, footprint.Door.Y] = true;
+            foreach (var cell in footprint.Cells)
+            {
+                bodyCells.Add(cell);
+                layers[TownLayers.Houses][cell.X, cell.Y] = true;
+            }
+        }
+
+        if (options.OpeningNeighborhood)
+        {
+            // A short, clear southern street gives the first errands a stable local geography.
+            // Their shared door row is deliberately first in raster order. Services retain
+            // their full furnished footprint; only the domestic home gets a smaller body.
+            var opening = new[] {
+                BuildingFootprint.Rectangle(new GridPoint(options.SpineX - 17, 3), 3, 7),
+                BuildingShapes.FurnishedDefault(new GridPoint(options.SpineX - 7, 3)),
+                BuildingShapes.FurnishedDefault(new GridPoint(options.SpineX + 7, 3))
+            };
+            foreach (var footprint in opening)
+            {
+                if (!Fits(footprint)) throw new InvalidOperationException("Opening neighborhood footprint does not fit.");
+                Place(footprint);
+            }
+        }
+
         var candidates = new List<GridPoint>();
         for (int x = 1; x <= W - 2; x++)
             for (int y = 1; y <= H - 2; y++)
@@ -66,6 +95,7 @@ public static partial class TownPlanGenerator
                 // Furnished districts enclose the map border; the south-facing
                 // doorway still needs its approach cell inside that enclosure.
                 if (options.Furnished && y == 1) continue;
+                if (options.OpeningNeighborhood && y < 14) continue;
                 if (mainRoad[x, y] || TownPlan.IsReservedCorridor(door, H, options.SpineX)) continue;
                 if (door.Equals(options.PartySpawn) || door.Equals(options.Exit)) continue;
                 candidates.Add(door);
@@ -90,14 +120,7 @@ public static partial class TownPlanGenerator
             }
             if (placed == null) continue;
 
-            doors.Add(door);
-            footprints.Add(placed);
-            layers[TownLayers.Buildings][door.X, door.Y] = true;
-            foreach (var cell in placed.Cells)
-            {
-                bodyCells.Add(cell);
-                layers[TownLayers.Houses][cell.X, cell.Y] = true;
-            }
+            Place(placed);
         }
 
         // Same fallback as the simple layout: a door with no body is better than a missing building.

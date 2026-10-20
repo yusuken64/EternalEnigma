@@ -39,6 +39,7 @@ public static class CampaignSaving
             var regionId = common.CampaignContext.Campaign.Locations.Single(l => l.Id == common.GameSaveData.Campaign.LocationId).RegionId;
             if (!common.GameSaveData.VisitedRegions.Contains(regionId)) common.GameSaveData.VisitedRegions.Add(regionId);
             var snapshot = JsonUtility.FromJson<GameSaveData>(JsonUtility.ToJson(common.GameSaveData));
+            snapshot.Campaign.OpeningClearNeedsSave = false;
             // Publish the opening key to live state only after the complete morning save succeeds.
             if (beginOpeningDay)
                 snapshot.Campaign.Keys = snapshot.Campaign.Keys.Append(CampaignContext.OpeningDayKey).Distinct().ToArray();
@@ -50,6 +51,7 @@ public static class CampaignSaving
             if (arrival.HasValue) { snapshot.ArrivalX = arrival.Value.x; snapshot.ArrivalY = arrival.Value.y; snapshot.ArrivalFacing = facing; }
             snapshot.Summary = BuildSummary(common, snapshot);
             SaveSystem.SaveData(snapshot);
+            common.CampaignContext.State.OpeningClearNeedsSave = false;
             if (beginOpeningDay)
             {
                 common.CampaignContext.Keys.Add(CampaignContext.OpeningDayKey);

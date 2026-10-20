@@ -39,6 +39,7 @@ public class Enemy : Character
 	{
         if (spawnInitialized) return;
         spawnInitialized = true;
+        if (GetComponent<EnemyGroundMarker>() == null) gameObject.AddComponent<EnemyGroundMarker>();
         SetFacing(VisualRandom.Pick(spawnFacings));
         gameObject.AddComponent<FogHiddenVisual>();
 		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(TilemapPosition);
@@ -77,6 +78,8 @@ public class Enemy : Character
 		}
 
         InitializeSpawn();
+        if (Game.Instance.GetComponent<OpeningDungeonLesson>()?.IsPracticeTarget(this) == true)
+        { determinedActions = new() { new WaitAction() }; return; }
         if (Game.Instance.Finale?.CanAct(this) == false) { determinedActions = new() { new WaitAction() }; return; }
 
         var encounterAction = Game.Instance.Encounter?.EnemyAction(this);

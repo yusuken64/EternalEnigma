@@ -8,7 +8,8 @@ public enum Capability
     Engineering, Translation, RoyalAuthority, AncientAttunement, BeastSpeech,
     GuildStanding, Remedy, Diplomacy, SacredRite,
     MillwrightTraining, ForestersWrit, FerrymansFavor, GravediggersCharge,
-    SmugglersMark, BellkeepersOffice, FuneraryRites, RoyalSurveyorsMaps
+    SmugglersMark, BellkeepersOffice, FuneraryRites, RoyalSurveyorsMaps,
+    HomeKey = 29
 }
 
 public enum CapabilityKind { Personal, Vehicle, Utility }
@@ -18,6 +19,10 @@ public static class CapabilityCatalog
 {
     public static IReadOnlyList<Capability> All { get; } =
         Array.AsReadOnly((Capability[])Enum.GetValues(typeof(Capability)));
+
+    // Tutorial unlocks are saved capabilities, but must not change seeded campaign generation.
+    public static IReadOnlyList<Capability> CampaignVocabulary { get; } =
+        Array.AsReadOnly(All.Where(c => c != Capability.HomeKey).ToArray());
 
     public static CapabilityKind Kind(this Capability capability)
     {
@@ -41,12 +46,13 @@ public static class CapabilityCatalog
         Capability.BellkeepersOffice => "Bellkeeper's Office",
         Capability.FuneraryRites => "Funerary Rites",
         Capability.RoyalSurveyorsMaps => "Royal Surveyor's Maps",
+        Capability.HomeKey => "Home Key",
         _ => System.Text.RegularExpressions.Regex.Replace(capability.ToString(), "([a-z])([A-Z])", "$1 $2")
     };
 
     public static bool IsNarrative(this Capability capability) =>
         capability == Capability.Remedy || capability == Capability.Diplomacy || capability == Capability.SacredRite ||
-        capability >= Capability.MillwrightTraining;
+        capability >= Capability.MillwrightTraining && capability <= Capability.RoyalSurveyorsMaps;
 }
 
 public readonly struct CapabilitySet : IEquatable<CapabilitySet>

@@ -1,0 +1,457 @@
+Opening 20 minutes: design and presentation audit
+2026-10-19 | Working tree d858aca9
+
+The strongest opportunities are a more intimate starting home, disciplined UI
+spacing, clearer combat composition, and an opening that lets the player practise
+what they learn. The game has useful ingredients: expressive heroes, furnished
+interiors, a preparation-day structure, explicit saving, and a dungeon-clear
+reward that opens the town gate. Their presentation needs a stronger hierarchy.
+
+The user's specific direction is incorporated here:
+- Make the starting house smaller.
+- Replace the first house's unappealing carpet colour.
+- Put the dungeon floor indicator beside the minimap.
+- Keep text comfortably inside its containing box.
+
+Quality criteria
+----------------
+For this audit, the Nintendo quality reference means understandable actions,
+careful composition from the gameplay camera, feedback that explains events,
+learning through small successes, and moments of character and surprise.
+These are review criteria, not a claim of equivalence to a Nintendo production.
+Nintendo's Super Mario Bros. Wonder developers describe tuning character poses
+to communicate state and direction from the actual gameplay view, and matching
+sound timing to the visible action. That is a useful standard for this game:
+https://www.nintendo.com/en-gb/News/2023/October/Ask-the-Developer-Vol-11-Super-Mario-Bros-Wonder-Chapter-2-2460633.html
+
+1. First priority: give the starting home its own compact composition
+------------------------------------------------------------------
+Observed: the seed-42 home capture has broad areas of stone flooring, furniture
+around the perimeter, and a long central teal carpet. Much of the room lies
+beyond the captured view. The supplied criticism that the house feels too big
+is consistent with this composition.
+
+There is a structural reason: furnished building plots are generated to fit the
+largest service-room recipe. FurnishedRandom chooses bodies 9 or 11 cells wide
+and 9-12 cells deep; its fallback is 9x9. These are generator ranges, not a
+measurement of the exact captured home. The home inherits that generous plot
+system even though residential furnishing can use a smaller room.
+
+Recommended direction:
+- Author a compact opening-home arrangement. Prototype roughly 5x5 to 5x7 usable
+  floor cells, then fit it to the actual gameplay camera and movement clearance.
+- Compose the hero, functional bed and exit as the main three readable elements.
+  Cluster furniture into a sleeping corner and a small living corner.
+- Keep a short, obvious route from the wake-up position to the exit. Check that
+  the bed, doorway and following party remain usable after reducing the room.
+- Let the opening camera show enough of the doorway to invite the first move.
+  Judge the result at the player's camera scale, with the HUD present.
+
+Success: on the opening view, a new player can find their character, recognise
+the bed and identify the exit without searching around a large empty room.
+
+Evidence: Temp/OpeningPreparation/home-before-errands.png;
+Core/EternalEnigma.Core/EternalEnigma.Core/Generation/BuildingShapes.cs:18;
+Core/EternalEnigma.Core/EternalEnigma.Core/Generation/TownInteriorGenerator.cs:22.
+
+2. First priority: redesign the room palette and carpet together
+--------------------------------------------------------------
+Observed: the carpet is a large, nearly uniform teal area with a warm border;
+the bed blanket repeats the teal. Its flat surface and large area make it read
+more like a coloured floor panel than a small domestic textile. The grey stone
+floor also gives the home a similar material character to the dungeon.
+
+Recommended direction: a smaller woven rug in muted terracotta, warm timber or
+quieter warm-grey flooring, cream trim, and restrained textile accents. A useful
+initial palette to prototype is rug #956451, trim #CEB88F and wood #78533E. These
+are proposed colours, not sampled values or approved final art.
+
+Give the rug a modest border and subtle material variation. Restrict its area
+to a living or bedside zone. Keep the hero and interactive bed distinct from
+the surfaces behind them. Review this as a complete room palette under game
+lighting; changing the carpet's hue alone will leave the scale problem intact.
+
+Evidence: home-before-errands.png; the carpet recipe at
+Core/EternalEnigma.Core/EternalEnigma.Core/Generation/TownInteriorGenerator.cs:81
+fills a three-cell-wide central strip over most of the room's depth.
+
+3. First priority: establish padding and reading order across the UI
+-----------------------------------------------------------------
+Observed: in the fresh 960x600 bakery capture, item names begin within a few
+pixels of the button's left boundary and prices nearly touch the right boundary.
+Footer instructions also sit close to the parchment edge. The trainer is more
+spacious, but its first ability explanation appears after rank, tier, level,
+cost, availability and prerequisite text.
+
+Recommended layout standards, expressed at a 960x600 reference resolution:
+- Start with 24-32 px of panel padding inside the decorative border.
+- Start with 16-24 px of horizontal padding and 8-12 px of vertical padding in
+  item rows and buttons. Adjust for the actual font metrics and ornament shape.
+- Use a padded inner content rectangle. Keep labels and prices in separate
+  aligned columns, with a protected gap between them.
+- Give titles, descriptions, secondary metadata and control hints distinct
+  visual weights. Keep decorative lettering for short display text.
+- Reflow or scroll long content before shrinking it below comfortable reading
+  size. The selected item's full name and effect should remain accessible.
+- Maintain visible focus using an outline or marker as well as colour.
+
+For the first Double Strike preview, lead with its effect, then show its cost
+and the Learn action. Put rank and unlock rules beneath that primary decision
+information. Show the actual Mana cost and targeting information from skill data.
+
+Success: no visible glyph touches the inner frame; long item names and prices
+fit together; the player can explain an ability before purchasing it. Check the
+same layout at 960x600, 1280x720, 1920x1080 and an ultrawide aspect ratio.
+
+Evidence: Temp/OpeningPreparation/free-bread.png and first-lesson.png;
+Assets/Scripts/Town/Menu/BallistaDialog.cs:180.
+
+4. First priority: give the HUD clear groups and protect combat readability
+------------------------------------------------------------------------
+Observed: the live dungeon shows a detached "2F" beneath the top menu tabs. The
+captured early fight combines large overlapping enemies, vivid pink enemy base
+discs and a bright impact burst over the controlled hero. That captured instant
+is difficult to parse. It does not establish how long the overlap persists.
+
+Recommended direction:
+- Place "Floor 2 / 5" immediately beside or above the minimap, aligned to its
+  edge with the same padding system. Keep this location group together as map
+  modes and screen sizes change.
+- Reserve stable HUD regions for party condition, navigation/progress, resource
+  totals and menu access. Keep the central combat area as clear as possible.
+- Maintain a visible hero silhouette, facing and occupied tile through attacks.
+  Reduce the opaque centre and excessive reach of effects that cover the hero.
+- Use restrained hostile markers, and a stronger outline/shape for the current
+  target. Distinguish hostile, selected and controlled states beyond colour alone.
+- Make action -> impact -> HP/status change easy to connect. Let the event log
+  supplement that visual explanation.
+- Consider revealing the Full Control feature when a companion joins, with a
+  short explanation. Its persistent label adds a concept before a solo player
+  has an immediate reason to use it.
+
+Success: a player can locate the hero, the selected target, current floor and
+next available action at a glance during a normal-speed encounter.
+
+Evidence: live dungeon inspection and
+Logs/Playthroughs/20261020-004944-dd0b101f/run-0001-seed-42-50b2eb06/final.png;
+Assets/Scripts/Dungeon/Game/UI/DungeonHud.cs:100.
+
+5. High priority: make preparation teach actions through small successes
+-----------------------------------------------------------------------
+Observed: the current opening requires free bread, an active-skill purchase,
+then sleep. The first lesson protects the player's points from being spent on
+passives. Home explains that defeat returns to the last save, and morning
+confirms that preparations were saved. These are useful improvements.
+
+The remaining gap is that learning a skill satisfies the opening requirement
+without demonstrating its use. The first training view also exposes blocked and
+completed rows alongside the one currently available primary active skill. The
+free-bread screen includes expensive products before the first transaction is
+understood.
+
+Recommended sequence:
+- Use the bedroom to teach movement and one contextual interaction.
+- Let the baker offer a clear "Take your free bread" action, explain what food
+  restores, and acknowledge the receipt. Provide the full shop as a secondary
+  option during this first visit.
+- Let the trainer recommend a suitable first active skill and immediately offer
+  a brief practice encounter that demonstrates its effect and target rules.
+  Support non-damaging skills with an appropriate practice target or situation.
+- Present one readable first opponent before mixed groups; then combine a known
+  enemy with one new behaviour. Introduce recovery before a likely first defeat.
+- Make a small interaction memorable: the baker handing over the loaf, a dummy
+  visibly reacting, or the morning light and gate changing after sleep. Tie each
+  detail to something the player just accomplished.
+
+Success: before the first dangerous group, the player has successfully used an
+ability, understands its resource, and knows how to use a recovery item.
+
+Evidence: first-lesson.png, free-bread.png, ready-for-morning.png;
+Core/EternalEnigma.Core/EternalEnigma.Core/Progression/CampaignContext.cs:91;
+Assets/Scripts/Town/TrainerOffers.cs:27; Assets/Scripts/Town/HomeBed.cs:112.
+
+6. High priority: keep the next goal visible and shorten required errands
+----------------------------------------------------------------------
+Observed: opening guidance is posted into the event feed. Outside dungeon turns,
+that feed starts fading after nine seconds and disappears after eleven. It is
+not a persistent current-objective display. The controlled morning/gate capture
+still contains earlier "ready for tomorrow" history beneath the open gate.
+
+Town services are distributed procedurally. The seed-42 automated route recorded
+188 town movement actions before entering the dungeon. This route uses full map
+knowledge, does additional preparation, and refreshes the party; it is not a
+measurement of a novice player's route, walking time, or minimum required steps.
+It does identify the distance between required destinations as worth examining.
+
+Recommended direction:
+- Keep one short current objective visible: collect bread -> learn/practise a
+  skill -> sleep -> enter the dungeon -> clear it -> return and save.
+- Update that objective directly when the state changes. Keep historical event
+  messages visually distinct from the next action.
+- Give the opening home, bakery and trainer a readable local arrangement, clear
+  door signs and landmarks. Constrain their separation across starting seeds.
+- Offer contextual movement/interact prompts until the player demonstrates them.
+  Keep prompts brief and matched to the active input device.
+
+Success: the player can answer "Where am I going, and why?" after returning from
+a menu, after the message feed fades, and after waking the next morning.
+
+Evidence: Assets/Scripts/MainMenu/GameMessages.cs:198;
+Assets/Scripts/Town/Town.cs:375; Temp/OpeningPreparation/entrance-open.png;
+the fresh run's actions.jsonl; Generation/TownLayout.cs.
+
+7. Medium priority: make hero selection communicate playstyle
+-----------------------------------------------------------
+Observed: the picker displays 24 heroes at once. Its preview provides a name,
+class pairing and primary role, but no signature action or concrete example of
+how the choice changes play.
+
+Recommended direction: give each preview one plain-language playstyle sentence
+and one signature-action example. Offer a small recommended starting selection
+while preserving access to the full roster. Give confirmation a clear label,
+such as "Begin as Rowan", that is visually separate from browsing the roster.
+Keep mouse preview and activation behaviour predictable.
+
+Success: a new player can describe how three options differ without needing to
+interpret the class system first.
+
+Evidence: live hero-picker inspection;
+Assets/Scripts/MainMenu/ProtagonistHeroPicker.cs:188.
+
+8. Medium priority: strengthen the world's material and colour hierarchy
+----------------------------------------------------------------------
+Observed: the town mixes strongly mottled grass, faceted trees, large tiled
+facades, small heroes and parchment UI. The early dungeon uses conspicuous base
+colours and effects. These elements compete for attention at gameplay scale.
+
+Recommended direction: soften high-frequency ground detail, use broader quiet
+material shapes, and reserve stronger contrast for the hero, useful doors,
+interactables and threats. Give the home a warmer domestic material identity.
+Keep world labels supported by a consistent outline or quiet backing. Review
+lighting, texture scale, props and UI together in actual gameplay screenshots.
+
+Success: the scene remains legible when viewed small or in greyscale; important
+interactive objects retain clear silhouettes and locations without relying only
+on saturation. Check moving footage before judging animation quality.
+
+9. Medium priority: make the first clear produce an unmistakable payoff
+--------------------------------------------------------------------
+The reward code already tells the player that the town gate is open and the
+overworld is available. Preserve that clarity. Add a brief visible world change
+or reveal, a clear next objective, and a reminder to bank the new progress at
+home. The first clear currently captures progress in memory; it does not itself
+commit a durable save.
+
+The opening should finish with a feeling of competence: the player used their
+class, overcame an understandable challenge, changed the world, and knows their
+progress is safe. A short gate reveal and a glimpse of the next destination can
+provide that sense of arrival.
+
+Evidence: Assets/Scripts/Overworld/CampaignTravelService.cs, FinishDungeon and
+ShowKeyRewards; Docs/CampaignSaves.md. This recommendation is source-based; the
+fresh probe was stopped on floor 2 before a clear.
+
+Proposed opening rhythm to validate with new players
+--------------------------------------------------
+0-2 minutes: choose a hero, wake in a readable home, move and interact.
+2-5 minutes: receive food, practise a signature ability, sleep/save, see morning.
+5-10 minutes: read a simple fight, use the ability, receive loot, recover once.
+10-15 minutes: combine familiar mechanics with one new encounter idea.
+15-20 minutes: clear the first dungeon, see the gate open, save, glimpse the world.
+These are proposed pacing targets, not measured playthrough times.
+
+Recommended order of work
+-------------------------
+First pass: compact starting home and palette; shared UI padding; floor/minimap
+grouping. These directly address the user's observations and improve many frames.
+Second pass: persistent objective, simple first transactions and real skill
+practice, followed by staged first combat.
+Third pass: wider material/lighting consistency, restrained combat feedback and
+the first-clear reveal. Validate timing and player comprehension throughout.
+
+Scope and evidence limits
+-------------------------
+Inspected the live title, slots, hero picker and early dungeon. Reviewed fresh
+960x600 captures from the existing opening-preparation fixture, current source,
+and a normal-rules seed-42 probe at 4x automation speed. The probe was manually
+stopped on floor 2 after 14 dungeon turns; it was not a defeat or completed run.
+DebugPlaythrough and effective InfiniteStrength were false. No balance conclusion
+is drawn from its unused skills, damage total or wall time.
+
+The screenshot fixture invokes transactions and repositions the camera directly;
+its captures establish layout and text, not natural movement or menu input feel.
+The Unity MCP test request timed out after 30 seconds. Six images were produced,
+but no passing test result is claimed. Audio quality, hardware controller feel,
+standalone performance, and an uninterrupted novice 20-minute session remain
+unevaluated. Late-opening recommendations are design proposals supported by the
+flow source rather than a fresh completed first-dungeon playthrough.
+
+The earlier 2026-10-12 audit's repaired slot activation, missing descriptions and
+floor-range labelling are not being reported as current defects. Save stores for
+the probes were isolated. The initial audit above was read-only; implementation
+was subsequently authorized and is recorded below.
+
+Implementation follow-up, 2026-10-19
+----------------------------------
+New campaigns now use a compact 5x5 usable home with one functional bed,
+perimeter furnishings, warm wood flooring, a small muted terracotta rug with
+cream edging, and sage linen. Home, bakery and trainer have fixed nearby
+opening positions. Existing campaign layouts retain their saved version.
+
+Authored dialogs, inventory/action rows and shop/trainer panels have consistent
+text insets. Floor progress is grouped directly above the minimap and remains
+visible when only the map texture is hidden. The solo-party Full Control toggle
+is hidden; its purpose is introduced when companions join.
+
+Hero selection starts with three distinct recommendations, retains all 24 heroes,
+explains playstyle and an actual class ability, and uses an explicit Begin action.
+The bakery offers free bread directly, then a short receipt and next step. Its
+full stock remains available through Browse. The first trainer highlights one
+usable active lesson, with effect, cost and targeting explained before purchase.
+
+Persistent objectives are separate from fading events. A harmless optional
+training target uses real ability costs and targeting; successful practice leads
+to one ordinary opponent. Recovery guidance responds to actual meters/items.
+The first dungeon clear reveals the opened gate and reminds the player to save.
+These lessons apply to new campaigns and keep the stairs available throughout.
+
+Ordinary melee impacts are smaller and shorter. Hostile ground markers use a
+thin interrupted outline; allied markers remain continuous. Town ground detail
+and opening-street decoration are quieter.
+
+The save-slot biome art has been regenerated from editable Unity diorama scenes,
+with a cottage and a distinct biome setting in each of the eight landscapes.
+Shorelines are continuous, the shore cottage has a supported plank dock, and
+the volcanic picture includes a visible lava stream. Card artwork uses a centred
+crop to retain its proportions; slot labels have inset margins and a shadow.
+All eight final images and their card presentation were visually reviewed.
+
+Review evidence
+---------------
+The Core DLL was rebuilt and imported; Unity scripts compile successfully.
+No automated test suite was added or run during implementation. The editor
+preview captures real production scenes with isolated in-memory save storage,
+at 960x600 and 1280x720. It stages transactions and positions directly and is
+therefore evidence for layout, readable copy and composition, not an uninterrupted
+human playthrough or measured opening pace.
+
+Captures: Temp/OpeningDesignPreview. Repeat with
+Tools > Eternal Enigma > Opening > Capture Design Preview.
+This restores the previous editor scene, game-view resolution and preferences.
+Human controller feel, audio, standalone performance and novice completion timing
+remain outside this implementation review.
+
+NPC dialogue audit, 2026-10-19
+-----------------------------
+Scope: the opening town and first return, plus the recurring dialogue mechanisms
+that shape later towns. This section is based on production source, authored copy
+and the service-menu captures. It is not a timed conversation playthrough.
+
+Assessment by the requested criteria:
+- Substance: greetings supply pleasant mood, but rarely a concrete fact about
+  the speaker, a personal concern, or a reason the protagonist matters to them.
+- Relevance: all ambient residents append the same global progression hint,
+  regardless of their occupation or whether its destination has been discovered.
+- Balance: a short character line can be followed by a long mechanical explanation.
+  Repeated conversations repeat this material, alongside the persistent objective.
+- Usefulness: actionable direction is valuable. It loses trust when biographies
+  contradict the actual class, or a next-step instruction ignores preparation state.
+- Narrative weight: the gate opens after victory, but people do not acknowledge
+  the accomplishment; their shared hint moves directly to the next obstacle.
+- Appropriateness: the warm animal-town tone fits the presentation. Some later
+  generated situations introduce human stakes that generic access feedback does
+  not adequately resolve.
+
+Priority findings and source evidence:
+1. Ambient NPCs share a walkthrough voice. TownNpc.cs:13-16 concatenates name,
+   static Greeting and CampaignGuidance.TownHint. CampaignGuidance.cs:48-82 chooses
+   an unresolved required route and can enumerate solutions and source locations.
+   Give each resident a particular area of knowledge; detailed directions should
+   be an optional follow-up. Use short repeat lines and milestone variants.
+
+2. Named vendors mostly lose their identity in play. TownPlayer.cs:217-225 triggers
+   an animation and opens the service menu. Only TownNpc.Greet reads Greeting;
+   TownInteriorRendering spawns only Cat/Dog as ambient conversational NPCs.
+   Mallow/Pip/Bram/Poppy/Vesper's authored greeting lines therefore do not reach
+   the player through ordinary service interactions. Show a keeper's name and
+   one brief personal line within the existing service menu.
+
+3. The opening has practical tasks without a resident-owned reason to care.
+   CampaignContext.OpeningPreparationHint explains bread, training and sleep;
+   LockSkinCatalog.TownGateKeyText explains the key at the dungeon bottom.
+   A brief local concern, why the player can help, and a reason to return would
+   give those actions emotional purpose. Keep the stakes small and concrete.
+
+4. The first victory has no social response. CampaignTravelService provides the
+   gate and save payoff, but TownNpcDefinition stores only one greeting. Give one
+   or two familiar residents a first-return acknowledgment before the next lead.
+
+5. Companion Talk is a biography/party-management screen. AllyRecruitDialog.cs:62
+   uses the same third-person Description; its Talk branch at :90 shows removal
+   controls. Rowan's Ally_MC03 biography at :2917 calls a Warrior/Healer a rogue;
+   Avery's Ally_MC01 biography at :3423 calls a Warrior/Occultist a skilled mage.
+   Reconcile fiction with actual kits, state why a companion wants to join, and
+   distinguish personal conversation from roster administration.
+
+6. Serious generated situations need human resolution. LockSkinCatalog.cs:233
+   describes a child with fever; :239 describes a quarrel blocking a road.
+   OverworldScene.cs:449-454 and CampaignTravelService.cs:228-235 resolve access
+   with generic 'The way is now open!' feedback. Give these families a short
+   outcome for the people involved, or reduce the stakes to match the interaction.
+
+7. Identity repetition reduces credibility. The same named Cat/Dog residents are
+   reused in generated towns, and Rowan the Shepherd shares the playable Rowan's
+   name. Reserve unique names for persistent people, or establish a recurring
+   traveler deliberately.
+
+One factual instruction defect found in this audit was corrected within the
+opening-flow implementation: the first trainer success message now derives its
+next step from OpeningObjective, so visiting the trainer before the bakery no
+longer incorrectly directs the player straight to bed. The broader dialogue
+rewrite remains a recommendation.
+
+Suggested writing budget: one specific personal sentence, one relevant instruction
+when needed, and a short reaction on return. Add first-meeting, preparation/morning,
+first-clear and repeat variants before adding more lore. Preserve the clear cost,
+effect and next-action information already present in the revised service menus.
+
+First-home capability follow-up, 2026-10-19
+-----------------------------------------
+New campaigns now begin with a book, chest and locked front door in the first
+home. The book explains that the chest holds the Home Key, the first acquired
+capability, and that it unlocks the door. The chest grants that permanent
+capability once; a facing interaction at the door uses it. Reading is optional
+if the player discovers the chest first. Contextual prompts use the current
+input device, and the book, chest and door visuals reflect their saved state.
+
+HomeLessonVersion gates this sequence to new campaigns. Older saves bypass it.
+Home Key is excluded from procedural campaign capability pools, preserving the
+existing campaign generator's choices. Book, key and door state are captured by
+normal saving. Locked-home movement and travel are blocked, including diagonal
+escape. Bed instructions now follow the active home objective. The existing
+Capabilities menu is also available in campaign towns, with a Home Key detail
+that explains the door interaction and updates after unlocking.
+
+The functional bed is restricted to the single first-home anchor. Decorative
+beds in other interiors are benches; cached decorative Bed placements also
+render as benches. Inns retain their service interaction.
+
+The first staged production-scene review reached bookRead=True, key=True and
+doorUnlocked=True with exactly one HomeBed. Core built with zero errors, and
+Unity scripts compiled with zero errors and eleven existing warnings. These
+captures are layout and integration previews, not a timed twenty-minute human
+playthrough. No test suite was run.
+
+Following the user's visual correction, MessageDialog's full-screen outer
+parchment is removed. A transparent input shield remains behind the single
+content panel. The authoring pass now preserves this arrangement, and generic
+styling excludes modal backdrops, dimmers and input shields so they do not
+become decorative parchment again.
+
+Final layout review: the repeated production-scene capture completed through
+floor two at 960x600 and 1280x720, including the locked bed instructions, book,
+key reward, opened chest, capability list/detail, and unlocked front door.
+The single parchment message panel leaves the room visible around it. The key
+detail uses 32-reference-pixel body text, inset margins and plain source wording.
+One final book-copy punctuation correction follows the screenshot review because
+the existing presentation formatter strips colons. No automated tests were run.

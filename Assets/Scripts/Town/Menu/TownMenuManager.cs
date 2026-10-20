@@ -21,7 +21,8 @@ public class TownMenuManager : MonoBehaviour
     {
         var town = GetComponentInParent<Town>();
         PartyMenuLauncher.Create(transform,
-            () => town.IsReady && !town.TownPlayer.CutsceneLocked && !Opened && MenuUIInputModule.Active?.HasDialog != true, OpenPartyMenu);
+            () => town.IsReady && !town.TownPlayer.CutsceneLocked && !Opened && MenuUIInputModule.Active?.HasDialog != true,
+            OpenPartyMenu, includeCapabilities: Common.Instance.CampaignContext != null);
     }
 
 	private void Update()

@@ -52,6 +52,21 @@ public class TownBuildingManager : MonoBehaviour
                         building.transform, new EternalEnigma.Core.World.GridPoint(0, 0), map.TileWorldCreator.twcAsset.cellSize, "Dungeon gate", true);
                 }
             }
+            if (configuration.Id == "town-0" && definition.Id is "home" or "bakery" or "trainer")
+            {
+                float size = map.TileWorldCreator.twcAsset.cellSize;
+                var label = new GameObject("Door label " + definition.Id).AddComponent<TMPro.TextMeshPro>();
+                label.transform.SetParent(building.transform, false);
+                label.transform.localPosition = new Vector3(.5f, -.45f, -.6f) * size;
+                label.rectTransform.sizeDelta = new Vector2(2.4f, .45f) * size;
+                label.margin = new Vector4(.10f, .04f, .10f, .04f) * size;
+                label.text = definition.Id == "home" ? "Home" : definition.Id == "bakery" ? "Bakery" : "Trainer";
+                label.fontSize = 2.1f * size;
+                label.alignment = TMPro.TextAlignmentOptions.Center;
+                label.color = new Color(1, .95f, .82f);
+                label.outlineColor = new Color(.17f, .14f, .12f); label.outlineWidth = .2f;
+                label.gameObject.AddComponent<BiomeSignLabel>().CameraOffset = .04f * size;
+            }
             buildings.Add(building);
         }
         return buildings;

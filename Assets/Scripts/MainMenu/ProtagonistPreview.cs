@@ -29,13 +29,16 @@ public sealed class ProtagonistPreview : MonoBehaviour
         if (renderers.Length == 0) return;
         var bounds = renderers[0].bounds;
         foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
-        texture = new RenderTexture(600, 800, 24) { name = "Protagonist portrait" };
+        Canvas.ForceUpdateCanvases();
+        var frame = destination.rectTransform.rect;
+        float aspect = frame.height > 0 ? Mathf.Clamp(frame.width / frame.height, .5f, 2.5f) : .75f;
+        texture = new RenderTexture(720, Mathf.RoundToInt(720 / aspect), 24) { name = "Protagonist portrait" };
         texture.Create(); destination.texture = texture;
         var cameraObject = new GameObject("Portrait camera", typeof(Camera)); cameraObject.transform.SetParent(stage.transform);
         view = cameraObject.GetComponent<Camera>();
         view.cullingMask = 1 << 31; view.targetTexture = texture;
         view.clearFlags = CameraClearFlags.SolidColor; view.backgroundColor = new Color(.82f, .72f, .51f);
-        view.orthographic = true; view.orthographicSize = Mathf.Max(bounds.extents.y * 1.2f, bounds.extents.x * 1.6f);
+        view.orthographic = true; view.orthographicSize = Mathf.Max(bounds.extents.y, bounds.extents.x / aspect) * 1.2f;
         view.nearClipPlane = .01f; view.farClipPlane = 100;
         view.transform.position = bounds.center + Vector3.forward * 12;
         view.transform.LookAt(bounds.center);

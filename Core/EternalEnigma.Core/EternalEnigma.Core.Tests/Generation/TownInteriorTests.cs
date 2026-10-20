@@ -23,7 +23,7 @@ public class TownInteriorTests
                 var assets = interior.Props.Select(p => p.Asset).ToArray();
                 if (kind is TownInteriorKind.Residential or TownInteriorKind.Inn)
                 {
-                    Assert.Equal(kind == TownInteriorKind.Inn ? 2 : 1, assets.Count(a => a == "Bed"));
+                    Assert.Equal(kind == TownInteriorKind.Inn ? 2 : 1, assets.Count(a => a == "Bench"));
                     foreach (string asset in new[] { "Bedside", "Cupboard", "Hearth", "Table", "Chair" }) Assert.Contains(asset, assets);
                     if (kind == TownInteriorKind.Inn) { Assert.Contains("Luggage", assets); Assert.Equal(2, interior.Counters.Count); }
                 }

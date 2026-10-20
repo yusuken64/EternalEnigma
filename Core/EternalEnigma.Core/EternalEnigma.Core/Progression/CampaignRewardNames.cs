@@ -53,6 +53,7 @@ public static class CampaignRewardNames
 
     public static string Purpose(Capability capability) => capability switch
     {
+        Capability.HomeKey => "Unlock the front door of your first home.",
         Capability.MillwrightTraining => "Operate mill sluices, waterwheels and water-powered lifts.",
         Capability.ForestersWrit => "Pass woodland wardens and use protected ranger trails.",
         Capability.FerrymansFavor => "Call on private ferrymen for their guarded crossings.",

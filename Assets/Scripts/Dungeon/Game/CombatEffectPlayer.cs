@@ -224,6 +224,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
                 float cellSize = Mathf.Abs(Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.right).x - Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.zero).x);
                 (point, size) = FitImpact(targetBounds.Value, camera != null ? camera.transform.forward : Vector3.forward,
                     camera != null ? camera.transform.right : Vector3.right, camera != null ? camera.transform.up : Vector3.up, cellSize);
+                if (!profile.Impact.ScaleWithTarget) size = 1;
             }
             // Impacts authored with a ground footprint (circles, portals, runes) still grow with
             // the target but stay on the dungeon floor instead of floating in front of its body.

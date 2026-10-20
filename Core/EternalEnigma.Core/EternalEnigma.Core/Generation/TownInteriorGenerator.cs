@@ -7,6 +7,7 @@ public static class TownInteriorGenerator
 {
     public static TownInterior Generate(int seed, int slot, ShopRoom room, TownInteriorSpec spec)
     {
+        if (spec.Kind == TownInteriorKind.Home) return Home(room, spec);
         var random = new SeedStream(seed, 1800u + (uint)slot);
         int first = random.Range(3); bool mirror = random.Range(2) == 1;
         for (int retry = 0; retry < 4; retry++)
@@ -19,6 +20,30 @@ public static class TownInteriorGenerator
             if (seen.Count() == free.Count && result.Reserved.All(free.Contains)) return result;
         }
         throw new InvalidOperationException($"No accessible furnishing recipe for {spec.Kind} at {room.Door}.");
+    }
+
+    private static TownInterior Home(ShopRoom room, TownInteriorSpec spec)
+    {
+        int x = room.Door.X, front = room.Door.Y + 2, rear = room.VendorAnchor.Y;
+        // The interactive bed is spawned by the host at VendorAnchor. A second decorative
+        // bed would mislead the player, so this recipe only supplies the surrounding room.
+        var props = new[] {
+            new TownPropPlacement("Lectern", new GridPoint(x - 1, rear)),
+            new TownPropPlacement("Chest", new GridPoint(x + 2, rear)),
+            new TownPropPlacement("Table", new GridPoint(x - 2, front)),
+            new TownPropPlacement("Chair", new GridPoint(x - 2, front + 1), 2),
+            new TownPropPlacement("Hearth", new GridPoint(x + 2, front)),
+            new TownPropPlacement("Plant", new GridPoint(x + 2, rear - 2))
+        };
+        if (props.Any(p => !room.Floor.Contains(p.Cell))) throw new InvalidOperationException("Home furnishing requires a five-cell room.");
+        var occupied = props.Select(p => p.Cell).ToHashSet();
+        var free = room.Floor.Where(c => !occupied.Contains(c)).ToHashSet();
+        var entry = new GridPoint(x, room.Door.Y + 1);
+        if (GridSearch.VisitOrder(entry, c => GridSteps.CardinalNeighbors(c, free.Contains)).Count() != free.Count)
+            throw new InvalidOperationException("Home furniture blocks circulation.");
+        var carpet = free.Where(c => Math.Abs(c.X - x) <= 1 && c.Y >= front && c.Y < front + 2);
+        var reserved = free.Where(c => c.X == x || c.Y == rear - 1);
+        return new TownInterior(room.Door, spec, 0, false, props, occupied, carpet, Array.Empty<GridPoint>(), reserved);
     }
 
     private static TownInterior Recipe(ShopRoom room, TownInteriorSpec spec, int arrangement, bool mirror, bool compact)
@@ -54,11 +79,13 @@ public static class TownInteriorGenerator
         int shift = compact ? 0 : Math.Min(arrangement, Math.Max(0, Rear(left) - bottom - 4));
         if (spec.Kind == TownInteriorKind.Residential || spec.Kind == TownInteriorKind.Inn)
         {
-            Add("Bed",left,Rear(left)); Add("Bedside",left+1,Rear(left+1));
+            // The opening home's functional bed is unique. Keep these existing
+            // occupied cells so saved positions and circulation remain compatible.
+            Add("Bench",left,Rear(left)); Add("Bedside",left+1,Rear(left+1));
             Add("Cupboard",right,Rear(right)); Add("Hearth",right,bottom);
             Add("Table",left,bottom+shift); Add("Chair",left,bottom+shift+1,2);
             if (spec.Kind == TownInteriorKind.Inn)
-            { Add("Bed",left,Rear(left,2)); Add("Luggage",left+1,Rear(left+1,2)); Counter(right,Rear(right,2)); Counter(right-1,Rear(right-1,2)); }
+            { Add("Bench",left,Rear(left,2)); Add("Luggage",left+1,Rear(left+1,2)); Counter(right,Rear(right,2)); Counter(right-1,Rear(right-1,2)); }
             if (!compact) { Add("Chest",right,Rear(right,2)); Add("Plant",left,Rear(left,2)); }
         }
         else if (spec.Kind == TownInteriorKind.Trainer)

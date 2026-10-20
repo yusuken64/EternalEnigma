@@ -53,11 +53,17 @@ public class MessageDialog : Dialog
         foreach (Transform child in transform)
         {
             if (child == panel) continue;
-            var backdrop = GameUISkin.PanelGraphic(child);
-            if (backdrop == null) continue;
-            backdrop.sprite = null;
-            backdrop.color = new Color(0, 0, 0, .65f);
-            backdrop.raycastTarget = true;
+            // The modal has one paper surface. Its full-screen sibling only blocks input.
+            var decoration = child.Find("GamePanelBackground");
+            if (decoration != null) DestroyImmediate(decoration.gameObject);
+            var shield = child.GetComponent<Image>();
+            if (shield == null) continue;
+            child.name = "Input shield";
+            shield.enabled = true;
+            shield.sprite = shield.overrideSprite = null;
+            shield.type = Image.Type.Simple;
+            shield.color = Color.clear;
+            shield.raycastTarget = true;
         }
     }
 #endif

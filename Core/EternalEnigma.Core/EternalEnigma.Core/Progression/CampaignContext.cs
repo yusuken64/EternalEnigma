@@ -17,6 +17,8 @@ public sealed class CampaignSnapshot
 {
     public int GeneratorVersion;
     public int NamingVersion;
+    // Versioned separately from campaign generation so saved town arrivals keep their geometry.
+    public int TownLayoutVersion;
     public TownDisplayName[] TownNames = Array.Empty<TownDisplayName>();
     public int Seed;
     public string Identity = "";
@@ -29,6 +31,12 @@ public sealed class CampaignSnapshot
     public bool Finished;
     // Enabled by the new-journey host. Existing saves and isolated starts have no prologue.
     public bool RequiresOpeningPreparation, BoughtOpeningBread, LearnedOpeningSkill;
+    public int HomeLessonVersion;
+    public bool ReadHomeBook, HomeDoorUnlocked;
+    public int OpeningLessonVersion;
+    public string OpeningSkillId = "";
+    public bool PractisedOpeningSkill, UsedOpeningRecovery, MovedInOpening, InteractedInOpening;
+    public bool OpeningClearNeedsSave;
     public string[] Keys = Array.Empty<string>(), Opened = Array.Empty<string>(), Resolved = Array.Empty<string>(),
         Claimed = Array.Empty<string>(), Roster = Array.Empty<string>(), Active = Array.Empty<string>(),
         Towns = Array.Empty<string>(), Completed = Array.Empty<string>(), CollectedPickups = Array.Empty<string>();
@@ -88,9 +96,22 @@ public HashSet<string> Completed { get; }
     public bool ResetFloorUnlocked => Completed.Contains("repeatable-0");
     public const string OpeningDayKey = "Opening day";
     public bool IsPreparingForOpening => !IsSandbox && State.RequiresOpeningPreparation && !Keys.Contains(OpeningDayKey);
-    public bool ReadyForOpeningDay => IsPreparingForOpening && State.BoughtOpeningBread && State.LearnedOpeningSkill;
-    public bool CanEnterDungeon(string dungeonId) => dungeonId != "story-0" || !IsPreparingForOpening;
-    public string OpeningPreparationHint => ReadyForOpeningDay
+    public bool HasHomeLesson => !IsSandbox && State.RequiresOpeningPreparation && State.HomeLessonVersion > 0;
+    public bool HasHomeKey => Permanent.Contains(Capability.HomeKey);
+    private bool HomeDoorIsLocked => HasHomeLesson && !State.HomeDoorUnlocked;
+    private string HomeLessonObjective => HasHomeKey ? "Use the Home Key to unlock your front door." :
+        !State.ReadHomeBook ? "Read the book in your home." : "Open the chest to find your Home Key.";
+    public bool ReadyForOpeningDay => !HomeDoorIsLocked && IsPreparingForOpening && State.BoughtOpeningBread && State.LearnedOpeningSkill;
+    public bool CanEnterDungeon(string dungeonId) => !HomeDoorIsLocked && (dungeonId != "story-0" || !IsPreparingForOpening);
+    public bool HasOpeningLesson => !IsSandbox && State.RequiresOpeningPreparation && State.OpeningLessonVersion > 0;
+    public string OpeningObjective => !State.RequiresOpeningPreparation || IsSandbox ? "" :
+        HomeDoorIsLocked ? HomeLessonObjective :
+        IsPreparingForOpening ? !State.BoughtOpeningBread ? "Collect your free bread at the bakery." :
+            !State.LearnedOpeningSkill ? "Learn your first ability at the trainer." : "Sleep and save in your bed at home." :
+        State.OpeningClearNeedsSave ? "The town gate is open! Rest at home to save your victory." :
+        Completed.Contains("story-0") ? State.Scene == "Town" && State.LocationId == "town-0" ? "Follow the open town gate to the overworld." : "" :
+        State.PendingDungeon == "story-0" ? "Reach Floor 5 and clear the town dungeon." : "Enter the town dungeon for your first adventure.";
+    public string OpeningPreparationHint => HomeDoorIsLocked ? HomeLessonObjective : ReadyForOpeningDay
         ? "You're ready for tomorrow. Sleep and save in your bed at home to open the town dungeon."
         : "The town dungeon opens tomorrow. " +
             (!State.BoughtOpeningBread ? "Collect your free bread at the bakery. " : "") +
@@ -112,7 +133,7 @@ public HashSet<string> Completed { get; }
     public CampaignContext(OverworldLaunchOptions options, CampaignSnapshot? snapshot = null)
     {
         Mode = options.Mode;
-        State = snapshot ?? new CampaignSnapshot { Seed = options.Seed, Identity = Guid.NewGuid().ToString("N"), GeneratorVersion = CampaignGenerator.Version };
+        State = snapshot ?? new CampaignSnapshot { Seed = options.Seed, Identity = Guid.NewGuid().ToString("N"), GeneratorVersion = CampaignGenerator.Version, TownLayoutVersion = 1 };
         Campaign = CampaignGenerator.GenerateVersion(State.Seed, State.GeneratorVersion == 0 ? CampaignGenerator.LegacyVersion : State.GeneratorVersion);
         var fingerprint = CampaignFingerprint.Compute(Campaign);
         if (snapshot != null && State.Fingerprint != fingerprint) throw new InvalidOperationException("Campaign save fingerprint mismatch.");
@@ -149,6 +170,24 @@ public HashSet<string> Completed { get; }
     }
     public string GetTownDisplayName(string townId) => State.TownNames.FirstOrDefault(n => n.TownId == townId)?.Name
         ?? throw new ArgumentException("Unknown town.", nameof(townId));
+    public bool ReadOpeningBook()
+    {
+        if (!HasHomeLesson || State.ReadHomeBook || State.Scene != "Town" || State.LocationId != "town-0") return false;
+        State.ReadHomeBook = true;
+        return true;
+    }
+    public bool ClaimHomeKey()
+    {
+        if (!HasHomeLesson || HasHomeKey || State.Scene != "Town" || State.LocationId != "town-0") return false;
+        Permanent = Permanent.Union(CapabilitySet.Of(Capability.HomeKey));
+        return true;
+    }
+    public bool UnlockHomeDoor()
+    {
+        if (!HomeDoorIsLocked || !HasHomeKey || State.Scene != "Town" || State.LocationId != "town-0") return false;
+        State.HomeDoorUnlocked = true;
+        return true;
+    }
     public bool Claim(string sourceId)
     {
         var source = Campaign.Sources.FirstOrDefault(s => s.Id == sourceId);
@@ -171,7 +210,7 @@ public HashSet<string> Completed { get; }
             !location.IsDungeon || !CanEnterDungeon(location.Id) || (location.Encounter != null && !location.Encounter.CanEnter(Held, Completed))) return false;
         State.PendingDungeon = location.Id; State.LocationId = location.Id; State.Scene = "DungeonScene"; return true;
     }
-    public bool CanLeaveTown(string townId) => Campaign.Routes.Where(r => r.IsTownExit && r.From == townId)
+    public bool CanLeaveTown(string townId) => !HomeDoorIsLocked && Campaign.Routes.Where(r => r.IsTownExit && r.From == townId)
         .All(r => Resolved.Contains(r.Id));
     public bool BeginTownDungeon(string dungeonId)
     {
@@ -190,6 +229,8 @@ public HashSet<string> Completed { get; }
         if (victory && id == Campaign.FinalLocationId && Finale?.VictoryReady != true && !IsSandbox) return false;
         if (victory)
         {
+            if (id == "story-0" && !Completed.Contains(id) && State.RequiresOpeningPreparation)
+                State.OpeningClearNeedsSave = true;
             Completed.Add(id);
             foreach (var route in Campaign.Routes.Where(r => r.CompletionLocationId == id)) { Resolved.Add(route.Id); Opened.Add(route.Id); }
             foreach (var route in Campaign.Routes.Where(r => r.ShortcutKind == ShortcutKind.Keyed && r.KeyLocationId == id && r.KeyId != null))
@@ -267,7 +308,8 @@ public HashSet<string> Completed { get; }
     public TownLayout TownLayout(string townId, int allyCount = 3)
     {
         var location = Campaign.Locations.FirstOrDefault(l => l.Id == townId && l.Kind == LocationKind.Town) ?? throw new ArgumentException("Unknown town.", nameof(townId));
-        return Generation.TownLayout.Create(this.LocationSeed(townId), location.Services, AuthoredTownBuildings, allyCount, ResidentialTownBuildings);
+        return Generation.TownLayout.Create(this.LocationSeed(townId), location.Services, AuthoredTownBuildings, allyCount, ResidentialTownBuildings,
+            openingNeighborhood: townId == "town-0" && State.TownLayoutVersion >= 1);
     }
     /// <summary>Generates the town's plan; explicit <paramref name="shopFlags"/> bypass the service layout.</summary>
     public TownPlan Town(string townId, IReadOnlyList<bool>? shopFlags = null, int allyCount = 3) =>

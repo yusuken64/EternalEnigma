@@ -26,10 +26,12 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
     public bool Detailed { get; }
     public IReadOnlyList<TownInteriorSpec> Interiors { get; }
     public bool Furnished => Interiors.Count > 0;
+    /// <summary>Versioned starting-town street: home, bakery and trainer occupy its first three slots.</summary>
+    public bool OpeningNeighborhood { get; }
 
     public TownPlanOptions(int seed, int width = 15, int height = 15, IReadOnlyList<bool>? shopFlags = null,
         int allyCount = 3, GridPoint? partySpawn = null, GridPoint? exit = null, int spineX = TownPlan.DefaultSpineX,
-        bool detailed = false, IReadOnlyList<TownInteriorSpec>? interiors = null)
+        bool detailed = false, IReadOnlyList<TownInteriorSpec>? interiors = null, bool openingNeighborhood = false)
     {
         if (width < 15 || width > 64)
             throw new ArgumentException("Width must be between 15 and 64.");
@@ -56,6 +58,11 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
         if (interiors != null && (interiors.Count != shopFlags.Count || !detailed))
             throw new ArgumentException("Interior metadata requires detailed slots of matching length.");
         Interiors = Array.AsReadOnly((interiors ?? Array.Empty<TownInteriorSpec>()).ToArray());
+        if (openingNeighborhood && (width < 52 || height < 52 || Interiors.Count < 3 ||
+            Interiors[0].Kind != TownInteriorKind.Home || Interiors[1].Theme != TownShopTheme.Bakery ||
+            Interiors[2].Kind != TownInteriorKind.Trainer))
+            throw new ArgumentException("Opening neighborhood requires home, bakery and trainer in its first three furnished slots.");
+        OpeningNeighborhood = openingNeighborhood;
         SpineX = spineX;
         Detailed = detailed;
         Seed = seed;
@@ -84,6 +91,7 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
         AllyCount == other.AllyCount &&
         SpineX == other.SpineX &&
         Detailed == other.Detailed &&
+        OpeningNeighborhood == other.OpeningNeighborhood &&
         PartySpawn.Equals(other.PartySpawn) &&
         Exit.Equals(other.Exit) &&
         ShopFlags.SequenceEqual(other.ShopFlags) && Interiors.SequenceEqual(other.Interiors);
@@ -95,7 +103,7 @@ public sealed class TownPlanOptions : IEquatable<TownPlanOptions>
         unchecked
         {
             int hash = Seed * 397 ^ Width * 397 ^ Height * 397 ^ AllyCount * 397 ^ SpineX * 397 ^ Detailed.GetHashCode() * 397 ^
-                       PartySpawn.GetHashCode() * 397 ^ Exit.GetHashCode() * 397;
+                       PartySpawn.GetHashCode() * 397 ^ Exit.GetHashCode() * 397 ^ OpeningNeighborhood.GetHashCode();
             foreach (var flag in ShopFlags)
                 hash = hash * 397 ^ flag.GetHashCode();
             foreach (var interior in Interiors) hash = hash * 397 ^ interior.GetHashCode();

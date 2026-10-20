@@ -108,8 +108,12 @@ public sealed class PartyMenuPicker : Dialog
         var label=description=Instantiate(Title,Rows);
         label.name="Interaction description";
         descriptionText=text;
-        RefreshDescription(); label.fontSize=24; label.enableAutoSizing=false;
+        RefreshDescription(); label.fontSize=32; label.fontSizeMin=32; label.fontSizeMax=32; label.enableAutoSizing=false;
         label.textWrappingMode=TextWrappingModes.Normal;
+        label.alignment=TextAlignmentOptions.TopLeft;
+        // The dock's viewport already has a small inset. Keep long detail copy
+        // clear of its decorative edges without shrinking text to fit the page.
+        label.margin=new Vector4(24,16,24,20);
         label.transform.SetAsFirstSibling();
         label.gameObject.AddComponent<LayoutElement>();
         var read=label.gameObject.AddComponent<TrainerPreviewScroll>();
@@ -133,7 +137,7 @@ public sealed class PartyMenuPicker : Dialog
     {
         descriptionGamepad=ControlDeviceState.Gamepad;
         string hint=hasActions?InputPrompts.DescriptionHint:$"Use {InputPrompts.Scroll} to scroll. Press {InputPrompts.Back} to return.";
-        description.text=GameplayText.Format(descriptionText+"\n\n<size=18>"+hint+"</size>");
+        description.text=GameplayText.Format(descriptionText+"\n\n<size=28>"+hint+"</size>");
     }
     internal override void SetFirstSelect()
     {

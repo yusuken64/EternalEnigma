@@ -16,7 +16,7 @@ public class BallistaPurchaseDialog : Dialog
 
 	internal override void SetFirstSelect()
 	{
-		CancelButton.Select();
+		PurchaseButton.Select();
 	}
 
     public void SetNavigation()
@@ -64,7 +64,10 @@ public class BallistaPurchaseDialog : Dialog
         TitleText.text = GameplayText.Format(nextRank <= 1
             ? $"Learn {skill.DisplayName} for {price}?"
             : $"Train {skill.DisplayName} to rank {nextRank} for {price}?");
-        DescriptionText.text = GameplayText.Format(skill.Description);
+        DescriptionText.text = GameplayText.Format(skill.Description + "\n\n" + SkillPreviewText.Usage(skill));
+        PurchaseButton.GetComponentInChildren<TMP_Text>().text = "Learn";
+        GameUISkin.PadButtonLabel(PurchaseButton);
+        GameUISkin.PadButtonLabel(CancelButton);
         SkillIcon = SkillIconView.Bind(SkillIcon, TitleText, skill.Icon);
         SetNavigation();
 	}

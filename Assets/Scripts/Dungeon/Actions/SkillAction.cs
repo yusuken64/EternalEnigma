@@ -165,6 +165,8 @@ internal class SkillAction : GameAction
         foreach (var effect in effects.OfType<ScaledDamageAction>()) effect.AmmunitionMultiplier = ammunitionMultiplier;
         AutoplayTrace?.Complete();
         GameInputDiagnostics.Record("SkillReleased", caster, skill);
+        OpeningDungeonLesson.SkillReleased(caster, skill, effects.Count,
+            !skill.ActionEffects.OfType<ScaledHealAction>().Any() || affected.Any(c => c.Vitals.HP < c.FinalStats.HPMax));
         return effects;
 	}
 

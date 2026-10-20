@@ -36,7 +36,7 @@ public sealed class TownLayout
         TownServiceKind.Consumables => new(TownInteriorKind.Shop, TownShopTheme.Consumables),
         _ => new(TownInteriorKind.Shop, TownShopTheme.Equipment) };
 
-    public static TownLayout Create(int seed, IReadOnlyList<TownService> services, int otherBuildings = 0, int allyCount = 3, int residentialBuildings = 0)
+    public static TownLayout Create(int seed, IReadOnlyList<TownService> services, int otherBuildings = 0, int allyCount = 3, int residentialBuildings = 0, bool openingNeighborhood = false)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
         if (otherBuildings < 0) throw new ArgumentOutOfRangeException(nameof(otherBuildings));
@@ -45,14 +45,27 @@ public sealed class TownLayout
         var slots = new TownService?[count];
         var order = new SeedStream(seed, 1200).Shuffle(Enumerable.Range(0, count));
         for (int i = 0; i < services.Count; i++) slots[order[i]] = services[i];
+        if (openingNeighborhood)
+        {
+            if (residentialBuildings < 1 || !services.Any(s => s.Kind == TownServiceKind.Bakery) || !services.Any(s => s.Kind == TownServiceKind.Trainer))
+                throw new ArgumentException("The opening neighborhood needs a home, bakery and trainer.");
+            Array.Clear(slots, 0, slots.Length);
+            slots[1] = services.Single(s => s.Kind == TownServiceKind.Bakery);
+            slots[2] = services.Single(s => s.Kind == TownServiceKind.Trainer);
+            var remaining = services.Where(s => s != slots[1] && s != slots[2]).ToArray();
+            var remainingSlots = new SeedStream(seed, 1200).Shuffle(Enumerable.Range(3, count - 3));
+            for (int i = 0; i < remaining.Length; i++) slots[remainingSlots[i]] = remaining[i];
+        }
         var flags = slots.Select(s => s != null && s.HasInterior).ToArray();
         var interiors = new TownInteriorSpec[count];
         int authored = 0;
         for (int i = 0; i < count; i++)
-            interiors[i] = slots[i] is TownService service ? InteriorFor(service.Kind) :
+            interiors[i] = openingNeighborhood && i == 0 ? new TownInteriorSpec(TownInteriorKind.Home) :
+                slots[i] is TownService service ? InteriorFor(service.Kind) :
                 new TownInteriorSpec(authored++ < otherBuildings ? TownInteriorKind.None : TownInteriorKind.Residential);
         int side = Math.Min(64, Math.Max(52, TownPlanOptions.SizeFor(count)));
         // Centre the entrance corridor so the town grows evenly on both sides.
-        return new TownLayout(new TownPlanOptions(seed, side, side, flags, allyCount, spineX: side / 2, detailed: true, interiors: interiors), Array.AsReadOnly(slots));
+        return new TownLayout(new TownPlanOptions(seed, side, side, flags, allyCount, spineX: side / 2, detailed: true, interiors: interiors,
+            openingNeighborhood: openingNeighborhood), Array.AsReadOnly(slots));
     }
 }

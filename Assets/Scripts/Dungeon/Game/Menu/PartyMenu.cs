@@ -78,7 +78,7 @@ public sealed class PartyMenu : Dialog
     }
     public void SwitchTab(PartyMenuTab tab)
     {
-        if (!IsRoot || tab == Tab || (tab == PartyMenuTab.Capabilities && context is not OverworldPartyMenuContext)) return;
+        if (!IsRoot || tab == Tab || (tab == PartyMenuTab.Capabilities && capabilitiesTab == null)) return;
         AudioManager.Instance?.PlayCue(SoundCue.Navigate);
         Remember(); Tab = tab; result = null; Refresh(); SetFirstSelect();
         Common.Instance.MenuInputHandler.ClearInputThisFrame();

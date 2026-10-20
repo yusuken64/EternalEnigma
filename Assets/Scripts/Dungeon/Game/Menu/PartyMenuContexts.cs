@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EternalEnigma.Core.Capabilities;
+using EternalEnigma.Core.Progression;
 using UnityEngine;
 
 public abstract class PartyMenuContext : IPartyMenuContext
@@ -9,6 +11,8 @@ public abstract class PartyMenuContext : IPartyMenuContext
     private readonly Dictionary<string,List<Skill>> skills = new();
     public IReadOnlyList<PartyMenuHero> Heroes => heroes;
     protected abstract List<InventoryItem> Bag { get; }
+    protected virtual CampaignContext Campaign => null;
+    protected const string CapabilityUseHint = "Use capabilities by interacting with matching objects in the world.";
     protected IEnumerable<Skill> Skills(PartyMenuHero hero)
     {
         if(hero.DungeonActor!=null)return hero.DungeonActor.Skills;
@@ -26,6 +30,7 @@ public abstract class PartyMenuContext : IPartyMenuContext
     }
     public virtual List<PartyMenuEntry> Entries(PartyMenuHero hero,PartyMenuTab tab)
     {
+        if(tab==PartyMenuTab.Capabilities)return CapabilityEntries();
         if(tab==PartyMenuTab.Skills)return Skills(hero).Where(s=>s!=null).OrderBy(s=>s.ActivationType).Select(s=> {
             int charge=s.ActivationType==ActivationType.Active?(hero.DungeonActor!=null?s.InitialCastTime(hero.DungeonActor):s.CastTime):0;
             return new PartyMenuEntry {
@@ -42,6 +47,27 @@ public abstract class PartyMenuContext : IPartyMenuContext
             Description=i.ItemDefinition.Description+(i is EquipableInventoryItem equipment ? "\n"+GameplayText.Name(equipment.EquipmentSlot.ToString())+"\n"+
                 (hero.DungeonActor!=null?StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,hero.Equipment.Current().With(equipment))):
                     StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,hero.Equipment.Current().With(equipment)))):"") }).ToList();
+    }
+    private List<PartyMenuEntry> CapabilityEntries()
+    {
+        var context = Campaign;
+        if (context == null) return new();
+        string Describe(Capability capability)
+        {
+            if (capability == Capability.HomeKey)
+                return CampaignRewardNames.Purpose(capability) + "\n\nFound in the chest at home.\n\n" +
+                    (context.State.HomeDoorUnlocked ? "Front door unlocked." :
+                        "Face your front door and press " + InputPrompts.Interact + " to use it.");
+            return capability.DisplayName() + "\n" + CampaignRewardNames.Purpose(capability) +
+                "\nProvided by " + CampaignGuidance.CapabilitySource(context, capability,
+                    id => CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? id) + "\n" +
+                (context.Held.Contains(capability) ? "Available" :
+                    "To use this, add the required companion to your travelling party at a town.");
+        }
+        return CampaignGuidance.Acquired(context).Select(capability => new PartyMenuEntry {
+            Title = CampaignRewardNames.Name(context, capability), Section = "Acquired capabilities",
+            Description = Describe(capability)
+        }).ToList();
     }
     protected virtual Stats StatsFor(PartyMenuHero hero) => hero.DungeonActor != null ? hero.DungeonActor.FinalStats : TownUtilityService.StatsFor(hero.TownActor);
     private List<PartyMenuEntry> StatEntries(PartyMenuHero hero)
@@ -145,6 +171,7 @@ public sealed class TownPartyMenuContext : PartyMenuContext
     private readonly Town town;
     private readonly TownUtilityService utilities;
     protected override List<InventoryItem> Bag=>town.TownPlayer.Inventory;
+    protected override CampaignContext Campaign => Common.InstanceOrNull?.CampaignContext;
     public TownPartyMenuContext(Town town)
     {
         this.town=town;
@@ -158,11 +185,13 @@ public sealed class TownPartyMenuContext : PartyMenuContext
     }
     public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)
     {
+        if(entry.Item==null && entry.Skill==null)return CapabilityUseHint;
         if(entry.Item is EquipableInventoryItem || entry.Item?.ItemDefinition is MaterialItemDefinition)return "";
         utilities.Describe(hero.TownActor,entry.Skill,entry.Item,out _,out string reason);return reason ?? "";
     }
     public override List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry)
     {
+        if(entry.Item==null && entry.Skill==null)return new();
         if(entry.Item is EquipableInventoryItem equipment)
         {
             string reason=!hero.Equipment.IsEquipped(equipment) && !HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment)?HeroClass.EquipmentRestriction(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,equipment):null;
@@ -193,6 +222,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
     private readonly OverworldScene world;
     private readonly List<InventoryItem> bag;
     protected override List<InventoryItem> Bag=>bag;
+    protected override CampaignContext Campaign => world.Context;
     public OverworldPartyMenuContext(OverworldScene world)
     {
         this.world=world;
@@ -204,18 +234,6 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
             if(live==null)continue;
             RestoreHero(live,data,bag.Add);Add(live);
         }
-    }
-    public override List<PartyMenuEntry> Entries(PartyMenuHero hero, PartyMenuTab tab)
-    {
-        if(tab!=PartyMenuTab.Capabilities)return base.Entries(hero,tab);
-        var context=world.Context;
-        return EternalEnigma.Core.Progression.CampaignGuidance.Acquired(context).Select(capability=>new PartyMenuEntry {
-            Title=EternalEnigma.Core.Progression.CampaignRewardNames.Name(context,capability), Section="Acquired capabilities",
-            Description=EternalEnigma.Core.Capabilities.CapabilityCatalog.DisplayName(capability)+"\n"+
-                EternalEnigma.Core.Progression.CampaignRewardNames.Purpose(capability)+"\nProvided by "+EternalEnigma.Core.Progression.CampaignGuidance.CapabilitySource(context,capability,
-                id=>CampaignParty.Resolve(id,TownSceneLoader.Default)?.Name??id)+"\n"+
-                (context.Held.Contains(capability)?"Available":"To use this, add the required companion to your travelling party at a town.")
-        }).ToList();
     }
     public static void RestoreHero(TownAlly live,TownAllyData data, Action<InventoryItem> displaced = null)
     {
@@ -236,7 +254,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         data.Attributes=hero.TownActor.Attributes;data.Hp=hero.TownActor.Hp;data.Mana=hero.TownActor.Mana;
         CampaignParty.Capture(common);SaveSystem.Capture(common);return true;
     }
-    public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Item==null && entry.Skill==null?"Choose a capability when interacting with an obstacle.":entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
+    public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Item==null && entry.Skill==null?CapabilityUseHint:entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
         entry.Skill?.ActivationType==ActivationType.Passive?base.Restriction(hero,entry):"Inspect only while travelling. Use items and recovery skills in town, or actions in a dungeon.";
     public override List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry)
     {

@@ -10,12 +10,14 @@ public sealed class DungeonHud : MonoBehaviour
     public CharacterStatsDisplay[] PartySlots;
     [SerializeField] private Button options;
     public Button OptionsButton => options;
+    public bool ShowingTargetDetails => targetBackdrop != null && targetBackdrop.activeSelf;
     private Game game;
     [SerializeField] private TMP_Text header, target;
     [SerializeField] private GameObject targetBackdrop;
     [SerializeField] private Button control;
     private Image[] enemyStatusIcons;
     private float detailUntil;
+    private bool explainedPartyControl;
     public static DungeonHud Ensure(Game game)
     {
         var hud=AuthoredUI.Require<DungeonHud>(game.transform);
@@ -91,13 +93,22 @@ public sealed class DungeonHud : MonoBehaviour
     private void Update()
     {
         if (game == null || !game.IsReady || game.PlayerController.ControlledAlly == null) return;
-        if (!AutoplayRunner.BlocksPlayerInput && !Common.Instance.GlobalSettings.IsOpen && !Common.Instance.Travel.IsTransitioning &&
+        bool hasCompanions = game.Allies.Count(a => a != null && !a.IsSummon) + game.DownedAllies.Count(a => a != null && !a.IsSummon) > 1;
+        control.gameObject.SetActive(hasCompanions);
+        if (hasCompanions && !explainedPartyControl)
+        {
+            explainedPartyControl = true;
+            GameMessages.Post("Companions act automatically. Full Control lets you choose each hero's turn.");
+        }
+        if (hasCompanions && !AutoplayRunner.BlocksPlayerInput && !Common.Instance.GlobalSettings.IsOpen && !Common.Instance.Travel.IsTransitioning &&
             MenuUIInputModule.Active?.HasDialog != true &&
             (Keyboard.current?.fKey.wasPressedThisFrame == true || Gamepad.current?.rightStickButton.wasPressedThisFrame == true))
             DungeonPreferences.FullControl = !DungeonPreferences.FullControl;
         var player = game.PlayerController;
         var turns = game.TurnManager;
-        header.text = GameplayText.Format(Game.Instance.Finale == null ? $"{player.Floor}F" : $"Finale {game.Finale.Session.CurrentFloor}\n{game.Finale.Session.Remaining} remaining");
+        header.text = GameplayText.Format(Game.Instance.Finale == null ?
+            $"Floor {player.Floor} / {Common.Instance.GameSaveData.DungeonSaveData.EndFloor}" :
+            $"Finale {game.Finale.Session.CurrentFloor} · {game.Finale.Session.Remaining} left");
         control.GetComponentInChildren<TMP_Text>().text = GameplayText.Format("Full Control " + (DungeonPreferences.FullControl ? "On" : "Off") +
             (turns.IsProcessingTurn && turns.FullControlThisRound != DungeonPreferences.FullControl ? " next round" : ""));
         var ally = player.ControlledAlly;

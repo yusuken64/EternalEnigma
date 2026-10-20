@@ -125,7 +125,9 @@ public static class GameUIButtonAuthoring
                 image.GetComponentInParent<Toggle>() != null || image.GetComponentInParent<Scrollbar>() != null ||
                 image.GetComponent<Mask>() != null || image.color.a < .1f ||
                 name.Contains("portrait") || name.Contains("icon") || name.Contains("cursor") || name.Contains("shutter") ||
-                name.Contains("fade") || name.Contains("transition") || name.Contains("mask") || name.Contains("overlay")) continue;
+                name.Contains("fade") || name.Contains("transition") || name.Contains("mask") || name.Contains("overlay") ||
+                name.Contains("input shield") || name.Contains("modal backdrop") || name.Contains("confirmation backdrop") ||
+                name.Contains("dimmer") || image.GetComponent<TownModalBackdrop>() != null) continue;
             bool plain = image.sprite == null || AssetDatabase.GetAssetPath(image.sprite).StartsWith("Resources/unity_builtin");
             if (plain || name.Contains("background") || name.Contains("panel") || name.Contains("frame"))
                 theme.Surface(image, theme.Panel, 24);

@@ -10,6 +10,8 @@ public sealed class TownInteriorCatalog : ScriptableObject
     public TownInteriorAsset[] Assets = Array.Empty<TownInteriorAsset>();
     public Material[] BiomeMaterials = Array.Empty<Material>();
     public Material CharacterMaterial;
+    public Material HomeFurniture, HomeWood, HomeRug;
+    public Mesh HomeSurface;
     public TileWorldCreator4TilesPreset Carpet, Counter;
     public TownNpcDefinition[] Characters = Array.Empty<TownNpcDefinition>();
     public static TownInteriorCatalog Load() => Resources.Load<TownInteriorCatalog>("TownInteriors/Catalog");

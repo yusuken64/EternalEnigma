@@ -48,7 +48,12 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                     else if(y<0&&Mathf.Abs(x-plan.Exit.X)<=1) surface=GroundSurface.Cobble;
                     ground[x+margin,y+margin]=surface;
                 }
-                PaintedGroundMesh.Build(root.transform,ground,groundStyle,size,creator.currentSeed,-margin,-margin);
+                // Keep small surface marks subordinate to doors, actors and signs. This
+                // local material follows generated-world ownership and leaves the overworld style intact.
+                var townGround = new Material(groundStyle.DryGround) { name = "Quiet town ground", hideFlags = HideFlags.DontSave };
+                townGround.SetFloat("_DetailSoftness", 1.5f); townGround.SetFloat("_DetailContrast", .72f);
+                batch.Owner.Materials.Add(townGround);
+                PaintedGroundMesh.Build(root.transform,ground,groundStyle,size,creator.currentSeed,-margin,-margin,townGround);
             }
             for (int y = 0; y < plan.Height; y++) for (int x = 0; x < plan.Width; x++)
             {
@@ -62,7 +67,7 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                     var tree=diorama?.Get(model);
                     if(tree!=null)
                     {
-                        float variation=DioramaPlacement.Variation(hash);
+                        float variation=DioramaPlacement.Variation(hash)*.9f;
                         bool Protected(int a,int b)=>a>=0&&b>=0&&a<plan.Width&&b<plan.Height&&(plan.Layers[TownLayers.Roads][a,b]||plan.IsReserved(new GridPoint(a,b))||plan.Layers[TownLayers.Buildings][a,b]);
                         if(DioramaPlacement.TreePosition(tree,x,y,size,variation,Protected,out var treePosition))
                             diorama.Add(batch,model,biome,treePosition,(hash>>16)%360,variation);
@@ -83,7 +88,10 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                     string replacement=DioramaPlacement.GroundCover(biome,hash);
                     if(diorama?.Get(replacement)!=null)model=replacement;
                     int triangles = Kit.Triangles(model);
-                    if (count < 160 && propTriangles + triangles <= 600000)
+                    // Decorative ground clutter stays sparse along the first errands;
+                    // geometry and collision cells retain their deterministic Core contract.
+                    bool quietStreet = plan.Interiors.Any(i => i.Spec.Kind == TownInteriorKind.Home) && y < 14;
+                    if (count < 160 && propTriangles + triangles <= 600000 && (!quietStreet || hash % 3 == 0))
                     {
                         if(diorama?.Get(model)!=null)diorama.Add(batch,model,biome,position,(hash>>16)%360,DioramaPlacement.Variation(hash));
                         else batch.Add(Kit.Mesh(model), Kit.Material(biome), position, Vector3.one * size * .45f, (hash >> 16) % 360);

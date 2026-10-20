@@ -367,6 +367,21 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         var player = town.TownPlayer;
         if (player.IsBusy || player.CutsceneLocked || player.ControllingTownAlly == null) return;
+        if (town.HomeLesson is { IsLocked: true } homeLesson)
+        {
+            var homeMenu = FindFirstObjectByType<TownMenuManager>();
+            if (homeMenu.DialogStack.Count > 0) { homeMenu.DialogStack.Peek().CloseDialog(); return; }
+            if (!homeLesson.TryGetNextInteraction(out var stand, out var prop))
+            { Finish("Stalled", "The next home interaction has no reachable approach."); return; }
+            if (player.ControllingTownAlly.TilemapPosition == stand)
+            {
+                player.ControllingTownAlly.SetFacing(Character.GetFacing(prop - stand));
+                if (homeLesson.TryInteract(prop)) { townRoute.Clear(); Log("Interact with home " + homeLesson.InteractionName(prop)); }
+                return;
+            }
+            MoveTowardTownTarget(town, stand);
+            return;
+        }
         visited.Add(town.Configuration.Id);
         if (Options.DebugPlaythrough && Options.InfiniteResources) player.Gold = 1000000;
         if (preparedTown != town)
@@ -430,6 +445,13 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (manager.DialogStack.Count > 0) { manager.DialogStack.Peek().CloseDialog(); return; }
         var from = player.ControllingTownAlly.TilemapPosition;
         if (from == target) { Common.Instance.Travel.ExitTown(town); return; }
+        MoveTowardTownTarget(town, target);
+    }
+
+    private void MoveTowardTownTarget(Town town, Vector3Int target)
+    {
+        var player = town.TownPlayer;
+        var from = player.ControllingTownAlly.TilemapPosition;
         bool Blocked(Vector3Int cell) => cell != target && (town.TownBuildings.Any(b => !b.HasInterior && b.TilemapPosition == cell) ||
             town.TownAllies.Any(a => a.TilemapPosition == cell)) || !town.CanEnter(cell);
         AStar.Node[,] TownGrid()
@@ -633,6 +655,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (game.Finale?.IsTransitioning == true) return;
         if (game.Finale?.OnOverworld == true) { FinaleTick(game, ally); return; }
         var skills = new AllySkillPolicy(game, ally, 0) { IncludeControlledAlly = true };
+        var practiceAction = game.GetComponent<OpeningDungeonLesson>()?.AutoplayAction(ally);
+        if (practiceAction != null) { Act(ally, practiceAction, "Practise opening ability"); return; }
         var puzzleAction = game.Encounter?.AutoplayPuzzleAction(ally);
         if (puzzleAction != null) { Act(ally,puzzleAction,"Solve puzzle through "+puzzleAction.GetType().Name); return; }
         var stash = dungeon.Interactables.OfType<EncounterStash>().FirstOrDefault(s=>s.Position==ally.TilemapPosition &&

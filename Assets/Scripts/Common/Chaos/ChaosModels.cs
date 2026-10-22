@@ -76,7 +76,9 @@ public sealed class ChaosFixture
         try { actual = ChaosJson.Hash(JsonUtility.ToJson(this)); } finally { Hash = expected; }
         if (Schema != Version || expected != actual) throw new InvalidDataException("Fixture version/hash mismatch.");
         var save = JsonUtility.FromJson<GameSaveData>(SaveJson);
-        if (save == null || JsonUtility.ToJson(new PartyEnvelope { Party = save.TownSaveData.RecruitedAlliesData, Inventory = save.TownSaveData.InventoryItems }) !=
+        if (save == null || save.FormatVersion != SaveSystem.CurrentFormatVersion || !save.HasCampaign || save.TownSaveData == null)
+            throw new InvalidDataException("Fixture must contain a campaign save in the current supported format.");
+        if (JsonUtility.ToJson(new PartyEnvelope { Party = save.TownSaveData.RecruitedAlliesData, Inventory = save.TownSaveData.InventoryItems }) !=
             JsonUtility.ToJson(new PartyEnvelope { Party = Party, Inventory = Inventory })) throw new InvalidDataException("Fixture manifest differs from its save.");
     }
     [Serializable] private sealed class PartyEnvelope { public List<TownAllyData> Party; public List<ItemSaveData> Inventory; }

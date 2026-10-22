@@ -33,6 +33,33 @@ namespace EternalEnigma.Tests
             replay.Party[0].AllyName = "tampered";
             Assert.Throws<InvalidDataException>(() => replay.Validate());
         }
+        [TestCase("Town"), TestCase("DungeonScene"), TestCase("Overworld")]
+        public void FixtureRawSaveCanBeInspectedAndContinued(string entry)
+        {
+            var fixture = ChaosFixtures.Create(42, TownSceneLoader.Default, manager, entry);
+            fixture.Validate();
+            var store = new ChaosSaveStore();
+            using var scope = SaveSystem.UseStore(store);
+            // Use the runner's exact installation path; SaveData would mask a missing format stamp.
+            store.Write(0, fixture.SaveJson);
+            var save = SaveSystem.Inspect(0, out var error);
+            Assert.That(error, Is.Null);
+            Assert.That(save, Is.Not.Null);
+            Assert.That(save.FormatVersion, Is.EqualTo(SaveSystem.CurrentFormatVersion));
+            Assert.That(save.HasCampaign, Is.True);
+            Assert.That(save.Campaign.Scene, Is.EqualTo(entry));
+            Assert.That(save.ProtagonistId, Is.EqualTo(fixture.ControlledHeroId));
+        }
+        [Test] public void SealedFixtureWithUnsupportedSaveFormatFailsBeforeMenuNavigation()
+        {
+            var fixture = ChaosFixtures.Create(42, TownSceneLoader.Default, manager);
+            var save = JsonUtility.FromJson<GameSaveData>(fixture.SaveJson);
+            save.FormatVersion = 0;
+            fixture.SaveJson = JsonUtility.ToJson(save);
+            fixture.Seal();
+            Assert.That(Assert.Throws<InvalidDataException>(() => fixture.Validate()).Message,
+                Does.Contain("current supported format"));
+        }
         [Test] public void RandomPartiesAndItemsAreLegalAndVaryAcrossSeeds()
         {
             string previous = null; var compositions = new System.Collections.Generic.HashSet<string>();
@@ -123,9 +150,10 @@ namespace EternalEnigma.Tests
         }
         [Test] public void DeveloperAndQuitControlsCannotBeActivatedByChaos()
         {
-            foreach (string label in new[] { "Exit", "Quit", "Developer", "Endgame Town", "Test Dungeon", "Debug Autoplay" })
+            foreach (string label in new[] { "Exit", "  EXIT", "> EXIT", "Quit", "Developer", "Endgame Town", "Test Dungeon", "Debug Autoplay" })
                 Assert.That(ChaosUI.Forbidden(label), Is.True, label);
             Assert.That(ChaosUI.Forbidden("Continue"), Is.False);
+            Assert.That(ChaosUI.Forbidden("> CONTINUE"), Is.False);
             Assert.That(ChaosUI.Forbidden("Skills"), Is.False);
         }
         [Test] public void ChangedVersionsAndIncompleteCoverageRejectFullPass()

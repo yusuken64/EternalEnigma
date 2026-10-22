@@ -322,6 +322,10 @@ namespace EternalEnigma.Tests
                 Assert.That(run.ReturnPromptOpen, Is.True);
                 Assert.That(Time.timeScale, Is.Zero);
                 var panel = Object.FindFirstObjectByType<AutoplayPanel>();
+                Assert.That(MenuUIInputModule.Active.Allows(panel.KeepWatching.gameObject), Is.True,
+                    "Playback controls remain usable above a paused scene cover.");
+                Assert.That(MenuUIInputModule.Active.Allows(transition.BlockScreen.gameObject), Is.False,
+                    "Keeping playback controls alive must not allow the underlying game UI.");
                 var backgroundHits = new System.Collections.Generic.List<RaycastResult>();
                 EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current) { position = new Vector2(5, 5) }, backgroundHits);
                 Assert.That(backgroundHits[0].gameObject, Is.EqualTo(panel.gameObject),

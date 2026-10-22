@@ -94,6 +94,36 @@ acceptance. With no directory argument it selects the latest sweep manifest.
 
 ## Campaign autoplay
 
+The main-menu Debug autoplay setup offers **Fast mode**. It selects 32x playback
+and the run-specific no-animation path, including the optimized turn runner.
+Turning it off restores the setup's selected playback speed. The live animation
+control changes only the current autoplay session; it does not save a gameplay
+animation preference. Starting a new player campaign always resets to 1x speed
+and normal animations.
+
+For repeated fast campaigns with randomly scheduled chaos smoke sessions, first
+build the current development player using **Tools > Eternal Enigma > Playthrough
+> Build Debug Windows**, then run:
+
+```powershell
+node Tools/fast-validation.mjs run Logs/FastValidation/my-run 20 2 42
+node Tools/fast-validation.mjs status Logs/FastValidation/my-run
+node Tools/fast-validation.mjs stop Logs/FastValidation/my-run
+```
+
+The final arguments are campaign count, concurrent autoplay workers (1 or 2), and
+starting seed. Each campaign has an isolated save/report directory and uses 32x,
+no animations, debug survivability/resources/strength, and item/ability coverage.
+One separate chaos player runs five-minute mixed-device smoke sessions. Recorded
+random delays separate chaos sessions; `manifest.json` records the scheduling seed
+and game assembly hash. The same development build supplies both runners.
+
+`status.json` records active processes and independently audited results. Completion
+does not imply passing: every campaign must have a clean audited Victory, and
+every chaos session must pass its artifact/smoke audit. Stop terminates only this
+supervisor's child processes; interrupted attempts remain incomplete evidence.
+The batch does not replace dedicated optional-book tests or full chaos coverage.
+
 Choose **Debug autoplay** in the main menu's developer controls to open its setup.
 Enter a **starting seed** and **run count**, then choose **Start autoplay**. Defaults
 are seed **42**, **1 run**, **1x**, with godmode, infinite strength, infinite resources,

@@ -110,6 +110,8 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     public static bool BlocksPlayerInput => Active != null && !Active.PlayerControlled;
     internal static bool SuppressesAnimations => BlocksPlayerInput &&
         (Active.IsLootSweep || Active.Options?.NoAnimations == true);
+    internal static DungeonAnimationMode? PlaybackAnimationMode => BlocksPlayerInput ? Active.playbackAnimationMode : null;
+    private DungeonAnimationMode? playbackAnimationMode;
     public bool PlayerControlled { get; private set; }
     public bool PanelVisible { get; private set; } = true;
     public bool TakingControl => takingControl;
@@ -148,7 +150,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     public bool ReturnPromptOpen { get; private set; }
     private bool wasPausedBeforePrompt, exiting;
     private float acceptInputAfter;
-    private bool startedCampaign, disposed;
+    private bool startedCampaign, startupReady, disposed;
     private static readonly Vector3Int[] Steps = {
         Vector3Int.up, Vector3Int.right, Vector3Int.down, Vector3Int.left,
         new(1,1), new(1,-1), new(-1,-1), new(-1,1) };
@@ -220,6 +222,9 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             originalTownConfiguration = Common.Instance.CurrentTownConfiguration;
             yield return SceneManager.LoadSceneAsync("MainMenu");
         }
+        // The old menu can still be ready while this initial asynchronous load
+        // is in flight. Do not queue Town travel until that menu has unloaded.
+        startupReady = true;
     }
 
     public static bool Protects(Vitals vitals) => Active != null && Active.Running && Active.Options.DebugPlaythrough &&
@@ -309,6 +314,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
 
     private void Tick()
     {
+        if (!startupReady) return;
         var common = Common.Instance;
         if (common == null || common.Travel.IsTransitioning) return;
         if (IsLootSweep) { SweepTick(common); return; }
@@ -752,6 +758,18 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         Options.Speed = Mathf.Clamp(speed, .5f, 32f);
         Time.fixedDeltaTime = originalFixedDeltaTime * Options.Speed;
         if (!Paused && Running) Time.timeScale = Options.Speed;
+        nextTick = Time.unscaledTime;
+        WriteReport();
+    }
+
+    public void CycleAnimationMode()
+    {
+        if (!SessionRunning || PlayerControlled || TakingControl || IsLootSweep) return;
+        var mode = (DungeonAnimationMode)(((int)DungeonPreferences.AnimationMode + 1) % 4);
+        playbackAnimationMode = mode;
+        // This is the same run option as the fast launch preset, including the
+        // turn runner's synchronous playback path. Never change player settings.
+        Options.NoAnimations = mode == DungeonAnimationMode.NoAnimations;
         nextTick = Time.unscaledTime;
         WriteReport();
     }

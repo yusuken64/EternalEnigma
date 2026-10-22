@@ -7,6 +7,7 @@ using UnityEngine;
 public static class ChaosTestLauncher
 {
     private const string ModeKey = "EternalEnigma.Chaos.Tests.Mode";
+    private const string JobKey = "EternalEnigma.Chaos.Tests.Job";
     private static readonly TestRunnerApi Api;
     static ChaosTestLauncher()
     {
@@ -22,8 +23,22 @@ public static class ChaosTestLauncher
         if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating || SessionState.GetInt(ModeKey, -1) >= 0)
             throw new System.InvalidOperationException("A Play Mode or chaos test run is already active.");
         SessionState.SetInt(ModeKey, (int)mode);
-        try { Api.Execute(new ExecutionSettings(new Filter { testMode = mode, testNames = names })); }
+        try { SessionState.SetString(JobKey, Api.Execute(new ExecutionSettings(new Filter { testMode = mode, testNames = names }))); }
         catch { SessionState.EraseInt(ModeKey); throw; }
+    }
+    [MenuItem("Tools/Eternal Enigma/Tests/Cancel Chaos Tests")]
+    public static void Cancel()
+    {
+        var job = SessionState.GetString(JobKey, "");
+        if (!string.IsNullOrEmpty(job)) TestRunnerApi.CancelTestRun(job);
+        int pending = SessionState.GetInt(ModeKey, -1);
+        if (pending >= 0)
+        {
+            Directory.CreateDirectory("Temp/Chaos");
+            File.WriteAllText("Temp/Chaos/tests-" + (TestMode)pending + ".txt", "Cancelled; no passing result.");
+        }
+        SessionState.EraseInt(ModeKey);
+        SessionState.EraseString(JobKey);
     }
     private sealed class Results : ICallbacks
     {
@@ -39,6 +54,7 @@ public static class ChaosTestLauncher
             int pending = SessionState.GetInt(ModeKey, -1); if (pending < 0) return;
             var mode = (TestMode)pending;
             SessionState.EraseInt(ModeKey);
+            SessionState.EraseString(JobKey);
             TestRunnerApi.SaveResultToFile(result, "Temp/Chaos/tests-" + mode + ".xml");
             File.WriteAllText("Temp/Chaos/tests-" + mode + ".txt", $"Completed\nPassed: {result.PassCount}\nFailed: {result.FailCount}\nSkipped: {result.SkipCount}\n{result.Message}");
         }

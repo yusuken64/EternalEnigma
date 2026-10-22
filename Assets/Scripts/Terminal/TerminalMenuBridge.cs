@@ -38,7 +38,12 @@ public sealed class TerminalMenuBridge : MonoBehaviour
         {
             if (mainMenu == null) mainMenu = FindFirstObjectByType<MainMenu>();
             if (mainMenu != null && mainMenu.NavigationHandler.gameObject.activeInHierarchy)
-            { currentOwner = mainMenu; currentRoot = mainMenu.transform; }
+            {
+                currentOwner = mainMenu;
+                // The authored buttons live on a sibling Canvas, outside the
+                // MainMenu controller hierarchy. Bind their actual focus root.
+                currentRoot = mainMenu.StartButton.transform.parent;
+            }
         }
         if (currentOwner == null || currentRoot == null) { Release(); return false; }
         if (owner != currentOwner || root != currentRoot)

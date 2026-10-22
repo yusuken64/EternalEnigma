@@ -183,6 +183,7 @@ public sealed partial class AutoplayRunner
         if (Report == null || DirectoryPath == null) return;
         if (IsLootSweep) LootLedger?.Audit();
         Report.Options.Speed = Options.Speed;
+        Report.Options.NoAnimations = Options.NoAnimations;
         Report.UnexercisedAbilities = Report.Abilities.Where(a => a.Active && a.Completed == 0)
             .OrderBy(a => a.ActorId).ThenBy(a => a.Skill)
             .Select(a => $"{a.ActorId}: {a.Skill} (rank {a.Rank}) — {a.Reason ?? "No context-appropriate completed cast"}").ToArray();

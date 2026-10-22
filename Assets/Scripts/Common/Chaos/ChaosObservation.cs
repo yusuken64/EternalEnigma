@@ -43,7 +43,8 @@ public sealed class ChaosSnapshot
                 UnityEngine.Object.FindFirstObjectByType<TownMenuManager>()?.CurrentDialog?.GetType().Name,
             Loading = common == null || common.Travel.IsTransitioning || common.ScreenTransition.BlockScreen.activeSelf,
             Ready = game != null ? game.IsReady : town != null ? town.TownPlayer?.ControllingTownAlly != null :
-                world != null || UnityEngine.Object.FindFirstObjectByType<MainMenu>()?.IsReady == true };
+                // MainMenu suspends its controller while Options owns input.
+                world != null || UnityEngine.Object.FindFirstObjectByType<MainMenu>(FindObjectsInactive.Include)?.IsReady == true };
         result.Targeting = game?.PlayerController?.CurrentControlMode == PlayerControlMode.TargetSelecting;
         result.CanControl = result.Ready && !result.Loading && (game == null ||
             !game.NewFloorMessage.gameObject.activeSelf && (!game.TurnManager.IsProcessingTurn || game.TurnManager.AwaitingCommand));
@@ -108,8 +109,14 @@ public static class ChaosUI
         var canvas = selectable.GetComponentInParent<Canvas>();
         return RectTransformUtility.WorldToScreenPoint(canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null, rect.TransformPoint(rect.rect.center));
     }
-    public static bool Forbidden(string label) => label.Trim().Equals("Exit", StringComparison.OrdinalIgnoreCase) ||
-        new[] { "Quit", "Exit game", "autoplay", "test dungeon", "endgame", "developer" }.Any(s => label.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0);
+    public static bool Forbidden(string label)
+    {
+        // TerminalMainMenuView prefixes the selected action with "> ".
+        string action = label.Trim();
+        if (action.StartsWith("> ", StringComparison.Ordinal)) action = action.Substring(2).TrimStart();
+        return action.Equals("Exit", StringComparison.OrdinalIgnoreCase) ||
+            new[] { "Quit", "Exit game", "autoplay", "test dungeon", "endgame", "developer" }.Any(s => action.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0);
+    }
     public static bool ForbiddenPoint(Vector2 position)
     {
         if (EventSystem.current == null) return false;

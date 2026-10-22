@@ -35,7 +35,9 @@ The CLI creates a separate launch directory and monitors a heartbeat belonging t
 the child PID. It records `watchdog.json` and terminates only that child if startup
 has no heartbeat for 180 seconds or its heartbeat stops for 75 seconds. A fourth
 `player` argument overrides the heartbeat deadline. Direct launches do not have an
-external watchdog. No `-batchmode` or `-nographics`: screenshots and production UI
+external watchdog. Temporary heartbeat read failures retain the last valid timestamp;
+they cannot extend the stall deadline or immediately terminate a healthy player.
+No `-batchmode` or `-nographics`: screenshots and production UI
 need rendered frames.
 
 Options are JSON fields on `ChaosOptions`:
@@ -85,6 +87,11 @@ HP, Mana, equipment and inventory. These guarantees are labelled in the manifest
 controlled hero, seeds, Unity random state, canonical save JSON, and a hash. Replay
 loads those values instead of regenerating them. The campaign identity is derived
 from the fixture seed rather than the normal new-campaign GUID.
+Generated fixtures carry the current save-format version. Before navigating
+Continue and Slot 1, preparation verifies that the production save reader can
+load the raw fixture; unsupported fixtures fail immediately with a diagnostic.
+Before closing a scenario trace, the runner closes any persistent Settings menu
+through recorded input so its focus scope cannot leak into the next fixture.
 
 After preparation, the runner queues `KeyboardState`, `MouseState`, and
 `GamepadState` events through production bindings. UI navigation observes authored

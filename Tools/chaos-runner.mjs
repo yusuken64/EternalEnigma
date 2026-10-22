@@ -23,6 +23,20 @@ export function heartbeatFailure(heartbeat, now, launchedAt, timeoutSeconds, sta
     if (!Number.isFinite(stamp) || stamp > now + 5000) return 'Invalid heartbeat timestamp';
     return now - stamp > timeoutSeconds * 1000 ? 'Player heartbeat stopped' : null;
 }
+export function heartbeatMonitor(launchedAt, timeoutSeconds, startupSeconds, expectedPid) {
+    let lastHeartbeat;
+    return (readHeartbeat, now) => {
+        let heartbeat, readError;
+        try { heartbeat = readHeartbeat(); }
+        catch (error) { readError = error.message; }
+        // A Windows sharing violation or an interrupted read is not a stalled player.
+        // Keep the last validated timestamp, so repeated read failures still time out.
+        const reason = heartbeatFailure(heartbeat ?? lastHeartbeat, now, launchedAt,
+            timeoutSeconds, startupSeconds, expectedPid);
+        if (heartbeat && !reason) lastHeartbeat = heartbeat;
+        return { reason, readError };
+    };
+}
 export function summarize(report) {
     const cases = report.Coverage?.Cases ?? [], required = cases.filter(c => !c.Demo);
     return { state: report.State, reason: report.Reason, seconds: report.Seconds, inputs: report.Inputs,
@@ -148,22 +162,22 @@ async function player(executable, optionsPath, timeoutSeconds = 75) {
         '-logFile', join(options.ReportRoot, 'player.log')], { cwd: root, windowsHide: true, stdio: 'ignore' });
     console.log('Launched chaos player ' + child.pid + ': ' + options.ReportRoot);
     let directory, finished = false, failed = false;
+    const monitor = heartbeatMonitor(launchedAt, timeoutSeconds, 180, child.pid);
     const timer = setInterval(() => {
         if (finished) return;
-        try {
-            let heartbeat;
+        const { reason, readError } = monitor(() => {
             if (existsSync(join(options.ReportRoot, 'latest.json'))) {
                 directory = findReport(options.ReportRoot);
-                if (existsSync(join(directory, 'heartbeat.json'))) heartbeat = json(join(directory, 'heartbeat.json'));
+                if (existsSync(join(directory, 'heartbeat.json'))) return json(join(directory, 'heartbeat.json'));
             }
-            const reason = heartbeatFailure(heartbeat, Date.now(), launchedAt, timeoutSeconds, 180, child.pid);
-            if (reason) {
-                write(join(options.ReportRoot, 'watchdog.json'), { State: 'WatchdogFailure', Reason: reason, ProcessId: child.pid, Utc: new Date().toISOString(), Directory: directory });
-                failed = true; child.kill(); console.error(reason); clearInterval(timer);
-            }
-        } catch (error) {
-            // Atomic writes avoid transient JSON partials; an unreadable heartbeat must not disable the deadline.
-            if (Date.now() - launchedAt > 180000) { failed = true; child.kill(); clearInterval(timer); console.error(error.message); }
+        }, Date.now());
+        if (reason) {
+            failed = true;
+            try {
+                write(join(options.ReportRoot, 'watchdog.json'), { State: 'WatchdogFailure', Reason: reason,
+                    ReadError: readError, ProcessId: child.pid, Utc: new Date().toISOString(), Directory: directory });
+            } catch (error) { console.error('Unable to write watchdog report: ' + error.message); }
+            child.kill(); console.error(reason + (readError ? ': ' + readError : '')); clearInterval(timer);
         }
     }, 1000);
     const exit = await new Promise((resolveExit, reject) => { child.on('error', reject); child.on('exit', code => resolveExit(code)); }).finally(() => { finished = true; clearInterval(timer); });

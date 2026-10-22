@@ -109,9 +109,10 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public bool Allows(GameObject obj)
     {
-        if (Common.InstanceOrNull?.ScreenTransition?.BlocksInput == true) return false;
+        // Playback controls stay usable above the cover, including while autoplay is paused.
         if (AutoplayRunner.BlocksPlayerInput)
             return obj != null && AutoplayRunner.Active.ShowPlaybackUI && obj.GetComponentInParent<AutoplayPanel>() != null;
+        if (Common.InstanceOrNull?.ScreenTransition?.BlocksInput == true) return false;
         return obj != null && (scopes.Count == 0 ||
             (scopes[^1].Root != null && obj.transform.IsChildOf(scopes[^1].Root)) ||
             (scopes[^1].Owner is PartyMenu party && party.HudTabs!=null && party.HudTabs.Allows(obj)));

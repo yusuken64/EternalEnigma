@@ -23,7 +23,7 @@ public sealed class AutoplayPanel : MonoBehaviour
         Hide.onClick.AddListener(()=>runner.SetPanelVisible(false));
         Show.onClick.AddListener(()=>runner.SetPanelVisible(true));
         Pause.onClick.AddListener(()=>runner.SetPaused(!runner.Paused));
-        Animations.onClick.AddListener(()=>DungeonPreferences.AnimationMode=(DungeonAnimationMode)(((int)DungeonPreferences.AnimationMode+1)%4));
+        Animations.onClick.AddListener(runner.CycleAnimationMode);
         Stop.onClick.AddListener(runner.Stop);
         Return.onClick.AddListener(runner.RequestReturn);
         TakeControl.onClick.AddListener(runner.TakeControl);

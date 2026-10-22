@@ -107,7 +107,10 @@ public static class ChaosFixtures
         var snapshot = context.Capture();
         snapshot.Identity = ChaosJson.Hash("chaos-fixture-v1/" + seed + "/" + entry).Substring(0, 32);
         snapshot.Roster = snapshot.Active = fixture.Party.Skip(1).Select(h => h.AllyId).ToArray();
-        var save = new GameSaveData { ProtagonistId = fixture.ControlledHeroId, Roster = fixture.Party, Campaign = snapshot,
+        // Fixtures are installed as exact raw JSON, so they must carry the same
+        // version that SaveSystem.SaveData stamps on a player-created save.
+        var save = new GameSaveData { FormatVersion = SaveSystem.CurrentFormatVersion,
+            ProtagonistId = fixture.ControlledHeroId, Roster = fixture.Party, Campaign = snapshot,
             TownSaveData = new TownSaveData { ConfigurationId = configuration.Id, TownSeed = seed,
                 RecruitedAlliesData = fixture.Party, InventoryItems = fixture.Inventory },
             DungeonSaveData = new DungeonSaveData { StartFloor = 1, EndFloor = 2 } };

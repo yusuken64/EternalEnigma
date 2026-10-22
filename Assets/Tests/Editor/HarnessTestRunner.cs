@@ -10,6 +10,29 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Fast Validation Audit")]
+    public static void RunFastValidationAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayFastModeTests", "EternalEnigma.Tests.NewCampaignPacingTests",
+        "EternalEnigma.Tests.ChaosInputTests", "EternalEnigma.Tests.ChaosMenuTests",
+        "EternalEnigma.Tests.TerminalMenuInteractionTests",
+        "EternalEnigma.Tests.EncounterGameplayTests.Seed60LureReplansWhenFollowingPartyBlocksTheTargetLane",
+        "EternalEnigma.Tests.EncounterGameplayTests.LureCompletionRemovesTargetWithoutReplayingItsDestroyedAnimator",
+        "EternalEnigma.Tests.EncounterGameplayTests.HerdingCompletionRemovesTargetWithNormalAnimationPlayback");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Fast Autoplay Menu")]
+    public static void RunFastAutoplayMenu() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayFastModeTests", "EternalEnigma.Tests.AutoplayTests.DebugMenuLaunchCanResumeWhileLoading");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Fast Autoplay Controls")]
+    public static void RunFastAutoplayControls() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.AutoplayFastModeTests", "EternalEnigma.Tests.NewCampaignPacingTests",
+        "EternalEnigma.Tests.AutoplayTests.DebugMenuLaunchCanResumeWhileLoading",
+        "EternalEnigma.Tests.AutoplayTests.SequentialSeedsWriteCompleteArtifactsAndRestoreOriginalSave");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Fast Autoplay EditMode")]
+    public static void RunFastAutoplayEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.AutoplayControlPreferenceTests", "EternalEnigma.Tests.AutoplayBatchTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Book Travel")]
     public static void RunBookTravel() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.BookDungeonTravelTests", "EternalEnigma.Tests.ScreenTransitionTests");

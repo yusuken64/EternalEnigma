@@ -124,6 +124,11 @@ public class MainMenu : MonoBehaviour
         if (!IsReady) return;
 		if (Common.Instance.Travel.IsTransitioning) return;
 		Common.Instance.GameSaveData = CreateNewSave(NewCampaignSeed(), hero);
+        // A player-confirmed journey always starts at its intended pacing. Debug
+        // batches create their saves separately and retain their explicit playback options.
+        Time.timeScale = 1;
+        DungeonPreferences.AnimationOverride = null;
+        DungeonPreferences.AnimationMode = DungeonAnimationMode.Normal;
 		Common.Instance.Travel.NewCampaign(Common.Instance.GameSaveData.TownSaveData.TownSeed);
 	}
 

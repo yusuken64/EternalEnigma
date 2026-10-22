@@ -241,7 +241,7 @@ public sealed partial class ChaosRunner : MonoBehaviour
                     if (inputIndex % 24 == 0) yield return DirectedMenus(SelectDevice(inputIndex / 24));
                     else yield return Pulse(RandomInput(random, SelectDevice(inputIndex / 8)));
                 }
-                CloseSegment();
+                yield return CompleteSegment(SelectDevice(run));
             }
         }
         if (segmentIndex == 0) throw new InvalidOperationException("No smoke scenarios match the filter.");
@@ -249,6 +249,9 @@ public sealed partial class ChaosRunner : MonoBehaviour
 
     private IEnumerator Prepare(ChaosFixture fixture)
     {
+        if (prepared) yield return CompleteSegment(SelectDevice(0));
+        if (Common.InstanceOrNull?.GlobalSettings.IsOpen == true)
+            throw new InvalidOperationException("Persistent settings remained open after the previous fixture trace closed.");
         prepared = false; devices.Release(); CloseSegment();
         ChaosSnapshot.ResetActors();
         if (Common.InstanceOrNull != null) CampaignParty.ClearLiveParty(Common.Instance);
@@ -257,10 +260,13 @@ public sealed partial class ChaosRunner : MonoBehaviour
         var common = Common.Instance;
         common.CampaignContext = null; common.GameSaveData = null; common.CurrentTownConfiguration = null;
         common.PendingDemoLoadout = null;
-        yield return Wait(() => FindFirstObjectByType<MainMenu>()?.IsReady == true, "fixture menu", Options.LoadTimeoutSeconds);
+        yield return Wait(() => FindFirstObjectByType<MainMenu>()?.IsReady == true &&
+            common.ScreenTransition?.BlocksInput != true, "fixture menu", Options.LoadTimeoutSeconds);
         fixture.Validate();
         store.ClearAll(); store.Write(0, fixture.SaveJson);
         SaveSystem.ActiveSlot = 0;
+        if (SaveSystem.Inspect(0, out var saveError)?.HasCampaign != true)
+            throw new InvalidDataException("Chaos fixture cannot be continued: " + (saveError ?? "No campaign in fixture save."));
         UnityEngine.Random.InitState(fixture.Seed);
         if (!string.IsNullOrEmpty(fixture.UnityRandomState)) UnityEngine.Random.state = JsonUtility.FromJson<UnityEngine.Random.State>(fixture.UnityRandomState);
         else { fixture.UnityRandomState = JsonUtility.ToJson(UnityEngine.Random.state); fixture.Seal(); }
@@ -282,7 +288,12 @@ public sealed partial class ChaosRunner : MonoBehaviour
         var menu = FindFirstObjectByType<MainMenu>();
         var before = ChaosSnapshot.Read();
         yield return Activate(menu.ContinueButton.GetComponent<Selectable>(), device);
-        yield return Activate(menu.CampaignStartMenu.CampaignSlotViews[0].SelectToActivateButton, device);
+        var slots = menu.CampaignStartMenu.SlotViewer.GetComponent<CampaignSlots>();
+        yield return Wait(() => slots.isActiveAndEnabled && MenuUIInputModule.Active?.OwnsFocus(slots) == true,
+            "campaign slot browser", Options.ActionTimeoutSeconds);
+        if (slots.Slots[0].Data?.HasCampaign != true)
+            throw new InvalidDataException("The campaign slot browser could not read the prepared chaos fixture.");
+        yield return Activate(slots.Slots[0].Button, device);
         yield return Wait(() => SceneManager.GetActiveScene().name == entry && ChaosSnapshot.Read().CanControl, "load " + entry, Options.LoadTimeoutSeconds);
         Feature("campaign-load", device, before, ChaosSnapshot.Read());
         Feature("scene-transition", device, before, ChaosSnapshot.Read());
@@ -347,7 +358,9 @@ public sealed partial class ChaosRunner : MonoBehaviour
         // A random pixel can hit an excluded developer/quit control even when the candidate list is filtered.
         // Record the neutral replacement, so replay dispatches exactly the same input.
         string focused = ChaosUI.Label(EventSystem.current?.currentSelectedGameObject?.GetComponent<Selectable>());
-        if (ChaosUI.Forbidden(focused) && ((input.Keys?.Contains("Enter") ?? false) || (input.Buttons?.Contains("South") ?? false)) ||
+        // GamepadButton.ToString may serialize the South button as A or Cross.
+        if (ChaosUI.Forbidden(focused) && ((input.Keys?.Contains("Enter") ?? false) ||
+            (input.Buttons?.Any(name => Enum.TryParse<GamepadButton>(name, out var button) && button == GamepadButton.South) ?? false)) ||
             (input.MouseButtons & 1) != 0 && ChaosUI.ForbiddenPoint(input.Position))
             input = new ChaosInput { Device = input.Device, HoldFrames = input.HoldFrames, SettleFrames = input.SettleFrames, Label = "excluded-control" };
         var before = ChaosSnapshot.Read();
@@ -505,6 +518,23 @@ public sealed partial class ChaosRunner : MonoBehaviour
         catch (Exception error) { reportingError = error.ToString(); }
     }
     private void WriteReport() { Report.Seconds = Elapsed; ChaosJson.Write(Path.Combine(DirectoryPath, "report.json"), Report); }
+    private IEnumerator CompleteSegment(string device)
+    {
+        // Settings live in Common, but their focus scope belongs to the current
+        // scene's input module. Close them before replacing that scene, while
+        // the old trace is still writable and input can reach the owning scope.
+        if (Common.InstanceOrNull?.GlobalSettings.IsOpen == true)
+        {
+            if (!prepared || inputs == null || checkpoints == null)
+                throw new InvalidOperationException("Cannot close fixture settings without an active input trace.");
+            if (!string.IsNullOrEmpty(Options.ReplayDirectory))
+                throw new ReplayDivergence("Recorded fixture ended with persistent settings open.");
+            yield return Activate(Common.Instance.GlobalSettings.ResumeButton, device);
+            yield return Wait(() => Common.InstanceOrNull?.GlobalSettings.IsOpen != true,
+                "close settings before fixture teardown", Options.ActionTimeoutSeconds);
+        }
+        CloseSegment();
+    }
     private void CloseSegment()
     {
         prepared = false;

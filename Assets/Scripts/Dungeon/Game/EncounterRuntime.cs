@@ -172,10 +172,27 @@ public sealed class EncounterRuntime
         var enemy = actors.Values.FirstOrDefault(a=>a!=null&&a.Invulnerable&&!a.Resolved)?.GetComponent<Enemy>();
         if (enemy == null) return new WaitAction();
         var destination = floor.PuzzleObjects.First(p=>p.Kind is PuzzleObjectKind.Trap or PuzzleObjectKind.Destination).Position;
+        var followers = game.Allies.Where(a => a != ally).ToArray();
+        var blocked = followers.Select(a => a.TilemapPosition.ToGridPoint()).ToHashSet();
+        var action = FindTargetStep(ally, enemy, destination, blocked);
+        if (action != null) return action;
+
+        // Followers can temporarily fill an entire lane. Treating their current
+        // cells as permanent walls makes the complete target route impossible,
+        // then waiting leaves that formation unchanged. Let mobile companions
+        // follow or swap through normal turns, and replan after this one step.
+        var stationary = followers.Where(a => a.AllyStrategy == AllyStrategy.HoldPosition || a.IsMovementBlocked)
+            .Select(a => a.TilemapPosition.ToGridPoint()).ToHashSet();
+        return stationary.Count < blocked.Count
+            ? FindTargetStep(ally, enemy, destination, stationary) ?? new WaitAction()
+            : new WaitAction();
+    }
+
+    GameAction FindTargetStep(Ally ally, Enemy enemy, GridPoint destination, HashSet<GridPoint> followers)
+    {
         var initial = (Player:new GridPoint(ally.TilemapPosition.x,ally.TilemapPosition.y), Enemy:new GridPoint(enemy.TilemapPosition.x,enemy.TilemapPosition.y));
         var queue = new Queue<(GridPoint Player,GridPoint Enemy)>();queue.Enqueue(initial);
         var first = new Dictionary<(GridPoint Player,GridPoint Enemy),GridPoint> { [initial]=initial.Player };
-        var followers = new HashSet<GridPoint>(game.Allies.Where(a=>a!=ally).Select(a=>new GridPoint(a.TilemapPosition.x,a.TilemapPosition.y)));
         while (queue.Count>0 && first.Count<24000)
         {
             var current=queue.Dequeue();
@@ -184,7 +201,7 @@ public sealed class EncounterRuntime
                 var cell=first[current].ToCell();
                 var follower=game.Allies.FirstOrDefault(a=>a!=ally&&a.TilemapPosition==cell);
                 GameAction action=follower!=null?new SwapAllyPositionAction(ally,follower):new MovementAction(ally,ally.TilemapPosition,cell);
-                return action.IsValid(ally)?action:new WaitAction();
+                return action.IsValid(ally)?action:null;
             }
             foreach(var player in PuzzleState.CardinalNeighbors(current.Player).Where(p=>floor.IsWalkable(p)&&!p.Equals(current.Enemy)))
             {
@@ -195,7 +212,7 @@ public sealed class EncounterRuntime
                 first.Add(next,current.Equals(initial)?player:first[current]);queue.Enqueue(next);
             }
         }
-        return new WaitAction();
+        return null;
     }
 
     internal Vector3Int? AutoplayDestination(Ally ally)

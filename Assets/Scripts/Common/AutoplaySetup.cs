@@ -8,9 +8,10 @@ using UnityEngine.UI;
 public sealed class AutoplaySetup : MonoBehaviour
 {
     public TMP_InputField Seed, RunCount;
-    public TMP_Text Validation, SpeedLabel, GodmodeLabel, ResourcesLabel, CoverageLabel;
-    public Button Launch, Back, Speed, Godmode, InfiniteResources, Coverage;
+    public TMP_Text Validation, SpeedLabel, FastModeLabel, GodmodeLabel, ResourcesLabel, CoverageLabel;
+    public Button Launch, Back, Speed, FastMode, Godmode, InfiniteResources, Coverage;
     private readonly AutoplayOptions options = new() { DebugPlaythrough = true, DebugCoverage = true, Speed = 1 };
+    private float watchSpeed = 1;
     private GameObject previousSelection;
     private CanvasGroup menuGroup;
 
@@ -30,7 +31,13 @@ public sealed class AutoplaySetup : MonoBehaviour
         Seed.text = options.Seed.ToString(CultureInfo.InvariantCulture); RunCount.text = options.RunCount.ToString(CultureInfo.InvariantCulture);
         Seed.onValueChanged.AddListener(_ => Refresh()); RunCount.onValueChanged.AddListener(_ => Refresh());
         Launch.onClick.AddListener(StartBatch); Back.onClick.AddListener(Close);
-        Speed.onClick.AddListener(() => { int index = System.Array.IndexOf(AutoplayPanel.Rates,options.Speed); options.Speed = AutoplayPanel.Rates[(index+1)%AutoplayPanel.Rates.Length]; Refresh(); });
+        Speed.onClick.AddListener(() => { if (options.NoAnimations) return; int index = System.Array.IndexOf(AutoplayPanel.Rates,options.Speed); options.Speed = AutoplayPanel.Rates[(index+1)%AutoplayPanel.Rates.Length]; Refresh(); });
+        FastMode.onClick.AddListener(() =>
+        {
+            if (options.NoAnimations) { options.NoAnimations = false; options.Speed = watchSpeed; }
+            else { watchSpeed = options.Speed; options.NoAnimations = true; options.Speed = 32; }
+            Refresh();
+        });
         Godmode.onClick.AddListener(() => { options.Godmode = !options.Godmode; options.InfiniteStrength = options.Godmode; Refresh(); });
         InfiniteResources.onClick.AddListener(() => { options.InfiniteResources = !options.InfiniteResources; Refresh(); });
         Coverage.onClick.AddListener(() => { options.DebugCoverage = !options.DebugCoverage; Refresh(); });
@@ -51,6 +58,8 @@ public sealed class AutoplaySetup : MonoBehaviour
         Launch.interactable = Read(out var reason);
         Validation.text = reason ?? $"Seeds {options.Seed} to {options.SeedForRun(options.RunCount-1)} · isolated campaigns";
         SpeedLabel.text = $"Speed {options.Speed:0.#}×";
+        FastModeLabel.text = options.NoAnimations ? "Fast mode On · 32×, no animations" : "Fast mode Off";
+        Speed.interactable = !options.NoAnimations;
         GodmodeLabel.text = "Invincibility and unlimited strength " + (options.Godmode ? "On" : "Off");
         ResourcesLabel.text = "Unlimited resources " + (options.InfiniteResources ? "On" : "Off");
         CoverageLabel.text = "Try items and abilities " + (options.DebugCoverage ? "On" : "Off");

@@ -85,7 +85,7 @@ public sealed partial class ChaosRunner
                     "paired scenario effects and control return", scenario.DeadlineSeconds);
                 var pairAfter = Metrics(scenario.Assertions);
                 foreach (var key in pairBefore.Keys) pairedDeltas[key] = pairAfter[key] - pairBefore[key];
-                CloseSegment(); pairedSegment = segment;
+                yield return CompleteSegment(row.Device == "Independent" ? "Keyboard" : row.Device); pairedSegment = segment;
             }
             previousComposition = fixture.Composition;
             yield return Prepare(fixture);
@@ -118,7 +118,7 @@ public sealed partial class ChaosRunner
             ChaosCatalog.Record(Report.Coverage, evidence);
             ChaosJson.Write(Path.Combine(segment, "evidence.json"), evidence);
             if (!row.Passed) AddIssue("ScenarioFailed", row.Id + ": " + row.Reason, null);
-            CloseSegment();
+            yield return CompleteSegment(row.Device == "Independent" ? "Keyboard" : row.Device);
             if (pairedSegment != null)
             {
                 string pairedEvidence = Path.Combine(segment, "paired"); Directory.CreateDirectory(pairedEvidence);

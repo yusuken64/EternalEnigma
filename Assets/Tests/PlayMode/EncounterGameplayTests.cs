@@ -25,9 +25,13 @@ namespace EternalEnigma.Tests
         IEnumerator LoadEncounter(EncounterKind kind)
         {
             yield return harness.LoadMainMenu(null);
-            Object.FindFirstObjectByType<MainMenu>().StartGame();
-            yield return harness.WaitUntil(()=>Object.FindFirstObjectByType<Town>()?.IsReady==true,"initial town");
-            var common=Common.Instance;var context=common.CampaignContext;
+            var common = Common.Instance;
+            common.GameSaveData = Object.FindFirstObjectByType<MainMenu>().CreateNewSave(42);
+            common.Travel.NewCampaign(42);
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true &&
+                !common.Travel.IsTransitioning, "initial town and reveal");
+            harness.PrepareOpening();
+            var context=common.CampaignContext;
             context.Completed.Add("repeatable-0");
             context.Position=context.Grid.Locations[context.Campaign.Locations.First(l=>l.Encounter?.Kind==kind).Id];
             context.State.Scene="Overworld";
@@ -51,7 +55,9 @@ namespace EternalEnigma.Tests
             var common = Common.Instance;
             common.GameSaveData = Object.FindFirstObjectByType<MainMenu>().CreateNewSave(seed);
             common.Travel.NewCampaign(seed);
-            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "seeded campaign town");
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true &&
+                !common.Travel.IsTransitioning, "seeded campaign town and reveal");
+            harness.PrepareOpening();
             var context = common.CampaignContext;
             context.Position = context.Grid.Locations["region-0-landmark"];
             context.State.Scene = "Overworld";
@@ -100,6 +106,73 @@ namespace EternalEnigma.Tests
         [UnityTest] public IEnumerator HerdingCompletionRemovesTargetWithNormalAnimationPlayback()
             => CompleteTargetPuzzle(EncounterKind.Herding, DungeonAnimationMode.Normal);
 
+        [UnityTest] public IEnumerator Seed60LureReplansWhenFollowingPartyBlocksTheTargetLane()
+        {
+            var previousAnimation = DungeonPreferences.AnimationOverride;
+            float previousSpeed = Time.timeScale;
+            try
+            {
+                DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;
+                Time.timeScale = 32;
+                yield return harness.LoadMainMenu(null);
+                var common = Common.Instance;
+                var catalog = TownSceneLoader.Default.AllyCatalog;
+                common.GameSaveData = Object.FindFirstObjectByType<MainMenu>().CreateNewSave(60, catalog[0]);
+                foreach (var prefab in catalog.Skip(1).Take(3))
+                    common.GameSaveData.TownSaveData.RecruitedAlliesData.Add(HeroClassBinding.FromPrefab(prefab,
+                        new TownAllyData { AllyId = prefab.Id, AllyName = prefab.Name, Skills = prefab.Skills.ToList() }));
+                common.Travel.NewCampaign(60);
+                yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true &&
+                    !common.Travel.IsTransitioning, "four-member campaign town");
+                harness.PrepareOpening();
+                var context = common.CampaignContext;
+                context.Completed.Add("repeatable-0");
+                context.Position = context.Grid.Locations["payoff-SacredRite"];
+                context.State.Scene = "Overworld";
+                Assert.That(common.Travel.EnterLocation(), Is.True);
+                yield return harness.WaitForIdle();
+
+                var game = harness.Game;
+                Assert.That(DungeonPreferences.AnimationMode, Is.EqualTo(DungeonAnimationMode.NoAnimations));
+                Assert.That(Time.timeScale, Is.EqualTo(32));
+                Assert.That(game.CurrentDungeon.Floor.Objective.Kind, Is.EqualTo(DungeonObjectiveKind.TrapEnemy));
+                Assert.That(game.Allies, Has.Count.EqualTo(4));
+                var leader = harness.Ally;
+                var target = game.Enemies.Single(e => e.GetComponent<EncounterActor>()?.Invulnerable == true);
+                // The final report from campaign seed 60: all three followers
+                // seal the lane while the pursuer is still on its western side.
+                leader.SetPosition(new Vector3Int(15, 5));
+                var followers = game.Allies.Where(a => a != leader).ToArray();
+                for (int i = 0; i < followers.Length; i++) followers[i].SetPosition(new Vector3Int(14, 4 + i));
+                target.SetPosition(new Vector3Int(10, 6));
+                game.Encounter.Puzzle.SetPlayerPosition(leader.TilemapPosition.ToGridPoint());
+                game.Encounter.Puzzle.ObserveEnemyPosition(target.TilemapPosition.ToGridPoint());
+                // Preserve learned passives and their initialized vitals. The
+                // protected target is already excluded from companion combat.
+                foreach (var member in game.Allies) member.AllyStrategy = AllyStrategy.Follow;
+                Assert.That(game.Encounter.AutoplayPuzzleAction(leader), Is.Not.TypeOf<WaitAction>(),
+                    "A temporary follower formation must not make the solver wait forever.");
+                for (int turn = 0; turn < 120 && !game.CanExitFloor; turn++)
+                {
+                    var action = game.Encounter.AutoplayPuzzleAction(leader);
+                    Assert.That(action, Is.Not.Null);
+                    Assert.That(action, Is.Not.TypeOf<ResetFloorAction>(), "The formation can be solved without resetting the floor.");
+                    Assert.That(action.IsValid(leader), Is.True);
+                    yield return harness.ExecuteAction(action);
+                }
+                yield return null;
+                Assert.That(game.Encounter.Puzzle.Complete, Is.True);
+                Assert.That(game.CanExitFloor, Is.True);
+                Assert.That(target == null, Is.True);
+                Assert.That(game.Allies, Has.Count.EqualTo(4));
+            }
+            finally
+            {
+                DungeonPreferences.AnimationOverride = previousAnimation;
+                Time.timeScale = previousSpeed;
+            }
+        }
+
         IEnumerator CompleteTargetPuzzle(EncounterKind kind, DungeonAnimationMode animationMode)
         {
             var previousAnimation = DungeonPreferences.AnimationOverride;
@@ -107,6 +180,7 @@ namespace EternalEnigma.Tests
             {
                 DungeonPreferences.AnimationOverride = animationMode;
                 yield return LoadEncounter(kind);
+                Assert.That(DungeonPreferences.AnimationMode, Is.EqualTo(animationMode));
                 var game = harness.Game;
                 var target = game.Enemies.Single(e => e.GetComponent<EncounterActor>()?.Invulnerable == true);
                 Assert.That(game.CanExitFloor, Is.False);

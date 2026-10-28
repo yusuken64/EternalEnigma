@@ -1,0 +1,24 @@
+{
+  "Version": 1,
+  "Difficulty": "moderate",
+  "Workers": 2,
+  "MaxCandidates": 7,
+  "RunMinutes": 45,
+  "MaxHours": 24,
+  "TrainingSeeds": [42, 43, 44, 45, 46, 47],
+  "ValidationSeeds": [1042, 1043, 1044, 1045, 1046, 1047, 1048, 1049, 1050, 1051],
+  "Heroes": [
+    "5495724c2afa1734eb3b4c7657a3af34",
+    "f856c5228c5189d45891d5e429791694",
+    "ce1a8d7760520a046bc6dd1813244da7"
+  ],
+  "Targets": {
+    "MinRuns": 18,
+    "MinStageRuns": 12,
+    "CampaignSuccess": 0.65,
+    "StageSuccess": 0.75,
+    "MaxRetreats": 8,
+    "MaxMeanRetreats": 3,
+    "RequiredTiers": [0, 1, 2, 3, 4]
+  }
+}

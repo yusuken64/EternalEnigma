@@ -10,6 +10,11 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Balance")]
+    public static void RunBalance() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CombatFoundationTests.AttackReplayConsumesOneAttackWithoutMutatingLiveVitalsTwice",
+        "EternalEnigma.Tests.BalancePlayModeTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Fast Validation Audit")]
     public static void RunFastValidationAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.AutoplayFastModeTests", "EternalEnigma.Tests.NewCampaignPacingTests",
@@ -893,6 +898,8 @@ public static class HarnessTestRunner
             throw new InvalidOperationException("A harness run is already active.");
         SessionState.SetBool("EternalEnigma.Autoplay.ManualChecks", Array.Exists(testFilters,
             name => name.StartsWith("EternalEnigma.Tests.AutoplayTests.", StringComparison.Ordinal)));
+        SessionState.SetBool("EternalEnigma.Balance.ManualChecks", Array.Exists(testFilters,
+            name => name.StartsWith("EternalEnigma.Tests.BalancePlayModeTests", StringComparison.Ordinal)));
         SessionState.SetBool("EternalEnigma.Finale.ManualChecks", Array.Exists(testFilters,
             name => name.StartsWith("EternalEnigma.Tests.FinaleAutoplayTests.", StringComparison.Ordinal) ||
                 name.StartsWith("EternalEnigma.Tests.FinaleAutoplayControlTests.", StringComparison.Ordinal) ||
@@ -928,6 +935,7 @@ public static class HarnessTestRunner
             run.failed = 1;
             Write(run);
             SessionState.EraseString(SessionKey);
+            SessionState.EraseBool("EternalEnigma.Balance.ManualChecks");
             SessionState.EraseBool("EternalEnigma.Finale.ManualChecks");
             throw;
         }
@@ -949,6 +957,7 @@ public static class HarnessTestRunner
         SessionState.EraseString(SessionKey);
         SessionState.EraseString(SessionKey + ".Job");
         SessionState.EraseBool("EternalEnigma.Autoplay.ManualChecks");
+        SessionState.EraseBool("EternalEnigma.Balance.ManualChecks");
         SessionState.EraseBool("EternalEnigma.Finale.ManualChecks");
     }
 
@@ -1023,6 +1032,7 @@ public static class HarnessTestRunner
             SessionState.EraseString(SessionKey);
             SessionState.EraseString(SessionKey + ".Job");
             SessionState.EraseBool("EternalEnigma.Autoplay.ManualChecks");
+            SessionState.EraseBool("EternalEnigma.Balance.ManualChecks");
             SessionState.EraseBool("EternalEnigma.Finale.ManualChecks");
         }
     }

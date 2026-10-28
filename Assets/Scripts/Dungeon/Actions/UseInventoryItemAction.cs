@@ -7,6 +7,7 @@ internal class UseInventoryItemAction : GameAction
 {
 	private Inventory inventory;
 	private InventoryItem item;
+    internal string BalanceItemName => item?.ItemName;
 	private Character user;
 	private Character target;
 	private InventoryItem inventoryTarget;

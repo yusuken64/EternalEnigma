@@ -171,7 +171,7 @@ internal class AttackAction : GameAction
 
 		AddMetricsModification(attacker, (stats, vitals) =>
 		{
-			attacker.Vitals.AttacksPerTurnLeft -= 1;
+			vitals.AttacksPerTurnLeft -= 1;
 		});
 
 		bool hit;

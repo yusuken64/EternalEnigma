@@ -12,7 +12,9 @@ public sealed partial class AutoplayRunner
         string key = town.Configuration.Id + "/" + building.Id + "/" + offer.Item.ItemName;
         if (failedPurchases.Contains(key)) return false;
         string reason = PurchaseRejection(town,building,offer);
+        if (IsBalance) ObserveBalanceOffer(offer, reason);
         if (reason != null) { Skip("buy/"+key,reason,item:offer.Item.ItemName); return false; }
+        if (IsBalance) return CautiousWantsOffer(town, building, offer);
         if (CoverageEnabled && !purchased.Contains(offer.Item.ItemName)) return true;
         if (offer.Item is EquipmentItemDefinition equipment)
         {
@@ -43,6 +45,8 @@ public sealed partial class AutoplayRunner
         var stock = town.Services.Shop(building).Stock.FirstOrDefault(s => s.ItemName == offer.Item.ItemName);
         int before = stock?.Remaining ?? 0;
         bool success = town.Services.Buy(building,offer.Item.ItemName,out var reason);
+        if (IsBalance && success)
+        { var balancePurchase = BalancePurchase(offer.Item.ItemName); balancePurchase.Purchases++; balancePurchase.GoldSpent += offer.Price; }
         Report.Purchases.Add(new AutoplayTransaction { Name = offer.Item.ItemName, Building = key,
             ActorId = town.TownPlayer.ControllingTownAlly.Id, Cost = offer.Price, Currency = "Gold", Success = success, Reason = reason });
         WriteEvent(new AutoplayEvent { Kind = "Purchase", ActorId = town.TownPlayer.ControllingTownAlly.Id,
@@ -70,8 +74,8 @@ public sealed partial class AutoplayRunner
                 if (reason != null) { Skip("learn/"+key,reason,ally.Id,offer.Skill.SkillName); continue; }
                 if (!failedTraining.Contains(key+"/"+offer.CurrentRank)) candidates.Add((ally,offer));
             }
-        return candidates.OrderBy(c => TrainingPriority(c.offer)).ThenBy(c => c.offer.Tier)
-            .ThenBy(c => c.offer.NextCost).ThenBy(c => c.ally.Id).ThenBy(c => c.offer.Skill.SkillName).FirstOrDefault();
+        return candidates.OrderBy(c => IsBalance ? CautiousTrainingPriority(c.ally, c.offer) : TrainingPriority(c.offer)).ThenBy(c => c.offer.Tier)
+            .ThenBy(c => c.offer.NextCost).ThenBy(c => IsBalance ? (int)c.offer.Source : 0).ThenBy(c => c.ally.Id).ThenBy(c => c.offer.Skill.SkillName).FirstOrDefault();
     }
 
     internal bool LearnOffer(Town town, TownAlly ally, TrainerOffer offer)

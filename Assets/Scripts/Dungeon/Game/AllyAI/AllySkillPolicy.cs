@@ -39,6 +39,8 @@ public sealed class AllySkillPolicy : PolicyBase
 		}
 
 		var context = AllySkillContext.Build(ally, game);
+		if (AutoplayRunner.Active?.IsBalance == true)
+			return AutoplayRunner.Active.CautiousSkillChoice(context, evaluators);
 		if (context.Castable.Count == 0)
 		{
 			return null;

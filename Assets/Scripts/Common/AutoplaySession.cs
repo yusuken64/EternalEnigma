@@ -82,7 +82,7 @@ public sealed partial class AutoplayRunner
     private readonly Dictionary<string,string> skipReasons = new();
 
     public static bool ContinuesAfter(string outcome, AutoplayMode mode = AutoplayMode.Campaign) =>
-        mode == AutoplayMode.FloorLootSweep ? outcome is "Passed" or "Failed" : outcome is "Victory" or "Defeat" or "Stalled" or "TimeLimit";
+        mode == AutoplayMode.FloorLootSweep ? outcome is "Passed" or "Failed" : outcome is "Victory" or "Defeat" or "ResourceLimit" or "Stalled" or "TimeLimit";
 
     private void BeginRun()
     {
@@ -111,6 +111,7 @@ public sealed partial class AutoplayRunner
             BuildId = typeof(Game).Assembly.ManifestModule.ModuleVersionId.ToString(),
 #endif
             UnityVersion = Application.unityVersion };
+        BeginBalanceRun();
         BeginSweepRun();
         Directory.CreateDirectory(DirectoryPath);
         store.Begin(DirectoryPath);
@@ -247,6 +248,7 @@ public sealed partial class AutoplayRunner
         if (!ContinuesAfter(outcome, Options.Mode)) CancelBatch(reason);
         if (Report.ValidationOnly) Report.EligibleForBalance = false;
         Report.Outcome = outcome; Report.Reason = reason; Report.EndedUtc = DateTime.UtcNow.ToString("O");
+        EndBalanceRun(outcome);
         pendingError = null;
         Status = outcome + ": " + reason;
         Time.timeScale = 0;

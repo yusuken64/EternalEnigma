@@ -96,6 +96,7 @@ public sealed partial class AutoplayRunner
         string id = Report.RunId + "/cast-" + Report.SkillUses.Sum(u => u.Selected);
         void Record(string kind, string reason)
         {
+            BalanceCastEvent(ally, choice.Option.Skill, kind);
             if (kind == "CastStarted") use.Started++;
             if (kind == "CastCompleted") { use.Casts++; row.Completed++; row.Reason = null; }
             if (kind == "CastInterrupted") { use.Interrupted++; row.Interrupted++; row.Reason = reason; }

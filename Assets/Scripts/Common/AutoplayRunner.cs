@@ -19,6 +19,7 @@ public sealed class AutoplayOptions
     public AutoplayMode Mode;
     public string ResumeManifestPath;
     public string ReportRoot;
+    public BalanceExperimentOptions Balance;
     public int ActionLimit = 100000;
     public int Seed = 42;
     public int RunCount = 1;
@@ -37,6 +38,9 @@ public sealed class AutoplayOptions
 
     public bool Validate(out string reason)
     {
+        if (Balance != null && (!Balance.Validate(out reason) || Mode != AutoplayMode.Campaign ||
+            DebugPlaythrough || DebugCoverage || Godmode || InfiniteResources || InfiniteStrength))
+        { reason ??= "Balance experiments require normal campaigns with every debug option disabled."; return false; }
         reason = !Enum.IsDefined(typeof(AutoplayMode), Mode) ? "Unknown autoplay mode." :
             ActionLimit < 1 ? "Action limit must be positive." : RunCount < 1 ? "Run count must be at least 1." :
             (long)Seed + RunCount - 1 > int.MaxValue ? "The last seed would exceed 2147483647." :
@@ -79,6 +83,7 @@ public sealed class AutoplayReport
     public int Floor, Gold;
     public CampaignSnapshot Campaign;
     public AutoplayFinaleReport Finale;
+    public BalanceRunReport Balance;
     public string[] Visited, Inventory;
     public List<AutoplayActor> Party = new();
     public List<AutoplayActor> Enemies = new();
@@ -205,7 +210,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         store = new AutoplayStore();
         saveScope = SaveSystem.UseStore(store);
         Application.logMessageReceived += OnLog;
-        try { InitializeSweep(); if (!batchCanceled) BeginRun(); }
+        try { InitializeBalance(); InitializeSweep(); if (!batchCanceled) BeginRun(); }
         catch (Exception error) { FailSession("Unable to initialize run", error); }
         var panel = Resources.Load<AutoplayPanel>("UI/AutoplayPanel");
         if (panel != null) { playbackUI = Instantiate(panel, transform); playbackUI.Bind(this); }
@@ -334,7 +339,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
                 startedCampaign = true; common.Travel.Continue();
                 Log("Direct-start debug finale"); return;
             }
-            common.GameSaveData = menu.CreateNewSave(CurrentSeed);
+            common.GameSaveData = menu.CreateNewSave(CurrentSeed, BalanceHero());
             startedCampaign = true;
             common.Travel.NewCampaign(CurrentSeed);
             Log("New campaign"); return;
@@ -342,6 +347,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         var context = common.CampaignContext;
         if (context == null) { Finish("Unsupported", "Campaign context disappeared."); return; }
         TrackProgress(context);
+        BalanceCheckpoint();
         if (context.State.Finished && Report.Finale?.FinalExitCompleted == true && common.Travel.HomecomingCompleted &&
             Report.Finale.Floors.Count == FinalePlan.FloorCount && Report.Finale.Floors.All(f => f.Regions.All(r => r.Cleared && r.Remaining == 0)) &&
             (IsFinaleDebug || !Options.ExploreAll || context.Campaign.Locations.All(l =>
@@ -398,6 +404,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             EquipParty(town);
             Log("Prepare town party");
         }
+        if (IsBalance && PrepareCautiousTown(town)) return;
         var interior = context.Campaign.Locations.FirstOrDefault(l => l.ParentTownId == town.Configuration.Id && !context.Completed.Contains(l.Id));
         Vector3Int target;
         var shop = town.TownBuildings.FirstOrDefault(b => !shopped.Contains(b) && town.Services.Catalog(b.Definition).Any(o => WantsOffer(town,b.Definition,o)));
@@ -630,6 +637,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (MenuManager.Instance.CurrentDialog is StairConfirm stairsPrompt) { stairsPrompt.YesClicked(); Log("Confirm stairs/exit"); return; }
         if (game.Finale != null && MenuManager.Instance.Opened && SelectFinaleDestination(game.Finale)) return;
         if (MenuManager.Instance.Opened) { Finish("Unsupported", "Unhandled dungeon dialog: " + MenuManager.Instance.CurrentDialog.GetType().Name); return; }
+        if (IsBalance) { CautiousDungeonTick(game); return; }
         var player = game.PlayerController; var ally = player.ControlledAlly; var dungeon = game.CurrentDungeon;
         if (ally == null) return;
         if (Options.DebugPlaythrough && Options.InfiniteResources) player.Gold = 1000000;
@@ -748,7 +756,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         repetitions.TryGetValue(signature,out var count); repetitions[signature] = count+1;
         if (!IsLootSweep && count > 30) { Finish("Stalled", "Repeated action/state loop: " + message); return; }
         if (!IsLootSweep) lastProgress = Time.realtimeSinceStartupAsDouble;
-        if (Report.Actions >= Options.ActionLimit) { Finish("Failed", "Floor action limit reached."); return; }
+        if (Report.Actions >= Options.ActionLimit) { Finish(IsBalance ? "TimeLimit" : "Failed", "Action limit reached."); return; }
         if (Report.Actions % 50 == 0) { Capture(); WriteReport(); }
     }
 
@@ -909,6 +917,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
 
     private void Capture()
     {
+        BalanceCheckpoint();
         var common = Common.Instance; var game = Game.Instance;
         var c = common?.CampaignContext;
         Report.Seconds = Time.realtimeSinceStartupAsDouble-started-pausedSeconds-(Paused ? Time.realtimeSinceStartupAsDouble-pausedAt : 0);
@@ -968,10 +977,12 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         finally
         {
             Application.logMessageReceived -= OnLog;
+            balanceDecisions?.Dispose();
             try { actions?.Dispose(); issues?.Dispose(); saveScope?.Dispose(); }
             finally
             {
                 Active = null; Time.timeScale = originalTimeScale;
+                balanceScope?.Dispose();
                 Time.fixedDeltaTime = originalFixedDeltaTime;
                 UnityEngine.Random.state = originalRandom; ReleaseSessionReload();
             }

@@ -105,6 +105,21 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator AttackReplayConsumesOneAttackWithoutMutatingLiveVitalsTwice()
+        {
+            caster.Vitals.AttacksPerTurnLeft = 1;
+            caster.SyncDisplayedStats();
+            var action = new AttackAction(caster, caster.TilemapPosition, first.TilemapPosition);
+            action.ExecuteImmediate(caster);
+            Assert.That(caster.Vitals.AttacksPerTurnLeft, Is.Zero);
+            Assert.That(caster.DisplayedVitals.AttacksPerTurnLeft, Is.EqualTo(1));
+            action.UpdateDisplayedStats();
+            Assert.That(caster.Vitals.AttacksPerTurnLeft, Is.Zero, "Replay must not spend another live attack.");
+            Assert.That(caster.DisplayedVitals.AttacksPerTurnLeft, Is.Zero);
+            yield return null;
+        }
+
+        [UnityTest]
         public IEnumerator StatusKillsCreditTheLatestCasterWithoutChangingDamageResponses()
         {
             var poison = CreateStatusTemplate<DotStatusEffect>(20);

@@ -16,14 +16,16 @@ public sealed class AutoplayBatchPlayer : MonoBehaviour
         if (Application.isEditor) return;
         var arguments = Environment.GetCommandLineArgs();
         int index = Array.IndexOf(arguments, "--debug-autoplay-options");
+        bool balance = false;
+        if (index < 0) { index = Array.IndexOf(arguments, "--balance-options"); balance = index >= 0; }
         if (index < 0) return;
         try
         {
             if (index + 1 >= arguments.Length) throw new ArgumentException("Missing debug autoplay options path.");
             var settings = JsonUtility.FromJson<AutoplayOptions>(File.ReadAllText(arguments[index + 1]));
             if (settings == null || !settings.Validate(out _) || settings.Mode != AutoplayMode.Campaign ||
-                !settings.DebugPlaythrough || string.IsNullOrWhiteSpace(settings.ReportRoot))
-                throw new ArgumentException("Expected valid debug campaign options with an explicit ReportRoot.");
+                (balance ? settings.Balance == null : !settings.DebugPlaythrough || settings.Balance != null) || string.IsNullOrWhiteSpace(settings.ReportRoot))
+                throw new ArgumentException("Expected valid campaign options for the requested runner and an explicit ReportRoot.");
             var host = new GameObject("Debug campaign batch player");
             DontDestroyOnLoad(host);
             host.AddComponent<AutoplayBatchPlayer>().options = settings;
@@ -46,7 +48,7 @@ public sealed class AutoplayBatchPlayer : MonoBehaviour
         while (run.SessionRunning) yield return null;
         while (run.Finalizing || run.Advancing) yield return null;
         bool passed = run.Batch.State == "Completed" && run.Batch.Runs.Count == options.RunCount &&
-            run.Batch.Runs.All(row => row.Outcome == "Victory" && row.ArtifactsComplete && row.Issues == 0);
+            run.Batch.Runs.All(row => (options.Balance != null ? row.Outcome is "Victory" or "Defeat" or "ResourceLimit" : row.Outcome == "Victory") && row.ArtifactsComplete && row.Issues == 0);
         Debug.Log($"Debug campaign batch {(passed ? "passed" : "failed")}: {run.BatchDirectoryPath}");
         run.ExitDemo();
         deadline = Time.realtimeSinceStartupAsDouble + 180;

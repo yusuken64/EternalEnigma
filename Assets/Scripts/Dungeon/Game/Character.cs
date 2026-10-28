@@ -250,8 +250,10 @@ public abstract class Character : MonoBehaviour, Actor
 	public abstract void DetermineAction();
     protected List<GameAction> ExecuteWithScenery(GameAction action)
     {
+        AutoplayRunner.BeginBalanceAction(action, this);
         action.Visuals.Begin(this);
         var result = ExecuteWithSceneryCore(action) ?? new List<GameAction>();
+        if (action.BalanceSource != null) foreach (var child in result.Where(c => c != null)) child.BalanceSource ??= action.BalanceSource;
         action.Visuals.End(action, this, result);
         return result;
     }

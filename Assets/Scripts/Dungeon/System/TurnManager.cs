@@ -80,6 +80,7 @@ public class TurnManager : MonoBehaviour
 	private IEnumerator TrackTurnRoutine()
 	{
 		GameInputDiagnostics.Record("TurnStarted");
+		AutoplayRunner.BalanceTurnStarted();
 		IsProcessingTurn = true;
 		try
         {
@@ -480,6 +481,7 @@ public interface Actor
 [System.Serializable]
 public abstract class GameAction
 {
+    [System.NonSerialized] internal BalanceActionSource BalanceSource;
 	[System.NonSerialized] internal bool ManualWalkCommand;
 	internal virtual bool InterruptsWalking => true;
 	[System.NonSerialized] internal CombatVisualReplay Visuals = new();
@@ -604,7 +606,9 @@ public abstract class GameAction
 	public void AddMetricsModification(Character target, Action<Stats, Vitals> metricModification)
 	{
 		TrackAnimationTarget(target);
+		int balanceHP = target.Vitals.HP, balanceMana = target.Vitals.Mana, balanceHunger = target.Vitals.Hunger;
 		metricModification?.Invoke(target.BaseStats, target.Vitals);
+		AutoplayRunner.BalanceMetrics(this, target, balanceHP, balanceMana, balanceHunger);
 		Action applyToDisplayedStats = () => metricModification?.Invoke(target.DisplayedStats, target.DisplayedVitals);
 		MetricsModifications.Add(applyToDisplayedStats);
 	}

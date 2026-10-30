@@ -402,8 +402,8 @@ namespace EternalEnigma.Tests
         {
             Learn("Damage"); Learn("Strength Up");
             Assert.That(MenuManager.Instance.TargetDialog.enabled, Is.False);
-            yield return Press(GamepadButton.LeftShoulder);
-            Assert.That(MenuManager.Instance.PartyMenu.EntryButtons.Count, Is.EqualTo(2), "Active and passive abilities remain inspectable.");
+            yield return Press(GamepadButton.East);
+            Assert.That(MenuManager.Instance.PartyMenu.EntryButtons.Count, Is.EqualTo(1), "Skills shows only active abilities; passives are inspected in Stats.");
             yield return Press(GamepadButton.South);
             var dialog = MenuManager.Instance.TargetDialog;
             Assert.That(dialog.enabled, Is.True);

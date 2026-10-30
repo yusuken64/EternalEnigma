@@ -1,5 +1,13 @@
 # Game test harness
 
+**Tools > Eternal Enigma > Tests > Run Menu Controller Followups** covers the
+Skills/Strategy controller swap, active-only Skills, passive descriptions in Stats,
+inventory focus release through all three close paths, shared menu cursors,
+Developer button visibility, and the first town's dungeon-tile entrance.
+Captures are written to `Temp/MenuFeedback`, `Temp/MenuControllerFollowups`, and
+`Temp/OpeningPreparation`. **Run Menu Town Followups EditMode** checks input
+prompts, the new town layout, and adventure-book placement in current/legacy saves.
+
 ## Book dungeons and zoom travel
 
 **Tools > Eternal Enigma > Tests > Run Book Travel** exercises optional book entry,
@@ -161,7 +169,7 @@ The opening room includes three stationary 500-HP practice targets, partly injur
 allies, and 100 Mana per ally. Allies hold position. A training sword and 20 Wooden
 Arrows are also provided. Inspect effects display the selected item's stock or
 weapon stats; they do not enchant or consume that target. Scroll use consumes one
-scroll with no Mana cost. **R / left shoulder** opens skills, **Q / west button**
+scroll with no Mana cost. **R / east button** opens skills, **Q / west button**
 opens the inventory. Later floors retain normal encounters.
 
 The content is stored in `Assets/Resources/DemoDungeon/Loadout.asset` with skill,
@@ -214,7 +222,7 @@ single-target (`AreaRadius` does not create splash damage). Confirmed empty shot
 still consume ammunition/skill Mana and a turn. Wooden Arrows and Spell Bolt now use
 this mode, preserving their existing 40-tile range and projectile visuals.
 
-Dungeon controls: **R / left shoulder** opens or closes skills; **WASD, arrows,
+Dungeon controls: **R / east button** opens or closes skills; **WASD, arrows,
 D-pad or left stick** selects a skill/target; **Enter, Space / south button**
 confirms; **Escape / east button** goes back. Self/untargeted skills cast on the
 first confirmation. Targeted skills require a second confirmation and can be

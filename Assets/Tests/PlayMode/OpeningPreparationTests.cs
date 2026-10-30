@@ -83,6 +83,32 @@ namespace EternalEnigma.Tests
         }
         Button BedAction() => Object.FindFirstObjectByType<HomeBedDialog>().GetComponentsInChildren<Button>()
             .Single(b => b.GetComponentInChildren<TMP_Text>().text != "Back");
+
+        [UnityTest] public IEnumerator FirstTownHasOnlyUsefulHousesAndDungeonSmartTileEntrance()
+        {
+            yield return StartCampaign();
+            Assert.That(Town.Plan.BuildingSlots.Count, Is.EqualTo(8));
+            Assert.That(Town.Plan.Interiors.Count(i => i.Spec.Kind == EternalEnigma.Core.World.TownInteriorKind.Residential), Is.EqualTo(1));
+            Assert.That(Town.DungeonBook, Is.Not.Null, "The remaining residence contains the adventure book.");
+            Assert.That(Town.GetComponentInChildren<HomeBed>(), Is.Not.Null);
+            var entrance = Town.TownBuildings.Single(b => b.Definition.DialogId == "entrance");
+            var creator = Town.WalkableMap.TileWorldCreator;
+            var layer = creator.twcAsset.mapBuildLayers.OfType<EnvironmentSmartTileLayer>().Single(l => l.Buildings);
+            var doors = TownDungeonEntranceTiles.Doors(Town.Plan, layer.BuildingServices);
+            Assert.That(doors, Does.Contain(entrance.TilemapPosition.ToGridPoint()));
+            Assert.That(creator.worldObject.GetComponentsInChildren<TownRoofVisual>(true)
+                .Any(roof => roof.Door.Equals(entrance.TilemapPosition.ToGridPoint())), Is.False,
+                "The dungeon masonry must remain visible instead of being covered by a house roof.");
+            Assert.That(entrance.transform.Find("Dungeon gate"), Is.Not.Null);
+            var theme = Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog").Get(new DungeonVisualSelection {
+                Biome = creator.GetComponent<TownBiomeStyle>().Current, Environment = DungeonEnvironmentKind.Interior
+            });
+            if (theme.RegularSmartBoundary.MaterialOverride != null)
+                Assert.That(creator.worldObject.GetComponentsInChildren<MeshRenderer>(true)
+                    .SelectMany(r => r.sharedMaterials), Does.Contain(theme.RegularSmartBoundary.MaterialOverride));
+            yield return CaptureGate("dungeon-smart-tile-entrance");
+        }
+
         void BuyBread() => Assert.That(Town.Services.Buy(Bakery, "Bread", out var reason), Is.True, reason);
         string LearnSkill()
         {

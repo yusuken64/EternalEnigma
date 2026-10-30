@@ -363,6 +363,13 @@ namespace EternalEnigma.Tests
                 Assert.That(scroll.viewport.GetComponent<RectMask2D>(), Is.Not.Null);
                 Assert.That(scroll.content.rect.height, Is.GreaterThan(scroll.viewport.rect.height));
                 var labels = scroll.content.GetComponentsInChildren<TMP_Text>();
+                var guide = string.Join("\n", labels.Select(label => label.text));
+                Assert.That(guide, Does.Contain("Skills: B / Circle"));
+                Assert.That(guide, Does.Contain("Dungeon orders: LB / L1"));
+                Assert.That(guide, Does.Contain("Back: B / Circle"));
+                System.IO.Directory.CreateDirectory("Temp/MenuControllerFollowups");
+                ScreenCapture.CaptureScreenshot("Temp/MenuControllerFollowups/controls-menu.png");
+                yield return new WaitForSecondsRealtime(.2f);
                 foreach (var label in labels)
                 {
                     label.ForceMeshUpdate();
@@ -382,6 +389,8 @@ namespace EternalEnigma.Tests
                     yield return Press(GamepadButton.DpadDown);
                 Assert.That(scroll.verticalNormalizedPosition, Is.LessThanOrEqualTo(.0001f));
                 Canvas.ForceUpdateCanvases();
+                ScreenCapture.CaptureScreenshot("Temp/MenuControllerFollowups/controls-world-bindings.png");
+                yield return new WaitForSecondsRealtime(.2f);
                 foreach (var label in labels)
                 {
                     label.ForceMeshUpdate();

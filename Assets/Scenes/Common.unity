@@ -15418,14 +15418,14 @@ MonoBehaviour:
     Inventory:
     X / Square
 
-    Skills: LB / L1
+    Skills: B / Circle
 
     Next hero: RB / R1
 
     Turn: hold Y / Triangle
     + direction
 
-    Dungeon orders: B / Circle
+    Dungeon orders: LB / L1
 
     Map: View / Select
 

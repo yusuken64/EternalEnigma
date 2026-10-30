@@ -66,7 +66,9 @@ namespace JuicyChickenGames.Menu
 
         internal void SetupTown(TownAlly controllingTownAlly)
         {
-            var dynamicActionInfos = controllingTownAlly.Skills.Select((skill, index) =>
+            var dynamicActionInfos = controllingTownAlly.Skills
+                .Where(skill => Common.Instance.SkillManager.GetSkillByName(skill)?.ActivationType == ActivationType.Active)
+                .Select((skill, index) =>
             {
                 return new DynamicActionInfo()
                 {

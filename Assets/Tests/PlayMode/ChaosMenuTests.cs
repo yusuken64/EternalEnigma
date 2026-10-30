@@ -275,7 +275,7 @@ namespace EternalEnigma.Tests
         {
             yield return harness.LoadDungeon(new TestScenario { Skills = new[] { "Fire Bolt" }, Mana = 50 });
             var actor = harness.Ally; int before = actor.Vitals.Mana;
-            yield return Input(ChaosInput.Pad(GamepadButton.LeftShoulder));
+            yield return Input(ChaosInput.Pad(GamepadButton.East));
             var menu = MenuManager.Instance.PartyMenu;
             var target = menu.EntryButtons.Single(b => ChaosUI.Label(b).StartsWith("Fire Bolt", System.StringComparison.Ordinal));
             for (int i = 0; i < 15 && EventSystem.current.currentSelectedGameObject != target.gameObject; i++) yield return Input(ChaosInput.Pad(GamepadButton.DpadDown));

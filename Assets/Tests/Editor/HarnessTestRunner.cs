@@ -10,6 +10,43 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Menu Controller Followups")]
+    public static void RunMenuControllerFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MenuSelectionTests", "EternalEnigma.Tests.ControllerFlowTests",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownPassivesAppearOnlyInStatsWithRanksAndDescriptions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonPassivesAppearOnlyInStatsWithoutSpendingActions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownKeyboardInventoryOpensUsesItemAndCloses",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonRootSwitchingDoesNotConsumeATurn",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.DungeonDockTests.StatAndEquipmentSummariesExplainWithoutItemCommands",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DeveloperButtonTogglesDebugControls",
+        "EternalEnigma.Tests.OpeningPreparationTests.FirstTownHasOnlyUsefulHousesAndDungeonSmartTileEntrance");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Menu Controller Final Checks")]
+    public static void RunMenuControllerFinalChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly",
+        "EternalEnigma.Tests.ControllerFlowTests.TownMovementInventorySkillsAndSettingsUseControllerOnly",
+        "EternalEnigma.Tests.DungeonDockTests.StatAndEquipmentSummariesExplainWithoutItemCommands",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DeveloperButtonTogglesDebugControls",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownPassivesAppearOnlyInStatsWithRanksAndDescriptions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonPassivesAppearOnlyInStatsWithoutSpendingActions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonRootSwitchingDoesNotConsumeATurn",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.SkillRegressionTests.GamepadOpensSelectsCancelsReopensAndConfirmsSkill",
+        "EternalEnigma.Tests.SettingsInteractionTests.ControlsGuideScrollsAndReturnsToCategoryAt960By600");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Controls Menu Checks")]
+    public static void RunControlsMenuChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.MenuSceneNavigationTests.DeveloperButtonTogglesDebugControls",
+        "EternalEnigma.Tests.SettingsInteractionTests.ControlsGuideScrollsAndReturnsToCategoryAt960By600");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Menu Town Followups EditMode")]
+    public static void RunMenuTownFollowupsEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.InputPromptsTests", "EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests",
+        "EternalEnigma.Tests.CoreIntegration.TownDungeonBookTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Balance")]
     public static void RunBalance() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.CombatFoundationTests.AttackReplayConsumesOneAttackWithoutMutatingLiveVitalsTwice",

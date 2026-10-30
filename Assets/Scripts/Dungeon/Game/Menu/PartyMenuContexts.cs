@@ -31,12 +31,12 @@ public abstract class PartyMenuContext : IPartyMenuContext
     public virtual List<PartyMenuEntry> Entries(PartyMenuHero hero,PartyMenuTab tab)
     {
         if(tab==PartyMenuTab.Capabilities)return CapabilityEntries();
-        if(tab==PartyMenuTab.Skills)return Skills(hero).Where(s=>s!=null).OrderBy(s=>s.ActivationType).Select(s=> {
-            int charge=s.ActivationType==ActivationType.Active?(hero.DungeonActor!=null?s.InitialCastTime(hero.DungeonActor):s.CastTime):0;
+        if(tab==PartyMenuTab.Skills)return Skills(hero).Where(s=>s!=null && s.ActivationType==ActivationType.Active).Select(s=> {
+            int charge=hero.DungeonActor!=null?s.InitialCastTime(hero.DungeonActor):s.CastTime;
             return new PartyMenuEntry {
-            Skill=s,Title=$"{s.DisplayName}  Rank {s.Rank}" + (s.ActivationType==ActivationType.Active?$"  {s.CostText(hero.DungeonActor)}":"  Passive"),
-            Description=s.Description+(s.ActivationType==ActivationType.Active?$"\nCharging takes {charge} {(charge==1?"action":"actions")}.":"")+(s.UsesArrows?"\nRequires "+(s.ArrowCostMode==ArrowCostMode.PerTarget?"1 arrow per target.":$"{s.ArrowCost} arrows."):""),
-            Section=s.ActivationType==ActivationType.Active?"Active skills":"Passive skills",Icon=s.Icon };
+            Skill=s,Title=$"{s.DisplayName}  Rank {s.Rank}  {s.CostText(hero.DungeonActor)}",
+            Description=s.Description+$"\nCharging takes {charge} {(charge==1?"action":"actions")}."+(s.UsesArrows?"\nRequires "+(s.ArrowCostMode==ArrowCostMode.PerTarget?"1 arrow per target.":$"{s.ArrowCost} arrows."):""),
+            Section="Active skills",Icon=s.Icon };
         }).ToList();
         if(tab==PartyMenuTab.Stats)return StatEntries(hero);
         if(tab==PartyMenuTab.Equipment)return EquipmentEntries(hero);
@@ -101,6 +101,11 @@ public abstract class PartyMenuContext : IPartyMenuContext
         Add("Resistances",$"Fire {stats.FireResistance}",Sources("Fire"));
         Add("Resistances",$"Ice {stats.IceResistance}",Sources("Ice"));
         Add("Resistances",$"Lightning {stats.LightningResistance}",Sources("Lightning"));
+        entries.AddRange(Skills(hero).Where(skill=>skill!=null && skill.ActivationType==ActivationType.Passive)
+            .Select(skill=>new PartyMenuEntry {
+                Skill=skill,Section="Passive skills",Title=$"{skill.DisplayName}  Rank {skill.Rank}",
+                Description=skill.Description+"\n\nThis passive skill is always active.",Icon=skill.Icon
+            }));
         return entries;
     }
     private List<PartyMenuEntry> EquipmentEntries(PartyMenuHero hero)

@@ -28,7 +28,7 @@ namespace EternalEnigma.Tests.CoreIntegration
                 Assert.That(context.IsGridGenerated, Is.False);
                 Assert.That(configuration.Buildings.Select(d => d.Id), Is.Unique);
                 Assert.That(configuration.PartySpawn, Is.EqualTo(layout.Options.PartySpawn.ToCell()));
-                Assert.That(configuration.SlotBuildings.Count(d => d == null), Is.EqualTo(CampaignContext.ResidentialTownBuildings));
+                Assert.That(configuration.SlotBuildings.Count(d => d == null), Is.EqualTo(CampaignContext.OpeningResidentialBuildings));
                 for (int i = 0; i < layout.SlotServices.Count; i++)
                     if (layout.SlotServices[i] != null)
                     {

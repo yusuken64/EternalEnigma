@@ -26,6 +26,63 @@ namespace EternalEnigma.Tests
         [UnityTearDown]public IEnumerator Cleanup(){yield return harness.Cleanup();DungeonPreferences.FullControlOverride=fullControl;DungeonPreferences.AnimationOverride=animation;inputScope.Dispose();foreach(var asset in owned)if(asset!=null)Object.DestroyImmediate(asset);owned.Clear();}
         private T Asset<T>() where T:ScriptableObject {var asset=ScriptableObject.CreateInstance<T>();owned.Add(asset);return asset;}
 
+        [UnityTest]public IEnumerator TownPassivesAppearOnlyInStatsWithRanksAndDescriptions()
+        {
+            yield return harness.LoadTown(new TestScenario {Skills=new[]{"Damage","Strength Up"}}.CreateSave());
+            var town=Object.FindFirstObjectByType<Town>();
+            var hero=town.TownPlayer.ControllingTownAlly;
+            hero.SetRank("Strength Up",3);
+            var context=new TownPartyMenuContext(town);
+            var inspected=context.Heroes.Single(entry=>entry.Id==hero.Id);
+            AssertPassiveSeparation(context,inspected);
+            context.Dispose();
+            var manager=Object.FindFirstObjectByType<TownMenuManager>();
+            manager.OpenPartyMenu(PartyMenuTab.Skills);yield return null;
+            var menu=manager.PartyMenu;
+            Assert.That(menu.EntryButtons.Any(button=>button.GetComponent<AuthoredButton>().Label.text.Contains("Strength Up")),Is.False);
+            Directory.CreateDirectory("Temp/MenuFeedback");
+            ScreenCapture.CaptureScreenshot("Temp/MenuFeedback/skills-active-only.png");
+            yield return new WaitForSecondsRealtime(.3f);
+            menu.SwitchTab(PartyMenuTab.Stats);yield return null;
+            var passive=menu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text.Contains("Strength Up"));
+            Assert.That(passive.GetComponent<AuthoredButton>().Label.text,Does.Contain("Rank 3"));
+            passive.Select();yield return new WaitForSecondsRealtime(.3f);
+            menu.scrollView.verticalNormalizedPosition=0;Canvas.ForceUpdateCanvases();yield return null;
+            ScreenCapture.CaptureScreenshot("Temp/MenuFeedback/stats-passives.png");
+            yield return new WaitForSecondsRealtime(.3f);
+            passive.onClick.Invoke();yield return null;
+            Assert.That(manager.CurrentDialog,Is.TypeOf<PartyMenuPicker>());
+            Assert.That(manager.CurrentDialog.GetComponentsInChildren<TMPro.TMP_Text>()
+                .Any(label=>label.text.Contains("always active")),Is.True);
+        }
+
+        [UnityTest]public IEnumerator DungeonPassivesAppearOnlyInStatsWithoutSpendingActions()
+        {
+            yield return harness.LoadDungeon(new TestScenario {Skills=new[]{"Damage","Strength Up"}});
+            var actor=harness.Ally;
+            var context=new DungeonPartyMenuContext(harness.Game);
+            var hero=context.Heroes.Single(entry=>entry.DungeonActor==actor);
+            AssertPassiveSeparation(context,hero);context.Dispose();
+            int actions=actor.Vitals.ActionsPerTurnLeft;
+            MenuManager.Instance.OpenPartyMenu(PartyMenuTab.Stats);yield return null;
+            var menu=MenuManager.Instance.PartyMenu;
+            var passive=menu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text.Contains("Strength Up"));
+            passive.onClick.Invoke();yield return null;
+            Assert.That(MenuManager.Instance.CurrentDialog,Is.TypeOf<PartyMenuPicker>());
+            Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
+        }
+
+        private static void AssertPassiveSeparation(PartyMenuContext context,PartyMenuHero hero)
+        {
+            var skills=context.Entries(hero,PartyMenuTab.Skills);
+            Assert.That(skills,Is.Not.Empty);
+            Assert.That(skills.All(entry=>entry.Skill.ActivationType==ActivationType.Active),Is.True);
+            var passive=context.Entries(hero,PartyMenuTab.Stats).Single(entry=>entry.Skill?.SkillName=="Strength Up");
+            Assert.That(passive.Section,Is.EqualTo("Passive skills"));
+            Assert.That(passive.Description,Does.Contain(passive.Skill.Description));
+            Assert.That(context.Actions(hero,passive),Is.Empty);
+        }
+
         [UnityTest]public IEnumerator MainMenuCompositionKeepsDeveloperControlsClosed()
         {
             yield return harness.LoadMainMenu(null);
@@ -267,7 +324,7 @@ namespace EternalEnigma.Tests
             yield return harness.LoadTown(new TestScenario().CreateSave());
             var town=Object.FindFirstObjectByType<Town>();var original=town.TownPlayer.RecruitedAllies[0];
             original.Level=LevelSystem.MaxLevel;original.Experience=LevelSystem.ExperienceAtLevel(LevelSystem.MaxLevel);
-            original.SetRank("Gatekeeper's Resolve",1);
+            original.SetRank("Strength Up",1);
             for(int i=1;i<4;i++)
             {
                 var clone=Object.Instantiate(original,town.transform);clone.Id="layout-"+i;clone.Name="Companion "+i;
@@ -340,16 +397,22 @@ namespace EternalEnigma.Tests
 
         private static void VerifyStatsFit(PartyMenu menu)
         {
-            Assert.That(menu.scrollView.vertical,Is.False,"The entire Stats submenu fits without scrolling.");
+            bool hasPassives=menu.RowsRoot.GetComponentsInChildren<TMPro.TMP_Text>()
+                .Any(label=>label.text=="Passive skills");
+            Assert.That(menu.scrollView.vertical,Is.EqualTo(hasPassives),"Learned passives extend Stats into a scrolling list.");
             Assert.That(menu.EntryButtons.Count,Is.GreaterThanOrEqualTo(19),"All stats remain present.");
-            Assert.That(menu.EntryButtons.Last().GetComponentInChildren<TMPro.TMP_Text>().text,Does.StartWith("Lightning "));
+            Assert.That(menu.EntryButtons.Any(button=>button.GetComponentInChildren<TMPro.TMP_Text>().text.StartsWith("Lightning ")),Is.True);
             var viewport=menu.scrollView.viewport;
-            Assert.That(menu.scrollView.content.rect.height,Is.LessThanOrEqualTo(viewport.rect.height+1));
+            if(hasPassives)Assert.That(menu.scrollView.content.rect.height,Is.GreaterThan(viewport.rect.height));
+            else Assert.That(menu.scrollView.content.rect.height,Is.LessThanOrEqualTo(viewport.rect.height+1));
             foreach(RectTransform row in menu.RowsRoot)
             {
-                var bounds=RectTransformUtility.CalculateRelativeRectTransformBounds(viewport,row);
-                Assert.That(bounds.min.y,Is.GreaterThanOrEqualTo(viewport.rect.yMin-1),row.name+" extends below the Stats panel.");
-                Assert.That(bounds.max.y,Is.LessThanOrEqualTo(viewport.rect.yMax+1),row.name+" extends above the Stats panel.");
+                if(!hasPassives)
+                {
+                    var bounds=RectTransformUtility.CalculateRelativeRectTransformBounds(viewport,row);
+                    Assert.That(bounds.min.y,Is.GreaterThanOrEqualTo(viewport.rect.yMin-1),row.name+" extends below the Stats panel.");
+                    Assert.That(bounds.max.y,Is.LessThanOrEqualTo(viewport.rect.yMax+1),row.name+" extends above the Stats panel.");
+                }
                 foreach(var label in row.GetComponentsInChildren<TMPro.TMP_Text>())
                 {
                     label.ForceMeshUpdate();
@@ -358,7 +421,8 @@ namespace EternalEnigma.Tests
             }
             var position=menu.scrollView.content.anchoredPosition;
             menu.scrollView.OnScroll(new PointerEventData(EventSystem.current){scrollDelta=new Vector2(0,-10)});
-            Assert.That(menu.scrollView.content.anchoredPosition,Is.EqualTo(position),"Mouse-wheel input must not scroll Stats.");
+            if(hasPassives)Assert.That(menu.scrollView.content.anchoredPosition,Is.Not.EqualTo(position),"Mouse-wheel input can reach learned passives below the stats.");
+            else Assert.That(menu.scrollView.content.anchoredPosition,Is.EqualTo(position),"Basic Stats fits without scrolling.");
         }
 
         private IEnumerator VerifyHudTabs(PartyMenu menu,bool includeCapabilities=false)

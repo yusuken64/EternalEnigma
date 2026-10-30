@@ -97,7 +97,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     {
         foreach(var houses in asset.mapBuildLayers.OfType<EnvironmentSmartTileLayer>().Where(l=>l.Buildings))
             houses.BuildingServices=(configuration.SlotBuildings??configuration.Buildings).Select(b=>b==null?"":
-                b.Id=="inn"?"Inn":b.ShopCatalog.Count>0?"Shop":b.Id.Contains("trainer")||b.DialogId=="trainer"?"Trainer":"").ToArray();
+                b.DialogId=="entrance"?"Dungeon":b.Id=="inn"?"Inn":b.ShopCatalog.Count>0?"Shop":b.Id.Contains("trainer")||b.DialogId=="trainer"?"Trainer":"").ToArray();
         if (configuration.Layout != null)
         {
             var options = configuration.Layout.Options;

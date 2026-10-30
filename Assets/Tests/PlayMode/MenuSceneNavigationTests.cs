@@ -94,8 +94,9 @@ namespace EternalEnigma.Tests
         {
             yield return harness.LoadMainMenu(null);
             var developer = Object.FindFirstObjectByType<MainMenuDeveloperControls>();
+            yield return null; // Include the visibility refresh in LateUpdate.
             Assert.That(developer, Is.Not.Null);
-            Assert.That(developer.Toggle.gameObject.activeSelf, Is.True);
+            Assert.That(developer.Toggle.gameObject.activeInHierarchy, Is.True);
             Assert.That(developer.Controls, Is.Not.Empty);
             Assert.That(developer.Controls.All(control => !control.activeSelf), Is.True);
 
@@ -106,7 +107,14 @@ namespace EternalEnigma.Tests
 
             developer.Initialize();
             developer.Toggle.onClick.Invoke();
+            yield return null;
             Assert.That(developer.Controls.All(control => control.activeSelf), Is.True);
+
+            Assert.That(developer.Close(), Is.True);
+            yield return null;
+            Assert.That(developer.Controls.All(control => !control.activeSelf), Is.True);
+            Assert.That(developer.Toggle.gameObject.activeInHierarchy, Is.True);
+            Assert.That(developer.Close(), Is.False);
         }
 
         [UnityTest]

@@ -15,6 +15,9 @@ New Journey opens a paged roster of existing heroes. Choosing one previews their
 model and fixed class or classes; Begin Journey starts the campaign with that hero
 as protagonist. The default hero remains available to debug launches.
 
+The **Developer** button is available in development and release builds. Its
+controls start closed.
+
 The stage uses visual models only. Menu material variants live in
 `Assets/Art/MainMenu`; editing them does not recolor gameplay assets.
 The eight dungeon surface textures are retained in `Assets/Art/MainMenu/Textures`

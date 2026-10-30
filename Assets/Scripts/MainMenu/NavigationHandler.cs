@@ -17,6 +17,29 @@ public class NavigationHandler : MonoBehaviour
     private Vector3 arrowStart;
     private float arrowStartedAt;
     private readonly Vector3[] corners = new Vector3[4];
+    private bool keepOnScreen;
+
+    public static void EnsureDialogPointer(MonoBehaviour owner, Transform root)
+    {
+        // Settings already has a pointer positioned for its sliders and tabs.
+        if (owner is GlobalSettings || owner is JuicyChickenGames.Menu.TargetDialog) return;
+        var navigation = root.GetComponent<NavigationHandler>();
+        if (navigation == null) navigation = root.gameObject.AddComponent<NavigationHandler>();
+        if (navigation.selectionArrow == null)
+        {
+            var pointer = new GameObject("Menu selection cursor", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.LayoutElement));
+            pointer.transform.SetParent(root, false);
+            pointer.GetComponent<UnityEngine.UI.LayoutElement>().ignoreLayout = true;
+            navigation.selectionArrow = (RectTransform)pointer.transform;
+        }
+        navigation.ConfigureCompactPointer(owner);
+        navigation.FocusRoot = root;
+        // A separate canvas keeps the arrow above scroll masks and external HUD tabs.
+        var canvas = navigation.selectionArrow.GetComponent<Canvas>();
+        if (canvas == null) canvas = navigation.selectionArrow.gameObject.AddComponent<Canvas>();
+        canvas.overrideSorting = true;
+        navigation.enabled = true;
+    }
 
     public void Init()
     {
@@ -32,6 +55,7 @@ public class NavigationHandler : MonoBehaviour
         arrowAnchor = ArrowAnchor.Left;
         arrowOffset = Vector3.zero;
         edgeSpacing = 8;
+        keepOnScreen = true;
         if (selectionArrow == null) return;
 
         selectionArrow.anchorMin = selectionArrow.anchorMax = new Vector2(.5f, .5f);
@@ -71,9 +95,12 @@ public class NavigationHandler : MonoBehaviour
         if (es == null || es != EventSystem.current) Init();
         if (es == null) return;
         var current = es.currentSelectedGameObject;
+        var module = MenuUIInputModule.Active;
+        bool externalPartyTab = FocusOwner is PartyMenu party && party.HudTabs != null && party.HudTabs.Allows(current);
         if (!MenuUIInputModule.IsUsable(current) ||
-            (FocusRoot != null && !current.transform.IsChildOf(FocusRoot)) ||
-            (FocusOwner != null && MenuUIInputModule.Active != null && !MenuUIInputModule.Active.OwnsFocus(FocusOwner)))
+            (FocusRoot != null && !current.transform.IsChildOf(FocusRoot) && !externalPartyTab) ||
+            (FocusOwner != null && module != null && !module.OwnsFocus(FocusOwner)) ||
+            (FocusOwner == null && module != null && module.HasDialog))
         {
             if (selectionArrow != null) selectionArrow.gameObject.SetActive(false);
             return;
@@ -88,6 +115,13 @@ public class NavigationHandler : MonoBehaviour
         }
 
         if (selectionArrow == null) return;
+        var pointerCanvas = selectionArrow.GetComponent<Canvas>();
+        var ownerCanvas = FocusRoot != null ? FocusRoot.GetComponentInParent<Canvas>() : null;
+        if (pointerCanvas != null && ownerCanvas != null)
+        {
+            var selectedCanvas = current.GetComponentInParent<Canvas>();
+            pointerCanvas.sortingOrder = Mathf.Max(ownerCanvas.sortingOrder, selectedCanvas != null ? selectedCanvas.sortingOrder : 0) + 2;
+        }
         var target = current.GetComponent<RectTransform>();
         if (target == null) return;
         Vector3 destination = GetAnchorWorldPosition(target) + arrowOffset;
@@ -106,6 +140,20 @@ public class NavigationHandler : MonoBehaviour
         }
         float progress = arrowMoveDuration <= 0 ? 1 : Mathf.Clamp01((Time.unscaledTime - arrowStartedAt) / arrowMoveDuration);
         selectionArrow.position = Vector3.Lerp(arrowStart, destination, Mathf.SmoothStep(0, 1, progress));
+        if (keepOnScreen) ClampToCanvas();
+    }
+
+    private void ClampToCanvas()
+    {
+        var canvas = selectionArrow.GetComponentInParent<Canvas>()?.rootCanvas;
+        if (canvas == null || canvas.transform is not RectTransform viewport) return;
+        var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport, selectionArrow);
+        var view = viewport.rect;
+        float dx = bounds.min.x < view.xMin + 4 ? view.xMin + 4 - bounds.min.x :
+            bounds.max.x > view.xMax - 4 ? view.xMax - 4 - bounds.max.x : 0;
+        float dy = bounds.min.y < view.yMin + 4 ? view.yMin + 4 - bounds.min.y :
+            bounds.max.y > view.yMax - 4 ? view.yMax - 4 - bounds.max.y : 0;
+        selectionArrow.position += viewport.TransformVector(new Vector3(dx, dy, 0));
     }
 
     private Vector3 GetAnchorWorldPosition(RectTransform rect)

@@ -107,6 +107,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             }
             if (Buildings && town != null)
             {
+                var dungeonCells = TownDungeonEntranceTiles.Build(batch, decorationFaces, town, BuildingServices, biome, size);
                 var colors = TownHouseTiles.Palette(biome);
                 var source = Kit.BuildingMaterial(biome);
                 var plaster = TownHouseTiles.ColorMaterial(source, colors.plaster, batch.Owner, "House plaster");
@@ -138,7 +139,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 for (int y = 0; y < houses.Height; y++) for (int x = 0; x < houses.Width; x++)
                 {
                     var cell = new GridPoint(x, y);
-                    if (!bodyCells.Contains(cell)) continue;
+                    if (!bodyCells.Contains(cell) || dungeonCells.Contains(cell)) continue;
                     foreach (var side in new[] { (0, -1), (1, 0), (0, 1), (-1, 0) })
                     {
                         var neighbor = new GridPoint(x + side.Item1, y + side.Item2);

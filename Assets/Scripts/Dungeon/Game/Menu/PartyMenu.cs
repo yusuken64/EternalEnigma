@@ -120,7 +120,8 @@ public sealed class PartyMenu : Dialog
     {
         StopAutoScroll();scrollView.StopMovement();
         Clear(HeroesRoot); Clear(RowsRoot); rows.Clear();
-        bool compactStats=Tab==PartyMenuTab.Stats;
+        entries = Hero == null ? new() : context.Entries(Hero, Tab);
+        bool compactStats=Tab==PartyMenuTab.Stats && !entries.Any(entry=>entry.Skill!=null);
         bool showDescription=Tab==PartyMenuTab.Skills;
         DetailsControl.Scroll.gameObject.SetActive(showDescription);
         var descriptionPaper=Panel.Find("Description parchment");
@@ -134,12 +135,11 @@ public sealed class PartyMenu : Dialog
         var layout=RowsRoot.GetComponent<VerticalLayoutGroup>();
         listSpacing ??= layout.spacing;
         layout.spacing=compactStats?2:listSpacing.Value;
-        // Stats fills the viewport; other tabs retain their scrolling lists.
+        // The basic stats fit the viewport. Learned passives extend it into a scrolling list.
         RowsRoot.GetComponent<ContentSizeFitter>().enabled=!compactStats;
         Fit(RowsRoot,0,compactStats?0:1,1,1);
         scrollView.vertical=!compactStats;
         HudTabs.Refresh();
-        entries = Hero == null ? new() : context.Entries(Hero, Tab);
         ViewState state = null;
         if (Hero != null) states.TryGetValue((Hero.Id,Tab), out state);
         int identityIndex = state == null ? -1 : entries.FindIndex(e => ReferenceEquals(e.Identity, state.Identity));
@@ -182,7 +182,7 @@ public sealed class PartyMenu : Dialog
     private void FitEntryRows()
     {
         rowWidth=((RectTransform)RowsRoot).rect.width;
-        if(Tab==PartyMenuTab.Stats)return;
+        if(!scrollView.vertical)return;
         foreach(var button in rows)
         {
             var row=button.GetComponent<AuthoredButton>();

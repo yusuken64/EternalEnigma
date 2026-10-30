@@ -52,6 +52,27 @@ namespace EternalEnigma.Tests
             yield return null; yield return null;
         }
 
+        [UnityTest]
+        public IEnumerator SkillsAndStrategyUseSwappedControllerButtonsInBothInputAssets()
+        {
+            using var generated = new DungeonControls();
+            var authored = InputActionAsset.FromJson(System.IO.File.ReadAllText("Assets/DungeonControls.inputactions"));
+            try
+            {
+                foreach (var asset in new[] { generated.asset, authored })
+                {
+                    string[] GamepadBindings(string action) => asset.FindAction(action, true).bindings
+                        .Where(binding => binding.path.StartsWith("<Gamepad>/")).Select(binding => binding.path).ToArray();
+                    Assert.That(GamepadBindings("Player/Skills"), Is.EqualTo(new[] { "<Gamepad>/buttonEast" }));
+                    Assert.That(GamepadBindings("Player/Plan"), Is.EqualTo(new[] { "<Gamepad>/leftShoulder" }));
+                    Assert.That(GamepadBindings("UI/OpenSkillMenu"), Is.EqualTo(new[] { "<Gamepad>/buttonEast" }));
+                    Assert.That(GamepadBindings("UI/Cancel"), Does.Contain("<Gamepad>/buttonEast"));
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(authored); }
+            yield break;
+        }
+
         [UnityTest] public IEnumerator WaitingAlliesBlockMovementAndRecruitFromAdjacentFacingInteraction()
         {
             yield return harness.LoadTown(new TestScenario { Gold=10000 }.CreateSave());
@@ -141,17 +162,16 @@ namespace EternalEnigma.Tests
             Assert.That(player.ControllingTownAlly.TilemapPosition, Is.EqualTo(position), "Menus must block walking.");
             yield return Press(GamepadButton.East);
             Assert.That(menus.Opened, Is.False);
-            yield return Press(GamepadButton.LeftShoulder);
+            yield return Press(GamepadButton.East);
             Assert.That(menus.CurrentDialog, Is.TypeOf<PartyMenu>());
             Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Skills));
+            var selectedSkill = EventSystem.current.currentSelectedGameObject;
+            int mana = player.ControllingTownAlly.Mana;
             yield return Press(GamepadButton.South);
-            var description = menus.CurrentDialog as PartyMenuPicker;
-            Assert.That(description, Is.Not.Null, "Unsupported town skills remain inspectable.");
-            Assert.That(description.Rows.GetComponentsInChildren<AuthoredButton>(), Is.Empty, "Inspecting an unavailable skill never offers Cast.");
-            Assert.That(description.Rows.GetComponentInChildren<TMPro.TMP_Text>().text, Is.Not.Empty);
-            Assert.That(description.GetComponentsInChildren<DungeonDialogClose>().Length, Is.EqualTo(1));
-            yield return Press(GamepadButton.East);
-            Assert.That(menus.CurrentDialog, Is.SameAs(menus.PartyMenu));
+            Assert.That(menus.CurrentDialog, Is.SameAs(menus.PartyMenu), "An unsupported town cast retains the Skills menu.");
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(selectedSkill));
+            Assert.That(player.ControllingTownAlly.Mana, Is.EqualTo(mana));
+            Assert.That(menus.PartyMenu.Details.text, Does.Contain("Only HP/Mana recovery and inventory inspection can be used in town."));
             Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Skills));
             yield return Press(GamepadButton.East);
             Assert.That(menus.Opened, Is.False);
@@ -162,6 +182,53 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.East);
             Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.False);
             Assert.That(Common.Instance.MenuInputHandler.PlayerInput.currentActionMap.name, Is.EqualTo("Player"));
+        }
+
+        [UnityTest] public IEnumerator InventoryCloseReleasesControllerFocusBackToTown()
+        {
+            yield return harness.LoadTown(new TestScenario { Items = new string[0] }.CreateSave());
+            ConnectPad();
+            var menus = Object.FindFirstObjectByType<TownMenuManager>();
+            var town = Object.FindFirstObjectByType<Town>();
+            var player = town.TownPlayer;
+            for (int exit = 0; exit < 3; exit++)
+            {
+                yield return Press(GamepadButton.West);
+                Assert.That(menus.Opened, Is.True);
+                var menu = menus.PartyMenu;
+                menu.InventoryTab.Select();
+                yield return null; yield return null;
+                var cursor = menu.GetComponent<NavigationHandler>().selectionArrow;
+                Assert.That(cursor.gameObject.activeInHierarchy, Is.True, "External inventory tab also has a cursor.");
+                if (exit == 0)
+                {
+                    System.IO.Directory.CreateDirectory("Temp/MenuControllerFollowups");
+                    ScreenCapture.CaptureScreenshot("Temp/MenuControllerFollowups/inventory-tab-cursor.png");
+                    yield return new WaitForEndOfFrame();
+                    yield return Press(GamepadButton.East);
+                }
+                else if (exit == 1) yield return Press(GamepadButton.West);
+                else
+                {
+                    menu.GetComponentsInChildren<DungeonDialogClose>().Single().GetComponent<UnityEngine.UI.Button>().Select();
+                    yield return Press(GamepadButton.South);
+                }
+                Assert.That(menus.Opened, Is.False);
+                Assert.That(MenuUIInputModule.Active.HasDialog, Is.False);
+                Assert.That(Common.Instance.MenuInputHandler.PlayerInput.currentActionMap.name, Is.EqualTo("Player"));
+                Assert.That(EventSystem.current.currentSelectedGameObject, Is.Null, "Closing must release the persistent inventory tab.");
+                var origin = player.ControllingTownAlly.TilemapPosition;
+                var offset = new[] { Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right }
+                    .First(d => player.WalkableMap.CanWalkTo(origin, origin + d) && town.CanEnter(origin + d) &&
+                        !town.TownBuildings.Any(b => b.TilemapPosition == origin + d) &&
+                        !town.TownAllies.Any(a => a.TilemapPosition == origin + d) &&
+                        !town.ShopVendors.Any(v => v.TilemapPosition == origin + d));
+                yield return Send(Direction(offset, false));
+                yield return harness.WaitUntil(() => !player.IsBusy, "walking after inventory close");
+                Assert.That(player.ControllingTownAlly.TilemapPosition, Is.Not.EqualTo(origin));
+                Assert.That(menus.Opened, Is.False);
+                Assert.That(EventSystem.current.currentSelectedGameObject, Is.Null);
+            }
         }
 
         static GamepadState Direction(Vector3Int direction, bool stick)
@@ -297,6 +364,10 @@ namespace EternalEnigma.Tests
             Assert.That(target.Vitals.HP,Is.LessThan(hp),"Holding target must attack the adjacent cell, not two cells away.");
             Assert.That(hero.TilemapPosition,Is.EqualTo(aimedOrigin),"An aimed attack must not move the hero.");
             yield return Press(GamepadButton.LeftShoulder);
+            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<AllyActionDialog>(), "LB opens hero strategy commands.");
+            yield return Press(GamepadButton.East);
+            Assert.That(MenuManager.Instance.Opened, Is.False, "B backs out of strategy without opening Skills.");
+            yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenu>());
             var damage = hero.Skills.Single(s => s.SkillName == "Damage");
             Assert.That(hero.CanCast(damage, out var reason), Is.True,
@@ -334,7 +405,7 @@ namespace EternalEnigma.Tests
             Assert.That(hero.Vitals.Mana, Is.EqualTo(mana - hero.Skills.Single(s => s.SkillName == "Damage").ManaCost));
 
             // Missile abilities aim at cells instead of cycling character targets.
-            yield return Press(GamepadButton.LeftShoulder);
+            yield return Press(GamepadButton.East);
             var bolt = hero.Skills.Single(s => s.SkillName == "Fire Bolt");
             var boltButton = skillMenu.EntryButtons.Single(b => b.GetComponent<AuthoredButton>().Label.text.StartsWith(
                 GameplayText.Format(bolt.DisplayName + "  Rank "), System.StringComparison.Ordinal));
@@ -353,7 +424,7 @@ namespace EternalEnigma.Tests
             yield return harness.WaitForIdle();
             Assert.That(MenuManager.Instance.Opened, Is.False);
             Assert.That(hero.Vitals.Mana, Is.EqualTo(mana - hero.Skills.Single(s => s.SkillName == "Fire Bolt").ManaCost));
-            yield return Press(GamepadButton.East);
+            yield return Press(GamepadButton.LeftShoulder);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<AllyActionDialog>());
             yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.Opened, Is.False);

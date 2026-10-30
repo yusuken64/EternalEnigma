@@ -13,7 +13,7 @@ public sealed class MainMenuDeveloperControls : MonoBehaviour
     public void Initialize()
     {
         open = false;
-        Toggle.gameObject.SetActive(Debug.isDebugBuild);
+        Toggle.gameObject.SetActive(true);
         foreach (var control in Controls) control.SetActive(false);
         toggleLabel = Toggle.GetComponentInChildren<TMP_Text>(true);
         if (toggleLabel != null)
@@ -31,7 +31,7 @@ public sealed class MainMenuDeveloperControls : MonoBehaviour
     private void LateUpdate()
     {
         if (!initialized) return;
-        bool visible = Debug.isDebugBuild && MenuUIInputModule.Active?.HasDialog != true;
+        bool visible = MenuUIInputModule.Active?.HasDialog != true;
         if (Toggle.gameObject.activeSelf != visible) Toggle.gameObject.SetActive(visible);
         foreach (var control in Controls)
             if (control.activeSelf != (visible && open)) control.SetActive(visible && open);

@@ -209,8 +209,8 @@ public static class SettingsAuthoring
             "Move / browse: Left stick / D-pad\nConfirm: A / Cross\nBack: B / Circle\n" +
             "Settings: Start / Menu\n3D / terminal: menu view button\n\n" +
             "<b>WORLD</b>\nAttack / talk / interact: A / Cross\nInventory: X / Square\n" +
-            "Skills: LB / L1\nNext hero: RB / R1\nTurn: hold Y / Triangle + direction\n" +
-            "Dungeon orders: B / Circle\nMap: View / Select\nWait: Left stick press\n" +
+            "Skills: B / Circle\nNext hero: RB / R1\nTurn: hold Y / Triangle + direction\n" +
+            "Dungeon orders: LB / L1\nMap: View / Select\nWait: Left stick press\n" +
             "Full Control: Right stick press\n\n" +
             "<b>PARTY MENUS</b>\nTabs: Left / Right  |  Browse: Up / Down\nHeroes: RB / R1 or LT / L2\n" +
             "Equipment / Stats: next tab right";

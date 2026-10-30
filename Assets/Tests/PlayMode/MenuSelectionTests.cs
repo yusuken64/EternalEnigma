@@ -278,6 +278,56 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator ReturningToGameplayReleasesHudFocusButKeepsPointerAccess()
+        {
+            first.Select();
+            yield return null;
+            module.ReleaseGameplayFocus();
+            Assert.That(events.currentSelectedGameObject, Is.Null);
+            yield return Pad(new GamepadState { leftStick = Vector2.right });
+            yield return Pad(new GamepadState());
+            yield return Pad(new GamepadState().WithButton(GamepadButton.South));
+            yield return Pad(new GamepadState());
+            Assert.That(events.currentSelectedGameObject, Is.Null, "World input must not recover the old HUD selection.");
+            Assert.That(firstClicks + secondClicks, Is.Zero);
+            yield return Click(second);
+            yield return Click(second);
+            Assert.That(secondClicks, Is.EqualTo(1), "HUD shortcuts remain clickable after closing a menu.");
+            yield return Pad(new GamepadState().WithButton(GamepadButton.South));
+            yield return Pad(new GamepadState());
+            Assert.That(secondClicks, Is.EqualTo(1), "World confirm must not submit a pointer-selected HUD tab.");
+            module.PushDialog(first, root.transform, first.gameObject);
+            yield return null;
+            yield return Pad(new GamepadState().WithButton(GamepadButton.DpadRight));
+            Assert.That(events.currentSelectedGameObject, Is.EqualTo(second.gameObject), "Opening another menu restores controller navigation.");
+        }
+
+        [UnityTest]
+        public IEnumerator EveryDialogGetsOneCursorAndNestedDialogsRestoreIt()
+        {
+            module.PushDialog(first, first.transform, first.gameObject);
+            yield return null; yield return null;
+            var navigation = first.GetComponent<NavigationHandler>();
+            Assert.That(navigation, Is.Not.Null);
+            var arrow = navigation.selectionArrow;
+            Assert.That(arrow.gameObject.activeInHierarchy, Is.True);
+            Assert.That(arrow.GetComponent<Graphic>().raycastTarget, Is.False);
+            Assert.That(arrow.GetComponent<LayoutElement>().ignoreLayout, Is.True);
+            module.PushDialog(second, second.transform, second.gameObject);
+            yield return null; yield return null;
+            Assert.That(arrow.gameObject.activeSelf, Is.False);
+            Assert.That(second.GetComponent<NavigationHandler>().selectionArrow.gameObject.activeInHierarchy, Is.True);
+            module.PopDialog(second);
+            yield return null; yield return null;
+            Assert.That(arrow.gameObject.activeInHierarchy, Is.True);
+            module.PopDialog(first);
+            module.PushDialog(first, first.transform, first.gameObject);
+            yield return null;
+            Assert.That(first.GetComponents<NavigationHandler>().Length, Is.EqualTo(1));
+            Assert.That(first.GetComponent<NavigationHandler>().selectionArrow, Is.SameAs(arrow));
+        }
+
+        [UnityTest]
         public IEnumerator SelectionArrowArrivesWhileTimeScaleIsZero()
         {
             var navigation = root.AddComponent<NavigationHandler>();

@@ -7,10 +7,10 @@ public static class InputPrompts
     public static string Interact => Pick("Enter", "A / Cross");
     public static string ToggleFullControl => Pick("F", "Right stick press");
     public static string Inventory => Pick("Q", "X / Square");
-    public static string Skills => Pick("R", "LB / L1");
+    public static string Skills => Pick("R", "B / Circle");
     public static string Party => Inventory;
     public static string Equipment => Pick("I", "X / Square, then right");
-    public static string Stats => Pick("T", "LB / L1, then right");
+    public static string Stats => Pick("T", "B / Circle, then right");
     public static string Scroll => Pick("Up / Down", "Left stick / D-pad up / down");
     public static string Actions => Pick("Right", "Left stick / D-pad right");
     public static string Presentation => Pick("Press F11 for 3D view", "Press View / Share for 3D view");

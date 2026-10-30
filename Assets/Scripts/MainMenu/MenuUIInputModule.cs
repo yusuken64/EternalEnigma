@@ -27,6 +27,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
     private int tabDirection;
     private float nextTabRepeat;
     private GameObject rememberedSelection;
+    private bool gameplayFocusReleased;
     private readonly List<InputActionReference> references = new();
     private readonly List<Scope> scopes = new();
 
@@ -100,6 +101,16 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public void ConsumeInput() => consumedFrame = Time.frameCount;
 
+    internal void ReleaseGameplayFocus()
+    {
+        // Main-menu settings also use Common's Player map as their return map.
+        // Their opener must remain selected for controller navigation.
+        if (HasDialog || UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MainMenu") return;
+        gameplayFocusReleased = true;
+        rememberedSelection = null;
+        eventSystem.SetSelectedGameObject(null);
+    }
+
     public static bool IsUsable(GameObject obj)
     {
         if (obj == null || !obj.activeInHierarchy) return false;
@@ -122,6 +133,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
         Action back = null, Action options = null)
     {
         if (scopes.Exists(s => s.Owner == owner)) return;
+        gameplayFocusReleased = false;
+        NavigationHandler.EnsureDialogPointer(owner, root);
         ConfigureCancelRole(owner);
         RememberSelection();
         scopes.Add(new Scope { Owner = owner, Root = root, First = first,
@@ -170,6 +183,12 @@ public class MenuUIInputModule : InputSystemUIInputModule
         if (!wasTop) return;
         AudioManager.Instance?.PlayCue(SoundCue.MenuClose);
         ConsumeInput();
+        string scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (scopes.Count == 0 && (scene == "Town" || scene == "DungeonScene" || scene == "Overworld"))
+        {
+            ReleaseGameplayFocus();
+            return;
+        }
         // External party headers were disabled while the upper modal owned focus.
         // Refresh them before choosing ReturnTo, rather than losing the opener
         // because their next Update has not run yet.
@@ -185,6 +204,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     private void RememberSelection()
     {
+        if (gameplayFocusReleased && !HasDialog) return;
         var current = eventSystem.currentSelectedGameObject;
         if (!IsUsable(current) || !Allows(current)) return;
         rememberedSelection = current;
@@ -193,6 +213,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     public void RestoreFocus(GameObject fallback = null)
     {
+        if (gameplayFocusReleased && !HasDialog) return;
         if (IsUsable(eventSystem.currentSelectedGameObject) && Allows(eventSystem.currentSelectedGameObject)) return;
         GameObject next = null;
         if (scopes.Count > 0)
@@ -290,6 +311,16 @@ public class MenuUIInputModule : InputSystemUIInputModule
             // TargetDialog's transparent shield absorbs UI clicks while its own
             // world-target input reads the actions. Drain cached pointer edges so
             // cancelling targeting cannot replay them against the restored HUD.
+            bool navigation = eventSystem.sendNavigationEvents;
+            eventSystem.sendNavigationEvents = false;
+            try { base.Process(); }
+            finally { eventSystem.sendNavigationEvents = navigation; }
+            return;
+        }
+        if (gameplayFocusReleased && !HasDialog)
+        {
+            // The HUD remains clickable, but movement/attack must not recover an
+            // inventory tab or submit a stale selection after returning to play.
             bool navigation = eventSystem.sendNavigationEvents;
             eventSystem.sendNavigationEvents = false;
             try { base.Process(); }

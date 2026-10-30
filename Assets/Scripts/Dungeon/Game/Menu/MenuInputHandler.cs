@@ -41,11 +41,14 @@ namespace JuicyChickenGames.Menu
             OpenSkillMenuInput = OpenSkillMenuAction.WasPressedThisFrame();
             SubmitMenuInput = SubmitAction.WasPressedThisFrame();
             CancelMenuInput = CancelAction.WasPressedThisFrame();
+            // B opens Skills in gameplay and remains Back while a dialog owns focus.
+            if (module.HasDialog && CancelMenuInput) OpenSkillMenuInput = false;
             OptionInput = OpenOptions.WasPressedThisFrame();
         }
 
         internal void SwitchToPlayerInput()
         {
+            MenuUIInputModule.Active?.ReleaseGameplayFocus();
             if (PlayerInput.currentActionMap?.name == "Player") return;
             PlayerInput.SwitchCurrentActionMap("Player");
             ClearInputThisFrame();

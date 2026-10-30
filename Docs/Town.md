@@ -26,9 +26,18 @@ plants and the exterior enclosure. The loading transition remains closed until g
 party/camera setup finish.
 
 Campaign towns bind `TownLayout.SlotServices` to bakery, consumables, items, inn and one
-class-aware trainer. Service-sized detailed layouts include seven residential slots. The
-default standalone town also enables furnishings; explicit legacy configurations can keep
+class-aware trainer. New campaigns use town-layout version 2: the first town has eight
+buildings, consisting of those five services, the dungeon entrance, the player's home and
+the adventure-book house. It has no unused residential houses. Other towns retain seven
+residential slots. Existing version 0/1 saves preserve their original streets and positions.
+The default standalone town also enables furnishings; explicit legacy configurations can keep
 `FurnishInteriors` disabled.
+
+Dungeon entrances reuse the biome's interior dungeon smart boundary tiles and materials.
+Their stone footprint has a recessed portal and no residential shingle roof; the existing
+door approach and dungeon interaction remain in place. The focused PlayMode test
+`OpeningPreparationTests.FirstTownHasOnlyUsefulHousesAndDungeonSmartTileEntrance` captures
+`Temp/OpeningPreparation/dungeon-smart-tile-entrance.png`.
 
 ## Furnished interiors (generation version 2)
 

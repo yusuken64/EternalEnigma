@@ -140,7 +140,7 @@ public HashSet<string> Completed { get; }
     public CampaignContext(OverworldLaunchOptions options, CampaignSnapshot? snapshot = null)
     {
         Mode = options.Mode;
-        State = snapshot ?? new CampaignSnapshot { Seed = options.Seed, Identity = Guid.NewGuid().ToString("N"), GeneratorVersion = CampaignGenerator.Version, TownLayoutVersion = 1 };
+        State = snapshot ?? new CampaignSnapshot { Seed = options.Seed, Identity = Guid.NewGuid().ToString("N"), GeneratorVersion = CampaignGenerator.Version, TownLayoutVersion = 2 };
         Campaign = CampaignGenerator.GenerateVersion(State.Seed, State.GeneratorVersion == 0 ? CampaignGenerator.LegacyVersion : State.GeneratorVersion);
         var fingerprint = CampaignFingerprint.Compute(Campaign);
         if (snapshot != null && State.Fingerprint != fingerprint) throw new InvalidOperationException("Campaign save fingerprint mismatch.");
@@ -318,11 +318,15 @@ public HashSet<string> Completed { get; }
     public const int AuthoredTownBuildings = 1;
     /// <summary>Extra houses with no service, so a town reads as a settlement; about as many as it has services and authored buildings.</summary>
     public const int ResidentialTownBuildings = 7;
+    /// <summary>The first town only needs the player's home and the adventure-book house.</summary>
+    public const int OpeningResidentialBuildings = 2;
     /// <summary>Sizes the town for its services and assigns each one to a building slot.</summary>
     public TownLayout TownLayout(string townId, int allyCount = 3)
     {
         var location = Campaign.Locations.FirstOrDefault(l => l.Id == townId && l.Kind == LocationKind.Town) ?? throw new ArgumentException("Unknown town.", nameof(townId));
-        return Generation.TownLayout.Create(this.LocationSeed(townId), location.Services, AuthoredTownBuildings, allyCount, ResidentialTownBuildings,
+        // Earlier saves keep their exact street geometry and saved positions.
+        int residences = townId == "town-0" && State.TownLayoutVersion >= 2 ? OpeningResidentialBuildings : ResidentialTownBuildings;
+        return Generation.TownLayout.Create(this.LocationSeed(townId), location.Services, AuthoredTownBuildings, allyCount, residences,
             openingNeighborhood: townId == "town-0" && State.TownLayoutVersion >= 1);
     }
     /// <summary>Generates the town's plan; explicit <paramref name="shopFlags"/> bypass the service layout.</summary>

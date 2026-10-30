@@ -206,7 +206,7 @@ namespace EternalEnigma.Tests
             AddEquipment(EquipmentSlot.OffHand, WeaponType.OffhandShield);
             var sword = AddEquipment(EquipmentSlot.MainHand);
             skill.InventoryTargetSelector.ItemType = InventoryTargetType.Weapon;
-            yield return Press(GamepadButton.LeftShoulder);
+            yield return Press(GamepadButton.East);
             yield return Press(GamepadButton.South);
             var picker=(PartyMenuPicker)MenuManager.Instance.CurrentDialog;
             var rows=picker.Rows.GetComponentsInChildren<AuthoredButton>();

@@ -557,7 +557,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""f15c8b45-ca71-460b-a9f9-6d6932bc9b7b"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -579,7 +579,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""d8f59c63-b805-46f7-b424-2513926da903"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
@@ -1133,7 +1133,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""86c424ff-586b-4f97-b908-b9c7afe2f149"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

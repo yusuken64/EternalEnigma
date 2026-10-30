@@ -151,7 +151,30 @@ public class TownLayoutTests
             var layout = context.TownLayout(town.Id);
             var plan = context.Town(town.Id);
             Assert.Equal(layout.Options.Width, plan.Width);
-            Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings, plan.BuildingSlots.Count);
+            int residences = town.Id == "town-0" ? CampaignContext.OpeningResidentialBuildings : CampaignContext.ResidentialTownBuildings;
+            Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings + residences, plan.BuildingSlots.Count);
+        }
+    }
+
+    [Theory]
+    [InlineData(0)] [InlineData(42)] [InlineData(-7)]
+    public void FirstTownOnlyHasServicesHomeBookHouseAndDungeon(int seed)
+    {
+        var context = new CampaignContext(new(OverworldLaunchMode.Campaign, seed));
+        var layout = context.TownLayout("town-0");
+        var plan = context.Town("town-0");
+        Assert.True(TownPlanValidator.Validate(plan, layout.Options).IsValid);
+        Assert.Single(plan.Interiors, i => i.Spec.Kind == TownInteriorKind.Home);
+        var bookHouse = Assert.Single(plan.Interiors, i => i.Spec.Kind == TownInteriorKind.Residential);
+        Assert.Contains(bookHouse.Props, p => p.Asset == "Table");
+        Assert.Equal(TownServiceCatalog.All.Count + 3, plan.BuildingSlots.Count);
+        Assert.Equal(layout.Options, new CampaignContext(new(OverworldLaunchMode.Campaign), context.Capture()).TownLayout("town-0").Options);
+        foreach (int version in new[] { 0, 1 })
+        {
+            context.State.TownLayoutVersion = version;
+            var legacy = context.TownLayout("town-0");
+            Assert.Equal(TownServiceCatalog.All.Count + CampaignContext.AuthoredTownBuildings + CampaignContext.ResidentialTownBuildings,
+                legacy.Options.BuildingCount);
         }
     }
 

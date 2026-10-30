@@ -42,8 +42,11 @@ public sealed class TownRoofTileLayer : TWCBuildLayer
             var biome = creator.GetComponent<TownBiomeStyle>()?.Current ?? OverworldBiome.Grassland;
             var roofCells = plan.Layers[TownLayers.Roofs];
             var diorama=DioramaCatalog.Load();
+            var dungeonDoors = TownDungeonEntranceTiles.Doors(plan, creator.twcAsset.mapBuildLayers
+                .OfType<EnvironmentSmartTileLayer>().FirstOrDefault(l => l.Buildings)?.BuildingServices);
             foreach (var door in plan.BuildingSlots)
             {
+                if (dungeonDoors.Contains(door)) continue;
                 var footprint = plan.Footprints.FirstOrDefault(f => f.Door.Equals(door));
                 var body = footprint != null && footprint.Cells.Count > 0
                     ? footprint.Cells.ToHashSet()

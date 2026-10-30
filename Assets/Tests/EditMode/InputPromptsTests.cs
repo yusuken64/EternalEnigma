@@ -23,10 +23,10 @@ namespace EternalEnigma.Tests
             Assert.That(InputPrompts.Skills, Is.EqualTo("R"));
             Set(true);
             Assert.That(InputPrompts.Format(template), Is.EqualTo(
-                "Left stick / D-pad | A / Cross | A / Cross | B / Circle | Right stick (press) | {Unknown}"));
+                "Left stick / D-pad | A / Cross | A / Cross | B / Circle | Right stick press | {Unknown}"));
             Assert.That(InputPrompts.Inventory, Is.EqualTo("X / Square"));
-            Assert.That(InputPrompts.Skills, Is.EqualTo("LB / L1"));
-            Assert.That(InputPrompts.Format(null), Is.Null);
+            Assert.That(InputPrompts.Skills, Is.EqualTo("B / Circle"));
+            Assert.That(InputPrompts.Format(null), Is.Empty);
         }
 
         [Test]

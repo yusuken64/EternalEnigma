@@ -417,7 +417,7 @@ public sealed partial class ChaosRunner : MonoBehaviour
     {
         if (device == "Controller") return ChaosInput.Pad(key switch {
             "Escape" => MenusOpen() ? GamepadButton.East : GamepadButton.Start,
-            "Enter" => GamepadButton.South, "Q" => GamepadButton.West, "R" => GamepadButton.LeftShoulder,
+            "Enter" => GamepadButton.South, "Q" => GamepadButton.West, "R" => GamepadButton.East, "E" => GamepadButton.LeftShoulder,
             "UpArrow" => GamepadButton.DpadUp, "DownArrow" => GamepadButton.DpadDown,
             "LeftArrow" => GamepadButton.DpadLeft, "RightArrow" => GamepadButton.DpadRight, _ => GamepadButton.North }, key);
         if (device == "Mouse")

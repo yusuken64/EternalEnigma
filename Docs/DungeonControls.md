@@ -9,21 +9,23 @@ The town inn uses normal dialog confirmation/Back handling.
 | --- | --- |
 | Move in town/combat; navigate menus and targets | D-pad or left stick |
 | Confirm; attack/interact in gameplay | A / Cross |
-| Back in menus; hero commands in combat; party panel in campaign town | B / Circle |
+| Back in menus | B / Circle |
+| Hero commands / strategy in combat | LB / L1 |
 | Inventory | X / Square |
-| Skills | LB / L1 |
+| Skills | B / Circle |
 | Hold position while choosing facing | Y / Triangle |
 | Switch controlled hero in gameplay; next inspected hero in Party Menu | RB / R1 |
-| Wait a combat turn | Right-stick press |
+| Wait a combat turn | Left-stick press |
+| Toggle Full Control | Right-stick press |
 | Minimap | View / Share |
 | Settings | Menu / Options |
 
 ## Shared party window
 
 Town, overworld and dungeon expose Inventory, Equipment, Skills and Stats; the
-overworld also has Capabilities. Q / X / Square opens Inventory, and R / LB / L1
-opens Skills. At the root, the active shortcut closes the window and the other
-switches tabs. Equipment and Stats have clickable launcher tabs but no dedicated
+overworld also has Capabilities. Q / X / Square opens Inventory, and R / B / Circle
+opens Skills. At the root, Q / R and X / Square shortcuts close their active tab or switch tabs.
+B / Circle opens Skills from gameplay and always goes back while a menu is open. Equipment and Stats have clickable launcher tabs but no dedicated
 keyboard/gamepad shortcut. Shortcuts are ignored inside action and target pickers.
 
 Navigate with WASD/arrows, D-pad/left stick or mouse. Confirming a dungeon active
@@ -38,10 +40,9 @@ controlled hero while browsing; nested actions and targeting retain their origin
 actor. Dungeon HUD portraits also support clicking to switch heroes.
 
 Inventory lists shared bag items; Equipment shows Weapon, Off-hand and Accessory
-slots and per-item bonuses, with stat previews in the change picker. Skills separates
-active/passive entries. Stats
-shows progression, attributes, vitals, combat values and resistances, with free
-attribute spending. Empty lists keep navigation and Back available; unavailable
+slots and per-item bonuses, with stat previews in the change picker. Skills lists active abilities. Stats
+shows progression, attributes, vitals, combat values, resistances and learned passives, with free
+attribute spending. Passives include ranks and inspectable descriptions; Stats scrolls when they extend the list. Empty lists keep navigation and Back available; unavailable
 actions explain their restrictions. Dungeon actions retain actor-turn eligibility,
 targeting, costs and replay. Overworld allows equipment changes and attribute
 spending; items and skills are otherwise inspectable only.
@@ -87,7 +88,7 @@ Animation changes apply to the next action chain. Each chain uses one playback d
 
 The same animation setting appears in the autoplay panel and applies to dungeon, town, and overworld play. Autoplay supports speeds from 0.5× through 32×.
 
-The dungeon HUD shows portraits, resources, status badges, order state, floor, gold and bag space. Wait uses period on keyboard or right-stick press on gamepad. Click status badges to inspect their names and remaining durations.
+The dungeon HUD shows portraits, resources, status badges, order state, floor, gold and bag space. Wait uses period on keyboard or left-stick press on gamepad. Click status badges to inspect their names and remaining durations.
 
 The collapsed Events panel shows three messages. History scrolls through the latest 100 historical messages. Current-turn storage has no 100-entry cap. Results remain visible while waiting for the next command; they clear only when the next turn actually commits an action. Combat, healing, skills, items, pickups and status outcomes are recorded during resolution independently of animation playback. Movement is omitted. Hidden enemy actions remain hidden.
 

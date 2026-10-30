@@ -10,6 +10,14 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Controls Rebinding EditMode")]
+    public static void RunControlsRebindingEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.ControlBindingsTests", "EternalEnigma.Tests.InputPromptsTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Controls Rebinding PlayMode")]
+    public static void RunControlsRebindingPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControlsRebindingTests", "EternalEnigma.Tests.SettingsInteractionTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Menu Controller Followups")]
     public static void RunMenuControllerFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.MenuSelectionTests", "EternalEnigma.Tests.ControllerFlowTests",

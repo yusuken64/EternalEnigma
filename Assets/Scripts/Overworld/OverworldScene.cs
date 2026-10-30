@@ -266,9 +266,7 @@ public sealed class OverworldScene : MonoBehaviour
         Vector2 move = ReadWalkInput();
         if (move.sqrMagnitude < .1f) StopHeldWalk();
         if (moving) return;
-        var keyboard = Keyboard.current;
-        var pad = Gamepad.current;
-        if (keyboard?.enterKey.wasPressedThisFrame == true || pad?.buttonSouth.wasPressedThisFrame == true)
+        if (MenuUIInputModule.Active?.UI.Submit.WasPressedThisFrame() == true)
         { ClaimRewards(); return; }
         if (move.sqrMagnitude < .1f || Time.time < nextMove) return;
         nextMove = Time.time + .16f;
@@ -278,19 +276,11 @@ public sealed class OverworldScene : MonoBehaviour
     private bool heldWalk;
     private bool BlocksWalkInput() => !isActiveAndEnabled || !IsReady || AutoplayRunner.BlocksPlayerInput ||
         Common.Instance.Travel.IsTransitioning || Common.Instance.GlobalSettings.IsOpen ||
-        MenuUIInputModule.Active?.HasDialog == true || MenuUIInputModule.Active?.InputConsumed == true;
+        MenuUIInputModule.Active?.HasDialog == true || MenuUIInputModule.Active?.InputConsumed == true || ControlBindings.SuppressInput;
 
     private static Vector2 ReadWalkInput()
     {
-        var keyboard = Keyboard.current;
-        var pad = Gamepad.current;
-        Vector2 move = pad == null ? Vector2.zero : pad.dpad.ReadValue() + pad.leftStick.ReadValue();
-        if (keyboard != null)
-        {
-            move.x += (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed ? 1 : 0);
-            move.y += (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed ? 1 : 0) - (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed ? 1 : 0);
-        }
-        return move;
+        return MenuUIInputModule.Active?.UI.Navigate.ReadValue<Vector2>() ?? Vector2.zero;
     }
 
     private void StopHeldWalk()

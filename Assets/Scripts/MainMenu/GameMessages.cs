@@ -143,6 +143,7 @@ public sealed class GameMessages : MonoBehaviour
         GameUISkin.PanelGraphic(group.transform).color=new Color(1,1,1,.94f);
         historyButton.onClick.AddListener(ToggleHistory);
         ControlDeviceState.Changed += RefreshText;
+        ControlBindings.Changed += RefreshText;
         SetTerminalPresentation(TerminalMode.Effective);
     }
     private void Render()
@@ -201,6 +202,7 @@ public sealed class GameMessages : MonoBehaviour
     private void OnDestroy()
     {
         ControlDeviceState.Changed -= RefreshText;
+        ControlBindings.Changed -= RefreshText;
         if (instance == this) instance = null;
     }
 }

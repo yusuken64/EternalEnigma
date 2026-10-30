@@ -55,6 +55,12 @@ namespace JuicyChickenGames.Menu
 
         private void Update()
         {
+            if (ControlBindings.SuppressInput)
+            {
+                moveInput = lookInput = Vector2.zero;
+                isMoving = attackPressed = waitPressed = menuPressed = skillsPressed = mapPressed = swapAllyPressed = planPressed = holdPosition = optionsPressed = false;
+                return;
+            }
             moveInput = moveAction.ReadValue<Vector2>();
             isMoving = moveInput.sqrMagnitude > 0.1f;
 

@@ -125,7 +125,7 @@ public sealed class TerminalRuntime : MonoBehaviour
     }
     private void Update()
     {
-        if (Keyboard.current?.f11Key.wasPressedThisFrame == true || Gamepad.current?.selectButton.wasPressedThisFrame == true)
+        if (!ControlBindings.SuppressInput && MenuUIInputModule.Active?.actionsAsset.FindAction("UI/Presentation")?.WasPressedThisFrame() == true)
         {
             AudioManager.Instance?.PlayCue(SoundCue.Confirm);
             TerminalMode.SetRequested(!TerminalMode.Requested);

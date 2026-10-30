@@ -15,6 +15,10 @@ public static class GamePreferences
         isolated.TryGetValue(key, out var value) && value is float number ? number : fallback : PlayerPrefs.GetFloat(key, fallback);
     public static void SetInt(string key, int value) { if (isolated != null) isolated[key] = value; else PlayerPrefs.SetInt(key, value); }
     public static void SetFloat(string key, float value) { if (isolated != null) isolated[key] = value; else PlayerPrefs.SetFloat(key, value); }
+    public static string GetString(string key, string fallback = "") => isolated != null ?
+        isolated.TryGetValue(key, out var value) && value is string text ? text : fallback : PlayerPrefs.GetString(key, fallback);
+    public static void SetString(string key, string value) { if (isolated != null) isolated[key] = value; else PlayerPrefs.SetString(key, value); }
+    public static void DeleteKey(string key) { if (isolated != null) isolated.Remove(key); else PlayerPrefs.DeleteKey(key); }
     public static void Save() { if (isolated == null) PlayerPrefs.Save(); }
     public static IDisposable Isolate()
     {

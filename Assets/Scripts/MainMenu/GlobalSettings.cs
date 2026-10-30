@@ -32,6 +32,7 @@ public class GlobalSettings : MonoBehaviour
     private void Awake()
     {
         EnsureMasterVolume();
+        GetComponentInChildren<ControlsRebindingScreen>(true)?.Initialize(this);
         // Party/service dialogs use orders 100+, while quit confirmation uses 2100.
         // Settings must own pointer raycasts as well as keyboard focus above them.
         var canvas = SettingsCanvas.GetComponent<Canvas>();

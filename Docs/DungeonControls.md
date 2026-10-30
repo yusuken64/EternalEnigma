@@ -3,6 +3,33 @@
 Controls apply to the current fixed-hero campaign flow and the isolated test modes.
 The town inn uses normal dialog confirmation/Back handling.
 
+## Displaying and changing bindings
+
+Settings > Controls displays the current bindings. Choose Keyboard / mouse or
+Controller, then Gameplay or Menus; use Previous / Next to browse the binding rows.
+Select a binding, release the current controls, and press its replacement key,
+mouse button, controller button, or stick. Movement directions and alternate keys
+can be changed separately. Escape, the controller Menu button, the visible Cancel
+button, or the capture timeout leave the binding unchanged. Restore defaults resets
+both devices and both contexts.
+
+Changes use Unity Input System interactive rebinding and apply immediately to the
+live gameplay and menu actions. Movement and Inventory / Skills / Settings
+shortcuts stay linked between gameplay and menus. A notice identifies inputs also
+used by another action; shared bindings are allowed because some default controls
+already have context-specific meanings. Gameplay and menu navigation are suppressed
+while a replacement is being captured. Visible prompts use the effective bindings.
+
+Bindings are app settings shared across all campaign slots, persisted through
+`GamePreferences` under `Controls.Bindings.v1`. They are not part of campaign
+checkpoints and do not save gameplay progress. Overrides identify the action by
+map/name and binding index so dynamically created menu actions survive a restart;
+Unity's `ApplyBindingOverride` applies them to each runtime input asset. Diagnostic
+preference isolation also isolates binding writes from personal settings.
+
+The tables below describe the default bindings. The Controls screen shows any
+custom bindings instead.
+
 ## Controller controls
 
 | Action | Xbox / PlayStation |
@@ -25,8 +52,9 @@ The town inn uses normal dialog confirmation/Back handling.
 Town, overworld and dungeon expose Inventory, Equipment, Skills and Stats; the
 overworld also has Capabilities. Q / X / Square opens Inventory, and R / B / Circle
 opens Skills. At the root, Q / R and X / Square shortcuts close their active tab or switch tabs.
-B / Circle opens Skills from gameplay and always goes back while a menu is open. Equipment and Stats have clickable launcher tabs but no dedicated
-keyboard/gamepad shortcut. Shortcuts are ignored inside action and target pickers.
+B / Circle opens Skills from gameplay and always goes back while a menu is open.
+Equipment and Stats have clickable launcher tabs and I / T keyboard shortcuts.
+Shortcuts are ignored inside action and target pickers.
 
 Navigate with WASD/arrows, D-pad/left stick or mouse. Confirming a dungeon active
 skill starts casting or target selection directly; items open their action list.

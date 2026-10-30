@@ -102,7 +102,7 @@ public sealed class DungeonHud : MonoBehaviour
         }
         if (hasCompanions && !AutoplayRunner.BlocksPlayerInput && !Common.Instance.GlobalSettings.IsOpen && !Common.Instance.Travel.IsTransitioning &&
             MenuUIInputModule.Active?.HasDialog != true &&
-            (Keyboard.current?.fKey.wasPressedThisFrame == true || Gamepad.current?.rightStickButton.wasPressedThisFrame == true))
+            !ControlBindings.SuppressInput && Common.Instance.MenuInputHandler.PlayerInput.actions.FindAction("Player/ToggleFullControl")?.WasPressedThisFrame() == true)
             DungeonPreferences.FullControl = !DungeonPreferences.FullControl;
         var player = game.PlayerController;
         var turns = game.TurnManager;

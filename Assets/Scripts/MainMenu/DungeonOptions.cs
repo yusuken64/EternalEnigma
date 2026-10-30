@@ -68,8 +68,8 @@ public sealed class DungeonOptions : MonoBehaviour
              DungeonPreferences.AnimationMode == DungeonAnimationMode.AnimateControlledHeroActions ? "Show your controlled hero's actions and their effects." :
              "With animations off, actions and movement happen instantly.");
     }
-    private void OnEnable() { ControlDeviceState.Changed += Refresh; if (control != null) Refresh(); }
-    private void OnDisable() { ControlDeviceState.Changed -= Refresh; }
+    private void OnEnable() { ControlDeviceState.Changed += Refresh; ControlBindings.Changed += Refresh; if (control != null) Refresh(); }
+    private void OnDisable() { ControlDeviceState.Changed -= Refresh; ControlBindings.Changed -= Refresh; }
     private void Update()
     {
         // Options can stay open across takeover, completion, or runner destruction.

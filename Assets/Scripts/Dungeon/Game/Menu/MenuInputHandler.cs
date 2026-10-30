@@ -23,11 +23,14 @@ namespace JuicyChickenGames.Menu
         public bool IsMoving;
         public bool IsBusy => PlayerInput != null && PlayerInput.currentActionMap?.name == "UI";
 
+        private void Start() => ControlBindings.Register(PlayerInput.actions);
+        private void OnDestroy() { if (PlayerInput != null) ControlBindings.Unregister(PlayerInput.actions); }
+
         private void Update()
         {
             var module = MenuUIInputModule.Active;
             ResetCommands();
-            if (module == null || module.InputConsumed || Common.Instance?.ScreenTransition?.BlocksInput == true) return;
+            if (module == null || module.InputConsumed || ControlBindings.SuppressInput || Common.Instance?.ScreenTransition?.BlocksInput == true) return;
             var ui = module.UI;
             NavigateActions = ui.Navigate;
             MenuOpenCloseAction = ui.OpenMenu;

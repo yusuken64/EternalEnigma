@@ -46,13 +46,12 @@ public class MenuUIInputModule : InputSystemUIInputModule
     {
         base.Awake();
         controls = new DungeonControls();
+        ControlBindings.Register(controls.asset);
         var uiMap = controls.asset.FindActionMap("UI");
-        NextHero = uiMap.AddAction("InspectNextHero", InputActionType.Button);
-        NextHero.AddBinding("<Keyboard>/tab"); NextHero.AddBinding("<Gamepad>/rightShoulder");
-        PreviousHero = uiMap.AddAction("InspectPreviousHero", InputActionType.Button);
-        PreviousHero.AddBinding("<Gamepad>/leftTrigger");
-        OpenEquipment = uiMap.AddAction("OpenEquipment", InputActionType.Button, "<Keyboard>/i");
-        OpenStats = uiMap.AddAction("OpenStats", InputActionType.Button, "<Keyboard>/t");
+        NextHero = uiMap.FindAction("InspectNextHero");
+        PreviousHero = uiMap.FindAction("InspectPreviousHero");
+        OpenEquipment = uiMap.FindAction("OpenEquipment");
+        OpenStats = uiMap.FindAction("OpenStats");
         actionsAsset = controls.asset;
         point = Reference(UI.Point);
         move = Reference(UI.Navigate);
@@ -96,6 +95,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
     {
         base.OnDestroy();
         foreach (var reference in references) Destroy(reference);
+        if (controls != null) ControlBindings.Unregister(controls.asset);
         controls?.Dispose();
     }
 
@@ -119,6 +119,14 @@ public class MenuUIInputModule : InputSystemUIInputModule
     }
 
     public bool Allows(GameObject obj)
+    {
+        // Drain cached pointer edges after capture without allowing the release
+        // to activate a control revealed when the capture dialog closes.
+        if (ControlBindings.SuppressInput && !ControlBindings.IsCapturing) return false;
+        return AllowsFocus(obj);
+    }
+
+    private bool AllowsFocus(GameObject obj)
     {
         // Playback controls stay usable above the cover, including while autoplay is paused.
         if (AutoplayRunner.BlocksPlayerInput)
@@ -193,7 +201,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
         // Refresh them before choosing ReturnTo, rather than losing the opener
         // because their next Update has not run yet.
         if (scopes.Count > 0 && scopes[^1].Owner is PartyMenu party) party.HudTabs?.Refresh();
-        if (IsUsable(scope.ReturnTo) && Allows(scope.ReturnTo))
+        if (IsUsable(scope.ReturnTo) && AllowsFocus(scope.ReturnTo))
             eventSystem.SetSelectedGameObject(scope.ReturnTo);
         else
         {
@@ -206,7 +214,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
     {
         if (gameplayFocusReleased && !HasDialog) return;
         var current = eventSystem.currentSelectedGameObject;
-        if (!IsUsable(current) || !Allows(current)) return;
+        if (!IsUsable(current) || !AllowsFocus(current)) return;
         rememberedSelection = current;
         if (scopes.Count > 0) scopes[^1].Remembered = current;
     }
@@ -214,13 +222,13 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public void RestoreFocus(GameObject fallback = null)
     {
         if (gameplayFocusReleased && !HasDialog) return;
-        if (IsUsable(eventSystem.currentSelectedGameObject) && Allows(eventSystem.currentSelectedGameObject)) return;
+        if (IsUsable(eventSystem.currentSelectedGameObject) && AllowsFocus(eventSystem.currentSelectedGameObject)) return;
         GameObject next = null;
         if (scopes.Count > 0)
         {
             var scope = scopes[^1];
-            if (IsUsable(scope.Remembered) && Allows(scope.Remembered)) next = scope.Remembered;
-            else if (IsUsable(scope.First) && Allows(scope.First)) next = scope.First;
+            if (IsUsable(scope.Remembered) && AllowsFocus(scope.Remembered)) next = scope.Remembered;
+            else if (IsUsable(scope.First) && AllowsFocus(scope.First)) next = scope.First;
             else if (scope.Root != null)
                 foreach (var selectable in scope.Root.GetComponentsInChildren<Selectable>())
                     if (IsUsable(selectable.gameObject)) { next = selectable.gameObject; break; }
@@ -277,6 +285,16 @@ public class MenuUIInputModule : InputSystemUIInputModule
     private void ProcessInput()
     {
         ControlDeviceState.Poll();
+        if (ControlBindings.SuppressInput)
+        {
+            ConsumeInput();
+            Common.InstanceOrNull?.MenuInputHandler?.ClearInputThisFrame();
+            bool navigation = eventSystem.sendNavigationEvents;
+            eventSystem.sendNavigationEvents = false;
+            try { base.Process(); }
+            finally { eventSystem.sendNavigationEvents = navigation; }
+            return;
+        }
         if (AutoplayRunner.BlocksPlayerInput)
         {
             consumedFrame = Time.frameCount;

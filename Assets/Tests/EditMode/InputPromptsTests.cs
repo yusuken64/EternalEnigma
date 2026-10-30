@@ -8,9 +8,21 @@ namespace EternalEnigma.Tests
         private static readonly MethodInfo SetDevice = typeof(ControlDeviceState).GetMethod("Set",
             BindingFlags.Static | BindingFlags.NonPublic);
         private bool original;
+        private System.IDisposable preferences;
 
-        [SetUp] public void SetUp() { original = ControlDeviceState.Gamepad; Set(false); }
-        [TearDown] public void TearDown() => Set(original);
+        [SetUp] public void SetUp()
+        {
+            preferences = GamePreferences.Isolate();
+            ControlBindings.Reload();
+            original = ControlDeviceState.Gamepad;
+            Set(false);
+        }
+        [TearDown] public void TearDown()
+        {
+            Set(original);
+            preferences.Dispose();
+            ControlBindings.Reload();
+        }
         private static void Set(bool value) => SetDevice.Invoke(null, new object[] { value });
 
         [Test]

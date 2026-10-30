@@ -55,13 +55,13 @@ public sealed class TerminalModeButton : MonoBehaviour
         component.Refresh();
         return component;
     }
-    private void OnEnable() { TerminalMode.Changed += Refresh; Refresh(); }
-    private void OnDisable() { TerminalMode.Changed -= Refresh; }
+    private void OnEnable() { TerminalMode.Changed += Refresh; ControlBindings.Changed += Refresh; Refresh(); }
+    private void OnDisable() { TerminalMode.Changed -= Refresh; ControlBindings.Changed -= Refresh; }
     private void Update() { if (lastPad != ControlDeviceState.Gamepad) Refresh(); }
     private void Refresh()
     {
         lastPad = ControlDeviceState.Gamepad;
         if (label != null) label.text = "Terminal mode " + (TerminalMode.Requested ? "On" : "Off") +
-            ". " + InputPrompts.Pick("F11", "View / Share") + " to switch.";
+            ". " + InputPrompts.PresentationKey + " to switch.";
     }
 }

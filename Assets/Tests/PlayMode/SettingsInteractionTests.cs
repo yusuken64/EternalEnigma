@@ -24,9 +24,12 @@ namespace EternalEnigma.Tests
         private Keyboard keyboard;
         private Mouse mouse;
         private GlobalSettings settings;
+        private System.IDisposable preferences;
         [UnitySetUp] public IEnumerator SetUp()
         {
             input = new TestInputScope(); harness = new GameTestHarness();
+            preferences = GamePreferences.Isolate();
+            ControlBindings.Reload();
             yield return harness.LoadMainMenu(new TestScenario().CreateSave());
             pad = InputSystem.AddDevice<Gamepad>(); keyboard = InputSystem.AddDevice<Keyboard>(); mouse = InputSystem.AddDevice<Mouse>();
             MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { pad, keyboard, mouse };
@@ -35,9 +38,20 @@ namespace EternalEnigma.Tests
         }
         [UnityTearDown] public IEnumerator TearDown()
         {
-            Time.timeScale = 1;
-            InputSystem.RemoveDevice(pad); InputSystem.RemoveDevice(keyboard); InputSystem.RemoveDevice(mouse);
-            yield return harness.Cleanup(); input.Dispose();
+            try
+            {
+                Time.timeScale = 1;
+                if (pad != null && pad.added) InputSystem.RemoveDevice(pad);
+                if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
+                if (mouse != null && mouse.added) InputSystem.RemoveDevice(mouse);
+                yield return harness.Cleanup();
+            }
+            finally
+            {
+                input?.Dispose();
+                preferences?.Dispose();
+                ControlBindings.Reload();
+            }
         }
         private IEnumerator Press(GamepadButton button)
         {
@@ -350,68 +364,61 @@ namespace EternalEnigma.Tests
             var view = UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
             var sizeProperty = view.GetType().GetProperty("selectedSizeIndex", flags);
             int originalSize = (int)sizeProperty.GetValue(view);
+            bool originalTerminal = TerminalMode.Requested;
             try
             {
-                view.GetType().GetMethod("SetCustomResolution", flags).Invoke(view, new object[] { new Vector2(960, 600), "Controls 960x600" });
+                TerminalMode.SetRequested(false);
                 var tab = settings.TabGroup.TabContents.Single(t => t.Content.name == "Controls");
-                tab.TabButton.Select(); yield return null; yield return null;
-                var reader = tab.Content.GetComponentInChildren<TrainerPreviewScroll>();
-                Assert.That(reader, Is.Not.Null);
-                var scroll = reader.Scroll;
-                Canvas.ForceUpdateCanvases();
-                LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.content);
-                Assert.That(scroll.viewport.GetComponent<RectMask2D>(), Is.Not.Null);
-                Assert.That(scroll.content.rect.height, Is.GreaterThan(scroll.viewport.rect.height));
-                var labels = scroll.content.GetComponentsInChildren<TMP_Text>();
-                var guide = string.Join("\n", labels.Select(label => label.text));
-                Assert.That(guide, Does.Contain("Skills: B / Circle"));
-                Assert.That(guide, Does.Contain("Dungeon orders: LB / L1"));
-                Assert.That(guide, Does.Contain("Back: B / Circle"));
-                System.IO.Directory.CreateDirectory("Temp/MenuControllerFollowups");
-                ScreenCapture.CaptureScreenshot("Temp/MenuControllerFollowups/controls-menu.png");
-                yield return new WaitForSecondsRealtime(.2f);
-                foreach (var label in labels)
+                tab.TabButton.Select(); yield return null;
+                var screen = tab.Content.GetComponent<ControlsRebindingScreen>();
+                Assert.That(screen, Is.Not.Null);
+                foreach (var resolution in new[] { new Vector2(960, 600), new Vector2(1280, 720) })
                 {
-                    label.ForceMeshUpdate();
-                    Assert.That(label.isTextOverflowing, Is.False, label.text);
-                    Assert.That(label.fontSize, Is.GreaterThanOrEqualTo(24));
+                    view.GetType().GetMethod("SetCustomResolution", flags).Invoke(view,
+                        new object[] { resolution, "Controls " + resolution.x + "x" + resolution.y });
+                    yield return null; yield return null;
+                    Canvas.ForceUpdateCanvases();
+                    Assert.That(screen.BindingButtons.Any(button => button.gameObject.activeInHierarchy), Is.True);
+                    foreach (var button in screen.BindingButtons.Where(button => button.gameObject.activeInHierarchy))
+                    {
+                        Assert.That(button.interactable, Is.True);
+                        var label = button.GetComponentInChildren<TMP_Text>();
+                        Assert.That(label.text, Is.Not.Empty);
+                        label.ForceMeshUpdate();
+                        Assert.That(label.isTextOverflowing, Is.False, label.text);
+                        var corners = new Vector3[4];
+                        ((RectTransform)button.transform).GetWorldCorners(corners);
+                        Assert.That(corners.All(corner => corner.x >= 0 && corner.x <= Screen.width && corner.y >= 0 && corner.y <= Screen.height), Is.True);
+                    }
+                    foreach (var label in screen.ActionLabels.Where(label => label.gameObject.activeInHierarchy))
+                    {
+                        label.ForceMeshUpdate();
+                        Assert.That(label.isTextOverflowing, Is.False, label.text);
+                    }
+                    System.IO.Directory.CreateDirectory("Temp/ControlsRebinding");
+                    ScreenCapture.CaptureScreenshot("Temp/ControlsRebinding/controls-" + (int)resolution.x + "x" + (int)resolution.y + ".png");
+                    yield return new WaitForSecondsRealtime(.2f);
                 }
-                var viewportCorners = new Vector3[4];
-                scroll.viewport.GetWorldCorners(viewportCorners);
-                Assert.That(viewportCorners.All(corner => corner.x >= 0 && corner.x <= Screen.width && corner.y >= 0 && corner.y <= Screen.height), Is.True);
-
-                scroll.verticalNormalizedPosition = 1;
-                yield return Press(GamepadButton.DpadRight);
-                Assert.That(Selected, Is.EqualTo(reader.gameObject));
-                yield return Key(UnityEngine.InputSystem.Key.DownArrow);
-                Assert.That(scroll.verticalNormalizedPosition, Is.LessThan(1), "Keyboard arrows scroll the guide.");
-                for (int step = 0; step < 30 && scroll.verticalNormalizedPosition > .0001f; step++)
-                    yield return Press(GamepadButton.DpadDown);
-                Assert.That(scroll.verticalNormalizedPosition, Is.LessThanOrEqualTo(.0001f));
-                Canvas.ForceUpdateCanvases();
-                ScreenCapture.CaptureScreenshot("Temp/MenuControllerFollowups/controls-world-bindings.png");
+                string firstPage = screen.PageLabel.text;
+                Assert.That(screen.NextPageButton.interactable, Is.True);
+                screen.NextPageButton.onClick.Invoke(); yield return null;
+                Assert.That(screen.PageLabel.text, Is.Not.EqualTo(firstPage));
+                Assert.That(screen.PreviousPageButton.interactable, Is.True);
+                screen.PreviousPageButton.onClick.Invoke(); yield return null;
+                Assert.That(screen.PageLabel.text, Is.EqualTo(firstPage));
+                string firstDevice = screen.DeviceButton.GetComponentInChildren<TMP_Text>().text;
+                screen.DeviceButton.onClick.Invoke(); yield return null;
+                Assert.That(screen.DeviceButton.GetComponentInChildren<TMP_Text>().text, Is.Not.EqualTo(firstDevice));
+                ScreenCapture.CaptureScreenshot("Temp/ControlsRebinding/controls-gamepad.png");
                 yield return new WaitForSecondsRealtime(.2f);
-                foreach (var label in labels)
-                {
-                    label.ForceMeshUpdate();
-                    var last = label.textInfo.characterInfo.Take(label.textInfo.characterCount).Last(character => character.isVisible);
-                    var point = RectTransformUtility.WorldToScreenPoint(null, label.transform.TransformPoint(last.bottomLeft));
-                    Assert.That(RectTransformUtility.RectangleContainsScreenPoint(scroll.viewport, point), Is.True,
-                        "The final guide line must be reachable inside the masked viewport.");
-                }
+                tab.TabButton.Select(); yield return Press(GamepadButton.DpadRight);
+                Assert.That(Selected, Is.EqualTo(screen.DeviceButton.gameObject));
                 yield return Key(UnityEngine.InputSystem.Key.Escape);
                 Assert.That(Selected, Is.EqualTo(tab.TabButton.gameObject));
-
-                scroll.verticalNormalizedPosition = 1;
-                var pointerPosition = RectTransformUtility.WorldToScreenPoint(null, scroll.viewport.TransformPoint(scroll.viewport.rect.center));
-                InputSystem.QueueStateEvent(mouse, new MouseState { position = pointerPosition }); yield return null;
-                InputSystem.QueueStateEvent(mouse, new MouseState { position = pointerPosition, scroll = new Vector2(0, -120) });
-                yield return null; yield return null;
-                Assert.That(scroll.verticalNormalizedPosition, Is.LessThan(1), "Mouse wheel scrolls the guide without requiring directional navigation.");
+                Assert.That(settings.IsOpen, Is.True);
             }
-            finally { sizeProperty.SetValue(view, originalSize); }
+            finally { sizeProperty.SetValue(view, originalSize); TerminalMode.SetRequested(originalTerminal); }
         }
-
         [UnityTest] public IEnumerator GameplayExplanationChangesWhileDialogRemainsOpen()
         {
             var gameplay = settings.TabGroup.TabContents.Single(t => t.TabButton.GetComponentInChildren<TMP_Text>().text == "Gameplay");

@@ -21,6 +21,14 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
     private readonly Dictionary<AudioClip, int> uiFrames = new();
     private int lastUIActionFrame = -1;
 
+    protected override void Initialize()
+    {
+        TerminalAudioFilter.Ensure(MusicAudioSource);
+        if (EffectAudioSources != null)
+            foreach (var source in EffectAudioSources) TerminalAudioFilter.Ensure(source);
+        foreach (var source in UIAudioSources) TerminalAudioFilter.Ensure(source);
+    }
+
     public void PlayCue(SoundCue cue)
     {
         var clip = SoundEffects?.For(cue);

@@ -8,6 +8,16 @@ The sound palette retains the installed RPG Essentials combat and menu clips. Ni
 
 All one-shot source pools are 2D, have autoplay disabled, and receive their correct mixer group on every playback. Owned visual-effect instances are staged inactive and their embedded audio sources disabled before activation; only the audio manager plays their cues. Volume preferences remain unchanged.
 
+## ASCII audio
+
+The applied terminal/ASCII view automatically enables an 8-bit, 11,025 Hz bitcrusher on music, Effects and UI sources. It follows `TerminalMode.Effective`, including deferred switches during gameplay and travel, and restores the dry signal when the view switches off. A 15 ms blend prevents an abrupt effect change; clips keep playing at their existing position and pitch. Processing happens before the mixer so the existing volume controls still work normally. Source filters persist with Common across scene changes and remain enabled while their DSP bypasses the effect.
+
+`TerminalAudioFilter` uses Unity's `OnAudioFilterRead` callback on native platforms and in the editor. Unity's Web audio backend does not run this callback; WebGL retains normal audio and would need a separate Web Audio or baked-clip implementation. Source assets are unchanged.
+
+**Audio / Test Edit Mode** covers quantization, silence, stereo sample hold, buffer continuity, output configuration changes, and restoring the original signal. **Audio / Test Terminal Audio** checks live Unity audio output, deferred switching, uninterrupted playback, saved preference startup, scene reloads and mixer routing.
+
+Verified in the Unity editor on 2026-10-30 UTC: 11 EditMode and 3 PlayMode tests passed with no failures or skips. The live output check captures the final AudioListener signal, including the source filters. Reports are retained in `Temp/TerminalAudio/{EditMode,PlayMode}.json` and matching XML. Native player builds and subjective listening were not part of this check.
+
 ## Coverage
 
 | Event | Cue / owner | Channel |

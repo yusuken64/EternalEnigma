@@ -70,7 +70,7 @@ namespace EternalEnigma.Tests
             menu.StartGame_Clicked(); yield return null;
             Object.FindFirstObjectByType<CampaignSlots>().Slots[SaveSystem.ActiveSlot].Button.onClick.Invoke(); yield return null;
             picker = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
-            var hero = (menu.TownConfiguration ?? TownSceneLoader.Default).AllyCatalog[1];
+            var hero = HeroChoicePresentation.Recommended((menu.TownConfiguration ?? TownSceneLoader.Default).AllyCatalog)[1];
             picker.GetComponentsInChildren<Button>().Single(b => b.name.StartsWith(hero.Name + "  ")).onClick.Invoke();
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true, "new campaign from hero selection");
             Assert.That(Common.Instance.GameSaveData.ProtagonistId, Is.EqualTo(hero.Id));

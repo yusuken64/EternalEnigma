@@ -133,7 +133,18 @@ public partial class TileWorldDungeonGenerator : MonoBehaviour
         {
             int floor = Game.Instance.PlayerController.Floor;
             var role = floor == run.StartFloor ? DungeonFloorRole.Entry : floor == run.EndFloor ? DungeonFloorRole.Exit : DungeonFloorRole.Regular;
-            ConfigureFloor(creator, DungeonLayoutProfile.Options(creator.twcAsset.randomSeed, run.LayoutBiome, run.LayoutTier, role, variant: run.Variant));
+            ConfigureFloor(creator, DungeonLayoutProfile.Options(creator.twcAsset.randomSeed, run.LayoutBiome, run.LayoutTier, role, variant: run.Variant, floorNumber: floor));
+        }
+        else if (run != null && Game.Instance.PlayerController.Floor == 2 && run.StartFloor < 2 && run.EndFloor > 2)
+        {
+            // The standalone dungeon uses its authored legacy template rather than a campaign run plan.
+            foreach (var layer in creator.twcAsset.mapBlueprintLayers)
+                foreach (var entry in layer.stack)
+                    if (entry.action is CoreDungeonLayerGenerator generator && !generator.Throne)
+                    {
+                        generator.EnemyCount = DungeonLayoutProfile.FloorTwoEnemyCount;
+                        generator.TrapCount = DungeonLayoutProfile.FloorTwoTrapCount;
+                    }
         }
     }
 

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -26,6 +27,49 @@ namespace EternalEnigma.Tests
             if (AutoplayRunner.Active != null)
             { AutoplayRunner.Active.ExitDemo(); yield return harness.WaitUntil(()=>AutoplayRunner.Active==null,"balance cleanup"); }
             yield return harness.Cleanup();
+        }
+
+        [UnityTest, Timeout(2400000)]
+        public IEnumerator EveryStartingHeroCanClearFloorTwoWithNormalRules()
+        {
+            harness.TimeoutSeconds = 180;
+            var roster = TownSceneLoader.Default.AllyCatalog;
+            var heroes = HeroChoicePresentation.Recommended(roster).Concat(roster).Distinct().ToArray();
+            var failures = new List<string>();
+            var summaries = new List<string> { "hero_id,hero,class,seed,outcome,entry_level,entry_hp,exit_hp,minimum_hp_fraction,damage,healing,downings,report" };
+            Directory.CreateDirectory("Temp/FloorTwoSurvival");
+            foreach (var hero in heroes)
+            {
+                var options = new AutoplayOptions { Seed=42, Speed=32, NoAnimations=true, Godmode=false,
+                    InfiniteResources=false, InfiniteStrength=false, TimeLimitMinutes=2, ActionLimit=3000,
+                    ReportRoot="Temp/FloorTwoSurvival", Balance=new BalanceExperimentOptions {
+                        ExperimentId="floor-two-survival", ContentId="floor-two-six-spawns-sixty-percent-hp-half-offense",
+                        Cohort="pilot", HeroId=hero.Id, MaxRetreats=0 } };
+                AutoplayRunner.WatchDemo(options);
+                var runner = AutoplayRunner.Active;
+                Assert.That(runner, Is.Not.Null);
+                runner.Report.ValidationOnly = true;
+                runner.Report.EligibleForBalance = false;
+                yield return harness.WaitUntil(() => !runner.Running ||
+                    runner.Report.Balance.Stages.Any(s => s.Location == "story-0" && s.Floor == 2 && s.Outcome == "Cleared"),
+                    hero.Name + " clears floor two");
+                var stage = runner.Report.Balance.Stages.LastOrDefault(s => s.Location == "story-0" && s.Floor == 2);
+                bool survived = stage?.Outcome == "Cleared" && stage.Downings == 0 && stage.EntryParty.Count == 1 &&
+                    stage.EntryParty[0].Level == 1 && stage.ExitParty.All(a => a.HP > 0);
+                string outcome = survived ? "Cleared" : runner.Report.Outcome + ": " + runner.Status;
+                if (runner.Running) runner.Stop();
+                yield return harness.WaitUntil(() => !runner.Finalizing, "survival report finalization");
+                string report = Path.Combine(runner.DirectoryPath, "report.json");
+                summaries.Add($"{hero.Id},{hero.Name},{hero.PrimaryClass.Id},42,{outcome.Replace(',', ';')},{stage?.EntryParty.FirstOrDefault()?.Level},{stage?.EntryParty.FirstOrDefault()?.HP},{stage?.ExitParty.FirstOrDefault()?.HP},{stage?.MinimumHealthFraction},{stage?.DamageTaken},{stage?.HealingReceived},{stage?.Downings},{report}");
+                File.WriteAllLines("Temp/FloorTwoSurvival/summary.csv", summaries);
+                if (!survived) failures.Add(hero.Name + " (" + hero.PrimaryClass.Id + "): " + outcome + " — " + report);
+                Debug.Log($"Floor 2 survival: {hero.Name} ({hero.PrimaryClass.Id}) — {outcome}");
+                runner.ExitDemo();
+                yield return harness.WaitUntil(() => AutoplayRunner.Active == null &&
+                    Object.FindFirstObjectByType<MainMenu>()?.IsReady == true && !Common.Instance.Travel.IsTransitioning,
+                    "return from survival case");
+            }
+            Assert.That(failures, Is.Empty, string.Join("\n", failures));
         }
 
         [UnityTest]

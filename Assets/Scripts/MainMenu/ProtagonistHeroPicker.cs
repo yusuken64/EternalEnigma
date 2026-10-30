@@ -23,7 +23,6 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
     [SerializeField] private ProtagonistPreview preview;
     public Button[] ChoiceButtons;
     public Button BackButton;
-    public Button BeginButton;
     public Button RosterToggle;
     public bool ShowingAllHeroes { get; private set; }
     private IReadOnlyList<TownAlly> visibleHeroes;
@@ -40,8 +39,6 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         picker.EnsureTitle();
         picker.BackButton.onClick.RemoveAllListeners();
         picker.BackButton.onClick.AddListener(picker.Back);
-        picker.BeginButton.onClick.RemoveAllListeners();
-        picker.BeginButton.onClick.AddListener(() => picker.Begin(picker.selected));
         picker.RosterToggle.onClick.RemoveAllListeners();
         picker.RosterToggle.onClick.AddListener(picker.ToggleRoster);
         picker.BuildChoices();
@@ -77,7 +74,6 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
 
     public void AuthorPresentation()
     {
-        if (BeginButton == null) BeginButton = GameUISkin.Button(transform, "Begin", Vector2.zero, Vector2.one, null);
         if (RosterToggle == null) RosterToggle = GameUISkin.Button(transform, "All heroes", Vector2.zero, Vector2.one, null);
         Fit((RectTransform)portrait.transform.parent, .05f, .54f, .35f, .81f);
         Fit(details.rectTransform, .055f, .19f, .35f, .53f);
@@ -86,23 +82,20 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         details.textWrappingMode = TextWrappingModes.Normal;
         details.alignment = TextAlignmentOptions.TopLeft;
         Fit((RectTransform)choices, .40f, .245f, .95f, .72f);
-        Fit((RectTransform)BeginButton.transform, .05f, .11f, .35f, .18f);
         Fit((RectTransform)RosterToggle.transform, .68f, .745f, .95f, .815f);
         Fit((RectTransform)BackButton.transform, .05f, .035f, .20f, .10f);
         Fit(pageLabel.rectTransform, .40f, .12f, .95f, .215f);
         pageLabel.fontSize = 30; pageLabel.enableAutoSizing = false;
         pageLabel.alignment = TextAlignmentOptions.TopLeft;
         pageLabel.textWrappingMode = TextWrappingModes.Normal;
-        if (BeginButton is SelectToActivateButton begin) begin.ActivateOnFirstPointerPress = true;
         if (RosterToggle is SelectToActivateButton toggle) toggle.ActivateOnFirstPointerPress = true;
-        foreach (var button in new[] { BeginButton, RosterToggle, BackButton })
+        foreach (var button in new[] { RosterToggle, BackButton })
         {
             var label = button.GetComponentInChildren<TMP_Text>();
             label.fontSize = label.fontSizeMax = 32;
             label.fontSizeMin = 30;
             label.enableAutoSizing = true;
         }
-        GameUISkin.PadButtonLabel(BeginButton);
         GameUISkin.PadButtonLabel(RosterToggle);
     }
 #endif
@@ -132,7 +125,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         if (next != null) next.gameObject.SetActive(false);
         visibleHeroes = ShowingAllHeroes ? heroes : HeroChoicePresentation.Recommended(heroes);
         pageLabel.text = ShowingAllHeroes
-            ? $"All {heroes.Count} heroes\nBrowse to preview. Choose Begin when you are ready."
+            ? $"All {heroes.Count} heroes\nChoose a hero to begin your journey."
             : "Three ways to begin\nFight up close, protect the party, or cast from a distance.";
         RosterToggle.GetComponentInChildren<TMP_Text>().text = ShowingAllHeroes ? "Recommended heroes" : $"All {heroes.Count} heroes";
         if (selected == null || !visibleHeroes.Contains(selected)) Select(visibleHeroes[0]);
@@ -206,7 +199,8 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
             label.margin = Vector4.zero;
             label.transform.SetAsLastSibling();
 
-            button.onClick.AddListener(() => { Select(hero); BeginButton.Select(); });
+            if (button is SelectToActivateButton choice) choice.ActivateOnFirstPointerPress = true;
+            button.onClick.AddListener(() => Begin(hero));
             button.GetComponent<ClassPickerFocus>().Focused = () =>
             {
                 if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject != button.gameObject)
@@ -223,21 +217,18 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
             button.navigation = new Navigation
             {
                 mode = Navigation.Mode.Explicit,
-                selectOnLeft = column > 0 ? ChoiceButtons[i - 1] : BeginButton,
+                selectOnLeft = column > 0 ? ChoiceButtons[i - 1] : BackButton,
                 selectOnRight = column < columns - 1 && i + 1 < visibleHeroes.Count ? ChoiceButtons[i + 1] : RosterToggle,
                 selectOnUp = up >= 0 ? ChoiceButtons[up] : RosterToggle,
-                selectOnDown = down < visibleHeroes.Count ? ChoiceButtons[down] : BeginButton
+                selectOnDown = down < visibleHeroes.Count ? ChoiceButtons[down] : BackButton
             };
         }
         BackButton.navigation = new Navigation { mode = Navigation.Mode.Explicit,
-            selectOnUp = BeginButton, selectOnDown = ChoiceButtons[0],
-            selectOnLeft = BeginButton, selectOnRight = BeginButton };
-        BeginButton.navigation = new Navigation { mode = Navigation.Mode.Explicit,
-            selectOnUp = ChoiceButtons[visibleHeroes.Count - 1], selectOnDown = BackButton,
-            selectOnLeft = BackButton, selectOnRight = ChoiceButtons[0] };
+            selectOnUp = ChoiceButtons[visibleHeroes.Count - 1], selectOnDown = ChoiceButtons[0],
+            selectOnLeft = RosterToggle, selectOnRight = ChoiceButtons[0] };
         RosterToggle.navigation = new Navigation { mode = Navigation.Mode.Explicit,
             selectOnUp = BackButton, selectOnDown = ChoiceButtons[0],
-            selectOnLeft = ChoiceButtons[0], selectOnRight = BeginButton };
+            selectOnLeft = ChoiceButtons[0], selectOnRight = BackButton };
         MarkPreviewedHero();
     }
 
@@ -247,7 +238,6 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         selected = hero;
         preview.Show(hero, portrait);
         details.text = HeroChoicePresentation.Preview(hero);
-        BeginButton.GetComponentInChildren<TMP_Text>().text = "Begin as " + hero.Name;
         MarkPreviewedHero();
     }
 
@@ -259,15 +249,13 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
             ChoiceButtons[i].GetComponentInChildren<TMP_Text>().fontStyle = FontStyles.Bold |
                 (visibleHeroes[i] == selected ? FontStyles.Underline : FontStyles.Normal);
             if (visibleHeroes[i] != selected) continue;
-            var navigation = BeginButton.navigation;
+            var navigation = BackButton.navigation;
             navigation.selectOnUp = navigation.selectOnRight = ChoiceButtons[i];
-            BeginButton.navigation = navigation;
+            BackButton.navigation = navigation;
         }
     }
 
     private void Begin(TownAlly hero) => Finish(() => confirmed?.Invoke(hero));
-
-    /// <summary>Swaps the skin's plain button for one that needs a select before it activates.</summary>
 
     private void Back() => Finish(cancelled);
 

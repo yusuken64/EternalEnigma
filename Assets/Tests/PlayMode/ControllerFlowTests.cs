@@ -116,7 +116,7 @@ namespace EternalEnigma.Tests
             var first = EventSystem.current.currentSelectedGameObject;
             Assert.That(first, Is.EqualTo(picker.ChoiceButtons[0].gameObject));
             yield return Press(GamepadButton.DpadDown);
-            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(picker.ChoiceButtons[6].gameObject));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(picker.BackButton.gameObject));
             yield return Press(GamepadButton.DpadUp);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
             yield return Press(GamepadButton.DpadRight);

@@ -69,7 +69,7 @@ public static class OpeningUIAuthoring
             finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
         }
         AssetDatabase.SaveAssets();
-        Debug.Log("Authored opening menu padding, readable trainer previews and explicit hero confirmation.");
+        Debug.Log("Authored opening menu padding, readable trainer previews and hero selection.");
     }
 
     private static void EditPrefab(string path, System.Action<GameObject> edit)

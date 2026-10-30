@@ -39,6 +39,7 @@ public class Enemy : Character
 	{
         if (spawnInitialized) return;
         spawnInitialized = true;
+        ApplyFloorTwoStats();
         if (GetComponent<EnemyGroundMarker>() == null) gameObject.AddComponent<EnemyGroundMarker>();
         SetFacing(VisualRandom.Pick(spawnFacings));
         gameObject.AddComponent<FogHiddenVisual>();
@@ -63,6 +64,20 @@ public class Enemy : Character
 
 		Policies = Policies.OrderBy(x => x.priority).ToList();
 	}
+
+    private void ApplyFloorTwoStats()
+    {
+        var game = Game.Instance;
+        if (game.PlayerController.Floor != 2 || game.RunPlan?.IsEncounter == true || game.Finale != null ||
+            game.CurrentDungeon.IsThroneFloor || Team != Team.Enemy || IsBoss || Vitals == null) return;
+        // Adjust this spawn only, including enemies created by splitting; authored prefabs keep their normal stats.
+        BaseStats.HPMax = Mathf.Max(1, Mathf.RoundToInt(BaseStats.HPMax * .6f));
+        BaseStats.Strength = Mathf.Max(1, BaseStats.Strength / 2);
+        BaseStats.MagicPower /= 2;
+        BaseStats.Defense /= 2;
+        Vitals.HP = Mathf.Min(Vitals.HP, FinalStats.HPMax);
+        SyncDisplayedStats();
+    }
 
 	public override void DetermineAction()
 	{

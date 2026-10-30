@@ -63,6 +63,51 @@ namespace EternalEnigma.Tests
             }
         }
 
+        [UnityTest] public IEnumerator FloorTwoIsForgivingAndFloorThreeKeepsNormalStats()
+        {
+            yield return harness.LoadDungeon(new TestScenario { Seed = 42 });
+            var game = harness.Game;
+            game.AdvanceFloor();
+            yield return harness.WaitForIdle();
+            Assert.That(game.PlayerController.Floor, Is.EqualTo(2));
+            Assert.That(game.CurrentDungeon.Floor.Enemies.Count, Is.EqualTo(6));
+            Assert.That(game.Enemies.Count, Is.InRange(1, 6), "Large enemy footprints may exclude a seeded spawn.");
+            Assert.That(game.CurrentDungeon.Floor.Traps.Count, Is.EqualTo(1));
+            Assert.That(game.CurrentDungeon.Floor.Gold.Count, Is.EqualTo(5));
+            Assert.That(game.CurrentDungeon.Floor.Items.Count, Is.EqualTo(5));
+            foreach (var enemy in game.Enemies.Cast<Enemy>()) CheckStats(enemy, true);
+
+            // Splitting and other later spawns receive the same reduction, without altering the prefab.
+            var mage = game.EnemyManager.EnemyPrefabs.Single(e => e.name == "Enemy_EvilMage");
+            int authoredHP = mage.StartingStats.HPMax;
+            var cell = game.CurrentDungeon.GetPositionWith(game.CurrentDungeon.Floor.Start.ToCell(), node =>
+                !game.AllCharacters.Any(c => c != null && c.TilemapPosition == new Vector3Int(node.X, node.Y)));
+            var spawn = new SpawnEnemyAction(mage, cell, game.CurrentDungeon.CellToWorld(cell));
+            spawn.ExecuteImmediate(harness.Ally);
+            Assert.That(spawn.SpawnedEnemy, Is.Not.Null);
+            CheckStats(spawn.SpawnedEnemy, true);
+            spawn.SpawnedEnemy.InitializeSpawn();
+            CheckStats(spawn.SpawnedEnemy, true);
+            Assert.That(mage.StartingStats.HPMax, Is.EqualTo(authoredHP));
+
+            game.AdvanceFloor();
+            yield return harness.WaitForIdle();
+            Assert.That(game.PlayerController.Floor, Is.EqualTo(3));
+            Assert.That(game.CurrentDungeon.Floor.Enemies.Count, Is.EqualTo(10));
+            Assert.That(game.CurrentDungeon.Floor.Traps.Count, Is.EqualTo(5));
+            foreach (var enemy in game.Enemies.Cast<Enemy>()) CheckStats(enemy, false);
+
+            static void CheckStats(Enemy enemy, bool reduced)
+            {
+                var authored = enemy.StartingStats;
+                Assert.That(enemy.FinalStats.HPMax, Is.EqualTo(reduced ? Mathf.Max(1, Mathf.RoundToInt(authored.HPMax * .6f)) : authored.HPMax), enemy.name);
+                Assert.That(enemy.Vitals.HP, Is.EqualTo(enemy.FinalStats.HPMax), enemy.name);
+                Assert.That(enemy.FinalStats.Strength, Is.EqualTo(reduced ? Mathf.Max(1, authored.Strength / 2) : authored.Strength), enemy.name);
+                Assert.That(enemy.FinalStats.Defense, Is.EqualTo(reduced ? authored.Defense / 2 : authored.Defense), enemy.name);
+                Assert.That(enemy.FinalStats.EXPOnKill, Is.EqualTo(authored.EXPOnKill), enemy.name);
+            }
+        }
+
         [UnityTest] public IEnumerator ResetWaitsForAnOpaqueFrameAndRestoresTheSamePuzzle()
         {
             yield return harness.LoadMainMenu(null);

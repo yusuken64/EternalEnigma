@@ -21,6 +21,28 @@ Entry/exit rooms omit normal encounters and blocking scenery.
 are 1-5, 5-10, 10-20, 20-30 and 30-40. Revisiting the same campaign/location/floor uses the
 same generation inputs. Combat progress and exact floor state are not persisted.
 
+Floor 2 is a forgiving first combat floor: its enemy budget is 6 instead of 10,
+with 1 trap instead of 5. Biome layouts retain their area-based enemy scaling.
+Normal enemies on this floor have 60% health (rounded), half Strength, Magic Power
+and Defense, with at least 1 HP and Strength. Gold, item and gathering budgets and
+per-enemy experience rewards are unchanged. This applies to ordinary campaign and
+standalone dungeons; short encounters, bosses, the finale and later floors retain
+their normal stats. The spawn adjustment also covers enemies created by splitting.
+
+**Tools > Eternal Enigma > Tests > Run Floor Two Balance** checks the production
+floor transition, population, enemy stats, later spawns and the return to normal
+stats on floor 3. **Run Floor Two Survival** plays the normal campaign opening with
+each selectable hero on seed 42 using the cautious policy, with all cheats disabled.
+It requires entering floor 2 alone at level 1 and reaching floor 3 without a downing
+or retreat. Results and full per-hero reports are written under
+`Temp/FloorTwoSurvival`, including `summary.csv`. This is a focused opening check,
+not a full-campaign balance cohort.
+
+The 2026-10-30 survival run cleared floor 2 with all 24 heroes starting at level 1
+on seed 42: zero downings or retreats, with a minimum observed health fraction of
+50%. These results establish survival in that tested opening, not every seed or
+player decision.
+
 ## Town plans
 
 Base layers are Roads, Houses, Trees, Parks, Roofs, Buildings, Allies, Dungeon, ShopFloor,

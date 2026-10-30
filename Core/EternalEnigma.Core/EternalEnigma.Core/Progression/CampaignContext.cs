@@ -294,7 +294,7 @@ public HashSet<string> Completed { get; }
     {
         var (start, end) = Floors(tier);
         int seed = LocationSeed(campaignSeed, locationId, floor);
-        return DungeonLayoutProfile.Options(seed, biome, tier, floor == start ? DungeonFloorRole.Entry : floor == end ? DungeonFloorRole.Exit : DungeonFloorRole.Regular, layoutVersion, locationId, variant);
+        return DungeonLayoutProfile.Options(seed, biome, tier, floor == start ? DungeonFloorRole.Entry : floor == end ? DungeonFloorRole.Exit : DungeonFloorRole.Regular, layoutVersion, locationId, variant, floor);
     }
     public DungeonFloor DungeonFloor(string locationId, int floor)
     {

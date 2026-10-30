@@ -47,10 +47,20 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.InputPromptsTests", "EternalEnigma.Tests.CoreIntegration.TownLayoutIntegrationTests",
         "EternalEnigma.Tests.CoreIntegration.TownDungeonBookTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Floor Two Survival")]
+    public static void RunFloorTwoSurvival() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.BalancePlayModeTests.EveryStartingHeroCanClearFloorTwoWithNormalRules");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Floor Two Balance")]
+    public static void RunFloorTwoBalance() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonFloorTransitionTests.FloorTwoIsForgivingAndFloorThreeKeepsNormalStats",
+        "EternalEnigma.Tests.DungeonFloorTransitionTests.AdvanceWaitsForAnOpaqueFrameBeforeReplacingTheFloor",
+        "EternalEnigma.Tests.GameplayFollowupTests.WerewolfPackMembersMoveTwiceButHaveOneAttack");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Balance")]
     public static void RunBalance() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.CombatFoundationTests.AttackReplayConsumesOneAttackWithoutMutatingLiveVitalsTwice",
-        "EternalEnigma.Tests.BalancePlayModeTests");
+        "EternalEnigma.Tests.BalancePlayModeTests.RealOpeningWritesProgressionAndRestoresSaveAndExperimentalCosts");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Fast Validation Audit")]
     public static void RunFastValidationAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
@@ -831,6 +841,7 @@ public static class HarnessTestRunner
     public static void RunHeroSelection() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.CampaignPresentationTests.HeroPickerUsesRealArtworkAndBackDoesNotStartCampaign",
         "EternalEnigma.Tests.CampaignPresentationTests.SelectedHeroConfirmsExactlyOnce",
+        "EternalEnigma.Tests.ControllerFlowTests.MainMenuHeroPickerAndBackUseControllerOnly",
         "EternalEnigma.Tests.ClassAssignmentTests.NewSaveUsesTheChosenHeroesFixedClasses",
         "EternalEnigma.Tests.MainMenuPresentationTests.VisualsLoopWithoutGameplayAndMenuRemainsUsable");
 

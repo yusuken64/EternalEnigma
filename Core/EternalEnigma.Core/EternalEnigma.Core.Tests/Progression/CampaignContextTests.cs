@@ -206,4 +206,33 @@ public sealed class CampaignContextTests
         Assert.Equal(town.Height, directGeneration.Height);
         Assert.Equal(town.Layers.Keys, directGeneration.Layers.Keys);
     }
+
+    [Theory]
+    [InlineData("story-0")]
+    [InlineData("repeatable-0")]
+    [InlineData("book-0")]
+    public void FloorTwoHasFewerEnemiesAndTrapsWithTheSameLootBudget(string locationId)
+    {
+        for (int seed = 0; seed < 24; seed++)
+        {
+            var context = new CampaignContext(new(OverworldLaunchMode.Campaign, seed));
+            var run = context.RunPlan(locationId);
+            var options = run.Floor(2).Options;
+            var floor = DungeonFloorGenerator.Generate(options);
+            var normal = DungeonFloorGenerator.Generate(DungeonLayoutProfile.Options(options.Seed, options.Biome, options.Tier,
+                options.Role, options.LayoutVersion, locationId, options.Variant));
+            Assert.Equal(6, options.EnemyCount);
+            Assert.InRange(floor.Enemies.Count, 1, (int)Math.Ceiling(normal.Enemies.Count * .65));
+            Assert.Single(floor.Traps);
+            Assert.Equal(5, options.GoldCount);
+            Assert.Equal(5, options.ItemCount);
+            Assert.Equal(3, options.GatheringCount);
+            Assert.Equal(10, run.Floor(3).Options.EnemyCount);
+            Assert.Equal(5, run.Floor(3).Options.TrapCount);
+            Assert.True(run.Floor(1).Options.IsThroneFloor);
+            Assert.True(run.Floor(5).Options.IsThroneFloor);
+            var validation = EternalEnigma.Core.Validation.DungeonFloorValidator.Validate(floor, options);
+            Assert.True(validation.IsValid, string.Join("\n", validation.Errors));
+        }
+    }
 }

@@ -4,7 +4,11 @@ public static class InputPrompts
     public static string Confirm => ControlBindings.Prompt("UI/Submit", "Enter / Space", "A / Cross");
     public static string Back => ControlBindings.Prompt("UI/Cancel", "Escape", "B / Circle");
     public static string Move => ControlBindings.Prompt("Player/Move", "WASD / arrows", "Left stick / D-pad");
+    public static string Navigate => ControlBindings.Prompt("UI/Navigate", "Arrow keys", "D-pad");
     public static string Interact => ControlBindings.Prompt("UI/Submit", "Enter", "A / Cross");
+    public static string Attack => ControlBindings.Prompt("Player/Attack", "Space", "A / Cross");
+    public static string NextHero => ControlBindings.Prompt("UI/InspectNextHero", "Tab", "RB / R1");
+    public static string PreviousHero => ControlBindings.Prompt("UI/InspectPreviousHero", "Shift+Tab", "LT / L2");
     public static string ToggleFullControl => ControlBindings.Prompt("Player/ToggleFullControl", "F", "Right stick press");
     public static string Inventory => ControlBindings.Prompt("Player/Menu", "Q", "X / Square");
     public static string Skills => ControlBindings.Prompt("Player/Skills", "R", "B / Circle");
@@ -24,7 +28,7 @@ public static class InputPrompts
     {
         if (template == null) return null;
         return template.Replace("{Confirm}", Confirm).Replace("{Back}", Back)
-            .Replace("{Move}", Move).Replace("{Interact}", Interact)
+            .Replace("{Move}", Move).Replace("{Navigate}", Navigate).Replace("{Interact}", Interact).Replace("{Attack}", Attack)
             .Replace("{ToggleFullControl}", ToggleFullControl)
             .Replace("{Inventory}", Inventory).Replace("{Skills}", Skills)
             .Replace("{Party}", Party).Replace("{Equipment}", Equipment).Replace("{Stats}", Stats)

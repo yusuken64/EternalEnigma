@@ -57,7 +57,7 @@ public abstract class PartyMenuContext : IPartyMenuContext
             if (capability == Capability.HomeKey)
                 return CampaignRewardNames.Purpose(capability) + "\n\nFound in the chest at home.\n\n" +
                     (context.State.HomeDoorUnlocked ? "Front door unlocked." :
-                        "Face your front door and press " + InputPrompts.Interact + " to use it.");
+                        "Face your front door and press " + InputPrompts.Attack + " to use it.");
             return capability.DisplayName() + "\n" + CampaignRewardNames.Purpose(capability) +
                 "\nProvided by " + CampaignGuidance.CapabilitySource(context, capability,
                     id => CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? id) + "\n" +

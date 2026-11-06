@@ -192,10 +192,22 @@ public static class ControlBindings
     public static string Prompt(string actionPath, string keyboardDefault, string gamepadDefault)
     {
         var action = DisplayAsset.FindAction(actionPath);
-        bool pad = ControlDeviceState.Gamepad;
+        if (action == null) return "Unavailable";
+        string group = ControlDeviceState.BindingGroup;
         var indices = Enumerable.Range(0, action.bindings.Count).Where(i => !action.bindings[i].isComposite &&
-            action.bindings[i].path.StartsWith(pad ? "<Gamepad>" : "<Keyboard>", StringComparison.Ordinal)).ToArray();
-        if (!indices.Any(i => action.bindings[i].overridePath != null)) return pad ? gamepadDefault : keyboardDefault;
-        return string.Join(" / ", indices.Select(i => BindingLabel(action, i)).Distinct());
+            MatchesDevice(action.bindings[i].effectivePath, group)).ToArray();
+        if (indices.Length == 0)
+            return group == "Gamepad" ? gamepadDefault : group == "Keyboard&Mouse" ? keyboardDefault : "Unavailable";
+        return string.Join(" / ", indices.Select(i => BindingLabel(action, i)).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct());
     }
+
+    private static bool MatchesDevice(string path, string group) => group switch
+    {
+        "Keyboard&Mouse" => path.StartsWith("<Keyboard>", StringComparison.Ordinal) || path.StartsWith("<Mouse>", StringComparison.Ordinal),
+        "Gamepad" => path.StartsWith("<Gamepad>", StringComparison.Ordinal),
+        "Touch" => path.StartsWith("<Touchscreen>", StringComparison.Ordinal),
+        "Joystick" => path.StartsWith("<Joystick>", StringComparison.Ordinal),
+        "XR" => path.StartsWith("<XRController>", StringComparison.Ordinal) || path.StartsWith("<TrackedDevice>", StringComparison.Ordinal),
+        _ => false
+    };
 }

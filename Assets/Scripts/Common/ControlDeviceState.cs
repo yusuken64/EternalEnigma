@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
@@ -7,18 +8,22 @@ using UnityEngine.InputSystem.Controls;
 public static class ControlDeviceState
 {
     public static bool Gamepad { get; private set; }
+    public static string BindingGroup { get; private set; } = "Keyboard&Mouse";
     public static event Action Changed;
 
     private static int polledFrame = -1;
     private static Gamepad previousPad;
     private static Vector2 previousLeft, previousRight, previousDpad;
 
-    internal static void Set(bool gamepad)
+    internal static void Set(string bindingGroup)
     {
-        if (Gamepad == gamepad) return;
-        Gamepad = gamepad;
+        if (string.IsNullOrEmpty(bindingGroup) || BindingGroup == bindingGroup) return;
+        BindingGroup = bindingGroup;
+        Gamepad = bindingGroup == "Gamepad";
         Changed?.Invoke();
     }
+
+    internal static void Set(bool gamepad) => Set(gamepad ? "Gamepad" : "Keyboard&Mouse");
 
     public static void Poll()
     {
@@ -64,17 +69,38 @@ public static class ControlDeviceState
             foreach (var key in Keyboard.current.allKeys)
                 if (key != null && key.wasPressedThisFrame) { keyboardUsed = true; break; }
 
+        bool touchUsed = Touchscreen.current?.primaryTouch.press.wasPressedThisFrame == true;
+        bool joystickUsed = false;
+        bool xrUsed = false;
+        foreach (var device in InputSystem.devices)
+        {
+            if (device is Gamepad || device is Keyboard || device is Mouse || device is Touchscreen) continue;
+            string group = device.layout.IndexOf("XRController", StringComparison.OrdinalIgnoreCase) >= 0 ? "XR" :
+                device is Joystick ? "Joystick" : null;
+            if (group == null) continue;
+            if (device.allControls.Any(control =>
+                control is ButtonControl button && button.wasPressedThisFrame ||
+                control is Vector2Control vector && vector.ReadValue().sqrMagnitude >= .35f * .35f ||
+                control is AxisControl axis && Mathf.Abs(axis.ReadValue()) >= .35f))
+            {
+                if (group == "XR") xrUsed = true;
+                else joystickUsed = true;
+            }
+        }
+
         // Keyboard and mouse take priority if both kinds of device act this frame.
         if (keyboardUsed || mouseUsed)
         {
-            Set(false);
+            Set("Keyboard&Mouse");
             if (pad != null)
             {
                 previousLeft = pad.leftStick.ReadValue(); previousRight = pad.rightStick.ReadValue(); previousDpad = pad.dpad.ReadValue();
             }
         }
-        else if (padUsed) Set(true);
-        else if (pad == null) Set(false);
+        else if (padUsed) Set("Gamepad");
+        else if (touchUsed) Set("Touch");
+        else if (joystickUsed) Set("Joystick");
+        else if (xrUsed) Set("XR");
     }
 
     private static bool DeliberateMovement(Vector2 value, ref Vector2 previous)

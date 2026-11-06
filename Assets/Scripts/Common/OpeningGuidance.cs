@@ -64,9 +64,9 @@ public sealed class OpeningGuidance : MonoBehaviour
                 var player = town.TownPlayer; var hero = player.ControllingTownAlly;
                 var ahead = hero.TilemapPosition + Dungeon.GetFacingOffset(hero.CurrentFacing);
                 if (town.GetComponentsInChildren<HomeBed>().Any(b => b.Tile == ahead))
-                    objective = "Your bed saves progress. Press " + InputPrompts.Interact + " to inspect it.";
+                    objective = "Your bed saves progress. Press " + InputPrompts.Attack + " to inspect it.";
                 else if (town.ShopVendors.Any(v => v.TilemapPosition == ahead))
-                    objective = "Press " + InputPrompts.Interact + " to talk to the person in front of you.";
+                    objective = "Press " + InputPrompts.Attack + " to talk to the person in front of you.";
             }
         }
         canvas.enabled = ready && !string.IsNullOrEmpty(objective);

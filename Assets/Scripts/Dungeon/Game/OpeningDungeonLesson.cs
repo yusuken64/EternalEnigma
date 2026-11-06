@@ -36,7 +36,7 @@ public sealed class OpeningDungeonLesson : MonoBehaviour
             if (!Context.State.UsedOpeningRecovery && hero != null && RecoveryItem(hero) is { } item)
                 return $"Recovery: open Items ({InputPrompts.Inventory}), select {item.DisplayName}, then Use.";
             if (opponentStarted && firstOpponent != null && firstOpponent.Vitals.HP > 0)
-                return $"One opponent: face it and press {InputPrompts.Interact} to attack, or use an ability.";
+                return $"One opponent: face it and press {InputPrompts.Attack} to attack, or use an ability.";
             return Context.OpeningObjective;
         }
     }

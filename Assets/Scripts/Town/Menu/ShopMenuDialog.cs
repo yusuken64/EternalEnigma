@@ -14,7 +14,6 @@ public class ShopMenuDialog : Dialog
     private string selectedItemName;
     private int selectedIndex;
     private TMPro.TMP_Text[] controlHints;
-    private bool? hintGamepad;
     private bool openingWelcome;
     private bool breadReceived;
     public override void PrepareTown(TownInteractionContext value)
@@ -37,7 +36,6 @@ public class ShopMenuDialog : Dialog
             Fit(label.transform, .075f, .045f, .67f, .155f);
             return label;
         }).ToArray();
-        hintGamepad = null;
         Update();
         BuyConfirmationDialog.gameObject.SetActive(false);
         ApplyPresentation();
@@ -149,26 +147,21 @@ public class ShopMenuDialog : Dialog
         Canvas.ForceUpdateCanvases();
         if(scrollView!=null)scrollView.verticalNormalizedPosition=position;
         SetNavigation();
-        hintGamepad = null;
         Update();
 
 	}
 
     private void Update()
     {
-        bool pad = ControlDeviceState.Gamepad;
-        if (hintGamepad == pad || controlHints == null) return;
-        hintGamepad = pad;
+        if (controlHints == null) return;
         foreach (var label in controlHints)
         {
+            string hint = breadReceived
+                ? $"{InputPrompts.Confirm}: choose  |  {InputPrompts.Back}: back"
+                : $"{InputPrompts.Navigate}: browse / tabs\n{InputPrompts.Confirm}: choose  |  {InputPrompts.Back}: back";
+            if (label.text == hint) continue;
             Fit(label.transform, .075f, .045f, breadReceived ? .925f : .67f, .155f);
-            if (breadReceived)
-            {
-                label.text = InputPrompts.Pick("Enter: choose  |  Esc: back", "A / Cross: choose  |  B / Circle: back");
-                continue;
-            }
-            label.text = InputPrompts.Pick("Up/Down: browse  |  Left/Right: tabs\nEnter / click: choose  |  Esc: back",
-                "Up/Down: browse  |  Left/Right: tabs\nA / Cross: choose  |  B / Circle: back");
+            label.text = hint;
         }
     }
 

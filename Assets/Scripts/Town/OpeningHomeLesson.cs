@@ -88,7 +88,7 @@ public sealed class OpeningHomeLesson : MonoBehaviour
             TownMenu.ShowMessage(context.State.HomeDoorUnlocked
                 ? "Your Home Key unlocked the front door."
                 : context.HasHomeKey
-                ? "<b>Before you set out</b>\n\nYour Home Key opens the front door. Face the door and press " + InputPrompts.Interact + " to use it."
+                ? "<b>Before you set out</b>\n\nYour Home Key opens the front door. Face the door and press " + InputPrompts.Attack + " to use it."
                 : firstRead
                     ? "<b>Before you set out</b>\n\nOpen the chest to find your Home Key.\nIt is your first capability. Use it at the front door to unlock the way."
                     : "Open the chest to find your Home Key, then use it at the front door.");
@@ -99,7 +99,7 @@ public sealed class OpeningHomeLesson : MonoBehaviour
             town.SaveProgress();
             AudioManager.Instance?.PlayCue(acquired ? SoundCue.ContainerOpen : SoundCue.Confirm);
             TownMenu.ShowMessage(acquired
-                ? "<b>Home Key acquired!</b>\n\nYour first capability opens the front door.\nFace the door and press " + InputPrompts.Interact + " to use it."
+                ? "<b>Home Key acquired!</b>\n\nYour first capability opens the front door.\nFace the door and press " + InputPrompts.Attack + " to use it."
                 : "The chest is empty. You already have its Home Key.");
         }
         else if (!context.State.HomeDoorUnlocked)
@@ -129,12 +129,12 @@ public sealed class OpeningHomeLesson : MonoBehaviour
             var hero = town?.TownPlayer?.ControllingTownAlly;
             if (!IsLocked || hero == null) return "";
             var ahead = hero.TilemapPosition + Dungeon.GetFacingOffset(hero.CurrentFacing);
-            if (ahead == BookCell) return "Book: press " + InputPrompts.Interact + " to read.";
+            if (ahead == BookCell) return "Book: press " + InputPrompts.Attack + " to read.";
             if (ahead == ChestCell) return context.HasHomeKey ? "Chest empty. Use your Home Key at the front door." :
-                "Chest: press " + InputPrompts.Interact + " to open.";
-            if (ahead == DoorCell) return context.HasHomeKey ? "Front door: press " + InputPrompts.Interact + " to unlock." :
-                "Front door locked. Press " + InputPrompts.Interact + " to inspect.";
-            if (context.HasHomeKey) return "Use your Home Key at the front door. Face it and press " + InputPrompts.Interact + ".";
+                "Chest: press " + InputPrompts.Attack + " to open.";
+            if (ahead == DoorCell) return context.HasHomeKey ? "Front door: press " + InputPrompts.Attack + " to unlock." :
+                "Front door locked. Press " + InputPrompts.Attack + " to inspect.";
+            if (context.HasHomeKey) return "Use your Home Key at the front door. Face it and press " + InputPrompts.Attack + ".";
             if (!context.State.MovedInOpening) return "Use " + InputPrompts.Move + " to walk to the book or chest.";
             return context.State.ReadHomeBook ? "Open the chest to find your Home Key." :
                 "Read the book beside your bed, or explore the chest.";

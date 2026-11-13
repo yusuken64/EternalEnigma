@@ -4,7 +4,7 @@
     <properties>
       <property name="platform" value="PlayMode" />
     </properties>
-    <test-suite type="Assembly" id="1300" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="252" result="Passed" start-time="2026-10-03 23:11:44Z" end-time="2026-10-03 23:12:26Z" duration="42.057231" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1300" name="EternalEnigma.Tests.PlayMode.dll" fullname="D:/Projects/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="252" result="Passed" start-time="2026-10-03 23:11:44Z" end-time="2026-10-03 23:12:26Z" duration="42.057231" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
       <properties>
         <property name="_PID" value="31704" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />

@@ -7,7 +7,7 @@
     <failure>
       <message><![CDATA[One or more child tests had errors]]></message>
     </failure>
-    <test-suite type="Assembly" id="1752" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="285" result="Failed" site="Child" start-time="2026-10-07 03:02:47Z" end-time="2026-10-07 03:06:28Z" duration="220.914956" total="285" passed="284" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1752" name="EternalEnigma.Tests.EditMode.dll" fullname="D:/Projects/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="285" result="Failed" site="Child" start-time="2026-10-07 03:02:47Z" end-time="2026-10-07 03:06:28Z" duration="220.914956" total="285" passed="284" failed="1" inconclusive="0" skipped="0" asserts="0">
       <properties>
         <property name="_PID" value="42496" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />
@@ -1800,7 +1800,7 @@ IgnoreFailingMessages:false
                 <message><![CDATA[  Expected: (512.00, 512.00)
   But was:  (512.00, 640.00)
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.HeroPortraitTests.EveryHeroHasItsOwnSavedPortraitAndStudioCycles () [0x000df] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\HeroPortraitTests.cs:25
+                <stack-trace><![CDATA[at EternalEnigma.Tests.HeroPortraitTests.EveryHeroHasItsOwnSavedPortraitAndStudioCycles () [0x000df] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\HeroPortraitTests.cs:25
 ]]></stack-trace>
               </failure>
             </test-case>

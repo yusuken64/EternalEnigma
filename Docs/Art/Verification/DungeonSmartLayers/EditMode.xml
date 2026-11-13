@@ -4,7 +4,7 @@
     <properties>
       <property name="platform" value="EditMode" />
     </properties>
-    <test-suite type="Assembly" id="1394" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="317" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:35:20Z" duration="336.898486" total="43" passed="43" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1394" name="EternalEnigma.Tests.EditMode.dll" fullname="D:/Projects/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="317" result="Passed" start-time="2026-10-09 03:29:43Z" end-time="2026-10-09 03:35:20Z" duration="336.898486" total="43" passed="43" failed="0" inconclusive="0" skipped="0" asserts="0">
       <properties>
         <property name="_PID" value="103460" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />

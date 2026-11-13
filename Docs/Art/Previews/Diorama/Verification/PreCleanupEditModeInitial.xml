@@ -7,7 +7,7 @@
     <failure>
       <message><![CDATA[One or more child tests had errors]]></message>
     </failure>
-    <test-suite type="Assembly" id="1356" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="284" result="Failed" site="Child" start-time="2026-10-07 02:43:34Z" end-time="2026-10-07 02:47:32Z" duration="237.860050" total="284" passed="282" failed="2" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1356" name="EternalEnigma.Tests.EditMode.dll" fullname="D:/Projects/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="284" result="Failed" site="Child" start-time="2026-10-07 02:43:34Z" end-time="2026-10-07 02:47:32Z" duration="237.860050" total="284" passed="282" failed="2" inconclusive="0" skipped="0" asserts="0">
       <properties>
         <property name="_PID" value="42496" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />
@@ -1468,7 +1468,7 @@ IgnoreFailingMessages:false
   Expected: greater than 2.21221375f
   But was:  1.75572515f
 ]]></message>
-                  <stack-trace><![CDATA[at EternalEnigma.Tests.EditMode.DioramaGenerationTests.LandmarkAdaptersKeepImportedMeshesAndNormalizedGroundBounds () [0x0018f] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\DioramaGenerationTests.cs:29
+                  <stack-trace><![CDATA[at EternalEnigma.Tests.EditMode.DioramaGenerationTests.LandmarkAdaptersKeepImportedMeshesAndNormalizedGroundBounds () [0x0018f] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\DioramaGenerationTests.cs:29
 ]]></stack-trace>
                 </failure>
               </test-case>
@@ -1808,7 +1808,7 @@ IgnoreFailingMessages:false
                 <message><![CDATA[  Expected: 512
   But was:  2048
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.HeroPortraitTests.EveryHeroHasItsOwnSavedPortraitAndStudioCycles () [0x000dc] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\HeroPortraitTests.cs:25
+                <stack-trace><![CDATA[at EternalEnigma.Tests.HeroPortraitTests.EveryHeroHasItsOwnSavedPortraitAndStudioCycles () [0x000dc] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\HeroPortraitTests.cs:25
 ]]></stack-trace>
               </failure>
             </test-case>

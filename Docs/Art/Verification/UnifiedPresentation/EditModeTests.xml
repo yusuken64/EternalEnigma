@@ -7,7 +7,7 @@
     <failure>
       <message><![CDATA[One or more child tests had errors]]></message>
     </failure>
-    <test-suite type="Assembly" id="1262" name="EternalEnigma.Tests.EditMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="211" result="Failed" site="Child" start-time="2026-10-03 23:00:51Z" end-time="2026-10-03 23:02:36Z" duration="104.414924" total="211" passed="201" failed="10" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1262" name="EternalEnigma.Tests.EditMode.dll" fullname="D:/Projects/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.EditMode.dll" runstate="Runnable" testcasecount="211" result="Failed" site="Child" start-time="2026-10-03 23:00:51Z" end-time="2026-10-03 23:02:36Z" duration="104.414924" total="211" passed="201" failed="10" inconclusive="0" skipped="0" asserts="0">
       <properties>
         <property name="_PID" value="31704" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />
@@ -230,7 +230,7 @@
                 <message><![CDATA[  Expected: False
   But was:  True
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.AllySkillIntentTests.EmergencyBelowThirtyPercent () [0x00015] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\AllySkillIntentTests.cs:230
+                <stack-trace><![CDATA[at EternalEnigma.Tests.AllySkillIntentTests.EmergencyBelowThirtyPercent () [0x00015] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\AllySkillIntentTests.cs:230
 ]]></stack-trace>
               </failure>
             </test-case>
@@ -361,7 +361,7 @@
   Expected: True
   But was:  False
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassContentTests.BossesAndResistancesAreAuthored () [0x00027] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\ClassContentTests.cs:340
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassContentTests.BossesAndResistancesAreAuthored () [0x00027] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\ClassContentTests.cs:340
 ]]></stack-trace>
               </failure>
             </test-case>
@@ -525,7 +525,7 @@
   But was:  "16460fa9b4ac88f34f1765b09173b4e66be779c6deabbd4f6a285270434b2b8f"
   -----------^
 ]]></message>
-                  <stack-trace><![CDATA[at EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests.ImportedDllMatchesHeadlessCampaignAndStartsASession () [0x00009] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\CampaignGenerationTests.cs:14
+                  <stack-trace><![CDATA[at EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests.ImportedDllMatchesHeadlessCampaignAndStartsASession () [0x00009] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\CampaignGenerationTests.cs:14
 ]]></stack-trace>
                 </failure>
               </test-case>
@@ -1159,7 +1159,7 @@ Instantiating material due to calling renderer.material during edit mode. This w
                   <message><![CDATA[  Expected: True
   But was:  False
 ]]></message>
-                  <stack-trace><![CDATA[at EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests.AdjacentRotatedSurfaceModulesShareUvCoordinatesAndMaterial () [0x000b2] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\PaintedEnvironmentTests.cs:47
+                  <stack-trace><![CDATA[at EternalEnigma.Tests.CoreIntegration.PaintedEnvironmentTests.AdjacentRotatedSurfaceModulesShareUvCoordinatesAndMaterial () [0x000b2] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\PaintedEnvironmentTests.cs:47
 ]]></stack-trace>
                 </failure>
               </test-case>
@@ -1519,8 +1519,8 @@ Instantiating material due to calling renderer.material during edit mode. This w
           </properties>
           <failure>
             <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
-            <stack-trace><![CDATA[  at StealthStatusEffect.GetResponseTo (Character owner, GameAction action) [0x00001] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\StatusEffects\StealthStatusEffect.cs:24 
-  at StatusEffectTests.StealthEndsWhenOwnerAttacks () [0x00022] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\StatusEffectTests.cs:213 
+            <stack-trace><![CDATA[  at StealthStatusEffect.GetResponseTo (Character owner, GameAction action) [0x00001] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\StatusEffects\StealthStatusEffect.cs:24 
+  at StatusEffectTests.StealthEndsWhenOwnerAttacks () [0x00022] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\StatusEffectTests.cs:213 
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
   at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
           </failure>
@@ -1568,8 +1568,8 @@ Instantiating material due to calling renderer.material during edit mode. This w
           </properties>
           <failure>
             <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
-            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
-  at TargetingAndArrowTests.ExpiredTauntIgnored () [0x00008] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:120 
+            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
+  at TargetingAndArrowTests.ExpiredTauntIgnored () [0x00008] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:120 
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
   at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
           </failure>
@@ -1587,8 +1587,8 @@ Instantiating material due to calling renderer.material during edit mode. This w
           </properties>
           <failure>
             <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
-            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
-  at TargetingAndArrowTests.NearestFirstWithoutTaunt () [0x00008] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:66 
+            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
+  at TargetingAndArrowTests.NearestFirstWithoutTaunt () [0x00008] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:66 
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
   at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
           </failure>
@@ -1612,8 +1612,8 @@ Instantiating material due to calling renderer.material during edit mode. This w
           </properties>
           <failure>
             <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
-            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
-  at TargetingAndArrowTests.StealthedAndDeadAreSkipped () [0x00008] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:147 
+            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
+  at TargetingAndArrowTests.StealthedAndDeadAreSkipped () [0x00008] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:147 
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
   at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
           </failure>
@@ -1625,8 +1625,8 @@ Instantiating material due to calling renderer.material during edit mode. This w
           </properties>
           <failure>
             <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
-            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
-  at TargetingAndArrowTests.TauntPullsToTaunterWhenVisible () [0x00008] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:87 
+            <stack-trace><![CDATA[  at Vitals.set_HP (System.Int32 value) [0x0002e] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Vitals.cs:26 
+  at TargetingAndArrowTests.TauntPullsToTaunterWhenVisible () [0x00008] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\EditMode\TargetingAndArrowTests.cs:87 
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
   at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
           </failure>

@@ -7,7 +7,7 @@
     <failure>
       <message><![CDATA[One or more child tests had errors]]></message>
     </failure>
-    <test-suite type="Assembly" id="1755" name="EternalEnigma.Tests.PlayMode.dll" fullname="C:/Users/yusuk/Documents/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="327" result="Failed" site="Child" start-time="2026-10-07 03:07:55Z" end-time="2026-10-07 03:52:59Z" duration="2704.015624" total="327" passed="273" failed="50" inconclusive="0" skipped="4" asserts="0">
+    <test-suite type="Assembly" id="1755" name="EternalEnigma.Tests.PlayMode.dll" fullname="D:/Projects/GitHub/EternalEnigma/Library/ScriptAssemblies/EternalEnigma.Tests.PlayMode.dll" runstate="Runnable" testcasecount="327" result="Failed" site="Child" start-time="2026-10-07 03:07:55Z" end-time="2026-10-07 03:52:59Z" duration="2704.015624" total="327" passed="273" failed="50" inconclusive="0" skipped="4" asserts="0">
       <properties>
         <property name="_PID" value="42496" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />
@@ -66,7 +66,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
             <message><![CDATA[  Expected: False
   But was:  True
 ]]></message>
-            <stack-trace><![CDATA[at AuditRegressionTests+<ReplacementReturnsBothDisplacedItemsExactlyOnce>d__4.MoveNext () [0x001d6] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\AuditRegressionTests.cs:40
+            <stack-trace><![CDATA[at AuditRegressionTests+<ReplacementReturnsBothDisplacedItemsExactlyOnce>d__4.MoveNext () [0x001d6] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\AuditRegressionTests.cs:40
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
           </failure>
@@ -90,7 +90,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
             <message><![CDATA[  Expected: 37
   But was:  100
 ]]></message>
-            <stack-trace><![CDATA[at AuditRegressionTests+<ReturnToMainMenuSavesTownProgress>d__7.MoveNext () [0x00145] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\AuditRegressionTests.cs:88
+            <stack-trace><![CDATA[at AuditRegressionTests+<ReturnToMainMenuSavesTownProgress>d__7.MoveNext () [0x00145] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\AuditRegressionTests.cs:88
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
           </failure>
@@ -135,7 +135,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
             <message><![CDATA[System.ArgumentOutOfRangeException : Index was out of range. Must be non-negative and less than the size of the collection.
 Parameter name: index]]></message>
             <stack-trace><![CDATA[  at System.Collections.Generic.List`1[T].get_Item (System.Int32 index) [0x00009] in <59bd7c40c082431db25e1e728ab62789>:0 
-  at GameTestHarness+<UseItemThroughMenu>d__28.MoveNext () [0x0010e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\Support\GameTestHarness.cs:192 
+  at GameTestHarness+<UseItemThroughMenu>d__28.MoveNext () [0x0010e] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\Support\GameTestHarness.cs:192 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
           </failure>
           <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
@@ -320,14 +320,14 @@ There are no audio listeners in the scene. Please ensure there is always one aud
           </properties>
           <failure>
             <message><![CDATA[System.InvalidOperationException : Expected one authored GameMessages in loaded scenes; found 0.]]></message>
-            <stack-trace><![CDATA[  at AuthoredUI.Require[T] (UnityEngine.Transform owner) [0x0005d] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\AuthoredUI.cs:14 
-  at GameMessages.Resolve () [0x00041] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:111 
-  at GameMessages.Post (System.String message, System.Boolean coalesce) [0x00026] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:73 
-  at GameMessages.ForCharacter (Character character, System.String message) [0x0000b] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:60 
-  at EnemyBehavior.Provoke () [0x000cb] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\EnemyActions\EnemyBehavior.cs:82 
-  at Enemy.Provoke () [0x0001a] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Enemy.cs:168 
-  at Enemy.WakeFrom (GameAction action) [0x00029] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Enemy.cs:150 
-  at EnemyAnimationStateTests.ChestMonsterRevealsWhenAttackedEvenIfTheAttackMisses () [0x00094] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnemyAnimationStateTests.cs:96 
+            <stack-trace><![CDATA[  at AuthoredUI.Require[T] (UnityEngine.Transform owner) [0x0005d] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\AuthoredUI.cs:14 
+  at GameMessages.Resolve () [0x00041] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:111 
+  at GameMessages.Post (System.String message, System.Boolean coalesce) [0x00026] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:73 
+  at GameMessages.ForCharacter (Character character, System.String message) [0x0000b] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:60 
+  at EnemyBehavior.Provoke () [0x000cb] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\EnemyActions\EnemyBehavior.cs:82 
+  at Enemy.Provoke () [0x0001a] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Enemy.cs:168 
+  at Enemy.WakeFrom (GameAction action) [0x00029] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Enemy.cs:150 
+  at EnemyAnimationStateTests.ChestMonsterRevealsWhenAttackedEvenIfTheAttackMisses () [0x00094] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnemyAnimationStateTests.cs:96 
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
   at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
           </failure>
@@ -339,14 +339,14 @@ There are no audio listeners in the scene. Please ensure there is always one aud
           </properties>
           <failure>
             <message><![CDATA[System.InvalidOperationException : Expected one authored GameMessages in loaded scenes; found 0.]]></message>
-            <stack-trace><![CDATA[  at AuthoredUI.Require[T] (UnityEngine.Transform owner) [0x0005d] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\AuthoredUI.cs:14 
-  at GameMessages.Resolve () [0x00041] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:111 
-  at GameMessages.Post (System.String message, System.Boolean coalesce) [0x00026] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:73 
-  at GameMessages.ForCharacter (Character character, System.String message) [0x0000b] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:60 
-  at EnemyBehavior.Provoke () [0x000cb] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\EnemyActions\EnemyBehavior.cs:82 
-  at Enemy.Provoke () [0x0001a] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Enemy.cs:168 
-  at RevealMimicAction.ExecuteImmediate (Character character) [0x00024] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\MovementAction.cs:638 
-  at EnemyAnimationStateTests.ChestMonsterStaysDormantUntilPickupAttemptAndRevealsWhenMoved () [0x0015a] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnemyAnimationStateTests.cs:57 
+            <stack-trace><![CDATA[  at AuthoredUI.Require[T] (UnityEngine.Transform owner) [0x0005d] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\AuthoredUI.cs:14 
+  at GameMessages.Resolve () [0x00041] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:111 
+  at GameMessages.Post (System.String message, System.Boolean coalesce) [0x00026] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:73 
+  at GameMessages.ForCharacter (Character character, System.String message) [0x0000b] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:60 
+  at EnemyBehavior.Provoke () [0x000cb] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\EnemyActions\EnemyBehavior.cs:82 
+  at Enemy.Provoke () [0x0001a] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\Enemy.cs:168 
+  at RevealMimicAction.ExecuteImmediate (Character character) [0x00024] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\MovementAction.cs:638 
+  at EnemyAnimationStateTests.ChestMonsterStaysDormantUntilPickupAttemptAndRevealsWhenMoved () [0x0015a] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnemyAnimationStateTests.cs:57 
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
   at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
           </failure>
@@ -787,7 +787,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
               <failure>
                 <message><![CDATA[System.InvalidOperationException : Sequence contains no matching element]]></message>
                 <stack-trace><![CDATA[  at System.Linq.Enumerable.Single[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) [0x00070] in <7229ad31196947fdb61dcfd278f7b739>:0 
-  at EternalEnigma.Tests.CampaignPresentationTests+<CampaignUsesTravelHudAndPartyCanCloseBeforeLeavingTown>d__6.MoveNext () [0x0011b] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\CampaignPresentationTests.cs:143 
+  at EternalEnigma.Tests.CampaignPresentationTests+<CampaignUsesTravelHudAndPartyCanCloseBeforeLeavingTown>d__6.MoveNext () [0x0011b] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\CampaignPresentationTests.cs:143 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
               </failure>
               <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
@@ -814,7 +814,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: 12
   But was:  11
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.CampaignPresentationTests+<HeroPickerUsesRealArtworkAndBackDoesNotStartCampaign>d__3.MoveNext () [0x000f8] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\CampaignPresentationTests.cs:33
+                <stack-trace><![CDATA[at EternalEnigma.Tests.CampaignPresentationTests+<HeroPickerUsesRealArtworkAndBackDoesNotStartCampaign>d__3.MoveNext () [0x000f8] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\CampaignPresentationTests.cs:33
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -842,7 +842,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
               <failure>
                 <message><![CDATA[System.InvalidOperationException : Sequence contains no matching element]]></message>
                 <stack-trace><![CDATA[  at System.Linq.Enumerable.Single[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) [0x00070] in <7229ad31196947fdb61dcfd278f7b739>:0 
-  at EternalEnigma.Tests.CampaignPresentationTests+<SelectedHeroConfirmsExactlyOnce>d__4.MoveNext () [0x000f2] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\CampaignPresentationTests.cs:62 
+  at EternalEnigma.Tests.CampaignPresentationTests+<SelectedHeroConfirmsExactlyOnce>d__4.MoveNext () [0x000f2] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\CampaignPresentationTests.cs:62 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
               </failure>
               <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
@@ -1088,7 +1088,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
               <failure>
                 <message><![CDATA[System.InvalidOperationException : Sequence contains no matching element]]></message>
                 <stack-trace><![CDATA[  at System.Linq.Enumerable.First[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) [0x00011] in <7229ad31196947fdb61dcfd278f7b739>:0 
-  at EternalEnigma.Tests.CampaignTravelTests+<OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel>d__11.MoveNext () [0x0033d] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\CampaignTravelTests.cs:160 
+  at EternalEnigma.Tests.CampaignTravelTests+<OverworldBuildsOnFirstExitAndReusesTerrainAcrossTownAndDungeonTravel>d__11.MoveNext () [0x0033d] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\CampaignTravelTests.cs:160 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
               </failure>
               <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
@@ -1616,7 +1616,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: 16
   But was:  17
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassSkillSmokeTests+<ArrowSkillUsesAnArrow>d__20.MoveNext () [0x00133] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\ClassSkillSmokeTests.cs:190
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassSkillSmokeTests+<ArrowSkillUsesAnArrow>d__20.MoveNext () [0x00133] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\ClassSkillSmokeTests.cs:190
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -1656,7 +1656,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: greater than 60
   But was:  60
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassSkillSmokeTests+<HealsRestoreHp>d__16.MoveNext () [0x00077] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\ClassSkillSmokeTests.cs:124
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassSkillSmokeTests+<HealsRestoreHp>d__16.MoveNext () [0x00077] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\ClassSkillSmokeTests.cs:124
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -1681,7 +1681,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: less than 60
   But was:  60
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassSkillSmokeTests+<MeleeAndAreaDamageSkillsHurtEnemies>d__14.MoveNext () [0x000dc] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\ClassSkillSmokeTests.cs:103
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassSkillSmokeTests+<MeleeAndAreaDamageSkillsHurtEnemies>d__14.MoveNext () [0x000dc] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\ClassSkillSmokeTests.cs:103
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -1720,7 +1720,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: less than 60
   But was:  60
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassSkillSmokeTests+<SpellsHitThroughMissiles>d__15.MoveNext () [0x00063] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\ClassSkillSmokeTests.cs:116
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ClassSkillSmokeTests+<SpellsHitThroughMissiles>d__15.MoveNext () [0x00063] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\ClassSkillSmokeTests.cs:116
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -2011,7 +2011,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: 1
   But was:  0
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.CombatFoundationTests+<PerTargetArrowSkillSkipsWhenOutOfArrows>d__24.MoveNext () [0x00296] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\CombatFoundationTests.cs:243
+                <stack-trace><![CDATA[at EternalEnigma.Tests.CombatFoundationTests+<PerTargetArrowSkillSkipsWhenOutOfArrows>d__24.MoveNext () [0x00296] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\CombatFoundationTests.cs:243
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -2050,7 +2050,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: same as <Ally(Clone) (Ally)>
   But was:  <Ally(Clone) (Ally)>
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.CombatFoundationTests+<TauntedEnemyTargetsTaunter>d__25.MoveNext () [0x00079] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\CombatFoundationTests.cs:254
+                <stack-trace><![CDATA[at EternalEnigma.Tests.CombatFoundationTests+<TauntedEnemyTargetsTaunter>d__25.MoveNext () [0x00079] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\CombatFoundationTests.cs:254
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -2081,7 +2081,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: False
   But was:  True
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.ControlDeviceStateTests+<CursorAndPromptsFollowDeliberateInputWithKeyboardMousePriority>d__0.MoveNext () [0x001ee] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\ControlDeviceStateTests.cs:34
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ControlDeviceStateTests+<CursorAndPromptsFollowDeliberateInputWithKeyboardMousePriority>d__0.MoveNext () [0x001ee] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\ControlDeviceStateTests.cs:34
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -2138,7 +2138,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: not null
   But was:  null
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.ControllerFlowTests+<MainMenuHeroPickerAndBackUseControllerOnly>d__10.MoveNext () [0x00137] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\ControllerFlowTests.cs:91
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ControllerFlowTests+<MainMenuHeroPickerAndBackUseControllerOnly>d__10.MoveNext () [0x00137] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\ControllerFlowTests.cs:91
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -2157,7 +2157,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: False
   But was:  True
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.ControllerFlowTests+<TownMovementInventorySkillsAndSettingsUseControllerOnly>d__11.MoveNext () [0x00526] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\ControllerFlowTests.cs:144
+                <stack-trace><![CDATA[at EternalEnigma.Tests.ControllerFlowTests+<TownMovementInventorySkillsAndSettingsUseControllerOnly>d__11.MoveNext () [0x00526] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\ControllerFlowTests.cs:144
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -2800,7 +2800,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: RGBA(0.900, 0.770, 0.580, 1.000)
   But was:  RGBA(0.770, 0.670, 0.520, 1.000)
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.DungeonVisualAuditTests+<HudDecorationsRespectVisibilityAndMenusKeepWorking>d__8.MoveNext () [0x004c9] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\DungeonVisualAuditTests.cs:99
+                <stack-trace><![CDATA[at EternalEnigma.Tests.DungeonVisualAuditTests+<HudDecorationsRespectVisibilityAndMenusKeepWorking>d__8.MoveNext () [0x004c9] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\DungeonVisualAuditTests.cs:99
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -3100,7 +3100,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: False
   But was:  True
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.EnemyBehaviorTests+<LegBindBlocksMovementWithoutSkippingActionsAndExpires>d__6.MoveNext () [0x00149] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnemyBehaviorTests.cs:43
+                <stack-trace><![CDATA[at EternalEnigma.Tests.EnemyBehaviorTests+<LegBindBlocksMovementWithoutSkippingActionsAndExpires>d__6.MoveNext () [0x00149] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnemyBehaviorTests.cs:43
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -3248,7 +3248,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: 39
   But was:  36
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.EnvironmentPlaygroundTests+<AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates>d__3.MoveNext () [0x003bd] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnvironmentPlaygroundTests.cs:53
+                <stack-trace><![CDATA[at EternalEnigma.Tests.EnvironmentPlaygroundTests+<AuthoredPlaygroundBuildsBothGeneratorsAndRebuildsWithoutDuplicates>d__3.MoveNext () [0x003bd] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\EnvironmentPlaygroundTests.cs:53
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -3287,10 +3287,10 @@ There are no audio listeners in the scene. Please ensure there is always one aud
               </properties>
               <failure>
                 <message><![CDATA[System.InvalidOperationException : Expected one authored CombatCalloutView in HarnessCleanup; found 0.]]></message>
-                <stack-trace><![CDATA[  at AuthoredUI.Require[T] (UnityEngine.Transform owner) [0x0005d] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\AuthoredUI.cs:14 
-  at DungeonFloatingText.ShowAtPosition (Game game, System.String message, UnityEngine.Color color, UnityEngine.Vector3 position, System.Boolean prominent) [0x00021] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\UI\DungeonFloatingText.cs:27 
-  at DungeonFloatingText.Show (Game game, System.String message, UnityEngine.Color color, Character character, System.Boolean prominent) [0x00068] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\UI\DungeonFloatingText.cs:17 
-  at EternalEnigma.Tests.FantasyTrapPlaybackTests+<CombatTextCentersOnVisualParent>d__8.MoveNext () [0x0004f] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\FantasyTrapPlaybackTests.cs:86 
+                <stack-trace><![CDATA[  at AuthoredUI.Require[T] (UnityEngine.Transform owner) [0x0005d] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\AuthoredUI.cs:14 
+  at DungeonFloatingText.ShowAtPosition (Game game, System.String message, UnityEngine.Color color, UnityEngine.Vector3 position, System.Boolean prominent) [0x00021] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\UI\DungeonFloatingText.cs:27 
+  at DungeonFloatingText.Show (Game game, System.String message, UnityEngine.Color color, Character character, System.Boolean prominent) [0x00068] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Game\UI\DungeonFloatingText.cs:17 
+  at EternalEnigma.Tests.FantasyTrapPlaybackTests+<CombatTextCentersOnVisualParent>d__8.MoveNext () [0x0004f] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\FantasyTrapPlaybackTests.cs:86 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
               </failure>
               <output><![CDATA[Dungeon created
@@ -3305,16 +3305,16 @@ Dungeon destroyed
               </properties>
               <failure>
                 <message><![CDATA[System.InvalidOperationException : Expected one authored GameMessages in HarnessCleanup; found 0.]]></message>
-                <stack-trace><![CDATA[  at AuthoredUI.Require[T] (UnityEngine.Transform owner) [0x0005d] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\AuthoredUI.cs:14 
-  at GameMessages.Resolve () [0x00041] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:111 
-  at GameMessages.Post (System.String message, System.Boolean coalesce) [0x00026] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:73 
-  at GameMessages.ForCharacter (Character character, System.String message) [0x0000b] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:60 
-  at TrapFeedbackAction.ExecuteImmediate (Character c) [0x00001] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:245 
-  at TrapResolutionAction.Run (GameAction action) [0x0000e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:28 
-  at TrapResolutionAction.Text (System.String text, System.String explanation) [0x00000] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:32 
-  at TrapResolutionAction.Resolve (FantasyTrap current, UnityEngine.Vector3Int entry) [0x000a2] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:43 
-  at TrapResolutionAction.ExecuteImmediate (Character c) [0x00029] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:22 
-  at EternalEnigma.Tests.FantasyTrapPlaybackTests+<ProjectilesEnterFromOffscreenAndHistoryExplainsHitAndEvade>d__7.MoveNext () [0x00329] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\FantasyTrapPlaybackTests.cs:71 
+                <stack-trace><![CDATA[  at AuthoredUI.Require[T] (UnityEngine.Transform owner) [0x0005d] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\AuthoredUI.cs:14 
+  at GameMessages.Resolve () [0x00041] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:111 
+  at GameMessages.Post (System.String message, System.Boolean coalesce) [0x00026] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:73 
+  at GameMessages.ForCharacter (Character character, System.String message) [0x0000b] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\MainMenu\GameMessages.cs:60 
+  at TrapFeedbackAction.ExecuteImmediate (Character c) [0x00001] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:245 
+  at TrapResolutionAction.Run (GameAction action) [0x0000e] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:28 
+  at TrapResolutionAction.Text (System.String text, System.String explanation) [0x00000] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:32 
+  at TrapResolutionAction.Resolve (FantasyTrap current, UnityEngine.Vector3Int entry) [0x000a2] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:43 
+  at TrapResolutionAction.ExecuteImmediate (Character c) [0x00029] in D:\Projects\GitHub\EternalEnigma\Assets\Scripts\Dungeon\Actions\TrapResolutionAction.cs:22 
+  at EternalEnigma.Tests.FantasyTrapPlaybackTests+<ProjectilesEnterFromOffscreenAndHistoryExplainsHitAndEvade>d__7.MoveNext () [0x00329] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\FantasyTrapPlaybackTests.cs:71 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
               </failure>
               <output><![CDATA[Dungeon created
@@ -3671,7 +3671,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: equivalent to < <EquipableInventoryItem> >
   But was:  <empty>
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.InventorySkillTargetingTests+<ItemUseOpensNestedPickerAndCancelPreservesOriginalInventory>d__22.MoveNext () [0x0039f] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\InventorySkillTargetingTests.cs:269
+                <stack-trace><![CDATA[at EternalEnigma.Tests.InventorySkillTargetingTests+<ItemUseOpensNestedPickerAndCancelPreservesOriginalInventory>d__22.MoveNext () [0x0039f] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\InventorySkillTargetingTests.cs:269
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -3709,7 +3709,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: equivalent to < <EquipableInventoryItem> >
   But was:  <empty>
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.InventorySkillTargetingTests+<WeaponFilterCanBeConfirmedWithMouseAfterOpeningWithGamepad>d__20.MoveNext () [0x00226] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\InventorySkillTargetingTests.cs:203
+                <stack-trace><![CDATA[at EternalEnigma.Tests.InventorySkillTargetingTests+<WeaponFilterCanBeConfirmedWithMouseAfterOpeningWithGamepad>d__20.MoveNext () [0x00226] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\InventorySkillTargetingTests.cs:203
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -3738,7 +3738,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: False
   But was:  True
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.MainMenuPresentationTests+<VisualsLoopWithoutGameplayAndMenuRemainsUsable>d__3.MoveNext () [0x0041c] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\MainMenuPresentationTests.cs:54
+                <stack-trace><![CDATA[at EternalEnigma.Tests.MainMenuPresentationTests+<VisualsLoopWithoutGameplayAndMenuRemainsUsable>d__3.MoveNext () [0x0041c] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\MainMenuPresentationTests.cs:54
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -3782,7 +3782,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: not null
   But was:  null
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.MainMenuStartupTests+<EnterOnInitialNewGameSelectionOpensHeroPicker>d__4.MoveNext () [0x001e8] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\MainMenuStartupTests.cs:90
+                <stack-trace><![CDATA[at EternalEnigma.Tests.MainMenuStartupTests+<EnterOnInitialNewGameSelectionOpensHeroPicker>d__4.MoveNext () [0x001e8] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\MainMenuStartupTests.cs:90
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -3954,7 +3954,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: equivalent to < SelectedTarget, Self, AllTargets, InventoryItem, Missile, Tile, LockedDoor >
   But was:  < SelectedTarget, AllTargets, Self, InventoryItem, Missile >
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.MenuSceneNavigationTests+<CheckTestDungeon>d__15.MoveNext () [0x00287] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\MenuSceneNavigationTests.cs:167
+                <stack-trace><![CDATA[at EternalEnigma.Tests.MenuSceneNavigationTests+<CheckTestDungeon>d__15.MoveNext () [0x00287] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\MenuSceneNavigationTests.cs:167
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -3977,7 +3977,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: equivalent to < SelectedTarget, Self, AllTargets, InventoryItem, Missile, Tile, LockedDoor >
   But was:  < SelectedTarget, AllTargets, Self, InventoryItem, Missile >
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.MenuSceneNavigationTests+<CheckTestDungeon>d__15.MoveNext () [0x00287] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\MenuSceneNavigationTests.cs:167
+                <stack-trace><![CDATA[at EternalEnigma.Tests.MenuSceneNavigationTests+<CheckTestDungeon>d__15.MoveNext () [0x00287] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\MenuSceneNavigationTests.cs:167
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -4140,7 +4140,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
               </properties>
               <failure>
                 <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
-                <stack-trace><![CDATA[  at EternalEnigma.Tests.OverworldPresentationTests+<FixedSeedsAndRestoredTerrainKeepRoutesAndLocationsVisible>d__4.MoveNext () [0x003b0] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\OverworldPresentationTests.cs:41 
+                <stack-trace><![CDATA[  at EternalEnigma.Tests.OverworldPresentationTests+<FixedSeedsAndRestoredTerrainKeepRoutesAndLocationsVisible>d__4.MoveNext () [0x003b0] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\OverworldPresentationTests.cs:41 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
               </failure>
               <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
@@ -4157,7 +4157,7 @@ Your script should either check if it is null or you should not destroy the obje
   at UnityEngine.EventSystems.UIBehaviour.IsActive () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\EventSystem\UIBehaviour.cs:28 
   at UnityEngine.UI.Graphic.SetVerticesDirty () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:295 
   at UnityEngine.UI.Graphic.set_color (UnityEngine.Color value) [0x00011] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:156 
-  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
+  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in D:\Projects\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
   at DG.Tweening.Plugins.ColorPlugin.EvaluateAndApply (DG.Tweening.Plugins.Options.ColorOptions options, DG.Tweening.Tween t, System.Boolean isRelative, DG.Tweening.Core.DOGetter`1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, System.Single elapsed, UnityEngine.Color startValue, UnityEngine.Color changeValue, System.Single duration, System.Boolean usingInversePosition, System.Int32 newCompletedSteps, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x0013c] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Plugins\ColorPlugin.cs:94 
   at DG.Tweening.Core.TweenerCore`3[T1,T2,TPlugOptions].ApplyTween (System.Single prevPosition, System.Int32 prevCompletedLoops, System.Int32 newCompletedSteps, System.Boolean useInversePosition, DG.Tweening.Core.Enums.UpdateMode updateMode, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x00030] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Core\TweenerCore.cs:261 
 
@@ -4193,7 +4193,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: String containing "Enter"
   But was:  <string.Empty>
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.OverworldSceneTests+<CampaignHintChangesWithDeviceWhileMessageIsStored>d__6.MoveNext () [0x001bb] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\OverworldSceneTests.cs:43
+                <stack-trace><![CDATA[at EternalEnigma.Tests.OverworldSceneTests+<CampaignHintChangesWithDeviceWhileMessageIsStored>d__6.MoveNext () [0x001bb] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\OverworldSceneTests.cs:43
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -4213,7 +4213,7 @@ Your script should either check if it is null or you should not destroy the obje
   at UnityEngine.EventSystems.UIBehaviour.IsActive () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\EventSystem\UIBehaviour.cs:28 
   at UnityEngine.UI.Graphic.SetVerticesDirty () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:295 
   at UnityEngine.UI.Graphic.set_color (UnityEngine.Color value) [0x00011] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:156 
-  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
+  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in D:\Projects\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
   at DG.Tweening.Plugins.ColorPlugin.EvaluateAndApply (DG.Tweening.Plugins.Options.ColorOptions options, DG.Tweening.Tween t, System.Boolean isRelative, DG.Tweening.Core.DOGetter`1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, System.Single elapsed, UnityEngine.Color startValue, UnityEngine.Color changeValue, System.Single duration, System.Boolean usingInversePosition, System.Int32 newCompletedSteps, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x0013c] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Plugins\ColorPlugin.cs:94 
   at DG.Tweening.Core.TweenerCore`3[T1,T2,TPlugOptions].ApplyTween (System.Single prevPosition, System.Int32 prevCompletedLoops, System.Int32 newCompletedSteps, System.Boolean useInversePosition, DG.Tweening.Core.Enums.UpdateMode updateMode, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x00030] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Core\TweenerCore.cs:261 
 
@@ -4245,7 +4245,7 @@ Your script should either check if it is null or you should not destroy the obje
   at UnityEngine.EventSystems.UIBehaviour.IsActive () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\EventSystem\UIBehaviour.cs:28 
   at UnityEngine.UI.Graphic.SetVerticesDirty () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:295 
   at UnityEngine.UI.Graphic.set_color (UnityEngine.Color value) [0x00011] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:156 
-  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
+  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in D:\Projects\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
   at DG.Tweening.Plugins.ColorPlugin.EvaluateAndApply (DG.Tweening.Plugins.Options.ColorOptions options, DG.Tweening.Tween t, System.Boolean isRelative, DG.Tweening.Core.DOGetter`1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, System.Single elapsed, UnityEngine.Color startValue, UnityEngine.Color changeValue, System.Single duration, System.Boolean usingInversePosition, System.Int32 newCompletedSteps, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x0013c] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Plugins\ColorPlugin.cs:94 
   at DG.Tweening.Core.TweenerCore`3[T1,T2,TPlugOptions].ApplyTween (System.Single prevPosition, System.Int32 prevCompletedLoops, System.Int32 newCompletedSteps, System.Boolean useInversePosition, DG.Tweening.Core.Enums.UpdateMode updateMode, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x00030] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Core\TweenerCore.cs:261 
 
@@ -4272,7 +4272,7 @@ Your script should either check if it is null or you should not destroy the obje
   at UnityEngine.EventSystems.UIBehaviour.IsActive () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\EventSystem\UIBehaviour.cs:28 
   at UnityEngine.UI.Graphic.SetVerticesDirty () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:295 
   at UnityEngine.UI.Graphic.set_color (UnityEngine.Color value) [0x00011] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:156 
-  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
+  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in D:\Projects\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
   at DG.Tweening.Plugins.ColorPlugin.EvaluateAndApply (DG.Tweening.Plugins.Options.ColorOptions options, DG.Tweening.Tween t, System.Boolean isRelative, DG.Tweening.Core.DOGetter`1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, System.Single elapsed, UnityEngine.Color startValue, UnityEngine.Color changeValue, System.Single duration, System.Boolean usingInversePosition, System.Int32 newCompletedSteps, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x0013c] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Plugins\ColorPlugin.cs:94 
   at DG.Tweening.Core.TweenerCore`3[T1,T2,TPlugOptions].ApplyTween (System.Single prevPosition, System.Int32 prevCompletedLoops, System.Int32 newCompletedSteps, System.Boolean useInversePosition, DG.Tweening.Core.Enums.UpdateMode updateMode, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x00030] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Core\TweenerCore.cs:261 
 
@@ -4382,7 +4382,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: 3
   But was:  4
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.SettingsInteractionTests+<AudioChannelsAreIndependentPersistAndRefreshLabels>d__16.MoveNext () [0x0003f] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\SettingsInteractionTests.cs:153
+                <stack-trace><![CDATA[at EternalEnigma.Tests.SettingsInteractionTests+<AudioChannelsAreIndependentPersistAndRefreshLabels>d__16.MoveNext () [0x0003f] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\SettingsInteractionTests.cs:153
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -4400,7 +4400,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
               <failure>
                 <message><![CDATA[System.InvalidOperationException : Sequence contains no matching element]]></message>
                 <stack-trace><![CDATA[  at System.Linq.Enumerable.Single[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) [0x00070] in <7229ad31196947fdb61dcfd278f7b739>:0 
-  at EternalEnigma.Tests.SettingsInteractionTests+<GameplayExplanationChangesWhileDialogRemainsOpen>d__13.MoveNext () [0x00037] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\SettingsInteractionTests.cs:60 
+  at EternalEnigma.Tests.SettingsInteractionTests+<GameplayExplanationChangesWhileDialogRemainsOpen>d__13.MoveNext () [0x00037] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\SettingsInteractionTests.cs:60 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
               </failure>
               <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
@@ -4567,7 +4567,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: 1
   But was:  7
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.SkillMovementTests+<ShadowStepFallsBackWhenBehindIsBlocked>d__18.MoveNext () [0x0017a] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\SkillMovementTests.cs:175
+                <stack-trace><![CDATA[at EternalEnigma.Tests.SkillMovementTests+<ShadowStepFallsBackWhenBehindIsBlocked>d__18.MoveNext () [0x0017a] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\SkillMovementTests.cs:175
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -4722,7 +4722,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[System.ArgumentOutOfRangeException : Index was out of range. Must be non-negative and less than the size of the collection.
 Parameter name: index]]></message>
                 <stack-trace><![CDATA[  at System.Collections.Generic.List`1[T].get_Item (System.Int32 index) [0x00009] in <59bd7c40c082431db25e1e728ab62789>:0 
-  at GameTestHarness+<UseItemThroughMenu>d__28.MoveNext () [0x0010e] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\Support\GameTestHarness.cs:192 
+  at GameTestHarness+<UseItemThroughMenu>d__28.MoveNext () [0x0010e] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\Support\GameTestHarness.cs:192 
   at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44 ]]></stack-trace>
               </failure>
               <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
@@ -4899,7 +4899,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: same as <Ally(Clone) (Ally)>
   But was:  null
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.SkillRegressionTests+<SkillsCanOnlyBeIssuedForTheControlledAlly>d__32.MoveNext () [0x00200] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\SkillRegressionTests.cs:479
+                <stack-trace><![CDATA[at EternalEnigma.Tests.SkillRegressionTests+<SkillsCanOnlyBeIssuedForTheControlledAlly>d__32.MoveNext () [0x00200] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\SkillRegressionTests.cs:479
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -4960,7 +4960,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: 2
   But was:  0
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.SongCommandTests+<BladeDanceHitsOncePerSong>d__21.MoveNext () [0x002a9] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\SongCommandTests.cs:325
+                <stack-trace><![CDATA[at EternalEnigma.Tests.SongCommandTests+<BladeDanceHitsOncePerSong>d__21.MoveNext () [0x002a9] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\SongCommandTests.cs:325
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5029,7 +5029,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: 7
   But was:  6
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.SongCommandTests+<EncoreExtendsSongs>d__19.MoveNext () [0x001fb] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\SongCommandTests.cs:268
+                <stack-trace><![CDATA[at EternalEnigma.Tests.SongCommandTests+<EncoreExtendsSongs>d__19.MoveNext () [0x001fb] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\SongCommandTests.cs:268
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5083,7 +5083,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: 80
   But was:  70
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.SongCommandTests+<ReinforceHealsWhenCommandEnds>d__26.MoveNext () [0x00216] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\SongCommandTests.cs:429
+                <stack-trace><![CDATA[at EternalEnigma.Tests.SongCommandTests+<ReinforceHealsWhenCommandEnds>d__26.MoveNext () [0x00216] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\SongCommandTests.cs:429
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5208,7 +5208,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
   Expected: 1
   But was:  0
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.SummonTests+<CloneExpiresAfterItsTurns>d__19.MoveNext () [0x001b9] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\SummonTests.cs:219
+                <stack-trace><![CDATA[at EternalEnigma.Tests.SummonTests+<CloneExpiresAfterItsTurns>d__19.MoveNext () [0x001b9] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\SummonTests.cs:219
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5398,7 +5398,7 @@ Your script should either check if it is null or you should not destroy the obje
   at UnityEngine.EventSystems.UIBehaviour.IsActive () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\EventSystem\UIBehaviour.cs:28 
   at UnityEngine.UI.Graphic.SetVerticesDirty () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:295 
   at UnityEngine.UI.Graphic.set_color (UnityEngine.Color value) [0x00011] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:156 
-  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
+  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in D:\Projects\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
   at DG.Tweening.Plugins.ColorPlugin.EvaluateAndApply (DG.Tweening.Plugins.Options.ColorOptions options, DG.Tweening.Tween t, System.Boolean isRelative, DG.Tweening.Core.DOGetter`1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, System.Single elapsed, UnityEngine.Color startValue, UnityEngine.Color changeValue, System.Single duration, System.Boolean usingInversePosition, System.Int32 newCompletedSteps, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x0013c] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Plugins\ColorPlugin.cs:94 
   at DG.Tweening.Core.TweenerCore`3[T1,T2,TPlugOptions].ApplyTween (System.Single prevPosition, System.Int32 prevCompletedLoops, System.Int32 newCompletedSteps, System.Boolean useInversePosition, DG.Tweening.Core.Enums.UpdateMode updateMode, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x00030] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Core\TweenerCore.cs:261 
 
@@ -5433,7 +5433,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: (14.00, 68.00, 0.00)
   But was:  (14.00, 70.00, 0.00)
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<CallerControlsBuildingsAndRecruitsAndShopsHaveIndependentStock>d__12.MoveNext () [0x0038a] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:111
+                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<CallerControlsBuildingsAndRecruitsAndShopsHaveIndependentStock>d__12.MoveNext () [0x0038a] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:111
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5492,7 +5492,7 @@ Your script should either check if it is null or you should not destroy the obje
   at UnityEngine.EventSystems.UIBehaviour.IsActive () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\EventSystem\UIBehaviour.cs:28 
   at UnityEngine.UI.Graphic.SetVerticesDirty () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:295 
   at UnityEngine.UI.Graphic.set_color (UnityEngine.Color value) [0x00011] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:156 
-  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
+  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in D:\Projects\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
   at DG.Tweening.Plugins.ColorPlugin.EvaluateAndApply (DG.Tweening.Plugins.Options.ColorOptions options, DG.Tweening.Tween t, System.Boolean isRelative, DG.Tweening.Core.DOGetter`1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, System.Single elapsed, UnityEngine.Color startValue, UnityEngine.Color changeValue, System.Single duration, System.Boolean usingInversePosition, System.Int32 newCompletedSteps, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x0013c] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Plugins\ColorPlugin.cs:94 
   at DG.Tweening.Core.TweenerCore`3[T1,T2,TPlugOptions].ApplyTween (System.Single prevPosition, System.Int32 prevCompletedLoops, System.Int32 newCompletedSteps, System.Boolean useInversePosition, DG.Tweening.Core.Enums.UpdateMode updateMode, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x00030] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Core\TweenerCore.cs:261 
 
@@ -5549,7 +5549,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: 320
   But was:  250
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<LeavingDungeonThroughSettingsCommitsDefeatRules>d__21.MoveNext () [0x00107] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:267
+                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<LeavingDungeonThroughSettingsCommitsDefeatRules>d__21.MoveNext () [0x00107] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:267
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5631,7 +5631,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: 2
   But was:  0
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<ShopPurchasesPersistAndSoldOutOrUnaffordablePurchasesDoNotCharge>d__14.MoveNext () [0x001de] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:160
+                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<ShopPurchasesPersistAndSoldOutOrUnaffordablePurchasesDoNotCharge>d__14.MoveNext () [0x001de] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:160
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5659,7 +5659,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: True
   But was:  False
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<TownInventoryUsesSharedActionMenuAndSavesEquipment>d__17.MoveNext () [0x001f8] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:229
+                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<TownInventoryUsesSharedActionMenuAndSavesEquipment>d__17.MoveNext () [0x001f8] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:229
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5686,7 +5686,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: collection containing "Mining"
   But was:  <empty>
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<TrainingSavesBeforeDialogClosesAndCannotChargeTwice>d__15.MoveNext () [0x0021a] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:197
+                <stack-trace><![CDATA[at EternalEnigma.Tests.TownGameplayTests+<TrainingSavesBeforeDialogClosesAndCannotChargeTwice>d__15.MoveNext () [0x0021a] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownGameplayTests.cs:197
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -5744,7 +5744,7 @@ Your script should either check if it is null or you should not destroy the obje
   at UnityEngine.EventSystems.UIBehaviour.IsActive () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\EventSystem\UIBehaviour.cs:28 
   at UnityEngine.UI.Graphic.SetVerticesDirty () [0x00001] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:295 
   at UnityEngine.UI.Graphic.set_color (UnityEngine.Color value) [0x00011] in .\Library\PackageCache\com.unity.ugui@f250afc9b68d\Runtime\UGUI\UI\Core\Graphic.cs:156 
-  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
+  at DG.Tweening.DOTweenModuleUI+<>c__DisplayClass4_0.<DOFade>b__1 (UnityEngine.Color x) [0x00000] in D:\Projects\GitHub\EternalEnigma\Assets\Plugins\Demigiant\DOTween\Modules\DOTweenModuleUI.cs:79 
   at DG.Tweening.Plugins.ColorPlugin.EvaluateAndApply (DG.Tweening.Plugins.Options.ColorOptions options, DG.Tweening.Tween t, System.Boolean isRelative, DG.Tweening.Core.DOGetter`1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, System.Single elapsed, UnityEngine.Color startValue, UnityEngine.Color changeValue, System.Single duration, System.Boolean usingInversePosition, System.Int32 newCompletedSteps, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x0013c] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Plugins\ColorPlugin.cs:94 
   at DG.Tweening.Core.TweenerCore`3[T1,T2,TPlugOptions].ApplyTween (System.Single prevPosition, System.Int32 prevCompletedLoops, System.Int32 newCompletedSteps, System.Boolean useInversePosition, DG.Tweening.Core.Enums.UpdateMode updateMode, DG.Tweening.Core.Enums.UpdateNotice updateNotice) [0x00030] in D:\DG\_Develop\__UNITY3_CLASSES\_Holoville\__DOTween\_DOTween.Assembly\DOTween\Core\TweenerCore.cs:261 
 
@@ -5806,7 +5806,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
                 <message><![CDATA[  Expected: True
   But was:  False
 ]]></message>
-                <stack-trace><![CDATA[at EternalEnigma.Tests.TownTrainerRankTests+<RankUpChargesSkillPointsPerRankAndPersists>d__10.MoveNext () [0x002c9] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownTrainerRankTests.cs:95
+                <stack-trace><![CDATA[at EternalEnigma.Tests.TownTrainerRankTests+<RankUpChargesSkillPointsPerRankAndPersists>d__10.MoveNext () [0x002c9] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\TownTrainerRankTests.cs:95
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
               </failure>
@@ -6086,7 +6086,7 @@ You probably need to add a Canvas to the game object "Result screen". Or your sc
             <stack-trace><![CDATA[  at UnityEngine.Object+MarshalledUnityObject.TryThrowEditorNullExceptionObject (UnityEngine.Object unityObj, System.String parameterName) [0x000e2] in <41b87322553648a1a76174c5109c71f9>:0 
   at UnityEngine.Bindings.ThrowHelper.ThrowNullReferenceException (System.Object obj) [0x00010] in <41b87322553648a1a76174c5109c71f9>:0 
   at UnityEngine.Canvas.get_overrideSorting () [0x00006] in <4646b4c71be54310a6b14f5a62c8668e>:0 
-  at FloorMessageTests.VictoryMessageHasRoomAndRendersAboveTheDungeonHud () [0x000f8] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\FloorMessageTests.cs:28 
+  at FloorMessageTests.VictoryMessageHasRoomAndRendersAboveTheDungeonHud () [0x000f8] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\FloorMessageTests.cs:28 
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
   at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <59bd7c40c082431db25e1e728ab62789>:0 ]]></stack-trace>
           </failure>
@@ -6126,7 +6126,7 @@ There are no audio listeners in the scene. Please ensure there is always one aud
             <message><![CDATA[  Expected: same as <EquipableInventoryItem>
   But was:  <EquipableInventoryItem>
 ]]></message>
-            <stack-trace><![CDATA[at HarnessSmokeTests+<OrdinaryEquipUsesInventoryButtonsAndRealTurnPipeline>d__5.MoveNext () [0x00104] in C:\Users\yusuk\Documents\GitHub\EternalEnigma\Assets\Tests\PlayMode\HarnessSmokeTests.cs:54
+            <stack-trace><![CDATA[at HarnessSmokeTests+<OrdinaryEquipUsesInventoryButtonsAndRealTurnPipeline>d__5.MoveNext () [0x00104] in D:\Projects\GitHub\EternalEnigma\Assets\Tests\PlayMode\HarnessSmokeTests.cs:54
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0004e] in .\Library\PackageCache\com.unity.test-framework@d97b7cd61ded\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
 ]]></stack-trace>
           </failure>

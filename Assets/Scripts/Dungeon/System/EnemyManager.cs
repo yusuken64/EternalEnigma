@@ -116,7 +116,7 @@ public class EnemyManager : MonoBehaviour
 	[ContextMenu("AssignMonsterStats")]
 	public void AssignMonsterStats()
 	{
-		var filePath = @"C:\Users\yusuk\Documents\GitHub\Dungeongeneration\Assets\Data\MonsterData.txt";
+		var filePath = @"D:\Projects\GitHub\Dungeongeneration\Assets\Data\MonsterData.txt";
 		MonsterDataReader monsterDataReader = new MonsterDataReader();
 		List<MonsterData> monsters = monsterDataReader.ReadMonstersFromCSV(filePath);
 
@@ -156,11 +156,11 @@ public class EnemyManager : MonoBehaviour
 	[ContextMenu("AssignMonsterSpawnRates")]
 	public void AssignMonsterSpawnRates()
 	{
-		var filePath = @"C:\Users\yusuk\Documents\GitHub\Dungeongeneration\Assets\Data\MonsterData.txt";
+		var filePath = @"D:\Projects\GitHub\Dungeongeneration\Assets\Data\MonsterData.txt";
 		MonsterDataReader monsterDataReader = new MonsterDataReader();
 		List<MonsterData> monsters = monsterDataReader.ReadMonstersFromCSV(filePath);
 
-		var filePath2 = @"C:\Users\yusuk\Documents\GitHub\Dungeongeneration\Assets\Data\MonsterSpawnData.txt";
+		var filePath2 = @"D:\Projects\GitHub\Dungeongeneration\Assets\Data\MonsterSpawnData.txt";
 		MonsterSpawnRateReader monsterSpawnRateReader = new MonsterSpawnRateReader();
 		List<MonsterSpawnData> parsedData = monsterSpawnRateReader.ParseMonsterData(filePath2);
 

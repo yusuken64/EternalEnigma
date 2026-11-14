@@ -13,6 +13,28 @@ public static class DungeonUIAuthoring
 {
     const string Folder = "Assets/Resources/UI/Dungeon";
     static GameUITheme Theme => GameUITheme.Current;
+    [MenuItem("Tools/Eternal Enigma/UI/Update Target Presentation")]
+    public static void UpdateTargetPresentation()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new InvalidOperationException("Update targeting presentation outside Play mode.");
+        var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/DungeonScene.unity");
+        bool opened = !scene.isLoaded;
+        if (!opened && scene.isDirty) throw new InvalidOperationException("Save DungeonScene before updating targeting presentation.");
+        if (opened) scene = EditorSceneManager.OpenScene("Assets/Scenes/DungeonScene.unity", OpenSceneMode.Additive);
+        try
+        {
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                foreach (var dialog in root.GetComponentsInChildren<TargetDialog>(true)) dialog.ApplyPresentation();
+                foreach (var hud in root.GetComponentsInChildren<DungeonHud>(true)) hud.ApplyTargetPresentation();
+            }
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+        finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
+    }
+
     static void Fit(Transform transform, float x, float y, float right, float top)
     {
         var rect = (RectTransform)transform;
@@ -215,18 +237,11 @@ public static class DungeonUIAuthoring
                 scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<Minimap>(true)).Single().AuthorLocationLabel(header);
                 var backing=hud.PartyRoot.parent.GetComponentsInChildren<RectTransform>(true).FirstOrDefault(t=>t.name=="Floor label parchment");
                 if(backing!=null)backing.gameObject.SetActive(false);
-                var serialized=new SerializedObject(hud);
-                var target=(TMP_Text)serialized.FindProperty("target").objectReferenceValue;
-                var targetPanel=(GameObject)serialized.FindProperty("targetBackdrop").objectReferenceValue;
-                Fit(targetPanel.transform,.32f,.835f,.60f,.895f);target.fontSize=24;target.enableAutoSizing=true;target.fontSizeMin=20;target.fontSizeMax=24;
-                Fit(target.transform,.04f,.08f,.96f,.92f);target.alignment=TextAlignmentOptions.Center;
+                hud.ApplyTargetPresentation();
             }
-            Fit(manager.TargetDialog.SelectTargetPrompt.transform,.32f,.90f,.60f,.98f);
+            manager.TargetDialog.ApplyPresentation();
             var targetScaler=manager.TargetDialog.GetComponent<CanvasScaler>()??manager.TargetDialog.gameObject.AddComponent<CanvasScaler>();
             targetScaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;targetScaler.referenceResolution=new Vector2(1920,1080);targetScaler.matchWidthOrHeight=.5f;
-            var targetPrompt=manager.TargetDialog.SelectTargetPrompt.GetComponentInChildren<TMP_Text>(true);
-            targetPrompt.fontSize=28;targetPrompt.enableAutoSizing=true;targetPrompt.fontSizeMin=24;targetPrompt.fontSizeMax=28;
-            Fit(targetPrompt.transform,.04f,.10f,.96f,.90f);targetPrompt.alignment=TextAlignmentOptions.Center;
             var resources=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<ResourceHUD>(true)).Single();
             var resourcePanel=resources.GoldText.transform.parent;
             Fit(resourcePanel,.73f,.89f,.98f,.935f);

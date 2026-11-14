@@ -264,7 +264,7 @@ namespace EternalEnigma.Tests
             yield return null; yield return null;
             first = EventSystem.current.currentSelectedGameObject;
             Assert.That(first.GetComponentInParent<SkillGridItem>(), Is.Not.Null);
-            // A short preview has no separate scroll control or dead navigation stop.
+            // Details stay on the page, so Right goes directly to Close.
             trainer.Layout.Preview.text = "Short skill details.";
             Canvas.ForceUpdateCanvases();
             yield return null; yield return null;
@@ -274,19 +274,17 @@ namespace EternalEnigma.Tests
             yield return Press(GamepadButton.DpadLeft);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
 
-            // Exercise the scrolling route without changing a shared skill asset.
-            trainer.Layout.Preview.text = string.Join("\n", Enumerable.Repeat("Long skill detail for scrolling.", 40));
+            // Longer details must fit without adding another navigation stop.
+            trainer.Layout.Preview.text = string.Join("\n", Enumerable.Repeat("A detailed explanation of the skill and its effects.", 4));
             Canvas.ForceUpdateCanvases();
             yield return null; yield return null;
-            Assert.That(trainer.Layout.PreviewControl.gameObject.activeSelf, Is.True);
+            trainer.Layout.Preview.ForceMeshUpdate();
+            Assert.That(trainer.Layout.Preview.isTextOverflowing, Is.False);
+            Assert.That(trainer.Layout.PreviewControl.gameObject.activeSelf, Is.False);
             Assert.That(trainer.Layout.PreviewScroll.content.rect.height,
-                Is.GreaterThan(trainer.Layout.PreviewScroll.viewport.rect.height));
-            trainer.Layout.PreviewScroll.verticalNormalizedPosition = 1;
+                Is.EqualTo(trainer.Layout.PreviewScroll.viewport.rect.height).Within(.1f));
             yield return Press(GamepadButton.DpadRight);
-            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(trainer.Layout.PreviewControl.gameObject));
-            yield return Press(GamepadButton.DpadDown);
-            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(trainer.Layout.PreviewControl.gameObject));
-            Assert.That(trainer.Layout.PreviewScroll.verticalNormalizedPosition, Is.LessThan(1));
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(trainer.Layout.Close.gameObject));
             yield return Press(GamepadButton.DpadLeft);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
             yield return Press(GamepadButton.DpadDown);

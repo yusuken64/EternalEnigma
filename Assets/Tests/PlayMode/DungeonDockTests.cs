@@ -131,6 +131,19 @@ namespace EternalEnigma.Tests
                 var prompt=manager.TargetDialog.SelectTargetPrompt.GetComponentInChildren<TMPro.TMP_Text>();
                 Canvas.ForceUpdateCanvases();prompt.ForceMeshUpdate();
                 Assert.That(prompt.isTextOverflowing,Is.False,"The targeting prompt must fit at every supported resolution.");
+                Assert.That(prompt.text,Is.EqualTo("Select target for Fire Bolt"));
+                var targetPanel=Object.FindFirstObjectByType<DungeonHud>().GetComponentsInChildren<RectTransform>(true)
+                    .Single(rect=>rect.name=="Target detail parchment");
+                var targetText=targetPanel.GetComponentInChildren<TMPro.TMP_Text>();
+                Assert.That(targetText,Is.Not.Null);
+                targetText.ForceMeshUpdate();
+                Assert.That(targetText.isTextOverflowing,Is.False,targetText.text);
+                foreach(var panel in new[]{(RectTransform)manager.TargetDialog.SelectTargetPrompt.transform,targetPanel})
+                    Assert.That(RectTransformUtility.WorldToScreenPoint(null,panel.TransformPoint(panel.rect.center)).x,
+                        Is.EqualTo(Screen.width*.5f).Within(1),"Targeting banners must be centered on the screen.");
+                var textBounds=RectTransformUtility.CalculateRelativeRectTransformBounds(targetPanel,targetText.transform);
+                Assert.That(textBounds.min.y,Is.GreaterThanOrEqualTo(targetPanel.rect.yMin));
+                Assert.That(textBounds.max.y,Is.LessThanOrEqualTo(targetPanel.rect.yMax));
                 foreach(var dialog in manager.DialogStack.Where(d=>d!=manager.TargetDialog))
                     Assert.That(dialog.GetComponent<Canvas>().enabled,Is.False,"Targeting must hide every underlying panel.");
                 yield return Capture("targeting",resolution);

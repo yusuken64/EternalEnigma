@@ -7,6 +7,7 @@ public static class InputPrompts
     public static string Navigate => ControlBindings.Prompt("UI/Navigate", "Arrow keys", "D-pad");
     public static string Interact => ControlBindings.Prompt("UI/Submit", "Enter", "A / Cross");
     public static string Attack => ControlBindings.Prompt("Player/Attack", "Space", "A / Cross");
+    public static string InteractionButton => ControlBindings.PrimaryPrompt("Player/Attack");
     public static string NextHero => ControlBindings.Prompt("UI/InspectNextHero", "Tab", "RB / R1");
     public static string PreviousHero => ControlBindings.Prompt("UI/InspectPreviousHero", "Shift+Tab", "LT / L2");
     public static string ToggleFullControl => ControlBindings.Prompt("Player/ToggleFullControl", "F", "Right stick press");

@@ -67,23 +67,37 @@ public sealed class OpeningHomeLesson : MonoBehaviour
     public string InteractionName(Vector3Int cell) => cell == BookCell ? "book" :
         cell == ChestCell ? "chest" : cell == DoorCell ? "front door" : "object";
 
-    public bool TryInteract(Vector3Int targetCell)
+    private bool CanInteract(Vector3Int targetCell)
     {
         var context = Context;
         var player = town?.TownPlayer;
         var hero = player?.ControllingTownAlly;
-        if (!enabled || context?.HasHomeLesson != true || !town.IsReady || hero == null || player.IsBusy ||
-            context.State.Scene != "Town" || context.State.LocationId != "town-0" ||
-            player.CutsceneLocked || Common.Instance.Travel.IsTransitioning || Common.Instance.GlobalSettings.IsOpen ||
-            FindFirstObjectByType<TownMenuManager>()?.DialogStack.Count > 0 ||
-            hero.TilemapPosition + Dungeon.GetFacingOffset(hero.CurrentFacing) != targetCell) return false;
+        return enabled && context?.HasHomeLesson == true && town.IsReady && hero != null && !player.IsBusy &&
+            context.State.Scene == "Town" && context.State.LocationId == "town-0" &&
+            !player.CutsceneLocked && !Common.Instance.Travel.IsTransitioning && !Common.Instance.GlobalSettings.IsOpen &&
+            FindFirstObjectByType<TownMenuManager>()?.Opened != true &&
+            hero.TilemapPosition + Dungeon.GetFacingOffset(hero.CurrentFacing) == targetCell;
+    }
+
+    public bool TryGetBookPromptAnchor(out Vector3 anchor)
+    {
+        anchor = visuals != null ? visuals.BookPromptAnchor : default;
+        return visuals != null && Context?.State.ReadHomeBook == false && CanInteract(BookCell);
+    }
+
+    public bool TryInteract(Vector3Int targetCell)
+    {
+        if (!CanInteract(targetCell)) return false;
         if (targetCell != BookCell && targetCell != ChestCell && targetCell != DoorCell) return false;
+        var context = Context;
+        var player = town.TownPlayer;
         player.StopHeldWalk();
         context.State.InteractedInOpening = true;
         if (targetCell == BookCell)
         {
             bool firstRead = context.ReadOpeningBook();
             town.SaveProgress();
+            if (firstRead) GameMessages.Post(context.OpeningObjective);
             AudioManager.Instance?.PlayCue(SoundCue.Confirm);
             TownMenu.ShowMessage(context.State.HomeDoorUnlocked
                 ? "Your Home Key unlocked the front door."
@@ -97,6 +111,7 @@ public sealed class OpeningHomeLesson : MonoBehaviour
         {
             bool acquired = context.ClaimHomeKey();
             town.SaveProgress();
+            if (acquired) GameMessages.Post(context.OpeningObjective);
             AudioManager.Instance?.PlayCue(acquired ? SoundCue.ContainerOpen : SoundCue.Confirm);
             TownMenu.ShowMessage(acquired
                 ? "<b>Home Key acquired!</b>\n\nYour first capability opens the front door.\nFace the door and press " + InputPrompts.Attack + " to use it."
@@ -119,26 +134,6 @@ public sealed class OpeningHomeLesson : MonoBehaviour
         else GameMessages.Post("The front door is open.");
         RefreshVisuals();
         return true;
-    }
-
-    public string Objective
-    {
-        get
-        {
-            var context = Context;
-            var hero = town?.TownPlayer?.ControllingTownAlly;
-            if (!IsLocked || hero == null) return "";
-            var ahead = hero.TilemapPosition + Dungeon.GetFacingOffset(hero.CurrentFacing);
-            if (ahead == BookCell) return "Book: press " + InputPrompts.Attack + " to read.";
-            if (ahead == ChestCell) return context.HasHomeKey ? "Chest empty. Use your Home Key at the front door." :
-                "Chest: press " + InputPrompts.Attack + " to open.";
-            if (ahead == DoorCell) return context.HasHomeKey ? "Front door: press " + InputPrompts.Attack + " to unlock." :
-                "Front door locked. Press " + InputPrompts.Attack + " to inspect.";
-            if (context.HasHomeKey) return "Use your Home Key at the front door. Face it and press " + InputPrompts.Attack + ".";
-            if (!context.State.MovedInOpening) return "Use " + InputPrompts.Move + " to walk to the book or chest.";
-            return context.State.ReadHomeBook ? "Open the chest to find your Home Key." :
-                "Read the book beside your bed, or explore the chest.";
-        }
     }
 
     /// <summary>Autoplay follows the same optional book discovery and real interactions as a player.</summary>

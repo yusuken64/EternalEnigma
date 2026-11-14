@@ -11,6 +11,8 @@ public static class EconomyShopAuthoring
     [MenuItem("Tools/Eternal Enigma/Author Economy Shop")]
     public static void Author()
     {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new System.InvalidOperationException("Author the shop outside Play mode.");
         var scene = SceneManager.GetSceneByPath("Assets/Scenes/Town.unity");
         bool opened = !scene.isLoaded;
         if (opened) scene = EditorSceneManager.OpenScene("Assets/Scenes/Town.unity", OpenSceneMode.Additive);
@@ -19,11 +21,8 @@ public static class EconomyShopAuthoring
             var shop = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<ShopMenuDialog>(true)).Single();
             if (shop.BuyModeButton != null)
             {
-                foreach (var hint in shop.GetComponentsInChildren<MenuControlHints>(true))
-                {
-                    var label = hint.GetComponent<TMPro.TMP_Text>();
-                    if (label != null) label.fontSize = 18;
-                }
+                AuthorDescription(shop);
+                shop.ApplyPresentation();
                 EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
                 return;
             }
@@ -34,7 +33,6 @@ public static class EconomyShopAuthoring
             shop.BuyModeButton = GameUISkin.Button(panel.transform, "Buy", new Vector2(.05f,.72f), new Vector2(.48f,.8f), null);
             shop.SellModeButton = GameUISkin.Button(panel.transform, "Sell", new Vector2(.52f,.72f), new Vector2(.95f,.8f), null);
             shop.BackButton = GameUISkin.Button(panel.transform, "Back", new Vector2(.72f,.02f), new Vector2(.95f,.10f), null, SelectToActivateButton.SoundRole.Cancel);
-            MenuControlHints.Bind(GameUISkin.Label(panel.transform, "", new Vector2(.05f,.02f), new Vector2(.7f,.10f), 18));
             var viewport = GameUISkin.Rect("Shop inventory", panel.transform, new Vector2(.05f,.13f), new Vector2(.95f,.69f));
             viewport.gameObject.AddComponent<Image>().color = new Color(1,1,1,.03f);
             viewport.gameObject.AddComponent<RectMask2D>();
@@ -59,10 +57,23 @@ public static class EconomyShopAuthoring
             row.gameObject.AddComponent<LayoutElement>().preferredHeight = 82;
             shop.ShopItemPrefab = PrefabUtility.SaveAsPrefabAsset(row.gameObject, "Assets/Prefabs/Menu/EconomyShopItem.prefab").GetComponent<ShopMenuItem>();
             Object.DestroyImmediate(row.gameObject);
+            AuthorDescription(shop);
+            shop.ApplyPresentation();
             shop.BuyConfirmationDialog.transform.SetAsLastSibling();
             EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
         }
         finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
+    }
+
+    private static void AuthorDescription(ShopMenuDialog shop)
+    {
+        if (shop.DescriptionPanel != null) return;
+        var panel = GameUISkin.Panel(shop.transform, new Vector2(.24f, .48f), new Vector2(.54f, .88f));
+        panel.name = "Item description";
+        panel.raycastTarget = false;
+        shop.DescriptionPanel = panel.rectTransform;
+        shop.DescriptionText = GameUISkin.Label(panel.transform, "", new Vector2(.08f, .10f), new Vector2(.92f, .90f), 24);
+        shop.BuyConfirmationDialog.transform.SetAsLastSibling();
     }
 }
 #endif

@@ -203,11 +203,7 @@ namespace EternalEnigma.Tests
             confirmation.Cancel_Clicked();
 
             Canvas.ForceUpdateCanvases();
-            foreach (var hint in shop.GetComponentsInChildren<MenuControlHints>())
-            {
-                hint.Label.ForceMeshUpdate();
-                Assert.That(hint.Label.isTextOverflowing, Is.False, "Shop controls must fit the footer.");
-            }
+            Assert.That(shop.GetComponentsInChildren<MenuControlHints>(), Is.Empty);
         }
 
         [UnityTest]
@@ -397,6 +393,42 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator OpeningBreadPreviewsConfirmsAndReturnsToShopWithoutControlHints()
+        {
+            yield return harness.LoadMainMenu(null);
+            var common = Common.Instance;
+            common.GameSaveData = Object.FindFirstObjectByType<MainMenu>().CreateNewSave(42);
+            common.Travel.NewCampaign(42);
+            yield return harness.WaitUntil(() => Town != null && Town.IsReady && !common.ScreenTransition.BlockScreen.activeSelf, "opening town");
+            var shop = (ShopMenuDialog)Object.FindFirstObjectByType<TownMenu>().OpenBuilding(Bakery, Town.TownPlayer, null);
+            yield return null;
+            Assert.That(shop.ShopItems.Count, Is.EqualTo(1));
+            Assert.That(shop.DescriptionText.text, Does.Contain(shop.ShopItemDatas[0].Definition.Description));
+            Assert.That(common.CampaignContext.State.BoughtOpeningBread, Is.False);
+            shop.ShopItems[0].BuyButton.onClick.Invoke(); yield return null;
+            Assert.That(shop.BuyConfirmationDialog.gameObject.activeInHierarchy, Is.True);
+            Assert.That(common.CampaignContext.State.BoughtOpeningBread, Is.False, "Using the offer opens confirmation before granting bread.");
+            shop.BuyConfirmationDialog.Cancel_Clicked(); yield return null;
+            Assert.That(common.CampaignContext.State.BoughtOpeningBread, Is.False);
+            shop.ShopItems[0].BuyButton.onClick.Invoke(); yield return null;
+            shop.BuyConfirmationDialog.Ok_Clicked(); yield return null;
+            Assert.That(common.CampaignContext.State.BoughtOpeningBread, Is.True);
+            Assert.That(shop.GetComponentsInChildren<MenuControlHints>(), Is.Empty);
+            Assert.That(shop.DescriptionPanel.gameObject.activeSelf, Is.False);
+            Assert.That(Object.FindFirstObjectByType<ResourceHUD>().GetComponent<Canvas>().enabled, Is.True);
+            Assert.That(Town.transform.Find("Current objective").GetComponent<Canvas>().enabled, Is.False);
+            shop.StatusText.ForceMeshUpdate();
+            Assert.That(shop.StatusText.isTextOverflowing, Is.False, shop.StatusText.text);
+            System.IO.Directory.CreateDirectory("Temp/ShopDescriptions");
+            ScreenCapture.CaptureScreenshot("Temp/ShopDescriptions/bread-packed.png");
+            yield return new WaitForSecondsRealtime(.2f);
+            shop.BuyModeButton.onClick.Invoke(); yield return null;
+            Assert.That(shop.StatusText.text, Is.EqualTo(Bakery.DisplayName));
+            Assert.That(shop.DescriptionPanel.gameObject.activeSelf, Is.True);
+            Assert.That(shop.GetComponentsInChildren<MenuControlHints>(), Is.Empty);
+        }
+
+        [UnityTest]
         public IEnumerator ShopSupportsKeyboardGamepadAndMouseSelection()
         {
             using var inputScope = new TestInputScope();
@@ -409,6 +441,47 @@ namespace EternalEnigma.Tests
                 MenuUIInputModule.Active.actionsAsset.devices = new InputDevice[] { keyboard, pad, mouse };
                 var shop = (ShopMenuDialog)Object.FindFirstObjectByType<TownMenu>().OpenBuilding(Bakery, Town.TownPlayer, null);
                 yield return null;
+                Assert.That(shop.StatusText.text, Is.EqualTo(Bakery.DisplayName));
+                Assert.That(Object.FindFirstObjectByType<ResourceHUD>().GetComponent<Canvas>().enabled, Is.True);
+                Assert.That(shop.GetComponentsInChildren<MenuControlHints>(), Is.Empty);
+                Assert.That(shop.DescriptionText.text, Does.Contain(shop.ShopItemDatas[0].Definition.Description));
+                shop.ShopItems[1].BuyButton.Select(); yield return null;
+                Assert.That(shop.DescriptionText.text, Does.Contain(shop.ShopItemDatas[1].Definition.Description));
+                Assert.That(shop.BuyConfirmationDialog.gameObject.activeSelf, Is.False, "Selection previews before any purchase confirmation.");
+                Assert.That(Town.TownPlayer.Gold, Is.EqualTo(10000));
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Enter)); yield return null;
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+                Assert.That(shop.BuyConfirmationDialog.gameObject.activeSelf, Is.True, "Use opens confirmation without purchasing.");
+                Assert.That(Town.TownPlayer.Gold, Is.EqualTo(10000));
+                shop.BuyConfirmationDialog.Cancel_Clicked(); yield return null;
+                Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(shop.ShopItems[1].gameObject));
+
+                var gameView = UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+                var sizeProperty = gameView.GetType().GetProperty("selectedSizeIndex", flags);
+                var originalSize = sizeProperty.GetValue(gameView);
+                try
+                {
+                    System.IO.Directory.CreateDirectory("Temp/ShopDescriptions");
+                    foreach (var size in new[] { new Vector2(960, 600), new Vector2(1280, 720), new Vector2(1920, 1080) })
+                    {
+                        gameView.GetType().GetMethod("SetCustomResolution", flags).Invoke(gameView, new object[] { size, "Shop descriptions" });
+                        yield return null; shop.Setup(); yield return null;
+                        foreach (var row in shop.ShopItems)
+                        {
+                            row.BuyButton.Select(); yield return null;
+                            Canvas.ForceUpdateCanvases();
+                            foreach (var label in new[] { row.ItemText, row.CostText, shop.DescriptionText })
+                            {
+                                label.ForceMeshUpdate();
+                                Assert.That(label.isTextOverflowing, Is.False, label.text);
+                            }
+                        }
+                        ScreenCapture.CaptureScreenshot($"Temp/ShopDescriptions/shop-{size.x}x{size.y}.png");
+                        yield return new WaitForSecondsRealtime(.2f);
+                    }
+                }
+                finally { sizeProperty.SetValue(gameView, originalSize); }
                 shop.BuyModeButton.Select();
                 InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.RightArrow)); yield return null;
                 InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;

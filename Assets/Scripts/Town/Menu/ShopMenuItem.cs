@@ -14,7 +14,7 @@ public class ShopMenuItem : MonoBehaviour, ISelectHandler
 
 	public Button BuyButton;
 
-	public Action SelectCallBack { get; internal set; }
+	public Action<BaseEventData> SelectCallBack { get; internal set; }
 
 
 	internal void Setup(ShopItemData data)
@@ -25,9 +25,9 @@ public class ShopMenuItem : MonoBehaviour, ISelectHandler
 		UpdateUI();
         if (transform.parent is RectTransform parent && parent.rect.width > 160)
         {
-            float nameWidth = Mathf.Max(80, parent.rect.width * .74f - 48);
-            float priceWidth = Mathf.Max(60, parent.rect.width * .26f - 40);
-            GetComponent<LayoutElement>().preferredHeight = Mathf.Max(96,
+            float nameWidth = Mathf.Max(80, parent.rect.width * .72f - 32);
+            float priceWidth = Mathf.Max(60, parent.rect.width * .28f - 28);
+            GetComponent<LayoutElement>().preferredHeight = Mathf.Max(76,
                 Mathf.Max(ItemText.GetPreferredValues(ItemText.text, nameWidth, 0).y,
                     CostText.GetPreferredValues(CostText.text, priceWidth, 0).y) + 24);
         }
@@ -37,25 +37,25 @@ public class ShopMenuItem : MonoBehaviour, ISelectHandler
     {
         // Separate columns protect the price from wrapping names and keep both clear of the frame.
         ItemText.rectTransform.anchorMin = new Vector2(0, 0);
-        ItemText.rectTransform.anchorMax = new Vector2(.74f, 1);
-        ItemText.rectTransform.offsetMin = new Vector2(32, 12);
-        ItemText.rectTransform.offsetMax = new Vector2(-16, -12);
-        CostText.rectTransform.anchorMin = new Vector2(.74f, 0);
+        ItemText.rectTransform.anchorMax = new Vector2(.72f, 1);
+        ItemText.rectTransform.offsetMin = new Vector2(20, 12);
+        ItemText.rectTransform.offsetMax = new Vector2(-12, -12);
+        CostText.rectTransform.anchorMin = new Vector2(.72f, 0);
         CostText.rectTransform.anchorMax = Vector2.one;
         CostText.rectTransform.offsetMin = new Vector2(8, 12);
-        CostText.rectTransform.offsetMax = new Vector2(-32, -12);
+        CostText.rectTransform.offsetMax = new Vector2(-20, -12);
         ItemText.margin = CostText.margin = Vector4.zero;
         ItemText.alignment = TextAlignmentOptions.MidlineLeft;
         CostText.alignment = TextAlignmentOptions.MidlineRight;
-        ItemText.fontSize = ItemText.fontSizeMax = 26;
-        ItemText.fontSizeMin = 24; ItemText.enableAutoSizing = true;
+        ItemText.fontSize = ItemText.fontSizeMax = 20;
+        ItemText.fontSizeMin = 16; ItemText.enableAutoSizing = true;
         ItemText.textWrappingMode = TextWrappingModes.Normal;
-        CostText.fontSize = CostText.fontSizeMax = 26;
-        CostText.fontSizeMin = 22; CostText.enableAutoSizing = true;
+        CostText.fontSize = CostText.fontSizeMax = 20;
+        CostText.fontSizeMin = 16; CostText.enableAutoSizing = true;
         CostText.textWrappingMode = TextWrappingModes.Normal;
         ItemText.raycastTarget = CostText.raycastTarget = false;
         var layout = GetComponent<LayoutElement>() ?? gameObject.AddComponent<LayoutElement>();
-        layout.minHeight = layout.preferredHeight = 96;
+        layout.minHeight = layout.preferredHeight = 76;
     }
 
 	private void UpdateUI()
@@ -72,5 +72,5 @@ public class ShopMenuItem : MonoBehaviour, ISelectHandler
 		CostText.text = GameplayText.Format(_data.Remaining > 0 ? _data.Cost == 0 ? "Free" : $"{_data.Cost}g" : "Sold out");
 	}
 
-    public void OnSelect(BaseEventData eventData) => SelectCallBack?.Invoke();
+    public void OnSelect(BaseEventData eventData) => SelectCallBack?.Invoke(eventData);
 }

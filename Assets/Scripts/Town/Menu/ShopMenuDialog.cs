@@ -9,11 +9,12 @@ public class ShopMenuDialog : Dialog
 {
     public Button BuyModeButton, SellModeButton, BackButton;
     public TMPro.TMP_Text StatusText;
+    public RectTransform DescriptionPanel;
+    public TMPro.TMP_Text DescriptionText;
     public bool Selling { get; private set; }
     private TownInteractionContext context;
     private string selectedItemName;
     private int selectedIndex;
-    private TMPro.TMP_Text[] controlHints;
     private bool openingWelcome;
     private bool breadReceived;
     public override void PrepareTown(TownInteractionContext value)
@@ -27,16 +28,6 @@ public class ShopMenuDialog : Dialog
         BuyModeButton.onClick.AddListener(() => { openingWelcome = false; breadReceived = false; SetMode(false); });
         SellModeButton.onClick.AddListener(() => SetMode(true));
         BackButton.onClick.AddListener(Cancel_Clicked);
-        controlHints = GetComponentsInChildren<MenuControlHints>(true).Select(hint => {
-            hint.enabled = false;
-            var label = hint.Label != null ? hint.Label : hint.GetComponent<TMPro.TMP_Text>();
-            label.enableAutoSizing = false; label.fontSize = 20;
-            label.textWrappingMode = TMPro.TextWrappingModes.Normal;
-            label.raycastTarget = false;
-            Fit(label.transform, .075f, .045f, .67f, .155f);
-            return label;
-        }).ToArray();
-        Update();
         BuyConfirmationDialog.gameObject.SetActive(false);
         ApplyPresentation();
         Setup();
@@ -44,14 +35,29 @@ public class ShopMenuDialog : Dialog
 
     public void ApplyPresentation()
     {
-        Fit(StatusText.transform, .075f, .82f, .925f, .955f);
+        var panel = StatusText.transform.parent;
+        UseGameplayDock(panel);
+        Fit(panel, .56f, .05f, .98f, .88f);
+        foreach (var hint in GetComponentsInChildren<MenuControlHints>(true))
+            hint.gameObject.SetActive(false);
+        Fit(StatusText.transform, .075f, .865f, .925f, .96f);
         StatusText.fontSize = 30; StatusText.enableAutoSizing = true;
-        StatusText.fontSizeMin = 26; StatusText.fontSizeMax = 30;
+        StatusText.fontSizeMin = 22; StatusText.fontSizeMax = 30;
         StatusText.textWrappingMode = TMPro.TextWrappingModes.Normal;
-        Fit(BuyModeButton.transform, .075f, .705f, .485f, .79f);
-        Fit(SellModeButton.transform, .515f, .705f, .925f, .79f);
-        Fit(BackButton.transform, .72f, .055f, .925f, .135f);
-        if (scrollView != null) Fit(scrollView.transform, .075f, .20f, .925f, .675f);
+        Fit(BuyModeButton.transform, .075f, .765f, .485f, .845f);
+        Fit(SellModeButton.transform, .515f, .765f, .925f, .845f);
+        Fit(BackButton.transform, .55f, .045f, .925f, .125f);
+        if (scrollView != null) Fit(scrollView.transform, .075f, .15f, .925f, .735f);
+        if (DescriptionPanel != null)
+        {
+            Fit(DescriptionPanel, .24f, .48f, .54f, .88f);
+            Fit(DescriptionText.transform, .08f, .10f, .92f, .90f);
+            DescriptionText.fontSize = DescriptionText.fontSizeMax = 24;
+            DescriptionText.fontSizeMin = 18; DescriptionText.enableAutoSizing = true;
+            DescriptionText.textWrappingMode = TMPro.TextWrappingModes.Normal;
+            DescriptionText.alignment = TMPro.TextAlignmentOptions.TopLeft;
+            DescriptionText.raycastTarget = false;
+        }
         GameUISkin.PadButtonLabel(BuyModeButton);
         GameUISkin.PadButtonLabel(SellModeButton);
         GameUISkin.PadButtonLabel(BackButton);
@@ -88,9 +94,10 @@ public class ShopMenuDialog : Dialog
         scrollView.gameObject.SetActive(!breadReceived);
         if (breadReceived)
         {
-            Fit(StatusText.transform, .075f, .42f, .925f, .955f);
-            Fit(BuyModeButton.transform, .075f, .20f, .485f, .295f);
-            Fit(BackButton.transform, .515f, .20f, .925f, .295f);
+            Fit(StatusText.transform.parent, .18f, .28f, .82f, .80f);
+            Fit(StatusText.transform, .075f, .32f, .925f, .94f);
+            Fit(BuyModeButton.transform, .075f, .12f, .485f, .25f);
+            Fit(BackButton.transform, .515f, .12f, .925f, .25f);
         }
         GameUITheme.StyleActiveTab(BuyModeButton, !Selling && !openingWelcome && !breadReceived);
         GameUITheme.StyleActiveTab(SellModeButton, Selling);
@@ -98,18 +105,18 @@ public class ShopMenuDialog : Dialog
         var stock = context.Services.Shop(context.Building);
         ShopItemDatas = Selling ? context.Player.Inventory
             .Select(i => new ShopItemData(i.ItemName, TownServices.SellPrice(i)) {
-                IsSale = true, BagItem = i, Remaining = i.StackStock ?? 1 }).ToList()
+                IsSale = true, BagItem = i, Definition = i.ItemDefinition, Remaining = i.StackStock ?? 1 }).ToList()
             : context.Services.Catalog(context.Building).Select(o => new ShopItemData(o.Item.ItemName, o.Price) {
-            Remaining = stock.Stock.FirstOrDefault(s => s.ItemName == o.Item.ItemName)?.Remaining ?? 0
+            Definition = o.Item, Remaining = stock.Stock.FirstOrDefault(s => s.ItemName == o.Item.ItemName)?.Remaining ?? 0
         }).ToList();
         if (openingWelcome) ShopItemDatas = ShopItemDatas.Where(item => item.ItemName == "Bread").ToList();
         if (breadReceived) ShopItemDatas.Clear();
-        StatusText.text = GameplayText.Format($"{context.Building.DisplayName} — {context.Player.Gold:N0}G" +
-            (Selling && ShopItemDatas.Count == 0 ? "\nNo items to sell." : Selling ? "\nSell a bag entry" :
-                context.Services.OffersOpeningBread(context.Building) ? "\nYour first loaf of bread is free." : "\nBuy supplies"));
+        StatusText.text = GameplayText.Format(context.Building.DisplayName +
+            (Selling && ShopItemDatas.Count == 0 ? "\n<size=75%>No items to sell.</size>" : ""));
         if (openingWelcome) StatusText.text = "A loaf for your first journey\n<size=70%>Bread restores Hunger. Eat it from your bag.</size>";
         else if (breadReceived && !Selling) StatusText.text = "<b>Bread packed in your bag!</b>\n\n<size=80%>The baker hands you a fresh loaf.\nEat it in the dungeon to restore Hunger.\n\n" +
             (Common.Instance.CampaignContext.State.LearnedOpeningSkill ? "Next: return home and sleep until morning." : "Next: visit the trainer for your first skill.") + "</size>";
+        Canvas.ForceUpdateCanvases();
 		Action<ShopMenuItem, ShopItemData> action = (view, data) =>
 		{
 			view.Setup(data);
@@ -119,13 +126,6 @@ public class ShopMenuDialog : Dialog
 			button.onClick.RemoveAllListeners();
 			button.onClick.AddListener(() =>
 			{
-                if (openingWelcome && data.ItemName == "Bread" && data.Cost == 0)
-                {
-                    string unavailable = UnavailableReason(data);
-                    if (unavailable != null) { GameMessages.Reject(unavailable); return; }
-                    Transact(view, data);
-                    return;
-                }
 				BuyConfirmationDialog.Setup(view, data, () => UnavailableReason(data));
 				BuyConfirmationDialog.SetNavigation();
 				BuyConfirmationDialog.gameObject.SetActive(true);
@@ -134,11 +134,13 @@ public class ShopMenuDialog : Dialog
 				FindFirstObjectByType<TownMenuManager>().Open(BuyConfirmationDialog);
 			});
 
-			view.SelectCallBack = () =>
+			view.SelectCallBack = eventData =>
 			{
 				selectedItemName=data.ItemName;
 				selectedIndex=Mathf.Max(0,ShopItemDatas.IndexOf(data));
-				ScrollToSelected(view.gameObject);
+                ShowDescription(data);
+                if (eventData is UnityEngine.EventSystems.PointerEventData) StopAutoScroll();
+				else ScrollToSelected(view.gameObject);
 			};
 		};
 		ShopItems = Container.RePopulateObjects(ShopItemPrefab, ShopItemDatas, action);
@@ -147,22 +149,17 @@ public class ShopMenuDialog : Dialog
         Canvas.ForceUpdateCanvases();
         if(scrollView!=null)scrollView.verticalNormalizedPosition=position;
         SetNavigation();
-        Update();
+        ShowDescription(ShopItemDatas.Count > 0 ? ShopItemDatas[selectedIndex] : null);
 
 	}
 
-    private void Update()
+    private void ShowDescription(ShopItemData item)
     {
-        if (controlHints == null) return;
-        foreach (var label in controlHints)
-        {
-            string hint = breadReceived
-                ? $"{InputPrompts.Confirm}: choose  |  {InputPrompts.Back}: back"
-                : $"{InputPrompts.Navigate}: browse / tabs\n{InputPrompts.Confirm}: choose  |  {InputPrompts.Back}: back";
-            if (label.text == hint) continue;
-            Fit(label.transform, .075f, .045f, breadReceived ? .925f : .67f, .155f);
-            label.text = hint;
-        }
+        if (DescriptionPanel == null) return;
+        DescriptionPanel.gameObject.SetActive(item != null && !breadReceived);
+        DescriptionText.text = item == null ? "" : GameplayText.Format(string.Join("\n\n",
+            new[] { $"<b>{GameplayText.Name(item.ItemName)}</b>", item.Definition?.Description }
+                .Where(text => !string.IsNullOrWhiteSpace(text))));
     }
 
     private string UnavailableReason(ShopItemData item)

@@ -7,6 +7,8 @@ using EternalEnigma.Core.Progression;
 using NUnit.Framework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -83,6 +85,107 @@ namespace EternalEnigma.Tests
         }
         Button BedAction() => Object.FindFirstObjectByType<HomeBedDialog>().GetComponentsInChildren<Button>()
             .Single(b => b.GetComponentInChildren<TMP_Text>().text != "Back");
+
+        [UnityTest] public IEnumerator BookPromptUsesCurrentBindingAndOnlyAppearsForAnAvailableUnreadBook()
+        {
+            var preferences = GamePreferences.Isolate();
+            ControlBindings.Reload();
+            try
+            {
+                var keyboard = InputSystem.AddDevice<Keyboard>();
+                var pad = InputSystem.AddDevice<Gamepad>();
+                yield return StartCampaign();
+                var devices = new InputDevice[] { keyboard, pad };
+                Common.MenuInputHandler.PlayerInput.actions.devices = devices;
+                MenuUIInputModule.Active.actionsAsset.devices = devices;
+                IEnumerator KeyPress(Key key)
+                {
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(key));
+                    yield return null;
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    yield return null; yield return null;
+                }
+                yield return KeyPress(Key.F8);
+                var canvas = Town.GetComponentsInChildren<Canvas>(true).Single(c => c.name == "Current objective");
+                var label = canvas.GetComponentInChildren<TMP_Text>(true);
+                Assert.That(canvas.enabled, Is.False, "The opening movement banner is gone.");
+                Assert.That(Context.OpeningObjective, Is.EqualTo("Read the book in your home."));
+                yield return Capture("home-quiet-opening");
+
+                var home = Town.HomeLesson;
+                Assert.That(home.TryGetInteractionStand(home.BookCell, out var stand), Is.True);
+                Hero.TilemapPosition = stand;
+                Hero.transform.position = Town.WalkableMap.CellToWorld(stand);
+                var facing = new TownMovement(Town.TownPlayer, stand, home.BookCell).GetFacing(home.BookCell - stand);
+                Hero.SetFacing(facing);
+                Town.TownPlayer.StopHeldWalk(); Town.RefreshRoofs(); Town.TownPlayer.CameraController.SnapToFollowTarget();
+                yield return null; yield return null;
+                Assert.That(canvas.enabled, Is.True);
+                Assert.That(label.text, Is.EqualTo("[Space] Read"));
+                foreach (var resolution in new[] { new Vector2(960, 600), new Vector2(1280, 720), new Vector2(2560, 1080) })
+                {
+                    view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view, new object[] { resolution, "Book prompt" });
+                    yield return null; yield return null;
+                    Canvas.ForceUpdateCanvases(); label.ForceMeshUpdate();
+                    Assert.That(label.isTextOverflowing, Is.False);
+                    Assert.That(home.TryGetBookPromptAnchor(out var anchor), Is.True);
+                    var screen = Town.TownPlayer.CameraController.Camera.WorldToScreenPoint(anchor);
+                    var corners = new Vector3[4]; ((RectTransform)label.transform.parent).GetWorldCorners(corners);
+                    Assert.That((corners[0].x + corners[2].x) / 2, Is.EqualTo(screen.x).Within(2));
+                    Assert.That(corners[0].y, Is.GreaterThan(screen.y));
+                    Assert.That(corners[0].x, Is.GreaterThanOrEqualTo(0));
+                    Assert.That(corners[2].x, Is.LessThanOrEqualTo(Screen.width));
+                    yield return Capture($"book-prompt-{(int)resolution.x}x{(int)resolution.y}");
+                }
+
+                Hero.SetFacing(facing == Facing.Down ? Facing.Up : Facing.Down);
+                yield return null; yield return null;
+                Assert.That(canvas.enabled, Is.False, "Facing away hides the prompt.");
+                Hero.SetFacing(facing);
+                var position = Hero.TilemapPosition;
+                Hero.TilemapPosition -= Dungeon.GetFacingOffset(facing);
+                yield return null; yield return null;
+                Assert.That(canvas.enabled, Is.False, "The book must be in interaction range.");
+                Hero.TilemapPosition = position;
+                Common.GlobalSettings.ShowDialog();
+                yield return null; yield return null;
+                Assert.That(canvas.enabled, Is.False, "Settings cover the interaction.");
+                Common.GlobalSettings.Exit_Clicked();
+                yield return null; yield return null;
+                Assert.That(canvas.enabled, Is.True);
+
+                var attack = ControlBindings.DisplayAsset.FindAction("Player/Attack", true);
+                int keyBinding = Enumerable.Range(0, attack.bindings.Count).Single(i => attack.bindings[i].path == "<Keyboard>/space");
+                int padBinding = Enumerable.Range(0, attack.bindings.Count).Single(i => attack.bindings[i].path == "<Gamepad>/buttonSouth");
+                ControlBindings.ApplyBinding("Player/Attack", keyBinding, "<Keyboard>/k");
+                ControlBindings.ApplyBinding("Player/Attack", padBinding, "<Gamepad>/rightShoulder");
+                yield return null; yield return null; yield return null;
+                Assert.That(label.text, Is.EqualTo("[K] Read"));
+                InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.LeftStick));
+                yield return null;
+                InputSystem.QueueStateEvent(pad, new GamepadState());
+                yield return null; yield return null;
+                Assert.That(label.text, Is.EqualTo("[RB] Read"));
+                yield return KeyPress(Key.F8);
+                Assert.That(label.text, Is.EqualTo("[K] Read"));
+                yield return Capture("book-prompt-rebound");
+                yield return KeyPress(Key.Space);
+                Assert.That(Context.State.ReadHomeBook, Is.False, "The old key no longer reads the book.");
+                yield return KeyPress(Key.K);
+                Assert.That(Context.State.ReadHomeBook, Is.True, "The advertised rebound key reads the book.");
+                Assert.That(canvas.enabled, Is.False);
+                var menus = Object.FindFirstObjectByType<TownMenuManager>();
+                menus.DialogStack.Peek().CloseDialog();
+                yield return null; yield return null;
+                Assert.That(canvas.enabled, Is.False, "The hint stays dismissed after reading.");
+                Assert.That(Context.OpeningObjective, Is.EqualTo("Open the chest to find your Home Key."));
+            }
+            finally
+            {
+                preferences.Dispose();
+                ControlBindings.Reload();
+            }
+        }
 
         [UnityTest] public IEnumerator FirstTownHasOnlyUsefulHousesAndDungeonSmartTileEntrance()
         {
@@ -272,6 +375,19 @@ namespace EternalEnigma.Tests
             yield return null;
             var trainer = Object.FindFirstObjectByType<BallistaDialog>();
             Assert.That(trainer.Character, Is.SameAs(Hero), "The first lesson selects the protagonist even when a companion leads.");
+            Assert.That(trainer.SkillGridItems.Count, Is.EqualTo(1));
+            Assert.That(trainer.SkillGridContainer.GetComponentsInChildren<TMP_Text>()
+                .Any(label => label.transform.parent == trainer.SkillGridContainer), Is.False, "The first lesson needs no heading above its only skill.");
+            Assert.That(trainer.Layout.GetComponentsInChildren<MenuControlHints>(), Is.Empty);
+            trainer.Layout.Preview.ForceMeshUpdate();
+            Assert.That(trainer.Layout.Preview.isTextOverflowing, Is.False, trainer.Layout.Preview.text);
+            yield return Capture("first-lesson");
+            trainer.SkillGridItems[0].ToggleOn_Clicked(); yield return null;
+            trainer.BallistaPurchaseDialog.Purchase_Clicked(); yield return null;
+            Assert.That(Context.State.LearnedOpeningSkill, Is.True);
+            trainer.Layout.Preview.ForceMeshUpdate();
+            Assert.That(trainer.Layout.Preview.isTextOverflowing, Is.False, trainer.Layout.Preview.text);
+            yield return Capture("first-lesson-learned");
             trainer.Close_Clicked();
             Town.TownPlayer.ControllingTownAlly = Hero;
         }

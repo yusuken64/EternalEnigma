@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>A current goal, separate from the fading record of past events.</summary>
+/// <summary>Opening guidance and a contextual prompt for the first interaction.</summary>
 public sealed class OpeningGuidance : MonoBehaviour
 {
     private Town town;
@@ -48,15 +48,18 @@ public sealed class OpeningGuidance : MonoBehaviour
         var common = Common.InstanceOrNull; var context = common?.CampaignContext;
         if (canvas == null) return;
         bool ready = context != null && !TerminalMode.Effective && !common.GlobalSettings.IsOpen &&
-            (town != null && town.IsReady && !town.TownPlayer.CutsceneLocked && FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud != true ||
+            (town != null && town.IsReady && !town.TownPlayer.CutsceneLocked && FindFirstObjectByType<TownMenuManager>()?.Opened != true ||
              game != null && game.IsReady && !MenuManager.Instance.Opened && game.GetComponent<DungeonHud>()?.ShowingTargetDetails != true ||
              world != null && world.IsReady && MenuUIInputModule.Active?.HasDialog != true);
+        if (town?.HomeLesson is { IsLocked: true } homeLesson)
+        {
+            ShowBookPrompt(ready, homeLesson);
+            return;
+        }
         string objective = ready ? context.OpeningObjective : "";
         if (ready && game != null && game.GetComponent<OpeningDungeonLesson>() is { } lesson && lesson.enabled)
             objective = lesson.Objective;
-        if (ready && town?.HomeLesson is { IsLocked: true } homeLesson)
-            objective = homeLesson.Objective;
-        else if (ready && town != null && context.IsPreparingForOpening)
+        if (ready && town != null && context.IsPreparingForOpening)
         {
             if (!context.State.MovedInOpening) objective = "Find the doorway. Use " + InputPrompts.Move + " to move.";
             else if (!context.State.InteractedInOpening)
@@ -72,9 +75,33 @@ public sealed class OpeningGuidance : MonoBehaviour
         canvas.enabled = ready && !string.IsNullOrEmpty(objective);
         if (canvas.enabled)
         {
+            panelRect.anchorMin = new Vector2(.31f, .72f); panelRect.anchorMax = new Vector2(.71f, .72f);
+            panelRect.offsetMin = Vector2.zero; panelRect.offsetMax = new Vector2(0, 90);
+            label.alignment = TextAlignmentOptions.MidlineLeft;
+            label.textWrappingMode = TextWrappingModes.Normal;
             label.text = GameplayText.Format(objective);
             panelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Clamp(label.preferredHeight + 24, 66, 124));
         }
+    }
+
+    private void ShowBookPrompt(bool ready, OpeningHomeLesson homeLesson)
+    {
+        canvas.enabled = false;
+        if (!ready || Common.Instance.ScreenTransition.BlocksInput || ControlBindings.SuppressInput ||
+            !homeLesson.TryGetBookPromptAnchor(out var anchor)) return;
+        string button = InputPrompts.InteractionButton;
+        if (string.IsNullOrEmpty(button)) return;
+        var camera = town.TownPlayer.CameraController.Camera;
+        var screen = camera.WorldToScreenPoint(anchor);
+        if (screen.z <= 0 || screen.x < 0 || screen.x > Screen.width || screen.y < 0 || screen.y > Screen.height) return;
+        label.text = $"[{button}] Read";
+        label.alignment = TextAlignmentOptions.Center;
+        label.textWrappingMode = TextWrappingModes.NoWrap;
+        // Normalized anchors keep the prompt on the prop while the canvas scaler catches up to a resize.
+        panelRect.anchorMin = panelRect.anchorMax = new Vector2(screen.x / Screen.width, screen.y / Screen.height);
+        panelRect.sizeDelta = new Vector2(label.preferredWidth + 36, label.preferredHeight + 20);
+        panelRect.anchoredPosition = new Vector2(0, 8);
+        canvas.enabled = true;
     }
 
     internal static IEnumerator RevealOpenedGate(Town town)

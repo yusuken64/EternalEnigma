@@ -7,6 +7,18 @@ using TMPro;
 public static class TrainerLayoutAuthoring
 {
     public const string Path = "Assets/Resources/UI/TrainerLayout.prefab";
+    [MenuItem("Tools/Eternal Enigma/UI/Update Trainer Presentation")]
+    public static void UpdatePresentation()
+    {
+        var root = PrefabUtility.LoadPrefabContents(Path);
+        try
+        {
+            root.GetComponent<TrainerLayout>().ApplyPresentation();
+            PrefabUtility.SaveAsPrefabAsset(root, Path);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+
     [MenuItem("Tools/Eternal Enigma/UI/Build Trainer Layout")]
     public static void Build()
     {
@@ -34,7 +46,6 @@ public static class TrainerLayoutAuthoring
                 new Vector2(.08f,.025f), new Vector2(.92f,.16f), true);
             view.PreviewControl.Scroll = view.PreviewScroll;
             view.Close = Button(root, "Close", new Vector2(.72f,.025f), new Vector2(.96f,.115f));
-            Label(root, "Select to preview. Submit / click again to train.", new Vector2(.04f,.03f), new Vector2(.69f,.105f), 14);
 
             var templates = GameUISkin.Rect("Templates", root, Vector2.zero, Vector2.one);
             view.HeadingTemplate = Label(templates, "Tier", Vector2.zero, Vector2.one, 16);

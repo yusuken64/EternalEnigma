@@ -24,10 +24,25 @@ public sealed class DungeonHud : MonoBehaviour
         if(hud.game==null)
         {
             hud.game=game;
+            hud.ApplyTargetPresentation();
             hud.control.onClick.AddListener(()=>DungeonPreferences.FullControl=!DungeonPreferences.FullControl);
             ResourceHUD.Ensure(game); ScenePresentation.Ensure(game);
         }
         return hud;
+    }
+    public void ApplyTargetPresentation()
+    {
+        if (targetBackdrop == null || target == null) return;
+        JuicyChickenGames.Menu.Dialog.Fit(targetBackdrop.transform, .28f, .77f, .72f, .89f);
+        target.transform.SetParent(targetBackdrop.transform, false);
+        var fitter = target.GetComponent<ContentSizeFitter>();
+        if (fitter != null) fitter.enabled = false;
+        JuicyChickenGames.Menu.Dialog.Fit(target.transform, .05f, .12f, .95f, .88f);
+        target.margin = Vector4.zero;
+        target.fontSize = target.fontSizeMax = 24;
+        target.fontSizeMin = 18; target.enableAutoSizing = true;
+        target.alignment = TextAlignmentOptions.Center;
+        target.textWrappingMode = TextWrappingModes.Normal;
     }
     #if UNITY_EDITOR
     public void AuthorLayout(Game owner)
@@ -118,7 +133,8 @@ public sealed class DungeonHud : MonoBehaviour
         if (selected == null && JuicyChickenGames.Menu.PlayerInputHandler.Instance.holdPosition)
             selected = game.AllCharacters.FirstOrDefault(c=>c!=null && c.OverlapsWith(Character.ToBounds(front)));
         target.text = GameplayText.Format(selected != null && GameMessages.Visible(selected) ?
-            EnemyBehavior.IsDisguised(selected) ? selected.GetComponent<FinaleActor>() is { } disguise ? disguise.IsTown ? "Town" : "Dungeon" : "Treasure chest" : $"{GameMessages.Name(selected)}\n{StatusSummary(selected)}" : "");
+            EnemyBehavior.IsDisguised(selected) ? selected.GetComponent<FinaleActor>() is { } disguise ? disguise.IsTown ? "Town" : "Dungeon" : "Treasure chest" :
+                string.Join("\n", new[] { GameMessages.Name(selected), StatusSummary(selected) }.Where(text => !string.IsNullOrWhiteSpace(text))) : "");
 		UpdateEnemyIcons(selected is Enemy visible && GameMessages.Visible(visible) && !EnemyBehavior.IsDisguised(visible) ? visible : null);
         var targeting = MenuManager.Instance.TargetDialog;
         if (player.CurrentControlMode == PlayerControlMode.TargetSelecting && !string.IsNullOrEmpty(targeting.RangeLabel))

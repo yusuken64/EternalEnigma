@@ -10,6 +10,7 @@ public sealed class OpeningHomeProps : MonoBehaviour
     private Material furniture;
     private Transform chestLid, doorHinge;
     private GameObject bookmark, lockPlate;
+    public Vector3 BookPromptAnchor { get; private set; }
 
     public static OpeningHomeProps Create(Town town, Vector3Int bookCell, Vector3Int chestCell, Vector3Int doorCell)
     {
@@ -68,6 +69,7 @@ public sealed class OpeningHomeProps : MonoBehaviour
         Render(root, "Lectern", catalog.Get("Lectern").Mesh, furniture);
         var book = Node(root, "Open book");
         book.localPosition = new Vector3(0, .04f, -.91f);
+        BookPromptAnchor = book.TransformPoint(new Vector3(0, .27f, -.05f));
         Box(book, "Blue cloth cover", new Vector3(0, 0, .005f), new Vector3(.70f, .48f, .035f), 18);
         Box(book, "Spine", new Vector3(0, 0, -.032f), new Vector3(.035f, .45f, .07f), 4);
         foreach (int side in new[] { -1, 1 })

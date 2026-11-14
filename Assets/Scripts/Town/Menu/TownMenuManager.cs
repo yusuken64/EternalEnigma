@@ -13,7 +13,8 @@ public class TownMenuManager : MonoBehaviour
     public Stack<Dialog> DialogStack => dialogs.Stack;
     public Dialog CurrentDialog => dialogs.Current;
     public bool CoversGameplayHud => DialogStack.Any(dialog => dialog is not global::PartyMenu &&
-        dialog is not PartyMenuPicker && dialog is not EventHistoryDialog && dialog is not ActionDialog);
+        dialog is not PartyMenuPicker && dialog is not EventHistoryDialog && dialog is not ActionDialog &&
+        dialog is not ShopMenuDialog && dialog is not BuyConfirmationDialog);
     private CampaignHUD campaignHUD;
     public PartyMenu PartyMenu { get; private set; }
 

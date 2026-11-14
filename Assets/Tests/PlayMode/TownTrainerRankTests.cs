@@ -232,8 +232,8 @@ namespace EternalEnigma.Tests
             hero.SecondaryClass = MakeClass();
             hero.SecondaryClass.Id = "capture-secondary";
             hero.SecondaryClass.DisplayName = "Secondary class with a long name";
-            hero.PrimaryClass.Skills[1].Skill.Description = string.Join("\n", Enumerable.Repeat(
-                "A detailed explanation of the skill, its targets, duration, and tactical effects.", 30));
+            var skills = Resources.LoadAll<Skill>("Classes/Skills");
+            hero.PrimaryClass.Skills[1].Skill.Description = skills.OrderByDescending(s => s.Description?.Length ?? 0).First().Description;
             World.TownBuildings.First(b => b.Definition.DialogId == "trainer").Interact(World.TownPlayer, null);
             yield return null;
             var dialog = (BallistaDialog)Manager.CurrentDialog;
@@ -253,15 +253,17 @@ namespace EternalEnigma.Tests
             System.IO.Directory.CreateDirectory("Temp/TrainerValidation");
             try
             {
-                foreach (var size in new[] { new Vector2Int(1280,720), new Vector2Int(1280,800), new Vector2Int(1920,1080) })
+                foreach (var size in new[] { new Vector2Int(960,600), new Vector2Int(1280,720), new Vector2Int(1280,800), new Vector2Int(1920,1080) })
                 {
                     var target = new RenderTexture(size.x, size.y, 24);
                     camera.targetTexture = target;
                     yield return null;
                     dialog.SkillGridItems[1].GridButton.Select();
+                    dialog.Refresh();
                     yield return new WaitForSecondsRealtime(.15f);
                     Canvas.ForceUpdateCanvases();
                     foreach (var row in dialog.SkillGridItems) AssertRowLabelsFit(row);
+                    AssertPreviewFits(view);
                     var root = (RectTransform)canvas.transform;
                     foreach (var control in new Component[] { view.PrimaryTab, view.SecondaryTab, view.Balance, view.PreviewScroll, view.ListScroll, view.Close })
                     {
@@ -285,6 +287,14 @@ namespace EternalEnigma.Tests
                     camera.targetTexture = null;
                     Object.Destroy(image);
                     Object.Destroy(target);
+                    foreach (var skill in skills)
+                    {
+                        view.Preview.text = GameplayText.Format(SkillPreviewText.Offer(new TrainerOffer {
+                            Skill = skill, HasClass = true, MaxRank = 5, NextCost = 1, CanLearn = true,
+                            NextRequiredLevel = 1, Prerequisites = "No tier prerequisites."
+                        }, true));
+                        AssertPreviewFits(view);
+                    }
                 }
             }
             finally
@@ -338,7 +348,7 @@ namespace EternalEnigma.Tests
                 Assert.That(view.Preview.text, Does.Contain(row.GetSkill().SkillName));
                 AssertRowLabelsFit(row);
                 Assert.That(row.RankText.text, Does.Contain("Rank"));
-                Assert.That(row.CostText.text, Does.Contain("Skill Points"));
+                Assert.That(row.CostText.text, Does.Contain("point"));
                 Assert.That(Manager.CurrentDialog, Is.SameAs(dialog), "Selection must only preview.");
                 var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(view.ListScroll.viewport, row.transform);
                 Assert.That(bounds.min.y, Is.GreaterThanOrEqualTo(view.ListScroll.viewport.rect.yMin - 1));
@@ -384,18 +394,28 @@ namespace EternalEnigma.Tests
             Assert.That(first.CostText.text, Is.EqualTo("Max rank"));
             Assert.That(first.RankText.text, Does.Contain("Complete"));
             Assert.That(World.TownPlayer.Gold, Is.EqualTo(10000));
-            first.GetSkill().Description = string.Join("\n", Enumerable.Repeat("A long description explaining this skill and its effects.", 40));
+            first.GetSkill().Description = string.Join(" ", Enumerable.Repeat("A detailed description explaining this skill and its effects.", 3));
             dialog.Refresh();
             Canvas.ForceUpdateCanvases();
-            view.PreviewControl.Select();
-            ExecuteEvents.Execute(view.PreviewControl.gameObject, new AxisEventData(es) { moveDir = MoveDirection.Down }, ExecuteEvents.moveHandler);
-            Assert.That(view.PreviewScroll.verticalNormalizedPosition, Is.LessThan(1));
-            ExecuteEvents.Execute(view.PreviewControl.gameObject, new AxisEventData(es) { moveDir = MoveDirection.Left }, ExecuteEvents.moveHandler);
+            AssertPreviewFits(view);
+            ExecuteEvents.Execute(first.gameObject, new AxisEventData(es) { moveDir = MoveDirection.Right }, ExecuteEvents.moveHandler);
+            Assert.That(es.currentSelectedGameObject, Is.SameAs(view.Close.gameObject));
+            ExecuteEvents.Execute(view.Close.gameObject, new AxisEventData(es) { moveDir = MoveDirection.Left }, ExecuteEvents.moveHandler);
             Assert.That(es.currentSelectedGameObject, Is.SameAs(first.gameObject));
             Manager.CloseAllMenus();
             World.TownBuildings.First(b => b.Definition.DialogId == "trainer").Interact(World.TownPlayer, null);
             yield return null;
             Assert.That(dialog.SkillGridItems[0].Offer.Source, Is.EqualTo(ClassSource.Primary));
+        }
+
+        static void AssertPreviewFits(TrainerLayout view)
+        {
+            view.Preview.ForceMeshUpdate();
+            Assert.That(view.Preview.isTextOverflowing, Is.False, view.Preview.text);
+            Assert.That(view.Preview.fontSize, Is.GreaterThanOrEqualTo(14));
+            Assert.That(view.PreviewControl.gameObject.activeSelf, Is.False);
+            Assert.That(view.PreviewScroll.enabled, Is.False);
+            Assert.That(view.Preview.rectTransform.rect.height, Is.EqualTo(view.PreviewScroll.viewport.rect.height).Within(.1f));
         }
 
         static void AssertRowLabelsFit(SkillGridItem row)

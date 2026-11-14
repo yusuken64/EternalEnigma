@@ -19,7 +19,6 @@ public class BallistaDialog : Dialog
     private ClassSource source;
     private readonly string[] selectedSkills = new string[2];
     private readonly float[] listPositions = { 1, 1 };
-    private readonly float[] previewPositions = { 1, 1 };
     private SkillGridItem selected;
     private bool firstLesson;
 
@@ -45,7 +44,7 @@ public class BallistaDialog : Dialog
         for (int i = 0; i < 2; i++)
         {
             selectedSkills[i] = null;
-            listPositions[i] = previewPositions[i] = 1;
+            listPositions[i] = 1;
         }
         Layout.PrimaryTab.GetComponentInChildren<TMP_Text>().text = GameplayText.Format(Character.PrimaryClass == null
             ? "Skills" : "Primary - " + Character.PrimaryClass.DisplayName);
@@ -65,8 +64,6 @@ public class BallistaDialog : Dialog
         var navigation = GetComponent<NavigationHandler>();
         if (navigation != null) navigation.selectionArrow = null;
         Layout = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(Resources.Load<TrainerLayout>("UI/TrainerLayout").gameObject, transform)).GetComponent<TrainerLayout>();
-        var hints=Layout.GetComponentsInChildren<TMP_Text>().FirstOrDefault(t=>t.text.StartsWith("Select to preview."));
-        if(hints!=null)MenuControlHints.Bind(hints);
         BallistaPurchaseDialog.transform.SetAsLastSibling();
         SkillsText = Layout.Balance;
         SkillGridContainer = Layout.ListScroll.content;
@@ -94,7 +91,6 @@ public class BallistaDialog : Dialog
         if (next == source) { SetFirstSelect(); return; }
         StopAutoScroll();
         listPositions[(int)source] = scrollView.verticalNormalizedPosition;
-        previewPositions[(int)source] = Layout.PreviewScroll.verticalNormalizedPosition;
         source = next;
         BuildList();
         SetFirstSelect();
@@ -124,11 +120,14 @@ public class BallistaDialog : Dialog
             .OrderBy(o => Character.PrimaryClass?.Id == "scout" && o.Skill.SkillName == "Floor Sense" ? 0 : 1).Take(1);
         foreach (var tier in displayed.GroupBy(o => o.Tier))
         {
-            var heading = Instantiate(Layout.HeadingTemplate, SkillGridContainer, false);
-            heading.gameObject.SetActive(true);
-            heading.text = GameplayText.Format(firstLesson ? "Recommended first skill" : Character.PrimaryClass == null ? "Available skills" :
-                $"Tier {tier.Key} · Level {tier.First().TierRequiredLevel}");
-            GameUISkin.RibbonHeader(heading);
+            if (!firstLesson)
+            {
+                var heading = Instantiate(Layout.HeadingTemplate, SkillGridContainer, false);
+                heading.gameObject.SetActive(true);
+                heading.text = GameplayText.Format(Character.PrimaryClass == null ? "Available skills" :
+                    $"Tier {tier.Key} · Level {tier.First().TierRequiredLevel}");
+                GameUISkin.RibbonHeader(heading);
+            }
             foreach (var offer in tier)
             {
                 var row = Instantiate(SkillGridSelectablePrefab, SkillGridContainer, false);
@@ -151,9 +150,7 @@ public class BallistaDialog : Dialog
         else Layout.Preview.text = GameplayText.Format("No skills in this tree.");
         StopAutoScroll();
         Canvas.ForceUpdateCanvases();
-        RefreshPreviewControl();
         scrollView.verticalNormalizedPosition = listPositions[(int)source];
-        Layout.PreviewScroll.verticalNormalizedPosition = previewPositions[(int)source];
     }
 
     private void WireNavigation()
@@ -162,15 +159,13 @@ public class BallistaDialog : Dialog
         var first = SkillGridItems.FirstOrDefault()?.GridButton ?? Layout.Close;
         var last = SkillGridItems.LastOrDefault()?.GridButton ?? tab;
         var other = Layout.SecondaryTab.gameObject.activeSelf ? Layout.SecondaryTab : Layout.PrimaryTab;
-        Selectable details = Layout.PreviewControl.gameObject.activeSelf ? (Selectable)Layout.PreviewControl : Layout.Close;
         Link(Layout.PrimaryTab, Layout.Close, first, other, other);
         Link(Layout.SecondaryTab, Layout.Close, first, Layout.PrimaryTab, Layout.PrimaryTab);
         for (int i = 0; i < SkillGridItems.Count; i++)
             Link(SkillGridItems[i].GridButton, i == 0 ? tab : SkillGridItems[i - 1].GridButton,
-                i + 1 == SkillGridItems.Count ? Layout.Close : SkillGridItems[i + 1].GridButton, tab, details);
+                i + 1 == SkillGridItems.Count ? Layout.Close : SkillGridItems[i + 1].GridButton, tab, Layout.Close);
         Link(Layout.Close, last, tab, selected?.GridButton ?? first,
-            Layout.PreviewControl.gameObject.activeSelf ? (Selectable)Layout.PreviewControl : selected?.GridButton ?? first);
-        Link(Layout.PreviewControl, tab, Layout.Close, selected?.GridButton ?? first, Layout.Close);
+            selected?.GridButton ?? first);
     }
 
     private static void Link(Selectable control, Selectable up, Selectable down, Selectable left, Selectable right) =>
@@ -179,33 +174,14 @@ public class BallistaDialog : Dialog
 
     private void Preview(SkillGridItem row, UnityEngine.EventSystems.BaseEventData eventData)
     {
-        bool changed = selectedSkills[(int)source] != row.GetSkill().SkillName;
         selected = row;
         selectedSkills[(int)source] = row.GetSkill().SkillName;
         var o = row.Offer;
         Layout.Preview.text = GameplayText.Format(SkillPreviewText.Offer(o, firstLesson));
         Canvas.ForceUpdateCanvases();
-        RefreshPreviewControl();
-        if (changed) Layout.PreviewScroll.verticalNormalizedPosition = 1;
         WireNavigation();
         if (eventData is UnityEngine.EventSystems.PointerEventData) StopAutoScroll();
         else ScrollToSelected(row.gameObject);
-    }
-
-    private void LateUpdate()
-    {
-        if (layoutBound && Layout != null) RefreshPreviewControl();
-    }
-
-    private void RefreshPreviewControl()
-    {
-        bool overflow = Layout.Preview.preferredHeight > Layout.PreviewScroll.viewport.rect.height + 1;
-        if (Layout.PreviewControl.gameObject.activeSelf == overflow) return;
-        bool wasSelected = UnityEngine.EventSystems.EventSystem.current != null &&
-            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject == Layout.PreviewControl.gameObject;
-        Layout.PreviewControl.gameObject.SetActive(overflow);
-        WireNavigation();
-        if (!overflow && wasSelected) (selected != null ? selected.GridButton : Layout.Close).Select();
     }
 
     public void Refresh()
@@ -219,7 +195,6 @@ public class BallistaDialog : Dialog
             {
                 string nextStep = Common.InstanceOrNull?.CampaignContext?.OpeningObjective ?? "Rest before your next adventure.";
                 Layout.Preview.text = GameplayText.Format($"<b>{learned} learned!</b>\n{nextStep}\nPractise {learned} at the dungeon entrance tomorrow.\n\n") + Layout.Preview.text;
-                Layout.PreviewScroll.verticalNormalizedPosition = 1;
             }
             return;
         }
@@ -235,7 +210,6 @@ public class BallistaDialog : Dialog
     {
         Refresh();
         Layout.Preview.text = GameplayText.Format(reason + "\n\n") + Layout.Preview.text;
-        Layout.PreviewScroll.verticalNormalizedPosition = 1;
         GameMessages.Reject(reason);
     }
 

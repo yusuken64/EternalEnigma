@@ -57,6 +57,10 @@ public static class HarnessTestRunner
     public static void RunControlsRebindingPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.ControlsRebindingTests", "EternalEnigma.Tests.SettingsInteractionTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Opening Interaction Prompt")]
+    public static void RunOpeningInteractionPrompt() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OpeningPreparationTests.BookPromptUsesCurrentBindingAndOnlyAppearsForAnAvailableUnreadBook");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Menu Controller Followups")]
     public static void RunMenuControllerFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.MenuSelectionTests", "EternalEnigma.Tests.ControllerFlowTests",
@@ -583,6 +587,21 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Trainer PlayMode")]
     public static void RunTrainerPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.TownTrainerRankTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Trainer Layout Checks")]
+    public static void RunTrainerLayoutChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownTrainerRankTests.TrainerLayoutFitsSupportedResolutionsWithLongText",
+        "EternalEnigma.Tests.TownTrainerRankTests.TrainerSelectionScrollingTabsAndModalFocus",
+        "EternalEnigma.Tests.ControllerFlowTests.TownShopAndTrainerSupportNavigationConfirmAndBack",
+        "EternalEnigma.Tests.OpeningPreparationTests.EverySelectableHeroHasAnAffordableActiveFirstLesson");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Shop Presentation Checks")]
+    public static void RunShopPresentationChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.EconomyGameplayTests.ShopSupportsKeyboardGamepadAndMouseSelection",
+        "EternalEnigma.Tests.EconomyGameplayTests.SalesConfirmExactEntriesCancelAndCannotPayTwice",
+        "EternalEnigma.Tests.EconomyGameplayTests.ShopConfirmationExplainsUnavailableOffersAndRejectsStalePurchases",
+        "EternalEnigma.Tests.EconomyGameplayTests.OpeningBreadPreviewsConfirmsAndReturnsToShopWithoutControlHints");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Target Presentation Checks")]
+    public static void RunTargetPresentationChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions");
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Floor Fix EditMode")]
     public static void RunDungeonFloorFixEditMode()=>Run(TestMode.EditMode,"EternalEnigma.Tests.EditMode",
         "EternalEnigma.Tests.CoreIntegration.DungeonThemeTests","EternalEnigma.Tests.CoreIntegration.TownAndPropVisualTests");

@@ -34,21 +34,26 @@ public sealed class TrainerLayout : MonoBehaviour
         HeadingTemplate.GetComponent<LayoutElement>().preferredHeight = 50;
         HeadingTemplate.enableAutoSizing = true;
         HeadingTemplate.fontSizeMin = 14; HeadingTemplate.fontSizeMax = 18;
-        Fit((RectTransform)ListScroll.transform, .06f, .17f, .55f, .77f);
-        Fit((RectTransform)panel, .58f, .17f, .94f, .77f);
-        Fit((RectTransform)PreviewScroll.transform, .10f, .21f, .90f, .92f);
-        Preview.fontSize = 18; Preview.enableAutoSizing = false;
+        Fit((RectTransform)ListScroll.transform, .06f, .17f, .48f, .77f);
+        Fit((RectTransform)panel, .51f, .17f, .94f, .77f);
+        Fit((RectTransform)PreviewScroll.transform, .06f, .05f, .94f, .95f);
+        // Keep the complete description inside a fixed panel, including purchase feedback.
+        PreviewScroll.StopMovement();
+        PreviewScroll.horizontal = PreviewScroll.vertical = false;
+        PreviewScroll.enabled = false;
+        var fitter = Preview.GetComponent<ContentSizeFitter>();
+        if (fitter != null) fitter.enabled = false;
+        Fit(Preview.rectTransform, 0, 0, 1, 1);
+        Preview.fontSize = Preview.fontSizeMax = 18;
+        Preview.fontSizeMin = 14; Preview.enableAutoSizing = true;
+        Preview.alignment = TextAlignmentOptions.TopLeft;
         Preview.textWrappingMode = TextWrappingModes.Normal;
         Preview.margin = new Vector4(0, 4, 0, 8);
-        Fit((RectTransform)PreviewControl.transform, .10f, .04f, .90f, .17f);
+        PreviewControl.gameObject.SetActive(false);
         Fit((RectTransform)Close.transform, .72f, .055f, .94f, .135f);
         foreach (var label in GetComponentsInChildren<TMP_Text>(true))
             if (label.transform.parent == transform && label != Balance)
-            {
-                Fit(label.rectTransform, .06f, .055f, .68f, .135f);
-                label.fontSize = 17; label.enableAutoSizing = false;
-                label.textWrappingMode = TextWrappingModes.Normal;
-            }
+                label.gameObject.SetActive(false);
         GameUISkin.PadButtonLabel(PrimaryTab);
         GameUISkin.PadButtonLabel(SecondaryTab);
         GameUISkin.PadButtonLabel(Close);

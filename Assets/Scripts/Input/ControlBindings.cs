@@ -188,6 +188,27 @@ public static class ControlBindings
         return string.Join(" / ", indices.Select(i => BindingLabel(action, i)).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct());
     }
 
+    /// <summary>One bound button for a contextual action, using the active device's labels.</summary>
+    public static string PrimaryPrompt(string actionPath)
+    {
+        var action = DisplayAsset.FindAction(actionPath);
+        if (action == null) return "";
+        string group = ControlDeviceState.BindingGroup;
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            var binding = action.bindings[i];
+            if (binding.isComposite || binding.isPartOfComposite || string.IsNullOrEmpty(binding.effectivePath)) continue;
+            var padControl = group == "Gamepad" && Gamepad.current?.enabled == true
+                ? InputControlPath.TryFindControl(Gamepad.current, binding.effectivePath) : null;
+            if (padControl != null)
+                return string.IsNullOrEmpty(padControl.shortDisplayName) ? padControl.displayName : padControl.shortDisplayName;
+            if (!MatchesDevice(binding.effectivePath, group)) continue;
+            string label = action.GetBindingDisplayString(i, InputBinding.DisplayStringOptions.DontIncludeInteractions);
+            if (!string.IsNullOrWhiteSpace(label)) return label;
+        }
+        return "";
+    }
+
     private static bool MatchesDevice(string path, string group) => group switch
     {
         "Keyboard&Mouse" => path.StartsWith("<Keyboard>", StringComparison.Ordinal) || path.StartsWith("<Mouse>", StringComparison.Ordinal),

@@ -21,7 +21,7 @@ namespace JuicyChickenGames.Menu
         private List<Vector3Int> tiles = new();
         private Vector3Int selectedTile;
         private int EffectiveMissileRange => missileRange + (targetingSkill != null && targetingSkill.UsesArrows && casterCharacter != null ? ClassPassives.MissileRangeBonus(casterCharacter) : 0);
-        public string RangeLabel => missileRange > 0 ? $"Range {EffectiveMissileRange} tiles" : targetingSkill != null ? "Choose a highlighted target" : "";
+        public string RangeLabel => missileRange > 0 ? $"Range {EffectiveMissileRange} tiles" : "";
         private TMPro.TMP_Text promptText;
         private string originalPrompt;
         public Vector3Int Direction { get; private set; }
@@ -32,7 +32,6 @@ namespace JuicyChickenGames.Menu
         private bool audioReady;
         internal Vector3Int? TerminalPointerFocus { get; private set; }
         private Vector2 lastPointer;
-        private bool? promptGamepad;
         private Image pointerShield;
         private readonly List<RaycastResult> pointerHits = new();
         public List<Character> Targetables { get; private set; }
@@ -98,6 +97,20 @@ namespace JuicyChickenGames.Menu
             if (pointerShield == null) pointerShield = gameObject.AddComponent<Image>();
             pointerShield.color = Color.clear;
             pointerShield.raycastTarget = true;
+            ApplyPresentation();
+        }
+
+        public void ApplyPresentation()
+        {
+            Fit(SelectTargetPrompt.transform, .28f, .90f, .72f, .98f);
+            var label = SelectTargetPrompt.GetComponentInChildren<TMPro.TMP_Text>(true);
+            if (label == null) return;
+            Fit(label.transform, .05f, .14f, .95f, .86f);
+            label.margin = Vector4.zero;
+            label.alignment = TMPro.TextAlignmentOptions.Center;
+            label.textWrappingMode = TMPro.TextWrappingModes.Normal;
+            label.enableAutoSizing = true;
+            label.fontSize = label.fontSizeMax = 28; label.fontSizeMin = 18;
         }
 
         internal void Setup(Character character, Skill skill)
@@ -131,7 +144,6 @@ namespace JuicyChickenGames.Menu
             if (promptText != null)
             {
                 originalPrompt = promptText.text;
-                promptGamepad = null;
                 RefreshPrompt();
             }
             if (tiles.Count > 0) SelectTile(tiles.Contains(selectedTile) ? selectedTile : tiles[0]);
@@ -147,13 +159,10 @@ namespace JuicyChickenGames.Menu
 
         private void RefreshPrompt()
         {
-            if (promptText == null || promptGamepad == ControlDeviceState.Gamepad) return;
-            promptGamepad = ControlDeviceState.Gamepad;
-            string title = missileRange > 0 ? "Aim in a direction" : "Select a highlighted target";
-            string controls = InputPrompts.Pick("Click / Enter: cast   Right-click / Esc: cancel",
-                "A / Cross: cast   B / Circle: cancel");
-            promptText.text = GameplayText.Format(title + "\n" + controls);
-            promptText.enableAutoSizing = true;promptText.fontSizeMin = 18;promptText.fontSizeMax = 24;
+            if (promptText == null) return;
+            string name = targetingSkill != null ? targetingSkill.DisplayName : targetingItem != null ? targetingItem.DisplayName : null;
+            string title = GameplayText.Format(string.IsNullOrEmpty(name) ? "Select target" : $"Select target for {name}");
+            if (promptText.text != title) promptText.text = title;
         }
 
         private void Aim(Vector3Int direction)

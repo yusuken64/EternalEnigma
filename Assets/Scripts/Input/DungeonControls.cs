@@ -93,6 +93,15 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             ""id"": ""45768324-4252-4d28-bc1b-0a1238aa112a"",
             ""actions"": [
                 {
+                    ""name"": ""History"",
+                    ""type"": ""Button"",
+                    ""id"": ""de60d9dd-d38a-469f-93b1-190c16669c12"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""4f30c79a-e8f3-48f3-b904-e147b4f58410"",
@@ -199,9 +208,29 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleFullControl"",
+                    ""type"": ""Button"",
+                    ""id"": ""1ad73f6d-5a2c-42eb-a4a8-d4f1ba6ae300"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""b77e0a86-ad9f-46d5-9911-360ce21d83eb"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""History"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
                 {
                     ""name"": """",
                     ""id"": ""978bfe49-cc26-4a3d-ab7b-7d7a29327403"",
@@ -630,6 +659,28 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""action"": ""Wait"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fac392be-845c-4c34-8e9f-e90afdfff727"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ToggleFullControl"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d83e1f0-542c-4d03-a864-f233c13d4934"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""ToggleFullControl"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -637,6 +688,15 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             ""name"": ""UI"",
             ""id"": ""b2e858ef-93dd-49e1-841b-5da3ec1637ca"",
             ""actions"": [
+                {
+                    ""name"": ""History"",
+                    ""type"": ""Button"",
+                    ""id"": ""c16f6da5-5dbb-4f8f-81b7-5df8a726c2ee"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
                 {
                     ""name"": ""Navigate"",
                     ""type"": ""PassThrough"",
@@ -753,9 +813,65 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""InspectNextHero"",
+                    ""type"": ""Button"",
+                    ""id"": ""114cff01-bb3a-4869-9594-cdc4d5f29b1b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""InspectPreviousHero"",
+                    ""type"": ""Button"",
+                    ""id"": ""f046f948-7828-40ac-bac7-69138bcaec10"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenEquipment"",
+                    ""type"": ""Button"",
+                    ""id"": ""203e2f7d-b495-4e1d-babc-9919b9f8a364"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenStats"",
+                    ""type"": ""Button"",
+                    ""id"": ""c7ea4df6-e2ef-4b15-82c2-c276da67137a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Presentation"",
+                    ""type"": ""Button"",
+                    ""id"": ""14f20a01-b1ea-4279-bd4d-86f1f75fb547"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""945d89dc-32e5-459a-8f7a-146807b21052"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""History"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
                 {
                     ""name"": """",
                     ""id"": ""fb8277d4-c5cd-4663-9dc7-ee3f0b506d90"",
@@ -1195,6 +1311,83 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""action"": ""Submit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e7146dfb-43f4-4e55-b011-5372992167e4"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""InspectNextHero"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2ffe1ea4-b0a5-454d-9ec5-93c73608bcef"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""InspectNextHero"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""846f2476-7ecd-4565-b4ff-3075da9af66f"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""InspectPreviousHero"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cebe5f47-b5ef-4e28-8c2c-3dcc84a22246"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""OpenEquipment"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""df5e1fb4-ca7a-491c-8d0f-ec489a2c8d25"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""OpenStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""60ce298f-00c7-488b-8ae3-ed7c7a16a5fd"",
+                    ""path"": ""<Keyboard>/f11"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Presentation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""479be613-6478-4cd8-9141-8ea3bf686aaf"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Presentation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1231,6 +1424,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+        m_Player_History = m_Player.FindAction("History", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
@@ -1243,8 +1437,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         m_Player_SwapAlly = m_Player.FindAction("SwapAlly", throwIfNotFound: true);
         m_Player_Options = m_Player.FindAction("Options", throwIfNotFound: true);
         m_Player_Wait = m_Player.FindAction("Wait", throwIfNotFound: true);
+        m_Player_ToggleFullControl = m_Player.FindAction("ToggleFullControl", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+        m_UI_History = m_UI.FindAction("History", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
         m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
         m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
@@ -1258,6 +1454,11 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         m_UI_OpenMenu = m_UI.FindAction("OpenMenu", throwIfNotFound: true);
         m_UI_OpenSkillMenu = m_UI.FindAction("OpenSkillMenu", throwIfNotFound: true);
         m_UI_Options = m_UI.FindAction("Options", throwIfNotFound: true);
+        m_UI_InspectNextHero = m_UI.FindAction("InspectNextHero", throwIfNotFound: true);
+        m_UI_InspectPreviousHero = m_UI.FindAction("InspectPreviousHero", throwIfNotFound: true);
+        m_UI_OpenEquipment = m_UI.FindAction("OpenEquipment", throwIfNotFound: true);
+        m_UI_OpenStats = m_UI.FindAction("OpenStats", throwIfNotFound: true);
+        m_UI_Presentation = m_UI.FindAction("Presentation", throwIfNotFound: true);
     }
 
     ~@DungeonControls()
@@ -1339,6 +1540,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
+    private readonly InputAction m_Player_History;
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Fire;
@@ -1351,6 +1553,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SwapAlly;
     private readonly InputAction m_Player_Options;
     private readonly InputAction m_Player_Wait;
+    private readonly InputAction m_Player_ToggleFullControl;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1362,6 +1565,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
         public PlayerActions(@DungeonControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Player/History".
+        /// </summary>
+        public InputAction @History => m_Wrapper.m_Player_History;
         /// <summary>
         /// Provides access to the underlying input action "Player/Move".
         /// </summary>
@@ -1411,6 +1618,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Wait => m_Wrapper.m_Player_Wait;
         /// <summary>
+        /// Provides access to the underlying input action "Player/ToggleFullControl".
+        /// </summary>
+        public InputAction @ToggleFullControl => m_Wrapper.m_Player_ToggleFullControl;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1436,6 +1647,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
+            @History.started += instance.OnHistory;
+            @History.performed += instance.OnHistory;
+            @History.canceled += instance.OnHistory;
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
@@ -1472,6 +1686,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @Wait.started += instance.OnWait;
             @Wait.performed += instance.OnWait;
             @Wait.canceled += instance.OnWait;
+            @ToggleFullControl.started += instance.OnToggleFullControl;
+            @ToggleFullControl.performed += instance.OnToggleFullControl;
+            @ToggleFullControl.canceled += instance.OnToggleFullControl;
         }
 
         /// <summary>
@@ -1483,6 +1700,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="PlayerActions" />
         private void UnregisterCallbacks(IPlayerActions instance)
         {
+            @History.started -= instance.OnHistory;
+            @History.performed -= instance.OnHistory;
+            @History.canceled -= instance.OnHistory;
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
@@ -1519,6 +1739,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @Wait.started -= instance.OnWait;
             @Wait.performed -= instance.OnWait;
             @Wait.canceled -= instance.OnWait;
+            @ToggleFullControl.started -= instance.OnToggleFullControl;
+            @ToggleFullControl.performed -= instance.OnToggleFullControl;
+            @ToggleFullControl.canceled -= instance.OnToggleFullControl;
         }
 
         /// <summary>
@@ -1556,6 +1779,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     // UI
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
+    private readonly InputAction m_UI_History;
     private readonly InputAction m_UI_Navigate;
     private readonly InputAction m_UI_Submit;
     private readonly InputAction m_UI_Cancel;
@@ -1569,6 +1793,11 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_OpenMenu;
     private readonly InputAction m_UI_OpenSkillMenu;
     private readonly InputAction m_UI_Options;
+    private readonly InputAction m_UI_InspectNextHero;
+    private readonly InputAction m_UI_InspectPreviousHero;
+    private readonly InputAction m_UI_OpenEquipment;
+    private readonly InputAction m_UI_OpenStats;
+    private readonly InputAction m_UI_Presentation;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -1580,6 +1809,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
         public UIActions(@DungeonControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "UI/History".
+        /// </summary>
+        public InputAction @History => m_Wrapper.m_UI_History;
         /// <summary>
         /// Provides access to the underlying input action "UI/Navigate".
         /// </summary>
@@ -1633,6 +1866,26 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Options => m_Wrapper.m_UI_Options;
         /// <summary>
+        /// Provides access to the underlying input action "UI/InspectNextHero".
+        /// </summary>
+        public InputAction @InspectNextHero => m_Wrapper.m_UI_InspectNextHero;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/InspectPreviousHero".
+        /// </summary>
+        public InputAction @InspectPreviousHero => m_Wrapper.m_UI_InspectPreviousHero;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/OpenEquipment".
+        /// </summary>
+        public InputAction @OpenEquipment => m_Wrapper.m_UI_OpenEquipment;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/OpenStats".
+        /// </summary>
+        public InputAction @OpenStats => m_Wrapper.m_UI_OpenStats;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/Presentation".
+        /// </summary>
+        public InputAction @Presentation => m_Wrapper.m_UI_Presentation;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_UI; }
@@ -1658,6 +1911,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_UIActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_UIActionsCallbackInterfaces.Add(instance);
+            @History.started += instance.OnHistory;
+            @History.performed += instance.OnHistory;
+            @History.canceled += instance.OnHistory;
             @Navigate.started += instance.OnNavigate;
             @Navigate.performed += instance.OnNavigate;
             @Navigate.canceled += instance.OnNavigate;
@@ -1697,6 +1953,21 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @Options.started += instance.OnOptions;
             @Options.performed += instance.OnOptions;
             @Options.canceled += instance.OnOptions;
+            @InspectNextHero.started += instance.OnInspectNextHero;
+            @InspectNextHero.performed += instance.OnInspectNextHero;
+            @InspectNextHero.canceled += instance.OnInspectNextHero;
+            @InspectPreviousHero.started += instance.OnInspectPreviousHero;
+            @InspectPreviousHero.performed += instance.OnInspectPreviousHero;
+            @InspectPreviousHero.canceled += instance.OnInspectPreviousHero;
+            @OpenEquipment.started += instance.OnOpenEquipment;
+            @OpenEquipment.performed += instance.OnOpenEquipment;
+            @OpenEquipment.canceled += instance.OnOpenEquipment;
+            @OpenStats.started += instance.OnOpenStats;
+            @OpenStats.performed += instance.OnOpenStats;
+            @OpenStats.canceled += instance.OnOpenStats;
+            @Presentation.started += instance.OnPresentation;
+            @Presentation.performed += instance.OnPresentation;
+            @Presentation.canceled += instance.OnPresentation;
         }
 
         /// <summary>
@@ -1708,6 +1979,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UIActions" />
         private void UnregisterCallbacks(IUIActions instance)
         {
+            @History.started -= instance.OnHistory;
+            @History.performed -= instance.OnHistory;
+            @History.canceled -= instance.OnHistory;
             @Navigate.started -= instance.OnNavigate;
             @Navigate.performed -= instance.OnNavigate;
             @Navigate.canceled -= instance.OnNavigate;
@@ -1747,6 +2021,21 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @Options.started -= instance.OnOptions;
             @Options.performed -= instance.OnOptions;
             @Options.canceled -= instance.OnOptions;
+            @InspectNextHero.started -= instance.OnInspectNextHero;
+            @InspectNextHero.performed -= instance.OnInspectNextHero;
+            @InspectNextHero.canceled -= instance.OnInspectNextHero;
+            @InspectPreviousHero.started -= instance.OnInspectPreviousHero;
+            @InspectPreviousHero.performed -= instance.OnInspectPreviousHero;
+            @InspectPreviousHero.canceled -= instance.OnInspectPreviousHero;
+            @OpenEquipment.started -= instance.OnOpenEquipment;
+            @OpenEquipment.performed -= instance.OnOpenEquipment;
+            @OpenEquipment.canceled -= instance.OnOpenEquipment;
+            @OpenStats.started -= instance.OnOpenStats;
+            @OpenStats.performed -= instance.OnOpenStats;
+            @OpenStats.canceled -= instance.OnOpenStats;
+            @Presentation.started -= instance.OnPresentation;
+            @Presentation.performed -= instance.OnPresentation;
+            @Presentation.canceled -= instance.OnPresentation;
         }
 
         /// <summary>
@@ -1813,6 +2102,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     /// <seealso cref="PlayerActions.RemoveCallbacks(IPlayerActions)" />
     public interface IPlayerActions
     {
+        /// <summary>
+        /// Method invoked when associated input action "History" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHistory(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -1897,6 +2193,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnWait(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleFullControl" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleFullControl(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -1905,6 +2208,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     /// <seealso cref="UIActions.RemoveCallbacks(IUIActions)" />
     public interface IUIActions
     {
+        /// <summary>
+        /// Method invoked when associated input action "History" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHistory(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Navigate" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -1996,5 +2306,40 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOptions(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "InspectNextHero" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInspectNextHero(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "InspectPreviousHero" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInspectPreviousHero(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenEquipment" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenEquipment(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenStats" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenStats(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Presentation" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPresentation(InputAction.CallbackContext context);
     }
 }

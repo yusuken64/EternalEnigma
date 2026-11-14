@@ -1,0 +1,353 @@
+ETERNAL ENIGMA — DEMO DAY 71 CLAIM VERIFICATION
+Audit date: 2026-11-13 (America/New_York)
+Review: https://itch.io/jam/agdg-demo-day-71/rate/2446295
+Checkout tested: 217d0e759b0c3cef2ac92ed008d500e5a909ae02
+Published WebGL productVersion inspected: 0.0.337
+
+VERDICT
+
+The reviews identify substantial, real usability problems. Some proposed
+explanations are wrong: diagonal attacks exist, the Arcane Wand does not apply
+two separate +6 bonuses, inert knight statues are scenery, and reloading an
+unchanged map is expected for a saved campaign. These misunderstandings still
+identify places where the game fails to explain itself.
+
+Current runtime defects were reproduced in item information, Controls paging,
+and shop-footer containment at the WebGL viewport size.
+Status inspection omits the effect's mechanics. A further Frailty lifecycle
+inconsistency surfaced during verification. Saving, last-hit experience, the
+ten-slot bag, and Explosion self-damage follow implemented rules; changing those
+rules is a design decision, while explaining them is a usability obligation.
+
+A report not reproduced in this checkout is not automatically false. Reviewers
+played earlier builds, and the exact uploaded build is not proven identical to
+the current source. Findings below distinguish current reproduction, historical
+evidence, intended behavior, and unresolved claims.
+
+WHAT WAS ACTUALLY VERIFIED
+
+- Reused the previous complete review-text/image inventory and transcript-assisted
+  video inspection. That original pass covered 13 posts, 13 game-related image
+  assets, both videos (45:11), all available automatic captions, 272 sampled frames,
+  and selected enlarged moments. It was not continuous audiovisual playback.
+- Ran production Unity scenes and actual menu/input paths using the project's
+  existing harness, isolated in-memory saves/preferences, and synthetic keyboard,
+  mouse, and gamepad events. Actors/items were deliberately staged to isolate
+  mechanics. This is not an unstaged balance playthrough.
+- Played the opening of the actual published WebGL build from a fresh isolated
+  browser save slot: selected Avery, read the book, opened the chest, obtained
+  the home key, and unlocked the door using the displayed Space prompts.
+- Tested logical sight with the existing core GridSightTests.
+- Inspected current C# code and authored assets to explain observed behavior.
+- Did not exhaustively test every seed/class, arbitrary custom rebinding,
+  controller gameplay, all viewport sizes, every target name, or the full uploaded
+  WebGL campaign. Did not independently listen to the music.
+
+CLAIM-BY-CLAIM DECISIONS
+
+01. Opening interaction hint fails
+    HISTORICAL DEFECT; OPENING FIX VERIFIED IN PUBLIC BUILD.
+    The developer acknowledged the old mismatch. In WebGL 0.0.337 the book,
+    chest, and front door all displayed Space and responded correctly to Space.
+    Enter did not substitute for the book's world interaction. The door opened
+    and the objective advanced to collecting bakery bread.
+    This closes the observed home-opening mismatch in the checked build, not
+    every later prompt or every rebound/controller combination.
+    Sources: https://itch.io/post/17826817 and https://itch.io/post/17827787.
+
+02. Inventory omits item effects
+    CONFIRMED CURRENT DEFECT.
+    Selecting Oblivion Draught left its description object hidden. Opening the
+    action menu showed Use/Throw/Drop and the item name, with no effect explanation.
+    PartyMenu.cs:125 enables the description only for Skills; inventory builds
+    descriptions but its item action dialog does not present them.
+    This is not a player overlooking a functioning inventory tooltip.
+    Evidence: inventory-oblivion-selected.png, inventory-oblivion-actions.png,
+    InventoryStatusEquipmentExperienceAndExplosion.txt.
+    Video: https://www.youtube.com/watch?v=HxmN7nEjaGo&t=849s
+
+03. Arcane Wand seems to grant a second Strength bonus
+    MISINTERPRETED STAT PRESENTATION; NO DUPLICATE BONUS REPRODUCED.
+    Equipping the actual item through the inventory changed Strength from 5 to 11.
+    Its authored modifier is +6 Strength. The comparison labels that attribute
+    Attack, so the changed total and the +6 modifier describe the same change.
+    The wording and missing detail are real problems; a double-application bug
+    is not supported by the measured result.
+    Evidence: InventoryStatusEquipmentExperienceAndExplosion.txt.
+    Source: https://itch.io/post/17856436
+
+04. Player cannot strike diagonally
+    MECHANIC EXISTS; DISCOVERABILITY PROBLEM.
+    Shift+W+D and Shift+Up+Right faced the hero diagonally without moving.
+    Space then damaged the diagonal enemy (4 HP in each staged case).
+    Shift+D and Shift+Right also aimed/attacked correctly.
+    Teach hold-position aiming; adding dedicated diagonal keys is an optional
+    input feature, not a prerequisite for diagonal combat.
+    Evidence: DirectionalInputAndTapReleaseMeasurements.txt.
+    Video: https://www.youtube.com/watch?v=HxmN7nEjaGo&t=909s
+
+05. Alternate movement bindings cannot aim without moving
+    NOT REPRODUCED WITH DEFAULT ALTERNATES.
+    Shift+arrows worked in the dungeon; Shift+Right worked in town, with zero
+    movement. This rules out a blanket failure of current default arrow bindings.
+    Arbitrary user-rebound bindings and the reviewer's exact old setup remain open.
+    Evidence: DirectionalInputAndTapReleaseMeasurements.txt,
+    TownRawTapsAndHoldPosition.txt.
+    Source: https://itch.io/post/17856436
+
+06. Movement feels imprecise and held walking looks uneven
+    REAL FEEL CONCERN; POST-RELEASE STEP BUG NOT REPRODUCED.
+    Tested nominal 0.05/0.12/0.24/0.40-second presses in town and in dungeons
+    with normal/no animations. No measured run took another tile step after
+    the recorded key release. Longer holds legitimately produced multiple steps.
+    The shortest synthetic taps produced no dungeon movement but one town step.
+    This reflects different input cadence and can contribute to inconsistent feel.
+    Frame scheduling affects actual hold duration; these are not hardware-latency
+    measurements or proof that all physical input cases are correct.
+    Existing HeldWalkingTests also had two failures: dungeon and town expected a
+    walking clip but found Idle_Normal_NoWeapon. Their direct-dispatch setup is
+    different from raw key input. These are unresolved animation/test-expectation
+    failures, not proof of the reviewer's alleged extra tile movement.
+    Evidence: directional/town text files and held-walking-results.xml.
+    Sources: https://itch.io/post/17851945 and https://itch.io/post/17856436.
+
+07. Controls paging unexpectedly changes tabs
+    CONFIRMED CURRENT DEFECT, WITH REPRODUCTION.
+    Controls page 2→3 via Next and 2→1 via Previous selected Audio.
+    Both boundaries reproduced with mouse clicks, keyboard Enter, and gamepad
+    South: six observed incorrect tab switches.
+    At a boundary Refresh disables the selected paging button and refreshes
+    navigation; GlobalSettings uses PreviewOnFocus, so fallback Audio focus
+    activates that tab. Mid-range paging remained on Controls.
+    Evidence: SettingsPagingWithActualMouseKeyboardAndController.txt,
+    settings-wrong-tab-0-0-1.png.
+    Source: https://itch.io/post/17856436
+
+08. Debuff access and Frailty mechanics are unclear
+    PARTLY MISUNDERSTOOD ACCESS; CONFIRMED INFORMATION GAP.
+    Portrait status buttons do exist. Clicking the real Frailty button showed
+    the name and remaining-turn text, but not the Strength penalty, stack effect,
+    or removal rules. Direct application lowered Strength 11→10 for one stack.
+    A badge existing does not resolve the player's inability to understand it.
+
+    CORRECTION TO THE ORIGINAL AUDIT:
+    My earlier claim that Frailty persists until cleansed was wrong.
+    FrailtyStatusEffect.Tick is empty and a comment describes persistence, but
+    the production prefab has TurnsLeft=1 and Character.GetStatusEffectSideEffects
+    removes effects at TurnsLeft==1. After using the real Frailty Potion through
+    inventory, the completed turn had no Frailty effect and Strength was restored.
+    Applying the actual status directly allowed observing its penalty before
+    cleanup; after subsequent waits it was gone.
+    This is an implementation/documented-intent inconsistency. Do not “fix” its
+    tooltip to promise permanence while this lifecycle remains unchanged.
+    Evidence: InventoryStatusEquipmentExperienceAndExplosion.txt,
+    frailty-status-inspection.png; Character.cs:528; FrailtyStatus.prefab.
+    Source: https://itch.io/post/17879335
+
+09. Explosion causes self-damage
+    TRUE, IMPLEMENTED MECHANIC; INADEQUATE WARNING.
+    Using the actual item reduced both the caster and adjacent companion from
+    100 HP to 80 HP. ExplosionAction selects all characters within ten tiles on
+    both axes, including the caster and allies; it does not filter teams or walls.
+    It is not literally an unlimited whole-floor attack. Its vague/hidden
+    description makes the surprise understandable. Friendly fire is not itself
+    evidence of an accidental damage calculation.
+    Evidence: InventoryStatusEquipmentExperienceAndExplosion.txt.
+    Sources: https://itch.io/post/17879335,
+    https://www.youtube.com/watch?v=HxmN7nEjaGo&t=727s
+
+10. Companions receive no shared experience
+    TRUE LAST-HIT RULE; BALANCE/COMMUNICATION ISSUE.
+    A staged kill awarded the attacker 1 XP and the companion 0 XP.
+    The developer confirms last-hit XP is intentional; companions can earn XP
+    by killing enemies. No evidence supports “companions cannot gain XP.”
+    Catch-up/shared XP would change progression design. The complaint about
+    recruiting a weak hero beside an autonomous stronger killer remains valid.
+    Evidence: InventoryStatusEquipmentExperienceAndExplosion.txt.
+    Sources: https://itch.io/post/17879335 and https://itch.io/post/17879360.
+
+11. Overworld exit discards progress since the checkpoint
+    TRUE CHECKPOINT POLICY; NOT DEMONSTRATED CORRUPTION.
+    The recorded reload returns to an older saved state. Current code captures
+    some transitions in memory but writes persistent state only through explicit
+    save commits; ReturnToMenu restores the saved snapshot and warns about loss.
+    The existing InterruptedDungeonRestoresExplicitSaveWithoutLossRules test
+    passed against production scenes and confirmed restoration of the checkpoint
+    without death penalties or persisting unsaved rewards.
+    This does not make between-dungeon progress loss good UX. Suspend/resume or
+    safer saving is a design proposal, rather than repairing a corrupt serializer.
+    Evidence: refined-probe-results.xml.
+    Video: https://www.youtube.com/watch?v=HxmN7nEjaGo&t=1602s
+
+12. An unchanged reloaded map suggests no random generation
+    MISUNDERSTANDING OF SEEDED CAMPAIGNS.
+    New campaigns generate a seed; an existing campaign restores its saved seed.
+    The checkpoint test reproduced the same generated floor after reload.
+    This is expected continuity, not evidence that all campaigns share one map.
+    It says nothing about whether the generator produces sufficiently varied
+    layouts, which is a separate design question.
+
+13. Inert knight-shaped objects appear to be broken enemies
+    STATUES, NOT BROKEN ENEMY AI.
+    EarlyDungeonStatue creates a harmless 40-HP destructible prop with no reward,
+    using a knight-shaped statue asset. The recognizability complaint is valid:
+    an enemy silhouette with no clear stone/pedestal/inspection distinction
+    encourages exactly the interpretation seen in the video.
+    In a production campaign with seed 42, floor 3 contained a Stone Hulk statue
+    with Transform, DungeonProp, and FogHiddenVisual components, and no Enemy.
+    This independently confirms the source classification at runtime.
+    Evidence: CurrentCampaignPresentation.txt.
+    Video: https://www.youtube.com/watch?v=HxmN7nEjaGo&t=260s
+
+14. Decorative books and chests resemble interactable objects
+    MISREAD SCENERY; REAL VISUAL-AFFORDANCE PROBLEM.
+    The developer explicitly acknowledges decorations that resemble pickups.
+    Do not classify every chest/book prop as a failed loot interaction.
+    Contrast with the actual home book and chest, which worked in the public
+    build. Distinguish decorative models from interactable versions visually.
+    Sources: https://itch.io/post/17879335 and https://itch.io/post/17879360.
+
+15. Spider encounters and open rooms feel overwhelming
+    CROWDING IS OBSERVED; UNWINNABLE BALANCE NOT ESTABLISHED.
+    The screenshots show severe visual overlap and the video shows early defeat.
+    Current SpiderActionResponse can spawn another spider with 50% probability
+    after nonlethal damage when a neighboring walkable unoccupied cell exists.
+    It is on-hit reproduction, not merely multiplication as time passes.
+    The developer's hallway advice is conditional: a hallway helps restrict
+    available neighbors, but does not guarantee reproduction is impossible.
+    Teach this mechanic and examine encounter budgets before claiming an
+    inevitable death or that Explosion is the only valid answer.
+    No multi-seed/class balance study was performed.
+    Sources: https://itch.io/post/17879335 and https://itch.io/post/17879360;
+    https://www.youtube.com/watch?v=HxmN7nEjaGo&t=460s
+
+16. Objective panels and text interfere with scene readability
+    REAL PRESENTATION ISSUE IN THE RECORDED EVIDENCE.
+    SPEC's objective screenshot and target screenshot directly show obstruction
+    and poor parchment/text alignment. The public opening retains a large
+    objective panel. Exact current scene/viewport findings:
+    Both bakery and item-shop hints extended below the parchment at 960x600.
+    At 1280x720 the same hints wrapped tightly but stayed on the parchment.
+    The 960x600 text also reported overflow in the captured UI data.
+    The current dungeon objective remains a broad panel above the hero; the event
+    panel occupies substantial space below. This supports the readability concern,
+    without implying that every size or encounter obscures the selected actor.
+    Evidence: shop-items-960.png, shop-bakery-960.png and their 1280 variants;
+    campaign-opening-objective.png and campaign-dungeon-objective.png.
+    The reviewer's target-name case has not been recreated with the same actor,
+    viewport, and UI state; do not label that exact defect fixed or universally
+    reproducible based only on a generic screen capture.
+    Sources: https://itch.io/post/17856436;
+    https://www.youtube.com/watch?v=3CZBMwkz9pY&t=891s
+
+17. Visibility rules and passage presentation seem inconsistent
+    VISUAL READABILITY ISSUE; EXACT LOGICAL FOV BUG UNRESOLVED.
+    The attached image and elb's passage sequence support visual confusion.
+    All three existing GridSightTests passed, covering wall blocking/visibility,
+    doors, symmetric corner behavior, radius, and map bounds.
+    Those tests do not reproduce the screenshot's mesh/fog/health-bar situation
+    or prove all multi-tile enemy visibility is correct. Do not change the sight
+    algorithm on the assumption that the image proves a logical error.
+    Evidence: CoreResults/dd71-grid-sight.trx.
+    Video: https://www.youtube.com/watch?v=3CZBMwkz9pY&t=631s
+
+18. Players want a wider dungeon view and camera zoom
+    FEATURE REQUEST WITH VALID READABILITY MOTIVATION.
+    The inspected camera follows a fixed offset and has no player zoom input.
+    “Too close” is a usability judgment, not an incorrect player observation.
+    It does not establish a camera malfunction.
+
+19. Inventory capacity and missing home storage frustrate players
+    TRUE LIMIT / ABSENT FEATURE; DESIGN REQUEST.
+    Default capacity is ten slots. The home chest is an opening key interaction,
+    not an implemented stash. No shipped capacity-upgrade mechanism was verified.
+    An upgrade or linked-town stash mentioned in a reply is a proposal, not a
+    feature the reviewer failed to find. Missing item detail compounds bag pressure.
+
+20. Large spaces and repeated pillars make traversal tedious
+    VALID PACING/ROUTING FEEDBACK; NO DISCONNECTION PROVEN.
+    The videos show substantial traversal and the minimap shows repeated pillars.
+    These demonstrate wasted-feeling space and detours, not an unreachable exit.
+    Procedural generation is not a reason to dismiss spacing/obstacle feedback.
+    Quantifying changes requires seed sampling and route/destination measurements.
+
+21. Players want automatic travel that stops for danger
+    FEATURE REQUEST.
+    The requested stop-on-danger/discovery travel behavior is distinct from
+    holding movement or disabling animation. Treat it as a convenience feature,
+    not a reported failure of an existing safe-run command.
+
+22. Opening directions and skill descriptions cause confusion
+    OBSERVED COMPREHENSION PROBLEMS; NOT ALL MECHANICAL FAILURES.
+    The videos show searching for required services, uncertainty about practice
+    versus real combat, ambiguous percentage/rank/mana wording, and elb stopping
+    before discovering recruitment/overworld play. Their uncertainty is evidence
+    about explanation and progression presentation.
+    The existence of a mechanic elsewhere in code does not refute these findings.
+    First-time-player comprehension needs another observed playtest after changes.
+
+23. Repeated music becomes tiring
+    SUBJECTIVE FEEDBACK; LOOP CONFIRMED, QUALITY NOT AUDITED.
+    The production dungeon used MusicBox_07, 111.36 seconds, with looping enabled.
+    This corroborates repeated playback but is not an independent listening
+    judgment about fatigue, variety across all dungeons, or composition quality.
+
+24. The art appears pre-rendered
+    FACTUAL MISUNDERSTANDING, ALREADY CORRECTED IN THE THREAD.
+    The running game uses Unity 3D scenes/models. The reviewer accepted the
+    correction. Their favorable aesthetic response is unaffected.
+
+25. Older gallery screenshots represent the current build
+    INVALID BUILD ASSUMPTION.
+    The gallery visibly depicts an earlier presentation than the November videos
+    and current runtime. It can be stale marketing, but old HUDs/labels are not
+    proof of a remaining defect. The original audit's page-presentation comments
+    are editorial recommendations, not additional player-reported runtime bugs.
+
+VERIFICATION RESULTS AND LIMITS
+
+- Existing Held Walking suite: 1 passed, 2 failed (town/dungeon animation
+  expectations described above). Preserved in held-walking-results.json/xml.
+- First focused probe run: 3 completed, 1 stopped on a bad audit assumption that
+  Frailty would persist. That assumption was investigated and corrected.
+- Refined probe run f02d5f15f3ca40e49ada4daaa7702e1a:
+  3 passed / 0 failed, including the production checkpoint test. Observational
+  probes passing means evidence collection completed, not that gameplay is
+  defect-free. The settings probe intentionally records incorrect transitions.
+- CurrentCampaignPresentation run 55e6cad7407a4f72a48461735d2bab32:
+  1 passed / 0 failed; collected current shop/layout/statue evidence.
+  Preserved in presentation-probe-results.json/xml.
+- Core GridSightTests: 3 passed / 0 failed.
+- Public WebGL opening: manually verified using the displayed default keyboard
+  hints. No full WebGL campaign, save reload, or physical-controller certification.
+- Runtime screenshots are at the staged viewport sizes noted in their filenames.
+  Their JSON companions contain active text/overflow data; template text should
+  not be mistaken for visible duplicated labels without checking the image.
+
+RECOMMENDED PRIORITY
+
+1. Restore inventory descriptions and consistent equipment terminology.
+2. Fix paging focus so Controls remains selected; add a meaningful regression
+   covering actual selected-button input at both page boundaries.
+3. Decide Frailty's intended duration, fix the lifecycle accordingly, and display
+   actual penalty/stack/duration information in status inspection.
+4. Address objective/shop/target readability and teach diagonal aiming, explosive
+   friendly fire, spider division, saving, and last-hit XP in context.
+5. Evaluate saving convenience, recruit catch-up, bag/storage, zoom, and traversal
+   as product decisions. Use player observations and representative seeds to
+   choose changes rather than treating every preference as a broken mechanic.
+6. Keep alternate rebinding, physical-input overshoot, the held-walk animation
+   failures, and the exact LOS screenshot on the unresolved verification list.
+
+EVIDENCE AND WORKSPACE
+
+All runtime evidence referenced above is under Temp/ReviewAudit/Runtime/.
+Original source material and the full image/video inventory are under
+Temp/ReviewAudit/ and Docs/DemoDay71ReviewAudit-2026-11-13.txt.
+The latter now carries a follow-up notice and correction to its Frailty claim.
+The temporary manual probe source is archived as
+Temp/ReviewAudit/Runtime/DemoDay71ClaimAudit.cs.
+No gameplay fixes were made. The temporary Assets test fixture was removed and
+its generated font-atlas change restored. Only the two audit documents are left
+as project changes; evidence and the reproducible probe source remain in ignored
+Temp/. Existing user saves were isolated from these tests.

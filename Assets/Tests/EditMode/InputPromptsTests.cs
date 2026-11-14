@@ -6,7 +6,7 @@ namespace EternalEnigma.Tests
     public sealed class InputPromptsTests
     {
         private static readonly MethodInfo SetDevice = typeof(ControlDeviceState).GetMethod("Set",
-            BindingFlags.Static | BindingFlags.NonPublic);
+            BindingFlags.Static | BindingFlags.NonPublic, null, new[]{typeof(bool)}, null);
         private bool original;
         private System.IDisposable preferences;
 
@@ -29,13 +29,17 @@ namespace EternalEnigma.Tests
         public void NamedPromptsAndKnownTokensUseOnlyTheCurrentDevice()
         {
             const string template = "{Move} | {Interact} | {Confirm} | {Back} | {ToggleFullControl} | {Unknown}";
-            Assert.That(InputPrompts.Format(template), Is.EqualTo(
-                "WASD / arrows | Enter | Enter / Space | Escape | F | {Unknown}"));
+            var keyboard = InputPrompts.Format(template);
+            Assert.That(keyboard, Does.Contain("W / Up").And.Contain("S / Down").And.Contain("A / Left").And.Contain("D / Right"));
+            Assert.That(keyboard, Does.Contain("Enter").And.Contain("Escape").And.Contain(" | F | {Unknown}"));
+            Assert.That(keyboard, Does.Not.Contain("Cross").And.Not.Contain("stick"));
             Assert.That(InputPrompts.Inventory, Is.EqualTo("Q"));
             Assert.That(InputPrompts.Skills, Is.EqualTo("R"));
             Set(true);
-            Assert.That(InputPrompts.Format(template), Is.EqualTo(
-                "Left stick / D-pad | A / Cross | A / Cross | B / Circle | Right stick press | {Unknown}"));
+            var gamepad = InputPrompts.Format(template);
+            Assert.That(gamepad, Does.Contain("Left stick").And.Contain("D-pad").And.Contain("A / Cross").And.Contain("B / Circle"));
+            Assert.That(gamepad, Does.Contain("Right stick press | {Unknown}"));
+            Assert.That(gamepad, Does.Not.Contain("Enter").And.Not.Contain("Escape"));
             Assert.That(InputPrompts.Inventory, Is.EqualTo("X / Square"));
             Assert.That(InputPrompts.Skills, Is.EqualTo("B / Circle"));
             Assert.That(InputPrompts.Format(null), Is.Empty);

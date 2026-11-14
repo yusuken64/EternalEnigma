@@ -29,6 +29,7 @@ public sealed class TerminalRuntime : MonoBehaviour
     private PartyMenuLauncher launcher;
     private ResourceHUD resources;
     private DungeonHud dungeonHud;
+    private TravelPartyHud travelPartyHud;
     private Button historyButton;
     private float nextHudStyle;
     private readonly Vector3[] corners = new Vector3[4];
@@ -95,6 +96,7 @@ public sealed class TerminalRuntime : MonoBehaviour
         launcher = FindFirstObjectByType<PartyMenuLauncher>();
         resources = FindFirstObjectByType<ResourceHUD>();
         dungeonHud = FindFirstObjectByType<DungeonHud>();
+        travelPartyHud = FindFirstObjectByType<TravelPartyHud>();
         nextHudStyle = 0;
     }
     private void PreferenceChanged()
@@ -147,7 +149,6 @@ public sealed class TerminalRuntime : MonoBehaviour
             TerminalMode.Requested != TerminalMode.Effective && !UnsafeToSwitch()) PreferenceChanged();
         if (historyButton != null) historyButton.gameObject.SetActive(CanShowHistory());
         if (!TerminalMode.Effective || screen == null) return;
-        if (CanShowHistory() && Keyboard.current?.hKey.wasPressedThisFrame == true) OpenHistory();
         if (screen.SetViewport(ViewportMin(), ViewportMax())) dirty = true;
         if (screen.Resize()) dirty = true;
         if (!dirty && Time.unscaledTime < nextRefresh) return;
@@ -208,11 +209,15 @@ public sealed class TerminalRuntime : MonoBehaviour
         // hierarchy overlaps the menu bridge and captures already-terminal fonts.
         if (dungeonHud != null && dungeonHud.PartyRoot != null)
             hudStyle.Refresh(dungeonHud.PartyRoot.parent, screen.FontAsset);
+        if (travelPartyHud != null && travelPartyHud.PartyRoot != null)
+            hudStyle.Refresh(travelPartyHud.PartyRoot.parent, screen.FontAsset);
         if (targetDialog != null && targetDialog.isActiveAndEnabled)
             hudStyle.Refresh(targetDialog.transform, screen.FontAsset);
         if (historyButton != null)
         {
-            historyButton.GetComponentInChildren<TMP_Text>().fontSizeMax = screen.FontSize;
+            var label = historyButton.GetComponentInChildren<TMP_Text>();
+            label.fontSizeMax = screen.FontSize;
+            label.text = HistoryButtonLabel();
             hudStyle.Refresh(historyButton.transform, screen.FontAsset);
         }
         if (mainMenu == null && historyButton == null) CreateHistoryButton();
@@ -220,6 +225,8 @@ public sealed class TerminalRuntime : MonoBehaviour
 
     private bool CanShowHistory() => TerminalMode.Effective && mainMenu == null && messages != null &&
         !UnsafeToSwitch() && !AutoplayRunner.BlocksPlayerInput && MenuUIInputModule.Active?.HasDialog != true;
+    private static string HistoryButtonLabel() => string.IsNullOrEmpty(InputPrompts.History)
+        ? "History" : "History [" + InputPrompts.History + "]";
     private void OpenHistory()
     {
         if (!CanShowHistory()) return;
@@ -238,7 +245,7 @@ public sealed class TerminalRuntime : MonoBehaviour
         historyButton.navigation = new Navigation { mode = Navigation.Mode.None };
         historyButton.onClick.AddListener(OpenHistory);
         var label = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI)); label.transform.SetParent(control.transform, false);
-        var text = label.GetComponent<TextMeshProUGUI>(); text.text = "History [H]"; text.font = screen.FontAsset; text.alignment = TextAlignmentOptions.Center;
+        var text = label.GetComponent<TextMeshProUGUI>(); text.text = HistoryButtonLabel(); text.font = screen.FontAsset; text.alignment = TextAlignmentOptions.Center;
         text.enableAutoSizing = true; text.fontSizeMin = 12; text.fontSizeMax = 18; text.raycastTarget = false;
         text.rectTransform.anchorMin = Vector2.zero; text.rectTransform.anchorMax = Vector2.one; text.rectTransform.offsetMin = new Vector2(8, 2); text.rectTransform.offsetMax = new Vector2(-8, -2);
         hudStyle.Refresh(owner.transform, screen.FontAsset);

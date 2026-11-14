@@ -352,6 +352,7 @@ GameObject:
   - component: {fileID: 2112433089261692307}
   - component: {fileID: 6704959045272929495}
   - component: {fileID: 3762725343626009643}
+  - component: {fileID: 8155070690550158003}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -376,7 +377,7 @@ RectTransform:
   m_Father: {fileID: 3475399028112879376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.37, y: 0.13}
-  m_AnchorMax: {x: 0.99, y: 0.29}
+  m_AnchorMax: {x: 0.965, y: 0.29}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -408,7 +409,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a55c018e0996a9a41ade56c686a08f0d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d1de50b9b2e1d3840ad8bd3b5045b8c1, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -417,7 +418,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &2112433089261692307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -503,6 +504,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::StatsDisplay
   ValueText: {fileID: 1303206142738637669}
   StatValueSlider: {fileID: 6704959045272929495}
+--- !u!114 &8155070690550158003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620842587629176744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 9
 --- !u!1 &1714792241716270667
 GameObject:
   m_ObjectHideFlags: 0
@@ -651,6 +665,7 @@ GameObject:
   - component: {fileID: 4109678702885453385}
   - component: {fileID: 8116132708312251481}
   - component: {fileID: 652152575311775185}
+  - component: {fileID: 2649109140835698919}
   m_Layer: 5
   m_Name: GameButtonBackground
   m_TagString: Untagged
@@ -705,7 +720,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d92f6e1b48f3b6e459c59828f42868bd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -735,6 +750,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2649109140835698919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1720994588246863889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 3
 --- !u!1 &1870827006238076727
 GameObject:
   m_ObjectHideFlags: 0
@@ -873,6 +901,7 @@ GameObject:
   - component: {fileID: 989483907291470345}
   - component: {fileID: 1452176673702459893}
   - component: {fileID: 8366111873569597556}
+  - component: {fileID: 5265368617904479726}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -897,7 +926,7 @@ RectTransform:
   m_Father: {fileID: 3475399028112879376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.37, y: 0.31}
-  m_AnchorMax: {x: 0.99, y: 0.47}
+  m_AnchorMax: {x: 0.965, y: 0.47}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -929,7 +958,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a55c018e0996a9a41ade56c686a08f0d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d1de50b9b2e1d3840ad8bd3b5045b8c1, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -938,7 +967,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &989483907291470345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1024,6 +1053,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::StatsDisplay
   ValueText: {fileID: 4498872938874342217}
   StatValueSlider: {fileID: 1452176673702459893}
+--- !u!114 &5265368617904479726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117246303383810604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 9
 --- !u!1 &2117392540090695052
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,6 +1078,7 @@ GameObject:
   - component: {fileID: 6480967042288211200}
   - component: {fileID: 334741755677971899}
   - component: {fileID: 4585998388544195997}
+  - component: {fileID: 3783168143935046439}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -1083,14 +1126,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.92, g: 0.61, b: 0.14, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 985455e758c5ae043b3b81df8904fd5e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f50cb5f7550362349b0cc1f023ad61f0, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1099,7 +1142,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &4585998388544195997
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1120,6 +1163,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &3783168143935046439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117392540090695052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 12
 --- !u!1 &2334203718224799838
 GameObject:
   m_ObjectHideFlags: 0
@@ -1307,6 +1363,7 @@ GameObject:
   - component: {fileID: 7021369230071869864}
   - component: {fileID: 740710976766865390}
   - component: {fileID: 2102550577993283424}
+  - component: {fileID: 2158431126050620342}
   m_Layer: 5
   m_Name: GameButtonBackground
   m_TagString: Untagged
@@ -1361,7 +1418,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d92f6e1b48f3b6e459c59828f42868bd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1391,6 +1448,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2158431126050620342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2585651923085023020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 3
 --- !u!1 &2982038074784577063
 GameObject:
   m_ObjectHideFlags: 0
@@ -1480,6 +1550,7 @@ GameObject:
   - component: {fileID: 3274045855308121076}
   - component: {fileID: 7078926248803016867}
   - component: {fileID: 3698105093577052096}
+  - component: {fileID: 626869279414751561}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -1504,7 +1575,7 @@ RectTransform:
   m_Father: {fileID: 3475399028112879376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.37, y: 0.49}
-  m_AnchorMax: {x: 0.99, y: 0.65}
+  m_AnchorMax: {x: 0.965, y: 0.65}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1536,7 +1607,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a55c018e0996a9a41ade56c686a08f0d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d1de50b9b2e1d3840ad8bd3b5045b8c1, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1545,7 +1616,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &3274045855308121076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1631,6 +1702,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::StatsDisplay
   ValueText: {fileID: 1080092657862576835}
   StatValueSlider: {fileID: 7078926248803016867}
+--- !u!114 &626869279414751561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3094721373436678688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 9
 --- !u!1 &3197022420576434878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1789,9 +1873,9 @@ RectTransform:
   m_Father: {fileID: 3475399028112879376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.37, y: 0.79}
-  m_AnchorMax: {x: 0.99, y: 0.99}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.965, y: 0.95}
+  m_AnchoredPosition: {x: 0, y: 0.7000046}
+  m_SizeDelta: {x: 0, y: 9.0069}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6420859617557390155
 CanvasRenderer:
@@ -1886,7 +1970,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 11.738429, z: 1.652368, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1919,6 +2003,7 @@ GameObject:
   - component: {fileID: 5171253396463142424}
   - component: {fileID: 4256817680814545540}
   - component: {fileID: 5929814909620085865}
+  - component: {fileID: 2922709216567563607}
   m_Layer: 5
   m_Name: GameButtonBackground
   m_TagString: Untagged
@@ -1973,7 +2058,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d92f6e1b48f3b6e459c59828f42868bd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2003,6 +2088,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2922709216567563607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3241749001238820141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 3
 --- !u!1 &3281376857653562985
 GameObject:
   m_ObjectHideFlags: 0
@@ -2139,6 +2237,7 @@ GameObject:
   - component: {fileID: 8724456967358812656}
   - component: {fileID: 3027838690358686600}
   - component: {fileID: 5371098413049181244}
+  - component: {fileID: 8466824393313488191}
   m_Layer: 5
   m_Name: GameButtonBackground
   m_TagString: Untagged
@@ -2193,7 +2292,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d92f6e1b48f3b6e459c59828f42868bd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 779845ab9c248b045b27e4a2a25832f0, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2223,6 +2322,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &8466824393313488191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3571721993364296717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 3
 --- !u!1 &3789322154145143801
 GameObject:
   m_ObjectHideFlags: 0
@@ -2507,6 +2619,7 @@ GameObject:
   - component: {fileID: 1883607108747474423}
   - component: {fileID: 2293355146704214119}
   - component: {fileID: 7668963557334439310}
+  - component: {fileID: 5267091047829413115}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -2554,15 +2667,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.37, g: 0.8, b: 0.2, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 985455e758c5ae043b3b81df8904fd5e, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: ed96b7d45c0a0c844baf1c0163865b0d, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2570,7 +2683,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &7668963557334439310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2591,6 +2704,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &5267091047829413115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3828674898330293047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 10
 --- !u!1 &4164975501604363346
 GameObject:
   m_ObjectHideFlags: 0
@@ -2605,6 +2731,7 @@ GameObject:
   - component: {fileID: 6098812601458477673}
   - component: {fileID: 1298195644053693652}
   - component: {fileID: 3064430571700896997}
+  - component: {fileID: 1470049940891162132}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -2629,8 +2756,8 @@ RectTransform:
   m_Father: {fileID: 3475399028112879376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.37, y: 0.02}
-  m_AnchorMax: {x: 0.99, y: 0.08}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.965, y: 0.08}
+  m_AnchoredPosition: {x: 0, y: 7}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7656307007569824830
@@ -2661,7 +2788,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a55c018e0996a9a41ade56c686a08f0d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d1de50b9b2e1d3840ad8bd3b5045b8c1, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2670,7 +2797,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &6098812601458477673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2756,6 +2883,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: EternalEnigma.Game::StatsDisplay
   ValueText: {fileID: 8914099421247551284}
   StatValueSlider: {fileID: 1298195644053693652}
+--- !u!114 &1470049940891162132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4164975501604363346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 9
 --- !u!1 &4381362943706597910
 GameObject:
   m_ObjectHideFlags: 0
@@ -2904,6 +3044,7 @@ GameObject:
   - component: {fileID: 1047062858410376414}
   - component: {fileID: 7281307825191230197}
   - component: {fileID: 2678882434811002326}
+  - component: {fileID: 4633571768724007020}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -2951,14 +3092,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.63, g: 0.49, b: 0.28, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 985455e758c5ae043b3b81df8904fd5e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f50cb5f7550362349b0cc1f023ad61f0, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2967,7 +3108,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &2678882434811002326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2988,6 +3129,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &4633571768724007020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4887206787929486596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 12
 --- !u!1 &4973965452874151882
 GameObject:
   m_ObjectHideFlags: 0
@@ -3023,7 +3177,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.37, y: 0.66}
   m_AnchorMax: {x: 0.99, y: 0.8}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -2.8}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5912953851751803679
@@ -3084,12 +3238,12 @@ MonoBehaviour:
   m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 10
+  m_fontSizeMax: 18
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -3119,7 +3273,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 17.614973, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -3152,6 +3306,7 @@ GameObject:
   - component: {fileID: 3107186871463764701}
   - component: {fileID: 9075128099771399543}
   - component: {fileID: 7658286781005101279}
+  - component: {fileID: 7748009926246779061}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -3199,14 +3354,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19, g: 0.53, b: 0.86, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 985455e758c5ae043b3b81df8904fd5e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7890fd0707bc1ae4bb2108f4c03ae773, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3215,7 +3370,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &7658286781005101279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3236,6 +3391,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &7748009926246779061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5338620034253808900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
+  Role: 11
 --- !u!1 &5768856097477612192
 GameObject:
   m_ObjectHideFlags: 0
@@ -3272,8 +3440,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -98.08177, y: 0}
+  m_SizeDelta: {x: -196.1636, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &3961530035864338489
 MonoBehaviour:
@@ -3680,7 +3848,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4546192674304013417, guid: 63247316a87cf9e479e2714549bebcad, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 39e7364523585314cba134531ff2cf2a, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 0
@@ -3689,7 +3857,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 0.5
+  m_PixelsPerUnitMultiplier: 8
 --- !u!114 &171968817999950394
 MonoBehaviour:
   m_ObjectHideFlags: 0

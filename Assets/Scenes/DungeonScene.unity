@@ -1385,19 +1385,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1392657931941609033, guid: 77dc0f6facdbdaa43b52cae4877ed7bb, type: 3}
   m_PrefabInstance: {fileID: 328111933}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &335556112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399824}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1 &346596560
 GameObject:
   m_ObjectHideFlags: 0
@@ -1990,7 +1977,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -196.1636
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2026,7 +2013,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -98.08177
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2234,10 +2221,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 3475399028112879376, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: 0
-      addedObject: {fileID: 991254339}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2982038074784577063, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
@@ -2251,66 +2235,30 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3228036627405165199, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1896881054}
-    - targetCorrespondingSourceObject: {fileID: 3094721373436678688, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 381399837}
-    - targetCorrespondingSourceObject: {fileID: 3828674898330293047, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 381399836}
     - targetCorrespondingSourceObject: {fileID: 3789322154145143801, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1896881053}
-    - targetCorrespondingSourceObject: {fileID: 2117246303383810604, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 381399835}
-    - targetCorrespondingSourceObject: {fileID: 5338620034253808900, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1386879137}
     - targetCorrespondingSourceObject: {fileID: 8521243958406799361, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1896881052}
-    - targetCorrespondingSourceObject: {fileID: 1620842587629176744, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 381399839}
-    - targetCorrespondingSourceObject: {fileID: 2117392540090695052, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 381399838}
     - targetCorrespondingSourceObject: {fileID: 3807363149398582128, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1896881055}
-    - targetCorrespondingSourceObject: {fileID: 4164975501604363346, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1177510930}
-    - targetCorrespondingSourceObject: {fileID: 4887206787929486596, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1397399749}
     - targetCorrespondingSourceObject: {fileID: 1714792241716270667, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1896881051}
     - targetCorrespondingSourceObject: {fileID: 4973965452874151882, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1840082557}
-    - targetCorrespondingSourceObject: {fileID: 3571721993364296717, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1733187028}
     - targetCorrespondingSourceObject: {fileID: 2390091569731991296, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 656840101}
-    - targetCorrespondingSourceObject: {fileID: 2585651923085023020, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1601793283}
     - targetCorrespondingSourceObject: {fileID: 6170170665246677058, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 481369224}
-    - targetCorrespondingSourceObject: {fileID: 3241749001238820141, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 335556112}
     - targetCorrespondingSourceObject: {fileID: 433255957183383553, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 842975304}
-    - targetCorrespondingSourceObject: {fileID: 1720994588246863889, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2058998049}
     - targetCorrespondingSourceObject: {fileID: 4381362943706597910, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1135685122}
@@ -2331,136 +2279,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
   m_PrefabInstance: {fileID: 381399819}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &381399822 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3475399028112879376, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399823 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1720994588246863889, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399824 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3241749001238820141, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399825 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2585651923085023020, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399826 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3571721993364296717, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399827 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4887206787929486596, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399828 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4164975501604363346, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399829 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5338620034253808900, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399830 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2117246303383810604, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399831 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3828674898330293047, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399832 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3094721373436678688, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399833 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2117392540090695052, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &381399834 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1620842587629176744, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 381399819}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &381399835
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
---- !u!114 &381399836
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 10
---- !u!114 &381399837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
---- !u!114 &381399838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399833}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 12
---- !u!114 &381399839
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
 --- !u!1 &385826260
 GameObject:
   m_ObjectHideFlags: 0
@@ -2557,19 +2375,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385826260}
   m_CullTransparentMesh: 1
---- !u!114 &392246709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1001 &403623395
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2823,19 +2628,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 441197391}
   m_CullTransparentMesh: 1
---- !u!114 &446681087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381720}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 12
 --- !u!1 &451681590
 GameObject:
   m_ObjectHideFlags: 0
@@ -3041,11 +2833,11 @@ RectTransform:
   - {fileID: 1379923198}
   m_Father: {fileID: 1191638071}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.8, y: 0.22}
-  m_AnchorMax: {x: 0.985, y: 0.48}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.0000076293945, y: 0.0000076293945}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -16, y: 7}
+  m_SizeDelta: {x: 197.33333, y: 156}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &503098999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3328,32 +3120,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
   OnWood: 1
---- !u!114 &542815450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381718}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
---- !u!114 &548238304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
 --- !u!1 &554154037
 GameObject:
   m_ObjectHideFlags: 0
@@ -3628,102 +3394,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7674463184335244964, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
   m_PrefabInstance: {fileID: 594259020}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &603865359
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 603865360}
-  - component: {fileID: 603865363}
-  - component: {fileID: 603865362}
-  - component: {fileID: 603865361}
-  m_Layer: 5
-  m_Name: Dungeon parchment
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &603865360
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 603865359}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1807381715}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -16, y: -16}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &603865361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 603865359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
-  m_IgnoreLayout: 1
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
---- !u!114 &603865362
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 603865359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 39e7364523585314cba134531ff2cf2a, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
---- !u!222 &603865363
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 603865359}
-  m_CullTransparentMesh: 1
 --- !u!1 &611623579
 GameObject:
   m_ObjectHideFlags: 0
@@ -3801,19 +3471,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 611623579}
   m_CullTransparentMesh: 1
---- !u!114 &646771900
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!114 &656840101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3827,19 +3484,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
   OnWood: 1
---- !u!114 &665403345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652919}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 12
 --- !u!114 &680847214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3949,19 +3593,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
   OnWood: 0
---- !u!114 &775228579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050471}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
 --- !u!114 &776780380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4071,19 +3702,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 778018034}
   m_CullTransparentMesh: 1
---- !u!114 &780034756
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 11
 --- !u!1 &782734149
 GameObject:
   m_ObjectHideFlags: 0
@@ -4897,19 +4515,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
   OnWood: 1
---- !u!114 &894314904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652917}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1 &938624644
 GameObject:
   m_ObjectHideFlags: 0
@@ -5211,102 +4816,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!1 &991254338
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 991254339}
-  - component: {fileID: 991254342}
-  - component: {fileID: 991254341}
-  - component: {fileID: 991254340}
-  m_Layer: 5
-  m_Name: Dungeon parchment
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &991254339
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 991254338}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 381399822}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -16, y: -16}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &991254340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 991254338}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
-  m_IgnoreLayout: 1
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
---- !u!114 &991254341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 991254338}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 39e7364523585314cba134531ff2cf2a, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
---- !u!222 &991254342
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 991254338}
-  m_CullTransparentMesh: 1
 --- !u!1 &1003197822
 GameObject:
   m_ObjectHideFlags: 0
@@ -6092,32 +5601,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067993980}
   m_CullTransparentMesh: 1
---- !u!114 &1091836193
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050470}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 12
---- !u!114 &1091951459
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1001 &1095788824
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6717,7 +6200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -196.1636
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -6753,7 +6236,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -98.08177
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -6961,10 +6444,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 3475399028112879376, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: 0
-      addedObject: {fileID: 1679191284}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2982038074784577063, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
@@ -6978,66 +6458,30 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3228036627405165199, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 242910777}
-    - targetCorrespondingSourceObject: {fileID: 3094721373436678688, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1110652929}
-    - targetCorrespondingSourceObject: {fileID: 3828674898330293047, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1110652928}
     - targetCorrespondingSourceObject: {fileID: 3789322154145143801, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 242910776}
-    - targetCorrespondingSourceObject: {fileID: 2117246303383810604, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1110652927}
-    - targetCorrespondingSourceObject: {fileID: 5338620034253808900, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1684774020}
     - targetCorrespondingSourceObject: {fileID: 8521243958406799361, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 242910775}
-    - targetCorrespondingSourceObject: {fileID: 1620842587629176744, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1110652931}
-    - targetCorrespondingSourceObject: {fileID: 2117392540090695052, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1110652930}
     - targetCorrespondingSourceObject: {fileID: 3807363149398582128, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 242910778}
-    - targetCorrespondingSourceObject: {fileID: 4164975501604363346, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 548238304}
-    - targetCorrespondingSourceObject: {fileID: 4887206787929486596, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 665403345}
     - targetCorrespondingSourceObject: {fileID: 1714792241716270667, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 242910774}
     - targetCorrespondingSourceObject: {fileID: 4973965452874151882, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2111360669}
-    - targetCorrespondingSourceObject: {fileID: 3571721993364296717, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 392246709}
     - targetCorrespondingSourceObject: {fileID: 2390091569731991296, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1480512500}
-    - targetCorrespondingSourceObject: {fileID: 2585651923085023020, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 894314904}
     - targetCorrespondingSourceObject: {fileID: 6170170665246677058, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 712728764}
-    - targetCorrespondingSourceObject: {fileID: 3241749001238820141, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1587225375}
     - targetCorrespondingSourceObject: {fileID: 433255957183383553, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 538167436}
-    - targetCorrespondingSourceObject: {fileID: 1720994588246863889, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1308602616}
     - targetCorrespondingSourceObject: {fileID: 4381362943706597910, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1362009515}
@@ -7058,136 +6502,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
   m_PrefabInstance: {fileID: 1110652911}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &1110652914 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3475399028112879376, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652915 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1720994588246863889, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652916 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3241749001238820141, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652917 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2585651923085023020, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652918 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3571721993364296717, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652919 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4887206787929486596, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652920 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4164975501604363346, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652921 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5338620034253808900, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652922 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2117246303383810604, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652923 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3828674898330293047, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652924 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3094721373436678688, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652925 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2117392540090695052, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1110652926 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1620842587629176744, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1110652911}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1110652927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652922}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
---- !u!114 &1110652928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 10
---- !u!114 &1110652929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652924}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
---- !u!114 &1110652930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 12
---- !u!114 &1110652931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652926}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
 --- !u!1001 &1115050462
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7510,7 +6824,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -196.1636
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -7546,7 +6860,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -98.08177
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -7754,10 +7068,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 3475399028112879376, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: 0
-      addedObject: {fileID: 1337366915}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2982038074784577063, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
@@ -7771,66 +7082,30 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3228036627405165199, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 51461753}
-    - targetCorrespondingSourceObject: {fileID: 3094721373436678688, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1115050480}
-    - targetCorrespondingSourceObject: {fileID: 3828674898330293047, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1115050479}
     - targetCorrespondingSourceObject: {fileID: 3789322154145143801, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 51461752}
-    - targetCorrespondingSourceObject: {fileID: 2117246303383810604, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1115050478}
-    - targetCorrespondingSourceObject: {fileID: 5338620034253808900, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1796406226}
     - targetCorrespondingSourceObject: {fileID: 8521243958406799361, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 51461751}
-    - targetCorrespondingSourceObject: {fileID: 1620842587629176744, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1115050482}
-    - targetCorrespondingSourceObject: {fileID: 2117392540090695052, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1115050481}
     - targetCorrespondingSourceObject: {fileID: 3807363149398582128, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 51461754}
-    - targetCorrespondingSourceObject: {fileID: 4164975501604363346, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 775228579}
-    - targetCorrespondingSourceObject: {fileID: 4887206787929486596, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1091836193}
     - targetCorrespondingSourceObject: {fileID: 1714792241716270667, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 51461750}
     - targetCorrespondingSourceObject: {fileID: 4973965452874151882, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 758945955}
-    - targetCorrespondingSourceObject: {fileID: 3571721993364296717, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2127186050}
     - targetCorrespondingSourceObject: {fileID: 2390091569731991296, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 680847214}
-    - targetCorrespondingSourceObject: {fileID: 2585651923085023020, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2091329703}
     - targetCorrespondingSourceObject: {fileID: 6170170665246677058, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 776780380}
-    - targetCorrespondingSourceObject: {fileID: 3241749001238820141, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1091951459}
     - targetCorrespondingSourceObject: {fileID: 433255957183383553, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1037339646}
-    - targetCorrespondingSourceObject: {fileID: 1720994588246863889, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1205798869}
     - targetCorrespondingSourceObject: {fileID: 4381362943706597910, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 689280776}
@@ -7845,142 +7120,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fef0190fe552f149a5f4d51e9648cb3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
 --- !u!224 &1115050464 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
   m_PrefabInstance: {fileID: 1115050462}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &1115050465 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3475399028112879376, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050466 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1720994588246863889, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050467 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3241749001238820141, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050468 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2585651923085023020, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050469 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3571721993364296717, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050470 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4887206787929486596, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050471 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4164975501604363346, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050472 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5338620034253808900, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050473 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2117246303383810604, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050474 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3828674898330293047, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050475 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3094721373436678688, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050476 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2117392540090695052, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1115050477 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1620842587629176744, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1115050462}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1115050478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050473}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
---- !u!114 &1115050479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 10
---- !u!114 &1115050480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
---- !u!114 &1115050481
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050476}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 12
---- !u!114 &1115050482
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050477}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
 --- !u!114 &1135685122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8286,19 +7431,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1144146798}
   m_CullTransparentMesh: 1
---- !u!114 &1177510930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399828}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
 --- !u!1001 &1181874677
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8589,19 +7721,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1194340458
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381716}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1 &1204557028
 GameObject:
   m_ObjectHideFlags: 0
@@ -8738,19 +7857,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1204557028}
   m_CullTransparentMesh: 1
---- !u!114 &1205798869
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1001 &1223137355
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9021,19 +8127,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &1308602616
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652915}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1 &1317153752
 GameObject:
   m_ObjectHideFlags: 0
@@ -9243,102 +8336,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
---- !u!1 &1337366914
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1337366915}
-  - component: {fileID: 1337366918}
-  - component: {fileID: 1337366917}
-  - component: {fileID: 1337366916}
-  m_Layer: 5
-  m_Name: Dungeon parchment
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1337366915
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1337366914}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1115050465}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -16, y: -16}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1337366916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1337366914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
-  m_IgnoreLayout: 1
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
---- !u!114 &1337366917
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1337366914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 39e7364523585314cba134531ff2cf2a, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
---- !u!222 &1337366918
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1337366914}
-  m_CullTransparentMesh: 1
 --- !u!1 &1337984420
 GameObject:
   m_ObjectHideFlags: 0
@@ -9546,8 +8543,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 8}
-  m_SizeDelta: {x: 0, y: 54}
+  m_AnchoredPosition: {x: 0, y: -9}
+  m_SizeDelta: {x: 0, y: 32.7}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1379923199
 MonoBehaviour:
@@ -9556,7 +8553,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1379923197}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -9587,19 +8584,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1379923197}
   m_CullTransparentMesh: 1
---- !u!114 &1386879137
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399829}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 11
 --- !u!1 &1391722943
 GameObject:
   m_ObjectHideFlags: 0
@@ -9705,19 +8689,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 100
   m_TargetDisplay: 0
---- !u!114 &1397399749
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399827}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 12
 --- !u!1 &1422610646
 GameObject:
   m_ObjectHideFlags: 0
@@ -10626,19 +9597,6 @@ Transform:
   - {fileID: 1464425863}
   m_Father: {fileID: 1143341172}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1542975748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381721}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
 --- !u!1 &1544246154
 GameObject:
   m_ObjectHideFlags: 0
@@ -10775,19 +9733,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 220, y: 44}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1558841192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381719}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1001 &1559431392
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11011,19 +9956,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 1
   m_TargetDisplay: 0
---- !u!114 &1587225375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652916}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1 &1595355232
 GameObject:
   m_ObjectHideFlags: 0
@@ -11099,19 +10031,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1595355232}
   m_CullTransparentMesh: 1
---- !u!114 &1601793283
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399825}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1001 &1604111926
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11896,115 +10815,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
   OnWood: 1
---- !u!1 &1679191283
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1679191284}
-  - component: {fileID: 1679191287}
-  - component: {fileID: 1679191286}
-  - component: {fileID: 1679191285}
-  m_Layer: 5
-  m_Name: Dungeon parchment
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1679191284
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1679191283}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1110652914}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -16, y: -16}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1679191285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1679191283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
-  m_IgnoreLayout: 1
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
---- !u!114 &1679191286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1679191283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 39e7364523585314cba134531ff2cf2a, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 4
---- !u!222 &1679191287
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1679191283}
-  m_CullTransparentMesh: 1
---- !u!114 &1684774020
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110652921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 11
 --- !u!1 &1693396634
 GameObject:
   m_ObjectHideFlags: 0
@@ -12681,19 +11491,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1731537215}
   m_CullTransparentMesh: 1
---- !u!114 &1733187028
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1 &1738698412
 GameObject:
   m_ObjectHideFlags: 0
@@ -12956,19 +11753,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1796406226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050472}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 11
 --- !u!1001 &1807381712
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13295,7 +12079,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -196.1636
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_SizeDelta.y
@@ -13331,7 +12115,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -98.08177
       objectReference: {fileID: 0}
     - target: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -13539,10 +12323,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 3475399028112879376, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: 0
-      addedObject: {fileID: 603865360}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2982038074784577063, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
@@ -13556,66 +12337,30 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3228036627405165199, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 188690707}
-    - targetCorrespondingSourceObject: {fileID: 3094721373436678688, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1807381730}
-    - targetCorrespondingSourceObject: {fileID: 3828674898330293047, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1807381729}
     - targetCorrespondingSourceObject: {fileID: 3789322154145143801, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 188690706}
-    - targetCorrespondingSourceObject: {fileID: 2117246303383810604, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1807381728}
-    - targetCorrespondingSourceObject: {fileID: 5338620034253808900, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 780034756}
     - targetCorrespondingSourceObject: {fileID: 8521243958406799361, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 188690705}
-    - targetCorrespondingSourceObject: {fileID: 1620842587629176744, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1807381732}
-    - targetCorrespondingSourceObject: {fileID: 2117392540090695052, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1807381731}
     - targetCorrespondingSourceObject: {fileID: 3807363149398582128, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 188690708}
-    - targetCorrespondingSourceObject: {fileID: 4164975501604363346, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1542975748}
-    - targetCorrespondingSourceObject: {fileID: 4887206787929486596, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 446681087}
     - targetCorrespondingSourceObject: {fileID: 1714792241716270667, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 188690704}
     - targetCorrespondingSourceObject: {fileID: 4973965452874151882, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2121195493}
-    - targetCorrespondingSourceObject: {fileID: 3571721993364296717, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1558841192}
     - targetCorrespondingSourceObject: {fileID: 2390091569731991296, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 971763516}
-    - targetCorrespondingSourceObject: {fileID: 2585651923085023020, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 542815450}
     - targetCorrespondingSourceObject: {fileID: 6170170665246677058, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1893439492}
-    - targetCorrespondingSourceObject: {fileID: 3241749001238820141, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 646771900}
     - targetCorrespondingSourceObject: {fileID: 433255957183383553, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2147204866}
-    - targetCorrespondingSourceObject: {fileID: 1720994588246863889, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1194340458}
     - targetCorrespondingSourceObject: {fileID: 4381362943706597910, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 875457921}
@@ -13636,136 +12381,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6975168157126072881, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
   m_PrefabInstance: {fileID: 1807381712}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &1807381715 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3475399028112879376, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381716 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1720994588246863889, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381717 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3241749001238820141, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381718 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2585651923085023020, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381719 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3571721993364296717, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381720 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4887206787929486596, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381721 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4164975501604363346, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381722 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5338620034253808900, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381723 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2117246303383810604, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381724 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3828674898330293047, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381725 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3094721373436678688, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381726 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2117392540090695052, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1807381727 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1620842587629176744, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}
-  m_PrefabInstance: {fileID: 1807381712}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1807381728
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381723}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
---- !u!114 &1807381729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381724}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 10
---- !u!114 &1807381730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381725}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
---- !u!114 &1807381731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 12
---- !u!114 &1807381732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807381727}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 9
 --- !u!1001 &1814503283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15921,19 +14536,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2039450982}
   m_CullTransparentMesh: 1
---- !u!114 &2058998049
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 381399823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1001 &2065976310
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16500,10 +15102,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 19.6
+  m_fontSizeBase: 19.6
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 22
   m_fontSizeMax: 26
   m_fontStyle: 0
@@ -16557,19 +15159,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DungeonTextStyle
   OnWood: 1
---- !u!114 &2091329703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!114 &2111360669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16713,19 +15302,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7674463184335244964, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
   m_PrefabInstance: {fileID: 2125787096}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2127186050
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1115050469}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad21603eb5f917a4882cc6003c8869da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
-  Role: 3
 --- !u!1 &2137865849 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2982038074784577063, guid: 3e44211bd69e1b44e995537ddee492bd, type: 3}

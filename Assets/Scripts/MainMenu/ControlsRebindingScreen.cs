@@ -122,7 +122,7 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
             "Options" => "Settings", "Wait" => "Wait a turn", "Submit" => "Confirm", "Cancel" => "Back",
             "Click" => "Select / activate", "RightClick" => "Cancel target", "OpenEquipment" => "Equipment",
             "OpenStats" => "Stats", "ToggleFullControl" => "Full Control", "Presentation" => "3D / terminal view",
-            "Interact" => "Interact / enter", _ => action.name
+            "History" => "Event history", "Interact" => "Interact / enter", _ => action.name
         };
         var binding = action.bindings[index];
         if (binding.isPartOfComposite)

@@ -240,16 +240,20 @@ public class Minimap : MonoBehaviour
     {
         // The location belongs to the map. Keep it available when only the map
         // texture is toggled off, and hide the whole group for menus/terminal mode.
-        if (locationPanel != null) locationPanel.SetActive(!dockHidden && !terminalHidden);
-        if (dockHidden || terminalHidden)
+        bool hidden = dockHidden || terminalHidden;
+        if (locationPanel != null) locationPanel.SetActive(!hidden);
+        foreach (var panel in GetComponentsInChildren<Image>(true))
         {
-            foreach (var panel in GetComponentsInChildren<Image>(true)) panel.enabled = false;
+            // The location group controls its visibility; preserve the authored
+            // enabled state of its background through menu and map-mode changes.
+            if (locationPanel != null && panel.transform.IsChildOf(locationPanel.transform)) continue;
+            panel.enabled = !hidden && currentMode == MinimapMode.Full;
+        }
+        if (hidden)
+        {
             minimapImage.gameObject.SetActive(false);
             return;
         }
-        foreach (var panel in GetComponentsInChildren<Image>(true)) panel.enabled = currentMode == MinimapMode.Full;
-        if (locationPanel != null)
-            foreach (var panel in locationPanel.GetComponentsInChildren<Image>(true)) panel.enabled = true;
         if (Frame != null) Frame.enabled = currentMode != MinimapMode.Hidden;
         switch (currentMode)
         {
@@ -276,16 +280,18 @@ public class Minimap : MonoBehaviour
             GameUISkin.Rect("Map location", transform, Vector2.up, Vector2.one);
         panel.anchorMin = new Vector2(0, 1); panel.anchorMax = Vector2.one;
         panel.pivot = new Vector2(.5f, 0);
-        panel.offsetMin = new Vector2(0, 8); panel.offsetMax = new Vector2(0, 62);
+        panel.offsetMin = new Vector2(0, -9); panel.offsetMax = new Vector2(0, 23.7f);
         locationPanel = panel.gameObject;
         var backing = panel.GetComponent<Image>() ?? panel.gameObject.AddComponent<Image>();
         backing.color = new Color(.10f, .15f, .17f, .92f); backing.raycastTarget = false;
+        backing.enabled = false;
         label.transform.SetParent(panel, false);
         label.name = "Floor location";
         label.rectTransform.anchorMin = Vector2.zero; label.rectTransform.anchorMax = Vector2.one;
         label.rectTransform.offsetMin = new Vector2(16, 7); label.rectTransform.offsetMax = new Vector2(-16, -7);
-        label.margin = Vector4.zero; label.fontSize = 26; label.fontSizeMin = 22; label.fontSizeMax = 26;
-        label.enableAutoSizing = true; label.alignment = TextAlignmentOptions.Center;
+        label.enableAutoSizing = false;
+        label.margin = Vector4.zero; label.fontSize = 19.6f; label.fontSizeMin = 22; label.fontSizeMax = 26;
+        label.alignment = TextAlignmentOptions.Center;
         label.color = GameUITheme.LightInk; label.raycastTarget = false;
         label.text = "Floor 2 / 5";
         UnityEditor.EditorUtility.SetDirty(this);

@@ -92,6 +92,7 @@ public sealed class OverworldScene : MonoBehaviour
         Context = common.CampaignContext;
         gameObject.AddComponent<OverworldMenuManager>();
         ResourceHUD.Ensure(this);
+        TravelPartyHud.Ensure(this);
         ScenePresentation.Ensure(this);
         var campaignHud = AuthoredUI.Require<CampaignHUD>(transform);
         campaignHud.Overworld=this;

@@ -106,7 +106,7 @@ namespace EternalEnigma.Tests
                 yield return ClickPortrait(actor);
                 menu.EntryButtons[0].Select();yield return null;
                 Canvas.ForceUpdateCanvases();
-                Assert.That(menu.HeroText.gameObject.activeSelf,Is.True);
+                Assert.That(menu.HeroText.gameObject.activeSelf,Is.False);
                 Assert.That(menu.HeroText.text,Is.EqualTo(GameplayText.Format(actor.CharacterName)));
                 Assert.That(menu.DetailsControl.Scroll.gameObject.activeInHierarchy,Is.True);
                 Assert.That(menu.Details.text,Does.Contain(longSkill.Description));
@@ -114,14 +114,10 @@ namespace EternalEnigma.Tests
                 Assert.That(menu.BackButton.gameObject.activeSelf,Is.False);
                 Assert.That(menu.Panel.GetComponentsInChildren<DungeonDialogClose>().Length,Is.EqualTo(1));
                 var list=(RectTransform)menu.scrollView.transform;
-                Assert.That(list.anchorMin,Is.EqualTo(new Vector2(.035f,.48f)));
+                Assert.That(list.anchorMin,Is.EqualTo(new Vector2(.035f,.16f)));
                 Assert.That(list.anchorMax,Is.EqualTo(new Vector2(.965f,.89f)));
                 yield return Capture("skills",resolution);
-                float listPosition=menu.scrollView.verticalNormalizedPosition;
-                menu.DetailsControl.Select();
-                ExecuteEvents.Execute(menu.DetailsControl.gameObject,new AxisEventData(EventSystem.current){moveDir=MoveDirection.Down},ExecuteEvents.moveHandler);
-                Assert.That(menu.DetailsControl.Scroll.verticalNormalizedPosition,Is.LessThan(1));
-                Assert.That(menu.scrollView.verticalNormalizedPosition,Is.EqualTo(listPosition).Within(.001f));
+                Assert.That(MenuUIInputModule.IsUsable(menu.DetailsControl.gameObject),Is.False,"Detached descriptions never take navigation focus.");
                 menu.EntryButtons.First(button=>button.GetComponentInChildren<TMPro.TMP_Text>().text.Contains("Fire Bolt")).Select();
                 yield return null;Canvas.ForceUpdateCanvases();
                 Assert.That(menu.Details.text,Does.Contain("Fire Bolt"));
@@ -153,7 +149,7 @@ namespace EternalEnigma.Tests
                 GameMessages.ShowHistory();yield return null;
                 var history=manager.CurrentDialog;GameMessages.ShowHistory();Assert.That(manager.CurrentDialog,Is.SameAs(history));
                 var reader=(EventHistoryDialog)history;
-                Assert.That(reader.GetComponentsInChildren<DungeonDialogClose>().Length,Is.EqualTo(1));
+                Assert.That(reader.GetComponentsInChildren<DungeonDialogClose>().Length,Is.Zero,"The feed header is the collapse control.");
                 Assert.That(reader.Reader.navigation.selectOnRight,Is.SameAs(reader.Back));
                 Assert.That(reader.Back.navigation.selectOnLeft,Is.SameAs(reader.Reader));
                 reader.Setup(System.Array.Empty<string>());
@@ -164,8 +160,7 @@ namespace EternalEnigma.Tests
                 Assert.That(reader.scrollView.verticalNormalizedPosition,Is.GreaterThan(0));
                 yield return Capture("history",resolution);history.CloseDialog();yield return null;
                 reader.Setup(System.Array.Empty<string>());
-                Assert.That(reader.Panel.anchorMin,Is.EqualTo(Vector2.zero));
-                Assert.That(reader.Panel.GetComponent<Image>().sprite,Is.EqualTo(GameUITheme.Current.DungeonWood));
+                UnifiedPartyMenuTests.AssertExpandedHistoryLayout(reader);
                 Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(turns));Assert.That(actor.Vitals.Mana,Is.EqualTo(mana));
                 Assert.That(Camera.main.transform.position,Is.EqualTo(camera));
             }
@@ -182,7 +177,45 @@ namespace EternalEnigma.Tests
                 var row=tab==PartyMenuTab.Stats
                     ?menu.EntryButtons.First(button=>button.GetComponentInChildren<TMPro.TMP_Text>().text.StartsWith("STR "))
                     :menu.EntryButtons.Last();
-                row.Select();row.onClick.Invoke();yield return null;
+                row.Select();yield return null;
+                if(tab==PartyMenuTab.Stats)
+                {
+                    Assert.That(menu.Details.isActiveAndEnabled,Is.True);
+                    Assert.That(menu.Details.text,Does.Contain("Each point grants +1 Attack, +3 maximum HP"));
+                    Assert.That(menu.DetailsControl.Scroll.transform.IsChildOf(menu.Panel),Is.False);
+                    Assert.That(MenuUIInputModule.IsUsable(menu.DetailsControl.gameObject),Is.False);
+                    Assert.That(manager.CurrentDialog,Is.SameAs(menu),"Selecting a stat immediately shows its explanation.");
+                    Directory.CreateDirectory("Temp/StatsDescriptions");
+                    foreach(var resolution in new[]{new Vector2(960,600),new Vector2(1280,720)})
+                    {
+                        view.GetType().GetMethod("SetCustomResolution",Flags).Invoke(view,new object[]{resolution,"Stats descriptions"});
+                        yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                        UnifiedPartyMenuTests.AssertEventFeedWidth();
+                        ScreenCapture.CaptureScreenshot($"Temp/StatsDescriptions/stats-{resolution.x}x{resolution.y}.png");
+                        yield return new WaitForSecondsRealtime(.2f);
+                    }
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.DownArrow));yield return null;yield return null;
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;yield return null;
+                    Assert.That(menu.Details.text,Does.Contain("Each point grants +2 maximum Mana"));
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Enter));yield return null;yield return null;
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;yield return null;
+                    Assert.That(manager.CurrentDialog,Is.SameAs(menu),"Keyboard Confirm does not open a redundant details screen.");
+                    InputSystem.QueueStateEvent(pad,new GamepadState().WithButton(GamepadButton.DpadDown));yield return null;yield return null;
+                    InputSystem.QueueStateEvent(pad,new GamepadState());yield return null;yield return null;
+                    Assert.That(menu.Details.text,Does.Contain("AGI's Evasion and Crit bonuses cap at 25%"));
+                    InputSystem.QueueStateEvent(pad,new GamepadState().WithButton(GamepadButton.South));yield return null;yield return null;
+                    InputSystem.QueueStateEvent(pad,new GamepadState());yield return null;yield return null;
+                    Assert.That(manager.CurrentDialog,Is.SameAs(menu),"Controller Confirm also keeps the stat list open.");
+                    var last=menu.EntryButtons.Last();last.Select();
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.DownArrow));yield return null;yield return null;
+                    InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;yield return null;
+                    Assert.That(EventSystem.current.currentSelectedGameObject,Is.SameAs(last.gameObject));
+                    row.onClick.Invoke();yield return null;
+                    Assert.That(manager.CurrentDialog,Is.SameAs(menu),"Clicking a stat only updates its explanation.");
+                    Assert.That(menu.Details.text,Does.Contain("Each point grants +1 Attack"));
+                    continue;
+                }
+                row.onClick.Invoke();yield return null;
                 Assert.That(manager.CurrentDialog,Is.TypeOf<PartyMenuPicker>());
                 var picker=(PartyMenuPicker)manager.CurrentDialog;
                 Assert.That(picker.Rows.GetComponentsInChildren<AuthoredButton>(),Is.Empty,"A stat breakdown never offers Use, Throw or Drop.");
@@ -363,6 +396,9 @@ namespace EternalEnigma.Tests
         static IEnumerator Capture(string name,Vector2 size)
         {
             Canvas.ForceUpdateCanvases();
+            UnifiedPartyMenuTests.AssertEventFeedWidth();
+            if(MenuManager.Instance.CurrentDialog is EventHistoryDialog history)
+                UnifiedPartyMenuTests.AssertExpandedHistoryLayout(history);
             ScreenCapture.CaptureScreenshot($"Temp/DungeonDock/{name}-{size.x}x{size.y}.png");
             yield return new WaitForSecondsRealtime(.2f);
         }

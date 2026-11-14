@@ -16,6 +16,65 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup() => harness.Cleanup();
 
         [UnityTest]
+        public IEnumerator CompactPreviewUsesAuthoredSettingsAndFourRenderedLines()
+        {
+            var feed=Object.FindFirstObjectByType<GameMessages>();
+            var scroll=feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>();
+            var text=scroll.content.GetComponent<TMP_Text>();
+            var view=UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
+            const System.Reflection.BindingFlags flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic;
+            var sizeProperty=view.GetType().GetProperty("selectedSizeIndex",flags);
+            var originalSize=sizeProperty.GetValue(view);
+            bool originalTerminal=TerminalMode.Requested;
+            try
+            {
+                TerminalMode.SetRequested(false);
+                System.IO.Directory.CreateDirectory("Temp/HistoryLayoutCapture");
+                foreach(var size in new[]{new Vector2(960,600),new Vector2(1280,720),new Vector2(1920,1080),new Vector2(1280,800),new Vector2(2560,1080)})
+                {
+                    view.GetType().GetMethod("SetCustomResolution",flags).Invoke(view,new object[]{size,"Four-line event feed"});
+                    yield return null;yield return null;
+                    GameMessages.BeginTurn();
+                    for(int i=1;i<=5;i++)GameMessages.Post("Event "+i+": the party is ready.");
+                    yield return null;Canvas.ForceUpdateCanvases();text.ForceMeshUpdate();
+                    UnifiedPartyMenuTests.AssertEventFeedWidth();
+                    Assert.That(text.fontSize,Is.EqualTo(33.11f).Within(.001f));
+                    Assert.That(text.enableAutoSizing,Is.False);
+                    Assert.That(scroll.viewport.anchoredPosition,Is.EqualTo(new Vector2(0,26.23f)));
+                    Assert.That(scroll.viewport.sizeDelta.y,Is.EqualTo(19.8808f).Within(.001f));
+                    Assert.That(text.text,Does.Not.Contain("Event 1:").And.Contain("Event 2:").And.Contain("Event 5:"));
+                    Assert.That(text.textInfo.lineCount,Is.EqualTo(4));
+                    Assert.That(text.isTextOverflowing,Is.False,"All four lines fit without clipping or shrinking the chosen font.");
+                    Assert.That(text.renderedHeight,Is.LessThanOrEqualTo(scroll.viewport.rect.height+.1f));
+                    ScreenCapture.CaptureScreenshot($"Temp/HistoryLayoutCapture/compact-{size.x}x{size.y}.png");
+                    yield return new WaitForSecondsRealtime(.15f);
+                    GameMessages.BeginTurn();yield return null;text.ForceMeshUpdate();
+                    Assert.That(feed.TurnEvents,Is.Empty,"Starting a turn still clears its separate action record.");
+                    Assert.That(text.textInfo.lineCount,Is.EqualTo(4),"The history preview retains four recent lines between turns.");
+                    Assert.That(text.text,Does.Contain("Event 2:").And.Contain("Event 5:"));
+
+                    GameMessages.ShowHistory();yield return null;
+                    var history=(EventHistoryDialog)MenuManager.Instance.CurrentDialog;
+                    UnifiedPartyMenuTests.AssertExpandedHistoryLayout(history);
+                    Assert.That(history.Entries.text,Does.Contain("Event 1:"));
+                    Assert.That(history.Entries.fontSize,Is.EqualTo(text.fontSize));
+                    history.CloseDialog();yield return null;yield return null;
+                    Assert.That(text.textInfo.lineCount,Is.EqualTo(4));
+                }
+                GameMessages.BeginTurn();
+                string longEvent=string.Join(" ",Enumerable.Repeat("The party continues exploring the dungeon.",30));
+                GameMessages.Post(longEvent);yield return null;text.ForceMeshUpdate();
+                Assert.That(text.textInfo.lineCount,Is.EqualTo(4),"Wrapped messages use four rendered lines, not four unbounded entries.");
+                Assert.That(feed.History.Last(),Is.EqualTo(longEvent),"The complete event remains available in expanded History.");
+                GameMessages.Post("Newest event");yield return null;text.ForceMeshUpdate();
+                Assert.That(text.textInfo.lineCount,Is.EqualTo(4));
+                Assert.That(text.text,Does.EndWith("Newest event"));
+                Assert.That(text.isTextOverflowing,Is.False);
+            }
+            finally {sizeProperty.SetValue(view,originalSize);TerminalMode.SetRequested(originalTerminal);}
+        }
+
+        [UnityTest]
         public IEnumerator ResolvedDamageAndOverheadMessagesReachNonBlockingFeed()
         {
             var ally = harness.Ally;
@@ -32,7 +91,7 @@ namespace EternalEnigma.Tests
             GameMessages.Post("Gate opened!");
             Assert.That(feed.GetComponentsInChildren<TMP_Text>().Any(t => t.text.Contains("Gate opened!")), Is.True);
             Assert.That(feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>(), Is.Not.Null);
-            Assert.That(feed.GetComponentsInChildren<TMP_Text>().Last().richText, Is.False);
+            Assert.That(feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>().content.GetComponent<TMP_Text>().richText, Is.False);
             yield return null;
             System.IO.Directory.CreateDirectory("Temp/MessagePreview");
             ScreenCapture.CaptureScreenshot("Temp/MessagePreview/messages.png");

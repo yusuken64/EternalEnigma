@@ -10,6 +10,45 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Party Portraits")]
+    public static void RunPartyPortraits() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.PartyPortraitTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Event Feed Defaults")]
+    public static void RunEventFeedDefaults() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameMessageTests.CompactPreviewUsesAuthoredSettingsAndFourRenderedLines",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.HistoryShortcutTogglesAcrossPresentationsAndRespectsRebinding",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Stats Descriptions")]
+    public static void RunStatsDescriptions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonDockTests.StatAndEquipmentSummariesExplainWithoutItemCommands",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownPassivesAppearOnlyInStatsWithRanksAndDescriptions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonPassivesAppearOnlyInStatsWithoutSpendingActions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run History Shortcut")]
+    public static void RunHistoryShortcut() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.HistoryShortcutTogglesAcrossPresentationsAndRespectsRebinding",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.SettingsInteractionTests.TerminalHistoryButtonAndShortcutHaveOneUICue");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Skill Descriptions")]
+    public static void RunSkillDescriptions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.SkillSelectionExplainsBeforeCastingWithoutTakingDescriptionFocus",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.InventorySelectionExplainsBreadBeforeOpeningActions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.ControllerFlowTests.TownMovementInventorySkillsAndSettingsUseControllerOnly");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Inventory Descriptions")]
+    public static void RunInventoryDescriptions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.InventorySelectionExplainsBreadBeforeOpeningActions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownKeyboardInventoryOpensUsesItemAndCloses",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Controls Rebinding EditMode")]
     public static void RunControlsRebindingEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
         "EternalEnigma.Tests.ControlBindingsTests", "EternalEnigma.Tests.InputPromptsTests");
@@ -344,9 +383,13 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Event History Views")]
     public static void RunEventHistoryViews()=>Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.HistoryShortcutTogglesAcrossPresentationsAndRespectsRebinding",
         "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
         "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonRootSwitchingDoesNotConsumeATurn",
         "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions",
+        "EternalEnigma.Tests.TerminalDungeonAuditTests.DungeonDockTargetAndHistoryFitAllSizesAndRestorePresentation",
+        "EternalEnigma.Tests.SettingsInteractionTests.TerminalHistoryButtonAndShortcutHaveOneUICue",
         "EternalEnigma.Tests.TerminalPlayModeTests.DungeonTerminalHidesDuplicateUiButKeepsMapAndHistory");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Menu Layout")]

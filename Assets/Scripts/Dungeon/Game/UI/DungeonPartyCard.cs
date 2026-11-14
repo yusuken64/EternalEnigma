@@ -55,7 +55,42 @@ public sealed class DungeonPartyCard : MonoBehaviour
             button.navigation=new Navigation { mode=Navigation.Mode.None }; button.gameObject.SetActive(false);
             card.StatusButtons[i]=button;
         }
+        card.AuthorCompactLayout();
         return card;
+    }
+    // Layout captured from the reviewed Avery card. Keep each slot's vertical
+    // placement and character-specific contents while sharing its presentation.
+    public void AuthorCompactLayout()
+    {
+        var rect=(RectTransform)transform;
+        rect.anchoredPosition=new Vector2(-98.08177f,rect.anchoredPosition.y);
+        rect.sizeDelta=new Vector2(-196.1636f,rect.sizeDelta.y);
+        display.NameText.rectTransform.anchorMax=new Vector2(.965f,.95f);
+        display.NameText.rectTransform.anchoredPosition=new Vector2(0,.7000046f);
+        display.NameText.rectTransform.sizeDelta=new Vector2(0,9.0069f);
+        display.NameText.margin=new Vector4(0,11.7384291f,1.652368f,0);
+        foreach(var bar in new[]{display.HpDisplay,display.ManaDisplay,display.HungerDisplay,display.LevelDisplay})
+        {
+            var barRect=(RectTransform)bar.transform;
+            barRect.anchorMax=new Vector2(.965f,barRect.anchorMax.y);
+            UnityEditor.EditorUtility.SetDirty(barRect);
+            if(UnityEditor.PrefabUtility.IsPartOfPrefabInstance(barRect))
+                UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(barRect);
+        }
+        var level=(RectTransform)display.LevelDisplay.transform;
+        level.anchoredPosition=new Vector2(0,7);
+        order.rectTransform.anchoredPosition=new Vector2(0,-2.8f);
+        order.alignment=TextAlignmentOptions.Left;
+        order.margin=new Vector4(0,0,17.6149731f,0);
+        order.enableAutoSizing=true;order.fontSizeMin=10;order.fontSizeMax=18;
+        var hpFill=display.HpDisplay.StatValueSlider.fillRect.GetComponent<Image>();
+        hpFill.type=Image.Type.Simple;
+        foreach(var component in new Component[]{rect,display.NameText,display.NameText.rectTransform,level,order.rectTransform,order,hpFill})
+        {
+            UnityEditor.EditorUtility.SetDirty(component);
+            if(UnityEditor.PrefabUtility.IsPartOfPrefabInstance(component))
+                UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(component);
+        }
     }
     private static StatsDisplay Bar(Transform parent,float y,Color color,float height=.16f)
     {
@@ -70,6 +105,14 @@ public sealed class DungeonPartyCard : MonoBehaviour
     }
 #endif
     public void Bind(CharacterStatsDisplay value) { display=value; statusKey=null; }
+    internal void ShowTravelState(TownAlly hero,bool leader,bool selected)
+    {
+        portraitHighlight.enabled=selected;
+        portraitHighlight.color=new Color(1,.84f,.3f,1);
+        order.text=GameplayText.Format((leader?"Leader":"Following")+
+            (hero.PendingAttributePoints>0?$"  ▲ {hero.PendingAttributePoints}":""));
+        foreach(var button in StatusButtons)button.gameObject.SetActive(false);
+    }
     private void Update()
     {
         if (display == null || display.Character is not Ally ally || Game.Instance == null) return;

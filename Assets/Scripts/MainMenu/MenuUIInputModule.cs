@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using TMPro;
+using Object = UnityEngine.Object;
 
 /// <summary>Owns the menu action map, dialog focus and input consumption for one scene.</summary>
 public class MenuUIInputModule : InputSystemUIInputModule
@@ -22,6 +23,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public InputAction OpenStats { get; private set; }
     public bool UsingGamepad => ControlDeviceState.Gamepad;
     private DungeonControls controls;
+    private InputAction historyAction;
     private int consumedFrame = -1;
     private PartyMenu tabMenu;
     private int tabDirection;
@@ -52,6 +54,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
         PreviousHero = uiMap.FindAction("InspectPreviousHero");
         OpenEquipment = uiMap.FindAction("OpenEquipment");
         OpenStats = uiMap.FindAction("OpenStats");
+        historyAction = uiMap.FindAction("History", true);
         actionsAsset = controls.asset;
         point = Reference(UI.Point);
         move = Reference(UI.Navigate);
@@ -282,6 +285,30 @@ public class MenuUIInputModule : InputSystemUIInputModule
             AudioManager.Instance?.PlayCue(SoundCue.Navigate);
     }
 
+    private void ProcessHistoryShortcut()
+    {
+        if (InputConsumed || !historyAction.WasPressedThisFrame()) return;
+        var common = Common.InstanceOrNull;
+        if (common == null || common.GlobalSettings.IsOpen) return;
+        var owner = scopes.Count > 0 ? scopes[^1].Owner : null;
+        if (owner is EventHistoryDialog reader)
+        {
+            AudioManager.Instance?.PlayCue(SoundCue.Cancel);
+            reader.CloseDialog();
+        }
+        else
+        {
+            if (owner != null && owner is not PartyMenu) return;
+            if (Game.Instance?.TurnManager?.IsProcessingTurn == true ||
+                Object.FindFirstObjectByType<Town>()?.TownPlayer?.IsBusy == true ||
+                Object.FindFirstObjectByType<OverworldScene>()?.IsMoving == true) return;
+            if (Object.FindFirstObjectByType<GameMessages>() == null) return;
+            GameMessages.ShowHistory();
+        }
+        ConsumeInput();
+        common.MenuInputHandler.ClearInputThisFrame();
+    }
+
     private void ProcessInput()
     {
         ControlDeviceState.Poll();
@@ -322,6 +349,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
             return;
         }
         scopes.RemoveAll(s => s.Owner == null || s.Root == null || !s.Root.gameObject.activeInHierarchy);
+        ProcessHistoryShortcut();
         // World targets use directional/confirm input in TargetDialog and MenuManager.
         // Keep EventSystem enabled so a settings dialog pushed above targeting still works.
         if (scopes.Count > 0 && scopes[^1].Owner is JuicyChickenGames.Menu.TargetDialog)

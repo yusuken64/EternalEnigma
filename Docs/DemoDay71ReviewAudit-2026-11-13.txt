@@ -1,0 +1,405 @@
+ETERNAL ENIGMA — DEMO DAY 71 REVIEW AUDIT
+Audited: 2026-11-13
+Review page: https://itch.io/jam/agdg-demo-day-71/rate/2446295
+Source checkout: 217d0e75 (2026-11-13, "update")
+
+ASSESSMENT
+
+The recurring problem is that players cannot reliably read the game or predict the
+result of an action. That affects movement, equipment, status effects, targeting,
+saving, and navigation. The party system and persistent adventure are the strongest
+reasons reviewers give for wanting to continue. Improving access to those strengths
+is a better next milestone than adding more content.
+
+"More polish" can be made concrete: show item effects before use, expose status
+mechanics, reduce HUD obstruction, distinguish scenery from gameplay objects, make
+short movement inputs predictable, and protect progress between dungeons.
+
+FOLLOW-UP: Runtime verification is complete in
+Docs/DemoDay71ClaimVerification-2026-11-13.txt. That report supersedes the current
+status of claims below. This original media/source pass is retained for its full
+text, image, and video evidence index. It is not proof that every historical
+defect persists. The opening prompt, Controls paging, and Frailty entries below
+have been updated to reflect the follow-up.
+
+COVERAGE AND LIMITS
+
+- Read all 13 live comment posts: six reviewers, six developer replies, and one
+  reviewer follow-up. Posts span November 6–12, 2026.
+- Inspected all 13 game-related image assets: six feedback screenshots, six gallery
+  screenshots at original resolution, and the cover GIF's complete 42-frame cycle.
+  Site logos, avatars, and cards advertising reviewers' unrelated games are outside
+  the game-evidence scope.
+- Inspected both embedded YouTube videos: 29:23 + 15:48 = 45:11.
+  Read their complete available English automatic captions, examined 272 frames
+  sampled every 10 seconds across both recordings, and enlarged selected moments.
+  This was transcript-assisted visual inspection, not continuous audiovisual
+  playback. Brief events between samples can be missed. Audio quality, music
+  repetition, and movement latency were not independently measured.
+- Automatic captions contain recognition errors. Interpretations were checked
+  against visible UI where possible; quotations are deliberately avoided.
+- This original media pass did not run Unity tests. The separate follow-up now
+  documents runtime tests and the public-build opening check. No gameplay fixes
+  were made. Recorded builds have not been proven identical to this checkout.
+
+PRIORITIZED FINDINGS
+
+DD71-01 — historical opening blocker: checked home prompts now work
+Evidence: Big Greg reported an Enter prompt that did nothing in the web build.
+The developer reproduced a Space/Enter mismatch and described a future-build fix.
+https://itch.io/post/17826817
+https://itch.io/post/17827787
+Follow-up status: the public WebGL build reports version 0.0.337. From a fresh
+slot, the book, chest, and front door displayed Space and responded correctly;
+the home key was acquired and the door unlocked. The reported home-opening
+mismatch was not reproduced. This does not certify every later/rebound prompt.
+Action: extend that default-key home verification through bakery, trainer, sleep,
+dungeon entry, targeting, alternate/rebound keys, and controller prompts.
+Acceptance: every displayed default, rebound, alternate, and controller hint invokes
+the action it describes. Browser focus and UI-confirm/world-interact are tested
+separately. Treat failure as a release blocker.
+
+DD71-02 — P1: inventory hides information needed to make decisions
+Evidence: both videos show item confusion; SPEC requests full stats. Vagrant's
+Oblivion Draught action panel around 14:09 has actions but no effect explanation.
+https://www.youtube.com/watch?v=HxmN7nEjaGo&t=849s
+https://itch.io/post/17856436
+Source-confirmed cause:
+  Assets/Scripts/Dungeon/Game/Menu/PartyMenu.cs:125
+    Description scroll and parchment are enabled only for the Skills tab.
+  PartyMenuContexts.cs:43
+    Inventory entries nevertheless build item descriptions and comparison data.
+  PartyMenuContexts.cs:318 and ActionDialog.cs:90
+    Dungeon inventory opens the item action dialog, which sets name/actions but
+    does not display the item's description.
+Equipment's detailed picker can expose information that inventory does not, which
+explains why players sometimes discover descriptions only later.
+The Arcane Wand issue is principally terminology: its asset grants Strength +6;
+StatPreview.Diff labels that same attribute "Attack". A resulting total of 13 is
+not evidence of an extra hidden +6 calculation.
+Action: show description, all modifiers, requirements, current/resulting totals,
+consumption, and turn cost on selection and before confirmation, consistently
+across inventory, equipment, and shop.
+Acceptance: a new player can explain what Oblivion Draught and Explosion do, and
+why the wand changes their total, without using/equipping them experimentally.
+
+DD71-03 — P1: the HUD and scene obscure tactical information
+Evidence: SPEC's objective and target screenshots directly show obstruction and
+misalignment. Both videos show crowded HUD layouts; the shop footer at elb 14:51
+extends below its parchment.
+https://img.itch.zone/aW1nLzMyMDI4Njg5LmpwZw==/original/xC7Okh.jpg
+https://img.itch.zone/aW1nLzMyMDI4NzMwLmpwZw==/original/oKVnbm.jpg
+https://www.youtube.com/watch?v=3CZBMwkz9pY&t=891s
+Source: OpeningGuidance.cs:33 anchors a broad objective panel in the upper playfield;
+line 76 keeps its height between 66 and 124 reference pixels. The camera follows
+with a fixed offset; no player zoom control was found in the inspected gameplay
+camera path.
+Action: make the persistent objective compact/collapsible, collapse an idle event
+feed, offer zoom, fix target/shop text containment, and preserve adjacent-tile
+visibility with four party cards. Shorten binding hints instead of listing every
+alternate key in a footer.
+Acceptance: inspect 1280x720 and the intended WebGL viewport at default browser
+scale, plus larger resolutions. Long names, four heroes, status icons, targeting,
+shops, and rebinding must fit without masking the selected actor or nearby threats.
+Separate issue: SPEC's LOS image and elb 10:31–10:46 show confusing wall/passage
+visibility. They do not prove incorrect logical FOV. Reproduce corners, doorways,
+multi-tile enemies, health-bar occlusion, and fog/mesh boundaries before changing
+the sight algorithm.
+
+DD71-04 — P1: movement precision and diagonal discoverability
+Evidence: movement complaints recur in Vagrant, SPEC, Feelmaker, and elb's video.
+Vagrant believes diagonal attacks are unavailable; SPEC reports alternate-key
+turn-in-place failure and requests dedicated diagonal bindings.
+https://itch.io/post/17874727
+https://itch.io/post/17851945
+Current source already supports eight facings and HoldPosition. The default binding
+is Shift; PlayerController uses a 0.1-second movement interval and a 0.12-second
+diagonal-release grace period. This is not evidence that diagonal attack is absent.
+The alternate-key defect and exact overshoot mechanism remain unverified.
+Action: teach aim-in-place with a visible diagonal target; provide optional direct
+diagonal bindings. Measure tap/hold behavior separately from animation and camera
+scale before tuning.
+Acceptance: test controlled tap durations around the repeat threshold, long holds,
+release during animation, rapid direction changes, WASD/arrows/rebound keys, and
+controller input at varied frame rates and animation settings. No unintended extra
+action after release; holding position must rotate without walking.
+
+DD71-05 — P1: leaving the overworld can discard a substantial session
+Evidence: Vagrant attempts to stop at 26:42 onward, then reloads an earlier home
+save. At 27:15 the slot shows 320 gold and Riley alone; the resumed world later has
+the previously opened gate locked.
+https://www.youtube.com/watch?v=HxmN7nEjaGo&t=1602s
+Current source: SaveSystem.Capture does not write to disk. CampaignTravelService
+captures after dungeon completion, while ReturnToMenu reloads the saved snapshot.
+CampaignSaving.Commit performs the actual disk write. GlobalSettings.cs:170 warns
+that unsaved progress will be lost.
+Classification: save-policy/usability problem, not demonstrated corruption or
+silent loss without a warning.
+Action: choose a clear policy for saving safely outside dungeons: an overworld save,
+milestone autosaves, or suspend/resume separate from the bed checkpoint.
+Acceptance: recruit, finish a repeatable dungeon, collect rewards, open a gate,
+leave/relaunch from the overworld; verify all intended progress persists. Also
+verify failure recovery and existing checkpoint/death rules.
+
+DD71-06 — P1: the opening delays and obscures the game's distinguishing features
+Evidence: elb finishes the starter dungeon but stops without recruiting or reaching
+the overworld. Both recordings include searching for required town destinations.
+https://www.youtube.com/watch?v=3CZBMwkz9pY
+https://www.youtube.com/watch?v=HxmN7nEjaGo&t=119s
+Action: give the current required destination a clear landmark/marker; reduce
+redundant procedural directions; let instructions remain readable until dismissed;
+distinguish the safe practice encounter from subsequent real enemies. Preview
+companions and the world journey early, and guide the first recruitment/exit.
+Improve skill copy: identify the stat basis of a percentage, distinguish rank from
+mana cost, describe the next rank, and explain resource recovery.
+Acceptance: a first-time player can find the trainer and dungeon, understand the
+practice transition, and reach the party/overworld feature without external help.
+Use completion and confusion observations rather than an arbitrary speedrun target.
+
+DD71-07 — P1: encounter density and readability undermine positioning
+Evidence: shiro's spider screenshot shows severe overlap; Vagrant struggles with a
+large populated room, then uses Explosion around 12:07. The feedback supports an
+encounter-readability/pacing problem, not a proven impossibility of winning.
+https://img.itch.zone/aW1nLzMyMTI5NTcwLnBuZw==/original/gsNvZ0.png
+https://www.youtube.com/watch?v=HxmN7nEjaGo&t=727s
+Developer advice about fighting spiders in hallways is useful design intent that
+the game needs to communicate before overwhelming the player.
+Action: audit early enemy budgets, spawn/reproduction limits, retreat routes, body
+overlap, and the teaching of chokepoints. Make explosive effects explicit, including
+self/allied damage where applicable. The current Explosion item description is
+vague even though its effect asset specifies damage.
+Acceptance: test representative seeds/classes with and without that consumable.
+A player should perceive multiple viable tactical responses; the required response
+must not depend on guessing an unidentified item. Tune obstacles by their effect
+on routes, not merely by reducing every room's prop count.
+
+DD71-08 — P1: status indicators do not explain the rules
+Evidence: shiro cannot tell what Frail does; Vagrant also questions it.
+https://itch.io/post/17879335
+Runtime correction: portrait status buttons exist, but clicking Frailty shows
+only its name and a turn count, not the Strength penalty or stack/removal rules.
+The earlier claim here that Frailty persists until cleansed was incorrect.
+Although its Tick method is empty, the production prefab has TurnsLeft=1 and
+Character.GetStatusEffectSideEffects removes it at that value. A real potion use
+ended with no active Frailty; direct application reduced Strength 11 to 10 before
+turn cleanup removed it. Resolve this lifecycle/documented-intent inconsistency
+before describing the effect as permanent.
+Action: show effect, stack count, duration model, and removal method on inspection;
+make the new-debuff notification and portrait affordance discoverable.
+Acceptance: after receiving Frailty, the player can identify its current penalty,
+whether it expires, and how to remove it. Verify all status types rather than
+copying one generic duration string onto persistent effects.
+
+DD71-09 — P1 design review: last-hit XP conflicts with autonomous companions
+Evidence: shiro reports an underleveled recruit; the developer confirms deliberate
+last-hit XP. Vagrant's companion later gains levels, so companions are not wholly
+unable to earn experience.
+Current source: MovementAction.cs:523 awards AddXPAction to the attacker; that action
+updates the specified character's experience (line 590).
+Action: prototype shared active-party XP or a catch-up rule and compare it with the
+current system. If retaining last-hit progression, explicitly teach it and provide
+reliable ways for a weak recruit to contribute.
+Acceptance: a newly recruited hero makes visible progress during a normal dungeon
+without the player needing to sabotage the stronger hero's automatic attacks.
+Balance choice, not a confirmed missing XP award.
+
+DD71-10 — P2: bag pressure arrives before players can evaluate loot
+Evidence: SPEC requests storage; both videos reach a full bag. Inventory.cs:8 sets
+the default capacity to 10. The house chest creates a storage expectation.
+Action: fix item comparison first, then evaluate capacity, stacking, quick disposal,
+and a shared town stash. A paid capacity upgrade alone may preserve the frustrating
+first impression. Clearly identify what the home chest does until storage exists.
+Acceptance: observe a normal first dungeon's pickup/discard decisions and time
+spent reopening menus; verify storage persistence if a stash is introduced.
+
+DD71-11 — P2: scenery communicates the wrong interaction
+Evidence: shiro mistakes decorative chest/book shapes for loot; Vagrant repeatedly
+tries to interact with large inert knights.
+Current source: EarlyDungeonStatue.cs explicitly creates a harmless, destructible
+Black Knight-shaped prop. These are not evidence of broken enemy AI.
+Action: give statues a stone treatment/pedestal/inspection name and make decorative
+books/chests visually distinct from collectible/interactable versions. Preserve
+consistent highlighting and cursor/selection feedback.
+Acceptance: a new player can distinguish enemy, statue, pickup, and decoration
+before committing an action.
+
+DD71-12 — P2 defect reproduction: Controls paging can select Audio
+Follow-up: independently reproduced with mouse, keyboard Enter, and gamepad South.
+Controls page 2 to 3 and page 2 to 1 both switched to Audio: six observed boundary
+failures. Disabling the selected paging button and refreshing navigation transfers
+focus to Audio; GlobalSettings PreviewOnFocus activates it.
+Action: preserve usable focus within Controls at a page boundary; verify both
+directions with actual selected-button input and after rebinding completion.
+Acceptance: Previous/Next changes the binding page while keeping Controls selected;
+focus always lands on a visible, usable control.
+
+DD71-13 — P2: long traversal and repetitive layouts need pacing constraints
+Evidence: Vagrant finds towns/overworld oversized; shiro's minimap shows repetitive
+pillar detours; SPEC requests safe directional running.
+Action: tune procedural generation using measurable destination spacing, useful
+route length, branch density, and repeated-obstacle limits. Consider a safe run
+command that stops on newly detected danger, interaction, junction, or obstruction.
+Do not implement the request as blindly skipping actions into traps.
+Acceptance: sample varied seeds and compare walking time to meaningful decisions.
+The pillar screenshot demonstrates awkward routing, not an unreachable destination.
+
+DD71-14 — P2 investigation: music fatigue
+Evidence: SPEC reports repetitive dungeon music.
+Status: subjective feedback; soundtrack/audio was not independently listened to.
+Action: conduct a representative-length listening pass before deciding between
+more variation, longer loops, quieter arrangements, and intermittent silence.
+
+DD71-15 — P2: the submission page undersells the current game
+The six gallery images show an earlier HUD/town presentation than the November
+videos, including old equipment naming and a large level-up overlay. They are
+marketing evidence, not proof those old UI defects remain in the current build.
+The cover animation emphasizes a character and enemies rather than the party
+adventure. The short genre description does not explain the game's distinguishing
+features.
+Action: refresh gallery/cover with current party combat, readable UI, town
+preparation, and overworld progression. Describe the controllable hero, autonomous
+companions, and continuing adventure accurately.
+
+TEXT-COVERAGE INDEX
+
+Read each reviewer and every reply, including corrections and stated intent:
+- shiroigadev (Nov 12): https://itch.io/post/17879335
+  Status clarity, scenery, spiders, self-damage, world reveal, recruit XP, pillars;
+  positive response to continuing progression and parties. DD71-07/08/09/11/13.
+  Developer reply: https://itch.io/post/17879360
+- VagrantShape (Nov 11): https://itch.io/post/17874727
+  Movement, diagonals, world scale/saving, crowded encounters, item explanation,
+  statues; particularly positive about autonomous allies. DD71-02/04/05/07/11/13.
+  Developer reply: https://itch.io/post/17878715
+- SPECXHT (Nov 9): https://itch.io/post/17856436
+  Party premise validated; movement, stats, bindings/settings, zoom, audio, LOS,
+  tutorial/text layout, inventory/storage, and safe running. All mapped above.
+  Developer reply: https://itch.io/post/17857273
+- FeelmakerGames (Nov 9): https://itch.io/post/17851945
+  Visual appeal, overshoot, cramped view; corrected the mistaken pre-rendered-art
+  interpretation after the developer explained the game is 3D. DD71-03/04.
+  Reply/follow-up: https://itch.io/post/17855757 and https://itch.io/post/17858749
+- elb.dev (Nov 8): https://itch.io/post/17844795
+  Positive mechanical foundation with presentation concerns; video supplies the
+  detailed evidence. Genre unfamiliarity does not invalidate usability observations.
+  Developer reply: https://itch.io/post/17845973
+- Big Greg Games (Nov 6): https://itch.io/post/17826817
+  Opening input blocker; future-build fix acknowledged. DD71-01.
+  Developer reply: https://itch.io/post/17827787
+
+Developer explanations were treated as intent/acknowledgement, not verification:
+procedural generation can still be tuned; intended inventory pressure can still be
+too disruptive; a feature explained only in a reply remains undiscoverable in-game.
+The replies' suggestions of zoom, upgrades, and linked storage are not shipped
+features until verified. Preserve the character style, party autonomy, and expanding
+world that attracted positive feedback.
+
+VIDEO EVIDENCE INDEX
+
+V1 — VagrantShape, "[DD 71] Eternal Enigma"
+https://www.youtube.com/watch?v=HxmN7nEjaGo
+Published 2026-11-10; 29:23.
+  01:01–02:20  Movement/scale and locating the trainer.
+  03:30–03:45  Practice encounter expectations.
+  04:20–05:55  Statue and scenery interactions.
+  07:40–08:10  Crowded encounter and defeat.
+  10:50–12:20  Large encounter; Explosion use.
+  14:04–14:12  Item action menu without an explanation.
+  15:09–15:19  Belief that diagonal attacks are unavailable.
+  16:07–17:10  Item uncertainty, starter completion, recruitment, world.
+  18:15–20:15  Companion control/discovery and positive AI reaction.
+  21:50–23:10  Equipment detail discovery; companion levels increase.
+  24:50–27:35  Gate/world traversal, save limitation, earlier state restored.
+  27:50–29:23  Final commentary over a mostly black screen.
+
+Interpretation cautions: at the early swarm the HUD says Floor 3/5 despite spoken
+references to floor five. Revisiting an unchanged campaign after reload is not
+proof generation never randomizes. Diagonal movement is later discovered; attack
+discoverability remains a separate issue. Audio/subtitle claims about exact damage
+or the entire floor being affected were not assumed to establish targeting rules.
+
+V2 — Derek Hendrick / elb.dev, "Demo Day 71: Eternal Enigma"
+https://www.youtube.com/watch?v=3CZBMwkz9pY
+Published 2026-11-08; 15:48.
+  00:10–01:21  Art reaction and hero-selection presentation.
+  01:30–03:05  Capability terminology, event history, fleeting instructions.
+  03:31–04:20  Skill percentage/rank and navigation ambiguity.
+  04:40–07:00  Finding the dungeon; verbose directions and movement feel.
+  07:20–08:23  Tutorial wording and dense rank/mana labels.
+  09:16–10:46  Resource recovery, trap/stairs, obscured passage.
+  11:28–13:10  Full bag, equipment restrictions/comparison.
+  13:33–13:38  Surprise at trap relocation.
+  14:00–14:35  Clear rewards, return to town, visibility/rest presentation.
+  14:50–15:48  UI feedback and stopping before party/world exploration.
+
+The first impression and loading/sound comments are aesthetic reactions, not
+independently measured defects. Clearing the starter dungeon does not establish
+that the player understood the campaign loop.
+
+IMAGE EVIDENCE INDEX
+
+All paths below are under Temp/ReviewAudit/. Full source URLs are preserved in
+images.json. These are observations of the actual attached images.
+
+I00 image_00.gif — 598x336; all 42 frames inspected.
+    Character/red slime/bats against black; does not communicate party/world play.
+I01 image_01.png — 672x658, shiro spider encounter.
+    Multiple large spiders and effects overlap the hero/tile area. A cropped
+    objective edge is not enough to prove full-screen clipping.
+I02 image_02.png — 592x515, shiro companion discussion.
+    Crowded creatures/characters and silhouettes. No visible XP/level readout:
+    the image itself does not prove the XP complaint.
+I03 image_03.png — 360x295, shiro pillar minimap.
+    Repeated rectangular obstacles and narrow routing; no proof of disconnection.
+I04 image_04.jpg — 1886x1447, SPEC LOS.
+    Wall/fog boundary and exposed green health-bar slivers are visually confusing;
+    logical sight correctness requires a controlled reproduction.
+I05 image_05.jpg — 1642x409, SPEC objective.
+    Large objective panel obscures nearby scene/character information.
+I06 image_06.jpg — 1189x366, SPEC target UI.
+    Target name and instruction sit against/outside parchment boundaries.
+I07 image_07.png — 766x482, gallery town.
+    Older plain town/road presentation; different from the reviewed videos.
+I08 image_08.png — 784x492, gallery loot.
+    Older dungeon/HUD presentation with loot.
+I09 image_09.png — 777x489, gallery slime.
+    Large red slime dominates the room; older HUD.
+I10 image_10.png — 773x483, gallery bat.
+    Corridor combat with an older HUD.
+I11 image_11.png — 777x477, gallery level-up.
+    Large yellow level-up overlay dominates the scene.
+I12 image_12.png — 772x476, gallery equipment.
+    Older purple menu and an asset-style axe name wrapping in its label.
+
+ORIGINAL NEXT-BUILD RECOMMENDATIONS
+(Use the follow-up claim-verification report for the updated priority/status.)
+
+1. Close the actual-upload opening blocker; fix inventory descriptions and prompt
+   consistency. These have clear, bounded behavior to verify.
+2. Reduce HUD obstruction, correct text containment, and teach directional aiming.
+   Tune input only after measuring the overshoot report.
+3. Resolve between-dungeon save expectations and make the first companion/world
+   transition easier to reach.
+4. Retest encounters, recruit progression, and bag pressure with new players.
+   Use fresh and continuing campaigns and multiple generation seeds.
+5. Reproduce the settings/alternate-key/LOS reports; perform an audio listening
+   pass; refresh the submission imagery after the UI changes.
+
+Record build identifier, platform/browser, viewport, input device, seed, and save
+state for each follow-up. Existing source capabilities do not close a usability
+report; a developer reply does not close a deployment defect.
+
+LOCAL EVIDENCE
+
+Temp/ReviewAudit/source_page.json      Live page text/link/image capture.
+Temp/ReviewAudit/source_manifest.json  Audit coverage and source URLs.
+Temp/ReviewAudit/images.json           Original image URLs, dimensions, local paths.
+Temp/ReviewAudit/cover_all_frames.jpg   Complete GIF contact sheet.
+Temp/ReviewAudit/*transcript.txt       Complete available automatic captions.
+Temp/ReviewAudit/*_sheet_*.jpg          Full-duration 10-second frame contact sheets.
+Temp/ReviewAudit/*_detail_*.jpg         Selected enlarged evidence.
+Temp/ReviewAudit/*.info.json           Video metadata.
+Temp/ReviewAudit/*.visual.mp4          Downloaded visual streams for inspection.
+
+Downloaded media and helper dependencies remain in ignored Temp/, not in the
+tracked audit document. Runtime test outcomes are recorded in the follow-up report.

@@ -50,33 +50,19 @@ public static class ControlBindings
         foreach (var asset in registered) ApplyTo(asset);
     }
 
-    // Dynamic actions use map/name + binding index for storage; their runtime GUIDs are not stable.
+    // Commands are authored in DungeonControls so PlayerInput caches every callback
+    // before activation. Saved overrides still use map/name and binding index.
     public static void ConfigureAdditionalActions(InputActionAsset asset)
     {
         var ui = asset.FindActionMap("UI");
         if (ui != null)
         {
-            Add(ui, "InspectNextHero", "<Keyboard>/tab", "<Gamepad>/rightShoulder");
-            Add(ui, "InspectPreviousHero", "<Gamepad>/leftTrigger");
-            Add(ui, "OpenEquipment", "<Keyboard>/i");
-            Add(ui, "OpenStats", "<Keyboard>/t");
-            Add(ui, "Presentation", "<Keyboard>/f11", "<Gamepad>/select");
             // The template wildcard includes the gamepad too. Separate its keyboard slot
             // so rebinding Back on one device cannot silently replace the other device.
             var cancel = ui.FindAction("Cancel");
             if (cancel != null && cancel.bindings.Count > 0 && cancel.bindings[0].path == "*/{Cancel}")
                 cancel.ChangeBinding(0).WithPath("<Keyboard>/escape");
         }
-        var player = asset.FindActionMap("Player");
-        if (player != null) Add(player, "ToggleFullControl", "<Keyboard>/f", "<Gamepad>/rightStickPress");
-    }
-
-    private static void Add(InputActionMap map, string name, params string[] paths)
-    {
-        if (map.FindAction(name) != null) return;
-        var action = map.AddAction(name, InputActionType.Button);
-        foreach (var path in paths)
-            action.AddBinding(path, groups: path.StartsWith("<Gamepad>") ? "Gamepad" : "Keyboard&Mouse");
     }
 
     public static void Register(InputActionAsset asset)
@@ -122,6 +108,7 @@ public static class ControlBindings
             "Player/Menu" => "UI/OpenMenu", "UI/OpenMenu" => "Player/Menu",
             "Player/Skills" => "UI/OpenSkillMenu", "UI/OpenSkillMenu" => "Player/Skills",
             "Player/Options" => "UI/Options", "UI/Options" => "Player/Options",
+            "Player/History" => "UI/History", "UI/History" => "Player/History",
             "Player/Move" => "UI/Navigate", "UI/Navigate" => "Player/Move", _ => null
         };
         if (linked != null)

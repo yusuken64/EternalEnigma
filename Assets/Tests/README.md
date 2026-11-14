@@ -1,5 +1,47 @@
 # Game test harness
 
+**Tools > Eternal Enigma > Tests > Run Event Feed Defaults** checks the saved 33.11
+event font and viewport settings, four recent rendered lines across turns (including
+wrapped messages), and expanded History retaining every event. It covers five window sizes,
+all three gameplay scenes, and History controls. Captures and the original Play Mode
+settings are in `Temp/HistoryLayoutCapture`. **UI > Open Event Feed Review** leaves
+the four-line compact feed open. **UI > Apply Event Feed Defaults** writes the
+captured defaults to the shared event prefabs in Edit Mode.
+
+**Tools > Eternal Enigma > Tests > Run Stats Descriptions** checks immediate stat
+and passive-skill explanations in the detached panel, keyboard/controller browsing,
+Confirm staying on the stat list, and attribute-point spending. It also checks list
+layout at four sizes and the event-feed width. Captures go to `Temp/StatsDescriptions`;
+**UI > Open Stats Review** leaves STR selected with its explanation visible.
+
+**Tools > Eternal Enigma > Tests > Run Event History Views** audits the fixed event-feed
+width in dungeon, town, and overworld: all party tabs, nested actions, targeting,
+Options, and History expansion/collapse. It checks mouse, keyboard, and controller
+paths in graphical and terminal presentation, actual screen bounds at five window
+sizes, and an inset safe-area container. Expanded History must keep the compact
+feed's left, right, and bottom edges. **UI > Open Stats Review** leaves Stats and the
+event feed open for inspection.
+
+**Tools > Eternal Enigma > Tests > Run History Shortcut** checks H opening and
+closing History in graphical and terminal views, returning to the selected
+inventory row, rebinding, settings focus, and town/overworld menu access. The keyboard
+is paired to PlayerInput to cover its real callback path. Expanded-feed captures at
+960x600 and 1280x720 go to `Temp/HistoryShortcut`; **UI > Open History Review** leaves
+the taller event panel open for inspection.
+
+**Tools > Eternal Enigma > Tests > Run Skill Descriptions** checks ten skill rows,
+the detached description, navigation stopping at the last skill, and browsing
+without spending Mana or actions. It also covers inventory layout and town
+controller navigation. Captures at 960x600 and 1280x720 go to `Temp/SkillDescriptions`.
+**Tools > Eternal Enigma > UI > Open Skills Review** leaves an isolated dungeon
+running with ten skills and Fire Bolt selected for manual inspection.
+
+**Tools > Eternal Enigma > Tests > Run Inventory Descriptions** checks that item
+selection shows descriptions before opening actions, browsing consumes nothing,
+ten item rows fit above the reserved paging footer, and descriptions stay detached
+to the left across supported layouts without taking navigation focus. Bread captures
+at 960x600 and 1280x720 are written to `Temp/InventoryDescriptions`.
+
 **Tools > Eternal Enigma > Tests > Run Menu Controller Followups** covers the
 Skills/Strategy controller swap, active-only Skills, passive descriptions in Stats,
 inventory focus release through all three close paths, shared menu cursors,

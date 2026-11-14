@@ -47,6 +47,7 @@ public class Town : MonoBehaviour
         FindFirstObjectByType<TownMenu>().ValidateBindings(Configuration);
         Services = new TownServices(this);
         ResourceHUD.Ensure(this);
+        TravelPartyHud.Ensure(this);
         ScenePresentation.Ensure(this);
         LoadSaveData();
         if (Common.Instance.CampaignContext != null)

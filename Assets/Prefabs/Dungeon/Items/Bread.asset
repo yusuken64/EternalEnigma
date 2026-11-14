@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bread
   m_EditorClassIdentifier: 
   ItemName: Bread
-  Description: "Eat to restore fullness."
+  Description: "A simple loaf for the journey. Restores 50 Food, up to your maximum."
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

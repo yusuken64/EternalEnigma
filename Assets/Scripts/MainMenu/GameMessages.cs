@@ -14,15 +14,21 @@ public sealed class GameMessages : MonoBehaviour
     private readonly List<string> turnEvents = new();
     [SerializeField] private ScrollRect scroll;
     [SerializeField] private Button historyButton;
+    [SerializeField, Min(1)] private int previewLines = 4;
     private EventHistoryDialog historyDialog;
     private readonly JuicyChickenGames.Menu.DialogController historyController = new();
-    private static readonly Vector2 normalMin=new(.24f,.016f), normalMax=new(.79f,.20f);
-    private bool docked;
+    // Center the 55%-wide feed on screen. Menus never change these bounds;
+    // expanded History changes only the top edge.
+    private static readonly Vector2 normalMin=new(.225f,.016f), normalMax=new(.775f,.20f);
     private bool inDungeonTurn;
     private bool hasMessage;
     private Canvas displayCanvas;
     private bool displayCanvasWasEnabled;
     private bool terminalHidden;
+    private bool historyWasOpen;
+    private RectTransform feedPanel;
+    private Vector2 authoredOffsetMin, authoredOffsetMax, layoutParentSize;
+    private float layoutFontSize;
     public IReadOnlyList<string> TurnEvents => turnEvents;
     public static void BeginTurn()
     {
@@ -36,7 +42,11 @@ public sealed class GameMessages : MonoBehaviour
     {
         if (instance == null) instance = Resolve();
         if (instance.historyDialog != null && instance.historyDialog.Owner != null) return;
-        if (instance.historyDialog == null) instance.historyDialog = Instantiate(GameUITheme.Current.HistoryPrefab, instance.transform);
+        if (instance.historyDialog == null)
+        {
+            instance.historyDialog = Instantiate(GameUITheme.Current.HistoryPrefab, instance.transform);
+            instance.historyDialog.UseFeed((RectTransform)instance.group.transform);
+        }
         instance.historyDialog.Setup(instance.history);
         if (Game.Instance != null) MenuManager.Open(instance.historyDialog);
         else if (Object.FindFirstObjectByType<TownMenuManager>() is { } townMenus) townMenus.Open(instance.historyDialog);
@@ -124,6 +134,26 @@ public sealed class GameMessages : MonoBehaviour
         scroll.viewport = viewport; scroll.content = text.rectTransform;
         scroll.horizontal = false; scroll.vertical = true; scroll.scrollSensitivity = 35;
         scroll.movementType = ScrollRect.MovementType.Clamped;
+        AuthorCompactLayout();
+    }
+
+    // Defaults captured from the user's Play Mode layout. Runtime respects the
+    // serialized prefab values, so subsequent Inspector edits are not overwritten.
+    public void AuthorCompactLayout()
+    {
+        previewLines=4;
+        JuicyChickenGames.Menu.Dialog.Fit(group.transform,normalMin.x,normalMin.y,normalMax.x,normalMax.y);
+        JuicyChickenGames.Menu.Dialog.Fit(historyButton.transform,.70f,.72f,.975f,.98f);
+        var label=historyButton.GetComponentInChildren<TMP_Text>(true);
+        label.fontSize=26;label.enableAutoSizing=true;label.fontSizeMin=16;label.fontSizeMax=26;
+        label.margin=new Vector4(0,1.789804f,0,1.78980434f);
+        JuicyChickenGames.Menu.Dialog.Fit(scroll.viewport,.035f,.03f,.965f,.70f);
+        scroll.viewport.anchoredPosition=new Vector2(0,26.23f);
+        scroll.viewport.sizeDelta=new Vector2(0,19.8808f);
+        historyButton.transform.SetAsLastSibling();
+        text.fontSize=33.11f;text.enableAutoSizing=false;text.color=GameUITheme.Ink;
+        text.lineSpacing=text.paragraphSpacing=0;
+        GameUISkin.PanelGraphic(group.transform).color=new Color(1,1,1,.94f);
     }
 #endif
 
@@ -135,12 +165,8 @@ public sealed class GameMessages : MonoBehaviour
     private void Awake()
     {
         instance=this; group.alpha=0; group.blocksRaycasts=false; group.interactable=false;
-        JuicyChickenGames.Menu.Dialog.Fit(group.transform,normalMin.x,normalMin.y,normalMax.x,normalMax.y);
-        JuicyChickenGames.Menu.Dialog.Fit(historyButton.transform,.70f,.72f,.975f,.98f);
-        JuicyChickenGames.Menu.Dialog.Fit(scroll.viewport,.035f,.03f,.965f,.70f);
-        historyButton.GetComponentInChildren<TMP_Text>().fontSize=24;
-        text.fontSize=30;text.color=GameUITheme.Ink;
-        GameUISkin.PanelGraphic(group.transform).color=new Color(1,1,1,.94f);
+        feedPanel=(RectTransform)group.transform;
+        authoredOffsetMin=feedPanel.offsetMin;authoredOffsetMax=feedPanel.offsetMax;
         historyButton.onClick.AddListener(ToggleHistory);
         ControlDeviceState.Changed += RefreshText;
         ControlBindings.Changed += RefreshText;
@@ -156,13 +182,50 @@ public sealed class GameMessages : MonoBehaviour
     private void RefreshText()
     {
         if (!hasMessage) return;
-        var entries = inDungeonTurn ? turnEvents : history;
-        int start = Mathf.Max(0,entries.Count-3);
+        var entries = history;
+        int lines=Mathf.Max(1,previewLines);
+        int start = Mathf.Max(0,entries.Count-lines);
         text.text = InputPrompts.Format(string.Join("\n", entries.GetRange(start, entries.Count-start)));
         Canvas.ForceUpdateCanvases();
+        FitPreviewHeight();
+        Canvas.ForceUpdateCanvases();
+        text.ForceMeshUpdate();
+        // Count rendered lines, including wrapping and embedded newlines. The full
+        // unabridged messages remain in History.
+        if(text.textInfo.lineCount>lines)
+        {
+            int first=text.textInfo.lineInfo[text.textInfo.lineCount-lines].firstCharacterIndex;
+            text.text=text.text.Substring(text.textInfo.characterInfo[first].index);
+        }
         text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-            Mathf.Max(scroll.viewport.rect.height, text.GetPreferredValues(text.text, scroll.viewport.rect.width, 0).y + 12));
-        scroll.verticalNormalizedPosition = 0;
+            Mathf.Max(scroll.viewport.rect.height, text.GetPreferredValues(text.text, scroll.viewport.rect.width, 0).y));
+        scroll.StopMovement();
+        scroll.verticalNormalizedPosition = 1;
+    }
+
+    private bool FitPreviewHeight()
+    {
+        var parentSize=((RectTransform)feedPanel.parent).rect.size;
+        if(parentSize.y<=0 || scroll.viewport.rect.width<=0)return false;
+        if(parentSize==layoutParentSize && Mathf.Approximately(layoutFontSize,text.fontSize))return false;
+        layoutParentSize=parentSize;layoutFontSize=text.fontSize;
+        float height=parentSize.y*(feedPanel.anchorMax.y-feedPanel.anchorMin.y)+authoredOffsetMax.y-authoredOffsetMin.y;
+        float stretch=scroll.viewport.anchorMax.y-scroll.viewport.anchorMin.y;
+        if(stretch<=0)return false;
+        var sample=new string[Mathf.Max(1,previewLines)];
+        for(int i=0;i<sample.Length;i++)sample[i]="Ag";
+        float required=text.GetPreferredValues(string.Join("\n",sample),scroll.viewport.rect.width,0).y+1;
+        float available=height*stretch+scroll.viewport.sizeDelta.y;
+        // Preserve the authored size at the reference aspect ratio. Only add
+        // vertical room if a wider window would otherwise clip the fourth line.
+        var maximum=authoredOffsetMax;maximum.y+=Mathf.Max(0,(required-available)/stretch);
+        feedPanel.offsetMin=authoredOffsetMin;feedPanel.offsetMax=maximum;
+        return true;
+    }
+
+    private void LateUpdate()
+    {
+        if(FitPreviewHeight() && hasMessage)RefreshText();
     }
 
     private void Add(string message, bool coalesce)
@@ -179,21 +242,14 @@ public sealed class GameMessages : MonoBehaviour
     private void Update()
     {
         historyController.Tick();
-        if (Object.FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud == true)
+        bool historyOpen = historyDialog != null && historyDialog.Owner != null;
+        if (historyWasOpen && !historyOpen) Render();
+        historyWasOpen = historyOpen;
+        if (historyOpen || Object.FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud == true)
         {
             group.alpha = 0;
             group.blocksRaycasts = group.interactable = false;
             return;
-        }
-        bool showDock = MenuUIInputModule.Active?.HasDialog==true &&
-            (Game.Instance==null || MenuManager.Instance==null || MenuManager.Instance.CurrentDialog!=MenuManager.Instance.TargetDialog);
-        if (showDock != docked)
-        {
-            docked = showDock;
-            var rect = (RectTransform)group.transform;
-            rect.anchorMin = docked ? new Vector2(.24f,.016f) : normalMin;
-            rect.anchorMax = docked ? new Vector2(.58f,.20f) : normalMax;
-            if (hasMessage) Render();
         }
         if (!hasMessage) return;
         if (!inDungeonTurn) group.alpha = 1 - Mathf.Clamp01((Time.unscaledTime - lastMessage - 9f) / 2f);

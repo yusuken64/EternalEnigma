@@ -12,6 +12,7 @@ public static class InputPrompts
     public static string ToggleFullControl => ControlBindings.Prompt("Player/ToggleFullControl", "F", "Right stick press");
     public static string Inventory => ControlBindings.Prompt("Player/Menu", "Q", "X / Square");
     public static string Skills => ControlBindings.Prompt("Player/Skills", "R", "B / Circle");
+    public static string History => ControlBindings.Prompt("UI/History", "H", "");
     public static string Party => Inventory;
     public static string Equipment => ControlDeviceState.Gamepad ? Inventory + ", then right" : ControlBindings.Prompt("UI/OpenEquipment", "I", "");
     public static string Stats => ControlDeviceState.Gamepad ? Skills + ", then right" : ControlBindings.Prompt("UI/OpenStats", "T", "");

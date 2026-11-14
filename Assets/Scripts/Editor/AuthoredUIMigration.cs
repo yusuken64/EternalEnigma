@@ -19,6 +19,160 @@ public static class AuthoredUIMigration
     const string Folder="Assets/Resources/UI/Authored";
     const string Marker="Authored UI v1";
 
+    [MenuItem("Tools/Eternal Enigma/UI/Apply Party Portrait Defaults")]
+    public static void ApplyPartyPortraitDefaults()
+    {
+        if(EditorApplication.isPlaying)throw new InvalidOperationException("Exit Play Mode before saving party portraits.");
+        const string scenePath="Assets/Scenes/DungeonScene.unity";
+        var scene=SceneManager.GetSceneByPath(scenePath);
+        bool opened=!scene.IsValid() || !scene.isLoaded;
+        if(opened)scene=EditorSceneManager.OpenScene(scenePath,OpenSceneMode.Additive);
+        try
+        {
+            var hud=Find<DungeonHud>(scene);
+            var reviewed=Object.Instantiate(hud.PartySlots[0]);
+            if(PrefabUtility.IsPartOfPrefabInstance(reviewed))
+                PrefabUtility.UnpackPrefabInstance(reviewed.gameObject,PrefabUnpackMode.Completely,InteractionMode.AutomatedAction);
+            try
+            {
+                RemoveDuplicatePartyParchment(reviewed.gameObject);
+                foreach(var path in new[]{"Assets/Prefabs/Dungeon/StatDisplay/CharacterStatsDisplay.prefab",
+                    "Assets/Prefabs/Dungeon/UI/CharacterStatsDisplay-3e44211b.prefab"})
+                {
+                    var root=PrefabUtility.LoadPrefabContents(path);
+                    try
+                    {
+                        RemoveDuplicatePartyParchment(root);
+                        CopyPartyCardAppearance(reviewed,root);
+                        root.GetComponent<DungeonPartyCard>().AuthorCompactLayout();
+                        PrefabUtility.SaveAsPrefabAsset(root,path);
+                    }
+                    finally {PrefabUtility.UnloadPrefabContents(root);}
+                }
+            }
+            finally {Object.DestroyImmediate(reviewed.gameObject);}
+            foreach(var card in hud.PartySlots)
+            {
+                // These decorations now come from the shared card instead of
+                // duplicate scene additions from the earlier dungeon migration.
+                var paper=card.GetComponentsInChildren<Image>(true).Where(i=>i.name=="Dungeon parchment").ToArray();
+                if(paper.Length>1)
+                    foreach(var image in paper.Where(i=>PrefabUtility.IsAddedGameObjectOverride(i.gameObject)))
+                        PrefabUtility.RevertAddedGameObject(image.gameObject,InteractionMode.AutomatedAction);
+                foreach(var role in card.GetComponentsInChildren<DungeonUIRole>(true))
+                    if(role.GetComponents<DungeonUIRole>().Length>1 && PrefabUtility.IsAddedComponentOverride(role))
+                        PrefabUtility.RevertAddedComponent(role,InteractionMode.AutomatedAction);
+                card.GetComponent<DungeonPartyCard>().AuthorCompactLayout();
+            }
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+        finally {if(opened)EditorSceneManager.CloseScene(scene,true);}
+        SaveTravelPartyHud();
+        AssetDatabase.SaveAssets();
+        Debug.Log("Saved the reviewed party portraits for dungeon, town and overworld.");
+    }
+
+    private static void RemoveDuplicatePartyParchment(GameObject card)
+    {
+        foreach(var image in card.GetComponentsInChildren<Image>(true).Where(i=>i.name=="Dungeon parchment").Skip(1).ToArray())
+            Object.DestroyImmediate(image.gameObject);
+    }
+
+    private static void CopyPartyCardAppearance(CharacterStatsDisplay source,GameObject target)
+    {
+        // Dungeon authoring added visual overrides to the scene cards. Preserve
+        // those in the shared templates without copying character data or fills.
+        foreach(var original in source.GetComponentsInChildren<Image>(true))
+        {
+            if(original==source.PortraitImage)continue;
+            var path=new Stack<Transform>();
+            for(var child=original.transform;child!=source.transform;child=child.parent)
+                path.Push(child);
+            var destination=target.transform;
+            while(path.Count>0)
+            {
+                var part=path.Pop();
+                int ordinal=part.parent.Cast<Transform>().Take(part.GetSiblingIndex()).Count(t=>t.name==part.name);
+                var next=destination.Cast<Transform>().Where(t=>t.name==part.name).ElementAtOrDefault(ordinal);
+                if(next==null && part==original.transform && part.childCount==0)
+                {
+                    next=Object.Instantiate(part.gameObject,destination,false).transform;
+                    next.name=part.name;next.SetSiblingIndex(part.GetSiblingIndex());
+                }
+                if(next==null)throw new InvalidOperationException("Missing party card image parent: "+part.name);
+                destination=next;
+            }
+            var image=destination.GetComponent<Image>();
+            if(image==null || original.transform!=source.transform && image.name!=original.name)
+                throw new InvalidOperationException($"Party card image {original.name} does not match {destination.name}.");
+            image.sprite=original.sprite;image.overrideSprite=null;image.color=original.color;
+            image.type=original.type;image.preserveAspect=original.preserveAspect;
+            image.fillCenter=original.fillCenter;image.pixelsPerUnitMultiplier=original.pixelsPerUnitMultiplier;
+            var role=original.GetComponent<DungeonUIRole>();
+            if(role!=null)(image.GetComponent<DungeonUIRole>()??image.gameObject.AddComponent<DungeonUIRole>()).Role=role.Role;
+            EditorUtility.SetDirty(image);
+        }
+    }
+
+    private static void SaveTravelPartyHud()
+    {
+        string path=$"{Folder}/TravelPartyHud.prefab";
+        var template=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Dungeon/UI/CharacterStatsDisplay-3e44211b.prefab");
+        var canvas=GameUISkin.Canvas("Travel party portraits",null,1);
+        try
+        {
+            var hud=canvas.gameObject.AddComponent<TravelPartyHud>();
+            hud.PartyRoot=GameUISkin.Rect("Party",canvas.transform,new Vector2(.012f,.255f),new Vector2(.30f,.985f));
+            hud.PartySlots=new CharacterStatsDisplay[4];
+            for(int i=0;i<hud.PartySlots.Length;i++)
+            {
+                var card=((GameObject)PrefabUtility.InstantiatePrefab(template,hud.PartyRoot)).GetComponent<CharacterStatsDisplay>();
+                card.name="Party slot "+(i+1);
+                Fit((RectTransform)card.transform,new Vector2(0,1-(i+1)*.25f+.008f),new Vector2(1,1-i*.25f));
+                card.GetComponent<DungeonPartyCard>().AuthorCompactLayout();
+                card.gameObject.SetActive(false);hud.PartySlots[i]=card;
+            }
+            PrefabUtility.SaveAsPrefabAsset(canvas.gameObject,path);
+        }
+        finally {Object.DestroyImmediate(canvas.gameObject);}
+        var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        foreach(var name in new[]{"Town","Overworld"})
+        {
+            var scene=SceneManager.GetSceneByPath($"Assets/Scenes/{name}.unity");
+            bool opened=!scene.IsValid() || !scene.isLoaded;
+            if(opened)scene=EditorSceneManager.OpenScene($"Assets/Scenes/{name}.unity",OpenSceneMode.Additive);
+            try
+            {
+                Transform owner=name=="Town"?Find<Town>(scene).transform:Find<OverworldScene>(scene).transform;
+                if(owner.GetComponentInChildren<TravelPartyHud>(true)==null)
+                    PrefabUtility.InstantiatePrefab(prefab,owner);
+                EditorSceneManager.MarkSceneDirty(scene);
+                EditorSceneManager.SaveScene(scene);
+            }
+            finally {if(opened)EditorSceneManager.CloseScene(scene,true);}
+        }
+    }
+
+    [MenuItem("Tools/Eternal Enigma/UI/Apply Event Feed Defaults")]
+    public static void ApplyEventFeedDefaults()
+    {
+        if(EditorApplication.isPlaying)throw new InvalidOperationException("Exit Play Mode before saving event-feed defaults.");
+        foreach(var name in new[]{"DungeonEvents","TravelEvents"})
+        {
+            string path=$"{Folder}/{name}.prefab";
+            var root=PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                root.GetComponent<GameMessages>().AuthorCompactLayout();
+                PrefabUtility.SaveAsPrefabAsset(root,path);
+            }
+            finally {PrefabUtility.UnloadPrefabContents(root);}
+        }
+        AssetDatabase.SaveAssets();
+        Debug.Log("Saved the four-line event feed and captured font/layout defaults to both shared prefabs.");
+    }
+
     [MenuItem("Tools/Eternal Enigma/UI/Repair Overworld Entry Dialogs")]
     public static void RepairOverworldEntryDialogs()
     {
@@ -218,7 +372,12 @@ public static class AuthoredUIMigration
             hud.PartySlots[i]=display;display.gameObject.SetActive(false);
         }
         game.CharacterStatsDisplayContainer=hud.PartyRoot;
-        var minimap=Find<Minimap>(scene);Fit((RectTransform)minimap.transform,new Vector2(.80f,.22f),new Vector2(.985f,.48f));
+        var minimap=Find<Minimap>(scene);
+        var mapRect=(RectTransform)minimap.transform;
+        // Preserve the reviewed size and margins, attached to the bottom-right corner.
+        mapRect.anchorMin=mapRect.anchorMax=mapRect.pivot=Vector2.right;
+        mapRect.sizeDelta=new Vector2(197.33333f,156);
+        mapRect.anchoredPosition=new Vector2(-16,7);
         minimap.AuthorLocationLabel((TMP_Text)new SerializedObject(hud).FindProperty("header").objectReferenceValue);
         var outline=minimap.minimapImage.GetComponent<Outline>()??minimap.minimapImage.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.7f,.53f,.25f,.9f);outline.effectDistance=new Vector2(2,-2);
         var result=Find<GameOverScreen>(scene);result.AuthorCanvas();result.AuthorLayout();
@@ -346,6 +505,7 @@ public static class AuthoredUIMigration
                             Object.DestroyImmediate(hud.PartySlots[i].gameObject);
                             var card=Instance(saved,hud.PartyRoot);card.name="Party slot "+(i+1);
                             Fit((RectTransform)card.transform,new Vector2(0,1-(i+1)*.25f+.008f),new Vector2(1,1-i*.25f));
+                            card.GetComponent<DungeonPartyCard>().AuthorCompactLayout();
                             card.gameObject.SetActive(false);hud.PartySlots[i]=card;
                         }
                     }

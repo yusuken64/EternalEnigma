@@ -58,7 +58,7 @@ namespace EternalEnigma.Tests
                 Is.EqualTo("<Keyboard>/s"));
         }
 
-        [Test] public void SavedOverridesSurviveReloadAndNewDynamicActionIds()
+        [Test] public void SavedOverridesSurviveReloadAndNewInputAssets()
         {
             var action = ControlBindings.DisplayAsset.FindAction("UI/OpenEquipment", true);
             ControlBindings.ApplyBinding("UI/OpenEquipment", Binding(action, "<Keyboard>/i"), "<Keyboard>/u");
@@ -98,7 +98,8 @@ namespace EternalEnigma.Tests
             int notifications = 0;
             bool originalDevice = ControlDeviceState.Gamepad;
             var setDevice = typeof(ControlDeviceState).GetMethod("Set",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic,
+                null, new[]{typeof(bool)}, null);
             void Changed() => notifications++;
             ControlBindings.Changed += Changed;
             try

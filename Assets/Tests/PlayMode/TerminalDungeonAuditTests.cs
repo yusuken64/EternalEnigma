@@ -86,14 +86,17 @@ namespace EternalEnigma.Tests
                 yield return new WaitForSecondsRealtime(.25f);
                 Assert.That(TerminalMode.Effective, Is.True);
                 Assert.That(Ascii.text, Does.Contain("@"));
+                UnifiedPartyMenuTests.AssertEventFeedWidth();
                 Assert.That(optionsLabel.font, Is.SameAs(ScreenView.FontAsset), "Persistent controls use the terminal font too.");
                 yield return Capture("hud", size);
                 manager.OpenPartyMenu(PartyMenuTab.Inventory); yield return new WaitForSecondsRealtime(.2f);
                 foreach (var tab in new[] { PartyMenuTab.Inventory, PartyMenuTab.Equipment, PartyMenuTab.Skills, PartyMenuTab.Stats })
                 {
                     menu.SwitchTab(tab); yield return new WaitForSecondsRealtime(.2f);
+                    UnifiedPartyMenuTests.AssertEventFeedWidth();
                     Assert.That(menu.HeroText.text, Is.EqualTo(GameplayText.Format(actor.CharacterName)));
-                    Assert.That(menu.HeroText.font, Is.SameAs(ScreenView.FontAsset));
+                    if(menu.HeroText.gameObject.activeInHierarchy)
+                        Assert.That(menu.HeroText.font, Is.SameAs(ScreenView.FontAsset));
                     Assert.That(menu.GetComponent<Canvas>().enabled, Is.True);
                     Assert.That(menu.Panel.GetComponentsInChildren<DungeonDialogClose>().Length, Is.EqualTo(1));
                     var mapBounds = Bounds(ScreenView.ContentRect);
@@ -106,6 +109,7 @@ namespace EternalEnigma.Tests
                 var first = menu.EntryButtons[0]; first.Select(); yield return null;
                 yield return KeyPress(Key.Enter);
                 Assert.That(manager.CurrentDialog, Is.SameAs(manager.ActionDialog), "Terminal submit opens the production item commands.");
+                UnifiedPartyMenuTests.AssertEventFeedWidth();
                 yield return Capture("item-actions", size);
                 yield return KeyPress(Key.Escape);
                 Assert.That(manager.CurrentDialog, Is.SameAs(menu));
@@ -118,6 +122,7 @@ namespace EternalEnigma.Tests
                 manager.OpenTargetingMenu(actor, actor.Skills.Single(skill => skill.SkillName == "Fire Bolt"));
                 yield return new WaitForSecondsRealtime(.25f);
                 var target = manager.TargetDialog;
+                UnifiedPartyMenuTests.AssertEventFeedWidth();
                 Assert.That(target.TerminalMissilePath.Any(), Is.True);
                 Assert.That(promptLabel.font, Is.SameAs(ScreenView.FontAsset), "The production targeting prompt shares the terminal presentation.");
                 Assert.That(promptPanel.sprite, Is.Null, "Targeting cannot retain a parchment panel over the terminal HUD.");
@@ -138,12 +143,14 @@ namespace EternalEnigma.Tests
                 history.Setup(Enumerable.Range(0, 60).Select(i => "Event " + i + ": the party found a path through the dungeon.").ToArray());
                 yield return new WaitForSecondsRealtime(.2f);
                 Assert.That(history.Entries.font, Is.SameAs(ScreenView.FontAsset));
+                UnifiedPartyMenuTests.AssertExpandedHistoryLayout(history);
                 history.Reader.Select(); yield return null;
                 yield return KeyPress(Key.UpArrow);
                 Assert.That(history.scrollView.verticalNormalizedPosition, Is.GreaterThan(0), "Keyboard navigation scrolls the actual history.");
                 yield return Capture("history", size);
                 yield return Click(history.Back);
                 Assert.That(manager.Opened, Is.False);
+                UnifiedPartyMenuTests.AssertEventFeedWidth();
             }
             Assert.That(actor.Vitals.HungerAccumulate, Is.EqualTo(hunger));
             Assert.That(actor.Vitals.Mana, Is.EqualTo(mana));

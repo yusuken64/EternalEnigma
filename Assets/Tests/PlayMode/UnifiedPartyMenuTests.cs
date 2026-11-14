@@ -47,13 +47,14 @@ namespace EternalEnigma.Tests
             var passive=menu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text.Contains("Strength Up"));
             Assert.That(passive.GetComponent<AuthoredButton>().Label.text,Does.Contain("Rank 3"));
             passive.Select();yield return new WaitForSecondsRealtime(.3f);
+            AssertDetachedSelectionLayout(menu);
+            Assert.That(menu.Details.isActiveAndEnabled,Is.True);
+            Assert.That(menu.Details.text,Does.Contain("Strength Up").And.Contain("always active"));
             menu.scrollView.verticalNormalizedPosition=0;Canvas.ForceUpdateCanvases();yield return null;
             ScreenCapture.CaptureScreenshot("Temp/MenuFeedback/stats-passives.png");
             yield return new WaitForSecondsRealtime(.3f);
             passive.onClick.Invoke();yield return null;
-            Assert.That(manager.CurrentDialog,Is.TypeOf<PartyMenuPicker>());
-            Assert.That(manager.CurrentDialog.GetComponentsInChildren<TMPro.TMP_Text>()
-                .Any(label=>label.text.Contains("always active")),Is.True);
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu),"Confirming a passive does not open another details screen.");
         }
 
         [UnityTest]public IEnumerator DungeonPassivesAppearOnlyInStatsWithoutSpendingActions()
@@ -67,8 +68,12 @@ namespace EternalEnigma.Tests
             MenuManager.Instance.OpenPartyMenu(PartyMenuTab.Stats);yield return null;
             var menu=MenuManager.Instance.PartyMenu;
             var passive=menu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text.Contains("Strength Up"));
+            passive.Select();yield return null;
+            AssertDetachedSelectionLayout(menu);
+            Assert.That(menu.Details.isActiveAndEnabled,Is.True);
+            Assert.That(menu.Details.text,Does.Contain("Strength Up").And.Contain("always active"));
             passive.onClick.Invoke();yield return null;
-            Assert.That(MenuManager.Instance.CurrentDialog,Is.TypeOf<PartyMenuPicker>());
+            Assert.That(MenuManager.Instance.CurrentDialog,Is.SameAs(menu));
             Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
         }
 
@@ -115,12 +120,16 @@ namespace EternalEnigma.Tests
             hero.Hp=1;
             var effect=Asset<ModifyStatsItemEffectDefinition>();effect.VitalModification=new VitalModification{Hp=5};
             var definition=Asset<UsableItemDefinition>();definition.ItemName="Keyboard recovery test";
+            definition.Description="Restores 5 HP.";
             definition.ItemEffectDefinition=effect;definition.Targeting=SkillTargeting.SelectedTarget;
             definition.TargetSelector=new TargetSelector{Team=TargetTeam.Self,Area=TargetArea.Self};
             var item=definition.AsInventoryItem(null);town.TownPlayer.Inventory.Add(item);
 
             yield return PressNavigation(keyboard,Key.Q);
             Assert.That(menu.EntryButtons.Count,Is.EqualTo(1));
+            Assert.That(menu.Details.isActiveAndEnabled,Is.True,"Selecting an inventory item exposes its description before confirmation.");
+            Assert.That(menu.Details.GetParsedText(),Does.Contain(definition.Description));
+            Assert.That(hero.Hp,Is.EqualTo(1),"Reading an item must not use it.");
             yield return PressNavigation(keyboard,Key.Enter);
             Assert.That(manager.CurrentDialog,Is.TypeOf<PartyMenuPicker>(),"Enter opens the item actions.");
             yield return PressNavigation(keyboard,Key.Enter);
@@ -144,6 +153,240 @@ namespace EternalEnigma.Tests
             Assert.That(Common.Instance.MenuInputHandler.PlayerInput.currentActionMap.name,Is.EqualTo("Player"));
             menu.InventoryTab.onClick.Invoke();yield return null;
             Assert.That(manager.CurrentDialog,Is.SameAs(menu),"The HUD shortcut is wired on ordinary town startup.");
+        }
+
+        [UnityTest]public IEnumerator InventorySelectionExplainsBreadBeforeOpeningActions()
+        {
+            yield return harness.LoadDungeon(new TestScenario {AllyName="Avery",Items=new[]{"Bread","Oblivion Draught","Arcane Wand","Frailty Potion","Explosion Spell","Bow","Wooden Buckler","Wooden Arrows","Antidote","Mana Potion"}});
+            var keyboard=InputSystem.AddDevice<Keyboard>();
+            MenuUIInputModule.Active.actionsAsset.devices=new InputDevice[]{keyboard};
+            var manager=MenuManager.Instance;
+            var actor=harness.Ally;
+            actor.Vitals.Hunger=20;
+            actor.SyncDisplayedStats();
+            int actions=actor.Vitals.ActionsPerTurnLeft;
+            var bag=harness.Game.PlayerController.Inventory.InventoryItems;
+            var bread=bag.Single(item=>item.ItemName=="Bread");
+            var other=bag.Single(item=>item.ItemName=="Oblivion Draught");
+            int food=((ModifyStatsItemEffectDefinition)bread.ItemDefinition.ItemEffectDefinition).VitalModification.Hunger;
+            manager.OpenPartyMenu(PartyMenuTab.Inventory);yield return null;
+            var menu=manager.PartyMenu;
+            Assert.That(menu.Details.isActiveAndEnabled,Is.True);
+            Assert.That(menu.Details.GetParsedText(),Does.Contain($"Restores {food} Food"));
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu),"The effect is readable before the action chooser opens.");
+
+            var view=UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
+            var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic;
+            var sizeProperty=view.GetType().GetProperty("selectedSizeIndex",flags);
+            var oldSize=sizeProperty.GetValue(view);
+            try
+            {
+                Directory.CreateDirectory("Temp/InventoryDescriptions");
+                foreach(var size in new[]{new Vector2Int(960,600),new Vector2Int(1280,720)})
+                {
+                    view.GetType().GetMethod("SetCustomResolution",flags).Invoke(view,new object[]{new Vector2(size.x,size.y),"Inventory descriptions"});
+                    yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                    AssertDetachedSelectionLayout(menu);
+                    AssertTenRowsFit(menu);
+                    ScreenCapture.CaptureScreenshot($"Temp/InventoryDescriptions/bread-{size.x}x{size.y}.png");
+                    yield return new WaitForSecondsRealtime(.25f);
+                }
+            }
+            finally {sizeProperty.SetValue(view,oldSize);}
+
+            yield return PressNavigation(keyboard,Key.DownArrow);
+            Assert.That(menu.Details.GetParsedText(),Does.Contain(other.ItemDefinition.Description));
+            Assert.That(menu.Details.GetParsedText(),Does.Not.Contain(bread.ItemDefinition.Description));
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu),"Browsing changes the description without opening actions.");
+            for(int i=1;i<menu.EntryButtons.Count;i++)yield return PressNavigation(keyboard,Key.DownArrow);
+            Assert.That(EventSystem.current.currentSelectedGameObject,Is.SameAs(menu.EntryButtons[^1].gameObject),"Down stops at the last item instead of entering the description popup.");
+            Assert.That(MenuUIInputModule.IsUsable(menu.DetailsControl.gameObject),Is.False,"The inventory description is display-only.");
+            for(int i=1;i<menu.EntryButtons.Count;i++)yield return PressNavigation(keyboard,Key.UpArrow);
+            Assert.That(menu.Details.GetParsedText(),Does.Contain(bread.ItemDefinition.Description));
+            Assert.That(bag.Count,Is.EqualTo(10));
+            Assert.That(actor.Vitals.Hunger,Is.EqualTo(20));
+            Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
+            yield return PressNavigation(keyboard,Key.Enter);
+            Assert.That(manager.CurrentDialog,Is.SameAs(manager.ActionDialog),"Confirm still opens the existing action chooser.");
+            Assert.That(bag.Contains(bread),Is.True,"Opening actions does not consume Bread.");
+        }
+
+        [UnityTest]public IEnumerator SkillSelectionExplainsBeforeCastingWithoutTakingDescriptionFocus()
+        {
+            yield return harness.LoadDungeon(new TestScenario {AllyName="Avery",Mana=30,
+                Skills=new[]{"Fire Bolt","Ice Bolt","Lightning Bolt","Fireball","Blizzard","Thunderclap","Inferno","Glacier","Tempest","Amplify"}});
+            var keyboard=InputSystem.AddDevice<Keyboard>();
+            MenuUIInputModule.Active.actionsAsset.devices=new InputDevice[]{keyboard};
+            var manager=MenuManager.Instance;
+            var actor=harness.Ally;
+            int actions=actor.Vitals.ActionsPerTurnLeft, mana=actor.Vitals.Mana;
+            var first=actor.Skills.Single(skill=>skill.SkillName=="Fire Bolt");
+            var second=actor.Skills.Single(skill=>skill.SkillName=="Ice Bolt");
+            manager.OpenPartyMenu(PartyMenuTab.Skills);yield return null;
+            var menu=manager.PartyMenu;
+            Assert.That(menu.Details.isActiveAndEnabled,Is.True);
+            Assert.That(menu.Details.GetParsedText(),Does.Contain(first.Description));
+            Assert.That(menu.Details.GetParsedText(),Does.Contain(first.CostText(actor)));
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu));
+
+            var view=UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
+            var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic;
+            var sizeProperty=view.GetType().GetProperty("selectedSizeIndex",flags);
+            var oldSize=sizeProperty.GetValue(view);
+            try
+            {
+                Directory.CreateDirectory("Temp/SkillDescriptions");
+                foreach(var size in new[]{new Vector2Int(960,600),new Vector2Int(1280,720)})
+                {
+                    view.GetType().GetMethod("SetCustomResolution",flags).Invoke(view,new object[]{new Vector2(size.x,size.y),"Skill descriptions"});
+                    yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                    AssertDetachedSelectionLayout(menu);
+                    AssertTenRowsFit(menu);
+                    ScreenCapture.CaptureScreenshot($"Temp/SkillDescriptions/skills-{size.x}x{size.y}.png");
+                    yield return new WaitForSecondsRealtime(.25f);
+                }
+            }
+            finally {sizeProperty.SetValue(view,oldSize);}
+
+            yield return PressNavigation(keyboard,Key.DownArrow);
+            Assert.That(menu.Details.GetParsedText(),Does.Contain(second.Description));
+            Assert.That(menu.Details.GetParsedText(),Does.Not.Contain(first.Description));
+            for(int i=1;i<menu.EntryButtons.Count;i++)yield return PressNavigation(keyboard,Key.DownArrow);
+            Assert.That(EventSystem.current.currentSelectedGameObject,Is.SameAs(menu.EntryButtons[^1].gameObject),"Down stops at the last skill.");
+            Assert.That(MenuUIInputModule.IsUsable(menu.DetailsControl.gameObject),Is.False,"Skill descriptions cannot take focus.");
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu),"Browsing skills does not cast or open targeting.");
+            Assert.That(actor.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
+            Assert.That(actor.Vitals.Mana,Is.EqualTo(mana));
+            for(int i=1;i<menu.EntryButtons.Count;i++)yield return PressNavigation(keyboard,Key.UpArrow);
+            yield return PressNavigation(keyboard,Key.Enter);
+            Assert.That(manager.CurrentDialog,Is.SameAs(manager.TargetDialog),"Confirm still opens skill targeting.");
+            Assert.That(actor.Vitals.Mana,Is.EqualTo(mana));
+        }
+
+        [UnityTest]public IEnumerator HistoryShortcutTogglesAcrossPresentationsAndRespectsRebinding()
+        {
+            bool originalTerminal=TerminalMode.Requested;
+            var preferences=GamePreferences.Isolate();
+            try
+            {
+                ControlBindings.Reload();
+                TerminalMode.SetRequested(false);
+                var keyboard=InputSystem.AddDevice<Keyboard>();
+                var mouse=InputSystem.AddDevice<Mouse>();
+                yield return harness.LoadDungeon(new TestScenario {Items=new[]{"Bread"}});
+                var playerInput=Common.Instance.MenuInputHandler.PlayerInput;
+                playerInput.SwitchCurrentControlScheme("Keyboard&Mouse",keyboard,mouse);
+                Assert.That(playerInput.notificationBehavior,Is.EqualTo(PlayerNotifications.SendMessages));
+                Assert.That(playerInput.devices.Contains(keyboard),Is.True,"Exercise the same PlayerInput callbacks as a physical keyboard.");
+                var module=MenuUIInputModule.Active;
+                module.actionsAsset.devices=new InputDevice[]{keyboard,mouse};
+                var manager=MenuManager.Instance;
+                int actions=harness.Ally.Vitals.ActionsPerTurnLeft;
+                var position=harness.Ally.TilemapPosition;
+                GameMessages.Post("The party is ready to explore.");
+                var feed=Object.FindFirstObjectByType<GameMessages>().GetComponentInChildren<CanvasGroup>();
+                foreach(bool terminal in new[]{false,true})
+                {
+                    TerminalMode.SetRequested(terminal);
+                    yield return new WaitForSecondsRealtime(.2f);
+                    yield return PressNavigation(keyboard,Key.H);
+                    var history=manager.CurrentDialog as EventHistoryDialog;
+                    Assert.That(history,Is.Not.Null,"H opens full History in both presentations.");
+                    Assert.That(history.Entries.text,Does.Contain("The party is ready to explore."));
+                    AssertExpandedHistoryLayout(history);
+                    if(!terminal)
+                    {
+                        var safeArea=history.GetComponentInChildren<SafeAreaPanel>();
+                        var safeRect=(RectTransform)safeArea.transform;
+                        var safeMin=safeRect.anchorMin;var safeMax=safeRect.anchorMax;
+                        safeArea.enabled=false;
+                        try
+                        {
+                            safeRect.anchorMin=new Vector2(.08f,.04f);safeRect.anchorMax=new Vector2(.94f,.96f);
+                            AssertExpandedHistoryLayout(history);
+                        }
+                        finally {safeRect.anchorMin=safeMin;safeRect.anchorMax=safeMax;safeArea.enabled=true;}
+                        var view=UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
+                        var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic;
+                        var sizeProperty=view.GetType().GetProperty("selectedSizeIndex",flags);
+                        var oldSize=sizeProperty.GetValue(view);
+                        try
+                        {
+                            history.Setup(Enumerable.Range(1,40).Select(i=>$"Event {i}: the party explores the dungeon.").ToArray());
+                            Directory.CreateDirectory("Temp/HistoryShortcut");
+                            foreach(var size in new[]{new Vector2Int(960,600),new Vector2Int(1280,720)})
+                            {
+                                view.GetType().GetMethod("SetCustomResolution",flags).Invoke(view,new object[]{new Vector2(size.x,size.y),"Expanded history"});
+                                yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                                AssertExpandedHistoryLayout(history);
+                                Assert.That(history.scrollView.verticalNormalizedPosition,Is.EqualTo(0).Within(.001f),"The newest events remain visible after resizing.");
+                                ScreenCapture.CaptureScreenshot($"Temp/HistoryShortcut/expanded-{size.x}x{size.y}.png");
+                                yield return new WaitForSecondsRealtime(.25f);
+                            }
+                            float before=history.scrollView.verticalNormalizedPosition;
+                            yield return PressNavigation(keyboard,Key.UpArrow);
+                            Assert.That(history.scrollView.verticalNormalizedPosition,Is.GreaterThan(before));
+                        }
+                        finally {sizeProperty.SetValue(view,oldSize);}
+                    }
+                    yield return PressNavigation(keyboard,Key.H);
+                    Assert.That(manager.Opened,Is.False,"H closes History without reopening it in terminal mode.");
+                    Assert.That(feed.alpha,Is.EqualTo(1).Within(.001f),"Collapsing History restores the small feed.");
+                    Assert.That(feed.blocksRaycasts,Is.True);
+
+                    yield return PressNavigation(keyboard,Key.H);
+                    yield return ClickHudTab(mouse,history.Back);
+                    Assert.That(manager.Opened,Is.False,"The Events / History button collapses the taller panel.");
+                    Assert.That(feed.alpha,Is.EqualTo(1).Within(.001f),"Mouse collapse restores the small feed too.");
+
+                    manager.OpenPartyMenu(PartyMenuTab.Inventory);yield return null;
+                    var menu=manager.PartyMenu;
+                    yield return PressNavigation(keyboard,Key.I);
+                    Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Equipment));AssertEventFeedWidth();
+                    yield return PressNavigation(keyboard,Key.T);
+                    Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Stats));AssertEventFeedWidth();
+                    yield return PressNavigation(keyboard,Key.Q);
+                    Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Inventory));AssertEventFeedWidth();
+                    yield return PressNavigation(keyboard,Key.F11);
+                    yield return new WaitForSecondsRealtime(.15f);
+                    Assert.That(TerminalMode.Effective,Is.EqualTo(!terminal));AssertEventFeedWidth();
+                    yield return PressNavigation(keyboard,Key.F11);
+                    yield return new WaitForSecondsRealtime(.15f);
+                    Assert.That(TerminalMode.Effective,Is.EqualTo(terminal));AssertEventFeedWidth();
+                    var selected=EventSystem.current.currentSelectedGameObject;
+                    yield return PressNavigation(keyboard,Key.H);
+                    Assert.That(manager.CurrentDialog,Is.SameAs(history));
+                    yield return PressNavigation(keyboard,Key.H);
+                    Assert.That(manager.CurrentDialog,Is.SameAs(menu));
+                    Assert.That(EventSystem.current.currentSelectedGameObject,Is.SameAs(selected));
+                    Assert.That(feed.alpha,Is.EqualTo(1).Within(.001f));
+                    Assert.That(((RectTransform)feed.transform).anchorMax,Is.EqualTo(new Vector2(.775f,.20f)));
+                    yield return PressNavigation(keyboard,Key.Escape);
+
+                    var settings=Common.Instance.GlobalSettings;
+                    settings.ShowDialog();yield return null;
+                    yield return PressNavigation(keyboard,Key.H);
+                    Assert.That(module.OwnsFocus(settings),Is.True,"The shortcut must not interrupt settings or binding capture.");
+                    settings.Exit_Clicked();yield return null;
+                }
+                ControlBindings.ApplyBinding("Player/History",0,"<Keyboard>/j");
+                yield return null;yield return null;
+                yield return PressNavigation(keyboard,Key.H);
+                Assert.That(manager.Opened,Is.False,"The old terminal-only H handler must not bypass rebinding.");
+                yield return PressNavigation(keyboard,Key.J);
+                Assert.That(manager.CurrentDialog,Is.TypeOf<EventHistoryDialog>());
+                Assert.That(InputPrompts.History,Does.Contain("J"));
+                yield return PressNavigation(keyboard,Key.Escape);
+                Assert.That(manager.Opened,Is.False);
+                Assert.That(harness.Ally.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
+                Assert.That(harness.Ally.TilemapPosition,Is.EqualTo(position));
+            }
+            finally
+            {
+                TerminalMode.SetRequested(originalTerminal);
+                preferences.Dispose();
+                ControlBindings.Reload();
+            }
         }
 
         [UnityTest]public IEnumerator TownTabsNestedBackAndRecoveryPreserveCheckpoint()
@@ -365,17 +608,18 @@ namespace EternalEnigma.Tests
                 {
                     menu.SwitchTab(tab);yield return null;Canvas.ForceUpdateCanvases();
                     if(tab==PartyMenuTab.Stats)VerifyStatsFit(menu);
-                    else if(tab==PartyMenuTab.Inventory)
+                    else if(tab==PartyMenuTab.Inventory || tab==PartyMenuTab.Skills)
                     {
-                        Assert.That(menu.scrollView.vertical,Is.True,"Inventory scrolling returns after leaving Stats.");
-                        Assert.That(menu.scrollView.content.rect.height,Is.GreaterThan(menu.scrollView.viewport.rect.height));
+                        AssertDetachedSelectionLayout(menu);
+                        Assert.That(menu.scrollView.vertical,Is.True,"List scrolling returns after leaving Stats.");
+                        if(tab==PartyMenuTab.Inventory)Assert.That(menu.scrollView.content.rect.height,Is.GreaterThan(menu.scrollView.viewport.rect.height));
                     }
                     foreach(var label in menu.RowsRoot.GetComponentsInChildren<TMPro.TMP_Text>())
                     {
                         label.ForceMeshUpdate();
                         Assert.That(label.isTextOverflowing,Is.False,label.text+" must fit its row without truncation.");
                     }
-                    menu.HeroText.ForceMeshUpdate();Assert.That(menu.HeroText.isTextOverflowing,Is.False);
+                    if(menu.HeroText.isActiveAndEnabled){menu.HeroText.ForceMeshUpdate();Assert.That(menu.HeroText.isTextOverflowing,Is.False);}
                     camera.Render();var previous=RenderTexture.active;RenderTexture.active=target;
                     var image=new Texture2D(size.x,size.y,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,size.x,size.y),0,0);image.Apply();
                     string name=tab==PartyMenuTab.Stats?"stats":tab==PartyMenuTab.Equipment?"equipment":tab==PartyMenuTab.Skills?"skills":"menu";
@@ -385,18 +629,51 @@ namespace EternalEnigma.Tests
             }
             menu.SwitchTab(PartyMenuTab.Inventory);yield return null;
             Assert.That(menu.HeroesRoot.gameObject.activeSelf,Is.False);
-            Assert.That(menu.HeroText.gameObject.activeSelf,Is.True);
-            Assert.That(menu.DetailsControl.Scroll.gameObject.activeSelf,Is.False);
+            Assert.That(menu.HeroText.gameObject.activeSelf,Is.False);
+            Assert.That(menu.DetailsControl.Scroll.gameObject.activeSelf,Is.True);
             Assert.That(menu.Hints.gameObject.activeSelf,Is.False);
             var list=(RectTransform)menu.scrollView.transform;
-            Assert.That(list.anchorMin,Is.EqualTo(new Vector2(.035f,.025f)));
+            Assert.That(list.anchorMin,Is.EqualTo(new Vector2(.035f,.16f)));
             Assert.That(list.anchorMax,Is.EqualTo(new Vector2(.965f,.89f)));
             var controlled=town.TownPlayer.ControllingTownAlly;menu.BrowseHero(1);Assert.That(town.TownPlayer.ControllingTownAlly,Is.SameAs(controlled));
-            Assert.That(menu.HeroText.text,Is.EqualTo(GameplayText.Format(menu.Hero.Name)),"The inspected hero remains visible when it differs from the world leader.");
+            Assert.That(menu.HeroText.gameObject.activeSelf,Is.False,"Inventory does not repeat the selected portrait's name.");
+        }
+
+        private static void AssertDetachedSelectionLayout(PartyMenu menu)
+        {
+            Assert.That(menu.HeroText.gameObject.activeSelf,Is.False);
+            Assert.That(menu.RowsRoot.GetComponentsInChildren<TMPro.TMP_Text>().Any(label=>label.text=="Shared bag" || label.text=="Active skills"),Is.False);
+            Assert.That(menu.DetailsControl.Scroll.transform.IsChildOf(menu.Panel),Is.False,"Descriptions must not occupy list space.");
+            Assert.That(MenuUIInputModule.IsUsable(menu.DetailsControl.gameObject),Is.False);
+            Assert.That(((RectTransform)menu.scrollView.transform).anchorMin.y,Is.EqualTo(menu.Tab==PartyMenuTab.Stats ? .025f : .16f),
+                "Stats keeps its full list; Inventory and Skills reserve their paging footer.");
+            var paper=menu.GetComponentsInChildren<Transform>().Single(t=>t.name=="Description parchment");
+            var root=(RectTransform)menu.GetComponent<Canvas>().transform;
+            var detailBounds=RectTransformUtility.CalculateRelativeRectTransformBounds(root,paper);
+            var listBounds=RectTransformUtility.CalculateRelativeRectTransformBounds(root,menu.Panel);
+            Assert.That(detailBounds.max.x,Is.LessThan(listBounds.min.x),"A visible gap separates the description from the list.");
+            Assert.That(detailBounds.min.x,Is.GreaterThanOrEqualTo(root.rect.xMin));
+            Assert.That(detailBounds.max.y,Is.LessThanOrEqualTo(root.rect.yMax));
+        }
+
+        private static void AssertTenRowsFit(PartyMenu menu)
+        {
+            Assert.That(menu.EntryButtons.Count,Is.EqualTo(10));
+            foreach(var button in menu.EntryButtons)
+            {
+                var bounds=RectTransformUtility.CalculateRelativeRectTransformBounds(menu.scrollView.viewport,button.transform);
+                Assert.That(bounds.min.y,Is.GreaterThanOrEqualTo(menu.scrollView.viewport.rect.yMin-1),"All ten rows fit without scrolling.");
+                Assert.That(bounds.max.y,Is.LessThanOrEqualTo(menu.scrollView.viewport.rect.yMax+1));
+                var label=button.GetComponent<AuthoredButton>().Label;
+                label.ForceMeshUpdate();
+                Assert.That(label.isTextOverflowing,Is.False,label.text+" must fit its row.");
+            }
         }
 
         private static void VerifyStatsFit(PartyMenu menu)
         {
+            AssertDetachedSelectionLayout(menu);
+            Assert.That(menu.Details.isActiveAndEnabled,Is.True);
             bool hasPassives=menu.RowsRoot.GetComponentsInChildren<TMPro.TMP_Text>()
                 .Any(label=>label.text=="Passive skills");
             Assert.That(menu.scrollView.vertical,Is.EqualTo(hasPassives),"Learned passives extend Stats into a scrolling list.");
@@ -459,6 +736,7 @@ namespace EternalEnigma.Tests
                 var optionsTab=menu.Tab;
                 yield return ClickHudTab(mouse,launcher.OptionsButton);
                 Assert.That(settings.IsOpen,Is.True,"Pointer users can open Options from the party menu.");
+                AssertEventFeedWidth();
                 Assert.That(module.OwnsFocus(settings),Is.True);
                 Assert.That(settings.SettingsCanvas.GetComponent<Canvas>().sortingOrder,Is.GreaterThan(hud.sortingOrder));
                 Directory.CreateDirectory("Temp/UIScreenAudit");
@@ -469,6 +747,7 @@ namespace EternalEnigma.Tests
                     settings.MainMenu_Clicked();yield return null;yield return null;
                     var quit=Object.FindFirstObjectByType<CampaignChoice>();
                     Assert.That(quit,Is.Not.Null);
+                    AssertEventFeedWidth();
                     Assert.That(quit.GetComponent<Canvas>().sortingOrder,Is.GreaterThan(settings.SettingsCanvas.GetComponent<Canvas>().sortingOrder));
                     ScreenCapture.CaptureScreenshot("Temp/UIScreenAudit/settings-quit-confirmation-"+menu.gameObject.scene.name+".png");
                     yield return new WaitForSecondsRealtime(.15f);
@@ -502,6 +781,7 @@ namespace EternalEnigma.Tests
                 Assert.That(owner.Stack.Count,Is.EqualTo(1));
                 Assert.That(menu.Tab,Is.EqualTo(tab));
                 Assert.That(menu.Hero.Id,Is.EqualTo(hero));
+                AssertEventFeedWidth();
                 if(tab==PartyMenuTab.Stats)VerifyStatsFit(menu);
                 Assert.That((button.GetComponentInChildren<TMPro.TMP_Text>().fontStyle & TMPro.FontStyles.Underline)!=0,Is.True);
                 var label=button.GetComponentInChildren<TMPro.TMP_Text>();label.ForceMeshUpdate();
@@ -521,6 +801,8 @@ namespace EternalEnigma.Tests
 
             var previousTab=menu.Tab;
             menu.Pick("Nested actions",new(){("Cancel this action",()=>{})});yield return null;
+            yield return null;
+            AssertEventFeedWidth();
             Assert.That(menu.GetComponent<Canvas>().enabled,Is.False);
             Assert.That(hud.enabled,Is.True);
             Assert.That(menu.InventoryTab.interactable,Is.False);
@@ -549,13 +831,10 @@ namespace EternalEnigma.Tests
             Assert.That(owner.Current,Is.SameAs(menu),"An empty inventory submenu has a working pointer exit.");
 
             GameMessages.Post("The party is ready to explore.");yield return null;
-            GameMessages.ShowHistory();yield return null;yield return null;
+            yield return PressNavigation(keyboard,Key.H);
             var history=owner.Current as EventHistoryDialog;
             Assert.That(history,Is.Not.Null,"History shares the scene's dialog stack.");
-            Assert.That(history.Panel.anchorMin,Is.EqualTo(Vector2.zero));
-            Assert.That(history.Panel.anchorMax,Is.EqualTo(Vector2.one),"History fills its safe-area reader instead of the compact party dock.");
-            Assert.That(history.Panel.GetComponentInParent<SafeAreaPanel>(),Is.Not.Null);
-            Assert.That(history.Panel.GetComponent<Image>().sprite,Is.EqualTo(GameUITheme.Current.DungeonWood));
+            AssertExpandedHistoryLayout(history);
             Assert.That(menu.GetComponent<Canvas>().enabled,Is.False);
             Assert.That(history.Entries.text,Does.Contain("The party is ready to explore."));
             GameMessages.ShowHistory();Assert.That(owner.Current,Is.SameAs(history));
@@ -567,7 +846,7 @@ namespace EternalEnigma.Tests
             Directory.CreateDirectory("Temp/UnifiedPresentation");
             ScreenCapture.CaptureScreenshot("Temp/UnifiedPresentation/history-"+menu.gameObject.scene.name+".png");
             yield return new WaitForSecondsRealtime(.15f);
-            history.Back.onClick.Invoke();yield return null;yield return null;
+            yield return PressNavigation(keyboard,Key.H);
             Assert.That(owner.Current,Is.SameAs(menu));
             Assert.That(menu.GetComponent<Canvas>().enabled,Is.True);
 
@@ -576,8 +855,8 @@ namespace EternalEnigma.Tests
             Assert.That(hud.enabled,Is.True,"Closing the menu leaves the same HUD buttons available.");
             var feed=Object.FindFirstObjectByType<GameMessages>();
             var feedPanel=(RectTransform)feed.GetComponentInChildren<CanvasGroup>().transform;
-            Assert.That(feedPanel.anchorMin,Is.EqualTo(new Vector2(.24f,.016f)));
-            Assert.That(feedPanel.anchorMax,Is.EqualTo(new Vector2(.79f,.20f)),"Events use the dungeon's bottom feed, not a floating panel.");
+            Assert.That(feedPanel.anchorMin,Is.EqualTo(new Vector2(.225f,.016f)));
+            Assert.That(feedPanel.anchorMax,Is.EqualTo(new Vector2(.775f,.20f)),"Events use the dungeon's bottom feed, not a floating panel.");
             var feedReference=Resources.Load<GameMessages>("UI/Authored/DungeonEvents").GetComponentInChildren<CanvasGroup>(true);
             var referenceImages=feedReference.GetComponentsInChildren<Image>(true);
             var feedImages=feedPanel.GetComponentsInChildren<Image>(true);
@@ -603,8 +882,105 @@ namespace EternalEnigma.Tests
             yield return ClickHudTab(mouse,launcher.ButtonFor(PartyMenuTab.Inventory));
             Assert.That(owner.Current,Is.SameAs(menu));
             Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Inventory));
+            yield return VerifyHistoryWidthAcrossPresentations(menu,keyboard,pad,includeCapabilities);
             module.actionsAsset.devices=null;
             InputSystem.RemoveDevice(mouse);InputSystem.RemoveDevice(pad);InputSystem.RemoveDevice(keyboard);
+        }
+
+        private IEnumerator VerifyHistoryWidthAcrossPresentations(PartyMenu menu,Keyboard keyboard,Gamepad pad,bool includeCapabilities)
+        {
+            bool originalTerminal=TerminalMode.Requested;
+            try
+            {
+                foreach(bool terminal in new[]{false,true})
+                {
+                    TerminalMode.SetRequested(terminal);yield return new WaitForSecondsRealtime(.2f);
+                    yield return PressNavigation(keyboard,Key.I);
+                    Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Equipment));AssertEventFeedWidth();
+                    yield return PressNavigation(keyboard,Key.T);
+                    Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Stats));AssertEventFeedWidth();
+                    foreach(var tab in includeCapabilities
+                        ? new[]{PartyMenuTab.Inventory,PartyMenuTab.Equipment,PartyMenuTab.Skills,PartyMenuTab.Stats,PartyMenuTab.Capabilities}
+                        : new[]{PartyMenuTab.Inventory,PartyMenuTab.Equipment,PartyMenuTab.Skills,PartyMenuTab.Stats})
+                    {
+                        menu.SwitchTab(tab);yield return null;yield return null;
+                        AssertEventFeedWidth();
+                        yield return PressNavigation(keyboard,Key.H);
+                        Assert.That(menu.Owner.Current,Is.TypeOf<EventHistoryDialog>());
+                        AssertExpandedHistoryLayout((EventHistoryDialog)menu.Owner.Current);
+                        yield return PressNavigation(keyboard,Key.H);
+                        Assert.That(menu.Owner.Current,Is.SameAs(menu));
+                        AssertEventFeedWidth();
+                    }
+                    menu.Pick("History width audit",new(){("Cancel",()=>{})});yield return null;yield return null;
+                    AssertEventFeedWidth();
+                    yield return PressNavigation(keyboard,Key.Escape);
+                    var settings=Common.Instance.GlobalSettings;
+                    settings.ShowDialog();yield return null;yield return null;
+                    AssertEventFeedWidth();
+                    settings.ShowEventHistory();yield return null;yield return null;
+                    Assert.That(menu.Owner.Current,Is.TypeOf<EventHistoryDialog>(),"The Options command uses the same History panel.");
+                    AssertExpandedHistoryLayout((EventHistoryDialog)menu.Owner.Current);
+                    InputSystem.QueueStateEvent(pad,new GamepadState().WithButton(GamepadButton.East));yield return null;yield return null;
+                    InputSystem.QueueStateEvent(pad,new GamepadState());yield return null;yield return null;
+                    Assert.That(menu.Owner.Current,Is.SameAs(menu),"Controller Cancel restores the party tab.");
+                    AssertEventFeedWidth();
+                }
+            }
+            finally {TerminalMode.SetRequested(originalTerminal);}
+            menu.SwitchTab(PartyMenuTab.Inventory);yield return new WaitForSecondsRealtime(.2f);
+        }
+
+        internal static RectTransform AssertEventFeedWidth()
+        {
+            Canvas.ForceUpdateCanvases();
+            var feed=Object.FindFirstObjectByType<GameMessages>();
+            Assert.That(feed,Is.Not.Null);
+            var panel=(RectTransform)feed.GetComponentsInChildren<CanvasGroup>(true)
+                .Single(group=>group.GetComponentInParent<EventHistoryDialog>(true)==null).transform;
+            Assert.That(panel.anchorMin,Is.EqualTo(new Vector2(.225f,.016f)));
+            Assert.That(panel.anchorMax,Is.EqualTo(new Vector2(.775f,.20f)),"Commands and menus must not narrow the event feed.");
+            var sourceScroll=panel.GetComponent<ScrollRect>();
+            Assert.That(sourceScroll.content.GetComponent<TMPro.TMP_Text>().fontSize,Is.EqualTo(33.11f).Within(.001f),"Every scene uses the saved event font size.");
+            Assert.That(sourceScroll.viewport.anchoredPosition.y,Is.EqualTo(26.23f).Within(.001f));
+            Assert.That(sourceScroll.viewport.sizeDelta.y,Is.EqualTo(19.8808f).Within(.001f));
+            // Terminal mode disables this canvas; Unity keeps its old pixel geometry
+            // through window resizes until the canvas is shown again.
+            if(!panel.GetComponentInParent<Canvas>().isActiveAndEnabled)return panel;
+            var bounds=ScreenBounds(panel);
+            Assert.That(bounds.xMin,Is.EqualTo(Screen.width*.225f).Within(1));
+            Assert.That(bounds.xMax,Is.EqualTo(Screen.width*.775f).Within(1));
+            Assert.That(bounds.yMin,Is.EqualTo(Screen.height*.016f).Within(1));
+            Assert.That(bounds.yMax,Is.GreaterThanOrEqualTo(Screen.height*.20f-1),"Wide windows can add vertical room for four complete lines.");
+            return panel;
+        }
+
+        private static Rect ScreenBounds(RectTransform panel)
+        {
+            var corners=new Vector3[4];panel.GetWorldCorners(corners);
+            var minimum=RectTransformUtility.WorldToScreenPoint(null,corners[0]);
+            var maximum=RectTransformUtility.WorldToScreenPoint(null,corners[2]);
+            return Rect.MinMaxRect(minimum.x,minimum.y,maximum.x,maximum.y);
+        }
+
+        internal static void AssertExpandedHistoryLayout(EventHistoryDialog history)
+        {
+            var compact=AssertEventFeedWidth();
+            Assert.That(history.Panel.anchorMin,Is.EqualTo(new Vector2(.225f,.016f)));
+            Assert.That(history.Panel.anchorMax,Is.EqualTo(new Vector2(.775f,.88f)),"History keeps the feed width and grows upward.");
+            var normalBounds=new Rect(Screen.width*.225f,Screen.height*.016f,Screen.width*.55f,Screen.height*.184f);
+            var expandedBounds=ScreenBounds(history.Panel);
+            Assert.That(expandedBounds.xMin,Is.EqualTo(normalBounds.xMin).Within(1));
+            Assert.That(expandedBounds.xMax,Is.EqualTo(normalBounds.xMax).Within(1),"The actual screen edges must match, not just the anchors.");
+            Assert.That(expandedBounds.yMin,Is.EqualTo(normalBounds.yMin).Within(1));
+            Assert.That(expandedBounds.yMax,Is.EqualTo(Screen.height*.88f).Within(1));
+            if(!TerminalMode.Effective)
+                Assert.That(GameUISkin.PanelGraphic(history.Panel).sprite,Is.EqualTo(GameUISkin.PanelGraphic(compact).sprite));
+            var sourceScroll=compact.GetComponent<ScrollRect>();
+            Assert.That(history.Entries.fontSize,Is.EqualTo(sourceScroll.content.GetComponent<TMPro.TMP_Text>().fontSize));
+            var buttonBounds=RectTransformUtility.CalculateRelativeRectTransformBounds(history.Panel,history.Back.transform);
+            Assert.That(buttonBounds.max.y,Is.LessThanOrEqualTo(history.Panel.rect.yMax));
+            Assert.That(buttonBounds.size.y,Is.LessThan(history.Panel.rect.height*.1f),"The expand/collapse button keeps the feed's compact height.");
         }
 
         private IEnumerator VerifyHorizontalTabNavigation(PartyMenu menu,Keyboard keyboard,Gamepad pad,bool includeCapabilities)
@@ -622,6 +998,7 @@ namespace EternalEnigma.Tests
             InputSystem.QueueStateEvent(pad,new GamepadState().WithButton(GamepadButton.DpadRight));yield return null;yield return null;
             InputSystem.QueueStateEvent(pad,new GamepadState());yield return null;yield return null;
             Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Equipment),"Right switches tabs directly from the menu contents, without Submit.");
+            AssertEventFeedWidth();
             yield return PressNavigation(keyboard,Key.LeftArrow);
             Assert.That(menu.Tab,Is.EqualTo(PartyMenuTab.Inventory));
             if(selectedItem!=null)
@@ -641,6 +1018,7 @@ namespace EternalEnigma.Tests
             {
                 yield return PressNavigation(keyboard,Key.RightArrow);
                 Assert.That(menu.Tab,Is.EqualTo(expected));
+                AssertEventFeedWidth();
                 Assert.That(owner.Current,Is.SameAs(menu));
                 Assert.That(owner.Stack.Count,Is.EqualTo(1));
                 Assert.That(menu.Hero.Id,Is.EqualTo(hero));
@@ -648,6 +1026,7 @@ namespace EternalEnigma.Tests
             InputSystem.QueueStateEvent(pad,new GamepadState{leftStick=Vector2.left});yield return null;yield return null;
             InputSystem.QueueStateEvent(pad,new GamepadState());yield return null;yield return null;
             Assert.That(menu.Tab,Is.EqualTo(includeCapabilities?PartyMenuTab.Capabilities:PartyMenuTab.Stats),"The controller stick also cycles tabs.");
+            AssertEventFeedWidth();
 
             menu.SwitchTab(PartyMenuTab.Inventory);yield return null;
             float delay=module.moveRepeatDelay,rate=module.moveRepeatRate;

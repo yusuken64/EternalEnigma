@@ -54,7 +54,25 @@ public static class OpeningDesignPreview
     [MenuItem("Tools/Eternal Enigma/Opening/Capture Save Artwork Preview")]
     public static void CaptureArtwork() => StartCapture(true);
 
-    private static void StartCapture(bool artworkOnly)
+    [MenuItem("Tools/Eternal Enigma/UI/Open Inventory Review")]
+    public static void OpenInventoryReview() => StartCapture(false, PartyMenuTab.Inventory);
+
+    [MenuItem("Tools/Eternal Enigma/UI/Open Skills Review")]
+    public static void OpenSkillsReview() => StartCapture(false, PartyMenuTab.Skills);
+
+    [MenuItem("Tools/Eternal Enigma/UI/Open History Review")]
+    public static void OpenHistoryReview() => StartCapture(false, PartyMenuTab.Inventory, true);
+
+    [MenuItem("Tools/Eternal Enigma/UI/Open Stats Review")]
+    public static void OpenStatsReview() => StartCapture(false, PartyMenuTab.Stats);
+
+    [MenuItem("Tools/Eternal Enigma/UI/Open Event Feed Review")]
+    public static void OpenEventFeedReview() => StartCapture(false,PartyMenuTab.Stats,feedReview:true);
+
+    [MenuItem("Tools/Eternal Enigma/UI/Open Party Portrait Review")]
+    public static void OpenPartyPortraitReview() => StartCapture(false,PartyMenuTab.Stats,feedReview:true,partyReview:true);
+
+    private static void StartCapture(bool artworkOnly, PartyMenuTab? reviewTab = null, bool historyReview = false, bool feedReview = false, bool partyReview = false)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode)
             throw new InvalidOperationException("Finish Play Mode before starting the isolated design preview.");
@@ -67,6 +85,10 @@ public static class OpeningDesignPreview
         SessionState.SetBool(Key + ".Suppression", LoadingSceneIntegration.SuppressAutomaticSceneLoading);
         SessionState.SetBool(Key, true);
         SessionState.SetBool(Key + ".ArtworkOnly", artworkOnly);
+        SessionState.SetInt(Key + ".PartyMenuReview", reviewTab.HasValue ? (int)reviewTab.Value : -1);
+        SessionState.SetBool(Key + ".HistoryReview", historyReview);
+        SessionState.SetBool(Key + ".FeedReview",feedReview);
+        SessionState.SetBool(Key + ".PartyPortraitReview",partyReview);
         started = false; sequence.Clear(); waiting = null;
         File.WriteAllText(Folder + "/Progress.txt", "Starting isolated production scene capture.\n");
         EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/MainMenu.unity");
@@ -152,6 +174,12 @@ public static class OpeningDesignPreview
             Common.InstanceOrNull != null && !Common.InstanceOrNull.Travel.IsTransitioning, "MainMenu");
         var common = Common.Instance;
         var mainMenu = Object.FindFirstObjectByType<MainMenu>();
+        int reviewTab = SessionState.GetInt(Key + ".PartyMenuReview", -1);
+        if (reviewTab >= 0)
+        {
+            yield return PartyMenuReview(mainMenu, (PartyMenuTab)reviewTab);
+            yield break; // Keep Play Mode and the isolated save store alive for the user.
+        }
         var backgrounds = Resources.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
         var biomes = (EternalEnigma.Core.World.OverworldBiome[])Enum.GetValues(typeof(EternalEnigma.Core.World.OverworldBiome));
         for (int page = 0; page < biomes.Length; page += 3)
@@ -242,6 +270,79 @@ public static class OpeningDesignPreview
         Debug.Log("Opening design preview captured: " + Path.GetFullPath(Folder));
         Stop();
     }
+    private static IEnumerator PartyMenuReview(MainMenu mainMenu, PartyMenuTab tab)
+    {
+        var hero = TownSceneLoader.Default.AllyCatalog.Single(ally => ally.Name == "Avery");
+        bool partyReview=SessionState.GetBool(Key + ".PartyPortraitReview",false);
+        var heroes=new List<TownAlly>{hero};
+        if(partyReview)heroes.AddRange(TownSceneLoader.Default.AllyCatalog.Where(ally=>ally!=hero).Take(3));
+        mainMenu.DebugAllyPrefabs = heroes;
+        mainMenu.DebugAllies = heroes.Select(ally=>new TownAllyData{AllyName=ally.Name,Skills=new()}).ToList();
+        mainMenu.TestDungeon_Clicked();
+        yield return Await(() => Game.Instance != null && Game.Instance.IsReady &&
+            !Game.Instance.TurnManager.IsProcessingTurn && !Common.Instance.ScreenTransition.BlocksInput, "party menu review dungeon");
+        var game = Game.Instance;
+        var bag = game.PlayerController.Inventory;
+        bag.MaxItems = Inventory.DefaultCapacity;
+        bag.InventoryItems.Clear();
+        foreach (var name in new[] { "Bread", "Oblivion Draught", "Arcane Wand", "Frailty Potion", "Explosion Spell",
+            "Bow", "Wooden Buckler", "Wooden Arrows", "Antidote", "Mana Potion" })
+            bag.InventoryItems.Add(new ItemSaveData { ItemName = name }.Restore(Common.Instance.ItemManager));
+        var actor = game.PlayerController.ControlledAlly;
+        if (tab == PartyMenuTab.Skills)
+        {
+            foreach (var skill in actor.Skills) Object.Destroy(skill);
+            actor.Skills.Clear();
+            foreach (var name in new[] { "Fire Bolt", "Ice Bolt", "Lightning Bolt", "Fireball", "Blizzard",
+                "Thunderclap", "Inferno", "Glacier", "Tempest", "Amplify" })
+                actor.Skills.Add(Common.Instance.SkillManager.GetSkillInstanceByName(name));
+            actor.InvalidateCachedStats();
+        }
+        actor.Vitals.Hunger = 20;
+        actor.SyncDisplayedStats();
+        GameMessages.BeginTurn();
+        GameMessages.Post("The party is ready to explore.");
+        MenuManager.Instance.OpenPartyMenu(tab);
+        yield return Delay(.3);
+        var reviewMenu=MenuManager.Instance.PartyMenu;
+        (tab==PartyMenuTab.Stats
+            ?reviewMenu.EntryButtons.First(button=>button.GetComponent<AuthoredButton>().Label.text.StartsWith("STR "))
+            :reviewMenu.EntryButtons[0]).Select();
+        view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view,
+            new object[] { new Vector2(1280, 720), tab + " review" });
+        view.Focus();
+        yield return Delay(.5);
+        bool historyReview = SessionState.GetBool(Key + ".HistoryReview", false);
+        bool feedReview=SessionState.GetBool(Key + ".FeedReview",false);
+        if(feedReview)
+        {
+            reviewMenu.CloseDialog();
+            GameMessages.BeginTurn();
+            GameMessages.Post("Avery attacked Practice Target!");
+            GameMessages.Post("Practice Target took 10 damage.");
+            GameMessages.Post("Avery attacked Practice Target!");
+            GameMessages.Post("Practice Target took 12 damage.");
+            yield return Delay(.3);
+        }
+        if (historyReview)
+        {
+            GameMessages.ShowHistory();
+            yield return Delay(.3);
+        }
+        Canvas.ForceUpdateCanvases();
+        string captureFolder = partyReview ? "Temp/PartyPortraitLayout" : feedReview ? "Temp/HistoryLayoutCapture" : historyReview ? "Temp/HistoryShortcut" : tab == PartyMenuTab.Stats ? "Temp/StatsDescriptions" : tab == PartyMenuTab.Skills ? "Temp/SkillDescriptions" : "Temp/InventoryDescriptions";
+        Directory.CreateDirectory(captureFolder);
+        ScreenCapture.CaptureScreenshot(captureFolder + (tab == PartyMenuTab.Stats && !feedReview ? "/stats-preview.png" : "/live-preview.png"));
+        yield return Delay(.3);
+        int animation = SessionState.GetInt(Key + ".Animation", -1);
+        DungeonPreferences.AnimationOverride = animation < 0 ? null : (DungeonAnimationMode)animation;
+        string selection = partyReview ? "four party portraits with the reviewed layout" : feedReview ? "four-line event feed" : historyReview ? "expanded event feed" : tab == PartyMenuTab.Skills ? "ten skills, Fire Bolt selected" :
+            tab == PartyMenuTab.Inventory ? "ten items, Bread selected" : "Stats with STR explanation and event feed";
+        File.AppendAllText(Folder + "/Progress.txt", $"{tab} review ready: {selection}. Play Mode remains open with physical input enabled and saves isolated.\n");
+        Debug.Log(tab + " review is ready. Stop Play Mode when finished; existing saves are unchanged.");
+        view.Focus();
+    }
+
     private static IEnumerator HomeInteraction(Town town, Vector3Int target, string name)
     {
         if (!town.HomeLesson.TryGetInteractionStand(target, out var standing))

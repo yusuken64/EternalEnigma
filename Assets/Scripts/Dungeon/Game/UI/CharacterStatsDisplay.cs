@@ -13,10 +13,12 @@ public class CharacterStatsDisplay : MonoBehaviour
 	public StatsDisplay HungerDisplay;
 
 	public Character Character;
+	public TownAlly TownActor { get; private set; }
 	private string baseName;
 
 	internal void Setup(Character character)
 	{
+		TownActor = null;
 		GetComponent<DungeonPartyCard>().Bind(this);
 		Character = character;
 		if (PortraitImage != null)
@@ -46,6 +48,27 @@ public class CharacterStatsDisplay : MonoBehaviour
 		HungerDisplay.Setup("Full",
 			() => $"Food  {character.DisplayedVitals.Hunger}/{character.DisplayedStats.HungerMax}",
 			() => (float)character.DisplayedVitals.Hunger / character.DisplayedStats.HungerMax);
+	}
+
+	internal void UpdateTravelUI(TownAlly hero)
+	{
+		TownActor=hero;
+		var stats=TownUtilityService.StatsFor(hero);
+		int hp=RecoveryMath.SavedVital(hero.Hp,stats.HPMax);
+		int mana=RecoveryMath.SavedVital(hero.Mana,stats.ManaMax);
+		int food=hero.HasHunger?hero.Hunger:stats.HungerMax;
+		NameText.text=GameplayText.Format(hp<=0?$"{hero.Name} (Downed)":$"{hero.Name} - Lv {hero.Level}");
+		PortraitImage.sprite=hero.Portrait;PortraitImage.enabled=hero.Portrait!=null;
+		SetTravelBar(HpDisplay,"HP",hp,stats.HPMax);
+		SetTravelBar(ManaDisplay,"Mana",mana,stats.ManaMax);
+		SetTravelBar(HungerDisplay,"Food",food,stats.HungerMax);
+		LevelDisplay.StatValueSlider.value=LevelSystem.Progress(hero.Level,hero.Experience);
+	}
+
+	private static void SetTravelBar(StatsDisplay display,string label,int value,int maximum)
+	{
+		display.ValueText.text=GameplayText.Format($"{label}  {value}/{maximum}");
+		display.StatValueSlider.value=maximum>0?(float)value/maximum:0;
 	}
 
 	internal void UpdateUI()

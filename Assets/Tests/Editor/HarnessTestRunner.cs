@@ -10,6 +10,49 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Status Presentation EditMode")]
+    public static void RunStatusPresentationEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "StatusPresentationTests", "StatusEffectTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Status Menu")]
+    public static void RunStatusMenu() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.StatusMenuTests",
+        "EternalEnigma.Tests.DungeonDockTests.StatAndEquipmentSummariesExplainWithoutItemCommands",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Status Menu Followup")]
+    public static void RunStatusMenuFollowup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.StatusMenuTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Controller Prompt Checks")]
+    public static void RunControllerPromptChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControlDeviceStateTests",
+        "EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored",
+        "EternalEnigma.Tests.SettingsInteractionTests.GameplayExplanationChangesWhileDialogRemainsOpen");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Text Presentation Followup")]
+    public static void RunTextPresentationFollowup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControlDeviceStateTests",
+        "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions",
+        "EternalEnigma.Tests.GameMessageTests",
+        "EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored",
+        "EternalEnigma.Tests.SettingsInteractionTests.GameplayExplanationChangesWhileDialogRemainsOpen",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalMainMenuSlotsHeroAndSettingsAcrossAspectRatios");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Text Containment Audit")]
+    public static void RunTextContainmentAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControlDeviceStateTests",
+        "EternalEnigma.Tests.OverworldSceneTests.CampaignHintChangesWithDeviceWhileMessageIsStored",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureMainMenuSlotsHeroAndSettingsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTownServicesPartyAndOverworldAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureDungeonLevelAndResultDialogsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalMainMenuSlotsHeroAndSettingsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalTownServicesPartyAndOverworldAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalDungeonLevelAndResultDialogsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureAutoplayPanelsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalAutoplayPanelsAcrossAspectRatios",
+        "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Party Portraits")]
     public static void RunPartyPortraits() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.PartyPortraitTests");

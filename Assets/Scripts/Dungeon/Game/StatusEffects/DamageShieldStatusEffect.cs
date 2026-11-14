@@ -5,6 +5,7 @@ public class DamageShieldStatusEffect : StatusEffect
 {
 	public int Absorb = 10;
 	[NonSerialized] private int remaining = -1;
+	public int RemainingAbsorb => Math.Max(0, remaining < 0 ? Absorb : remaining);
 
 	public override GameAction GetActionOverride(Character character)
 	{

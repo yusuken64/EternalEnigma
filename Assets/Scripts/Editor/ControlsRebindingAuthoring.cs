@@ -1,41 +1,89 @@
+using System;
 using System.Linq;
 using TMPro;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public static class ControlsRebindingAuthoring
 {
+    [MenuItem("Tools/Eternal Enigma/UI/Author Controls")]
+    public static void Run()
+    {
+        if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");
+        var scene = SceneManager.GetSceneByPath("Assets/Scenes/Common.unity");
+        bool opened = !scene.IsValid() || !scene.isLoaded;
+        if (!opened && scene.isDirty) throw new InvalidOperationException("Common has unsaved changes.");
+        if (opened) scene = EditorSceneManager.OpenScene("Assets/Scenes/Common.unity", OpenSceneMode.Additive);
+        try
+        {
+            var settings = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<GlobalSettings>(true)).Single();
+            Author(settings);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+        finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
+    }
+
     public static void Author(GlobalSettings settings)
     {
         var panel = settings.TabGroup.TabContents.Single(tab => tab.Content.name == "Controls").Content;
         var screen = panel.GetComponent<ControlsRebindingScreen>();
-        if (screen != null) return;
         foreach (Transform child in panel.transform.Cast<Transform>().ToArray())
             if (child.name != "Section heading" && child.GetComponent<HeaderRibbon>() == null && child.name != "GamePanelBackground")
                 Object.DestroyImmediate(child.gameObject);
-        screen = panel.AddComponent<ControlsRebindingScreen>();
-        screen.DeviceButton = Button(panel.transform, "Keyboard / mouse", .04f, .765f, .58f, .845f);
-        screen.ContextButton = Button(panel.transform, "Gameplay", .61f, .765f, .96f, .845f);
+        if (screen == null) screen = panel.AddComponent<ControlsRebindingScreen>();
+        screen.DeviceButton = Button(panel.transform, "Keyboard / mouse", .04f, .765f, .48f, .845f);
+        screen.ContextButton = Button(panel.transform, "Gameplay", .52f, .765f, .96f, .845f);
         Text(panel.transform, "ACTION", .05f, .71f, .53f, .755f, 20);
         Text(panel.transform, "CURRENT BINDING", .55f, .71f, .95f, .755f, 20);
-        screen.BindingButtons = new Button[6];
-        screen.ActionLabels = new TMP_Text[6];
-        for (int i = 0; i < 6; i++)
-        {
-            float top = .70f - i * .076f;
-            var label = Text(panel.transform, "Action", .05f, top - .066f, .53f, top, 24);
-            label.name = "Action " + (i + 1);
-            screen.ActionLabels[i] = label;
-            screen.BindingButtons[i] = Button(panel.transform, "Binding", .55f, top - .066f, .95f, top);
-            screen.BindingButtons[i].name = "Rebind " + (i + 1);
-        }
-        screen.PreviousPageButton = Button(panel.transform, "Previous", .04f, .16f, .36f, .232f);
-        screen.PageLabel = Text(panel.transform, "1 / 1", .38f, .16f, .62f, .232f, 24);
-        screen.PageLabel.alignment = TextAlignmentOptions.Center;
-        screen.NextPageButton = Button(panel.transform, "Next", .64f, .16f, .96f, .232f);
+
+        var list = GameUISkin.Rect("Bindings scroll", panel.transform, new Vector2(.04f, .17f), new Vector2(.96f, .70f));
+        screen.BindingScroll = list.gameObject.AddComponent<ScrollRect>();
+        var viewport = GameUISkin.Rect("Viewport", list, Vector2.zero, new Vector2(.97f, 1));
+        viewport.gameObject.AddComponent<RectMask2D>();
+        viewport.gameObject.AddComponent<Image>().color = Color.clear;
+        var content = GameUISkin.Rect("Bindings", viewport, new Vector2(0, 1), Vector2.one);
+        content.pivot = new Vector2(.5f, 1);
+        var layout = content.gameObject.AddComponent<VerticalLayoutGroup>();
+        layout.spacing = 6;
+        layout.childControlWidth = layout.childControlHeight = true;
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = false;
+        content.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        var row = GameUISkin.Rect("Binding row 1", content, Vector2.zero, Vector2.one);
+        row.gameObject.AddComponent<LayoutElement>().preferredHeight = 58;
+        var action = Text(row, "Action", .01f, .05f, .52f, .95f, 24);
+        action.name = "Action";
+        var binding = Button(row, "Binding", .57f, .05f, .93f, .95f);
+        screen.BindingButtons = new[] { binding };
+        screen.ActionLabels = new[] { action };
+        screen.BindingScroll.viewport = viewport;
+        screen.BindingScroll.content = content;
+        screen.BindingScroll.horizontal = false;
+        screen.BindingScroll.movementType = ScrollRect.MovementType.Clamped;
+        screen.BindingScroll.inertia = false;
+        screen.BindingScroll.scrollSensitivity = 25;
+
+        var track = GameUISkin.Rect("Scrollbar", list, new Vector2(.985f, 0), Vector2.one);
+        track.gameObject.AddComponent<Image>().color = new Color(.25f, .17f, .09f, .15f);
+        var handle = GameUISkin.Rect("Handle", track, Vector2.zero, Vector2.one);
+        var handleImage = handle.gameObject.AddComponent<Image>();
+        handleImage.color = new Color(.25f, .17f, .09f, .65f);
+        var scrollbar = track.gameObject.AddComponent<Scrollbar>();
+        scrollbar.handleRect = handle;
+        scrollbar.targetGraphic = handleImage;
+        scrollbar.direction = Scrollbar.Direction.BottomToTop;
+        scrollbar.navigation = new Navigation { mode = Navigation.Mode.None };
+        screen.BindingScroll.verticalScrollbar = scrollbar;
+        screen.BindingScroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+
         screen.ResetButton = Button(panel.transform, "Restore all defaults", .19f, .072f, .81f, .144f);
-        screen.Status = Text(panel.transform, "Select a binding to change it. Changes save automatically.", .04f, .005f, .96f, .066f, 20);
+        screen.Status = Text(panel.transform, "Select a binding. Changes save automatically.", .04f, .005f, .96f, .066f, 20);
+        screen.Status.fontSizeMin = 14;
         screen.Status.alignment = TextAlignmentOptions.Center;
 
         var capture = GameUISkin.Panel(panel.transform, new Vector2(.01f, .01f), new Vector2(.99f, .85f));

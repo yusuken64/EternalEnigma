@@ -151,7 +151,7 @@ namespace EternalEnigma.Tests
                 yield return null;
                 Assert.That(ControlDeviceState.Gamepad, Is.True);
                 Assert.That(Cursor.visible, Is.False);
-                Assert.That(InputPrompts.Interact, Is.EqualTo("A / Cross"));
+                Assert.That(InputPrompts.Interact, Is.EqualTo("A"));
                 InputSystem.QueueStateEvent(pad, new GamepadState { leftStick = new Vector2(.53f, 0) });
                 yield return null;
                 Assert.That(ControlDeviceState.Gamepad, Is.True, "An unchanged held stick does not create new activity.");
@@ -161,7 +161,7 @@ namespace EternalEnigma.Tests
                 yield return null;
                 Assert.That(ControlDeviceState.Gamepad, Is.False, "Keyboard wins simultaneous activity.");
                 Assert.That(Cursor.visible, Is.True);
-                Assert.That(InputPrompts.Interact, Is.EqualTo("Enter"));
+                Assert.That(InputPrompts.Interact, Does.Contain("Enter").And.Not.Contain(" / Cross"));
 
                 InputSystem.QueueStateEvent(keyboard, new KeyboardState());
                 InputSystem.QueueStateEvent(pad, new GamepadState());

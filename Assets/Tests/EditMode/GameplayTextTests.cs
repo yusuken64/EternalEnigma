@@ -34,6 +34,9 @@ public sealed class GameplayTextTests
             Is.EqualTo("\n<b>Restores 40 HP</b>\nCosts 25 gold. Hit chance +12.5%. Saved at 10:30."));
         Assert.That(GameplayText.Format("[Cast] Aria casts Heal (5 Mana)."), Is.EqualTo("Aria casts Heal 5 Mana."));
         Assert.That(GameplayText.Plain("<b>Guard</b> (1 turn)"), Is.EqualTo("Guard for 1 turn"));
+        var stored = GameplayText.PlainTemplate("<b>Press {Inventory}</b> to open your bag.");
+        Assert.That(stored, Is.EqualTo("Press {Inventory} to open your bag."));
+        Assert.That(GameplayText.Format(stored), Is.EqualTo($"Press {InputPrompts.Inventory} to open your bag."));
         Assert.That(GameplayText.Format("Press {Confirm} to choose or {Back} to return."),
             Is.EqualTo($"Press {InputPrompts.Confirm} to choose or {InputPrompts.Back} to return."));
     }

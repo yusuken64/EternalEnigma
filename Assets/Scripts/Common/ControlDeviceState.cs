@@ -101,6 +101,7 @@ public static class ControlDeviceState
         else if (touchUsed) Set("Touch");
         else if (joystickUsed) Set("Joystick");
         else if (xrUsed) Set("XR");
+        else if (Gamepad && pad == null) Set("Keyboard&Mouse");
     }
 
     private static bool DeliberateMovement(Vector2 value, ref Vector2 previous)

@@ -95,7 +95,7 @@ public class GlobalSettings : MonoBehaviour
         {
             var tab = tabs[i];
             var contents = tab.Content.GetComponentsInChildren<Selectable>()
-                .Where(s => s.IsActive() && s.IsInteractable()).ToArray();
+                .Where(s => s.IsActive() && s.IsInteractable() && s is not Scrollbar).ToArray();
             tab.TabButton.navigation = new Navigation
             {
                 mode = Navigation.Mode.Explicit,

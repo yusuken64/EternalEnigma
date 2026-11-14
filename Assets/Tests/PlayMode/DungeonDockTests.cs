@@ -412,6 +412,8 @@ namespace EternalEnigma.Tests
             UnifiedPartyMenuTests.AssertEventFeedWidth();
             if(MenuManager.Instance.CurrentDialog is EventHistoryDialog history)
                 UnifiedPartyMenuTests.AssertExpandedHistoryLayout(history);
+            Assert.That(TextLayoutAudit.Capture($"Temp/DungeonDock/{name}-{size.x}x{size.y}"), Is.Empty,
+                $"Visible text must fit at {name} {size}.");
             ScreenCapture.CaptureScreenshot($"Temp/DungeonDock/{name}-{size.x}x{size.y}.png");
             yield return new WaitForSecondsRealtime(.2f);
         }

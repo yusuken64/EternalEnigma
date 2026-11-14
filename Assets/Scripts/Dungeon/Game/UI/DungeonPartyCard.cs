@@ -131,12 +131,13 @@ public sealed class DungeonPartyCard : MonoBehaviour
         for(int i=0;i<Mathf.Min(4,effects.Length);i++)
         {
             var effect=effects[i];string name=effect.GetEffectName();
-            string badge=i==3&&effects.Length>4 ? "+"+(effects.Length-3) : new string(name.Where(char.IsUpper).Take(2).ToArray());
-            if (badge.Length<2) badge=name.Substring(0,Mathf.Min(2,name.Length));
+            bool overflow=i==3&&effects.Length>4;
+            string badge=overflow ? "+"+(effects.Length-3) : new string(name.Where(char.IsUpper).Take(2).ToArray());
+            if (!overflow && badge.Length<2) badge=name.Substring(0,Mathf.Min(2,name.Length));
             var button=StatusButtons[i]; button.gameObject.SetActive(true);
 			var label=button.GetComponentInChildren<TMP_Text>();
 			var icon=button.transform.Find("Status icon")?.GetComponent<Image>();
-			var sprite=CombatVisualCatalog.Instance?.ForStatus(effect)?.Icon;
+			var sprite=overflow ? null : CombatVisualCatalog.Instance?.ForStatus(effect)?.Icon;
 			if (sprite != null && icon == null)
 			{
 				var image=new GameObject("Status icon",typeof(RectTransform),typeof(Image));
@@ -147,7 +148,9 @@ public sealed class DungeonPartyCard : MonoBehaviour
 				label.transform.SetAsLastSibling();
 			}
 			if (icon != null) { icon.enabled=sprite != null; icon.sprite=sprite; }
-			label.text=GameplayText.Format(sprite != null ? effect.TurnsLeft.ToString() : badge);
+			label.text=GameplayText.Format(sprite != null ? StatusPresentation.Badge(effect) : badge);
+			label.textWrappingMode=TextWrappingModes.NoWrap;
+			label.enableAutoSizing=true; label.fontSizeMin=10; label.fontSizeMax=17;
 			var labelRect=(RectTransform)label.transform;
 			labelRect.anchorMin=sprite != null ? new Vector2(.52f,0) : Vector2.zero;
 			labelRect.anchorMax=Vector2.one;

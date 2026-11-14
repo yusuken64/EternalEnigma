@@ -163,13 +163,13 @@ public static class ControlBindings
         string path = action.bindings[index].effectivePath;
         return path switch
         {
-            "<Gamepad>/buttonSouth" => "A / Cross", "<Gamepad>/buttonEast" => "B / Circle",
-            "<Gamepad>/buttonWest" => "X / Square", "<Gamepad>/buttonNorth" => "Y / Triangle",
-            "<Gamepad>/leftStickPress" => "Left stick press", "<Gamepad>/rightStickPress" => "Right stick press",
+            "<Gamepad>/buttonSouth" => "A", "<Gamepad>/buttonEast" => "B",
+            "<Gamepad>/buttonWest" => "X", "<Gamepad>/buttonNorth" => "Y",
+            "<Gamepad>/leftStickPress" => "LS", "<Gamepad>/rightStickPress" => "RS",
             "<Gamepad>/leftStick" => "Left stick", "<Gamepad>/rightStick" => "Right stick",
-            "<Gamepad>/dpad" => "D-pad", "<Gamepad>/select" => "View / Share", "<Gamepad>/start" => "Menu / Options",
-            "<Gamepad>/leftShoulder" => "LB / L1", "<Gamepad>/rightShoulder" => "RB / R1",
-            "<Gamepad>/leftTrigger" => "LT / L2", "<Gamepad>/rightTrigger" => "RT / R2",
+            "<Gamepad>/dpad" => "D-pad", "<Gamepad>/select" => "View", "<Gamepad>/start" => "Menu",
+            "<Gamepad>/leftShoulder" => "LB", "<Gamepad>/rightShoulder" => "RB",
+            "<Gamepad>/leftTrigger" => "LT", "<Gamepad>/rightTrigger" => "RT",
             "<Keyboard>/escape" => "Escape", "<Keyboard>/enter" => "Enter", "<Keyboard>/numpadEnter" => "Numpad Enter",
             "<Mouse>/leftButton" => "Left mouse", "<Mouse>/rightButton" => "Right mouse", "<Mouse>/middleButton" => "Middle mouse",
             _ => action.GetBindingDisplayString(index, InputBinding.DisplayStringOptions.DontIncludeInteractions)

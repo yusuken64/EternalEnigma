@@ -378,6 +378,14 @@ namespace EternalEnigma.Tests
                         new object[] { resolution, "Controls " + resolution.x + "x" + resolution.y });
                     yield return null; yield return null;
                     Canvas.ForceUpdateCanvases();
+                    screen.DeviceButton.Select();
+                    screen.BindingScroll.verticalNormalizedPosition = 1;
+                    var deviceSize = ((RectTransform)screen.DeviceButton.transform).rect.size;
+                    var contextSize = ((RectTransform)screen.ContextButton.transform).rect.size;
+                    Assert.That(Vector2.Distance(deviceSize, contextSize), Is.LessThan(.01f), "Device and context buttons must be the same size.");
+                    var viewportCorners = new Vector3[4];
+                    screen.BindingScroll.viewport.GetWorldCorners(viewportCorners);
+                    Assert.That(viewportCorners.All(corner => corner.x >= 0 && corner.x <= Screen.width && corner.y >= 0 && corner.y <= Screen.height), Is.True);
                     Assert.That(screen.BindingButtons.Any(button => button.gameObject.activeInHierarchy), Is.True);
                     foreach (var button in screen.BindingButtons.Where(button => button.gameObject.activeInHierarchy))
                     {
@@ -386,9 +394,6 @@ namespace EternalEnigma.Tests
                         Assert.That(label.text, Is.Not.Empty);
                         label.ForceMeshUpdate();
                         Assert.That(label.isTextOverflowing, Is.False, label.text);
-                        var corners = new Vector3[4];
-                        ((RectTransform)button.transform).GetWorldCorners(corners);
-                        Assert.That(corners.All(corner => corner.x >= 0 && corner.x <= Screen.width && corner.y >= 0 && corner.y <= Screen.height), Is.True);
                     }
                     foreach (var label in screen.ActionLabels.Where(label => label.gameObject.activeInHierarchy))
                     {
@@ -398,17 +403,20 @@ namespace EternalEnigma.Tests
                     System.IO.Directory.CreateDirectory("Temp/ControlsRebinding");
                     ScreenCapture.CaptureScreenshot("Temp/ControlsRebinding/controls-" + (int)resolution.x + "x" + (int)resolution.y + ".png");
                     yield return new WaitForSecondsRealtime(.2f);
+                    screen.BindingButtons.Last(button => button.gameObject.activeInHierarchy).Select();
+                    yield return null;
+                    Assert.That(screen.BindingScroll.verticalNormalizedPosition, Is.LessThan(.05f));
+                    ScreenCapture.CaptureScreenshot("Temp/ControlsRebinding/controls-bottom-" + (int)resolution.x + "x" + (int)resolution.y + ".png");
+                    yield return new WaitForSecondsRealtime(.2f);
                 }
-                string firstPage = screen.PageLabel.text;
-                Assert.That(screen.NextPageButton.interactable, Is.True);
-                screen.NextPageButton.onClick.Invoke(); yield return null;
-                Assert.That(screen.PageLabel.text, Is.Not.EqualTo(firstPage));
-                Assert.That(screen.PreviousPageButton.interactable, Is.True);
-                screen.PreviousPageButton.onClick.Invoke(); yield return null;
-                Assert.That(screen.PageLabel.text, Is.EqualTo(firstPage));
                 string firstDevice = screen.DeviceButton.GetComponentInChildren<TMP_Text>().text;
                 screen.DeviceButton.onClick.Invoke(); yield return null;
                 Assert.That(screen.DeviceButton.GetComponentInChildren<TMP_Text>().text, Is.Not.EqualTo(firstDevice));
+                Assert.That(screen.BindingScroll.verticalNormalizedPosition, Is.EqualTo(1).Within(.001f));
+                screen.ContextButton.onClick.Invoke(); yield return null;
+                Assert.That(screen.ContextButton.GetComponentInChildren<TMP_Text>().text, Is.EqualTo("Menus"));
+                Assert.That(screen.BindingButtons.Any(button => button.gameObject.activeInHierarchy), Is.True);
+                Assert.That(screen.BindingScroll.verticalNormalizedPosition, Is.EqualTo(1).Within(.001f));
                 ScreenCapture.CaptureScreenshot("Temp/ControlsRebinding/controls-gamepad.png");
                 yield return new WaitForSecondsRealtime(.2f);
                 tab.TabButton.Select(); yield return Press(GamepadButton.DpadRight);
@@ -428,7 +436,7 @@ namespace EternalEnigma.Tests
             Assert.That(explanation.text, Does.Contain("Press F"));
             yield return Press(GamepadButton.South);
             Assert.That(settings.IsOpen, Is.True);
-            Assert.That(explanation.text, Does.Contain("Press Right stick press"));
+            Assert.That(explanation.text, Does.Contain("Press RS"));
             Assert.That(explanation.text, Does.Not.Contain("Press F"));
             yield return Key(UnityEngine.InputSystem.Key.K);
             Assert.That(explanation.text, Does.Contain("Press F"));

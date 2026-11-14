@@ -40,11 +40,14 @@ namespace EternalEnigma.Tests
             Assert.That(InputPrompts.Skills, Is.EqualTo("R"));
             Set(true);
             var gamepad = InputPrompts.Format(template);
-            Assert.That(gamepad, Does.Contain("Left stick").And.Contain("D-pad").And.Contain("A / Cross").And.Contain("B / Circle"));
-            Assert.That(gamepad, Does.Contain("Right stick press | {Unknown}"));
+            Assert.That(gamepad, Does.Contain("Left stick").And.Contain("D-pad").And.Contain(" | A | A | B | "));
+            Assert.That(gamepad, Does.Contain("RS | {Unknown}"));
             Assert.That(gamepad, Does.Not.Contain("Enter").And.Not.Contain("Escape"));
-            Assert.That(InputPrompts.Inventory, Is.EqualTo("X / Square"));
-            Assert.That(InputPrompts.Skills, Is.EqualTo("B / Circle"));
+            Assert.That(InputPrompts.Inventory, Is.EqualTo("X"));
+            Assert.That(InputPrompts.Skills, Is.EqualTo("B"));
+            Assert.That(InputPrompts.NextHero, Is.EqualTo("RB"));
+            Assert.That(InputPrompts.PreviousHero, Is.EqualTo("LT"));
+            Assert.That(InputPrompts.PresentationKey, Is.EqualTo("View"));
             Assert.That(InputPrompts.Format(null), Is.Empty);
         }
 

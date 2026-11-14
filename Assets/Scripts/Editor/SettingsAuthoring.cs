@@ -85,7 +85,9 @@ public static class SettingsAuthoring
             display.Resolution = Dropdown(panel.transform, new Vector2(.09f,.30f), new Vector2(.91f,.42f), tabButton);
             display.Resolution.name = "Resolution";
             display.Resolution.ClearOptions(); display.Resolution.AddOptions(new System.Collections.Generic.List<string> { "1920 x 1080" });
-            GameUISkin.Label(panel.transform, "In Borderless Fullscreen, resolution changes rendering size; the window fills your desktop.", new Vector2(.09f,.06f), new Vector2(.91f,.25f), 24);
+            var explanation = GameUISkin.Label(panel.transform, "In Borderless Fullscreen, resolution changes rendering size; the window fills your desktop.", new Vector2(.09f,.06f), new Vector2(.91f,.25f), 24);
+            explanation.enableAutoSizing = true;
+            explanation.fontSizeMin = 18; explanation.fontSizeMax = 24;
             panel.gameObject.SetActive(false);
             tabs.Insert(tabs.IndexOf(audioTab) + 1, new TabContent { TabButton = tabButton, Content = panel.gameObject });
             settings.TabGroup.PreviewOnFocus = true;

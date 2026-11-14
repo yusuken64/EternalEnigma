@@ -127,6 +127,13 @@ public abstract class PartyMenuContext : IPartyMenuContext
         Add(EquipmentSlot.Accessory,"Accessory",loadout.Accessory);
         var bonuses=string.Join("\n",loadout.Modification.DescribeEffect());
         entries.Add(new PartyMenuEntry{Section="Totals",Title="Equipment bonuses",Description=string.IsNullOrWhiteSpace(bonuses)?"No equipment bonuses.":bonuses});
+        if (hero.DungeonActor != null)
+            entries.AddRange(hero.DungeonActor.StatusEffects.Where(status => status != null && !status.IsExpired())
+                .Select(status => new PartyMenuEntry {
+                    Status=status, Section="Statuses", Title=StatusPresentation.Name(status),
+                    Description=StatusPresentation.Description(status, hero.DungeonActor),
+                    Icon=CombatVisualCatalog.Instance?.ForStatus(status)?.Icon
+                }));
         return entries;
     }
     public virtual List<(string Label, InventoryItem Item, string Description, bool Enabled)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)
@@ -327,6 +334,7 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext, IPartyMenuEntryH
     }
     public override List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry)
     {
+        if(entry.Status!=null)return new();
         if(entry.Skill?.ActivationType==ActivationType.Passive)return new();
         var actor=hero.DungeonActor;string unavailable=Eligibility(hero);
         if(entry.Skill!=null)

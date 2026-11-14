@@ -27,8 +27,16 @@ public class BuyConfirmationDialog : Dialog
         OkButton.GetComponentInChildren<TMP_Text>().text = !data.IsSale && data.Cost == 0 && data.ItemName == "Bread" ? "Take bread" : data.IsSale ? "Sell" : "Buy";
         GameUISkin.PadButtonLabel(OkButton);
         GameUISkin.PadButtonLabel(CancelButton);
+        foreach (var button in new[] { OkButton, CancelButton })
+        {
+            var label = button.GetComponentInChildren<TMP_Text>();
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 16;
+            label.fontSizeMax = 32;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+        }
 		PromptText.enableAutoSizing = true;
-		PromptText.fontSizeMin = 22;
+		PromptText.fontSizeMin = 18;
 		PromptText.fontSizeMax = 28;
 		PromptText.textWrappingMode = TextWrappingModes.Normal;
 		RefreshAvailability();

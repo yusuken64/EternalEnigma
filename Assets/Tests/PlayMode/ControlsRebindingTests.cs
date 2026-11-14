@@ -4,9 +4,11 @@ using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 namespace EternalEnigma.Tests
 {
@@ -70,6 +72,118 @@ namespace EternalEnigma.Tests
             yield return null;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState());
             yield return new WaitForSecondsRealtime(.2f);
+        }
+
+        [UnityTest] public IEnumerator ContinuousListKeepsEveryRowReachableWithKeyboard() =>
+            CheckListNavigation(false);
+
+        [UnityTest] public IEnumerator ContinuousListKeepsEveryRowReachableWithController() =>
+            CheckListNavigation(true);
+
+        private IEnumerator MoveSelection(bool controller, bool down)
+        {
+            if (controller)
+                InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(down ? GamepadButton.DpadDown : GamepadButton.DpadUp));
+            else InputSystem.QueueStateEvent(keyboard, new KeyboardState(down ? Key.DownArrow : Key.UpArrow));
+            yield return null;
+            if (controller) InputSystem.QueueStateEvent(pad, new GamepadState());
+            else InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+            yield return null;
+        }
+
+        private IEnumerator CheckListNavigation(bool controller)
+        {
+            Time.timeScale = 0;
+            var rows = screen.BindingButtons.Where(button => button.gameObject.activeInHierarchy).ToArray();
+            Assert.That(rows.Length, Is.GreaterThan(6), "All bindings must be available without paging.");
+            var tab = settings.TabGroup.SelectedTab;
+            screen.DeviceButton.Select();
+            yield return MoveSelection(controller, true);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(screen.ContextButton.gameObject));
+            foreach (var row in rows)
+            {
+                yield return MoveSelection(controller, true);
+                Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(row.gameObject));
+                AssertRowVisible(row);
+                AssertControlsFocus(tab);
+            }
+            Assert.That(screen.BindingScroll.verticalNormalizedPosition, Is.LessThan(.05f));
+            yield return MoveSelection(controller, true);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(screen.ResetButton.gameObject));
+            for (int i = rows.Length - 1; i >= 0; i--)
+            {
+                yield return MoveSelection(controller, false);
+                Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(rows[i].gameObject));
+                AssertRowVisible(rows[i]);
+                AssertControlsFocus(tab);
+            }
+            Assert.That(screen.BindingScroll.verticalNormalizedPosition, Is.GreaterThan(.95f));
+            yield return MoveSelection(controller, false);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(screen.ContextButton.gameObject));
+            Assert.That(screen.IsRebinding, Is.False, "Browsing must not start rebinding.");
+            AssertControlsFocus(tab);
+        }
+
+        [UnityTest] public IEnumerator MouseWheelScrollsContinuouslyAndLastBindingRemainsClickable()
+        {
+            Time.timeScale = 0;
+            var tab = settings.TabGroup.SelectedTab;
+            screen.DeviceButton.Select();
+            var rows = screen.BindingButtons.Where(button => button.gameObject.activeInHierarchy).ToArray();
+            Assert.That(rows.Length, Is.GreaterThan(6));
+            yield return ScrollWithMouse(-1);
+            Assert.That(screen.BindingScroll.verticalNormalizedPosition, Is.LessThan(.001f));
+            AssertRowVisible(rows.Last());
+            AssertControlsFocus(tab);
+            var rect = (RectTransform)rows.Last().transform;
+            var position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center));
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position, buttons = 1 });
+            yield return null;
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.That(screen.IsRebinding, Is.True, "A scrolled binding must accept a real click.");
+            Assert.That(screen.CaptureLabel.text, Does.Contain(screen.ActionLabels[rows.Length - 1].text));
+            yield return KeyPress(Key.Escape);
+            Assert.That(screen.IsRebinding, Is.False);
+            AssertControlsFocus(tab);
+            yield return ScrollWithMouse(1);
+            Assert.That(screen.BindingScroll.verticalNormalizedPosition, Is.GreaterThan(.999f));
+            AssertRowVisible(rows[0]);
+            Assert.That(settings.NavigationHandler.selectionArrow.gameObject.activeSelf, Is.False,
+                "The cursor must not float outside the viewport when its selected row is scrolled away.");
+            AssertControlsFocus(tab);
+        }
+
+        private IEnumerator ScrollWithMouse(int direction)
+        {
+            var viewport = screen.BindingScroll.viewport;
+            var position = RectTransformUtility.WorldToScreenPoint(null, viewport.TransformPoint(viewport.rect.center));
+            for (int i = 0; i < 10; i++)
+            {
+                InputSystem.QueueStateEvent(mouse, new MouseState { position = position, scroll = new Vector2(0, direction * 120) });
+                yield return null;
+                InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
+                yield return null;
+                float scroll = screen.BindingScroll.verticalNormalizedPosition;
+                if (direction > 0 ? scroll >= .999f : scroll <= .001f) break;
+            }
+        }
+
+        private void AssertRowVisible(Button row)
+        {
+            var viewport = screen.BindingScroll.viewport;
+            var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport, row.transform);
+            Assert.That(bounds.min.y, Is.GreaterThanOrEqualTo(viewport.rect.yMin - 1), "The focused row must be fully visible.");
+            Assert.That(bounds.max.y, Is.LessThanOrEqualTo(viewport.rect.yMax + 1), "The focused row must be fully visible.");
+        }
+
+        private void AssertControlsFocus(TabContent tab)
+        {
+            Assert.That(settings.IsOpen, Is.True);
+            Assert.That(settings.TabGroup.SelectedTab, Is.SameAs(tab), "Scrolling must keep the Controls category open.");
+            var selected = EventSystem.current.currentSelectedGameObject;
+            Assert.That(MenuUIInputModule.IsUsable(selected), Is.True, "Scrolling must leave a usable selection at both boundaries.");
+            Assert.That(selected.transform.IsChildOf(screen.transform), Is.True, "Focus must remain in Controls.");
         }
 
         [UnityTest] public IEnumerator CapturedKeyboardInputAppliesToLivePlayerAndSurvivesReopening()

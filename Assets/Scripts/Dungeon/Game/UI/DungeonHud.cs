@@ -78,8 +78,7 @@ public sealed class DungeonHud : MonoBehaviour
         if (targetBackdrop != null) targetBackdrop.SetActive(!string.IsNullOrWhiteSpace(text));
         detailUntil = Time.unscaledTime + 6;
     }
-    public static string StatusSummary(Character c) => string.Join(", ", c.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).Select(s=>
-        s is GoopiRootStatusEffect ? "Rooted until the holder is defeated" : $"{GameplayText.Name(s.GetEffectName())}, {s.TurnsLeft} turns left"));
+    public static string StatusSummary(Character c) => string.Join(", ", c.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).Select(StatusPresentation.Summary));
 	private void UpdateEnemyIcons(Enemy enemy)
 	{
 		if (enemyStatusIcons == null)

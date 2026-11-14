@@ -124,6 +124,16 @@ public class NavigationHandler : MonoBehaviour
         }
         var target = current.GetComponent<RectTransform>();
         if (target == null) return;
+        var scroll = target.GetComponentInParent<UnityEngine.UI.ScrollRect>();
+        if (scroll != null && scroll.viewport != null && target.IsChildOf(scroll.content))
+        {
+            var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(scroll.viewport, target);
+            if (bounds.center.y < scroll.viewport.rect.yMin || bounds.center.y > scroll.viewport.rect.yMax)
+            {
+                selectionArrow.gameObject.SetActive(false);
+                return;
+            }
+        }
         Vector3 destination = GetAnchorWorldPosition(target) + arrowOffset;
         if (edgeSpacing > 0 && (arrowAnchor == ArrowAnchor.Left || arrowAnchor == ArrowAnchor.Right))
         {

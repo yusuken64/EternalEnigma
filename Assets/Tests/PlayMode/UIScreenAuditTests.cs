@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -28,10 +29,12 @@ namespace EternalEnigma.Tests
         DungeonAnimationMode? animation;
         bool? fullControl;
         bool terminalAudit;
+        readonly List<string> textIssues = new();
 
         [UnitySetUp] public IEnumerator Setup()
         {
             terminalAudit = false;
+            textIssues.Clear();
             input = new TestInputScope();
             preferences = GamePreferences.Isolate();
             harness = new GameTestHarness { TimeoutSeconds = 120 };
@@ -47,7 +50,21 @@ namespace EternalEnigma.Tests
 
         [UnityTearDown] public IEnumerator Cleanup()
         {
-            try { TerminalMode.SetRequested(false); yield return harness.Cleanup(); }
+            try
+            {
+                if (AutoplayRunner.Active != null)
+                {
+                    if (AutoplayRunner.Active.Report != null)
+                    {
+                        AutoplayRunner.Active.Report.ValidationOnly = true;
+                        AutoplayRunner.Active.ExitDemo();
+                    }
+                    else Object.Destroy(AutoplayRunner.Active.gameObject);
+                    yield return harness.WaitUntil(() => AutoplayRunner.Active == null, "audit demo cleanup");
+                }
+                TerminalMode.SetRequested(false);
+                yield return harness.Cleanup();
+            }
             finally
             {
                 DungeonPreferences.AnimationOverride = animation;
@@ -56,6 +73,7 @@ namespace EternalEnigma.Tests
                 input?.Dispose();
                 preferences?.Dispose();
             }
+            Assert.That(textIssues.Count, Is.Zero, string.Join("\n", textIssues.Take(12)));
         }
 
         [UnityTest] public IEnumerator CaptureTerminalMainMenuSlotsHeroAndSettingsAcrossAspectRatios()
@@ -76,27 +94,129 @@ namespace EternalEnigma.Tests
             yield return CaptureDungeonLevelAndResultDialogsAcrossAspectRatios();
         }
 
+        [UnityTest] public IEnumerator CaptureTerminalAutoplayPanelsAcrossAspectRatios()
+        {
+            terminalAudit = true;
+            yield return CaptureAutoplayPanelsAcrossAspectRatios();
+        }
+
+        [UnityTest] public IEnumerator CaptureAutoplayPanelsAcrossAspectRatios()
+        {
+            yield return harness.LoadMainMenu(null);
+            AutoplaySetup.Show(Object.FindFirstObjectByType<MainMenu>()); yield return null;
+            var setup = Object.FindFirstObjectByType<AutoplaySetup>();
+            yield return CaptureSizes("autoplay-setup");
+            setup.Seed.text = "invalid"; yield return null;
+            yield return CaptureSizes("autoplay-seed-validation");
+            setup.Seed.text = int.MaxValue.ToString(); setup.RunCount.text = "2"; yield return null;
+            yield return CaptureSizes("autoplay-range-validation");
+            setup.Seed.text = "42"; setup.RunCount.text = "1";
+            setup.FastMode.onClick.Invoke(); yield return null;
+            yield return CaptureSizes("autoplay-fast-mode");
+            setup.Close(); yield return null;
+            AutoplayRunner.WatchDemo(new AutoplayOptions { Speed = 1, ReportRoot = "Temp/TextContainmentAudit/Autoplay" });
+            var run = AutoplayRunner.Active;
+            Assert.That(run, Is.Not.Null);
+            Assert.That(run.Report, Is.Not.Null, run.Status);
+            Assert.That(run.IsBalance, Is.False, "Copying normal demo options must preserve the absence of a balance experiment.");
+            run.Report.ValidationOnly = true;
+            yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true &&
+                !Common.Instance.ScreenTransition.BlocksInput, "audit demo town");
+            run.SetPaused(true);
+            run.Report.Actions = 100000; run.Report.DungeonTurns = 100000;
+            yield return CaptureSizes("autoplay-paused");
+            run.SetPanelVisible(false); yield return null;
+            yield return CaptureSizes("autoplay-collapsed");
+            run.SetPanelVisible(true);
+            run.RequestReturn(); yield return null;
+            yield return CaptureSizes("autoplay-return-prompt");
+            run.ExitDemo();
+            yield return harness.WaitUntil(() => AutoplayRunner.Active == null, "audit demo exit");
+        }
+
         [UnityTest] public IEnumerator CaptureMainMenuSlotsHeroAndSettingsAcrossAspectRatios()
         {
             yield return harness.LoadMainMenu(null);
             var menu = Object.FindFirstObjectByType<MainMenu>();
             int writes = harness.Store.Writes;
             yield return CaptureSizes("main-menu");
+            var developer = menu.GetComponent<MainMenuDeveloperControls>();
+            developer.Toggle.onClick.Invoke(); yield return null;
+            yield return CaptureSizes("main-menu-developer");
+            developer.Close();
             menu.StartGame_Clicked(); yield return null;
             yield return CaptureSizes("campaign-slots");
             Object.FindFirstObjectByType<CampaignSlots>().BackButton.onClick.Invoke();
             menu.ChooseHero(); yield return null;
             yield return CaptureSizes("hero-picker");
-            Object.FindFirstObjectByType<ProtagonistHeroPicker>().BackButton.onClick.Invoke();
+            var heroes = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
+            heroes.ToggleRoster(); yield return null;
+            int heroIndex = 0;
+            foreach (var choice in heroes.ChoiceButtons.Where(button => button.gameObject.activeInHierarchy))
+            {
+                choice.Select(); yield return null;
+                yield return CaptureSizes($"hero-{heroIndex++}-" + choice.GetComponentInChildren<TMP_Text>().text.ToLowerInvariant());
+            }
+            heroes.BackButton.onClick.Invoke();
             var settings = Common.Instance.GlobalSettings;
             menu.Options_Clicked(); yield return null;
             foreach (var tab in settings.TabGroup.TabContents)
             {
                 tab.TabButton.Select(); yield return null;
                 yield return CaptureSizes("settings-" + tab.TabButton.GetComponentInChildren<TMP_Text>().text.ToLowerInvariant());
+                var display = tab.Content.GetComponent<DisplayOptions>();
+                if (display != null)
+                    foreach (var dropdown in new[] { display.WindowMode, display.Resolution })
+                    {
+                        dropdown.Show(); yield return null;
+                        yield return CaptureSizes("settings-dropdown-" + dropdown.name.Replace(" ", "-").ToLowerInvariant());
+                        dropdown.Hide(); yield return new WaitForSecondsRealtime(.2f);
+                    }
+                var controls = tab.Content.GetComponent<ControlsRebindingScreen>();
+                if (controls != null)
+                {
+                    for (int device = 0; device < 2; device++)
+                    {
+                        for (int context = 0; context < 2; context++)
+                        {
+                            yield return CaptureSizes($"settings-bindings-{device}-{context}");
+                            controls.BindingButtons.Last(button => button.gameObject.activeInHierarchy).Select(); yield return null;
+                            yield return CaptureSizes($"settings-bindings-bottom-{device}-{context}");
+                            controls.ContextButton.onClick.Invoke(); yield return null;
+                        }
+                        var action = ControlBindings.DisplayAsset.FindAction("Player/Wait", true);
+                        string path = device == 0 ? "<Keyboard>/period" : "<Gamepad>/leftStickPress";
+                        int binding = Enumerable.Range(0, action.bindings.Count).Single(index => action.bindings[index].path == path);
+                        controls.BeginRebind("Player/Wait", binding); yield return new WaitForSecondsRealtime(.2f);
+                        yield return CaptureSizes("settings-capture-" + device);
+                        controls.CancelRebind();
+                        controls.DeviceButton.onClick.Invoke(); yield return null;
+                    }
+                }
+                if (tab.Content.name == "Gameplay options")
+                    for (int mode = 0; mode < 4; mode++)
+                    {
+                        DungeonPreferences.AnimationOverride = (DungeonAnimationMode)mode;
+                        settings.GetComponent<DungeonOptions>().SendMessage("Refresh"); yield return null;
+                        yield return CaptureSizes("settings-animation-" + mode);
+                    }
             }
             settings.Exit_Clicked();
             Assert.That(harness.Store.Writes, Is.EqualTo(writes), "Browsing screens must not create or replace a campaign.");
+            var save = menu.CreateNewSave(42);
+            SaveSystem.SaveData(0, save);
+            harness.Store.Write(1, "unreadable audit fixture");
+            menu.StartGame_Clicked(); yield return null;
+            yield return CaptureSizes("campaign-slots-populated");
+            var slots = Object.FindFirstObjectByType<CampaignSlots>();
+            slots.Slots[1].Button.onClick.Invoke(); yield return null;
+            yield return CaptureSizes("campaign-slot-replacement");
+            Object.FindFirstObjectByType<CampaignChoice>().Back.onClick.Invoke();
+            slots.BackButton.onClick.Invoke(); yield return null;
+            CampaignChoice.Show("Return to the main menu? Unsaved progress will be lost.", "Quit without saving", () => { });
+            yield return null;
+            yield return CaptureSizes("quit-confirmation");
+            Object.FindFirstObjectByType<CampaignChoice>().Back.onClick.Invoke();
         }
 
         [UnityTest] public IEnumerator CaptureTownServicesPartyAndOverworldAcrossAspectRatios()
@@ -192,7 +312,49 @@ namespace EternalEnigma.Tests
                 }
                 dialog.CloseDialog(); yield return null;
             }
+            int npcIndex = 0;
+            foreach (var npc in town.GetComponentsInChildren<TownNpc>())
+            {
+                npc.Greet(town.TownPlayer.ControllingTownAlly.TilemapPosition); yield return null;
+                yield return CaptureSizes("town-npc-" + npcIndex++);
+                Common.Instance.MessageDialog.CloseDialog(); yield return null;
+            }
+            var longestItem = Common.Instance.ItemManager.ItemDefinitions
+                .OrderByDescending(item => item.Description?.Length ?? 0).First();
+            TownMenu.ShowMessage(longestItem.ItemName + "\n" + longestItem.Description + "\nUse this item in the dungeon.");
+            yield return null;
+            yield return CaptureSizes("town-item-message");
+            Common.Instance.MessageDialog.CloseDialog(); yield return null;
+            var book = town.GetComponentInChildren<TownDungeonBook>(true);
+            if (book != null)
+            {
+                BookDungeonPrompt.Show(town, book.Definition, () => { }, () => { }); yield return null;
+                yield return CaptureSizes("town-book-locked");
+                town.GetComponentInChildren<BookDungeonPrompt>(true).Close(); yield return null;
+            }
             harness.PrepareOpening();
+            foreach (var building in town.Configuration.Buildings)
+            {
+                var dialog = services.OpenBuilding(building, town.TownPlayer, null);
+                if (dialog is ShopMenuDialog shop)
+                {
+                    Assert.That(shop.GetComponentsInChildren<MenuControlHints>(), Is.Empty, "Shop footers must stay hidden.");
+                    for (int item = 0; item < shop.ShopItems.Count; item++)
+                    {
+                        shop.ShopItems[item].BuyButton.Select(); yield return null;
+                        yield return CaptureSizes($"town-shop-{building.Id}-item-{item}");
+                    }
+                    shop.SetMode(true); yield return null;
+                    yield return CaptureSizes("town-shop-stocked-sell-" + building.Id);
+                    if (shop.ShopItems.Count > 0)
+                    {
+                        shop.ShopItems[0].BuyButton.onClick.Invoke(); yield return null;
+                        yield return CaptureSizes("town-sale-confirmation-" + building.Id);
+                        shop.BuyConfirmationDialog.CloseDialog(); yield return null;
+                    }
+                }
+                dialog?.CloseDialog(); yield return null;
+            }
             var readyEntrance = (EntranceDialog)services.OpenBuilding(town.Configuration.Buildings.First(b => b.DialogId == "entrance"), town.TownPlayer, null);
             yield return null;
             var availableEntry = readyEntrance.Container.GetComponentsInChildren<DungeonTierItem>().First(row => row.Button.interactable);
@@ -236,6 +398,12 @@ namespace EternalEnigma.Tests
             var context = Common.Instance.CampaignContext;
             Assert.That(context.BeginTownDungeon("story-0"), Is.True);
             Assert.That(context.CompleteDungeon(true), Is.True);
+            if (book != null)
+            {
+                BookDungeonPrompt.Show(town, book.Definition, () => { }, () => { }); yield return null;
+                yield return CaptureSizes("town-book-unlocked");
+                town.GetComponentInChildren<BookDungeonPrompt>(true).Close(); yield return null;
+            }
             Assert.That(Common.Instance.Travel.ExitTown(town), Is.True);
             yield return harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true &&
                 !Common.Instance.ScreenTransition.BlockScreen.activeSelf, "overworld");
@@ -252,6 +420,18 @@ namespace EternalEnigma.Tests
         [UnityTest] public IEnumerator CaptureDungeonLevelAndResultDialogsAcrossAspectRatios()
         {
             yield return harness.LoadDungeon(new TestScenario { IncludeStartingItems = true });
+            yield return CaptureSizes("dungeon-hud");
+            foreach (var tab in new[] { PartyMenuTab.Inventory, PartyMenuTab.Equipment, PartyMenuTab.Skills, PartyMenuTab.Stats })
+            {
+                MenuManager.Instance.OpenPartyMenu(tab); yield return null;
+                yield return CaptureSizes("dungeon-" + tab.ToString().ToLowerInvariant());
+                MenuManager.Instance.PartyMenu.CloseDialog(); yield return null;
+            }
+            var stairs = MenuManager.Instance.StairDialog;
+            stairs.Setup("Leave this floor and descend to the next one?", () => { }, () => { });
+            MenuManager.Open(stairs); yield return null;
+            yield return CaptureSizes("dungeon-stairs-confirmation");
+            stairs.CloseDialog(); yield return null;
             harness.Ally.Vitals.Level = 2;
             harness.Ally.SyncDisplayedStats();
             var level = LevelUpChoiceDialog.Open(harness.Ally, null);
@@ -386,20 +566,8 @@ namespace EternalEnigma.Tests
                 Assert.That(Screen.height, Is.EqualTo((int)resolution.y), "Capture height must match its filename.");
                 Canvas.ForceUpdateCanvases();
                 verify?.Invoke();
-                var labels = Object.FindObjectsByType<TMP_Text>(FindObjectsSortMode.None)
-                    .Where(t => t is TextMeshProUGUI && t.enabled && !string.IsNullOrWhiteSpace(t.text) &&
-                        t.GetComponentsInParent<Canvas>().All(c => c.enabled))
-                    .Select(t =>
-                    {
-                        t.ForceMeshUpdate();
-                        var corners = new Vector3[4]; t.rectTransform.GetWorldCorners(corners);
-                        return new LabelReport { path = PathOf(t.transform), text = t.text,
-                            font = t.font != null ? t.font.name : "MISSING", fontPixels = t.fontSize * t.rectTransform.lossyScale.y,
-                            overflow = t.isTextOverflowing, x = corners[0].x, y = corners[0].y,
-                            width = corners[2].x - corners[0].x, height = corners[2].y - corners[0].y };
-                    }).ToArray();
                 string path = $"{directory}/{screen}-{resolution.x}x{resolution.y}";
-                File.WriteAllText(path + ".json", JsonUtility.ToJson(new ScreenReport { labels = labels }, true));
+                textIssues.AddRange(TextLayoutAudit.Capture(path).Select(issue => path + ": " + issue));
                 if (terminalAudit)
                 {
                     var terminal = Common.Instance.GetComponentInChildren<TerminalScreen>(true);
@@ -411,14 +579,6 @@ namespace EternalEnigma.Tests
             }
         }
 
-        static string PathOf(Transform t) => t.parent == null ? t.name : PathOf(t.parent) + "/" + t.name;
-        [Serializable] sealed class ScreenReport { public LabelReport[] labels; }
-        [Serializable] sealed class LabelReport
-        {
-            public string path, text, font;
-            public float fontPixels, x, y, width, height;
-            public bool overflow;
-        }
     }
 }
 #endif

@@ -15,6 +15,10 @@ public class StairConfirm : Dialog
     public void Setup(string prompt, Action yesAction, Action noAction)
     {
         PromptText.text = GameplayText.Format(prompt);
+        PromptText.textWrappingMode = TextWrappingModes.Normal;
+        PromptText.enableAutoSizing = true;
+        PromptText.fontSizeMin = 18;
+        PromptText.fontSizeMax = 32;
         _yesAction = yesAction;
         _noAction = noAction;
         

@@ -16,6 +16,16 @@ public class CharacterStatsDisplay : MonoBehaviour
 	public TownAlly TownActor { get; private set; }
 	private string baseName;
 
+    private void Awake()
+    {
+        if (NameText == null) return;
+        float maximum = NameText.enableAutoSizing ? NameText.fontSizeMax : NameText.fontSize;
+        NameText.enableAutoSizing = true;
+        NameText.fontSizeMin = Mathf.Min(18, maximum);
+        NameText.fontSizeMax = maximum;
+        NameText.textWrappingMode = TextWrappingModes.NoWrap;
+    }
+
 	internal void Setup(Character character)
 	{
 		TownActor = null;

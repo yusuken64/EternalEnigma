@@ -31,7 +31,7 @@ public sealed class PartyMenu : Dialog
     private string result;
     public PartyMenuTab Tab { get; private set; }
     private bool UsesTenRowList => Tab==PartyMenuTab.Inventory || Tab==PartyMenuTab.Skills;
-    private bool UsesDetachedDescription => UsesTenRowList || Tab==PartyMenuTab.Stats;
+    private bool UsesDetachedDescription => UsesTenRowList || Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment;
     public bool IsRoot => Owner?.Current == this;
     public PartyMenuHero Hero => context != null && context.Heroes.Count > 0 ? context.Heroes[heroIndex] : null;
 
@@ -190,8 +190,10 @@ public sealed class PartyMenu : Dialog
     }
     private void LateUpdate()
     {
-        if(IsRoot && (!Mathf.Approximately(rowWidth,((RectTransform)RowsRoot).rect.width) ||
-            !Mathf.Approximately(rowViewportHeight,scrollView.viewport.rect.height)))FitEntryRows();
+        if(!IsRoot)return;
+        if(!Mathf.Approximately(rowWidth,((RectTransform)RowsRoot).rect.width) ||
+            !Mathf.Approximately(rowViewportHeight,scrollView.viewport.rect.height))FitEntryRows();
+        if(Tab==PartyMenuTab.Equipment)FitEquipmentDescription();
     }
     private void FitEntryRows()
     {
@@ -254,12 +256,26 @@ public sealed class PartyMenu : Dialog
             ? string.Join("\n",actions.Where(a=>!a.Available).Select(a=>a.UnavailableReason).Distinct())
             : string.Join("\n",actions.Select(a=>a.Available?a.Label:a.Label+": "+a.UnavailableReason));
         string restriction=Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? "" : context.Restriction(Hero,entry);
-        Details.text = GameplayText.Format(string.Join("\n\n",new[]{ $"<b>{entry.Title}</b>",entry.Description,restriction,availability,result }
+        var description=entry.Status!=null ? StatusPresentation.Description(entry.Status,Hero?.DungeonActor) : entry.Description;
+        Details.text = GameplayText.Format(string.Join("\n\n",new[]{ $"<b>{entry.Title}</b>",description,restriction,availability,result }
             .Where(text=>!string.IsNullOrWhiteSpace(text)).Distinct()));
         Details.rectTransform.anchoredPosition = Vector2.zero;
         DetailsControl.Scroll.StopMovement();
         if(Details.gameObject.activeInHierarchy)Canvas.ForceUpdateCanvases();
+        if(Tab==PartyMenuTab.Equipment)FitEquipmentDescription();
         DetailsControl.Scroll.verticalNormalizedPosition=1;
+    }
+    private void FitEquipmentDescription()
+    {
+        // Refit after font or window changes too, without moving focus into a second scroll area.
+        float bottom=.605f;
+        if(selectedIndex<entries.Count && entries[selectedIndex].Status!=null && Panel.parent is RectTransform surface && surface.rect.height>0)
+            bottom=Mathf.Clamp(.855f-(Details.preferredHeight+8)/surface.rect.height,.30f,.605f);
+        var rect=(RectTransform)DetailsControl.Scroll.transform;
+        if(Mathf.Approximately(rect.anchorMin.y,bottom))return;
+        Fit(rect,.45f,bottom,.69f,.855f);
+        if(descriptionPaper!=null)Fit(descriptionPaper,.43f,bottom-.025f,.71f,.88f);
+        Canvas.ForceUpdateCanvases();
     }
     private void OpenActions(int index)
     {
@@ -272,7 +288,7 @@ public sealed class PartyMenu : Dialog
                 ()=>Complete("Attribute points updated."));
             Owner.Open(dialog);return;
         }
-        if(Tab==PartyMenuTab.Stats)return;
+        if(Tab==PartyMenuTab.Stats || entry.Status!=null)return;
         if(entry.Slot.HasValue)
         {
             var options=((PartyMenuContext)context).EquipmentOptions(Hero,entry.Slot.Value)

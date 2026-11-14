@@ -198,6 +198,9 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     {
         if (!options.Validate(out var reason)) throw new ArgumentException(reason);
         Active = this; Options = JsonUtility.FromJson<AutoplayOptions>(JsonUtility.ToJson(options));
+        // Unity's inline serialization turns a null nested class into an empty object.
+        // A normal demo must not become an invalid balance experiment when copied.
+        if (options.Balance == null) Options.Balance = null;
         HoldSessionReload();
         acceptInputAfter = Time.unscaledTime + .75f;
         originalTimeScale = Time.timeScale; originalRandom = UnityEngine.Random.state;

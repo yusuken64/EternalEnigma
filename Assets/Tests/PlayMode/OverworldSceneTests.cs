@@ -270,7 +270,8 @@ namespace EternalEnigma.Tests
 
             InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.LeftStick));
             yield return null;
-            Assert.That(message.text, Does.Contain("A / Cross"));
+            Assert.That(InputPrompts.Interact, Is.EqualTo("A"));
+            Assert.That(message.text, Does.Contain(InputPrompts.Format(world.Message)));
             Assert.That(message.text, Does.Not.Contain("Enter"));
             yield return null; // CursorManager may update before the input module in this frame.
             Assert.That(Cursor.visible, Is.False);
@@ -279,7 +280,7 @@ namespace EternalEnigma.Tests
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.K));
             yield return null;
             Assert.That(message.text, Does.Contain("Enter"));
-            Assert.That(message.text, Does.Not.Contain("A / Cross"));
+            Assert.That(message.text, Does.Contain(InputPrompts.Format(world.Message)));
             yield return null;
             Assert.That(Cursor.visible, Is.True);
             Assert.That(feed.History.Count, Is.EqualTo(eventCount), "Changing controls must not duplicate campaign messages.");

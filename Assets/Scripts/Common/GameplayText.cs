@@ -33,10 +33,15 @@ public static class GameplayText
 
     public static string Plain(string value) => Markup.Replace(Format(value), "");
 
-    public static string Format(string value)
+    // Stored event text resolves button prompts when displayed, so changing devices or bindings stays accurate.
+    public static string PlainTemplate(string value) => Markup.Replace(Format(value, false), "");
+
+    public static string Format(string value) => Format(value, true);
+
+    private static string Format(string value, bool resolveInput)
     {
         if (string.IsNullOrEmpty(value)) return value ?? "";
-        value = InputPrompts.Resolve(value);
+        if (resolveInput) value = InputPrompts.Resolve(value);
         var parts = Markup.Split(value);
         for (int i = 0; i < parts.Length; i += 2)
         {

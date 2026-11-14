@@ -42,7 +42,7 @@ public class ShopMenuDialog : Dialog
             hint.gameObject.SetActive(false);
         Fit(StatusText.transform, .075f, .865f, .925f, .96f);
         StatusText.fontSize = 30; StatusText.enableAutoSizing = true;
-        StatusText.fontSizeMin = 22; StatusText.fontSizeMax = 30;
+        StatusText.fontSizeMin = 16; StatusText.fontSizeMax = 30;
         StatusText.textWrappingMode = TMPro.TextWrappingModes.Normal;
         Fit(BuyModeButton.transform, .075f, .765f, .485f, .845f);
         Fit(SellModeButton.transform, .515f, .765f, .925f, .845f);
@@ -53,7 +53,7 @@ public class ShopMenuDialog : Dialog
             Fit(DescriptionPanel, .24f, .48f, .54f, .88f);
             Fit(DescriptionText.transform, .08f, .10f, .92f, .90f);
             DescriptionText.fontSize = DescriptionText.fontSizeMax = 24;
-            DescriptionText.fontSizeMin = 18; DescriptionText.enableAutoSizing = true;
+            DescriptionText.fontSizeMin = 16; DescriptionText.enableAutoSizing = true;
             DescriptionText.textWrappingMode = TMPro.TextWrappingModes.Normal;
             DescriptionText.alignment = TMPro.TextAlignmentOptions.TopLeft;
             DescriptionText.raycastTarget = false;

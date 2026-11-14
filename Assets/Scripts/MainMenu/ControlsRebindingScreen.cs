@@ -10,17 +10,20 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 
 /// <summary>Displays effective bindings and captures replacements without sending input to the game.</summary>
+[DefaultExecutionOrder(-10)]
 public sealed class ControlsRebindingScreen : MonoBehaviour
 {
-    public Button DeviceButton, ContextButton, PreviousPageButton, NextPageButton, ResetButton, CancelButton;
+    public Button DeviceButton, ContextButton, ResetButton, CancelButton;
+    public ScrollRect BindingScroll;
     public Button[] BindingButtons;
     public TMP_Text[] ActionLabels;
-    public TMP_Text PageLabel, Status, CaptureLabel;
+    public TMP_Text Status, CaptureLabel;
     public GameObject CapturePanel;
     public bool IsRebinding { get; private set; }
     private GlobalSettings settings;
     private bool gamepad, menus, initialized;
-    private int page;
+    private GameObject lastSelected;
+    private Vector2 viewportSize;
     private readonly List<(InputAction action, int index)> entries = new();
     private InputActionRebindingExtensions.RebindingOperation operation;
     private Coroutine captureRoutine;
@@ -35,10 +38,8 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
         initialized = true;
         settings = owner;
         CapturePanel.SetActive(false);
-        DeviceButton.onClick.AddListener(() => { gamepad = !gamepad; page = 0; Refresh(); });
-        ContextButton.onClick.AddListener(() => { menus = !menus; page = 0; Refresh(); });
-        PreviousPageButton.onClick.AddListener(PreviousPage);
-        NextPageButton.onClick.AddListener(NextPage);
+        DeviceButton.onClick.AddListener(() => { gamepad = !gamepad; Refresh(); ScrollToTop(); });
+        ContextButton.onClick.AddListener(() => { menus = !menus; Refresh(); ScrollToTop(); });
         ResetButton.onClick.AddListener(() =>
         {
             ControlBindings.ResetAll();
@@ -46,24 +47,41 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
             MenuUIInputModule.Active?.ConsumeInput();
         });
         CancelButton.onClick.AddListener(CancelRebind);
-        for (int i = 0; i < BindingButtons.Length; i++)
-        {
-            int row = i;
-            BindingButtons[i].onClick.AddListener(() =>
-            {
-                int index = page * BindingButtons.Length + row;
-                if (index >= entries.Count) return;
-                var entry = entries[index];
-                BeginRebind(entry.action.actionMap.name + "/" + entry.action.name, entry.index);
-            });
-        }
+        for (int i = 0; i < BindingButtons.Length; i++) BindRow(i);
         Refresh();
     }
 
     private void OnEnable() { ControlBindings.Changed += Refresh; if (initialized) Refresh(); }
     private void OnDisable() { CancelRebind(); ControlBindings.Changed -= Refresh; }
-    public void NextPage() { page++; Refresh(); }
-    public void PreviousPage() { page--; Refresh(); }
+
+    private void BindRow(int row) => BindingButtons[row].onClick.AddListener(() =>
+    {
+        if (row >= entries.Count) return;
+        var entry = entries[row];
+        BeginRebind(entry.action.actionMap.name + "/" + entry.action.name, entry.index);
+    });
+
+    private void EnsureRows(int count)
+    {
+        int existing = BindingButtons.Length;
+        if (count <= existing) return;
+        Array.Resize(ref BindingButtons, count);
+        Array.Resize(ref ActionLabels, count);
+        for (int i = existing; i < count; i++)
+        {
+            var row = Instantiate(BindingButtons[0].transform.parent, BindingScroll.content);
+            row.name = "Binding row " + (i + 1);
+            BindingButtons[i] = row.GetComponentInChildren<Button>(true);
+            ActionLabels[i] = row.Find("Action").GetComponent<TMP_Text>();
+            BindRow(i);
+        }
+    }
+
+    private void ScrollToTop()
+    {
+        BindingScroll.StopMovement();
+        BindingScroll.verticalNormalizedPosition = 1;
+    }
 
     private static bool IsVisibleAction(InputAction action) => action.name != "Look" && action.name != "Fire" &&
         action.name != "Point" && action.name != "ScrollWheel" && action.name != "MiddleClick" &&
@@ -72,6 +90,8 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
     private void Refresh()
     {
         if (!initialized) return;
+        // Hiding a row clears Unity's current selection.
+        var selected = EventSystem.current?.currentSelectedGameObject;
         entries.Clear();
         foreach (var action in ControlBindings.DisplayAsset.FindActionMap(menus ? "UI" : "Player").actions)
         {
@@ -87,28 +107,44 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
                 if (gamepad ? pad : keyboard) entries.Add((action, i));
             }
         }
-        int pages = Mathf.Max(1, Mathf.CeilToInt(entries.Count / (float)BindingButtons.Length));
-        page = Mathf.Clamp(page, 0, pages - 1);
+        EnsureRows(entries.Count);
         Label(DeviceButton, gamepad ? "Controller" : "Keyboard / mouse");
         Label(ContextButton, menus ? "Menus" : "Gameplay");
-        PageLabel.text = $"{page + 1} / {pages}";
-        PreviousPageButton.interactable = page > 0;
-        NextPageButton.interactable = page + 1 < pages;
         for (int row = 0; row < BindingButtons.Length; row++)
         {
-            int index = page * BindingButtons.Length + row;
-            bool visible = index < entries.Count;
-            BindingButtons[row].gameObject.SetActive(visible);
-            ActionLabels[row].gameObject.SetActive(visible);
+            bool visible = row < entries.Count;
+            BindingButtons[row].transform.parent.gameObject.SetActive(visible);
             if (!visible) continue;
-            var entry = entries[index];
+            var entry = entries[row];
             ActionLabels[row].text = ActionName(entry.action, entry.index);
             Label(BindingButtons[row], ControlBindings.BindingLabel(entry.action, entry.index));
         }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(BindingScroll.content);
         settings.TabGroup.RefreshNavigation();
-        var selected = EventSystem.current?.currentSelectedGameObject;
         if (selected != null && selected.transform.IsChildOf(transform) && !MenuUIInputModule.IsUsable(selected))
-            BindingButtons[0].Select();
+            DeviceButton.Select();
+    }
+
+    private void LateUpdate()
+    {
+        if (!initialized) return;
+        var selected = EventSystem.current?.currentSelectedGameObject;
+        bool resized = viewportSize != BindingScroll.viewport.rect.size;
+        viewportSize = BindingScroll.viewport.rect.size;
+        if (selected == lastSelected && !resized) return;
+        lastSelected = selected;
+        // Wheel and drag scrolling must not snap back to an old selection.
+        if (selected == null || !selected.transform.IsChildOf(BindingScroll.content) ||
+            MenuUIInputModule.Active?.UI.Click.IsPressed() == true) return;
+        Canvas.ForceUpdateCanvases();
+        var viewport = BindingScroll.viewport;
+        var row = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport, selected.transform);
+        float overflow = BindingScroll.content.rect.height - viewport.rect.height;
+        float offset = row.max.y > viewport.rect.yMax ? viewport.rect.yMax - row.max.y :
+            row.min.y < viewport.rect.yMin ? viewport.rect.yMin - row.min.y : 0;
+        if (overflow <= 0 || Mathf.Approximately(offset, 0)) return;
+        BindingScroll.StopMovement();
+        BindingScroll.verticalNormalizedPosition = Mathf.Clamp01(BindingScroll.verticalNormalizedPosition - offset / overflow);
     }
 
     private static void Label(Button button, string value) => button.GetComponentInChildren<TMP_Text>(true).text = value;

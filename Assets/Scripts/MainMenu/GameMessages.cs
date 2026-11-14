@@ -230,7 +230,7 @@ public sealed class GameMessages : MonoBehaviour
 
     private void Add(string message, bool coalesce)
     {
-        message = GameplayText.Plain(message);
+        message = GameplayText.PlainTemplate(message);
         // Holding movement against a locked gate should not flood the display.
         if (coalesce && history.Count > 0 && history[history.Count - 1] == message && Time.unscaledTime - lastMessage < 1f) return;
         history.Add(message);

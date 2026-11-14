@@ -17,12 +17,13 @@ public sealed class PartyMenuEntry
 {
     public InventoryItem Item;
     public Skill Skill;
+    public StatusEffect Status;
     public string Title, Description, Section;
     public Sprite Icon;
     public bool Equipped;
     public EquipmentSlot? Slot;
     public bool SpendAttribute;
-    public object Identity => (object)Item ?? Skill ?? (object)Slot ?? (SpendAttribute ? "spend" : Title);
+    public object Identity => (object)Item ?? (object)Skill ?? Status ?? (object)Slot ?? (SpendAttribute ? "spend" : Title);
 }
 
 public sealed class PartyMenuAction

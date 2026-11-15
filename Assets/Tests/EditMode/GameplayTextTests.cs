@@ -83,7 +83,7 @@ public sealed class GameplayTextTests
             var item = new EquipableInventoryItem(definition);
             string description = InspectInventoryItemEffect.Describe(item);
             Assert.That(description, Does.StartWith("Iron Shield\nOff hand"));
-            Assert.That(description, Does.Not.Contain("Strength +0"));
+            Assert.That(description, Does.Not.Contain("Attack +0"));
             Assert.That(description, Does.Not.Match(@"[\[\]()_:{}]"));
         }
         finally { Object.DestroyImmediate(definition); }

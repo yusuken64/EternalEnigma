@@ -26,7 +26,7 @@ public sealed class StatusPresentationTests
         frailty.ReApply(frailty); frailty.ReApply(frailty);
         for (int turn = 0; turn < 12; turn++) frailty.Tick();
         Assert.That(frailty.GetStatModification().Strength, Is.EqualTo(-3));
-        Assert.That(StatusPresentation.Description(frailty), Does.Contain("Strength -3").And.Contain("Until cleansed").And.Not.Contain("turns left"));
+        Assert.That(StatusPresentation.Description(frailty), Does.Contain("Attack -3").And.Contain("Until cleansed").And.Not.Contain("turns left"));
         Assert.That(StatusPresentation.Badge(frailty), Is.EqualTo("x3"));
         Assert.That(StatusPresentation.Summary(frailty), Does.Contain("x3").And.Contain("Until cleansed"));
     }
@@ -47,7 +47,7 @@ public sealed class StatusPresentationTests
         command.Modification = new StatModification { Strength = 4, Defense = 2 };
         command.HealPerTurn = 8; command.BonusElement = DamageElement.Fire; command.BonusElementPercent = 20;
         command.Multiplier = 1.5f; command.TurnsLeft = 1;
-        Assert.That(StatusPresentation.Description(command), Does.Contain("+6 Strength").And.Contain("+3 Defense")
+        Assert.That(StatusPresentation.Description(command), Does.Contain("Attack +6").And.Contain("+3 Defense")
             .And.Contain("12 HP").And.Contain("Fire hit for 30%").And.Contain("1 turn left"));
     }
 
@@ -60,7 +60,7 @@ public sealed class StatusPresentationTests
     [TestCase("Guard", "Counters direct hits")]
     [TestCase("Armored", "one quarter")]
     [TestCase("Exposed", "double damage")]
-    [TestCase("Empowered", "+12 Strength")]
+    [TestCase("Empowered", "Attack +12")]
     public void BossVariantsDescribeTheirDistinctMechanics(string kind, string detail)
     {
         var status = Create<BossEffectStatus>(); status.Kind = kind;

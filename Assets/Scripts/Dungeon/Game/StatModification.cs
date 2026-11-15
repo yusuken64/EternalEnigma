@@ -89,7 +89,7 @@ public class StatModification : StartingStats
         if (HPMax != 0) parts.Add($"{(HPMax > 0 ? "+" : "")}{HPMax} maximum HP");
         if (ManaMax != 0) parts.Add($"{(ManaMax > 0 ? "+" : "")}{ManaMax} maximum Mana");
         if (HungerMax != 0) parts.Add($"{(HungerMax > 0 ? "+" : "")}{HungerMax} maximum fullness");
-        if (Strength != 0) parts.Add($"{(Strength > 0 ? "+" : "")}{Strength} Strength");
+        if (Strength != 0) parts.Add($"Attack {(Strength > 0 ? "+" : "")}{Strength}");
         if (MagicPower != 0) parts.Add($"{(MagicPower > 0 ? "+" : "")}{MagicPower} Magic Power");
         if (Defense != 0) parts.Add($"{(Defense > 0 ? "+" : "")}{Defense} Defense");
         if (EXPOnKill != 0) parts.Add($"{(EXPOnKill > 0 ? "+" : "")}{EXPOnKill} experience per defeat");

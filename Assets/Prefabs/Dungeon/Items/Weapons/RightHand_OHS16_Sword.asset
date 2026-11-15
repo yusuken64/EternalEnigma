@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS16_Sword
   m_EditorClassIdentifier: 
   ItemName: Shadow Sword
-  Description: Shadow Sword grants 16 strength.
+  Description: Shadow Sword grants +16 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

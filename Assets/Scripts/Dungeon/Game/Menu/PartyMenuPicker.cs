@@ -19,6 +19,9 @@ public sealed class PartyMenuPicker : Dialog
     private string descriptionText;
     private bool descriptionGamepad;
     private bool hasActions;
+    private EquipmentComparisonView equipmentComparison;
+    private RectTransform optionPanel;
+    private ScrollRect optionScroll;
     #if UNITY_EDITOR
     public static PartyMenuPicker AuthorLayout(Transform parent, string title, List<(string Label, Action Execute)> choices,bool closeOnChoose=true)
     {
@@ -58,7 +61,7 @@ public sealed class PartyMenuPicker : Dialog
     public static PartyMenuPicker Build(Transform parent,string title,List<(string Label,Action Execute)> choices,bool closeOnChoose=true,bool showBackButton=true)
         => BuildDetailed(parent,title,choices.Select(c=>(c.Label,(string)null,c.Execute)).ToList(),closeOnChoose,showBackButton);
 
-    public static PartyMenuPicker BuildDetailed(Transform parent,string title,List<(string Label,string Description,Action Execute)> choices,bool closeOnChoose=true,bool showBackButton=true)
+    public static PartyMenuPicker BuildDetailed(Transform parent,string title,List<(string Label,string Description,Action Execute)> choices,bool closeOnChoose=true,bool showBackButton=true,IReadOnlyList<EquipmentStatPreview> previews=null)
     {
         var picker=parent.GetComponentsInChildren<PartyMenuPicker>(true).FirstOrDefault(p=>p.Owner==null);
         if(picker==null)throw new InvalidOperationException("No free authored party picker for this dialog stack.");
@@ -71,22 +74,38 @@ public sealed class PartyMenuPicker : Dialog
         picker.committed=false;picker.submittedFrame=-1;picker.Title.text=GameplayText.Format(title);picker.Title.enableAutoSizing=true;picker.Title.fontSizeMin=18;picker.Title.fontSizeMax=30;picker.first=null;picker.description=null;
         if(picker.OptionDescription!=null)
         {
-            Fit(picker.OptionDescription.transform.parent,.285f,.22f,.59f,.78f);
-            picker.OptionDescription.transform.parent.gameObject.SetActive(choices.Any(c=>!string.IsNullOrEmpty(c.Description)));
+            picker.PrepareOptionDescription();
+            if(previews!=null)Fit(picker.optionPanel,.43f,.58f,.71f,.88f);
+            else Fit(picker.optionPanel,.285f,.22f,.59f,.78f);
+            picker.optionPanel.gameObject.SetActive(choices.Any(c=>!string.IsNullOrEmpty(c.Description)));
             picker.OptionDescription.gameObject.SetActive(true);
             picker.OptionDescription.text=GameplayText.Format("Select an option for its stat preview.");
+            picker.equipmentComparison?.Show(null);
+            if(previews!=null)picker.equipmentComparison ??= EquipmentComparisonView.For(picker.OptionDescription,picker.optionPanel,picker.optionScroll);
         }
         foreach(Transform child in picker.Rows){child.gameObject.SetActive(false);Destroy(child.gameObject);}
         var buttons = new List<Button>();
-        foreach(var choice in choices)
+        for(int index=0;index<choices.Count;index++)
         {
+            var choice=choices[index];
+            var preview=previews!=null && index<previews.Count?previews[index]:null;
             var row=picker.RowTemplate.Spawn(picker.Rows,choice.Label,()=> {
                 if(picker.committed || picker.Owner?.Current!=picker || picker.submittedFrame==Time.frameCount || choice.Execute==null)return;
                 picker.submittedFrame=Time.frameCount;
                 picker.committed=closeOnChoose;if(closeOnChoose)picker.CloseDialog();
                 Common.Instance.MenuInputHandler.ClearInputThisFrame();choice.Execute();
             });
-            row.Button.GetComponent<PartyMenuRow>().Selected=()=>{picker.ScrollToSelected(row.gameObject);if(picker.OptionDescription!=null)picker.OptionDescription.text=GameplayText.Format(choice.Description??"");};
+            row.Button.GetComponent<PartyMenuRow>().Selected=()=>{
+                picker.ScrollToSelected(row.gameObject);
+                if(picker.OptionDescription!=null)
+                {
+                    picker.OptionDescription.text=GameplayText.Format(choice.Description??"");
+                    picker.equipmentComparison?.Show(preview);
+                    picker.FitEquipmentPreview();
+                    Canvas.ForceUpdateCanvases();
+                    picker.optionScroll.StopMovement();picker.optionScroll.verticalNormalizedPosition=1;
+                }
+            };
             row.Button.interactable=choice.Execute!=null;
             if(row.Button.interactable)buttons.Add(row.Button);
             if(picker.first==null && row.Button.interactable)picker.first=row.Button;
@@ -102,6 +121,36 @@ public sealed class PartyMenuPicker : Dialog
             selectOnUp=buttons[(i+buttons.Count-1)%buttons.Count],selectOnDown=buttons[(i+1)%buttons.Count]};
         picker.scrollView.verticalNormalizedPosition=1;
         return picker;
+    }
+    private void PrepareOptionDescription()
+    {
+        if(optionPanel!=null)return;
+        optionPanel=(RectTransform)OptionDescription.transform.parent;
+        var viewport=new GameObject("Preview viewport",typeof(RectTransform),typeof(RectMask2D),typeof(Image));
+        viewport.transform.SetParent(optionPanel,false);
+        viewport.layer=optionPanel.gameObject.layer;
+        viewport.GetComponent<Image>().color=Color.clear;
+        Fit(viewport.transform,.06f,.06f,.94f,.94f);
+        OptionDescription.transform.SetParent(viewport.transform,false);
+        Fit(OptionDescription.transform,0,1,1,1);
+        OptionDescription.rectTransform.pivot=new Vector2(.5f,1);
+        OptionDescription.gameObject.AddComponent<ContentSizeFitter>().verticalFit=ContentSizeFitter.FitMode.PreferredSize;
+        optionScroll=viewport.AddComponent<ScrollRect>();
+        optionScroll.viewport=(RectTransform)viewport.transform;optionScroll.content=OptionDescription.rectTransform;
+        optionScroll.horizontal=false;optionScroll.movementType=ScrollRect.MovementType.Clamped;optionScroll.scrollSensitivity=24;
+    }
+    private void LateUpdate() => FitEquipmentPreview();
+    private void FitEquipmentPreview()
+    {
+        if(equipmentComparison?.Preview==null)
+        {
+            if(optionScroll!=null)Fit(optionScroll.transform,.06f,.06f,.94f,.94f);
+            return;
+        }
+        if(optionPanel.parent is not RectTransform surface || surface.rect.height<=0)return;
+        float height=Mathf.Max(.30f,equipmentComparison.RequiredPanelHeight/surface.rect.height);
+        Fit(optionPanel,.43f,Mathf.Max(.15f,.88f-height),.71f,.88f);
+        equipmentComparison.Reflow();
     }
     public void Description(string text)
     {

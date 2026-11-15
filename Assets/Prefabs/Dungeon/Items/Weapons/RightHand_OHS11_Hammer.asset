@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS11_Hammer
   m_EditorClassIdentifier: 
   ItemName: Mallet
-  Description: Mallet grants 11 strength.
+  Description: Mallet grants +11 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 15

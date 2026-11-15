@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS03_Sword
   m_EditorClassIdentifier: 
   ItemName: Short Sword
-  Description: Short Sword grants 3 strength.
+  Description: Short Sword grants +3 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

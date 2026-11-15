@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Spear01
   m_EditorClassIdentifier: 
   ItemName: Wooden Spear
-  Description: Wooden Spear grants 2 strength.
+  Description: Wooden Spear grants +2 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

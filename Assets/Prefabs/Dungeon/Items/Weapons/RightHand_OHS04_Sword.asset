@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS04_Sword
   m_EditorClassIdentifier: 
   ItemName: Iron Sword
-  Description: Iron Sword grants 4 strength.
+  Description: Iron Sword grants +4 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

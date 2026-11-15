@@ -129,6 +129,22 @@ public static class ControlBindings
         saved.bindings.Add(new Binding { action = action, index = index, path = path });
     }
 
+    public static bool IsOptionalBinding(InputBinding binding) =>
+        !binding.isComposite && !binding.isPartOfComposite && string.IsNullOrEmpty(binding.path);
+
+    public static void ClearBinding(string actionPath, int bindingIndex)
+    {
+        var action = DisplayAsset.FindAction(actionPath, true);
+        if (bindingIndex < 0 || bindingIndex >= action.bindings.Count)
+            throw new ArgumentOutOfRangeException(nameof(bindingIndex));
+        if (!IsOptionalBinding(action.bindings[bindingIndex]))
+            throw new ArgumentException("Only optional bindings can be cleared.", nameof(bindingIndex));
+        saved.bindings.RemoveAll(b => b != null && b.action == actionPath && b.index == bindingIndex);
+        GamePreferences.SetString(PreferenceKey, JsonUtility.ToJson(saved));
+        GamePreferences.Save();
+        Synchronize();
+    }
+
     public static void ResetAll()
     {
         saved = new SavedBindings();
@@ -161,6 +177,7 @@ public static class ControlBindings
     public static string BindingLabel(InputAction action, int index)
     {
         string path = action.bindings[index].effectivePath;
+        if (string.IsNullOrEmpty(path)) return "Unbound";
         return path switch
         {
             "<Gamepad>/buttonSouth" => "A", "<Gamepad>/buttonEast" => "B",

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS05_Sword
   m_EditorClassIdentifier: 
   ItemName: Steel Sword
-  Description: Steel Sword grants 5 strength.
+  Description: Steel Sword grants +5 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

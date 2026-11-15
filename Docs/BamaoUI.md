@@ -47,6 +47,8 @@ Only the top dungeon dialog canvas is visible; targeting hides underlying panels
 
 Native 3D targeting supports pointer preview, left-click confirmation and right-click cancellation. A held opening click must be released before targeting accepts another click; HUD hits and invalid targets cannot confirm. Keyboard/controller targeting remains available, including in terminal presentation. Dungeon Wait uses **Period / left stick press**; Full Control uses **F / right stick press**, without spending a wait action.
 
+Equipment previews use a compact stat comparison anchored to the bottom of the parchment, with no separate background or border. Item text has its own scrolling area above the comparison, so changing or scrolling the description never moves the stats. Separate text objects show each stat name, absolute before and after totals, and a smaller signed change beneath the result. Increases use dark green, decreases use red, and unchanged values use brown ink. Attack, Defense and Magic are always visible; other changed stats extend the comparison, with separate scrolling if needed. The same comparison is used in inventory, equipped-item details and equipment choices, including removals and displaced equipment. The comparison never takes keyboard/controller focus. **Tools > Eternal Enigma > UI > Open Equipment Preview** opens an isolated Arcane Wand preview and leaves Play Mode running for inspection.
+
 ## UI audit workflow
 
 Options and service screens use one primary parchment surface. Details use plain

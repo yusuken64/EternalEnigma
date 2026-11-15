@@ -211,6 +211,233 @@ namespace EternalEnigma.Tests
             Assert.That(bag.Contains(bread),Is.True,"Opening actions does not consume Bread.");
         }
 
+        [UnityTest]public IEnumerator ArcaneWandAddsSixAttackOnceAndLeavesStrengthAttributeUnchanged()
+        {
+            yield return harness.LoadDungeon(new TestScenario {AllyName="Avery",Items=new[]{"Arcane Wand"}});
+            foreach(var enemy in harness.Game.Enemies.ToArray())Object.Destroy(enemy.gameObject);
+            harness.Game.Enemies.Clear();
+            yield return null;
+            var actor=harness.Ally;
+            var wand=(EquipableInventoryItem)harness.Game.PlayerController.Inventory.InventoryItems.Single(item=>item.ItemName=="Arcane Wand");
+            var before=new Stats(actor.FinalStats);
+            var attributes=actor.Attributes;
+            int baseStrength=actor.BaseStats.Strength;
+            int expectedAttack=before.Strength+6;
+            string expectedComparison=$"Your Attack {before.Strength} → {expectedAttack}, change +6";
+            Assert.That(wand.GetEquipmentStatModification().DescribeEffect(),Is.EqualTo(new[]{"Attack +6"}));
+            var predicted=StatPreview.Final(actor,actor.Equipment.Current().With(wand));
+            Assert.That(StatPreview.Diff(before,predicted),Is.EqualTo(expectedComparison));
+            Assert.That(actor.FinalStats.Strength,Is.EqualTo(before.Strength),"Inspecting the preview must not apply the item.");
+
+            var manager=MenuManager.Instance;
+            manager.OpenInventoryAs(actor);
+            yield return null;
+            manager.PartyMenu.EntryButtons.Single().Select();
+            yield return null;
+            var details=manager.PartyMenu.Details.GetParsedText();
+            Assert.That(details,Does.Contain("Grants +6 Attack while equipped.").And.Not.Contain("Your Attack").And.Not.Contain("strength"));
+            AssertEquipmentComparison(manager.PartyMenu.Details,before.Strength,expectedAttack);
+            var view=UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
+            var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic;
+            var sizeProperty=view.GetType().GetProperty("selectedSizeIndex",flags);
+            var oldSize=sizeProperty.GetValue(view);
+            try
+            {
+                Directory.CreateDirectory("Temp/EquipmentComparison");
+                foreach(var size in new[]{new Vector2(960,600),new Vector2(1280,720),new Vector2(2560,1080)})
+                {
+                    view.GetType().GetMethod("SetCustomResolution",flags).Invoke(view,new object[]{size,"Equipment comparison"});
+                    yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                    AssertEquipmentComparison(manager.PartyMenu.Details,before.Strength,expectedAttack);
+                    AssertComparisonFits(manager.PartyMenu.Details);
+                    yield return AssertComparisonStaysAnchored(manager.PartyMenu.Details,manager.PartyMenu.DetailsControl.Scroll);
+                    ScreenCapture.CaptureScreenshot($"Temp/EquipmentComparison/equip-{size.x}x{size.y}.png");
+                    yield return new WaitForSecondsRealtime(.2f);
+                }
+            }
+            finally{sizeProperty.SetValue(view,oldSize);}
+            manager.OpenPartyMenu(PartyMenuTab.Equipment);yield return null;
+            manager.PartyMenu.EntryButtons.First().onClick.Invoke();yield return null;
+            var picker=(PartyMenuPicker)manager.CurrentDialog;
+            picker.Rows.GetComponentsInChildren<AuthoredButton>().Single(row=>row.Label.text=="Arcane Wand").Button.Select();
+            yield return null;Canvas.ForceUpdateCanvases();yield return null;
+            AssertEquipmentComparison(picker.OptionDescription,before.Strength,expectedAttack);
+            AssertComparisonFits(picker.OptionDescription);
+            yield return AssertComparisonStaysAnchored(picker.OptionDescription,picker.OptionDescription.GetComponentInParent<ScrollRect>());
+            ScreenCapture.CaptureScreenshot("Temp/EquipmentComparison/picker.png");yield return null;
+            Assert.That(actor.FinalStats.Strength,Is.EqualTo(before.Strength),"Browsing the choice must not equip it.");
+            picker.CloseDialog();yield return null;
+            TestContext.Out.WriteLine("Before equipping: "+details);
+            for(int cycle=0;cycle<2;cycle++)
+            {
+                yield return harness.UseItemThroughMenu(wand);
+                Assert.That(actor.Equipment.EquippedWeapon,Is.SameAs(wand));
+                Assert.That(actor.FinalStats.Strength,Is.EqualTo(expectedAttack));
+                Assert.That(actor.DisplayedStats.Strength,Is.EqualTo(expectedAttack));
+                Assert.That(StatPreview.Diff(before,actor.FinalStats),Is.EqualTo(expectedComparison));
+                Assert.That(actor.BaseStats.Strength,Is.EqualTo(baseStrength));
+                Assert.That(actor.Attributes,Is.EqualTo(attributes),"The item grants Attack, not six STR attribute points.");
+                if(cycle==0)
+                {
+                    manager.OpenPartyMenu(PartyMenuTab.Equipment);
+                    yield return null;
+                    var menu=manager.PartyMenu;
+                    menu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text.Contains("Arcane Wand")).Select();
+                    yield return null;
+                    string equipmentDetails=menu.Details.GetParsedText();
+                    Assert.That(equipmentDetails,Does.Contain("Grants +6 Attack while equipped.").And.Not.Contain("Item bonus").And.Not.Contain("Your Attack").And.Not.Contain("Strength"));
+                    AssertEquipmentComparison(menu.Details,expectedAttack,before.Strength);
+                    Assert.That(menu.Details.GetComponent<EquipmentComparisonView>().Preview.Caption,Is.EqualTo("Unequip preview"));
+                    ScreenCapture.CaptureScreenshot("Temp/EquipmentComparison/unequip.png");
+                    yield return null;
+                    menu.SwitchTab(PartyMenuTab.Stats);yield return null;
+                    Assert.That(menu.Details.GetComponent<EquipmentComparisonView>().Viewport.gameObject.activeSelf,Is.False,"Switching away clears the previous item's comparison.");
+                    TestContext.Out.WriteLine("Equipped: "+equipmentDetails);
+                }
+                actor.Equipment.Equip(wand);
+                actor.InvalidateCachedStats();
+                Assert.That(actor.FinalStats.Strength,Is.EqualTo(expectedAttack),"Re-equipping the same instance must not stack its bonus.");
+                yield return harness.UseItemThroughMenu(wand);
+                Assert.That(actor.Equipment.IsEquipped(wand),Is.False);
+                Assert.That(actor.FinalStats.Strength,Is.EqualTo(before.Strength));
+                Assert.That(actor.DisplayedStats.Strength,Is.EqualTo(before.Strength));
+                Assert.That(actor.Attributes,Is.EqualTo(attributes));
+                TestContext.Out.WriteLine($"Cycle {cycle+1}: Attack {before.Strength} -> {expectedAttack} -> {before.Strength}; base {baseStrength} unchanged; STR {actor.Attributes.Str} unchanged.");
+            }
+        }
+
+        [UnityTest]public IEnumerator EquipmentDescriptionAndProficiencyFitAboveFixedPreview()
+        {
+            yield return harness.LoadDungeon(new TestScenario {AllyName="Avery",Items=new[]{"Arcane Wand","Wooden Arrows"}});
+            var manager=MenuManager.Instance;
+            manager.OpenInventoryAs(harness.Ally);yield return null;
+            var menu=manager.PartyMenu;
+            float normalFontSize=menu.Details.fontSize;
+            var view=UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.GameView"));
+            var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic;
+            var sizeProperty=view.GetType().GetProperty("selectedSizeIndex",flags);
+            var oldSize=sizeProperty.GetValue(view);
+            try
+            {
+                Directory.CreateDirectory("Temp/EquipmentComparison");
+                foreach(var size in new[]{new Vector2(960,600),new Vector2(1280,720),new Vector2(2560,1080)})
+                {
+                    view.GetType().GetMethod("SetCustomResolution",flags).Invoke(view,new object[]{size,"Equipment description fit"});
+                    menu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text.StartsWith("Arcane Wand")).Select();
+                    yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                    var comparison=menu.Details.GetComponent<EquipmentComparisonView>();
+                    var canvas=(RectTransform)menu.GetComponent<Canvas>().transform;
+                    var before=VisibleComparisonRect(canvas,comparison.Viewport);
+                    menu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text.StartsWith("Wooden Arrows")).Select();
+                    yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                    ScreenCapture.CaptureScreenshot($"Temp/EquipmentComparison/arrows-{size.x}x{size.y}.png");
+                    yield return new WaitForSecondsRealtime(.2f);
+                    Assert.That(menu.Details.GetParsedText(),Does.Contain("Wooden arrows for bows.").And.Contain("proficiency").And.Contain("cannot equip this item."));
+                    AssertEquipmentDescriptionFits(menu.Details,menu.DetailsControl.Scroll);
+                    AssertComparisonFits(menu.Details);
+                    var after=VisibleComparisonRect(canvas,comparison.Viewport);
+                    Assert.That(Vector3.Distance(before.center,after.center),Is.LessThan(.1f),"The longer restriction text must not move the stat preview.");
+                }
+                menu.SwitchTab(PartyMenuTab.Equipment);yield return null;
+                menu.EntryButtons[1].onClick.Invoke();yield return null;
+                var picker=(PartyMenuPicker)manager.CurrentDialog;
+                picker.Rows.GetComponentsInChildren<AuthoredButton>().Single(row=>row.Label.text.StartsWith("Wooden Arrows")).Button.Select();
+                yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                AssertEquipmentDescriptionFits(picker.OptionDescription,picker.OptionDescription.GetComponentInParent<ScrollRect>());
+                picker.CloseDialog();yield return null;
+                menu.SwitchTab(PartyMenuTab.Stats);yield return null;
+                Assert.That(menu.Details.fontSize,Is.EqualTo(normalFontSize),"Description fitting must not shrink other tabs.");
+            }
+            finally{sizeProperty.SetValue(view,oldSize);}
+        }
+
+        private static void AssertEquipmentDescriptionFits(TMPro.TMP_Text description,ScrollRect scroll)
+        {
+            description.ForceMeshUpdate();
+            Assert.That(description.preferredHeight,Is.LessThanOrEqualTo(scroll.viewport.rect.height+.5f),
+                $"The full item description and class restriction must fit above the stats. Font {description.fontSize}, text rect {description.rectTransform.rect.size}, viewport {scroll.viewport.rect.size}. Text: {description.text}");
+            Assert.That(description.fontSize,Is.GreaterThanOrEqualTo(20),"Fitting must retain readable text.");
+            var canvas=(RectTransform)description.GetComponentInParent<Canvas>().transform;
+            var textBounds=VisibleComparisonRect(canvas,description.rectTransform);
+            var visibleBounds=VisibleComparisonRect(canvas,scroll.viewport);
+            Assert.That(textBounds.min.y,Is.GreaterThanOrEqualTo(visibleBounds.min.y-.5f));
+            Assert.That(textBounds.max.y,Is.LessThanOrEqualTo(visibleBounds.max.y+.5f));
+        }
+
+        private static void AssertEquipmentComparison(TMPro.TMP_Text description,int before,int after)
+        {
+            var comparison=description.GetComponent<EquipmentComparisonView>();
+            Assert.That(comparison,Is.Not.Null);
+            Assert.That(comparison.Preview,Is.Not.Null);
+            var attack=comparison.Preview.Values.Single(value=>value.Label=="Attack");
+            Assert.That(attack.Before,Is.EqualTo(before));Assert.That(attack.After,Is.EqualTo(after));
+            Assert.That(attack.DeltaText,Is.EqualTo(after>before?"+6":"−6"));
+            var stat=comparison.Strip.GetChild(1);
+            Assert.That(stat.Find("Before").GetComponent<TMPro.TMP_Text>().text,Is.EqualTo(before.ToString()));
+            var final=stat.Find("After").GetComponent<TMPro.TMP_Text>();
+            var delta=stat.Find("Change").GetComponent<TMPro.TMP_Text>();
+            Assert.That(final.text,Is.EqualTo(after.ToString()));
+            Assert.That(delta.text,Is.EqualTo(attack.DeltaText));
+            Assert.That(delta.color,Is.EqualTo(after>before?EquipmentComparisonView.Increase:EquipmentComparisonView.Decrease));
+            Assert.That(final.color,Is.EqualTo(delta.color));
+            foreach(var label in comparison.Strip.GetComponentsInChildren<TMPro.TMP_Text>())
+            {
+                label.ForceMeshUpdate();Assert.That(label.isTextOverflowing,Is.False,label.text);
+            }
+        }
+        private static void AssertComparisonFits(TMPro.TMP_Text description)
+        {
+            var comparison=description.GetComponent<EquipmentComparisonView>();
+            var strip=comparison.Strip;
+            var viewport=comparison.Viewport;
+            var bounds=RectTransformUtility.CalculateRelativeRectTransformBounds(viewport,strip);
+            Assert.That(bounds.min.y,Is.GreaterThanOrEqualTo(viewport.rect.yMin-1),"The whole stat strip should be visible without scrolling.");
+            Assert.That(bounds.max.y,Is.LessThanOrEqualTo(viewport.rect.yMax+1));
+            Assert.That(bounds.min.x,Is.GreaterThanOrEqualTo(viewport.rect.xMin-1));
+            Assert.That(bounds.max.x,Is.LessThanOrEqualTo(viewport.rect.xMax+1));
+        }
+
+        private static IEnumerator AssertComparisonStaysAnchored(TMPro.TMP_Text description,ScrollRect descriptionScroll)
+        {
+            var comparison=description.GetComponent<EquipmentComparisonView>();
+            Assert.That(comparison.Strip.IsChildOf(description.transform),Is.False,"Stats have their own text objects outside the item description.");
+            Assert.That(comparison.Viewport.anchorMin.y,Is.Zero);
+            Assert.That(comparison.Viewport.anchorMax.y,Is.Zero);
+            var canvas=(RectTransform)description.GetComponentInParent<Canvas>().transform;
+            var before=RectTransformUtility.CalculateRelativeRectTransformBounds(canvas,comparison.Strip);
+            var original=description.text;
+            try
+            {
+                description.text=original+"\n\n"+string.Join("\n",Enumerable.Repeat("A long item description stays in its own scrolling area.",12));
+                Canvas.ForceUpdateCanvases();yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                var after=RectTransformUtility.CalculateRelativeRectTransformBounds(canvas,comparison.Strip);
+                Assert.That(Vector3.Distance(before.center,after.center),Is.LessThan(.1f),"Changing item text must not move the comparison.");
+                Assert.That(descriptionScroll.viewport.GetComponent<RectMask2D>(),Is.Not.Null,"The text area clips its scrolling content.");
+                var textBounds=VisibleComparisonRect(canvas,descriptionScroll.viewport);
+                var previewBounds=VisibleComparisonRect(canvas,comparison.Viewport);
+                Assert.That(textBounds.min.y,Is.GreaterThan(previewBounds.max.y),"Long text is clipped above the preview, with a visible gap.");
+                descriptionScroll.verticalNormalizedPosition=0;
+                yield return null;
+                var scrolled=RectTransformUtility.CalculateRelativeRectTransformBounds(canvas,comparison.Strip);
+                Assert.That(Vector3.Distance(before.center,scrolled.center),Is.LessThan(.1f),"Scrolling the item text must not scroll the stats.");
+            }
+            finally
+            {
+                description.text=original;
+                Canvas.ForceUpdateCanvases();descriptionScroll.verticalNormalizedPosition=1;
+            }
+            yield return null;
+        }
+
+        private static Bounds VisibleComparisonRect(RectTransform root,RectTransform rect)
+        {
+            // Measure the viewport itself, excluding the intentionally taller scrolling children.
+            var corners=new Vector3[4];rect.GetWorldCorners(corners);
+            var bounds=new Bounds(root.InverseTransformPoint(corners[0]),Vector3.zero);
+            for(int i=1;i<corners.Length;i++)bounds.Encapsulate(root.InverseTransformPoint(corners[i]));
+            return bounds;
+        }
+
         [UnityTest]public IEnumerator SkillSelectionExplainsBeforeCastingWithoutTakingDescriptionFocus()
         {
             yield return harness.LoadDungeon(new TestScenario {AllyName="Avery",Mana=30,

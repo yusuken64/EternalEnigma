@@ -57,6 +57,12 @@ public static class OpeningDesignPreview
     [MenuItem("Tools/Eternal Enigma/UI/Open Inventory Review")]
     public static void OpenInventoryReview() => StartCapture(false, PartyMenuTab.Inventory);
 
+    [MenuItem("Tools/Eternal Enigma/UI/Open Equipment Preview")]
+    public static void OpenEquipmentPreview() => StartCapture(false, PartyMenuTab.Equipment);
+
+    [MenuItem("Tools/Eternal Enigma/UI/Open Equipment Description Review")]
+    public static void OpenEquipmentDescriptionReview() => StartCapture(false, PartyMenuTab.Inventory, equipmentDescriptionReview:true);
+
     [MenuItem("Tools/Eternal Enigma/UI/Open Skills Review")]
     public static void OpenSkillsReview() => StartCapture(false, PartyMenuTab.Skills);
 
@@ -72,7 +78,7 @@ public static class OpeningDesignPreview
     [MenuItem("Tools/Eternal Enigma/UI/Open Party Portrait Review")]
     public static void OpenPartyPortraitReview() => StartCapture(false,PartyMenuTab.Stats,feedReview:true,partyReview:true);
 
-    private static void StartCapture(bool artworkOnly, PartyMenuTab? reviewTab = null, bool historyReview = false, bool feedReview = false, bool partyReview = false)
+    private static void StartCapture(bool artworkOnly, PartyMenuTab? reviewTab = null, bool historyReview = false, bool feedReview = false, bool partyReview = false, bool equipmentDescriptionReview = false)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode)
             throw new InvalidOperationException("Finish Play Mode before starting the isolated design preview.");
@@ -89,6 +95,7 @@ public static class OpeningDesignPreview
         SessionState.SetBool(Key + ".HistoryReview", historyReview);
         SessionState.SetBool(Key + ".FeedReview",feedReview);
         SessionState.SetBool(Key + ".PartyPortraitReview",partyReview);
+        SessionState.SetBool(Key + ".EquipmentDescriptionReview",equipmentDescriptionReview);
         started = false; sequence.Clear(); waiting = null;
         File.WriteAllText(Folder + "/Progress.txt", "Starting isolated production scene capture.\n");
         EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/MainMenu.unity");
@@ -305,9 +312,19 @@ public static class OpeningDesignPreview
         MenuManager.Instance.OpenPartyMenu(tab);
         yield return Delay(.3);
         var reviewMenu=MenuManager.Instance.PartyMenu;
+        bool equipmentDescriptionReview=SessionState.GetBool(Key + ".EquipmentDescriptionReview",false);
         (tab==PartyMenuTab.Stats
             ?reviewMenu.EntryButtons.First(button=>button.GetComponent<AuthoredButton>().Label.text.StartsWith("STR "))
             :reviewMenu.EntryButtons[0]).Select();
+        if(equipmentDescriptionReview)
+            reviewMenu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text.StartsWith("Wooden Arrows")).Select();
+        if(tab==PartyMenuTab.Equipment)
+        {
+            reviewMenu.EntryButtons[0].onClick.Invoke();
+            yield return Delay(.2);
+            var choices=(PartyMenuPicker)MenuManager.Instance.CurrentDialog;
+            choices.Rows.GetComponentsInChildren<AuthoredButton>().Single(row=>row.Label.text=="Arcane Wand").Button.Select();
+        }
         view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view,
             new object[] { new Vector2(1280, 720), tab + " review" });
         view.Focus();
@@ -330,13 +347,13 @@ public static class OpeningDesignPreview
             yield return Delay(.3);
         }
         Canvas.ForceUpdateCanvases();
-        string captureFolder = partyReview ? "Temp/PartyPortraitLayout" : feedReview ? "Temp/HistoryLayoutCapture" : historyReview ? "Temp/HistoryShortcut" : tab == PartyMenuTab.Stats ? "Temp/StatsDescriptions" : tab == PartyMenuTab.Skills ? "Temp/SkillDescriptions" : "Temp/InventoryDescriptions";
+        string captureFolder = equipmentDescriptionReview || tab==PartyMenuTab.Equipment ? "Temp/EquipmentComparison" : partyReview ? "Temp/PartyPortraitLayout" : feedReview ? "Temp/HistoryLayoutCapture" : historyReview ? "Temp/HistoryShortcut" : tab == PartyMenuTab.Stats ? "Temp/StatsDescriptions" : tab == PartyMenuTab.Skills ? "Temp/SkillDescriptions" : "Temp/InventoryDescriptions";
         Directory.CreateDirectory(captureFolder);
         ScreenCapture.CaptureScreenshot(captureFolder + (tab == PartyMenuTab.Stats && !feedReview ? "/stats-preview.png" : "/live-preview.png"));
         yield return Delay(.3);
         int animation = SessionState.GetInt(Key + ".Animation", -1);
         DungeonPreferences.AnimationOverride = animation < 0 ? null : (DungeonAnimationMode)animation;
-        string selection = partyReview ? "four party portraits with the reviewed layout" : feedReview ? "four-line event feed" : historyReview ? "expanded event feed" : tab == PartyMenuTab.Skills ? "ten skills, Fire Bolt selected" :
+        string selection = equipmentDescriptionReview ? "Wooden Arrows description and equip preview selected" : tab==PartyMenuTab.Equipment ? "Arcane Wand equip preview selected" : partyReview ? "four party portraits with the reviewed layout" : feedReview ? "four-line event feed" : historyReview ? "expanded event feed" : tab == PartyMenuTab.Skills ? "ten skills, Fire Bolt selected" :
             tab == PartyMenuTab.Inventory ? "ten items, Bread selected" : "Stats with STR explanation and event feed";
         File.AppendAllText(Folder + "/Progress.txt", $"{tab} review ready: {selection}. Play Mode remains open with physical input enabled and saves isolated.\n");
         Debug.Log(tab + " review is ready. Stop Play Mode when finished; existing saves are unchanged.");

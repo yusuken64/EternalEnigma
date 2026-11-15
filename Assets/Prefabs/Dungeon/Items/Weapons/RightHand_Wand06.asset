@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Wand06
   m_EditorClassIdentifier: 
   ItemName: Arcane Wand
-  Description: Arcane Wand grants 6 strength.
+  Description: Grants +6 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

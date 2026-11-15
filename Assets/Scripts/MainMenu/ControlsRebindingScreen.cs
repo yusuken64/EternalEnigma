@@ -13,7 +13,7 @@ using UnityEngine.UI;
 [DefaultExecutionOrder(-10)]
 public sealed class ControlsRebindingScreen : MonoBehaviour
 {
-    public Button DeviceButton, ContextButton, ResetButton, CancelButton;
+    public Button DeviceButton, ContextButton, ResetButton, CancelButton, ClearButton;
     public ScrollRect BindingScroll;
     public Button[] BindingButtons;
     public TMP_Text[] ActionLabels;
@@ -31,6 +31,8 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
     private string pendingPath;
     private string captureName;
     private string captureInstruction;
+    private InputAction captureAction;
+    private int captureIndex;
 
     public void Initialize(GlobalSettings owner)
     {
@@ -47,6 +49,7 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
             MenuUIInputModule.Active?.ConsumeInput();
         });
         CancelButton.onClick.AddListener(CancelRebind);
+        ClearButton.onClick.AddListener(ClearCurrentBinding);
         for (int i = 0; i < BindingButtons.Length; i++) BindRow(i);
         Refresh();
     }
@@ -87,6 +90,16 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
         action.name != "Point" && action.name != "ScrollWheel" && action.name != "MiddleClick" &&
         !action.name.StartsWith("TrackedDevice", StringComparison.Ordinal);
 
+    private static bool IsDeviceBinding(InputBinding binding, bool pad)
+    {
+        // Empty optional slots have no control path, so retain their authored device group.
+        if (string.IsNullOrEmpty(binding.path))
+            return (binding.groups ?? "").Split(';').Contains(pad ? "Gamepad" : "Keyboard&Mouse");
+        return pad ? binding.path.StartsWith("<Gamepad>", StringComparison.OrdinalIgnoreCase) :
+            binding.path.StartsWith("<Keyboard>", StringComparison.OrdinalIgnoreCase) ||
+            binding.path.StartsWith("<Mouse>", StringComparison.OrdinalIgnoreCase) || binding.path == "*/{Cancel}";
+    }
+
     private void Refresh()
     {
         if (!initialized) return;
@@ -101,10 +114,7 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
                 var binding = action.bindings[i];
                 if (binding.isComposite) continue;
                 // Keep a binding in its original device column after an override.
-                bool pad = binding.path.StartsWith("<Gamepad>", StringComparison.OrdinalIgnoreCase);
-                bool keyboard = binding.path.StartsWith("<Keyboard>", StringComparison.OrdinalIgnoreCase) ||
-                    binding.path.StartsWith("<Mouse>", StringComparison.OrdinalIgnoreCase) || binding.path == "*/{Cancel}";
-                if (gamepad ? pad : keyboard) entries.Add((action, i));
+                if (IsDeviceBinding(binding, gamepad)) entries.Add((action, i));
             }
         }
         EnsureRows(entries.Count);
@@ -153,6 +163,8 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
         string name = action.name switch
         {
             "Move" => "Move", "Navigate" => "Browse", "Attack" => "Attack / talk", "HoldPosition" => "Turn in place",
+            "MoveUpLeft" => "Move up-left", "MoveUpRight" => "Move up-right",
+            "MoveDownLeft" => "Move down-left", "MoveDownRight" => "Move down-right",
             "Plan" => "Dungeon orders", "Menu" or "OpenMenu" => "Inventory", "Skills" or "OpenSkillMenu" => "Skills",
             "Map" => "Map", "SwapAlly" or "InspectNextHero" => "Next hero", "InspectPreviousHero" => "Previous hero",
             "Options" => "Settings", "Wait" => "Wait a turn", "Submit" => "Confirm", "Cancel" => "Back",
@@ -169,7 +181,7 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
                     action.bindings[i].path.StartsWith("<Keyboard>")) ordinal++;
             name += " " + binding.name + (ordinal > 1 ? " (alternate)" : "");
         }
-        else
+        else if (!string.IsNullOrEmpty(binding.path))
         {
             int ordinal = 0;
             string device = binding.path.Split('/')[0];
@@ -187,6 +199,9 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
         if (bindingIndex < 0 || bindingIndex >= action.bindings.Count || action.bindings[bindingIndex].isComposite) return;
         IsRebinding = ControlBindings.IsCapturing = true;
         pendingPath = null;
+        captureAction = action;
+        captureIndex = bindingIndex;
+        ClearButton.gameObject.SetActive(ControlBindings.IsOptionalBinding(action.bindings[bindingIndex]));
         deadline = Time.unscaledTime + 15;
         captureName = ActionName(action, bindingIndex);
         CapturePanel.SetActive(true);
@@ -196,7 +211,8 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
 
     private IEnumerator Capture(InputAction action, int index)
     {
-        bool pad = action.bindings[index].path.StartsWith("<Gamepad>");
+        bool pad = IsDeviceBinding(action.bindings[index], true);
+        bool clearRequested = false;
         captureInstruction = pad ? (action.expectedControlType == "Vector2" ? "Move a controller stick or D-pad." : "Press a controller button.") : "Press a key or mouse button.";
         CaptureLabel.text = $"{captureName}\nRelease the current controls…";
         yield return new WaitForSecondsRealtime(.15f);
@@ -211,14 +227,18 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
             .OnMatchWaitForAnother(.1f)
             .OnApplyBinding((op, path) =>
             {
-                // A click on the visible Cancel button must never become a binding.
-                bool cancelClick = op.selectedControl?.device is Mouse mouse &&
-                    RectTransformUtility.RectangleContainsScreenPoint((RectTransform)CancelButton.transform, mouse.position.ReadValue());
-                pendingPath = cancelClick ? null : path;
+                // Dialog button clicks must never become bindings.
+                clearRequested = op.selectedControl?.device is Mouse clearMouse &&
+                    op.selectedControl == clearMouse.leftButton && ContainsPointer(ClearButton, clearMouse);
+                bool dialogClick = op.selectedControl?.device is Mouse mouse &&
+                    (ContainsPointer(CancelButton, mouse) || ContainsPointer(ClearButton, mouse));
+                pendingPath = dialogClick ? null : path;
             })
             .OnCancel(_ => FinishCapture("Binding unchanged."))
             .OnComplete(_ =>
             {
+                // Capture can finish before uGUI receives the pointer release.
+                if (clearRequested) { ClearCurrentBinding(); return; }
                 if (pendingPath == null) { FinishCapture("Binding unchanged."); return; }
                 string path = pendingPath;
                 FinishCapture("Binding saved.");
@@ -229,6 +249,8 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
             });
         if (pad) operation.WithControlsHavingToMatchPath("<Gamepad>");
         else operation.WithControlsHavingToMatchPath("<Keyboard>").WithControlsHavingToMatchPath("<Mouse>");
+        if (ControlBindings.IsOptionalBinding(action.bindings[index]))
+            operation.WithControlsExcluding("<Keyboard>/delete").WithControlsExcluding("<Gamepad>/select");
         operation.Start();
         captureRoutine = null;
     }
@@ -237,14 +259,31 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
         Mouse.current?.allControls.OfType<ButtonControl>().Any(button => button.isPressed) == true ||
         Gamepad.current?.allControls.OfType<ButtonControl>().Any(button => button.isPressed) == true;
 
+    private static bool ContainsPointer(Button button, Mouse mouse) => button.gameObject.activeInHierarchy &&
+        RectTransformUtility.RectangleContainsScreenPoint((RectTransform)button.transform, mouse.position.ReadValue());
+
     private void Update()
     {
         if (!IsRebinding) return;
         if (Keyboard.current?.escapeKey.wasPressedThisFrame == true || Gamepad.current?.startButton.wasPressedThisFrame == true)
         { CancelRebind(); return; }
+        if (ClearButton.gameObject.activeSelf && (Keyboard.current?.deleteKey.wasPressedThisFrame == true ||
+            Gamepad.current?.selectButton.wasPressedThisFrame == true))
+        { ClearCurrentBinding(); return; }
         if (Time.unscaledTime >= deadline) { FinishCapture("No input received. Binding unchanged."); return; }
         if (operation != null)
-            CaptureLabel.text = $"{captureName}\n{captureInstruction}\nEsc / controller Menu: cancel   •   {Mathf.CeilToInt(deadline - Time.unscaledTime)}s";
+            CaptureLabel.text = $"{captureName}\n{captureInstruction}\n" +
+                (ClearButton.gameObject.activeSelf ? "Delete / controller View: clear\n" : "") +
+                $"Esc / controller Menu: cancel   •   {Mathf.CeilToInt(deadline - Time.unscaledTime)}s";
+    }
+
+    public void ClearCurrentBinding()
+    {
+        if (!IsRebinding || !ControlBindings.IsOptionalBinding(captureAction.bindings[captureIndex])) return;
+        string actionPath = captureAction.actionMap.name + "/" + captureAction.name;
+        int index = captureIndex;
+        FinishCapture("Binding cleared.");
+        ControlBindings.ClearBinding(actionPath, index);
     }
 
     public void CancelRebind() { if (IsRebinding) FinishCapture("Binding unchanged."); }
@@ -255,6 +294,7 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
         ControlBindings.SuppressForFrame();
         if (captureRoutine != null) { StopCoroutine(captureRoutine); captureRoutine = null; }
         operation?.Dispose(); operation = null;
+        captureAction = null;
         CapturePanel.SetActive(false);
         MenuUIInputModule.Active?.PopDialog(this);
         Status.text = message;

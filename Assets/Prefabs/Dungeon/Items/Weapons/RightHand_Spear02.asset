@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Spear02
   m_EditorClassIdentifier: 
   ItemName: Iron Spear
-  Description: Iron Spear grants 4 strength.
+  Description: Iron Spear grants +4 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

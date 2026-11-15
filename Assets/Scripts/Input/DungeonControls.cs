@@ -217,6 +217,42 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MoveUpLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""e301dc96-ae0e-41bc-a9bf-f28a38da3890"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MoveUpRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""4ff45551-fed2-454c-97ad-db5a4cb5537b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MoveDownLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""d3bceaf9-0439-415f-ba64-b65e276a0b7f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MoveDownRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""5da133d2-c058-4803-94a9-2bab8fdb0019"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -679,6 +715,94 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""ToggleFullControl"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""97a6b558-a678-4ebf-b3a6-3c277304c4a7"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""MoveUpLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b158331f-e4f4-4df1-9d59-7f18111cbbf5"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""MoveUpLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5bfed1bb-7e02-4aad-932c-967572731223"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""MoveUpRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2373e1d9-8237-40e4-b082-31dcc5d34579"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""MoveUpRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""32a34235-5d49-43cf-a564-d936af59b879"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""MoveDownLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8b8a3c97-ccfa-40de-b98b-1649d2a97798"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""MoveDownLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a6660e5-6f4d-4035-86ae-356999592f06"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""MoveDownRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3fa248a1-df4a-429b-b275-8f59e57e8042"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""MoveDownRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1438,6 +1562,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         m_Player_Options = m_Player.FindAction("Options", throwIfNotFound: true);
         m_Player_Wait = m_Player.FindAction("Wait", throwIfNotFound: true);
         m_Player_ToggleFullControl = m_Player.FindAction("ToggleFullControl", throwIfNotFound: true);
+        m_Player_MoveUpLeft = m_Player.FindAction("MoveUpLeft", throwIfNotFound: true);
+        m_Player_MoveUpRight = m_Player.FindAction("MoveUpRight", throwIfNotFound: true);
+        m_Player_MoveDownLeft = m_Player.FindAction("MoveDownLeft", throwIfNotFound: true);
+        m_Player_MoveDownRight = m_Player.FindAction("MoveDownRight", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_History = m_UI.FindAction("History", throwIfNotFound: true);
@@ -1554,6 +1682,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Options;
     private readonly InputAction m_Player_Wait;
     private readonly InputAction m_Player_ToggleFullControl;
+    private readonly InputAction m_Player_MoveUpLeft;
+    private readonly InputAction m_Player_MoveUpRight;
+    private readonly InputAction m_Player_MoveDownLeft;
+    private readonly InputAction m_Player_MoveDownRight;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1622,6 +1754,22 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ToggleFullControl => m_Wrapper.m_Player_ToggleFullControl;
         /// <summary>
+        /// Provides access to the underlying input action "Player/MoveUpLeft".
+        /// </summary>
+        public InputAction @MoveUpLeft => m_Wrapper.m_Player_MoveUpLeft;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/MoveUpRight".
+        /// </summary>
+        public InputAction @MoveUpRight => m_Wrapper.m_Player_MoveUpRight;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/MoveDownLeft".
+        /// </summary>
+        public InputAction @MoveDownLeft => m_Wrapper.m_Player_MoveDownLeft;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/MoveDownRight".
+        /// </summary>
+        public InputAction @MoveDownRight => m_Wrapper.m_Player_MoveDownRight;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1689,6 +1837,18 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @ToggleFullControl.started += instance.OnToggleFullControl;
             @ToggleFullControl.performed += instance.OnToggleFullControl;
             @ToggleFullControl.canceled += instance.OnToggleFullControl;
+            @MoveUpLeft.started += instance.OnMoveUpLeft;
+            @MoveUpLeft.performed += instance.OnMoveUpLeft;
+            @MoveUpLeft.canceled += instance.OnMoveUpLeft;
+            @MoveUpRight.started += instance.OnMoveUpRight;
+            @MoveUpRight.performed += instance.OnMoveUpRight;
+            @MoveUpRight.canceled += instance.OnMoveUpRight;
+            @MoveDownLeft.started += instance.OnMoveDownLeft;
+            @MoveDownLeft.performed += instance.OnMoveDownLeft;
+            @MoveDownLeft.canceled += instance.OnMoveDownLeft;
+            @MoveDownRight.started += instance.OnMoveDownRight;
+            @MoveDownRight.performed += instance.OnMoveDownRight;
+            @MoveDownRight.canceled += instance.OnMoveDownRight;
         }
 
         /// <summary>
@@ -1742,6 +1902,18 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @ToggleFullControl.started -= instance.OnToggleFullControl;
             @ToggleFullControl.performed -= instance.OnToggleFullControl;
             @ToggleFullControl.canceled -= instance.OnToggleFullControl;
+            @MoveUpLeft.started -= instance.OnMoveUpLeft;
+            @MoveUpLeft.performed -= instance.OnMoveUpLeft;
+            @MoveUpLeft.canceled -= instance.OnMoveUpLeft;
+            @MoveUpRight.started -= instance.OnMoveUpRight;
+            @MoveUpRight.performed -= instance.OnMoveUpRight;
+            @MoveUpRight.canceled -= instance.OnMoveUpRight;
+            @MoveDownLeft.started -= instance.OnMoveDownLeft;
+            @MoveDownLeft.performed -= instance.OnMoveDownLeft;
+            @MoveDownLeft.canceled -= instance.OnMoveDownLeft;
+            @MoveDownRight.started -= instance.OnMoveDownRight;
+            @MoveDownRight.performed -= instance.OnMoveDownRight;
+            @MoveDownRight.canceled -= instance.OnMoveDownRight;
         }
 
         /// <summary>
@@ -2200,6 +2372,34 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleFullControl(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MoveUpLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMoveUpLeft(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MoveUpRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMoveUpRight(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MoveDownLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMoveDownLeft(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MoveDownRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMoveDownRight(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

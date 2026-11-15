@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_THS07_Sword
   m_EditorClassIdentifier: 
   ItemName: Royal Greatsword
-  Description: Royal Greatsword grants 20 strength.
+  Description: Royal Greatsword grants +20 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

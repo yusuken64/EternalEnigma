@@ -31,6 +31,66 @@ namespace EternalEnigma.Tests
         private static int Binding(InputAction action, string path) =>
             Enumerable.Range(0, action.bindings.Count).Single(i => action.bindings[i].path == path);
 
+        [TestCase("MoveUpLeft")]
+        [TestCase("MoveUpRight")]
+        [TestCase("MoveDownLeft")]
+        [TestCase("MoveDownRight")]
+        public void OptionalDirectionsStartUnboundAndPersistReplaceClearAndReset(string name)
+        {
+            string actionPath = "Player/" + name;
+            var action = ControlBindings.DisplayAsset.FindAction(actionPath, true);
+            var authored = UnityEditor.AssetDatabase.LoadAssetAtPath<InputActionAsset>("Assets/DungeonControls.inputactions");
+            foreach (var asset in new[] { authored, live.asset, ControlBindings.DisplayAsset })
+            {
+                var direction = asset.FindAction(actionPath, true);
+                Assert.That(direction.type, Is.EqualTo(InputActionType.Button));
+                Assert.That(direction.bindings.Select(b => b.groups), Is.EqualTo(new[] { "Keyboard&Mouse", "Gamepad" }));
+                Assert.That(direction.bindings.All(b => string.IsNullOrEmpty(b.effectivePath)), Is.True);
+                Assert.That(asset.FindAction("UI/" + name), Is.Null, "Dedicated directions are gameplay-only.");
+            }
+            Assert.That(ControlBindings.BindingLabel(action, 0), Is.EqualTo("Unbound"));
+            Assert.That(ControlBindings.BindingLabel(action, 1), Is.EqualTo("Unbound"));
+            live.Player.Enable();
+            ControlBindings.ApplyBinding(actionPath, 0, "<Keyboard>/numpad7");
+            ControlBindings.ApplyBinding(actionPath, 1, "<Gamepad>/rightTrigger");
+            ControlBindings.ApplyBinding(actionPath, 0, "<Keyboard>/numpad9");
+            ControlBindings.Reload();
+            Assert.That(live.asset.FindAction(actionPath).bindings[0].effectivePath, Is.EqualTo("<Keyboard>/numpad9"));
+            Assert.That(live.asset.FindAction(actionPath).bindings[1].effectivePath, Is.EqualTo("<Gamepad>/rightTrigger"));
+            ControlBindings.ClearBinding(actionPath, 0);
+            ControlBindings.Reload();
+            var next = new DungeonControls();
+            try
+            {
+                ControlBindings.Register(next.asset);
+                var restored = next.asset.FindAction(actionPath, true);
+                Assert.That(restored.bindings[0].effectivePath, Is.Null.Or.Empty);
+                Assert.That(restored.bindings[1].effectivePath, Is.EqualTo("<Gamepad>/rightTrigger"));
+                ControlBindings.ApplyBinding(actionPath, 0, "<Keyboard>/numpad7");
+                ControlBindings.ResetAll();
+                ControlBindings.Reload();
+                Assert.That(restored.bindings.All(b => string.IsNullOrEmpty(b.effectivePath)), Is.True);
+            }
+            finally
+            {
+                ControlBindings.Unregister(next.asset);
+                next.Disable();
+                UnityEngine.Object.DestroyImmediate(next.asset);
+            }
+        }
+
+        [Test] public void ClearingOptionalBindingPreservesExistingOverridesAndCannotClearRequiredControls()
+        {
+            var menu = ControlBindings.DisplayAsset.FindAction("Player/Menu", true);
+            int menuIndex = Binding(menu, "<Keyboard>/q");
+            ControlBindings.ApplyBinding("Player/Menu", menuIndex, "<Keyboard>/k");
+            ControlBindings.ApplyBinding("Player/MoveUpLeft", 0, "<Keyboard>/numpad7");
+            ControlBindings.ClearBinding("Player/MoveUpLeft", 0);
+            ControlBindings.Reload();
+            Assert.That(live.Player.Menu.bindings[menuIndex].effectivePath, Is.EqualTo("<Keyboard>/k"));
+            Assert.Throws<ArgumentException>(() => ControlBindings.ClearBinding("Player/Menu", menuIndex));
+        }
+
         [Test] public void OverrideSynchronizesEnabledAssetsAndLinkedMenuActions()
         {
             live.Enable();

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_THS06_Sword
   m_EditorClassIdentifier: 
   ItemName: Gilded Greatsword
-  Description: Gilded Greatsword grants 18 strength.
+  Description: Gilded Greatsword grants +18 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

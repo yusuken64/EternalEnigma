@@ -17,6 +17,7 @@ public sealed class PartyMenu : Dialog
     private Button capabilitiesTab;
     private Button closeButton;
     private Transform descriptionPaper;
+    private EquipmentComparisonView equipmentComparison;
     public PartyMenuLauncher HudTabs { get; private set; }
     public TrainerPreviewScroll DetailsControl;
     public IReadOnlyList<Button> EntryButtons => rows;
@@ -193,7 +194,7 @@ public sealed class PartyMenu : Dialog
         if(!IsRoot)return;
         if(!Mathf.Approximately(rowWidth,((RectTransform)RowsRoot).rect.width) ||
             !Mathf.Approximately(rowViewportHeight,scrollView.viewport.rect.height))FitEntryRows();
-        if(Tab==PartyMenuTab.Equipment)FitEquipmentDescription();
+        if(Tab==PartyMenuTab.Equipment || equipmentComparison?.Preview!=null)FitEquipmentDescription();
     }
     private void FitEntryRows()
     {
@@ -246,6 +247,7 @@ public sealed class PartyMenu : Dialog
         HeroText.text = GameplayText.Format(Hero == null ? "No party members" : Hero.Name);
         if (entries.Count == 0)
         {
+            equipmentComparison?.Show(null);
             Details.text = GameplayText.Format(context is DungeonPartyMenuContext ?
                 "No entries for this character. Switch tabs, or click a HUD portrait to change characters." : "Select a hero or switch tabs.");
             return;
@@ -257,22 +259,36 @@ public sealed class PartyMenu : Dialog
             : string.Join("\n",actions.Select(a=>a.Available?a.Label:a.Label+": "+a.UnavailableReason));
         string restriction=Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? "" : context.Restriction(Hero,entry);
         var description=entry.Status!=null ? StatusPresentation.Description(entry.Status,Hero?.DungeonActor) : entry.Description;
-        Details.text = GameplayText.Format(string.Join("\n\n",new[]{ $"<b>{entry.Title}</b>",description,restriction,availability,result }
+        string title=entry.EquipmentPreview!=null?entry.Item.DisplayName:entry.Title;
+        Details.text = GameplayText.Format(string.Join(entry.EquipmentPreview!=null?"\n":"\n\n",new[]{ $"<b>{title}</b>",description,restriction,availability,result }
             .Where(text=>!string.IsNullOrWhiteSpace(text)).Distinct()));
+        if(entry.EquipmentPreview!=null || equipmentComparison!=null)
+        {
+            equipmentComparison ??= EquipmentComparisonView.For(Details,(RectTransform)descriptionPaper,DetailsControl.Scroll);
+            equipmentComparison.Show(entry.EquipmentPreview);
+        }
         Details.rectTransform.anchoredPosition = Vector2.zero;
         DetailsControl.Scroll.StopMovement();
         if(Details.gameObject.activeInHierarchy)Canvas.ForceUpdateCanvases();
-        if(Tab==PartyMenuTab.Equipment)FitEquipmentDescription();
+        if(Tab==PartyMenuTab.Equipment || equipmentComparison!=null)FitEquipmentDescription();
         DetailsControl.Scroll.verticalNormalizedPosition=1;
     }
     private void FitEquipmentDescription()
     {
         // Refit after font or window changes too, without moving focus into a second scroll area.
+        if(equipmentComparison?.Preview!=null && Panel.parent is RectTransform previewSurface && previewSurface.rect.height>0)
+        {
+            float height=Mathf.Max(.30f,equipmentComparison.RequiredPanelHeight/previewSurface.rect.height);
+            Fit(descriptionPaper,.43f,Mathf.Max(.30f,.88f-height),.71f,.88f);
+            equipmentComparison.Reflow();
+            return;
+        }
         float bottom=.605f;
         if(selectedIndex<entries.Count && entries[selectedIndex].Status!=null && Panel.parent is RectTransform surface && surface.rect.height>0)
             bottom=Mathf.Clamp(.855f-(Details.preferredHeight+8)/surface.rect.height,.30f,.605f);
         var rect=(RectTransform)DetailsControl.Scroll.transform;
-        if(Mathf.Approximately(rect.anchorMin.y,bottom))return;
+        if(rect.parent==Panel.parent && Mathf.Approximately(rect.anchorMin.y,bottom))return;
+        rect.SetParent(Panel.parent,false);
         Fit(rect,.45f,bottom,.69f,.855f);
         if(descriptionPaper!=null)Fit(descriptionPaper,.43f,bottom-.025f,.71f,.88f);
         Canvas.ForceUpdateCanvases();
@@ -291,13 +307,14 @@ public sealed class PartyMenu : Dialog
         if(Tab==PartyMenuTab.Stats || entry.Status!=null)return;
         if(entry.Slot.HasValue)
         {
-            var options=((PartyMenuContext)context).EquipmentOptions(Hero,entry.Slot.Value)
-                .Select(option=>(option.Label,option.Description,(Action)(()=>{
+            var equipmentOptions=((PartyMenuContext)context).EquipmentOptions(Hero,entry.Slot.Value);
+            var options=equipmentOptions.Select(option=>(option.Label,option.Description,(Action)(()=>{
                     var itemEntry=new PartyMenuEntry{Item=option.Item,Equipped=Hero.Equipment.IsEquipped(option.Item)};
                     var action=context.Actions(Hero,itemEntry).FirstOrDefault();
                     action?.Execute(this);
                 }))).ToList();
-            PickDetailed("Change "+entry.Title,options,entry.Description);return;
+            PickDetailed("Change "+(entry.Slot==EquipmentSlot.MainHand?"weapon":entry.Slot==EquipmentSlot.OffHand?"off-hand":"accessory"),
+                options,previews:equipmentOptions.Select(option=>option.Preview).ToList());return;
         }
         if (context is IPartyMenuEntryHandler handler && handler.OpenEntry(this, Hero, entry)) return;
         var actions = Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment ? new List<PartyMenuAction>() : context.Actions(Hero,entry);
@@ -325,9 +342,9 @@ public sealed class PartyMenu : Dialog
         picker.CloseAction = null;
         Owner.Open(picker);
     }
-    public void PickDetailed(string title,List<(string Label,string Description,Action Execute)> options,string description=null)
+    public void PickDetailed(string title,List<(string Label,string Description,Action Execute)> options,string description=null,IReadOnlyList<EquipmentStatPreview> previews=null)
     {
-        var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options,closeOnChoose:false,showBackButton:false);
+        var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options,closeOnChoose:false,showBackButton:false,previews:previews);
         if(!string.IsNullOrEmpty(description))picker.Description(description);
         picker.CloseAction=null;Owner.Open(picker);
     }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Wand04
   m_EditorClassIdentifier: 
   ItemName: Crystal Wand
-  Description: Crystal Wand grants 4 strength.
+  Description: Crystal Wand grants +4 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

@@ -58,7 +58,9 @@ public static class StatPreview
         void Add(string name, int a, int b) { if (a != b) lines.Add($"{name} {a} to {b}"); }
         void Percent(string name, float a, float b) { if (Math.Abs(a-b) > .0001f) lines.Add($"{name} {a*100:0.#}% to {b*100:0.#}%"); }
         Add("HP",before.HPMax,after.HPMax);Add("Mana",before.ManaMax,after.ManaMax);
-        Add("Food",before.HungerMax,after.HungerMax);Add("Attack",before.Strength,after.Strength);
+        Add("Food",before.HungerMax,after.HungerMax);
+        if(before.Strength!=after.Strength)
+            lines.Add($"Your Attack {before.Strength} → {after.Strength}, change {after.Strength-before.Strength:+0;-0;0}");
         Add("Magic",before.MagicPower,after.MagicPower);Add("Defense",before.Defense,after.Defense);
         Add("Experience per defeat",before.EXPOnKill,after.EXPOnKill);
         Add("Actions between hunger loss",before.HungerAccumulateThreshold,after.HungerAccumulateThreshold);

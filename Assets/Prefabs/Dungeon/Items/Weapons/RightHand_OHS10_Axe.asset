@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS10_Axe
   m_EditorClassIdentifier: 
   ItemName: Hand Axe
-  Description: Hand Axe grants 10 strength.
+  Description: Hand Axe grants +10 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 15

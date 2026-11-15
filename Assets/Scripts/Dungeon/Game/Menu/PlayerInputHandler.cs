@@ -22,6 +22,7 @@ namespace JuicyChickenGames.Menu
         public bool optionsPressed { get; private set; }
 
         private InputAction moveAction;
+        private InputAction moveUpLeftAction, moveUpRightAction, moveDownLeftAction, moveDownRightAction;
         private InputAction lookAction;
         private InputAction attackAction;
         //private InputAction interactAction;
@@ -38,6 +39,10 @@ namespace JuicyChickenGames.Menu
         {
             base.Initialize();
             moveAction = PlayerInput.actions["Move"];
+            moveUpLeftAction = PlayerInput.actions["MoveUpLeft"];
+            moveUpRightAction = PlayerInput.actions["MoveUpRight"];
+            moveDownLeftAction = PlayerInput.actions["MoveDownLeft"];
+            moveDownRightAction = PlayerInput.actions["MoveDownRight"];
             lookAction = PlayerInput.actions["Look"];
             attackAction = PlayerInput.actions["Attack"];
             //interactAction = PlayerInput.actions["Use"];
@@ -61,7 +66,7 @@ namespace JuicyChickenGames.Menu
                 isMoving = attackPressed = waitPressed = menuPressed = skillsPressed = mapPressed = swapAllyPressed = planPressed = holdPosition = optionsPressed = false;
                 return;
             }
-            moveInput = moveAction.ReadValue<Vector2>();
+            moveInput = ReadMovement();
             isMoving = moveInput.sqrMagnitude > 0.1f;
 
             lookInput = lookAction.ReadValue<Vector2>();
@@ -78,6 +83,17 @@ namespace JuicyChickenGames.Menu
             optionsPressed = optionsAction.WasPressedThisFrame();
 
 
+        }
+
+        private Vector2 ReadMovement()
+        {
+            bool upLeft = moveUpLeftAction.IsPressed(), upRight = moveUpRightAction.IsPressed();
+            bool downLeft = moveDownLeftAction.IsPressed(), downRight = moveDownRightAction.IsPressed();
+            if (!upLeft && !upRight && !downLeft && !downRight) return moveAction.ReadValue<Vector2>();
+
+            // Dedicated directions take priority while held; opposite components cancel.
+            return new Vector2((upRight ? 1 : 0) + (downRight ? 1 : 0) - (upLeft ? 1 : 0) - (downLeft ? 1 : 0),
+                (upLeft ? 1 : 0) + (upRight ? 1 : 0) - (downLeft ? 1 : 0) - (downRight ? 1 : 0)).normalized;
         }
 
         void OnEnable()

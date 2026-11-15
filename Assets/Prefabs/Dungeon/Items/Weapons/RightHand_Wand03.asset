@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Wand03
   m_EditorClassIdentifier: 
   ItemName: Oak Wand
-  Description: Oak Wand grants 3 strength.
+  Description: Oak Wand grants +3 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

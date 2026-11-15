@@ -11,7 +11,13 @@ using Object = UnityEngine.Object;
 public static class ControlsRebindingAuthoring
 {
     [MenuItem("Tools/Eternal Enigma/UI/Author Controls")]
-    public static void Run()
+    public static void Run() => EditScene(Author);
+
+    [MenuItem("Tools/Eternal Enigma/UI/Author Optional Binding Clear")]
+    public static void UpdateClearButton() => EditScene(settings =>
+        AuthorClearButton(settings.GetComponentInChildren<ControlsRebindingScreen>(true)));
+
+    private static void EditScene(Action<GlobalSettings> author)
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");
         var scene = SceneManager.GetSceneByPath("Assets/Scenes/Common.unity");
@@ -21,7 +27,7 @@ public static class ControlsRebindingAuthoring
         try
         {
             var settings = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<GlobalSettings>(true)).Single();
-            Author(settings);
+            author(settings);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }
@@ -96,7 +102,20 @@ public static class ControlsRebindingAuthoring
         screen.CaptureLabel.alignment = TextAlignmentOptions.Center;
         screen.CancelButton = Button(capture.transform, "Cancel", .25f, .10f, .75f, .24f);
         SelectToActivateButton.MarkCancel(screen.CancelButton);
+        AuthorClearButton(screen);
         capture.gameObject.SetActive(false);
+        EditorUtility.SetDirty(screen);
+    }
+
+    private static void AuthorClearButton(ControlsRebindingScreen screen)
+    {
+        if (screen.ClearButton == null)
+            screen.ClearButton = Button(screen.CapturePanel.transform, "Clear binding", .08f, .10f, .48f, .24f);
+        var cancel = (RectTransform)screen.CancelButton.transform;
+        cancel.anchorMin = new Vector2(.52f, .10f);
+        cancel.anchorMax = new Vector2(.92f, .24f);
+        cancel.offsetMin = cancel.offsetMax = Vector2.zero;
+        screen.ClearButton.gameObject.SetActive(false);
         EditorUtility.SetDirty(screen);
     }
 

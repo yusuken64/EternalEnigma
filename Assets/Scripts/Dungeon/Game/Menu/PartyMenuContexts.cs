@@ -44,9 +44,9 @@ public abstract class PartyMenuContext : IPartyMenuContext
             Item=i,Title=i.DisplayName+(i.HasStacks?$"  x{i.StackStock}":"")+(hero.Equipment.IsEquipped(i)?"  Equipped":""),
             Equipped=hero.Equipment.IsEquipped(i),Section=hero.Equipment.IsEquipped(i)?"Equipped":"Shared bag",
             Icon=i.ItemDefinition.ResolveIcon(),
-            Description=i.ItemDefinition.Description+(i is EquipableInventoryItem equipment ? "\n"+GameplayText.Name(equipment.EquipmentSlot.ToString())+"\n"+
-                (hero.DungeonActor!=null?StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,hero.Equipment.Current().With(equipment))):
-                    StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,hero.Equipment.Current().With(equipment)))):"") }).ToList();
+            Description=i.ItemDefinition.Description,
+            EquipmentPreview=i is EquipableInventoryItem equipment ? Preview(hero,
+                hero.Equipment.IsEquipped(i)?hero.Equipment.Current().Without(equipment.EquipmentSlot):hero.Equipment.Current().With(equipment),hero.Equipment.IsEquipped(i)):null }).ToList();
     }
     private List<PartyMenuEntry> CapabilityEntries()
     {
@@ -70,6 +70,8 @@ public abstract class PartyMenuContext : IPartyMenuContext
         }).ToList();
     }
     protected virtual Stats StatsFor(PartyMenuHero hero) => hero.DungeonActor != null ? hero.DungeonActor.FinalStats : TownUtilityService.StatsFor(hero.TownActor);
+    private EquipmentStatPreview Preview(PartyMenuHero hero,Loadout after,bool removing) => new(StatsFor(hero),
+        hero.DungeonActor!=null?StatPreview.Final(hero.DungeonActor,after):TownUtilityService.StatsFor(hero.TownActor,after),removing);
     private List<PartyMenuEntry> StatEntries(PartyMenuHero hero)
     {
         var actor=hero.DungeonActor;var town=hero.TownActor;var stats=StatsFor(hero);
@@ -114,13 +116,10 @@ public abstract class PartyMenuContext : IPartyMenuContext
         var entries=new List<PartyMenuEntry>();
         void Add(EquipmentSlot slot,string name,EquipableInventoryItem item,bool blocked=false)
         {
-            var description=blocked?"Blocked by a two-handed weapon.":item==null?"Empty slot.":item.ItemDefinition.Description+"\n"+string.Join(", ",item.GetEquipmentStatModification().DescribeEffect());
-            if(item!=null)description+="\n\nWithout this item, "+(hero.DungeonActor!=null?
-                StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,loadout.Without(slot))):
-                StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,loadout.Without(slot))));
-            string own=item==null?"":string.Join(", ",item.GetEquipmentStatModification().DescribeEffect());
+            var description=blocked?"Blocked by a two-handed weapon.":item==null?"Empty slot.":item.ItemDefinition.Description;
             entries.Add(new PartyMenuEntry{Section="Equipped",Slot=slot,Item=item,Equipped=item!=null,
-                Title=name+"  "+(blocked?"Unavailable":item?.DisplayName??"Empty")+(own.Length>0?"\n"+own:""),Description=description});
+                Title=name+"  "+(blocked?"Unavailable":item?.DisplayName??"Empty"),Description=description,
+                EquipmentPreview=item!=null?Preview(hero,loadout.Without(slot),true):null});
         }
         Add(EquipmentSlot.MainHand,"Weapon",loadout.Weapon);
         Add(EquipmentSlot.OffHand,"Off-hand",loadout.OffHand,loadout.Weapon?.EquipmentSlot==EquipmentSlot.TwoHand && loadout.Weapon?.EquipmentItemDefinition?.WeaponType!=WeaponType.BowAndArrow);
@@ -136,27 +135,24 @@ public abstract class PartyMenuContext : IPartyMenuContext
                 }));
         return entries;
     }
-    public virtual List<(string Label, InventoryItem Item, string Description, bool Enabled)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)
+    public virtual List<(string Label, InventoryItem Item, string Description, bool Enabled, EquipmentStatPreview Preview)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)
     {
         var current=hero.Equipment.Current();
-        var options=new List<(string Label,InventoryItem Item,string Description,bool Enabled)>();
+        var options=new List<(string Label,InventoryItem Item,string Description,bool Enabled,EquipmentStatPreview Preview)>();
         var existing=slot==EquipmentSlot.MainHand?current.Weapon:slot==EquipmentSlot.OffHand?current.OffHand:current.Accessory;
         if(existing!=null)
         {
             var without=current.Without(slot);
-            var preview=hero.DungeonActor!=null?StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,without)):
-                StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,without));
-            options.Add(("Unequip",existing,preview,true));
+            options.Add(("Unequip",existing,existing.DisplayName,true,Preview(hero,without,true)));
         }
-        foreach(var item in Bag.OfType<EquipableInventoryItem>().Where(i=>i.EquipmentSlot==slot || slot==EquipmentSlot.MainHand && i.EquipmentSlot==EquipmentSlot.TwoHand))
+        foreach(var item in Bag.OfType<EquipableInventoryItem>().Where(i=>i!=existing && (i.EquipmentSlot==slot || slot==EquipmentSlot.MainHand && i.EquipmentSlot==EquipmentSlot.TwoHand)))
         {
             bool allowed=hero.DungeonActor!=null?HeroClass.AllowsItem(hero.DungeonActor.PrimaryClass,hero.DungeonActor.SecondaryClass,item):HeroClass.AllowsItem(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,item);
             string restriction=allowed?null:hero.DungeonActor!=null?HeroClass.EquipmentRestriction(hero.DungeonActor.PrimaryClass,hero.DungeonActor.SecondaryClass,item):HeroClass.EquipmentRestriction(hero.TownActor.PrimaryClass,hero.TownActor.SecondaryClass,item);
             var after=current.With(item);
             var warning=string.Join(", ",current.Items.Where(i=>i!=existing && !after.Items.Contains(i)).Select(i=>"removes "+i.DisplayName));
-            var preview=hero.DungeonActor!=null?StatPreview.Diff(hero.DungeonActor.FinalStats,StatPreview.Final(hero.DungeonActor,after)):
-                StatPreview.Diff(TownUtilityService.StatsFor(hero.TownActor),TownUtilityService.StatsFor(hero.TownActor,after));
-            options.Add((item.DisplayName,item,allowed?preview+(warning.Length>0?"  Also "+warning:""):restriction,allowed));
+            string description=item.ItemDefinition.Description+(warning.Length>0?"\nAlso "+warning:" ");
+            options.Add((item.DisplayName,item,allowed?description:description+"\n"+restriction,allowed,Preview(hero,after,false)));
         }
         return options.OrderByDescending(o=>o.Item==existing).ThenByDescending(o=>o.Enabled).ToList();
     }
@@ -315,12 +311,12 @@ public sealed class DungeonPartyMenuContext : PartyMenuContext, IPartyMenuEntryH
         if(!MenuManager.CanAttemptAction(actor,out var restriction))return restriction;
         return game.PlayerController.CanOpenMenu()?null:"Wait until this hero is ready for another action.";
     }
-    public override List<(string Label, InventoryItem Item, string Description, bool Enabled)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)
+    public override List<(string Label, InventoryItem Item, string Description, bool Enabled, EquipmentStatPreview Preview)> EquipmentOptions(PartyMenuHero hero,EquipmentSlot slot)
     {
         var options=base.EquipmentOptions(hero,slot);
         var reason=Eligibility(hero);
         return options.Select(option=>(option.Label,option.Item,
-            option.Description+(reason==null?"  Uses "+hero.Name+"'s turn.":"  "+reason),option.Enabled && reason==null)).ToList();
+            option.Description+(reason==null?"\nUses "+hero.Name+"'s turn.":"\n"+reason),option.Enabled && reason==null,option.Preview)).ToList();
     }
     public bool OpenEntry(PartyMenu menu, PartyMenuHero hero, PartyMenuEntry entry)
     {

@@ -92,13 +92,34 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.UnifiedPartyMenuTests.TownKeyboardInventoryOpensUsesItemAndCloses",
         "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Arcane Wand Audit")]
+    public static void RunArcaneWandAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.ArcaneWandAddsSixAttackOnceAndLeavesStrengthAttributeUnchanged");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Equipment Description Fit")]
+    public static void RunEquipmentDescriptionFit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentDescriptionAndProficiencyFitAboveFixedPreview",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.ArcaneWandAddsSixAttackOnceAndLeavesStrengthAttributeUnchanged");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Equipment Wording EditMode")]
+    public static void RunEquipmentWordingEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "GameplayTextTests", "EternalEnigma.Tests.WeaponCatalogTests", "StatusPresentationTests", "HeroAttributeTests", "EquipmentStatPreviewTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Equipment Wording PlayMode")]
+    public static void RunEquipmentWordingPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.ArcaneWandAddsSixAttackOnceAndLeavesStrengthAttributeUnchanged",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.DungeonDockTests.StatAndEquipmentSummariesExplainWithoutItemCommands",
+        "EternalEnigma.Tests.StatusMenuTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Controls Rebinding EditMode")]
     public static void RunControlsRebindingEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
         "EternalEnigma.Tests.ControlBindingsTests", "EternalEnigma.Tests.InputPromptsTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Controls Rebinding PlayMode")]
     public static void RunControlsRebindingPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.ControlsRebindingTests", "EternalEnigma.Tests.SettingsInteractionTests");
+        "EternalEnigma.Tests.ControlsRebindingTests", "EternalEnigma.Tests.SettingsInteractionTests",
+        "EternalEnigma.Tests.DiagonalMovementTests");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Opening Interaction Prompt")]
     public static void RunOpeningInteractionPrompt() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

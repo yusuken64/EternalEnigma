@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Spear03
   m_EditorClassIdentifier: 
   ItemName: Steel Spear
-  Description: Steel Spear grants 6 strength.
+  Description: Steel Spear grants +6 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

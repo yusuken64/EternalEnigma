@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_THS04_Sword
   m_EditorClassIdentifier: 
   ItemName: Knight's Greatsword
-  Description: Knight's Greatsword grants 14 strength.
+  Description: Knight's Greatsword grants +14 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

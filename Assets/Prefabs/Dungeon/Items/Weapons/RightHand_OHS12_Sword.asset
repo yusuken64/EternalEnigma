@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS12_Sword
   m_EditorClassIdentifier: 
   ItemName: Mythril Sword
-  Description: Mythril Sword grants 12 strength.
+  Description: Mythril Sword grants +12 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 15

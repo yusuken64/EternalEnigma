@@ -19,6 +19,7 @@ public sealed class PartyMenuEntry
     public Skill Skill;
     public StatusEffect Status;
     public string Title, Description, Section;
+    public EquipmentStatPreview EquipmentPreview;
     public Sprite Icon;
     public bool Equipped;
     public EquipmentSlot? Slot;

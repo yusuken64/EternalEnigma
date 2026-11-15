@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Wand02
   m_EditorClassIdentifier: 
   ItemName: Apprentice Wand
-  Description: Apprentice Wand grants 2 strength.
+  Description: Apprentice Wand grants +2 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

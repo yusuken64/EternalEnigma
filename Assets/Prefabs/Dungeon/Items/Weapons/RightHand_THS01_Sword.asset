@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_THS01_Sword
   m_EditorClassIdentifier: 
   ItemName: Greatsword
-  Description: Greatsword grants 8 strength.
+  Description: Greatsword grants +8 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 6

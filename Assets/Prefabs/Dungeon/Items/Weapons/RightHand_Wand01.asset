@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Wand01
   m_EditorClassIdentifier: 
   ItemName: Wooden Wand
-  Description: Wooden Wand grants 1 strength.
+  Description: Wooden Wand grants +1 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

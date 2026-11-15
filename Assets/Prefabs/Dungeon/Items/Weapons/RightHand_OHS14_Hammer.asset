@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS14_Hammer
   m_EditorClassIdentifier: 
   ItemName: War Hammer
-  Description: War Hammer grants 14 strength.
+  Description: War Hammer grants +14 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

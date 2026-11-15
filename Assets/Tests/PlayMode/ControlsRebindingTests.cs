@@ -74,6 +74,103 @@ namespace EternalEnigma.Tests
             yield return new WaitForSecondsRealtime(.2f);
         }
 
+        private Button DirectionRow(string label)
+        {
+            int row = Enumerable.Range(0, screen.ActionLabels.Length)
+                .Single(i => screen.ActionLabels[i].gameObject.activeInHierarchy && screen.ActionLabels[i].text == label);
+            return screen.BindingButtons[row];
+        }
+
+        [UnityTest] public IEnumerator OptionalKeyboardDirectionsAreVisibleCaptureButtonsAndClearIndividually()
+        {
+            var names = new[] { "MoveUpLeft", "MoveUpRight", "MoveDownLeft", "MoveDownRight" };
+            var labels = new[] { "Move up-left", "Move up-right", "Move down-left", "Move down-right" };
+            var keys = new[] { Key.Numpad7, Key.Numpad9, Key.Numpad1, Key.Numpad3 };
+            var paths = new[] { "<Keyboard>/numpad7", "<Keyboard>/numpad9", "<Keyboard>/numpad1", "<Keyboard>/numpad3" };
+            for (int i = 0; i < names.Length; i++)
+            {
+                var row = DirectionRow(labels[i]);
+                Assert.That(row.GetComponentInChildren<TMPro.TMP_Text>().text, Is.EqualTo("Unbound"));
+                row.onClick.Invoke();
+                yield return new WaitForSecondsRealtime(.3f);
+                Assert.That(screen.ClearButton.gameObject.activeInHierarchy, Is.True);
+                InputSystem.QueueStateEvent(pad, new GamepadState { rightTrigger = 1 });
+                yield return null;
+                InputSystem.QueueStateEvent(pad, new GamepadState());
+                yield return new WaitForSecondsRealtime(.2f);
+                Assert.That(screen.IsRebinding, Is.True, "An empty keyboard slot must ignore controller buttons.");
+                yield return KeyPress(keys[i]);
+                Assert.That(screen.IsRebinding, Is.False);
+                var action = Common.Instance.MenuInputHandler.PlayerInput.actions.FindAction("Player/" + names[i], true);
+                Assert.That(action.bindings[0].effectivePath, Is.EqualTo(paths[i]));
+                Assert.That(action.bindings[1].effectivePath, Is.Null.Or.Empty);
+                row.onClick.Invoke();
+                yield return new WaitForSecondsRealtime(.3f);
+                yield return KeyPress(Key.Delete);
+                Assert.That(screen.IsRebinding, Is.False);
+                Assert.That(row.GetComponentInChildren<TMPro.TMP_Text>().text, Is.EqualTo("Unbound"));
+                Assert.That(action.bindings[0].effectivePath, Is.Null.Or.Empty);
+                Assert.That(settings.IsOpen, Is.True);
+            }
+            screen.ContextButton.onClick.Invoke();
+            Assert.That(screen.ActionLabels.Where(label => label.gameObject.activeInHierarchy)
+                .Any(label => labels.Contains(label.text)), Is.False, "Diagonal bindings do not add menu navigation controls.");
+        }
+
+        [UnityTest] public IEnumerator OptionalControllerDirectionsKeepTheirDeviceGroupAfterRebindingAndClearWithView()
+        {
+            screen.DeviceButton.onClick.Invoke();
+            foreach (var direction in new[] { ("MoveUpLeft", "Move up-left"), ("MoveUpRight", "Move up-right"),
+                ("MoveDownLeft", "Move down-left"), ("MoveDownRight", "Move down-right") })
+            {
+                var row = DirectionRow(direction.Item2);
+                Assert.That(row.GetComponentInChildren<TMPro.TMP_Text>().text, Is.EqualTo("Unbound"));
+                row.onClick.Invoke();
+                yield return new WaitForSecondsRealtime(.3f);
+                yield return KeyPress(Key.K);
+                Assert.That(screen.IsRebinding, Is.True);
+                InputSystem.QueueStateEvent(pad, new GamepadState { rightTrigger = 1 });
+                yield return null;
+                InputSystem.QueueStateEvent(pad, new GamepadState());
+                yield return new WaitForSecondsRealtime(.2f);
+                Assert.That(screen.IsRebinding, Is.False);
+                var action = ControlBindings.DisplayAsset.FindAction("Player/" + direction.Item1, true);
+                Assert.That(action.bindings[1].effectivePath, Is.EqualTo("<Gamepad>/rightTrigger"));
+                Assert.That(action.bindings[0].effectivePath, Is.Null.Or.Empty);
+                Assert.That(DirectionRow(direction.Item2), Is.SameAs(row));
+                row.onClick.Invoke();
+                yield return new WaitForSecondsRealtime(.3f);
+                InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.Select));
+                yield return null;
+                InputSystem.QueueStateEvent(pad, new GamepadState());
+                yield return new WaitForSecondsRealtime(.2f);
+                Assert.That(screen.IsRebinding, Is.False);
+                Assert.That(action.bindings[1].effectivePath, Is.Null.Or.Empty);
+                Assert.That(settings.IsOpen, Is.True);
+            }
+        }
+
+        [UnityTest] public IEnumerator OptionalBindingClearButtonClickDoesNotBecomeAMouseBinding()
+        {
+            ControlBindings.ApplyBinding("Player/MoveUpLeft", 0, "<Keyboard>/numpad7");
+            DirectionRow("Move up-left").onClick.Invoke();
+            yield return new WaitForSecondsRealtime(.3f);
+            Canvas.ForceUpdateCanvases();
+            System.IO.Directory.CreateDirectory("Temp/ControlsRebinding");
+            ScreenCapture.CaptureScreenshot("Temp/ControlsRebinding/capture-optional.png");
+            yield return null;
+            var rect = (RectTransform)screen.ClearButton.transform;
+            var position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center));
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position, buttons = 1 });
+            yield return null;
+            InputSystem.QueueStateEvent(mouse, new MouseState { position = position });
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.That(screen.IsRebinding, Is.False);
+            Assert.That(ControlBindings.DisplayAsset.FindAction("Player/MoveUpLeft").bindings[0].effectivePath, Is.Null.Or.Empty);
+            Assert.That(screen.Status.text, Is.EqualTo("Binding cleared."));
+            Assert.That(settings.IsOpen, Is.True);
+        }
+
         [UnityTest] public IEnumerator ContinuousListKeepsEveryRowReachableWithKeyboard() =>
             CheckListNavigation(false);
 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS07_Sword
   m_EditorClassIdentifier: 
   ItemName: Silver Sword
-  Description: Silver Sword grants 7 strength.
+  Description: Silver Sword grants +7 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 6

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS01_Stick
   m_EditorClassIdentifier: 
   ItemName: Stick
-  Description: Stick grants 1 strength.
+  Description: Stick grants +1 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

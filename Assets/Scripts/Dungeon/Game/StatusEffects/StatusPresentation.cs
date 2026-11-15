@@ -28,8 +28,8 @@ public static class StatusPresentation
 
     public static string Effect(StatusEffect status, Character owner = null) => status switch
     {
-        FrailtyStatusEffect frailty => $"Strength -{frailty.Stacks}. Each stack reduces Strength by 1. Reapplying adds a stack; waiting does not remove it.",
-        StrengthStatusEffect strength => $"Strength +{strength.Stacks * strength.StrengthPerStack}. {strength.Stacks} {(strength.Stacks == 1 ? "stack" : "stacks")}, +{strength.StrengthPerStack} per stack. Reapplying adds a stack without extending the duration.",
+        FrailtyStatusEffect frailty => $"Attack -{frailty.Stacks}. Each stack reduces Attack by 1. Reapplying adds a stack; waiting does not remove it.",
+        StrengthStatusEffect strength => $"Attack +{strength.Stacks * strength.StrengthPerStack}. {strength.Stacks} {(strength.Stacks == 1 ? "stack" : "stacks")}, +{strength.StrengthPerStack} per stack. Reapplying adds a stack without extending the duration.",
         GoopiRootStatusEffect => "Cannot move or be moved. Attacks, skills and items remain available. Defeat the holder to break free.",
         StuckStatusEffect => "Cannot move or be moved. Attacks, skills and items remain available.",
         ArmBindStatusEffect => "Cannot use basic attacks, ranged attacks, weapon skills or skills that use arrows.",
@@ -53,7 +53,7 @@ public static class StatusPresentation
             (owner != null && ClassPassives.KeepsStealthOnKill(owner) ? " Your passive preserves stealth if the attack defeats its target." : ""),
         SafePassageStatusEffect => "Enemies cannot target you. Ends for the whole party when any party member attacks an enemy.",
         BarrierStatusEffect barrier => $"Reduces {barrier.Element} damage taken by {Percent(barrier.Reduction)}." + AdditionalStats(barrier.Modification),
-        FollowUpMarkStatusEffect mark => $"Physical hits by the caster's team trigger a {mark.Element} follow-up hit while the caster is alive. Base damage is {Percent(mark.DamagePercent)} of the caster's Strength, adjusted by defense and follow-up bonuses.",
+        FollowUpMarkStatusEffect mark => $"Physical hits by the caster's team trigger a {mark.Element} follow-up hit while the caster is alive. Base damage is {Percent(mark.DamagePercent)} of the caster's Attack, adjusted by defense and follow-up bonuses.",
         SongStatusEffect song => Song(song),
         CommandStatusEffect command => Command(command),
         BossEffectStatus boss => Boss(boss, owner),
@@ -103,7 +103,7 @@ public static class StatusPresentation
         "Poison" or "Bleed" => owner != null
             ? $"Deals {Mathf.Max(1, owner.FinalStats.HPMax / 12)} damage each turn, based on one twelfth of maximum HP, before damage modifiers."
             : "Deals one twelfth of maximum HP as damage each turn, rounded down with a minimum of 1, before damage modifiers.",
-        "Guard" => "Reduces incoming damage to one quarter, with a minimum of 1. Counters direct hits for damage based on Strength.",
+        "Guard" => "Reduces incoming damage to one quarter, with a minimum of 1. Counters direct hits for damage based on Attack.",
         "Armored" => "Reduces incoming damage to one quarter, with a minimum of 1.",
         "Exposed" => "Takes double damage.",
         "Empowered" => Stats(boss.GetStatModification()),

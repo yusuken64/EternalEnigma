@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_Wand05
   m_EditorClassIdentifier: 
   ItemName: Silver Wand
-  Description: Silver Wand grants 5 strength.
+  Description: Silver Wand grants +5 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

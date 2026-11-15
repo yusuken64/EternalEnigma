@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS02_Niddle
   m_EditorClassIdentifier: 
   ItemName: Needle
-  Description: Needle grants 2 strength.
+  Description: Needle grants +2 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

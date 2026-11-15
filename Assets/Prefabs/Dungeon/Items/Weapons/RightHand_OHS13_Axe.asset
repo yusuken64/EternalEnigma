@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS13_Axe
   m_EditorClassIdentifier: 
   ItemName: Battle Axe
-  Description: Battle Axe grants 13 strength.
+  Description: Battle Axe grants +13 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 25

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RightHand_OHS09_Sword
   m_EditorClassIdentifier: 
   ItemName: Royal Sword
-  Description: Royal Sword grants 9 strength.
+  Description: Royal Sword grants +9 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 6

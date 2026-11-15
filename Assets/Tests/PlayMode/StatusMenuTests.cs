@@ -106,16 +106,16 @@ namespace EternalEnigma.Tests
             for (int i = 0; i < first; i++) yield return Press(keyboard, Key.DownArrow);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(frailtyRow.gameObject));
             Assert.That(menu.Details.isActiveAndEnabled, Is.True);
-            Assert.That(menu.Details.GetParsedText(), Does.Contain("Frail").And.Contain("Strength -3").And.Contain("Until cleansed"));
+            Assert.That(menu.Details.GetParsedText(), Does.Contain("Frail").And.Contain("Attack -3").And.Contain("Until cleansed"));
             yield return Press(keyboard, Key.Enter);
             Assert.That(manager.CurrentDialog, Is.SameAs(menu), "Inspecting a status does not open item actions or a second dialog.");
             yield return Press(pad, GamepadButton.DpadDown);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.SameAs(strengthRow.gameObject));
-            Assert.That(menu.Details.GetParsedText(), Does.Contain("Strength +5").And.Contain("7 turns left"));
+            Assert.That(menu.Details.GetParsedText(), Does.Contain("Attack +5").And.Contain("7 turns left"));
             yield return Press(pad, GamepadButton.South);
             Assert.That(manager.CurrentDialog, Is.SameAs(menu));
             yield return Press(pad, GamepadButton.DpadUp);
-            Assert.That(menu.Details.GetParsedText(), Does.Contain("Strength -3"));
+            Assert.That(menu.Details.GetParsedText(), Does.Contain("Attack -3"));
             strengthRow.Select(); yield return new WaitForSecondsRealtime(.25f);
             var rect = (RectTransform)frailtyRow.transform;
             var point = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center));
@@ -130,7 +130,7 @@ namespace EternalEnigma.Tests
             menu.BrowseHero(1); yield return null;
             Assert.That(menu.EntryButtons.Any(button => button.GetComponent<AuthoredButton>().Label.text == "Frail"), Is.False, "Statuses belong to the selected hero.");
             menu.BrowseHero(-1); yield return null;
-            Assert.That(menu.Details.GetParsedText(), Does.Contain("Strength -3"), "Returning restores the same selected status.");
+            Assert.That(menu.Details.GetParsedText(), Does.Contain("Attack -3"), "Returning restores the same selected status.");
             frailty.TurnsLeft = 0; menu.Refresh(); menu.SetFirstSelect(); yield return null;
             Assert.That(menu.EntryButtons.Any(button => button.GetComponent<AuthoredButton>().Label.text == "Frail"), Is.False);
         }

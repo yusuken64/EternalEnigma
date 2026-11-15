@@ -6,12 +6,24 @@ The town inn uses normal dialog confirmation/Back handling.
 ## Displaying and changing bindings
 
 Settings > Controls displays the current bindings. Choose Keyboard / mouse or
-Controller, then Gameplay or Menus; use Previous / Next to browse the binding rows.
+Controller, then Gameplay or Menus; scroll or use directional navigation to browse the binding rows.
 Select a binding, release the current controls, and press its replacement key,
 mouse button, controller button, or stick. Movement directions and alternate keys
 can be changed separately. Escape, the controller Menu button, the visible Cancel
 button, or the capture timeout leave the binding unchanged. Restore defaults resets
 both devices and both contexts.
+
+Gameplay includes four optional directions: Move up-left, Move up-right, Move
+down-left, and Move down-right. Each starts **Unbound** on keyboard/mouse and
+controller. Bind a key or button to move diagonally with one input, or hold Shift
+(controller Y / Triangle) to turn in place before attacking with Space
+(controller A / Cross). Existing two-direction combinations still work. Dedicated
+directions take priority over ordinary movement while held; opposite components
+cancel. These bindings do not change menu navigation.
+
+To remove an optional binding, select it and choose **Clear binding**, press
+Delete, or press controller View / Share. Those shortcuts clear only while
+capturing an optional binding. Restore defaults leaves all four directions unbound.
 
 Changes use Unity Input System interactive rebinding and apply immediately to the
 live gameplay and menu actions. Movement and Inventory / Skills / Settings

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeftHand_Bows
   m_EditorClassIdentifier: 
   ItemName: Bow
-  Description: Bow grants 3 strength.
+  Description: Bow grants +3 Attack while equipped.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1

@@ -109,10 +109,10 @@ namespace EternalEnigma.Tests
             Assert.That(completed, Is.Zero);
 
             choice.AgiButton.Select();
-            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.DpadDown)); yield return null; yield return null;
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.DpadRight)); yield return null; yield return null;
             InputSystem.QueueStateEvent(pad, new GamepadState()); yield return null; yield return null;
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(choice.StrButton.gameObject));
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.UpArrow)); yield return null; yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.LeftArrow)); yield return null; yield return null;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null; yield return null;
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(choice.AgiButton.gameObject));
 

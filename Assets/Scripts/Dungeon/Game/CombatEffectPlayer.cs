@@ -183,7 +183,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         yield return Deliver(new CombatVisualSequence { Profile = profile, Origin = point, Center = point }, point, true, bounds);
     }
 
-    internal IEnumerator Deliver(CombatVisualSequence sequence, Vector3 destination, bool hit, Bounds? targetBounds = null, bool audible = false, System.Action impactSound = null)
+    internal IEnumerator Deliver(CombatVisualSequence sequence, Vector3 destination, bool hit, Bounds? targetBounds = null, bool audible = false, System.Action impactSound = null, bool impactInFlight = true)
     {
         var profile = sequence.Profile;
         var stage = profile.Projectile;
@@ -205,32 +205,18 @@ public sealed class CombatEffectPlayer : MonoBehaviour
                 {
                     projectile.transform.position = Vector3.Lerp(sequence.Origin, flightDestination, elapsed / duration) + stage.Offset;
                     while (nextImpact < contacts.Count && Vector3.Dot(contacts[nextImpact].point - sequence.Origin, delta) <= delta.sqrMagnitude * elapsed / duration)
-                    { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) StartCoroutine(Burst(profile.Impact, contact.point, visibilityPosition: contact.point)); }
+                    { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) PlayImpact(profile, contact.point, contact.bounds); }
                     yield return null;
                 }
             }
             finally { Release(projectile); }
-            while (nextImpact < contacts.Count) { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) StartCoroutine(Burst(profile.Impact, contact.point, visibilityPosition: contact.point)); }
+            while (nextImpact < contacts.Count) { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) PlayImpact(profile, contact.point, contact.bounds); }
         }
         // Continuous flight invokes every recorded recipient at contact. The action's
         // queue guard makes this fallback safe for later recipients and ordinary shots.
         impactSound?.Invoke();
-        if (hit && !(sequence.ContinuousFlight && stage?.Prefab != null))
-        {
-            var point = destination; float size = 1;
-            if (profile.Impact.FitToTarget && targetBounds.HasValue)
-            {
-                var camera = Camera.main;
-                float cellSize = Mathf.Abs(Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.right).x - Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.zero).x);
-                (point, size) = FitImpact(targetBounds.Value, camera != null ? camera.transform.forward : Vector3.forward,
-                    camera != null ? camera.transform.right : Vector3.right, camera != null ? camera.transform.up : Vector3.up, cellSize);
-                if (!profile.Impact.ScaleWithTarget) size = 1;
-            }
-            // Impacts authored with a ground footprint (circles, portals, runes) still grow with
-            // the target but stay on the dungeon floor instead of floating in front of its body.
-            if (profile.Impact.MinimumDiameterCells > 0) point = Ground(destination);
-            StartCoroutine(Burst(profile.Impact, point, size, visibilityPosition: destination));
-        }
+        if (hit && !(impactInFlight && sequence.ContinuousFlight && stage?.Prefab != null))
+            PlayImpact(profile, destination, targetBounds);
         sequence.PlayAreaSound(audible);
         if (!sequence.AreaPlayed && profile.Area.Prefab != null)
         {
@@ -238,6 +224,22 @@ public sealed class CombatEffectPlayer : MonoBehaviour
             StartCoroutine(Burst(profile.Area, Ground(sequence.Center), profile.ScaleAreaToRadius ? Mathf.Max(1, sequence.Radius * 2 + 1) : 1));
         }
         yield return new WaitForSecondsRealtime(Mathf.Max(profile.ImpactSeconds, Mathf.Max(profile.Impact.Delay, profile.Area.Delay)));
+    }
+
+    void PlayImpact(CombatEffectProfile profile, Vector3 destination, Bounds? targetBounds)
+    {
+        var point = destination; float size = 1;
+        if (profile.Impact.FitToTarget && targetBounds.HasValue)
+        {
+            var camera = Camera.main;
+            float cellSize = Mathf.Abs(Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.right).x - Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.zero).x);
+            (point, size) = FitImpact(targetBounds.Value, camera != null ? camera.transform.forward : Vector3.forward,
+                camera != null ? camera.transform.right : Vector3.right, camera != null ? camera.transform.up : Vector3.up, cellSize);
+            if (!profile.Impact.ScaleWithTarget) size = 1;
+        }
+        // Ground footprints stay on the floor; body hits clear the visible mesh surface.
+        if (profile.Impact.MinimumDiameterCells > 0) point = Ground(destination);
+        StartCoroutine(Burst(profile.Impact, point, size, visibilityPosition: destination));
     }
 
     internal void SetStatuses(Character character, Dictionary<string, StatusVisualProfile> snapshot)

@@ -80,6 +80,8 @@ internal class UseInventoryItemAction : GameAction
 		bool usefulRecovery = OpeningDungeonLesson.UsefulRecovery(target ?? character, item);
 		var definition = Definition;
 		List<GameAction> effects;
+        Visuals.Face(character, definition?.Targeting == SkillTargeting.Missile ? direction :
+            target != null ? target.TilemapPosition - character.TilemapPosition : Vector3Int.zero);
 		if (definition?.Targeting == SkillTargeting.InventoryItem)
 			effects = definition.InventoryEffects.Cast<InventorySkillEffect>().Select(e => e.Bind(character, inventoryTarget)).ToList();
 		else
@@ -98,8 +100,12 @@ internal class UseInventoryItemAction : GameAction
         {
             QueueSound(SoundCue.AbilityStart);
             GameMessages.AbilityCast(character, skillEffect.EffectSkill, item.DisplayName);
+        }
+        var profile = definition?.VisualProfile ?? (item.ItemDefinition.ItemEffectDefinition as SkillItemEffectDefinition)?.EffectSkill?.VisualProfile;
+        if (profile != null)
+        {
             var center = definition?.Targeting == SkillTargeting.Missile ? missileHit.Cell : target != null ? target.TilemapPosition : character.TilemapPosition;
-            Visuals.Configure(skillEffect.EffectSkill.VisualProfile, character, center, definition != null ? definition.AreaRadius : 0);
+            Visuals.Configure(profile, character, center, definition != null ? definition.AreaRadius : 0);
             if (Visuals.Sequence != null) Visuals.Sequence.SingleFlight = definition?.Targeting == SkillTargeting.Missile;
         }
 		if (consume && item.HasStacks)

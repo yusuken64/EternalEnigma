@@ -12,6 +12,7 @@ public class UsableItemDefinition : ItemDefinition
 	[Min(0)] public int AreaRadius;
 	[Min(1)] public int MissileRange = 8;
 	public GameObject MissileProjectilePrefab;
+    public CombatEffectProfile VisualProfile;
 	[Tooltip("InventorySkillEffect templates used when targeting an inventory item.")]
 	[SerializeReference] public List<GameAction> InventoryEffects = new();
 	internal ActionTargeting TargetingRules => new(Targeting, TargetSelector, InventoryTargetSelector, AreaRadius, MissileRange);

@@ -13,6 +13,34 @@ public static class CombatEffectAuthoring
     static readonly Dictionary<string, string> icons = new();
     static Dictionary<string, string> prefabs;
 
+    [MenuItem("Tools/Eternal Enigma/Combat Effects/Refresh Cast and Level Up Feedback")]
+    public static void RefreshCastAndLevelUpFeedback()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Exit Play Mode first.");
+        Initialize();
+        var catalog = AssetDatabase.LoadAssetAtPath<CombatVisualCatalog>(Root + "/Catalog.asset");
+        var ding = Asset<CombatEffectProfile>(Root + "/Profiles/Level Up.asset");
+        ding.Impact = Stage("LightExplosionSmall", .7f, true);
+        ding.Impact.FitToTarget = true;
+        ding.Area = Stage("NovaLight", .4f, true);
+        GroundFootprint(ding.Area);
+        ding.CastSeconds = 0;
+        ding.ImpactSeconds = .2f;
+        ding.ScaleAreaToRadius = false;
+        catalog.LevelUp = ding;
+        EditorUtility.SetDirty(ding);
+        EditorUtility.SetDirty(catalog);
+
+        var bolt = AssetDatabase.LoadAssetAtPath<UsableItemDefinition>("Assets/Prefabs/Dungeon/Items/Spell_Bolt.asset");
+        bolt.VisualProfile = Profile("Lightning", true, false);
+        bolt.MissileProjectilePrefab = bolt.VisualProfile.Projectile.Prefab;
+        var effect = (RangedAttackItemEffectDefinition)bolt.ItemEffectDefinition;
+        effect.ProjectilePrefab = bolt.MissileProjectilePrefab;
+        EditorUtility.SetDirty(bolt);
+        EditorUtility.SetDirty(effect);
+        AssetDatabase.SaveAssets();
+    }
+
     [MenuItem("Tools/Eternal Enigma/Combat Effects/Complete Enemy Feedback")]
     public static void CompleteEnemyFeedback()
     {

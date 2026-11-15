@@ -43,6 +43,8 @@ public static class OpeningDesignPreview
         EditorApplication.playModeStateChanged += state => {
             if (!SessionState.GetBool(Key, false)) return;
             if (state == PlayModeStateChange.ExitingEditMode) Isolate();
+            if (state == PlayModeStateChange.EnteredPlayMode)
+                EditorSettings.enterPlayModeOptionsEnabled = SessionState.GetBool(Key + ".FastPlay", false);
             if (state == PlayModeStateChange.ExitingPlayMode) RestoreScopes();
             if (state == PlayModeStateChange.EnteredEditMode) RestoreEditor();
         };
@@ -78,7 +80,10 @@ public static class OpeningDesignPreview
     [MenuItem("Tools/Eternal Enigma/UI/Open Party Portrait Review")]
     public static void OpenPartyPortraitReview() => StartCapture(false,PartyMenuTab.Stats,feedReview:true,partyReview:true);
 
-    private static void StartCapture(bool artworkOnly, PartyMenuTab? reviewTab = null, bool historyReview = false, bool feedReview = false, bool partyReview = false, bool equipmentDescriptionReview = false)
+    [MenuItem("Tools/Eternal Enigma/UI/Open Level Up Review")]
+    public static void OpenLevelUpReview() => StartCapture(false, levelUpReview:true);
+
+    private static void StartCapture(bool artworkOnly, PartyMenuTab? reviewTab = null, bool historyReview = false, bool feedReview = false, bool partyReview = false, bool equipmentDescriptionReview = false, bool levelUpReview = false)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode)
             throw new InvalidOperationException("Finish Play Mode before starting the isolated design preview.");
@@ -89,6 +94,7 @@ public static class OpeningDesignPreview
         SessionState.SetInt(Key + ".Animation", DungeonPreferences.AnimationOverride.HasValue ? (int)DungeonPreferences.AnimationOverride.Value : -1);
         SessionState.SetBool(Key + ".Background", Application.runInBackground);
         SessionState.SetBool(Key + ".Suppression", LoadingSceneIntegration.SuppressAutomaticSceneLoading);
+        SessionState.SetBool(Key + ".FastPlay", EditorSettings.enterPlayModeOptionsEnabled);
         SessionState.SetBool(Key, true);
         SessionState.SetBool(Key + ".ArtworkOnly", artworkOnly);
         SessionState.SetInt(Key + ".PartyMenuReview", reviewTab.HasValue ? (int)reviewTab.Value : -1);
@@ -96,10 +102,13 @@ public static class OpeningDesignPreview
         SessionState.SetBool(Key + ".FeedReview",feedReview);
         SessionState.SetBool(Key + ".PartyPortraitReview",partyReview);
         SessionState.SetBool(Key + ".EquipmentDescriptionReview",equipmentDescriptionReview);
+        SessionState.SetBool(Key + ".LevelUpReview",levelUpReview);
         started = false; sequence.Clear(); waiting = null;
         File.WriteAllText(Folder + "/Progress.txt", "Starting isolated production scene capture.\n");
         EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/MainMenu.unity");
         LoadingSceneIntegration.SuppressAutomaticSceneLoading = true;
+        // A preview must not inherit runtime state from prior tests or fast Play Mode sessions.
+        EditorSettings.enterPlayModeOptionsEnabled = false;
         EditorApplication.isPlaying = true;
     }
 
@@ -130,6 +139,7 @@ public static class OpeningDesignPreview
         RestoreScopes(); sequence.Clear(); waiting = null; started = false;
         EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(SessionState.GetString(Key + ".StartScene", ""));
         LoadingSceneIntegration.SuppressAutomaticSceneLoading = SessionState.GetBool(Key + ".Suppression", false);
+        EditorSettings.enterPlayModeOptionsEnabled = SessionState.GetBool(Key + ".FastPlay", false);
         view = EditorWindow.GetWindow(typeof(Editor).Assembly.GetType("UnityEditor.GameView"));
         view.GetType().GetProperty("selectedSizeIndex", Flags).SetValue(view, SessionState.GetInt(Key + ".Size", 0));
         SessionState.EraseBool(Key);
@@ -181,6 +191,11 @@ public static class OpeningDesignPreview
             Common.InstanceOrNull != null && !Common.InstanceOrNull.Travel.IsTransitioning, "MainMenu");
         var common = Common.Instance;
         var mainMenu = Object.FindFirstObjectByType<MainMenu>();
+        if (SessionState.GetBool(Key + ".LevelUpReview", false))
+        {
+            yield return LevelUpReview(mainMenu);
+            yield break;
+        }
         int reviewTab = SessionState.GetInt(Key + ".PartyMenuReview", -1);
         if (reviewTab >= 0)
         {
@@ -277,6 +292,34 @@ public static class OpeningDesignPreview
         Debug.Log("Opening design preview captured: " + Path.GetFullPath(Folder));
         Stop();
     }
+    private static IEnumerator LevelUpReview(MainMenu mainMenu)
+    {
+        var prefab = TownSceneLoader.Default.AllyCatalog.Single(ally => ally.Name == "Avery");
+        mainMenu.DebugAllyPrefabs = new List<TownAlly> { prefab };
+        mainMenu.DebugAllies = new List<TownAllyData> { new() { AllyName = prefab.Name, Skills = new() } };
+        mainMenu.TestDungeon_Clicked();
+        yield return Await(() => Game.Instance != null && Game.Instance.IsReady &&
+            !Game.Instance.TurnManager.IsProcessingTurn && !Common.Instance.ScreenTransition.BlocksInput, "level-up review dungeon");
+        view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view,
+            new object[] { new Vector2(1280, 720), "Level-up review" });
+        view.Focus();
+        yield return Delay(.3);
+        var hero = Game.Instance.PlayerController.ControlledAlly;
+        hero.Vitals.Level = 2;
+        hero.Attributes = default;
+        hero.AttributePromptPending = true;
+        hero.SyncDisplayedStats();
+        DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
+        LevelUpChoiceDialog.Open(hero, null);
+        Common.Instance.AudioManager.PlayCue(SoundCue.LevelUp);
+        yield return Delay(.15);
+        Canvas.ForceUpdateCanvases();
+        ScreenCapture.CaptureScreenshot(Folder + "/level-up-review.png");
+        File.AppendAllText(Folder + "/Progress.txt", "Level-up review ready. Play Mode remains open with physical input enabled and saves isolated.\n");
+        Debug.Log("Level-up review is ready. Stop Play Mode when finished; existing saves are unchanged.");
+        view.Focus();
+    }
+
     private static IEnumerator PartyMenuReview(MainMenu mainMenu, PartyMenuTab tab)
     {
         var hero = TownSceneLoader.Default.AllyCatalog.Single(ally => ally.Name == "Avery");

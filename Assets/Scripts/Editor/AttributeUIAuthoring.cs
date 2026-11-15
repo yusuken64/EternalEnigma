@@ -31,22 +31,42 @@ public static class AttributeUIAuthoring
         }
     }
 
-    [MenuItem("Tools/Eternal Enigma/Author Attribute UI")]
-    public static void Author()
+    [MenuItem("Tools/Eternal Enigma/Author Level Up Popup")]
+    public static void AuthorLevelUpPopup()
     {
         var canvas=GameUISkin.Canvas("Level up choice",null,120);
         var dialog=canvas.gameObject.AddComponent<LevelUpChoiceDialog>();
-        GameUISkin.Rect("Input shield",canvas.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>().color=new Color(0,0,0,.55f);
-        var panel=GameUISkin.Panel(canvas.transform,new Vector2(.18f,.18f),new Vector2(.82f,.82f));
-        dialog.Heading=GameUISkin.Label(panel.transform,"Level up",new Vector2(.06f,.83f),new Vector2(.94f,.97f),30);
-        dialog.StrButton=GameUISkin.Button(panel.transform,"STR",new Vector2(.06f,.64f),new Vector2(.94f,.81f),null);
-        dialog.IntButton=GameUISkin.Button(panel.transform,"INT",new Vector2(.06f,.45f),new Vector2(.94f,.62f),null);
-        dialog.AgiButton=GameUISkin.Button(panel.transform,"AGI",new Vector2(.06f,.26f),new Vector2(.94f,.43f),null);
+        // Keep clicks in the modal without obscuring the dungeon behind the popup.
+        GameUISkin.Rect("Input shield",canvas.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>().color=Color.clear;
+        var panel=GameUISkin.Panel(canvas.transform,new Vector2(.23f,.37f),new Vector2(.77f,.83f));
+        panel.name="Level up popup";
+        var title=GameUISkin.Label(panel.transform,"Level up!",new Vector2(.08f,.87f),new Vector2(.92f,.97f),38);
+        title.alignment=TextAlignmentOptions.Center;title.fontStyle=FontStyles.Bold;
+        title.enableAutoSizing=true;title.fontSizeMin=30;title.fontSizeMax=38;
+        dialog.Heading=GameUISkin.Label(panel.transform,"Hero",new Vector2(.06f,.79f),new Vector2(.94f,.87f),24);
+        dialog.Heading.alignment=TextAlignmentOptions.Center;
+        dialog.Heading.enableAutoSizing=true;dialog.Heading.fontSizeMin=18;dialog.Heading.fontSizeMax=24;
+        dialog.StrButton=GameUISkin.Button(panel.transform,"STR",new Vector2(.05f,.12f),new Vector2(.34f,.76f),null);
+        dialog.IntButton=GameUISkin.Button(panel.transform,"INT",new Vector2(.355f,.12f),new Vector2(.645f,.76f),null);
+        dialog.AgiButton=GameUISkin.Button(panel.transform,"AGI",new Vector2(.66f,.12f),new Vector2(.95f,.76f),null);
         foreach(var button in new[]{dialog.StrButton,dialog.IntButton,dialog.AgiButton})
-        {var label=button.GetComponentInChildren<TMP_Text>();label.fontSize=21;label.enableAutoSizing=true;label.fontSizeMin=16;label.fontSizeMax=24;}
+        {
+            button.gameObject.AddComponent<LevelUpChoiceView>();
+            var label=button.GetComponentInChildren<TMP_Text>();label.fontSize=26;label.enableAutoSizing=true;label.fontSizeMin=20;label.fontSizeMax=26;
+            label.fontStyle=FontStyles.Bold;
+            label.alignment=TextAlignmentOptions.Center;label.textWrappingMode=TextWrappingModes.NoWrap;
+            label.rectTransform.anchorMin=new Vector2(.06f,.84f);label.rectTransform.anchorMax=new Vector2(.94f,.96f);
+            label.rectTransform.offsetMin=label.rectTransform.offsetMax=Vector2.zero;label.margin=Vector4.zero;
+        }
         dialog.gameObject.SetActive(false);
         PrefabUtility.SaveAsPrefabAsset(dialog.gameObject,"Assets/Resources/UI/LevelUpChoiceDialog.prefab");
         Object.DestroyImmediate(dialog.gameObject);
+    }
+
+    [MenuItem("Tools/Eternal Enigma/Author Attribute UI")]
+    public static void Author()
+    {
+        AuthorLevelUpPopup();
         foreach(var path in new[]{"Assets/Resources/UI/PartyMenu.prefab","Assets/Resources/UI/Dungeon/PartyMenu.prefab"})
         {
             var root=PrefabUtility.LoadPrefabContents(path);

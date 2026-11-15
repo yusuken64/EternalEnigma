@@ -15,6 +15,7 @@ public sealed class CombatVisualCatalog : ScriptableObject
     public CombatEffectProfile Melee, Ranged, Confusion, Root, Steal, Heal, Utility;
     public CombatEffectProfile Fire, Ice, Lightning;
     public CombatEffectProfile FireBreath, Explosion, Reveal, Duplication, Warp;
+    public CombatEffectProfile LevelUp;
     public StatusVisualProfile BlazingArms, FrostArms, StormArms;
     public List<StatusEntry> Statuses = new();
     static CombatVisualCatalog instance;

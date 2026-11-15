@@ -17,6 +17,22 @@ public class CameraController : MonoBehaviour
     }
 
 	public Transform _followTarget;
+    private Transform presentationTarget;
+    private Vector2 presentationViewport = new(.5f, .5f);
+
+    internal void FramePresentation(Transform target, Vector2 viewport)
+    {
+        presentationTarget = target;
+        presentationViewport = viewport;
+        SnapToFollowTarget();
+    }
+
+    internal void ClearPresentation(Transform target)
+    {
+        if (presentationTarget != target) return;
+        presentationTarget = null;
+        SnapToFollowTarget();
+    }
 
 	public void SetFollowTarget(Transform target)
 	{
@@ -30,10 +46,15 @@ public class CameraController : MonoBehaviour
 	internal void SnapToFollowTarget()
 	{
 		if (ScreenTransition.ControlsCamera(Camera)) return;
-		if (_followTarget != null && Camera != null)
+		var target = presentationTarget != null ? presentationTarget : _followTarget;
+        if (target != null && Camera != null)
 		{
-			Camera.transform.position = _followTarget.position + CameraOffset;
-			Camera.transform.LookAt(_followTarget);
+			var rotation = Quaternion.LookRotation(-CameraOffset, Vector3.up);
+            float height = Camera.orthographic ? Camera.orthographicSize * 2 :
+                2 * CameraOffset.magnitude * Mathf.Tan(Camera.fieldOfView * Mathf.Deg2Rad * .5f);
+            var viewport = presentationTarget != null ? presentationViewport - new Vector2(.5f, .5f) : Vector2.zero;
+            var shift = rotation * new Vector3(viewport.x * height * Camera.aspect, viewport.y * height, 0);
+            Camera.transform.SetPositionAndRotation(target.position + CameraOffset - shift, rotation);
 		}
 	}
 }

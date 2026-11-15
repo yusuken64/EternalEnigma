@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Spell_Bolt
   m_EditorClassIdentifier: 
   ItemName: Bolt Spell
-  Description: "Launches a bolt of lightning."
+  Description: Launches a bolt of lightning.
   ShopOnly: 0
   IsProgressionItem: 0
   MinFloor: 1
@@ -40,7 +40,8 @@ MonoBehaviour:
     IncludeEquipped: 0
   AreaRadius: 0
   MissileRange: 40
-  MissileProjectilePrefab: {fileID: 2253768139606894128, guid: b309532eff643b4409d599e5afd94fe0, type: 3}
+  MissileProjectilePrefab: {fileID: 6728124141602915277, guid: d071cccda75e55a48ad30d08986a18d4, type: 3}
+  VisualProfile: {fileID: 11400000, guid: 942e922b148080d448edd7817f3ad4d2, type: 2}
   InventoryEffects: []
   references:
     version: 2

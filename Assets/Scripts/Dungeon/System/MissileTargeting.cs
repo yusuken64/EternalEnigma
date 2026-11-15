@@ -21,13 +21,11 @@ internal static class MissileTargeting
         if (!IsDirection(direction)) return result;
         var dungeon = Game.Instance.CurrentDungeon;
         var seen = new HashSet<Character>();
-        bool Open(Vector3Int cell) => dungeon.IsFloorCell(cell) && dungeon.PropAt(cell)?.Alive != true && dungeon.PropAt(cell)?.BlocksMovement != true;
         for (int i = 0; i < range; i++)
         {
             var cell = result.Endpoint;
             var next = cell + direction;
-            if (!dungeon.IsFloorCell(next) || direction.x != 0 && direction.y != 0 &&
-                (!Open(cell + new Vector3Int(direction.x, 0)) || !Open(cell + new Vector3Int(0, direction.y)))) break;
+            if (!CanStep(dungeon, cell, direction)) break;
             result.Endpoint = next;
             if (dungeon.PropAt(next)?.Alive == true || dungeon.PropAt(next)?.BlocksMovement == true) break;
             var hit = Game.Instance.AllCharacters.FirstOrDefault(c => c != null && c != caster && c.Vitals.HP > 0 && c.OverlapsWith(new BoundsInt(next, Vector3Int.one)));
@@ -49,6 +47,14 @@ internal static class MissileTargeting
     internal static bool IsDirection(Vector3Int direction) => direction.z == 0 &&
         direction != Vector3Int.zero && Mathf.Abs(direction.x) <= 1 && Mathf.Abs(direction.y) <= 1;
 
+    private static bool CanStep(TileWorldDungeon dungeon, Vector3Int cell, Vector3Int direction)
+    {
+        bool Open(Vector3Int side) => dungeon.IsFloorCell(side) &&
+            dungeon.PropAt(side)?.Alive != true && dungeon.PropAt(side)?.BlocksMovement != true;
+        return dungeon.IsFloorCell(cell + direction) && (direction.x == 0 || direction.y == 0 ||
+            Open(cell + new Vector3Int(direction.x, 0)) && Open(cell + new Vector3Int(0, direction.y)));
+    }
+
     internal static Hit Trace(Character caster, Vector3Int direction, int range)
     {
         var cell = caster.TilemapPosition;
@@ -57,11 +63,9 @@ internal static class MissileTargeting
         for (int i = 0; i < range; i++)
         {
             var next = cell + direction;
-            if (!dungeon.IsFloorCell(next) || (direction.x != 0 && direction.y != 0 &&
-                (!dungeon.IsFloorCell(cell + new Vector3Int(direction.x, 0)) ||
-                 !dungeon.IsFloorCell(cell + new Vector3Int(0, direction.y))))) break;
+            if (!CanStep(dungeon, cell, direction)) break;
             cell = next;
-            if (dungeon.PropAt(cell)?.Alive == true) return new Hit(cell,null);
+            if (dungeon.PropAt(cell)?.Alive == true || dungeon.PropAt(cell)?.BlocksMovement == true) return new Hit(cell,null);
             // Every living character blocks a shot, regardless of the effect's team filter.
             var hit = Game.Instance.AllCharacters.FirstOrDefault(c => c != caster && c != null &&
                 c.Vitals.HP > 0 && c.OverlapsWith(new BoundsInt(cell, Vector3Int.one)));
@@ -74,13 +78,15 @@ internal static class MissileTargeting
     {
         prefab ??= Game.Instance.ThrownItemProjectilePrefab;
         if (prefab == null) yield break;
-        var projectile = Object.Instantiate(prefab, caster.VisualParent.transform.position, Quaternion.identity);
+        var origin = CombatEffectPlayer.Body(caster, Game.Instance.CurrentDungeon.WorldToCell(caster.transform.position));
+        var destination = CombatEffectPlayer.Body(null, cell);
+        var delta = destination - origin;
+        var rotation = delta.sqrMagnitude > .001f ? Quaternion.LookRotation(delta, Vector3.back) : Quaternion.identity;
+        var projectile = Object.Instantiate(prefab, origin, rotation * prefab.transform.localRotation);
         try
         {
-            var destination = Game.Instance.CurrentDungeon.CellToWorld(cell);
-            if (destination != projectile.transform.position) projectile.transform.LookAt(destination);
-            yield return projectile.transform.DOMove(destination, 0.25f).SetEase(Ease.Linear).WaitForCompletion();
+            yield return projectile.transform.DOMove(destination, 0.25f).SetEase(Ease.Linear).SetUpdate(true).WaitForCompletion();
         }
-        finally { if (projectile != null) Object.Destroy(projectile); }
+        finally { if (projectile != null) { projectile.transform.DOKill(); Object.Destroy(projectile); } }
     }
 }

@@ -36,11 +36,21 @@ internal class LevelUpAction : GameAction
 	{
 		character = recipient != null ? recipient : character;
 		if (skipAnimation) yield break;
-		(character as Ally)?.HeroAnimator?.PlayOneShot(AnimatedAction.LevelUp);
-
-        DungeonFloatingText.Show(Game.Instance, "Level Up", new Color(.84f,.76f,1f), character, true);
-
-		yield return new WaitForSecondsRealtime(1.0f);
+        var facing = character.CurrentFacing;
+        try
+        {
+            character.SetFacing(Facing.Down);
+            (character as Ally)?.HeroAnimator?.PlayOneShot(AnimatedAction.LevelUp);
+            var player = CombatEffectPlayer.Get();
+            if (player != null)
+            {
+                var cell = Game.Instance.CurrentDungeon.WorldToCell(character.transform.position);
+                player.StartCoroutine(player.Cue(CombatVisualCatalog.Instance?.LevelUp, CombatEffectPlayer.Body(character, cell)));
+            }
+            DungeonFloatingText.Show(Game.Instance, "Level Up", new Color(.84f,.76f,1f), character, true);
+            yield return new WaitForSecondsRealtime(1.0f);
+        }
+        finally { if (character != null) character.SetFacing(facing); }
 	}
 
 	internal override bool IsValid(Character character)

@@ -27,6 +27,7 @@ internal sealed class CombatVisualReplay
     internal Character BoundTarget;
     internal bool Cast;
     internal readonly List<(Vector3 point, bool hit, Bounds? bounds)> Impacts = new();
+    readonly HashSet<Vector3> flightContacts = new();
     readonly Dictionary<Character, Dictionary<string, StatusVisualProfile>> before = new(), after = new();
     readonly Dictionary<Character, Vector3Int> positions = new();
     readonly Dictionary<Character, CombatEffectProfile> castingAfter = new();
@@ -36,7 +37,17 @@ internal sealed class CombatVisualReplay
     internal bool AfterMovement;
     bool revealSoundsPlayed;
     Character resolvingActor;
+    Character facingActor;
+    Facing? facing;
     internal Vector3Int OriginCell;
+
+    internal void Face(Character actor, Vector3Int direction)
+    {
+        if (actor == null || direction == Vector3Int.zero) return;
+        facingActor = actor;
+        facing = Character.GetFacing(direction);
+        actor.SetFacing(facing.Value);
+    }
 
     internal void Begin(Character actor)
     {
@@ -131,11 +142,19 @@ internal sealed class CombatVisualReplay
     {
         var impact = (CombatEffectPlayer.Body(target, cell), hit, Sequence?.Profile.Impact.FitToTarget == true ? CombatEffectPlayer.TargetBounds(target, cell) : null);
         Impacts.Add(impact);
-        if (Sequence?.ContinuousFlight == true) Sequence.FlightImpacts.Add((impact.Item1, impact.Item2, impact.Item3, impactSound));
+        // A projectile contacts each position once. Echoes and additional hits at that
+        // position keep their own playback beat instead of bursting together in flight.
+        if (Sequence?.ContinuousFlight == true && !Sequence.FlightImpacts.Any(i => i.point == impact.Item1))
+        {
+            Sequence.FlightImpacts.Add((impact.Item1, impact.Item2, impact.Item3, impactSound));
+            flightContacts.Add(impact.Item1);
+        }
     }
 
     internal IEnumerator Play(GameAction action, Character actor, bool skip)
     {
+        // Resolution may already have advanced to another action or target position.
+        if (facingActor != null && facing.HasValue) facingActor.SetFacing(facing.Value);
         bool audible = action.ShouldPlayAudio(actor);
         var player = CombatEffectPlayer.Get();
         bool hasImpactAudio = action is TakeDamageAction or TakeHealAction or PropDamageAction;
@@ -163,7 +182,7 @@ internal sealed class CombatVisualReplay
         if (!skip && player != null && Sequence != null)
         {
             bool secondaryStatus = (action is ApplyStatusEffectAction || action is ApplyStatusChanceAction) && BoundTarget != null && Sequence.DamageRecipients.Contains(BoundTarget);
-            if (!AfterMovement && !secondaryStatus) foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds, audible, impactSound);
+            if (!AfterMovement && !secondaryStatus) foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds, audible, impactSound, flightContacts.Contains(impact.point));
         }
         if (!revealSoundsPlayed && reveals.Count > 0)
         {
@@ -174,7 +193,7 @@ internal sealed class CombatVisualReplay
             foreach (var reveal in reveals) yield return player.Cue(CombatVisualCatalog.Instance?.Reveal, reveal.point, reveal.bounds);
         yield return action.ExecuteRoutine(actor, skip);
         if (!skip && player != null && Sequence != null && AfterMovement)
-            foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds, audible, impactSound);
+            foreach (var impact in Impacts) yield return player.Deliver(Sequence, impact.point, impact.hit, impact.bounds, audible, impactSound, flightContacts.Contains(impact.point));
         // Even skipped playback advances the aura ledger; never consult future simulation state here.
         if (player != null)
         {

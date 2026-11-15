@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Spell_Bolt_RangedAttackItemEffectDefinition
   m_EditorClassIdentifier: 
   Damage: 10
-  ProjectilePrefab: {fileID: 2253768139606894128, guid: b309532eff643b4409d599e5afd94fe0, type: 3}
+  ProjectilePrefab: {fileID: 6728124141602915277, guid: d071cccda75e55a48ad30d08986a18d4, type: 3}

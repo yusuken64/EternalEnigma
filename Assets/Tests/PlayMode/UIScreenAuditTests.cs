@@ -417,6 +417,56 @@ namespace EternalEnigma.Tests
             }
         }
 
+        [UnityTest] public IEnumerator CaptureLevelUpPopupAcrossAspectRatios()
+        {
+            yield return harness.LoadDungeon(new TestScenario());
+            var hero = harness.Ally;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
+            hero.SetFacing(Facing.Down); hero.PlayIdleAnimation();
+            yield return new WaitForSecondsRealtime(.15f);
+            ScreenCapture.CaptureScreenshot("Temp/UIScreenAudit/level-up-south-idle.png");
+            yield return null;
+            hero.SetFacing(Facing.UpRight);
+            var celebration = hero.StartCoroutine(new LevelUpAction(hero).ExecuteRoutine(hero));
+            yield return new WaitForSecondsRealtime(.25f);
+            Assert.That(hero.CurrentFacing, Is.EqualTo(Facing.Down));
+            ScreenCapture.CaptureScreenshot("Temp/UIScreenAudit/level-up-celebration.png");
+            File.WriteAllText("Temp/UIScreenAudit/level-up-pose.txt", "Facing: " + hero.CurrentFacing + "\nVisual: " + hero.VisualParent.transform.eulerAngles +
+                "\nAnimator: " + hero.HeroAnimator.Animator.transform.eulerAngles + "\nState: " + hero.HeroAnimator.LastPlayedAction);
+            yield return new WaitForSecondsRealtime(.4f);
+            ScreenCapture.CaptureScreenshot("Temp/UIScreenAudit/level-up-celebration-later.png");
+            yield return celebration;
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;
+            hero.Vitals.Level = 2; hero.Attributes = default; hero.SyncDisplayedStats();
+            DungeonPreferences.AnimationOverride = DungeonAnimationMode.Normal;
+            var choice = LevelUpChoiceDialog.Open(hero, null);
+            yield return new WaitForSecondsRealtime(.15f);
+            ScreenCapture.CaptureScreenshot("Temp/UIScreenAudit/level-up-popup-celebration.png");
+            yield return CaptureSizes("dungeon-level-up-popup", () =>
+            {
+                var panel = (RectTransform)choice.Heading.transform.parent;
+                var surface = (RectTransform)choice.transform;
+                Assert.That(panel.rect.width * panel.rect.height, Is.LessThan(surface.rect.width * surface.rect.height * .5f));
+                var buttons = new[] { choice.StrButton, choice.IntButton, choice.AgiButton };
+                for (int i = 1; i < buttons.Length; i++)
+                {
+                    Assert.That(buttons[i].transform.position.x, Is.GreaterThan(buttons[i - 1].transform.position.x));
+                    Assert.That(buttons[i].transform.position.y, Is.EqualTo(buttons[0].transform.position.y).Within(.1f));
+                }
+                Assert.That(choice.transform.Find("Input shield").GetComponent<Image>().color.a, Is.Zero);
+                var corners = new Vector3[4]; panel.GetWorldCorners(corners);
+                var camera = harness.Game.PlayerController.CameraController.Camera;
+                var bounds = CombatEffectPlayer.TargetBounds(hero, hero.TilemapPosition).Value;
+                float top = float.NegativeInfinity;
+                for (int x = -1; x <= 1; x += 2) for (int y = -1; y <= 1; y += 2) for (int z = -1; z <= 1; z += 2)
+                    top = Mathf.Max(top, camera.WorldToScreenPoint(bounds.center + Vector3.Scale(bounds.extents, new Vector3(x, y, z))).y);
+                Assert.That(top + 12, Is.LessThan(corners[0].y), "The entire hero must remain below the popup.");
+                Assert.That(hero.CurrentFacing, Is.EqualTo(Facing.Down));
+            });
+            choice.StrButton.onClick.Invoke();
+            yield return null;
+        }
+
         [UnityTest] public IEnumerator CaptureDungeonLevelAndResultDialogsAcrossAspectRatios()
         {
             yield return harness.LoadDungeon(new TestScenario { IncludeStartingItems = true });

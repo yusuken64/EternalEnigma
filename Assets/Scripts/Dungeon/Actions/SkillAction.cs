@@ -79,6 +79,7 @@ internal class SkillAction : GameAction
 		if (!releasing)
         {
             if (!IsValid(character)) { AutoplayTrace?.Interrupt("Cast became invalid before execution"); return new(); }
+            FaceTarget();
             AutoplayTrace?.Start();
             GameInputDiagnostics.Record("SkillStarted", caster, skill);
             castSucceeded = true;
@@ -110,6 +111,7 @@ internal class SkillAction : GameAction
                 return new();
             }
             GameMessages.ForCharacter(caster, $"{GameMessages.Name(caster)} releases {skill.DisplayName}.");
+            FaceTarget();
         }
         resolved = true;
         float ammunitionMultiplier = skill.UsesArrows ? ArrowSupply.DamageMultiplier(caster) : 1f;
@@ -190,6 +192,12 @@ internal class SkillAction : GameAction
 		foreach (var recipient in affected)
 			if (recipient != null) yield return skill.ExecuteRoutine(caster, recipient);
 	}
+
+    private void FaceTarget()
+    {
+        var destination = tile ?? (sceneryTarget != null ? sceneryTarget.Position : target != null ? target.TilemapPosition : caster.TilemapPosition);
+        Visuals.Face(caster, skill.Targeting == SkillTargeting.Missile ? direction : destination - caster.TilemapPosition);
+    }
 
 	internal void ShowCasting(bool skipAnimation)
 	{

@@ -27,6 +27,7 @@ MonoBehaviour:
   Reveal: {fileID: 11400000, guid: ca410afc98a5fe6459570561de45cfe6, type: 2}
   Duplication: {fileID: 11400000, guid: d933fdb990fa8094b9497355889e28c8, type: 2}
   Warp: {fileID: 11400000, guid: f4f1319a22422314aacd0107e91df48a, type: 2}
+  LevelUp: {fileID: 11400000, guid: 5f916101e8d010945a4de847abdd1fe1, type: 2}
   BlazingArms: {fileID: 11400000, guid: 8e16c682818b3084abe6eef0ea0a7ac0, type: 2}
   FrostArms: {fileID: 11400000, guid: 23cde5c3c45c1d349a139695ba2f3256, type: 2}
   StormArms: {fileID: 11400000, guid: 8fc1949486d363147bb273138f3cf2fd, type: 2}

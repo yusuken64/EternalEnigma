@@ -5,6 +5,19 @@ using UnityEngine;
 
 public sealed class CombatEffectAssignmentTests
 {
+    [Test] public void BoltUsesLightningParticlesAndThrownItemsKeepTheirOwnModels()
+    {
+        var bolt = AssetDatabase.LoadAssetAtPath<UsableItemDefinition>("Assets/Prefabs/Dungeon/Items/Spell_Bolt.asset");
+        Assert.That(bolt.VisualProfile, Is.Not.Null);
+        Assert.That(bolt.MissileProjectilePrefab, Is.SameAs(bolt.VisualProfile.Projectile.Prefab));
+        Assert.That(bolt.MissileProjectilePrefab.GetComponentsInChildren<ParticleSystem>(true), Is.Not.Empty);
+        Assert.That(bolt.VisualProfile.Impact.Prefab, Is.Not.Null);
+        Assert.That(bolt.DroppedItemPrefab.gameObject, Is.Not.SameAs(bolt.MissileProjectilePrefab));
+        var thrown = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Dungeon/Effects/ThrownItemProjectile.prefab");
+        Assert.That(thrown, Is.Not.SameAs(bolt.MissileProjectilePrefab));
+        Assert.That(CombatVisualCatalog.Instance.LevelUp?.Area.Prefab, Is.Not.Null);
+    }
+
     [Test] public void EveryActiveAbilityIncludingDemoSubassetsHasAnExplicitReleaseSound()
     {
         var skills = AssetDatabase.FindAssets("t:Skill").Select(AssetDatabase.GUIDToAssetPath).Distinct()

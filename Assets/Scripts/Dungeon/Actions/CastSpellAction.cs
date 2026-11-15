@@ -24,6 +24,7 @@ internal class CastSpellAction : GameAction
 		if (!releasing)
         {
             if (!IsValid(character)) return new();
+            Visuals.Face(character, Target.TilemapPosition - character.TilemapPosition);
             started = true;
             QueueSound(SoundCue.AbilityStart);
             var release = new CastSpellAction { releasing = true, SpellName = SpellName, Target = Target,
@@ -36,6 +37,7 @@ internal class CastSpellAction : GameAction
         { GameMessages.ForCharacter(character, $"{GameMessages.Name(character)}'s {GameplayText.Name(SpellName)} fizzled because the target is no longer available."); return new(); }
         GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} releases {GameplayText.Name(SpellName)}.");
         resolved = true;
+        Visuals.Face(character, Target.TilemapPosition - character.TilemapPosition);
         return GetActionsFunc?.Invoke() ?? new();
 	}
 

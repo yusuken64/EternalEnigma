@@ -699,6 +699,26 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Combat Effects")]
     public static void RunCombatEffects() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.CombatEffectPlaybackTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Casting and Level Up Feedback")]
+    public static void RunCastingAndLevelUpFeedback() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests", "EternalEnigma.Tests.CastingAndPiercingTests",
+        "EternalEnigma.Tests.GameplayCorrectnessTests.ExperienceAndMultipleGrowthsFollowRecipientInsteadOfActor",
+        "EternalEnigma.Tests.GameplayCorrectnessTests.LevelUpChoiceIgnoresKeyboardAndControllerCancelAndWrapsThreeStats",
+        "EternalEnigma.Tests.GameplayCorrectnessTests.FailedAttributeSpendingKeepsChoiceAndPendingPromptOpen",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureLevelUpPopupAcrossAspectRatios");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Cast Feedback Followup")]
+    public static void RunCastFeedbackFollowup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests", "EternalEnigma.Tests.UIScreenAuditTests.CaptureLevelUpPopupAcrossAspectRatios",
+        "EternalEnigma.Tests.GameplayCorrectnessTests.LevelUpChoiceIgnoresKeyboardAndControllerCancelAndWrapsThreeStats",
+        "EternalEnigma.Tests.GameplayAudioTests.ActualLevelGainsCoalesceAndOnlyCommandedWaitingSounds");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Level Up Popup Checks")]
+    public static void RunLevelUpPopupChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureLevelUpPopupAcrossAspectRatios",
+        "EternalEnigma.Tests.GameplayCorrectnessTests.LevelUpChoiceIgnoresKeyboardAndControllerCancelAndWrapsThreeStats",
+        "EternalEnigma.Tests.GameplayCorrectnessTests.FailedAttributeSpendingKeepsChoiceAndPendingPromptOpen");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Combat Effects EditMode")]
     public static void RunCombatEffectsEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
         "CombatEffectAssignmentTests", "PresentationActionTests", "StatusEffectTests", "CombatMathTests", "ClassContentTests");

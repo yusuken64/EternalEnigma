@@ -18,8 +18,10 @@ namespace EternalEnigma.Tests
         TileWorldCreatorAsset map;
         CombatEffectProfile profile;
         StatusVisualProfile aura;
+        AudioManager previousAudio;
         [SetUp] public void Setup()
         {
+            previousAudio = AudioManager.Instance;
             root = new GameObject("Combat effects fixture");
             game = root.AddComponent<Game>(); game.enabled = false;
             game.Allies = new(); game.Enemies = new(); game.DeadUnits = new(); game.DownedAllies = new(); game.StatusEffectPrefabs = new();
@@ -44,6 +46,7 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup()
         {
             Object.Destroy(root); Object.Destroy(particle); Object.Destroy(map); Object.Destroy(profile); Object.Destroy(aura); yield return null;
+            typeof(SingletonMonoBehaviour<AudioManager>).GetField("instance", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic).SetValue(null, previousAudio);
         }
         sealed class EmptyAction : GameAction
         {
@@ -54,6 +57,8 @@ namespace EternalEnigma.Tests
 
         AudioManager AudioFixture(out List<AudioClip> played, out AudioClip start, out AudioClip release)
         {
+            // The editor's starting scene may already own an audio manager.
+            typeof(SingletonMonoBehaviour<AudioManager>).GetField("instance", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic).SetValue(null, null);
             var go = new GameObject("Ability audio fixture"); go.transform.SetParent(root.transform);
             var audio = go.AddComponent<AudioManager>(); audio.enabled = false;
             audio.SoundEffects = go.AddComponent<SoundEffects>();
@@ -150,6 +155,223 @@ namespace EternalEnigma.Tests
             Assert.That(spawned.enabled, Is.False);
             Assert.That(spawned.playOnAwake, Is.False);
             Assert.That(spawned.isPlaying, Is.False);
+        }
+
+        [UnityTest] public IEnumerator LevelUpFacesSouthCelebratesAndRestoresFacing()
+        {
+            actor.SetFacing(Facing.UpRight);
+            var player = CombatEffectPlayer.Get();
+            var action = new LevelUpAction(actor);
+            var routine = action.ExecuteRoutine(actor);
+            Assert.That(routine.MoveNext(), Is.True);
+            Assert.That(actor.CurrentFacing, Is.EqualTo(Facing.Down));
+            yield return null;
+            Assert.That(player.ActiveCount, Is.EqualTo(2), "The celebration has a burst and a ground ring.");
+            Assert.That(player.GetComponentsInChildren<ParticleSystem>().Any(p => p.particleCount > 0), Is.True);
+            yield return routine.Current;
+            yield return routine;
+            Assert.That(actor.CurrentFacing, Is.EqualTo(Facing.UpRight));
+            player.Clear();
+            yield return action.ExecuteRoutine(actor, true);
+            Assert.That(player.ActiveCount, Is.Zero);
+            Assert.That(actor.CurrentFacing, Is.EqualTo(Facing.UpRight));
+        }
+
+        [UnityTest] public IEnumerator RepeatedProjectileHitsHaveSeparateVisibleImpacts()
+        {
+            var audio = AudioFixture(out var played, out var start, out var release);
+            audio.SoundEffects.Impact_flesh = release;
+            profile.Area.Prefab = null;
+            var mesh = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            mesh.transform.SetParent(actor.VisualParent.transform, false);
+            mesh.transform.localScale = Vector3.one * 5;
+            var point = CombatEffectPlayer.Body(actor, actor.TilemapPosition);
+            var sequence = new CombatVisualSequence { Profile = profile, Actor = actor, SingleFlight = true, ContinuousFlight = true,
+                Origin = point - Vector3.right * 5, Center = point };
+            var hits = new[] { new TakeDamageAction(actor, actor, 5, false), new TakeDamageAction(actor, actor, 5, false) };
+            try
+            {
+                foreach (var hit in hits)
+                {
+                    hit.SetPlaybackContext(DungeonAnimationMode.Normal, true, actor, actor);
+                    hit.Visuals.Begin(actor); hit.Visuals.Sequence = sequence;
+                    var children = hit.ExecuteImmediate(actor); hit.Visuals.End(hit, actor, children);
+                }
+                Assert.That(sequence.FlightImpacts.Count, Is.EqualTo(1));
+                yield return hits[0].Visuals.Play(hits[0], actor, false);
+                var player = CombatEffectPlayer.Get();
+                var first = player.GetComponentsInChildren<ParticleSystem>().Single();
+                Assert.That(first.transform.position.z, Is.LessThan(mesh.GetComponent<Renderer>().bounds.min.z), "Contact particles must clear the model.");
+                Assert.That(player.ActiveCount, Is.EqualTo(1));
+                Assert.That(played.Count, Is.EqualTo(1));
+                yield return hits[1].Visuals.Play(hits[1], actor, false);
+                Assert.That(player.ActiveCount, Is.EqualTo(2), "The second hit bursts again without another flight.");
+                Assert.That(played.Count, Is.EqualTo(2));
+            }
+            finally { Object.Destroy(start); Object.Destroy(release); }
+        }
+
+        [UnityTest] public IEnumerator AuthoredExplosionAndLightningParticlesRestartWhenReused()
+        {
+            var player = CombatEffectPlayer.Get();
+            foreach (var authored in new[] { CombatVisualCatalog.Instance.Explosion, Resources.Load<CombatEffectProfile>("CombatEffects/Profiles/Lightning Flight") })
+            {
+                var burst = Object.Instantiate(authored);
+                burst.Projectile = new(); burst.Area = new(); burst.ImpactSeconds = .12f;
+                try
+                {
+                    GameObject previous = null;
+                    for (int repeat = 0; repeat < 2; repeat++)
+                    {
+                        yield return player.Deliver(new CombatVisualSequence { Profile = burst }, actor.transform.position, true);
+                        var systems = player.GetComponentsInChildren<ParticleSystem>();
+                        Assert.That(systems.Any(p => p.particleCount > 0), Is.True, authored.name + " hit " + repeat);
+                        var effect = systems.First().transform;
+                        while (effect.parent != player.transform) effect = effect.parent;
+                        if (previous != null) Assert.That(effect.gameObject, Is.SameAs(previous), "Exercise the pooled instance.");
+                        previous = effect.gameObject;
+                        player.Release(previous);
+                    }
+                }
+                finally { player.Clear(); Object.Destroy(burst); }
+            }
+        }
+
+        bool[,] OpenCastingFloor()
+        {
+            var dungeon = game.CurrentDungeon;
+            var mask = new bool[dungeon.dungeonWidth, dungeon.dungeonHeight];
+            for (int x = 1; x < mask.GetLength(0) - 1; x++)
+                for (int y = 1; y < mask.GetLength(1) - 1; y++) mask[x, y] = true;
+            typeof(TileWorldDungeon).GetField("floorMask", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(dungeon, mask);
+            actor.SetPosition(new Vector3Int(8, 8));
+            return mask;
+        }
+
+        Ally CastingTarget(Vector3Int cell)
+        {
+            var target = Object.Instantiate(actor, root.transform);
+            target.BaseStats = new Stats { HPMax = 1000 }; target.Vitals = new Vitals();
+            target.DisplayedVitals = new Vitals();
+            target.Team = Team.Enemy; target.SetPosition(cell);
+            target.BaseStats.HPMax = 1000; target.InvalidateCachedStats(); target.Vitals.HP = 1000;
+            game.Allies.Add(target);
+            return target;
+        }
+
+        List<GameAction> ResolveRecorded(GameAction action)
+        {
+            var result = new List<GameAction>();
+            var queue = new Queue<GameAction>(); queue.Enqueue(action);
+            while (queue.Count > 0)
+            {
+                var next = queue.Dequeue(); result.Add(next);
+                next.Visuals.Begin(actor); var children = next.ExecuteImmediate(actor); next.Visuals.End(next, actor, children);
+                foreach (var child in children) queue.Enqueue(child);
+                Assert.That(result.Count, Is.LessThan(100));
+            }
+            return result;
+        }
+
+        [TestCase(1, 1)] [TestCase(-1, 1)] [TestCase(1, -1)] [TestCase(-1, -1)]
+        [TestCase(1, 0)] [TestCase(-1, 0)] [TestCase(0, 1)] [TestCase(0, -1)]
+        public void AuthoredDirectionalSpellsHitAndRetainTheirAim(int x, int y)
+        {
+            OpenCastingFloor();
+            var direction = new Vector3Int(x, y);
+            var target = CastingTarget(actor.TilemapPosition + direction * 3);
+            var far = CastingTarget(actor.TilemapPosition + direction * 5);
+            actor.BaseStats.ManaMax = 1000; actor.InvalidateCachedStats();
+            foreach (string name in new[] { "Fire Bolt", "Ice Bolt", "Lightning Bolt", "Fireball" })
+            {
+                var skill = Object.Instantiate(Resources.Load<Skill>("Classes/Skills/Elementalist/" + name));
+                actor.Skills.Add(skill); actor.Vitals.Mana = 1000; target.Vitals.HP = far.Vitals.HP = 1000;
+                try
+                {
+                    var action = SkillAction.ForMissile(actor, skill, direction);
+                    Assert.That(action.IsValid(actor), Is.True, name);
+                    ResolveRecorded(action);
+                    Assert.That(actor.CurrentFacing, Is.EqualTo(Character.GetFacing(direction)), name + " charge");
+                    var all = new List<GameAction>();
+                    int advances = 0;
+                    while (actor.PendingCast != null)
+                    {
+                        Assert.That(++advances, Is.LessThan(10));
+                        actor.SetFacing(Character.GetFacing(-direction));
+                        all.AddRange(ResolveRecorded(new AdvanceCastAction()));
+                    }
+                    Assert.That(actor.CurrentFacing, Is.EqualTo(Character.GetFacing(direction)), name + " release");
+                    Assert.That(target.Vitals.HP, Is.LessThan(1000), name);
+                    var release = all.OfType<SkillAction>().Last();
+                    bool pierces = skill.AreaRadius == 0 && skill.MissileTargets != 1;
+                    Assert.That(far.Vitals.HP < 1000, Is.EqualTo(pierces), name + " penetration");
+                    int distance = pierces ? 5 : 3;
+                    if (pierces && (skill.MissileTargets == 0 || skill.MissileTargets > 2))
+                    {
+                        distance = skill.MissileRange;
+                        var origin = actor.TilemapPosition; var dungeon = game.CurrentDungeon;
+                        if (x != 0) distance = Mathf.Min(distance, x < 0 ? origin.x - 1 : dungeon.dungeonWidth - 2 - origin.x);
+                        if (y != 0) distance = Mathf.Min(distance, y < 0 ? origin.y - 1 : dungeon.dungeonHeight - 2 - origin.y);
+                    }
+                    Assert.That(release.Visuals.Sequence.Center, Is.EqualTo(CombatEffectPlayer.Body(null, actor.TilemapPosition + direction * distance)), name);
+                }
+                finally { actor.Skills.Remove(skill); Object.DestroyImmediate(skill); }
+            }
+            var bolt = UnityEditor.AssetDatabase.LoadAssetAtPath<UsableItemDefinition>("Assets/Prefabs/Dungeon/Items/Spell_Bolt.asset");
+            var inventory = root.AddComponent<Inventory>();
+            var item = bolt.AsInventoryItem(null); inventory.Add(item); target.Vitals.HP = 1000;
+            var use = new UseInventoryItemAction(inventory, actor, item).WithDirection(direction);
+            ResolveRecorded(use);
+            Assert.That(actor.CurrentFacing, Is.EqualTo(Character.GetFacing(direction)));
+            Assert.That(target.Vitals.HP, Is.LessThan(1000));
+            Assert.That(use.Visuals.Sequence.Profile, Is.SameAs(bolt.VisualProfile));
+            Assert.That(use.Visuals.Sequence.Center, Is.EqualTo(CombatEffectPlayer.Body(null, target.TilemapPosition)));
+        }
+
+        [TestCase(1, 1)] [TestCase(-1, 1)] [TestCase(1, -1)] [TestCase(-1, -1)]
+        public void DiagonalItemAndSkillShotsRespectWallsSceneryAndRange(int x, int y)
+        {
+            var mask = OpenCastingFloor(); var origin = actor.TilemapPosition;
+            var direction = new Vector3Int(x, y);
+            Assert.That(MissileTargeting.Trace(actor, direction, 3).Cell, Is.EqualTo(origin + direction * 3));
+            Assert.That(MissileTargeting.TraceLine(actor, direction, 3).Endpoint, Is.EqualTo(origin + direction * 3));
+            foreach (var side in new[] { new Vector3Int(x, 0), new Vector3Int(0, y) })
+            {
+                var cell = origin + side;
+                mask[cell.x, cell.y] = false;
+                Assert.That(MissileTargeting.Trace(actor, direction, 3).Cell, Is.EqualTo(origin));
+                Assert.That(MissileTargeting.TraceLine(actor, direction, 3).Endpoint, Is.EqualTo(origin));
+                mask[cell.x, cell.y] = true;
+                var prop = DungeonProp.Create(game.CurrentDungeon, new EternalEnigma.Core.World.DungeonScenery(cell.ToGridPoint(),
+                    EternalEnigma.Core.World.DungeonSceneryKind.Container, 1, 42, EternalEnigma.Core.World.SceneryReward.None), null);
+                try
+                {
+                    Assert.That(MissileTargeting.Trace(actor, direction, 3).Cell, Is.EqualTo(origin));
+                    Assert.That(MissileTargeting.TraceLine(actor, direction, 3).Endpoint, Is.EqualTo(origin));
+                }
+                finally { game.CurrentDungeon.Interactables.Remove(prop); Object.DestroyImmediate(prop.gameObject); }
+            }
+        }
+
+        [UnityTest] public IEnumerator CastPlaybackUsesRecordedFacingAndSelfCastsKeepFacing()
+        {
+            OpenCastingFloor();
+            var target = CastingTarget(actor.TilemapPosition + new Vector3Int(2, -2));
+            var action = new CastSpellAction { Target = target, GetActionsFunc = () => new() };
+            ResolveRecorded(action);
+            actor.SetFacing(Facing.Up);
+            target.SetPosition(actor.TilemapPosition + Vector3Int.left);
+            yield return action.Visuals.Play(action, actor, true);
+            Assert.That(actor.CurrentFacing, Is.EqualTo(Facing.DownRight));
+            ResolveRecorded(new AdvanceCastAction());
+            Assert.That(actor.CurrentFacing, Is.EqualTo(Facing.Left), "Release follows a selected target that moved.");
+            var self = AudioSkill(null);
+            try
+            {
+                ResolveRecorded(new SkillAction(actor, self, actor));
+                Assert.That(actor.CurrentFacing, Is.EqualTo(Facing.Left));
+            }
+            finally { actor.Skills.Remove(self); Object.Destroy(self); }
         }
 
         [UnityTest] public IEnumerator AreaSoundSurvivesSkippedAnimationsAndMultipleRecipientsDoNotRepeatIt()

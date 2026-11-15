@@ -15,5 +15,18 @@ MonoBehaviour:
   Id: Dog
   DisplayName: Rowan the Shepherd
   Greeting: The flock is settled. Take a moment to enjoy the town.
+  DialogueTopics:
+  - Topic: Taking a turn
+    Answer: When it's your turn, the beasts will wait while you think. A step, a strike, or a deliberate wait gives the dungeon its next turn.
+  - Topic: Food for the road
+    Answer: Long dungeon journeys empty bellies. Pack bread before descending; an empty stomach will start costing health.
+  - Topic: Resting
+    Answer: A warm bed does more than mend bruises. Resting at the inn restores the whole party's health, magic, and full bellies without taking a coin.
+  - Topic: Learning skills
+    Answer: A patient pupil can learn a new skill at the trainer, or strengthen one they already know. Take your companions there before the next descent.
+  - Topic: Choosing companions
+    Answer: A sure-footed climber is little help sitting at home. Bring the companion whose gift the road demands into your travelling party.
+  - Topic: Keeping my progress
+    Answer: Sleep and save in your bed at home before a risky journey. If a journey ends in defeat, you'll return to your last save.
   Prefab: {fileID: 7812168593237593571, guid: 912e50f211da0c6458a67ea97bb0564a, type: 3}
   Portrait: {fileID: 21300000, guid: b072b15d18f6adf4d8af2cb88bff96d5, type: 3}

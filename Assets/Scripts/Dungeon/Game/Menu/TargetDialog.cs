@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace JuicyChickenGames.Menu
 {
-    public class TargetDialog : Dialog
+    public partial class TargetDialog : Dialog
     {
         public GameObject SelectTargetPrompt;
         public GameObject TargetIndicator;
@@ -37,10 +37,10 @@ namespace JuicyChickenGames.Menu
         public List<Character> Targetables { get; private set; }
         private Character cameraTarget;
         public Character CameraTarget { get => cameraTarget; private set { if (cameraTarget == value) return; cameraTarget = value; HudRefresh.Request(HudChange.Dungeon); } }
-        public Vector3Int? TerminalSelectedCell => missileRange > 0 ? MissileEndpoint :
+        public Vector3Int? TerminalSelectedCell => targetingWorld != null ? GateCell(selectedGate) : missileRange > 0 ? MissileEndpoint :
             tiles.Count > 0 ? selectedTile : selectedProp != null ? selectedProp.Position :
             CameraTarget != null ? CameraTarget.TilemapPosition : (Vector3Int?)null;
-        public IReadOnlyList<Vector3Int> TerminalValidCells => tiles.Count > 0 ? tiles :
+        public IReadOnlyList<Vector3Int> TerminalValidCells => targetingWorld != null ? gateTargets.SelectMany(GateCells).Distinct().ToArray() : tiles.Count > 0 ? tiles :
             Targetables != null ? Targetables.Where(c => c != null && c.Vitals != null).Select(c => c.TilemapPosition)
                 .Concat(props.Where(p => p != null && p.Alive).Select(p => p.Position)).ToArray() :
             System.Array.Empty<Vector3Int>();
@@ -71,6 +71,8 @@ namespace JuicyChickenGames.Menu
         {
             get
             {
+                if (targetingWorld != null) return GameplayText.Format(gateActionName + "\n" + GateLabel(selectedGate) +
+                    $"\nPress {InputPrompts.Confirm} to confirm or {InputPrompts.Back} to cancel.");
                 string name = targetingSkill != null ? targetingSkill.DisplayName : targetingItem != null ? targetingItem.DisplayName : "Select target";
                 var cell = TerminalSelectedCell;
                 string target = cell.HasValue ? "Selected ground tile" : "No target selected";
@@ -161,8 +163,9 @@ namespace JuicyChickenGames.Menu
         private void RefreshPrompt()
         {
             if (promptText == null) return;
-            string name = targetingSkill != null ? targetingSkill.DisplayName : targetingItem != null ? targetingItem.DisplayName : null;
+            string name = targetingWorld != null ? gateActionName : targetingSkill != null ? targetingSkill.DisplayName : targetingItem != null ? targetingItem.DisplayName : null;
             string title = GameplayText.Format(string.IsNullOrEmpty(name) ? "Select target" : $"Select target for {name}");
+            if (targetingWorld != null && selectedGate != null) title += "\n" + GameplayText.Format(GateLabel(selectedGate));
             if (promptText.text != title) promptText.text = title;
         }
 
@@ -255,6 +258,11 @@ namespace JuicyChickenGames.Menu
 
         private bool TryTerminalTarget(Vector2 position)
         {
+            if (targetingWorld != null)
+            {
+                if (PointerHitsControl(position) || !TerminalRuntime.TryGetMapCell(position, out var gateCell)) return false;
+                return TrySelectGateCell(gateCell);
+            }
             if (casterCharacter == null || targetingFloor == null || PointerHitsControl(position) ||
                 !TerminalRuntime.TryGetMapCell(position, out var cell)) return false;
             // Freeze the currently displayed focus before changing the hover preview.
@@ -284,6 +292,7 @@ namespace JuicyChickenGames.Menu
 
         internal bool TryPointTarget(Vector2 position)
         {
+            if (targetingWorld != null) return TryPointGate(position);
             var camera = Camera.main;
             if (camera == null || casterCharacter == null || targetingFloor == null || !camera.pixelRect.Contains(position)) return false;
             // Ignore only our event-draining surface; HUD graphics beneath it
@@ -328,6 +337,7 @@ namespace JuicyChickenGames.Menu
 
         private void Update()
         {
+            if (targetingWorld != null) { UpdateGateTargeting(); return; }
             if (Game.Instance.PlayerController.CurrentControlMode != PlayerControlMode.TargetSelecting ||
                 Common.Instance.GlobalSettings.IsOpen || MenuUIInputModule.Active?.InputConsumed == true ||
                 Owner?.Current != this || AutoplayRunner.BlocksPlayerInput) return;
@@ -376,6 +386,7 @@ namespace JuicyChickenGames.Menu
 
         internal void ConfirmTarget()
         {
+            if (targetingWorld != null) { ConfirmGateTarget(); return; }
             if (createAction == null || casterCharacter == null) return;
             var caster = casterCharacter;
             if (Game.Instance == null || Game.Instance.CurrentDungeon != targetingFloor || caster.Vitals == null || caster.Vitals.HP <= 0 ||
@@ -393,6 +404,8 @@ namespace JuicyChickenGames.Menu
         internal void CancelTargetSelection() => Close();
         internal void Close()
         {
+            bool overworld = targetingWorld != null;
+            targetingWorld = null; selectedGate = null; gateTargets.Clear(); useGate = null; gateActionName = null;
             audioReady = false;
             enabled = false;
             TargetIndicator.SetActive(false);
@@ -407,7 +420,7 @@ namespace JuicyChickenGames.Menu
             missileRange = 0;
             TerminalPointerFocus = null;
             Direction = Vector3Int.zero;
-            Game.Instance.PlayerController.CurrentControlMode = PlayerControlMode.FollowAlly;
+            if (!overworld && Game.Instance != null) Game.Instance.PlayerController.CurrentControlMode = PlayerControlMode.FollowAlly;
         }
         internal override void SetFirstSelect() { }
         internal void SetNavigation() { }

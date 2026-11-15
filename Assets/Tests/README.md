@@ -99,6 +99,18 @@ campaign-specific names in reward/menu/action UI, repeat-claim behavior, gate ch
 required return trips for seeds 42, -1 and 0. The EditMode `CampaignGenerationTests` cover
 the imported generator and the new gate visuals. These fixtures use isolated save stores.
 
+**Tools > Eternal Enigma > Tests > Run Gate Interactions** checks that inspecting an
+overworld gate opens the shared Capabilities tab, with acquired keys alongside capabilities.
+Use opens the item-targeting view; confirmation applies the selected capability to the gate.
+Coverage includes unavailable companions, wrong keys, cancellation, partial solutions,
+stale targets, controller input and terminal pointer input. The masonry arch stays visible
+after its portcullis opens, including after reloading. Captures go to `Temp/GateInteractions`.
+The campaign capability list hides spent entries by default. Tests cover **Show all**
+with controller input, an empty useful list, and unchanged acquisition/save state.
+The [lock test scene](../../Docs/LockTestLab.md) provides every authored variant and
+named gate key with all capabilities available. **Run Lock Test Lab** exercises
+every station through the production menus and verifies reset behavior and save isolation.
+
 `node Tools/unity-mcp.mjs harness OpeningPreparation` exercises the new-journey lock,
 0G bread confirmation and cancellation, active lesson choice, both errand orders,
 early Save and quit, failed morning writes, reload/defeat persistence, and every authored

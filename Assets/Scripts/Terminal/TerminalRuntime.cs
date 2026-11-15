@@ -149,6 +149,7 @@ public sealed class TerminalRuntime : MonoBehaviour
             TerminalMode.Requested != TerminalMode.Effective && !UnsafeToSwitch()) PreferenceChanged();
         if (historyButton != null) historyButton.gameObject.SetActive(CanShowHistory());
         if (!TerminalMode.Effective || screen == null) return;
+        if (targetDialog == null && overworld != null) targetDialog = overworld.GetComponent<OverworldMenuManager>()?.TargetDialog;
         if (screen.SetViewport(ViewportMin(), ViewportMax())) dirty = true;
         if (screen.Resize()) dirty = true;
         if (!dirty && Time.unscaledTime < nextRefresh) return;

@@ -15,6 +15,9 @@ public sealed class PartyMenuHero
 
 public sealed class PartyMenuEntry
 {
+    public EternalEnigma.Core.Capabilities.Capability? Capability;
+    public string KeyId;
+    public bool SpentCapability;
     public InventoryItem Item;
     public Skill Skill;
     public StatusEffect Status;

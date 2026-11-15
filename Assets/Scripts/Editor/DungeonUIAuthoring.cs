@@ -13,6 +13,33 @@ public static class DungeonUIAuthoring
 {
     const string Folder = "Assets/Resources/UI/Dungeon";
     static GameUITheme Theme => GameUITheme.Current;
+    [MenuItem("Tools/Eternal Enigma/UI/Build Overworld Target View")]
+    public static void BuildOverworldTargetView()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new InvalidOperationException("Build targeting views outside Play mode.");
+        var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/DungeonScene.unity");
+        bool opened = !scene.isLoaded;
+        if (opened) scene = EditorSceneManager.OpenScene("Assets/Scenes/DungeonScene.unity", OpenSceneMode.Additive);
+        GameObject copy = null;
+        try
+        {
+            var source = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<TargetDialog>(true)).Single();
+            copy = Object.Instantiate(source.gameObject);
+            copy.name = "Overworld target selection";
+            copy.SetActive(false);
+            copy.transform.localScale = Vector3.one;
+            var view = copy.GetComponent<TargetDialog>();
+            view.TargetIndicator = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Dungeon/TargetSelectIndicator.prefab");
+            view.ApplyPresentation();
+            PrefabUtility.SaveAsPrefabAsset(copy, "Assets/Resources/UI/OverworldTargetDialog.prefab");
+        }
+        finally
+        {
+            if (copy != null) Object.DestroyImmediate(copy);
+            if (opened) EditorSceneManager.CloseScene(scene, true);
+        }
+    }
     [MenuItem("Tools/Eternal Enigma/UI/Update Target Presentation")]
     public static void UpdateTargetPresentation()
     {

@@ -106,6 +106,15 @@ public static class TownInteriorAuthoring
         for(int i=0;i<names.Length;i++)
         {
             var d=ScriptableObject.CreateInstance<TownNpcDefinition>();d.Id=names[i];d.DisplayName=display[i];d.Greeting=greetings[i];d.Prefab=catalog.Get(names[i]).Prefab;
+            if (names[i] == "Dog") d.DialogueTopics = new[]
+            {
+                new TownNpcDialogueTopic { Topic = "Taking a turn", Answer = "When it's your turn, the beasts will wait while you think. A step, a strike, or a deliberate wait gives the dungeon its next turn." },
+                new TownNpcDialogueTopic { Topic = "Food for the road", Answer = "Long dungeon journeys empty bellies. Pack bread before descending; an empty stomach will start costing health." },
+                new TownNpcDialogueTopic { Topic = "Resting", Answer = "A warm bed does more than mend bruises. Resting at the inn restores the whole party's health, magic, and full bellies without taking a coin." },
+                new TownNpcDialogueTopic { Topic = "Learning skills", Answer = "A patient pupil can learn a new skill at the trainer, or strengthen one they already know. Take your companions there before the next descent." },
+                new TownNpcDialogueTopic { Topic = "Choosing companions", Answer = "A sure-footed climber is little help sitting at home. Bring the companion whose gift the road demands into your travelling party." },
+                new TownNpcDialogueTopic { Topic = "Keeping my progress", Answer = "Sleep and save in your bed at home before a risky journey. If a journey ends in defeat, you'll return to your last save." }
+            };
             d.Portrait=AssetDatabase.LoadAllAssetsAtPath("Assets/Bamao/BamaoUIPack/Sprites/"+portraits[i]).OfType<Sprite>().FirstOrDefault();
             d=Save(d,Folder+"/NPC_"+names[i]+".asset");definitions.Add(d);
         }

@@ -16,6 +16,10 @@ public sealed class PartyMenu : Dialog
     public Button InventoryTab, SkillsTab, EquipmentTab, StatsTab, BackButton;
     private Button capabilitiesTab;
     private Button closeButton;
+    private AuthoredButton capabilityFilter;
+    public Button CapabilityFilterButton => capabilityFilter?.Button;
+    public bool ShowAllCapabilities { get; private set; }
+    public int SpentCapabilityCount { get; private set; }
     private Transform descriptionPaper;
     private EquipmentComparisonView equipmentComparison;
     public PartyMenuLauncher HudTabs { get; private set; }
@@ -31,7 +35,7 @@ public sealed class PartyMenu : Dialog
     private float rowWidth, rowViewportHeight;
     private string result;
     public PartyMenuTab Tab { get; private set; }
-    private bool UsesTenRowList => Tab==PartyMenuTab.Inventory || Tab==PartyMenuTab.Skills;
+    private bool UsesTenRowList => Tab==PartyMenuTab.Inventory || Tab==PartyMenuTab.Skills || Tab==PartyMenuTab.Capabilities;
     private bool UsesDetachedDescription => UsesTenRowList || Tab==PartyMenuTab.Stats || Tab==PartyMenuTab.Equipment;
     public bool IsRoot => Owner?.Current == this;
     public PartyMenuHero Hero => context != null && context.Heroes.Count > 0 ? context.Heroes[heroIndex] : null;
@@ -43,7 +47,11 @@ public sealed class PartyMenu : Dialog
 
     public void Setup(IPartyMenuContext source, PartyMenuTab tab, string heroId = null)
     {
-        if (context != source) { context?.Dispose(); context = source; states.Clear(); }
+        if (context != source)
+        {
+            context?.Dispose(); context = source; states.Clear();
+            ShowAllCapabilities = (source as PartyMenuContext)?.ShowAllCapabilitiesByDefault == true;
+        }
         heroIndex = Math.Max(0, context.Heroes.ToList().FindIndex(h => h.Id == heroId));
         Tab = tab; result = null;
         UseHudTabs();
@@ -126,6 +134,9 @@ public sealed class PartyMenu : Dialog
         StopAutoScroll();scrollView.StopMovement();
         Clear(HeroesRoot); Clear(RowsRoot); rows.Clear();
         entries = Hero == null ? new() : context.Entries(Hero, Tab);
+        SpentCapabilityCount = Tab == PartyMenuTab.Capabilities ? entries.Count(entry => entry.SpentCapability) : 0;
+        if (Tab == PartyMenuTab.Capabilities && !ShowAllCapabilities) entries.RemoveAll(entry => entry.SpentCapability);
+        RefreshCapabilityFilter();
         bool tenRowList=UsesTenRowList;
         bool detachedDescription=UsesDetachedDescription;
         bool compactStats=Tab==PartyMenuTab.Stats && !entries.Any(entry=>entry.Skill!=null);
@@ -184,7 +195,7 @@ public sealed class PartyMenu : Dialog
             button.GetComponent<PartyMenuRow>().Selected = () => { selectedIndex = index; ShowDetails(); ScrollToSelected(button.gameObject); };
             rows.Add(button);
         }
-        if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=GameplayText.Format(Tab==PartyMenuTab.Inventory?"The bag is empty.":Tab==PartyMenuTab.Capabilities?"No acquired capabilities.":"No learned skills.");empty.gameObject.SetActive(true);}
+        if(entries.Count==0) {var empty=Instantiate(EmptyTemplate,RowsRoot);empty.text=GameplayText.Format(Tab==PartyMenuTab.Inventory?"The bag is empty.":Tab==PartyMenuTab.Capabilities?SpentCapabilityCount>0?"No remaining capability uses.":"No acquired capabilities.":"No learned skills.");empty.gameObject.SetActive(true);}
         Canvas.ForceUpdateCanvases(); FitEntryRows();
         scrollView.verticalNormalizedPosition = compactStats?1:state?.Scroll ?? 1;
         WireNavigation();
@@ -195,7 +206,7 @@ public sealed class PartyMenu : Dialog
         if(!IsRoot)return;
         if(!Mathf.Approximately(rowWidth,((RectTransform)RowsRoot).rect.width) ||
             !Mathf.Approximately(rowViewportHeight,scrollView.viewport.rect.height))FitEntryRows();
-        if(Tab==PartyMenuTab.Equipment || equipmentComparison?.Preview!=null)FitEquipmentDescription();
+        if(Tab==PartyMenuTab.Equipment || Tab==PartyMenuTab.Capabilities || equipmentComparison?.Preview!=null)FitEquipmentDescription();
     }
     private void FitEntryRows()
     {
@@ -233,15 +244,46 @@ public sealed class PartyMenu : Dialog
     private void WireNavigation()
     {
         var tab=Tab==PartyMenuTab.Inventory?InventoryTab:Tab==PartyMenuTab.Equipment?EquipmentTab:Tab==PartyMenuTab.Stats?StatsTab:Tab==PartyMenuTab.Capabilities?capabilitiesTab:SkillsTab;
-        Selectable firstRow=rows.Count>0?rows[0]:tab;
+        var filter = capabilityFilter != null && capabilityFilter.gameObject.activeSelf ? capabilityFilter.Button : null;
+        Selectable firstRow=rows.Count>0?rows[0]:filter!=null?filter:tab;
         for(int i=0;i<rows.Count;i++)rows[i].navigation=new Navigation {mode=Navigation.Mode.Explicit,
-            selectOnUp=i>0?rows[i-1]:tab,selectOnDown=i+1<rows.Count?rows[i+1]:null};
+            selectOnUp=i>0?rows[i-1]:tab,selectOnDown=i+1<rows.Count?rows[i+1]:filter};
+        if (filter != null) filter.navigation = new Navigation { mode=Navigation.Mode.Explicit,
+            selectOnUp=rows.Count>0?rows[rows.Count-1]:tab, selectOnDown=rows.Count>0?rows[0]:tab };
         DetailsControl.navigation=new Navigation {mode=Navigation.Mode.None};
         InventoryTab.navigation=EquipmentTab.navigation=SkillsTab.navigation=StatsTab.navigation=
             new Navigation {mode=Navigation.Mode.Explicit,selectOnUp=closeButton,selectOnDown=firstRow};
         if(capabilitiesTab!=null && capabilitiesTab.gameObject.activeSelf)
             capabilitiesTab.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnUp=closeButton,selectOnDown=firstRow};
         if(closeButton!=null)closeButton.navigation=new Navigation {mode=Navigation.Mode.Explicit,selectOnUp=tab,selectOnDown=firstRow};
+    }
+    private void RefreshCapabilityFilter()
+    {
+        bool visible = Tab == PartyMenuTab.Capabilities && SpentCapabilityCount > 0;
+        if (visible && capabilityFilter == null)
+        {
+            capabilityFilter = PlainEntryTemplate.Spawn(Panel, "", ToggleCapabilityFilter);
+            capabilityFilter.name = "Capability list filter";
+            capabilityFilter.GetComponent<LayoutElement>().ignoreLayout = true;
+            Fit(capabilityFilter.transform, .05f, .035f, .95f, .12f);
+            capabilityFilter.Label.enableAutoSizing = true;
+            capabilityFilter.Label.fontSize = 24; capabilityFilter.Label.fontSizeMin = 14; capabilityFilter.Label.fontSizeMax = 24;
+        }
+        if (capabilityFilter == null) return;
+        capabilityFilter.gameObject.SetActive(visible);
+        capabilityFilter.Label.text = ShowAllCapabilities ? "Hide completed" : "Show all";
+    }
+    public void ToggleCapabilityFilter()
+    {
+        if (!IsRoot || Tab != PartyMenuTab.Capabilities) return;
+        ShowAllCapabilities = !ShowAllCapabilities;
+        if (Hero != null) states.Remove((Hero.Id, Tab));
+        selectedIndex = 0; result = null;
+        AudioManager.Instance?.PlayCue(SoundCue.Navigate);
+        Refresh();
+        if (capabilityFilter != null && capabilityFilter.gameObject.activeSelf) capabilityFilter.Button.Select();
+        else SetFirstSelect();
+        Common.Instance.MenuInputHandler.ClearInputThisFrame();
     }
     private void ShowDetails()
     {
@@ -271,7 +313,7 @@ public sealed class PartyMenu : Dialog
         Details.rectTransform.anchoredPosition = Vector2.zero;
         DetailsControl.Scroll.StopMovement();
         if(Details.gameObject.activeInHierarchy)Canvas.ForceUpdateCanvases();
-        if(Tab==PartyMenuTab.Equipment || equipmentComparison!=null)FitEquipmentDescription();
+        if(Tab==PartyMenuTab.Equipment || Tab==PartyMenuTab.Capabilities || equipmentComparison!=null)FitEquipmentDescription();
         DetailsControl.Scroll.verticalNormalizedPosition=1;
     }
     private void FitEquipmentDescription()
@@ -285,7 +327,7 @@ public sealed class PartyMenu : Dialog
             return;
         }
         float bottom=.605f;
-        if(selectedIndex<entries.Count && entries[selectedIndex].Status!=null && Panel.parent is RectTransform surface && surface.rect.height>0)
+        if(selectedIndex<entries.Count && (entries[selectedIndex].Status!=null || Tab==PartyMenuTab.Capabilities) && Panel.parent is RectTransform surface && surface.rect.height>0)
             bottom=Mathf.Clamp(.855f-(Details.preferredHeight+8)/surface.rect.height,.30f,.605f);
         var rect=(RectTransform)DetailsControl.Scroll.transform;
         if(rect.parent==Panel.parent && Mathf.Approximately(rect.anchorMin.y,bottom))return;
@@ -380,6 +422,7 @@ public sealed class PartyMenu : Dialog
     {
         Canvas.ForceUpdateCanvases();FitEntryRows();
         if (rows.Count > 0) rows[Mathf.Clamp(selectedIndex,0,rows.Count-1)].Select();
+        else if (Tab == PartyMenuTab.Capabilities && capabilityFilter != null && capabilityFilter.gameObject.activeSelf) capabilityFilter.Button.Select();
         else (Tab == PartyMenuTab.Inventory ? InventoryTab : Tab == PartyMenuTab.Equipment ? EquipmentTab : Tab == PartyMenuTab.Stats ? StatsTab : Tab == PartyMenuTab.Capabilities ? capabilitiesTab : SkillsTab).Select();
     }
     private static void Clear(Transform parent)

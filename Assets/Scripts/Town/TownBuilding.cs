@@ -6,6 +6,9 @@ public class TownBuilding : MonoBehaviour
 
 	public Vector3Int TilemapPosition { get; internal set; }
 
+	/// <summary>Entrance prompts can sit in the facade while TilemapPosition remains the walkable approach.</summary>
+	public Vector3Int InteractionPosition { get; internal set; }
+
 	public TownBuildingDefinition Definition { get; internal set; }
 
 	/// <summary>True once a shop interior/vendor was actually carved for this instance this generation; walking onto the door tile no longer opens the dialog directly.</summary>

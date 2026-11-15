@@ -25,6 +25,7 @@ public sealed class CampaignOverworld : MonoBehaviour
     public TileWorldCreatorAsset Template;
     public EnvironmentKit CosmeticKit;
     public OverworldStyleProfile StyleProfile;
+    public bool IncludeSettlements = true;
     public TileWorldCreatorAsset EffectiveTemplate => StyleProfile?.ResolveTemplate() ?? Template;
     public EnvironmentKit EffectiveKit => StyleProfile?.ResolveKit() ?? CosmeticKit;
     public string LastGenerationError { get; private set; }
@@ -142,6 +143,8 @@ public sealed class CampaignOverworld : MonoBehaviour
             layer.randomSeedOverride = false;
             layer.previewTextureMap = null;
         }
+        if (!IncludeSettlements)
+            foreach (var output in generatedAsset.mapBuildLayers.OfType<OverworldSettlementLayer>()) output.active = false;
         creator.twcAsset = generatedAsset;
         creator.generatedBlueprintMaps.Clear();
         CurrentGrid = grid;

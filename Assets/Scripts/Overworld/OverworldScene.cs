@@ -22,6 +22,8 @@ public sealed class OverworldScene : MonoBehaviour
     public GameObject DungeonMarker;
     public GameObject LandmarkMarker;
     public GameObject GateMarker;
+    public bool ShowLocationMarkers = true;
+    public bool ShowSandboxControls = true;
     public Vector3 CameraOffset = new(0, -14, -20);
     private bool isReady;
     public bool IsReady { get => isReady; private set { if (isReady == value) return; isReady = value; HudRefresh.Request(HudChange.All); } }
@@ -59,6 +61,7 @@ public sealed class OverworldScene : MonoBehaviour
     private HashSet<string> active => Context.Active;
     private HashSet<string> resolved => Context.Resolved;
     private readonly Dictionary<string, List<GameObject>> gateVisuals = new();
+    private readonly Dictionary<string, OverworldLockVisual> waystoneVisuals = new();
     private readonly Dictionary<GridPoint, GameObject> locationVisuals = new();
     private readonly Dictionary<string,GameObject> clearedVisuals = new();
     private Dictionary<GridPoint, CampaignLocation> locations;
@@ -105,7 +108,8 @@ public sealed class OverworldScene : MonoBehaviour
         gates = Context.Gates;
         locations = Campaign.Locations.Where(l => l.ParentTownId == null).ToDictionary(l => grid.Locations[l.Id]);
         var controls = gameObject.AddComponent<OverworldSandboxControls>();
-        controls.Scene = this; controls.enabled = Context.IsSandbox;
+        controls.Scene = this; controls.enabled = Context.IsSandbox && ShowSandboxControls;
+        Map.IncludeSettlements = ShowLocationMarkers;
         terrainCache = common.OverworldTerrain;
         restoredTerrain = terrainCache.TryRestore(Context, Map, this);
         if (restoredTerrain) { TerrainReady(creator); return; }
@@ -122,6 +126,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (!restoredTerrain) terrainCache.Store(Context, Map, this);
         foreach (var location in Campaign.Locations.Where(l => l.ParentTownId == null))
         {
+            if (!ShowLocationMarkers) continue;
             var prefab = location.Kind == LocationKind.Town || location.Variant == DungeonVariant.Town ? TownMarker :
                 location.Kind == LocationKind.StoryDungeon || location.Kind == LocationKind.RepeatableDungeon || location.Kind == LocationKind.FinalDungeon
                     ? DungeonMarker : LandmarkMarker;
@@ -154,21 +159,12 @@ public sealed class OverworldScene : MonoBehaviour
                 var marker = Instantiate(GateMarker, CellCenterToWorld(cell), Quaternion.identity, transform);
                 var dry=gate.Cells.Where(c=>!Map.CurrentGrid.RequiresBoat(c)).ToArray();
                 marker.transform.position=dry.Select(CellCenterToWorld).Aggregate(Vector3.zero,(a,b)=>a+b)/dry.Length;
-                float dx=dry.Max(c=>c.X)-dry.Min(c=>c.X),dy=dry.Max(c=>c.Y)-dry.Min(c=>c.Y);
-                marker.transform.rotation=Quaternion.Euler(0,0,dx>dy?90:0);
+                marker.transform.rotation=OverworldLockVisual.GateRotation(Map.CurrentGrid,gate);
                 marker.transform.localScale=Vector3.one*creator.twcAsset.cellSize;
                 BiomeModel.ApplyAll(marker, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
                 var route = Campaign.Routes.First(r => r.Id == gate.RouteId);
                 OverworldLockVisual.Build(marker,route,OverworldCosmetics.Biome(Map.CurrentGrid,cell.X,cell.Y));
                 marker.name = (route.ShortcutKind == ShortcutKind.None ? "Gate " : "Shortcut ") + gate.RouteId;
-                if (route.ShortcutKind != ShortcutKind.None)
-                    foreach (var renderer in marker.GetComponentsInChildren<Renderer>())
-                    {
-                        var properties = new MaterialPropertyBlock(); renderer.GetPropertyBlock(properties);
-                        Color color = route.ShortcutKind == ShortcutKind.FarSide || route.ShortcutKind == ShortcutKind.Keyed ? Color.cyan : Color.yellow;
-                        color=Color.Lerp(Color.white,color,.3f);
-                        properties.SetColor("_Color", color); properties.SetColor("_BaseColor", color); renderer.SetPropertyBlock(properties);
-                    }
                 markers.Add(marker);
             }
             gateVisuals.Add(gate.RouteId, markers);
@@ -177,16 +173,15 @@ public sealed class OverworldScene : MonoBehaviour
         Player = Instantiate(protagonist, CellToWorld(Position), Quaternion.identity, transform);
         foreach (var endpoint in Map.CurrentGrid.Warps.SelectMany(r => new[] { r.From, r.To }).Distinct())
         {
-            var pad = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            var pad = new GameObject();
             pad.name = "Warp gate " + endpoint;
             pad.transform.SetParent(transform);
-            pad.transform.position = CellCenterToWorld(Map.CurrentGrid.Locations[endpoint]) + Vector3.back * .3f;
-            pad.transform.rotation = Quaternion.Euler(90, 0, 0);
-            pad.transform.localScale = new Vector3(.8f, .08f, .8f) * creator.twcAsset.cellSize;
-            Destroy(pad.GetComponent<Collider>());
-            var properties = new MaterialPropertyBlock();
-            properties.SetColor("_Color", Color.cyan); properties.SetColor("_BaseColor", Color.cyan);
-            pad.GetComponent<Renderer>().SetPropertyBlock(properties);
+            var cell = Map.CurrentGrid.Locations[endpoint];
+            pad.transform.position = CellCenterToWorld(cell) + Vector3.up * creator.twcAsset.cellSize * .35f;
+            pad.transform.localScale = Vector3.one * creator.twcAsset.cellSize * .7f;
+            var route = Campaign.Routes.First(r => r.IsWarp && (r.From == endpoint || r.To == endpoint));
+            OverworldLockVisual.Build(pad, route, OverworldCosmetics.Biome(Map.CurrentGrid, cell.X, cell.Y));
+            waystoneVisuals[endpoint] = pad.GetComponent<OverworldLockVisual>();
         }
         Player.name = "Campaign Player";
         Player.SetFacing(Facing.Down);
@@ -260,6 +255,15 @@ public sealed class OverworldScene : MonoBehaviour
 
     public Vector3 CellToWorld(GridPoint point) => Map.transform.position + new Vector3(point.X, point.Y, 0) * creator.twcAsset.cellSize;
     public Vector3 CellCenterToWorld(GridPoint point) => CellToWorld(point) + CellVisualOffset;
+    internal IEnumerable<Renderer> GateRenderers(string routeId)
+    {
+        if (gateVisuals.TryGetValue(routeId, out var visuals))
+            return visuals.Where(visual => visual != null && visual.activeInHierarchy)
+                .SelectMany(visual => visual.GetComponentsInChildren<Renderer>()).Where(renderer => renderer.enabled);
+        var route = Campaign.Routes.FirstOrDefault(candidate => candidate.Id == routeId && candidate.IsWarp);
+        return route == null ? Enumerable.Empty<Renderer>() : new[] { route.From, route.To }
+            .Where(endpoint => waystoneVisuals.ContainsKey(endpoint)).SelectMany(endpoint => waystoneVisuals[endpoint].GetComponentsInChildren<Renderer>());
+    }
     private Vector3 CellVisualOffset => new Vector3(.5f, .5f, 0) * creator.twcAsset.cellSize;
 
     private void Update()
@@ -594,8 +598,30 @@ public sealed class OverworldScene : MonoBehaviour
     private void RefreshGates()
     {
         RefreshLocationMarkers();
+        foreach (var waystone in waystoneVisuals)
+            waystone.Value.SetOpen(Campaign.Routes.Any(route => route.IsWarp && (route.From == waystone.Key || route.To == waystone.Key) && !gates.NeedsOpening(route)));
         foreach (var gate in Map.CurrentGrid.Locks)
-            foreach (var visual in gateVisuals[gate.RouteId]) visual.SetActive(!gates.IsWalkable(gate.Cells[0], Held));
+            foreach (var visual in gateVisuals[gate.RouteId])
+            {
+                bool open = gates.IsWalkable(gate.Cells[0], Held);
+                if (visual.TryGetComponent<OverworldLockVisual>(out var obstacle)) obstacle.SetOpen(open);
+                else visual.SetActive(!open);
+            }
+    }
+
+    public bool RelocateSandbox(GridPoint destination)
+    {
+        if (!IsReady || moving || !Context.IsSandbox || GetComponent<OverworldMenuManager>().Opened ||
+            !gates.IsWalkable(destination, Held)) return false;
+        StopHeldWalk();
+        Position = destination;
+        Player.transform.position = CellToWorld(destination);
+        Player.TilemapPosition = new Vector3Int(destination.X, destination.Y, 0);
+        walkHistory.Clear(); walkHistory.Add(destination); PlaceFollowers();
+        RefreshGates(); RefreshBiomeMusic(); FollowCamera();
+        Common.Instance.MenuInputHandler.ClearInputThisFrame();
+        HudRefresh.Request(HudChange.All);
+        return true;
     }
 
     private void LateUpdate()
@@ -616,7 +642,7 @@ public sealed class OverworldScene : MonoBehaviour
     private void OnGUI()
     {
         GameUISkin.UseLegacySkin();
-        if (Context == null || !Context.IsSandbox || !IsReady || GetComponent<OverworldMenuManager>().Opened) return;
+        if (Context == null || !Context.IsSandbox || !ShowSandboxControls || !IsReady || GetComponent<OverworldMenuManager>().Opened) return;
         bool previousEnabled = GUI.enabled;
         GUI.enabled = previousEnabled && !AutoplayRunner.BlocksPlayerInput;
         GameUISkin.LegacyBeginArea(new Rect(16, 16, 580, 430));

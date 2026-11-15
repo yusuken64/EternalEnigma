@@ -83,7 +83,10 @@ public static class OpeningDesignPreview
     [MenuItem("Tools/Eternal Enigma/UI/Open Level Up Review")]
     public static void OpenLevelUpReview() => StartCapture(false, levelUpReview:true);
 
-    private static void StartCapture(bool artworkOnly, PartyMenuTab? reviewTab = null, bool historyReview = false, bool feedReview = false, bool partyReview = false, bool equipmentDescriptionReview = false, bool levelUpReview = false)
+    [MenuItem("Tools/Eternal Enigma/UI/Open Rowan Dialogue Review")]
+    public static void OpenRowanDialogueReview() => StartCapture(false, rowanReview:true);
+
+    private static void StartCapture(bool artworkOnly, PartyMenuTab? reviewTab = null, bool historyReview = false, bool feedReview = false, bool partyReview = false, bool equipmentDescriptionReview = false, bool levelUpReview = false, bool rowanReview = false)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode)
             throw new InvalidOperationException("Finish Play Mode before starting the isolated design preview.");
@@ -103,6 +106,7 @@ public static class OpeningDesignPreview
         SessionState.SetBool(Key + ".PartyPortraitReview",partyReview);
         SessionState.SetBool(Key + ".EquipmentDescriptionReview",equipmentDescriptionReview);
         SessionState.SetBool(Key + ".LevelUpReview",levelUpReview);
+        SessionState.SetBool(Key + ".RowanReview",rowanReview);
         started = false; sequence.Clear(); waiting = null;
         File.WriteAllText(Folder + "/Progress.txt", "Starting isolated production scene capture.\n");
         EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/MainMenu.unity");
@@ -191,6 +195,11 @@ public static class OpeningDesignPreview
             Common.InstanceOrNull != null && !Common.InstanceOrNull.Travel.IsTransitioning, "MainMenu");
         var common = Common.Instance;
         var mainMenu = Object.FindFirstObjectByType<MainMenu>();
+        if (SessionState.GetBool(Key + ".RowanReview", false))
+        {
+            yield return RowanDialogueReview(mainMenu);
+            yield break;
+        }
         if (SessionState.GetBool(Key + ".LevelUpReview", false))
         {
             yield return LevelUpReview(mainMenu);
@@ -292,6 +301,41 @@ public static class OpeningDesignPreview
         Debug.Log("Opening design preview captured: " + Path.GetFullPath(Folder));
         Stop();
     }
+    private static IEnumerator RowanDialogueReview(MainMenu mainMenu)
+    {
+        var common = Common.Instance;
+        common.GameSaveData = mainMenu.CreateNewSave(42);
+        common.Travel.NewCampaign(42);
+        yield return Await(() => Object.FindFirstObjectByType<Town>()?.IsReady == true && !common.Travel.IsTransitioning, "Rowan's town");
+        var town = Object.FindFirstObjectByType<Town>();
+        var menus = Object.FindFirstObjectByType<TownMenuManager>();
+        if (town.HomeLesson != null)
+            foreach (var target in new[] { town.HomeLesson.BookCell, town.HomeLesson.ChestCell, town.HomeLesson.DoorCell })
+            {
+                if (!town.HomeLesson.TryGetInteractionStand(target, out var standing))
+                    throw new InvalidOperationException("No approach to the opening home lesson.");
+                StageAt(town, standing);
+                town.TownPlayer.ControllingTownAlly.SetFacing(Character.GetFacing(target - standing));
+                yield return Await(() => !town.TownPlayer.IsBusy && !common.ScreenTransition.BlocksInput, "home interaction");
+                if (!town.HomeLesson.TryInteract(target))
+                    throw new InvalidOperationException("Could not interact with the opening " + town.HomeLesson.InteractionName(target) + ".");
+                menus.CloseAllMenus();
+                yield return Delay(.1);
+            }
+        var rowan = town.Townsfolk.Single(n => n.Definition.Id == "Dog");
+        var approach = new[] { Vector3Int.down, Vector3Int.left, Vector3Int.right, Vector3Int.up }
+            .Select(offset => rowan.Cell + offset).First(town.CanEnter);
+        StageAt(town, approach);
+        town.TownPlayer.ControllingTownAlly.SetFacing(Character.GetFacing(rowan.Cell - approach));
+        view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view,
+            new object[] { new Vector2(1280, 720), "Rowan dialogue review" });
+        rowan.Greet(approach);
+        yield return Delay(.6);
+        ScreenCapture.CaptureScreenshot(Folder + "/rowan-dialogue.png");
+        File.AppendAllText(Folder + "/Progress.txt", "Rowan dialogue ready. Play Mode remains open with physical input enabled and saves isolated.\n");
+        view.Focus();
+    }
+
     private static IEnumerator LevelUpReview(MainMenu mainMenu)
     {
         var prefab = TownSceneLoader.Default.AllyCatalog.Single(ally => ally.Name == "Avery");

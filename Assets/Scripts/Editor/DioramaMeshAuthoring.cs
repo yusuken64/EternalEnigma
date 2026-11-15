@@ -47,7 +47,7 @@ public static class DioramaMeshAuthoring
                 Triangles=data.parts.Sum(p=>p.triangles.Length/3),Sockets=data.sockets??Array.Empty<DioramaSocket>(),Tree=new[]{"SnowPine","Palm","Willow","DeadTree","CharredTree"}.Contains(data.id)});
         }
         // A rerun retains imported source selections; source mesh GUIDs are never replaced.
-        catalog.Models=models.Concat(catalog.Models.Where(m=>m.Id.StartsWith("Pack")||m.Id.StartsWith("Castle"))).ToArray();
+        catalog.Models=models.Concat(catalog.Models.Where(m=>m.Id.StartsWith("Pack")||m.Id.StartsWith("Castle")||m.Id.StartsWith("Lock"))).ToArray();
         var style=PaintedGroundStyle.Load();
         if(style!=null)
         {

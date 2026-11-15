@@ -61,6 +61,18 @@ public class TownMenu : MonoBehaviour
         FindFirstObjectByType<TownMenuManager>().Open(dialog);
     }
 
+    public static void ShowConversation(TownNpcDefinition npc)
+    {
+        var manager = FindFirstObjectByType<TownMenuManager>();
+        var partyMenu = PartyMenu.Create(manager.transform);
+        PartyMenuPicker picker = null;
+        var choices = npc.DialogueTopics.Select(topic => (topic.Topic, (Action)(() =>
+            ShowMessage(npc.DisplayName + "\n\n" + topic.Answer)))).ToList();
+        choices.Add(("That's all, thanks.", () => picker.CloseDialog()));
+        picker = PartyMenuPicker.Build(partyMenu.transform.parent, "What do you want to know?", choices, closeOnChoose: false);
+        manager.Open(picker);
+    }
+
     public void OpenItemActions(InventoryMenu inventory, TownAlly character, InventoryItem item)
     {
         if (item.ItemDefinition is MaterialItemDefinition)

@@ -15,6 +15,9 @@ public sealed class OverworldMenuManager : MonoBehaviour
     public bool Opened=>dialogs.Opened;
     internal void Open(Dialog dialog)=>dialogs.Open(dialog);
     public LockInteractionSession Interaction { get; private set; }
+    public TargetDialog TargetDialog { get; private set; }
+    private CampaignRoute interactionRoute;
+    private readonly HashSet<Capability> applied = new();
     public string CompanionName(string id) => GameplayText.Name(CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? "a companion");
 
     private void EnsurePickers()
@@ -30,7 +33,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
         var position = world.Position;
         var routes = world.Map.CurrentGrid.WarpsAt(position).Where(r => r.CanTraverse(world.Held, context.Resolved)).ToArray();
         var gates = context.Gates.Nearby(position).Where(r => context.Gates.NeedsOpening(r) && r.ShortcutKind != ShortcutKind.FarSide).ToArray();
-        if (routes.Length == 0 && gates.Length < 2) return false;
+        if (routes.Length == 0) return gates.Length > 0 && ChooseGate(gates[0]);
         EnsurePickers();
         bool StillHere() => Common.Instance.CampaignContext == context && context.Position.Equals(position);
         var choices = routes.Select(route => (world.WarpLabel(route), (Action)(() =>
@@ -49,48 +52,76 @@ public sealed class OverworldMenuManager : MonoBehaviour
 
     public bool ChooseGate(CampaignRoute route)
     {
-        if(Opened || world.IsMoving || !world.IsReady || Common.Instance.Travel.IsTransitioning)return false;
+        if(Opened || world.IsMoving || !world.IsReady || Common.Instance.Travel.IsTransitioning ||
+            Common.Instance.GlobalSettings.IsOpen || MenuUIInputModule.Active?.HasDialog == true)return false;
         var session=world.BeginGateInteraction(route.Id);
         if(session==null)return false;
         Interaction=session;
-        EnsurePickers();
-        PartyMenuPicker picker=null;
-        var options=new List<(string Label,Action Execute)>();
-        var applied=new HashSet<Capability>();
-        void Attempt(LockAction action)
-        {
-            var outcome=world.AttemptGate(session,action,false);
-            if(session.Closed){picker.CloseDialog();return;}
-            string reason;
-            if(outcome==LockOutcome.Progress)
-            {
-                if(action is CapabilityLockAction progress)applied.Add(progress.Capability);
-                reason="Something changed, but the way is still blocked. " + (route.LockText??route.GateHint);
-                GameMessages.Post(reason);
-                AudioManager.Instance?.PlayCue(SoundCue.Status);
-            }
-            else
-            {
-                reason=GateRejection(route,action,applied);
-                GameMessages.Reject(reason);
-            }
-            picker.Title.text=GameplayText.Format(reason);
-        }
-        foreach(var capability in CampaignGuidance.Acquired(world.Context))
-        {
-            var action=new CapabilityLockAction(capability);
-            bool available=world.Held.Contains(capability);
-            options.Add((CampaignRewardNames.Name(world.Context,capability)+(available?"":" requires "+CampaignGuidance.CapabilitySource(world.Context,capability,CompanionName)),
-                ()=>Attempt(action)));
-        }
-        var keys=world.CollectedKeys.ToList();
-        if(route.ShortcutKind==ShortcutKind.Keyed && !keys.Contains(route.KeyId))keys.Add(route.KeyId);
-        foreach(var key in keys)options.Add((world.Campaign.KeyLabel(key),()=>Attempt(new KeyLockAction(key))));
-        picker=PartyMenuPicker.Build(PartyMenu.transform.parent,"Choose an action",options,false);
-        picker.Description((route.LockText??route.GateHint)+(options.Count==0?"\n\nYou have no abilities or keys to use here.":""), showControlHints:false);
-        picker.CloseAction=()=>{session.Dispose();Interaction=null;};
-        dialogs.Open(picker);
+        interactionRoute=route;
+        applied.Clear();
+        GameMessages.Post(route.LockText ?? route.GateHint, coalesce:true);
+        ShowPartyMenu(PartyMenuTab.Capabilities);
         return true;
+    }
+
+    internal string GateActionRestriction(LockAction action)
+    {
+        if (action is CapabilityLockAction use && !world.Held.Contains(use.Capability))
+            return CampaignRewardNames.Name(world.Context, use.Capability) + " requires " +
+                CampaignGuidance.CapabilitySource(world.Context, use.Capability, CompanionName) + " in the active party.";
+        if (action is KeyLockAction key && !world.CollectedKeys.Contains(key.KeyId))
+            return "Requires " + world.Campaign.KeyLabel(key.KeyId) + "; you do not have it.";
+        return null;
+    }
+
+    internal void UseGateAction(LockAction action, string label)
+    {
+        if (!Opened || PartyMenu.Owner != dialogs || dialogs.Current is TargetDialog) return;
+        string restriction = GateActionRestriction(action);
+        if (restriction != null) { PartyMenu.Reject(restriction); return; }
+        var targets = world.Context.Gates.Nearby(world.Position).Where(route => route.HasGate &&
+            world.Context.Gates.NeedsOpening(route) && route.ShortcutKind != ShortcutKind.FarSide &&
+            (route.CompletionLocationId == null || world.Context.Completed.Contains(route.CompletionLocationId))).ToList();
+        if (targets.Count == 0) { PartyMenu.Reject("There are no nearby gates to target."); return; }
+        if (TargetDialog == null)
+            TargetDialog = Instantiate(Resources.Load<TargetDialog>("UI/OverworldTargetDialog"), transform);
+        dialogs.Open(TargetDialog);
+        TargetDialog.Setup(world, label, targets, interactionRoute?.Id, route => AttemptGate(route, action));
+        TargetDialog.CloseAction = TargetDialog.Close;
+        Common.Instance.MenuInputHandler.ClearInputThisFrame();
+    }
+
+    private void AttemptGate(CampaignRoute route, LockAction action)
+    {
+        if (dialogs.Current != TargetDialog) return;
+        if (interactionRoute != route || Interaction == null || Interaction.Closed)
+        {
+            EndGateInteraction();
+            Interaction = world.BeginGateInteraction(route.Id);
+            interactionRoute = route;
+        }
+        if (Interaction == null) { PartyMenu.Reject("Return to this gate before using that capability or key."); return; }
+        var outcome = world.AttemptGate(Interaction, action, false);
+        if (outcome == LockOutcome.Opened) { dialogs.CloseAll(); return; }
+        if (Interaction.Closed)
+        {
+            EndGateInteraction();
+            PartyMenu.Complete(null);
+            PartyMenu.Reject("Return to this gate before using that capability or key.");
+            return;
+        }
+        if (outcome == LockOutcome.Progress)
+        {
+            if (action is CapabilityLockAction progress) applied.Add(progress.Capability);
+            AudioManager.Instance?.PlayCue(SoundCue.Status);
+            PartyMenu.Complete("Something changed, but the way is still blocked.");
+        }
+        else PartyMenu.Reject(GateRejection(route, action, applied));
+    }
+
+    private void EndGateInteraction()
+    {
+        Interaction?.Dispose(); Interaction=null; interactionRoute=null; applied.Clear();
     }
 
     private string GateRejection(CampaignRoute route, LockAction action, HashSet<Capability> applied)
@@ -152,7 +183,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
     }
     private void Awake()=>world=GetComponent<OverworldScene>();
     private void Start()=>PartyMenuLauncher.Create(transform,
-        ()=>world.IsReady && !world.IsMoving && !world.Context.IsSandbox && !Opened && Interaction==null,
+        ()=>world.IsReady && !world.IsMoving && (!world.Context.IsSandbox || !world.ShowSandboxControls) && !Opened && Interaction==null,
         OpenPartyMenu,includeCapabilities:true);
     private void Update()
     {
@@ -161,6 +192,16 @@ public sealed class OverworldMenuManager : MonoBehaviour
             AutoplayRunner.BlocksPlayerInput || MenuUIInputModule.Active?.InputConsumed==true)return;
         var input=common.MenuInputHandler;
         if(Opened && input.OptionInput){common.GlobalSettings.ShowDialog();return;}
+        if (TargetDialog != null && dialogs.Current == TargetDialog)
+        {
+            if (input.SubmitMenuInput) TargetDialog.ConfirmTarget();
+            else if (input.CancelMenuInput)
+            {
+                AudioManager.Instance?.PlayCue(SoundCue.Cancel);
+                TargetDialog.CloseDialog();
+            }
+            return;
+        }
         if(!input.MenuOpenClosedInput && !input.OpenSkillMenuInput)return;
         var tab=input.MenuOpenClosedInput?PartyMenuTab.Inventory:PartyMenuTab.Skills;
         if(PartyMenu!=null && dialogs.Current==PartyMenu)PartyMenu.Shortcut(tab);
@@ -168,13 +209,18 @@ public sealed class OverworldMenuManager : MonoBehaviour
     }
     public void OpenPartyMenu(PartyMenuTab tab)
     {
-        if(!world.IsReady || world.IsMoving || world.Context.IsSandbox || Interaction!=null ||
+        if(!world.IsReady || world.IsMoving || world.Context.IsSandbox && world.ShowSandboxControls || Interaction!=null ||
             Common.Instance.Travel.IsTransitioning || Common.Instance.GlobalSettings.IsOpen || AutoplayRunner.BlocksPlayerInput ||
             Opened && dialogs.Current != PartyMenu || !Opened && MenuUIInputModule.Active?.HasDialog == true)return;
-        if(PartyMenu==null)PartyMenu=global::PartyMenu.Create(transform);
+        ShowPartyMenu(tab);
+    }
+    private void ShowPartyMenu(PartyMenuTab tab)
+    {
+        EnsurePickers();
         PartyMenu.Setup(new OverworldPartyMenuContext(world),tab,Common.Instance.GameSaveData.ProtagonistId);
+        PartyMenu.CloseAction=EndGateInteraction;
         dialogs.Open(PartyMenu);
     }
     private void LateUpdate()=>dialogs.Tick();
-    private void OnDisable(){if(dialogs.Opened)dialogs.CloseAll();Interaction?.Dispose();Interaction=null;}
+    private void OnDisable(){if(dialogs.Opened)dialogs.CloseAll();EndGateInteraction();}
 }

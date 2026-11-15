@@ -11,6 +11,7 @@ public sealed class OverworldTerrainCache
     private CampaignContext context;
     private TileWorldCreatorAsset template;
     private string artIdentity;
+    private bool includesSettlements;
     private TileWorldCreatorAsset asset;
     private Dictionary<string, WorldMap> maps;
     private GameObject world;
@@ -25,7 +26,7 @@ public sealed class OverworldTerrainCache
 
     public bool TryRestore(CampaignContext current, CampaignOverworld map, OverworldScene view)
     {
-        if (!IsBuilt || !ReferenceEquals(context, current) || template != map.EffectiveTemplate || artIdentity != DioramaArtIdentity.For(map)) return false;
+        if (!IsBuilt || !ReferenceEquals(context, current) || template != map.EffectiveTemplate || artIdentity != DioramaArtIdentity.For(map) || includesSettlements != map.IncludeSettlements) return false;
         map.UseCachedTerrain(current.Grid, asset, maps, world);
         map.GetComponent<OverworldBiomeRenderer>()?.UseCachedSurfaces(surfaces);
         activeView = view;
@@ -38,6 +39,7 @@ public sealed class OverworldTerrainCache
         Clear();
         var creator = map.GetComponent<TileWorldCreator>();
         context = current; template = map.EffectiveTemplate; artIdentity = DioramaArtIdentity.For(map);
+        includesSettlements = map.IncludeSettlements;
         asset = map.ReleaseGeneratedAssetOwnership();
         maps = creator.generatedBlueprintMaps;
         world = creator.worldObject;

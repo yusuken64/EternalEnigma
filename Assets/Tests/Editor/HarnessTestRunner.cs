@@ -10,6 +10,10 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Townsfolk Hints")]
+    public static void RunTownsfolkHints() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownAmbientGameplayTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Camera Backdrops")]
     public static void RunCameraBackdrops() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.CameraBackdropTests", "EternalEnigma.Tests.CameraZoomTests");
@@ -1198,6 +1202,23 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.TownGameplayTests.TownInventoryUsesSharedActionMenuAndSavesEquipment",
         "EternalEnigma.Tests.CombatEffectPlaybackTests.EachValidCastCreatesAHistoryEventAndInvalidCastsDoNot",
         "EternalEnigma.Tests.CastingAndPiercingTests.MultiplePrimaryActionsChargeAndReleaseInOneTurn");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Gate Interactions")]
+    public static void RunGateInteractions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OverworldSceneTests.LockChooserOffersEveryAcquiredOptionAndCancelsWithoutOpening",
+        "EternalEnigma.Tests.OverworldSceneTests.UniqueCampaignRewardUsesTheSameNameInPopupMenuAndGateAction",
+        "EternalEnigma.Tests.OverworldSceneTests.CapabilityTargetingRetainsProgressAndRejectsStaleTargets",
+        "EternalEnigma.Tests.CampaignTravelTests.DungeonEntryApprovalCancellationAndCapabilitiesUseOverworldDialogs",
+        "EternalEnigma.Tests.ControllerFlowTests.CombatMovementAttackSkillTargetCancelAndConfirmUseControllerOnly");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Lock Test Lab")]
+    public static void RunLockTestLab() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.LockTestLabTests",
+        "EternalEnigma.Tests.OverworldSceneTests.LockChooserOffersEveryAcquiredOptionAndCancelsWithoutOpening",
+        "EternalEnigma.Tests.OverworldSceneTests.CapabilityTargetingRetainsProgressAndRejectsStaleTargets");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Lock Models")]
+    public static void RunLockModels() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode", "EternalEnigma.Tests.OverworldLockVisualTests");
 
     private static void Run(TestMode mode, string filter, params string[] testFilters)
     {

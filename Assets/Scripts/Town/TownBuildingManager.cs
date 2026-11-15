@@ -21,13 +21,15 @@ public class TownBuildingManager : MonoBehaviour
             building.Definition = definition;
             building.Name = definition.DisplayName;
             building.TilemapPosition = positions[i];
-            // The door marker remains the approach and interaction cell. A bodyless
+            // The door marker remains the approach cell. A bodyless
             // fallback has no front wall to mount the entrance on.
             var door = positions[i].ToGridPoint();
             var front = new GridPoint(door.X, door.Y + 1);
             var hasBody = plan.Footprints.Count > 0
                 ? plan.Footprints.Any(f => f.Door.Equals(door) && f.Cells.Count > 0)
                 : plan.Layers[TownLayers.Houses].At(front) || plan.Layers[TownLayers.ShopFloor].At(front);
+            building.InteractionPosition = positions[i] +
+                (definition.DialogId == "entrance" && hasBody ? Vector3Int.up : Vector3Int.zero);
             building.transform.position = map.CellToWorld(positions[i] + (hasBody ? Vector3Int.up : Vector3Int.zero));
             BiomeModel.ApplyAll(building.gameObject, map.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current ?? EternalEnigma.Core.World.OverworldBiome.Grassland);
             if (hasBody)

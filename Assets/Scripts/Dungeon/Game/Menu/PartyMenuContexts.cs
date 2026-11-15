@@ -12,6 +12,7 @@ public abstract class PartyMenuContext : IPartyMenuContext
     public IReadOnlyList<PartyMenuHero> Heroes => heroes;
     protected abstract List<InventoryItem> Bag { get; }
     protected virtual CampaignContext Campaign => null;
+    public bool ShowAllCapabilitiesByDefault => Campaign?.IsSandbox == true;
     protected const string CapabilityUseHint = "Use capabilities by interacting with matching objects in the world.";
     protected IEnumerable<Skill> Skills(PartyMenuHero hero)
     {
@@ -58,15 +59,19 @@ public abstract class PartyMenuContext : IPartyMenuContext
                 return CampaignRewardNames.Purpose(capability) + "\n\nFound in the chest at home.\n\n" +
                     (context.State.HomeDoorUnlocked ? "Front door unlocked." :
                         "Face your front door and press " + InputPrompts.Attack + " to use it.");
-            return capability.DisplayName() + "\n" + CampaignRewardNames.Purpose(capability) +
-                "\nProvided by " + CampaignGuidance.CapabilitySource(context, capability,
-                    id => CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? id) + "\n" +
+            string provider = CampaignGuidance.CapabilitySource(context, capability,
+                id => CampaignParty.Resolve(id, TownSceneLoader.Default)?.Name ?? id);
+            string category = CampaignRewardNames.Name(context, capability) == capability.DisplayName() ? "" : capability.DisplayName() + "\n";
+            return category + CampaignRewardNames.Purpose(capability) + "\n" +
+                (provider == "Permanent" ? "Permanently acquired." : "Provided by " + provider) + "\n" +
                 (context.Held.Contains(capability) ? "Available" :
                     "To use this, add the required companion to your travelling party at a town.");
         }
         return CampaignGuidance.Acquired(context).Select(capability => new PartyMenuEntry {
+            Capability = capability,
+            SpentCapability = !CapabilityUsage.HasRemainingUse(context, capability),
             Title = CampaignRewardNames.Name(context, capability), Section = "Acquired capabilities",
-            Description = Describe(capability)
+            Description = Describe(capability) + (CapabilityUsage.HasRemainingUse(context, capability) ? "" : "\n\nNo remaining uses. Kept in your records.")
         }).ToList();
     }
     protected virtual Stats StatsFor(PartyMenuHero hero) => hero.DungeonActor != null ? hero.DungeonActor.FinalStats : TownUtilityService.StatsFor(hero.TownActor);
@@ -247,6 +252,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
             if(live==null)continue;
             RestoreHero(live,data,bag.Add);Add(live);
         }
+        if (heroes.Count == 0 && world.Context.IsSandbox) Add(world.Player);
     }
     public static void RestoreHero(TownAlly live,TownAllyData data, Action<InventoryItem> displaced = null)
     {
@@ -259,6 +265,19 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         live.RefreshEquipmentVisuals();
         live.EnsureStartingSkills();
     }
+    public override List<PartyMenuEntry> Entries(PartyMenuHero hero, PartyMenuTab tab)
+    {
+        var entries = base.Entries(hero, tab);
+        if (tab == PartyMenuTab.Capabilities)
+            entries.AddRange(world.CollectedKeys.Select(key => new PartyMenuEntry {
+                KeyId = key, Title = world.Campaign.KeyLabel(key), Section = "Acquired keys",
+                SpentCapability = !CapabilityUsage.HasRemainingKeyUse(world.Context, key),
+                Description = CapabilityUsage.HasRemainingKeyUse(world.Context, key) ? "Use this key on a nearby gate." :
+                    world.Campaign.Routes.Any(route => route.KeyId == key) ? "All matching gates are open. Kept in your records." : "Recorded campaign progress.",
+                Icon = Resources.Load<Sprite>("UI/ItemIcons/Key")
+            }));
+        return entries;
+    }
     public override bool Spend(PartyMenuHero hero, HeroAttribute attribute)
     {
         if(!AttributeSpending.TrySpend(hero.TownActor,attribute))return false;
@@ -267,10 +286,17 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
         data.Attributes=hero.TownActor.Attributes;data.Hp=hero.TownActor.Hp;data.Mana=hero.TownActor.Mana;
         CampaignParty.Capture(common);SaveSystem.Capture(common);return true;
     }
-    public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Item==null && entry.Skill==null?CapabilityUseHint:entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
+    public override string Restriction(PartyMenuHero hero,PartyMenuEntry entry)=> entry.Capability.HasValue || entry.KeyId!=null?"":entry.Item==null && entry.Skill==null?CapabilityUseHint:entry.Item is EquipableInventoryItem?"Equipment can be changed while travelling.":
         entry.Skill?.ActivationType==ActivationType.Passive?base.Restriction(hero,entry):"Inspect only while travelling. Use items and recovery skills in town, or actions in a dungeon.";
     public override List<PartyMenuAction> Actions(PartyMenuHero hero,PartyMenuEntry entry)
     {
+        if (entry.Capability.HasValue || entry.KeyId != null)
+        {
+            LockAction action = entry.Capability.HasValue ? new CapabilityLockAction(entry.Capability.Value) : new KeyLockAction(entry.KeyId);
+            var manager = world.GetComponent<OverworldMenuManager>();
+            return new() { new PartyMenuAction { Label = "Use", UnavailableReason = manager.GateActionRestriction(action),
+                Execute = menu => manager.UseGateAction(action, entry.Title) } };
+        }
         if(entry.Item is not EquipableInventoryItem equipment)
         {
             if(entry.Item==null && entry.Skill==null || entry.Skill?.ActivationType==ActivationType.Passive)return new();

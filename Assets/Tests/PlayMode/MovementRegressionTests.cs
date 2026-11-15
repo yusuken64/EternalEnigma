@@ -92,6 +92,60 @@ public class MovementRegressionTests
     }
 
     [UnityTest]
+    public IEnumerator TownDungeonPromptsOnlyWhenMovingIntoTheEntrance()
+    {
+        yield return harness.LoadTown(new TestScenario().CreateSave());
+        var town = Object.FindFirstObjectByType<Town>();
+        var player = town.TownPlayer;
+        var hero = player.ControllingTownAlly;
+        var manager = Object.FindFirstObjectByType<TownMenuManager>();
+        var entrance = town.TownBuildings.Single(b => b.Definition.DialogId == "entrance");
+        var door = entrance.TilemapPosition;
+        var approach = door + Vector3Int.down;
+        hero.TilemapPosition = approach;
+        hero.transform.position = town.WalkableMap.CellToWorld(approach);
+
+        IEnumerator Move(Vector3Int direction, bool hold = false)
+        {
+            Input(direction, hold);
+            Decide(player);
+            Input(Vector3Int.zero, false);
+            yield return harness.WaitUntil(() => !player.IsBusy, "town entrance movement");
+        }
+
+        yield return Move(Vector3Int.up);
+        Assert.That(hero.TilemapPosition, Is.EqualTo(door));
+        Assert.That(manager.DialogStack, Is.Empty, "Arriving in front of the dungeon must not open its prompt.");
+
+        yield return Move(Vector3Int.up, hold: true);
+        Assert.That(hero.CurrentFacing, Is.EqualTo(Facing.Up));
+        Assert.That(manager.DialogStack, Is.Empty, "Turning toward the dungeon must not enter it.");
+        yield return Move(new Vector3Int(1, 1));
+        Assert.That(hero.TilemapPosition, Is.EqualTo(door));
+        Assert.That(manager.DialogStack, Is.Empty, "A diagonal step must not enter the doorway.");
+
+        yield return Move(Vector3Int.up);
+        Assert.That(manager.CurrentDialog, Is.TypeOf<EntranceDialog>());
+        Assert.That(manager.DialogStack.Count, Is.EqualTo(1));
+        Assert.That(hero.TilemapPosition, Is.EqualTo(door), "The dungeon facade is not a walkable town room.");
+
+        ((EntranceDialog)manager.CurrentDialog).Cancel_Clicked();
+        yield return null;
+        yield return harness.WaitUntil(() => !player.IsBusy, "cancel dungeon entrance");
+        Assert.That(manager.DialogStack, Is.Empty);
+        Assert.That(hero.TilemapPosition, Is.EqualTo(door), "Cancel should leave the party at the entrance.");
+
+        yield return Move(Vector3Int.down);
+        Assert.That(hero.TilemapPosition, Is.EqualTo(approach));
+        Assert.That(manager.DialogStack, Is.Empty);
+        yield return Move(Vector3Int.up);
+        Assert.That(manager.DialogStack, Is.Empty);
+        yield return Move(Vector3Int.up);
+        Assert.That(manager.CurrentDialog, Is.TypeOf<EntranceDialog>(), "The entrance remains usable after canceling.");
+        ((EntranceDialog)manager.CurrentDialog).Cancel_Clicked();
+    }
+
+    [UnityTest]
     public IEnumerator TownInputStillTurnsInPlaceThenMovesAndRecordsTrail()
     {
         yield return harness.LoadTown(new TestScenario().CreateSave());

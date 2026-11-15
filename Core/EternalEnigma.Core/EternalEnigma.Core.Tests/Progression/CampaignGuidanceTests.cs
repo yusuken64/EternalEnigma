@@ -22,7 +22,8 @@ public sealed class CampaignGuidanceTests
         string town = "town-0";
         var exit = c.Campaign.Routes.Single(r=>r.IsTownExit && r.From==town);
         var hint = CampaignGuidance.TownHint(c,town);
-        Assert.Contains(exit.LockText!,hint);
+        Assert.StartsWith("Clear ",hint);
+        Assert.DoesNotContain(exit.LockText!,hint);
         Assert.Contains(c.Campaign.KeyLabel(exit.KeyId!),hint);
         Assert.Contains("here in town",hint);
         c.Resolved.UnionWith(c.Campaign.Routes.Select(r=>r.Id));
@@ -30,23 +31,133 @@ public sealed class CampaignGuidanceTests
     }
 
     [Fact]
-    public void AlternativesPairsSourcesAndAcquiredGuidanceAreExplicit()
+    public void OpeningAdviceAdvancesOneErrandAtATime()
     {
-        var c = new CampaignContext(new(OverworldLaunchMode.Campaign,42));
-        var capabilities=c.Campaign.Companions.Select(a=>a.Capability).Distinct().Take(3).ToArray();
-        var route=new CampaignRoute("test","town-0","checkpoint-1",new Requirement(CapabilitySet.Of(capabilities[0],capabilities[1]),CapabilitySet.Of(capabilities[2])),LockForm.Obstacle,true,lockText:"An ancient barrier.");
-        c.Resolved.UnionWith(c.Campaign.Routes.Where(r=>r!=route).Select(r=>r.Id));
-        var hint=CampaignGuidance.DescribeLock(c,"town-0",route);
-        Assert.Contains("alternatively",hint);Assert.Contains("both",hint);
-        foreach(var capability in route.Requirement.Alternatives.SelectMany(a=>a.Values).Distinct())
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        c.State.RequiresOpeningPreparation = true;
+        Assert.Equal("Collect your free bread at the bakery.", CampaignGuidance.TownHint(c, "town-0"));
+        c.State.BoughtOpeningBread = true;
+        Assert.Equal("Learn your first ability at the trainer.", CampaignGuidance.TownHint(c, "town-0"));
+        c.State.LearnedOpeningSkill = true;
+        Assert.Equal("Sleep and save in your bed at home.", CampaignGuidance.TownHint(c, "town-0"));
+        Assert.False(c.IsGridGenerated);
+    }
+
+    [Fact]
+    public void OwnedKeyPointsToItsGateInsteadOfRepeatingItsSource()
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var route = c.Campaign.Routes.Single(r => r.Id == "starter-exit");
+        c.Keys.Add(route.KeyId!);
+        var hint = CampaignGuidance.DescribeLock(c, "town-0", route);
+        Assert.StartsWith("Use " + c.Campaign.KeyLabel(route.KeyId!) + " at the gate toward ", hint);
+        Assert.Contains(CampaignGuidance.LocationName(c, route.To), hint);
+        Assert.Contains("from here", hint);
+        Assert.DoesNotContain("dungeon", hint);
+        Assert.DoesNotContain(route.LockText!, hint);
+    }
+
+    [Fact]
+    public void OwnedAlternativeIsPreferredAndBenchedCompanionIsNamed()
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var companions = c.Campaign.Companions.GroupBy(a => a.Capability).Select(g => g.First()).Take(3).ToArray();
+        var route = new CampaignRoute("test", "town-0", "checkpoint-1",
+            new Requirement(CapabilitySet.Of(companions[0].Capability, companions[1].Capability), CapabilitySet.Of(companions[2].Capability)), LockForm.Obstacle);
+        c.Roster.Add(companions[2].Id);
+        var hint = CampaignGuidance.DescribeLock(c, "town-0", route, _ => "Casey");
+        Assert.Equal("Add Casey to your party here in town to use " + CampaignRewardNames.Name(c, companions[2].Capability) + ".", hint);
+        c.Active.Add(companions[2].Id);
+        hint = CampaignGuidance.DescribeLock(c, "town-0", route, _ => "Casey");
+        Assert.StartsWith("Use " + CampaignRewardNames.Name(c, companions[2].Capability) + " at the gate", hint);
+        Assert.DoesNotContain("alternatively", hint);
+        Assert.DoesNotContain(CampaignRewardNames.Name(c, companions[0].Capability), hint);
+    }
+
+    [Fact]
+    public void PairedRequirementGivesOnlyTheRemainingRecruitmentStep()
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var companions = c.Campaign.Companions.GroupBy(a => a.Capability).Select(g => g.First()).Take(2).ToArray();
+        var route = new CampaignRoute("test", "town-0", "checkpoint-1",
+            new Requirement(CapabilitySet.Of(companions[0].Capability, companions[1].Capability)), LockForm.Obstacle);
+        c.Roster.Add(companions[0].Id);
+        c.Active.Add(companions[0].Id);
+        var source = c.Campaign.Sources.First(s => s.CompanionId == companions[1].Id);
+        var hint = CampaignGuidance.DescribeLock(c, "town-0", route, _ => "Riley");
+        Assert.StartsWith("Recruit Riley at ", hint);
+        Assert.Contains(CampaignGuidance.LocationName(c, source.LocationId), hint);
+        Assert.Contains("from here", hint);
+        Assert.DoesNotContain(CampaignRewardNames.Name(c, companions[0].Capability), hint);
+    }
+
+    [Fact]
+    public void ReadyPairIsOneGateActionUsingBothCapabilities()
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var companions = c.Campaign.Companions.GroupBy(a => a.Capability).Select(g => g.First()).Take(2).ToArray();
+        var route = new CampaignRoute("test", "town-0", "checkpoint-1",
+            new Requirement(CapabilitySet.Of(companions[0].Capability, companions[1].Capability)), LockForm.Obstacle);
+        c.Roster.UnionWith(companions.Select(a => a.Id));
+        c.Active.UnionWith(companions.Select(a => a.Id));
+        var hint = CampaignGuidance.DescribeLock(c, "town-0", route);
+        Assert.StartsWith("Use ", hint);
+        foreach (var companion in companions) Assert.Contains(CampaignRewardNames.Name(c, companion.Capability), hint);
+        Assert.Contains(" and ", hint);
+        Assert.Contains(" at the gate toward ", hint);
+        Assert.DoesNotContain("alternatively", hint);
+    }
+
+    [Fact]
+    public void ConverterAdviceFirstNamesTheMissingPrerequisite()
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var route = new CampaignRoute("test", "town-0", "checkpoint-1", new Requirement(CapabilitySet.Of(Capability.Boat)), LockForm.Obstacle);
+        var engineering = c.Campaign.Sources.First(s => s.Capability == Capability.Engineering);
+        var hint = CampaignGuidance.DescribeLock(c, "town-0", route);
+        Assert.StartsWith("Collect " + CampaignRewardNames.Name(c, Capability.Engineering) + " at ", hint);
+        Assert.Contains(CampaignGuidance.LocationName(c, engineering.LocationId), hint);
+        Assert.DoesNotContain(CampaignRewardNames.Name(c, Capability.Boat), hint);
+        c.Position = c.Grid.Locations[engineering.LocationId];
+        Assert.True(c.Claim(engineering.Id));
+        var boat = c.Campaign.Sources.First(s => s.Capability == Capability.Boat);
+        hint = CampaignGuidance.DescribeLock(c, "town-0", route);
+        Assert.StartsWith("Collect " + CampaignRewardNames.Name(c, Capability.Boat) + " at ", hint);
+        Assert.Contains(CampaignGuidance.LocationName(c, boat.LocationId), hint);
+    }
+
+    [Fact]
+    public void BridgeAdviceHandlesEntryRequirementsBeforeNamingItsCompletionAction()
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        var route = c.Campaign.Routes.First(r => r.CompletionLocationId != null);
+        var hint = CampaignGuidance.DescribeLock(c, "town-3", route, _ => "Rowan");
+        Assert.StartsWith("Recruit Rowan at ", hint);
+        var companion = c.Campaign.Companions.Single(a => a.Capability == Capability.Icewalk);
+        c.Roster.Add(companion.Id);
+        c.Active.Add(companion.Id);
+        hint = CampaignGuidance.DescribeLock(c, "town-3", route);
+        Assert.StartsWith("Reach the far end of ", hint);
+        Assert.Contains(CampaignGuidance.LocationName(c, route.CompletionLocationId!), hint);
+        Assert.Contains("from here", hint);
+        Assert.DoesNotContain(route.LockText!, hint);
+    }
+
+    [Theory]
+    [InlineData(0)] [InlineData(42)] [InlineData(12345)]
+    public void GeneratedGateHintsHaveOneInstructionAndNoAlternativeLists(int seed)
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, seed));
+        foreach (var route in c.Campaign.Routes.Where(r => r.HasGate && (r.Required || r.IsTownExit)))
         {
-            Assert.Contains(CampaignRewardNames.Name(c,capability),hint);
-            foreach(var source in c.Campaign.Sources.Where(s=>s.Capability==capability))
-                Assert.Contains(CampaignGuidance.Location(c,"town-0",source.LocationId),hint);
+            var hint = CampaignGuidance.DescribeLock(c, "town-0", route, _ => "Casey");
+            Assert.NotEmpty(hint);
+            Assert.EndsWith(".", hint);
+            Assert.DoesNotContain(". ", hint);
+            Assert.DoesNotContain(";", hint);
+            Assert.DoesNotContain("alternatively", hint);
+            Assert.DoesNotContain("The way leads", hint);
         }
-        c.Roster.UnionWith(c.Campaign.Companions.Select(a=>a.Id));
-        hint=CampaignGuidance.DescribeLock(c,"town-0",route);
-        Assert.Contains("travelling party",hint);
     }
 
     [Fact]

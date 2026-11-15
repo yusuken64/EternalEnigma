@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using EternalEnigma.Core.World;
 using EternalEnigma.Core.Capabilities;
+using EternalEnigma.Core.Generation;
 using EternalEnigma.Core.Progression;
 using NUnit.Framework;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace EternalEnigma.Tests
         private Scene scene;
         private Keyboard keyboard;
         private Gamepad pad;
+        private Mouse mouse;
 
         [UnityTest]
         public IEnumerator GateUnlockAudioOnlyPlaysForANewUnlock()
@@ -206,19 +208,21 @@ namespace EternalEnigma.Tests
                 context.Gates.IsWalkable(p, context.Held) && context.Gates.Nearby(p).Any(r => r.Id == route.Id));
             Assert.That(menu.ChooseGate(route), Is.True);
             yield return null;
-            var picker = menu.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p => p.Owner != null);
-            var button = picker.Rows.GetComponentsInChildren<AuthoredButton>()
-                .Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text == name);
-            Assert.That(button.Button.interactable, Is.True);
+            Assert.That(menu.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Capabilities));
+            var button = menu.PartyMenu.EntryButtons.Single(b => b.GetComponentInChildren<TMPro.TMP_Text>().text == name);
+            Assert.That(button.interactable, Is.True);
             Directory.CreateDirectory("Temp/CampaignKeys");
             ScreenCapture.CaptureScreenshot("Temp/CampaignKeys/named-gate-action.png");
             yield return new WaitForEndOfFrame();
-            Assert.That(button.Label.isTextOverflowing, Is.False, "The long generated reward name must fit its action button.");
-            button.Button.onClick.Invoke();
+            Assert.That(button.GetComponentInChildren<TMPro.TMP_Text>().isTextOverflowing, Is.False, "The long generated reward name must fit its action button.");
+            yield return UseGateEntry(menu, name);
+            Assert.That(context.Resolved.Contains(route.Id), Is.False);
+            Assert.That(menu.TargetDialog.TargetRouteId, Is.EqualTo(route.Id));
+            Assert.That(menu.TargetDialog.TerminalLabel, Does.Contain(name));
+            menu.TargetDialog.ConfirmTarget();
             yield return null;
             Assert.That(context.Resolved.Contains(route.Id), Is.True);
-            Assert.That(Common.Instance.MessageDialog.PromptText.text, Does.Contain(name));
-            yield return AcknowledgeKeyAnnouncement();
+            Assert.That(menu.Opened, Is.False);
         }
 
         [UnityTest] public IEnumerator RoadSignOpensTownAndLandmarkDirectionsWithoutChangingProgression()
@@ -305,94 +309,220 @@ namespace EternalEnigma.Tests
         [UnityTest]
         public IEnumerator LockChooserOffersEveryAcquiredOptionAndCancelsWithoutOpening()
         {
-            Common.Instance.BeginSandbox(42);
-            var context=Common.Instance.CampaignContext;
-            context.Roster.UnionWith(context.Campaign.Companions.Select(c=>c.Id));
-            var route=context.Campaign.Routes.First(r=>r.ShortcutKind==ShortcutKind.Keyed && context.Grid.Locks.Any(g=>g.RouteId==r.Id));
-            var gate=context.Grid.Locks.First(g=>g.RouteId==route.Id);
-            context.Position=gate.Cells.SelectMany(OverworldMovement.Neighbors).First(p=>context.Gates.IsWalkable(p,context.Held) && context.Gates.Nearby(p).Any(r=>r.Id==route.Id));
+            var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
+            Common.Instance.CampaignContext = context;
+            context.State.Scene = "Overworld";
+            context.Roster.UnionWith(context.Campaign.Companions.Select(c => c.Id));
+            var route = context.Campaign.Routes.Single(r => r.Id == "starter-exit");
+            var gate = context.Grid.Locks.Single(g => g.RouteId == route.Id);
+            context.Position = gate.Cells.SelectMany(OverworldMovement.Neighbors).First(p =>
+                context.Gates.IsWalkable(p, context.Held) && context.Gates.Nearby(p).Any(r => r.Id == route.Id));
             context.Keys.Add("wrong key"); context.Keys.Add(route.KeyId);
-            yield return SceneManager.LoadSceneAsync("Overworld",LoadSceneMode.Additive);
-            scene=SceneManager.GetSceneByName("Overworld");
-            var world=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<OverworldScene>()).Single();
-            yield return harness.WaitUntil(()=>world.IsReady,"lock chooser world");
-            Assert.That(world.OpenGate(route.Id),Is.True);
+            keyboard = InputSystem.AddDevice<Keyboard>();
+            pad = InputSystem.AddDevice<Gamepad>();
+            yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+            scene = SceneManager.GetSceneByName("Overworld");
+            var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+            yield return harness.WaitUntil(() => world.IsReady && !Common.Instance.Travel.IsTransitioning, "gate capabilities menu");
+            var menu = world.GetComponent<OverworldMenuManager>();
+            var feed = AuthoredUI.Require<GameMessages>(world.transform);
+            var visual = world.GetComponentsInChildren<OverworldLockVisual>().Single(v => v.name == "Shortcut " + route.Id);
+            Assert.That(visual.Portcullis.activeInHierarchy, Is.True);
+            Assert.That(visual.GetComponentsInChildren<MeshRenderer>().Where(r => r.enabled).All(r => r.sharedMaterial != null && r.sharedMaterial.shader.isSupported), Is.True);
+            Directory.CreateDirectory("Temp/GateInteractions");
+            CaptureOverview(world, "Temp/GateInteractions/closed-gate.png", gate.Cells[0]);
+
+            Assert.That(world.OpenGate(route.Id), Is.True);
             yield return null;
-            var menu=world.GetComponent<OverworldMenuManager>();
-            var picker=menu.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p=>p.Owner!=null);
-            Assert.That(context.Gates.NeedsOpening(route),Is.True);
-            Assert.That(world.TryMove(1,0),Is.False);
-            Assert.That(world.OpenGate(route.Id),Is.False);
-            var buttons=picker.Rows.GetComponentsInChildren<AuthoredButton>();
-            Assert.That(buttons.Length,Is.EqualTo(CampaignGuidance.Acquired(context).Count()+2));
-            Assert.That(buttons.All(b=>b.Button.interactable),Is.True,"Benched capabilities remain selectable and explain their requirements.");
-            Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains(route.LockText)),Is.True);
-            Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Single(t=>t.name=="Interaction description").text,
-                Does.Not.Contain("to scroll").And.Not.Contain("for actions"));
-            var benched=CampaignGuidance.Acquired(context).First(capability=>!world.Held.Contains(capability));
-            var unavailable=buttons.Single(b=>b.GetComponentInChildren<TMPro.TMP_Text>().text.StartsWith(CampaignRewardNames.Name(context,benched)+" requires "));
-            unavailable.Button.Select();
-            unavailable.Button.onClick.Invoke();
-            Assert.That(picker.Title.text,Does.Contain("active party"));
-            Assert.That(context.Gates.NeedsOpening(route),Is.True);
-            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject,Is.SameAs(unavailable.Button.gameObject));
-            yield return null;
-            var wrong=buttons.Single(b=>b.GetComponentInChildren<TMPro.TMP_Text>().text=="wrong key");
-            wrong.Button.Select();
-            wrong.Button.onClick.Invoke();
-            Assert.That(picker.Title.text,Does.Contain("does not fit").And.Contain(context.Campaign.KeyLabel(route.KeyId)));
-            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject,Is.SameAs(wrong.Button.gameObject));
-            Assert.That(context.Gates.NeedsOpening(route),Is.True);
-            var correct=buttons.Single(b=>b.GetComponentInChildren<TMPro.TMP_Text>().text==context.Campaign.KeyLabel(route.KeyId));
-            correct.Button.onClick.Invoke();
-            Assert.That(context.Gates.NeedsOpening(route),Is.True,"A second submission in the same frame must be ignored.");
-            Directory.CreateDirectory("Temp/TravelVerification");
-            ScreenCapture.CaptureScreenshot("Temp/TravelVerification/lock-chooser.png");
+            Assert.That(menu.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Capabilities));
+            Assert.That(menu.PartyMenu.IsRoot, Is.True);
+            Assert.That(menu.PartyMenu.ShowAllCapabilities, Is.False);
+            Assert.That(menu.PartyMenu.EntryButtons.Count, Is.EqualTo(CampaignGuidance.Acquired(context).Count(c => CapabilityUsage.HasRemainingUse(context, c)) + 1));
+            Assert.That(menu.PartyMenu.SpentCapabilityCount, Is.EqualTo(1));
+            Assert.That(menu.PartyMenu.EntryButtons.Any(b => b.GetComponentInChildren<TMPro.TMP_Text>().text == "wrong key"), Is.False);
+            ScreenCapture.CaptureScreenshot("Temp/GateInteractions/useful-capabilities.png");
             yield return new WaitForEndOfFrame();
-            var read=picker.Rows.GetComponentInChildren<TrainerPreviewScroll>();
-            var move=new UnityEngine.EventSystems.AxisEventData(UnityEngine.EventSystems.EventSystem.current){moveDir=UnityEngine.EventSystems.MoveDirection.Down};
-            read.OnMove(move);
-            Assert.That(picker.scrollView.verticalNormalizedPosition,Is.LessThan(1));
-            Assert.That(read.navigation.selectOnRight,Is.Not.Null);
-            var cancelled=menu.Interaction;
-            picker.BackButton.onClick.Invoke();
-            Assert.That(cancelled.Closed,Is.True);
-            Assert.That(menu.Interaction,Is.Null);
-            Assert.That(context.Gates.NeedsOpening(route),Is.True);
+            string beforeFilter = JsonUtility.ToJson(context.Capture());
+            menu.PartyMenu.CapabilityFilterButton.Select();
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.South));
             yield return null;
-            context.Roster.Clear();context.Keys.Clear();
-            Assert.That(world.OpenGate(route.Id),Is.True);
+            InputSystem.QueueStateEvent(pad, new GamepadState());
             yield return null;
-            picker=menu.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p=>p.Owner!=null);
-            var missing=picker.Rows.GetComponentsInChildren<AuthoredButton>().Single();
-            Assert.That(missing.GetComponentInChildren<TMPro.TMP_Text>().text,Is.EqualTo(context.Campaign.KeyLabel(route.KeyId)));
-            Assert.That(missing.Button.interactable,Is.True);
-            missing.Button.Select();
-            missing.Button.onClick.Invoke();
-            Assert.That(picker.Title.text,Does.Contain("you do not have it").And.Contain(context.Campaign.KeyLabel(route.KeyId)));
-            Assert.That(context.Gates.NeedsOpening(route),Is.True);
-            Assert.That(context.Keys,Is.Empty);
-            Assert.That(menu.Interaction.Closed,Is.False);
-            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject,Is.SameAs(missing.Button.gameObject));
-            var description=picker.Rows.GetComponentInChildren<TrainerPreviewScroll>().GetComponent<TMPro.TMP_Text>();
-            description.text=string.Join("\n\n",Enumerable.Repeat(route.LockText,12));
-            picker.SetFirstSelect();
-            Assert.That(picker.scrollView.content.rect.height,Is.GreaterThan(picker.scrollView.viewport.rect.height));
-            Assert.That(description.isTextOverflowing,Is.False,"Long obstacle descriptions must remain readable in the scroll area.");
-            picker.BackButton.onClick.Invoke();
+            Assert.That(menu.PartyMenu.ShowAllCapabilities, Is.True);
+            Assert.That(menu.PartyMenu.EntryButtons.Count, Is.EqualTo(CampaignGuidance.Acquired(context).Count() + 2));
+            Assert.That(JsonUtility.ToJson(context.Capture()), Is.EqualTo(beforeFilter), "Filtering must never discard ownership or alter progression.");
+            Assert.That(menu.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Any(p => p.Owner != null), Is.False);
+            Assert.That(feed.History.Any(text => text.Contains(route.LockText)), Is.True);
+            Assert.That(menu.PartyMenu.Details.text, Does.Not.Contain(route.LockText));
+            Assert.That(world.TryMove(1, 0), Is.False);
+            Assert.That(world.OpenGate(route.Id), Is.False);
+            var benched = CampaignGuidance.Acquired(context).First(capability => !world.Held.Contains(capability));
+            yield return UseGateEntry(menu, CampaignRewardNames.Name(context, benched));
+            Assert.That(menu.TargetDialog, Is.Null, "An unavailable companion cannot start targeting.");
+            Assert.That(feed.History.Last(), Does.Contain("active party"));
+            menu.PartyMenu.Owner.Current.CloseDialog();
+            yield return null;
+
+            yield return UseGateEntry(menu, "wrong key");
+            Assert.That(menu.TargetDialog.TargetRouteId, Is.EqualTo(route.Id));
+            Assert.That(context.Gates.NeedsOpening(route), Is.True, "Use must wait for a target confirmation.");
+            menu.TargetDialog.ConfirmTarget();
+            Assert.That(feed.History.Last(), Does.Contain("does not fit"));
+            Assert.That(menu.PartyMenu.Owner.Current, Is.SameAs(menu.TargetDialog));
+            Assert.That(visual.Portcullis.activeSelf, Is.True);
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.East));
+            yield return null;
+            InputSystem.QueueStateEvent(pad, new GamepadState());
+            yield return null;
+            Assert.That(menu.TargetDialog.gameObject.activeSelf, Is.False);
+            Assert.That(menu.PartyMenu.Owner.Current, Is.TypeOf<PartyMenuPicker>());
+            menu.PartyMenu.Owner.Current.CloseDialog();
+            yield return null;
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TMPro.TMP_Text>().text, Is.EqualTo("wrong key"));
+            var cancelled = menu.Interaction;
+            menu.PartyMenu.CloseDialog();
+            Assert.That(cancelled.Closed, Is.True);
+            Assert.That(menu.Interaction, Is.Null);
+            Assert.That(context.Gates.NeedsOpening(route), Is.True);
+
+            context.Roster.Clear(); context.Keys.Clear();
+            Assert.That(world.OpenGate(route.Id), Is.True);
+            yield return null;
+            Assert.That(menu.PartyMenu.EntryButtons, Is.Empty, "Do not invent missing keys in the acquired list.");
+            menu.PartyMenu.CloseDialog();
             context.Keys.Add(route.KeyId);
-            Assert.That(world.OpenGate(route.Id),Is.True);
+            Assert.That(world.OpenGate(route.Id), Is.True);
             yield return null;
-            picker=menu.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p=>p.Owner!=null);
-            correct=picker.Rows.GetComponentsInChildren<AuthoredButton>().Single(b=>b.GetComponentInChildren<TMPro.TMP_Text>().text==context.Campaign.KeyLabel(route.KeyId));
-            correct.Button.onClick.Invoke();
-            Assert.That(context.Gates.NeedsOpening(route),Is.False);
-            Assert.That(menu.Opened,Is.False);
-            Assert.That(context.Keys,Does.Contain(route.KeyId));
-            correct.Button.onClick.Invoke();
-            Assert.That(context.Opened.Count(id=>id==route.Id),Is.EqualTo(1));
+            yield return UseGateEntry(menu, context.Campaign.KeyLabel(route.KeyId));
+            Assert.That(menu.TargetDialog.TryPointTarget(world.ViewCamera.WorldToScreenPoint(world.CellCenterToWorld(gate.Cells[0]))), Is.True);
+            ScreenCapture.CaptureScreenshot("Temp/GateInteractions/targeting.png");
+            yield return new WaitForEndOfFrame();
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.South));
+            yield return null;
+            InputSystem.QueueStateEvent(pad, new GamepadState());
+            yield return null;
+            Assert.That(context.Gates.NeedsOpening(route), Is.False);
+            Assert.That(menu.Opened, Is.False);
+            Assert.That(context.Keys, Does.Contain(route.KeyId));
+            Assert.That(visual.gameObject.activeSelf, Is.True, "The masonry arch remains after unlocking.");
+            Assert.That(visual.Portcullis.activeSelf, Is.False);
+            CaptureOverview(world, "Temp/GateInteractions/open-gate.png", gate.Cells[0]);
+            menu.TargetDialog.ConfirmTarget();
+            Assert.That(context.Opened.Count(id => id == route.Id), Is.EqualTo(1));
+            menu.OpenPartyMenu(PartyMenuTab.Capabilities);
+            yield return null;
+            Assert.That(menu.PartyMenu.ShowAllCapabilities, Is.False, "Reopening starts with useful entries.");
+            Assert.That(menu.PartyMenu.EntryButtons, Is.Empty, "A spent key leaves the default list after its final gate.");
+            Assert.That(menu.PartyMenu.SpentCapabilityCount, Is.EqualTo(1));
+            Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(menu.PartyMenu.CapabilityFilterButton.gameObject));
+            menu.PartyMenu.CapabilityFilterButton.onClick.Invoke();
+            yield return null;
+            Assert.That(menu.PartyMenu.EntryButtons.Count, Is.EqualTo(1), "Show all retains the acquired key.");
+            Assert.That(context.Keys, Does.Contain(route.KeyId));
+            menu.PartyMenu.CloseDialog();
+            yield return SceneManager.UnloadSceneAsync(scene);
+            yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+            scene = SceneManager.GetSceneByName("Overworld");
+            world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+            yield return harness.WaitUntil(() => world.IsReady, "restored open gate");
+            visual = world.GetComponentsInChildren<OverworldLockVisual>().Single(v => v.name == "Shortcut " + route.Id);
+            Assert.That(visual.Portcullis.activeSelf, Is.False, "Opened gates stay visibly open after reloading.");
         }
 
+        [UnityTest]
+        public IEnumerator CapabilityTargetingRetainsProgressAndRejectsStaleTargets()
+        {
+            Directory.CreateDirectory("Temp/GateInteractions");
+            var gallery = new LockTestWorld();
+            var context = gallery.CreateContext();
+            Common.Instance.CampaignContext = context;
+            var route = context.Campaign.Routes.Single(candidate => candidate.Id == "test-compound");
+            var gate = context.Grid.Locks.First(g => g.RouteId == route.Id);
+            var approach = gate.Cells.SelectMany(OverworldMovement.Neighbors).First(p => context.Gates.IsWalkable(p, context.Held) &&
+                context.Gates.Nearby(p).Any(candidate => candidate.Id == route.Id));
+            var capabilities = route.Requirement.Alternatives.First(solution => solution.Count == 2).Values.ToArray();
+            context.Position = approach;
+            void ConfigureGallery(Scene loaded, LoadSceneMode mode)
+            {
+                if (loaded.name != "Overworld") return;
+                var view = loaded.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<OverworldScene>()).Single();
+                view.ShowSandboxControls = false; view.ShowLocationMarkers = false;
+            }
+            SceneManager.sceneLoaded += ConfigureGallery;
+            try { yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive); }
+            finally { SceneManager.sceneLoaded -= ConfigureGallery; }
+            scene = SceneManager.GetSceneByName("Overworld");
+            var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
+            yield return harness.WaitUntil(() => world.IsReady && !Common.Instance.Travel.IsTransitioning, "compound gate");
+            var menu = world.GetComponent<OverworldMenuManager>();
+            var held = context.Held;
+            Assert.That(world.OpenGate(route.Id), Is.True);
+            yield return null;
+            yield return UseGateEntry(menu, CampaignRewardNames.Name(context, capabilities[0]));
+            menu.TargetDialog.ConfirmTarget();
+            Assert.That(menu.PartyMenu.IsRoot, Is.True, "Partial progress returns to the capabilities list for the next action.");
+            Assert.That(context.Gates.NeedsOpening(route), Is.True);
+            var cancelled = menu.Interaction;
+            menu.PartyMenu.CloseDialog();
+            Assert.That(cancelled.Closed, Is.True);
+
+            Assert.That(world.OpenGate(route.Id), Is.True);
+            yield return null;
+            yield return UseGateEntry(menu, CampaignRewardNames.Name(context, capabilities[1]));
+            menu.TargetDialog.ConfirmTarget();
+            Assert.That(context.Gates.NeedsOpening(route), Is.True, "Closing the capabilities menu discards incomplete solutions.");
+            yield return null;
+            yield return UseGateEntry(menu, CampaignRewardNames.Name(context, capabilities[0]));
+            context.Position = context.Grid.PlayerStart;
+            menu.TargetDialog.ConfirmTarget();
+            Assert.That(context.Gates.NeedsOpening(route), Is.True, "A stale target cannot open a remote gate.");
+            Assert.That(menu.PartyMenu.IsRoot, Is.True);
+            Assert.That(menu.Interaction, Is.Null);
+            menu.PartyMenu.CloseDialog();
+            context.Position = approach;
+
+            bool terminal = TerminalMode.Requested;
+            mouse = InputSystem.AddDevice<Mouse>();
+            try
+            {
+                TerminalMode.SetRequested(true);
+                menu.OpenPartyMenu(PartyMenuTab.Capabilities);
+                yield return null;
+                foreach (var capability in capabilities)
+                {
+                    yield return UseGateEntry(menu, CampaignRewardNames.Name(context, capability));
+                    yield return new WaitForSecondsRealtime(.2f);
+                    var target = menu.TargetDialog;
+                    Assert.That(TerminalSceneSnapshots.Overworld(world).Target.ValidCells, Is.Not.Empty);
+                    Assert.That(target.TargetIndicator.activeSelf, Is.False, "Terminal targeting must not show a 3D ring.");
+                    Assert.That(TerminalRuntime.TryGetCellScreenPosition(target.TerminalSelectedCell.Value, out var point), Is.True);
+                    InputSystem.QueueStateEvent(mouse, new MouseState { position = point });
+                    yield return null; yield return null;
+                    ScreenCapture.CaptureScreenshot("Temp/GateInteractions/terminal-targeting.png");
+                    yield return new WaitForEndOfFrame();
+                    InputSystem.QueueStateEvent(mouse, new MouseState { position = point, buttons = 1 });
+                    yield return null;
+                    InputSystem.QueueStateEvent(mouse, new MouseState { position = point });
+                    yield return null;
+                }
+                Assert.That(context.Gates.NeedsOpening(route), Is.False);
+                Assert.That(menu.Opened, Is.False);
+                Assert.That(context.Held, Is.EqualTo(held), "Targeted capabilities are reusable and consume no inventory.");
+            }
+            finally { TerminalMode.SetRequested(terminal); }
+        }
+
+        private IEnumerator UseGateEntry(OverworldMenuManager menu, string label)
+        {
+            var row = menu.PartyMenu.EntryButtons.Single(button => button.GetComponentInChildren<TMPro.TMP_Text>().text == label);
+            row.Select(); row.onClick.Invoke();
+            yield return null;
+            var picker = (PartyMenuPicker)menu.PartyMenu.Owner.Current;
+            var use = picker.Rows.GetComponentsInChildren<AuthoredButton>().Single();
+            Assert.That(use.Label.text, Is.EqualTo("Use"));
+            use.Button.onClick.Invoke();
+            yield return null;
+        }
         [UnityTest]
         public IEnumerator CompanionWithoutAnimatorCanWalkAfterCachedTerrainReload()
         {
@@ -650,7 +780,8 @@ namespace EternalEnigma.Tests
                 Assert.That(world.TryMove(blocked.X - approach.X, blocked.Y - approach.Y), Is.False);
                 Assert.That(AutoplayRunner.TryGateActions(world, gate.RouteId), Is.True);
                 Assert.That(world.Message, Does.Contain("The way is now open!"));
-                Assert.That(gateMarkers.All(m => !m.activeSelf), Is.True);
+                Assert.That(gateMarkers.All(m => m.TryGetComponent<OverworldLockVisual>(out var visual) && visual.Portcullis != null
+                    ? !visual.Portcullis.activeSelf : !m.activeSelf), Is.True);
                 Assert.That(world.CanStep(approach, blocked), Is.True);
                 var reward = c.Sources.First(source => source.Capability == objective.RewardCapability);
                 yield return WalkTo(world, grid.Locations[reward.LocationId]); world.ClaimRewards(announceLocked: false); yield return AcknowledgeKeyAnnouncement();
@@ -811,6 +942,7 @@ namespace EternalEnigma.Tests
         {
             if (keyboard != null) InputSystem.RemoveDevice(keyboard);
             if (pad != null) InputSystem.RemoveDevice(pad);
+            if (mouse != null) InputSystem.RemoveDevice(mouse);
             if (scene.IsValid() && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
             yield return harness.Cleanup();
             inputScope.Dispose();

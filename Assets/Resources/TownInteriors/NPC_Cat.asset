@@ -15,5 +15,6 @@ MonoBehaviour:
   Id: Cat
   DisplayName: Mochi the Traveler
   Greeting: Every road has a story. This town smells like a good one!
+  DialogueTopics: []
   Prefab: {fileID: 8117372756656315288, guid: 6ada7068448102645bd371887c2dc0b3, type: 3}
   Portrait: {fileID: 21300000, guid: 8197c392e37daa34fa18fc5a08d4227b, type: 3}

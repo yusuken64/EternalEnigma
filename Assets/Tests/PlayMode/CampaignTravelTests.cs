@@ -96,7 +96,8 @@ namespace EternalEnigma.Tests
             context.Roster.UnionWith(context.Campaign.Companions.Select(c=>c.Id));
             menus.OpenPartyMenu(PartyMenuTab.Capabilities);
             yield return null;
-            Assert.That(menus.PartyMenu.EntryButtons.Count,Is.EqualTo(CampaignGuidance.Acquired(context).Count()));
+            Assert.That(menus.PartyMenu.EntryButtons.Count,Is.EqualTo(CampaignGuidance.Acquired(context).Count(c=>CapabilityUsage.HasRemainingUse(context,c))+
+                context.Keys.Count(key=>CapabilityUsage.HasRemainingKeyUse(context,key))));
             System.IO.Directory.CreateDirectory("Temp/TravelVerification");
             ScreenCapture.CaptureScreenshot("Temp/TravelVerification/capabilities.png");
             yield return null;

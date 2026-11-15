@@ -498,6 +498,474 @@ MonoBehaviour:
     Lod: 0
     Tree: 0
     Sockets: []
+  - Id: LockCliff1
+    Prefab: {fileID: 3827070467315917390, guid: d252acb7f4a2ae949938d9f0c5e8fe28, type: 3}
+    Height: 1.42
+    Width: 1.8367438
+    TargetHeight: 0
+    Triangles: 336
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockIceFloes1
+    Prefab: {fileID: 1696872992239485755, guid: 6e19c75d8f0d4634ea3312a689d04752, type: 3}
+    Height: 0.5168052
+    Width: 1.6058481
+    TargetHeight: 0
+    Triangles: 384
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockDrownedStair1
+    Prefab: {fileID: 4781607086642666578, guid: da5127219050725488d1722adba18758, type: 3}
+    Height: 0.295
+    Width: 1.63
+    TargetHeight: 0
+    Triangles: 660
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockVeil1
+    Prefab: {fileID: 3609587649891658919, guid: 05ea4cfc5223fa34195eddd3d8844747, type: 3}
+    Height: 1.32
+    Width: 1.7004972
+    TargetHeight: 0
+    Triangles: 740
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockAnchorGap1
+    Prefab: {fileID: 8407490717147521064, guid: 44656480bdd72fe4e9e2c99f26f951bd, type: 3}
+    Height: 1.18
+    Width: 1.9005688
+    TargetHeight: 0
+    Triangles: 724
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockBrokenDock1
+    Prefab: {fileID: 325769183081645477, guid: 7d1d8270789bb694a9f3673729040841, type: 3}
+    Height: 0.49
+    Width: 1.62
+    TargetHeight: 0
+    Triangles: 1020
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockCliff2
+    Prefab: {fileID: 8262343187577402323, guid: c6fbdeb0b5e2ef548a17ecc53020dc50, type: 3}
+    Height: 1.42
+    Width: 1.8298044
+    TargetHeight: 0
+    Triangles: 448
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockIceFloes2
+    Prefab: {fileID: 951357648384422679, guid: b335cd2b9c722dc44b8c38ba7020e1aa, type: 3}
+    Height: 0.5168052
+    Width: 1.6
+    TargetHeight: 0
+    Triangles: 412
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockDrownedStair2
+    Prefab: {fileID: 406335502943257816, guid: 5799a09284012fd4f925fab3a4d813fe, type: 3}
+    Height: 0.365
+    Width: 1.6
+    TargetHeight: 0
+    Triangles: 1140
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockVeil2
+    Prefab: {fileID: 7670110293357734345, guid: ba7774a7f4555804389a69cea8e9b238, type: 3}
+    Height: 1.42
+    Width: 1.7219174
+    TargetHeight: 0
+    Triangles: 908
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockAnchorGap2
+    Prefab: {fileID: 9181925522746496374, guid: c502e66621d7d76499cab542deecf205, type: 3}
+    Height: 1.18
+    Width: 1.8739436
+    TargetHeight: 0
+    Triangles: 976
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockBrokenDock2
+    Prefab: {fileID: 1927439902669033760, guid: 7d4433c8816270e46a5bea5911dc4781, type: 3}
+    Height: 0.49
+    Width: 1.62
+    TargetHeight: 0
+    Triangles: 1152
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockCliff3
+    Prefab: {fileID: 8745548738423563039, guid: 29ed453e98001f242bfbdca41aa6330c, type: 3}
+    Height: 1.42
+    Width: 1.8268672
+    TargetHeight: 0
+    Triangles: 860
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockIceFloes3
+    Prefab: {fileID: 7275574808014346480, guid: a057d3597d1fe454d9a447a5f8da49f6, type: 3}
+    Height: 0.5168052
+    Width: 1.6031868
+    TargetHeight: 0
+    Triangles: 440
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockDrownedStair3
+    Prefab: {fileID: 7784582865388797420, guid: 3550ebe4387e05a4bba5f6278b931e6d, type: 3}
+    Height: 0.99
+    Width: 1.6
+    TargetHeight: 0
+    Triangles: 900
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockVeil3
+    Prefab: {fileID: 6133172600606537577, guid: 5acf587de9c40254fa14e480126ca594, type: 3}
+    Height: 1.32
+    Width: 1.681153
+    TargetHeight: 0
+    Triangles: 1276
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockAnchorGap3
+    Prefab: {fileID: 7152453174995790148, guid: 704c0fd495ab5b64a824751c602647bd, type: 3}
+    Height: 1.18
+    Width: 1.8883862
+    TargetHeight: 0
+    Triangles: 976
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockBrokenDock3
+    Prefab: {fileID: 5407196225174482291, guid: fb3d4c35f337d6049a348756767f5d6c, type: 3}
+    Height: 0.49
+    Width: 1.62
+    TargetHeight: 0
+    Triangles: 1272
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockWaystone1
+    Prefab: {fileID: 1718250528996948979, guid: 9e9238882e754824f90bff92180683d6, type: 3}
+    Height: 1.61
+    Width: 1.1
+    TargetHeight: 0
+    Triangles: 576
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockWaystone2
+    Prefab: {fileID: 3010810136837693894, guid: d4d8e1c1d08c1bf498f28f6379245251, type: 3}
+    Height: 1.38
+    Width: 1.1
+    TargetHeight: 0
+    Triangles: 704
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockWaystone3
+    Prefab: {fileID: 1617451650102253997, guid: b43881fc3ef41e648994914fd4cd2dbc, type: 3}
+    Height: 1.64
+    Width: 1.1150731
+    TargetHeight: 0
+    Triangles: 680
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockWaystone4
+    Prefab: {fileID: 6112255524810945738, guid: d3a5b5877e2521442b1d202ca67fc069, type: 3}
+    Height: 1.69
+    Width: 1.1
+    TargetHeight: 0
+    Triangles: 584
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockWinch1
+    Prefab: {fileID: 2597494126573093071, guid: 8ebd6b713c13da542a67f2c685d51ef5, type: 3}
+    Height: 1.2182223
+    Width: 1.45
+    TargetHeight: 0
+    Triangles: 1164
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockWaterwheel1
+    Prefab: {fileID: 2269585284205691066, guid: e0041446f61208144a51557c7ec2d1b6, type: 3}
+    Height: 1.315
+    Width: 1.6
+    TargetHeight: 0
+    Triangles: 1812
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockWinch2
+    Prefab: {fileID: 3205400632039231773, guid: e73b9e2b3d1f0d44a9d6498b8ef72f51, type: 3}
+    Height: 1.2182223
+    Width: 1.45
+    TargetHeight: 0
+    Triangles: 1392
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockWaterwheel2
+    Prefab: {fileID: 9068025611399800887, guid: 36d007f6f930873498012da3da1315d8, type: 3}
+    Height: 1.5
+    Width: 1.645
+    TargetHeight: 0
+    Triangles: 1932
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockAltar1
+    Prefab: {fileID: 4005026772024320568, guid: 52b25af482e3ea348b161c3fbbcdf27a, type: 3}
+    Height: 0.795
+    Width: 1.35
+    TargetHeight: 0
+    Triangles: 332
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockAltar2
+    Prefab: {fileID: 3138203562932744469, guid: 4a1a83a2f9c8e3f42b29fcbf69013565, type: 3}
+    Height: 1.18
+    Width: 1.35
+    TargetHeight: 0
+    Triangles: 576
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockAltar3
+    Prefab: {fileID: 3411768125584566172, guid: 78a114357d25a4a4e869751ece65bdd4, type: 3}
+    Height: 0.65
+    Width: 1.35
+    TargetHeight: 0
+    Triangles: 592
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockFerry1
+    Prefab: {fileID: 8513351289422845565, guid: 2153272c61cdb2a4fb882d753fbd494d, type: 3}
+    Height: 0.67
+    Width: 1.61
+    TargetHeight: 0
+    Triangles: 756
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockFerry2
+    Prefab: {fileID: 1313835041186582697, guid: ded22f31e1c179742b9126aaa85f0c63, type: 3}
+    Height: 1.32
+    Width: 1.61
+    TargetHeight: 0
+    Triangles: 878
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGraves1
+    Prefab: {fileID: 2499079804093501701, guid: 3a649931ec6b2454d9faa7aec9bf0390, type: 3}
+    Height: 0.81
+    Width: 1.25
+    TargetHeight: 0
+    Triangles: 416
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGraves2
+    Prefab: {fileID: 1362205377955103786, guid: 6642c5c5106db594e93d33cc3f7e53d5, type: 3}
+    Height: 0.81
+    Width: 1.38
+    TargetHeight: 0
+    Triangles: 776
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGraves3
+    Prefab: {fileID: 8172715092238895093, guid: 118cf452a02063147852963f2fbd7d85, type: 3}
+    Height: 0.81
+    Width: 1.25
+    TargetHeight: 0
+    Triangles: 952
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockBelfry1
+    Prefab: {fileID: 2121337325768809459, guid: 7a481482dda833a45b29cab8552320d7, type: 3}
+    Height: 1.77
+    Width: 1.24
+    TargetHeight: 0
+    Triangles: 760
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockSurvey1
+    Prefab: {fileID: 3997358571560701652, guid: a083dc18634761c4a8c397a99493bb41, type: 3}
+    Height: 1.177445
+    Width: 1.52
+    TargetHeight: 0
+    Triangles: 544
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockBelfry2
+    Prefab: {fileID: 8762513119790679784, guid: 7448c95f614223749824346fd60b80cb, type: 3}
+    Height: 1.77
+    Width: 1.24
+    TargetHeight: 0
+    Triangles: 1000
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockSurvey2
+    Prefab: {fileID: 7682525059225153800, guid: bfbbd077dc28ff64db59bce520cc0c69, type: 3}
+    Height: 1.0449451
+    Width: 1.52
+    TargetHeight: 0
+    Triangles: 528
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockSickCart1
+    Prefab: {fileID: 2116374087218357074, guid: c994a6e0ae61cfb44966a87da9a8b58e, type: 3}
+    Height: 0.86822236
+    Width: 1.5024297
+    TargetHeight: 0
+    Triangles: 3324
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockSickCart2
+    Prefab: {fileID: 6531222545014665810, guid: b40c64f0c2081914d914b2a84971c91e, type: 3}
+    Height: 0.63
+    Width: 1.3442074
+    TargetHeight: 0
+    Triangles: 748
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockSickCart3
+    Prefab: {fileID: 5907967189450048649, guid: 3b72769334542e84ab2d13ab2ef9762c, type: 3}
+    Height: 1.1982224
+    Width: 1.5024297
+    TargetHeight: 0
+    Triangles: 3624
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockMine1
+    Prefab: {fileID: 7233865161700283655, guid: e7f610867d798da49aa32308f6842b75, type: 3}
+    Height: 1.42
+    Width: 1.5806863
+    TargetHeight: 0
+    Triangles: 800
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockMine2
+    Prefab: {fileID: 7516029067394947792, guid: 010271bf40fe66948a8adfc9d3c3a8b6, type: 3}
+    Height: 1.42
+    Width: 1.5545813
+    TargetHeight: 0
+    Triangles: 836
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGate1
+    Prefab: {fileID: 5020340294104396648, guid: 880b207355bc1944a8691f694bab4acc, type: 3}
+    Height: 1.37
+    Width: 1.55
+    TargetHeight: 0
+    Triangles: 1164
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGate2
+    Prefab: {fileID: 5027316508511248579, guid: c9c01c819d84d1541bc857205aa886b8, type: 3}
+    Height: 1.37
+    Width: 1.55
+    TargetHeight: 0
+    Triangles: 1068
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGate3
+    Prefab: {fileID: 3117634048582515680, guid: f819b346743a72948828bcae629aaf65, type: 3}
+    Height: 1.25
+    Width: 1.62
+    TargetHeight: 0
+    Triangles: 900
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGate4
+    Prefab: {fileID: 1564723909675220011, guid: ebe342ac0b9ea3e4491628d35cc5c408, type: 3}
+    Height: 1.37
+    Width: 1.5
+    TargetHeight: 0
+    Triangles: 1000
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGate5
+    Prefab: {fileID: 9217581915544063682, guid: d9f98cd50a1179e4294deced59698d1b, type: 3}
+    Height: 1.37
+    Width: 1.55
+    TargetHeight: 0
+    Triangles: 948
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockGate6
+    Prefab: {fileID: 4586709267147699442, guid: 306c7f0602e0c7744828e75f6a119e5e, type: 3}
+    Height: 0.9
+    Width: 1.5
+    TargetHeight: 0
+    Triangles: 3180
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockDog
+    Prefab: {fileID: 2060267696072216620, guid: ecace741c923a014db29f45b6fea7700, type: 3}
+    Height: 0
+    Width: 0
+    TargetHeight: 0
+    Triangles: 0
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockCrate
+    Prefab: {fileID: 4103083878585538734, guid: 96223c9bb4837d54bbc94c6fb201808d, type: 3}
+    Height: 0
+    Width: 0
+    TargetHeight: 0
+    Triangles: 0
+    Lod: 0
+    Tree: 0
+    Sockets: []
+  - Id: LockBarrel
+    Prefab: {fileID: 2350064163043088512, guid: c2af02020c78a89459e32a4e7d85f5b4, type: 3}
+    Height: 0
+    Width: 0
+    TargetHeight: 0
+    Triangles: 0
+    Lod: 0
+    Tree: 0
+    Sockets: []
   Roles:
   - Plaster
   - Timber

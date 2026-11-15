@@ -160,6 +160,22 @@ public HashSet<string> Completed { get; }
         Permanent = CapabilitySet.From(State.Permanent);
         if (snapshot == null) Towns.Add(Campaign.StartLocationId);
     }
+    // Dedicated authored playgrounds use a supplied world and can never become player campaigns.
+    internal CampaignContext(Campaign campaign, OverworldGrid world, CapabilitySet capabilities, IEnumerable<string> keys)
+    {
+        Mode = OverworldLaunchMode.Sandbox;
+        Campaign = campaign; grid = world;
+        State = new CampaignSnapshot { Seed = campaign.Seed, Identity = "lock-test-world",
+            GeneratorVersion = campaign.GeneratorVersion, Fingerprint = CampaignFingerprint.Compute(campaign),
+            Scene = "Overworld", LocationId = campaign.StartLocationId, LastTownId = campaign.StartLocationId,
+            TownLayoutVersion = 2, BookContentVersion = BookDungeonDefinition.CurrentVersion };
+        BookDungeon = new BookDungeonDefinition(campaign);
+        Permanent = capabilities;
+        Keys = new(keys); Opened = new(); Resolved = new(); Claimed = new(); Roster = new(); Active = new();
+        Towns = new(); Completed = new(); CollectedPickups = new();
+        Position = world.PlayerStart;
+    }
+
     public CampaignSnapshot Capture()
     {
         State.Keys = Keys.OrderBy(x => x).ToArray(); State.Opened = Opened.OrderBy(x => x).ToArray(); State.Resolved = Resolved.OrderBy(x => x).ToArray();

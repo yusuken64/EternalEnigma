@@ -169,8 +169,18 @@ public class TownPlayer : MonoBehaviour
 
 			if (!PlayerInputHandler.Instance.holdPosition)
 			{
+				var town = FindFirstObjectByType<Town>();
+				var entrance = town.TownBuildings.FirstOrDefault(building => !building.HasInterior &&
+					building.TilemapPosition == originalPosition && building.InteractionPosition == newMapPosition);
+				if (entrance != null)
+				{
+					StopHeldWalk();
+					entrance.Interact(this, null);
+					holdTime = 0f;
+					return;
+				}
 				if (WalkableMap.CanWalkTo(originalPosition, newMapPosition) &&
-					FindFirstObjectByType<Town>().CanEnter(newMapPosition))
+					town.CanEnter(newMapPosition))
 				{
 					SetAction(new TownMovement(this, originalPosition, newMapPosition, true));
 					holdTime = 0f;
@@ -302,7 +312,7 @@ public class TownPlayer : MonoBehaviour
 		if (Common.Instance.CampaignContext != null && ControllingTownAlly.TilemapPosition == town.Plan.Exit.ToCell())
         { StopHeldWalk(); Common.Instance.Travel.ExitTown(town); _busy = false; yield break; }
 		var overlappingBuilding = town.TownBuildings.FirstOrDefault(x =>
-			x.TilemapPosition == this.ControllingTownAlly.TilemapPosition && !x.HasInterior);
+			x.InteractionPosition == this.ControllingTownAlly.TilemapPosition && !x.HasInterior);
 		if (overlappingBuilding != null)
 		{
 			StopHeldWalk();

@@ -184,6 +184,10 @@ internal static class TerminalSceneSnapshots
         var location = scene.Campaign.Locations.FirstOrDefault(l => grid.Locations.TryGetValue(l.Id, out var p) && p.Equals(scene.Position));
         string place = location != null ? location.Kind == LocationKind.Town ? scene.Context.GetTownDisplayName(location.Id) : GameplayText.Format(location.Id) :
             grid.BiomeAt(scene.Position)?.ToString() ?? "Wilderness";
+        var targeting = scene.GetComponent<OverworldMenuManager>()?.TargetDialog;
+        var target = targeting != null && targeting.isActiveAndEnabled && targeting.TerminalSelectedCell.HasValue
+            ? new TerminalTargetSnapshot(Point(targeting.TerminalSelectedCell.Value), targeting.TerminalLabel,
+                validCells: targeting.TerminalValidCells.Select(Point)) : null;
         return new OverworldTerminalSnapshot(grid.Width, grid.Height, scene.Position,
             region == null ? "Overworld" : "Overworld - " + region.DisplayName, p =>
         {
@@ -197,7 +201,7 @@ internal static class TerminalSceneSnapshots
             }, TerminalPalette.Feature);
             if (gateOpen.TryGetValue(p, out bool open)) return Cell(open ? '/' : '+', TerminalPalette.Feature);
             return cache.Ground(p);
-        }, actors, null, Tail(messages), context: new[] {
+        }, actors, null, Tail(messages), target: target, context: new[] {
             HeroContext(scene.Player), "Here: " + place, $"Interact/travel: {InputPrompts.Interact}" },
             legend: new[] { "@ you  a party", "T town  D story  R repeatable", "F finale  O warp  C converter",
                 "K key  k collected  + gate  / open", "? secret  * landmark", "~ water  \" trees  : road  # cliff" });

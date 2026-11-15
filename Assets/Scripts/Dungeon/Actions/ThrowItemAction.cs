@@ -98,6 +98,7 @@ internal class ThrowItemAction : GameAction
 		}
 
 		inventory.InventoryItems.Remove(item);
+        HudRefresh.Request(HudChange.Resources | HudChange.Party);
 		return ret;
 	}
 

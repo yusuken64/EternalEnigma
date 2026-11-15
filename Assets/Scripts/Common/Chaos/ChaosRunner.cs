@@ -417,7 +417,7 @@ public sealed partial class ChaosRunner : MonoBehaviour
     {
         if (device == "Controller") return ChaosInput.Pad(key switch {
             "Escape" => MenusOpen() ? GamepadButton.East : GamepadButton.Start,
-            "Enter" => GamepadButton.South, "Q" => GamepadButton.West, "R" => GamepadButton.East, "E" => GamepadButton.LeftShoulder,
+            "Enter" => GamepadButton.South, "Q" => GamepadButton.West, "R" => GamepadButton.East, "LeftCtrl" => GamepadButton.LeftShoulder,
             "UpArrow" => GamepadButton.DpadUp, "DownArrow" => GamepadButton.DpadDown,
             "LeftArrow" => GamepadButton.DpadLeft, "RightArrow" => GamepadButton.DpadRight, _ => GamepadButton.North }, key);
         if (device == "Mouse")
@@ -452,7 +452,7 @@ public sealed partial class ChaosRunner : MonoBehaviour
         }
         else
         {
-            input = ChaosInput.Key(new[] { Key.UpArrow, Key.DownArrow, Key.LeftArrow, Key.RightArrow, Key.Enter, Key.Escape, Key.Q, Key.R, Key.E, Key.Period, Key.I, Key.T }[random.Range(12)]);
+            input = ChaosInput.Key(new[] { Key.UpArrow, Key.DownArrow, Key.LeftArrow, Key.RightArrow, Key.Enter, Key.Escape, Key.Q, Key.R, Key.LeftCtrl, Key.Period, Key.I, Key.T }[random.Range(12)]);
             if (choice == 11) input.Keys = new[] { "UpArrow", "DownArrow", "LeftArrow", "RightArrow" };
             if (choice == 10) input.Keys = new[] { "Enter", "Escape" };
         }

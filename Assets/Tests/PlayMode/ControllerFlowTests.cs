@@ -53,7 +53,7 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator SkillsAndStrategyUseSwappedControllerButtonsInBothInputAssets()
+        public IEnumerator SkillsAndFastWalkUseTheirDefaultControllerButtonsInBothInputAssets()
         {
             using var generated = new DungeonControls();
             var authored = InputActionAsset.FromJson(System.IO.File.ReadAllText("Assets/DungeonControls.inputactions"));
@@ -64,7 +64,9 @@ namespace EternalEnigma.Tests
                     string[] GamepadBindings(string action) => asset.FindAction(action, true).bindings
                         .Where(binding => binding.path.StartsWith("<Gamepad>/")).Select(binding => binding.path).ToArray();
                     Assert.That(GamepadBindings("Player/Skills"), Is.EqualTo(new[] { "<Gamepad>/buttonEast" }));
-                    Assert.That(GamepadBindings("Player/Plan"), Is.EqualTo(new[] { "<Gamepad>/leftShoulder" }));
+                    Assert.That(GamepadBindings("Player/FastWalk"), Is.EqualTo(new[] { "<Gamepad>/leftShoulder" }));
+                    Assert.That(asset.FindAction("Player/Plan"), Is.Null);
+                    Assert.That(asset.bindings.Any(binding => binding.path == "<Keyboard>/e"), Is.False);
                     Assert.That(GamepadBindings("UI/OpenSkillMenu"), Is.EqualTo(new[] { "<Gamepad>/buttonEast" }));
                     Assert.That(GamepadBindings("UI/Cancel"), Does.Contain("<Gamepad>/buttonEast"));
                 }
@@ -362,9 +364,7 @@ namespace EternalEnigma.Tests
             Assert.That(target.Vitals.HP,Is.LessThan(hp),"Holding target must attack the adjacent cell, not two cells away.");
             Assert.That(hero.TilemapPosition,Is.EqualTo(aimedOrigin),"An aimed attack must not move the hero.");
             yield return Press(GamepadButton.LeftShoulder);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<AllyActionDialog>(), "LB opens hero strategy commands.");
-            yield return Press(GamepadButton.East);
-            Assert.That(MenuManager.Instance.Opened, Is.False, "B backs out of strategy without opening Skills.");
+            Assert.That(MenuManager.Instance.Opened, Is.False, "The fast-walk modifier alone does not open a menu.");
             yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<PartyMenu>());
             var damage = hero.Skills.Single(s => s.SkillName == "Damage");
@@ -423,8 +423,6 @@ namespace EternalEnigma.Tests
             Assert.That(MenuManager.Instance.Opened, Is.False);
             Assert.That(hero.Vitals.Mana, Is.EqualTo(mana - hero.Skills.Single(s => s.SkillName == "Fire Bolt").ManaCost));
             yield return Press(GamepadButton.LeftShoulder);
-            Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<AllyActionDialog>());
-            yield return Press(GamepadButton.East);
             Assert.That(MenuManager.Instance.Opened, Is.False);
         }
     }

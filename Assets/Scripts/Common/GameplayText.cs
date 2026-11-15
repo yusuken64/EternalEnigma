@@ -40,6 +40,7 @@ public static class GameplayText
 
     private static string Format(string value, bool resolveInput)
     {
+        using var measurement = new FinalePerformance.Scope("Gameplay text formatting");
         if (string.IsNullOrEmpty(value)) return value ?? "";
         if (resolveInput) value = InputPrompts.Resolve(value);
         var parts = Markup.Split(value);

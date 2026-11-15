@@ -10,7 +10,7 @@ public static class DungeonPreferences
     {
         get => !AutoplayRunner.BlocksPlayerInput &&
             (FullControlOverride ?? GamePreferences.GetInt("Dungeon.FullControl", 0) != 0);
-        set { GamePreferences.SetInt("Dungeon.FullControl", value ? 1 : 0); GamePreferences.Save(); }
+        set { GamePreferences.SetInt("Dungeon.FullControl", value ? 1 : 0); GamePreferences.Save(); HudRefresh.Request(HudChange.Dungeon); }
     }
     public static DungeonAnimationMode AnimationMode
     {

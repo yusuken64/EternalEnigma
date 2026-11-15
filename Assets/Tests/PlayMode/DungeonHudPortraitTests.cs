@@ -60,6 +60,7 @@ namespace EternalEnigma.Tests
 
         internal static void CheckIndicator(Game game, Ally ally, bool active, bool exhausted = false)
         {
+            Canvas.ForceUpdateCanvases(); // Deliver pending presentation events before inspecting the rendered state.
             var display = game.CharacterStatsDisplays.Single(d => d.Character == ally);
             display.GetComponent<DungeonPartyCard>().SendMessage("Update");
             ally.SendMessage("LateUpdate");
@@ -91,6 +92,7 @@ namespace EternalEnigma.Tests
             hero.DisplayedVitals.ActionsPerTurnLeft = 0;
             CheckIndicator(game,hero,true,true);
             hero.DisplayedVitals.HP = 0;
+            Canvas.ForceUpdateCanvases();
             var display = game.CharacterStatsDisplays.Single(d => d.Character == hero);
             display.GetComponent<DungeonPartyCard>().SendMessage("Update");
             hero.SendMessage("LateUpdate");

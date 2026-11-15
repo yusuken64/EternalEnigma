@@ -23,7 +23,8 @@ public sealed class OverworldScene : MonoBehaviour
     public GameObject LandmarkMarker;
     public GameObject GateMarker;
     public Vector3 CameraOffset = new(0, -14, -20);
-    public bool IsReady { get; private set; }
+    private bool isReady;
+    public bool IsReady { get => isReady; private set { if (isReady == value) return; isReady = value; HudRefresh.Request(HudChange.All); } }
     public bool IsMoving => moving;
     public CampaignContext Context { get; private set; }
     public GridPoint Position { get => Context.Position; private set => Context.Position = value; }
@@ -65,7 +66,8 @@ public sealed class OverworldScene : MonoBehaviour
     private TileWorldCreator creator;
     private OverworldTerrainCache terrainCache;
     private bool restoredTerrain;
-    private bool moving;
+    private bool movingValue;
+    private bool moving { get => movingValue; set { if (movingValue == value) return; movingValue = value; HudRefresh.Request(HudChange.Travel); } }
     private float nextMove;
     private OverworldBiome? playingBiome;
 
@@ -201,7 +203,7 @@ public sealed class OverworldScene : MonoBehaviour
             if (live != null) OverworldPartyMenuContext.RestoreHero(live, data);
         }
         RefreshGates();
-        Message = "Use {Move} to move. Press {Interact} to collect rewards or use a key at a gate.";
+        Message = "";
         FollowCamera();
         // Start the reveal only after followers, saved stats and camera placement
         // are complete, so their setup cannot consume part of the visible fade.
@@ -323,13 +325,13 @@ public sealed class OverworldScene : MonoBehaviour
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
         SaveProgress();
         RefreshGates();
-        Message = locations.TryGetValue(Position, out var location) ? (location.Kind == LocationKind.Town ? Context.GetTownDisplayName(location.Id) : location.Id) + " — " + location.Kind + ". Press {Interact} to interact." : "";
+        Message = locations.TryGetValue(Position, out var location) ? (location.Kind == LocationKind.Town ? Context.GetTownDisplayName(location.Id) : location.Id) + " — " + location.Kind : "";
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
             if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) Message += " | " + GateDescription(id);
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
-            Message += route.KeyCondition == KeyAcquisition.AtLocation ? ". Press {Interact} to collect " + route.KeyLabel : " | Clear this encounter to earn " + route.KeyLabel;
+            Message += route.KeyCondition == KeyAcquisition.AtLocation ? " | " + route.KeyLabel + " is here." : " | Clear this encounter to earn " + route.KeyLabel;
         foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
-        if (NearbySign() != null) Message += ". Press {Interact} to read the road sign.";
+        if (NearbySign() != null) Message += " | Road sign nearby.";
         walkHistory.Add(Position);
         if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
         heldWalk = manual;
@@ -421,7 +423,7 @@ public sealed class OverworldScene : MonoBehaviour
         PlaceFollowers();
         RefreshGates(); FollowCamera();
         SaveProgress();
-        Message = "Warp complete. Press {Interact} to choose a destination.";
+        Message = "Warp complete.";
         AudioManager.Instance?.PlayCue(SoundCue.Teleport);
         return true;
     }
@@ -552,6 +554,7 @@ public sealed class OverworldScene : MonoBehaviour
     }
     private void SaveProgress()
     {
+        HudRefresh.Request(HudChange.Party | HudChange.Resources | HudChange.Travel);
         if (!Context.IsSandbox) SaveSystem.Capture(Common.Instance);
     }
     public bool SimulateDungeonVictory()
@@ -612,7 +615,6 @@ public sealed class OverworldScene : MonoBehaviour
         GUI.enabled = previousEnabled && !AutoplayRunner.BlocksPlayerInput;
         GameUISkin.LegacyBeginArea(new Rect(16, 16, 580, 430));
         GUILayout.Label("CAMPAIGN OVERWORLD  |  Seed " + Map.Seed);
-        GUILayout.Label(InputPrompts.Format("{Move}: move   •   {Interact}: interact"));
         GUILayout.Label("Green: town   Red: dungeon   Gold: landmark   Purple: closed gate");
         GUILayout.Label(InputPrompts.Format(Message));
         if (IsReady)

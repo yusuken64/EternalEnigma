@@ -359,6 +359,7 @@ namespace EternalEnigma.Tests
             for(int i=0;i<120;i++) GameMessages.Post("Instant event "+i);
             GameMessages.FinishAction();
             var log=Object.FindFirstObjectByType<GameMessages>();
+            Canvas.ForceUpdateCanvases();
             Assert.That(log.TurnEvents.Count,Is.EqualTo(120));
             Assert.That(log.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains("Instant event 117")&&t.text.Contains("Instant event 119")),Is.True);
             Common.Instance.GlobalSettings.ShowDialog();yield return null;

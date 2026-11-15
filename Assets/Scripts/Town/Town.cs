@@ -29,7 +29,8 @@ public class Town : MonoBehaviour
     public IReadOnlyList<TownRoofVisual> Roofs => roofs;
     private TownAlly roofAlly;
     private Vector3Int roofCell;
-    public bool IsReady { get; private set; }
+    private bool isReady;
+    public bool IsReady { get => isReady; private set { if (isReady == value) return; isReady = value; HudRefresh.Request(HudChange.All); } }
     private string arrivalHeroId;
     public TownPlan Plan { get; private set; }
     private bool finishingGeneration;
@@ -80,6 +81,7 @@ public class Town : MonoBehaviour
     [ContextMenu("Write Data")]
     internal void WriteSaveData()
     {
+        HudRefresh.Request(HudChange.Party | HudChange.Resources | HudChange.Travel);
 
 
 		TownSaveData townSaveData = Common.Instance.GameSaveData.TownSaveData;

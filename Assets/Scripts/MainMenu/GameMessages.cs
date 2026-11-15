@@ -29,6 +29,9 @@ public sealed class GameMessages : MonoBehaviour
     private RectTransform feedPanel;
     private Vector2 authoredOffsetMin, authoredOffsetMax, layoutParentSize;
     private float layoutFontSize;
+    private float layoutWidth;
+    private bool textDirty = true, refreshingText;
+    private TownMenuManager townMenus;
     public IReadOnlyList<string> TurnEvents => turnEvents;
     public static void BeginTurn()
     {
@@ -129,7 +132,7 @@ public sealed class GameMessages : MonoBehaviour
         text.rectTransform.pivot = new Vector2(.5f,1);
         text.richText = false;
         text.overflowMode = TextOverflowModes.Overflow;
-        text.alignment = TextAlignmentOptions.TopLeft;
+        text.alignment = TextAlignmentOptions.BottomLeft;
         scroll = panel.gameObject.AddComponent<ScrollRect>();
         scroll.viewport = viewport; scroll.content = text.rectTransform;
         scroll.horizontal = false; scroll.vertical = true; scroll.scrollSensitivity = 35;
@@ -167,21 +170,51 @@ public sealed class GameMessages : MonoBehaviour
         instance=this; group.alpha=0; group.blocksRaycasts=false; group.interactable=false;
         feedPanel=(RectTransform)group.transform;
         authoredOffsetMin=feedPanel.offsetMin;authoredOffsetMax=feedPanel.offsetMax;
+        text.alignment = TextAlignmentOptions.BottomLeft;
         historyButton.onClick.AddListener(ToggleHistory);
-        ControlDeviceState.Changed += RefreshText;
-        ControlBindings.Changed += RefreshText;
+        ControlDeviceState.Changed += InvalidateText;
+        ControlBindings.Changed += InvalidateText;
+        HudRefresh.Changed += Refresh;
+        townMenus = GetComponentInParent<Town>()?.GetComponentInChildren<TownMenuManager>(true);
+        feedPanel.gameObject.AddComponent<HudLayoutObserver>().Changed = LayoutChanged;
+        scroll.viewport.gameObject.AddComponent<HudLayoutObserver>().Changed = LayoutChanged;
         SetTerminalPresentation(TerminalMode.Effective);
+    }
+    private void InvalidateText() { textDirty = true; HudRefresh.Request(HudChange.Events); }
+    private void LayoutChanged()
+    {
+        if (refreshingText || feedPanel == null || scroll == null || text == null) return;
+        if (layoutParentSize != ((RectTransform)feedPanel.parent).rect.size ||
+            !Mathf.Approximately(layoutWidth, scroll.viewport.rect.width) || !Mathf.Approximately(layoutFontSize, text.fontSize))
+            InvalidateText();
+    }
+    private void Refresh(HudChange changes)
+    {
+        if ((changes & HudChange.Visibility) != 0)
+        {
+            bool historyOpen = historyDialog != null && historyDialog.Owner != null;
+            if (historyWasOpen && !historyOpen) Render();
+            historyWasOpen = historyOpen;
+        }
+        if ((changes & HudChange.Events) != 0 && textDirty && hasMessage) RefreshText();
     }
     private void Render()
     {
+        // Keep every event in History, but rebuild the feed only once after a fast walk.
+        if (DungeonFastWalk.DeferPresentation) return;
         hasMessage=true; group.blocksRaycasts=true; group.interactable=true;
-        RefreshText();
+        if (textDirty) HudRefresh.Request(HudChange.Events);
         lastMessage = Time.unscaledTime; group.alpha = 1;
     }
 
     private void RefreshText()
     {
         if (!hasMessage) return;
+        using var measurement = new FinalePerformance.Scope("Event feed layout");
+        refreshingText = true;
+        try
+        {
+        textDirty = false;
         var entries = history;
         int lines=Mathf.Max(1,previewLines);
         int start = Mathf.Max(0,entries.Count-lines);
@@ -200,7 +233,10 @@ public sealed class GameMessages : MonoBehaviour
         text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
             Mathf.Max(scroll.viewport.rect.height, text.GetPreferredValues(text.text, scroll.viewport.rect.width, 0).y));
         scroll.StopMovement();
-        scroll.verticalNormalizedPosition = 1;
+        scroll.verticalNormalizedPosition = 0;
+        layoutWidth = scroll.viewport.rect.width;
+        }
+        finally { refreshingText = false; }
     }
 
     private bool FitPreviewHeight()
@@ -223,11 +259,6 @@ public sealed class GameMessages : MonoBehaviour
         return true;
     }
 
-    private void LateUpdate()
-    {
-        if(FitPreviewHeight() && hasMessage)RefreshText();
-    }
-
     private void Add(string message, bool coalesce)
     {
         message = GameplayText.PlainTemplate(message);
@@ -236,6 +267,7 @@ public sealed class GameMessages : MonoBehaviour
         history.Add(message);
         if (inDungeonTurn) turnEvents.Add(message);
         if (history.Count > 100) history.RemoveAt(0);
+        textDirty = true;
         Render();
     }
 
@@ -243,9 +275,7 @@ public sealed class GameMessages : MonoBehaviour
     {
         historyController.Tick();
         bool historyOpen = historyDialog != null && historyDialog.Owner != null;
-        if (historyWasOpen && !historyOpen) Render();
-        historyWasOpen = historyOpen;
-        if (historyOpen || Object.FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud == true)
+        if (historyOpen || townMenus?.CoversGameplayHud == true)
         {
             group.alpha = 0;
             group.blocksRaycasts = group.interactable = false;
@@ -257,8 +287,9 @@ public sealed class GameMessages : MonoBehaviour
     }
     private void OnDestroy()
     {
-        ControlDeviceState.Changed -= RefreshText;
-        ControlBindings.Changed -= RefreshText;
+        ControlDeviceState.Changed -= InvalidateText;
+        ControlBindings.Changed -= InvalidateText;
+        HudRefresh.Changed -= Refresh;
         if (instance == this) instance = null;
     }
 }

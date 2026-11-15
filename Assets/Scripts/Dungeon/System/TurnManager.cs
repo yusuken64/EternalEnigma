@@ -6,10 +6,12 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-	public bool IsProcessingTurn { get; private set; }
-    public bool AwaitingCommand { get; private set; }
+	private bool isProcessingTurn, awaitingCommand;
+	private Character activeActor;
+	public bool IsProcessingTurn { get => isProcessingTurn; private set { if (isProcessingTurn == value) return; isProcessingTurn = value; HudRefresh.PartyChanged(); } }
+    public bool AwaitingCommand { get => awaitingCommand; private set { if (awaitingCommand == value) return; awaitingCommand = value; HudRefresh.PartyChanged(); } }
     public bool FullControlThisRound { get; private set; }
-    public Character ActiveActor { get; private set; }
+    public Character ActiveActor { get => activeActor; private set { if (activeActor == value) return; activeActor = value; HudRefresh.PartyChanged(); } }
     public bool UsesFullControl => IsProcessingTurn ? FullControlThisRound : DungeonPreferences.FullControl;
     public string PhaseLabel => !IsProcessingTurn ? "Your turn" : AwaitingCommand ? "Awaiting order" : ActiveActor is Enemy ? "Enemy turn" : "Resolving action";
 
@@ -82,9 +84,10 @@ public class TurnManager : MonoBehaviour
 		GameInputDiagnostics.Record("TurnStarted");
 		AutoplayRunner.BalanceTurnStarted();
 		IsProcessingTurn = true;
+		bool completed = false;
 		try
         {
-            if (AutoplayRunner.SuppressesAnimations)
+            if (AutoplayRunner.SuppressesAnimations || DungeonFastWalk.SuppressPlayback)
             {
                 // No-animation playback still executes every production routine and
                 // its bookkeeping. Flatten completed enumerators; explicit waits,
@@ -94,8 +97,14 @@ public class TurnManager : MonoBehaviour
                 finally { (routine as IDisposable)?.Dispose(); }
             }
             else yield return ProcessTurnRoutine();
+            completed = true;
         }
-		finally { IsProcessingTurn = false; AwaitingCommand = false; ActiveActor = null; }
+		finally
+        {
+            IsProcessingTurn = false; AwaitingCommand = false; ActiveActor = null;
+            if (!completed) Game.Instance?.PlayerController?.FastWalk.RequestStop(FastWalkStop.Interrupted);
+            Game.Instance?.PlayerController?.FastWalk.TurnCompleted();
+        }
 	}
 
     private static IEnumerator FlattenCompletedRoutines(IEnumerator root)
@@ -364,7 +373,7 @@ public class TurnManager : MonoBehaviour
             foreach (var replay in simultaneousEffects)
                 replay.Action.AddDestinationSight(Game.Instance.PlaybackVisibleTiles);
 
-            if (AutoplayRunner.SuppressesAnimations)
+            if (AutoplayRunner.SuppressesAnimations || DungeonFastWalk.SuppressPlayback)
             {
                 // There are no animations to run concurrently. Avoid scheduling an
                 // extra coroutine per effect merely to wait for an empty animation.
@@ -506,6 +515,8 @@ public abstract class GameAction
     // Animation preferences affect visual timing, never whether an audible action has feedback.
     internal bool ShouldPlayAudio(Character actor)
     {
+        if (DungeonFastWalk.SuppressPlayback && !InterruptsWalking) return false;
+        if (DungeonFastWalk.SuppressPlayback && this is MovementAction or SwapAllyPositionAction or WaitAction) return false;
         var game = Game.Instance;
         if (game?.CurrentDungeon == null || actor == null) return false;
         return IsVisibleForAnimation(actor);
@@ -554,7 +565,9 @@ public abstract class GameAction
 
     internal bool ShouldAnimate(Character actor)
     {
-        if (playback != null) return playback.ShouldAnimate(() => IsVisibleForAnimation(actor));
+        bool fast = DungeonFastWalk.SuppressPlayback;
+        if (fast && !DungeonFastWalk.Active.ShowsFeedback(this)) return false;
+        if (!fast && playback != null) return playback.ShouldAnimate(() => IsVisibleForAnimation(actor));
         var mode = DungeonPreferences.AnimationMode;
         var focus = Game.Instance.PlayerController.ControlledAlly;
         if (mode == DungeonAnimationMode.NoAnimations ||
@@ -608,6 +621,7 @@ public abstract class GameAction
 		TrackAnimationTarget(target);
 		int balanceHP = target.Vitals.HP, balanceMana = target.Vitals.Mana, balanceHunger = target.Vitals.Hunger;
 		metricModification?.Invoke(target.BaseStats, target.Vitals);
+        if (target.Vitals.HP < balanceHP) DungeonFastWalk.PartyEvent(target);
 		AutoplayRunner.BalanceMetrics(this, target, balanceHP, balanceMana, balanceHunger);
 		Action applyToDisplayedStats = () => metricModification?.Invoke(target.DisplayedStats, target.DisplayedVitals);
 		MetricsModifications.Add(applyToDisplayedStats);
@@ -618,6 +632,7 @@ public abstract class GameAction
 	internal void UpdateDisplayedStats()
 	{
 		MetricsModifications.ForEach(x => x.Invoke());
+        HudRefresh.PartyChanged();
 	}
 
 	//this is a temp fix
@@ -649,5 +664,6 @@ internal sealed class DungeonActionPlayback
         return animationDecision ?? (AllowsAnimation && isVisible());
     }
     internal DungeonActionPlayback(bool commanded, Character focus, Character origin, DungeonAnimationMode? mode = null)
-    { Commanded = commanded; Focus = focus; Origin = origin; Mode = mode ?? DungeonPreferences.AnimationMode; }
+    { Commanded = commanded; Focus = focus; Origin = origin;
+      Mode = mode ?? (DungeonFastWalk.SuppressPlayback ? DungeonAnimationMode.NoAnimations : DungeonPreferences.AnimationMode); }
 }

@@ -150,6 +150,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
         RememberSelection();
         scopes.Add(new Scope { Owner = owner, Root = root, First = first,
             ReturnTo = eventSystem.currentSelectedGameObject, Back = back, Options = options });
+        HudRefresh.Request(HudChange.Visibility | HudChange.Party | HudChange.Dungeon | HudChange.Travel);
         AudioManager.Instance?.PlayCue(SoundCue.MenuOpen);
         ConsumeInput();
         eventSystem.SetSelectedGameObject(null);
@@ -191,6 +192,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
         var scope = scopes[index];
         bool wasTop = index == scopes.Count - 1;
         scopes.RemoveAt(index);
+        HudRefresh.Request(HudChange.Visibility | HudChange.Party | HudChange.Dungeon | HudChange.Travel);
         if (!wasTop) return;
         AudioManager.Instance?.PlayCue(SoundCue.MenuClose);
         ConsumeInput();

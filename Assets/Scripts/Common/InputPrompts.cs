@@ -1,9 +1,13 @@
+using System.Text.RegularExpressions;
+
 public static class InputPrompts
 {
+    private static readonly Regex Tokens = new(@"\{[A-Za-z]+\}", RegexOptions.Compiled);
     public static string Pick(string keyboard, string pad) => ControlDeviceState.Gamepad ? pad : keyboard;
     public static string Confirm => ControlBindings.Prompt("UI/Submit", "Enter / Space", "A");
     public static string Back => ControlBindings.Prompt("UI/Cancel", "Escape", "B");
     public static string Move => ControlBindings.Prompt("Player/Move", "WASD / arrows", "Left stick / D-pad");
+    public static string FastWalk => ControlBindings.Prompt("Player/FastWalk", "Ctrl", "LB");
     public static string Navigate => ControlBindings.Prompt("UI/Navigate", "Arrow keys", "D-pad");
     public static string Interact => ControlBindings.Prompt("UI/Submit", "Enter", "A");
     public static string Attack => ControlBindings.Prompt("Player/Attack", "Space", "A");
@@ -28,12 +32,31 @@ public static class InputPrompts
 
     internal static string Resolve(string template)
     {
-        if (template == null) return null;
-        return template.Replace("{Confirm}", Confirm).Replace("{Back}", Back)
-            .Replace("{Move}", Move).Replace("{Navigate}", Navigate).Replace("{Interact}", Interact).Replace("{Attack}", Attack)
-            .Replace("{ToggleFullControl}", ToggleFullControl)
-            .Replace("{Inventory}", Inventory).Replace("{Skills}", Skills)
-            .Replace("{Party}", Party).Replace("{Equipment}", Equipment).Replace("{Stats}", Stats)
-            .Replace("{Scroll}", Scroll).Replace("{Actions}", Actions).Replace("{Presentation}", Presentation);
+        using var measurement = new FinalePerformance.Scope("Input prompt substitution");
+        // HUD labels call this every frame. Resolve only prompts actually present, so plain
+        // text never enumerates input bindings and device changes/rebinding remain live.
+        if (template == null || template.IndexOf('{') < 0) return template;
+        return Tokens.Replace(template, ResolveToken);
     }
+
+    private static string ResolveToken(Match token) => token.Value switch
+    {
+        "{Confirm}" => Confirm,
+        "{Back}" => Back,
+        "{FastWalk}" => FastWalk,
+        "{Move}" => Move,
+        "{Navigate}" => Navigate,
+        "{Interact}" => Interact,
+        "{Attack}" => Attack,
+        "{ToggleFullControl}" => ToggleFullControl,
+        "{Inventory}" => Inventory,
+        "{Skills}" => Skills,
+        "{Party}" => Party,
+        "{Equipment}" => Equipment,
+        "{Stats}" => Stats,
+        "{Scroll}" => Scroll,
+        "{Actions}" => Actions,
+        "{Presentation}" => Presentation,
+        _ => token.Value
+    };
 }

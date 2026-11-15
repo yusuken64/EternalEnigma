@@ -53,8 +53,11 @@ internal class SwapAllyPositionAction : GameAction
         {
             character.transform.position = worldPosition;
             swapAlly.transform.position = worldPosition2;
-            character.PlayIdleAnimation();
-            swapAlly.PlayIdleAnimation();
+            if (!DungeonFastWalk.SuppressPlayback)
+            {
+                character.PlayIdleAnimation();
+                swapAlly.PlayIdleAnimation();
+            }
             yield break;
         }
 		bool continuous = Game.Instance.PlayerController?.CanContinueHeldWalk == true;

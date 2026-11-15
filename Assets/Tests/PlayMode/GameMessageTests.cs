@@ -16,6 +16,32 @@ namespace EternalEnigma.Tests
         [UnityTearDown] public IEnumerator Cleanup() => harness.Cleanup();
 
         [UnityTest]
+        public IEnumerator NewMessagesPushEarlierLinesUpFromTheBottom()
+        {
+            var feed = Object.FindFirstObjectByType<GameMessages>();
+            var scroll = feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>();
+            var text = scroll.content.GetComponent<TMP_Text>();
+            ((System.Collections.Generic.List<string>)feed.History).Clear();
+            GameMessages.Post("First event");
+            yield return null; yield return null; text.ForceMeshUpdate();
+            Assert.That(text.alignment, Is.EqualTo(TextAlignmentOptions.BottomLeft));
+            float bottomBaseline = text.textInfo.lineInfo[0].baseline;
+            Assert.That(text.textInfo.lineInfo[0].descender, Is.EqualTo(text.rectTransform.rect.yMin + text.margin.w).Within(1));
+            System.IO.Directory.CreateDirectory("Temp/HistoryLayoutCapture");
+            ScreenCapture.CaptureScreenshot("Temp/HistoryLayoutCapture/bottom-first.png");
+            yield return null;
+            GameMessages.Post("Second event");
+            yield return null; yield return null; text.ForceMeshUpdate();
+            Assert.That(text.textInfo.lineCount, Is.EqualTo(2));
+            Assert.That(text.textInfo.lineInfo[0].baseline, Is.GreaterThan(bottomBaseline));
+            Assert.That(text.textInfo.lineInfo[1].baseline, Is.EqualTo(bottomBaseline).Within(.1f));
+            GameMessages.Post("Third event");
+            yield return null; yield return null;
+            ScreenCapture.CaptureScreenshot("Temp/HistoryLayoutCapture/bottom-three.png");
+            yield return null;
+        }
+
+        [UnityTest]
         public IEnumerator CompactPreviewUsesAuthoredSettingsAndFourRenderedLines()
         {
             var feed=Object.FindFirstObjectByType<GameMessages>();
@@ -89,6 +115,7 @@ namespace EternalEnigma.Tests
             GameMessages.Post("Requires key", true); GameMessages.Post("Requires key", true);
             Assert.That(feed.History.Count(x => x == "Requires key"), Is.EqualTo(1));
             GameMessages.Post("Gate opened!");
+            yield return null; // Model events coalesce into one refresh before drawing.
             Assert.That(feed.GetComponentsInChildren<TMP_Text>().Any(t => t.text.Contains("Gate opened!")), Is.True);
             Assert.That(feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>(), Is.Not.Null);
             Assert.That(feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>().content.GetComponent<TMP_Text>().richText, Is.False);

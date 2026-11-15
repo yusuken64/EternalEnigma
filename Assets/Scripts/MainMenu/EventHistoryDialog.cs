@@ -15,6 +15,21 @@ public sealed class EventHistoryDialog : Dialog
     private Vector2 viewportMin,viewportMax,viewportOffsetMin,viewportOffsetMax;
     private bool usesFeed;
     private float scrollPosition;
+    private System.Collections.Generic.IReadOnlyList<string> entries;
+    private bool textDirty;
+    private void OnEnable()
+    {
+        HudRefresh.Changed += Refresh;
+        ControlDeviceState.Changed += InvalidateText;
+        ControlBindings.Changed += InvalidateText;
+    }
+    private void OnDisable()
+    {
+        HudRefresh.Changed -= Refresh;
+        ControlDeviceState.Changed -= InvalidateText;
+        ControlBindings.Changed -= InvalidateText;
+    }
+    private void InvalidateText() { textDirty = true; HudRefresh.Request(HudChange.Events); }
 
     internal void UseFeed(RectTransform feedPanel)
     {
@@ -22,6 +37,7 @@ public sealed class EventHistoryDialog : Dialog
         // Match the compact feed's full-canvas coordinates. The dialog's safe-area
         // container would otherwise narrow only the expanded view on inset displays.
         Panel = Instantiate(feedPanel, transform);
+        Panel.gameObject.AddComponent<HudLayoutObserver>().Changed = () => HudRefresh.Request(HudChange.Events);
         Panel.name = "Expanded events";
         original.gameObject.SetActive(false);
         Destroy(original.gameObject);
@@ -29,6 +45,7 @@ public sealed class EventHistoryDialog : Dialog
         group.alpha = 1;
         group.blocksRaycasts = group.interactable = true;
         scrollView = Panel.GetComponent<ScrollRect>();
+        scrollView.onValueChanged.AddListener(_ => scrollPosition = scrollView.verticalNormalizedPosition);
         Entries = scrollView.content.GetComponent<TMP_Text>();
         Back = Panel.GetComponentInChildren<Button>();
         Back.onClick = new Button.ButtonClickedEvent();
@@ -48,6 +65,8 @@ public sealed class EventHistoryDialog : Dialog
 
     public void Setup(System.Collections.Generic.IReadOnlyList<string> entries)
     {
+        this.entries = entries;
+        textDirty = false;
         Entries.text = GameplayText.Plain(entries.Count == 0 ? "No events yet." : string.Join("\n", entries));
         Entries.richText = false;
         Back.onClick.RemoveAllListeners(); Back.onClick.AddListener(CloseDialog);
@@ -79,15 +98,20 @@ public sealed class EventHistoryDialog : Dialog
         Canvas.ForceUpdateCanvases();
     }
 
-    private void LateUpdate()
+    private void Refresh(HudChange changes)
     {
-        if (Owner == null) return;
-        if (layoutSize != Panel.rect.size)
+        if (Owner == null || (changes & HudChange.Events) == 0) return;
+        // Events also cover a newly appended message while History is open.
+        string copy = GameplayText.Plain(entries.Count == 0 ? "No events yet." : string.Join("\n", entries));
+        bool changed = copy != Entries.text;
+        if (changed) Entries.text = copy;
+        if (changed || textDirty || layoutSize != Panel.rect.size)
         {
+            textDirty = false;
+            float position = scrollPosition;
             RefreshLayout();
-            scrollView.verticalNormalizedPosition = scrollPosition;
+            scrollView.verticalNormalizedPosition = position;
         }
-        scrollPosition = scrollView.verticalNormalizedPosition;
     }
 
     internal override void SetFirstSelect() { Reader.Select(); scrollView.verticalNormalizedPosition = 0; }

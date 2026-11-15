@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
     public Ally PartyLeader { get; private set; }
     private bool releaseInput;
     private bool heldWalk;
+    private DungeonFastWalk fastWalk;
+    internal DungeonFastWalk FastWalk => fastWalk ??= new DungeonFastWalk(this);
     internal bool CanContinueHeldWalk => heldWalk && isActiveAndEnabled && !releaseInput &&
         CurrentControlMode == PlayerControlMode.FollowAlly && !ShouldBlockInput() &&
         MenuManager.Instance?.Opened != true && Common.Instance.Travel.IsTransitioning != true &&
@@ -40,7 +42,8 @@ public class PlayerController : MonoBehaviour
             foreach (var ally in Game.Instance.Allies) ally?.HeroAnimator?.StopWalkContinuation();
     }
 
-    private void OnDisable() => StopHeldWalk();
+    private void OnDisable() { StopHeldWalk(); fastWalk?.RequestStop(FastWalkStop.Interrupted); fastWalk?.Finish(); }
+    private void OnApplicationFocus(bool focus) { if (!focus) fastWalk?.RequestStop(FastWalkStop.Interrupted); }
     public void FocusCommand(Ally ally)
     {
         bool changedAlly = ControlledAlly != ally;
@@ -48,6 +51,7 @@ public class PlayerController : MonoBehaviour
         if (changedAlly && ControlledAlly != null)
         { ControlledAlly.IsWaitingForPlayerInput = false; ControlledAlly.SetToCPU(); }
         ControlledAlly = ally;
+        HudRefresh.PartyChanged();
         if (ally == null) return;
         if (changedAlly)
         {
@@ -66,11 +70,13 @@ public class PlayerController : MonoBehaviour
 
     // === team stuff ====
     public int Floor;
-    public int Gold;
+    [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("Gold")] private int gold;
+    public int Gold { get => gold; set { if (gold == value) return; gold = value; HudRefresh.Request(HudChange.Resources); } }
     internal bool PendingRetreat;
 
     // === Control Mode ===
-    public PlayerControlMode CurrentControlMode { get; set; }
+    private PlayerControlMode currentControlMode;
+    public PlayerControlMode CurrentControlMode { get => currentControlMode; set { if (currentControlMode == value) return; currentControlMode = value; HudRefresh.Request(HudChange.Dungeon); } }
     public Minimap Minimap;
 
     private void Start()
@@ -81,6 +87,16 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        var movementInput = PlayerInputHandler.Instance;
+        bool otherCommand = movementInput != null && (movementInput.menuPressed || movementInput.skillsPressed ||
+            movementInput.optionsPressed || movementInput.attackPressed || movementInput.waitPressed ||
+            movementInput.swapAllyPressed);
+        if (otherCommand) fastWalk?.RequestStop(FastWalkStop.InputRequired);
+        bool fastInput = movementInput != null && FastWalk.ReadInput(movementInput.moveInput, movementInput.fastWalkHeld,
+            !otherCommand && !releaseInput && !ShouldBlockInput() && CurrentControlMode == PlayerControlMode.FollowAlly &&
+            MenuManager.Instance?.Opened != true && !movementInput.holdPosition);
+        fastWalk?.Tick();
+        if (fastWalk?.Running == true) return;
         if (!CanContinueHeldWalk) StopHeldWalk();
         CheckAttributePrompts();
         if (ShouldBlockInput()) return;
@@ -97,6 +113,7 @@ public class PlayerController : MonoBehaviour
         switch (CurrentControlMode)
         {
             case PlayerControlMode.FollowAlly:
+                suppressMovement = fastInput;
                 HandleMovementInput();
                 break;
         }
@@ -151,6 +168,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private bool suppressMovement;
     private void DeterminePlayerAction()
     {
         var originalPosition = new Vector3Int(ControlledAlly.TilemapPosition.x, ControlledAlly.TilemapPosition.y);
@@ -197,7 +215,7 @@ public class PlayerController : MonoBehaviour
         if (!PlayerInputHandler.Instance.holdPosition)
         {
             TargetIndicator.gameObject.SetActive(false);
-            if (move.sqrMagnitude >= .01f && holdTime > repeatTime)
+            if (!suppressMovement && move.sqrMagnitude >= .01f && holdTime > repeatTime)
             {
                 holdTime = 0f;
                 var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
@@ -267,7 +285,6 @@ public class PlayerController : MonoBehaviour
             var targetAlly = Game.Instance.Allies.FirstOrDefault(x => x.TilemapPosition == ControlledAlly.TilemapPosition + offset);
             if (targetAlly != null && !ControlledAlly.IsRangedAttack(out _))
 			{
-                //FindObjectOfType<MenuManager>().OpenAllyMenu(targetAlly);
                 AudioManager.Instance?.PlayCue(SoundCue.Denied);
                 return;
             }
@@ -303,12 +320,6 @@ public class PlayerController : MonoBehaviour
         if (PlayerInputHandler.Instance.swapAllyPressed)
         {
             TakeControlNextAlly();
-        }
-
-        if (PlayerInputHandler.Instance.planPressed)
-		{
-            StopHeldWalk();
-            MenuManager.Instance.OpenAllyMenu(ControlledAlly);
         }
 
         if (PlayerInputHandler.Instance.optionsPressed)

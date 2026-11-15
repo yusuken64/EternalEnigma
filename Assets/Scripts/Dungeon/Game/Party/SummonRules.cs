@@ -88,6 +88,7 @@ public static class SummonRules
 	public static void Despawn(Game game, SummonedUnit unit)
 	{
 		if (unit == null) return;
+		DungeonFastWalk.PartyEvent(unit.GetComponent<Character>());
 
 		if (unit.Kind == SummonKind.Clone)
 		{

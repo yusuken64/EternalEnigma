@@ -104,7 +104,9 @@ public sealed class DungeonPartyCard : MonoBehaviour
         return data;
     }
 #endif
-    public void Bind(CharacterStatsDisplay value) { display=value; statusKey=null; }
+    public void Bind(CharacterStatsDisplay value) { display=value; statusKey=null; HudRefresh.PartyChanged(); }
+    private void OnEnable() { HudRefresh.Changed += Refresh; HudRefresh.PartyChanged(); }
+    private void OnDisable() => HudRefresh.Changed -= Refresh;
     internal void ShowTravelState(TownAlly hero,bool leader,bool selected)
     {
         portraitHighlight.enabled=selected;
@@ -115,6 +117,13 @@ public sealed class DungeonPartyCard : MonoBehaviour
     }
     private void Update()
     {
+        // Only the turn-highlight pulse animates between model changes.
+        if (portraitHighlight != null && display?.Character is Ally ally && Game.Instance != null)
+            portraitHighlight.color = ally.TurnHighlightColor;
+    }
+    private void Refresh(HudChange changes)
+    {
+        if ((changes & HudChange.Party) == 0) return;
         if (display == null || display.Character is not Ally ally || Game.Instance == null) return;
         portraitHighlight.enabled = ally.IsTurnHighlighted;
         portraitHighlight.color = ally.TurnHighlightColor;

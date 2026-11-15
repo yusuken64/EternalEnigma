@@ -96,6 +96,7 @@ public class ScreenTransition : MonoBehaviour
 
     private void ShowCover(float alpha)
     {
+        HudRefresh.Request(HudChange.Visibility | HudChange.Travel);
         BlockScreen.SetActive(true);
         ShutterScreen.gameObject.SetActive(true);
         ShutterScreen.color = new Color(0,0,0,alpha);
@@ -209,6 +210,7 @@ public class ScreenTransition : MonoBehaviour
     }
     public void ReleaseFade()
     {
+        HudRefresh.Request(HudChange.Visibility | HudChange.Travel);
         CancelAnimation();
         SetDestinationTitle(null);
         ShutterScreen.color = Color.clear;

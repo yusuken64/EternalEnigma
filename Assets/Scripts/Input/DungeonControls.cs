@@ -93,6 +93,15 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             ""id"": ""45768324-4252-4d28-bc1b-0a1238aa112a"",
             ""actions"": [
                 {
+                    ""name"": ""FastWalk"",
+                    ""type"": ""Button"",
+                    ""id"": ""d4d04406-e2bc-4a8f-a770-5cc54751c332"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""History"",
                     ""type"": ""Button"",
                     ""id"": ""de60d9dd-d38a-469f-93b1-190c16669c12"",
@@ -141,15 +150,6 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""name"": ""HoldPosition"",
                     ""type"": ""Button"",
                     ""id"": ""6b3fc6c1-846c-4684-9402-0a1da6039879"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Plan"",
-                    ""type"": ""Button"",
-                    ""id"": ""f773d6c7-5483-4e58-a2cf-33b68d4a83a7"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -256,6 +256,28 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                 }
             ],
             ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a28c5ce4-698f-4ae6-b1e5-3bc91706b17d"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FastWalk"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""04c819d9-6548-4307-bead-59b7a14b421b"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FastWalk"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
                 {
                     ""name"": """",
                     ""id"": ""b77e0a86-ad9f-46d5-9911-360ce21d83eb"",
@@ -638,28 +660,6 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Skills"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d8f59c63-b805-46f7-b424-2513926da903"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""Plan"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""bbe08e2e-e734-4cc5-8614-39737ba112fa"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Plan"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1548,13 +1548,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+        m_Player_FastWalk = m_Player.FindAction("FastWalk", throwIfNotFound: true);
         m_Player_History = m_Player.FindAction("History", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_HoldPosition = m_Player.FindAction("HoldPosition", throwIfNotFound: true);
-        m_Player_Plan = m_Player.FindAction("Plan", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
         m_Player_Skills = m_Player.FindAction("Skills", throwIfNotFound: true);
         m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
@@ -1668,13 +1668,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
+    private readonly InputAction m_Player_FastWalk;
     private readonly InputAction m_Player_History;
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_HoldPosition;
-    private readonly InputAction m_Player_Plan;
     private readonly InputAction m_Player_Menu;
     private readonly InputAction m_Player_Skills;
     private readonly InputAction m_Player_Map;
@@ -1697,6 +1697,10 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
         public PlayerActions(@DungeonControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Player/FastWalk".
+        /// </summary>
+        public InputAction @FastWalk => m_Wrapper.m_Player_FastWalk;
         /// <summary>
         /// Provides access to the underlying input action "Player/History".
         /// </summary>
@@ -1721,10 +1725,6 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/HoldPosition".
         /// </summary>
         public InputAction @HoldPosition => m_Wrapper.m_Player_HoldPosition;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Plan".
-        /// </summary>
-        public InputAction @Plan => m_Wrapper.m_Player_Plan;
         /// <summary>
         /// Provides access to the underlying input action "Player/Menu".
         /// </summary>
@@ -1795,6 +1795,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
+            @FastWalk.started += instance.OnFastWalk;
+            @FastWalk.performed += instance.OnFastWalk;
+            @FastWalk.canceled += instance.OnFastWalk;
             @History.started += instance.OnHistory;
             @History.performed += instance.OnHistory;
             @History.canceled += instance.OnHistory;
@@ -1813,9 +1816,6 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @HoldPosition.started += instance.OnHoldPosition;
             @HoldPosition.performed += instance.OnHoldPosition;
             @HoldPosition.canceled += instance.OnHoldPosition;
-            @Plan.started += instance.OnPlan;
-            @Plan.performed += instance.OnPlan;
-            @Plan.canceled += instance.OnPlan;
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
@@ -1860,6 +1860,9 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="PlayerActions" />
         private void UnregisterCallbacks(IPlayerActions instance)
         {
+            @FastWalk.started -= instance.OnFastWalk;
+            @FastWalk.performed -= instance.OnFastWalk;
+            @FastWalk.canceled -= instance.OnFastWalk;
             @History.started -= instance.OnHistory;
             @History.performed -= instance.OnHistory;
             @History.canceled -= instance.OnHistory;
@@ -1878,9 +1881,6 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
             @HoldPosition.started -= instance.OnHoldPosition;
             @HoldPosition.performed -= instance.OnHoldPosition;
             @HoldPosition.canceled -= instance.OnHoldPosition;
-            @Plan.started -= instance.OnPlan;
-            @Plan.performed -= instance.OnPlan;
-            @Plan.canceled -= instance.OnPlan;
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
@@ -2275,6 +2275,13 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         /// <summary>
+        /// Method invoked when associated input action "FastWalk" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFastWalk(InputAction.CallbackContext context);
+        /// <summary>
         /// Method invoked when associated input action "History" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -2316,13 +2323,6 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnHoldPosition(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Plan" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPlan(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Menu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

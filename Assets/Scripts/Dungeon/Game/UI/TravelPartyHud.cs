@@ -10,7 +10,8 @@ public sealed class TravelPartyHud : MonoBehaviour
     private TownMenuManager townMenus;
     private OverworldMenuManager worldMenus;
     private Canvas canvas;
-    private float nextVitalsRefresh;
+    private void OnEnable() { HudRefresh.Changed += Refresh; HudRefresh.Request(HudChange.Party | HudChange.Visibility); }
+    private void OnDisable() => HudRefresh.Changed -= Refresh;
 
     public static TravelPartyHud Ensure(MonoBehaviour owner) => AuthoredUI.Require<TravelPartyHud>(owner.transform);
 
@@ -22,12 +23,13 @@ public sealed class TravelPartyHud : MonoBehaviour
         canvas.enabled=false;
     }
 
-    private void LateUpdate()
+    private void Refresh(HudChange changes)
     {
+        if ((changes & (HudChange.Party | HudChange.Visibility | HudChange.Travel)) == 0) return;
         var common=Common.InstanceOrNull;
         if(town!=null && townMenus==null)townMenus=town.GetComponentInChildren<TownMenuManager>(true);
         if(world!=null && worldMenus==null)worldMenus=world.GetComponent<OverworldMenuManager>();
-        bool ready=common!=null && !common.GlobalSettings.IsOpen &&
+        bool ready=common!=null && !common.GlobalSettings.IsOpen && !common.ScreenTransition.HasTravelPresentation &&
             (town!=null && town.IsReady && townMenus?.CoversGameplayHud!=true || world!=null && world.IsReady);
         canvas.enabled=ready;
         if(!ready)return;
@@ -36,8 +38,6 @@ public sealed class TravelPartyHud : MonoBehaviour
         var menu=town!=null?townMenus?.PartyMenu:worldMenus?.PartyMenu;
         var selected=menu?.Owner!=null?menu.Hero?.TownActor:leader;
         var followers=world!=null?world.Followers:null;
-        bool refresh=Time.unscaledTime>=nextVitalsRefresh;
-        if(refresh)nextVitalsRefresh=Time.unscaledTime+.1f;
         for(int i=0;i<PartySlots.Length;i++)
         {
             var hero=town!=null
@@ -46,7 +46,7 @@ public sealed class TravelPartyHud : MonoBehaviour
             var card=PartySlots[i];
             card.gameObject.SetActive(hero!=null);
             if(hero==null)continue;
-            if(refresh || card.TownActor!=hero)card.UpdateTravelUI(hero);
+            card.UpdateTravelUI(hero);
             card.GetComponent<DungeonPartyCard>().ShowTravelState(hero,hero==leader,hero==selected);
         }
     }

@@ -7,6 +7,15 @@
             "id": "45768324-4252-4d28-bc1b-0a1238aa112a",
             "actions": [
                 {
+                    "name": "FastWalk",
+                    "type": "Button",
+                    "id": "d4d04406-e2bc-4a8f-a770-5cc54751c332",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "History",
                     "type": "Button",
                     "id": "de60d9dd-d38a-469f-93b1-190c16669c12",
@@ -55,15 +64,6 @@
                     "name": "HoldPosition",
                     "type": "Button",
                     "id": "6b3fc6c1-846c-4684-9402-0a1da6039879",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Plan",
-                    "type": "Button",
-                    "id": "f773d6c7-5483-4e58-a2cf-33b68d4a83a7",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -170,6 +170,28 @@
                 }
             ],
             "bindings": [
+                {
+                    "name": "",
+                    "id": "a28c5ce4-698f-4ae6-b1e5-3bc91706b17d",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "FastWalk",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "04c819d9-6548-4307-bead-59b7a14b421b",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "FastWalk",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
                 {
                     "name": "",
                     "id": "b77e0a86-ad9f-46d5-9911-360ce21d83eb",
@@ -552,28 +574,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Skills",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "d8f59c63-b805-46f7-b424-2513926da903",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Plan",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "bbe08e2e-e734-4cc5-8614-39737ba112fa",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Plan",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

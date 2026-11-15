@@ -106,15 +106,15 @@ namespace EternalEnigma.Tests
             yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
             scene = SceneManager.GetSceneByName("Overworld");
             var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
-            yield return harness.WaitUntil(() => world.IsReady, "travel chooser world");
+            yield return harness.WaitUntil(() => world.IsReady && !Common.Instance.Travel.IsTransitioning, "travel chooser world");
             var menu = world.GetComponent<OverworldMenuManager>();
             var origin = world.Position;
             yield return null;
-            var interactionButton = world.GetComponentsInChildren<UnityEngine.UI.Button>()
-                .Single(b => b.GetComponentInChildren<TMPro.TMP_Text>()?.text == "Interact / Travel");
-            Assert.That(interactionButton.IsActive() && interactionButton.IsInteractable(), Is.True, "World interaction needs a visible mouse control.");
-
-            interactionButton.onClick.Invoke();
+            Assert.That(world.GetComponentsInChildren<UnityEngine.UI.Button>().Any(button =>
+                button.GetComponentInChildren<TMPro.TMP_Text>()?.text is "Interact" or "Interact / Travel"), Is.False);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Enter));
+            yield return null;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState());
             yield return null;
             Assert.That(pending.All(context.Claimed.Contains), Is.True, "Interaction claims local rewards before offering travel.");
             Assert.That(world.Position, Is.EqualTo(origin));
@@ -248,7 +248,7 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
-        public IEnumerator CampaignHintChangesWithDeviceWhileMessageIsStored()
+        public IEnumerator OverworldStartsWithoutControlHintsAndHistoryTracksDeviceChanges()
         {
             Common.Instance.CampaignContext = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
             keyboard = InputSystem.AddDevice<Keyboard>();
@@ -262,16 +262,22 @@ namespace EternalEnigma.Tests
             yield return harness.WaitUntil(() => world.IsReady, "overworld control prompts");
             var feed = AuthoredUI.Require<GameMessages>(world.transform);
             var message = feed.GetComponentInChildren<UnityEngine.UI.ScrollRect>().content.GetComponent<TMPro.TMP_Text>();
-            Assert.That(world.Message, Does.Contain("{Interact}"));
-            yield return harness.WaitUntil(() => message.text.Contains("Enter"), "first campaign event log entry");
-            Assert.That(message.text, Does.Contain("Enter"));
-            Assert.That(feed.History.Count(entry => entry == world.Message), Is.EqualTo(1));
+            Assert.That(world.Message, Is.Empty);
+            Assert.That(feed.History.Any(entry => entry.Contains("{Move}") || entry.Contains("{Interact}")), Is.False);
+            Assert.That(world.GetComponentsInChildren<UnityEngine.UI.Button>().Any(button =>
+                button.GetComponentInChildren<TMPro.TMP_Text>()?.text is "Interact" or "Interact / Travel"), Is.False);
+            // Stored event text must still respond to a device change when an event uses a button label.
+            const string eventTemplate = "Event confirmation {Confirm}.";
+            GameMessages.Post(eventTemplate);
+            yield return harness.WaitUntil(() => message.text.Contains(InputPrompts.Format(eventTemplate)), "campaign event log entry");
+            Assert.That(feed.History.Count(entry => entry == eventTemplate), Is.EqualTo(1));
             int eventCount = feed.History.Count;
 
             InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.LeftStick));
             yield return null;
+            Canvas.ForceUpdateCanvases();
             Assert.That(InputPrompts.Interact, Is.EqualTo("A"));
-            Assert.That(message.text, Does.Contain(InputPrompts.Format(world.Message)));
+            Assert.That(message.text, Does.Contain(InputPrompts.Format(eventTemplate)));
             Assert.That(message.text, Does.Not.Contain("Enter"));
             yield return null; // CursorManager may update before the input module in this frame.
             Assert.That(Cursor.visible, Is.False);
@@ -279,16 +285,20 @@ namespace EternalEnigma.Tests
             InputSystem.QueueStateEvent(pad, new GamepadState());
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.K));
             yield return null;
-            Assert.That(message.text, Does.Contain("Enter"));
-            Assert.That(message.text, Does.Contain(InputPrompts.Format(world.Message)));
+            Canvas.ForceUpdateCanvases();
+            Assert.That(message.text, Does.Contain(InputPrompts.Format(eventTemplate)));
             yield return null;
             Assert.That(Cursor.visible, Is.True);
             Assert.That(feed.History.Count, Is.EqualTo(eventCount), "Changing controls must not duplicate campaign messages.");
             GameMessages.ShowHistory();
             yield return null;
             var history = feed.GetComponentInChildren<EventHistoryDialog>();
-            Assert.That(history.Entries.text, Does.Contain("Enter"));
-            Assert.That(history.Entries.text, Does.Not.Contain("{Interact}"));
+            Assert.That(history.Entries.text, Does.Contain(InputPrompts.Format(eventTemplate)));
+            Assert.That(history.Entries.text, Does.Not.Contain("{Move}").And.Not.Contain("{Interact}"));
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.LeftStick));
+            yield return null; Canvas.ForceUpdateCanvases();
+            Assert.That(history.Entries.text, Does.Contain(InputPrompts.Format(eventTemplate)));
+            Assert.That(feed.History.Count, Is.EqualTo(eventCount));
             history.CloseDialog();
         }
 

@@ -17,11 +17,13 @@ public class Inventory : MonoBehaviour
 	{
 		InventoryItems.Remove(item);
 		HandleInventoryChanged?.Invoke();
+        HudRefresh.Request(HudChange.Resources | HudChange.Party);
 	}
 
 	internal void Add(InventoryItem inventoryItem)
 	{
 		InventoryItems.Add(inventoryItem);
+        HudRefresh.Request(HudChange.Resources | HudChange.Party);
 	}
 
 	internal int Count()
@@ -37,5 +39,6 @@ public class Inventory : MonoBehaviour
 	internal void Clear()
 	{
 		InventoryItems.Clear();
+        HudRefresh.Request(HudChange.Resources | HudChange.Party);
 	}
 }

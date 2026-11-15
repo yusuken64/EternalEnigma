@@ -17,7 +17,8 @@ public class Ally : Character
 	public int PendingAttributePoints => IsSummon ? 0 : HeroAttributes.Pending(Vitals?.Level ?? 1, Attributes);
 	public HeroAnimator HeroAnimator;
 	internal Interactable currentInteractable;
-	public AllyStrategy AllyStrategy;
+	[SerializeField, UnityEngine.Serialization.FormerlySerializedAs("AllyStrategy")] private AllyStrategy allyStrategy;
+	public AllyStrategy AllyStrategy { get => allyStrategy; set { if (allyStrategy == value) return; allyStrategy = value; HudRefresh.PartyChanged(); } }
 	// True while this ally is in Game.DownedAllies (0 HP, not destroyed). Set by PartyRules.
 	public bool IsDowned { get; internal set; }
 	// Set by ForgetSkillsAction; DungeonReturnService then clears the hero's saved skills.
@@ -170,7 +171,7 @@ public class Ally : Character
 		if (this == null) { yield break; }
 
 		yield return action.Visuals.Play(action, this, !action.ShouldAnimate(this));
-		if (DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations && Vitals.HP > 0) PlayIdleAnimation();
+		if (!DungeonFastWalk.SuppressPlayback && DungeonPreferences.AnimationMode == DungeonAnimationMode.NoAnimations && Vitals.HP > 0) PlayIdleAnimation();
 		action.UpdateDisplayedStats();
 	}
 
@@ -307,6 +308,7 @@ public class Ally : Character
 
 	public override void Equipment_HandleEquipmentChanged(EquipChangeType equipChangeType, EquipableInventoryItem item)
 	{
+        HudRefresh.Request(HudChange.Resources);
 		base.Equipment_HandleEquipmentChanged(equipChangeType, item);
 
 		switch (equipChangeType)

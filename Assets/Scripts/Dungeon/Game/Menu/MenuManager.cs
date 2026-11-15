@@ -12,7 +12,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 	public InventoryMenu InventoryMenu;
     public PartyMenu PartyMenu { get; private set; }
 	public ActionDialog ActionDialog;
-	public AllyActionDialog AllyActionDialog;
 	public SkillDialog SkillDialog;
 	public TargetDialog TargetDialog;
 	public bool Opened => dialogs.Opened;
@@ -30,7 +29,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
 		base.Initialize();
 		InventoryMenu.gameObject.SetActive(false);
 		ActionDialog.gameObject.SetActive(false);
-		AllyActionDialog.gameObject.SetActive(false);
 		SkillDialog.gameObject.SetActive(false);
 		TargetDialog.gameObject.SetActive(false);
 	}
@@ -82,23 +80,6 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
         Open(PartyMenu);
     }
     public void OpenInventoryAs(Ally ally) => OpenPartyMenu(PartyMenuTab.Inventory, ally);
-
-	public void OpenAllyMenu(Ally ally)
-	{
-		Common.Instance.MenuInputHandler.SwitchToUIInput();
-		this.gameObject.SetActive(true);
-		MenuManager.Open(AllyActionDialog);
-		AllyActionDialog.Setup(ally);
-
-		AllyActionDialog.CloseAction = () =>
-		{
-			AllyActionDialog.Close();
-		};
-		AllyActionDialog.SetNavigation();
-
-		Common.Instance.MenuInputHandler.SubmitMenuInput = false;
-		Common.Instance.MenuInputHandler.ClearInputThisFrame();
-	}
 
     public void OpenSkillsMenu(Character character) => OpenPartyMenu(PartyMenuTab.Skills, character as Ally);
 

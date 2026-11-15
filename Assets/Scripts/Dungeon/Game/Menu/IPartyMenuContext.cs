@@ -24,7 +24,8 @@ public sealed class PartyMenuEntry
     public bool Equipped;
     public EquipmentSlot? Slot;
     public bool SpendAttribute;
-    public object Identity => (object)Item ?? (object)Skill ?? Status ?? (object)Slot ?? (SpendAttribute ? "spend" : Title);
+    public bool Strategy;
+    public object Identity => (object)Item ?? (object)Skill ?? Status ?? (object)Slot ?? (SpendAttribute ? "spend" : Strategy ? "strategy" : Title);
 }
 
 public sealed class PartyMenuAction

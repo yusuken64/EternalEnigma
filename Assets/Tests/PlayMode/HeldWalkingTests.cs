@@ -135,6 +135,10 @@ public sealed class HeldWalkingTests
         player.WalkPositionHistory.Clear();
         player.WalkPositionHistory.Add(origin);
         Input(offset);
+        // Scene reveal/menu input can still own the frame in which the harness resumed.
+        // Real input waits for the controller; reflected decisions must do so as well.
+        yield return null;
+        yield return harness.WaitUntil(() => player.CanContinueHeldWalk, "town input ready for held movement");
         Decide(player);
         yield return harness.WaitUntil(() => !player.IsBusy, "first held town step");
         AssertAction(leader.HeroAnimator, AnimatedAction.MoveFWD);
@@ -207,6 +211,7 @@ public sealed class HeldWalkingTests
         var offset = game.CurrentDungeon.GetValidWalkDirections(origin).Select(GridMovement.GetFacingOffset)
             .First(d => game.CurrentDungeon.GetCharacterAtPosition(origin + d) == null &&
                 game.CurrentDungeon.GetInteractable(origin + d) == null);
+        yield return null;
         for (int step = 0; step < 3; step++)
         {
             var before = step == 0 ? default : State(leader.HeroAnimator);

@@ -109,17 +109,20 @@ namespace EternalEnigma.Tests
             EventSystem.current.RaycastAll(pointer, hits);
             Assert.That(hits.Count, Is.GreaterThan(0));
             Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject), Is.EqualTo(button.gameObject));
+            button.Select();
+            ExecuteEvents.ExecuteHierarchy(hits[0].gameObject, pointer, ExecuteEvents.pointerDownHandler);
+            ExecuteEvents.ExecuteHierarchy(hits[0].gameObject, pointer, ExecuteEvents.pointerUpHandler);
             ExecuteEvents.ExecuteHierarchy(hits[0].gameObject, pointer, ExecuteEvents.pointerClickHandler);
             Assert.That(chosen, Is.EqualTo(1));
             Assert.That(manager.CurrentDialog, Is.SameAs(manager.PartyMenu));
             manager.CloseAllMenus();
             Assert.That(harness.Ally.Vitals.ActionsPerTurnLeft, Is.EqualTo(actions));
 
-            manager.OpenAllyMenu(harness.Ally);
-            yield return Capture("ally-actions",960,720);
-            manager.AllyActionDialog.Strategy_Clicked();
+            manager.OpenPartyMenu(PartyMenuTab.Equipment);
+            yield return Capture("equipment-strategy",960,720);
+            manager.PartyMenu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text==AllyStrategyInfo.Name(harness.Ally.AllyStrategy)).onClick.Invoke();
             yield return Capture("strategy",960,720);
-            foreach(var strategyButton in manager.AllyActionDialog.DynamicActionDialog.ButtonContainer.GetComponentsInChildren<Button>())
+            foreach(var strategyButton in ((PartyMenuPicker)manager.CurrentDialog).Rows.GetComponentsInChildren<Button>())
                 Assert.That(strategyButton.GetComponentInChildren<TMP_Text>().isTextOverflowing,Is.False);
             manager.CloseAllMenus();
 

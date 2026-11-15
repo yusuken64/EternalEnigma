@@ -18,16 +18,22 @@ public class TownAlly : TownCharacter
 	public List<SkillRankSaveData> SkillRanks = new();
 	// Highest dungeon level reached; the trainer's level gate.
 	[Min(1)] public int HighestLevel = 1;
-    public int Level = 1;
-    public int Experience;
+    [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("Level")] private int level = 1;
+    public int Level { get => level; set { if (level == value) return; level = value; HudRefresh.PartyChanged(); } }
+    [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("Experience")] private int experience;
+    public int Experience { get => experience; set { if (experience == value) return; experience = value; HudRefresh.PartyChanged(); } }
 	public AttributePoints Attributes;
 	public int PendingAttributePoints => HeroAttributes.Pending(Level, Attributes);
 	// Vitals carried between dungeon runs; -1 means full.
-	public int Hp = -1;
-	public int Mana = -1;
+	[SerializeField, UnityEngine.Serialization.FormerlySerializedAs("Hp")] private int hp = -1;
+    public int Hp { get => hp; set { if (hp == value) return; hp = value; HudRefresh.PartyChanged(); } }
+	[SerializeField, UnityEngine.Serialization.FormerlySerializedAs("Mana")] private int mana = -1;
+    public int Mana { get => mana; set { if (mana == value) return; mana = value; HudRefresh.PartyChanged(); } }
     // Explicit presence flag distinguishes old saves from genuine zero hunger.
-    public bool HasHunger;
-    public int Hunger;
+    [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("HasHunger")] private bool hasHunger;
+    public bool HasHunger { get => hasHunger; set { if (hasHunger == value) return; hasHunger = value; HudRefresh.PartyChanged(); } }
+    [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("Hunger")] private int hunger;
+    public int Hunger { get => hunger; set { if (hunger == value) return; hunger = value; HudRefresh.PartyChanged(); } }
     public int HungerAccumulate;
 
 	// Fixed per hero prefab (assigned in Phase 7). The protagonist's instance is overwritten from the save.
@@ -50,6 +56,7 @@ public class TownAlly : TownCharacter
 		Skills ??= new();
 		SkillRanks ??= new();
 		SkillRanks.RemoveAll(r => r == null || r.SkillName == skillName);
+        HudRefresh.PartyChanged();
 		if (rank <= 0)
 		{
 			Skills.Remove(skillName);
@@ -95,8 +102,11 @@ public class TownAlly : TownCharacter
 		SkillRanks ??= new();
 		if (HighestLevel < 1) HighestLevel = 1;
 	}
+    private void OnEnable() => HudRefresh.PartyChanged();
+    private void OnDisable() => HudRefresh.PartyChanged();
 	public void RefreshEquipmentVisuals()
     {
+        HudRefresh.PartyChanged();
         HeroAnimator?.SetWeapon(Equipment.EquippedWeapon?.EquipmentItemDefinition, Equipment.EquippedShield?.EquipmentItemDefinition);
         SilhouetteParticipant.Register(transform,SilhouetteRole.Caster,true);
     }

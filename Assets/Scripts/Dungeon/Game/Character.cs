@@ -20,6 +20,7 @@ public abstract class Character : MonoBehaviour, Actor
 				if (!VoluntaryCastMovement) global::PendingCast.Cancel(this, "displaced");
                 tilemapPosition = value;
 				MovedThisTurn = true;
+				HudRefresh.Request(HudChange.Dungeon);
 			}
 		}
 	}
@@ -183,8 +184,11 @@ public abstract class Character : MonoBehaviour, Actor
 		get => displayedVitals;
 		set
 		{
+			if (displayedVitals != null) displayedVitals.Changed -= HudRefresh.PartyChanged;
 			displayedVitals = value;
 			DisplayedVitals.LinkedStats = () => DisplayedStats;
+			displayedVitals.Changed += HudRefresh.PartyChanged;
+			HudRefresh.PartyChanged();
 		}
 	}
 
@@ -208,6 +212,7 @@ public abstract class Character : MonoBehaviour, Actor
 
 	private void Awake()
 	{
+        DisplayedStats.OnStatChanged += HudRefresh.PartyChanged;
         SilhouetteParticipant.Register(transform,SilhouetteRole.Caster,true);
 		BaseStats = new();
 		if (Equipment != null)
@@ -218,6 +223,8 @@ public abstract class Character : MonoBehaviour, Actor
 
 	private void OnDestroy()
 	{
+        DisplayedStats.OnStatChanged -= HudRefresh.PartyChanged;
+        if (displayedVitals != null) displayedVitals.Changed -= HudRefresh.PartyChanged;
         Game.Instance?.GetComponent<CombatEffectPlayer>()?.ClearCasting(this);
 		BaseStats.OnStatChanged -= BaseStats_OnStatChanged;
 		if (Equipment != null)
@@ -250,11 +257,13 @@ public abstract class Character : MonoBehaviour, Actor
 	public abstract void DetermineAction();
     protected List<GameAction> ExecuteWithScenery(GameAction action)
     {
+        using var measurement = new FinalePerformance.Scope("Action resolution");
         AutoplayRunner.BeginBalanceAction(action, this);
         action.Visuals.Begin(this);
         var result = ExecuteWithSceneryCore(action) ?? new List<GameAction>();
         if (action.BalanceSource != null) foreach (var child in result.Where(c => c != null)) child.BalanceSource ??= action.BalanceSource;
         action.Visuals.End(action, this, result);
+        DungeonFastWalk.ObserveAction(action, this);
         return result;
     }
 
@@ -270,6 +279,8 @@ public abstract class Character : MonoBehaviour, Actor
             {
                 if (pair.Key is Enemy movedEnemy && pair.Value != movedEnemy.TilemapPosition)
                     movedEnemy.GetComponent<EnemyBehavior>()?.RevealIfMoved();
+                if (pair.Key is Ally && pair.Value != pair.Key.TilemapPosition && action is not MovementAction and not SwapAllyPositionAction)
+                    DungeonFastWalk.PartyEvent(pair.Key);
                 effects.AddRange(dungeon.EntryEffects(pair.Key,pair.Value,pair.Key.TilemapPosition));
                 Game.Instance.Encounter?.OnMoved(pair.Key,pair.Value,pair.Key.TilemapPosition);
                 if (pair.Value != pair.Key.TilemapPosition && dungeon.GetInteractable(pair.Key.TilemapPosition) is FantasyTrap trap && trap.CanTrigger(pair.Key))
@@ -318,6 +329,7 @@ public abstract class Character : MonoBehaviour, Actor
 
 	internal void SetFacing(Facing facing)
 	{
+		if (CurrentFacing != facing) HudRefresh.Request(HudChange.Dungeon);
 		CurrentFacing = facing;
 		var multiplier = 0;
 		switch (facing)
@@ -538,6 +550,7 @@ disp: {displayedVitals}");
 		var matchingStatus = StatusEffects.FirstOrDefault(x => x != null && x.StackKey == newStatusPrefab.StackKey);
 		if (matchingStatus != null)
 		{
+            DungeonFastWalk.PartyEvent(this);
 			matchingStatus.ReApply(newStatusPrefab);
             global::PendingCast.Validate(this);
 			UpdateCachedStats();
@@ -550,6 +563,7 @@ disp: {displayedVitals}");
 			var newStatus = Instantiate(newStatusPrefab, VisualParent.transform);
 			newStatus.Apply();
 			StatusEffects.Add(newStatus);
+            DungeonFastWalk.PartyEvent(this);
             global::PendingCast.Validate(this);
 			UpdateCachedStats();
 			DisplayedStats.Sync(FinalStats);
@@ -563,6 +577,7 @@ disp: {displayedVitals}");
 		var existing = StatusEffects.FirstOrDefault(x => ReferenceEquals(x, expiredStatus))
 			?? StatusEffects.FirstOrDefault(x => x != null && expiredStatus != null && x.GetType() == expiredStatus.GetType());
 		T existingStatus = existing as T;
+        if (existing != null) DungeonFastWalk.PartyEvent(this);
 		StatusEffects.Remove(existing);
 		UpdateCachedStats();
 		DisplayedStats.Sync(FinalStats);

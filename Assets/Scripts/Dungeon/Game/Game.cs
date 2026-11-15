@@ -8,7 +8,8 @@ using UnityEngine;
 
 public partial class Game : SingletonMonoBehaviour<Game>
 {
-	public bool IsReady { get; private set; }
+	private bool isReady;
+	public bool IsReady { get => isReady; private set { if (isReady == value) return; isReady = value; HudRefresh.Request(HudChange.All); } }
 	private DemoDungeonLoadout demoLoadout;
 	public TileWorldDungeonGenerator DungeonGenerator;
 	public TileWorldDungeon CurrentDungeon;
@@ -55,7 +56,6 @@ public partial class Game : SingletonMonoBehaviour<Game>
 	public TextMeshPro FloatingTextPrefab;
 
 	public InventoryMenu InventoryMenu;
-	public AllyActionDialog AllyMenu;
 	public SkillDialog SkillDialog;
 	public GameOverScreen GameOverScreen;
 	public NewFloorMessage NewFloorMessage;
@@ -446,13 +446,9 @@ public partial class Game : SingletonMonoBehaviour<Game>
         }
         var minimap = PlayerController.Minimap;
         minimap.UpdateVision(PartyVisibleTiles);
-        minimap.UpdateMinimapWithVisibleTiles(PartyVisibleTiles);
+        // Record every explored tile during fast travel; upload map/fog textures at the stop.
+        if (!DungeonFastWalk.DeferPresentation) minimap.UpdateMinimapWithVisibleTiles(PartyVisibleTiles);
     }
-
-	private void Update()
-	{
-		UpdateUI();
-	}
 
 	public void UpdateUI()
 	{

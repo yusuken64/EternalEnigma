@@ -17,8 +17,9 @@ namespace JuicyChickenGames.Menu
         public bool skillsPressed { get; private set; }
         public bool mapPressed { get; private set; }
         public bool swapAllyPressed { get; private set; }
-        public bool planPressed { get; private set; }
-        public bool holdPosition { get; private set; }
+        private bool holdingPosition;
+        public bool holdPosition { get => holdingPosition; private set { if (holdingPosition == value) return; holdingPosition = value; HudRefresh.Request(HudChange.Dungeon); } }
+        public bool fastWalkHeld { get; private set; }
         public bool optionsPressed { get; private set; }
 
         private InputAction moveAction;
@@ -28,11 +29,11 @@ namespace JuicyChickenGames.Menu
         //private InputAction interactAction;
         private InputAction waitAction;
         private InputAction holdPositionAction;
+        private InputAction fastWalkAction;
         private InputAction menuAction;
         private InputAction skillsAction;
         private InputAction mapAction;
         private InputAction swapAllyAction;
-        private InputAction planAction;
         private InputAction optionsAction;
 
         protected override void Initialize()
@@ -48,11 +49,11 @@ namespace JuicyChickenGames.Menu
             //interactAction = PlayerInput.actions["Use"];
             waitAction = PlayerInput.actions["Wait"];
             holdPositionAction = PlayerInput.actions["HoldPosition"];
+            fastWalkAction = PlayerInput.actions["FastWalk"];
             menuAction = PlayerInput.actions["Menu"];
             skillsAction = PlayerInput.actions["Skills"];
             mapAction = PlayerInput.actions["Map"];
             swapAllyAction = PlayerInput.actions["SwapAlly"];
-            planAction = PlayerInput.actions["Plan"];
             optionsAction = PlayerInput.actions["Options"];
 
             PlayerInput.SwitchCurrentActionMap("Player");
@@ -63,7 +64,7 @@ namespace JuicyChickenGames.Menu
             if (ControlBindings.SuppressInput)
             {
                 moveInput = lookInput = Vector2.zero;
-                isMoving = attackPressed = waitPressed = menuPressed = skillsPressed = mapPressed = swapAllyPressed = planPressed = holdPosition = optionsPressed = false;
+                isMoving = attackPressed = waitPressed = menuPressed = skillsPressed = mapPressed = swapAllyPressed = holdPosition = fastWalkHeld = optionsPressed = false;
                 return;
             }
             moveInput = ReadMovement();
@@ -78,8 +79,8 @@ namespace JuicyChickenGames.Menu
             mapPressed = mapAction.WasPressedThisFrame();
             waitPressed = waitAction.WasPressedThisFrame();
             holdPosition = holdPositionAction.IsPressed();
+            fastWalkHeld = fastWalkAction.IsPressed();
             swapAllyPressed = swapAllyAction.WasPressedThisFrame();
-            planPressed = planAction.WasPressedThisFrame();
             optionsPressed = optionsAction.WasPressedThisFrame();
 
 

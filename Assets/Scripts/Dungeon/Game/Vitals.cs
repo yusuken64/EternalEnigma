@@ -4,6 +4,7 @@ using UnityEngine;
 [Serializable]
 public class Vitals
 {
+	public event Action Changed;
 	[SerializeField] private int hp;
 	[SerializeField] private int mana;
 	[SerializeField] private int level;
@@ -27,6 +28,7 @@ public class Vitals
 				AutoplayRunner.RecordHPChange(this, hp, value);
 				hp = value;
 				ClampVitals();
+				Changed?.Invoke();
 			}
 		}
 	}
@@ -42,6 +44,7 @@ public class Vitals
 			{
 				mana = value;
 				ClampVitals();
+				Changed?.Invoke();
 			}
 		}
 	}
@@ -55,6 +58,7 @@ public class Vitals
 			{
 				level = value;
 				ClampVitals();
+				Changed?.Invoke();
 			}
 		}
 	}
@@ -68,6 +72,7 @@ public class Vitals
 			{
 				exp = value;
 				ClampVitals();
+				Changed?.Invoke();
 			}
 		}
 	}
@@ -82,6 +87,7 @@ public class Vitals
 			{
 				hunger = value;
 				ClampVitals();
+				Changed?.Invoke();
 			}
 		}
 	}

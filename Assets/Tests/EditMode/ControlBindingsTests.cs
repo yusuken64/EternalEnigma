@@ -31,6 +31,20 @@ namespace EternalEnigma.Tests
         private static int Binding(InputAction action, string path) =>
             Enumerable.Range(0, action.bindings.Count).Single(i => action.bindings[i].path == path);
 
+        [Test]
+        public void FastWalkDefaultsToLeftShoulderAndRetainsSavedRebindings()
+        {
+            var action = live.asset.FindAction("Player/FastWalk", true);
+            int binding = Binding(action, "<Gamepad>/leftShoulder");
+            Assert.That(live.asset.FindAction("Player/Plan"), Is.Null);
+            Assert.That(live.asset.bindings.Any(b => b.path == "<Keyboard>/e"), Is.False);
+            ControlBindings.ApplyBinding("Player/FastWalk", binding, "<Gamepad>/rightTrigger");
+            ControlBindings.Reload();
+            Assert.That(action.bindings[binding].effectivePath, Is.EqualTo("<Gamepad>/rightTrigger"));
+            ControlBindings.ResetAll();
+            Assert.That(action.bindings[binding].effectivePath, Is.EqualTo("<Gamepad>/leftShoulder"));
+        }
+
         [TestCase("MoveUpLeft")]
         [TestCase("MoveUpRight")]
         [TestCase("MoveDownLeft")]

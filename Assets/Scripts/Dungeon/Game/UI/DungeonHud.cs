@@ -18,6 +18,10 @@ public sealed class DungeonHud : MonoBehaviour
     private Image[] enemyStatusIcons;
     private float detailUntil;
     private bool explainedPartyControl;
+    private bool hasCompanions;
+    private Coroutine inspection;
+    private void OnEnable() { HudRefresh.Changed += Refresh; HudRefresh.Request(HudChange.All); }
+    private void OnDisable() => HudRefresh.Changed -= Refresh;
     public static DungeonHud Ensure(Game game)
     {
         var hud=AuthoredUI.Require<DungeonHud>(game.transform);
@@ -27,6 +31,7 @@ public sealed class DungeonHud : MonoBehaviour
             hud.ApplyTargetPresentation();
             hud.control.onClick.AddListener(()=>DungeonPreferences.FullControl=!DungeonPreferences.FullControl);
             ResourceHUD.Ensure(game); ScenePresentation.Ensure(game);
+            HudRefresh.Request(HudChange.All);
         }
         return hud;
     }
@@ -77,6 +82,14 @@ public sealed class DungeonHud : MonoBehaviour
         target.text = GameplayText.Format(text);
         if (targetBackdrop != null) targetBackdrop.SetActive(!string.IsNullOrWhiteSpace(text));
         detailUntil = Time.unscaledTime + 6;
+        if (inspection != null) StopCoroutine(inspection);
+        inspection = StartCoroutine(EndInspection());
+    }
+    private System.Collections.IEnumerator EndInspection()
+    {
+        yield return new WaitForSecondsRealtime(6);
+        inspection = null;
+        HudRefresh.Request(HudChange.Dungeon);
     }
     public static string StatusSummary(Character c) => string.Join(", ", c.StatusEffects.Where(s=>s!=null&&!s.IsExpired()).Select(StatusPresentation.Summary));
 	private void UpdateEnemyIcons(Enemy enemy)
@@ -107,17 +120,23 @@ public sealed class DungeonHud : MonoBehaviour
     private void Update()
     {
         if (game == null || !game.IsReady || game.PlayerController.ControlledAlly == null) return;
-        bool hasCompanions = game.Allies.Count(a => a != null && !a.IsSummon) + game.DownedAllies.Count(a => a != null && !a.IsSummon) > 1;
+        if (hasCompanions && !AutoplayRunner.BlocksPlayerInput && !Common.Instance.GlobalSettings.IsOpen && !Common.Instance.Travel.IsTransitioning &&
+            MenuUIInputModule.Active?.HasDialog != true &&
+            !ControlBindings.SuppressInput && Common.Instance.MenuInputHandler.PlayerInput.actions.FindAction("Player/ToggleFullControl")?.WasPressedThisFrame() == true)
+            DungeonPreferences.FullControl = !DungeonPreferences.FullControl;
+    }
+    private void Refresh(HudChange changes)
+    {
+        if (game == null || !game.IsReady || game.PlayerController.ControlledAlly == null) return;
+        if ((changes & HudChange.Party) != 0) game.UpdateUI();
+        if ((changes & (HudChange.Dungeon | HudChange.Party | HudChange.Visibility)) == 0) return;
+        hasCompanions = game.Allies.Count(a => a != null && !a.IsSummon) + game.DownedAllies.Count(a => a != null && !a.IsSummon) > 1;
         control.gameObject.SetActive(hasCompanions);
         if (hasCompanions && !explainedPartyControl)
         {
             explainedPartyControl = true;
             GameMessages.Post("Companions act automatically. Full Control lets you choose each hero's turn.");
         }
-        if (hasCompanions && !AutoplayRunner.BlocksPlayerInput && !Common.Instance.GlobalSettings.IsOpen && !Common.Instance.Travel.IsTransitioning &&
-            MenuUIInputModule.Active?.HasDialog != true &&
-            !ControlBindings.SuppressInput && Common.Instance.MenuInputHandler.PlayerInput.actions.FindAction("Player/ToggleFullControl")?.WasPressedThisFrame() == true)
-            DungeonPreferences.FullControl = !DungeonPreferences.FullControl;
         var player = game.PlayerController;
         var turns = game.TurnManager;
         header.text = GameplayText.Format(Game.Instance.Finale == null ?

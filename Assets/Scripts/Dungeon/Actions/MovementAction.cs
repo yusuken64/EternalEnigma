@@ -59,7 +59,7 @@ internal class MovementAction : GameAction
 		}
 		if (skipAnimation)
 		{
-			character.PlayIdleAnimation();
+			if (!DungeonFastWalk.SuppressPlayback) character.PlayIdleAnimation();
 			character.transform.position = worldPosition;
 			yield break;
 		}

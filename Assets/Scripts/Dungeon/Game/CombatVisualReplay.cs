@@ -153,6 +153,8 @@ internal sealed class CombatVisualReplay
 
     internal IEnumerator Play(GameAction action, Character actor, bool skip)
     {
+        using var measurement = new FinalePerformance.Scope("Action playback");
+        if (!skip && DungeonFastWalk.SuppressPlayback) DungeonFastWalk.Active.BeginFeedback();
         // Resolution may already have advanced to another action or target position.
         if (facingActor != null && facing.HasValue) facingActor.SetFacing(facing.Value);
         bool audible = action.ShouldPlayAudio(actor);

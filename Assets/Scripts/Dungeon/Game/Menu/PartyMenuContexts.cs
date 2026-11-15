@@ -124,6 +124,11 @@ public abstract class PartyMenuContext : IPartyMenuContext
         Add(EquipmentSlot.MainHand,"Weapon",loadout.Weapon);
         Add(EquipmentSlot.OffHand,"Off-hand",loadout.OffHand,loadout.Weapon?.EquipmentSlot==EquipmentSlot.TwoHand && loadout.Weapon?.EquipmentItemDefinition?.WeaponType!=WeaponType.BowAndArrow);
         Add(EquipmentSlot.Accessory,"Accessory",loadout.Accessory);
+        if(hero.DungeonActor!=null)
+            entries.Add(new PartyMenuEntry { Section="Strategy", Strategy=true,
+                Title=AllyStrategyInfo.Name(hero.DungeonActor.AllyStrategy),
+                Description=AllyStrategyInfo.Description(hero.DungeonActor.AllyStrategy)+
+                    "\n\nApplies when another party member is leading. Changing strategy is free." });
         var bonuses=string.Join("\n",loadout.Modification.DescribeEffect());
         entries.Add(new PartyMenuEntry{Section="Totals",Title="Equipment bonuses",Description=string.IsNullOrWhiteSpace(bonuses)?"No equipment bonuses.":bonuses});
         if (hero.DungeonActor != null)

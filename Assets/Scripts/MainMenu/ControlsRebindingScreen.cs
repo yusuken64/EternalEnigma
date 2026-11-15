@@ -143,6 +143,13 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
         viewportSize = BindingScroll.viewport.rect.size;
         if (selected == lastSelected && !resized) return;
         lastSelected = selected;
+        if (!IsRebinding && selected != null)
+        {
+            int index = Array.FindIndex(BindingButtons, button => button.gameObject == selected);
+            Status.text = index >= 0 && index < entries.Count && entries[index].action.name == "FastWalk"
+                ? "Dungeon: hold Fast walk and choose a direction. At each stop, release/repress or change direction."
+                : "Select a binding. Changes save automatically.";
+        }
         // Wheel and drag scrolling must not snap back to an old selection.
         if (selected == null || !selected.transform.IsChildOf(BindingScroll.content) ||
             MenuUIInputModule.Active?.UI.Click.IsPressed() == true) return;
@@ -165,7 +172,8 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
             "Move" => "Move", "Navigate" => "Browse", "Attack" => "Attack / talk", "HoldPosition" => "Turn in place",
             "MoveUpLeft" => "Move up-left", "MoveUpRight" => "Move up-right",
             "MoveDownLeft" => "Move down-left", "MoveDownRight" => "Move down-right",
-            "Plan" => "Dungeon orders", "Menu" or "OpenMenu" => "Inventory", "Skills" or "OpenSkillMenu" => "Skills",
+            "FastWalk" => "Fast walk (dungeon)",
+            "Menu" or "OpenMenu" => "Inventory", "Skills" or "OpenSkillMenu" => "Skills",
             "Map" => "Map", "SwapAlly" or "InspectNextHero" => "Next hero", "InspectPreviousHero" => "Previous hero",
             "Options" => "Settings", "Wait" => "Wait a turn", "Submit" => "Confirm", "Cancel" => "Back",
             "Click" => "Select / activate", "RightClick" => "Cancel target", "OpenEquipment" => "Equipment",

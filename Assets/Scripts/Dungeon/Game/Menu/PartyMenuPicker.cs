@@ -61,7 +61,7 @@ public sealed class PartyMenuPicker : Dialog
     public static PartyMenuPicker Build(Transform parent,string title,List<(string Label,Action Execute)> choices,bool closeOnChoose=true,bool showBackButton=true)
         => BuildDetailed(parent,title,choices.Select(c=>(c.Label,(string)null,c.Execute)).ToList(),closeOnChoose,showBackButton);
 
-    public static PartyMenuPicker BuildDetailed(Transform parent,string title,List<(string Label,string Description,Action Execute)> choices,bool closeOnChoose=true,bool showBackButton=true,IReadOnlyList<EquipmentStatPreview> previews=null)
+    public static PartyMenuPicker BuildDetailed(Transform parent,string title,List<(string Label,string Description,Action Execute)> choices,bool closeOnChoose=true,bool showBackButton=true,IReadOnlyList<EquipmentStatPreview> previews=null,int selectedIndex=0)
     {
         var picker=parent.GetComponentsInChildren<PartyMenuPicker>(true).FirstOrDefault(p=>p.Owner==null);
         if(picker==null)throw new InvalidOperationException("No free authored party picker for this dialog stack.");
@@ -108,7 +108,7 @@ public sealed class PartyMenuPicker : Dialog
             };
             row.Button.interactable=choice.Execute!=null;
             if(row.Button.interactable)buttons.Add(row.Button);
-            if(picker.first==null && row.Button.interactable)picker.first=row.Button;
+            if(row.Button.interactable && (picker.first==null || index==selectedIndex))picker.first=row.Button;
         }
         picker.BackButton.onClick.RemoveAllListeners();picker.BackButton.onClick.AddListener(picker.CloseDialog);
         picker.hasActions=buttons.Count>0;
@@ -121,6 +121,10 @@ public sealed class PartyMenuPicker : Dialog
             selectOnUp=buttons[(i+buttons.Count-1)%buttons.Count],selectOnDown=buttons[(i+1)%buttons.Count]};
         picker.scrollView.verticalNormalizedPosition=1;
         return picker;
+    }
+    internal void UseEquipmentDescriptionLayout()
+    {
+        if(optionPanel!=null)Fit(optionPanel,.43f,.58f,.71f,.88f);
     }
     private void PrepareOptionDescription()
     {

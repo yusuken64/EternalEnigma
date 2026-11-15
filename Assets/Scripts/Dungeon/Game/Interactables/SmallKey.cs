@@ -7,11 +7,12 @@ public static class SmallKeys
 {
     static DungeonSaveData Run => Common.Instance?.GameSaveData?.DungeonSaveData;
     public static int Count => Run?.SmallKeys ?? 0;
-    internal static void Add() { if (Run != null) Run.SmallKeys++; }
+    internal static void Add() { if (Run != null) { Run.SmallKeys++; HudRefresh.Request(HudChange.Resources); } }
     internal static bool TrySpend()
     {
         if (Count <= 0) return false;
         Run.SmallKeys--;
+        HudRefresh.Request(HudChange.Resources);
         return true;
     }
 }

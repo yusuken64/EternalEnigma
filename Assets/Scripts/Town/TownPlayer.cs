@@ -19,7 +19,8 @@ public class TownPlayer : MonoBehaviour
     public bool CutsceneLocked;
 	public WalkableMap WalkableMap;
 
-	public int Gold;
+	[SerializeField, UnityEngine.Serialization.FormerlySerializedAs("Gold")] private int gold;
+	public int Gold { get => gold; set { if (gold == value) return; gold = value; HudRefresh.Request(HudChange.Resources); } }
 	public List<InventoryItem> Inventory = new();
 
 	public TextMeshProUGUI UIText;
@@ -272,6 +273,7 @@ public class TownPlayer : MonoBehaviour
 		newAlly.SetToPlayer();
 
 		ControllingTownAlly = newAlly;
+        HudRefresh.PartyChanged();
 		CameraController.SetFollowTarget(newAlly.CirlcleRenderer.transform);
 		FindFirstObjectByType<Town>()?.RefreshRoofs();
 	}

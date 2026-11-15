@@ -25,6 +25,7 @@ public static class AttributeSpending
         var after = TownUtilityService.StatsFor(hero);
         if (hero.Hp >= 0) hero.Hp += Math.Max(0, after.HPMax - before.HPMax);
         if (hero.Mana >= 0) hero.Mana += Math.Max(0, after.ManaMax - before.ManaMax);
+        HudRefresh.PartyChanged();
         return true;
     }
 }

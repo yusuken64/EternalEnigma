@@ -241,7 +241,6 @@
 //			{
 //				//open ally menu instead
 //				var menuManager = FindObjectOfType<MenuManager>(true);
-//				menuManager.OpenAllyMenu(attackedAlly);
 
 //				holdTime = 0;
 //				pickedAction = null;

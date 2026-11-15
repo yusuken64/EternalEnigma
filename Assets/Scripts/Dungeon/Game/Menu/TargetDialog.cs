@@ -35,7 +35,8 @@ namespace JuicyChickenGames.Menu
         private Image pointerShield;
         private readonly List<RaycastResult> pointerHits = new();
         public List<Character> Targetables { get; private set; }
-        public Character CameraTarget { get; private set; }
+        private Character cameraTarget;
+        public Character CameraTarget { get => cameraTarget; private set { if (cameraTarget == value) return; cameraTarget = value; HudRefresh.Request(HudChange.Dungeon); } }
         public Vector3Int? TerminalSelectedCell => missileRange > 0 ? MissileEndpoint :
             tiles.Count > 0 ? selectedTile : selectedProp != null ? selectedProp.Position :
             CameraTarget != null ? CameraTarget.TilemapPosition : (Vector3Int?)null;
@@ -167,6 +168,7 @@ namespace JuicyChickenGames.Menu
 
         private void Aim(Vector3Int direction)
         {
+            HudRefresh.Request(HudChange.Dungeon);
             if (audioReady && direction != Direction) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             Direction = direction;
             var line = targetingSkill != null ? MissileTargeting.TraceLine(casterCharacter, direction, EffectiveMissileRange, targetingSkill.AreaRadius > 0 ? 1 : ArrowSupply.Penetration(casterCharacter, targetingSkill), targetingSkill.AreaRadius > 0) : null;
@@ -181,6 +183,7 @@ namespace JuicyChickenGames.Menu
 
         private void SelectTile(Vector3Int cell)
         {
+            HudRefresh.Request(HudChange.Dungeon);
             if (audioReady && cell != selectedTile) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             selectedTile = cell;
             TargetIndicator.SetActive(true);
@@ -189,6 +192,7 @@ namespace JuicyChickenGames.Menu
         }
         private void SelectProp(DungeonProp prop, bool followCamera = true)
         {
+            HudRefresh.Request(HudChange.Dungeon);
             if (audioReady && prop != selectedProp) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             selectedProp = prop; CameraTarget = null;
             TargetIndicator.SetActive(true); TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellToWorld(prop.Position);

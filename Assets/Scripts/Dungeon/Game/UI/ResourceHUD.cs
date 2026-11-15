@@ -24,13 +24,18 @@ public sealed class ResourceHUD : MonoBehaviour
     private ResourceHUDState last;
     private bool initialized;
     private Canvas canvas;
+    private TownMenuManager townMenus;
+    private void OnEnable() { HudRefresh.Changed += Refresh; HudRefresh.Request(HudChange.Resources | HudChange.Visibility); }
+    private void OnDisable() => HudRefresh.Changed -= Refresh;
 
     public static ResourceHUD Ensure(MonoBehaviour owner)
     {
         var hud = AuthoredUI.Require<ResourceHUD>(owner.transform);
         hud.town=owner as Town; hud.game=owner as Game; hud.world=owner as OverworldScene;
         hud.canvas=hud.GetComponent<Canvas>();
+        hud.townMenus = hud.town != null ? hud.town.GetComponentInChildren<TownMenuManager>(true) : null;
         if (hud.town != null || hud.world != null) hud.FitSharedHeader();
+        HudRefresh.Request(HudChange.Resources | HudChange.Visibility);
         return hud;
     }
 
@@ -48,13 +53,14 @@ public sealed class ResourceHUD : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
+    private void Refresh(HudChange changes)
     {
+        if ((changes & (HudChange.Resources | HudChange.Visibility)) == 0) return;
         var common=Common.Instance;
         if(canvas==null)canvas=GetComponent<Canvas>();
         // Prepare the destination HUD underneath its cover so it fades in with the scene.
-        bool ready=common!=null && !common.GlobalSettings.IsOpen &&
-            (town == null || FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud != true) &&
+        bool ready=common!=null && !common.GlobalSettings.IsOpen && !common.ScreenTransition.HasTravelPresentation &&
+            (town == null || townMenus?.CoversGameplayHud != true) &&
             (town!=null&&town.IsReady || game!=null&&game.IsReady || world!=null&&world.IsReady);
         canvas.enabled=ready;
         if(!ready)return;

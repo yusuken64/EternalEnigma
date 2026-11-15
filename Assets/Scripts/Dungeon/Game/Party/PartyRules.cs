@@ -38,6 +38,7 @@ public static class PartyRules
 
 	public static void MarkDowned(Game game, Ally ally)
 	{
+		DungeonFastWalk.PartyEvent(ally);
 		global::PendingCast.Cancel(ally, "downed");
         game.Allies.Remove(ally);
 		if (!game.DownedAllies.Contains(ally))
@@ -54,6 +55,7 @@ public static class PartyRules
 
 	public static void MarkStanding(Game game, Ally ally)
 	{
+		DungeonFastWalk.PartyEvent(ally);
 		game.DownedAllies.Remove(ally);
 		if (!game.Allies.Contains(ally))
 			game.Allies.Add(ally);

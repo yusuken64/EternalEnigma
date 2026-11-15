@@ -26,6 +26,56 @@ namespace EternalEnigma.Tests
         [UnityTearDown]public IEnumerator Cleanup(){yield return harness.Cleanup();DungeonPreferences.FullControlOverride=fullControl;DungeonPreferences.AnimationOverride=animation;inputScope.Dispose();foreach(var asset in owned)if(asset!=null)Object.DestroyImmediate(asset);owned.Clear();}
         private T Asset<T>() where T:ScriptableObject {var asset=ScriptableObject.CreateInstance<T>();owned.Add(asset);return asset;}
 
+        [UnityTest]public IEnumerator EquipmentStrategyAppliesOnlyToTheControlledAllyWithoutSpendingActions()
+        {
+            yield return harness.LoadDungeon(new TestScenario {AdditionalAllies=new[]{"Avery"}});
+            var first=harness.Ally;
+            var second=harness.Game.Allies.Single(actor=>actor!=first);
+            first.AllyStrategy=AllyStrategy.Aggresive;second.AllyStrategy=AllyStrategy.Follow;
+            int actions=first.Vitals.ActionsPerTurnLeft, secondActions=second.Vitals.ActionsPerTurnLeft;
+            var manager=MenuManager.Instance;
+            manager.OpenPartyMenu(PartyMenuTab.Equipment);yield return null;
+            var menu=manager.PartyMenu;
+            Button StrategyRow()=>menu.EntryButtons.Single(button=>button.GetComponent<AuthoredButton>().Label.text==AllyStrategyInfo.Name(menu.Hero.DungeonActor.AllyStrategy));
+            var row=StrategyRow();
+            Assert.That(row.GetComponent<Image>().sprite,Is.EqualTo(menu.EntryButtons[0].GetComponent<Image>().sprite),"Strategy uses the equipment slot styling.");
+            Assert.That(row.GetComponent<AuthoredButton>().Label.text,Does.Contain("Aggressive"));
+            row.Select();yield return new WaitForSecondsRealtime(.2f);
+            Directory.CreateDirectory("Temp/StrategyMenu");
+            ScreenCapture.CaptureScreenshot("Temp/StrategyMenu/equipment-slot.png");yield return new WaitForEndOfFrame();
+            row.onClick.Invoke();yield return null;
+            var picker=(PartyMenuPicker)manager.CurrentDialog;
+            var choices=picker.Rows.GetComponentsInChildren<AuthoredButton>();
+            Assert.That(choices.Select(choice=>choice.Label.text),Is.EqualTo(new[]{"Follow","Aggressive","Hold Position"}));
+            yield return harness.WaitUntil(()=>EventSystem.current.currentSelectedGameObject==choices[1].gameObject,"current strategy receives deferred dialog focus");
+            Assert.That(EventSystem.current.currentSelectedGameObject,Is.EqualTo(choices[1].gameObject),"Focus starts on this ally's current strategy.");
+            Assert.That(picker.OptionDescription.text,Does.Contain("Pursue visible enemies"));
+            ScreenCapture.CaptureScreenshot("Temp/StrategyMenu/strategy-options.png");yield return new WaitForEndOfFrame();
+            choices[0].Button.onClick.Invoke();yield return null;
+            Assert.That(manager.CurrentDialog,Is.SameAs(menu));
+            Assert.That(first.AllyStrategy,Is.EqualTo(AllyStrategy.Follow));
+            Assert.That(first.Vitals.ActionsPerTurnLeft,Is.EqualTo(actions));
+            Assert.That(StrategyRow().GetComponent<AuthoredButton>().Label.text,Does.Contain("Follow"));
+            StrategyRow().onClick.Invoke();yield return null;
+            ((PartyMenuPicker)manager.CurrentDialog).CloseDialog();yield return null;
+            Assert.That(first.AllyStrategy,Is.EqualTo(AllyStrategy.Follow),"Cancelling does not change strategy.");
+            menu.BrowseHero(1);yield return null;
+            Assert.That(harness.Game.PlayerController.ControlledAlly,Is.SameAs(second));
+            Assert.That(menu.Hero.DungeonActor,Is.SameAs(second));
+            StrategyRow().onClick.Invoke();yield return null;
+            picker=(PartyMenuPicker)manager.CurrentDialog;
+            picker.Rows.GetComponentsInChildren<AuthoredButton>().Single(choice=>choice.Label.text=="Hold Position").Button.onClick.Invoke();
+            yield return null;
+            Assert.That(second.AllyStrategy,Is.EqualTo(AllyStrategy.HoldPosition));
+            Assert.That(first.AllyStrategy,Is.EqualTo(AllyStrategy.Follow));
+            Assert.That(second.Vitals.ActionsPerTurnLeft,Is.EqualTo(secondActions));
+            Assert.That(harness.Game.TurnManager.IsProcessingTurn,Is.False);
+            manager.CloseAllMenus();yield return null;
+            var keyboard=InputSystem.AddDevice<Keyboard>();
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.E));yield return null;yield return null;
+            Assert.That(manager.Opened,Is.False,"E no longer opens an ally menu.");
+        }
+
         [UnityTest]public IEnumerator TownPassivesAppearOnlyInStatsWithRanksAndDescriptions()
         {
             yield return harness.LoadTown(new TestScenario {Skills=new[]{"Damage","Strength Up"}}.CreateSave());

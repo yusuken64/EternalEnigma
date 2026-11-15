@@ -122,6 +122,7 @@ public sealed class PartyMenu : Dialog
     }
     public void Refresh()
     {
+        HudRefresh.Request(HudChange.Party | HudChange.Resources);
         StopAutoScroll();scrollView.StopMovement();
         Clear(HeroesRoot); Clear(RowsRoot); rows.Clear();
         entries = Hero == null ? new() : context.Entries(Hero, Tab);
@@ -305,6 +306,21 @@ public sealed class PartyMenu : Dialog
             Owner.Open(dialog);return;
         }
         if(Tab==PartyMenuTab.Stats || entry.Status!=null)return;
+        if(entry.Strategy)
+        {
+            var actor=Hero.DungeonActor;
+            if(actor==null || actor!=Game.Instance?.PlayerController.ControlledAlly)
+            { Reject("Control this ally before changing their strategy.");return; }
+            var choices=AllyStrategyInfo.Choices.Select(strategy=>(AllyStrategyInfo.Name(strategy),
+                AllyStrategyInfo.Description(strategy),(Action)(()=>{
+                    if(actor==null || actor!=Game.Instance?.PlayerController.ControlledAlly)
+                    { Reject("Control this ally before changing their strategy.");return; }
+                    actor.AllyStrategy=strategy;
+                    Complete("Strategy set to "+AllyStrategyInfo.Name(strategy)+".");
+                }))).ToList();
+            PickDetailed("Strategy",choices,selectedIndex:Array.IndexOf(AllyStrategyInfo.Choices,actor.AllyStrategy));
+            return;
+        }
         if(entry.Slot.HasValue)
         {
             var equipmentOptions=((PartyMenuContext)context).EquipmentOptions(Hero,entry.Slot.Value);
@@ -342,9 +358,10 @@ public sealed class PartyMenu : Dialog
         picker.CloseAction = null;
         Owner.Open(picker);
     }
-    public void PickDetailed(string title,List<(string Label,string Description,Action Execute)> options,string description=null,IReadOnlyList<EquipmentStatPreview> previews=null)
+    public void PickDetailed(string title,List<(string Label,string Description,Action Execute)> options,string description=null,IReadOnlyList<EquipmentStatPreview> previews=null,int selectedIndex=0)
     {
-        var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options,closeOnChoose:false,showBackButton:false,previews:previews);
+        var picker=PartyMenuPicker.BuildDetailed(transform.parent,title,options,closeOnChoose:false,showBackButton:false,previews:previews,selectedIndex:selectedIndex);
+        if(Tab==PartyMenuTab.Equipment)picker.UseEquipmentDescriptionLayout();
         if(!string.IsNullOrEmpty(description))picker.Description(description);
         picker.CloseAction=null;Owner.Open(picker);
     }

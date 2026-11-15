@@ -23,6 +23,26 @@ public class SavedHeroSummary
 }
 public static class CampaignSaving
 {
+    public static bool CanSaveOverworld(Common common)
+    {
+        var context = common?.CampaignContext;
+        if (context == null || context.IsSandbox || common.GameSaveData == null || common.GameSaveData.IsSandbox ||
+            context.State.Scene != "Overworld" || context.Finale != null || common.Travel.IsTransitioning ||
+            AutoplayRunner.Active != null) return false;
+        var world = UnityEngine.Object.FindFirstObjectByType<OverworldScene>();
+        return world != null && world.Context == context && world.IsReady && !world.IsMoving &&
+            world.GetComponent<OverworldMenuManager>().Interaction == null;
+    }
+
+    public static bool SaveOverworld(Common common, out string error)
+    {
+        if (!CanSaveOverworld(common))
+        { error = "Save when your party is standing still on the overworld."; return false; }
+        CampaignParty.Capture(common);
+        // Commit always writes the active campaign slot; there is no save-slot choice.
+        return Commit(common, "overworld", null, Facing.Down, out error);
+    }
+
     public static bool Commit(Common common, string point, Vector3Int? arrival, Facing facing, out string error, bool beginOpeningDay = false)
     {
         error = null;
@@ -36,8 +56,7 @@ public static class CampaignSaving
         try
         {
             SaveSystem.Capture(common);
-            var regionId = (common.CampaignContext.ResolveDungeonLocation(common.GameSaveData.Campaign.LocationId) ??
-                common.CampaignContext.Campaign.Locations.Single(l => l.Id == common.GameSaveData.Campaign.LocationId)).RegionId;
+            var regionId = SaveRegionId(common, common.GameSaveData);
             if (!common.GameSaveData.VisitedRegions.Contains(regionId)) common.GameSaveData.VisitedRegions.Add(regionId);
             var snapshot = JsonUtility.FromJson<GameSaveData>(JsonUtility.ToJson(common.GameSaveData));
             snapshot.Campaign.OpeningClearNeedsSave = false;
@@ -71,11 +90,12 @@ public static class CampaignSaving
         var campaign = common.CampaignContext.Campaign;
         var location = common.CampaignContext.ResolveDungeonLocation(save.Campaign.LocationId) ??
             campaign.Locations.Single(l => l.Id == save.Campaign.LocationId);
-        var region = campaign.Regions.Single(r => r.Id == location.RegionId);
+        var region = campaign.Regions.Single(r => r.Id == SaveRegionId(common, save));
         var required = campaign.Locations.Where(l => l.Required && (l.Kind == LocationKind.StoryDungeon || l.Kind == LocationKind.FinalDungeon || l.Kind == LocationKind.RepeatableDungeon)).ToArray();
         var result = new CampaignSaveSummary {
             Biome = OverworldGridGenerator.BiomeForRegion(campaign, region.Id), Region = region.DisplayName,
-            Town = location.Kind == LocationKind.Town ? common.CampaignContext.GetTownDisplayName(location.Id) : region.DisplayName,
+            Town = save.Campaign.Scene == "Overworld" ? "Overworld" :
+                location.Kind == LocationKind.Town ? common.CampaignContext.GetTownDisplayName(location.Id) : region.DisplayName,
             RequiredTotal = required.Length, RequiredCleared = required.Count(l => save.Campaign.Completed.Contains(l.Id)),
             RegionsTotal = campaign.Regions.Count, RegionsVisited = save.VisitedRegions.Distinct().Count() };
         var catalog = ClassCatalog.Load();
@@ -99,5 +119,24 @@ public static class CampaignSaving
                 Strength = stats.Strength, Defense = stats.Defense });
         }
         return result;
+    }
+
+    private static string SaveRegionId(Common common, GameSaveData save)
+    {
+        var context = common.CampaignContext;
+        if (save.Campaign.Scene == "Overworld")
+        {
+            var position = new GridPoint(save.Campaign.X, save.Campaign.Y);
+            var grid = context.Grid;
+            var region = context.Campaign.Regions.FirstOrDefault(r =>
+                grid.Layers.TryGetValue(OverworldLayers.Region(r.Id), out var layer) && layer.At(position));
+            if (region != null) return region.Id;
+            // Crossings between region masks use the closest overworld location.
+            return context.Campaign.Locations.Where(l => grid.Locations.ContainsKey(l.Id))
+                .OrderBy(l => Math.Abs(grid.Locations[l.Id].X - position.X) + Math.Abs(grid.Locations[l.Id].Y - position.Y))
+                .First().RegionId;
+        }
+        return (context.ResolveDungeonLocation(save.Campaign.LocationId) ??
+            context.Campaign.Locations.Single(l => l.Id == save.Campaign.LocationId)).RegionId;
     }
 }

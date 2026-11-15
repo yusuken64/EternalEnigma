@@ -63,6 +63,8 @@ namespace EternalEnigma.Tests
             yield return null;
             var picker=menus.PartyMenu.transform.parent.GetComponentsInChildren<PartyMenuPicker>().Single(p=>p.Owner!=null);
             Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains("Not cleared")),Is.True);
+            Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Single(t=>t.name=="Interaction description").text,
+                Does.Not.Contain("to scroll").And.Not.Contain("for actions"));
             picker.BackButton.onClick.Invoke();
             Assert.That(JsonUtility.ToJson(context.Capture()),Is.EqualTo(before));
             var puzzle = context.Campaign.Locations.Single(l => l.Encounter?.RequiresResetFloor == true);

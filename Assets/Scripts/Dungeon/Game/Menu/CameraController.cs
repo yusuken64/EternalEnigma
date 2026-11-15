@@ -40,6 +40,7 @@ public class CameraController : MonoBehaviour
 	}
 	private void LateUpdate()
 	{
+		if (_followTarget != null && presentationTarget == null) CameraZoom.Update(Camera);
 		SnapToFollowTarget();
 	}
 

@@ -327,6 +327,8 @@ namespace EternalEnigma.Tests
             Assert.That(buttons.Length,Is.EqualTo(CampaignGuidance.Acquired(context).Count()+2));
             Assert.That(buttons.All(b=>b.Button.interactable),Is.True,"Benched capabilities remain selectable and explain their requirements.");
             Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Any(t=>t.text.Contains(route.LockText)),Is.True);
+            Assert.That(picker.Rows.GetComponentsInChildren<TMPro.TMP_Text>().Single(t=>t.name=="Interaction description").text,
+                Does.Not.Contain("to scroll").And.Not.Contain("for actions"));
             var benched=CampaignGuidance.Acquired(context).First(capability=>!world.Held.Contains(capability));
             var unavailable=buttons.Single(b=>b.GetComponentInChildren<TMPro.TMP_Text>().text.StartsWith(CampaignRewardNames.Name(context,benched)+" requires "));
             unavailable.Button.Select();

@@ -89,7 +89,7 @@ public sealed class CampaignSlots : MonoBehaviour
         else if (summary == null) detail.text = "<b>Campaign</b>\nSave details are unavailable.";
         else
         {
-            string point = save.SavePointId?.EndsWith("/home") == true ? "Home" :
+            string point = save.SavePointId == "overworld" ? "Overworld" : save.SavePointId?.EndsWith("/home") == true ? "Home" :
                 save.SavePointId?.EndsWith("/inn") == true ? "Inn" : "Campaign";
             string timestamp = DateTime.TryParse(save.SavedUtc, out var savedAt) ? savedAt.ToLocalTime().ToString("g") : "Date unavailable";
             detail.text = $"<b>{summary.Town} - {summary.Biome}</b>\n" +

@@ -30,9 +30,10 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             int propTriangles = 0;
             var diorama=DioramaCatalog.Load();
             var groundStyle=PaintedGroundStyle.Load();
+            bool district = plan.Layers.ContainsKey(TownLayers.Boundary);
+            int margin = district ? TownSurroundings.InnerBorder : TownSurroundings.MarginCells(size);
             if(groundStyle!=null)
             {
-                const int margin=4;
                 var ground=new GroundSurface[plan.Width+margin*2,plan.Height+margin*2];
                 for(int y=-margin;y<plan.Height+margin;y++) for(int x=-margin;x<plan.Width+margin;x++)
                 {
@@ -102,11 +103,10 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             }
             // Expand the TWC scenery beyond the playable grid. Out-of-bounds cells are
             // impassable in WalkableMap, so the visible enclosure matches movement.
-            bool district = plan.Layers.ContainsKey(TownLayers.Boundary);
             if (district) TownDungeonPresentation.Boundary(batch, faces, Kit, plan, biome, size);
             else
             {
-            const int border = 4;
+            const int border = TownSurroundings.InnerBorder;
             for (int y = -border; y < plan.Height + border; y++)
             for (int x = -border; x < plan.Width + border; x++)
             {
@@ -143,6 +143,7 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                 batch.Add(Kit.Mesh("Wall"), Kit.Material(biome),
                     new Vector3(plan.Exit.X + .5f + side * 1.5f, plan.Exit.Y, 0) * size,
                     Vector3.one * size, 90);
+            TownSurroundings.Build(root.transform, plan, Kit, TreeModels, diorama, biome, size, creator.currentSeed, margin, groundStyle != null);
             }
             if(diorama!=null)DioramaTownDressing.Build(batch,plan,biome,size,diorama);
             batch.Finish();

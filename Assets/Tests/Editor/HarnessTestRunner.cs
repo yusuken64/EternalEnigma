@@ -10,6 +10,24 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Camera Backdrops")]
+    public static void RunCameraBackdrops() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CameraBackdropTests", "EternalEnigma.Tests.CameraZoomTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Camera Zoom")]
+    public static void RunCameraZoom() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CameraZoomTests", "EternalEnigma.Tests.ControlsRebindingTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Interaction Copy")]
+    public static void RunInteractionCopy() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OverworldSceneTests.LockChooserOffersEveryAcquiredOptionAndCancelsWithoutOpening",
+        "EternalEnigma.Tests.CampaignTravelTests.DungeonEntryApprovalCancellationAndCapabilitiesUseOverworldDialogs");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Overworld Saving")]
+    public static void RunOverworldSaving() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OverworldSaveTests",
+        "EternalEnigma.Tests.SettingsInteractionTests.PreviewEntryCancelAndReopeningWorkWhilePaused");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Fast Walk")]
     public static void RunFastWalk() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonFastWalkTests");
 

@@ -31,6 +31,26 @@ namespace EternalEnigma.Tests
         private static int Binding(InputAction action, string path) =>
             Enumerable.Range(0, action.bindings.Count).Single(i => action.bindings[i].path == path);
 
+        [TestCase("ZoomIn", "rightBracket", "up")]
+        [TestCase("ZoomOut", "leftBracket", "down")]
+        public void CameraZoomDefaultsAndSavedOverridesMatchTheAuthoredAsset(string name, string key, string direction)
+        {
+            string actionPath = "Player/" + name;
+            var authored = UnityEditor.AssetDatabase.LoadAssetAtPath<InputActionAsset>("Assets/DungeonControls.inputactions");
+            foreach (var asset in new[] { authored, live.asset, ControlBindings.DisplayAsset })
+            {
+                var action = asset.FindAction(actionPath, true);
+                Assert.That(action.type, Is.EqualTo(InputActionType.Value));
+                Assert.That(action.bindings.Select(b => b.path), Is.EqualTo(new[]
+                    { "<Keyboard>/" + key, "<Gamepad>/rightStick/" + direction, "<Mouse>/scroll/" + direction }));
+            }
+            ControlBindings.ApplyBinding(actionPath, 0, "<Keyboard>/numpadPlus");
+            ControlBindings.Reload();
+            Assert.That(live.asset.FindAction(actionPath).bindings[0].effectivePath, Is.EqualTo("<Keyboard>/numpadPlus"));
+            ControlBindings.ResetAll();
+            Assert.That(live.asset.FindAction(actionPath).bindings[0].effectivePath, Is.EqualTo("<Keyboard>/" + key));
+        }
+
         [Test]
         public void FastWalkDefaultsToLeftShoulderAndRetainsSavedRebindings()
         {

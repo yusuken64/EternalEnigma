@@ -18,6 +18,7 @@ public sealed class PartyMenuPicker : Dialog
     private TMP_Text description;
     private string descriptionText;
     private bool descriptionGamepad;
+    private bool descriptionHints;
     private bool hasActions;
     private EquipmentComparisonView equipmentComparison;
     private RectTransform optionPanel;
@@ -156,11 +157,12 @@ public sealed class PartyMenuPicker : Dialog
         Fit(optionPanel,.43f,Mathf.Max(.15f,.88f-height),.71f,.88f);
         equipmentComparison.Reflow();
     }
-    public void Description(string text)
+    public void Description(string text, bool showControlHints = true)
     {
         var label=description=Instantiate(Title,Rows);
         label.name="Interaction description";
         descriptionText=text;
+        descriptionHints=showControlHints;
         RefreshDescription(); label.fontSize=32; label.fontSizeMin=32; label.fontSizeMax=32; label.enableAutoSizing=false;
         label.textWrappingMode=TextWrappingModes.Normal;
         label.alignment=TextAlignmentOptions.TopLeft;
@@ -179,7 +181,7 @@ public sealed class PartyMenuPicker : Dialog
     }
     private void Update()
     {
-        if(description!=null && descriptionGamepad!=ControlDeviceState.Gamepad)
+        if(description!=null && descriptionHints && descriptionGamepad!=ControlDeviceState.Gamepad)
         {
             RefreshDescription();
             float width=Mathf.Max(200,((RectTransform)Rows).rect.width);
@@ -190,7 +192,7 @@ public sealed class PartyMenuPicker : Dialog
     {
         descriptionGamepad=ControlDeviceState.Gamepad;
         string hint=hasActions?InputPrompts.DescriptionHint:$"Use {InputPrompts.Scroll} to scroll. Press {InputPrompts.Back} to return.";
-        description.text=GameplayText.Format(descriptionText+"\n\n<size=28>"+hint+"</size>");
+        description.text=GameplayText.Format(descriptionText+(descriptionHints?"\n\n<size=28>"+hint+"</size>":""));
     }
     internal override void SetFirstSelect()
     {

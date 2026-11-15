@@ -7,8 +7,12 @@ public class FogOverlay : MonoBehaviour
     internal static FogOverlay Instance { get; private set; }
     private Minimap.MinimapTileData[,] visibilityMap;
     private float cellSize;
+    private Camera viewCamera;
+    private Vector2 minimumHalfSize;
 
     private void Awake() => Instance = this;
+    private void OnEnable() => Camera.onPreCull += CoverCamera;
+    private void OnDisable() => Camera.onPreCull -= CoverCamera;
 
     private void OnDestroy()
     {
@@ -55,8 +59,10 @@ public class FogOverlay : MonoBehaviour
         // ray so the existing fog-mask projection and gameplay visibility stay fixed.
         float coverHeight=Mathf.Max(3.35f,currentDungeon.PresentationWallHeight+.35f);
         float padding=coverHeight+cellSize*2;
-        fogOverlayQuad.transform.localScale=new Vector3(worldSize.x*cellSize+padding*2,worldSize.y*cellSize+padding*2,1);
-        var direction=Camera.main!=null?Camera.main.transform.forward:new Vector3(0,12,14).normalized;
+        minimumHalfSize=worldSize*cellSize*.5f+Vector2.one*padding;
+        fogOverlayQuad.transform.localScale=new Vector3(minimumHalfSize.x*2,minimumHalfSize.y*2,1);
+        viewCamera=Camera.main;
+        var direction=viewCamera!=null?viewCamera.transform.forward:new Vector3(0,12,14).normalized;
         var shift=direction.z>.001f ? -(Vector2)direction*((coverHeight-3.35f)/direction.z) : Vector2.zero;
         fogOverlayQuad.transform.position = new Vector3(
             worldOrigin.x + worldSize.x * cellSize / 2+shift.x,
@@ -81,6 +87,25 @@ public class FogOverlay : MonoBehaviour
 
         // Assign texture once
         fogMaterial.SetTexture("_FogTex", fogTexture);
+    }
+
+    private void CoverCamera(Camera camera)
+    {
+        if (camera != viewCamera || fogOverlayQuad == null || cellSize <= 0) return;
+        var center = fogOverlayQuad.transform.position;
+        var halfSize = minimumHalfSize;
+        // Fit after camera follow, zoom and travel animation, including window resizes.
+        // The shader uses world coordinates, so enlarging the quad leaves the sight mask fixed.
+        for (int corner = 0; corner < 4; corner++)
+        {
+            var ray = camera.ViewportPointToRay(new Vector3(corner & 1, corner >> 1, 0));
+            if (Mathf.Abs(ray.direction.z) < .001f) continue;
+            float distance = (center.z - ray.origin.z) / ray.direction.z;
+            if (distance < 0) continue;
+            var point = ray.GetPoint(distance);
+            halfSize = Vector2.Max(halfSize, new Vector2(Mathf.Abs(point.x - center.x), Mathf.Abs(point.y - center.y)) + Vector2.one * cellSize);
+        }
+        fogOverlayQuad.transform.localScale = new Vector3(halfSize.x * 2, halfSize.y * 2, 1);
     }
 
     internal void UpdateFog(Minimap.MinimapTileData[,] dungeonMap, ICollection<Vector3Int> changed = null)

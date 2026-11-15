@@ -108,7 +108,7 @@ public class AuditRegressionTests
         Assert.That(harness.Game.CurrentDungeon.IsExitFloor, Is.True);
         Assert.That(harness.Game.NewFloorMessage.FloorMessage.text, Is.EqualTo("Floor 5"));
         harness.Game.GameOverScreen.Setup(harness.Game.PlayerController);
-        Assert.That(harness.Game.GameOverScreen.MessageText.text, Does.Contain("On floor 5"));
+        Assert.That(harness.Game.GameOverScreen.MessageText.text, Is.EqualTo("Game Over"));
     }
 
     [UnityTest]

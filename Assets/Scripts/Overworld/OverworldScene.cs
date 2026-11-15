@@ -598,7 +598,13 @@ public sealed class OverworldScene : MonoBehaviour
             foreach (var visual in gateVisuals[gate.RouteId]) visual.SetActive(!gates.IsWalkable(gate.Cells[0], Held));
     }
 
-    private void LateUpdate() { FlushMessage(); if (IsReady) FollowCamera(); }
+    private void LateUpdate()
+    {
+        FlushMessage();
+        if (!IsReady) return;
+        CameraZoom.Update(ViewCamera);
+        FollowCamera();
+    }
     private void FollowCamera()
     {
         if (ScreenTransition.ControlsCamera(ViewCamera)) return;

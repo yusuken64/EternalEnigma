@@ -184,11 +184,14 @@ public static class ControlBindings
             "<Gamepad>/buttonWest" => "X", "<Gamepad>/buttonNorth" => "Y",
             "<Gamepad>/leftStickPress" => "LS", "<Gamepad>/rightStickPress" => "RS",
             "<Gamepad>/leftStick" => "Left stick", "<Gamepad>/rightStick" => "Right stick",
+            "<Gamepad>/rightStick/up" => "Right stick up", "<Gamepad>/rightStick/down" => "Right stick down",
             "<Gamepad>/dpad" => "D-pad", "<Gamepad>/select" => "View", "<Gamepad>/start" => "Menu",
             "<Gamepad>/leftShoulder" => "LB", "<Gamepad>/rightShoulder" => "RB",
             "<Gamepad>/leftTrigger" => "LT", "<Gamepad>/rightTrigger" => "RT",
             "<Keyboard>/escape" => "Escape", "<Keyboard>/enter" => "Enter", "<Keyboard>/numpadEnter" => "Numpad Enter",
             "<Mouse>/leftButton" => "Left mouse", "<Mouse>/rightButton" => "Right mouse", "<Mouse>/middleButton" => "Middle mouse",
+            "<Mouse>/scroll/up" => "Wheel up", "<Mouse>/scroll/down" => "Wheel down",
+            "<Keyboard>/leftBracket" => "[", "<Keyboard>/rightBracket" => "]",
             _ => action.GetBindingDisplayString(index, InputBinding.DisplayStringOptions.DontIncludeInteractions)
         };
     }

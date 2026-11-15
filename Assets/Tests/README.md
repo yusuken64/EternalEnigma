@@ -1,5 +1,24 @@
 # Game test harness
 
+**Tools > Eternal Enigma > Tests > Run Camera Backdrops** checks dungeon fog and
+town surroundings at every map corner through 32:9 at the widest zoom. Rendered
+pixel checks reject exposed background; fog visibility and projection remain fixed.
+Town scenery uses overworld biome models, deterministic placement and decoration
+budgets. Captures are written to `Temp/CameraBackdrops`.
+
+**Tools > Eternal Enigma > Tests > Run Camera Zoom** checks right-stick up/down,
+`]` / `[`, and mouse-wheel zoom in dungeon, town, and overworld scenes. The closest
+limit is the existing dungeon framing; the widest is the existing overworld framing.
+Each scene resets to its authored starting zoom on entry. Coverage includes limits,
+idle stick drift, menu/transition input ownership, saved rebinding and wheel/stick
+capture in Controls. `ControlBindingsTests` checks the authored defaults in EditMode.
+
+**Tools > Eternal Enigma > Tests > Run Overworld Saving** verifies **Options > Save game > Save**
+always updates the campaign's original slot without a slot picker. It covers pointer/controller
+input, canceling, failed writes and retry, Continue and defeat recovery, and hidden Save controls
+outside the overworld. UI sequence captures and reload evidence go to `Temp/OverworldSaving`;
+the fixtures use isolated save storage.
+
 **Tools > Eternal Enigma > Tests > Run Event Feed Defaults** checks the saved 33.11
 event font and viewport settings, four recent rendered lines across turns (including
 wrapped messages), and expanded History retaining every event. It covers five window sizes,

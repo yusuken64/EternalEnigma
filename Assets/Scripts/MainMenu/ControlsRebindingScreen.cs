@@ -143,7 +143,8 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
         viewportSize = BindingScroll.viewport.rect.size;
         if (selected == lastSelected && !resized) return;
         lastSelected = selected;
-        if (!IsRebinding && selected != null)
+        // Restoring focus after capture must leave the saved/cleared feedback visible.
+        if (!IsRebinding && !ControlBindings.SuppressInput && selected != null)
         {
             int index = Array.FindIndex(BindingButtons, button => button.gameObject == selected);
             Status.text = index >= 0 && index < entries.Count && entries[index].action.name == "FastWalk"
@@ -173,6 +174,7 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
             "MoveUpLeft" => "Move up-left", "MoveUpRight" => "Move up-right",
             "MoveDownLeft" => "Move down-left", "MoveDownRight" => "Move down-right",
             "FastWalk" => "Fast walk (dungeon)",
+            "ZoomIn" => "Zoom in", "ZoomOut" => "Zoom out",
             "Menu" or "OpenMenu" => "Inventory", "Skills" or "OpenSkillMenu" => "Skills",
             "Map" => "Map", "SwapAlly" or "InspectNextHero" => "Next hero", "InspectPreviousHero" => "Previous hero",
             "Options" => "Settings", "Wait" => "Wait a turn", "Submit" => "Confirm", "Cancel" => "Back",
@@ -220,17 +222,19 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
     private IEnumerator Capture(InputAction action, int index)
     {
         bool pad = IsDeviceBinding(action.bindings[index], true);
+        bool zoom = action.name is "ZoomIn" or "ZoomOut";
         bool clearRequested = false;
-        captureInstruction = pad ? (action.expectedControlType == "Vector2" ? "Move a controller stick or D-pad." : "Press a controller button.") : "Press a key or mouse button.";
+        captureInstruction = zoom ? (pad ? "Move a stick up/down or press a controller button." : "Press a key, mouse button, or scroll the wheel.") :
+            pad ? (action.expectedControlType == "Vector2" ? "Move a controller stick or D-pad." : "Press a controller button.") : "Press a key or mouse button.";
         CaptureLabel.text = $"{captureName}\nRelease the current controls…";
         yield return new WaitForSecondsRealtime(.15f);
         while (AnyHeld()) yield return null;
         operation = action.PerformInteractiveRebinding(index)
             .WithCancelingThrough("<Keyboard>/escape")
             .WithControlsExcluding("<Pointer>/position").WithControlsExcluding("<Pointer>/delta")
-            .WithControlsExcluding("<Mouse>/scroll").WithControlsExcluding("<Keyboard>/anyKey")
+            .WithControlsExcluding("<Keyboard>/anyKey")
             .WithControlsExcluding("<Gamepad>/start")
-            .WithExpectedControlType(action.bindings[index].isPartOfComposite ? "Button" :
+            .WithExpectedControlType(zoom ? (pad ? "Button" : "Axis") : action.bindings[index].isPartOfComposite ? "Button" :
                 action.expectedControlType == "Vector2" ? "Vector2" : "Button")
             .OnMatchWaitForAnother(.1f)
             .OnApplyBinding((op, path) =>
@@ -255,6 +259,12 @@ public sealed class ControlsRebindingScreen : MonoBehaviour
                     other.bindings.Any(binding => !binding.isComposite && binding.effectivePath == path));
                 Status.text = shared ? "Saved. This input is also used by another action." : "Binding saved.";
             });
+        if (zoom)
+        {
+            // Capture a positive direction, not a signed axis shared by both zoom commands.
+            operation.WithControlsExcluding("<Mouse>/scroll/x").WithControlsExcluding("<Mouse>/scroll/y");
+        }
+        else operation.WithControlsExcluding("<Mouse>/scroll");
         if (pad) operation.WithControlsHavingToMatchPath("<Gamepad>");
         else operation.WithControlsHavingToMatchPath("<Keyboard>").WithControlsHavingToMatchPath("<Mouse>");
         if (ControlBindings.IsOptionalBinding(action.bindings[index]))

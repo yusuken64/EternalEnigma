@@ -66,6 +66,30 @@ namespace EternalEnigma.Tests
         private static int Binding(InputAction action, string path) =>
             Enumerable.Range(0, action.bindings.Count).Single(i => action.bindings[i].path == path);
 
+        [UnityTest] public IEnumerator ZoomRowsCaptureWheelDirectionsAndControllerStickDirections()
+        {
+            var zoomIn = ControlBindings.DisplayAsset.FindAction("Player/ZoomIn", true);
+            var zoomOut = ControlBindings.DisplayAsset.FindAction("Player/ZoomOut", true);
+            foreach (string label in new[] { "Zoom in", "Zoom out" })
+                Assert.That(screen.ActionLabels.Count(row => row.gameObject.activeInHierarchy && row.text == label), Is.EqualTo(2),
+                    "Keyboard and mouse each have a visible zoom binding.");
+            screen.BeginRebind("Player/ZoomIn", Binding(zoomIn, "<Mouse>/scroll/up"));
+            yield return new WaitForSecondsRealtime(.3f);
+            InputSystem.QueueStateEvent(mouse, new MouseState { scroll = Vector2.down });
+            yield return new WaitForSecondsRealtime(.3f);
+            Assert.That(screen.IsRebinding, Is.False);
+            Assert.That(zoomIn.bindings[Binding(zoomIn, "<Mouse>/scroll/up")].effectivePath, Is.EqualTo("<Mouse>/scroll/down"));
+            screen.DeviceButton.onClick.Invoke();
+            screen.BeginRebind("Player/ZoomOut", Binding(zoomOut, "<Gamepad>/rightStick/down"));
+            yield return new WaitForSecondsRealtime(.3f);
+            InputSystem.QueueStateEvent(pad, new GamepadState { rightStick = Vector2.up });
+            yield return new WaitForSecondsRealtime(.3f);
+            Assert.That(screen.IsRebinding, Is.False);
+            Assert.That(zoomOut.bindings[Binding(zoomOut, "<Gamepad>/rightStick/down")].effectivePath, Is.EqualTo("<Gamepad>/rightStick/up"));
+            InputSystem.QueueStateEvent(pad, new GamepadState());
+            yield return null;
+        }
+
         private IEnumerator KeyPress(Key key)
         {
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(key));

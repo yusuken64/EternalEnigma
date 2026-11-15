@@ -166,7 +166,7 @@ namespace EternalEnigma.Tests
             Assert.That(dialog.PromptText.rectTransform.anchorMin.x,Is.LessThan(.1f));
         }
         [UnityTest]
-        public IEnumerator ResultIconsReadInVictoryAndDefeatDialogs()
+        public IEnumerator ResultDialogsShowVictoryIconOnlyForVictory()
         {
             yield return harness.LoadDungeon(new TestScenario());
             var result=Object.FindFirstObjectByType<GameOverScreen>(FindObjectsInactive.Include);
@@ -175,7 +175,7 @@ namespace EternalEnigma.Tests
             {
                 result.Setup(harness.Game.PlayerController,victory);
                 Assert.That(result.ResultIcon.sprite,Is.SameAs(victory?result.VictoryIcon:result.DefeatIcon));
-                Assert.That(result.ResultIcon.enabled,Is.True);
+                Assert.That(result.ResultIcon.enabled,Is.EqualTo(victory));
                 yield return DioramaUICapture.Save(result.GetComponent<Canvas>(),victory?"victory":"defeat");
             }
             result.gameObject.SetActive(false);

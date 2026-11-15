@@ -15,6 +15,7 @@ public class GlobalSettings : MonoBehaviour
     public TabGroup TabGroup;
     public Button ResumeButton;
     public Button ReturntoMainButton;
+    public Button SaveButton { get; private set; }
     public bool IsOpen => SettingsCanvas != null && SettingsCanvas.activeInHierarchy;
     private bool returnToGameplay;
 
@@ -32,6 +33,7 @@ public class GlobalSettings : MonoBehaviour
     private void Awake()
     {
         EnsureMasterVolume();
+        EnsureSaveButton();
         GetComponentInChildren<ControlsRebindingScreen>(true)?.Initialize(this);
         // Party/service dialogs use orders 100+, while quit confirmation uses 2100.
         // Settings must own pointer raycasts as well as keyboard focus above them.
@@ -73,6 +75,42 @@ public class GlobalSettings : MonoBehaviour
         }
         master.Refresh();
     }
+    private void EnsureSaveButton()
+    {
+        SaveButton = Instantiate(ReturntoMainButton, ReturntoMainButton.transform.parent);
+        SaveButton.name = "Save game";
+        SaveButton.transform.SetSiblingIndex(ResumeButton.transform.GetSiblingIndex() + 1);
+        SaveButton.GetComponentInChildren<TMP_Text>().text = "Save game";
+        SaveButton.onClick = new Button.ButtonClickedEvent();
+        SaveButton.onClick.AddListener(SaveGame_Clicked);
+        if (SaveButton is SelectToActivateButton button)
+        {
+            button.AudioRole = SelectToActivateButton.SoundRole.Confirm;
+            button.ActivateOnFirstPointerPress = true;
+        }
+        SaveButton.gameObject.SetActive(false);
+    }
+
+    public void SaveGame_Clicked()
+    {
+        var common = Common.Instance;
+        if (!IsOpen || !CampaignSaving.CanSaveOverworld(common)) return;
+        var context = common.CampaignContext;
+        var world = FindFirstObjectByType<OverworldScene>();
+        int slot = SaveSystem.ActiveSlot;
+        CampaignChoice.Show($"Save your progress to Slot {slot + 1}?", "Save", () =>
+        {
+            // A confirmation belongs to the campaign and slot that opened it.
+            if (common.CampaignContext != context || SaveSystem.ActiveSlot != slot || world == null) return;
+            bool saved = CampaignSaving.SaveOverworld(common, out var error);
+            Exit_Clicked();
+            var message = common.MessageDialog;
+            message.PromptText.text = saved ? $"Game saved.\nSlot {slot + 1}" : error;
+            message.SetPortrait(null);
+            world.GetComponent<OverworldMenuManager>().Open(message);
+        });
+    }
+
     private void OnEnable()
     {
         TabGroup.TabActivated += EnterTab;
@@ -89,7 +127,10 @@ public class GlobalSettings : MonoBehaviour
         var tabs = TabGroup.TabContents;
         if (tabs.Count == 0) return;
         var last = ReturntoMainButton.gameObject.activeSelf ? ReturntoMainButton : ResumeButton;
-        ResumeButton.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnDown = tabs[0].TabButton };
+        bool canSave = SaveButton != null && SaveButton.gameObject.activeSelf;
+        ResumeButton.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnDown = canSave ? SaveButton : tabs[0].TabButton };
+        if (canSave) SaveButton.navigation = new Navigation { mode = Navigation.Mode.Explicit,
+            selectOnUp = ResumeButton, selectOnDown = tabs[0].TabButton };
         ReturntoMainButton.navigation = new Navigation { mode = Navigation.Mode.Explicit, selectOnUp = tabs[^1].TabButton };
         for (int i = 0; i < tabs.Count; i++)
         {
@@ -99,7 +140,7 @@ public class GlobalSettings : MonoBehaviour
             tab.TabButton.navigation = new Navigation
             {
                 mode = Navigation.Mode.Explicit,
-                selectOnUp = i == 0 ? ResumeButton : tabs[i - 1].TabButton,
+                selectOnUp = i == 0 ? (canSave ? SaveButton : ResumeButton) : tabs[i - 1].TabButton,
                 selectOnDown = i == tabs.Count - 1 ? last : tabs[i + 1].TabButton,
                 selectOnRight = tab == TabGroup.SelectedTab ? contents.FirstOrDefault() : null
             };
@@ -134,6 +175,7 @@ public class GlobalSettings : MonoBehaviour
         SettingsCanvas.SetActive(true);
         bool atMainMenu = SceneManager.GetActiveScene().name == "MainMenu";
         ReturntoMainButton.gameObject.SetActive(!atMainMenu);
+        SaveButton.gameObject.SetActive(CampaignSaving.CanSaveOverworld(Common.Instance));
         ResumeButton.GetComponentInChildren<TMP_Text>().text = atMainMenu ? "Close" : "Resume";
         TabGroup.Setup();
         SetupTabNavigation();

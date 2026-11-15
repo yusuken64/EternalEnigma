@@ -62,10 +62,9 @@ public class GameOverScreen : Dialog
 
 		_playerController = playerController;
 		_victory = victory;
-        if(ResultIcon!=null){ResultIcon.sprite=victory?VictoryIcon:DefeatIcon;ResultIcon.enabled=ResultIcon.sprite!=null;}
+        if(ResultIcon!=null){ResultIcon.sprite=victory?VictoryIcon:DefeatIcon;ResultIcon.enabled=victory&&ResultIcon.sprite!=null;}
 		CloseAction = null;
-		MessageText.text = victory ? $"Victory!\nFinal dungeon cleared\nGold {playerController.Gold:N0}" :
-			$"Player Perished\nOn floor {playerController.Floor}\nGold {playerController.Gold:N0}";
+		MessageText.text = victory ? $"Victory!\nFinal dungeon cleared\nGold {playerController.Gold:N0}" : "Game Over";
 		// JsonUtility materializes an empty record for saves without a completion.
 		if (victory && Common.Instance.GameSaveData.Completion is { } record && !string.IsNullOrEmpty(record.CompletedUtc))
 			MessageText.text = "Hall of Fame\n" + GameplayText.Format(record.Statistics);

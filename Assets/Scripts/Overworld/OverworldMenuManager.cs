@@ -87,7 +87,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
         if(route.ShortcutKind==ShortcutKind.Keyed && !keys.Contains(route.KeyId))keys.Add(route.KeyId);
         foreach(var key in keys)options.Add((world.Campaign.KeyLabel(key),()=>Attempt(new KeyLockAction(key))));
         picker=PartyMenuPicker.Build(PartyMenu.transform.parent,"Choose an action",options,false);
-        picker.Description((route.LockText??route.GateHint)+(options.Count==0?"\n\nYou have no abilities or keys to use here.":""));
+        picker.Description((route.LockText??route.GateHint)+(options.Count==0?"\n\nYou have no abilities or keys to use here.":""), showControlHints:false);
         picker.CloseAction=()=>{session.Dispose();Interaction=null;};
         dialogs.Open(picker);
         return true;
@@ -146,7 +146,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
         picker.Description(CampaignGuidance.LocationName(context, location.Id)+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
             "\n" + location.DungeonDescription + (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? ". Hostile territory" : "") +
             (location.Encounter?.Kind==EncounterKind.Prison?"\nYour carried and equipped possessions will be confiscated temporarily. Recover them from the guarded stash before escaping. Gold and learned skills remain available.":"")+
-            (blockedReason == null ? "" : "\n" + blockedReason));
+            (blockedReason == null ? "" : "\n" + blockedReason), showControlHints:false);
         dialogs.Open(picker);
         return true;
     }

@@ -54,8 +54,7 @@ public sealed class OverworldGates
             return opened.Add(route.Id);
         });
     }
-    public string Hint(CampaignRoute route, CapabilitySet held) => NeedsOpening(route)
-        ? "Enter / A: Interact: " + route.GateHint : route.GateHint;
+    public string Hint(CampaignRoute route, CapabilitySet held) => route.GateHint;
 
     /// <summary>What the party opens a gate with: the key's name, or the cheapest satisfied way through.</summary>
     public static string UsedLabel(CampaignRoute route, CapabilitySet held)

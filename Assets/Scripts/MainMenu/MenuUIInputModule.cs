@@ -21,6 +21,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
     public InputAction PreviousHero { get; private set; }
     public InputAction OpenEquipment { get; private set; }
     public InputAction OpenStats { get; private set; }
+    public InputAction ZoomIn { get; private set; }
+    public InputAction ZoomOut { get; private set; }
     public bool UsingGamepad => ControlDeviceState.Gamepad;
     private DungeonControls controls;
     private InputAction historyAction;
@@ -55,6 +57,8 @@ public class MenuUIInputModule : InputSystemUIInputModule
         OpenEquipment = uiMap.FindAction("OpenEquipment");
         OpenStats = uiMap.FindAction("OpenStats");
         historyAction = uiMap.FindAction("History", true);
+        ZoomIn = controls.asset.FindAction("Player/ZoomIn", true);
+        ZoomOut = controls.asset.FindAction("Player/ZoomOut", true);
         actionsAsset = controls.asset;
         point = Reference(UI.Point);
         move = Reference(UI.Navigate);
@@ -85,12 +89,17 @@ public class MenuUIInputModule : InputSystemUIInputModule
         base.OnEnable();
         Active = this;
         controls?.UI.Enable();
+        // The overworld uses UI navigation for movement, so zoom must survive map switches.
+        ZoomIn.Enable();
+        ZoomOut.Enable();
     }
 
     protected override void OnDisable()
     {
         base.OnDisable();
         controls?.UI.Disable();
+        ZoomIn?.Disable();
+        ZoomOut?.Disable();
         if (Active == this) Active = null;
     }
 

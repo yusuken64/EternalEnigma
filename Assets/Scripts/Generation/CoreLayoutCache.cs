@@ -94,6 +94,24 @@ public static class CoreLayoutCache
         return false;
     }
 
+    /// <summary>The town plan together with the options it was generated from, for handing to another creator.</summary>
+    public static bool TryGetTown(TileWorldCreator twc, out TownPlan plan, out TownPlanOptions options)
+    {
+        if (twc == null) throw new ArgumentNullException(nameof(twc));
+        plan = null; options = null;
+        if (!slots.TryGetValue(twc, out var slot) || slot.Town == null) return false;
+        plan = slot.Town; options = slot.TownKey;
+        return true;
+    }
+
+    /// <summary>Registers an already generated town plan for a creator that is reusing its geometry.</summary>
+    public static void SupplyTown(TileWorldCreator twc, TownPlanOptions options, TownPlan plan)
+    {
+        var slot = slots.GetOrCreateValue(twc);
+        slot.TownKey = options; slot.Town = plan;
+        slot.Dungeon = null; slot.DungeonKey = null;
+    }
+
     public static void Clear(TileWorldCreator twc) => slots.Remove(twc);
 
     public static void SupplyDungeon(TileWorldCreator twc, DungeonFloorOptions options, DungeonFloor floor)

@@ -97,6 +97,16 @@ public static class WebContentBuild
             var bootContent = BootScenes.Concat(bootResources.Select(AssetDatabase.GUIDToAssetPath)).ToArray();
             var (bootAtlases, gameAtlases) = SplitAtlases(new HashSet<string>(AssetDatabase.GetDependencies(bootContent, true)));
             SpriteAtlasUtility.PackAllAtlases(BuildTarget.WebGL);
+            ResourceRoots.Clear(); ResourceRoots.UnionWith(resources);
+            PackedTextures.Clear();
+            foreach (var atlasPath in bootAtlases.Concat(gameAtlases))
+                foreach (var packable in AssetDatabase.LoadAssetAtPath<SpriteAtlas>(atlasPath).GetPackables())
+                {
+                    string packed = AssetDatabase.GetAssetPath(packable);
+                    if (AssetDatabase.IsValidFolder(packed))
+                        PackedTextures.UnionWith(AssetDatabase.FindAssets("t:Texture2D", new[] { packed }).Select(AssetDatabase.GUIDToAssetPath));
+                    else if (!string.IsNullOrEmpty(packed)) PackedTextures.Add(packed);
+                }
             var bootRoots = bootContent.Concat(bootAtlases).ToArray();
             // Late content is whatever only the late Resources folders reach; anything shared stays in the game bundle.
             var lateRoots = resourceNames.Where(pair => LateResourceFolders.Any(folder =>
@@ -166,6 +176,9 @@ public static class WebContentBuild
 
     private static readonly HashSet<Type> EditorOnlyTypes = new()
         { typeof(SceneAsset), typeof(DefaultAsset), typeof(LightingDataAsset), typeof(LightingSettings) };
+    // Set for the duration of a build: assets the game loads by Resources path, and atlas-packed textures.
+    private static readonly HashSet<string> ResourceRoots = new();
+    private static readonly HashSet<string> PackedTextures = new();
 
     /// <summary>Assets that can be placed in a bundle explicitly: project assets that are not code, scenes or editor data.</summary>
     private static IEnumerable<string> Bundled(IEnumerable<string> paths)
@@ -176,6 +189,13 @@ public static class WebContentBuild
             var type = AssetDatabase.GetMainAssetTypeAtPath(path);
             if (type == null || EditorOnlyTypes.Contains(type) || typeof(MonoScript).IsAssignableFrom(type)) continue;
             if (type.FullName.StartsWith("UnityEditorInternal.", StringComparison.Ordinal) || type.FullName == "UnityEditor.Presets.Preset") continue;
+            // Naming an asset puts the whole file in the bundle. That is wrong for three kinds unless
+            // the game loads them by Resources path: model files (every mesh and clip in the file, not
+            // just the ones used), bare meshes (the town scene's editor preview is stripped from
+            // builds but still listed as a dependency) and textures packed into an atlas (the sprite
+            // ships in the atlas). Those are left for Unity to include by reference, as a player build does.
+            if (!ResourceRoots.Contains(path) &&
+                (type == typeof(Mesh) || AssetImporter.GetAtPath(path) is ModelImporter || PackedTextures.Contains(path))) continue;
             // Everything else is named explicitly, including mixers and animator controllers, so the
             // boot and game bundles share one copy instead of each embedding its own.
             yield return path;

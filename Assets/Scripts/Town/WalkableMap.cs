@@ -29,6 +29,13 @@ public class WalkableMap : MonoBehaviour
         townPlan = plan;
 	}
 
+    /// <summary>Adopts a plan whose geometry was restored from cache, where no blueprint pass runs.</summary>
+    internal void UsePlan(TownPlan plan)
+    {
+        _walkableMap = plan.Layers[TownLayers.Walkable].ToArray();
+        townPlan = plan;
+    }
+
 	internal Vector3 CellToWorld(Vector3Int newMapPosition)
 	{
 		return GridMovement.CellToWorld(newMapPosition, TileWorldCreator.twcAsset.cellSize);

@@ -16,11 +16,13 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
         get => campaignContext;
         internal set
         {
-            if (!ReferenceEquals(campaignContext, value)) overworldTerrain?.Clear();
+            if (!ReferenceEquals(campaignContext, value)) { overworldTerrain?.Clear(); townTerrain?.Clear(); }
             campaignContext = value;
         }
     }
-    private void OnDestroy() { overworldTerrain?.Clear(); }
+    private TownTerrainCache townTerrain;
+    public TownTerrainCache TownTerrain => townTerrain ??= new TownTerrainCache(transform);
+    private void OnDestroy() { overworldTerrain?.Clear(); townTerrain?.Clear(); }
     private CampaignTravelService travel;
     public CampaignTravelService Travel
     {

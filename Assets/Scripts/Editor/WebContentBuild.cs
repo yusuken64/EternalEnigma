@@ -5,7 +5,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
+using UnityEditor.U2D;
 using UnityEngine;
+using UnityEngine.U2D;
 
 /// <summary>
 /// Builds the web player with deferred content: the player holds only a bootstrap scene, the menu
@@ -25,6 +27,8 @@ public static class WebContentBuild
     private const string MusicFolder = "Assets/Sounds/Music/";
     // Files rewritten for the build, by GUID, with the copy to put back afterwards.
     private static readonly List<(string Guid, string Backup)> Backups = new();
+    // Assets created only for the build.
+    private static readonly List<string> Generated = new();
     // Scan tag only: lets build hooks that inspect named bundles still see the moved folder.
     private const string ScanTag = "deferred-resources";
 
@@ -88,9 +92,11 @@ public static class WebContentBuild
             MoveResourcesOut();
             var resources = resourceNames.Keys.Select(AssetDatabase.GUIDToAssetPath).ToArray();
             var tracks = SeparateMusic(BootScenes.Concat(gameScenes).Concat(resources).ToArray());
-            var atlases = AssetDatabase.FindAssets("t:SpriteAtlas", new[] { "Assets" }).Select(AssetDatabase.GUIDToAssetPath);
-            var bootRoots = BootScenes.Concat(bootResources.Select(AssetDatabase.GUIDToAssetPath)).Concat(atlases).ToArray();
-            var gameRoots = gameScenes.Concat(resources).ToArray();
+            var bootContent = BootScenes.Concat(bootResources.Select(AssetDatabase.GUIDToAssetPath)).ToArray();
+            var (bootAtlases, gameAtlases) = SplitAtlases(new HashSet<string>(AssetDatabase.GetDependencies(bootContent, true)));
+            SpriteAtlasUtility.PackAllAtlases(BuildTarget.WebGL);
+            var bootRoots = bootContent.Concat(bootAtlases).ToArray();
+            var gameRoots = gameScenes.Concat(resources).Concat(gameAtlases).ToArray();
             var boot = Bundled(AssetDatabase.GetDependencies(bootRoots, true)).ToArray();
             var game = Bundled(AssetDatabase.GetDependencies(gameRoots, true)).Except(boot).ToArray();
             string Name(string path) => resourceNames.TryGetValue(AssetDatabase.AssetPathToGUID(path), out var name) ? name : path.ToLowerInvariant();
@@ -181,6 +187,8 @@ public static class WebContentBuild
         try
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            foreach (var path in Generated) AssetDatabase.DeleteAsset(path);
+            Generated.Clear();
             foreach (var (guid, backup) in Backups)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
@@ -248,17 +256,13 @@ public static class WebContentBuild
     private static List<string> SeparateMusic(string[] roots)
     {
         bool IsMusic(string path) => path.StartsWith(MusicFolder, StringComparison.Ordinal);
-        if (Directory.Exists(BackupFolder)) Directory.Delete(BackupFolder, true);
-        Directory.CreateDirectory(BackupFolder);
         var named = new SortedSet<string>(StringComparer.Ordinal);
         var holders = AssetDatabase.GetDependencies(roots, true)
             .Where(path => path.StartsWith("Assets/", StringComparison.Ordinal) && !IsMusic(path))
             .Where(path => AssetDatabase.GetDependencies(path, false).Any(IsMusic)).ToArray();
         foreach (var path in holders)
         {
-            string backup = BackupFolder + "/" + Backups.Count;
-            File.Copy(path, backup, true);
-            Backups.Add((AssetDatabase.AssetPathToGUID(path), backup));
+            Backup(path);
             if (path.EndsWith(".unity", StringComparison.OrdinalIgnoreCase))
             {
                 var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
@@ -280,6 +284,47 @@ public static class WebContentBuild
         if (remaining.Length > 0) throw new InvalidOperationException("Music is still referenced by bundled content: " + string.Join(", ", remaining));
         Debug.Log($"Deferred content: separated music from {holders.Length} assets; named tracks: {string.Join(", ", named.Select(Path.GetFileNameWithoutExtension))}.");
         return named.ToList();
+    }
+
+    /// <summary>Keeps a copy of a file the build is about to rewrite, so <see cref="Restore"/> can put it back.</summary>
+    private static void Backup(string path)
+    {
+        Directory.CreateDirectory(BackupFolder);
+        string backup = BackupFolder + "/" + Backups.Count;
+        File.Copy(path, backup, true);
+        Backups.Add((AssetDatabase.AssetPathToGUID(path), backup));
+    }
+
+    /// <summary>
+    /// A sprite atlas is all-or-nothing in a bundle. Each atlas that the menu only partly needs is
+    /// split in two, so the boot bundles carry just the sprites the menu shows.
+    /// </summary>
+    private static (List<string> Boot, List<string> Game) SplitAtlases(HashSet<string> bootAssets)
+    {
+        var boot = new List<string>();
+        var game = new List<string>();
+        foreach (var path in AssetDatabase.FindAssets("t:SpriteAtlas", new[] { "Assets" }).Select(AssetDatabase.GUIDToAssetPath).ToArray())
+        {
+            var atlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(path);
+            var packables = atlas.GetPackables();
+            var menu = packables.Where(p => p != null && bootAssets.Contains(AssetDatabase.GetAssetPath(p))).ToArray();
+            if (menu.Length == 0) { game.Add(path); continue; }
+            if (menu.Length == packables.Length) { boot.Add(path); continue; }
+            Backup(path);
+            string bootPath = Path.GetDirectoryName(path).Replace('\\', '/') + "/" + Path.GetFileNameWithoutExtension(path) + "Boot" + Path.GetExtension(path);
+            if (!AssetDatabase.CopyAsset(path, bootPath)) throw new InvalidOperationException("Could not copy " + path);
+            Generated.Add(bootPath);
+            var bootAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(bootPath);
+            bootAtlas.Remove(packables.Except(menu).ToArray());
+            atlas.Remove(menu);
+            EditorUtility.SetDirty(bootAtlas);
+            EditorUtility.SetDirty(atlas);
+            boot.Add(bootPath);
+            game.Add(path);
+            Debug.Log($"Deferred content: split {path}: {menu.Length} of {packables.Length} entries go to the boot atlas.");
+        }
+        AssetDatabase.SaveAssets();
+        return (boot, game);
     }
 
     private static bool ClearMusic(UnityEngine.Object target, ISet<string> named)

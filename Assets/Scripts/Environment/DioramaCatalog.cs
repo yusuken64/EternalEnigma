@@ -25,7 +25,7 @@ public sealed class DioramaCatalog : ScriptableObject
     public Material[] Cliffs=Array.Empty<Material>();
     public Mesh CliffGrid;
     public bool TreeWalls;
-    public static DioramaCatalog Load()=>Resources.Load<DioramaCatalog>("EnvironmentKit/DioramaCatalog");
+    public static DioramaCatalog Load()=>GameContent.Load<DioramaCatalog>("EnvironmentKit/DioramaCatalog");
     public DioramaModel Get(string id)=>Models.FirstOrDefault(m=>m.Id==id);
     public Material Material(string role,OverworldBiome biome)=>Palettes.First(p=>p.Biome==biome).Materials[Array.IndexOf(Roles,role)];
     public void Add(EnvironmentBatch batch,string id,OverworldBiome biome,Vector3 position,float rotation=0,float variation=1,Vector3? scale=null,int? lod=null)

@@ -61,7 +61,13 @@ public class MainMenu : MonoBehaviour
         foreach (var button in buttons) button.interactable = false;
         yield return LoadingSceneIntegration.EnsureCommon();
         UseMenuEventSystem();
-        for (int i = 0; i < buttons.Length; i++) if (buttons[i] != null) buttons[i].interactable = interactable[i];
+        // A deferred web build shows the menu while the rest of the game is still downloading.
+        bool downloading = !GameContent.Ready;
+        void Unlock()
+        {
+            for (int i = 0; i < buttons.Length; i++) if (buttons[i] != null) buttons[i].interactable = interactable[i];
+        }
+        if (!downloading) Unlock();
         GetComponent<MainMenuDeveloperControls>()?.Initialize();
         Common.Instance.EndSandbox();
         Common.Instance.Travel.SceneReady();
@@ -70,10 +76,20 @@ public class MainMenu : MonoBehaviour
         NavigationHandler.arrowAnchor = ArrowAnchor.Left;
         NavigationHandler.arrowOffset = Vector3.zero;
         NavigationHandler.edgeSpacing = 12;
-        IsReady = true;
-        StartButton.GetComponent<Button>().Select();
+        if (!downloading)
+        {
+            IsReady = true;
+            StartButton.GetComponent<Button>().Select();
+        }
         CampaignStartMenu.gameObject.SetActive(false);
         if (Common.Instance.ScreenTransition.BlockScreen.activeSelf) Common.Instance.ScreenTransition.DoOpen();
+        if (downloading)
+        {
+            while (!GameContent.Ready) yield return null;
+            Unlock();
+            IsReady = true;
+            StartButton.GetComponent<Button>().Select();
+        }
         // The menu is usable; read the town roster behind it so the first slot or hero screen is ready.
         yield return null;
         if (townConfigurationOverride == null) TownSceneLoader.PreloadDefault();
@@ -267,7 +283,7 @@ public class MainMenu : MonoBehaviour
 		}
 
 		common.PendingDemoLoadout = DemoDungeonLoadout.Load();
-		SceneManager.LoadScene("DungeonScene");
+		GameContent.LoadScene("DungeonScene");
 	}
 
 	public void DebugAutoplay_Clicked()

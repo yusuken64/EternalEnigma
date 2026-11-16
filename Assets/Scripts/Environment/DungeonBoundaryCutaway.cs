@@ -47,7 +47,7 @@ public sealed class DungeonBoundaryCutaway : MonoBehaviour
     public void ApplyMaterials(GameObject root,EnvironmentMeshOwner owner,bool wholeCell=false)
     {
         if(owner==null)return;
-        var shader=Resources.Load<Shader>("DungeonThemes/BoundaryCutaway");
+        var shader=GameContent.Load<Shader>("DungeonThemes/BoundaryCutaway");
         foreach(var group in root.GetComponentsInChildren<MeshRenderer>()
             .Where(r=>r.GetComponent<SilhouetteParticipant>()?.Role==SilhouetteRole.Caster).GroupBy(r=>r.sharedMaterial))
         {

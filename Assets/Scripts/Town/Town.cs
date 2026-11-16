@@ -35,6 +35,11 @@ public class Town : MonoBehaviour
     public TownPlan Plan { get; private set; }
     private bool finishingGeneration;
     private TileWorldCreatorAsset runtimeAsset;
+    // Restarted whenever generation starts; reported once the town is playable.
+    private readonly System.Diagnostics.Stopwatch generationTimer = System.Diagnostics.Stopwatch.StartNew();
+    private double layoutMilliseconds, meshMilliseconds;
+    private string terrainIdentity;
+    private bool restoredTerrain;
 
     // Start is called before the first frame update
     void Start()
@@ -56,6 +61,7 @@ public class Town : MonoBehaviour
             gameObject.AddComponent<CampaignTownControls>().Town = this;
         }
         var twc = WalkableMap.TileWorldCreator;
+        var template = twc.twcAsset;
         runtimeAsset = Instantiate(twc.twcAsset);
         runtimeAsset.hideFlags = HideFlags.DontSave;
         twc.twcAsset = runtimeAsset;
@@ -65,7 +71,31 @@ public class Town : MonoBehaviour
         Debug.Log("TileWorldCreator type: " + (WalkableMap.TileWorldCreator == null ? "NULL" : WalkableMap.TileWorldCreator.GetType().FullName));
         int seed = Common.Instance.GameSaveData.TownSaveData.TownSeed;
 		WalkableMap.TileWorldCreator.SetCustomRandomSeed(seed);
+        generationTimer.Restart();
+        if (TownTerrainCache.Enabled)
+        {
+            var style = twc.GetComponent<TownBiomeStyle>();
+            terrainIdentity = TownTerrainCache.Identity(template, runtimeAsset, seed,
+                style != null ? style.Current : OverworldBiome.Grassland, Configuration);
+            if (Common.Instance.TownTerrain.TryRestore(terrainIdentity, twc, this, out var cachedPlan))
+            {
+                // Same town as last visit: reuse its geometry and rebuild only buildings and actors.
+                // The cache owns the asset it was built from, so this visit's copy is not needed.
+                Destroy(runtimeAsset); runtimeAsset = null;
+                restoredTerrain = true;
+                WalkableMap.UsePlan(cachedPlan);
+                layoutMilliseconds = generationTimer.Elapsed.TotalMilliseconds;
+                buildLayersComplete(twc);
+                return;
+            }
+        }
         WalkableMap.TileWorldCreator.ExecuteAllBlueprintLayers();
+    }
+
+    private void OnDisable()
+    {
+        var common = Common.InstanceOrNull;
+        if (common != null) common.TownTerrain.Hide(this);
     }
 
     private void LoadSaveData()
@@ -325,12 +355,14 @@ public class Town : MonoBehaviour
 
     private void blueprintLayersComplete(TileWorldCreator _twc)
     {
+        layoutMilliseconds = generationTimer.Elapsed.TotalMilliseconds;
         CoreLayoutCache.ClearResultFlags(_twc.twcAsset);
         WalkableMap.TileWorldCreator.ExecuteAllBuildLayers(false);
     }
 
     private void buildLayersComplete(TileWorldCreator _twc)
     {
+        meshMilliseconds = generationTimer.Elapsed.TotalMilliseconds;
         if (finishingGeneration) return;
         finishingGeneration = true;
         StartCoroutine(FinishGeneration());
@@ -373,6 +405,10 @@ public class Town : MonoBehaviour
         while (TownPlayer.ControllingTownAlly == null || camera._followTarget == null || camera.Camera == null)
             yield return null;
         camera.SnapToFollowTarget();
+        // Every build listener has run by now, so decorations and interior props are part of the geometry.
+        if (TownTerrainCache.Enabled && !restoredTerrain && runtimeAsset != null &&
+            Common.Instance.TownTerrain.Store(terrainIdentity, WalkableMap.TileWorldCreator, runtimeAsset, this))
+            runtimeAsset = null;
         IsReady = true;
         if (Common.Instance.GameSaveData.NeedsInitialSave)
         {
@@ -383,7 +419,8 @@ public class Town : MonoBehaviour
         }
         ScenePresentation.RegisterWorld(WalkableMap.TileWorldCreator.worldObject.transform);
 
-        Debug.Log("Town done");
+        Debug.Log($"[Timing] Town ready in {generationTimer.Elapsed.TotalMilliseconds:0} ms, geometry {(restoredTerrain ? "restored from cache" : "built")} (layout {layoutMilliseconds:0} ms, " +
+            $"meshes {meshMilliseconds - layoutMilliseconds:0} ms, buildings, actors and camera {generationTimer.Elapsed.TotalMilliseconds - meshMilliseconds:0} ms).");
         if (Common.Instance.Travel.IsHomecoming(Configuration.Id))
             yield return GetComponentInChildren<HomeBed>().WakeOnly();
         else Common.Instance.ScreenTransition.DoOpen();

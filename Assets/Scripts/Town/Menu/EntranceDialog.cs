@@ -125,7 +125,7 @@ public class EntranceDialog : Dialog
 			Common.Instance.GameSaveData.DungeonSaveData.StartFloor = data.StartFloor;
 			Common.Instance.GameSaveData.DungeonSaveData.EndFloor = data.EndFloor;
 			SaveSystem.Capture(Common.Instance);
-			SceneManager.LoadScene("DungeonScene");
+			GameContent.LoadScene("DungeonScene");
 		});
 	}
 

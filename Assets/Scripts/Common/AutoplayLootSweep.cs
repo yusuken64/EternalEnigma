@@ -48,7 +48,7 @@ public sealed partial class AutoplayRunner
         }
         else
         {
-            Manifest = AutoplaySweepManifest.Create(Options, Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog"), sweepBuild, sweepContent);
+            Manifest = AutoplaySweepManifest.Create(Options, GameContent.Load<DungeonThemeCatalog>("DungeonThemes/Catalog"), sweepBuild, sweepContent);
             Directory.CreateDirectory(BatchDirectoryPath);
             AutoplaySweepManifest.WriteJson(Path.Combine(BatchDirectoryPath, "manifest.json"), Manifest);
         }

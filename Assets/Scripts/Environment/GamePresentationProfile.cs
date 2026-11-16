@@ -9,5 +9,5 @@ public sealed class GamePresentationProfile : ScriptableObject
     public Color Silhouette = new(.12f,.17f,.21f,.24f);
     public float SunPeriodSeconds = 1200;
     private static GamePresentationProfile current;
-    public static GamePresentationProfile Current => current != null ? current : current = Resources.Load<GamePresentationProfile>("UI/GamePresentationProfile");
+    public static GamePresentationProfile Current => current != null ? current : current = GameContent.Load<GamePresentationProfile>("UI/GamePresentationProfile");
 }

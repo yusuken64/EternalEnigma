@@ -269,6 +269,20 @@ public partial class Game : SingletonMonoBehaviour<Game>
 		StartCoroutine(AdvanceFloorRoutine());
 	}
 
+    /// <summary>Builds the next floor's layout while the player is taking their turn on this one.</summary>
+    private IEnumerator PrewarmNextFloor()
+    {
+        if (RunPlan == null || AutoplayRunner.SweepGeneration != null) yield break;
+        int floor = PlayerController.Floor;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // No worker threads on the web: wait until the arrival presentation has settled.
+        yield return new WaitForSecondsRealtime(3);
+        if (!IsReady || PlayerController.Floor != floor) yield break;
+#endif
+        var next = RunPlan.Floors.FirstOrDefault(step => step.Number == floor + 1);
+        if (next != null) CoreLayoutCache.Prewarm(next.Options);
+    }
+
 	private IEnumerator AdvanceFloorRoutine(bool reset = false)
 	{
         // Both stairs and Reset Floor must present an opaque frame before any
@@ -401,6 +415,7 @@ public partial class Game : SingletonMonoBehaviour<Game>
         }
 		IsReady = true;
         resettingFloor = false;
+        StartCoroutine(PrewarmNextFloor());
         if (!reset && Encounter.AllowsReset) entrySnapshot = new FloorEntrySnapshot(this);
         ScenePresentation.RegisterWorld(CurrentDungeon.transform);
         ScenePresentation.RegisterWorld(DungeonGenerator.transform);

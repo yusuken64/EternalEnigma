@@ -66,35 +66,94 @@ public sealed class EnvironmentBatch
     }
     public void Finish(bool smoothTerrain = false)
     {
+        if (TerrainStreaming.IsOpen)
+        {
+            FinishStreamed(smoothTerrain);
+            return;
+        }
         var terrainMeshes = new List<Mesh>();
         foreach (var pair in groups)
         {
-            var mesh = new Mesh { name = "Environment chunk", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
-            mesh.CombineMeshes(pair.Value.ToArray(), true, true, false); mesh.RecalculateBounds();
-            // Project after combining so adjacent/rotated modules share a continuous surface.
-            // Atlas props retain authored UVs; only explicitly tagged painted surfaces opt in.
-            string projection = pair.Key.Item3.GetTag("EnvironmentProjection", false, "");
-            if (projection.Length != 0)
-            {
-                var vertices = mesh.vertices; var normals = mesh.normals; var uv = new Vector2[vertices.Length];
-                for (int i = 0; i < vertices.Length; i++)
-                {
-                    var p = vertices[i] / 2.5f; var n = normals[i];
-                    uv[i] = projection == "Planar" || Mathf.Abs(n.z) >= Mathf.Max(Mathf.Abs(n.x), Mathf.Abs(n.y))
-                        ? new Vector2(p.x, p.y) : Mathf.Abs(n.x) > Mathf.Abs(n.y) ? new Vector2(p.y, -p.z) : new Vector2(p.x, -p.z);
-                }
-                mesh.uv = uv;
-            }
-            owner.Meshes.Add(mesh);
+            var mesh = Build(pair.Key, pair.Value);
             if(smoothTerrain)terrainMeshes.Add(mesh);
-            var obj = new GameObject($"Cosmetic {pair.Key.Item1},{pair.Key.Item2} {pair.Key.Item3.name}");
-            obj.transform.SetParent(parent, false); obj.AddComponent<MeshFilter>().sharedMesh = mesh;
-            var renderer = obj.AddComponent<MeshRenderer>(); renderer.sharedMaterial = pair.Key.Item3;
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
-            obj.AddComponent<SilhouetteParticipant>().Role = pair.Key.Item4;
         }
         if(smoothTerrain)SmoothTerrain(terrainMeshes);
+    }
+
+    /// <summary>
+    /// Builds each chunk group through <see cref="TerrainStreaming"/>. Smoothed terrain keeps shared
+    /// normals correct as chunks arrive: every new chunk adds to the running sums, then it and its
+    /// already-built neighbours take their normals from them. The end state equals one global pass.
+    /// </summary>
+    private void FinishStreamed(bool smoothTerrain)
+    {
+        var sums = smoothTerrain ? new Dictionary<Vector3Int, Vector3>() : null;
+        var built = smoothTerrain ? new Dictionary<(int, int), List<Mesh>>() : null;
+        foreach (var pair in groups)
+        {
+            var key = pair.Key; var instances = pair.Value;
+            var center = new Vector2((key.Item1 + .5f) * TerrainStreaming.ChunkSize, (key.Item2 + .5f) * TerrainStreaming.ChunkSize);
+            TerrainStreaming.Schedule(center, owner, () =>
+            {
+                var mesh = Build(key, instances);
+                if (sums == null) return;
+                Accumulate(mesh, sums);
+                var chunk = (key.Item1, key.Item2);
+                if (!built.TryGetValue(chunk, out var here)) built[chunk] = here = new List<Mesh>();
+                here.Add(mesh);
+                for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++)
+                    if (built.TryGetValue((key.Item1 + dx, key.Item2 + dy), out var near))
+                        foreach (var neighbour in near) ApplyNormals(neighbour, sums);
+            });
+        }
+    }
+
+    private Mesh Build((int, int, Material, SilhouetteRole) key, List<CombineInstance> instances)
+    {
+        var material = key.Item3;
+        var mesh = new Mesh { name = "Environment chunk", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+        mesh.CombineMeshes(instances.ToArray(), true, true, false); mesh.RecalculateBounds();
+        // Project after combining so adjacent/rotated modules share a continuous surface.
+        // Atlas props retain authored UVs; only explicitly tagged painted surfaces opt in.
+        string projection = material.GetTag("EnvironmentProjection", false, "");
+        if (projection.Length != 0)
+        {
+            var vertices = mesh.vertices; var normals = mesh.normals; var uv = new Vector2[vertices.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var p = vertices[i] / 2.5f; var n = normals[i];
+                uv[i] = projection == "Planar" || Mathf.Abs(n.z) >= Mathf.Max(Mathf.Abs(n.x), Mathf.Abs(n.y))
+                    ? new Vector2(p.x, p.y) : Mathf.Abs(n.x) > Mathf.Abs(n.y) ? new Vector2(p.y, -p.z) : new Vector2(p.x, -p.z);
+            }
+            mesh.uv = uv;
+        }
+        owner.Meshes.Add(mesh);
+        var obj = new GameObject($"Cosmetic {key.Item1},{key.Item2} {material.name}");
+        obj.transform.SetParent(parent, false); obj.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = obj.AddComponent<MeshRenderer>(); renderer.sharedMaterial = material;
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        obj.AddComponent<SilhouetteParticipant>().Role = key.Item4;
+        return mesh;
+    }
+
+    private static Vector3Int NormalKey(Vector3 p) => Vector3Int.RoundToInt(p * 10000);
+
+    private static void Accumulate(Mesh mesh, Dictionary<Vector3Int, Vector3> sums)
+    {
+        var v = mesh.vertices; var triangles = mesh.triangles;
+        for (int i = 0; i < triangles.Length; i += 3)
+        {
+            var normal = Vector3.Cross(v[triangles[i + 1]] - v[triangles[i]], v[triangles[i + 2]] - v[triangles[i]]);
+            for (int j = 0; j < 3; j++) { var key = NormalKey(v[triangles[i + j]]); sums.TryGetValue(key, out var sum); sums[key] = sum + normal; }
+        }
+    }
+
+    private static void ApplyNormals(Mesh mesh, Dictionary<Vector3Int, Vector3> sums)
+    {
+        var v = mesh.vertices; var normals = new Vector3[v.Length];
+        for (int i = 0; i < v.Length; i++) normals[i] = sums.TryGetValue(NormalKey(v[i]), out var sum) ? sum.normalized : Vector3.back;
+        mesh.normals = normals;
     }
 
     // Adjacent six-piece height-field quads must share lighting normals, including

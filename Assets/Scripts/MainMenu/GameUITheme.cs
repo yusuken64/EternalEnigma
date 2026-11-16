@@ -22,7 +22,7 @@ public sealed class GameUITheme : ScriptableObject
             DungeonVisualRole.HP => DungeonHP, DungeonVisualRole.Mana => DungeonMana, DungeonVisualRole.InputSurface => null, _ => DungeonHunger
     };
     private static GameUITheme instance;
-    public static GameUITheme Current => instance != null ? instance : instance = Resources.Load<GameUITheme>("UI/BamaoTheme");
+    public static GameUITheme Current => instance != null ? instance : instance = GameContent.Load<GameUITheme>("UI/BamaoTheme");
     public static readonly Color Ink = new(.23f, .14f, .085f);
     public static readonly Color Selected = new(1f, .88f, .59f);
     public static readonly Color LightInk = new(1f, .96f, .84f);

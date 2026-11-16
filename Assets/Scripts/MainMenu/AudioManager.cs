@@ -76,7 +76,30 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
 
 	public SoundEffects SoundEffects;
 
+    private string requestedTrack;
+
+    /// <summary>
+    /// Plays <paramref name="musicClip"/>, or, when a deferred build shipped the music separately,
+    /// the named <paramref name="track"/> once it has downloaded. The current music keeps playing meanwhile.
+    /// </summary>
+    internal void PlayMusic(AudioClip musicClip, string track)
+    {
+        if (musicClip != null || string.IsNullOrEmpty(track)) { PlayMusic(musicClip); return; }
+        if (requestedTrack == track) return;
+        requestedTrack = track;
+        GameContent.LoadTrack(track, clip =>
+        {
+            if (this != null && requestedTrack == track && clip != null) ChangeTo(clip);
+        });
+    }
+
 	internal void PlayMusic(AudioClip musicClip)
+	{
+        requestedTrack = null;
+        ChangeTo(musicClip);
+	}
+
+	private void ChangeTo(AudioClip musicClip)
 	{
 		if (MusicAudioSource == null) return;
         if (musicTransition != null) StopCoroutine(musicTransition);

@@ -9,9 +9,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        targetPlatform:
-          - WebGL # WebGL.
-          - StandaloneWindows64
+        include:
+          # The web build ships the game beyond the menu as bundles that download in the background.
+          - targetPlatform: WebGL
+            buildMethod: WebContentBuild.BuildFromCommandLine
+          - targetPlatform: StandaloneWindows64
+            buildMethod: ''
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,6 +39,7 @@ jobs:
           projectPath: .
           buildsPath: ./build
           buildName: Eternal Enigma
+          buildMethod: ${{ matrix.buildMethod }}
       - uses: actions/upload-artifact@v4
         with:
           name: Eternal-Enigma-${{ matrix.targetPlatform }}
@@ -48,6 +52,8 @@ jobs:
       - name: Set itch.io project
         run: echo "itchio_project=juicychicken/eternal-enigma" >> $GITHUB_ENV
       - name: Upload ${{ matrix.targetPlatform  }} to itch.io project
+        # Work branches build and keep their artifact but never publish to players.
+        if: github.ref == 'refs/heads/main'
         uses: robpc/itchio-upload-action@v1
         with:
           path: build/${{ matrix.targetPlatform  }}

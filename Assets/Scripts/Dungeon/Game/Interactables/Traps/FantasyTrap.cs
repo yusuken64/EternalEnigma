@@ -25,7 +25,7 @@ public sealed class FantasyTrap : Trap
     internal static FantasyTrap PrefabFor(int roll)
     {
         var kind = (FantasyTrapKind)((uint)roll % KindCount);
-        var prefab = Resources.Load<FantasyTrap>("FantasyTraps/" + kind);
+        var prefab = GameContent.Load<FantasyTrap>("FantasyTraps/" + kind);
         if (prefab == null) throw new System.InvalidOperationException("Missing fantasy trap prefab: " + kind);
         return prefab;
     }

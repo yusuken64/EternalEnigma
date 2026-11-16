@@ -20,7 +20,7 @@ public static class TownShopCatalog
             return (int)Math.Min(int.MaxValue, (long)material.SellValue * remaining);
         decimal fallback = item.ItemDefinition is EquipmentItemDefinition equipment
             ? Math.Max(100, 50 * (equipment.StatModification.Strength + equipment.StatModification.Defense)) : 100;
-        var prices = Resources.LoadAll<TownBuildingDefinition>("Towns/Buildings")
+        var prices = GameContent.LoadAll<TownBuildingDefinition>("Towns/Buildings")
             .SelectMany(b => b.ShopCatalog).Where(o => o.Item == item.ItemDefinition && o.StackCount > 0)
             .Select(o => (decimal)o.Price / o.StackCount);
         decimal unitPrice = prices.DefaultIfEmpty(fallback).Min();

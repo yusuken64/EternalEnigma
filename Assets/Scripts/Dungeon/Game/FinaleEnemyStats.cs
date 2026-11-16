@@ -7,7 +7,7 @@ internal static class FinaleEnemyStats
     internal static Enemy Prefab(string family, bool boss)
     {
         if (Game.Instance?.Finale == null) return null;
-        return Resources.Load<Enemy>("Finale/" + (boss ? "Boss_" : "Enemy_") + FinaleRoster.PrefabStem(family)) ??
+        return GameContent.Load<Enemy>("Finale/" + (boss ? "Boss_" : "Enemy_") + FinaleRoster.PrefabStem(family)) ??
             (boss ? LargeBossBehavior.Prefab(family) : Game.Instance.EnemyManager.EnemyPrefabs.FirstOrDefault(e => e != null && e.name == "Enemy_" + FinaleRoster.PrefabStem(family)));
     }
 

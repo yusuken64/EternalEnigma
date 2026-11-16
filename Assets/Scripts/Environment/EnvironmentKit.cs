@@ -22,7 +22,7 @@ public sealed class EnvironmentKit : ScriptableObject
     public Material Surface(string id, OverworldBiome biome) => id.StartsWith("SmartShore") ? Shore : id.StartsWith("SmartRoad") ? Road : id == "Paving" ? Paving :
         id.StartsWith("SmartHouse") || id == "House" || id == "Inn" || id == "Shop" || id == "Trainer" ? BuildingMaterial(biome) : Material(biome);
     public Material Ground(OverworldBiome biome) => Palettes.First(p => p.Biome == biome).Ground;
-    public static EnvironmentKit Load() => Resources.Load<EnvironmentKit>("EnvironmentKit/Kit");
+    public static EnvironmentKit Load() => GameContent.Load<EnvironmentKit>("EnvironmentKit/Kit");
 
     public GameObject Create(string id, OverworldBiome biome, Transform parent, Vector3 position, float size = 1)
     {

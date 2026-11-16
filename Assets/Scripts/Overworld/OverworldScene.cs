@@ -12,7 +12,9 @@ using UnityEngine.InputSystem;
 /// <summary>Shared campaign and sandbox scene; all progression is owned by Common.</summary>
 public sealed class OverworldScene : MonoBehaviour
 {
-    [System.Serializable] public sealed class BiomeMusicEntry { public OverworldBiome Biome; public AudioClip Clip; }
+    // The *Track names are filled by the deferred web build, which ships music separately and clears the clips.
+    [System.Serializable] public sealed class BiomeMusicEntry { public OverworldBiome Biome; public AudioClip Clip; [HideInInspector] public string ClipTrack; }
+    [HideInInspector] public string OverworldMusicTrack;
     public CampaignOverworld Map;
     public TownAlly PlayerPrefab;
     public Camera ViewCamera;
@@ -74,13 +76,22 @@ public sealed class OverworldScene : MonoBehaviour
     private float nextMove;
     private OverworldBiome? playingBiome;
 
+    // Terrain is built around the player first; the rest streams in and follows this point.
+    private Vector2 TerrainFocus => new Vector2(Position.X + .5f, Position.Y + .5f) * creator.twcAsset.cellSize;
+    private System.Diagnostics.Stopwatch terrainTimer;
+    private double gridMilliseconds, layoutMilliseconds;
+
     private void RefreshBiomeMusic()
     {
+        // Called on every move, so it also keeps the terrain around the player built.
+        TerrainStreaming.Focus(TerrainFocus);
         var biome = Map.CurrentGrid?.BiomeAt(Position) ?? OverworldBiome.Grassland;
         if (playingBiome == biome) return;
         playingBiome = biome;
-        var clip = BiomeMusic.FirstOrDefault(entry => entry.Biome == biome)?.Clip ?? OverworldMusic;
-        if (clip != null) Common.Instance.AudioManager?.PlayMusic(clip);
+        var music = BiomeMusic.FirstOrDefault(entry => entry.Biome == biome);
+        var clip = music?.Clip ?? OverworldMusic;
+        string track = !string.IsNullOrEmpty(music?.ClipTrack) ? music.ClipTrack : OverworldMusicTrack;
+        if (clip != null || !string.IsNullOrEmpty(track)) Common.Instance.AudioManager?.PlayMusic(clip, track);
     }
 
     private void Start()
@@ -104,7 +115,10 @@ public sealed class OverworldScene : MonoBehaviour
         campaignHud.enabled=!Context.IsSandbox;
         Campaign = Context.Campaign;
         Map.Seed = Campaign.Seed;
+        var gridTimer = System.Diagnostics.Stopwatch.StartNew();
+        bool gridExisted = Context.IsGridGenerated;
         var grid = Context.Grid;
+        gridMilliseconds = gridExisted ? 0 : gridTimer.Elapsed.TotalMilliseconds;
         gates = Context.Gates;
         locations = Campaign.Locations.Where(l => l.ParentTownId == null).ToDictionary(l => grid.Locations[l.Id]);
         var controls = gameObject.AddComponent<OverworldSandboxControls>();
@@ -113,13 +127,26 @@ public sealed class OverworldScene : MonoBehaviour
         terrainCache = common.OverworldTerrain;
         restoredTerrain = terrainCache.TryRestore(Context, Map, this);
         if (restoredTerrain) { TerrainReady(creator); return; }
+        terrainTimer = System.Diagnostics.Stopwatch.StartNew();
         Map.Apply(grid, Held, resolved);
+        layoutMilliseconds = terrainTimer.Elapsed.TotalMilliseconds;
         Map.TerrainBuilt += TerrainReady;
-        Map.BuildMeshes();
+        TerrainStreaming.Begin(TerrainFocus);
+        try { Map.BuildMeshes(); }
+        catch { TerrainStreaming.End(); throw; }
     }
 
     private void TerrainReady(TileWorldCreator _)
     {
+        TerrainStreaming.End();
+        if (terrainTimer != null)
+        {
+            double total = terrainTimer.Elapsed.TotalMilliseconds;
+            Debug.Log($"[Timing] Overworld terrain ready in {total:0} ms (grid {gridMilliseconds:0} ms before that; layout {layoutMilliseconds:0} ms, " +
+                $"meshes {total - layoutMilliseconds:0} ms); {TerrainStreaming.Pending} chunk builds deferred.");
+            terrainTimer = null;
+        }
+        else Debug.Log($"[Timing] Overworld terrain restored from cache (grid {gridMilliseconds:0} ms); {TerrainStreaming.Pending} chunk builds still pending.");
         Map.TerrainBuilt -= TerrainReady;
         RefreshBiomeMusic();
         roadSigns = BiomeRoadSigns.Plan(Map.CurrentGrid);

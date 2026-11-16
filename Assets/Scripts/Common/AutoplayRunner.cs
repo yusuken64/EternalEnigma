@@ -215,7 +215,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         Application.logMessageReceived += OnLog;
         try { InitializeBalance(); InitializeSweep(); if (!batchCanceled) BeginRun(); }
         catch (Exception error) { FailSession("Unable to initialize run", error); }
-        var panel = Resources.Load<AutoplayPanel>("UI/AutoplayPanel");
+        var panel = GameContent.Load<AutoplayPanel>("UI/AutoplayPanel");
         if (panel != null) { playbackUI = Instantiate(panel, transform); playbackUI.Bind(this); }
     }
 

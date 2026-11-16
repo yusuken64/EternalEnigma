@@ -14,7 +14,7 @@ public sealed class PaintedGroundStyle : ScriptableObject
     public Mesh GrassLip;
     public Material GrassLipMaterial;
     public int Revision = 1;
-    public static PaintedGroundStyle Load() => Resources.Load<PaintedGroundStyle>("EnvironmentKit/DioramaGround");
+    public static PaintedGroundStyle Load() => GameContent.Load<PaintedGroundStyle>("EnvironmentKit/DioramaGround");
     public static GroundSurface Surface(OverworldBiome biome) => biome switch {
         OverworldBiome.Desert => GroundSurface.Sand, OverworldBiome.Water => GroundSurface.Water,
         OverworldBiome.Mountain => GroundSurface.Mountain, OverworldBiome.Forest => GroundSurface.Forest,

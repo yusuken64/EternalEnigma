@@ -91,7 +91,7 @@ public sealed class AbilityTestLab : MonoBehaviour
         Friend = Game.Allies.First(a => a != Caster);
         Caster.CharacterName = "Ability tester";
         Friend.CharacterName = "Friendly target";
-        foreach (var source in Abilities.Concat(Resources.LoadAll<Skill>("Classes/Skills")).Distinct().OrderBy(s => s.SkillName))
+        foreach (var source in Abilities.Concat(GameContent.LoadAll<Skill>("Classes/Skills")).Distinct().OrderBy(s => s.SkillName))
         {
             var copy = Instantiate(source);
             copy.ManaCost = 0; // Unlimited mana only on lab-owned skill instances.

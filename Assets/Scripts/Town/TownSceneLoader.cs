@@ -6,9 +6,9 @@ public static class TownSceneLoader
 {
     public const string SceneName = "Town";
     private const string DefaultPath = "Towns/DefaultTown";
-    public static TownConfiguration Default => Resources.Load<TownConfiguration>(DefaultPath);
+    public static TownConfiguration Default => GameContent.Load<TownConfiguration>(DefaultPath);
     /// <summary>Starts reading the default town without blocking; a later <see cref="Default"/> completes it.</summary>
-    public static ResourceRequest PreloadDefault() => Resources.LoadAsync<TownConfiguration>(DefaultPath);
+    public static void PreloadDefault() => GameContent.Warm<TownConfiguration>(DefaultPath);
 
     public static TownConfiguration ResolveSaved(TownConfiguration fallback = null)
     {
@@ -16,7 +16,7 @@ public static class TownSceneLoader
         string id = common.GameSaveData?.TownSaveData.ConfigurationId;
         if (common.CurrentTownConfiguration != null && common.CurrentTownConfiguration.Id == id)
             return common.CurrentTownConfiguration;
-        return (!string.IsNullOrEmpty(id) ? Resources.Load<TownConfiguration>("Towns/" + id) : null) ?? fallback ?? Default;
+        return (!string.IsNullOrEmpty(id) ? GameContent.Load<TownConfiguration>("Towns/" + id) : null) ?? fallback ?? Default;
     }
 
     // Call before loading the scene, including custom/additive test or editor loaders.
@@ -33,7 +33,7 @@ public static class TownSceneLoader
     {
         Configure(configuration);
         if (transition)
-            Common.Instance.ScreenTransition.DoTransition(() => SceneManager.LoadScene(SceneName), autoOpen: false);
-        else SceneManager.LoadScene(SceneName);
+            Common.Instance.ScreenTransition.DoTransition(() => GameContent.LoadScene(SceneName), autoOpen: false);
+        else GameContent.LoadScene(SceneName);
     }
 }

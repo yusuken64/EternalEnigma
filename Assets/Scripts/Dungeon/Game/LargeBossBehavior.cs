@@ -25,7 +25,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
     int warning, cooldown, turns, combo;
     public bool IsTelegraphing => warning > 0;
     internal IReadOnlyList<Vector3Int> MarkedTiles => warned;
-    internal static Enemy Prefab(string family) => Resources.Load<Enemy>("Bosses/" + family.Replace(" ", ""));
+    internal static Enemy Prefab(string family) => GameContent.Load<Enemy>("Bosses/" + family.Replace(" ", ""));
     sealed class Field { public HashSet<Vector3Int> Cells; public string Kind; public int Turns; public readonly List<GameObject> Visuals = new(); }
 
     internal GameAction ChooseAction()

@@ -84,7 +84,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
             (route.CompletionLocationId == null || world.Context.Completed.Contains(route.CompletionLocationId))).ToList();
         if (targets.Count == 0) { PartyMenu.Reject("There are no nearby gates to target."); return; }
         if (TargetDialog == null)
-            TargetDialog = Instantiate(Resources.Load<TargetDialog>("UI/OverworldTargetDialog"), transform);
+            TargetDialog = Instantiate(GameContent.Load<TargetDialog>("UI/OverworldTargetDialog"), transform);
         dialogs.Open(TargetDialog);
         TargetDialog.Setup(world, label, targets, interactionRoute?.Id, route => AttemptGate(route, action));
         TargetDialog.CloseAction = TargetDialog.Close;

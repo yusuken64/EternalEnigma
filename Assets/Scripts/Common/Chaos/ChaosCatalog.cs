@@ -80,7 +80,7 @@ public static class ChaosCatalog
             var skill = DungeonClearAbilities.ForDungeon(location.Id);
             if (skill != null && production.Add(skill)) SkillCases(skill, "dungeon-clear:" + location.Id, 1);
         }
-        foreach (var skill in Resources.LoadAll<Skill>("Classes/Skills").Where(s => !production.Contains(s)))
+        foreach (var skill in GameContent.LoadAll<Skill>("Classes/Skills").Where(s => !production.Contains(s)))
         { production.Add(skill); SkillCases(skill, "production-resource", skill.MaxRank); }
         var demo = DemoDungeonLoadout.Load();
         if (demo != null) foreach (var skill in demo.Skills.Where(s => s != null && !production.Contains(s))) SkillCases(skill, "demo", skill.MaxRank, true);

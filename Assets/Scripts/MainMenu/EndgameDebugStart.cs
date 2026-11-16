@@ -19,7 +19,7 @@ public static class EndgameDebugStart
         var party = new[] { "warrior", "healer", "elementalist", "archer" }
             .Select(id => configuration.AllyCatalog.First(hero => hero.PrimaryClass?.Id == id)).ToArray();
         var equipment = items.ItemDefinitions.Concat(items.StartingItems)
-            .Concat(Resources.LoadAll<TownBuildingDefinition>("Towns/Buildings")
+            .Concat(GameContent.LoadAll<TownBuildingDefinition>("Towns/Buildings")
                 .SelectMany(building => building.ShopCatalog).Select(offer => offer.Item))
             .OfType<EquipmentItemDefinition>().Where(item => !item.IsProgressionItem).Distinct().ToArray();
         var roster = party.Select(hero => CreateHero(hero, equipment)).ToList();

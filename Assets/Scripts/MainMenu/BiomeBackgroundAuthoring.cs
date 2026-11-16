@@ -49,7 +49,10 @@ public sealed class BiomeBackgroundAuthoring : MonoBehaviour
                     texture.ReadPixels(new Rect(0,0,1920,1080),0,0); texture.Apply();
                     string path="Assets/Art/CampaignBackgrounds/"+set.Biome+".png";
                     File.WriteAllBytes(path,texture.EncodeToPNG()); AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceSynchronousImport);
-                    var importer=(TextureImporter)AssetImporter.GetAtPath(path); importer.mipmapEnabled=false; importer.maxTextureSize=2048; importer.textureCompression=TextureImporterCompression.Uncompressed; importer.SaveAndReimport();
+                    var importer=(TextureImporter)AssetImporter.GetAtPath(path); importer.mipmapEnabled=false; importer.maxTextureSize=2048; importer.textureCompression=TextureImporterCompression.Uncompressed;
+                    // The web build downloads every plate before the menu; PC keeps the uncompressed default.
+                    importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings { name="WebGL", overridden=true, maxTextureSize=2048, format=TextureImporterFormat.DXT1 });
+                    importer.SaveAndReimport();
                     var entry=Catalog.Backgrounds.Single(e=>e.Biome==set.Biome); entry.Texture=AssetDatabase.LoadAssetAtPath<Texture2D>(path);
                 }
                 finally { camera.targetTexture=previous; camera.aspect=aspect; RenderTexture.active=active; RenderTexture.ReleaseTemporary(render); if(texture!=null) DestroyImmediate(texture); }

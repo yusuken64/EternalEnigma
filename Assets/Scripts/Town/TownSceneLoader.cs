@@ -5,7 +5,10 @@ using UnityEngine.SceneManagement;
 public static class TownSceneLoader
 {
     public const string SceneName = "Town";
-    public static TownConfiguration Default => Resources.Load<TownConfiguration>("Towns/DefaultTown");
+    private const string DefaultPath = "Towns/DefaultTown";
+    public static TownConfiguration Default => Resources.Load<TownConfiguration>(DefaultPath);
+    /// <summary>Starts reading the default town without blocking; a later <see cref="Default"/> completes it.</summary>
+    public static ResourceRequest PreloadDefault() => Resources.LoadAsync<TownConfiguration>(DefaultPath);
 
     public static TownConfiguration ResolveSaved(TownConfiguration fallback = null)
     {

@@ -10,7 +10,11 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    public TownConfiguration TownConfiguration;
+    // Left unset in the scene: a serialized reference makes the menu load the whole town
+    // roster (heroes, buildings, shops) before its first frame. It is read on demand instead.
+    [SerializeField] private TownConfiguration townConfigurationOverride;
+    public TownConfiguration TownConfiguration =>
+        townConfigurationOverride != null ? townConfigurationOverride : TownSceneLoader.Default;
 	public GameObject StartButton;
 	public GameObject ContinueButton;
     public Button TestDungeonButton;
@@ -70,6 +74,9 @@ public class MainMenu : MonoBehaviour
         StartButton.GetComponent<Button>().Select();
         CampaignStartMenu.gameObject.SetActive(false);
         if (Common.Instance.ScreenTransition.BlockScreen.activeSelf) Common.Instance.ScreenTransition.DoOpen();
+        // The menu is usable; read the town roster behind it so the first slot or hero screen is ready.
+        yield return null;
+        if (townConfigurationOverride == null) TownSceneLoader.PreloadDefault();
     }
 
     private void Update()

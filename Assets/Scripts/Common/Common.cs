@@ -65,7 +65,7 @@ public class Common : PersistedSingletonMonoBehaviour<Common>
         Travel = new CampaignTravelService(this);
         TerminalRuntime.Ensure(this);
 #if !UNITY_EDITOR
-		SceneManager.LoadScene(1);
+		SceneManager.LoadScene("MainMenu");
 #endif
 	}
 

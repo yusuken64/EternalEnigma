@@ -21,15 +21,24 @@ public abstract class StatusEffect : MonoBehaviour
 	//i.e. sleep
 	public abstract GameAction GetActionOverride(Character character);
 
-	//Do all statuseffects expire with turns?
+	// How this status ends. Turns: counts down and is removed when it runs out.
+	// None: never expires on its own; ignores TurnsLeft and stays until removed by another effect (e.g. a cleanse).
+	internal virtual StatusExpiration Expiration => StatusExpiration.Turns;
+
 	public virtual void Tick()
 	{
-		TurnsLeft--;
+		if (Expiration == StatusExpiration.Turns) TurnsLeft--;
 	}
 
 	internal bool IsExpired()
 	{
-		return TurnsLeft <= 0;
+		return Expiration == StatusExpiration.Turns && TurnsLeft <= 0;
+	}
+
+	// True on the last turn of a turn-limited status, when it is queued for removal.
+	internal bool IsOnFinalTurn()
+	{
+		return Expiration == StatusExpiration.Turns && TurnsLeft == 1;
 	}
 
 	virtual public void Apply() { }
@@ -73,3 +82,9 @@ public abstract class StatusEffect : MonoBehaviour
 }
 
 public enum BuffFamily { None, Song, Command, Barrier }
+
+public enum StatusExpiration
+{
+	Turns,
+	None
+}

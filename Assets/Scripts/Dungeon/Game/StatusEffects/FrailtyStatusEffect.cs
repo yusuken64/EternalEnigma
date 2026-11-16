@@ -12,8 +12,7 @@
 		Stacks++;
 	}
 
-	//Presists until cleansed by item
-	public override void Tick() { }
+	internal override StatusExpiration Expiration => StatusExpiration.None;
 
 	internal override StatModification GetStatModification()
 	{

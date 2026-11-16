@@ -537,7 +537,7 @@ disp: {displayedVitals}");
 					result.Add(tickAction);
 				}
 			}
-			if (effect.TurnsLeft == 1) result.Add(new RemoveStatusEffectAction(this, effect));
+			if (effect.IsOnFinalTurn()) result.Add(new RemoveStatusEffectAction(this, effect));
 
 		}
 

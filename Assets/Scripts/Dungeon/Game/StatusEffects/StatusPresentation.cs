@@ -8,7 +8,7 @@ public static class StatusPresentation
 
     public static string Duration(StatusEffect status) => status switch
     {
-        FrailtyStatusEffect => "Until cleansed",
+        { Expiration: StatusExpiration.None } => "Until cleansed",
         GoopiRootStatusEffect => "Until the holder is defeated",
         _ => $"{Mathf.Max(0, status.TurnsLeft)} {(status.TurnsLeft == 1 ? "turn" : "turns")} left"
     };

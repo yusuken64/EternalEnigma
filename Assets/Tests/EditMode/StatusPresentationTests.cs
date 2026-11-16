@@ -31,6 +31,29 @@ public sealed class StatusPresentationTests
         Assert.That(StatusPresentation.Summary(frailty), Does.Contain("x3").And.Contain("Until cleansed"));
     }
 
+    [Test] public void FrailtyNeverExpiresOnItsOwnEvenAtOneTurnLeft()
+    {
+        // Production prefab ships TurnsLeft = 1, which turn-limited statuses treat as their final turn.
+        var frailty = Create<FrailtyStatusEffect>(); frailty.TurnsLeft = 1; frailty.Apply();
+        for (int turn = 0; turn < 12; turn++)
+        {
+            Assert.That(frailty.IsExpired(), Is.False);
+            Assert.That(frailty.IsOnFinalTurn(), Is.False);
+            frailty.Tick();
+        }
+        Assert.That(frailty.TurnsLeft, Is.EqualTo(1));
+    }
+
+    [Test] public void TurnLimitedStatusStillCountsDownAndExpires()
+    {
+        var strength = Create<StrengthStatusEffect>(); strength.TurnsLeft = 2;
+        Assert.That(strength.IsOnFinalTurn(), Is.False);
+        strength.Tick();
+        Assert.That(strength.IsOnFinalTurn(), Is.True);
+        strength.Tick();
+        Assert.That(strength.IsExpired(), Is.True);
+    }
+
     [Test] public void ShieldDescriptionTracksDamageAbsorbedAndRefresh()
     {
         var owner = Create<Ally>();

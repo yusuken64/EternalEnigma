@@ -35,6 +35,9 @@ public class Town : MonoBehaviour
     public TownPlan Plan { get; private set; }
     private bool finishingGeneration;
     private TileWorldCreatorAsset runtimeAsset;
+    // Restarted whenever generation starts; reported once the town is playable.
+    private readonly System.Diagnostics.Stopwatch generationTimer = System.Diagnostics.Stopwatch.StartNew();
+    private double layoutMilliseconds, meshMilliseconds;
 
     // Start is called before the first frame update
     void Start()
@@ -65,6 +68,7 @@ public class Town : MonoBehaviour
         Debug.Log("TileWorldCreator type: " + (WalkableMap.TileWorldCreator == null ? "NULL" : WalkableMap.TileWorldCreator.GetType().FullName));
         int seed = Common.Instance.GameSaveData.TownSaveData.TownSeed;
 		WalkableMap.TileWorldCreator.SetCustomRandomSeed(seed);
+        generationTimer.Restart();
         WalkableMap.TileWorldCreator.ExecuteAllBlueprintLayers();
     }
 
@@ -325,12 +329,14 @@ public class Town : MonoBehaviour
 
     private void blueprintLayersComplete(TileWorldCreator _twc)
     {
+        layoutMilliseconds = generationTimer.Elapsed.TotalMilliseconds;
         CoreLayoutCache.ClearResultFlags(_twc.twcAsset);
         WalkableMap.TileWorldCreator.ExecuteAllBuildLayers(false);
     }
 
     private void buildLayersComplete(TileWorldCreator _twc)
     {
+        meshMilliseconds = generationTimer.Elapsed.TotalMilliseconds;
         if (finishingGeneration) return;
         finishingGeneration = true;
         StartCoroutine(FinishGeneration());
@@ -383,7 +389,8 @@ public class Town : MonoBehaviour
         }
         ScenePresentation.RegisterWorld(WalkableMap.TileWorldCreator.worldObject.transform);
 
-        Debug.Log("Town done");
+        Debug.Log($"[Timing] Town ready in {generationTimer.Elapsed.TotalMilliseconds:0} ms (layout {layoutMilliseconds:0} ms, " +
+            $"meshes {meshMilliseconds - layoutMilliseconds:0} ms, buildings, actors and camera {generationTimer.Elapsed.TotalMilliseconds - meshMilliseconds:0} ms).");
         if (Common.Instance.Travel.IsHomecoming(Configuration.Id))
             yield return GetComponentInChildren<HomeBed>().WakeOnly();
         else Common.Instance.ScreenTransition.DoOpen();

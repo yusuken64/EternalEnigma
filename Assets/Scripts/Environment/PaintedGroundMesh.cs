@@ -24,6 +24,15 @@ public static class PaintedGroundMesh
         for (int cx = 0; cx < width; cx += ChunkSize)
         for (int kind = 0; kind < 3; kind++)
         {
+            int chunkX = cx, chunkY = cy, chunkKind = kind;
+            var center = new Vector2((cx + ChunkSize * .5f + originX) * cellSize, (cy + ChunkSize * .5f + originY) * cellSize);
+            // Near chunks, and every chunk outside a streaming session, are built here and now.
+            TerrainStreaming.Schedule(center, owner, () => BuildChunk(chunkX, chunkY, chunkKind));
+        }
+        return output;
+
+        void BuildChunk(int cx, int cy, int kind)
+        {
             var vertices = new List<Vector3>(); var normals = new List<Vector3>(); var uv = new List<Vector2>();
             var weights0 = new List<Color>(); var weights1 = new List<Vector4>(); var weights2 = new List<Vector2>();
             var triangles = new List<int>(); var indices = new Dictionary<Vector2Int, int>();
@@ -41,7 +50,7 @@ public static class PaintedGroundMesh
                     triangles.AddRange(new[] {a,c,b,a,d,c});
                 }
             }
-            if (vertices.Count == 0) continue;
+            if (vertices.Count == 0) return;
             var mesh = new Mesh {name = $"Painted ground {kind} {cx},{cy}", hideFlags = HideFlags.DontSave};
             mesh.SetVertices(vertices); mesh.SetNormals(normals); mesh.SetUVs(0,uv);
             mesh.SetColors(weights0); mesh.SetUVs(1,weights1); mesh.SetUVs(2,weights2); mesh.SetTriangles(triangles,0); mesh.RecalculateBounds();
@@ -64,7 +73,6 @@ public static class PaintedGroundMesh
                 return index;
             }
         }
-        return output;
     }
 
     public static float[] Weights(GroundSurface[,] cells, float x, float y, int seed, int originX = 0, int originY = 0)

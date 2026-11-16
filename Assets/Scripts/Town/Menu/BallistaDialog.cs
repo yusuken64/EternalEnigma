@@ -63,7 +63,7 @@ public class BallistaDialog : Dialog
             if (child != BallistaPurchaseDialog.transform) child.gameObject.SetActive(false);
         var navigation = GetComponent<NavigationHandler>();
         if (navigation != null) navigation.selectionArrow = null;
-        Layout = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(Resources.Load<TrainerLayout>("UI/TrainerLayout").gameObject, transform)).GetComponent<TrainerLayout>();
+        Layout = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(GameContent.Load<TrainerLayout>("UI/TrainerLayout").gameObject, transform)).GetComponent<TrainerLayout>();
         BallistaPurchaseDialog.transform.SetAsLastSibling();
         SkillsText = Layout.Balance;
         SkillGridContainer = Layout.ListScroll.content;

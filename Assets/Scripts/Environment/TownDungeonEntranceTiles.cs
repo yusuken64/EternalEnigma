@@ -15,7 +15,7 @@ public static class TownDungeonEntranceTiles
         var doors = Doors(plan, services);
         var cells = plan.Footprints.Where(f => doors.Contains(f.Door)).SelectMany(f => f.Cells).ToHashSet();
         if (cells.Count == 0) return cells;
-        var theme = Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog").Get(new DungeonVisualSelection {
+        var theme = GameContent.Load<DungeonThemeCatalog>("DungeonThemes/Catalog").Get(new DungeonVisualSelection {
             Biome = biome, Environment = DungeonEnvironmentKind.Interior, UseBiomePresentation = true
         });
         var preset = theme.RegularSmartBoundary;

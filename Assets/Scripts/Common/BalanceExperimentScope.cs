@@ -16,8 +16,8 @@ public sealed class BalanceExperimentScope : IDisposable
     {
         if (options == null || !options.Validate(out _)) throw new ArgumentException("Invalid balance experiment.");
         // Resolve every target before applying any mutation; unknown names cannot silently pass.
-        var allSkills = Resources.LoadAll<Skill>("Classes/Skills").Concat(Resources.LoadAll<Skill>("Skills")).Distinct().ToArray();
-        var allOffers = Resources.LoadAll<TownBuildingDefinition>("Towns/Buildings").SelectMany(b => b.ShopCatalog).ToArray();
+        var allSkills = GameContent.LoadAll<Skill>("Classes/Skills").Concat(GameContent.LoadAll<Skill>("Skills")).Distinct().ToArray();
+        var allOffers = GameContent.LoadAll<TownBuildingDefinition>("Towns/Buildings").SelectMany(b => b.ShopCatalog).ToArray();
         foreach (var row in options.AbilityMana)
             if (!allSkills.Any(s => s.SkillName == row.Name)) throw new ArgumentException("Unknown ability: " + row.Name);
         foreach (var row in options.ItemPrices)

@@ -18,7 +18,7 @@ public sealed class CampaignSummaryDialog : Dialog
 
     internal static CampaignSummaryDialog Create(Transform parent, CampaignCompletionRecord record)
     {
-        var dialog = Instantiate(Resources.Load<CampaignSummaryDialog>("UI/CampaignSummary"), parent, false);
+        var dialog = Instantiate(GameContent.Load<CampaignSummaryDialog>("UI/CampaignSummary"), parent, false);
         foreach (var label in dialog.GetComponentsInChildren<TMP_Text>(true))
             if (label.text == "HALL OF FAME")
             {

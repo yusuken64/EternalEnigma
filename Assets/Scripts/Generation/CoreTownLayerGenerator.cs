@@ -212,7 +212,7 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
         asset.mapBuildLayers.Add(new TownFloorTileLayer {
             layerName = "House floors", guid = new Guid("d71dd1c5-038a-4b6b-bdd6-6023daef1003"),
             assignedGenerationLayerGuid = floor.guid, active = true,
-            Kit = EnvironmentKit.Load(), Material = Resources.Load<Material>("EnvironmentKit/HouseFloor")
+            Kit = EnvironmentKit.Load(), Material = GameContent.Load<Material>("EnvironmentKit/HouseFloor")
         });
     }
 

@@ -13,7 +13,7 @@ public partial class TileWorldDungeonGenerator
         GeneratedDungeon = null;
         CurrentVisuals = new DungeonVisualSelection { Biome = plan.Grid.BiomeAt(plan.Start) ?? OverworldBiome.Grassland,
             UseBiomePresentation = true, Environment = DungeonEnvironmentKind.Outdoor };
-        ThemeCatalog ??= Resources.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
+        ThemeCatalog ??= GameContent.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
         RenderSettings.ambientLight = ScenePresentation.FillAmbient(originalAmbient);
         if (themeLight != null) { themeLight.color = originalLightColor; themeLight.intensity = originalLightIntensity; }
         var root = new GameObject("Finale floor " + plan.Number);
@@ -21,7 +21,7 @@ public partial class TileWorldDungeonGenerator
         var creator = root.AddComponent<TileWorldCreator>();
         creator.worldObject = new GameObject("Terrain"); creator.worldObject.transform.SetParent(root.transform, false);
         var map = root.AddComponent<CampaignOverworld>();
-        map.StyleProfile = Resources.Load<OverworldStyleProfile>("EnvironmentKit/OverworldStyle");
+        map.StyleProfile = GameContent.Load<OverworldStyleProfile>("EnvironmentKit/OverworldStyle");
         if (map.StyleProfile == null) throw new System.InvalidOperationException("Missing overworld style profile.");
         bool built = false;
         map.TerrainBuilt += _ => built = true;

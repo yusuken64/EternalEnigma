@@ -11,7 +11,7 @@ public sealed class HomeBed : MonoBehaviour
     public RuntimeAnimatorController SleepingController;
     public bool IsSleeping { get; private set; }
     private Town town;
-    private void Awake() { town = GetComponentInParent<Town>(); SleepingController = Resources.Load<RuntimeAnimatorController>("HomeSleeping"); }
+    private void Awake() { town = GetComponentInParent<Town>(); SleepingController = GameContent.Load<RuntimeAnimatorController>("HomeSleeping"); }
     private int activationFrame = -1;
     public static HomeBed Create(Town town, Vector3Int tile)
     {
@@ -40,7 +40,7 @@ public sealed class HomeBed : MonoBehaviour
                 catalog.Material(town.WalkableMap.TileWorldCreator.GetComponent<TownBiomeStyle>()?.Current??EternalEnigma.Core.World.OverworldBiome.Grassland);
         bed.SleepAnchor = new GameObject("Sleeping pose anchor").transform;
         bed.SleepAnchor.SetParent(root.transform, false); bed.SleepAnchor.localPosition = new Vector3(0,0,-.42f)*size;
-        bed.SleepingController = Resources.Load<RuntimeAnimatorController>("HomeSleeping");
+        bed.SleepingController = GameContent.Load<RuntimeAnimatorController>("HomeSleeping");
         return bed;
     }
     public void Interact()

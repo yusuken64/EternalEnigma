@@ -18,7 +18,7 @@ public sealed class AutoplaySetup : MonoBehaviour
     public static void Show(MainMenu menu)
     {
         if (FindFirstObjectByType<AutoplaySetup>() != null || AutoplayRunner.Active != null) return;
-        var view = Instantiate(Resources.Load<AutoplaySetup>("UI/AutoplaySetup"));
+        var view = Instantiate(GameContent.Load<AutoplaySetup>("UI/AutoplaySetup"));
         view.previousSelection = EventSystem.current?.currentSelectedGameObject;
         view.menuGroup = menu.NavigationHandler.GetComponent<CanvasGroup>();
         if (view.menuGroup == null) view.menuGroup = menu.NavigationHandler.gameObject.AddComponent<CanvasGroup>();

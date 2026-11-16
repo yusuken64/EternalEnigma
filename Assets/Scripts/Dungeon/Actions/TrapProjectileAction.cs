@@ -27,9 +27,9 @@ internal sealed class TrapProjectileAction : GameAction
         var root = new GameObject(model + " flight");
         try
         {
-            var mesh = Resources.Load<Mesh>("DungeonProps/" + model);
+            var mesh = GameContent.Load<Mesh>("DungeonProps/" + model);
             root.AddComponent<MeshFilter>().sharedMesh = mesh;
-            root.AddComponent<MeshRenderer>().sharedMaterial = Resources.Load<Material>("DungeonProps/Palette");
+            root.AddComponent<MeshRenderer>().sharedMaterial = GameContent.Load<Material>("DungeonProps/Palette");
             float scale = size * (model == "LogProjectile" ? 1.1f : .8f) / mesh.bounds.size.x;
             root.transform.localScale = Vector3.one * scale;
             root.transform.rotation = Quaternion.FromToRotation(Vector3.right, (impact - start).normalized);

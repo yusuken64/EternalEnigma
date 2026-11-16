@@ -8,7 +8,7 @@ public class DemoDungeonLoadout : ScriptableObject
     public List<Skill> Skills = new();
     public List<ItemDefinition> Items = new();
     public Enemy PracticeTargetPrefab;
-    public static DemoDungeonLoadout Load() => Resources.Load<DemoDungeonLoadout>("DemoDungeon/Loadout");
+    public static DemoDungeonLoadout Load() => GameContent.Load<DemoDungeonLoadout>("DemoDungeon/Loadout");
 
     internal void Apply(Game game)
     {

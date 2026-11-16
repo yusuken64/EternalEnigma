@@ -5,7 +5,7 @@ using UnityEngine;
 // Find Exit's paid trail uses ordinary gold collection, but never gets a minimap marker.
 public sealed class TrailCoin : Gold
 {
-    internal static TrailCoin Prefab => Resources.Load<TrailCoin>("DungeonThemes/TrailCoin");
+    internal static TrailCoin Prefab => GameContent.Load<TrailCoin>("DungeonThemes/TrailCoin");
 
     protected override void Awake()
     {

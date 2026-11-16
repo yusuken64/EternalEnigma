@@ -140,7 +140,7 @@ public sealed class TownDungeonBook : MonoBehaviour
         Box(cover, "Blue cloth cover", new Vector3(.165f, 0, 0), new Vector3(.35f, .48f, .022f), 18);
         Box(cover, "Gold title plate", new Vector3(.17f, .08f, -.013f), new Vector3(.23f, .06f, .005f), 27);
         Box(cover, "Cream inside cover", new Vector3(.17f, 0, .013f), new Vector3(.31f, .44f, .005f), 5);
-        var art = Resources.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
+        var art = GameContent.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
         var texture = art?.Backgrounds.FirstOrDefault(b => b.Biome == Definition.Biome)?.Texture ?? art?.Neutral;
         var material = new Material(TownInteriorCatalog.Load().Material(Definition.Biome))
             { name = "Book landscape illustration", mainTexture = texture };

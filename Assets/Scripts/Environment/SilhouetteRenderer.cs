@@ -18,7 +18,7 @@ public sealed class SilhouetteRenderer : MonoBehaviour
     private void OnEnable()
     {
         view=GetComponent<Camera>();
-        var shader=Resources.Load<Shader>("Presentation/Silhouette");
+        var shader=GameContent.Load<Shader>("Presentation/Silhouette");
         if(shader==null || !shader.isSupported){enabled=false;return;}
         // Sharing camera depth with the mask requires matching render-target
         // orientation, including cameras that would otherwise draw directly to screen.

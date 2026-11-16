@@ -41,7 +41,7 @@ public static class GameUISkin
 
     public static void UseLegacySkin()
     {
-        if (legacySkin == null) legacySkin = Resources.Load<GUISkin>("UI/GameSkin");
+        if (legacySkin == null) legacySkin = GameContent.Load<GUISkin>("UI/GameSkin");
         GUI.skin = legacySkin;
     }
 
@@ -130,7 +130,7 @@ public static class GameUISkin
 
     public static Image Panel(Transform parent, Vector2 min, Vector2 max)
     {
-        if (panelPrefab == null) panelPrefab = Resources.Load<Image>("UI/GamePanelBackground");
+        if (panelPrefab == null) panelPrefab = GameContent.Load<Image>("UI/GamePanelBackground");
         Image image;
 #if UNITY_EDITOR
         if (!Application.isPlaying) image = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(panelPrefab.gameObject, parent)).GetComponent<Image>();
@@ -155,7 +155,7 @@ public static class GameUISkin
     public static Button Button(Transform parent, string text, Vector2 min, Vector2 max, Action clicked,
         SelectToActivateButton.SoundRole soundRole = SelectToActivateButton.SoundRole.Confirm)
     {
-        if (buttonPrefab == null) buttonPrefab = Resources.Load<Button>("UI/GameButton");
+        if (buttonPrefab == null) buttonPrefab = GameContent.Load<Button>("UI/GameButton");
         Button button;
 #if UNITY_EDITOR
         if (!Application.isPlaying) button = ((GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(buttonPrefab.gameObject, parent)).GetComponent<Button>();

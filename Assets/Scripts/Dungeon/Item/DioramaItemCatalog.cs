@@ -15,7 +15,7 @@ public sealed class DioramaItemCatalog : ScriptableObject
     [Serializable] public sealed class Prop {public string Id;public GameObject Prefab;}
     public Entry[] Items=Array.Empty<Entry>();
     public Prop[] Props=Array.Empty<Prop>();
-    public static DioramaItemCatalog Load()=>Resources.Load<DioramaItemCatalog>("EnvironmentKit/DioramaItems");
+    public static DioramaItemCatalog Load()=>GameContent.Load<DioramaItemCatalog>("EnvironmentKit/DioramaItems");
     public void Apply(ItemDefinition definition)
     {
         var entry=Items.FirstOrDefault(e=>e.Name==definition.ItemName);if(entry==null)return;

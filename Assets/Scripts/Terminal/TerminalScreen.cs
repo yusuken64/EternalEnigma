@@ -41,7 +41,7 @@ public sealed class TerminalScreen : MonoBehaviour
         text.overflowMode = TextOverflowModes.Overflow;
         text.raycastTarget = false;
         text.fontSize = 18;
-        var source = Resources.Load<Font>("Terminal/TerminalMono");
+        var source = GameContent.Load<Font>("Terminal/TerminalMono");
         if (source != null)
         {
             ownedFont = TMP_FontAsset.CreateFontAsset(source);

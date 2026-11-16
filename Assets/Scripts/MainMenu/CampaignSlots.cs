@@ -24,7 +24,7 @@ public sealed class CampaignSlots : MonoBehaviour
         newJourney = creating;
         selected = Mathf.Clamp(SaveSystem.ActiveSlot, 0, Slots.Length - 1);
         EnsureTitle(creating);
-        var catalog = Resources.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
+        var catalog = GameContent.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
         for (int i = 0; i < Slots.Length; i++)
         {
             int slot = i;

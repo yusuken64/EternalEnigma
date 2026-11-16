@@ -15,8 +15,8 @@ public static class DungeonPropModels
 
     public static GameObject Create(string id, Transform parent, float cellSize)
     {
-        var mesh = Resources.Load<Mesh>("DungeonProps/" + id);
-        var material = Resources.Load<Material>("DungeonProps/Palette");
+        var mesh = GameContent.Load<Mesh>("DungeonProps/" + id);
+        var material = GameContent.Load<Material>("DungeonProps/Palette");
         if (mesh == null || material == null)
             throw new InvalidOperationException("Missing Blender dungeon prop: " + id + ". Run Art/Import Dungeon Props.");
         var visual = new GameObject(id);

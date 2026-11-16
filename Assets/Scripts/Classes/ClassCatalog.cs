@@ -10,7 +10,7 @@ public class ClassCatalog : ScriptableObject
 	public List<ClassDefinition> Classes = new();
 
 	// Null when the asset has not been generated yet (Tools > Eternal Enigma > Classes > Create Missing Class Definitions).
-	public static ClassCatalog Load() => Resources.Load<ClassCatalog>(ResourcePath);
+	public static ClassCatalog Load() => GameContent.Load<ClassCatalog>(ResourcePath);
 
 	public ClassDefinition Get(string id)
 	{

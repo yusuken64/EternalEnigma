@@ -38,5 +38,5 @@ public sealed class BiomeDecorationCatalog : ScriptableObject
     public BiomeDecorationAsset[] Assets = Array.Empty<BiomeDecorationAsset>();
     public BiomeFacadeDefinition[] Facades = Array.Empty<BiomeFacadeDefinition>();
     public BiomeDecorationAsset Get(OverworldBiome biome, BiomeDecorationKind kind) => Assets.Single(a => a.Biome == biome && a.Kind == kind);
-    public static BiomeDecorationCatalog Load() => Resources.Load<BiomeDecorationCatalog>("BiomeDecorations/Catalog");
+    public static BiomeDecorationCatalog Load() => GameContent.Load<BiomeDecorationCatalog>("BiomeDecorations/Catalog");
 }

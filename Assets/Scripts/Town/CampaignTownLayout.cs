@@ -12,7 +12,7 @@ public static class CampaignTownLayout
         var authored = configuration.Buildings.Where(b => b.DialogId == "entrance").ToArray();
         if (authored.Length != CampaignContext.AuthoredTownBuildings)
             throw new InvalidOperationException("Campaign towns require an entrance definition.");
-        var definitions = Resources.LoadAll<TownBuildingDefinition>("Towns/Buildings");
+        var definitions = GameContent.LoadAll<TownBuildingDefinition>("Towns/Buildings");
         var slots = new TownBuildingDefinition[layout.SlotServices.Count];
         int nextAuthored = 0;
         for (int i = 0; i < slots.Length; i++)

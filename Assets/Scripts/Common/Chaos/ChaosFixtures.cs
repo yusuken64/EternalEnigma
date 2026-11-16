@@ -9,7 +9,7 @@ using UnityEngine;
 public static class ChaosFixtures
 {
     public static List<ItemDefinition> Items(ItemManager manager) => manager.ItemDefinitions.Concat(manager.StartingItems)
-        .Concat(Resources.LoadAll<TownBuildingDefinition>("Towns/Buildings").SelectMany(b => b.ShopCatalog).Select(o => o.Item))
+        .Concat(GameContent.LoadAll<TownBuildingDefinition>("Towns/Buildings").SelectMany(b => b.ShopCatalog).Select(o => o.Item))
         .Where(i => i != null && !i.IsProgressionItem).Distinct().OrderBy(i => i.ItemName, StringComparer.Ordinal).ToList();
 
     public static ChaosFixture Create(int seed, TownConfiguration configuration, ItemManager manager, string entry = "Town",

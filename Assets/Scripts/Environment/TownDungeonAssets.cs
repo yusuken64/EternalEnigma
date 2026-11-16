@@ -6,5 +6,5 @@ using UnityEngine;
 public sealed class TownDungeonAssets : ScriptableObject
 {
     public TileWorldCreatorAsset Template;
-    public static TileWorldCreatorAsset SharedTemplate => Resources.Load<TownDungeonAssets>("TownDungeonAssets")?.Template;
+    public static TileWorldCreatorAsset SharedTemplate => GameContent.Load<TownDungeonAssets>("TownDungeonAssets")?.Template;
 }

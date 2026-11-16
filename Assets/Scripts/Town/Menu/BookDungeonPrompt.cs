@@ -19,7 +19,7 @@ public sealed class BookDungeonPrompt : MonoBehaviour
         var view = town.GetComponentInChildren<BookDungeonPrompt>(true);
         if (view == null)
         {
-            var prefab = Resources.Load<BookDungeonPrompt>("UI/BookDungeonPrompt");
+            var prefab = GameContent.Load<BookDungeonPrompt>("UI/BookDungeonPrompt");
             if (prefab == null) throw new InvalidOperationException("Book dungeon prompt prefab is missing.");
             view = Instantiate(prefab, town.transform, false);
         }
@@ -32,7 +32,7 @@ public sealed class BookDungeonPrompt : MonoBehaviour
         var context = Common.Instance.CampaignContext;
         bool available = context.CanEnterDungeon(definition.Id);
         bool cleared = context.Completed.Contains(definition.Id);
-        var catalog = Resources.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
+        var catalog = GameContent.Load<BiomeBackgroundCatalog>("CampaignBackgrounds");
         Card.Artwork.texture = catalog.Backgrounds.FirstOrDefault(b => b.Biome == definition.Biome)?.Texture ?? catalog.Neutral;
         Card.Label.text = $"<b>{definition.Title}</b>\n<size=65%>{definition.Biome}</size>";
         Card.Button.enabled = false;

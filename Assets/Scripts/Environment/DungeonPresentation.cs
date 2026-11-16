@@ -218,7 +218,7 @@ public static class DungeonPresentation
                 var model=kit.Models.FirstOrDefault(m=>m.Id==id);
                 var interior=interiors?.Get(id);
                 Mesh mesh=model?.Mesh ?? interior?.Mesh;
-                if(id=="CryptRoots") mesh=Resources.Load<Mesh>("DungeonThemes/CryptRoots");
+                if(id=="CryptRoots") mesh=GameContent.Load<Mesh>("DungeonThemes/CryptRoots");
                 int triangleBudget=250;
                 if(mesh==null || mesh.triangles.Length/3>triangleBudget) continue;
                 if (!DecorationPose(floor, p.x, p.y, p.hash, size, mesh, wall, out var position, out float scale, out float angle)) continue;

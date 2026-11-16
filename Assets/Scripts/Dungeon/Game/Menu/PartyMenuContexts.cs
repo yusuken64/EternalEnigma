@@ -274,7 +274,7 @@ public sealed class OverworldPartyMenuContext : PartyMenuContext
                 SpentCapability = !CapabilityUsage.HasRemainingKeyUse(world.Context, key),
                 Description = CapabilityUsage.HasRemainingKeyUse(world.Context, key) ? "Use this key on a nearby gate." :
                     world.Campaign.Routes.Any(route => route.KeyId == key) ? "All matching gates are open. Kept in your records." : "Recorded campaign progress.",
-                Icon = Resources.Load<Sprite>("UI/ItemIcons/Key")
+                Icon = GameContent.Load<Sprite>("UI/ItemIcons/Key")
             }));
         return entries;
     }

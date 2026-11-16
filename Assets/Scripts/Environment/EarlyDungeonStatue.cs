@@ -8,7 +8,7 @@ public static class EarlyDungeonStatue
 {
     public static DungeonProp Place(TileWorldDungeon dungeon, DungeonTheme theme)
     {
-        var prefab = Resources.Load<GameObject>("DungeonProps/StoneHulkStatue");
+        var prefab = GameContent.Load<GameObject>("DungeonProps/StoneHulkStatue");
         if (prefab == null) return null;
         var start = dungeon.GetStartPosition();
         var stairs = dungeon.Floor.Stairs.ToCell();

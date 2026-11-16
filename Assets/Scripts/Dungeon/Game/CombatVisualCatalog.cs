@@ -19,7 +19,7 @@ public sealed class CombatVisualCatalog : ScriptableObject
     public StatusVisualProfile BlazingArms, FrostArms, StormArms;
     public List<StatusEntry> Statuses = new();
     static CombatVisualCatalog instance;
-    public static CombatVisualCatalog Instance => instance != null ? instance : instance = Resources.Load<CombatVisualCatalog>("CombatEffects/Catalog");
+    public static CombatVisualCatalog Instance => instance != null ? instance : instance = GameContent.Load<CombatVisualCatalog>("CombatEffects/Catalog");
     public StatusVisualProfile ForStatus(StatusEffect status)
     {
         if (status is BossEffectStatus boss && status.VisualProfile == null)

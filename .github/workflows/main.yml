@@ -35,9 +35,10 @@ jobs:
           targetPlatform: ${{ matrix.targetPlatform }}
           projectPath: .
           buildsPath: ./build
+          buildName: Eternal Enigma
       - uses: actions/upload-artifact@v4
         with:
-          name: Build-${{ matrix.targetPlatform }}
+          name: Eternal-Enigma-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
       - name: Set Version
         run: |
@@ -45,7 +46,7 @@ jobs:
       - name: Set itch.io channel
         run: echo "itchio_channel=${{ matrix.targetPlatform }}" >> $GITHUB_ENV
       - name: Set itch.io project
-        run: echo "itchio_project=juicychicken/eternal-enigma-avarices-abyss" >> $GITHUB_ENV 
+        run: echo "itchio_project=juicychicken/eternal-enigma" >> $GITHUB_ENV
       - name: Upload ${{ matrix.targetPlatform  }} to itch.io project
         uses: robpc/itchio-upload-action@v1
         with:

@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: JuicyChickenGames
-  productName: 'Eternal Enigma: Avarice''s Abyss'
+  productName: Eternal Enigma
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -165,7 +165,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.2DProject
+    Standalone: com.JuicyChickenGames.EternalEnigma
   buildNumber:
     Bratwurst: 0
     Standalone: 0
@@ -745,16 +745,16 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 2
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Dungeongeneration
+  metroPackageName: EternalEnigma
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: daf06edb8a9952ca
-  metroApplicationDescription: Dungeongeneration
+  metroApplicationDescription: Eternal Enigma
   wsaImages: {}
-  metroTileShortName: 
+  metroTileShortName: Eternal Enigma
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0

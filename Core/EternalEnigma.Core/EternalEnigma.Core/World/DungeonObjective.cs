@@ -67,8 +67,11 @@ public sealed class DungeonObjectiveProgress
     public bool IsRequired(string id) => required.Contains(id);
     public bool RegisterReinforcement(string id)
     {
-        if (Complete || string.IsNullOrWhiteSpace(id) || !required.Add(id)) return false;
-        remaining.Add(id); return true;
+        if (Definition.Kind != DungeonObjectiveKind.DefeatEnemies && Definition.Kind != DungeonObjectiveKind.DefeatBoss) return false;
+        if (string.IsNullOrWhiteSpace(id) || !required.Add(id)) return false;
+        // Death responses can spawn children after the parent's death was recorded.
+        // They join the same objective before the next player decision.
+        remaining.Add(id); Complete = false; return true;
     }
     public bool Defeat(string id)
     {

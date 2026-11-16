@@ -12,7 +12,7 @@ public sealed class EncounterRuntime
     readonly DungeonFloor floor;
     readonly Dictionary<string, GameObject> visuals = new();
     readonly Dictionary<string, EncounterActor> actors = new();
-    int witnessStep;
+    int witnessStep, summonSerial;
     bool witnessDiverged;
     public DungeonObjectiveProgress Progress { get; }
     public PuzzleState Puzzle { get; }
@@ -62,6 +62,8 @@ public sealed class EncounterRuntime
             if (prefab == null) throw new InvalidOperationException($"Missing objective enemy prefab: {placement.Family}");
             var enemy = UnityEngine.Object.Instantiate(prefab, game.CurrentDungeon.transform);
             if (game.Finale != null) FinaleEnemyStats.Apply(enemy, difficulty, placement.IsBoss);
+            if (game.RunPlan?.LocationId == "story-0" && placement.IsBoss && placement.Family == "Slime")
+                OpeningSlimeBoss.Configure(enemy, game.EnemyManager);
             enemy.UpdateCachedStats(); enemy.InitialzeVitalsFromStats();
             enemy.IsDormant = false; enemy.TilemapPosition = placement.Position.ToCell();
             if (!SkillMovement.CanOccupy(enemy,enemy.TilemapPosition))
@@ -84,12 +86,20 @@ public sealed class EncounterRuntime
         if (!Progress.IsRequired(id)) Progress.RegisterReinforcement(id);
     }
 
+    internal void RegisterSummon(Character parent, Enemy child)
+    {
+        var identity = parent != null ? parent.GetComponent<EncounterActor>() : null;
+        if (identity == null || !Progress.IsRequired(identity.Id)) return;
+        Register(child, identity.Id + "/summon-" + ++summonSerial);
+    }
+
     internal void OnDeath(Character actor)
     {
         var identity = actor.GetComponent<EncounterActor>();
         if (identity == null || identity.Resolved) return;
         identity.Resolved = true;
-        bool before = CanExit; Progress.Defeat(identity.Id); AnnounceCompletion(before);
+        bool before = CanExit; Progress.Defeat(identity.Id);
+        if (actor.GetComponent<BigSlimeDieResponseBehavior>() == null) AnnounceCompletion(before);
 
     }
 

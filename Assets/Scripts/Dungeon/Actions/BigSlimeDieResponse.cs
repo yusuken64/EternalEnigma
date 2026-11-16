@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 public class BigSlimeDieResponse : GameActionResponse
@@ -20,17 +20,19 @@ public class BigSlimeDieResponse : GameActionResponse
 		{
 			var ret = new List<GameAction>();
 
+			var reserved = new HashSet<UnityEngine.Vector3Int>();
 			for (int i = 0; i < slimesToSpawn; i++)
 			{
 				var possiblePositions = Game.Instance.CurrentDungeon.GetWalkableNeighborhoodTiles(deathDamageAction.target.TilemapPosition)
-					.Where(x => FinaleActor.AllowsPosition(character, x) && !Game.Instance.AllCharacters.Any(character => character.TilemapPosition == x));
+					.Where(x => !reserved.Contains(x) && FinaleActor.AllowsPosition(character, x) && !Game.Instance.AllCharacters.Any(character => character.TilemapPosition == x));
 
 				if (!possiblePositions.Any())
 				{
-					return new();
+					return ret;
 				}
 
 				var spawnTilePosition = possiblePositions.Sample();
+                reserved.Add(spawnTilePosition);
 				var spawnSourceWorldLocation = deathDamageAction.target.transform.position;
 
 				ret.Add(new SpawnEnemyAction(enemyToSpawnPrefab, spawnTilePosition, spawnSourceWorldLocation, character));

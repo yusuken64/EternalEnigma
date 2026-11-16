@@ -216,6 +216,8 @@ public sealed class CampaignTravelService
         {
             var ability = DungeonClearAbilities.ForDungeon(firstClear);
             if (ability != null) capabilities = capabilities.Append($"<b>{ability.DisplayName}</b>\n{ability.Description}").ToArray();
+            var atlasPage = LivingAtlas.AfterClear(Context, firstClear);
+            if (atlasPage != null) capabilities = capabilities.Append(atlasPage).ToArray();
             if (firstClear == "repeatable-0") capabilities = capabilities.Append("<b>Reset Floor</b>\nPermanently restore puzzle floors to their entry state at no Mana cost.").ToArray();
         }
         CampaignParty.ClearLiveParty(common);

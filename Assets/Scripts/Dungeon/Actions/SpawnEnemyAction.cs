@@ -49,6 +49,7 @@ internal class SpawnEnemyAction : GameAction
 		_spawnedEnemy.VisualParent.transform.localScale = Vector3.zero;
 		_spawnedEnemy.VisualParent.transform.position = spawnSourceWorldLocation;
 		Game.Instance.Finale?.RegisterSummon(source ?? character, _spawnedEnemy);
+        Game.Instance.Encounter?.RegisterSummon(source ?? character, _spawnedEnemy);
 		Game.Instance.Enemies.Add(_spawnedEnemy);
 		Visuals.Configure(CombatVisualCatalog.Instance?.Duplication, source ?? character, spawnTilePosition);
 		Visuals.AddImpact(_spawnedEnemy, spawnTilePosition, true);

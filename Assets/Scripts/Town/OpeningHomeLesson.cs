@@ -99,13 +99,13 @@ public sealed class OpeningHomeLesson : MonoBehaviour
             town.SaveProgress();
             if (firstRead) GameMessages.Post(context.OpeningObjective);
             AudioManager.Instance?.PlayCue(SoundCue.Confirm);
-            TownMenu.ShowMessage(context.State.HomeDoorUnlocked
+            TownMenu.ShowMessage(LivingAtlas.Read(context) + "\n\n" + (context.State.HomeDoorUnlocked
                 ? "Your Home Key unlocked the front door."
                 : context.HasHomeKey
                 ? "<b>Before you set out</b>\n\nYour Home Key opens the front door. Face the door and press " + InputPrompts.Attack + " to use it."
                 : firstRead
                     ? "<b>Before you set out</b>\n\nOpen the chest to find your Home Key.\nIt is your first capability. Use it at the front door to unlock the way."
-                    : "Open the chest to find your Home Key, then use it at the front door.");
+                    : "Open the chest to find your Home Key, then use it at the front door."));
         }
         else if (targetCell == ChestCell)
         {

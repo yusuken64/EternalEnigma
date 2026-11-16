@@ -310,6 +310,10 @@ public HashSet<string> Completed { get; }
     {
         var (start, end) = Floors(tier);
         int seed = LocationSeed(campaignSeed, locationId, floor);
+        if (locationId == "story-0" && floor == end)
+            return new DungeonFloorOptions(seed, 20, 20, enemyCount: 0, goldCount: 0, itemCount: 0, trapCount: 0, gatheringCount: 0,
+                biome: biome, tier: tier, encounter: EncounterKind.BossArena,
+                objective: new DungeonObjectiveDefinition(DungeonObjectiveKind.DefeatBoss), bossFamily: "Slime");
         return DungeonLayoutProfile.Options(seed, biome, tier, floor == start ? DungeonFloorRole.Entry : floor == end ? DungeonFloorRole.Exit : DungeonFloorRole.Regular, layoutVersion, locationId, variant, floor);
     }
     public DungeonFloor DungeonFloor(string locationId, int floor)

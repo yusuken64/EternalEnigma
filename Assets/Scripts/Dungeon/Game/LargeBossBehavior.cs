@@ -12,6 +12,9 @@ public sealed class LargeBossBehavior : MonoBehaviour
 {
     public string Family;
     public int WarningTurns = 1, CooldownTurns = 3, EffectTurns = 2;
+    public int SplashRadiusOverride, RecoveryTurns;
+    int recovery;
+    internal bool IsRecovering => recovery > 0;
     readonly List<GameObject> marks = new();
     readonly List<Field> fields = new();
     readonly List<(DungeonProp prop, int expires)> cages = new();
@@ -37,12 +40,13 @@ public sealed class LargeBossBehavior : MonoBehaviour
         var actions = TickFields();
         foreach (var cage in cages.Where(c => c.expires <= turns).ToArray())
         { if (cage.prop != null) cage.prop.ApplyDamage(int.MaxValue); cages.Remove(cage); }
+        if (recovery > 0) { recovery--; return actions; }
         var targets = Game.Instance.AllCharacters.Where(c => c != null && c.Team != owner.Team && c.Vitals.HP > 0).ToList();
         var target = targets.OrderBy(c => TileWorldDungeon.ChevDistance(owner.TilemapPosition, c.TilemapPosition)).ThenBy(c => c.TilemapPosition.x).ThenBy(c => c.TilemapPosition.y).FirstOrDefault();
         if (target == null) return actions;
         if (warning > 0)
         {
-            if (--warning == 0) { Feedback(turn, true); actions.AddRange(ResolveSpecial()); ClearMarks(); cooldown = CooldownTurns; }
+            if (--warning == 0) { Feedback(turn, true); actions.AddRange(ResolveSpecial()); ClearMarks(); cooldown = CooldownTurns; recovery = RecoveryTurns; }
             return actions;
         }
         if (combo > 0)
@@ -107,6 +111,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
         var center = owner.TilemapPosition;
         bool aroundSelf = Family is "Bat" or "Cactus" or "Angry Mushroom" or "Smiling Mushroom" or "Turtle Shell" or "Golem" or "Ice Golem" or "Orc" or "Black Knight";
         int radius = Family is "Turtle Shell" or "Golem" or "Ice Golem" or "Bat" ? 4 : Family is "Cyclops" or "Worm Monster" ? 1 : 2;
+        if (Family == "Slime" && SplashRadiusOverride > 0) radius = SplashRadiusOverride;
         if (aroundSelf) target = center;
         var direction = SkillMovement.Step(center,target);
         for (int x = -8; x <= 8; x++) for (int y = -8; y <= 8; y++)

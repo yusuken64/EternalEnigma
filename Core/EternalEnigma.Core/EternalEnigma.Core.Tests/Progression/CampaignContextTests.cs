@@ -187,10 +187,17 @@ public sealed class CampaignContextTests
         var location = context.Campaign.Locations.First(l => l.Id == "story-0");
         var (start, end) = CampaignContext.Floors(location.Tier);
         var throneStart = context.DungeonFloor("story-0", start);
-        var throneEnd = context.DungeonFloor("story-0", end);
+        var bossEnd = context.DungeonFloor("story-0", end);
         var middle = context.DungeonFloor("story-0", (start + end) / 2);
         Assert.True(throneStart.IsThroneFloor);
-        Assert.True(throneEnd.IsThroneFloor);
+        // The opening dungeon ends in its boss arena instead of a throne room.
+        Assert.False(bossEnd.IsThroneFloor);
+        Assert.Equal(EternalEnigma.Core.World.DungeonObjectiveKind.DefeatBoss, bossEnd.Objective.Kind);
+        Assert.Equal("Slime", Assert.Single(bossEnd.ObjectiveEnemies).Family);
+        var repeatable = context.Campaign.Locations.First(l => l.Id == "repeatable-0");
+        var (repeatableStart, repeatableEnd) = CampaignContext.Floors(repeatable.Tier);
+        Assert.True(context.DungeonFloor("repeatable-0", repeatableStart).IsThroneFloor);
+        Assert.True(context.DungeonFloor("repeatable-0", repeatableEnd).IsThroneFloor);
         Assert.False(middle.IsThroneFloor);
         Assert.Equal(32, middle.Width);
         Assert.Equal(32, middle.Height);
@@ -230,7 +237,8 @@ public sealed class CampaignContextTests
             Assert.Equal(10, run.Floor(3).Options.EnemyCount);
             Assert.Equal(5, run.Floor(3).Options.TrapCount);
             Assert.True(run.Floor(1).Options.IsThroneFloor);
-            Assert.True(run.Floor(5).Options.IsThroneFloor);
+            // story-0 ends in a boss arena; the other starter dungeons end in a throne room.
+            Assert.Equal(locationId != "story-0", run.Floor(5).Options.IsThroneFloor);
             var validation = EternalEnigma.Core.Validation.DungeonFloorValidator.Validate(floor, options);
             Assert.True(validation.IsValid, string.Join("\n", validation.Errors));
         }

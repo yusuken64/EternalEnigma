@@ -64,7 +64,10 @@ public sealed class EncounterTests
         Assert.True(progress.RegisterReinforcement("reinforcement"));
         foreach (var enemy in floor.ObjectiveEnemies) Assert.True(progress.Defeat(enemy.Id));
         Assert.False(progress.CanExit); Assert.True(progress.Defeat("reinforcement")); Assert.True(progress.CanExit);
-        Assert.False(progress.Defeat("reinforcement")); Assert.False(progress.RegisterReinforcement("after-victory"));
+        Assert.False(progress.Defeat("reinforcement"));
+        // A death response can spawn children after the last required death; they reopen the objective once.
+        Assert.True(progress.RegisterReinforcement("spawned-on-death")); Assert.False(progress.RegisterReinforcement("spawned-on-death"));
+        Assert.False(progress.CanExit); Assert.True(progress.Defeat("spawned-on-death")); Assert.True(progress.CanExit);
     }
 
     [Fact]

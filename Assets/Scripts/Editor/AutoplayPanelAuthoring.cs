@@ -15,7 +15,7 @@ public static class AutoplayPanelAuthoring
             var ui=canvas.gameObject.AddComponent<AutoplayPanel>();
             var panel=GameUISkin.Panel(canvas.transform,Vector2.one,Vector2.one).rectTransform;
             panel.pivot=Vector2.one;panel.anchoredPosition=new Vector2(-18,-76);panel.sizeDelta=new Vector2(510,820);ui.Expanded=panel;
-            ui.Title=Label(panel,"Autoplay",.92f,.98f,32);ui.Title.font=GameUITheme.Current.HeadingFont;
+            ui.Title=Label(panel,"Autoplay",.92f,.98f,32);ui.Title.font=TMP_Settings.defaultFontAsset;
             ui.Status=Label(panel,"Starting",.78f,.91f,23);ui.Status.enableAutoSizing=true;ui.Status.fontSizeMin=18;ui.Status.fontSizeMax=23;
             ui.Counts=Label(panel,"",.70f,.78f,23);
             ui.Playback=Label(panel,"Playback speed 4×",.64f,.70f,24);
@@ -29,7 +29,7 @@ public static class AutoplayPanelAuthoring
             var collapsed=GameUISkin.Rect("Collapsed",canvas.transform,Vector2.one,Vector2.one);collapsed.pivot=Vector2.one;collapsed.anchoredPosition=new Vector2(-18,-76);collapsed.sizeDelta=new Vector2(210,55);ui.Collapsed=collapsed;
             ui.Show=Button(collapsed,"Autoplay · F8",0,0,1,1);
             var prompt=GameUISkin.Panel(canvas.transform,new Vector2(.5f,.5f),new Vector2(.5f,.5f)).rectTransform;prompt.sizeDelta=new Vector2(560,370);ui.Prompt=prompt;
-            var heading=Label(prompt,"Stop autoplay?",.76f,.92f,34);heading.font=GameUITheme.Current.HeadingFont;
+            var heading=Label(prompt,"Stop autoplay?",.76f,.92f,34);heading.font=TMP_Settings.defaultFontAsset;
             Label(prompt,"Your saved game is unchanged.",.61f,.76f,24);
             ui.TakeControl=Button(prompt,"Take control · T / X",.07f,.42f,.93f,.57f);
             ui.Menu=Button(prompt,"Return to main menu",.07f,.24f,.93f,.39f);
@@ -51,7 +51,7 @@ public static class AutoplayPanelAuthoring
             var ui=canvas.gameObject.AddComponent<AutoplaySetup>();
             var panel=GameUISkin.Panel(canvas.transform,new Vector2(.5f,.5f),new Vector2(.5f,.5f)).rectTransform;
             panel.sizeDelta=new Vector2(760,880);
-            var title=Label(panel,"Autoplay options",.90f,.97f,38);title.font=GameUITheme.Current.HeadingFont;
+            var title=Label(panel,"Autoplay options",.90f,.97f,38);title.font=TMP_Settings.defaultFontAsset;
             Label(panel,"Starting seed",.82f,.88f,25);ui.Seed=Input(panel,"Starting seed",.82f,.88f,"42");
             Label(panel,"Run count",.73f,.79f,25);ui.RunCount=Input(panel,"Run count",.73f,.79f,"1");
             ui.FastMode=Button(panel,"Fast mode Off",.06f,.64f,.94f,.71f);ui.FastModeLabel=ui.FastMode.GetComponentInChildren<TMP_Text>();

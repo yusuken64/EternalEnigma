@@ -32,7 +32,6 @@ MonoBehaviour:
     - Banner
     - Books
     - ArcanePedestal
-    - Chest
     UseTrees: 0
     Ambient: {r: 0.5775, g: 0.649, b: 0.4995, a: 1}
     LightColor: {r: 0.87, g: 0.892, b: 0.846, a: 1}
@@ -79,7 +78,6 @@ MonoBehaviour:
     - Banner
     - Books
     - ArcanePedestal
-    - Chest
     UseTrees: 0
     Ambient: {r: 0.792, g: 0.6685, b: 0.519, a: 1}
     LightColor: {r: 0.936, g: 0.898, b: 0.852, a: 1}
@@ -128,7 +126,6 @@ MonoBehaviour:
     - Banner
     - Books
     - ArcanePedestal
-    - Chest
     UseTrees: 0
     Ambient: {r: 0.5905, g: 0.69449997, b: 0.7075, a: 1}
     LightColor: {r: 0.874, g: 0.906, b: 0.91, a: 1}
@@ -220,7 +217,6 @@ MonoBehaviour:
     - Banner
     - Books
     - ArcanePedestal
-    - Chest
     UseTrees: 0
     Ambient: {r: 0.532, g: 0.597, b: 0.493, a: 1}
     LightColor: {r: 0.856, g: 0.876, b: 0.844, a: 1}
@@ -268,7 +264,6 @@ MonoBehaviour:
     - Banner
     - Books
     - ArcanePedestal
-    - Chest
     UseTrees: 0
     Ambient: {r: 0.792, g: 0.8765, b: 0.909, a: 1}
     LightColor: {r: 0.936, g: 0.962, b: 0.972, a: 1}
@@ -314,7 +309,6 @@ MonoBehaviour:
     - Banner
     - Books
     - ArcanePedestal
-    - Chest
     UseTrees: 0
     Ambient: {r: 0.532, g: 0.571, b: 0.493, a: 1}
     LightColor: {r: 0.856, g: 0.86800003, b: 0.844, a: 1}
@@ -363,7 +357,6 @@ MonoBehaviour:
     - Banner
     - Books
     - ArcanePedestal
-    - Chest
     UseTrees: 0
     Ambient: {r: 0.47349998, g: 0.4605, b: 0.48, a: 1}
     LightColor: {r: 0.838, g: 0.834, b: 0.84000003, a: 1}

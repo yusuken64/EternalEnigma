@@ -93,7 +93,7 @@ public sealed class PartyMenuLauncher : MonoBehaviour
         {
             StyleTab(OptionsButton,0);
             var rect=(RectTransform)OptionsButton.transform;
-            rect.anchorMin=new Vector2(.87f,.935f);rect.anchorMax=new Vector2(.985f,.985f);
+            rect.anchorMin=new Vector2(.87f,.925f);rect.anchorMax=new Vector2(.985f,.985f);
             rect.offsetMin=rect.offsetMax=Vector2.zero;
             OptionsButton.GetComponentInChildren<TMP_Text>().text=GameplayText.Format("Options");
             OptionsButton.navigation=new Navigation{mode=Navigation.Mode.None};
@@ -104,8 +104,8 @@ public sealed class PartyMenuLauncher : MonoBehaviour
     {
         // Reserve the same space for each header, including overworld's fifth tab.
         var rect=(RectTransform)button.transform;
-        float start=fiveTabs?.27f:.40f,step=.115f;
-        rect.anchorMin=new Vector2(start+index*step,.935f);
+        float start=fiveTabs?.235f:.361f,step=.126f;
+        rect.anchorMin=new Vector2(start+index*step,.925f);
         rect.anchorMax=new Vector2(start+(index+1)*step-.01f,.985f);
         rect.offsetMin=rect.offsetMax=Vector2.zero;
         var theme=GameUITheme.Current;
@@ -123,8 +123,9 @@ public sealed class PartyMenuLauncher : MonoBehaviour
         var label=button.GetComponentInChildren<TMP_Text>();
         label.font=TMP_Settings.defaultFontAsset;label.fontStyle=FontStyles.Normal;label.color=GameUITheme.LightInk;
         label.alignment=TextAlignmentOptions.Center;label.enableAutoSizing=true;
-        label.fontSize=26;label.fontSizeMin=16;label.fontSizeMax=26;label.textWrappingMode=TextWrappingModes.NoWrap;
-        label.rectTransform.anchorMin=new Vector2(.04f,.1f);label.rectTransform.anchorMax=new Vector2(.96f,.9f);
+        label.fontSize=26;label.fontSizeMin=20;label.fontSizeMax=26;label.textWrappingMode=TextWrappingModes.NoWrap;
+        // Keep lettering on the flat face, clear of the carved frame and its shadow.
+        label.rectTransform.anchorMin=new Vector2(.14f,.32f);label.rectTransform.anchorMax=new Vector2(.86f,.84f);
         label.rectTransform.offsetMin=label.rectTransform.offsetMax=Vector2.zero;label.margin=Vector4.zero;
         var textStyle=label.GetComponent<DungeonTextStyle>()??label.gameObject.AddComponent<DungeonTextStyle>();
         textStyle.OnWood=true;

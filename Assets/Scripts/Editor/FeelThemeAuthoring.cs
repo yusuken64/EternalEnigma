@@ -25,7 +25,7 @@ public static class FeelThemeAuthoring
                 theme.BossMusic = boss != null ? boss : fallback;
                 theme.Decorations = theme.Environment == DungeonEnvironmentKind.Interior
                     ? theme.Biome.ToString() == "Mountain" ? new[] { "Barrel", "Crate", "Sack", "Lantern" }
-                        : new[] { "Candles", "Sconce", "Banner", "Books", "ArcanePedestal", "Chest" }
+                        : new[] { "Candles", "Sconce", "Banner", "Books", "ArcanePedestal" }
                     : theme.Biome.ToString() == "Tundra"
                         ? new[] { "Rock", "SnowPine", "SnowRock", "Shrine" }
                         : theme.Biome.ToString() == "Mountain"

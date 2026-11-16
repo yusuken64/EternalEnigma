@@ -62,7 +62,8 @@ public static class TownInteriorRendering
                 interior.Spec.Theme is TownShopTheme.Bakery or TownShopTheme.Consumables&&p.Asset is "Basket" or "Potions")continue;
             // Older cached plans may still name decorative beds. Only HomeBed
             // instantiates the special bed; preserve these cells as seating.
-            string propAsset = p.Asset == "Bed" ? "Bench" : p.Asset;
+            // Decorative storage uses luggage, including plans saved with chest furniture.
+            string propAsset = p.Asset switch { "Bed" => "Bench", "Chest" => "Luggage", _ => p.Asset };
             var asset=catalog.Get(propAsset);if(asset==null)throw new InvalidOperationException("Missing interior asset "+propAsset);
             var furnitureMaterial = interior.Spec.Kind == TownInteriorKind.Home && catalog.HomeFurniture != null
                 ? catalog.HomeFurniture : catalog.Material(biome);

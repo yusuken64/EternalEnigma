@@ -35,6 +35,7 @@ public class BuyConfirmationDialog : Dialog
             label.fontSizeMax = 32;
             label.textWrappingMode = TextWrappingModes.NoWrap;
         }
+		PromptText.font = TMP_Settings.defaultFontAsset;
 		PromptText.enableAutoSizing = true;
 		PromptText.fontSizeMin = 18;
 		PromptText.fontSizeMax = 28;

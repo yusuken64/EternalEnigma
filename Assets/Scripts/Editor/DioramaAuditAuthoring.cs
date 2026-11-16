@@ -140,7 +140,7 @@ public static class DioramaAuditAuthoring
             foreach(var result in scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<GameOverScreen>(true)))
             {result.AuthorLayout();result.VictoryIcon=trophy;result.DefeatIcon=chest;result.ResultIcon.sprite=trophy;}
             foreach(var text in scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<TMP_Text>(true)))
-                if(text.name.IndexOf("title",StringComparison.OrdinalIgnoreCase)>=0||text.name.IndexOf("heading",StringComparison.OrdinalIgnoreCase)>=0)text.font=theme.HeadingFont;
+                if(text.GetComponentInParent<ScreenTransition>(true)==null && (text.name.IndexOf("title",StringComparison.OrdinalIgnoreCase)>=0||text.name.IndexOf("heading",StringComparison.OrdinalIgnoreCase)>=0))text.font=TMP_Settings.defaultFontAsset;
             EditorSceneManager.SaveScene(scene);
             scene=EditorSceneManager.OpenScene("Assets/Scenes/DungeonScene.unity");
             foreach(var result in scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<GameOverScreen>(true)))

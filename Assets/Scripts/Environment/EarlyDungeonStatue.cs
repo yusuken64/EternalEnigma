@@ -51,7 +51,8 @@ public static class EarlyDungeonStatue
             int expected=0;
             for(int y=0;y<dungeon.dungeonHeight;y++) for(int x=0;x<dungeon.dungeonWidth;x++) if(Walkable(new Vector3Int(x,y))) expected++;
             if(seen.Count!=expected) continue;
-            var prop=DungeonProp.Create(dungeon,new DungeonScenery(cell.ToGridPoint(),DungeonSceneryKind.Destructible,40,0,SceneryReward.None),theme,prefab);
+            // Zero HP keeps this obstacle out of every damage-target list while it still blocks movement.
+            var prop=DungeonProp.Create(dungeon,new DungeonScenery(cell.ToGridPoint(),DungeonSceneryKind.Destructible,0,0,SceneryReward.None),theme,prefab);
             prop.name="Stone Hulk statue";
             return prop;
         }

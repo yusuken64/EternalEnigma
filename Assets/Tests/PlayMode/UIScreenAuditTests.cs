@@ -150,7 +150,7 @@ namespace EternalEnigma.Tests
             menu.ChooseHero(); yield return null;
             yield return CaptureSizes("hero-picker");
             var heroes = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
-            heroes.ToggleRoster(); yield return null;
+            yield return null;
             int heroIndex = 0;
             foreach (var choice in heroes.ChoiceButtons.Where(button => button.gameObject.activeInHierarchy))
             {
@@ -580,6 +580,141 @@ namespace EternalEnigma.Tests
             {
                 label.ForceMeshUpdate();
                 Assert.That(label.isTextOverflowing, Is.False, $"{label.name} must fit at {Screen.width}x{Screen.height}: {label.text}");
+            }
+        }
+
+
+        [UnityTest] public IEnumerator CaptureLearnSkillConfirmationsAcrossAspectRatios()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold = 10000 }.CreateSave());
+            var town = Object.FindFirstObjectByType<Town>();
+            town.TownBuildings.First(building => building.Definition.DialogId == "trainer").Interact(town.TownPlayer, null);
+            yield return null;
+            var trainer = (BallistaDialog)Object.FindFirstObjectByType<TownMenuManager>().CurrentDialog;
+            var confirmation = trainer.BallistaPurchaseDialog;
+            var skills = Resources.LoadAll<Skill>("Classes/Skills").OrderBy(skill => skill.DisplayName).ToArray();
+            Assert.That(skills.Length, Is.GreaterThan(100), "Exercise the complete authored skill catalog.");
+            var samples = skills.OrderByDescending(skill => (skill.Description + SkillPreviewText.Usage(skill)).Length).Take(2)
+                .Concat(skills.OrderByDescending(skill => skill.DisplayName.Length).Take(1))
+                .Concat(skills.Where(skill => skill.SkillName == "Double Strike")).ToHashSet();
+            string directory = "Temp/LearnSkillDialogAudit/" + (terminalAudit ? "Terminal" : "Graphical");
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(directory + "/summary.txt", "Running");
+            TerminalMode.SetRequested(terminalAudit);
+            yield return harness.WaitUntil(() => TerminalMode.Effective == terminalAudit, "learn dialog presentation");
+            foreach (var resolution in new[] { new Vector2(960, 600), new Vector2(1280, 720), new Vector2(1920, 1080), new Vector2(2560, 1080) })
+            {
+                view.GetType().GetMethod("SetCustomResolution", Flags).Invoke(view, new object[] { resolution, "Learn skill audit " + resolution });
+                view.Repaint();
+                yield return new WaitForSecondsRealtime(.2f);
+                Assert.That(Screen.width, Is.EqualTo((int)resolution.x));
+                Assert.That(Screen.height, Is.EqualTo((int)resolution.y));
+                for (int index = 0; index < skills.Length; index++)
+                {
+                    var skill = skills[index];
+                    confirmation.Setup(skill, skill.SkillName == "Double Strike" ? 1 : Mathf.Max(1, skill.MaxRank), 3, usesPoints: true);
+                    if (terminalAudit) yield return new WaitForSecondsRealtime(.12f);
+                    else yield return null;
+                    Canvas.ForceUpdateCanvases();
+                    string path = $"{directory}/{index:D3}-{resolution.x}x{resolution.y}";
+                    textIssues.AddRange(TextLayoutAudit.Capture(path).Select(issue => skill.DisplayName + ": " + issue));
+                    foreach (var label in new[] { confirmation.TitleText, confirmation.DescriptionText })
+                    {
+                        label.ForceMeshUpdate();
+                        if (label.isTextOverflowing) textIssues.Add(skill.DisplayName + ": truncated confirmation: " + label.text);
+                        Assert.That(label.fontSize, Is.GreaterThanOrEqualTo(22), "Keep the confirmation readable.");
+                    }
+                    foreach (var button in new[] { confirmation.CancelButton, confirmation.PurchaseButton })
+                    {
+                        var label = button.GetComponentInChildren<TMP_Text>();
+                        var face = (Image)button.targetGraphic;
+                        label.ForceMeshUpdate();
+                        Assert.That(face.isActiveAndEnabled, Is.True, "Actions need visible button faces.");
+                        Assert.That(face.rectTransform.rect.width, Is.GreaterThan(120), "Actions must retain their width.");
+                        Assert.That(label.isTextOverflowing, Is.False, label.text);
+                        Assert.That(label.textInfo.lineCount, Is.EqualTo(1), label.text);
+                    }
+                    if (samples.Contains(skill))
+                    {
+                        ScreenCapture.CaptureScreenshot(path + ".png");
+                        File.WriteAllText(path + ".txt", skill.DisplayName + "\n" + confirmation.TitleText.text + "\n\n" + confirmation.DescriptionText.text);
+                        yield return new WaitForSecondsRealtime(.12f);
+                    }
+                }
+            }
+            Assert.That(textIssues, Is.Empty, string.Join("\n", textIssues.Take(12)));
+            File.WriteAllText(directory + "/summary.txt", $"PASS: {skills.Length} skills at four resolutions; {skills.Length * 4} confirmations checked.");
+            confirmation.Cancel_ClickeD();
+        }
+
+        [UnityTest] public IEnumerator CaptureTerminalLearnSkillConfirmationsAcrossAspectRatios()
+        {
+            terminalAudit = true;
+            yield return CaptureLearnSkillConfirmationsAcrossAspectRatios();
+        }
+
+        [UnityTest] public IEnumerator CaptureHeaderButtonsAcrossScenesAndInputs()
+        {
+            var pad = InputSystem.AddDevice<Gamepad>();
+            string previousDevice = ControlDeviceState.BindingGroup;
+            try
+            {
+                yield return harness.LoadMainMenu(null);
+                var main = Object.FindFirstObjectByType<MainMenu>();
+                Common.Instance.GameSaveData = main.CreateNewSave(42);
+                Common.Instance.Travel.NewCampaign(42);
+                yield return harness.WaitUntil(() => Object.FindFirstObjectByType<Town>()?.IsReady == true &&
+                    !Common.Instance.ScreenTransition.BlockScreen.activeSelf, "header audit town");
+                yield return CaptureHeader("town");
+                harness.PrepareOpening();
+                var town = Object.FindFirstObjectByType<Town>();
+                var context = Common.Instance.CampaignContext;
+                Assert.That(context.BeginTownDungeon("story-0"), Is.True);
+                Assert.That(context.CompleteDungeon(true), Is.True);
+                Assert.That(Common.Instance.Travel.ExitTown(town), Is.True);
+                yield return harness.WaitUntil(() => Object.FindFirstObjectByType<OverworldScene>()?.IsReady == true &&
+                    !Common.Instance.ScreenTransition.BlockScreen.activeSelf, "header audit overworld");
+                yield return CaptureHeader("overworld");
+                yield return harness.Cleanup();
+                harness = new GameTestHarness { TimeoutSeconds = 120 };
+                yield return harness.LoadDungeon(new TestScenario());
+                yield return CaptureHeader("dungeon");
+            }
+            finally { ControlDeviceState.Set(previousDevice); }
+        }
+
+        IEnumerator CaptureHeader(string scene)
+        {
+            var launcher = Object.FindFirstObjectByType<PartyMenuLauncher>();
+            Assert.That(launcher, Is.Not.Null);
+            foreach (bool gamepad in new[] { false, true })
+            {
+                ControlDeviceState.Set(gamepad); launcher.Refresh(); yield return null;
+                yield return CaptureSizes("header-" + scene + (gamepad ? "-gamepad" : "-keyboard"), () => {
+                    var buttons = new[] { PartyMenuTab.Inventory, PartyMenuTab.Equipment, PartyMenuTab.Skills,
+                        PartyMenuTab.Stats, PartyMenuTab.Capabilities }.Select(launcher.ButtonFor)
+                        .Where(button => button != null).Append(launcher.OptionsButton).ToArray();
+                    foreach (var button in buttons)
+                    {
+                        var label = button.GetComponentInChildren<TMP_Text>();
+                        var face = (Image)button.targetGraphic;
+                        label.ForceMeshUpdate();
+                        Assert.That(face.enabled && face.rectTransform.rect.width > 80, Is.True, button.name);
+                        Assert.That(label.isTextOverflowing, Is.False, label.text);
+                        Assert.That(label.textInfo.lineCount, Is.EqualTo(1), label.text);
+                        var box = RectTransformUtility.CalculateRelativeRectTransformBounds(face.transform, label.rectTransform);
+                        var rect = face.rectTransform.rect;
+                        Assert.That(box.min.x - rect.xMin, Is.GreaterThanOrEqualTo(16), label.text + " left border");
+                        Assert.That(rect.xMax - box.max.x, Is.GreaterThanOrEqualTo(16), label.text + " right border");
+                        Assert.That(box.min.y - rect.yMin, Is.GreaterThanOrEqualTo(9), label.text + " lower border");
+                        Assert.That(rect.yMax - box.max.y, Is.GreaterThanOrEqualTo(8), label.text + " upper border");
+                    }
+                    var resources = Object.FindFirstObjectByType<ResourceHUD>();
+                    var parent = launcher.OptionsButton.transform.parent;
+                    var strip = RectTransformUtility.CalculateRelativeRectTransformBounds(parent, resources.GoldText.transform.parent);
+                    var options = RectTransformUtility.CalculateRelativeRectTransformBounds(parent, launcher.OptionsButton.transform);
+                    Assert.That(strip.max.y, Is.LessThan(options.min.y), "Resources must clear the top buttons.");
+                });
             }
         }
 

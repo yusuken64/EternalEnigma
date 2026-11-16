@@ -34,13 +34,20 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         if(roster==null || roster.Count==0 || roster.Any(h=>h==null || h.PrimaryClass==null))throw new ArgumentException("Each selectable hero needs a fixed primary class.");
         var picker=AuthoredUI.Require<ProtagonistHeroPicker>();
         picker.heroes=roster;picker.confirmed=confirmed;picker.cancelled=cancelled;picker.finished=false;picker.selected=null;
-        picker.ShowingAllHeroes = false;
+        picker.ShowingAllHeroes = true;
         picker.gameObject.SetActive(true);
         picker.EnsureTitle();
         picker.BackButton.onClick.RemoveAllListeners();
         picker.BackButton.onClick.AddListener(picker.Back);
-        picker.RosterToggle.onClick.RemoveAllListeners();
-        picker.RosterToggle.onClick.AddListener(picker.ToggleRoster);
+        if (picker.RosterToggle != null) picker.RosterToggle.gameObject.SetActive(false);
+        if (picker.pageLabel != null) picker.pageLabel.gameObject.SetActive(false);
+        foreach (var label in picker.GetComponentsInChildren<TMP_Text>(true))
+            if (label.text == "ETERNAL ENIGMA  /  A NEW JOURNEY") label.gameObject.SetActive(false);
+        Fit((RectTransform)picker.title.transform, .05f, .87f, .95f, .97f);
+        Fit((RectTransform)picker.portrait.transform.parent, .05f, .59f, .35f, .86f);
+        Fit(picker.details.rectTransform, .055f, .13f, .35f, .58f);
+        picker.details.fontSizeMin = 24;
+        Fit((RectTransform)picker.choices, .40f, .10f, .95f, .86f);
         picker.BuildChoices();
         var input = MenuUIInputModule.Active;
         if (input != null) input.PushDialog(picker,picker.transform,picker.ChoiceButtons[0].gameObject,picker.Back);
@@ -54,7 +61,6 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         var picker = canvas.gameObject.AddComponent<ProtagonistHeroPicker>();
         picker.heroes = roster; picker.confirmed = confirmed; picker.cancelled = cancelled;
         GameUISkin.Panel(canvas.transform, Vector2.zero, Vector2.one).color = Color.white;
-        GameUISkin.Label(canvas.transform, "ETERNAL ENIGMA  /  A NEW JOURNEY", new Vector2(.05f, .92f), new Vector2(.95f, .97f), 22);
         picker.title = GameUISkin.Label(canvas.transform, "Choose your hero", new Vector2(.05f, .82f), new Vector2(.95f, .92f), 48);
         picker.EnsureTitle();
 
@@ -76,9 +82,9 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
     {
         if (RosterToggle == null) RosterToggle = GameUISkin.Button(transform, "All heroes", Vector2.zero, Vector2.one, null);
         Fit((RectTransform)portrait.transform.parent, .05f, .54f, .35f, .81f);
-        Fit(details.rectTransform, .055f, .19f, .35f, .53f);
+        Fit(details.rectTransform, .055f, .13f, .35f, .58f);
         details.fontSize = details.fontSizeMax = 32;
-        details.fontSizeMin = 30; details.enableAutoSizing = true;
+        details.fontSizeMin = 24; details.enableAutoSizing = true;
         details.textWrappingMode = TextWrappingModes.Normal;
         details.alignment = TextAlignmentOptions.TopLeft;
         Fit((RectTransform)choices, .40f, .245f, .95f, .72f);
@@ -106,13 +112,6 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
         rect.offsetMin = rect.offsetMax = Vector2.zero;
     }
 
-    public void ToggleRoster()
-    {
-        ShowingAllHeroes = !ShowingAllHeroes;
-        BuildChoices();
-        ChoiceButtons[Mathf.Max(0, visibleHeroes.ToList().IndexOf(selected))].Select();
-    }
-
     private void EnsureTitle()
     {
         if (title == null) title = GetComponentsInChildren<TMP_Text>(true).FirstOrDefault(label => label.text == "Choose your hero");
@@ -123,11 +122,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
     {
         if (previous != null) previous.gameObject.SetActive(false);
         if (next != null) next.gameObject.SetActive(false);
-        visibleHeroes = ShowingAllHeroes ? heroes : HeroChoicePresentation.Recommended(heroes);
-        pageLabel.text = ShowingAllHeroes
-            ? $"All {heroes.Count} heroes\nChoose a hero to begin your journey."
-            : "Three ways to begin\nFight up close, protect the party, or cast from a distance.";
-        RosterToggle.GetComponentInChildren<TMP_Text>().text = ShowingAllHeroes ? "Recommended heroes" : $"All {heroes.Count} heroes";
+        visibleHeroes = heroes;
         if (selected == null || !visibleHeroes.Contains(selected)) Select(visibleHeroes[0]);
 
         var gridBackground = choices.GetComponent<Image>() ?? choices.gameObject.AddComponent<Image>();
@@ -143,7 +138,7 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
             ChoiceButtons = expanded;
         }
 
-        int columns = Mathf.Min(ShowingAllHeroes ? GridColumns : 3, visibleHeroes.Count);
+        int columns = Mathf.Min(GridColumns, visibleHeroes.Count);
         int rows = Mathf.CeilToInt(visibleHeroes.Count / (float)columns);
         for (int i = 0; i < ChoiceButtons.Length; i++)
         {
@@ -218,17 +213,14 @@ public sealed class ProtagonistHeroPicker : MonoBehaviour
             {
                 mode = Navigation.Mode.Explicit,
                 selectOnLeft = column > 0 ? ChoiceButtons[i - 1] : BackButton,
-                selectOnRight = column < columns - 1 && i + 1 < visibleHeroes.Count ? ChoiceButtons[i + 1] : RosterToggle,
-                selectOnUp = up >= 0 ? ChoiceButtons[up] : RosterToggle,
+                selectOnRight = column < columns - 1 && i + 1 < visibleHeroes.Count ? ChoiceButtons[i + 1] : BackButton,
+                selectOnUp = up >= 0 ? ChoiceButtons[up] : BackButton,
                 selectOnDown = down < visibleHeroes.Count ? ChoiceButtons[down] : BackButton
             };
         }
         BackButton.navigation = new Navigation { mode = Navigation.Mode.Explicit,
             selectOnUp = ChoiceButtons[visibleHeroes.Count - 1], selectOnDown = ChoiceButtons[0],
-            selectOnLeft = RosterToggle, selectOnRight = ChoiceButtons[0] };
-        RosterToggle.navigation = new Navigation { mode = Navigation.Mode.Explicit,
-            selectOnUp = BackButton, selectOnDown = ChoiceButtons[0],
-            selectOnLeft = ChoiceButtons[0], selectOnRight = BackButton };
+            selectOnLeft = ChoiceButtons[visibleHeroes.Count - 1], selectOnRight = ChoiceButtons[0] };
         MarkPreviewedHero();
     }
 

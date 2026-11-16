@@ -26,13 +26,32 @@ public sealed class CampaignSummaryDialog : Dialog
                 GameUISkin.RibbonHeader(label);
             }
         dialog.Statistics.text = record.Statistics;
+        // Older completion records predate ProtagonistId; the campaign save retains it.
+        var protagonistId = string.IsNullOrEmpty(record.ProtagonistId)
+            ? Common.Instance?.GameSaveData?.ProtagonistId : record.ProtagonistId;
+        var ending = HeroStory.Ending(protagonistId);
+        if (!string.IsNullOrEmpty(ending))
+        {
+            var story = Instantiate(dialog.Statistics, dialog.Statistics.transform.parent, false);
+            story.name = "Protagonist ending";
+            story.text = ending;
+            Fit(story.transform, .07f, .70f, .93f, .85f);
+            story.alignment = TextAlignmentOptions.Center;
+            story.enableAutoSizing = true;
+            story.fontSizeMin = 18;
+            story.fontSizeMax = 26;
+            story.textWrappingMode = TextWrappingModes.Normal;
+            foreach (var label in dialog.GetComponentsInChildren<TMP_Text>(true))
+                if (label.text == "The world is restored. Remember the heroes who brought you home.")
+                    label.gameObject.SetActive(false);
+        }
         int count = Mathf.Min(record.Party.Length, dialog.Heroes.Length);
         for (int i = 0; i < dialog.Heroes.Length; i++)
         {
             var card = dialog.Heroes[i]; card.Root.gameObject.SetActive(i < count);
             if (i >= count) continue;
             StyleHeroCard(card);
-            Fit(card.Root, .04f + i * .92f / count, .36f, .04f + (i + 1) * .92f / count - .012f, .78f);
+            Fit(card.Root, .04f + i * .92f / count, .35f, .04f + (i + 1) * .92f / count - .012f, .69f);
             var hero = record.Party[i];
             card.Name.text = hero.Name;
             card.Portrait.sprite = CampaignParty.Resolve(hero.Id, TownSceneLoader.Default)?.Portrait;

@@ -14,9 +14,9 @@ public static class TextLayoutAudit
 {
     [Serializable] public sealed class LabelReport
     {
-        public string path, text, font, overflowMode;
+        public string path, text, font, overflowMode, menuScope, expectedFont;
         public float fontPixels, x, y, width, height;
-        public bool overflow, glyphsOutsideTextBox, glyphsOutsideScreen, visible;
+        public bool overflow, glyphsOutsideTextBox, glyphsOutsideScreen, visible, fontChecked, fontMismatch;
         public string[] panelsOutside;
     }
 
@@ -35,10 +35,11 @@ public static class TextLayoutAudit
                 label.canvas != null && label.canvas.rootCanvas.renderMode != RenderMode.WorldSpace &&
                 label.GetComponentsInParent<Canvas>().All(canvas => canvas.enabled) && label.canvasRenderer.GetInheritedAlpha() > .01f)
             .Select(Measure).OrderBy(label => label.path, StringComparer.Ordinal).ToArray();
-        var issues = labels.Where(label => label.glyphsOutsideTextBox || label.glyphsOutsideScreen || label.panelsOutside.Length > 0)
+        var issues = labels.Where(label => label.glyphsOutsideTextBox || label.glyphsOutsideScreen || label.panelsOutside.Length > 0 || label.fontMismatch)
             .Select(label => label.path + ": " +
                 (label.glyphsOutsideTextBox ? "text box; " : "") +
                 (label.glyphsOutsideScreen ? "screen; " : "") +
+                (label.fontMismatch ? $"font {label.font}, expected {label.expectedFont}; " : "") +
                 string.Join(", ", label.panelsOutside) + " | " + label.text.Substring(0, Math.Min(160, label.text.Length))).ToArray();
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         File.WriteAllText(path + ".json", JsonUtility.ToJson(new ScreenReport {
@@ -92,8 +93,22 @@ public static class TextLayoutAudit
                 // A dropdown popup has its own sorting canvas and intentionally extends beyond its owning button.
                 if (parent.TryGetComponent<Canvas>(out var sortingCanvas) && sortingCanvas.overrideSorting) break;
             }
+        var dialog = label.GetComponentInParent<JuicyChickenGames.Menu.Dialog>();
+        var focus = MenuUIInputModule.Active?.FocusRoot;
+        var autoplay = label.GetComponentInParent<AutoplayPanel>();
+        string scope = dialog != null ? dialog.GetType().Name : autoplay != null ? nameof(AutoplayPanel) :
+            focus != null && label.transform.IsChildOf(focus) ? focus.name : null;
+        // Terminal styling belongs to the current focus hierarchy. Covered
+        // parent dialogs have their original style restored when a child opens.
+        bool checkFont = visible && scope != null && (!TerminalMode.Effective || autoplay != null ||
+            focus == null || label.transform.IsChildOf(focus));
+        var expected = TerminalMode.Effective && autoplay == null
+            ? Common.InstanceOrNull?.GetComponentInChildren<TerminalScreen>(true)?.FontAsset
+            : TMP_Settings.defaultFontAsset;
         return new LabelReport {
             path = PathOf(label.transform), text = label.text, font = label.font != null ? label.font.name : "MISSING",
+            menuScope = scope, expectedFont = expected != null ? expected.name : "MISSING",
+            fontChecked = checkFont, fontMismatch = checkFont && (expected == null || label.font != expected),
             fontPixels = label.fontSize * label.rectTransform.lossyScale.y, overflow = label.isTextOverflowing,
             overflowMode = label.overflowMode.ToString(), x = textRect.x, y = textRect.y, width = textRect.width, height = textRect.height,
             glyphsOutsideTextBox = outsideBox, visible = visible, panelsOutside = panels.ToArray(),

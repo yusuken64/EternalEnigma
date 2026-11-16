@@ -237,8 +237,7 @@ public static class OpeningDesignPreview
         }
         mainMenu.ChooseHero();
         var picker = Object.FindFirstObjectByType<ProtagonistHeroPicker>();
-        yield return Pair("hero-recommended");
-        picker.ToggleRoster(); yield return Pair("hero-all");
+        yield return Pair("hero-all");
         picker.BackButton.onClick.Invoke(); yield return Delay(.3);
         common.GameSaveData = mainMenu.CreateNewSave(42);
         common.Travel.NewCampaign(42);

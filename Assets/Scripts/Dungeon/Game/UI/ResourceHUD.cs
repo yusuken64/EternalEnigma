@@ -34,7 +34,7 @@ public sealed class ResourceHUD : MonoBehaviour
         hud.town=owner as Town; hud.game=owner as Game; hud.world=owner as OverworldScene;
         hud.canvas=hud.GetComponent<Canvas>();
         hud.townMenus = hud.town != null ? hud.town.GetComponentInChildren<TownMenuManager>(true) : null;
-        if (hud.town != null || hud.world != null) hud.FitSharedHeader();
+        hud.FitSharedHeader();
         HudRefresh.Request(HudChange.Resources | HudChange.Visibility);
         return hud;
     }
@@ -42,7 +42,7 @@ public sealed class ResourceHUD : MonoBehaviour
     private void FitSharedHeader()
     {
         // Match the dungeon resource strip: below shortcuts and above the right-hand dock.
-        JuicyChickenGames.Menu.Dialog.Fit(GoldText.transform.parent,.73f,.89f,.98f,.935f);
+        JuicyChickenGames.Menu.Dialog.Fit(GoldText.transform.parent,.73f,.875f,.98f,.92f);
         JuicyChickenGames.Menu.Dialog.Fit(GoldText.transform,.10f,.05f,.49f,.95f);
         JuicyChickenGames.Menu.Dialog.Fit(BagText.transform,.60f,.05f,.98f,.95f);
         JuicyChickenGames.Menu.Dialog.Fit(CoinIcon.transform,.015f,.15f,.09f,.85f);

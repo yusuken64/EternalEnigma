@@ -55,6 +55,52 @@ public static class GameUIButtonAuthoring
         File.WriteAllText("Temp/UIValidation/saved-button-validation.txt", $"PASS: {count} saved scene/prefab buttons inherit sliced backgrounds with multiplier 1 outside Play Mode.");
     }
 
+
+    [MenuItem("Tools/Eternal Enigma/UI/Validate Saved Menu Fonts")]
+    public static void ValidateMenuFonts()
+    {
+        GameUIButtonBackgroundAuthoring.RequireSavedScenes();
+        var normal = TMP_Settings.defaultFontAsset;
+        if (normal == null) throw new InvalidOperationException("The standard menu font is missing.");
+        int labels = 0, implicitDefaults = 0, assets = 0;
+        var problems = new System.Collections.Generic.List<string>();
+        var dialogTypes = new System.Collections.Generic.HashSet<string>();
+        void Check(GameObject root, string path)
+        {
+            foreach (var dialog in root.GetComponentsInChildren<JuicyChickenGames.Menu.Dialog>(true))
+                dialogTypes.Add(dialog.GetType().Name);
+            foreach (var label in root.GetComponentsInChildren<TextMeshProUGUI>(true))
+            {
+                // Branding and scene-loading artwork are not dialog copy.
+                if (label.name == "EternalEnigma" || label.GetComponentInParent<ScreenTransition>(true) != null) continue;
+                labels++;
+                if (label.font == null) implicitDefaults++; // TMP resolves these to its configured default at startup.
+                else if (label.font != normal)
+                    problems.Add(path + " / " + AnimationUtility.CalculateTransformPath(label.transform, root.transform) + ": " + label.font.name);
+            }
+        }
+        foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs", "Assets/Resources" }))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            Check(AssetDatabase.LoadAssetAtPath<GameObject>(path), path);
+            assets++;
+        }
+        foreach (string guid in AssetDatabase.FindAssets("t:Scene", new[] { "Assets/Scenes" }))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var scene = EditorSceneManager.OpenPreviewScene(path);
+            try { foreach (var root in scene.GetRootGameObjects()) Check(root, path); assets++; }
+            finally { EditorSceneManager.ClosePreviewScene(scene); }
+        }
+        Directory.CreateDirectory("Temp/DialogFontVerification");
+        File.WriteAllLines("Temp/DialogFontVerification/authored-fonts.txt",
+            new[] { $"Checked {labels} menu labels in {assets} scene/prefab assets; {implicitDefaults} inherit the TMP default.",
+                $"Dialog types ({dialogTypes.Count}): " + string.Join(", ", dialogTypes.OrderBy(name => name)),
+                $"Font mismatches: {problems.Count}" }.Concat(problems));
+        if (problems.Count > 0) throw new InvalidOperationException(string.Join("\n", problems));
+        Debug.Log($"Menu font audit passed: {labels} authored labels; {dialogTypes.Count} dialog types.");
+    }
+
     [MenuItem("Tools/Eternal Enigma/UI/Bake Button Styles")]
     public static void Bake()
     {
@@ -138,8 +184,10 @@ public static class GameUIButtonAuthoring
             // World labels and floating combat text keep their contrast against the world.
             if (label is not TextMeshProUGUI) continue;
             label.color = GameUITheme.Ink;
-            if ((label.name.ToLowerInvariant().Contains("title") || label.name.ToLowerInvariant().Contains("header")) && theme.HeadingFont != null)
-                label.font = theme.HeadingFont;
+            // The game logo and loading title keep their decorative treatment.
+            // Dialogs, controls and dynamically cloned menu labels share the body font.
+            if (label.name != "EternalEnigma" && label.GetComponentInParent<ScreenTransition>(true) == null)
+                label.font = TMP_Settings.defaultFontAsset;
         }
         foreach (var label in root.GetComponentsInChildren<Text>(true)) label.color = GameUITheme.Ink;
         foreach (var button in root.GetComponentsInChildren<Button>(true)) Style(button);

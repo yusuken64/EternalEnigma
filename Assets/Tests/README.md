@@ -423,6 +423,26 @@ specific combat encounters should explicitly spawn those enemies.
 
 ## UI audit
 
+**Tools > Eternal Enigma > UI > Validate Saved Menu Fonts** loads saved scenes
+and prefabs, including inactive and inherited labels, and rejects menu fonts other
+than the TMP default. The logo and scene-loading title are excluded. Its report is
+`Temp/DialogFontVerification/authored-fonts.txt`.
+
+**Tools > Eternal Enigma > Tests > Run Text Containment Audit** checks graphical
+and terminal menus at four window sizes, including every hero, shop confirmations,
+binding capture and result screens. Capture assertions reject visible glyphs
+outside their text/panel/screen bounds and incorrect fonts in active menu scopes.
+Covered terminal parents and the graphical autoplay overlay retain their own
+presentation. JSON records `menuScope`, `expectedFont`, `fontChecked` and
+`fontMismatch` alongside the existing layout diagnostics.
+
+**Tools > Eternal Enigma > Tests > Run Dialog and Prop Followups** checks every
+skill confirmation at four sizes in graphical and terminal modes, the shared top
+menu buttons in all three gameplay scenes with keyboard/controller prompts,
+trainer transactions and navigation, and the unbreakable Black Knight statue.
+Skill captures go to `Temp/LearnSkillDialogAudit`; header captures use
+`Temp/UIScreenAudit/header-*`.
+
 Run these Editor menu commands sequentially after compilation, outside Play Mode:
 
 - **Tools > Eternal Enigma > Tests > Run UI Audit Captures** runs `UIScreenAuditTests`

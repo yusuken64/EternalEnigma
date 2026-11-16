@@ -14,12 +14,14 @@ public sealed class CampaignCompletionRecord
     public int Seed, DungeonsCleared, TownsVisited, CompanionsRecruited, KeysFound, Gold;
     public double PlaytimeSeconds;
     public string CompletedUtc;
+    public string ProtagonistId;
 
     internal static CampaignCompletionRecord Capture(Common common, PlayerController player)
     {
         var context = common.CampaignContext;
         return new CampaignCompletionRecord
         {
+            ProtagonistId = common.GameSaveData.ProtagonistId,
             Seed = context.State.Seed, DungeonsCleared = context.Completed.Count,
             TownsVisited = context.Towns.Count, CompanionsRecruited = context.Roster.Count,
             KeysFound = context.Keys.Count, Gold = player.Gold,

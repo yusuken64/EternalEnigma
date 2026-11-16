@@ -197,7 +197,7 @@ public static class DungeonUIAuthoring
                 if(label.transform.parent==menu.Panel && label!=menu.HeroText && label!=menu.Hints && label!=menu.Details && label.transform!=menu.BackButton.transform)
                 { if(label.rectTransform.anchorMin.y>.8f) label.gameObject.SetActive(false); }
             var ribbon=Surface(menu.Panel,"Heading ribbon",DungeonVisualRole.Heading,.035f,.88f,.88f,.995f);ribbon.transform.SetSiblingIndex(1);
-            var title=GameUISkin.Label(menu.Panel,"Party",new Vector2(.1f,.905f),new Vector2(.83f,.97f),30);title.font=Theme.HeadingFont;title.alignment=TextAlignmentOptions.Center;
+            var title=GameUISkin.Label(menu.Panel,"Party",new Vector2(.1f,.905f),new Vector2(.83f,.97f),30);title.font=TMP_Settings.defaultFontAsset;title.alignment=TextAlignmentOptions.Center;
             title.enableAutoSizing=true;title.fontSizeMin=24;title.fontSizeMax=30;
             CloseButton(menu.Panel,menu);
         });
@@ -271,7 +271,7 @@ public static class DungeonUIAuthoring
             targetScaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;targetScaler.referenceResolution=new Vector2(1920,1080);targetScaler.matchWidthOrHeight=.5f;
             var resources=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<ResourceHUD>(true)).Single();
             var resourcePanel=resources.GoldText.transform.parent;
-            Fit(resourcePanel,.73f,.89f,.98f,.935f);
+            Fit(resourcePanel,.73f,.875f,.98f,.92f);
             Fit(resources.GoldText.transform,.10f,.05f,.49f,.95f);Fit(resources.BagText.transform,.60f,.05f,.98f,.95f);
             resources.GoldText.fontSize=22;resources.BagText.fontSize=22;
             resources.GoldText.enableAutoSizing=resources.BagText.enableAutoSizing=true;
@@ -387,7 +387,7 @@ public static class DungeonUIAuthoring
             GameUISkin.Rect("Input shield",root.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>().color=Color.clear;
             var panel=Surface(root.transform,"Inventory picker panel",DungeonVisualRole.Wood,0,0,1,1).rectTransform;Dock(panel,root.transform);
             Surface(panel,"Heading ribbon",DungeonVisualRole.Heading,.04f,.89f,.89f,.98f);
-            var title=GameUISkin.Label(panel,"Choose an item",new Vector2(.08f,.89f),new Vector2(.85f,.98f),30);title.font=Theme.HeadingFont;title.alignment=TextAlignmentOptions.Center;
+            var title=GameUISkin.Label(panel,"Choose an item",new Vector2(.08f,.89f),new Vector2(.85f,.98f),30);title.font=TMP_Settings.defaultFontAsset;title.alignment=TextAlignmentOptions.Center;
             menu.scrollView.transform.SetParent(panel,false);menu.scrollView.gameObject.SetActive(true);Fit(menu.scrollView.transform,.04f,.44f,.96f,.86f);
             Role(GameUISkin.PanelGraphic(menu.scrollView.transform),DungeonVisualRole.Paper);
             Fit(menu.scrollView.content,0,1,1,1);menu.scrollView.content.pivot=new Vector2(.5f,1);
@@ -419,7 +419,7 @@ public static class DungeonUIAuthoring
             var dialog=canvas.gameObject.AddComponent<EventHistoryDialog>();
             dialog.Panel=Surface(safe,"History panel",DungeonVisualRole.Wood,0,0,1,1).rectTransform;
             Surface(dialog.Panel,"Heading ribbon",DungeonVisualRole.Heading,.04f,.88f,.89f,.98f);
-            var title=GameUISkin.Label(dialog.Panel,"Event history",new Vector2(.08f,.885f),new Vector2(.85f,.975f),32);title.font=Theme.HeadingFont;title.alignment=TextAlignmentOptions.Center;
+            var title=GameUISkin.Label(dialog.Panel,"Event history",new Vector2(.08f,.885f),new Vector2(.85f,.975f),32);title.font=TMP_Settings.defaultFontAsset;title.alignment=TextAlignmentOptions.Center;
             var paper=Surface(dialog.Panel,"History parchment",DungeonVisualRole.Paper,.04f,.13f,.96f,.87f);
             var viewport=GameUISkin.Rect("Viewport",paper.transform,new Vector2(.06f,.04f),new Vector2(.94f,.96f));viewport.gameObject.AddComponent<RectMask2D>();
             var hit=viewport.gameObject.AddComponent<Image>();hit.color=Color.clear;

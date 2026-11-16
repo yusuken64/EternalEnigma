@@ -30,11 +30,9 @@ namespace EternalEnigma.Tests
             Assert.That(picker, Is.Not.Null);
             Assert.That(picker.GetComponentInChildren<RawImage>().texture, Is.TypeOf<RenderTexture>());
             var heroes = menu.TownConfiguration != null ? menu.TownConfiguration.AllyCatalog : TownSceneLoader.Default.AllyCatalog;
-            Assert.That(picker.ChoiceButtons.Count(b => b.gameObject.activeSelf), Is.EqualTo(HeroChoicePresentation.Recommended(heroes).Count));
-            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(HeroChoicePresentation.Recommended(heroes).Count + 2));
-            picker.RosterToggle.onClick.Invoke();
             Assert.That(picker.ChoiceButtons.Count(b => b.gameObject.activeSelf), Is.EqualTo(heroes.Count));
-            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(heroes.Count + 2));
+            Assert.That(picker.GetComponentsInChildren<Button>().Length, Is.EqualTo(heroes.Count + 1));
+            Assert.That(picker.GetComponentsInChildren<TMP_Text>().Any(t => t.text.Contains(HeroStory.Opening(heroes[0].Id))), Is.True);
             for (int i = 0; i < heroes.Count; i++)
                 Assert.That(picker.ChoiceButtons[i].transform.Find("Hero portrait")?.GetComponent<Image>()?.sprite,
                     Is.EqualTo(heroes[i].Portrait), heroes[i].Name);
@@ -57,13 +55,11 @@ namespace EternalEnigma.Tests
         {
             Object.FindFirstObjectByType<MainMenu>().ChooseHero();
             var heroes = TownSceneLoader.Default.AllyCatalog;
-            foreach (bool allHeroes in new[] { false, true })
             foreach (bool pointer in new[] { true, false })
             {
                 int confirmations = 0;
                 TownAlly chosen = null;
                 var picker = ProtagonistHeroPicker.Show(heroes, hero => { chosen = hero; confirmations++; }, () => Assert.Fail("Unexpected cancel"));
-                if (allHeroes) picker.RosterToggle.onClick.Invoke();
                 var choice = picker.ChoiceButtons[1];
                 choice.Select();
                 yield return null;
@@ -78,7 +74,7 @@ namespace EternalEnigma.Tests
                 }
                 else ExecuteEvents.Execute(choice.gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.submitHandler);
                 Assert.That(confirmations, Is.EqualTo(1), $"A single {(pointer ? "click" : "submit")} must start the chosen hero.");
-                Assert.That(chosen, Is.SameAs((allHeroes ? heroes : HeroChoicePresentation.Recommended(heroes))[1]));
+                Assert.That(chosen, Is.SameAs(heroes[1]));
                 Assert.That(picker.gameObject.activeSelf, Is.False);
                 choice.onClick.Invoke();
                 Assert.That(confirmations, Is.EqualTo(1), "Repeated activation must not start another campaign.");

@@ -1,11 +1,71 @@
-# UI audit — October 14, 2026
+# UI audit
+
+## Dialog fonts and layouts - November 15, 2026
+
+Graphical dialog titles, body copy and controls use LiberationSans SDF, matching
+the menus. Fixed the remaining decorative-font references in the town scene,
+shared button/skill templates, and dungeon history, inventory and party assets.
+The authoring tools now preserve that choice when regenerating those views.
+Terminal binding capture also refreshes its style while normal menu input is
+suspended. The hero chooser has enough description space for all 24 backstories
+and playstyles in both presentations.
+
+The saved-asset audit loaded 595 scene/prefab assets and checked 773 menu labels,
+including inactive templates and all 22 dialog component types found in those
+assets. All passed; 47 labels inherit the configured TMP default. Branding and
+scene-loading artwork retain their decorative font.
+
+The font audit consolidates 12 unique passing Play Mode checks from the full
+text-containment run and its focused follow-up. Its 989 screenshot/JSON pairs
+contain 25,848 measured labels and 12,513 active menu-font checks,
+with no font mismatches or rendered-text containment failures.
+Coverage includes graphical and terminal menus, all 24 heroes, settings/binding
+capture, slots, shops and transaction confirmations, NPC/recruitment dialogs,
+training, home/inn/book entry, party docks, overworld, dungeon and results.
+Captures use 960x600, 1280x720, 1920x1080 and 2560x1080; dungeon docks also use
+1280x800. Visual review covered each active dialog family at the smallest size,
+with affected bread and hero layouts also checked ultrawide. Dormant legacy
+templates were checked as saved assets rather than presented as reachable flows.
+
+A further seven Play Mode checks pass for the subsequent dialog, header and prop
+changes (19 unique checks across both audits). The Learn dialog now has a wider
+paper sheet with a separate title, description and action row. Its old horizontal
+layout group is disabled so it cannot collapse the anchored Learn/Cancel buttons.
+All 195 authored skills were checked at all four sizes in graphical and terminal
+mode: 1,560 confirmations, including single-line action labels and visible button
+faces. Representative longest-text captures were reviewed at 960x600 and
+2560x1080.
+
+The shared top menu buttons have wider faces, taller panels and lettering inset
+from the carved edges. The resource strip clears the buttons below them.
+The header follow-up covers town, overworld and dungeon with keyboard and
+controller prompts at all four sizes (24 captures). Decorative chests were
+removed from dungeon themes and replaced by luggage in town furniture rendering.
+The Black Knight-shaped statue remains a blocking prop but cannot receive damage;
+the regression exercises direct, melee, ranged and skill targeting.
+
+Reproduce with **Tools > Eternal Enigma > UI > Validate Saved Menu Fonts**,
+then **Tests > Run Text Containment Audit**. The follow-up used
+**Tests > Run Terminal Audit Captures**. Use **Tests > Run Dialog and Prop Followups**
+for the skill/header/prop checks. Runtime assertions check the active
+terminal focus hierarchy; covered parent dialogs restore their authored styling.
+The autoplay playback overlay retains its graphical font in terminal mode.
+
+Evidence: `Temp/DialogFontVerification/authored-fonts.txt`, `runtime.json`,
+`full-run.json/xml`, `followup.json/xml`, `dialog-prop-followup.json/xml`, and
+`dialog-prop-summary.json` (plus the final alignment recheck in `header-followup.json/xml`). Skill captures are in `Temp/LearnSkillDialogAudit`;
+header captures have the `header-` prefix. Other captures are in
+`Temp/UIScreenAudit`, `Temp/TerminalAudit`, and `Temp/DungeonDock`.
+Tests isolate saves and preferences. These are Editor Play Mode checks.
+
+## October 14, 2026 audit
 
 Scope: main menu and campaign selection, hero selection, all Settings tabs, town
 services and recruitment, shared party menus, overworld travel and gates, dungeon
 actions and targeting, event history, level-up, victory/defeat and Hall of Fame
 screens, scene fades, and dungeon floor transitions.
 
-## Corrections
+### Corrections
 
 | Area | Findings and corrections |
 | --- | --- |
@@ -31,7 +91,7 @@ supported text rather than a missing star glyph. Recruitment and entrance dialog
 use a compact pointer outside their selected button; unavailable dungeon entries
 are disabled and focus returns to Cancel.
 
-## Character animation audit
+### Character animation audit
 
 The source and asset review found no runtime character jump, shake, punch,
 rotation, or scale tweens replacing skeletal animation. Town, dungeon, and
@@ -62,7 +122,7 @@ Two clip-routing issues were identified:
 All 13 animation regression checks passed, including armed potion playback,
 movement skills, and the actual home-bed sleep flow.
 
-## Validation
+### Validation
 
 Unity Play Mode interaction checks and visual captures are run through:
 

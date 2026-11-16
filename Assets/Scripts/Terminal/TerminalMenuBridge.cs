@@ -55,13 +55,7 @@ public sealed class TerminalMenuBridge : MonoBehaviour
                 () => AdditionalControls(module));
             nextMove = 0; lastMove = Vector2.zero;
         }
-        if (Time.unscaledTime >= nextStyle)
-        {
-            var screen = Common.InstanceOrNull != null ? Common.InstanceOrNull.GetComponentInChildren<TerminalScreen>(true) : null;
-            // MainMenu has its own reversible title/button treatment.
-            if (owner != mainMenu && screen != null) style.Refresh(root, screen.FontAsset, opaqueBackdrop: true);
-            nextStyle = Time.unscaledTime + .1f;
-        }
+        RefreshStyle();
 
         var current = EventSystem.current?.currentSelectedGameObject;
         var selected = current != null ? current.GetComponent<Selectable>() : null;
@@ -112,7 +106,20 @@ public sealed class TerminalMenuBridge : MonoBehaviour
     private void LateUpdate()
     {
         if (!TerminalMode.Effective || owner == null || root == null || !root.gameObject.activeInHierarchy) Release();
+        // Rebinding suspends menu input, but its newly enabled prompt still needs
+        // the same styling as the settings hierarchy that owns it.
+        else if (ControlBindings.IsCapturing) RefreshStyle();
     }
+
+    private void RefreshStyle()
+    {
+        if (Time.unscaledTime < nextStyle) return;
+        var screen = Common.InstanceOrNull?.GetComponentInChildren<TerminalScreen>(true);
+        // MainMenu has its own reversible title/button treatment.
+        if (owner != mainMenu && screen != null) style.Refresh(root, screen.FontAsset, opaqueBackdrop: true);
+        nextStyle = Time.unscaledTime + .1f;
+    }
+
     private IEnumerable<Selectable> AdditionalControls(MenuUIInputModule module)
     {
         // Party tabs and Options belong to the party focus scope but are retained

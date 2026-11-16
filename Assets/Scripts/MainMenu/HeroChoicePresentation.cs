@@ -42,8 +42,6 @@ public static class HeroChoicePresentation
     {
         string classes = hero.PrimaryClass.DisplayName +
             (hero.SecondaryClass != null ? " / " + hero.SecondaryClass.DisplayName : "");
-        var skill = Signature(hero);
-        string example = skill == null ? "" : $"\n\n<b>First lesson: {skill.DisplayName}</b>\n{skill.Description}";
-        return $"<b><size=120%>{hero.Name}</size></b>\n<size=85%>{classes}</size>\n{Playstyle(hero.PrimaryClass)}{example}";
+        return $"<b><size=120%>{hero.Name}</size></b>\n<size=85%>{classes}</size>\n{HeroStory.Opening(hero.Id) ?? hero.Description}\n\n{Playstyle(hero.PrimaryClass)}";
     }
 }

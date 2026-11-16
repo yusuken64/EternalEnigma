@@ -56,9 +56,9 @@ public class BallistaPurchaseDialog : Dialog
         TownModalBackdrop.Ensure(this, true);
 
         TitleText.font = TMP_Settings.defaultFontAsset;
-        TitleText.enableAutoSizing = true; TitleText.fontSizeMin = 18; TitleText.fontSizeMax = 28;
+        TitleText.enableAutoSizing = true; TitleText.fontSizeMin = 24; TitleText.fontSizeMax = 32;
         TitleText.textWrappingMode = TextWrappingModes.Normal;
-        DescriptionText.enableAutoSizing = true; DescriptionText.fontSizeMin = 16; DescriptionText.fontSizeMax = 24;
+        DescriptionText.enableAutoSizing = true; DescriptionText.fontSizeMin = 22; DescriptionText.fontSizeMax = 28;
         DescriptionText.textWrappingMode = TextWrappingModes.Normal;
         string price = usesPoints ? $"{cost} Skill Point{(cost == 1 ? "" : "s")}" : $"{cost} gold";
         TitleText.text = GameplayText.Format(nextRank <= 1

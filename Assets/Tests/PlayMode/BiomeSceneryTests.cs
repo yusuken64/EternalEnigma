@@ -86,6 +86,49 @@ namespace EternalEnigma.Tests
             Assert.That(dungeon.Interactables.Contains(last),Is.False);
         }
 
+
+        [UnityTest]
+        public IEnumerator BlackKnightStatueCannotBeDamagedOrBroken()
+        {
+            // This prop is authored for biome floors, not the legacy editor-template floor.
+            var run = Common.Instance.GameSaveData.DungeonSaveData;
+            run.UseBiomeLayout = true; run.LayoutBiome = OverworldBiome.Grassland;
+            harness.Game.AdvanceFloor(); yield return harness.WaitForIdle();
+            var dungeon = harness.Game.CurrentDungeon;
+            var statue = dungeon.Interactables.OfType<DungeonProp>().SingleOrDefault(prop => prop.name == "Stone Hulk statue");
+            Assert.That(statue, Is.Not.Null, "The statue must have a reachable placement.");
+            var ally = harness.Ally;
+            var adjacent = GridMovement.GetNeighbors(statue.Position, dungeon.IsWalkable).First();
+            harness.PlaceAlly(adjacent);
+            ally.SetFacingByTargetPosition(statue.Position);
+            void Resolve(GameAction action)
+            {
+                var pending = new Queue<GameAction>(); pending.Enqueue(action);
+                while (pending.Count > 0)
+                    foreach (var child in ally.ExecuteActionImmediate(pending.Dequeue())) pending.Enqueue(child);
+            }
+            Assert.That(statue.Alive, Is.False, "A statue is not a damage target.");
+            Assert.That(statue.Damage(ally, int.MaxValue).IsValid(ally), Is.False);
+            Resolve(new AttackAction(ally, adjacent, statue.Position));
+            Resolve(new RangedAttackAction(ally, null, int.MaxValue, null));
+            Resolve(statue.Damage(ally, int.MaxValue));
+            var skill = ScriptableObject.CreateInstance<Skill>(); ally.Skills.Add(skill);
+            try
+            {
+                skill.Targeting = SkillTargeting.SelectedTarget;
+                skill.TargetSelector = new TargetSelector { Team = TargetTeam.Enemies, Area = TargetArea.Visible };
+                skill.ActionEffects = new List<GameAction> { new TakeDamageAction { damage = int.MaxValue } };
+                Assert.That(SkillAction.ForScenery(ally, skill, statue).IsValid(ally), Is.False);
+            }
+            finally { ally.Skills.Remove(skill); Object.Destroy(skill); }
+            yield return null;
+            Assert.That(statue != null && statue.gameObject.activeInHierarchy, Is.True);
+            Assert.That(statue.Opened, Is.False);
+            Assert.That(statue.BlocksMovement, Is.True);
+            Assert.That(dungeon.IsWalkable(statue.Position), Is.False);
+            Assert.That(dungeon.Interactables.Contains(statue), Is.True);
+        }
+
         [UnityTest]
         public IEnumerator DamageOpeningHazardsAndTransitions()
         {

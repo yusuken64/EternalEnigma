@@ -761,6 +761,20 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Trainer PlayMode")]
     public static void RunTrainerPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.TownTrainerRankTests");
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Header Layout Checks")]
+    public static void RunHeaderLayoutChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureHeaderButtonsAcrossScenesAndInputs");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dialog and Prop Followups")]
+    public static void RunDialogAndPropFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureHeaderButtonsAcrossScenesAndInputs",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureLearnSkillConfirmationsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalLearnSkillConfirmationsAcrossAspectRatios",
+        "EternalEnigma.Tests.BiomeSceneryTests.BlackKnightStatueCannotBeDamagedOrBroken",
+        "EternalEnigma.Tests.TownTrainerRankTests.TrainerSelectionScrollingTabsAndModalFocus",
+        "EternalEnigma.Tests.TownTrainerRankTests.RankUpChargesSkillPointsPerRankAndPersists",
+        "EternalEnigma.Tests.ControllerFlowTests.TownShopAndTrainerSupportNavigationConfirmAndBack");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Trainer Layout Checks")]
     public static void RunTrainerLayoutChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.TownTrainerRankTests.TrainerLayoutFitsSupportedResolutionsWithLongText",

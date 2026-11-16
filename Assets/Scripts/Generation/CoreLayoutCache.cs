@@ -11,13 +11,44 @@ public static class CoreLayoutCache
     /// Number of core generations performed (test hook).
     public static int Generations { get; private set; }
 
+    private static DungeonFloorOptions prewarmKey;
+    private static DungeonFloor prewarmFloor;
+    private static System.Threading.Tasks.Task<DungeonFloor> prewarmTask;
+
+    /// <summary>
+    /// Generates a floor ahead of need. Core generation is a pure function of its options, so the
+    /// result is the same floor that <see cref="GetDungeon"/> would otherwise build on demand.
+    /// </summary>
+    public static void Prewarm(DungeonFloorOptions options)
+    {
+        if (options == null || options.Equals(prewarmKey)) return;
+        prewarmKey = options; prewarmFloor = null; prewarmTask = null;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // The web player has no worker threads; callers choose an idle moment.
+        prewarmFloor = DungeonFloorGenerator.Generate(options);
+#else
+        prewarmTask = System.Threading.Tasks.Task.Run(() => DungeonFloorGenerator.Generate(options));
+#endif
+    }
+
+    private static DungeonFloor TakePrewarmed(DungeonFloorOptions options)
+    {
+        if (prewarmKey == null || !options.Equals(prewarmKey)) return null;
+        var floor = prewarmFloor;
+        var task = prewarmTask;
+        prewarmKey = null; prewarmFloor = null; prewarmTask = null;
+        if (floor != null || task == null) return floor;
+        // A failed background run falls through to the ordinary path, which reports the error.
+        try { return task.Result; } catch (AggregateException) { return null; }
+    }
+
     public static DungeonFloor GetDungeon(TileWorldCreator twc, DungeonFloorOptions options)
     {
         if (twc == null) throw new ArgumentNullException(nameof(twc));
         var slot = slots.GetOrCreateValue(twc);
         if (slot.Dungeon == null || !options.Equals(slot.DungeonKey))
         {
-            slot.Dungeon = DungeonFloorGenerator.Generate(options);
+            slot.Dungeon = TakePrewarmed(options) ?? DungeonFloorGenerator.Generate(options);
             slot.DungeonKey = options;
             slot.Town = slot.Dungeon.TownPlan;
             slot.TownKey = options.Variant == DungeonVariant.Town ? TownDungeonGenerator.TownOptions(options) : null;

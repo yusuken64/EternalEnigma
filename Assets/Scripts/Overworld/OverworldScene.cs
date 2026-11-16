@@ -12,7 +12,9 @@ using UnityEngine.InputSystem;
 /// <summary>Shared campaign and sandbox scene; all progression is owned by Common.</summary>
 public sealed class OverworldScene : MonoBehaviour
 {
-    [System.Serializable] public sealed class BiomeMusicEntry { public OverworldBiome Biome; public AudioClip Clip; }
+    // The *Track names are filled by the deferred web build, which ships music separately and clears the clips.
+    [System.Serializable] public sealed class BiomeMusicEntry { public OverworldBiome Biome; public AudioClip Clip; [HideInInspector] public string ClipTrack; }
+    [HideInInspector] public string OverworldMusicTrack;
     public CampaignOverworld Map;
     public TownAlly PlayerPrefab;
     public Camera ViewCamera;
@@ -79,8 +81,10 @@ public sealed class OverworldScene : MonoBehaviour
         var biome = Map.CurrentGrid?.BiomeAt(Position) ?? OverworldBiome.Grassland;
         if (playingBiome == biome) return;
         playingBiome = biome;
-        var clip = BiomeMusic.FirstOrDefault(entry => entry.Biome == biome)?.Clip ?? OverworldMusic;
-        if (clip != null) Common.Instance.AudioManager?.PlayMusic(clip);
+        var music = BiomeMusic.FirstOrDefault(entry => entry.Biome == biome);
+        var clip = music?.Clip ?? OverworldMusic;
+        string track = !string.IsNullOrEmpty(music?.ClipTrack) ? music.ClipTrack : OverworldMusicTrack;
+        if (clip != null || !string.IsNullOrEmpty(track)) Common.Instance.AudioManager?.PlayMusic(clip, track);
     }
 
     private void Start()

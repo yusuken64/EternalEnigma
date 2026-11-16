@@ -18,8 +18,17 @@ public sealed class WebBootstrap : MonoBehaviour
         public long Bytes;
     }
 
+    [Serializable]
+    public struct Track
+    {
+        public string Name;
+        public Bundle Bundle;
+    }
+
     public Bundle[] Boot = Array.Empty<Bundle>();
     public Bundle[] Game = Array.Empty<Bundle>();
+    // Each music track is its own bundle, fetched when a scene first asks for it.
+    public Track[] Music = Array.Empty<Track>();
     public string FirstScene = "Common";
     // Keeps the built-in Standard shader in the player for materials created by code.
     public Material StandardMaterial;
@@ -30,10 +39,54 @@ public sealed class WebBootstrap : MonoBehaviour
     private float progress;
     private GUIStyle style;
 
+    private readonly System.Collections.Generic.Dictionary<string, AudioClip> tracks = new();
+    private readonly System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<Action<AudioClip>>> waiting = new();
+
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
         GameContent.BeginDeferred();
+        GameContent.TrackProvider = LoadTrack;
+    }
+
+    private void LoadTrack(string track, Action<AudioClip> done)
+    {
+        if (tracks.TryGetValue(track, out var clip)) { done(clip); return; }
+        if (waiting.TryGetValue(track, out var callbacks)) { callbacks.Add(done); return; }
+        int index = Array.FindIndex(Music, entry => entry.Name == track);
+        if (index < 0) { Debug.LogWarning("Unknown music track: " + track); done(null); return; }
+        waiting.Add(track, new System.Collections.Generic.List<Action<AudioClip>> { done });
+        StartCoroutine(FetchTrack(Music[index]));
+    }
+
+    private IEnumerator FetchTrack(Track track)
+    {
+        AssetBundle bundle = null;
+        yield return Fetch(track.Bundle, _ => { }, loaded => bundle = loaded, false);
+        AudioClip clip = null;
+        if (bundle != null)
+        {
+            var request = bundle.LoadAllAssetsAsync<AudioClip>();
+            yield return request;
+            clip = request.asset as AudioClip;
+        }
+        // A missing track is remembered as silence rather than retried on every scene.
+        tracks[track.Name] = clip;
+        var callbacks = waiting[track.Name];
+        waiting.Remove(track.Name);
+        foreach (var callback in callbacks) callback(clip);
+    }
+
+    /// <summary>Fetches the remaining music one track at a time so later scene changes find it ready.</summary>
+    private IEnumerator PrefetchMusic()
+    {
+        foreach (var track in Music)
+        {
+            if (tracks.ContainsKey(track.Name)) continue;
+            bool finished = false;
+            LoadTrack(track.Name, _ => finished = true);
+            while (!finished) yield return null;
+        }
     }
 
     private IEnumerator Start()
@@ -47,6 +100,7 @@ public sealed class WebBootstrap : MonoBehaviour
         if (error != null) yield break;
         stage = null;
         GameContent.EndDeferred();
+        yield return PrefetchMusic();
     }
 
     private IEnumerator Download(Bundle[] bundles)
@@ -60,7 +114,7 @@ public sealed class WebBootstrap : MonoBehaviour
         for (int i = 0; i < bundles.Length; i++)
         {
             int slot = i;
-            StartCoroutine(Fetch(bundles[slot], value => received[slot] = value, bundle => { loaded[slot] = bundle; pending--; }));
+            StartCoroutine(Fetch(bundles[slot], value => received[slot] = value, bundle => { loaded[slot] = bundle; pending--; }, true));
         }
         while (pending > 0 && error == null)
         {
@@ -74,7 +128,8 @@ public sealed class WebBootstrap : MonoBehaviour
         foreach (var bundle in loaded) GameContent.Register(bundle);
     }
 
-    private IEnumerator Fetch(Bundle bundle, Action<long> report, Action<AssetBundle> finished)
+    /// <summary>Downloads one bundle with retries. Only a <paramref name="required"/> bundle stops the game on failure.</summary>
+    private IEnumerator Fetch(Bundle bundle, Action<long> report, Action<AssetBundle> finished, bool required)
     {
         string url = Application.streamingAssetsPath + "/" + GameContent.Folder + "/" + bundle.Name + "?v=" + bundle.Hash;
         string failure = null;
@@ -104,8 +159,17 @@ public sealed class WebBootstrap : MonoBehaviour
             report(0);
             yield return new WaitForSecondsRealtime(attempt);
         }
-        error = "Could not download " + bundle.Name + " (" + failure + "). Reload the page to try again.";
-        Debug.LogError(error);
+        string message = "Could not download " + bundle.Name + " (" + failure + ").";
+        if (required)
+        {
+            error = message + " Reload the page to try again.";
+            Debug.LogError(error);
+        }
+        else
+        {
+            Debug.LogWarning(message);
+            finished(null);
+        }
     }
 
     private void OnGUI()

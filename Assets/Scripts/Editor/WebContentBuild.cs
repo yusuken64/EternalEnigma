@@ -21,6 +21,10 @@ public static class WebContentBuild
     private const string LinkFile = "Assets/link.xml";
     private const string StreamingFolder = "Assets/StreamingAssets";
     private const string Staging = "Temp/WebContent";
+    private const string BackupFolder = "Temp/WebContentBackup";
+    private const string MusicFolder = "Assets/Sounds/Music/";
+    // Files rewritten for the build, by GUID, with the copy to put back afterwards.
+    private static readonly List<(string Guid, string Backup)> Backups = new();
     // Scan tag only: lets build hooks that inspect named bundles still see the moved folder.
     private const string ScanTag = "deferred-resources";
 
@@ -83,6 +87,7 @@ public static class WebContentBuild
         {
             MoveResourcesOut();
             var resources = resourceNames.Keys.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            var tracks = SeparateMusic(BootScenes.Concat(gameScenes).Concat(resources).ToArray());
             var atlases = AssetDatabase.FindAssets("t:SpriteAtlas", new[] { "Assets" }).Select(AssetDatabase.GUIDToAssetPath);
             var bootRoots = BootScenes.Concat(bootResources.Select(AssetDatabase.GUIDToAssetPath)).Concat(atlases).ToArray();
             var gameRoots = gameScenes.Concat(resources).ToArray();
@@ -95,8 +100,8 @@ public static class WebContentBuild
                 new AssetBundleBuild { assetBundleName = "boot_scenes", assetNames = BootScenes },
                 new AssetBundleBuild { assetBundleName = "game_assets", assetNames = game, addressableNames = game.Select(Name).ToArray() },
                 new AssetBundleBuild { assetBundleName = "game_scenes", assetNames = gameScenes },
-            };
-            Debug.Log($"Deferred content: {boot.Length} boot assets, {game.Length} game assets, {gameScenes.Length} game scenes.");
+            }.Concat(tracks.Select((path, i) => new AssetBundleBuild { assetBundleName = "music_" + i, assetNames = new[] { path } })).ToArray();
+            Debug.Log($"Deferred content: {boot.Length} boot assets, {game.Length} game assets, {gameScenes.Length} game scenes, {tracks.Count} music tracks.");
 
             if (Directory.Exists(Staging)) Directory.Delete(Staging, true);
             Directory.CreateDirectory(Staging);
@@ -116,9 +121,11 @@ public static class WebContentBuild
             }
             var bootBundles = new[] { Publish("boot_assets"), Publish("boot_scenes") };
             var gameBundles = new[] { Publish("game_assets"), Publish("game_scenes") };
+            var music = tracks.Select((path, i) => new WebBootstrap.Track
+                { Name = Path.GetFileNameWithoutExtension(path), Bundle = Publish("music_" + i) }).ToArray();
 
             WriteLinkFile(bootRoots.Concat(gameRoots).ToArray());
-            CreateBootstrapScene(bootBundles, gameBundles);
+            CreateBootstrapScene(bootBundles, gameBundles, music);
             AssetDatabase.Refresh();
 
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
@@ -174,6 +181,14 @@ public static class WebContentBuild
         try
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            foreach (var (guid, backup) in Backups)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (string.IsNullOrEmpty(path) || !File.Exists(backup)) continue;
+                File.Copy(backup, path, true);
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+            }
+            Backups.Clear();
             AssetDatabase.DeleteAsset(BootstrapScene);
             AssetDatabase.DeleteAsset(BootstrapMaterial);
             AssetDatabase.DeleteAsset(LinkFile);
@@ -225,7 +240,75 @@ public static class WebContentBuild
         Debug.Log("Deferred content preserves: " + string.Join(", ", assemblies));
     }
 
-    private static void CreateBootstrapScene(WebBootstrap.Bundle[] boot, WebBootstrap.Bundle[] game)
+    /// <summary>
+    /// Music ships as one bundle per track. Every reference to a track is cleared from the content
+    /// about to be bundled; where the field has a "...Track" companion, the track's name is recorded
+    /// there so the game can ask for it by name. Returns the tracks that were named.
+    /// </summary>
+    private static List<string> SeparateMusic(string[] roots)
+    {
+        bool IsMusic(string path) => path.StartsWith(MusicFolder, StringComparison.Ordinal);
+        if (Directory.Exists(BackupFolder)) Directory.Delete(BackupFolder, true);
+        Directory.CreateDirectory(BackupFolder);
+        var named = new SortedSet<string>(StringComparer.Ordinal);
+        var holders = AssetDatabase.GetDependencies(roots, true)
+            .Where(path => path.StartsWith("Assets/", StringComparison.Ordinal) && !IsMusic(path))
+            .Where(path => AssetDatabase.GetDependencies(path, false).Any(IsMusic)).ToArray();
+        foreach (var path in holders)
+        {
+            string backup = BackupFolder + "/" + Backups.Count;
+            File.Copy(path, backup, true);
+            Backups.Add((AssetDatabase.AssetPathToGUID(path), backup));
+            if (path.EndsWith(".unity", StringComparison.OrdinalIgnoreCase))
+            {
+                var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+                bool changed = false;
+                foreach (var root in scene.GetRootGameObjects())
+                    foreach (var component in root.GetComponentsInChildren<Component>(true))
+                        if (component != null) changed |= ClearMusic(component, named);
+                if (changed && !EditorSceneManager.SaveScene(scene)) throw new InvalidOperationException("Could not save " + path);
+            }
+            else
+            {
+                foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(path))
+                    if (asset != null && ClearMusic(asset, named)) EditorUtility.SetDirty(asset);
+            }
+        }
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        var remaining = AssetDatabase.GetDependencies(roots, true).Where(IsMusic).ToArray();
+        if (remaining.Length > 0) throw new InvalidOperationException("Music is still referenced by bundled content: " + string.Join(", ", remaining));
+        Debug.Log($"Deferred content: separated music from {holders.Length} assets; named tracks: {string.Join(", ", named.Select(Path.GetFileNameWithoutExtension))}.");
+        return named.ToList();
+    }
+
+    private static bool ClearMusic(UnityEngine.Object target, ISet<string> named)
+    {
+        var serialized = new SerializedObject(target);
+        var property = serialized.GetIterator();
+        bool changed = false, enterChildren = true;
+        while (property.Next(enterChildren))
+        {
+            // Strings expose their characters as children; there is nothing to find inside them.
+            enterChildren = property.propertyType != SerializedPropertyType.String;
+            if (property.propertyType != SerializedPropertyType.ObjectReference) continue;
+            if (!(property.objectReferenceValue is AudioClip clip)) continue;
+            string path = AssetDatabase.GetAssetPath(clip);
+            if (!path.StartsWith(MusicFolder, StringComparison.Ordinal)) continue;
+            var track = serialized.FindProperty(property.propertyPath + "Track");
+            if (track != null && track.propertyType == SerializedPropertyType.String)
+            {
+                track.stringValue = clip.name;
+                named.Add(path);
+            }
+            property.objectReferenceValue = null;
+            changed = true;
+        }
+        if (changed) serialized.ApplyModifiedPropertiesWithoutUndo();
+        return changed;
+    }
+
+    private static void CreateBootstrapScene(WebBootstrap.Bundle[] boot, WebBootstrap.Bundle[] game, WebBootstrap.Track[] music)
     {
         var material = new Material(Shader.Find("Standard"));
         AssetDatabase.CreateAsset(material, BootstrapMaterial);
@@ -237,6 +320,7 @@ public static class WebContentBuild
         var bootstrap = new GameObject("Web Bootstrap").AddComponent<WebBootstrap>();
         bootstrap.Boot = boot;
         bootstrap.Game = game;
+        bootstrap.Music = music;
         bootstrap.FirstScene = Path.GetFileNameWithoutExtension(BootScenes[0]);
         bootstrap.StandardMaterial = material;
         if (!EditorSceneManager.SaveScene(scene, BootstrapScene))

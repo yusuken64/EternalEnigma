@@ -28,7 +28,7 @@ public static class GameContent
     public static bool Ready { get; private set; } = true;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetSession() { index = null; Ready = true; }
+    private static void ResetSession() { index = null; Ready = true; TrackProvider = null; }
 
     internal static void BeginDeferred()
     {
@@ -93,6 +93,19 @@ public static class GameContent
             return;
         }
         if (Ready) Resources.LoadAsync<T>(path);
+    }
+
+    /// <summary>Set by a deferred build to fetch a music track by name; unset everywhere else.</summary>
+    internal static Action<string, Action<AudioClip>> TrackProvider;
+
+    /// <summary>
+    /// Fetches a music track that a deferred build shipped separately from its scene.
+    /// <paramref name="done"/> receives null when the track is unavailable.
+    /// </summary>
+    public static void LoadTrack(string track, Action<AudioClip> done)
+    {
+        if (TrackProvider != null) TrackProvider(track, done);
+        else done(null);
     }
 
     private static string Key(string path) => (path ?? "").Replace('\\', '/').Trim('/').ToLowerInvariant();

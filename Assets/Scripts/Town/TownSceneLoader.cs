@@ -33,7 +33,7 @@ public static class TownSceneLoader
     {
         Configure(configuration);
         if (transition)
-            Common.Instance.ScreenTransition.DoTransition(() => SceneManager.LoadScene(SceneName), autoOpen: false);
-        else SceneManager.LoadScene(SceneName);
+            Common.Instance.ScreenTransition.DoTransition(() => GameContent.LoadScene(SceneName), autoOpen: false);
+        else GameContent.LoadScene(SceneName);
     }
 }

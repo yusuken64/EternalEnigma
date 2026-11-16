@@ -383,7 +383,7 @@ public sealed class CampaignTravelService
             // during the zoom, before a covered frame has actually been presented.
             beforeLoad?.Invoke();
             if (deferDestinationState) CommitDestination();
-            SceneManager.LoadScene(scene);
+            GameContent.LoadScene(scene);
         },
             autoOpen: false, destinationTitle: destinationTitle, travel: travel);
     }

@@ -27,6 +27,9 @@ public sealed class WebBootstrap : MonoBehaviour
 
     public Bundle[] Boot = Array.Empty<Bundle>();
     public Bundle[] Game = Array.Empty<Bundle>();
+    // Content only reached well into a campaign (bosses, the finale). It downloads after the menu
+    // unlocks; a gameplay scene waits for it only if the player gets there first.
+    public Bundle[] Late = Array.Empty<Bundle>();
     // Each music track is its own bundle, fetched when a scene first asks for it.
     public Track[] Music = Array.Empty<Track>();
     public string FirstScene = "Common";
@@ -37,6 +40,8 @@ public sealed class WebBootstrap : MonoBehaviour
     private string stage;
     private string error;
     private float progress;
+    private bool lateReady;
+    private bool sceneWaiting;
     private GUIStyle style;
 
     private readonly System.Collections.Generic.Dictionary<string, AudioClip> tracks = new();
@@ -47,6 +52,7 @@ public sealed class WebBootstrap : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         GameContent.BeginDeferred();
         GameContent.TrackProvider = LoadTrack;
+        GameContent.SceneGate = LoadSceneWhenReady;
     }
 
     private void LoadTrack(string track, Action<AudioClip> done)
@@ -98,9 +104,29 @@ public sealed class WebBootstrap : MonoBehaviour
         stage = "Downloading the adventure";
         yield return Download(Game);
         if (error != null) yield break;
-        stage = null;
+        // The menu unlocks here. Late-game content keeps downloading behind it.
         GameContent.EndDeferred();
+        stage = "Downloading late-game content";
+        yield return Download(Late);
+        if (error != null) yield break;
+        stage = null;
+        lateReady = true;
         yield return PrefetchMusic();
+    }
+
+    /// <summary>Holds a gameplay scene behind its transition until the late content is in.</summary>
+    private void LoadSceneWhenReady(string scene)
+    {
+        if (lateReady) { SceneManager.LoadScene(scene); return; }
+        StartCoroutine(WaitThenLoad(scene));
+    }
+
+    private IEnumerator WaitThenLoad(string scene)
+    {
+        sceneWaiting = true;
+        while (!lateReady && error == null) yield return null;
+        sceneWaiting = false;
+        if (error == null) SceneManager.LoadScene(scene);
     }
 
     private IEnumerator Download(Bundle[] bundles)
@@ -174,7 +200,9 @@ public sealed class WebBootstrap : MonoBehaviour
 
     private void OnGUI()
     {
-        string text = error ?? (stage != null ? stage + "... " + Mathf.FloorToInt(progress * 100) + "%" : null);
+        // Once the menu is unlocked the line only returns if a scene is actually waiting on a download.
+        bool show = stage != null && (!GameContent.Ready || sceneWaiting);
+        string text = error ?? (show ? stage + "... " + Mathf.FloorToInt(progress * 100) + "%" : null);
         if (text == null) return;
         style ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, wordWrap = true };
         style.fontSize = Mathf.Max(14, Screen.height / 36);

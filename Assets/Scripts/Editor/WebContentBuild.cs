@@ -35,6 +35,8 @@ public static class WebContentBuild
     private static readonly string[] BootScenes = { "Assets/Scenes/Common.unity", "Assets/Scenes/MainMenu.unity" };
     // Resources the menu reads before the game bundles arrive.
     private static readonly string[] BootResourceFolders = { "UI/", "Presentation/", "Terminal/" };
+    // Resources only reached deep into a campaign. What nothing else shares downloads after the menu unlocks.
+    private static readonly string[] LateResourceFolders = { "Bosses/", "Finale/" };
     // Read through Resources by code this project does not own.
     private static readonly string[] PlayerResources = { "DOTweenSettings.asset" };
 
@@ -96,9 +98,14 @@ public static class WebContentBuild
             var (bootAtlases, gameAtlases) = SplitAtlases(new HashSet<string>(AssetDatabase.GetDependencies(bootContent, true)));
             SpriteAtlasUtility.PackAllAtlases(BuildTarget.WebGL);
             var bootRoots = bootContent.Concat(bootAtlases).ToArray();
-            var gameRoots = gameScenes.Concat(resources).Concat(gameAtlases).ToArray();
+            // Late content is whatever only the late Resources folders reach; anything shared stays in the game bundle.
+            var lateRoots = resourceNames.Where(pair => LateResourceFolders.Any(folder =>
+                    pair.Value.StartsWith(GameContent.ResourcePrefix + folder.ToLowerInvariant(), StringComparison.Ordinal)))
+                .Select(pair => AssetDatabase.GUIDToAssetPath(pair.Key)).ToArray();
+            var gameRoots = gameScenes.Concat(resources.Except(lateRoots)).Concat(gameAtlases).ToArray();
             var boot = Bundled(AssetDatabase.GetDependencies(bootRoots, true)).ToArray();
             var game = Bundled(AssetDatabase.GetDependencies(gameRoots, true)).Except(boot).ToArray();
+            var late = Bundled(AssetDatabase.GetDependencies(lateRoots, true)).Except(boot).Except(game).ToArray();
             string Name(string path) => resourceNames.TryGetValue(AssetDatabase.AssetPathToGUID(path), out var name) ? name : path.ToLowerInvariant();
             var builds = new[]
             {
@@ -106,8 +113,11 @@ public static class WebContentBuild
                 new AssetBundleBuild { assetBundleName = "boot_scenes", assetNames = BootScenes },
                 new AssetBundleBuild { assetBundleName = "game_assets", assetNames = game, addressableNames = game.Select(Name).ToArray() },
                 new AssetBundleBuild { assetBundleName = "game_scenes", assetNames = gameScenes },
-            }.Concat(tracks.Select((path, i) => new AssetBundleBuild { assetBundleName = "music_" + i, assetNames = new[] { path } })).ToArray();
-            Debug.Log($"Deferred content: {boot.Length} boot assets, {game.Length} game assets, {gameScenes.Length} game scenes, {tracks.Count} music tracks.");
+            }.Concat(late.Length == 0 ? Enumerable.Empty<AssetBundleBuild>() : new[]
+            {
+                new AssetBundleBuild { assetBundleName = "late_assets", assetNames = late, addressableNames = late.Select(Name).ToArray() },
+            }).Concat(tracks.Select((path, i) => new AssetBundleBuild { assetBundleName = "music_" + i, assetNames = new[] { path } })).ToArray();
+            Debug.Log($"Deferred content: {boot.Length} boot assets, {game.Length} game assets, {late.Length} late assets, {gameScenes.Length} game scenes, {tracks.Count} music tracks.");
 
             if (Directory.Exists(Staging)) Directory.Delete(Staging, true);
             Directory.CreateDirectory(Staging);
@@ -127,11 +137,12 @@ public static class WebContentBuild
             }
             var bootBundles = new[] { Publish("boot_assets"), Publish("boot_scenes") };
             var gameBundles = new[] { Publish("game_assets"), Publish("game_scenes") };
+            var lateBundles = late.Length == 0 ? Array.Empty<WebBootstrap.Bundle>() : new[] { Publish("late_assets") };
             var music = tracks.Select((path, i) => new WebBootstrap.Track
                 { Name = Path.GetFileNameWithoutExtension(path), Bundle = Publish("music_" + i) }).ToArray();
 
-            WriteLinkFile(bootRoots.Concat(gameRoots).ToArray());
-            CreateBootstrapScene(bootBundles, gameBundles, music);
+            WriteLinkFile(bootRoots.Concat(gameRoots).Concat(lateRoots).ToArray());
+            CreateBootstrapScene(bootBundles, gameBundles, lateBundles, music);
             AssetDatabase.Refresh();
 
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
@@ -353,7 +364,7 @@ public static class WebContentBuild
         return changed;
     }
 
-    private static void CreateBootstrapScene(WebBootstrap.Bundle[] boot, WebBootstrap.Bundle[] game, WebBootstrap.Track[] music)
+    private static void CreateBootstrapScene(WebBootstrap.Bundle[] boot, WebBootstrap.Bundle[] game, WebBootstrap.Bundle[] late, WebBootstrap.Track[] music)
     {
         var material = new Material(Shader.Find("Standard"));
         AssetDatabase.CreateAsset(material, BootstrapMaterial);
@@ -365,6 +376,7 @@ public static class WebContentBuild
         var bootstrap = new GameObject("Web Bootstrap").AddComponent<WebBootstrap>();
         bootstrap.Boot = boot;
         bootstrap.Game = game;
+        bootstrap.Late = late;
         bootstrap.Music = music;
         bootstrap.FirstScene = Path.GetFileNameWithoutExtension(BootScenes[0]);
         bootstrap.StandardMaterial = material;

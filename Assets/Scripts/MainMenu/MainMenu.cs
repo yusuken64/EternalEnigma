@@ -283,7 +283,7 @@ public class MainMenu : MonoBehaviour
 		}
 
 		common.PendingDemoLoadout = DemoDungeonLoadout.Load();
-		SceneManager.LoadScene("DungeonScene");
+		GameContent.LoadScene("DungeonScene");
 	}
 
 	public void DebugAutoplay_Clicked()

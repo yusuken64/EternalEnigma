@@ -28,7 +28,7 @@ public static class GameContent
     public static bool Ready { get; private set; } = true;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetSession() { index = null; Ready = true; TrackProvider = null; }
+    private static void ResetSession() { index = null; Ready = true; TrackProvider = null; SceneGate = null; }
 
     internal static void BeginDeferred()
     {
@@ -93,6 +93,19 @@ public static class GameContent
             return;
         }
         if (Ready) Resources.LoadAsync<T>(path);
+    }
+
+    /// <summary>Set by a deferred build to hold a gameplay scene until its late content has arrived.</summary>
+    internal static Action<string> SceneGate;
+
+    /// <summary>
+    /// Loads a gameplay scene. A deferred build may still be downloading late-game content the
+    /// scene can ask for by name; the load then waits behind the caller's transition.
+    /// </summary>
+    public static void LoadScene(string scene)
+    {
+        if (SceneGate != null) SceneGate(scene);
+        else UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
     }
 
     /// <summary>Set by a deferred build to fetch a music track by name; unset everywhere else.</summary>

@@ -16,6 +16,19 @@ public static class RuntimeMeshMemory
 #endif
 
     /// <summary>
+    /// [Memory] log lines: on in the web player, and in development players so leaks can be traced
+    /// from the command-line debug autoplay. Off in the editor and in release desktop builds.
+    /// </summary>
+#if DEVELOPMENT_BUILD && !UNITY_EDITOR
+    public static bool Logging = true;
+#else
+    public static bool Logging = Enabled;
+#endif
+
+    // Desktop players can collect mid-frame, so their log lines report live memory, not garbage.
+    private static readonly bool collectBeforeLog = !Enabled;
+
+    /// <summary>
     /// Drops the CPU copy of generated meshes under <paramref name="root"/>: meshes registered with an
     /// <see cref="EnvironmentMeshOwner"/>, TWC's runtime cluster meshes and <paramref name="extra"/>.
     /// Shared imported meshes are never touched, and meshes used by colliders stay readable.
@@ -52,7 +65,7 @@ public static class RuntimeMeshMemory
     {
         TWC.TileWorldCreator.BuildLayerStepped = null;
         TWC.TileWorldCreator.BlueprintLayerStepped = null;
-        if (!Enabled) return;
+        if (!Logging) return;
         TWC.TileWorldCreator.BuildLayerStepped = (creator, layer) => Log($"{creator.name} layer {layer} built");
         TWC.TileWorldCreator.BlueprintLayerStepped = (creator, layer) => Log($"{creator.name} blueprint {layer} done");
     }
@@ -61,7 +74,7 @@ public static class RuntimeMeshMemory
     public static void Log(string label)
     {
         const float MB = 1024f * 1024f;
-        Debug.Log($"[Memory] {label}: managed {System.GC.GetTotalMemory(false) / MB:0} MB " +
+        Debug.Log($"[Memory] {label}: {(collectBeforeLog ? "live " : "")}managed {System.GC.GetTotalMemory(collectBeforeLog) / MB:0} MB " +
             $"(mono heap {Profiler.GetMonoHeapSizeLong() / MB:0} MB), native allocated {Profiler.GetTotalAllocatedMemoryLong() / MB:0} MB, " +
             $"reserved {Profiler.GetTotalReservedMemoryLong() / MB:0} MB.");
     }

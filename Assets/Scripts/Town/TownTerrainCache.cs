@@ -90,7 +90,7 @@ public sealed class TownTerrainCache
         BuildCount++;
         // Every build listener has run, so nothing combines or reads these meshes again.
         int released = RuntimeMeshMemory.ReleaseCpuCopies(Root);
-        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log($"Town terrain cached, {released} mesh CPU copies released");
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Town terrain cached, {released} mesh CPU copies released");
         return true;
     }
 

@@ -35,7 +35,7 @@ public sealed class DungeonBoundaryLayer : DungeonThemeTileLayer
     /// <summary>Web-only memory trace of the layer's stages (the dungeon's largest garbage producer).</summary>
     private static void Step(string stage)
     {
-        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Dungeon boundary " + stage);
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Dungeon boundary " + stage);
     }
 
     public override void Execute(TileWorldCreator creator, bool force)

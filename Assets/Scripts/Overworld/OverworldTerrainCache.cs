@@ -69,7 +69,7 @@ public sealed class OverworldTerrainCache
         {
             if (Root != stored || stored == null) return;
             int released = RuntimeMeshMemory.ReleaseCpuCopies(stored, ownedMeshes);
-            if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log($"Overworld terrain cached, {released} mesh CPU copies released");
+            if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Overworld terrain cached, {released} mesh CPU copies released");
         });
     }
 

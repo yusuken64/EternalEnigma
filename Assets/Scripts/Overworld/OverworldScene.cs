@@ -143,7 +143,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         yield return Map.ApplyOverFrames(grid, Held, resolved);
         layoutMilliseconds = terrainTimer.Elapsed.TotalMilliseconds;
-        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Overworld layout done");
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Overworld layout done");
         // Let a frame pass so the layout's garbage is collected before the meshes add theirs.
         yield return null;
         BuildMeshesNow();
@@ -250,7 +250,7 @@ public sealed class OverworldScene : MonoBehaviour
         // Start the reveal only after followers, saved stats and camera placement
         // are complete, so their setup cannot consume part of the visible fade.
         IsReady = true;
-        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Overworld ready");
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Overworld ready");
         Common.Instance.Travel.SceneReady();
         Common.Instance.ScreenTransition.DoOpen();
     }

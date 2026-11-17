@@ -369,7 +369,7 @@ public class Town : MonoBehaviour
 
     private IEnumerator BuildLayersNextFrame(TileWorldCreator _twc)
     {
-        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Town layout done");
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Town layout done");
         var buildRandom = UnityEngine.Random.state;
         yield return null;
         var outerRandom = UnityEngine.Random.state;
@@ -430,7 +430,7 @@ public class Town : MonoBehaviour
             Common.Instance.TownTerrain.Store(terrainIdentity, WalkableMap.TileWorldCreator, runtimeAsset, this))
             runtimeAsset = null;
         IsReady = true;
-        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Town ready");
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Town ready");
         if (Common.Instance.GameSaveData.NeedsInitialSave)
         {
             WriteSaveData();

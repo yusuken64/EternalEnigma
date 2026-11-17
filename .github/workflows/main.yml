@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   buildForAllSupportedPlatforms:
-    name: Build for ${{ matrix.targetPlatform }}
+    name: Build for ${{ matrix.targetPlatform }}${{ matrix.variant }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -15,6 +15,11 @@ jobs:
             buildMethod: WebContentBuild.BuildFromCommandLine
           - targetPlatform: StandaloneWindows64
             buildMethod: ''
+          # Development player for diagnosis: command-line debug autoplay and live-memory logs.
+          # Kept as an artifact and never published.
+          - targetPlatform: StandaloneWindows64
+            buildMethod: DevelopmentBuild.BuildWindowsFromCommandLine
+            variant: -Development
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,7 +47,7 @@ jobs:
           buildMethod: ${{ matrix.buildMethod }}
       - uses: actions/upload-artifact@v4
         with:
-          name: Eternal-Enigma-${{ matrix.targetPlatform }}
+          name: Eternal-Enigma-${{ matrix.targetPlatform }}${{ matrix.variant }}
           path: build/${{ matrix.targetPlatform }}
       - name: Set Version
         run: |
@@ -53,7 +58,7 @@ jobs:
         run: echo "itchio_project=juicychicken/eternal-enigma" >> $GITHUB_ENV
       - name: Upload ${{ matrix.targetPlatform  }} to itch.io project
         # Work branches build and keep their artifact but never publish to players.
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && matrix.variant == ''
         uses: robpc/itchio-upload-action@v1
         with:
           path: build/${{ matrix.targetPlatform  }}

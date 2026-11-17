@@ -275,9 +275,9 @@ public partial class Game : SingletonMonoBehaviour<Game>
         if (RunPlan == null || AutoplayRunner.SweepGeneration != null) yield break;
         int floor = PlayerController.Floor;
 #if UNITY_WEBGL && !UNITY_EDITOR
-        // No worker threads on the web: wait until the arrival presentation has settled.
-        yield return new WaitForSecondsRealtime(3);
-        if (!IsReady || PlayerController.Floor != floor) yield break;
+        // No worker threads on the web, so prewarming would stall a frame of live play. Generate the
+        // floor during the covered transition instead, where it is spread over several frames.
+        yield break;
 #endif
         var next = RunPlan.Floors.FirstOrDefault(step => step.Number == floor + 1);
         if (next != null) CoreLayoutCache.Prewarm(next.Options);

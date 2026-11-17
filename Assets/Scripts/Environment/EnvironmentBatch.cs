@@ -157,6 +157,7 @@ public sealed class EnvironmentBatch
         if (projection.Length != 0)
         {
             var vertices = scratchVertices; var normals = scratchNormals; var uv = scratchUVs;
+            Reserve(vertices, mesh.vertexCount); Reserve(normals, mesh.vertexCount); Reserve(uv, mesh.vertexCount);
             mesh.GetVertices(vertices); mesh.GetNormals(normals); uv.Clear();
             for (int i = 0; i < vertices.Count; i++)
             {
@@ -184,15 +185,21 @@ public sealed class EnvironmentBatch
     private static readonly List<Vector3> scratchNormals = new List<Vector3>();
     private static readonly List<Vector2> scratchUVs = new List<Vector2>();
     private static readonly List<int> scratchTriangles = new List<int>();
+    // The List overloads resize to the exact mesh size when a buffer is too small, so meshes of
+    // varied sizes would reallocate the buffers again and again. Grow in powers of two instead.
+    private static void Reserve<T>(List<T> list, int count)
+    {
+        if (list.Capacity < count) list.Capacity = Mathf.NextPowerOfTwo(count);
+    }
 
     private static void Accumulate(Mesh mesh, Dictionary<Vector3Int, Vector3> sums)
     {
         var v = scratchVertices; var triangles = scratchTriangles;
-        mesh.GetVertices(v);
+        Reserve(v, mesh.vertexCount); mesh.GetVertices(v);
         // mesh.triangles concatenates every submesh's indices in submesh order.
         for (int s = 0; s < mesh.subMeshCount; s++)
         {
-            mesh.GetTriangles(triangles, s);
+            Reserve(triangles, (int)mesh.GetIndexCount(s)); mesh.GetTriangles(triangles, s);
             for (int i = 0; i < triangles.Count; i += 3)
             {
                 var normal = Vector3.Cross(v[triangles[i + 1]] - v[triangles[i]], v[triangles[i + 2]] - v[triangles[i]]);
@@ -204,7 +211,7 @@ public sealed class EnvironmentBatch
     private static void ApplyNormals(Mesh mesh, Dictionary<Vector3Int, Vector3> sums)
     {
         var v = scratchVertices; var normals = scratchNormals;
-        mesh.GetVertices(v); normals.Clear();
+        Reserve(v, mesh.vertexCount); Reserve(normals, mesh.vertexCount); mesh.GetVertices(v); normals.Clear();
         for (int i = 0; i < v.Count; i++) normals.Add(sums.TryGetValue(NormalKey(v[i]), out var sum) ? sum.normalized : Vector3.back);
         mesh.SetNormals(normals);
     }
@@ -218,10 +225,10 @@ public sealed class EnvironmentBatch
         var v=scratchVertices;var triangles=scratchTriangles;var normals=scratchNormals;
         foreach(var mesh in meshes)
         {
-            mesh.GetVertices(v);
+            Reserve(v,mesh.vertexCount);mesh.GetVertices(v);
             for(int s=0;s<mesh.subMeshCount;s++)
             {
-                mesh.GetTriangles(triangles,s);
+                Reserve(triangles,(int)mesh.GetIndexCount(s));mesh.GetTriangles(triangles,s);
                 for(int i=0;i<triangles.Count;i+=3)
                 {
                     var normal=Vector3.Cross(v[triangles[i+1]]-v[triangles[i]],v[triangles[i+2]]-v[triangles[i]]);
@@ -231,7 +238,7 @@ public sealed class EnvironmentBatch
         }
         foreach(var mesh in meshes)
         {
-            mesh.GetVertices(v);normals.Clear();
+            Reserve(v,mesh.vertexCount);Reserve(normals,mesh.vertexCount);mesh.GetVertices(v);normals.Clear();
             for(int i=0;i<v.Count;i++)normals.Add(sums[Key(v[i])].normalized);
             mesh.SetNormals(normals);
         }

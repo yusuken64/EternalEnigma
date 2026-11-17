@@ -70,6 +70,30 @@ public static class RuntimeMeshMemory
         TWC.TileWorldCreator.BlueprintLayerStepped = (creator, layer) => Log($"{creator.name} blueprint {layer} done");
     }
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void StartWatchdog()
+    {
+        if (!Logging || Object.FindFirstObjectByType<MemoryWatchdog>() != null) return;
+        var host = new GameObject("Memory watchdog") { hideFlags = HideFlags.HideAndDontSave };
+        Object.DontDestroyOnLoad(host);
+        host.AddComponent<MemoryWatchdog>();
+    }
+
+    /// <summary>Logs a [Memory] line whenever managed or native use jumps between frames, naming the scene.</summary>
+    private sealed class MemoryWatchdog : MonoBehaviour
+    {
+        const long Threshold = 64L << 20;
+        long managed, mono, native;
+        void LateUpdate()
+        {
+            long m = System.GC.GetTotalMemory(false), h = Profiler.GetMonoHeapSizeLong(), n = Profiler.GetTotalAllocatedMemoryLong();
+            if (managed != 0 && (m - managed > Threshold || h - mono > Threshold || n - native > Threshold))
+                Log($"Jump since last frame (managed {(m - managed) / 1048576:+0;-0} MB, mono heap {(h - mono) / 1048576:+0;-0} MB, " +
+                    $"native {(n - native) / 1048576:+0;-0} MB) in scene {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            managed = m; mono = h; native = n;
+        }
+    }
+
     /// <summary>One log line of memory use, so web builds show where the heap goes.</summary>
     public static void Log(string label)
     {

@@ -11,6 +11,19 @@ public partial class TileWorldDungeonGenerator
     internal IEnumerator GenerateFinaleTerrain(FinaleFloorPlan plan)
     {
         GeneratedDungeon = null;
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Finale floor {plan.Number} terrain start");
+        if (RuntimeMeshMemory.Enabled && Common.Instance != null)
+        {
+            // The web heap cannot hold the cached overworld and town alongside a second overworld-sized
+            // world. Both caches rebuild on demand if the party leaves the finale. Wait a frame so the
+            // destroyed objects are freed and the garbage collector runs before the build.
+            Common.Instance.OverworldTerrain.Clear();
+            Common.Instance.TownTerrain.Clear();
+            yield return null;
+            System.GC.Collect();
+            yield return null;
+            if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Finale: overworld and town caches released");
+        }
         CurrentVisuals = new DungeonVisualSelection { Biome = plan.Grid.BiomeAt(plan.Start) ?? OverworldBiome.Grassland,
             UseBiomePresentation = true, Environment = DungeonEnvironmentKind.Outdoor };
         ThemeCatalog ??= GameContent.Load<DungeonThemeCatalog>("DungeonThemes/Catalog");
@@ -25,8 +38,18 @@ public partial class TileWorldDungeonGenerator
         if (map.StyleProfile == null) throw new System.InvalidOperationException("Missing overworld style profile.");
         bool built = false;
         map.TerrainBuilt += _ => built = true;
-        map.Apply(plan.Grid); map.BuildMeshes();
+        map.Apply(plan.Grid);
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Finale terrain layout applied");
+        map.BuildMeshes();
         while (!built) yield return null;
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Finale terrain built");
+        // Nothing re-reads these meshes once the deferred chunks are done; drop their CPU copies on web.
+        TerrainStreaming.WhenDrained(() =>
+        {
+            if (root == null) return;
+            int released = RuntimeMeshMemory.ReleaseCpuCopies(root);
+            if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Finale terrain streamed, {released} mesh CPU copies released");
+        });
         CurrentFloor = plan.CreateFloor();
         GeneratedDungeon = Instantiate(TileWorldDungeonPrefab, root.transform);
         GeneratedDungeon.Setup(creator, CurrentFloor);

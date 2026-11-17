@@ -156,6 +156,8 @@ public partial class Game : SingletonMonoBehaviour<Game>
 		DownedAllies.Clear();
         var context = Common.Instance.CampaignContext;
         RunPlan = context != null && context.State.PendingDungeon.Length > 0 ? context.RunPlan(context.State.PendingDungeon) : null;
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Dungeon run start: {context?.State.PendingDungeon ?? "sandbox"}" +
+            (context != null && context.State.PendingDungeon == context.Campaign.FinalLocationId ? " (finale)" : $", variant {RunPlan?.Variant}"));
         if (context?.State.PendingDungeon == context?.Campaign.FinalLocationId && context != null)
         {
             Finale = new FinaleRuntime(this, context.BeginFinale());

@@ -48,7 +48,9 @@ public static class CoreLayoutCache
         var slot = slots.GetOrCreateValue(twc);
         if (slot.Dungeon == null || !options.Equals(slot.DungeonKey))
         {
+            if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Core dungeon generation start");
             slot.Dungeon = TakePrewarmed(options) ?? DungeonFloorGenerator.Generate(options);
+            if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Core dungeon generated");
             slot.DungeonKey = options;
             slot.Town = slot.Dungeon.TownPlan;
             slot.TownKey = options.Variant == DungeonVariant.Town ? TownDungeonGenerator.TownOptions(options) : null;
@@ -63,7 +65,9 @@ public static class CoreLayoutCache
         var slot = slots.GetOrCreateValue(twc);
         if (slot.Town == null || !options.Equals(slot.TownKey))
         {
+            if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Core town generation start");
             slot.Town = TownPlanGenerator.Generate(options);
+            if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Core town generated");
             slot.TownKey = options;
             Generations++;
         }

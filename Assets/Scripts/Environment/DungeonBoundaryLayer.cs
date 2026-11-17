@@ -32,9 +32,16 @@ public sealed class DungeonBoundaryLayer : DungeonThemeTileLayer
                 if (RotateMask(canonical[piece], turns) == neighbors) return (piece, turns);
         throw new ArgumentOutOfRangeException(nameof(neighbors));
     }
+    /// <summary>Web-only memory trace of the layer's stages (the dungeon's largest garbage producer).</summary>
+    private static void Step(string stage)
+    {
+        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Dungeon boundary " + stage);
+    }
+
     public override void Execute(TileWorldCreator creator, bool force)
     {
         if (SmartPreset == null) { base.Execute(creator, force); return; }
+        Step("start");
         try
         {
             DungeonLayerOutput.Remove(creator, guid);
@@ -44,6 +51,7 @@ public sealed class DungeonBoundaryLayer : DungeonThemeTileLayer
             var mask = (bool[,])source.Clone();
             for (int y=0;y<mask.GetLength(1);y++) for (int x=0;x<mask.GetLength(0);x++)
                 if (Excluded(exclusions,x,y)) mask[x,y] = false;
+            Step("mask");
             var root = DungeonLayerOutput.Create(creator, this, Offset);
             var batch = new EnvironmentBatch(root.transform);
             var faces = root.AddComponent<BiomeDecorationSurfaceSet>();
@@ -75,8 +83,11 @@ public sealed class DungeonBoundaryLayer : DungeonThemeTileLayer
                 void Add(GameObject part, int rotation) => AddPrefab(batch, faces, part, position, scale,
                     Quaternion.Euler(0,0,-90*rotation),true,size,SmartPreset.MaterialOverride);
             }
+            Step("placed "+batch.Owner.PropCount+" pieces, "+faces.Faces.Count+" faces");
             batch.Finish();
+            Step("meshes combined");
             if(CutawayForeground)DungeonBoundaryCutaway.Install(creator,root,batch.Owner,faces);
+            Step("cutaway, "+faces.Faces.Count+" faces left");
         }
         finally { creator.executedBuildLayersCount++; }
     }

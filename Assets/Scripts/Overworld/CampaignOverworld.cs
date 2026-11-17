@@ -69,7 +69,7 @@ public sealed class CampaignOverworld : MonoBehaviour
         return grid;
     }
 
-    public void Apply(OverworldGrid grid, CapabilitySet held = default, ISet<string> resolvedLocks = null)
+    private void Prepare(OverworldGrid grid, CapabilitySet held, ISet<string> resolvedLocks)
     {
         if (grid == null) throw new ArgumentNullException(nameof(grid));
         if (building) throw new InvalidOperationException("Wait for the current TWC build to finish before replacing the map.");
@@ -150,34 +150,76 @@ public sealed class CampaignOverworld : MonoBehaviour
         creator.twcAsset = generatedAsset;
         creator.generatedBlueprintMaps.Clear();
         CurrentGrid = grid;
-        var randomState = UnityEngine.Random.state;
+        pendingStyleLayers = styleLayers;
         LastGenerationError=null;
+    }
+
+    private Dictionary<Guid, OverworldStyleBinding> pendingStyleLayers;
+
+    /// <summary>Generates the campaign layers in one call.</summary>
+    public void Apply(OverworldGrid grid, CapabilitySet held = default, ISet<string> resolvedLocks = null)
+    {
+        Prepare(grid, held, resolvedLocks);
+        var randomState = UnityEngine.Random.state;
         try
         {
             // This produces both GUID and GUID_UNSUBD WorldMaps, as needed by tile and object build layers.
-            creator.ExecuteAllBlueprintLayers();
-            foreach (var layer in generatedAsset.mapBlueprintLayers)
-            {
-                if(!layer.active)continue;
-                var output=creator.GetMapOutputFromBlueprintLayer(layer.guid);
-                if(output==null || output.GetLength(0)!=grid.Width || output.GetLength(1)!=grid.Height)
-                    throw new InvalidOperationException("Blueprint produced a missing or incorrectly sized mask: "+layer.layerName);
-                bool empty=!output.Cast<bool>().Any(v=>v);
-                if(empty && styleLayers!=null && styleLayers.TryGetValue(layer.guid,out var spec) && !spec.AllowEmpty)
-                    throw new InvalidOperationException("Required style layer produced an empty mask: "+layer.layerName);
-                // TWC uses these flags solely to flag empty intermediate masks. Exceptions and
-                // invalid outputs above are generation errors; intentional empty masks are valid.
-                layer.mapResultFailed = false;
-                foreach (var action in layer.stack) if (action.action is TWC.Actions.TWCBlueprintAction blueprint) blueprint.resultFailed = false;
-            }
+            Creator.ExecuteAllBlueprintLayers();
+            ValidateLayers();
         }
-        catch(Exception error)
-        {
-            LastGenerationError=error.Message;
-            ReleaseAsset();
-            throw;
-        }
+        catch (Exception error) { FailGeneration(error); throw; }
         finally { UnityEngine.Random.state = randomState; }
+    }
+
+    /// <summary>
+    /// Same result as <see cref="Apply"/>, one blueprint layer per frame, so no single frame stalls
+    /// on the whole layout and each layer's garbage is collected before the next.
+    /// </summary>
+    public System.Collections.IEnumerator ApplyOverFrames(OverworldGrid grid, CapabilitySet held = default, ISet<string> resolvedLocks = null)
+    {
+        Prepare(grid, held, resolvedLocks);
+        var steps = Creator.ExecuteAllBlueprintLayersYielding();
+        bool first = true;
+        while (true)
+        {
+            // The first step seeds the global random stream; later steps keep their own.
+            var randomState = UnityEngine.Random.state;
+            bool more;
+            try { more = steps.MoveNext(); }
+            catch (Exception error) { FailGeneration(error); throw; }
+            finally { if (first) UnityEngine.Random.state = randomState; }
+            first = false;
+            if (!more) break;
+            yield return steps.Current;
+        }
+        try { ValidateLayers(); }
+        catch (Exception error) { FailGeneration(error); throw; }
+    }
+
+    private void FailGeneration(Exception error)
+    {
+        LastGenerationError = error.Message;
+        ReleaseAsset();
+    }
+
+    private void ValidateLayers()
+    {
+        var grid = CurrentGrid; var creator = Creator; var styleLayers = pendingStyleLayers;
+        foreach (var layer in generatedAsset.mapBlueprintLayers)
+        {
+            if(!layer.active)continue;
+            var output=creator.GetMapOutputFromBlueprintLayer(layer.guid);
+            if(output==null || output.GetLength(0)!=grid.Width || output.GetLength(1)!=grid.Height)
+                throw new InvalidOperationException("Blueprint produced a missing or incorrectly sized mask: "+layer.layerName);
+            bool empty=!output.Cast<bool>().Any(v=>v);
+            if(empty && styleLayers!=null && styleLayers.TryGetValue(layer.guid,out var spec) && !spec.AllowEmpty)
+                throw new InvalidOperationException("Required style layer produced an empty mask: "+layer.layerName);
+            // TWC uses these flags solely to flag empty intermediate masks. Exceptions and
+            // invalid outputs above are generation errors; intentional empty masks are valid.
+            layer.mapResultFailed = false;
+            foreach (var action in layer.stack) if (action.action is TWC.Actions.TWCBlueprintAction blueprint) blueprint.resultFailed = false;
+        }
+        pendingStyleLayers = null;
     }
 
     public void BuildMeshes()

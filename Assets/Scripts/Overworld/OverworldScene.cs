@@ -131,17 +131,20 @@ public sealed class OverworldScene : MonoBehaviour
         // never coexist at the build's memory peak.
         terrainCache.Clear();
         terrainTimer = System.Diagnostics.Stopwatch.StartNew();
+        Map.TerrainBuilt += TerrainReady;
+        if (CampaignOverworld.YieldBetweenBuildLayers) { StartCoroutine(BuildOverFrames(grid, resolved)); return; }
         Map.Apply(grid, Held, resolved);
         layoutMilliseconds = terrainTimer.Elapsed.TotalMilliseconds;
-        Map.TerrainBuilt += TerrainReady;
-        // Let a frame pass so the layout's garbage is collected before the meshes add theirs.
-        if (CampaignOverworld.YieldBetweenBuildLayers) StartCoroutine(BuildMeshesNextFrame());
-        else BuildMeshesNow();
+        BuildMeshesNow();
     }
 
-    private System.Collections.IEnumerator BuildMeshesNextFrame()
+    /// <summary>Layout one blueprint layer per frame, then meshes one build layer per frame.</summary>
+    private System.Collections.IEnumerator BuildOverFrames(OverworldGrid grid, ISet<string> resolved)
     {
+        yield return Map.ApplyOverFrames(grid, Held, resolved);
+        layoutMilliseconds = terrainTimer.Elapsed.TotalMilliseconds;
         if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Overworld layout done");
+        // Let a frame pass so the layout's garbage is collected before the meshes add theirs.
         yield return null;
         BuildMeshesNow();
     }

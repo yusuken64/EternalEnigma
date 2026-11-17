@@ -64,8 +64,20 @@ public partial class TileWorldDungeonGenerator : MonoBehaviour
 		GeneratedDungeon = null;
 		PreparePresentation(TileWorldCreator, false);
 		SetCampaignSeed(TileWorldCreator);
-		TileWorldCreator.ExecuteAllBlueprintLayers();
+		Execute(TileWorldCreator);
 	}
+
+	/// <summary>
+	/// Game waits for <see cref="GeneratedDungeon"/> behind the floor cover, so on the web player the
+	/// floor is laid out and built one TWC layer per frame instead of stalling a single frame.
+	/// </summary>
+	private void Execute(TileWorldCreator creator)
+	{
+		if (layout != null) { StopCoroutine(layout); layout = null; }
+		if (CampaignOverworld.YieldBetweenBuildLayers && isActiveAndEnabled) layout = StartCoroutine(creator.ExecuteAllBlueprintLayersYielding());
+		else creator.ExecuteAllBlueprintLayers();
+	}
+	private Coroutine layout;
 
 	internal void GenerateThroneRoom()
 	{
@@ -76,7 +88,7 @@ public partial class TileWorldDungeonGenerator : MonoBehaviour
 		GeneratedDungeon = null;
 		PreparePresentation(ThroneTileWorldCreator, true);
 		SetCampaignSeed(ThroneTileWorldCreator);
-		ThroneTileWorldCreator.ExecuteAllBlueprintLayers();
+		Execute(ThroneTileWorldCreator);
 	}
 
     private void PreparePresentation(TileWorldCreator creator, bool throne)
@@ -157,11 +169,13 @@ public partial class TileWorldDungeonGenerator : MonoBehaviour
 	private void BluePrintComplete(TileWorldCreator _twc)
 	{
 		CoreLayoutCache.ClearResultFlags(_twc.twcAsset);
+		_twc.yieldBetweenBuildLayers = CampaignOverworld.YieldBetweenBuildLayers;
 		_twc.ExecuteAllBuildLayers(true);
 	}
 
 	private void BuildComplete(TileWorldCreator _twc)
 	{
+		_twc.yieldBetweenBuildLayers = false;
 		if (!CoreLayoutCache.TryGetDungeon(_twc, out var floor))
 			throw new InvalidOperationException("The TWC asset has no Core Dungeon Layer actions; run Tools/Eternal Enigma/Core Layers/Rewrite Dungeon Assets.");
 		CurrentFloor = floor;

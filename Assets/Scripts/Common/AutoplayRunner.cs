@@ -137,6 +137,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     private double started, lastProgress, pausedAt, pausedSeconds;
     private float nextTick;
     private string progressSignature, pendingError, floorIdentity;
+    private string floorKeyPending; private int floorKeyFloor, floorKeyFinaleFloor; private bool floorKeyHasFinale, floorKeyValid;
     private readonly HashSet<string> visited = new(), triedParties = new();
     private readonly HashSet<Vector3Int> discovered = new();
     private readonly Dictionary<string, int> repetitions = new();
@@ -644,8 +645,18 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         var player = game.PlayerController; var ally = player.ControlledAlly; var dungeon = game.CurrentDungeon;
         if (ally == null) return;
         if (Options.DebugPlaythrough && Options.InfiniteResources) player.Gold = 1000000;
-        string floor = Common.Instance.CampaignContext.State.PendingDungeon + "/" + player.Floor +
-            (game.Finale == null ? "" : "/" + game.Finale.Session.CurrentFloor.ToString());
+        // Rebuild the identity string only when one of its parts changes (this runs every tick).
+        string pendingDungeon = Common.Instance.CampaignContext.State.PendingDungeon;
+        bool hasFinale = game.Finale != null;
+        int finaleFloor = hasFinale ? game.Finale.Session.CurrentFloor : 0;
+        string floor = floorIdentity;
+        if (floorIdentity == null || !floorKeyValid || floorKeyPending != pendingDungeon || floorKeyFloor != player.Floor ||
+            floorKeyHasFinale != hasFinale || floorKeyFinaleFloor != finaleFloor)
+        {
+            floor = pendingDungeon + "/" + player.Floor + (hasFinale ? "/" + finaleFloor.ToString() : "");
+            floorKeyValid = true; floorKeyPending = pendingDungeon; floorKeyFloor = player.Floor;
+            floorKeyHasFinale = hasFinale; floorKeyFinaleFloor = finaleFloor;
+        }
         if (floorIdentity != floor)
         {
             floorIdentity = floor; discovered.Clear(); repetitions.Clear(); dungeonRoute.Clear(); approachRoute.Clear(); combatObjective = null;
@@ -655,11 +666,13 @@ public sealed partial class AutoplayRunner : MonoBehaviour
                 if (dungeon.IsWalkable(new Vector3Int(x,y))) discovered.Add(new Vector3Int(x,y));
             Log("Floor " + floor);
         }
-        var supplies = player.Inventory.InventoryItems.Where(i => i.ItemDefinition.ItemEffectDefinition is ModifyStatsItemEffectDefinition effect &&
-            ((ally.Vitals.HP < ally.FinalStats.HPMax * .5f && effect.VitalModification.Hp > 0) ||
-             (ally.Vitals.Hunger < ally.FinalStats.HungerMax * .25f && effect.VitalModification.Hunger > 0))).ToArray();
-        foreach (var item in supplies)
+        var inventoryItems = player.Inventory.InventoryItems;
+        for (int supplyIndex = 0; supplyIndex < inventoryItems.Count; supplyIndex++)
         {
+            var item = inventoryItems[supplyIndex];
+            if (!(item.ItemDefinition.ItemEffectDefinition is ModifyStatsItemEffectDefinition effect &&
+                ((ally.Vitals.HP < ally.FinalStats.HPMax * .5f && effect.VitalModification.Hp > 0) ||
+                 (ally.Vitals.Hunger < ally.FinalStats.HungerMax * .25f && effect.VitalModification.Hunger > 0)))) continue;
             var use = new UseInventoryItemAction(player.Inventory,ally,item);
             if (use.IsValid(ally)) { Report.ItemsUsed++; Act(ally,use,"Use " + item.ItemName); return; }
         }

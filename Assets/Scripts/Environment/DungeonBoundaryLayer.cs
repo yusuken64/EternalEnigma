@@ -24,9 +24,9 @@ public sealed class DungeonBoundaryLayer : DungeonThemeTileLayer
         return (cardinal, diagonal);
     }
     public static int RotateMask(int mask, int turns) => ((mask << turns) | (mask >> (4-turns))) & 15;
+    private static readonly int[] canonical = { 0, 1, 5, 3, 7, 15 };
     public static (int piece, int turns) Classify(int neighbors)
     {
-        int[] canonical = { 0, 1, 5, 3, 7, 15 };
         for (int piece=0;piece<canonical.Length;piece++)
             for (int turns=0;turns<4;turns++)
                 if (RotateMask(canonical[piece], turns) == neighbors) return (piece, turns);
@@ -43,7 +43,7 @@ public sealed class DungeonBoundaryLayer : DungeonThemeTileLayer
             var exclusions = Exclusions(creator);
             var mask = (bool[,])source.Clone();
             for (int y=0;y<mask.GetLength(1);y++) for (int x=0;x<mask.GetLength(0);x++)
-                if (exclusions.Any(excluded => At(excluded,x,y))) mask[x,y] = false;
+                if (Excluded(exclusions,x,y)) mask[x,y] = false;
             var root = DungeonLayerOutput.Create(creator, this, Offset);
             var batch = new EnvironmentBatch(root.transform);
             var faces = root.AddComponent<BiomeDecorationSurfaceSet>();

@@ -15,18 +15,56 @@ public sealed class EnvironmentBatch
         this.parent = parent;
         owner = parent.gameObject.AddComponent<EnvironmentMeshOwner>();
     }
-    public void AddPrefab(GameObject prefab,Vector3 position,Vector3 scale,Quaternion rotation,int lod=0,Func<Material,Material> materialMap=null)
+    private sealed class PrefabPart
     {
+        public Mesh Mesh;
+        public Matrix4x4 LocalToWorld;
+        public Material[] Materials;
+    }
+    private sealed class PrefabTemplate
+    {
+        public Matrix4x4 WorldToLocal;
+        public readonly List<PrefabPart> Parts = new List<PrefabPart>();
+    }
+    // Props reuse a few prefab assets thousands of times. Their hierarchy, LOD selection and
+    // materials are immutable, so resolve them once per (asset, lod) instead of once per prop.
+    private static readonly Dictionary<(int, int), PrefabTemplate> prefabTemplates = new Dictionary<(int, int), PrefabTemplate>();
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetTemplates()
+    {
+        prefabTemplates.Clear();
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= ClearTemplates;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += ClearTemplates;
+    }
+    private static void ClearTemplates(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) => prefabTemplates.Clear();
+    private static PrefabTemplate Template(GameObject prefab, int lod)
+    {
+        // Only imported assets (positive instance IDs) are immutable; scene objects are resolved every call.
+        int id = prefab.GetInstanceID();
+        if (id > 0 && prefabTemplates.TryGetValue((id, lod), out var cached)) return cached;
+        var template = new PrefabTemplate { WorldToLocal = prefab.transform.worldToLocalMatrix };
         var groupsInPrefab=prefab.GetComponentsInChildren<LODGroup>(true);
         var lodRenderers=new HashSet<Renderer>(groupsInPrefab.SelectMany(g=>g.GetLODs()).SelectMany(l=>l.renderers));
         var chosen=new HashSet<Renderer>(groupsInPrefab.SelectMany(g=>g.GetLODs()[Mathf.Clamp(lod,0,g.lodCount-1)].renderers));
-        var root=Matrix4x4.TRS(position,rotation,scale)*prefab.transform.worldToLocalMatrix;
         foreach(var filter in prefab.GetComponentsInChildren<MeshFilter>(true))
         {
             var renderer=filter.GetComponent<MeshRenderer>();if(renderer==null||filter.sharedMesh==null)continue;
             if(lodRenderers.Contains(renderer)&&!chosen.Contains(renderer))continue;
-            var mesh=filter.sharedMesh;
-            var materials=renderer.sharedMaterials;
+            template.Parts.Add(new PrefabPart { Mesh = filter.sharedMesh, LocalToWorld = filter.transform.localToWorldMatrix, Materials = renderer.sharedMaterials });
+        }
+        if (id > 0) prefabTemplates[(id, lod)] = template;
+        return template;
+    }
+    public void AddPrefab(GameObject prefab,Vector3 position,Vector3 scale,Quaternion rotation,int lod=0,Func<Material,Material> materialMap=null)
+    {
+        var template=Template(prefab,lod);
+        var root=Matrix4x4.TRS(position,rotation,scale)*template.WorldToLocal;
+        var parts=template.Parts;
+        for(int p=0;p<parts.Count;p++)
+        {
+            var part=parts[p];
+            var mesh=part.Mesh;
+            var materials=part.Materials;
             var keyPosition=position;
             for(int sub=0;sub<mesh.subMeshCount;sub++)
             {
@@ -34,7 +72,7 @@ public sealed class EnvironmentBatch
                 if(material==null)continue;
                 var key=(Mathf.FloorToInt(keyPosition.x/64),Mathf.FloorToInt(keyPosition.y/64),material,SilhouetteRole.Caster);
                 if(!groups.TryGetValue(key,out var list))groups[key]=list=new List<CombineInstance>();
-                list.Add(new CombineInstance {mesh=mesh,subMeshIndex=sub,transform=root*filter.transform.localToWorldMatrix});
+                list.Add(new CombineInstance {mesh=mesh,subMeshIndex=sub,transform=root*part.LocalToWorld});
                 owner.TriangleCount+=(int)mesh.GetIndexCount(sub)/3;
             }
         }
@@ -118,14 +156,15 @@ public sealed class EnvironmentBatch
         string projection = material.GetTag("EnvironmentProjection", false, "");
         if (projection.Length != 0)
         {
-            var vertices = mesh.vertices; var normals = mesh.normals; var uv = new Vector2[vertices.Length];
-            for (int i = 0; i < vertices.Length; i++)
+            var vertices = scratchVertices; var normals = scratchNormals; var uv = scratchUVs;
+            mesh.GetVertices(vertices); mesh.GetNormals(normals); uv.Clear();
+            for (int i = 0; i < vertices.Count; i++)
             {
                 var p = vertices[i] / 2.5f; var n = normals[i];
-                uv[i] = projection == "Planar" || Mathf.Abs(n.z) >= Mathf.Max(Mathf.Abs(n.x), Mathf.Abs(n.y))
-                    ? new Vector2(p.x, p.y) : Mathf.Abs(n.x) > Mathf.Abs(n.y) ? new Vector2(p.y, -p.z) : new Vector2(p.x, -p.z);
+                uv.Add(projection == "Planar" || Mathf.Abs(n.z) >= Mathf.Max(Mathf.Abs(n.x), Mathf.Abs(n.y))
+                    ? new Vector2(p.x, p.y) : Mathf.Abs(n.x) > Mathf.Abs(n.y) ? new Vector2(p.y, -p.z) : new Vector2(p.x, -p.z));
             }
-            mesh.uv = uv;
+            mesh.SetUVs(0, uv);
         }
         owner.Meshes.Add(mesh);
         var obj = new GameObject($"Cosmetic {key.Item1},{key.Item2} {material.name}");
@@ -139,21 +178,35 @@ public sealed class EnvironmentBatch
 
     private static Vector3Int NormalKey(Vector3 p) => Vector3Int.RoundToInt(p * 10000);
 
+    // Main-thread scratch buffers. mesh.vertices/triangles/normals return fresh arrays per call;
+    // the List overloads copy into these instead, in the same order (all submeshes, in index order).
+    private static readonly List<Vector3> scratchVertices = new List<Vector3>();
+    private static readonly List<Vector3> scratchNormals = new List<Vector3>();
+    private static readonly List<Vector2> scratchUVs = new List<Vector2>();
+    private static readonly List<int> scratchTriangles = new List<int>();
+
     private static void Accumulate(Mesh mesh, Dictionary<Vector3Int, Vector3> sums)
     {
-        var v = mesh.vertices; var triangles = mesh.triangles;
-        for (int i = 0; i < triangles.Length; i += 3)
+        var v = scratchVertices; var triangles = scratchTriangles;
+        mesh.GetVertices(v);
+        // mesh.triangles concatenates every submesh's indices in submesh order.
+        for (int s = 0; s < mesh.subMeshCount; s++)
         {
-            var normal = Vector3.Cross(v[triangles[i + 1]] - v[triangles[i]], v[triangles[i + 2]] - v[triangles[i]]);
-            for (int j = 0; j < 3; j++) { var key = NormalKey(v[triangles[i + j]]); sums.TryGetValue(key, out var sum); sums[key] = sum + normal; }
+            mesh.GetTriangles(triangles, s);
+            for (int i = 0; i < triangles.Count; i += 3)
+            {
+                var normal = Vector3.Cross(v[triangles[i + 1]] - v[triangles[i]], v[triangles[i + 2]] - v[triangles[i]]);
+                for (int j = 0; j < 3; j++) { var key = NormalKey(v[triangles[i + j]]); sums.TryGetValue(key, out var sum); sums[key] = sum + normal; }
+            }
         }
     }
 
     private static void ApplyNormals(Mesh mesh, Dictionary<Vector3Int, Vector3> sums)
     {
-        var v = mesh.vertices; var normals = new Vector3[v.Length];
-        for (int i = 0; i < v.Length; i++) normals[i] = sums.TryGetValue(NormalKey(v[i]), out var sum) ? sum.normalized : Vector3.back;
-        mesh.normals = normals;
+        var v = scratchVertices; var normals = scratchNormals;
+        mesh.GetVertices(v); normals.Clear();
+        for (int i = 0; i < v.Count; i++) normals.Add(sums.TryGetValue(NormalKey(v[i]), out var sum) ? sum.normalized : Vector3.back);
+        mesh.SetNormals(normals);
     }
 
     // Adjacent six-piece height-field quads must share lighting normals, including
@@ -162,20 +215,25 @@ public sealed class EnvironmentBatch
     {
         var sums=new Dictionary<Vector3Int,Vector3>();
         Vector3Int Key(Vector3 p)=>Vector3Int.RoundToInt(p*10000);
+        var v=scratchVertices;var triangles=scratchTriangles;var normals=scratchNormals;
         foreach(var mesh in meshes)
         {
-            var v=mesh.vertices;var triangles=mesh.triangles;
-            for(int i=0;i<triangles.Length;i+=3)
+            mesh.GetVertices(v);
+            for(int s=0;s<mesh.subMeshCount;s++)
             {
-                var normal=Vector3.Cross(v[triangles[i+1]]-v[triangles[i]],v[triangles[i+2]]-v[triangles[i]]);
-                for(int j=0;j<3;j++){var key=Key(v[triangles[i+j]]);sums.TryGetValue(key,out var sum);sums[key]=sum+normal;}
+                mesh.GetTriangles(triangles,s);
+                for(int i=0;i<triangles.Count;i+=3)
+                {
+                    var normal=Vector3.Cross(v[triangles[i+1]]-v[triangles[i]],v[triangles[i+2]]-v[triangles[i]]);
+                    for(int j=0;j<3;j++){var key=Key(v[triangles[i+j]]);sums.TryGetValue(key,out var sum);sums[key]=sum+normal;}
+                }
             }
         }
         foreach(var mesh in meshes)
         {
-            var v=mesh.vertices;var normals=new Vector3[v.Length];
-            for(int i=0;i<v.Length;i++)normals[i]=sums[Key(v[i])].normalized;
-            mesh.normals=normals;
+            mesh.GetVertices(v);normals.Clear();
+            for(int i=0;i<v.Count;i++)normals.Add(sums[Key(v[i])].normalized);
+            mesh.SetNormals(normals);
         }
     }
 }

@@ -14,7 +14,7 @@ public sealed class CrowdControlEvaluator : IAllySkillEvaluator
         {
             var intent = SkillIntents.Classify(skill);
             if (!intent.Has(SkillIntent.CrowdControl) && !intent.Has(SkillIntent.Debuff)) continue;
-            foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
+            foreach (var option in context.Options(skill))
             {
                 if (SkillIntents.TargetsEnemies(skill) && option.Affected.Any(c => !context.VisibleEnemies.Contains(c))) continue;
                 float score = Value(context, skill, option);

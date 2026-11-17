@@ -15,6 +15,9 @@ public static class AStar
         public double HCost { get; set; } // (Heuristic Cost)
         public double FCost => GCost + HCost;
         public Node Parent { get; set; }
+        // Search bookkeeping, reset at the start of every FindPath (replaces a per-call HashSet and List.Contains).
+        internal bool InOpen;
+        internal bool Closed;
 
         public Node(int x, int y, bool isWalkable, int movePenalty)
         {
@@ -25,22 +28,33 @@ public static class AStar
 		}
     }
 
+    // Main-thread only and non-reentrant: FindPath never calls out to user code while searching.
+    static readonly List<Node> SharedOpenSet = new List<Node>(64);
+    // Same order as GridMovement's Directions: DownLeft, Down, DownRight, Left, Right, UpLeft, Up, UpRight.
+    static readonly int[] NeighborDx = { -1, 0, 1, -1, 1, -1, 0, 1 };
+    static readonly int[] NeighborDy = { -1, -1, -1, 0, 0, 1, 1, 1 };
+
     public static List<Node> FindPath(Node[,] grid, Node startNode, Node targetNode,
         DiagonalMovement diagonal = DiagonalMovement.RequireOpenSides)
     {
-        List<Node> openSet = new List<Node>();
-        HashSet<Node> closedSet = new HashSet<Node>();
-
         if (startNode == null || targetNode == null) return null;
+        List<Node> openSet = SharedOpenSet;
+        openSet.Clear();
+        int width = grid.GetLength(0);
+        int height = grid.GetLength(1);
+
         foreach (var node in grid)
         {
             if (node == null) continue;
             node.GCost = double.PositiveInfinity;
             node.HCost = 0;
             node.Parent = null;
+            node.InOpen = false;
+            node.Closed = false;
         }
         startNode.GCost = 0;
         openSet.Add(startNode);
+        startNode.InOpen = true;
 
         while (openSet.Count > 0)
 		{
@@ -54,30 +68,47 @@ public static class AStar
 			}
 
 			openSet.Remove(currentNode);
-			closedSet.Add(currentNode);
+			currentNode.InOpen = false;
+			currentNode.Closed = true;
 
 			if (targetNode == currentNode)
 			{
+				openSet.Clear();
 				return RetracePath(startNode, targetNode);
 			}
 
-			foreach (Node neighbor in GetNeighbors(grid, currentNode, diagonal))
+			// Inlined equivalent of GridMovement.GetNeighbors + CardinalOnly filter (same order, same rules).
+			for (int d = 0; d < NeighborDx.Length; d++)
 			{
-				if (!neighbor.IsWalkable || closedSet.Contains(neighbor))
+				int dx = NeighborDx[d];
+				int dy = NeighborDy[d];
+				Node neighbor = GetWalkable(grid, width, height, currentNode.X + dx, currentNode.Y + dy);
+				if (neighbor == null) continue;
+				if (dx != 0 && dy != 0)
+				{
+					if (diagonal != DiagonalMovement.AllowCornerCutting &&
+						(GetWalkable(grid, width, height, currentNode.X + dx, currentNode.Y) == null ||
+						 GetWalkable(grid, width, height, currentNode.X, currentNode.Y + dy) == null))
+						continue;
+					if (currentNode.CardinalOnly || neighbor.CardinalOnly) continue;
+				}
+
+				if (neighbor.Closed)
 				{
 					continue;
 				}
 
 				double newMovementCostToNeighbor = currentNode.GCost + GetDistance(currentNode, neighbor) + neighbor.MovePenalty;
-				if (newMovementCostToNeighbor < neighbor.GCost || !openSet.Contains(neighbor))
+				if (newMovementCostToNeighbor < neighbor.GCost || !neighbor.InOpen)
 				{
 					neighbor.GCost = newMovementCostToNeighbor;
 					neighbor.HCost = GetDistance(neighbor, targetNode);
 					neighbor.Parent = currentNode;
 
-					if (!openSet.Contains(neighbor))
+					if (!neighbor.InOpen)
 					{
 						openSet.Add(neighbor);
+						neighbor.InOpen = true;
 					}
 				}
 			}
@@ -101,14 +132,11 @@ public static class AStar
         return path;
     }
 
-    static IEnumerable<Node> GetNeighbors(Node[,] grid, Node node, DiagonalMovement diagonal)
+    static Node GetWalkable(Node[,] grid, int width, int height, int x, int y)
     {
-        bool IsWalkable(Vector3Int cell) =>
-            GridMovement.Contains(grid.GetLength(0), grid.GetLength(1), cell) &&
-            grid[cell.x, cell.y] != null && grid[cell.x, cell.y].IsWalkable;
-        foreach (var cell in GridMovement.GetNeighbors(new Vector3Int(node.X, node.Y), IsWalkable, diagonal))
-            if (cell.x == node.X || cell.y == node.Y || !(node.CardinalOnly || grid[cell.x,cell.y].CardinalOnly))
-                yield return grid[cell.x, cell.y];
+        if (x < 0 || y < 0 || x >= width || y >= height) return null;
+        Node n = grid[x, y];
+        return n != null && n.IsWalkable ? n : null;
     }
 
     static double GetDistance(Node nodeA, Node nodeB)

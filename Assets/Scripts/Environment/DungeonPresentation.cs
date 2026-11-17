@@ -181,6 +181,13 @@ public static class DungeonPresentation
         }
         return false;
     }
+    // Equals mesh.triangles.Length/3 for triangle meshes without copying the index buffer.
+    private static long TriangleCount(Mesh mesh)
+    {
+        long indices=0;
+        for(int sub=0;sub<mesh.subMeshCount;sub++)indices+=mesh.GetIndexCount(sub);
+        return indices/3;
+    }
     public static uint Hash(int seed,int x,int y)
     { unchecked { uint h=(uint)seed ^ (uint)x*0x9e3779b9u ^ (uint)y*0x85ebca6bu ^ 0x6d2b79f5u; h=(h^(h>>16))*0x7feb352du;return h^(h>>15); } }
     public static void PreviewScenery(TileWorldCreator creator,DungeonFloor floor,DungeonTheme theme)
@@ -224,7 +231,7 @@ public static class DungeonPresentation
                 Mesh mesh=model?.Mesh ?? interior?.Mesh;
                 if(id=="CryptRoots") mesh=GameContent.Load<Mesh>("DungeonThemes/CryptRoots");
                 int triangleBudget=250;
-                if(mesh==null || mesh.triangles.Length/3>triangleBudget) continue;
+                if(mesh==null || TriangleCount(mesh)>triangleBudget) continue;
                 if (!DecorationPose(floor, p.x, p.y, p.hash, size, mesh, wall, out var position, out float scale, out float angle)) continue;
                 var material=interior != null && model == null ? interiors.Material(theme.Biome) : theme.DecorationMaterial;
                 batch.Add(mesh,material,position,Vector3.one*scale,angle);

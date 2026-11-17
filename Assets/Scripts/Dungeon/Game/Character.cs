@@ -587,16 +587,43 @@ disp: {displayedVitals}");
 
 	internal List<GameAction> GetActionResponses(GameAction gameAction)
 	{
-		var responseBehaviors = GetComponents<IResponseBehavior>();
-		var actionsResponses = responseBehaviors
-			.Select(x => x.GetActionResponse(gameAction))
-			.Where(x => x != null).ToList();
-		actionsResponses.Add(new BigUnitStuckInHallway(Game.Instance.StatusEffectPrefabs.FirstOrDefault(x => x.GetEffectName() == "Stuck")));
-		var ret = actionsResponses
-			.SelectMany(x => x.GetResponseTo(this, gameAction));
+		// Non-allocating GetComponents overload; same order as the array overload. GetActionResponse
+		// implementations only construct response objects, so the shared buffer is not re-entered.
+		ResponseBehaviorBuffer.Clear();
+		GetComponents(ResponseBehaviorBuffer);
+		var actionsResponses = new List<GameActionResponse>(ResponseBehaviorBuffer.Count + 1);
+		foreach (var behavior in ResponseBehaviorBuffer)
+		{
+			var response = behavior.GetActionResponse(gameAction);
+			if (response != null) actionsResponses.Add(response);
+		}
+		ResponseBehaviorBuffer.Clear();
+		actionsResponses.Add(new BigUnitStuckInHallway(StuckPrefab()));
+		var ret = new List<GameAction>();
+		foreach (var response in actionsResponses)
+			ret.AddRange(response.GetResponseTo(this, gameAction));
 
 		//TODO: add equipment-specific responses; statuses and passive skills use GetClassResponses.
-		return ret.ToList();
+		return ret;
+	}
+
+	static readonly List<IResponseBehavior> ResponseBehaviorBuffer = new List<IResponseBehavior>();
+	static Game stuckPrefabGame;
+	static List<StatusEffect> stuckPrefabSource;
+	static StatusEffect stuckPrefab;
+
+	// Cached Game.Instance.StatusEffectPrefabs.FirstOrDefault(x => x.GetEffectName() == "Stuck").
+	static StatusEffect StuckPrefab()
+	{
+		var game = Game.Instance;
+		var source = game.StatusEffectPrefabs;
+		if (stuckPrefab == null || !ReferenceEquals(stuckPrefabGame, game) || !ReferenceEquals(stuckPrefabSource, source))
+		{
+			stuckPrefabGame = game;
+			stuckPrefabSource = source;
+			stuckPrefab = source.FirstOrDefault(x => x.GetEffectName() == "Stuck");
+		}
+		return stuckPrefab;
 	}
 
 	// Status-effect and passive-skill responses. Called once per actor per executed action by TurnManager.
@@ -608,16 +635,16 @@ disp: {displayedVitals}");
 		{
 			if (status == null || status.IsExpired()) continue;
 			var responses = status.GetResponseTo(this, action);
-			if (responses != null) result.AddRange(responses.Where(x => x != null));
+			if (responses != null) foreach (var r in responses) if (r != null) result.Add(r);
 		}
-		foreach (var skill in (Skills ?? new List<Skill>()).ToList())
+		foreach (var skill in (Skills != null ? Skills.ToArray() : System.Array.Empty<Skill>()))
 		{
 			if (skill == null || skill.ActivationType != ActivationType.Passive || skill.PassiveResponses == null) continue;
 			foreach (var passive in skill.PassiveResponses)
 			{
 				if (passive == null) continue;
 				var responses = passive.Respond(this, skill, action);
-				if (responses != null) result.AddRange(responses.Where(x => x != null));
+				if (responses != null) foreach (var r in responses) if (r != null) result.Add(r);
 			}
 		}
 		return result;
@@ -629,7 +656,7 @@ disp: {displayedVitals}");
 		if (context == null || this == null || Vitals == null || Vitals.HP <= 0) return;
 		foreach (var status in StatusEffects.ToList())
 			if (status != null && !status.IsExpired()) status.ModifyIncomingDamage(this, context);
-		foreach (var skill in (Skills ?? new List<Skill>()).ToList())
+		foreach (var skill in (Skills != null ? Skills.ToArray() : System.Array.Empty<Skill>()))
 		{
 			if (skill == null || skill.ActivationType != ActivationType.Passive || skill.PassiveResponses == null) continue;
 			foreach (var passive in skill.PassiveResponses)

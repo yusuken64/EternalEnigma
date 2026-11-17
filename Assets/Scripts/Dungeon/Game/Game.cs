@@ -73,7 +73,15 @@ public partial class Game : SingletonMonoBehaviour<Game>
 			return ret;
 		}
 	}
-	
+
+	// Allocation-free equivalent of AllCharacters.Contains(character).
+	internal bool ContainsCharacter(Character character)
+	{
+		if (character is Ally ally) return Allies.Contains(ally) || Enemies.Contains(character);
+		if (ReferenceEquals(character, null)) return Allies.Contains(null) || Enemies.Contains(null);
+		return Enemies.Contains(character);
+	}
+
 	public List<Character> DeadUnits; //dead units are added to this, destroy at end turn;
 	public Transform CharacterStatsDisplayContainer;
 	public CharacterStatsDisplay CharacterStatsDisplayPrefab;
@@ -428,8 +436,17 @@ public partial class Game : SingletonMonoBehaviour<Game>
     private TileWorldDungeon sightDungeon;
     internal readonly HashSet<Vector3Int> PlaybackVisibleTiles = new();
 
-    private IEnumerable<Ally> SightAllies() => Allies.Concat(DownedAllies).Concat(DeadUnits.OfType<Ally>())
-        .Where(a => a != null && a.DisplayedVitals.HP > 0);
+    private readonly List<Ally> sightAllies = new();
+
+    // Fills a reused list (no per-frame enumerator/closure garbage); same members and order as before.
+    private List<Ally> SightAllies()
+    {
+        sightAllies.Clear();
+        foreach (var a in Allies) if (a != null && a.DisplayedVitals.HP > 0) sightAllies.Add(a);
+        foreach (var a in DownedAllies) if (a != null && a.DisplayedVitals.HP > 0) sightAllies.Add(a);
+        foreach (var unit in DeadUnits) if (unit is Ally a && a != null && a.DisplayedVitals.HP > 0) sightAllies.Add(a);
+        return sightAllies;
+    }
 
     private void LateUpdate() => RefreshSight();
 

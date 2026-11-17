@@ -25,6 +25,21 @@ public sealed class AllySkillContext
         return subset;
     }
 
+	// Cast options per skill for this one decision. Created in Build so ForSkill clones share it.
+	// Callers must treat the returned list as read-only.
+	private Dictionary<Skill, List<SkillCastOption>> optionCache;
+
+	internal List<SkillCastOption> Options(Skill skill)
+	{
+		if (skill == null || optionCache == null) return SkillCastOptions.Enumerate(Ally, skill);
+		if (!optionCache.TryGetValue(skill, out var options))
+		{
+			options = SkillCastOptions.Enumerate(Ally, skill);
+			optionCache[skill] = options;
+		}
+		return options;
+	}
+
 	public bool CanAfford(Skill skill) => AllySkillBudget.CanAfford(Ally.Vitals.Mana, skill, ManaReserve);
 
 	public IEnumerable<Skill> WithIntent(SkillIntent intent) =>
@@ -38,6 +53,7 @@ public sealed class AllySkillContext
 		var context = new AllySkillContext();
 		context.Ally = ally;
 		context.Game = game;
+		context.optionCache = new Dictionary<Skill, List<SkillCastOption>>();
 
 		ally.Awareness.Refresh(game);
 		context.AllowMovement = ally.AllyStrategy == AllyStrategy.Aggresive && !ally.IsMovementBlocked;
@@ -76,7 +92,7 @@ public sealed class AllySkillContext
 
 		// Reserve learned recovery costs even when Mana, range, targets or statuses prevent casting now.
 		context.ManaReserve = AllySkillBudget.ManaReserve(allSkills, ally.AllyStrategy);
-		context.NormalAttackValue = AllyCombat.AttacksFrom(game, ally, ally.TilemapPosition)
+		context.NormalAttackValue = AllyCombat.AttacksFrom(game, ally, ally.TilemapPosition, context.VisibleEnemies)
 			.Select(a => a.Value).DefaultIfEmpty(0f).Max();
 
 		return context;

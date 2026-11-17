@@ -43,6 +43,8 @@ public sealed class WebBootstrap : MonoBehaviour
     private bool lateReady;
     private bool sceneWaiting;
     private GUIStyle style;
+    private string label, labelStage;
+    private int labelPercent = -1;
 
     private readonly System.Collections.Generic.Dictionary<string, AudioClip> tracks = new();
     private readonly System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<Action<AudioClip>>> waiting = new();
@@ -201,8 +203,21 @@ public sealed class WebBootstrap : MonoBehaviour
     private void OnGUI()
     {
         // Once the menu is unlocked the line only returns if a scene is actually waiting on a download.
+        // Every download is finished and no error can follow: stop receiving OnGUI events.
+        // (Coroutines such as music fetches keep running on a disabled behaviour.)
+        if (stage == null && error == null && lateReady) { enabled = false; return; }
         bool show = stage != null && (!GameContent.Ready || sceneWaiting);
-        string text = error ?? (show ? stage + "... " + Mathf.FloorToInt(progress * 100) + "%" : null);
+        string text = error;
+        if (text == null && show)
+        {
+            int percent = Mathf.FloorToInt(progress * 100);
+            if (!ReferenceEquals(stage, labelStage) || percent != labelPercent)
+            {
+                labelStage = stage; labelPercent = percent;
+                label = stage + "... " + percent + "%";
+            }
+            text = label;
+        }
         if (text == null) return;
         style ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, wordWrap = true };
         style.fontSize = Mathf.Max(14, Screen.height / 36);

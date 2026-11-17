@@ -167,11 +167,25 @@ public sealed class PartyMenuLauncher : MonoBehaviour
         obj!=null && (obj.transform.IsChildOf(transform) ||
             OptionsButton!=null && obj.transform.IsChildOf(OptionsButton.transform));
 
+    // TownMenuManager is scene-authored, so search at most once per active scene while it is missing
+    // instead of scanning the whole scene every frame (e.g. in the dungeon, where none exists).
+    private TownMenuManager townMenu;
+    private int townMenuSearchScene = int.MinValue;
+    private TownMenuManager TownMenu()
+    {
+        if (townMenu != null) return townMenu;
+        int scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().handle;
+        if (scene == townMenuSearchScene) return null;
+        townMenuSearchScene = scene;
+        townMenu = FindFirstObjectByType<TownMenuManager>();
+        return townMenu;
+    }
+
     public void Refresh()
     {
         if(ready==null || tabs==null)return;
         bool partyOpen=PartyOpen;
-        canvas.enabled = FindFirstObjectByType<TownMenuManager>()?.CoversGameplayHud != true &&
+        canvas.enabled = TownMenu()?.CoversGameplayHud != true &&
             !(Game.Instance != null && MenuManager.Instance?.CurrentDialog is JuicyChickenGames.Menu.TargetDialog) &&
             !(menu?.Owner?.Current is JuicyChickenGames.Menu.TargetDialog);
         // The same HUD buttons sit above the party menu's full-screen input shield.

@@ -27,10 +27,13 @@ public static class OverworldCosmetics
     {
         var playable = grid.BiomeAt(new GridPoint(x, y));
         if (playable.HasValue) return playable.Value;
-        foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome)))
-            if (InLayer(grid, OverworldLayers.Landscape(biome), x, y)) return biome;
+        // Called per cell: iterate a cached copy of Enum.GetValues order with precomputed layer names.
+        for (int i = 0; i < AllBiomes.Length; i++)
+            if (InLayer(grid, LandscapeLayers[i], x, y)) return AllBiomes[i];
         return OverworldBiome.Grassland;
     }
+    private static readonly OverworldBiome[] AllBiomes = (OverworldBiome[])Enum.GetValues(typeof(OverworldBiome));
+    private static readonly string[] LandscapeLayers = Array.ConvertAll(AllBiomes, OverworldLayers.Landscape);
 
     public static bool[,] Protected(OverworldGrid grid)
     {

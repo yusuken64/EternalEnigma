@@ -211,7 +211,8 @@ public sealed class CampaignOverworld : MonoBehaviour
             var output=creator.GetMapOutputFromBlueprintLayer(layer.guid);
             if(output==null || output.GetLength(0)!=grid.Width || output.GetLength(1)!=grid.Height)
                 throw new InvalidOperationException("Blueprint produced a missing or incorrectly sized mask: "+layer.layerName);
-            bool empty=!output.Cast<bool>().Any(v=>v);
+            bool empty=true;
+            for(int ex=0;ex<output.GetLength(0)&&empty;ex++)for(int ey=0;ey<output.GetLength(1);ey++)if(output[ex,ey]){empty=false;break;}
             if(empty && styleLayers!=null && styleLayers.TryGetValue(layer.guid,out var spec) && !spec.AllowEmpty)
                 throw new InvalidOperationException("Required style layer produced an empty mask: "+layer.layerName);
             // TWC uses these flags solely to flag empty intermediate masks. Exceptions and

@@ -42,10 +42,14 @@ public static class SkillCastOptions
 
 			if (skill.Targeting == SkillTargeting.Tile)
             {
+                var targets = skill.GetTargetCharacters(caster); // read-only query; hoisted out of the per-cell loop
                 foreach (var cell in skill.GetTargetTiles(caster))
                 {
-                    var affected = skill.GetTargetCharacters(caster).Where(c => TileWorldDungeon.ChevDistance(c.TilemapPosition, cell) <= skill.AreaRadius).ToList();
-                    if (affected.Count > 0) result.Add(new SkillCastOption(skill, null, cell, affected));
+                    List<Character> affected = null;
+                    foreach (var c in targets)
+                        if (TileWorldDungeon.ChevDistance(c.TilemapPosition, cell) <= skill.AreaRadius)
+                            (affected ??= new List<Character>()).Add(c);
+                    if (affected != null) result.Add(new SkillCastOption(skill, null, cell, affected));
                 }
             }
             else if (skill.Targeting == SkillTargeting.Missile)

@@ -286,7 +286,7 @@ public class TakeDamageAction : GameAction
 			var context = new DamageContext(attacker, target, damage, Element, miss, ResponseDepth);
 			var game = Game.Instance;
 			if (game != null && !Environmental)
-				foreach (var character_char in game.AllCharacters.ToList())
+				foreach (var character_char in game.AllCharacters) // AllCharacters is already a fresh snapshot list
 					if (character_char != null && character_char.Vitals != null && character_char.Vitals.HP > 0)
 						character_char.InterceptDamage(context);
 			if (context.Target != null) target = context.Target;
@@ -517,7 +517,7 @@ public class DeathAction : GameAction
         GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} {(downed ? "was downed" : "died")}.");
         target.GetComponent<EnemyBehavior>()?.DropStolenLoot();
         target.GetComponent<TrapCarriedItem>()?.TryDrop(true);
-        foreach (var owner in Game.Instance.AllCharacters.ToList())
+        foreach (var owner in Game.Instance.AllCharacters) // AllCharacters is already a fresh snapshot list
             foreach (var status in owner.StatusEffects.ToList())
                 if (status != null) status.OnCharacterDied(owner, target);
 		var xpPool = target.FinalStats.EXPOnKill;
@@ -576,7 +576,7 @@ public class DeathAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		return Game.Instance.AllCharacters.Contains(character);
+		return Game.Instance.ContainsCharacter(character);
 	}
 }
 

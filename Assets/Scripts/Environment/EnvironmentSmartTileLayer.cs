@@ -85,7 +85,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                         if(!roads[x,y]) continue;
                         if(town!=null&&(!town.Layers.TryGetValue(TownLayers.Alleys,out var pathAlleys)||!pathAlleys[x,y]))continue;
                         if(grid!=null&&OverworldCosmetics.Biome(grid,x,y) is not (OverworldBiome.Grassland or OverworldBiome.Forest or OverworldBiome.Marsh))continue;
-                        foreach(var side in new[]{new Vector2Int(0,-1),new Vector2Int(1,0),new Vector2Int(0,1),new Vector2Int(-1,0)})
+                        foreach(var side in VergeSides)
                         {
                             int nx=x+side.x,ny=y+side.y;
                             if(nx<0||ny<0||nx>=roads.GetLength(0)||ny>=roads.GetLength(1)||roads[nx,ny]) continue;
@@ -136,11 +136,12 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                             var cell = new GridPoint(entry.X + column, entry.Y + row);
                             if (bodyCells.Contains(cell)) buildingOf[cell] = entry;
                         }
+                var slotArray = town.BuildingSlots.ToArray();
                 for (int y = 0; y < houses.Height; y++) for (int x = 0; x < houses.Width; x++)
                 {
                     var cell = new GridPoint(x, y);
                     if (!bodyCells.Contains(cell) || dungeonCells.Contains(cell)) continue;
-                    foreach (var side in new[] { (0, -1), (1, 0), (0, 1), (-1, 0) })
+                    foreach (var side in FacadeSides)
                     {
                         var neighbor = new GridPoint(x + side.Item1, y + side.Item2);
                         if (bodyCells.Contains(neighbor) &&
@@ -148,7 +149,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                             buildingOf.TryGetValue(neighbor, out var neighborDoor) && currentDoor.Equals(neighborDoor)) continue;
                         bool entrance = side.Item2 == -1 && entrances.Contains(new GridPoint(x, y - 1));
                         bool window = !entrance && (x + y) % 2 == 0;
-                        int slot=entrance?Array.IndexOf(town.BuildingSlots.ToArray(),new GridPoint(x,y-1)):-1;
+                        int slot=entrance?Array.IndexOf(slotArray,new GridPoint(x,y-1)):-1;
                         string service=slot>=0&&slot<(BuildingServices?.Length??0)?BuildingServices[slot]:"";
                         TownHouseTiles.Facade(batch, plaster, timber, door, glass, size, cell,
                             side.Item1, side.Item2, entrance, window,biome,decorationFaces,service,
@@ -210,7 +211,7 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
                 bool alley = Road && town != null && town.Layers.TryGetValue(TownLayers.Alleys, out var alleys) && alleys[x,y];
                 if(!Road && (wall || tile.tileType==TileData.TileType.edge) && (Buildings || wall || mesh.bounds.size.z*HeightScale>.25f))
                     tileFaces.Add(mesh,Matrix4x4.TRS(new Vector3((tile.position.x+.5f)*unit,(tile.position.z+.5f)*unit,-Elevation*size),Quaternion.Euler(0,0,angle),new Vector3(unit,unit,unit*HeightScale)),palette,
-                        Buildings && town!=null && town.Layers[TownLayers.ShopWalls].At(new GridPoint(x,y)) ? DecorationSurface.BuiltWall : Buildings?DecorationSurface.Facade:wall?DecorationSurface.BuiltWall:DecorationSurface.NaturalWall,size,Buildings?(town?.Footprints.FirstOrDefault(f=>f.Cells.Contains(new GridPoint(x,y)))?.Door.ToString()??x+","+y):null,splitPanels:wall && town!=null && town.Interiors.Count>0);
+                        Buildings && town!=null && town.Layers[TownLayers.ShopWalls].At(new GridPoint(x,y)) ? DecorationSurface.BuiltWall : Buildings?DecorationSurface.Facade:wall?DecorationSurface.BuiltWall:DecorationSurface.NaturalWall,size,Buildings?(FootprintAt(town,x,y)?.Door.ToString()??x+","+y):null,splitPanels:wall && town!=null && town.Interiors.Count>0);
                 tileBatch.Add(mesh, townCatalog != null ? townCatalog.Material(palette) : SurfaceMaterial != null ? SurfaceMaterial : Road ? (alley ? Kit.Paving : Kit.Road) : Buildings ? Kit.BuildingMaterial(palette) : Kit.Material(palette),
                     new Vector3((tile.position.x + .5f) * unit, (tile.position.z + .5f) * unit, -Elevation * size),
                     new Vector3(unit, unit, unit * HeightScale), angle,
@@ -223,6 +224,19 @@ public sealed class EnvironmentSmartTileLayer : TWCBuildLayer
             FinishBatches();
         }
         finally { creator.executedBuildLayersCount += 1; }
+    }
+
+    private static readonly Vector2Int[] VergeSides = { new Vector2Int(0,-1), new Vector2Int(1,0), new Vector2Int(0,1), new Vector2Int(-1,0) };
+    private static readonly (int, int)[] FacadeSides = { (0, -1), (1, 0), (0, 1), (-1, 0) };
+    // Same result as Footprints.FirstOrDefault(f => f.Cells.Contains(cell)) without a per-tile closure.
+    private static BuildingFootprint FootprintAt(TownPlan town, int x, int y)
+    {
+        if (town == null) return null;
+        var cell = new GridPoint(x, y);
+        var footprints = town.Footprints;
+        for (int i = 0; i < footprints.Count; i++)
+            if (footprints[i].Cells.Contains(cell)) return footprints[i];
+        return null;
     }
 
     private static bool IsSixTerrainLayer(string name) =>

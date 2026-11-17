@@ -7,6 +7,7 @@ public class FogHiddenVisual : MonoBehaviour
 {
     private readonly List<Renderer> renderers = new();
     private Character character;
+    private DungeonProp prop;
 
     private void Awake() => character = GetComponent<Character>();
 
@@ -15,7 +16,9 @@ public class FogHiddenVisual : MonoBehaviour
         var fog = FogOverlay.Instance;
         bool hidden = fog == null || !fog.IsCurrentlyVisible(transform.position,
             character != null ? character.FootPrint : FootPrint.Size1x1);
-        if (GetComponent<DungeonProp>() is DungeonProp prop && prop.Definition != null && prop.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard) hidden = fog == null || !fog.IsExplored(transform.position);
+        // Cached once found; looked up again while missing in case the prop is attached after Awake.
+        if (prop == null) prop = GetComponent<DungeonProp>();
+        if (prop != null &&prop.Definition != null && prop.Definition.Kind == EternalEnigma.Core.World.DungeonSceneryKind.Hazard) hidden = fog == null || !fog.IsExplored(transform.position);
         // Reuse the list and include newly attached status effects and inactive trap visuals.
         GetComponentsInChildren(true, renderers);
         foreach (var renderer in renderers)

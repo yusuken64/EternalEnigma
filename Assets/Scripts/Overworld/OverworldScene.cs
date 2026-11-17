@@ -689,8 +689,9 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void OnGUI()
     {
-        GameUISkin.UseLegacySkin();
+        // Early-out before touching the skin: outside the sandbox this draws nothing.
         if (Context == null || !Context.IsSandbox || !ShowSandboxControls || !IsReady || GetComponent<OverworldMenuManager>().Opened) return;
+        GameUISkin.UseLegacySkin();
         bool previousEnabled = GUI.enabled;
         GUI.enabled = previousEnabled && !AutoplayRunner.BlocksPlayerInput;
         GameUISkin.LegacyBeginArea(new Rect(16, 16, 580, 430));

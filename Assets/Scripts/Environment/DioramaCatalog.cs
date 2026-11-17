@@ -32,6 +32,24 @@ public sealed class DioramaCatalog : ScriptableObject
     {
         var model=Get(id);if(model==null)throw new ArgumentException("Unknown diorama model: "+id);
         batch.AddPrefab(model.Prefab,position,scale??Vector3.one*(model.Scale*variation),Quaternion.Euler(0,0,rotation),lod??model.Lod,
-            material=>material!=null&&material.shader.name=="EternalEnigma/Diorama Vertex Lit"?Material(material.name.Split('_').Last(),biome):material);
+            BiomeMap(biome));
+    }
+    // Per-submesh remaps ran shader.name/name.Split for every prop. Resolve each (material, biome) once.
+    [NonSerialized] private System.Collections.Generic.Dictionary<(Material,OverworldBiome),Material> remapped;
+    [NonSerialized] private System.Collections.Generic.Dictionary<OverworldBiome,Func<Material,Material>> biomeMaps;
+    private Func<Material,Material> BiomeMap(OverworldBiome biome)
+    {
+        biomeMaps??=new System.Collections.Generic.Dictionary<OverworldBiome,Func<Material,Material>>();
+        if(!biomeMaps.TryGetValue(biome,out var map))biomeMaps[biome]=map=material=>Remap(material,biome);
+        return map;
+    }
+    private Material Remap(Material material,OverworldBiome biome)
+    {
+        if(material==null)return material;
+        remapped??=new System.Collections.Generic.Dictionary<(Material,OverworldBiome),Material>();
+        if(remapped.TryGetValue((material,biome),out var result))return result;
+        result=material.shader.name=="EternalEnigma/Diorama Vertex Lit"?Material(material.name.Split('_').Last(),biome):material;
+        remapped[(material,biome)]=result;
+        return result;
     }
 }

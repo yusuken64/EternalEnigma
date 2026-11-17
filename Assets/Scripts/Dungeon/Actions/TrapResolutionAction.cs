@@ -145,12 +145,22 @@ internal sealed class TrapResolutionAction : GameAction
         Arrive(destination, direction);
     }
     Inventory Bag => victim is Ally ? Game.Instance.PlayerController.Inventory : victim.GetComponent<Inventory>();
+    static bool IsEquippedBy(Character a, InventoryItem i) => a != null && a.Equipment != null && a.Equipment.IsEquipped(i);
+    // Same as AllCharacters.Concat(DownedAllies).Any(...) without building lists per item.
+    static bool IsEquippedByAnyone(InventoryItem i)
+    {
+        var game = Game.Instance;
+        foreach (var a in game.Allies) if (IsEquippedBy(a, i)) return true;
+        foreach (var a in game.Enemies) if (IsEquippedBy(a, i)) return true;
+        foreach (var a in game.DownedAllies) if (IsEquippedBy(a, i)) return true;
+        return false;
+    }
     void DropItems(bool equipment)
     {
         var bag = Bag;
         var equippedItems = victim.Equipment != null ? victim.Equipment.GetEquippedItems().Cast<InventoryItem>() : Enumerable.Empty<InventoryItem>();
         var items = equipment ? equippedItems.Where(i => i?.ItemDefinition != null && !i.ItemDefinition.ProtectedFromTraps).Take(1).ToArray()
-            : (bag?.InventoryItems ?? new List<InventoryItem>()).Where(i => i?.ItemDefinition != null && !i.ItemDefinition.ProtectedFromTraps && !Game.Instance.AllCharacters.Concat(Game.Instance.DownedAllies).Any(a => a != null && a.Equipment != null && a.Equipment.IsEquipped(i))).Take(3).ToArray();
+            : (bag?.InventoryItems ?? new List<InventoryItem>()).Where(i => i?.ItemDefinition != null && !i.ItemDefinition.ProtectedFromTraps && !IsEquippedByAnyone(i)).Take(3).ToArray();
         bool changed = false;
         foreach (var item in items)
         {

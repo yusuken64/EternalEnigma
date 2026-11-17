@@ -88,6 +88,8 @@ public class Town : MonoBehaviour
                 buildLayersComplete(twc);
                 return;
             }
+            // A different town: drop the old geometry before building, so both never coexist at the peak.
+            Common.Instance.TownTerrain.Clear();
         }
         WalkableMap.TileWorldCreator.ExecuteAllBlueprintLayers();
     }
@@ -410,6 +412,7 @@ public class Town : MonoBehaviour
             Common.Instance.TownTerrain.Store(terrainIdentity, WalkableMap.TileWorldCreator, runtimeAsset, this))
             runtimeAsset = null;
         IsReady = true;
+        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Town ready");
         if (Common.Instance.GameSaveData.NeedsInitialSave)
         {
             WriteSaveData();

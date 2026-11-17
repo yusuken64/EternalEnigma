@@ -127,6 +127,9 @@ public sealed class OverworldScene : MonoBehaviour
         terrainCache = common.OverworldTerrain;
         restoredTerrain = terrainCache.TryRestore(Context, Map, this);
         if (restoredTerrain) { TerrainReady(creator); return; }
+        // The cached terrain cannot be reused; drop it before building, so the old and new copies
+        // never coexist at the build's memory peak.
+        terrainCache.Clear();
         terrainTimer = System.Diagnostics.Stopwatch.StartNew();
         Map.Apply(grid, Held, resolved);
         layoutMilliseconds = terrainTimer.Elapsed.TotalMilliseconds;
@@ -230,6 +233,7 @@ public sealed class OverworldScene : MonoBehaviour
         // Start the reveal only after followers, saved stats and camera placement
         // are complete, so their setup cannot consume part of the visible fade.
         IsReady = true;
+        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Overworld ready");
         Common.Instance.Travel.SceneReady();
         Common.Instance.ScreenTransition.DoOpen();
     }

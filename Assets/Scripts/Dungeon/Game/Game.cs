@@ -414,6 +414,7 @@ public partial class Game : SingletonMonoBehaviour<Game>
             AutoplayRunner.Active.LootLedger?.VerifyGeneration(CurrentDungeon);
         }
 		IsReady = true;
+        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Dungeon floor ready");
         resettingFloor = false;
         StartCoroutine(PrewarmNextFloor());
         if (!reset && Encounter.AllowsReset) entrySnapshot = new FloorEntrySnapshot(this);

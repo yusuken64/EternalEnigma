@@ -120,9 +120,19 @@ public sealed class OverworldGrid
     public OverworldBiome? BiomeAt(GridPoint cell)
     {
         if (!IsGround(cell)) return null;
-        foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome)))
-            if (Layers.TryGetValue(OverworldLayers.Biome(biome), out var layer) && layer[cell.X, cell.Y]) return biome;
+        // Same order as Enum.GetValues; Layers is immutable, so the lookups are resolved once per grid.
+        biomeLayers ??= BuildBiomeLayers();
+        foreach (var (biome, layer) in biomeLayers)
+            if (layer[cell.X, cell.Y]) return biome;
         return null;
+    }
+    private (OverworldBiome Biome, GridLayer Layer)[]? biomeLayers;
+    private (OverworldBiome Biome, GridLayer Layer)[] BuildBiomeLayers()
+    {
+        var result = new List<(OverworldBiome, GridLayer)>();
+        foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome)))
+            if (Layers.TryGetValue(OverworldLayers.Biome(biome), out var layer)) result.Add((biome, layer));
+        return result.ToArray();
     }
     public bool IsWalkable(GridPoint cell, CapabilitySet held, ISet<string>? resolvedLocks = null)
     {

@@ -256,12 +256,22 @@ public static class OverworldGridGenerator
         foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome))) masks[OverworldLayers.Landscape(biome)] = new bool[w, h];
         var ground = masks[OverworldLayers.Ground];
         var regionOwner = new string?[w, h];
+        // Region names and landscape masks per territory index, built on first use instead of per cell.
+        var regionNames = new string?[6]; var regionLandscapes = new bool[6][,];
         for (int y = 1; y < h - 1; y++) for (int x = 1; x < w - 1; x++)
         {
             if (owner[x, y] < 0) continue;
-            string region = "region-" + Math.Min(5, territory[x, y]);
+            int index = Math.Min(5, territory[x, y]);
+            string region; bool[,] landscape;
+            if (index >= 0 && regionNames[index] != null) { region = regionNames[index]!; landscape = regionLandscapes[index]; }
+            else
+            {
+                region = "region-" + index;
+                landscape = masks[OverworldLayers.Landscape(palette[region])];
+                if (index >= 0) { regionNames[index] = region; regionLandscapes[index] = landscape; }
+            }
             regionOwner[x, y] = region;
-            masks[OverworldLayers.Landscape(palette[region])][x, y] = true;
+            landscape[x, y] = true;
             bool interior = true;
             for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++)
                 if (owner[x + dx, y + dy] != owner[x, y]) interior = false;
@@ -333,12 +343,13 @@ public static class OverworldGridGenerator
                 return true;
             }
             var candidates = new List<GridPoint[]>();
+            var cells = new List<GridPoint>(8);
             for (int y = 2; y < h - 2; y++) for (int x = 2; x < w - 2; x++)
             {
                 if (!ground[x, y] || owner[x, y] != a) continue;
                 foreach (var d in Directions)
                 {
-                    var cells = new List<GridPoint>();
+                    cells.Clear();
                     for (int step = 1; step <= 7; step++)
                     {
                         int xx = x + d.X * step, yy = y + d.Y * step;

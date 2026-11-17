@@ -70,19 +70,27 @@ public static class OverworldGridValidator
         var components = new int[grid.Width, grid.Height];
         for (int y = 0; y < grid.Height; y++) for (int x = 0; x < grid.Width; x++) components[x, y] = -1;
         bool ClosedFloor(GridPoint p) => grid.IsGround(p) && grid.LockAt(p) == null;
+        // One delegate and queue for the whole labelling pass, instead of one per step / component.
+        Func<GridPoint, bool> closedFloor = ClosedFloor;
         int count = 0;
+        var componentQueue = new Queue<GridPoint>();
         for (int y = 0; y < grid.Height; y++)
             for (int x = 0; x < grid.Width; x++)
             {
                 var first = new GridPoint(x, y);
                 if (!ClosedFloor(first) || components[x, y] >= 0) continue;
-                var queue = new Queue<GridPoint>(); queue.Enqueue(first); components[x, y] = count;
-                while (queue.Count > 0)
+                componentQueue.Clear(); componentQueue.Enqueue(first); components[x, y] = count;
+                while (componentQueue.Count > 0)
                 {
-                    var at = queue.Dequeue();
-                    foreach (var next in OverworldMovement.Neighbors(at))
-                        if (OverworldMovement.CanStep(at, next, ClosedFloor) && components[next.X, next.Y] < 0)
-                        { components[next.X, next.Y] = count; queue.Enqueue(next); }
+                    var at = componentQueue.Dequeue();
+                    for (int ny = -1; ny <= 1; ny++)
+                    for (int nx = -1; nx <= 1; nx++)
+                    {
+                        if (nx == 0 && ny == 0) continue;
+                        var next = new GridPoint(at.X + nx, at.Y + ny);
+                        if (OverworldMovement.CanStep(at, next, closedFloor) && components[next.X, next.Y] < 0)
+                        { components[next.X, next.Y] = count; componentQueue.Enqueue(next); }
+                    }
                 }
                 count++;
             }
@@ -112,12 +120,13 @@ public static class OverworldGridValidator
             var visited = new HashSet<GridPoint> { gate.Cells[0] };
             var queue = new Queue<GridPoint>(); queue.Enqueue(gate.Cells[0]);
             bool GateOpen(GridPoint p) => grid.IsGround(p) && (grid.LockAt(p) == null || grid.LockAt(p)!.RouteId == gate.RouteId);
+            Func<GridPoint, bool> gateOpen = GateOpen;
             while (queue.Count > 0)
             {
                 var at = queue.Dequeue();
                 foreach (var next in OverworldMovement.Neighbors(at))
                 {
-                    if (!OverworldMovement.CanStep(at, next, GateOpen)) continue;
+                    if (!OverworldMovement.CanStep(at, next, gateOpen)) continue;
                     if (grid.LockAt(next) == null) contacts.Add(components[next.X, next.Y]);
                     else if (visited.Add(next)) queue.Enqueue(next);
                 }
@@ -142,6 +151,8 @@ public static class OverworldGridValidator
             Check(cells > 0 && broad >= cells * .3, $"layout.interior: {region.Id} has only {broad}/{cells} broad cells (requires 30%).");
         }
         var all = CapabilitySet.From(campaign.Manifest.Select(c => c.Id));
+        // Read-only for CanStep, so one set serves every step of every route.
+        var allRoutes = new HashSet<string>(campaign.Routes.Select(r => r.Id));
         foreach (var route in campaign.Routes)
         {
             var path = grid.Routes[route.Id];
@@ -154,7 +165,7 @@ public static class OverworldGridValidator
             }
             for (int i = 1; i < path.Count; i++)
             {
-                Check(grid.CanStep(path[i - 1], path[i], all, new HashSet<string>(campaign.Routes.Select(r => r.Id))), $"route.step: {route.Id} has an illegal grid step.");
+                if (!grid.CanStep(path[i - 1], path[i], all, allRoutes)) errors.Add($"route.step: {route.Id} has an illegal grid step.");
                 if (grid.RequiresBoat(path[i]))
                     Check(route.Form == LockForm.Area && route.Requirement.Alternatives.All(a => a.Contains(Capability.Boat)),
                         $"route.water: {route.Id} adds a Boat requirement not present in the campaign.");
@@ -197,17 +208,52 @@ public static class OverworldGridValidator
     }
     public static int Distance(OverworldGrid grid, GridPoint from, GridPoint to, CapabilitySet held, ISet<string> resolved, string? blockedRoute = null)
     {
-        var distance = new Dictionary<GridPoint, int> { [from] = 0 };
-        var queue = new Queue<GridPoint>(); queue.Enqueue(from);
-        bool Walkable(GridPoint p) => grid.IsWalkable(p, held, resolved) && (blockedRoute == null || grid.LockAt(p)?.RouteId != blockedRoute);
+        // Array BFS with the same visit order as the original dictionary search: the eight
+        // OverworldMovement.Neighbors in order (y outer, x inner), then warp destinations.
+        int w = grid.Width, h = grid.Height;
+        // Walkability is fixed for the call (held/resolved are only read), so cache it: 0 unknown, 1 yes, 2 no.
+        var walkable = new byte[w, h];
+        bool Walkable(int x, int y)
+        {
+            if (x < 0 || y < 0 || x >= w || y >= h) return false;
+            byte known = walkable[x, y];
+            if (known == 0)
+            {
+                var p = new GridPoint(x, y);
+                known = grid.IsWalkable(p, held, resolved) && (blockedRoute == null || grid.LockAt(p)?.RouteId != blockedRoute) ? (byte)1 : (byte)2;
+                walkable[x, y] = known;
+            }
+            return known == 1;
+        }
+        // Only warp landing pads can have warp destinations.
+        var warpPads = new HashSet<GridPoint>();
+        foreach (var warp in grid.Warps) { warpPads.Add(grid.Locations[warp.From]); warpPads.Add(grid.Locations[warp.To]); }
+        // Distances for in-bounds cells; -1 is unvisited. Out-of-bounds cells (only reachable as `from`) use a side table.
+        var distance = new int[w, h];
+        for (int x = 0; x < w; x++) for (int y = 0; y < h; y++) distance[x, y] = -1;
+        Dictionary<GridPoint, int>? outside = null;
+        bool Visited(GridPoint p) => grid.Contains(p) ? distance[p.X, p.Y] >= 0 : outside != null && outside.ContainsKey(p);
+        void Set(GridPoint p, int d) { if (grid.Contains(p)) distance[p.X, p.Y] = d; else (outside ??= new Dictionary<GridPoint, int>())[p] = d; }
+        int Get(GridPoint p) => grid.Contains(p) ? distance[p.X, p.Y] : outside![p];
+        var queue = new Queue<GridPoint>(); queue.Enqueue(from); Set(from, 0);
         while (queue.Count > 0)
         {
             var at = queue.Dequeue();
-            if (at.Equals(to)) return distance[at];
-            foreach (var next in OverworldMovement.Neighbors(at).Where(p => OverworldMovement.CanStep(at, p, Walkable))
-                .Concat(grid.WarpDestinations(at, held, resolved, blockedRoute)))
-                if (!distance.ContainsKey(next))
-                { distance[next] = distance[at] + 1; queue.Enqueue(next); }
+            int d = Get(at);
+            if (at.Equals(to)) return d;
+            if (Walkable(at.X, at.Y))
+                for (int dy = -1; dy <= 1; dy++)
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    if (dx == 0 && dy == 0) continue;
+                    int x = at.X + dx, y = at.Y + dy;
+                    // OverworldMovement.CanStep with the corner-sealing rule.
+                    if (!Walkable(x, y) || (dx != 0 && dy != 0 && !(Walkable(at.X + dx, at.Y) && Walkable(at.X, at.Y + dy)))) continue;
+                    if (distance[x, y] < 0) { distance[x, y] = d + 1; queue.Enqueue(new GridPoint(x, y)); }
+                }
+            if (warpPads.Contains(at))
+                foreach (var next in grid.WarpDestinations(at, held, resolved, blockedRoute))
+                    if (!Visited(next)) { Set(next, d + 1); queue.Enqueue(next); }
         }
         return -1;
     }

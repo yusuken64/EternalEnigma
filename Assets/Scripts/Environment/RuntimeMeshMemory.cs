@@ -16,14 +16,27 @@ public static class RuntimeMeshMemory
 #endif
 
     /// <summary>
-    /// [Memory] log lines: on in the web player, and in development players so leaks can be traced
-    /// from the command-line debug autoplay. Off in the editor and in release desktop builds.
+    /// [Memory] log lines and the per-frame watchdog: on in development players, and in the web player only
+    /// when the page URL has a <c>memlog</c> query parameter (for example <c>index.html?memlog</c>).
+    /// Off for players and in the editor.
     /// </summary>
+    public static bool Logging => logging ??= ComputeLogging();
+    private static bool? logging;
+    private static bool ComputeLogging()
+    {
 #if DEVELOPMENT_BUILD && !UNITY_EDITOR
-    public static bool Logging = true;
+        return true;
+#elif UNITY_WEBGL && !UNITY_EDITOR
+        var url = Application.absoluteURL ?? "";
+        int query = url.IndexOf('?');
+        if (query < 0) return false;
+        foreach (var part in url.Substring(query + 1).Split('&', '#'))
+            if (part == "memlog" || part.StartsWith("memlog=")) return true;
+        return false;
 #else
-    public static bool Logging = Enabled;
+        return false;
 #endif
+    }
 
     // Desktop players can collect mid-frame, so their log lines report live memory, not garbage.
     private static readonly bool collectBeforeLog = !Enabled;

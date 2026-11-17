@@ -82,3 +82,6 @@ Assets/Art/RPGHero/SRP/FreeRPGHeroesHD.zip.meta
 Assets/TileWorldCreator/Demo/
 /PCBuild
 /ArtRefs
+
+# BenchmarkDotNet results
+BenchmarkDotNet.Artifacts/

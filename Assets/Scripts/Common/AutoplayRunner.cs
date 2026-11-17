@@ -136,6 +136,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
     private StreamWriter actions, issues;
     private double started, lastProgress, pausedAt, pausedSeconds;
     private float nextTick;
+    private int loggedActionBlock = -1;
     private string progressSignature, pendingError, floorIdentity;
     private string floorKeyPending; private int floorKeyFloor, floorKeyFinaleFloor; private bool floorKeyHasFinale, floorKeyValid;
     private readonly HashSet<string> visited = new(), triedParties = new();
@@ -319,6 +320,12 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             }
         }
         catch (Exception error) { Finish("AutomationError", error.ToString()); }
+        // Memory every 1000 actions separates per-turn growth from per-floor and per-town growth.
+        if (RuntimeMeshMemory.Logging && Report != null && Report.Actions / 1000 != loggedActionBlock)
+        {
+            loggedActionBlock = Report.Actions / 1000;
+            RuntimeMeshMemory.Log($"Autoplay {Report.Actions} actions, floor {Game.Instance?.PlayerController.Floor.ToString() ?? "-"}");
+        }
     }
 
     private void Tick()

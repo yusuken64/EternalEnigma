@@ -7,7 +7,28 @@ using TWC;
 public static class CoreLayoutCache
 {
     private sealed class Slot { public DungeonFloorOptions DungeonKey; public DungeonFloor Dungeon; public TownPlanOptions TownKey; public TownPlan Town; }
-    private static readonly ConditionalWeakTable<TileWorldCreator, Slot> slots = new();
+    // Keyed by reference, and pruned of destroyed creators: each scene's TileWorldCreator is new, and
+    // holding a dead creator's slot keeps its whole floor or town plan alive. (A ConditionalWeakTable
+    // depends on the runtime's weak-key support, which the web player's GC may not provide.)
+    private static readonly System.Collections.Generic.Dictionary<TileWorldCreator, Slot> slots = new(new ByReference());
+    private sealed class ByReference : System.Collections.Generic.IEqualityComparer<TileWorldCreator>
+    {
+        public bool Equals(TileWorldCreator a, TileWorldCreator b) => ReferenceEquals(a, b);
+        public int GetHashCode(TileWorldCreator creator) => RuntimeHelpers.GetHashCode(creator);
+    }
+    private static readonly System.Collections.Generic.List<TileWorldCreator> dead = new();
+    private static Slot SlotFor(TileWorldCreator twc)
+    {
+        if (!slots.TryGetValue(twc, out var slot))
+        {
+            dead.Clear();
+            foreach (var key in slots.Keys) if (key == null) dead.Add(key);
+            foreach (var key in dead) slots.Remove(key);
+            dead.Clear();
+            slots[twc] = slot = new Slot();
+        }
+        return slot;
+    }
     /// Number of core generations performed (test hook).
     public static int Generations { get; private set; }
 
@@ -45,7 +66,7 @@ public static class CoreLayoutCache
     public static DungeonFloor GetDungeon(TileWorldCreator twc, DungeonFloorOptions options)
     {
         if (twc == null) throw new ArgumentNullException(nameof(twc));
-        var slot = slots.GetOrCreateValue(twc);
+        var slot = SlotFor(twc);
         if (slot.Dungeon == null || !options.Equals(slot.DungeonKey))
         {
             if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Core dungeon generation start");
@@ -62,7 +83,7 @@ public static class CoreLayoutCache
     public static TownPlan GetTown(TileWorldCreator twc, TownPlanOptions options)
     {
         if (twc == null) throw new ArgumentNullException(nameof(twc));
-        var slot = slots.GetOrCreateValue(twc);
+        var slot = SlotFor(twc);
         if (slot.Town == null || !options.Equals(slot.TownKey))
         {
             if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Core town generation start");
@@ -111,7 +132,7 @@ public static class CoreLayoutCache
     /// <summary>Registers an already generated town plan for a creator that is reusing its geometry.</summary>
     public static void SupplyTown(TileWorldCreator twc, TownPlanOptions options, TownPlan plan)
     {
-        var slot = slots.GetOrCreateValue(twc);
+        var slot = SlotFor(twc);
         slot.TownKey = options; slot.Town = plan;
         slot.Dungeon = null; slot.DungeonKey = null;
     }
@@ -120,7 +141,7 @@ public static class CoreLayoutCache
 
     public static void SupplyDungeon(TileWorldCreator twc, DungeonFloorOptions options, DungeonFloor floor)
     {
-        var slot = slots.GetOrCreateValue(twc);
+        var slot = SlotFor(twc);
         slot.DungeonKey = options; slot.Dungeon = floor; slot.Town = floor.TownPlan;
         slot.TownKey = options.Variant == DungeonVariant.Town ? TownDungeonGenerator.TownOptions(options) : null;
     }

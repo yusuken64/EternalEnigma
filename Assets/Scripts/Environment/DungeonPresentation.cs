@@ -8,7 +8,15 @@ using UnityEngine;
 
 public static class DungeonPresentation
 {
-    private static readonly ConditionalWeakTable<DungeonFloor, HashSet<GridPoint>> protectedCells = new();
+    // Only one floor is decorated at a time; keep just the latest floor's set rather than a weak table,
+    // whose entries the web player's GC may never release.
+    private static DungeonFloor protectedFloor;
+    private static HashSet<GridPoint> protectedSet;
+    private static HashSet<GridPoint> ProtectedFor(DungeonFloor floor)
+    {
+        if (!ReferenceEquals(floor, protectedFloor)) { protectedSet = Protected(floor); protectedFloor = floor; }
+        return protectedSet;
+    }
     private static HashSet<GridPoint> Protected(DungeonFloor floor)
     {
         var cells = new HashSet<GridPoint> { floor.Start, floor.Stairs };
@@ -118,7 +126,7 @@ public static class DungeonPresentation
         // Blocked cells also contain walls. Decorate additionally fits props into the
         // paved shoulder outside the rendered wall footprint, never the cell center.
         if (x<0 || y<0 || x>=floor.Width || y>=floor.Height || floor.Layers[DungeonLayers.Floor][x,y]) return false;
-        return !protectedCells.GetValue(floor, Protected).Contains(new GridPoint(x,y));
+        return !ProtectedFor(floor).Contains(new GridPoint(x,y));
     }
     static Dictionary<GridPoint, Bounds> BoundaryFootprints(TileWorldCreator creator, Transform space)
     {

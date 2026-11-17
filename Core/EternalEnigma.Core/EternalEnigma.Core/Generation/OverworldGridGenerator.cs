@@ -446,13 +446,15 @@ public static class OverworldGridGenerator
             locationFootprints.Add(footprint);
             foreach (var p in footprint.Cells) { masks[OverworldLayers.LocationFootprints][p.X, p.Y] = true; masks[OverworldLayers.Reserved][p.X, p.Y] = true; }
         }
+        // One parent buffer and queue shared by every route search; cleared per call.
+        var previous = new int[w, h]; var pathQueue = new Queue<GridPoint>();
         List<GridPoint> Path(GridPoint from, GridPoint to, int a, int b, string? gate = null)
         {
             bool Allowed(GridPoint p) => Inside(p.X, p.Y) && ground[p.X, p.Y] &&
                 (owner[p.X, p.Y] == a || owner[p.X, p.Y] == b) &&
                 (!masks[OverworldLayers.Locks][p.X, p.Y] || gate != null && gateCells[gate].Contains(p));
             // Cardinal BFS keeps the visible roads aligned to the movement grid.
-            var previous = new int[w, h]; var queue = new Queue<GridPoint>(); queue.Enqueue(from); previous[from.X, from.Y] = -1;
+            Array.Clear(previous, 0, previous.Length); var queue = pathQueue; queue.Clear(); queue.Enqueue(from); previous[from.X, from.Y] = -1;
             while (queue.Count > 0 && previous[to.X, to.Y] == 0)
             {
                 var at = queue.Dequeue();
@@ -582,11 +584,17 @@ public static class OverworldGridGenerator
             if (ground[x, y] && !retained[x, y] && !masks[OverworldLayers.Locks][x, y])
             { ground[x, y] = false; flooded[x, y] = false; masks[OverworldLayers.Trees][x, y] = true; }
         var start = positions[campaign.StartLocationId]; masks[OverworldLayers.PlayerStart][start.X, start.Y] = true;
+        // Region mask per owner name, resolved once per distinct name rather than built per cell.
+        var regionMasks = new Dictionary<string, bool[,]>(StringComparer.Ordinal);
         for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
         {
             if (ground[x, y])
             {
-                masks[OverworldLayers.Region(regionOwner[x, y]!)][x, y] = true;
+                string? owned = regionOwner[x, y];
+                bool[,]? regionMask;
+                if (owned == null) regionMask = masks[OverworldLayers.Region(owned!)];
+                else if (!regionMasks.TryGetValue(owned, out regionMask)) regionMasks[owned] = regionMask = masks[OverworldLayers.Region(owned)];
+                regionMask[x, y] = true;
                 masks[OverworldLayers.Walkable][x, y] = !masks[OverworldLayers.Locks][x, y];
                 masks[OverworldLayers.Reserved][x, y] = true;
             }
@@ -598,6 +606,14 @@ public static class OverworldGridGenerator
         var biomes = AssignBiomes(campaign, masks, flooded, regionOwner, locks);
         var pickupRandom = new SeedStream(campaign.Seed, 1750);
         var pickups = new List<OverworldPickup>();
+        // Same tests as positions.Values.Any(...) || locks.Any(g => g.Cells.Any(...)), without per-cell closures.
+        var locationPoints = positions.Values.ToArray();
+        bool NearLocationOrGate(int x, int y)
+        {
+            foreach (var q in locationPoints) if (Math.Abs(q.X - x) <= 3 && Math.Abs(q.Y - y) <= 3) return true;
+            foreach (var g in locks) foreach (var q in g.Cells) if (Math.Abs(q.X - x) <= 3 && Math.Abs(q.Y - y) <= 3) return true;
+            return false;
+        }
         foreach (var region in campaign.Regions.OrderBy(r => r.Id, StringComparer.Ordinal))
         {
             var candidates = new List<GridPoint>();
@@ -605,8 +621,7 @@ public static class OverworldGridGenerator
             {
                 var p = new GridPoint(x, y);
                 if (!ground[x, y] || flooded[x, y] || regionOwner[x, y] != region.Id || masks[OverworldLayers.Locks][x, y] ||
-                    masks[OverworldLayers.LocationFootprints][x, y] || approachLane[x, y] || positions.Values.Any(q => Math.Abs(q.X - x) <= 3 && Math.Abs(q.Y - y) <= 3) ||
-                    locks.Any(g => g.Cells.Any(q => Math.Abs(q.X - x) <= 3 && Math.Abs(q.Y - y) <= 3))) continue;
+                    masks[OverworldLayers.LocationFootprints][x, y] || approachLane[x, y] || NearLocationOrGate(x, y)) continue;
                 // A dry cell in the location's connected territory is reachable without owning a water vehicle.
                 if (dry[x, y]) candidates.Add(p);
             }
@@ -645,6 +660,9 @@ public static class OverworldGridGenerator
         var ground = masks[OverworldLayers.Ground];
         int width = ground.GetLength(0), height = ground.GetLength(1);
         foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome))) masks[OverworldLayers.Biome(biome)] = new bool[width, height];
+        // Indexed by enum value (Grassland..Volcanic are 0..7) so the per-cell lookup neither builds a string nor boxes.
+        var biomeMasks = new bool[(int)OverworldBiome.Volcanic + 1][,];
+        foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome))) biomeMasks[(int)biome] = masks[OverworldLayers.Biome(biome)];
         var water = masks[OverworldLayers.NavigableWater] = new bool[width, height];
         var bridges = masks[OverworldLayers.Bridges] = new bool[width, height];
         // Boat-only area gates become actual water crossings. Alternative-capability
@@ -673,7 +691,7 @@ public static class OverworldGridGenerator
                 masks[OverworldLayers.Water][x, y] = true;
                 masks[OverworldLayers.Walkable][x, y] = false;
             }
-            masks[OverworldLayers.Biome(biome)][x, y] = true;
+            biomeMasks[(int)biome][x, y] = true;
         }
         return regions;
     }

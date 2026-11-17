@@ -16,6 +16,90 @@ public static partial class TownPlanGenerator
     private const int PropFramePercent = 65, PropVergePercent = 14, PropFieldPercent = 6;
 
     private static readonly GridPoint[] Cardinals = { new(0, 1), new(-1, 0), new(1, 0), new(0, -1) };
+    /// <summary>West, east, south, north: the order of the per-cell neighbour arrays this replaces.</summary>
+    private static readonly GridPoint[] Adjacent4 = { new(-1, 0), new(1, 0), new(0, -1), new(0, 1) };
+
+    /// <summary>
+    /// Array-backed equivalents of GridSearch.Nearest and GridSearch.Path over Cardinals-ordered steps
+    /// (`passable` plays the role of the neighbour filter), reusable across searches on one grid.
+    /// Visit order, first-found target and BFS parents are exactly those of GridSearch, so results are identical.
+    /// </summary>
+    private sealed class CardinalSearch
+    {
+        readonly int w, h;
+        readonly int[,] stamp;
+        readonly int[,] parent;
+        readonly GridPoint[] queue;
+        int generation;
+
+        public CardinalSearch(int w, int h)
+        {
+            this.w = w; this.h = h;
+            stamp = new int[w, h]; parent = new int[w, h];
+            queue = new GridPoint[w * h + 1];
+        }
+
+        bool Inside(GridPoint p) => p.X >= 0 && p.Y >= 0 && p.X < w && p.Y < h;
+
+        // Mirrors GridSearch's HashSet visited; out-of-bounds cells are never passable, so only the origin can be outside.
+        bool Visited(GridPoint p, GridPoint origin) => p.Equals(origin) || (Inside(p) && stamp[p.X, p.Y] == generation);
+        void Visit(GridPoint p, GridPoint from) { stamp[p.X, p.Y] = generation; parent[p.X, p.Y] = from.Y * w + from.X; }
+
+        public GridPoint? Nearest(GridPoint origin, Func<GridPoint, bool> passable, Func<GridPoint, bool> isTarget)
+        {
+            if (isTarget(origin)) return origin;
+            generation++;
+            int head = 0, tail = 0;
+            queue[tail++] = origin;
+            if (Inside(origin)) stamp[origin.X, origin.Y] = generation;
+            while (head < tail)
+            {
+                var current = queue[head++];
+                foreach (var step in Cardinals)
+                {
+                    var next = new GridPoint(current.X + step.X, current.Y + step.Y);
+                    if (!passable(next) || Visited(next, origin)) continue;
+                    if (isTarget(next)) return next;
+                    Visit(next, current); queue[tail++] = next;
+                }
+            }
+            return null;
+        }
+
+        public List<GridPoint> Path(GridPoint origin, GridPoint target, Func<GridPoint, bool> passable)
+        {
+            if (origin.Equals(target)) return new List<GridPoint> { origin };
+            generation++;
+            int head = 0, tail = 0;
+            queue[tail++] = origin;
+            if (Inside(origin)) stamp[origin.X, origin.Y] = generation;
+            while (head < tail)
+            {
+                var current = queue[head++];
+                if (current.Equals(target))
+                {
+                    var path = new List<GridPoint>();
+                    var node = target;
+                    while (!node.Equals(origin))
+                    {
+                        path.Add(node);
+                        int index = parent[node.X, node.Y];
+                        node = new GridPoint(index % w, index / w);
+                    }
+                    path.Add(origin);
+                    path.Reverse();
+                    return path;
+                }
+                foreach (var step in Cardinals)
+                {
+                    var next = new GridPoint(current.X + step.X, current.Y + step.Y);
+                    if (!passable(next) || Visited(next, origin)) continue;
+                    Visit(next, current); queue[tail++] = next;
+                }
+            }
+            return new List<GridPoint>();
+        }
+    }
 
     /// <summary>The wide vertical spine and the wide cross avenue. Buildings never cover these cells.</summary>
     private static bool[,] MainRoadMask(TownPlanOptions options)
@@ -104,8 +188,12 @@ public static partial class TownPlanGenerator
         foreach (var door in plots.Shuffle(candidates))
         {
             if (doors.Count >= options.BuildingCount) break;
-            if (doors.Any(d => Math.Max(Math.Abs(door.X - d.X), Math.Abs(door.Y - d.Y)) < 3)) continue;
-            if (bodyCells.Contains(door) || Cardinals.Any(step => bodyCells.Contains(new GridPoint(door.X + step.X, door.Y + step.Y)))) continue;
+            bool crowded = false;
+            foreach (var d in doors) if (Math.Max(Math.Abs(door.X - d.X), Math.Abs(door.Y - d.Y)) < 3) { crowded = true; break; }
+            if (crowded) continue;
+            if (bodyCells.Contains(door)) continue;
+            foreach (var step in Cardinals) if (bodyCells.Contains(new GridPoint(door.X + step.X, door.Y + step.Y))) { crowded = true; break; }
+            if (crowded) continue;
 
             BuildingFootprint? placed = null;
             for (int attempt = 0; attempt < 3 && placed == null; attempt++)
@@ -173,14 +261,16 @@ public static partial class TownPlanGenerator
                 if (mainRoad[x, y] && !Solid(new GridPoint(x, y))) { roads[x, y] = true; main[x, y] = true; }
 
         // 2. Single-cell arteries: every door gets the shortest way to the network.
+        var search = new CardinalSearch(W, H);
+        var buildings = layers[TownLayers.Buildings];
+        Func<GridPoint, bool> isRoad = c => roads[c.X, c.Y];
         foreach (var door in doors)
         {
-            IEnumerable<GridPoint> Open(GridPoint c) => Cardinals
-                .Select(step => new GridPoint(c.X + step.X, c.Y + step.Y))
-                .Where(n => InBounds(n) && !Solid(n) && !(layers[TownLayers.Buildings][n.X, n.Y] && !n.Equals(door)));
-            var target = GridSearch.Nearest(door, Open, c => roads[c.X, c.Y]);
+            bool Open(GridPoint n) => InBounds(n) && !Solid(n) && !(buildings[n.X, n.Y] && !n.Equals(door));
+            Func<GridPoint, bool> open = Open;
+            var target = search.Nearest(door, open, isRoad);
             if (target == null) throw new InvalidOperationException($"No road reachable from door {door}");
-            foreach (var cell in GridSearch.Path(door, target.Value, Open))
+            foreach (var cell in search.Path(door, target.Value, open))
                 if (!cell.Equals(door)) roads[cell.X, cell.Y] = true;
         }
 
@@ -209,14 +299,12 @@ public static partial class TownPlanGenerator
             var link = new List<GridPoint>();
             if (!joined)
             {
-                IEnumerable<GridPoint> Open(GridPoint c) => Cardinals
-                    .Select(step => new GridPoint(c.X + step.X, c.Y + step.Y))
-                    .Where(n => InBounds(n) && !Solid(n) && !layers[TownLayers.Buildings][n.X, n.Y]);
+                Func<GridPoint, bool> open = n => InBounds(n) && !Solid(n) && !buildings[n.X, n.Y];
                 foreach (var end in new[] { lane[0], lane[lane.Count - 1] })
                 {
-                    var target = GridSearch.Nearest(end, Open, c => roads[c.X, c.Y] && !laneSet.Contains(c));
+                    var target = search.Nearest(end, open, c => roads[c.X, c.Y] && !laneSet.Contains(c));
                     if (target == null) continue;
-                    link = GridSearch.Path(end, target.Value, Open).Where(c => !roads[c.X, c.Y]).ToList();
+                    link = search.Path(end, target.Value, open).Where(c => !roads[c.X, c.Y]).ToList();
                     joined = true;
                     break;
                 }
@@ -255,18 +343,29 @@ public static partial class TownPlanGenerator
             TownLayers.Roads, TownLayers.Houses, TownLayers.Trees, TownLayers.ShopWalls, TownLayers.ShopFloor,
             TownLayers.Buildings, TownLayers.Allies, TownLayers.Dungeon,
         };
-        bool Has(string layer, int x, int y) => x >= 0 && x < W && y >= 0 && y < H && layers[layer][x, y];
+        // Resolved once; the per-cell tests below are plain loops (same results as the former Any lambdas).
+        var blockerMasks = blockers.Select(layer => layers[layer]).ToArray();
+        var buildings = layers[TownLayers.Buildings];
+        var roads = layers[TownLayers.Roads];
+        bool Has(bool[,] mask, int x, int y) => x >= 0 && x < W && y >= 0 && y < H && mask[x, y];
+        bool AnyCardinal(bool[,] mask, int x, int y)
+        {
+            foreach (var step in Cardinals) if (Has(mask, x + step.X, y + step.Y)) return true;
+            return false;
+        }
 
         for (int x = 0; x < W; x++)
             for (int y = 0; y < H; y++)
             {
                 var cell = new GridPoint(x, y);
-                if (blockers.Any(layer => layers[layer][x, y])) continue;
+                bool blocked = false;
+                foreach (var mask in blockerMasks) if (mask[x, y]) { blocked = true; break; }
+                if (blocked) continue;
                 if (TownPlan.IsReservedCorridor(cell, H, options.SpineX) || cell.Equals(options.PartySpawn) || cell.Equals(options.Exit)) continue;
-                if (Cardinals.Any(step => Has(TownLayers.Buildings, x + step.X, y + step.Y))) continue; // keep doorways clear
+                if (AnyCardinal(buildings, x, y)) continue; // keep doorways clear
 
                 int edgeDistance = Math.Min(Math.Min(x, W - 1 - x), Math.Min(y, H - 1 - y));
-                bool verge = Cardinals.Any(step => Has(TownLayers.Roads, x + step.X, y + step.Y));
+                bool verge = AnyCardinal(roads, x, y);
                 int percent = edgeDistance < PropFrameWidth ? PropFramePercent : verge ? PropVergePercent : PropFieldPercent;
                 if (random.Range(100) < percent) props[x, y] = true;
             }

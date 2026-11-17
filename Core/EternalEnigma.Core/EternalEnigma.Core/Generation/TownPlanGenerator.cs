@@ -308,10 +308,9 @@ public static partial class TownPlanGenerator
 
             // Check not 4-adjacent to any accepted body cell
             bool adjacent = false;
-            var neighbors = new[] { new GridPoint(door.X - 1, door.Y), new GridPoint(door.X + 1, door.Y),
-                                   new GridPoint(door.X, door.Y - 1), new GridPoint(door.X, door.Y + 1) };
-            foreach (var neighbor in neighbors)
+            foreach (var step in Adjacent4)
             {
+                var neighbor = new GridPoint(door.X + step.X, door.Y + step.Y);
                 foreach (var acceptedBody in acceptedBodies)
                 {
                     if (acceptedBody.Contains(neighbor))
@@ -404,42 +403,27 @@ public static partial class TownPlanGenerator
             layers[TownLayers.Roads][spineX, y] = true;
         }
 
-        // For each door, find path to first road cell
+        // For each door, find path to first road cell. One array-backed search serves every door;
+        // it visits the same Cardinals-ordered steps as the former GridSearch.Nearest/Path calls.
+        var search = new CardinalSearch(W, H);
+        var houses = layers[TownLayers.Houses]; var shopWalls = layers[TownLayers.ShopWalls];
+        var buildings = layers[TownLayers.Buildings]; var roads = layers[TownLayers.Roads];
+        Func<GridPoint, bool> isRoad = c => c.X >= 0 && c.X < W && c.Y >= 0 && c.Y < H && roads[c.X, c.Y];
         foreach (var door in doors)
         {
-            // Define blocked predicate
-            Func<GridPoint, bool> blocked = (GridPoint c) =>
-            {
-                if (c.X < 0 || c.X >= W || c.Y < 0 || c.Y >= H)
-                    return true;
-                return (layers[TownLayers.Houses][c.X, c.Y] ||
-                       layers[TownLayers.ShopWalls][c.X, c.Y] ||
-                       (layers[TownLayers.Buildings][c.X, c.Y] && !c.Equals(door)));
-            };
-
-            // 4-way neighbors over !blocked cells
-            Func<GridPoint, IEnumerable<GridPoint>> neighbors = (GridPoint c) =>
-            {
-                var result = new List<GridPoint>();
-                var directions = new[] { new GridPoint(0, 1), new GridPoint(-1, 0),
-                                        new GridPoint(1, 0), new GridPoint(0, -1) };
-                foreach (var dir in directions)
-                {
-                    var next = new GridPoint(c.X + dir.X, c.Y + dir.Y);
-                    if (!blocked(next))
-                        result.Add(next);
-                }
-                return result;
-            };
+            // 4-way steps over cells that are in bounds and not blocked
+            Func<GridPoint, bool> passable = (GridPoint c) =>
+                c.X >= 0 && c.X < W && c.Y >= 0 && c.Y < H &&
+                !(houses[c.X, c.Y] || shopWalls[c.X, c.Y] || (buildings[c.X, c.Y] && !c.Equals(door)));
 
             // Find first road cell using BFS (Nearest)
-            var targetRoad = GridSearch.Nearest(door, neighbors, c => c.X >= 0 && c.X < W && c.Y >= 0 && c.Y < H && layers[TownLayers.Roads][c.X, c.Y]);
+            var targetRoad = search.Nearest(door, passable, isRoad);
 
             if (targetRoad == null)
                 throw new InvalidOperationException($"No road reachable from door {door}");
 
             // Get path
-            var path = GridSearch.Path(door, targetRoad.Value, neighbors);
+            var path = search.Path(door, targetRoad.Value, passable);
 
             // Mark all path cells except door as Roads
             foreach (var cell in path)
@@ -484,10 +468,9 @@ public static partial class TownPlanGenerator
 
                 // Check not 4-adjacent to a door (buildings)
                 bool adjacentToDoor = false;
-                var neighbors = new[] { new GridPoint(x - 1, y), new GridPoint(x + 1, y),
-                                       new GridPoint(x, y - 1), new GridPoint(x, y + 1) };
-                foreach (var neighbor in neighbors)
+                foreach (var step in Adjacent4)
                 {
+                    var neighbor = new GridPoint(x + step.X, y + step.Y);
                     if (neighbor.X >= 0 && neighbor.X < W && neighbor.Y >= 0 && neighbor.Y < H &&
                         layers[TownLayers.Buildings][neighbor.X, neighbor.Y])
                     {
@@ -570,10 +553,9 @@ public static partial class TownPlanGenerator
 
                 // Check not 4-adjacent to a door
                 bool adjacentToDoor = false;
-                var neighbors = new[] { new GridPoint(x - 1, y), new GridPoint(x + 1, y),
-                                       new GridPoint(x, y - 1), new GridPoint(x, y + 1) };
-                foreach (var neighbor in neighbors)
+                foreach (var step in Adjacent4)
                 {
+                    var neighbor = new GridPoint(x + step.X, y + step.Y);
                     if (neighbor.X >= 0 && neighbor.X < W && neighbor.Y >= 0 && neighbor.Y < H &&
                         layers[TownLayers.Buildings][neighbor.X, neighbor.Y])
                     {
@@ -586,8 +568,9 @@ public static partial class TownPlanGenerator
 
                 // Check 4-adjacent to a road
                 bool adjacentToRoad = false;
-                foreach (var neighbor in neighbors)
+                foreach (var step in Adjacent4)
                 {
+                    var neighbor = new GridPoint(x + step.X, y + step.Y);
                     if (neighbor.X >= 0 && neighbor.X < W && neighbor.Y >= 0 && neighbor.Y < H &&
                         layers[TownLayers.Roads][neighbor.X, neighbor.Y])
                     {

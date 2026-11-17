@@ -46,17 +46,38 @@ public static class TownDungeonGenerator
         bool Inside(GridPoint p) => p.X > 0 && p.Y > 0 && p.X < w - 1 && p.Y < h - 1;
         bool Open(GridPoint p) => Inside(p) && walkable[p.X, p.Y];
         bool Clearable(GridPoint p) => Inside(p) && (Open(p) || trees[p.X, p.Y]);
-        var reachable = GridSearch.VisitOrder(town.PartySpawn, p => GridSteps.CardinalNeighbors(p, Open)).ToHashSet();
+        Func<GridPoint, IEnumerable<GridPoint>> openSteps = p => GridSteps.CardinalNeighbors(p, Open);
+        Func<GridPoint, IEnumerable<GridPoint>> clearableSteps = p => GridSteps.CardinalNeighbors(p, Clearable);
+        var reachable = GridSearch.VisitOrder(town.PartySpawn, openSteps).ToHashSet();
+        // Repairs only ever open cells, so the reachable set only grows: extend it from each repaired path
+        // instead of re-flooding the town. `reached` mirrors set membership; the ordered set is rebuilt once below.
+        var reached = new bool[w, h];
+        foreach (var p in reachable) if (p.X >= 0 && p.Y >= 0 && p.X < w && p.Y < h) reached[p.X, p.Y] = true;
+        bool IsReached(GridPoint p) => p.X >= 0 && p.Y >= 0 && p.X < w && p.Y < h ? reached[p.X, p.Y] : reachable.Contains(p);
+        Func<GridPoint, bool> isReached = IsReached;
+        var grow = new Queue<GridPoint>();
+        bool repaired = false;
         for (int y = 1; y < h - 1; y++) for (int x = 1; x < w - 1; x++)
         {
             var cell = new GridPoint(x, y);
-            if (!Open(cell) || reachable.Contains(cell)) continue;
-            var target = GridSearch.Nearest(cell, p => GridSteps.CardinalNeighbors(p, Clearable), reachable.Contains)
+            if (!Open(cell) || IsReached(cell)) continue;
+            var target = GridSearch.Nearest(cell, clearableSteps, isReached)
                 ?? throw new InvalidOperationException($"District interior at {cell} cannot reach a street.");
-            foreach (var p in GridSearch.Path(cell, target, q => GridSteps.CardinalNeighbors(q, Clearable)))
+            var path = GridSearch.Path(cell, target, clearableSteps);
+            foreach (var p in path)
             { trees[p.X, p.Y] = false; props[p.X, p.Y] = false; walkable[p.X, p.Y] = true; }
-            reachable = GridSearch.VisitOrder(town.PartySpawn, p => GridSteps.CardinalNeighbors(p, Open)).ToHashSet();
+            // The path ends on a reached cell, so everything now open and connected to it joins the set.
+            grow.Clear();
+            foreach (var p in path) if (!reached[p.X, p.Y]) { reached[p.X, p.Y] = true; grow.Enqueue(p); }
+            while (grow.Count > 0)
+            {
+                var at = grow.Dequeue();
+                foreach (var next in GridSteps.CardinalNeighbors(at, Open))
+                    if (!reached[next.X, next.Y]) { reached[next.X, next.Y] = true; grow.Enqueue(next); }
+            }
+            repaired = true;
         }
+        if (repaired) reachable = GridSearch.VisitOrder(town.PartySpawn, openSteps).ToHashSet();
 
         var square = BossSquare(town);
         foreach (var p in square.Cells())

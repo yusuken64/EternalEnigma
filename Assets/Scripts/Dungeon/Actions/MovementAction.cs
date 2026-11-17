@@ -699,7 +699,6 @@ public class InteractAction : GameAction
 public class WaitAction : GameAction
 {
 	public WaitAction() {}
-    internal override void RecordOutcome(Character character) { if (character is Ally) GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} waited."); }
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if (Playback?.Commanded == true && character == Playback.Focus) QueueSound(SoundCue.Wait);

@@ -107,7 +107,7 @@ public class TurnManager : MonoBehaviour
         }
 	}
 
-    private static IEnumerator FlattenCompletedRoutines(IEnumerator root)
+    internal static IEnumerator FlattenCompletedRoutines(IEnumerator root)
     {
         var stack = new Stack<IEnumerator>(); stack.Push(root);
         try

@@ -14,13 +14,24 @@ public class SequentialCoroutines
 
     public IEnumerator RunCoroutines(List<IEnumerator> routines)
     {
+        // An instant routine (e.g. a hunger tick after a step) must not cost a frame:
+        // yielding on an already-finished Coroutine still waits for the next frame.
         foreach (var routine in routines)
         {
-            Coroutine runningCoroutine = context.StartCoroutine(routine);
+            bool done = false;
+            Coroutine runningCoroutine = context.StartCoroutine(Track(routine, () => done = true));
+            if (done) continue;
             runningCoroutines.Add(runningCoroutine);
             yield return runningCoroutine;
             runningCoroutines.Remove(runningCoroutine);
         }
+    }
+
+    private static IEnumerator Track(IEnumerator routine, System.Action post)
+    {
+        var flat = TurnManager.FlattenCompletedRoutines(routine);
+        try { while (flat.MoveNext()) yield return flat.Current; }
+        finally { post(); }
     }
 
     public void StopAllRunningCoroutines()

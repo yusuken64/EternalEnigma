@@ -450,7 +450,9 @@ public partial class Game : SingletonMonoBehaviour<Game>
         return sightAllies;
     }
 
-    private void LateUpdate() => RefreshSight();
+    // Sight is refreshed on demand, not polled per frame: a per-frame poll recomputed all party
+    // sight and re-uploaded the minimap once per walking hero per step. Replay refreshes before
+    // each batch, and PlayerController.StartTurn updates fog/minimap when control returns.
 
     internal void RefreshSight()
     {

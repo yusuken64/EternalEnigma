@@ -651,23 +651,26 @@ disp: {displayedVitals}");
 		var game = Game.Instance;
         if (game.Finale != null) return game.Finale.PursuitPath(this);
 
-		//TODO refactor cost out of the loop, do it in 2nd pass
-		//move to a different class
 		AStar.Node[,] grid = new AStar.Node[game.CurrentDungeon.dungeonWidth, game.CurrentDungeon.dungeonHeight];
+		// Occupied and trapped cells are gathered once, not searched per cell: the per-cell LINQ built a
+		// new character list for every cell of every pursuing enemy's grid, every turn.
+		var occupied = OccupiedCells(game);
+		var trapped = new HashSet<Vector3Int>();
+		foreach (var interactable in game.CurrentDungeon.Interactables)
+			if (interactable is Trap trap && trap.VisualObject.activeInHierarchy) trapped.Add(trap.Position);
 
 		for (int i = 0; i < game.CurrentDungeon.dungeonWidth; i++)
 		{
 			for (int j = 0; j < game.CurrentDungeon.dungeonHeight; j++)
 			{
-				var isWalkable = ToBounds(FootPrint,new Vector3Int(i,j)).Cells()
-                    .All(cell => game.CurrentDungeon.IsWalkable(new Vector3Int(cell.x,cell.y,0)));
+				var bounds = ToBounds(FootPrint,new Vector3Int(i,j));
+				bool isWalkable = true;
+				for (int x = bounds.xMin; x < bounds.xMax && isWalkable; x++)
+					for (int y = bounds.yMin; y < bounds.yMax && isWalkable; y++)
+						isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(x,y,0));
 
-				var containsCharacter = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
-				var containsTrap = game.CurrentDungeon.Interactables
-					.OfType<Trap>()
-					.Where(x => x.VisualObject.activeInHierarchy)
-					.Any(x => x.Position == new Vector3Int(i, j));
-				var movePenalty = game.CurrentDungeon.IsHazard(new Vector3Int(i,j)) ? 100 : containsCharacter || containsTrap ? 5 : 0;
+				var cell = new Vector3Int(i, j);
+				var movePenalty = game.CurrentDungeon.IsHazard(cell) ? 100 : occupied.Contains(cell) || trapped.Contains(cell) ? 5 : 0;
 				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty) { CardinalOnly = game.CurrentDungeon.Floor.TownPlan?.IsDoorway(new EternalEnigma.Core.World.GridPoint(i,j)) ?? false };
 			}
 		}
@@ -692,9 +695,8 @@ disp: {displayedVitals}");
 	{
 		var game = Game.Instance;
 
-		//TODO refactor cost out of the loop, do it in 2nd pass
-		//move to a different class
 		AStar.Node[,] grid = new AStar.Node[game.CurrentDungeon.dungeonWidth, game.CurrentDungeon.dungeonHeight];
+		var occupied = OccupiedCells(game);
 
 		for (int i = 0; i < game.CurrentDungeon.dungeonWidth; i++)
 		{
@@ -702,13 +704,20 @@ disp: {displayedVitals}");
 			{
 				var isWalkable = game.CurrentDungeon.IsWalkable(new Vector3Int(i, j));
 
-				var containsCharacter = game.AllCharacters.Any(x => x.TilemapPosition == new Vector3Int(i, j));
-				var movePenalty = game.CurrentDungeon.IsHazard(new Vector3Int(i,j)) ? 100 : containsCharacter ? 5 : 0;
+				var movePenalty = game.CurrentDungeon.IsHazard(new Vector3Int(i,j)) ? 100 : occupied.Contains(new Vector3Int(i, j)) ? 5 : 0;
 				grid[i, j] = new AStar.Node(i, j, isWalkable, movePenalty) { CardinalOnly = game.CurrentDungeon.Floor.TownPlan?.IsDoorway(new EternalEnigma.Core.World.GridPoint(i,j)) ?? false };
 			}
 		}
 
 		return grid;
+	}
+
+	private static HashSet<Vector3Int> OccupiedCells(Game game)
+	{
+		var occupied = new HashSet<Vector3Int>();
+		foreach (var ally in game.Allies) occupied.Add(ally.TilemapPosition);
+		foreach (var enemy in game.Enemies) occupied.Add(enemy.TilemapPosition);
+		return occupied;
 	}
 
 	internal Character GetPursuitTarget()

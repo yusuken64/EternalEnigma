@@ -134,6 +134,20 @@ public sealed class OverworldScene : MonoBehaviour
         Map.Apply(grid, Held, resolved);
         layoutMilliseconds = terrainTimer.Elapsed.TotalMilliseconds;
         Map.TerrainBuilt += TerrainReady;
+        // Let a frame pass so the layout's garbage is collected before the meshes add theirs.
+        if (CampaignOverworld.YieldBetweenBuildLayers) StartCoroutine(BuildMeshesNextFrame());
+        else BuildMeshesNow();
+    }
+
+    private System.Collections.IEnumerator BuildMeshesNextFrame()
+    {
+        if (RuntimeMeshMemory.Enabled) RuntimeMeshMemory.Log("Overworld layout done");
+        yield return null;
+        BuildMeshesNow();
+    }
+
+    private void BuildMeshesNow()
+    {
         TerrainStreaming.Begin(TerrainFocus);
         try { Map.BuildMeshes(); }
         catch { TerrainStreaming.End(); throw; }

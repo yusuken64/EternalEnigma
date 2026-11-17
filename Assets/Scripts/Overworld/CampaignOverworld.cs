@@ -36,6 +36,8 @@ public sealed class CampaignOverworld : MonoBehaviour
     public List<CampaignLayerBinding> LayerBindings = new();
     public OverworldGrid CurrentGrid { get; private set; }
     public event Action<TileWorldCreator> TerrainBuilt;
+    /// <summary>Build one TWC layer per frame. On by default only in the web player.</summary>
+    public static bool YieldBetweenBuildLayers = RuntimeMeshMemory.Enabled;
 
     [SerializeField, HideInInspector] private TileWorldCreatorAsset generatedAsset;
     [SerializeField, HideInInspector] private TileWorldCreatorAsset previousAsset;
@@ -190,6 +192,9 @@ public sealed class CampaignOverworld : MonoBehaviour
         Creator.OnBuildLayersComplete -= BuildFinished;
         Creator.OnBuildLayersComplete += BuildFinished;
         building = true;
+        // The web player collects garbage only between frames; one layer per frame keeps the
+        // permanent heap from growing to the whole build's garbage. TerrainBuilt still fires at the end.
+        Creator.yieldBetweenBuildLayers = YieldBetweenBuildLayers;
         try { Creator.ExecuteAllBuildLayers(true); }
         catch { building = false; Creator.OnBuildLayersComplete -= BuildFinished; throw; }
     }
@@ -214,7 +219,7 @@ public sealed class CampaignOverworld : MonoBehaviour
 
     private void BuildFinished(TileWorldCreator creator)
     {
-        building = false; creator.OnBuildLayersComplete -= BuildFinished;
+        building = false; creator.OnBuildLayersComplete -= BuildFinished; creator.yieldBetweenBuildLayers = false;
         BiomeDecorations.World(creator,CurrentGrid);
         TerrainBuilt?.Invoke(creator);
     }

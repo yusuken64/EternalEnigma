@@ -47,6 +47,13 @@ public static class RuntimeMeshMemory
         return released;
     }
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void LogBuildLayers()
+    {
+        TWC.TileWorldCreator.BuildLayerStepped = null;
+        if (Enabled) TWC.TileWorldCreator.BuildLayerStepped = (creator, layer) => Log($"{creator.name} layer {layer} built");
+    }
+
     /// <summary>One log line of memory use, so web builds show where the heap goes.</summary>
     public static void Log(string label)
     {

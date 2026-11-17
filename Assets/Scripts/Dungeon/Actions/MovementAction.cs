@@ -520,7 +520,17 @@ public class DeathAction : GameAction
         foreach (var owner in Game.Instance.AllCharacters.ToList())
             foreach (var status in owner.StatusEffects.ToList())
                 if (status != null) status.OnCharacterDied(owner, target);
-		var gainXP = new AddXPAction(attacker, target.FinalStats.EXPOnKill);
+		var xpPool = target.FinalStats.EXPOnKill;
+		var xpAwards = new List<GameAction>();
+		if (target is Ally)
+			xpAwards.Add(new AddXPAction(attacker, xpPool));
+		else
+		{
+			var witnesses = PartyRules.ExperienceWitnesses(Game.Instance, attacker, target);
+			var share = PartyRules.ExperienceShare(xpPool, witnesses.Count);
+			if (share > 0)
+				foreach (var witness in witnesses) xpAwards.Add(new AddXPAction(witness, share));
+		}
 
 		float value = UnityEngine.Random.value;
 		droppedItem = target.FinalStats.DropRate > 0 &&
@@ -539,7 +549,7 @@ public class DeathAction : GameAction
             }
             effects.AddRange(behavior.DeathEffects(enemy));
         }
-		if (AwardExperience) effects.Add(gainXP);
+		if (AwardExperience) effects.AddRange(xpAwards);
 		return effects;
 	}
 

@@ -17,6 +17,22 @@ public static class PartyRules
 
 	public static bool IsPartyDefeated(Game game) => StandingMembers(game).Count == 0;
 
+	// Who shares the XP for a kill: the killer (always counts as seeing it, if alive and not a summon),
+	// plus every other standing party member who can see the victim. Killer comes first.
+	public static IReadOnlyList<Ally> ExperienceWitnesses(Game game, Character killer, Character victim)
+	{
+		var witnesses = new List<Ally>();
+		if (killer is Ally k && IsStanding(game, k)) witnesses.Add(k);
+		foreach (var ally in StandingMembers(game))
+			if (!witnesses.Contains(ally) && victim != null && game.CurrentDungeon.CanSee(ally, victim))
+				witnesses.Add(ally);
+		return witnesses;
+	}
+
+	// Flat split, rounded up to the nearest whole point per witness.
+	public static int ExperienceShare(int pool, int witnessCount) =>
+		pool <= 0 || witnessCount <= 0 ? 0 : (pool + witnessCount - 1) / witnessCount;
+
 	public static IReadOnlyList<Ally> PartyMembers(Game game)
 	{
 		var members = new List<Ally>();

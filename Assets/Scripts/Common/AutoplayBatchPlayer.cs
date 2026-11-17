@@ -23,6 +23,8 @@ public sealed class AutoplayBatchPlayer : MonoBehaviour
         {
             if (index + 1 >= arguments.Length) throw new ArgumentException("Missing debug autoplay options path.");
             var settings = JsonUtility.FromJson<AutoplayOptions>(File.ReadAllText(arguments[index + 1]));
+            // JsonUtility always instantiates serializable fields, so an omitted Balance arrives as an empty object.
+            if (settings?.Balance != null && string.IsNullOrWhiteSpace(settings.Balance.ExperimentId)) settings.Balance = null;
             if (settings == null || !settings.Validate(out _) || settings.Mode != AutoplayMode.Campaign ||
                 (balance ? settings.Balance == null : !settings.DebugPlaythrough || settings.Balance != null) || string.IsNullOrWhiteSpace(settings.ReportRoot))
                 throw new ArgumentException("Expected valid campaign options for the requested runner and an explicit ReportRoot.");

@@ -12,14 +12,17 @@ public partial class TileWorldDungeonGenerator
     {
         GeneratedDungeon = null;
         if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Finale floor {plan.Number} terrain start");
-        if (RuntimeMeshMemory.Enabled && Common.Instance != null)
+        if (Common.Instance != null)
         {
-            // The web heap cannot hold the cached overworld and town alongside a second overworld-sized
-            // world. Both caches rebuild on demand if the party leaves the finale. Wait a frame so the
-            // destroyed objects are freed and the garbage collector runs before the build.
+            // The finale is the end of the campaign, so nothing cached for the overworld or towns is
+            // needed again (both caches rebuild on demand if the party does retreat). The web heap cannot
+            // hold them alongside a second overworld-sized world. Free them and unused assets, and collect,
+            // before the build.
             Common.Instance.OverworldTerrain.Clear();
             Common.Instance.TownTerrain.Clear();
             yield return null;
+            System.GC.Collect();
+            yield return Resources.UnloadUnusedAssets();
             System.GC.Collect();
             yield return null;
             if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Finale: overworld and town caches released");

@@ -91,7 +91,9 @@ public class Town : MonoBehaviour
             // A different town: drop the old geometry before building, so both never coexist at the peak.
             Common.Instance.TownTerrain.Clear();
         }
-        WalkableMap.TileWorldCreator.ExecuteAllBlueprintLayers();
+        // On the web player, one blueprint layer per frame lets each layer's garbage be collected.
+        if (CampaignOverworld.YieldBetweenBuildLayers) StartCoroutine(twc.ExecuteAllBlueprintLayersYielding());
+        else twc.ExecuteAllBlueprintLayers();
     }
 
     private void OnDisable()

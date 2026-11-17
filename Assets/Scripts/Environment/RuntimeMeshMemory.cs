@@ -51,7 +51,10 @@ public static class RuntimeMeshMemory
     private static void LogBuildLayers()
     {
         TWC.TileWorldCreator.BuildLayerStepped = null;
-        if (Enabled) TWC.TileWorldCreator.BuildLayerStepped = (creator, layer) => Log($"{creator.name} layer {layer} built");
+        TWC.TileWorldCreator.BlueprintLayerStepped = null;
+        if (!Enabled) return;
+        TWC.TileWorldCreator.BuildLayerStepped = (creator, layer) => Log($"{creator.name} layer {layer} built");
+        TWC.TileWorldCreator.BlueprintLayerStepped = (creator, layer) => Log($"{creator.name} blueprint {layer} done");
     }
 
     /// <summary>One log line of memory use, so web builds show where the heap goes.</summary>

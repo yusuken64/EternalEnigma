@@ -66,26 +66,30 @@ public static class DungeonPresentation
     public static void ClearOutput(GameObject root)
     {
         // Baked scene meshes are not assets. Shared imported/persistent meshes must survive.
-        var owned=new HashSet<Mesh>(root.GetComponentsInChildren<EnvironmentMeshOwner>(true).SelectMany(o=>o.Meshes));
-        foreach(var mesh in owned) if(mesh!=null) Release(mesh);
-        foreach(var owner in root.GetComponentsInChildren<EnvironmentMeshOwner>(true))
-        {
-            owner.Meshes.Clear();
-            foreach(var material in owner.Materials)if(material!=null)Release(material);
-            owner.Materials.Clear();
-            foreach(var texture in owner.Textures)if(texture!=null)Release(texture);
-            owner.Textures.Clear();
-        }
-        foreach(var mesh in root.GetComponentsInChildren<MeshFilter>(true).Select(f=>f.sharedMesh).Where(m=>m!=null).Distinct())
-        {
-            if(owned.Contains(mesh)) continue;
-#if UNITY_EDITOR
-            if(UnityEditor.EditorUtility.IsPersistent(mesh)) continue;
-#endif
-            // Only TWC's combined meshes are owned here; prefab meshes are shared.
-            if(mesh.name.Contains("_Cluster_")) Release(mesh);
-        }
+        var owners=root.GetComponentsInChildren<EnvironmentMeshOwner>(true);
+        var owned=new HashSet<Mesh>(owners.SelectMany(o=>o.Meshes));
+        var clusters=root.GetComponentsInChildren<MeshFilter>(true).Select(f=>f.sharedMesh).Where(m=>m!=null).Distinct()
+            .Where(m=>!owned.Contains(m) && m.name.Contains("_Cluster_")).ToList();
+        var materials=owners.SelectMany(o=>o.Materials).Where(m=>m!=null).ToList();
+        var textures=owners.SelectMany(o=>o.Textures).Where(t=>t!=null).ToList();
+        foreach(var owner in owners){owner.Meshes.Clear();owner.Materials.Clear();owner.Textures.Clear();}
+        // Hide the old output first, then free its assets at once: the next floor is usually built in
+        // this same frame, and a deferred Destroy would keep both floors' geometry alive at its peak.
         foreach(Transform child in root.transform.Cast<Transform>().ToArray()) Release(child.gameObject);
+        foreach(var mesh in owned) if(mesh!=null) ReleaseNow(mesh);
+        // Only TWC's combined meshes are owned here; prefab meshes are shared.
+        foreach(var mesh in clusters) ReleaseNow(mesh);
+        foreach(var material in materials) ReleaseNow(material);
+        foreach(var texture in textures) ReleaseNow(texture);
+    }
+    /// <summary>Destroys a generated asset (never a GameObject) immediately rather than at the end of the frame.</summary>
+    static void ReleaseNow(UnityEngine.Object asset)
+    {
+        if(asset==null || asset is GameObject || asset is Component)return;
+#if UNITY_EDITOR
+        if(UnityEditor.EditorUtility.IsPersistent(asset))return;
+#endif
+        UnityEngine.Object.DestroyImmediate(asset);
     }
     public static void TrackLegacyMeshes(GameObject root)
     {

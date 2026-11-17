@@ -125,21 +125,34 @@ public static partial class TownPlanGenerator
         var bodyCells = new HashSet<GridPoint>();
 
         bool InsideTown(GridPoint c) => c.X >= 1 && c.X <= W - 2 && c.Y >= 1 && c.Y <= H - 2;
+        bool CellFits(GridPoint cell) =>
+            InsideTown(cell) && !mainRoad[cell.X, cell.Y] && !bodyCells.Contains(cell) &&
+            !TownPlan.IsReservedCorridor(cell, H, options.SpineX) &&
+            !cell.Equals(options.PartySpawn) && !cell.Equals(options.Exit);
+        // A rear notch against both enclosing district walls would create an
+        // outdoor pocket with no exit. Leave access around at least one side.
+        bool BoundsFit(GridRect bounds, bool hasNotch) =>
+            !(hasNotch && bounds.Top == H - 2 && (bounds.X == 1 || bounds.Right == W - 2));
+        bool Spaced(GridPoint door, GridRect bounds)
+        {
+            // Bodies keep a two-cell gap, which leaves room for an alley between neighbours.
+            foreach (var other in footprints)
+                if (other.Bounds.Intersects(bounds, margin: 1) || bounds.Contains(other.Door) || other.Bounds.Contains(door)) return false;
+            return true;
+        }
         bool Fits(BuildingFootprint fp)
         {
-            // A rear notch against both enclosing district walls would create an
-            // outdoor pocket with no exit. Leave access around at least one side.
-            if (fp.HasNotch && fp.Bounds.Top == H - 2 && (fp.Bounds.X == 1 || fp.Bounds.Right == W - 2))
-                return false;
-            foreach (var cell in fp.Cells)
-            {
-                if (!InsideTown(cell) || mainRoad[cell.X, cell.Y] || bodyCells.Contains(cell) ||
-                    TownPlan.IsReservedCorridor(cell, H, options.SpineX) ||
-                    cell.Equals(options.PartySpawn) || cell.Equals(options.Exit))
-                    return false;
-            }
-            // Bodies keep a two-cell gap, which leaves room for an alley between neighbours.
-            return !footprints.Any(other => other.Bounds.Intersects(fp.Bounds, margin: 1) || fp.Bounds.Contains(other.Door) || other.Bounds.Contains(fp.Door));
+            if (!BoundsFit(fp.Bounds, fp.HasNotch)) return false;
+            foreach (var cell in fp.Cells) if (!CellFits(cell)) return false;
+            return Spaced(fp.Door, fp.Bounds);
+        }
+        // Same verdict as Fits(shape.Build(door)) without building the footprint.
+        bool ShapeFits(BuildingShapes.Shape shape, GridPoint door)
+        {
+            var bounds = shape.Bounds(door);
+            if (!BoundsFit(bounds, shape.HasNotch)) return false;
+            foreach (var offset in shape.Offsets) if (!CellFits(new GridPoint(door.X + offset.X, door.Y + offset.Y))) return false;
+            return Spaced(door, bounds);
         }
 
         void Place(BuildingFootprint footprint)
@@ -195,20 +208,21 @@ public static partial class TownPlanGenerator
             foreach (var step in Cardinals) if (bodyCells.Contains(new GridPoint(door.X + step.X, door.Y + step.Y))) { crowded = true; break; }
             if (crowded) continue;
 
-            BuildingFootprint? placed = null;
+            // Shapes are drawn (same draws) and tested without building them; only the placed one becomes a footprint.
+            BuildingShapes.Shape? placed = null;
             for (int attempt = 0; attempt < 3 && placed == null; attempt++)
             {
-                var shape = options.Furnished ? BuildingShapes.FurnishedRandom(shapes, door) : BuildingShapes.Random(shapes, door);
-                if (Fits(shape)) placed = shape;
+                var shape = options.Furnished ? BuildingShapes.FurnishedRandomShape(shapes) : BuildingShapes.RandomShape(shapes);
+                if (ShapeFits(shape, door)) placed = shape;
             }
             if (placed == null)
             {
-                var fallback = options.Furnished ? BuildingShapes.FurnishedDefault(door) : BuildingShapes.Default(door);
-                if (Fits(fallback)) placed = fallback;
+                var fallback = options.Furnished ? BuildingShapes.FurnishedDefaultShape : BuildingShapes.DefaultShape;
+                if (ShapeFits(fallback, door)) placed = fallback;
             }
             if (placed == null) continue;
 
-            Place(placed);
+            Place(placed.Value.Build(door));
         }
 
         // Same fallback as the simple layout: a door with no body is better than a missing building.

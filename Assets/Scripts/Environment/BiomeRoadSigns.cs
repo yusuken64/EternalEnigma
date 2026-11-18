@@ -46,6 +46,14 @@ public static class BiomeRoadSigns
     public sealed class Branch {public string TownId;public Vector2Int Direction,FirstCell;public int Distance;}
     public sealed class Sign {public Vector2Int Road,Verge;public OverworldBiome Biome;public Branch[] Branches;public int Priority;public HashSet<Vector2Int> JunctionCells;}
 
+    // Signs name places as the rest of the game does, never by generator id.
+    private static string SignName(CampaignContext context, string locationId)
+    {
+        string name = CampaignGuidance.LocationName(context, locationId);
+        if (name.StartsWith("the ", System.StringComparison.Ordinal)) name = name.Substring(4);
+        return name.Length == 0 ? name : char.ToUpperInvariant(name[0]) + name.Substring(1);
+    }
+
     public static string Directions(CampaignContext context, Sign sign)
     {
         var grid = context.Grid;
@@ -74,7 +82,7 @@ public static class BiomeRoadSigns
             if (!distances.TryGetValue(p, out int distance) || distance == 0) continue;
             bool town = location.Kind == LocationKind.Town;
             string name = town ? context.GetTownDisplayName(location.Id) : location.Encounter?.DisplayName ??
-                (location.Kind == LocationKind.FinalDungeon ? "Final dungeon" : location.Variant == DungeonVariant.Town ? "Hostile town district" : location.Id.Replace('-', ' '));
+                (location.Variant == DungeonVariant.Town ? "Hostile town district" : SignName(context, location.Id));
             entries.Add((town, location.Id, distance, $"{Compass(directions[p])} — {name} · {distance} road steps"));
         }
         var sorted = entries.OrderBy(e => e.Distance).ThenBy(e => e.Id, StringComparer.Ordinal).ToArray();

@@ -65,7 +65,7 @@ public sealed class ConsoleExplorerTests
     public void WarpMenuRequiresLaterKeyAndTeleportsBothWays()
     {
         var session = Create(LockForm.None, warp: true);
-        Assert.Contains("Requires: Later key", session.WarpLabel(Assert.Single(session.WarpsHere)));
+        Assert.Contains("You need the Later key", session.WarpLabel(Assert.Single(session.WarpsHere)));
         Assert.False(session.Warp("gate"));
         Assert.Equal("start", session.Location!.Id);
         for (int i = 0; i < 14; i++) Assert.True(session.Move(1, 0));

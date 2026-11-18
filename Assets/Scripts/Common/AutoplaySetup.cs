@@ -34,7 +34,9 @@ public sealed class AutoplaySetup : MonoBehaviour
         Speed.onClick.AddListener(() => { if (options.NoAnimations) return; int index = System.Array.IndexOf(AutoplayPanel.Rates,options.Speed); options.Speed = AutoplayPanel.Rates[(index+1)%AutoplayPanel.Rates.Length]; Refresh(); });
         FastMode.onClick.AddListener(() =>
         {
-            if (options.NoAnimations) { options.NoAnimations = false; options.Speed = watchSpeed; }
+            // Off → Fast → Cinematic → Off.
+            if (options.Cinematic) { options.Cinematic = false; options.Speed = watchSpeed; }
+            else if (options.NoAnimations) { options.NoAnimations = false; options.Cinematic = true; options.Speed = 1; options.DebugCoverage = false; }
             else { watchSpeed = options.Speed; options.NoAnimations = true; options.Speed = 32; }
             Refresh();
         });
@@ -58,7 +60,8 @@ public sealed class AutoplaySetup : MonoBehaviour
         Launch.interactable = Read(out var reason);
         Validation.text = reason ?? $"Seeds {options.Seed} to {options.SeedForRun(options.RunCount-1)} · isolated campaigns";
         SpeedLabel.text = $"Speed {options.Speed:0.#}×";
-        FastModeLabel.text = options.NoAnimations ? "Fast mode On · 32×, no animations" : "Fast mode Off";
+        FastModeLabel.text = options.NoAnimations ? "Fast mode On · 32×, no animations" :
+            options.Cinematic ? "Cinematic · controls hidden, F8 shows" : "Fast mode Off";
         Speed.interactable = !options.NoAnimations;
         GodmodeLabel.text = "Invincibility and unlimited strength " + (options.Godmode ? "On" : "Off");
         ResourcesLabel.text = "Unlimited resources " + (options.InfiniteResources ? "On" : "Off");

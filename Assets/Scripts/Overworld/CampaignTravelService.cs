@@ -173,6 +173,8 @@ public sealed class CampaignTravelService
         Load("Overworld", "Overworld", presentation, () =>
         {
             Context.Position = Context.Grid.Locations[townId];
+            // Leaving town declines the optional post-clear rest; don't remind on a later visit.
+            Context.State.OpeningClearNeedsSave = false;
             CampaignParty.ClearLiveParty(common);
         }, deferDestinationState: true);
         return true;
@@ -215,10 +217,11 @@ public sealed class CampaignTravelService
         if (firstClear != null)
         {
             var ability = DungeonClearAbilities.ForDungeon(firstClear);
-            if (ability != null) capabilities = capabilities.Append($"<b>{ability.DisplayName}</b>\n{ability.Description}").ToArray();
+            if (ability != null) capabilities = capabilities.Append($"<b>{ability.DisplayName}</b>\nWhole party: " +
+                string.Join(", ", ability.PassiveStatModification.DescribeEffect())).ToArray();
+            if (firstClear == "repeatable-0") capabilities = capabilities.Append("<b>Reset Floor</b>\nReset a puzzle floor to its starting state, free.").ToArray();
             var atlasPage = LivingAtlas.AfterClear(Context, firstClear);
             if (atlasPage != null) capabilities = capabilities.Append(atlasPage).ToArray();
-            if (firstClear == "repeatable-0") capabilities = capabilities.Append("<b>Reset Floor</b>\nPermanently restore puzzle floors to their entry state at no Mana cost.").ToArray();
         }
         CampaignParty.ClearLiveParty(common);
         CampaignParty.Capture(common);
@@ -249,10 +252,8 @@ public sealed class CampaignTravelService
     }
 
     public static string DescribeCapabilityReward(CampaignContext context, CapabilitySource source) =>
-        $"<b>{CampaignRewardNames.Name(context, source.Capability)}</b>\n{source.Capability.DisplayName()}\n" +
-        CampaignRewardNames.Purpose(source.Capability) + "\n" + (source.CompanionId != null
-            ? "Add the companion with this capability to your party at a town to use it."
-            : "Permanently available for matching overworld obstacles and routes.");
+        $"<b>{CampaignRewardNames.Name(context, source.Capability)}</b>\n" + CampaignRewardNames.Purpose(source.Capability) +
+        (source.CompanionId != null ? "\nA new companion can do this. Add them to your party at a town." : "");
 
     private string CapabilityName(EternalEnigma.Core.Capabilities.Capability capability) =>
         CampaignRewardNames.Name(Context, capability);
@@ -263,17 +264,13 @@ public sealed class CampaignTravelService
         {
             bool townGate = Context.Campaign.Routes.Any(route => route.KeyId == key && route.IsTownExit);
             return $"<b>{Context.Campaign.KeyLabel(key)}</b>\n" + (townGate && inDungeon
-                ? "The town gate is now open. Rest at home to save your victory, then follow the gate to the overworld!"
-                : "Unlocks its matching locked gate on the overworld.");
+                ? "The town gate is now open."
+                : "Opens a locked gate on the overworld.");
         });
-        string heading = keys.Length == 1 ? "KEY ACQUIRED!" : "KEYS ACQUIRED!";
-        if (capabilityRewards != null && capabilityRewards.Length > 0)
-        {
-            heading = keys.Length > 0 ? "REWARDS ACQUIRED!" : "CAPABILITY ACQUIRED!";
-            rewards = rewards.Concat(capabilityRewards);
-        }
-        yield return ShowKeyMessage($"<b>{heading}</b>\n" + (inDungeon ? "Dungeon cleared!\n\n" : "\n") +
-            string.Join("\n\n", rewards), continueTravel, inDungeon);
+        if (capabilityRewards != null) rewards = rewards.Concat(capabilityRewards);
+        int count = rewards.Count();
+        string heading = inDungeon ? "DUNGEON CLEARED!" : count == 1 ? "NEW REWARD!" : "NEW REWARDS!";
+        yield return ShowKeyMessage($"<b>{heading}</b>\n\n" + string.Join("\n\n", rewards), continueTravel, inDungeon);
     }
 
     public void ShowKeyUsed(string key)

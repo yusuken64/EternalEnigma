@@ -20,16 +20,21 @@ public sealed class FinaleRuntime
     public FinaleSession Session { get; }
     public bool OnOverworld => true;
     public bool IsTransitioning => transitioning;
-    public string Title => $"The reverse world - Floor {Session.CurrentFloor}";
+    // Only the first finale map mirrors the player's own world; the second is a newly generated land.
+    public static string WorldName(int floor) => floor <= 1 ? "The Reverse World" : "The Uncharted World";
+    public string Title => WorldName(Session.CurrentFloor);
     internal static string LoadingTitle(int floor) =>
-        $"Loading...\n<size=70%>The reverse world - Floor {floor}</size>";
+        $"Loading...\n<size=70%>{WorldName(floor)}</size>";
     public string ObjectiveText
     {
         get
         {
             var region = Session.Floor.Regions.FirstOrDefault(r => !Session.ClearedRegions.Contains(r.Id));
-            return region == null ? "Floor cleared. Ascend at the starting town." :
-                $"{region.Name} has {Session.RemainingIn(region.Id)} enemies remaining. {Session.Remaining} remain on this floor.";
+            if (region == null)
+                return Session.CurrentFloor < FinalePlan.FloorCount
+                    ? "Every region is clear. Return to the starting town to cross into the next world."
+                    : "Every region is clear. Return to the starting town to find the way home.";
+            return $"{region.Name} has {Session.RemainingIn(region.Id)} enemies remaining. {Session.Remaining} remain in this world.";
         }
     }
     internal FinaleRuntime(Game game, FinaleSession session) { this.game = game; Session = session; }
@@ -195,7 +200,7 @@ public sealed class FinaleRuntime
         foreach (var trap in game.CurrentDungeon.Floor.Traps) game.CurrentDungeon.SetTrap(trap.Cell.ToCell(), trap.Roll);
         foreach (var cell in Session.Floor.Grid.Warps.SelectMany(w => new[] { Session.Floor.Grid.Locations[w.From], Session.Floor.Grid.Locations[w.To] })
                      .Append(Session.Floor.Start).Distinct().Where(p => !p.Equals(Session.Floor.Stairs)))
-            FinalePortal.Create(game.CurrentDungeon, cell.ToCell(), "Choose a warp or leave the reverse world", () => RequestLocation(cell));
+            FinalePortal.Create(game.CurrentDungeon, cell.ToCell(), "Choose a warp or leave this world", () => RequestLocation(cell));
         var map = game.PlayerController.Minimap;
         map.FogOverlay.Initialize(game.CurrentDungeon); map.Initialize(game.CurrentDungeon);
         game.FloorReveal.LayoutRevealed = true; map.RevealLayout();
@@ -268,7 +273,7 @@ public sealed class FinaleRuntime
         var choices = new List<(string Label, string Description, Action Execute)>(); var ids = new List<string>();
         destinationButtons.Clear();
         if (from.Equals(Session.Floor.Start))
-        { ids.Add("retreat"); choices.Add(("Leave the reverse world", "Return with loot. Finale progress resets.", () => game.PlayerController.PendingRetreat = true)); }
+        { ids.Add("retreat"); choices.Add(("Leave this world", "Return home with your loot. Progress in these worlds resets.", () => game.PlayerController.PendingRetreat = true)); }
         foreach (var warp in Session.Floor.Grid.WarpsAt(from))
         {
             string id = warp.Id; bool available = Session.WarpDestinations(from).Any(w => w.RouteId == id);

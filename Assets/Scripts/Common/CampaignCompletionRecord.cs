@@ -39,5 +39,5 @@ public sealed class CampaignCompletionRecord
 
     internal string Statistics => $"{DungeonsCleared} dungeons cleared   ·   {TownsVisited} towns visited   ·   {CompanionsRecruited} companions recruited\n" +
         $"{KeysFound} keys found   ·   {Gold:N0} treasure   ·   {TimeSpan.FromSeconds(Math.Max(0, PlaytimeSeconds)).TotalHours:0.0} hours\n" +
-        $"The reverse world conquered   ·   Journey seed {Seed}";
+        $"The atlas worlds conquered   ·   Journey seed {Seed}";
 }

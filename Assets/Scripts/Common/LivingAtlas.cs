@@ -23,9 +23,10 @@ public static class LivingAtlas
     public static string AfterClear(CampaignContext context, string id)
     {
         if (!id.StartsWith("story-")) return null;
-        if (id == "story-0") return "<b>A page has changed</b>\nThe atlas in your pack falls open. Its blank page now shows the slime's chamber, with your footprints drawn in wet ink. Beside the picture is the impossible door from your bedroom.";
+        // Short teasers; the full chapter is in the book itself.
+        if (id == "story-0") return "<b>A page has changed</b>\nYour atlas now shows the slime's chamber in wet ink, beside a door like the one in your bedroom.";
         return "<b>The atlas remembers</b>\n" + (context.Completed.Count(x => x.StartsWith("story-")) >= 3
-            ? "Familiar companions fill the margins. Beyond your route, the atlas draws a second home: empty windows above a street of teeth. Something is copying the places you have visited."
-            : "Another room appears on a blank page. The drawing includes a dropped item you left behind. This book knows more than the shape of the land.");
+            ? "Your companions fill its margins, and past the last road it draws a strange copy of home."
+            : "A new page shows the room you just cleared, down to what you left behind.");
     }
 }

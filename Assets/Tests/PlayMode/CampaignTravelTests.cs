@@ -30,7 +30,7 @@ namespace EternalEnigma.Tests
         {
             var common = Common.Instance;
             yield return harness.WaitUntil(() => common.MessageDialog.gameObject.activeSelf, "key reward popup");
-            Assert.That(common.MessageDialog.PromptText.text, Does.Contain("KEY ACQUIRED!").Or.Contain("REWARDS ACQUIRED!"));
+            Assert.That(common.MessageDialog.PromptText.text, Does.Contain("DUNGEON CLEARED!").Or.Contain("NEW REWARD"));
             Assert.That(common.MessageDialog.PromptText.text, Does.Contain(common.CampaignContext.Campaign.KeyLabel(key)));
             Assert.That(common.Travel.IsTransitioning, Is.True);
             Assert.That(common.GameSaveData.Campaign.Keys, Contains.Item(key), "Capture the reward before acknowledgement.");

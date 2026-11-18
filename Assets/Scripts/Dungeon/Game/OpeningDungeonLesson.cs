@@ -138,6 +138,12 @@ public sealed class OpeningDungeonLesson : MonoBehaviour
         }
     }
 
+    // Update only advances the lesson between rounds. Autoplay submits rounds back to back,
+    // so it holds here until the practice result is replaced by the first opponent.
+    internal bool AutoplayHolds => enabled && pendingOpponent;
+    internal Vector3Int? AutoplayOpponent => enabled && opponentStarted && firstOpponent != null && firstOpponent.Vitals.HP > 0
+        ? firstOpponent.TilemapPosition : null;
+
     internal GameAction AutoplayAction(Ally hero)
     {
         if (hero != Hero || game.PlayerController.Floor != 1 || Context.State.PractisedOpeningSkill || skill == null) return null;

@@ -44,6 +44,35 @@ public sealed class CampaignGuidanceTests
     }
 
     [Fact]
+    public void OverworldDungeonsHaveDistinctPlaceNames()
+    {
+        for (int seed = 1; seed <= 40; seed++)
+        {
+            var c = new CampaignContext(new(OverworldLaunchMode.Campaign, seed));
+            var names = c.Campaign.Locations.Where(l => l.ParentTownId == null && l.IsDungeon && l.Encounter == null)
+                .Select(l => CampaignGuidance.LocationName(c, l.Id)).ToArray();
+            Assert.All(names, n => Assert.DoesNotContain("dungeon", n));
+            Assert.True(names.Distinct().Count() == names.Length, $"Seed {seed}: " + string.Join("; ", names));
+        }
+    }
+
+    [Fact]
+    public void OpeningRestReminderStaysInTheFirstTown()
+    {
+        var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
+        c.State.RequiresOpeningPreparation = true;
+        c.Keys.Add(CampaignContext.OpeningDayKey);
+        c.Completed.Add("story-0");
+        c.State.OpeningClearNeedsSave = true;
+        c.State.Scene = "Town"; c.State.LocationId = c.Campaign.StartLocationId;
+        Assert.Equal("The town gate is open! Rest at home to save your victory.", c.OpeningObjective);
+        c.State.Scene = "Overworld";
+        Assert.Equal("", c.OpeningObjective);
+        c.State.Scene = "Town"; c.State.LocationId = "town-1";
+        Assert.Equal("", c.OpeningObjective);
+    }
+
+    [Fact]
     public void OwnedKeyPointsToItsGateInsteadOfRepeatingItsSource()
     {
         var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));

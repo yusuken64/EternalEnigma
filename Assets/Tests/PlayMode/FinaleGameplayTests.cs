@@ -60,7 +60,7 @@ namespace EternalEnigma.Tests
             Assert.That(title, Is.Not.Null);
             Assert.That(title.gameObject.activeInHierarchy && title.alpha > .99f, Is.True);
             Assert.That(title.text, Does.StartWith("Loading..."));
-            if (floor > 0) Assert.That(title.text, Is.EqualTo($"Loading...\n<size=70%>The reverse world - Floor {floor}</size>"));
+            if (floor > 0) Assert.That(title.text, Is.EqualTo($"Loading...\n<size=70%>{FinaleRuntime.WorldName(floor)}</size>"));
         }
         static void Resolve(Character actor, GameAction action)
         {
@@ -173,7 +173,7 @@ namespace EternalEnigma.Tests
             for (int floor = 1; floor <= 2; floor++)
             {
                 yield return harness.WaitForIdle(); // The floor title also owns input after the scene cover opens.
-                Assert.That(game.Finale.Title, Is.EqualTo($"The reverse world - Floor {floor}"));
+                Assert.That(game.Finale.Title, Is.EqualTo(floor == 1 ? "The Reverse World" : "The Uncharted World"));
                 var hud = Object.FindFirstObjectByType<DungeonHud>();
                 var header = (TMPro.TMP_Text)typeof(DungeonHud).GetField("header",
                     System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(hud);

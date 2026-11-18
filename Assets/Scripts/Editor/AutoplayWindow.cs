@@ -85,6 +85,7 @@ public sealed class AutoplayWindow : EditorWindow
             if (options.Mode != AutoplayMode.Finale) options.ExploreAll = EditorGUILayout.Toggle("Visit all destinations", options.ExploreAll);
             else EditorGUILayout.HelpBox("Direct start at floor 1 with an endgame party. Both floors and waking at home are required. Excluded from full-campaign acceptance.", MessageType.Info);
             options.NoAnimations = EditorGUILayout.Toggle("Disable animations for run", options.NoAnimations);
+            options.Cinematic = EditorGUILayout.Toggle(new GUIContent("Cinematic", "Start with playback controls hidden. F8 shows them; any other input offers to stop."), options.Cinematic);
             }
             options.Speed = EditorGUILayout.Slider("Playback speed", options.Speed, .5f, 32);
             options.TimeLimitMinutes = Mathf.Max(1, EditorGUILayout.FloatField("Time limit (minutes)", options.TimeLimitMinutes));
@@ -137,6 +138,8 @@ public sealed class AutoplayWindow : EditorWindow
     public static void RunNormal() => Launch(new AutoplayOptions());
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug")]
     public static void RunDebug() => Launch(new AutoplayOptions { DebugPlaythrough = true, DebugCoverage = true });
+    [MenuItem("Tools/Eternal Enigma/Playthrough/Run Cinematic Debug")]
+    public static void RunCinematicDebug() => Launch(AutoplayOptions.CinematicDebug());
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug From File")]
     public static void RunDebugFromFile()
     {

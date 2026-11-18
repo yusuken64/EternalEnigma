@@ -39,7 +39,7 @@ public sealed class AutoplayPanel : MonoBehaviour
 
     public bool Contains(Vector2 point)
     {
-        var rect=Prompt.gameObject.activeInHierarchy?Prompt:runner.PanelVisible?Expanded:Collapsed;
+        var rect=Prompt.gameObject.activeInHierarchy?Prompt:Expanded;
         return rect.gameObject.activeInHierarchy&&RectTransformUtility.RectangleContainsScreenPoint(rect,point);
     }
 
@@ -49,7 +49,8 @@ public sealed class AutoplayPanel : MonoBehaviour
         bool visible=runner!=null&&runner.ShowPlaybackUI;
         if(inputBlocker!=null)inputBlocker.enabled=visible;
         Expanded.gameObject.SetActive(visible&&!runner.ReturnPromptOpen&&(runner.PanelVisible||runner.TakingControl));
-        Collapsed.gameObject.SetActive(visible&&!runner.ReturnPromptOpen&&!runner.PanelVisible&&!runner.TakingControl);
+        // Hidden means nothing on screen: any input already opens the return prompt, and F8 brings the panel back.
+        Collapsed.gameObject.SetActive(false);
         Prompt.gameObject.SetActive(visible&&runner.ReturnPromptOpen);
         if(!visible)return;
         Title.text="Autoplay";

@@ -366,7 +366,7 @@ public sealed class OverworldScene : MonoBehaviour
             StopHeldWalk();
             var gate = Map.CurrentGrid.LockAt(next);
             Message = Map.CurrentGrid.RequiresBoat(next) && !Held.Contains(Capability.Boat) ? "You need a boat to sail." :
-                gate == null ? "Blocked." : GateDescription(gate.RouteId);
+                gate == null ? "The way is blocked." : GateDescription(gate.RouteId);
             if (manual) AudioManager.Instance?.PlayCue(SoundCue.Denied);
             return false;
         }
@@ -377,13 +377,17 @@ public sealed class OverworldScene : MonoBehaviour
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
         SaveProgress();
         RefreshGates();
-        Message = locations.TryGetValue(Position, out var location) ? (location.Kind == LocationKind.Town ? Context.GetTownDisplayName(location.Id) : location.Id) + " — " + location.Kind : "";
+        // Each part is a full sentence for the event history. Road signs speak for themselves when read.
+        var parts = new List<string>();
+        if (locations.TryGetValue(Position, out var location)) parts.Add(ArrivalText(location));
         foreach (string id in OverworldMovement.Neighbors(Position).Select(Map.CurrentGrid.LockAt).Where(g => g != null).Select(g => g.RouteId).Distinct())
-            if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) Message += " | " + GateDescription(id);
+            if (gates.NeedsOpening(Campaign.Routes.First(r => r.Id == id))) parts.Add(GateDescription(id));
         foreach (var route in Campaign.Routes.Where(r => r.KeyLocationId != null && Map.CurrentGrid.Locations[r.KeyLocationId].Equals(Position) && !gates.HasKey(r)))
-            Message += route.KeyCondition == KeyAcquisition.AtLocation ? " | " + route.KeyLabel + " is here." : " | Clear this encounter to earn " + route.KeyLabel;
-        foreach (var route in Map.CurrentGrid.WarpsAt(Position)) Message += " | " + WarpLabel(route);
-        if (NearbySign() != null) Message += " | Road sign nearby.";
+            parts.Add(route.KeyCondition == KeyAcquisition.AtLocation ? "The " + route.KeyLabel + " is here." : "Clear this place to earn the " + route.KeyLabel + ".");
+        foreach (var route in Map.CurrentGrid.WarpsAt(Position))
+            parts.Add(route.CanTraverse(Held, resolved) ? "You can warp to " + WarpDestination(route) + " from here." :
+                "A warp to " + WarpDestination(route) + " is here. " + gates.Hint(route, Held));
+        Message = string.Join(" ", parts);
         walkHistory.Add(Position);
         if (walkHistory.Count > 4) walkHistory.RemoveAt(0);
         heldWalk = manual;
@@ -446,14 +450,23 @@ public sealed class OverworldScene : MonoBehaviour
         return gates.Hint(route, Held);
     }
 
-    public string WarpLabel(CampaignRoute route)
+    private string ArrivalText(CampaignLocation location)
+    {
+        string name = CampaignGuidance.LocationName(Context, location.Id);
+        if (location.Kind == LocationKind.Town) return "You arrive at " + name + ".";
+        return "You reach " + (name.StartsWith("the ", System.StringComparison.OrdinalIgnoreCase) ? "" : "the ") + name + ".";
+    }
+
+    private string WarpDestination(CampaignRoute route)
     {
         string destination = Map.CurrentGrid.Locations[route.From].Equals(Position) ? route.To : route.From;
         var target = Campaign.Locations.First(l => l.Id == destination);
-        string region = target.RegionId;
-        return "Warp to " + (target.Kind==LocationKind.Town?Context.GetTownDisplayName(destination):Campaign.Regions.First(r => r.Id == region).DisplayName) +
-            (route.CanTraverse(Held, resolved) ? "" : " | " + gates.Hint(route, Held));
+        return target.Kind == LocationKind.Town ? Context.GetTownDisplayName(destination) :
+            Campaign.Regions.First(r => r.Id == target.RegionId).DisplayName;
     }
+
+    public string WarpLabel(CampaignRoute route) => "Warp to " + WarpDestination(route) +
+        (route.CanTraverse(Held, resolved) ? "" : ". " + gates.Hint(route, Held));
 
     public bool Warp(string routeId)
     {
@@ -462,7 +475,7 @@ public sealed class OverworldScene : MonoBehaviour
         if (!Map.CurrentGrid.TryWarp(routeId, Position, Held, resolved, out var destination))
         {
             var blocked = Map.CurrentGrid.WarpsAt(Position).FirstOrDefault(r => r.Id == routeId);
-            Message = blocked != null ? gates.Hint(blocked, Held) : "Stand on a warp gate.";
+            Message = blocked != null ? gates.Hint(blocked, Held) : "There is no warp gate here.";
             AudioManager.Instance?.PlayCue(SoundCue.Denied);
             return false;
         }
@@ -475,7 +488,7 @@ public sealed class OverworldScene : MonoBehaviour
         PlaceFollowers();
         RefreshGates(); FollowCamera();
         SaveProgress();
-        Message = "Warp complete.";
+        Message = locations.TryGetValue(Position, out var arrived) ? ArrivalText(arrived) : "You step through the warp.";
         AudioManager.Instance?.PlayCue(SoundCue.Teleport);
         return true;
     }
@@ -516,7 +529,9 @@ public sealed class OverworldScene : MonoBehaviour
         foreach (var route in Campaign.Routes)
             if (route.TryUnlock(location.Id, resolved))
             {
-                Message = "Opened the shortcut to " + route.Id;
+                string other = route.Other(location.Id);
+                Message = other == null ? "A shortcut is now open." :
+                    "The shortcut to " + CampaignGuidance.LocationName(Context, other) + " is now open.";
                 RefreshGates();
                 SaveProgress();
                 AudioManager.Instance?.PlayCue(SoundCue.GateUnlock);
@@ -560,22 +575,27 @@ public sealed class OverworldScene : MonoBehaviour
         var rewards = new List<string>();
         var acquiredKeys = new List<string>();
         var acquiredCapabilities = new List<string>();
+        bool gotKey = false, gotCompanion = false;
         foreach (var route in Campaign.Routes)
             if (gates.CollectKey(route, location.Id))
             {
-                rewards.Add(route.KeyLabel + ". Use it at the gate.");
+                rewards.Add("the " + route.KeyLabel);
                 acquiredKeys.Add(route.KeyId);
+                gotKey = true;
             }
         foreach (var source in Campaign.Sources.Where(s => s.LocationId == location.Id && !claimed.Contains(s.Id)))
         {
             if (!Context.Claim(source.Id)) continue;
             rewards.Add(CampaignRewardNames.Name(Context, source.Capability));
             acquiredCapabilities.Add(CampaignTravelService.DescribeCapabilityReward(Context, source));
+            gotCompanion |= source.CompanionId != null;
         }
         SaveProgress();
         // Claim local rewards first; once collected, the same interaction key exposes travel.
         if (rewards.Count == 0 && announceLocked && GetComponent<OverworldMenuManager>().ChooseTravel()) return;
-        Message = rewards.Count == 0 ? "No eligible unclaimed rewards here." : "Acquired " + string.Join(", ", rewards) + ". Equip companions at a town.";
+        Message = rewards.Count == 0 ? "There is nothing left to collect here." :
+            "You received " + JoinNatural(rewards) + "." + (gotKey ? " Use the key at its locked gate." : "") +
+            (gotCompanion ? " Add new companions to your party at a town." : "");
         if (rewards.Count > 0) AudioManager.Instance?.PlayCue(SoundCue.Pickup);
         RefreshGates();
         Common.Instance.Travel.ShowRewardsAcquired(acquiredKeys.Distinct().ToArray(), acquiredCapabilities.ToArray());
@@ -590,6 +610,9 @@ public sealed class OverworldScene : MonoBehaviour
         GameMessages.Post("Travelling party updated.");
         RebuildFollowers(); SaveProgress(); RefreshGates(); return true;
     }
+
+    private static string JoinNatural(IReadOnlyList<string> items) => items.Count <= 1 ? string.Join("", items) :
+        string.Join(", ", items.Take(items.Count - 1)) + " and " + items[items.Count - 1];
 
     private void RebuildFollowers()
     {
@@ -618,7 +641,7 @@ public sealed class OverworldScene : MonoBehaviour
         Context.CompleteDungeon(true); RefreshGates();
         if (Context.Opened.Except(previousOpenedGates).Any()) AudioManager.Instance?.PlayCue(SoundCue.GateUnlock);
         Message = Context.State.Scene == "Town" ? "Town dungeon cleared. The town gate is unlocked."
-            : "Dungeon victory committed. Use any awarded key at its exit gate."; return true;
+            : "Dungeon cleared. Use any key you earned at its locked gate."; return true;
     }
 
     private GridPoint TrailCell(int index) => walkHistory[Mathf.Max(0, walkHistory.Count - index - 1)];

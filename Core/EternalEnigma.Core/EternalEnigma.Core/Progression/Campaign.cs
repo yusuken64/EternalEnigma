@@ -69,8 +69,9 @@ public sealed class CampaignRoute
     /// <summary>Display name of the key. <see cref="KeyId"/> stays the stable identity used by saves and unlock state.</summary>
     public string? KeyName { get; }
     public string? KeyLabel => KeyName ?? KeyId;
-    public string GateHint => LockText ?? (ShortcutKind == ShortcutKind.Keyed ? "Requires: " + KeyId :
-        ShortcutKind == ShortcutKind.FarSide ? "Open shortcut at the far endpoint." : "Requires: " + Requirement);
+    // Shown in the event history, so the fallbacks are sentences rather than ids or requirement syntax.
+    public string GateHint => LockText ?? (ShortcutKind == ShortcutKind.Keyed ? "You need the " + KeyLabel + " to open this." :
+        ShortcutKind == ShortcutKind.FarSide ? "This shortcut opens from the other side." : "You need " + Requirement.Describe() + " to pass.");
     public bool HasGate => !Requirement.IsOpen || ShortcutKind == ShortcutKind.FarSide || ShortcutKind == ShortcutKind.Keyed;
     public CampaignRoute(string id, string from, string to, Requirement requirement, LockForm form, bool required = false, bool isProgressionBoundary = false, ShortcutKind shortcutKind = ShortcutKind.None, string? unlockingEndpoint = null, string? keyId = null, string? keyLocationId = null, bool isWarp = false, KeyAcquisition keyCondition = KeyAcquisition.AtLocation, bool isTownExit = false, string? skinId = null, string? lockText = null, string? keyName = null, string? completionLocationId = null)
     { Id = id; From = from; To = to; Requirement = requirement ?? throw new ArgumentNullException(nameof(requirement)); Form = form; Required = required; IsProgressionBoundary = isProgressionBoundary; ShortcutKind = shortcutKind; UnlockingEndpoint = unlockingEndpoint; KeyId = keyId; KeyLocationId = keyLocationId; IsWarp = isWarp; KeyCondition = keyCondition; IsTownExit = isTownExit; SkinId = skinId; LockText = lockText; KeyName = keyName; CompletionLocationId = completionLocationId; }

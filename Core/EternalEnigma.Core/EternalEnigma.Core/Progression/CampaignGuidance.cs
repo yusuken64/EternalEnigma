@@ -33,8 +33,30 @@ public static class CampaignGuidance
         var region = context.Campaign.Regions.Single(r => r.Id == location.RegionId);
         return location.Kind == LocationKind.Town ? context.GetTownDisplayName(location.Id) :
             location.Encounter != null ? region.DisplayName + " " + location.Encounter.DisplayName.ToLowerInvariant() :
-            location.ParentTownId != null ? "the dungeon in " + context.GetTownDisplayName(anchor) : region.DisplayName + " " + location.Kind.ToString().Replace("Dungeon", " dungeon").ToLowerInvariant();
+            location.ParentTownId != null ? "the dungeon in " + context.GetTownDisplayName(anchor) : DungeonName(location, region);
     }
+
+    // Place names, not design categories: "the Keep of the Harrowmark" rather than "story dungeon".
+    private static string DungeonName(CampaignLocation location, CampaignRegion region) => location.Kind switch
+    {
+        LocationKind.StoryDungeon => "the " + Landmark(region.Theme) + " of " + region.DisplayName,
+        LocationKind.RepeatableDungeon => "the Depths of " + region.DisplayName,
+        LocationKind.FinalDungeon => "the Inkbound Town",
+        _ => region.DisplayName + " " + location.Kind.ToString().ToLowerInvariant()
+    };
+
+    private static string Landmark(string theme) => theme switch
+    {
+        Generation.LockSkinCatalog.Highlands => "Keep",
+        Generation.LockSkinCatalog.Marsh => "Sunken Halls",
+        Generation.LockSkinCatalog.Coast => "Sea Caves",
+        Generation.LockSkinCatalog.Forest => "Barrow",
+        Generation.LockSkinCatalog.Desert => "Tomb",
+        Generation.LockSkinCatalog.Tundra => "Ice Caverns",
+        Generation.LockSkinCatalog.Ruins => "Vaults",
+        Generation.LockSkinCatalog.Volcanic => "Forge",
+        _ => "Halls"
+    };
 
     public static string Location(CampaignContext context, string townId, string locationId)
     {

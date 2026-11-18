@@ -115,7 +115,9 @@ public HashSet<string> Completed { get; }
         HomeDoorIsLocked ? HomeLessonObjective :
         IsPreparingForOpening ? !State.BoughtOpeningBread ? "Collect your free bread at the bakery." :
             !State.LearnedOpeningSkill ? "Learn your first ability at the trainer." : "Sleep and save in your bed at home." :
-        State.OpeningClearNeedsSave ? "The town gate is open! Rest at home to save your victory." :
+        // The rest reminder belongs to the first town; it never follows the player out of it.
+        State.OpeningClearNeedsSave && State.Scene == "Town" && State.LocationId == Campaign.StartLocationId
+            ? "The town gate is open! Rest at home to save your victory." :
         Completed.Contains("story-0") ? State.Scene == "Town" && State.LocationId == "town-0" ? "Follow the open town gate to the overworld." : "" :
         State.PendingDungeon == "story-0" ? "Reach Floor 5 and clear the town dungeon." : "Enter the town dungeon for your first adventure.";
     public string OpeningPreparationHint => HomeDoorIsLocked ? HomeLessonObjective : ReadyForOpeningDay

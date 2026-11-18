@@ -59,20 +59,29 @@ public sealed class OverworldMenuManager : MonoBehaviour
         Interaction=session;
         interactionRoute=route;
         applied.Clear();
-        GameMessages.Post(route.LockText ?? route.GateHint, coalesce:true);
+        GameMessages.Post(route.GateHint, coalesce:true);
         ShowPartyMenu(PartyMenuTab.Capabilities);
         return true;
     }
 
     internal string GateActionRestriction(LockAction action)
     {
-        if (action is CapabilityLockAction use && !world.Held.Contains(use.Capability))
-            return CampaignRewardNames.Name(world.Context, use.Capability) + " requires " +
-                CampaignGuidance.CapabilitySource(world.Context, use.Capability, CompanionName) + " in the active party.";
+        if (action is CapabilityLockAction use && !world.Held.Contains(use.Capability)) return MissingCapability(use.Capability);
         if (action is KeyLockAction key && !world.CollectedKeys.Contains(key.KeyId))
-            return "Requires " + world.Campaign.KeyLabel(key.KeyId) + "; you do not have it.";
+            return "You don't have the " + world.Campaign.KeyLabel(key.KeyId) + ".";
         return null;
     }
+
+    private string MissingCapability(Capability capability)
+    {
+        string name = CampaignRewardNames.Name(world.Context, capability);
+        string source = CampaignGuidance.CapabilitySource(world.Context, capability, CompanionName);
+        return string.IsNullOrEmpty(source) ? "You don't have " + name + " yet." :
+            "To use " + name + ", bring " + source + " in your travelling party.";
+    }
+
+    private string RequirementText(Requirement requirement) =>
+        requirement.Describe(c => CampaignRewardNames.Name(world.Context, c));
 
     internal void UseGateAction(LockAction action, string label)
     {
@@ -128,18 +137,18 @@ public sealed class OverworldMenuManager : MonoBehaviour
     {
         if(action is KeyLockAction key)
         {
-            if(!world.CollectedKeys.Contains(key.KeyId))return "Requires " + world.Campaign.KeyLabel(key.KeyId) + "; you do not have it.";
+            if(!world.CollectedKeys.Contains(key.KeyId))return "You don't have the " + world.Campaign.KeyLabel(key.KeyId) + ".";
             return route.ShortcutKind==ShortcutKind.Keyed
-                ? world.Campaign.KeyLabel(key.KeyId) + " does not fit. Requires " + world.Campaign.KeyLabel(route.KeyId) + "."
-                : "This gate does not use that key. " + (route.LockText??route.GateHint);
+                ? "The " + world.Campaign.KeyLabel(key.KeyId) + " doesn't fit. This lock takes the " + world.Campaign.KeyLabel(route.KeyId) + "."
+                : "No key opens this way. " + route.GateHint;
         }
         if(action is CapabilityLockAction use)
         {
             string name=CampaignRewardNames.Name(world.Context,use.Capability);
-            if(!world.Held.Contains(use.Capability))return name + " requires " + CampaignGuidance.CapabilitySource(world.Context,use.Capability,CompanionName) + " in the active party.";
-            if(route.ShortcutKind==ShortcutKind.Keyed)return "This gate requires " + world.Campaign.KeyLabel(route.KeyId) + ".";
-            if(applied.Contains(use.Capability))return name + " has already been used. Another ability is needed. " + (route.LockText??route.GateHint);
-            return name + " cannot open this gate. " + (route.LockText??route.GateHint);
+            if(!world.Held.Contains(use.Capability))return MissingCapability(use.Capability);
+            if(route.ShortcutKind==ShortcutKind.Keyed)return "This gate needs the " + world.Campaign.KeyLabel(route.KeyId) + ".";
+            if(applied.Contains(use.Capability))return "You've already used " + name + " here. Something else is needed. " + route.GateHint;
+            return name + " won't open this way. " + route.GateHint;
         }
         return "Choose an ability or key for this gate.";
     }
@@ -159,7 +168,7 @@ public sealed class OverworldMenuManager : MonoBehaviour
             location.Encounter?.RequiresResetFloor == true && !context.ResetFloorUnlocked
                 ? "Learn Reset Floor by clearing the first repeatable dungeon before entering." :
             location.Encounter != null && !location.Encounter.EntryRequirement.IsSatisfiedBy(context.Held)
-                ? "This encounter requires " + location.Encounter.EntryRequirement + "." : null;
+                ? "You need " + RequirementText(location.Encounter.EntryRequirement) + " to enter here." : null;
         var blockedReason=BlockedReason();
         PartyMenuPicker picker=null;
         Action enter = () =>
@@ -174,7 +183,8 @@ public sealed class OverworldMenuManager : MonoBehaviour
         };
         picker=PartyMenuPicker.Build(PartyMenu.transform.parent,location.Encounter==null?"Enter dungeon?":"Enter encounter?",
             new List<(string,Action)>{("Enter", enter)},false);
-        picker.Description(CampaignGuidance.LocationName(context, location.Id)+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
+        string placeName=CampaignGuidance.LocationName(context, location.Id);
+        picker.Description(char.ToUpperInvariant(placeName[0])+placeName.Substring(1)+"\n"+(context.Completed.Contains(location.Id)?"Cleared":"Not cleared")+
             "\n" + location.DungeonDescription + (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town ? ". Hostile territory" : "") +
             (location.Encounter?.Kind==EncounterKind.Prison?"\nYour carried and equipped possessions will be confiscated temporarily. Recover them from the guarded stash before escaping. Gold and learned skills remain available.":"")+
             (blockedReason == null ? "" : "\n" + blockedReason), showControlHints:false);

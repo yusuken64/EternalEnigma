@@ -12,6 +12,10 @@ public sealed class AutoplayPanel : MonoBehaviour
     public static readonly float[] Rates={.5f,1,2,4,8,16,32};
     AutoplayRunner runner;
     Image inputBlocker;
+    bool countsCached,playbackCached,animationCached,lastSweep,lastPaused;
+    long lastRun,lastRunCount,lastCollected,lastExpected,lastTurns,lastActions;
+    float lastSpeed;
+    string lastSpeedLabel;
 
     public void Bind(AutoplayRunner value)
     {
@@ -51,11 +55,32 @@ public sealed class AutoplayPanel : MonoBehaviour
         Title.text="Autoplay";
         Status.text=runner.TakingControl?"Finishing the current action…":runner.Finalizing?"Saving the run report…":
             runner.SessionRunning?(runner.Paused?"Paused":"Exploring the world…"):"Autoplay has ended.";
-        Counts.text=$"Run {System.Math.Min(runner.RunNumber,runner.Options.RunCount)} of {runner.Options.RunCount}\n"+
-            (runner.IsLootSweep?$"Found {runner.Report?.CollectedLoot??0} of {runner.Report?.ExpectedLoot??0} items. ":$"{runner.Report?.DungeonTurns??0} turns. ")+$"{runner.Report?.Actions??0} actions.";
-        Playback.text=$"Playback speed {runner.Options.Speed:0.#}×"+(runner.Paused?" paused":"");
+        // Formatted labels are rebuilt only when their inputs change (Update runs this every frame).
+        long run=System.Math.Min(runner.RunNumber,runner.Options.RunCount),runCount=runner.Options.RunCount;
+        long collected=runner.Report?.CollectedLoot??0,expected=runner.Report?.ExpectedLoot??0;
+        long turns=runner.Report?.DungeonTurns??0,actions=runner.Report?.Actions??0;
+        bool sweep=runner.IsLootSweep;
+        if(!countsCached||run!=lastRun||runCount!=lastRunCount||sweep!=lastSweep||collected!=lastCollected||
+           expected!=lastExpected||turns!=lastTurns||actions!=lastActions)
+        {
+            countsCached=true;lastRun=run;lastRunCount=runCount;lastSweep=sweep;lastCollected=collected;
+            lastExpected=expected;lastTurns=turns;lastActions=actions;
+            Counts.text=$"Run {run} of {runCount}\n"+
+                (sweep?$"Found {collected} of {expected} items. ":$"{turns} turns. ")+$"{actions} actions.";
+        }
+        float speed=runner.Options.Speed;bool paused=runner.Paused;
+        if(!playbackCached||speed!=lastSpeed||paused!=lastPaused)
+        {
+            playbackCached=true;lastSpeed=speed;lastPaused=paused;
+            Playback.text=$"Playback speed {speed:0.#}×"+(paused?" paused":"");
+        }
         PauseLabel.text=runner.Paused?"Resume":"Pause";
-        AnimationLabel.text="Animations "+DungeonPreferences.SpeedLabel;
+        string speedLabel=DungeonPreferences.SpeedLabel;
+        if(!animationCached||speedLabel!=lastSpeedLabel)
+        {
+            animationCached=true;lastSpeedLabel=speedLabel;
+            AnimationLabel.text="Animations "+speedLabel;
+        }
         Footer.text=runner.Finalizing?"Saving the run report…":runner.SessionRunning?"Click outside these controls to stop or take control.":
             runner.Report?.ArtifactsComplete==true?"The run report has been saved.":"The run report could not be completed.";
         Pause.interactable=runner.SessionRunning&&!runner.TakingControl;

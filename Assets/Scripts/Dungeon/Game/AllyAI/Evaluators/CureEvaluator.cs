@@ -12,7 +12,7 @@ public sealed class CureEvaluator : IAllySkillEvaluator
 		{
 			var cures = skill.ActionEffects.OfType<ICureEffect>().ToList();
 			if (cures.Count == 0) continue;
-			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
+			foreach (var option in context.Options(skill))
 			{
 				int afflicted = option.Affected.Count(c => context.Party.Contains(c) &&
 					c.StatusEffects.Any(s => s != null && !s.IsExpired() && cures.Any(cure => cure.Cures(s))));

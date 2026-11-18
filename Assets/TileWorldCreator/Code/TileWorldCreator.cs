@@ -159,7 +159,15 @@ namespace TWC
 				{
 					if (executeAllBuildLayers)
 					{
-						ExecuteNextBuildLayer(forceRebuild);
+						// EternalEnigma: optionally start the next layer on the next frame (see yieldBetweenBuildLayers).
+						if (yieldBetweenBuildLayers && Application.isPlaying && isActiveAndEnabled)
+						{
+							StartCoroutine(ExecuteNextBuildLayerNextFrame(forceRebuild));
+						}
+						else
+						{
+							ExecuteNextBuildLayer(forceRebuild);
+						}
 					}
 				}
 			}
@@ -169,6 +177,32 @@ namespace TWC
 		
 		private bool executeAllBuildLayers = false;
 		private bool forceRebuild = false;
+
+		/// <summary>
+		/// EternalEnigma addition. When true at runtime, ExecuteAllBuildLayers runs one build layer per
+		/// frame instead of chaining them all inside one frame. The web player only collects garbage
+		/// between frames, so this caps the managed heap at the largest single layer's garbage rather
+		/// than the whole build's. The build's random stream is kept separate from the rest of the game
+		/// across those frames, so results match a single-frame build.
+		/// </summary>
+		[System.NonSerialized] public bool yieldBetweenBuildLayers = false;
+
+		/// <summary>EternalEnigma addition: raised after each build layer when yielding between layers.</summary>
+		public static System.Action<TileWorldCreator, string> BuildLayerStepped;
+
+		System.Collections.IEnumerator ExecuteNextBuildLayerNextFrame(bool _forceCompleteRebuild)
+		{
+			var _finished = _executedBuildLayersCount > 0 && _executedBuildLayersCount <= twcAsset.mapBuildLayers.Count
+				? twcAsset.mapBuildLayers[_executedBuildLayersCount - 1] : null;
+			if (_finished != null && _finished.active && BuildLayerStepped != null) BuildLayerStepped(this, _finished.layerName);
+			var _buildRandom = UnityEngine.Random.state;
+			yield return null;
+			if (!executeAllBuildLayers) yield break;
+			var _outerRandom = UnityEngine.Random.state;
+			UnityEngine.Random.state = _buildRandom;
+			try { ExecuteNextBuildLayer(_forceCompleteRebuild); }
+			finally { UnityEngine.Random.state = _outerRandom; }
+		}
 		public int currentSeed;
 		
 		int lastSeed;
@@ -606,6 +640,47 @@ namespace TWC
 			//}
 		}
 		
+		/// <summary>
+		/// EternalEnigma addition: ExecuteAllBlueprintLayers with a frame between active layers, so the
+		/// web player can collect each layer's garbage. The layers' random stream is kept separate from
+		/// the rest of the game across those frames, so results match ExecuteAllBlueprintLayers.
+		/// Start it with StartCoroutine; OnBlueprintLayersComplete fires after the last layer as usual.
+		/// </summary>
+		public System.Collections.IEnumerator ExecuteAllBlueprintLayersYielding()
+		{
+			_executedBlueprintLayersCount = 0;
+			int _seed = System.Environment.TickCount;
+			if (twcAsset.useRandomSeed)
+			{
+				_seed = twcAsset.randomSeed;
+			}
+			currentSeed = _seed;
+			lastSeed = currentSeed;
+			UnityEngine.Random.InitState(_seed);
+			bool _ranOne = false;
+			string _lastLayer = null;
+			for (int m = 0; m < twcAsset.mapBlueprintLayers.Count; m ++)
+			{
+				if (!twcAsset.mapBlueprintLayers[m].active) continue;
+				if (_ranOne)
+				{
+					if (BlueprintLayerStepped != null) BlueprintLayerStepped(this, _lastLayer);
+					var _layersRandom = UnityEngine.Random.state;
+					yield return null;
+					var _outerRandom = UnityEngine.Random.state;
+					UnityEngine.Random.state = _layersRandom;
+					try { ExecuteBlueprintLayer(m); }
+					finally { UnityEngine.Random.state = _outerRandom; }
+				}
+				else ExecuteBlueprintLayer(m);
+				_ranOne = true;
+				_lastLayer = twcAsset.mapBlueprintLayers[m].layerName;
+			}
+		}
+
+		/// <summary>EternalEnigma addition: raised between blueprint layers by ExecuteAllBlueprintLayersYielding.</summary>
+		public static System.Action<TileWorldCreator, string> BlueprintLayerStepped;
+
 		/// <summary>
 		/// Execute specific layer in the blueprint stack
 		/// </summary>

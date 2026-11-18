@@ -16,6 +16,15 @@ public sealed class TownPlanValidationResult
 /// </summary>
 public static class TownPlanValidator
 {
+    // Per-cell checks below test their condition first and only format the message on failure;
+    // the error text and order are unchanged from the former Check(condition, $"...") calls.
+
+    private static bool OnAny(GridLayer[] layers, int x, int y)
+    {
+        foreach (var layer in layers) if (layer[x, y]) return true;
+        return false;
+    }
+
     /// <summary>Checks that only detailed towns need: road classes, props and building footprints.</summary>
     private static void ValidateDetail(TownPlan plan, TownPlanOptions options, Action<bool, string> check)
     {
@@ -35,34 +44,34 @@ public static class TownPlanValidator
             for (int y = 0; y < plan.Height; y++)
             {
                 var cell = new GridPoint(x, y);
-                if (main[x, y]) check(roads[x, y], $"detail.mainRoads: Main road at {cell} is not a road.");
+                if (main[x, y] && !roads[x, y]) check(false, $"detail.mainRoads: Main road at {cell} is not a road.");
                 if (alleys[x, y])
                 {
-                    check(roads[x, y], $"detail.alleys: Alley at {cell} is not a road.");
-                    check(!main[x, y], $"detail.alleys: Alley at {cell} is also a main road.");
+                    if (!roads[x, y]) check(false, $"detail.alleys: Alley at {cell} is not a road.");
+                    if (main[x, y]) check(false, $"detail.alleys: Alley at {cell} is also a main road.");
                 }
                 if (props[x, y])
                 {
-                    check(!roads[x, y] && !solid.Any(layer => layer[x, y]), $"detail.props: Prop at {cell} is on a road or occupied cell.");
-                    check(!plan.IsReserved(cell) && !cell.Equals(plan.PartySpawn) && !cell.Equals(plan.Exit), $"detail.props: Prop at {cell} blocks the entrance.");
+                    if (roads[x, y] || OnAny(solid, x, y)) check(false, $"detail.props: Prop at {cell} is on a road or occupied cell.");
+                    if (plan.IsReserved(cell) || cell.Equals(plan.PartySpawn) || cell.Equals(plan.Exit)) check(false, $"detail.props: Prop at {cell} blocks the entrance.");
                 }
             }
         }
 
         // The spine is a main road along its whole length, so the exit and dungeon entrance sit on it.
         for (int y = 0; y < plan.Height; y++)
-            check(main[plan.SpineX, y], $"detail.spine: Spine cell ({plan.SpineX},{y}) is not a main road.");
+            if (!main[plan.SpineX, y]) check(false, $"detail.spine: Spine cell ({plan.SpineX},{y}) is not a main road.");
 
         check(plan.Footprints.Count == plan.BuildingSlots.Count, "detail.footprints: Footprint count does not match the building slots.");
         var seen = new HashSet<GridPoint>();
         for (int i = 0; i < plan.Footprints.Count && i < plan.BuildingSlots.Count; i++)
         {
             var footprint = plan.Footprints[i];
-            check(footprint.Door.Equals(plan.BuildingSlots[i]), $"detail.footprints[{i}]: Footprint door is not slot {i}.");
+            if (!footprint.Door.Equals(plan.BuildingSlots[i])) check(false, $"detail.footprints[{i}]: Footprint door is not slot {i}.");
             foreach (var cell in footprint.Cells)
             {
-                check(seen.Add(cell), $"detail.footprints[{i}]: Cell {cell} belongs to two buildings.");
-                check(!roads[cell.X, cell.Y], $"detail.footprints[{i}]: Cell {cell} is on a road.");
+                if (!seen.Add(cell)) check(false, $"detail.footprints[{i}]: Cell {cell} belongs to two buildings.");
+                if (roads[cell.X, cell.Y]) check(false, $"detail.footprints[{i}]: Cell {cell} is on a road.");
             }
         }
     }
@@ -95,7 +104,7 @@ public static class TownPlanValidator
         // Check 2: Every layer in TownLayers.All present with equal dims
         foreach (var layerName in TownLayers.All)
         {
-            Check(plan.Layers.ContainsKey(layerName), $"layers: Missing layer '{layerName}'.");
+            if (!plan.Layers.ContainsKey(layerName)) errors.Add($"layers: Missing layer '{layerName}'.");
         }
 
         if (errors.Count > 0) return new TownPlanValidationResult(errors);
@@ -138,12 +147,12 @@ public static class TownPlanValidator
                 var cell = new GridPoint(x, y);
                 if (plan.IsReserved(cell))
                 {
-                    Check(walkableLayer[x, y], $"corridor.walkable: Reserved corridor at ({x},{y}) is not walkable.");
-                    Check(!housesLayer[x, y], $"corridor.houses: Reserved corridor at ({x},{y}) contains a house.");
-                    Check(!treesLayer[x, y], $"corridor.trees: Reserved corridor at ({x},{y}) contains a tree.");
-                    Check(!buildingsLayer[x, y], $"corridor.buildings: Reserved corridor at ({x},{y}) contains a building.");
-                    Check(!alliesLayer[x, y], $"corridor.allies: Reserved corridor at ({x},{y}) contains an ally.");
-                    Check(!shopsWallsLayer[x, y], $"corridor.shopWalls: Reserved corridor at ({x},{y}) contains a shop wall.");
+                    if (!walkableLayer[x, y]) errors.Add($"corridor.walkable: Reserved corridor at ({x},{y}) is not walkable.");
+                    if (housesLayer[x, y]) errors.Add($"corridor.houses: Reserved corridor at ({x},{y}) contains a house.");
+                    if (treesLayer[x, y]) errors.Add($"corridor.trees: Reserved corridor at ({x},{y}) contains a tree.");
+                    if (buildingsLayer[x, y]) errors.Add($"corridor.buildings: Reserved corridor at ({x},{y}) contains a building.");
+                    if (alliesLayer[x, y]) errors.Add($"corridor.allies: Reserved corridor at ({x},{y}) contains an ally.");
+                    if (shopsWallsLayer[x, y]) errors.Add($"corridor.shopWalls: Reserved corridor at ({x},{y}) contains a shop wall.");
                 }
             }
         }
@@ -157,7 +166,7 @@ public static class TownPlanValidator
         {
             var slot = plan.BuildingSlots[i];
 
-            Check(walkableLayer[slot.X, slot.Y], $"buildingSlots[{i}]: Slot at {slot} is not walkable.");
+            if (!walkableLayer[slot.X, slot.Y]) errors.Add($"buildingSlots[{i}]: Slot at {slot} is not walkable.");
 
             // Check not on border
             Check(slot.X > 0 && slot.X < plan.Width - 1 && slot.Y > 0 && slot.Y < plan.Height - 1,
@@ -168,7 +177,7 @@ public static class TownPlanValidator
             {
                 var prev = plan.BuildingSlots[i - 1];
                 bool prevLess = prev.Y < slot.Y || (prev.Y == slot.Y && prev.X < slot.X);
-                Check(prevLess, $"buildingSlots: Not in strictly increasing raster order at index {i}.");
+                if (!prevLess) errors.Add($"buildingSlots: Not in strictly increasing raster order at index {i}.");
             }
 
             // Check Chebyshev distance >= 3 from other building slots
@@ -178,7 +187,7 @@ public static class TownPlanValidator
                 {
                     var other = plan.BuildingSlots[j];
                     int chebyshev = Math.Max(Math.Abs(slot.X - other.X), Math.Abs(slot.Y - other.Y));
-                    Check(chebyshev >= 3, $"buildingSlots: Distance between slots {i} and {j} is less than 3.");
+                    if (chebyshev < 3) errors.Add($"buildingSlots: Distance between slots {i} and {j} is less than 3.");
                 }
             }
         }
@@ -216,13 +225,13 @@ public static class TownPlanValidator
             var slot = plan.AllySlots[i];
             var cell = slot.Cell;
 
-            Check(walkableLayer[cell.X, cell.Y], $"allySlots[{i}]: Slot at {cell} is not walkable.");
+            if (!walkableLayer[cell.X, cell.Y]) errors.Add($"allySlots[{i}]: Slot at {cell} is not walkable.");
 
-            Check(!buildingSlotSet.Contains(cell), $"allySlots[{i}]: Slot at {cell} overlaps with a building slot.");
-            Check(!allShopCells.Contains(cell), $"allySlots[{i}]: Slot at {cell} overlaps with a shop room.");
-            Check(!cell.Equals(plan.PartySpawn), $"allySlots[{i}]: Slot at {cell} overlaps with PartySpawn.");
-            Check(!cell.Equals(plan.Exit), $"allySlots[{i}]: Slot at {cell} overlaps with Exit.");
-            Check(!cell.Equals(plan.DungeonEntrance), $"allySlots[{i}]: Slot at {cell} overlaps with DungeonEntrance.");
+            if (buildingSlotSet.Contains(cell)) errors.Add($"allySlots[{i}]: Slot at {cell} overlaps with a building slot.");
+            if (allShopCells.Contains(cell)) errors.Add($"allySlots[{i}]: Slot at {cell} overlaps with a shop room.");
+            if (cell.Equals(plan.PartySpawn)) errors.Add($"allySlots[{i}]: Slot at {cell} overlaps with PartySpawn.");
+            if (cell.Equals(plan.Exit)) errors.Add($"allySlots[{i}]: Slot at {cell} overlaps with Exit.");
+            if (cell.Equals(plan.DungeonEntrance)) errors.Add($"allySlots[{i}]: Slot at {cell} overlaps with DungeonEntrance.");
 
             allyLocations.Add(cell);
         }
@@ -241,11 +250,11 @@ public static class TownPlanValidator
 
             if (isShop)
             {
-                Check(room != null, $"shops[{i}]: ShopFlags[{i}] is true but no room exists at building slot {i}.");
+                if (room == null) errors.Add($"shops[{i}]: ShopFlags[{i}] is true but no room exists at building slot {i}.");
             }
             else
             {
-                Check(room == null, $"shops[{i}]: ShopFlags[{i}] is false but a room exists at building slot {i}.");
+                if (room != null) errors.Add($"shops[{i}]: ShopFlags[{i}] is false but a room exists at building slot {i}.");
             }
         }
 
@@ -255,24 +264,24 @@ public static class TownPlanValidator
             var room = plan.ShopRooms[i];
 
             // Door must be in BuildingSlots (implicit in the correspondence check above)
-            Check(plan.BuildingIndexAt(room.Door) != null, $"shopRoom[{i}]: Door at {room.Door} is not a building slot.");
+            if (plan.BuildingIndexAt(room.Door) == null) errors.Add($"shopRoom[{i}]: Door at {room.Door} is not a building slot.");
 
             // Every Floor cell must be true in ShopFloor and Walkable
             foreach (var cell in room.Floor)
             {
-                Check(shopFloorLayer[cell.X, cell.Y], $"shopRoom[{i}]: Floor cell {cell} is not true in ShopFloor layer.");
-                Check(walkableLayer[cell.X, cell.Y] || (layers.TryGetValue(TownLayers.Furniture, out var furniture) && furniture.At(cell)), $"shopRoom[{i}]: Floor cell {cell} is neither walkable nor furnished.");
+                if (!shopFloorLayer[cell.X, cell.Y]) errors.Add($"shopRoom[{i}]: Floor cell {cell} is not true in ShopFloor layer.");
+                if (!(walkableLayer[cell.X, cell.Y] || (layers.TryGetValue(TownLayers.Furniture, out var furniture) && furniture.At(cell)))) errors.Add($"shopRoom[{i}]: Floor cell {cell} is neither walkable nor furnished.");
             }
 
             // Every Wall cell must be true in ShopWalls
             foreach (var cell in room.Wall)
             {
-                Check(shopsWallsLayer[cell.X, cell.Y], $"shopRoom[{i}]: Wall cell {cell} is not true in ShopWalls layer.");
+                if (!shopsWallsLayer[cell.X, cell.Y]) errors.Add($"shopRoom[{i}]: Wall cell {cell} is not true in ShopWalls layer.");
             }
 
             // VendorAnchor must be true in ShopFloor
             var anchor = room.VendorAnchor;
-            Check(shopFloorLayer[anchor.X, anchor.Y], $"shopRoom[{i}]: VendorAnchor {anchor} is not true in ShopFloor layer.");
+            if (!shopFloorLayer[anchor.X, anchor.Y]) errors.Add($"shopRoom[{i}]: VendorAnchor {anchor} is not true in ShopFloor layer.");
         }
 
         // ShopFloor and ShopWalls must contain no cells outside the rooms
@@ -283,11 +292,11 @@ public static class TownPlanValidator
                 var cell = new GridPoint(x, y);
                 if (shopFloorLayer[x, y])
                 {
-                    Check(shopFloorCells.Contains(cell), $"shopFloor: Cell {cell} is in ShopFloor layer but not in any room.");
+                    if (!shopFloorCells.Contains(cell)) errors.Add($"shopFloor: Cell {cell} is in ShopFloor layer but not in any room.");
                 }
                 if (shopsWallsLayer[x, y])
                 {
-                    Check(shopWallsCells.Contains(cell), $"shopWalls: Cell {cell} is in ShopWalls layer but not in any room.");
+                    if (!shopWallsCells.Contains(cell)) errors.Add($"shopWalls: Cell {cell} is in ShopWalls layer but not in any room.");
                 }
             }
         }
@@ -307,7 +316,7 @@ public static class TownPlanValidator
             }
         }
 
-        Check(dungeonCellCount == 1, $"dungeon: Expected exactly 1 dungeon cell, found {dungeonCellCount}.");
+        if (dungeonCellCount != 1) errors.Add($"dungeon: Expected exactly 1 dungeon cell, found {dungeonCellCount}.");
         if (dungeonCell.HasValue)
         {
             Check(dungeonCell.Equals(plan.DungeonEntrance),

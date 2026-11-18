@@ -106,13 +106,14 @@ public sealed class EnemyBehavior : MonoBehaviour
         var target = owner.PursuitTarget;
         if (CarryingLoot || AlwaysFlees)
         {
-            var threats = Game.Instance.AllCharacters.Where(c => c != null && c.Team == Team.Player && c.Vitals.HP > 0).ToList();
+            var all = Game.Instance.AllCharacters; // one snapshot instead of one per candidate cell
+            var threats = all.Where(c => c != null && c.Team == Team.Player && c.Vitals.HP > 0).ToList();
             if (threats.Count == 0) return new WaitAction();
             int Distance(Vector3Int p) => threats.Min(c => TileWorldDungeon.ChevDistance(c.TilemapPosition, p));
             var candidates = System.Enum.GetValues(typeof(Facing)).Cast<Facing>()
                 .Select(f => owner.TilemapPosition + GridMovement.GetFacingOffset(f))
                 .Where(p => new MovementAction(owner, owner.TilemapPosition, p).IsValid(owner) &&
-                    !Game.Instance.AllCharacters.Any(c => c != null && c != owner && c.Vitals.HP > 0 && c.OverlapsWith(Character.ToBounds(p))))
+                    !all.Any(c => c != null && c != owner && c.Vitals.HP > 0 && c.OverlapsWith(Character.ToBounds(p))))
                 .OrderByDescending(Distance).ThenBy(p => Game.Instance.CurrentDungeon.IsHazard(p)).ToList();
             if (candidates.Count == 0) return null;
             var next = candidates[0];

@@ -14,7 +14,7 @@ public sealed class EmergencyHealEvaluator : IAllySkillEvaluator
 		AllySkillChoice best = null;
 		foreach (var skill in context.WithIntent(SkillIntent.Heal))
 		{
-			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
+			foreach (var option in context.Options(skill))
 			{
 				int covered = option.Affected.Count(needy.Contains);
 				if (covered == 0) continue;

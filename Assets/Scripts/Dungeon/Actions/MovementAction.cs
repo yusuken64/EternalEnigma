@@ -286,7 +286,7 @@ public class TakeDamageAction : GameAction
 			var context = new DamageContext(attacker, target, damage, Element, miss, ResponseDepth);
 			var game = Game.Instance;
 			if (game != null && !Environmental)
-				foreach (var character_char in game.AllCharacters.ToList())
+				foreach (var character_char in game.AllCharacters) // AllCharacters is already a fresh snapshot list
 					if (character_char != null && character_char.Vitals != null && character_char.Vitals.HP > 0)
 						character_char.InterceptDamage(context);
 			if (context.Target != null) target = context.Target;
@@ -517,10 +517,20 @@ public class DeathAction : GameAction
         GameMessages.ForCharacter(target, $"{GameMessages.Name(target)} {(downed ? "was downed" : "died")}.");
         target.GetComponent<EnemyBehavior>()?.DropStolenLoot();
         target.GetComponent<TrapCarriedItem>()?.TryDrop(true);
-        foreach (var owner in Game.Instance.AllCharacters.ToList())
+        foreach (var owner in Game.Instance.AllCharacters) // AllCharacters is already a fresh snapshot list
             foreach (var status in owner.StatusEffects.ToList())
                 if (status != null) status.OnCharacterDied(owner, target);
-		var gainXP = new AddXPAction(attacker, target.FinalStats.EXPOnKill);
+		var xpPool = target.FinalStats.EXPOnKill;
+		var xpAwards = new List<GameAction>();
+		if (target is Ally)
+			xpAwards.Add(new AddXPAction(attacker, xpPool));
+		else
+		{
+			var witnesses = PartyRules.ExperienceWitnesses(Game.Instance, attacker, target);
+			var share = PartyRules.ExperienceShare(xpPool, witnesses.Count);
+			if (share > 0)
+				foreach (var witness in witnesses) xpAwards.Add(new AddXPAction(witness, share));
+		}
 
 		float value = UnityEngine.Random.value;
 		droppedItem = target.FinalStats.DropRate > 0 &&
@@ -539,7 +549,7 @@ public class DeathAction : GameAction
             }
             effects.AddRange(behavior.DeathEffects(enemy));
         }
-		if (AwardExperience) effects.Add(gainXP);
+		if (AwardExperience) effects.AddRange(xpAwards);
 		return effects;
 	}
 
@@ -566,7 +576,7 @@ public class DeathAction : GameAction
 
 	internal override bool IsValid(Character character)
 	{
-		return Game.Instance.AllCharacters.Contains(character);
+		return Game.Instance.ContainsCharacter(character);
 	}
 }
 
@@ -689,7 +699,6 @@ public class InteractAction : GameAction
 public class WaitAction : GameAction
 {
 	public WaitAction() {}
-    internal override void RecordOutcome(Character character) { if (character is Ally) GameMessages.ForCharacter(character, $"{GameMessages.Name(character)} waited."); }
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
 		if (Playback?.Commanded == true && character == Playback.Focus) QueueSound(SoundCue.Wait);

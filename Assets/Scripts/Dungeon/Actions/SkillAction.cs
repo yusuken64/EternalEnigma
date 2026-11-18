@@ -40,17 +40,33 @@ internal class SkillAction : GameAction
         return true;
     }
     private bool Eligible(Character recipient) => skill.TargetSelector.Eligible(caster, recipient) &&
-        Game.Instance.AllCharacters.Concat(Game.Instance.DownedAllies).Contains(recipient);
+        (Game.Instance.ContainsCharacter(recipient) || ContainsDowned(recipient));
+    private static bool ContainsDowned(Character recipient)
+    {
+        var downed = Game.Instance.DownedAllies;
+        if (recipient is Ally ally) return downed.Contains(ally);
+        return ReferenceEquals(recipient, null) && downed.Contains(null);
+    }
+    private List<Character> RecipientsWithin(Vector3Int center)
+    {
+        var game = Game.Instance;
+        var result = new List<Character>();
+        foreach (var c in game.Allies)
+            if (Eligible(c) && TileWorldDungeon.ChevDistance(c.TilemapPosition, center) <= skill.AreaRadius) result.Add(c);
+        foreach (var c in game.Enemies)
+            if (Eligible(c) && TileWorldDungeon.ChevDistance(c.TilemapPosition, center) <= skill.AreaRadius) result.Add(c);
+        return result;
+    }
     private List<Character> Recipients()
     {
         if (captured != null) return captured.Where(Eligible).ToList();
         if (skill.Targeting == SkillTargeting.Tile)
-            return Game.Instance.AllCharacters.Where(c => Eligible(c) && TileWorldDungeon.ChevDistance(c.TilemapPosition, tile.Value) <= skill.AreaRadius).ToList();
+            return RecipientsWithin(tile.Value);
         if (skill.Targeting == SkillTargeting.SelectedTarget && target != null)
         {
             if (!Eligible(target)) return new();
             if (skill.AreaRadius == 0) return new() { target };
-            return Game.Instance.AllCharacters.Where(c => Eligible(c) && TileWorldDungeon.ChevDistance(c.TilemapPosition, target.TilemapPosition) <= skill.AreaRadius).ToList();
+            return RecipientsWithin(target.TilemapPosition);
         }
         return skill.GetAffectedCharacters(caster, target);
     }
@@ -227,7 +243,7 @@ internal class SkillAction : GameAction
 	internal override bool IsValid(Character character)
 	{
 		return character == caster && skill != null && skill.IsValid(caster) &&
-			(skill.Targeting == SkillTargeting.Tile ? tile.HasValue && skill.GetTargetTiles(caster).Contains(tile.Value) : skill.Targeting == SkillTargeting.Missile ? MissileTargeting.IsDirection(direction) : skill.Targeting == SkillTargeting.InventoryItem ?
+			(skill.Targeting == SkillTargeting.Tile ? tile.HasValue && skill.IsTargetTile(caster, tile.Value) : skill.Targeting == SkillTargeting.Missile ? MissileTargeting.IsDirection(direction) : skill.Targeting == SkillTargeting.InventoryItem ?
 				skill.GetInventoryTargets(caster).Contains(inventoryTarget) :
 				inventoryTarget == null && (sceneryTarget != null ? ScenerySkillTargets.Candidates(caster,skill).Contains(sceneryTarget) : skill.GetAffectedCharacters(caster, target).Any() || (skill.Targeting != SkillTargeting.SelectedTarget && ScenerySkillTargets.Affected(caster,skill,target,null,default).Any())));
 	}

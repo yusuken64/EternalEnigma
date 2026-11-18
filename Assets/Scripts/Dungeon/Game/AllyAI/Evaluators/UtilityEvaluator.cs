@@ -15,7 +15,7 @@ public sealed class UtilityEvaluator : IAllySkillEvaluator
 				int amount = skill.RankContext.Scaling.ScalePower(kitchen.HungerRestore, skill.RankContext.Rank);
 				if (amount <= 0 || !context.Party.Any(a => a.FinalStats.HungerMax - a.Vitals.Hunger >= amount)) continue;
 			}
-			var option = SkillCastOptions.Enumerate(context.Ally, skill).FirstOrDefault();
+			var option = context.Options(skill).FirstOrDefault();
 			if (option != null) return new AllySkillChoice(Name, option, 1f, skill.SkillName);
 		}
 		return null;

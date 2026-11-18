@@ -8,7 +8,14 @@ public static class BiomeDecorationPlacement
 {
     public static uint Hash(int seed,string context,string candidate)
     {
-        unchecked { uint h=(uint)seed^0x6b7a921du;foreach(char c in "biome-decoration/v1/"+context+"/"+candidate)h=(h^c)*16777619u;h^=h>>16;h*=0x7feb352du;return h^(h>>15); }
+        // Same character sequence as hashing "biome-decoration/v1/"+context+"/"+candidate, without the concatenation.
+        unchecked { uint h=(uint)seed^0x6b7a921du;h=Fold(h,"biome-decoration/v1/");h=Fold(h,context);h=Fold(h,"/");h=Fold(h,candidate);h^=h>>16;h*=0x7feb352du;return h^(h>>15); }
+    }
+    private static uint Fold(uint h,string text)
+    {
+        if(text==null)return h;
+        unchecked { for(int i=0;i<text.Length;i++)h=(h^text[i])*16777619u; }
+        return h;
     }
     public static string Id(Vector3 p) => Mathf.RoundToInt(p.x*1000)+","+Mathf.RoundToInt(p.y*1000)+","+Mathf.RoundToInt(p.z*1000);
     public static List<Vector2Int> SelectCells(IEnumerable<Vector2Int> candidates,int seed,string context,int separation,int cap)
@@ -20,6 +27,11 @@ public static class BiomeDecorationPlacement
             result.Add(p);counts[chunk]=count+1;
         }
         return result;
+    }
+    private static bool NearPost(List<Vector2Int> posts,Vector2Int p)
+    {
+        for(int i=0;i<posts.Count;i++)if((p-posts[i]).sqrMagnitude<=4)return true;
+        return false;
     }
     public static Transform Reset(Transform parent)
     {
@@ -50,11 +62,16 @@ public static class BiomeDecorationPlacement
             uint h=Hash(seed,context,Id(center));
             var kind=f.Surface==DecorationSurface.NaturalWall?BiomeDecorationKind.Accent:h%5<2?BiomeDecorationKind.Fixture:h%5==2?BiomeDecorationKind.Ornament:BiomeDecorationKind.Accent;
             if(f.PreferredKind>=0)kind=(BiomeDecorationKind)f.PreferredKind;
-            if(kind==BiomeDecorationKind.Fixture&&posts!=null&&posts.Any(q=>(p-q).sqrMagnitude<=4))continue;
+            if(kind==BiomeDecorationKind.Fixture&&posts!=null&&NearPost(posts,p))continue;
             if(f.HouseId!=null && kind==BiomeDecorationKind.Accent)continue;
             string houseKey=f.HouseId+"/"+kind;
             if(f.HouseId!=null&&houses.Contains(houseKey))continue;
-            if(placed.Any(q=>(f.HouseId==null||q.house!=f.HouseId)&&new Vector2(q.center.x-center.x,q.center.y-center.y).sqrMagnitude<9*cellSize*cellSize))continue;
+            bool crowded=false;
+            for(int i=0;i<placed.Count;i++) {
+                var q=placed[i];
+                if((f.HouseId==null||q.house!=f.HouseId)&&new Vector2(q.center.x-center.x,q.center.y-center.y).sqrMagnitude<9*cellSize*cellSize){crowded=true;break;}
+            }
+            if(crowded)continue;
             var chunk=new Vector2Int(Mathf.FloorToInt(p.x/32f),Mathf.FloorToInt(p.y/32f));counts.TryGetValue(chunk,out int count);if(count>=24)continue;
             var asset=catalog.Get(f.Biome,kind);if((asset.Surfaces&f.Surface)==0)continue;
             float scale=cellSize*(context=="dungeon"?asset.DungeonScale:context=="town"?asset.TownScale:asset.OverworldScale);

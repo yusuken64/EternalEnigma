@@ -16,7 +16,7 @@ public sealed class DamageEvaluator : IAllySkillEvaluator
 		float threshold = !coverage && context.NormalAttackValue > 0f ? context.NormalAttackValue * NormalAttackMargin : 0f;
 		AllySkillChoice best = null;
 		foreach (var skill in context.WithIntent(SkillIntent.Damage))
-			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
+			foreach (var option in context.Options(skill))
 			{
 				// Never hit our own side.
 				if (option.Affected.Any(c => !context.VisibleEnemies.Contains(c))) continue;

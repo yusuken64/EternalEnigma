@@ -162,14 +162,22 @@ internal static class BiomeDungeonGenerator
         var enemies = Place(regular ? Count(o.EnemyCount) : 0, keepExitRouteClear: true);
         var props = new List<DungeonScenery>();
         var blocked = new HashSet<GridPoint>();
+        // `blocked` stays the authoritative set; the flood mirrors it as a grid for allocation-free fills.
+        var propFlood = new Flood(layer);
+        Func<GridPoint, GridPoint, bool>? doorwayStep = town == null ? null : town.AllowsDoorwayStep;
         bool PlaceBlockingProp(GridPoint cell)
         {
-            blocked.Add(cell);
-            var reachable = GridSearch.VisitOrder(start, p => Neighbors(layer, p, blocked)
-                .Where(q => town?.AllowsDoorwayStep(p, q) ?? true)).ToHashSet();
-            if (reachable.Count == cells.Count - blocked.Count &&
-                blocked.All(p => Orthogonal(p).Any(reachable.Contains))) return true;
-            blocked.Remove(cell);
+            blocked.Add(cell); propFlood.Block(cell);
+            propFlood.Fill(start, doorwayStep);
+            if (propFlood.Count == cells.Count - blocked.Count)
+            {
+                bool supported = true;
+                foreach (var p in blocked)
+                    if (!propFlood.Reached(new GridPoint(p.X - 1, p.Y)) && !propFlood.Reached(new GridPoint(p.X + 1, p.Y)) &&
+                        !propFlood.Reached(new GridPoint(p.X, p.Y - 1)) && !propFlood.Reached(new GridPoint(p.X, p.Y + 1))) { supported = false; break; }
+                if (supported) return true;
+            }
+            blocked.Remove(cell); propFlood.Unblock(cell);
             return false;
         }
         int goldBudget = regular ? Count(o.GoldCount) : 0, itemBudget = regular ? Count(o.ItemCount) : 0;
@@ -212,10 +220,13 @@ internal static class BiomeDungeonGenerator
         if (chest != null)
         {
             // The key hides in a prop the party can reach with the door still closed.
-            var closed = new HashSet<GridPoint>(blocked) { vault!.Value.Door };
-            var outside = GridSearch.VisitOrder(start, q => Neighbors(layer, q, closed)).ToHashSet();
+            // Reachable with every blocking prop and the vault door closed.
+            propFlood.Block(vault!.Value.Door);
+            propFlood.Fill(start);
+            propFlood.Unblock(vault.Value.Door);
+            if (blocked.Contains(vault.Value.Door)) propFlood.Block(vault.Value.Door);
             var holders = Enumerable.Range(0, props.Count).Where(i => props[i] != chest && props[i].Kind != DungeonSceneryKind.Hazard &&
-                Orthogonal(props[i].Cell).Any(outside.Contains)).ToList();
+                Orthogonal(props[i].Cell).Any(propFlood.Reached)).ToList();
             if (holders.Count > 0)
             {
                 int holder = holders[lockRandom.Range(holders.Count)];
@@ -295,23 +306,88 @@ internal static class BiomeDungeonGenerator
     {
         bool Open(int x, int y) => layer.At(new GridPoint(x, y));
         var found = new List<(GridPoint Door, HashSet<GridPoint> Cells)>();
+        // One reusable flood for every candidate: same reachable set as
+        // GridSearch.VisitOrder(start, p => Neighbors(layer, p, {door})), without per-candidate garbage.
+        var flood = new Flood(layer);
         foreach (var door in cells)
         {
             if (reserved.Contains(door) || occupied.Contains(door)) continue;
             bool across = !Open(door.X - 1, door.Y) && !Open(door.X + 1, door.Y) && Open(door.X, door.Y - 1) && Open(door.X, door.Y + 1);
             bool along = !Open(door.X, door.Y - 1) && !Open(door.X, door.Y + 1) && Open(door.X - 1, door.Y) && Open(door.X + 1, door.Y);
             if (!across && !along) continue;
-            var closed = new HashSet<GridPoint> { door };
-            var outside = GridSearch.VisitOrder(start, p => Neighbors(layer, p, closed)).ToHashSet();
-            int size = cells.Count - 1 - outside.Count;
-            if (!outside.Contains(stairs) || size < MinimumVault || size > cells.Count / 4) continue;
-            var sealedCells = cells.Where(p => !p.Equals(door) && !outside.Contains(p)).ToHashSet();
-            if (sealedCells.Any(p => GridSight.IsRoom(layer, p))) found.Add((door, sealedCells));
+            flood.Block(door);
+            flood.Fill(start);
+            flood.Unblock(door);
+            int size = cells.Count - 1 - flood.Count;
+            if (!flood.Reached(stairs) || size < MinimumVault || size > cells.Count / 4) continue;
+            // Only materialize the sealed set (in `cells` order, as before) for a room-bearing candidate.
+            bool hasRoom = false;
+            foreach (var p in cells)
+                if (!p.Equals(door) && !flood.Reached(p) && GridSight.IsRoom(layer, p)) { hasRoom = true; break; }
+            if (!hasRoom) continue;
+            var sealedCells = new HashSet<GridPoint>();
+            foreach (var p in cells) if (!p.Equals(door) && !flood.Reached(p)) sealedCells.Add(p);
+            found.Add((door, sealedCells));
         }
         var distinct = new List<(GridPoint Door, HashSet<GridPoint> Cells)>();
         foreach (var candidate in found.OrderBy(f => f.Cells.Count))
             if (!distinct.Any(d => candidate.Cells.Overlaps(d.Cells))) distinct.Add(candidate);
         return distinct.Count == 0 ? null : distinct[random.Range(distinct.Count)];
+    }
+
+    /// <summary>
+    /// Allocation-free repeated reachability over one floor layer. Fill visits exactly the cells of
+    /// GridSearch.VisitOrder(origin, p => Neighbors(floor, p, blocked)[.Where(step)]): the origin plus every open,
+    /// unblocked cell reachable by eight-way steps whose diagonals need both orthogonal cells open.
+    /// Visit marks use a generation stamp, so nothing is cleared between fills.
+    /// </summary>
+    internal sealed class Flood
+    {
+        readonly GridLayer floor;
+        readonly int w, h;
+        readonly int[,] stamp;
+        readonly bool[,] blocked;
+        readonly GridPoint[] queue;
+        int generation;
+        GridPoint origin;
+        /// <summary>Number of cells visited by the last fill, origin included.</summary>
+        public int Count { get; private set; }
+
+        public Flood(GridLayer floor)
+        {
+            this.floor = floor; w = floor.Width; h = floor.Height;
+            stamp = new int[w, h]; blocked = new bool[w, h];
+            queue = new GridPoint[w * h + 1];
+        }
+
+        bool Inside(int x, int y) => x >= 0 && y >= 0 && x < w && y < h;
+        bool Open(int x, int y) => Inside(x, y) && floor[x, y] && !blocked[x, y];
+        public void Block(GridPoint p) { if (Inside(p.X, p.Y)) blocked[p.X, p.Y] = true; }
+        public void Unblock(GridPoint p) { if (Inside(p.X, p.Y)) blocked[p.X, p.Y] = false; }
+        public bool Reached(GridPoint p) => p.Equals(origin) || (Inside(p.X, p.Y) && stamp[p.X, p.Y] == generation);
+
+        public void Fill(GridPoint from, Func<GridPoint, GridPoint, bool>? step = null)
+        {
+            generation++; origin = from;
+            int head = 0, tail = 0;
+            queue[tail++] = from;
+            if (Inside(from.X, from.Y)) stamp[from.X, from.Y] = generation;
+            while (head < tail)
+            {
+                var p = queue[head++];
+                for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++)
+                {
+                    if (dx == 0 && dy == 0) continue;
+                    int x = p.X + dx, y = p.Y + dy;
+                    if (!Open(x, y) || (dx != 0 && dy != 0 && !(Open(p.X + dx, p.Y) && Open(p.X, p.Y + dy)))) continue;
+                    if (stamp[x, y] == generation || (x == from.X && y == from.Y)) continue;
+                    var q = new GridPoint(x, y);
+                    if (step != null && !step(p, q)) continue;
+                    stamp[x, y] = generation; queue[tail++] = q;
+                }
+            }
+            Count = tail;
+        }
     }
 
     internal static IEnumerable<GridPoint> Orthogonal(GridPoint p)

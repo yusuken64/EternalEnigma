@@ -48,7 +48,7 @@ public static class TerrainStreaming
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetSession()
     {
-        queue.Clear(); open = false; runner = null; deferred = built = 0; buildMilliseconds = worstMilliseconds = 0;
+        queue.Clear(); Drained = null; open = false; runner = null; deferred = built = 0; buildMilliseconds = worstMilliseconds = 0;
     }
 
     /// <summary>Opens a session: until <see cref="End"/>, builds far from <paramref name="focusPoint"/> are deferred.</summary>
@@ -150,7 +150,20 @@ public static class TerrainStreaming
         Debug.Log($"[Timing] Terrain streaming finished: {deferred} deferred builds in {Time.realtimeSinceStartup - startedAt:0.0} s; " +
             $"{buildMilliseconds:0} ms of building, slowest {worstMilliseconds:0.0} ms.");
         deferred = built = 0; buildMilliseconds = worstMilliseconds = 0;
+        var drained = Drained; Drained = null;
+        drained?.Invoke();
     }
+
+    /// <summary>
+    /// Runs <paramref name="action"/> once every deferred build has run: now when nothing is waiting.
+    /// </summary>
+    public static void WhenDrained(Action action)
+    {
+        if (queue.Count == 0) { action(); return; }
+        Drained += action;
+    }
+
+    private static event Action Drained;
 
     private sealed class Runner : MonoBehaviour
     {

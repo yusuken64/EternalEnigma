@@ -10,7 +10,7 @@ public sealed class ReviveEvaluator : IAllySkillEvaluator
 		AllySkillChoice best = null;
 		foreach (var skill in context.WithIntent(SkillIntent.Revive))
 		{
-			foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
+			foreach (var option in context.Options(skill))
 			{
 				var reachable = skill.ActionEffects.OfType<ReviveAction>().SelectMany(r => r.Targets(context.Ally))
 					.Where(a => context.Downed.Contains(a)).Distinct();

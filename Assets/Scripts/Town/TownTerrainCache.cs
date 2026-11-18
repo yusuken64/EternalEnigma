@@ -88,6 +88,9 @@ public sealed class TownTerrainCache
         world.transform.SetParent(Root.transform, true);
         activeView = view;
         BuildCount++;
+        // Every build listener has run, so nothing combines or reads these meshes again.
+        int released = RuntimeMeshMemory.ReleaseCpuCopies(Root);
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Town terrain cached, {released} mesh CPU copies released");
         return true;
     }
 
@@ -100,7 +103,18 @@ public sealed class TownTerrainCache
 
     public void Clear()
     {
-        if (Root != null) { Root.SetActive(false); Object.Destroy(Root); }
+        if (Root != null)
+        {
+            // TWC's runtime cluster meshes have no owner; release them with the geometry instead of
+            // waiting for the next unused-asset sweep. Owner meshes go with their EnvironmentMeshOwner.
+            var clusters = new HashSet<Mesh>();
+            foreach (var filter in Root.GetComponentsInChildren<MeshFilter>(true))
+                if (filter.sharedMesh != null && filter.sharedMesh.name.Contains("_Cluster_")) clusters.Add(filter.sharedMesh);
+            foreach (var collider in Root.GetComponentsInChildren<MeshCollider>(true))
+                if (collider.sharedMesh != null && collider.sharedMesh.name.Contains("_Cluster_")) clusters.Add(collider.sharedMesh);
+            Root.SetActive(false); Object.Destroy(Root);
+            foreach (var mesh in clusters) Object.Destroy(mesh);
+        }
         if (asset != null)
         {
             foreach (var layer in asset.mapBlueprintLayers)

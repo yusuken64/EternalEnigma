@@ -36,6 +36,8 @@ public sealed class CampaignOverworld : MonoBehaviour
     public List<CampaignLayerBinding> LayerBindings = new();
     public OverworldGrid CurrentGrid { get; private set; }
     public event Action<TileWorldCreator> TerrainBuilt;
+    /// <summary>Build one TWC layer per frame. On by default only in the web player.</summary>
+    public static bool YieldBetweenBuildLayers = RuntimeMeshMemory.Enabled;
 
     [SerializeField, HideInInspector] private TileWorldCreatorAsset generatedAsset;
     [SerializeField, HideInInspector] private TileWorldCreatorAsset previousAsset;
@@ -67,7 +69,7 @@ public sealed class CampaignOverworld : MonoBehaviour
         return grid;
     }
 
-    public void Apply(OverworldGrid grid, CapabilitySet held = default, ISet<string> resolvedLocks = null)
+    private void Prepare(OverworldGrid grid, CapabilitySet held, ISet<string> resolvedLocks)
     {
         if (grid == null) throw new ArgumentNullException(nameof(grid));
         if (building) throw new InvalidOperationException("Wait for the current TWC build to finish before replacing the map.");
@@ -148,34 +150,77 @@ public sealed class CampaignOverworld : MonoBehaviour
         creator.twcAsset = generatedAsset;
         creator.generatedBlueprintMaps.Clear();
         CurrentGrid = grid;
-        var randomState = UnityEngine.Random.state;
+        pendingStyleLayers = styleLayers;
         LastGenerationError=null;
+    }
+
+    private Dictionary<Guid, OverworldStyleBinding> pendingStyleLayers;
+
+    /// <summary>Generates the campaign layers in one call.</summary>
+    public void Apply(OverworldGrid grid, CapabilitySet held = default, ISet<string> resolvedLocks = null)
+    {
+        Prepare(grid, held, resolvedLocks);
+        var randomState = UnityEngine.Random.state;
         try
         {
             // This produces both GUID and GUID_UNSUBD WorldMaps, as needed by tile and object build layers.
-            creator.ExecuteAllBlueprintLayers();
-            foreach (var layer in generatedAsset.mapBlueprintLayers)
-            {
-                if(!layer.active)continue;
-                var output=creator.GetMapOutputFromBlueprintLayer(layer.guid);
-                if(output==null || output.GetLength(0)!=grid.Width || output.GetLength(1)!=grid.Height)
-                    throw new InvalidOperationException("Blueprint produced a missing or incorrectly sized mask: "+layer.layerName);
-                bool empty=!output.Cast<bool>().Any(v=>v);
-                if(empty && styleLayers!=null && styleLayers.TryGetValue(layer.guid,out var spec) && !spec.AllowEmpty)
-                    throw new InvalidOperationException("Required style layer produced an empty mask: "+layer.layerName);
-                // TWC uses these flags solely to flag empty intermediate masks. Exceptions and
-                // invalid outputs above are generation errors; intentional empty masks are valid.
-                layer.mapResultFailed = false;
-                foreach (var action in layer.stack) if (action.action is TWC.Actions.TWCBlueprintAction blueprint) blueprint.resultFailed = false;
-            }
+            Creator.ExecuteAllBlueprintLayers();
+            ValidateLayers();
         }
-        catch(Exception error)
-        {
-            LastGenerationError=error.Message;
-            ReleaseAsset();
-            throw;
-        }
+        catch (Exception error) { FailGeneration(error); throw; }
         finally { UnityEngine.Random.state = randomState; }
+    }
+
+    /// <summary>
+    /// Same result as <see cref="Apply"/>, one blueprint layer per frame, so no single frame stalls
+    /// on the whole layout and each layer's garbage is collected before the next.
+    /// </summary>
+    public System.Collections.IEnumerator ApplyOverFrames(OverworldGrid grid, CapabilitySet held = default, ISet<string> resolvedLocks = null)
+    {
+        Prepare(grid, held, resolvedLocks);
+        var steps = Creator.ExecuteAllBlueprintLayersYielding();
+        bool first = true;
+        while (true)
+        {
+            // The first step seeds the global random stream; later steps keep their own.
+            var randomState = UnityEngine.Random.state;
+            bool more;
+            try { more = steps.MoveNext(); }
+            catch (Exception error) { FailGeneration(error); throw; }
+            finally { if (first) UnityEngine.Random.state = randomState; }
+            first = false;
+            if (!more) break;
+            yield return steps.Current;
+        }
+        try { ValidateLayers(); }
+        catch (Exception error) { FailGeneration(error); throw; }
+    }
+
+    private void FailGeneration(Exception error)
+    {
+        LastGenerationError = error.Message;
+        ReleaseAsset();
+    }
+
+    private void ValidateLayers()
+    {
+        var grid = CurrentGrid; var creator = Creator; var styleLayers = pendingStyleLayers;
+        foreach (var layer in generatedAsset.mapBlueprintLayers)
+        {
+            if(!layer.active)continue;
+            var output=creator.GetMapOutputFromBlueprintLayer(layer.guid);
+            if(output==null || output.GetLength(0)!=grid.Width || output.GetLength(1)!=grid.Height)
+                throw new InvalidOperationException("Blueprint produced a missing or incorrectly sized mask: "+layer.layerName);
+            bool empty=true;
+            for(int ex=0;ex<output.GetLength(0)&&empty;ex++)for(int ey=0;ey<output.GetLength(1);ey++)if(output[ex,ey]){empty=false;break;}
+            if(empty && styleLayers!=null && styleLayers.TryGetValue(layer.guid,out var spec) && !spec.AllowEmpty)
+                throw new InvalidOperationException("Required style layer produced an empty mask: "+layer.layerName);
+            // TWC uses these flags solely to flag empty intermediate masks. Exceptions and
+            // invalid outputs above are generation errors; intentional empty masks are valid.
+            layer.mapResultFailed = false;
+            foreach (var action in layer.stack) if (action.action is TWC.Actions.TWCBlueprintAction blueprint) blueprint.resultFailed = false;
+        }
+        pendingStyleLayers = null;
     }
 
     public void BuildMeshes()
@@ -190,6 +235,9 @@ public sealed class CampaignOverworld : MonoBehaviour
         Creator.OnBuildLayersComplete -= BuildFinished;
         Creator.OnBuildLayersComplete += BuildFinished;
         building = true;
+        // The web player collects garbage only between frames; one layer per frame keeps the
+        // permanent heap from growing to the whole build's garbage. TerrainBuilt still fires at the end.
+        Creator.yieldBetweenBuildLayers = YieldBetweenBuildLayers;
         try { Creator.ExecuteAllBuildLayers(true); }
         catch { building = false; Creator.OnBuildLayersComplete -= BuildFinished; throw; }
     }
@@ -214,7 +262,7 @@ public sealed class CampaignOverworld : MonoBehaviour
 
     private void BuildFinished(TileWorldCreator creator)
     {
-        building = false; creator.OnBuildLayersComplete -= BuildFinished;
+        building = false; creator.OnBuildLayersComplete -= BuildFinished; creator.yieldBetweenBuildLayers = false;
         BiomeDecorations.World(creator,CurrentGrid);
         TerrainBuilt?.Invoke(creator);
     }

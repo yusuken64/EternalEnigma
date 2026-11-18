@@ -1,4 +1,3 @@
-using System.Linq;
 using EternalEnigma.Core.World;
 using UnityEngine;
 
@@ -23,8 +22,18 @@ public sealed class TownDungeonVisibility : MonoBehaviour
         foreach (var roof in roofs)
         {
             if (roof == null || roof.Room == null) continue;
-            bool visibleInterior = preview || roof.Room.Floor.Any(p =>
-                FogOverlay.Instance != null && FogOverlay.Instance.IsCurrentlyVisible(new Vector3(p.X, p.Y, 0) * cellSize));
+            bool visibleInterior = preview;
+            if (!visibleInterior)
+            {
+                var fog = FogOverlay.Instance;
+                var cells = roof.Room.Floor;
+                if (fog != null)
+                    for (int i = 0; i < cells.Count; i++)
+                    {
+                        var p = cells[i];
+                        if (fog.IsCurrentlyVisible(new Vector3(p.X, p.Y, 0) * cellSize)) { visibleInterior = true; break; }
+                    }
+            }
             roof.gameObject.SetActive(!visibleInterior);
         }
     }

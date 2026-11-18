@@ -93,6 +93,14 @@ public class Skill : ScriptableObject
 	internal List<Vector3Int> GetTargetTiles(Character caster) => Game.Instance.CurrentDungeon.GetVisibleTiles(caster, caster.TilemapPosition)
         .Where(cell => Game.Instance.CurrentDungeon.IsFloorCell(cell) && TileWorldDungeon.ChevDistance(cell, caster.TilemapPosition) <= MissileRange).ToList();
 
+	// Equivalent to GetTargetTiles(caster).Contains(cell) without building the list.
+	internal bool IsTargetTile(Character caster, Vector3Int cell)
+	{
+		var dungeon = Game.Instance.CurrentDungeon;
+		return dungeon.IsFloorCell(cell) && TileWorldDungeon.ChevDistance(cell, caster.TilemapPosition) <= MissileRange &&
+			dungeon.GetVisibleTiles(caster, caster.TilemapPosition).Contains(cell);
+	}
+
     internal List<Vector3Int> GetTargets(Character caster) => GetTargetCharacters(caster).Select(c => c.TilemapPosition).Distinct().ToList();
 
 	internal List<Character> GetTargetCharacters(Character caster) =>

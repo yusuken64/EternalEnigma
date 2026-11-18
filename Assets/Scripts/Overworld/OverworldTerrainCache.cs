@@ -63,6 +63,14 @@ public sealed class OverworldTerrainCache
         }
         activeView = view;
         BuildCount++;
+        // Deferred chunks still combine and smooth these meshes; release once the last one is built.
+        var stored = Root;
+        TerrainStreaming.WhenDrained(() =>
+        {
+            if (Root != stored || stored == null) return;
+            int released = RuntimeMeshMemory.ReleaseCpuCopies(stored, ownedMeshes);
+            if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Overworld terrain cached, {released} mesh CPU copies released");
+        });
     }
 
     public void Hide(OverworldScene view)

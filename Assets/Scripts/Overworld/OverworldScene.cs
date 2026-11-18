@@ -127,10 +127,30 @@ public sealed class OverworldScene : MonoBehaviour
         terrainCache = common.OverworldTerrain;
         restoredTerrain = terrainCache.TryRestore(Context, Map, this);
         if (restoredTerrain) { TerrainReady(creator); return; }
+        // The cached terrain cannot be reused; drop it before building, so the old and new copies
+        // never coexist at the build's memory peak.
+        terrainCache.Clear();
         terrainTimer = System.Diagnostics.Stopwatch.StartNew();
+        Map.TerrainBuilt += TerrainReady;
+        if (CampaignOverworld.YieldBetweenBuildLayers) { StartCoroutine(BuildOverFrames(grid, resolved)); return; }
         Map.Apply(grid, Held, resolved);
         layoutMilliseconds = terrainTimer.Elapsed.TotalMilliseconds;
-        Map.TerrainBuilt += TerrainReady;
+        BuildMeshesNow();
+    }
+
+    /// <summary>Layout one blueprint layer per frame, then meshes one build layer per frame.</summary>
+    private System.Collections.IEnumerator BuildOverFrames(OverworldGrid grid, ISet<string> resolved)
+    {
+        yield return Map.ApplyOverFrames(grid, Held, resolved);
+        layoutMilliseconds = terrainTimer.Elapsed.TotalMilliseconds;
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Overworld layout done");
+        // Let a frame pass so the layout's garbage is collected before the meshes add theirs.
+        yield return null;
+        BuildMeshesNow();
+    }
+
+    private void BuildMeshesNow()
+    {
         TerrainStreaming.Begin(TerrainFocus);
         try { Map.BuildMeshes(); }
         catch { TerrainStreaming.End(); throw; }
@@ -230,6 +250,7 @@ public sealed class OverworldScene : MonoBehaviour
         // Start the reveal only after followers, saved stats and camera placement
         // are complete, so their setup cannot consume part of the visible fade.
         IsReady = true;
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Overworld ready");
         Common.Instance.Travel.SceneReady();
         Common.Instance.ScreenTransition.DoOpen();
     }
@@ -668,8 +689,9 @@ public sealed class OverworldScene : MonoBehaviour
 
     private void OnGUI()
     {
-        GameUISkin.UseLegacySkin();
+        // Early-out before touching the skin: outside the sandbox this draws nothing.
         if (Context == null || !Context.IsSandbox || !ShowSandboxControls || !IsReady || GetComponent<OverworldMenuManager>().Opened) return;
+        GameUISkin.UseLegacySkin();
         bool previousEnabled = GUI.enabled;
         GUI.enabled = previousEnabled && !AutoplayRunner.BlocksPlayerInput;
         GameUISkin.LegacyBeginArea(new Rect(16, 16, 580, 430));

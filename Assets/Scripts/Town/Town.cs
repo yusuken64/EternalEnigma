@@ -88,8 +88,12 @@ public class Town : MonoBehaviour
                 buildLayersComplete(twc);
                 return;
             }
+            // A different town: drop the old geometry before building, so both never coexist at the peak.
+            Common.Instance.TownTerrain.Clear();
         }
-        WalkableMap.TileWorldCreator.ExecuteAllBlueprintLayers();
+        // On the web player, one blueprint layer per frame lets each layer's garbage be collected.
+        if (CampaignOverworld.YieldBetweenBuildLayers) StartCoroutine(twc.ExecuteAllBlueprintLayersYielding());
+        else twc.ExecuteAllBlueprintLayers();
     }
 
     private void OnDisable()
@@ -357,11 +361,27 @@ public class Town : MonoBehaviour
     {
         layoutMilliseconds = generationTimer.Elapsed.TotalMilliseconds;
         CoreLayoutCache.ClearResultFlags(_twc.twcAsset);
-        WalkableMap.TileWorldCreator.ExecuteAllBuildLayers(false);
+        // On the web player, build one layer per frame (after a frame for the layout's garbage), so
+        // garbage is collected between layers instead of all piling into one frame.
+        if (CampaignOverworld.YieldBetweenBuildLayers && isActiveAndEnabled) StartCoroutine(BuildLayersNextFrame(_twc));
+        else _twc.ExecuteAllBuildLayers(false);
+    }
+
+    private IEnumerator BuildLayersNextFrame(TileWorldCreator _twc)
+    {
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Town layout done");
+        var buildRandom = UnityEngine.Random.state;
+        yield return null;
+        var outerRandom = UnityEngine.Random.state;
+        UnityEngine.Random.state = buildRandom;
+        _twc.yieldBetweenBuildLayers = true;
+        try { _twc.ExecuteAllBuildLayers(false); }
+        finally { UnityEngine.Random.state = outerRandom; }
     }
 
     private void buildLayersComplete(TileWorldCreator _twc)
     {
+        _twc.yieldBetweenBuildLayers = false;
         meshMilliseconds = generationTimer.Elapsed.TotalMilliseconds;
         if (finishingGeneration) return;
         finishingGeneration = true;
@@ -410,6 +430,7 @@ public class Town : MonoBehaviour
             Common.Instance.TownTerrain.Store(terrainIdentity, WalkableMap.TileWorldCreator, runtimeAsset, this))
             runtimeAsset = null;
         IsReady = true;
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Town ready");
         if (Common.Instance.GameSaveData.NeedsInitialSave)
         {
             WriteSaveData();

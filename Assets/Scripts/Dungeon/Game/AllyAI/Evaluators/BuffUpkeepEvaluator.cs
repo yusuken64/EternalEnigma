@@ -11,7 +11,7 @@ public sealed class BuffUpkeepEvaluator : IAllySkillEvaluator
         if (context == null) return null;
         AllySkillChoice best = null;
         foreach (var skill in context.WithIntent(SkillIntent.Buff))
-            foreach (var option in SkillCastOptions.Enumerate(context.Ally, skill))
+            foreach (var option in context.Options(skill))
             {
                 float score = Benefit(context, skill, option);
                 if (score > 0 && (best == null || score > best.Score))

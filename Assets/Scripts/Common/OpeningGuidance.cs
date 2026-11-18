@@ -14,6 +14,39 @@ public sealed class OpeningGuidance : MonoBehaviour
     private TMP_Text label;
     private RectTransform panelRect;
 
+    // Per-frame caches so LateUpdate does not scan the scene or rebuild strings every frame.
+    private TownMenuManager townMenu;
+    private DungeonHud hud;
+    private readonly System.Collections.Generic.List<HomeBed> beds = new();
+    private string formattedSource, formattedObjective, bookButton, bookPrompt;
+    private string moveKey, moveText, bedKey, bedText, vendorKey, vendorText;
+
+    private TownMenuManager TownMenu()
+    {
+        if (townMenu == null) townMenu = FindFirstObjectByType<TownMenuManager>();
+        return townMenu;
+    }
+    private DungeonHud Hud()
+    {
+        if (hud == null) hud = game.GetComponent<DungeonHud>();
+        return hud;
+    }
+    private string MovePrompt(string key)
+    {
+        if (key != moveKey) { moveKey = key; moveText = "Find the doorway. Use " + key + " to move."; }
+        return moveText;
+    }
+    private string BedPrompt(string key)
+    {
+        if (key != bedKey) { bedKey = key; bedText = "Your bed saves progress. Press " + key + " to inspect it."; }
+        return bedText;
+    }
+    private string VendorPrompt(string key)
+    {
+        if (key != vendorKey) { vendorKey = key; vendorText = "Press " + key + " to talk to the person in front of you."; }
+        return vendorText;
+    }
+
     public static void Ensure(MonoBehaviour owner)
     {
         if (Common.InstanceOrNull?.CampaignContext?.State.RequiresOpeningPreparation != true) return;
@@ -48,8 +81,8 @@ public sealed class OpeningGuidance : MonoBehaviour
         var common = Common.InstanceOrNull; var context = common?.CampaignContext;
         if (canvas == null) return;
         bool ready = context != null && !TerminalMode.Effective && !common.GlobalSettings.IsOpen &&
-            (town != null && town.IsReady && !town.TownPlayer.CutsceneLocked && FindFirstObjectByType<TownMenuManager>()?.Opened != true ||
-             game != null && game.IsReady && !MenuManager.Instance.Opened && game.GetComponent<DungeonHud>()?.ShowingTargetDetails != true ||
+            (town != null && town.IsReady && !town.TownPlayer.CutsceneLocked && TownMenu()?.Opened != true ||
+             game != null && game.IsReady && !MenuManager.Instance.Opened && Hud()?.ShowingTargetDetails != true ||
              world != null && world.IsReady && MenuUIInputModule.Active?.HasDialog != true);
         if (town?.HomeLesson is { IsLocked: true } homeLesson)
         {
@@ -61,15 +94,20 @@ public sealed class OpeningGuidance : MonoBehaviour
             objective = lesson.Objective;
         if (ready && town != null && context.IsPreparingForOpening)
         {
-            if (!context.State.MovedInOpening) objective = "Find the doorway. Use " + InputPrompts.Move + " to move.";
+            if (!context.State.MovedInOpening) objective = MovePrompt(InputPrompts.Move);
             else if (!context.State.InteractedInOpening)
             {
                 var player = town.TownPlayer; var hero = player.ControllingTownAlly;
                 var ahead = hero.TilemapPosition + Dungeon.GetFacingOffset(hero.CurrentFacing);
-                if (town.GetComponentsInChildren<HomeBed>().Any(b => b.Tile == ahead))
-                    objective = "Your bed saves progress. Press " + InputPrompts.Attack + " to inspect it.";
-                else if (town.ShopVendors.Any(v => v.TilemapPosition == ahead))
-                    objective = "Press " + InputPrompts.Attack + " to talk to the person in front of you.";
+                bool facingBed = false;
+                town.GetComponentsInChildren(false, beds);
+                foreach (var b in beds) if (b.Tile == ahead) { facingBed = true; break; }
+                beds.Clear();
+                bool facingVendor = false;
+                if (!facingBed)
+                    foreach (var v in town.ShopVendors) if (v.TilemapPosition == ahead) { facingVendor = true; break; }
+                if (facingBed) objective = BedPrompt(InputPrompts.Attack);
+                else if (facingVendor) objective = VendorPrompt(InputPrompts.Attack);
             }
         }
         canvas.enabled = ready && !string.IsNullOrEmpty(objective);
@@ -79,7 +117,8 @@ public sealed class OpeningGuidance : MonoBehaviour
             panelRect.offsetMin = Vector2.zero; panelRect.offsetMax = new Vector2(0, 90);
             label.alignment = TextAlignmentOptions.MidlineLeft;
             label.textWrappingMode = TextWrappingModes.Normal;
-            label.text = GameplayText.Format(objective);
+            if (objective != formattedSource) { formattedSource = objective; formattedObjective = GameplayText.Format(objective); }
+            if (label.text != formattedObjective) label.text = formattedObjective;
             panelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Clamp(label.preferredHeight + 24, 66, 124));
         }
     }
@@ -94,7 +133,8 @@ public sealed class OpeningGuidance : MonoBehaviour
         var camera = town.TownPlayer.CameraController.Camera;
         var screen = camera.WorldToScreenPoint(anchor);
         if (screen.z <= 0 || screen.x < 0 || screen.x > Screen.width || screen.y < 0 || screen.y > Screen.height) return;
-        label.text = $"[{button}] Read";
+        if (button != bookButton) { bookButton = button; bookPrompt = $"[{button}] Read"; }
+        if (label.text != bookPrompt) label.text = bookPrompt;
         label.alignment = TextAlignmentOptions.Center;
         label.textWrappingMode = TextWrappingModes.NoWrap;
         // Normalized anchors keep the prompt on the prop while the canvas scaler catches up to a resize.

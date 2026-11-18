@@ -29,6 +29,11 @@ public class DungeonThemeTileLayer : TWCBuildLayer
         .Where(mask => mask != null).ToArray();
     public static bool At(bool[,] map, int x, int y) => map != null && x >= 0 && y >= 0 &&
         x < map.GetLength(0) && y < map.GetLength(1) && map[x, y];
+    protected static bool Excluded(bool[][,] exclusions, int x, int y)
+    {
+        for (int i = 0; i < exclusions.Length; i++) if (At(exclusions[i], x, y)) return true;
+        return false;
+    }
 
     public override void Execute(TileWorldCreator creator, bool force)
     {
@@ -45,7 +50,7 @@ public class DungeonThemeTileLayer : TWCBuildLayer
             foreach (var tile in map.clusters.Values.SelectMany(c => c.Values))
             {
                 int x = (int)tile.position.x / 2, y = (int)tile.position.z / 2;
-                if (exclusions.Any(mask => At(mask, x, y))) continue;
+                if (Excluded(exclusions, x, y)) continue;
                 var prefab = tile.tileType switch {
                     TileData.TileType.edge => Preset.edgeTile,
                     TileData.TileType.exteriorCorner => Preset.exteriorCornerTile,
@@ -63,13 +68,34 @@ public class DungeonThemeTileLayer : TWCBuildLayer
         finally { creator.executedBuildLayersCount++; }
     }
 
+    // Each floor places the same few prefab assets thousands of times; GetComponentsInChildren
+    // allocates a fresh array per call. Asset prefabs (positive instance IDs) are immutable.
+    private static readonly System.Collections.Generic.Dictionary<int, (MeshFilter[] filters, bool singleSubmesh)> prefabFilters = new();
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetFilters()
+    {
+        prefabFilters.Clear();
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= ClearFilters;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += ClearFilters;
+    }
+    private static void ClearFilters(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) => prefabFilters.Clear();
+    private static (MeshFilter[] filters, bool singleSubmesh) Filters(GameObject prefab)
+    {
+        int id = prefab.GetInstanceID();
+        if (id > 0 && prefabFilters.TryGetValue(id, out var cached)) return cached;
+        var filters = prefab.GetComponentsInChildren<MeshFilter>();
+        var entry = (filters, filters.All(f => f.sharedMesh != null && f.sharedMesh.subMeshCount == 1));
+        if (id > 0) prefabFilters[id] = entry;
+        return entry;
+    }
+
     protected static void AddPrefab(EnvironmentBatch batch, BiomeDecorationSurfaceSet faces, GameObject prefab,
         Vector3 position, Vector3 scale, Quaternion rotation, bool boundary, float cellSize, Material materialOverride = null)
     {
         if (prefab == null) return;
         // Quarter-tile floors retain receiver classification and continuous planar UVs.
-        var filters = prefab.GetComponentsInChildren<MeshFilter>();
-        if (filters.All(f => f.sharedMesh != null && f.sharedMesh.subMeshCount == 1))
+        var (filters, singleSubmesh) = Filters(prefab);
+        if (singleSubmesh)
         {
             var rootMatrix = Matrix4x4.TRS(position,rotation,scale) * prefab.transform.worldToLocalMatrix;
             foreach (var filter in filters)
@@ -84,7 +110,7 @@ public class DungeonThemeTileLayer : TWCBuildLayer
         else batch.AddPrefab(prefab, position, scale, rotation, materialMap: materialOverride == null ? null : _ => materialOverride);
         if (!boundary) return;
         var matrix = Matrix4x4.TRS(position, rotation, scale) * prefab.transform.worldToLocalMatrix;
-        foreach (var filter in prefab.GetComponentsInChildren<MeshFilter>())
+        foreach (var filter in filters)
             if (filter.sharedMesh != null)
                 faces.Add(filter.sharedMesh, matrix * filter.transform.localToWorldMatrix,
                     EternalEnigma.Core.World.OverworldBiome.Grassland, DecorationSurface.BuiltWall, cellSize);

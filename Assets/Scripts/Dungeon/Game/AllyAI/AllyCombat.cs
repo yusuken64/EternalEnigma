@@ -7,11 +7,26 @@ internal static class AllyCombat
     internal static bool IsVisibleHostile(Game game, Ally ally, Character target) =>
         target != null && target != ally && target.Vitals.HP > 0 && target.Team != ally.Team &&
         target.Team != Team.Neutral && !EnemyBehavior.IsDisguised(target) && !EncounterActor.Protected(target) &&
-        game.AllCharacters.Contains(target) && game.CurrentDungeon.CanSee(ally, target);
+        game.ContainsCharacter(target) && game.CurrentDungeon.CanSee(ally, target);
 
-    internal static List<Character> VisibleHostiles(Game game, Ally ally) => game.AllCharacters
-        .Where(c => IsVisibleHostile(game, ally, c)).OrderBy(c => c.TilemapPosition.y)
-        .ThenBy(c => c.TilemapPosition.x).ThenBy(c => c.GetInstanceID()).ToList();
+    // Keys (y, x, instance id) are unique per object, so an unstable Sort yields the same order as OrderBy/ThenBy.
+    static readonly System.Comparison<Character> HostileOrder = (a, b) =>
+    {
+        int c = a.TilemapPosition.y.CompareTo(b.TilemapPosition.y);
+        if (c != 0) return c;
+        c = a.TilemapPosition.x.CompareTo(b.TilemapPosition.x);
+        if (c != 0) return c;
+        return a.GetInstanceID().CompareTo(b.GetInstanceID());
+    };
+
+    internal static List<Character> VisibleHostiles(Game game, Ally ally)
+    {
+        var result = new List<Character>();
+        foreach (var c in game.Allies) if (IsVisibleHostile(game, ally, c)) result.Add(c);
+        foreach (var c in game.Enemies) if (IsVisibleHostile(game, ally, c)) result.Add(c);
+        if (result.Count > 1) result.Sort(HostileOrder);
+        return result;
+    }
 
     internal sealed class Attack
     {

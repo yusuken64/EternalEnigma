@@ -563,13 +563,14 @@ public static class DungeonFloorGenerator
         };
     }
 
+    private static readonly (int Dx, int Dy)[] OrthogonalSteps = { (-1, 0), (1, 0), (0, -1), (0, 1) };
+
     private static bool IsAdjacentToRoomFloor(int x, int y, GridRect room, bool[,] floorCells, int W, int H)
     {
         // Check if orthogonally adjacent to any floor cell outside this room
-        var orthogonal = new[] { (x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1) };
-
-        foreach (var (ox, oy) in orthogonal)
+        foreach (var (dx, dy) in OrthogonalSteps)
         {
+            int ox = x + dx, oy = y + dy;
             if (ox >= 0 && ox < W && oy >= 0 && oy < H && floorCells[ox, oy])
             {
                 // Check if this floor cell is outside the room

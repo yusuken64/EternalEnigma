@@ -33,6 +33,7 @@ public sealed class TerminalRuntime : MonoBehaviour
     private Button historyButton;
     private float nextHudStyle;
     private readonly Vector3[] corners = new Vector3[4];
+    private readonly System.Collections.Generic.List<Image> focusImages = new();
     private bool hasPresentedMode;
 
     public static void Ensure(Common common)
@@ -185,7 +186,9 @@ public sealed class TerminalRuntime : MonoBehaviour
         var scope = MenuUIInputModule.Active?.FocusRoot;
         if (scope != null)
         {
-            foreach (var image in scope.GetComponentsInChildren<Image>())
+            // List overload reuses one buffer instead of allocating an array every frame.
+            scope.GetComponentsInChildren(false, focusImages);
+            foreach (var image in focusImages)
             {
                 if (!image.enabled || image.color.a < .01f) continue;
                 image.rectTransform.GetWorldCorners(corners);

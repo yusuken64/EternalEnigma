@@ -73,7 +73,15 @@ public partial class Game : SingletonMonoBehaviour<Game>
 			return ret;
 		}
 	}
-	
+
+	// Allocation-free equivalent of AllCharacters.Contains(character).
+	internal bool ContainsCharacter(Character character)
+	{
+		if (character is Ally ally) return Allies.Contains(ally) || Enemies.Contains(character);
+		if (ReferenceEquals(character, null)) return Allies.Contains(null) || Enemies.Contains(null);
+		return Enemies.Contains(character);
+	}
+
 	public List<Character> DeadUnits; //dead units are added to this, destroy at end turn;
 	public Transform CharacterStatsDisplayContainer;
 	public CharacterStatsDisplay CharacterStatsDisplayPrefab;
@@ -148,6 +156,8 @@ public partial class Game : SingletonMonoBehaviour<Game>
 		DownedAllies.Clear();
         var context = Common.Instance.CampaignContext;
         RunPlan = context != null && context.State.PendingDungeon.Length > 0 ? context.RunPlan(context.State.PendingDungeon) : null;
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log($"Dungeon run start: {context?.State.PendingDungeon ?? "sandbox"}" +
+            (context != null && context.State.PendingDungeon == context.Campaign.FinalLocationId ? " (finale)" : $", variant {RunPlan?.Variant}"));
         if (context?.State.PendingDungeon == context?.Campaign.FinalLocationId && context != null)
         {
             Finale = new FinaleRuntime(this, context.BeginFinale());
@@ -275,9 +285,9 @@ public partial class Game : SingletonMonoBehaviour<Game>
         if (RunPlan == null || AutoplayRunner.SweepGeneration != null) yield break;
         int floor = PlayerController.Floor;
 #if UNITY_WEBGL && !UNITY_EDITOR
-        // No worker threads on the web: wait until the arrival presentation has settled.
-        yield return new WaitForSecondsRealtime(3);
-        if (!IsReady || PlayerController.Floor != floor) yield break;
+        // No worker threads on the web, so prewarming would stall a frame of live play. Generate the
+        // floor during the covered transition instead, where it is spread over several frames.
+        yield break;
 #endif
         var next = RunPlan.Floors.FirstOrDefault(step => step.Number == floor + 1);
         if (next != null) CoreLayoutCache.Prewarm(next.Options);
@@ -414,6 +424,7 @@ public partial class Game : SingletonMonoBehaviour<Game>
             AutoplayRunner.Active.LootLedger?.VerifyGeneration(CurrentDungeon);
         }
 		IsReady = true;
+        if (RuntimeMeshMemory.Logging) RuntimeMeshMemory.Log("Dungeon floor ready");
         resettingFloor = false;
         StartCoroutine(PrewarmNextFloor());
         if (!reset && Encounter.AllowsReset) entrySnapshot = new FloorEntrySnapshot(this);
@@ -427,10 +438,21 @@ public partial class Game : SingletonMonoBehaviour<Game>
     private TileWorldDungeon sightDungeon;
     internal readonly HashSet<Vector3Int> PlaybackVisibleTiles = new();
 
-    private IEnumerable<Ally> SightAllies() => Allies.Concat(DownedAllies).Concat(DeadUnits.OfType<Ally>())
-        .Where(a => a != null && a.DisplayedVitals.HP > 0);
+    private readonly List<Ally> sightAllies = new();
 
-    private void LateUpdate() => RefreshSight();
+    // Fills a reused list (no per-frame enumerator/closure garbage); same members and order as before.
+    private List<Ally> SightAllies()
+    {
+        sightAllies.Clear();
+        foreach (var a in Allies) if (a != null && a.DisplayedVitals.HP > 0) sightAllies.Add(a);
+        foreach (var a in DownedAllies) if (a != null && a.DisplayedVitals.HP > 0) sightAllies.Add(a);
+        foreach (var unit in DeadUnits) if (unit is Ally a && a != null && a.DisplayedVitals.HP > 0) sightAllies.Add(a);
+        return sightAllies;
+    }
+
+    // Sight is refreshed on demand, not polled per frame: a per-frame poll recomputed all party
+    // sight and re-uploaded the minimap once per walking hero per step. Replay refreshes before
+    // each batch, and PlayerController.StartTurn updates fog/minimap when control returns.
 
     internal void RefreshSight()
     {

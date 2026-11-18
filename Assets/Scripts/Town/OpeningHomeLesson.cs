@@ -14,7 +14,14 @@ public sealed class OpeningHomeLesson : MonoBehaviour
     public Vector3Int BookCell { get; private set; }
     public Vector3Int ChestCell { get; private set; }
     public Vector3Int DoorCell { get; private set; }
-    private CampaignContext Context => Common.InstanceOrNull?.CampaignContext;
+    // Cached; re-found only while missing (avoids a whole-scene scan every frame).
+    private TownMenuManager townMenu;
+    private TownMenuManager CachedTownMenu()
+    {
+        if (townMenu == null) townMenu = FindFirstObjectByType<TownMenuManager>();
+        return townMenu;
+    }
+    private CampaignContext Context =>Common.InstanceOrNull?.CampaignContext;
     public bool IsLocked => Context?.HasHomeLesson == true && !Context.State.HomeDoorUnlocked;
 
     public static OpeningHomeLesson Create(Town town)
@@ -75,7 +82,7 @@ public sealed class OpeningHomeLesson : MonoBehaviour
         return enabled && context?.HasHomeLesson == true && town.IsReady && hero != null && !player.IsBusy &&
             context.State.Scene == "Town" && context.State.LocationId == "town-0" &&
             !player.CutsceneLocked && !Common.Instance.Travel.IsTransitioning && !Common.Instance.GlobalSettings.IsOpen &&
-            FindFirstObjectByType<TownMenuManager>()?.Opened != true &&
+            CachedTownMenu()?.Opened != true &&
             hero.TilemapPosition + Dungeon.GetFacingOffset(hero.CurrentFacing) == targetCell;
     }
 

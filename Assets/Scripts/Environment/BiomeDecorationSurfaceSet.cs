@@ -32,6 +32,25 @@ public sealed class BiomeDecorationSurfaceSet : MonoBehaviour
             Mathf.Abs(x.y) + Mathf.Abs(y.y) + Mathf.Abs(z.y),
             Mathf.Abs(x.z) + Mathf.Abs(y.z) + Mathf.Abs(z.z)) * 2);
     }
+    // A floor places the same few prefab meshes thousands of times, and mesh.vertices/triangles return
+    // fresh copies on every call. Copying once per asset mesh removed hundreds of MB of garbage per floor.
+    private static readonly Dictionary<int,(Vector3[] vertices,int[] indices)> assetGeometry = new();
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetGeometry()
+    {
+        assetGeometry.Clear();
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= ClearGeometry;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += ClearGeometry;
+    }
+    private static void ClearGeometry(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) => assetGeometry.Clear();
+    internal static (Vector3[] vertices,int[] indices) Geometry(Mesh mesh)
+    {
+        // Only imported assets (positive instance IDs) are shared and immutable; generated meshes are not cached.
+        int id=mesh.GetInstanceID();
+        if(id<=0)return (mesh.vertices,mesh.triangles);
+        if(!assetGeometry.TryGetValue(id,out var geometry))assetGeometry[id]=geometry=(mesh.vertices,mesh.triangles);
+        return geometry;
+    }
     // Pull only vertical planar faces. Sloping roofs and flat biome seams cannot qualify.
     public void Add(Mesh mesh, Matrix4x4 matrix, OverworldBiome biome, DecorationSurface surface, float cellSize, string houseId=null, bool splitPanels=false)
     {
@@ -48,9 +67,11 @@ public sealed class BiomeDecorationSurfaceSet : MonoBehaviour
             }
             return;
         }
-        var vertices=mesh.vertices;var indices=mesh.triangles;
-        var groups=new Dictionary<(int,int,int,int,int),List<Vector3>>();
-        var areas=new Dictionary<(int,int,int,int,int),float>();
+        var (vertices,indices)=Geometry(mesh);
+        // Reused across calls (main thread only). Clear() on a dictionary that only ever had adds
+        // restarts insertion-ordered enumeration, so Faces keep exactly the same order.
+        var groups=scratchGroups;var areas=scratchAreas;
+        groups.Clear();areas.Clear();int pooled=0;
         for(int i=0;i<indices.Length;i+=3) {
             var a=matrix.MultiplyPoint3x4(vertices[indices[i]]);var b=matrix.MultiplyPoint3x4(vertices[indices[i+1]]);var c=matrix.MultiplyPoint3x4(vertices[indices[i+2]]);
             var n=Vector3.Cross(b-a,c-a).normalized;
@@ -73,7 +94,10 @@ public sealed class BiomeDecorationSurfaceSet : MonoBehaviour
             var key=(side,Mathf.RoundToInt(plane/cellSize*1000),Mathf.RoundToInt(min.z/cellSize*1000),
                 splitPanels?Mathf.RoundToInt((min.x+max.x)*500/cellSize):Mathf.FloorToInt((min.x+max.x)*.5f/cellSize),
                 splitPanels?Mathf.RoundToInt((min.y+max.y)*500/cellSize):Mathf.FloorToInt((min.y+max.y)*.5f/cellSize));
-            if(!groups.TryGetValue(key,out var points))groups[key]=points=new();
+            if(!groups.TryGetValue(key,out var points)) {
+                if(pooled==scratchPoints.Count)scratchPoints.Add(new List<Vector3>());
+                points=scratchPoints[pooled++];points.Clear();groups[key]=points;
+            }
             points.Add(a);points.Add(b);points.Add(c);
             areas.TryGetValue(key,out float area);areas[key]=area+Vector3.Cross(b-a,c-a).magnitude*.5f;
         }
@@ -85,5 +109,9 @@ public sealed class BiomeDecorationSurfaceSet : MonoBehaviour
             var normal=pair.Key.Item1==0?Vector3.right:pair.Key.Item1==1?Vector3.left:pair.Key.Item1==2?Vector3.up:Vector3.down;
             Faces.Add(new BiomeDecorationFace {Center=bounds.center,Normal=normal,Width=width,Height=bounds.size.z,Biome=biome,Surface=surface,HouseId=houseId});
         }
+        groups.Clear();areas.Clear();
     }
+    private static readonly Dictionary<(int,int,int,int,int),List<Vector3>> scratchGroups=new();
+    private static readonly Dictionary<(int,int,int,int,int),float> scratchAreas=new();
+    private static readonly List<List<Vector3>> scratchPoints=new();
 }

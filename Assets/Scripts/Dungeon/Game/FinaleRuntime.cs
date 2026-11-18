@@ -173,11 +173,13 @@ public sealed class FinaleRuntime
         yield return ScreenTransition.PresentLoadingScreen();
         SummonRules.DespawnClones(game); PartyRules.RestoreAllDowned(game, 1);
         foreach (var ally in game.Allies) { global::PendingCast.Cancel(ally, "floor changed"); ally.currentInteractable = null; }
-        terrain.SetActive(false); UnityEngine.Object.Destroy(terrain);
+        // Free the old floor's generated meshes now; destroying the GameObject alone leaves them until the next scene load.
+        terrain.SetActive(false); DungeonPresentation.ClearOutput(terrain); UnityEngine.Object.Destroy(terrain);
         game.Enemies.Clear(); actors.Clear(); spawned.Clear();
         foreach (var dead in game.DeadUnits) if (dead != null) UnityEngine.Object.Destroy(dead.gameObject);
         game.DeadUnits.Clear(); game.CurrentDungeon = null;
-        yield return null; yield return LoadFloor();
+        yield return null; if (RuntimeMeshMemory.Enabled) { System.GC.Collect(); yield return null; }
+        yield return LoadFloor();
         transitioning = false; game.SetFinaleReady(true); Common.Instance.ScreenTransition.DoOpen();
     }
     IEnumerator LoadFloor()

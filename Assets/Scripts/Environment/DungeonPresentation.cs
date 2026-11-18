@@ -8,7 +8,15 @@ using UnityEngine;
 
 public static class DungeonPresentation
 {
-    private static readonly ConditionalWeakTable<DungeonFloor, HashSet<GridPoint>> protectedCells = new();
+    // Only one floor is decorated at a time; keep just the latest floor's set rather than a weak table,
+    // whose entries the web player's GC may never release.
+    private static DungeonFloor protectedFloor;
+    private static HashSet<GridPoint> protectedSet;
+    private static HashSet<GridPoint> ProtectedFor(DungeonFloor floor)
+    {
+        if (!ReferenceEquals(floor, protectedFloor)) { protectedSet = Protected(floor); protectedFloor = floor; }
+        return protectedSet;
+    }
     private static HashSet<GridPoint> Protected(DungeonFloor floor)
     {
         var cells = new HashSet<GridPoint> { floor.Start, floor.Stairs };
@@ -66,26 +74,30 @@ public static class DungeonPresentation
     public static void ClearOutput(GameObject root)
     {
         // Baked scene meshes are not assets. Shared imported/persistent meshes must survive.
-        var owned=new HashSet<Mesh>(root.GetComponentsInChildren<EnvironmentMeshOwner>(true).SelectMany(o=>o.Meshes));
-        foreach(var mesh in owned) if(mesh!=null) Release(mesh);
-        foreach(var owner in root.GetComponentsInChildren<EnvironmentMeshOwner>(true))
-        {
-            owner.Meshes.Clear();
-            foreach(var material in owner.Materials)if(material!=null)Release(material);
-            owner.Materials.Clear();
-            foreach(var texture in owner.Textures)if(texture!=null)Release(texture);
-            owner.Textures.Clear();
-        }
-        foreach(var mesh in root.GetComponentsInChildren<MeshFilter>(true).Select(f=>f.sharedMesh).Where(m=>m!=null).Distinct())
-        {
-            if(owned.Contains(mesh)) continue;
-#if UNITY_EDITOR
-            if(UnityEditor.EditorUtility.IsPersistent(mesh)) continue;
-#endif
-            // Only TWC's combined meshes are owned here; prefab meshes are shared.
-            if(mesh.name.Contains("_Cluster_")) Release(mesh);
-        }
+        var owners=root.GetComponentsInChildren<EnvironmentMeshOwner>(true);
+        var owned=new HashSet<Mesh>(owners.SelectMany(o=>o.Meshes));
+        var clusters=root.GetComponentsInChildren<MeshFilter>(true).Select(f=>f.sharedMesh).Where(m=>m!=null).Distinct()
+            .Where(m=>!owned.Contains(m) && m.name.Contains("_Cluster_")).ToList();
+        var materials=owners.SelectMany(o=>o.Materials).Where(m=>m!=null).ToList();
+        var textures=owners.SelectMany(o=>o.Textures).Where(t=>t!=null).ToList();
+        foreach(var owner in owners){owner.Meshes.Clear();owner.Materials.Clear();owner.Textures.Clear();}
+        // Hide the old output first, then free its assets at once: the next floor is usually built in
+        // this same frame, and a deferred Destroy would keep both floors' geometry alive at its peak.
         foreach(Transform child in root.transform.Cast<Transform>().ToArray()) Release(child.gameObject);
+        foreach(var mesh in owned) if(mesh!=null) ReleaseNow(mesh);
+        // Only TWC's combined meshes are owned here; prefab meshes are shared.
+        foreach(var mesh in clusters) ReleaseNow(mesh);
+        foreach(var material in materials) ReleaseNow(material);
+        foreach(var texture in textures) ReleaseNow(texture);
+    }
+    /// <summary>Destroys a generated asset (never a GameObject) immediately rather than at the end of the frame.</summary>
+    static void ReleaseNow(UnityEngine.Object asset)
+    {
+        if(asset==null || asset is GameObject || asset is Component)return;
+#if UNITY_EDITOR
+        if(UnityEditor.EditorUtility.IsPersistent(asset))return;
+#endif
+        UnityEngine.Object.DestroyImmediate(asset);
     }
     public static void TrackLegacyMeshes(GameObject root)
     {
@@ -114,7 +126,7 @@ public static class DungeonPresentation
         // Blocked cells also contain walls. Decorate additionally fits props into the
         // paved shoulder outside the rendered wall footprint, never the cell center.
         if (x<0 || y<0 || x>=floor.Width || y>=floor.Height || floor.Layers[DungeonLayers.Floor][x,y]) return false;
-        return !protectedCells.GetValue(floor, Protected).Contains(new GridPoint(x,y));
+        return !ProtectedFor(floor).Contains(new GridPoint(x,y));
     }
     static Dictionary<GridPoint, Bounds> BoundaryFootprints(TileWorldCreator creator, Transform space)
     {
@@ -177,6 +189,13 @@ public static class DungeonPresentation
         }
         return false;
     }
+    // Equals mesh.triangles.Length/3 for triangle meshes without copying the index buffer.
+    private static long TriangleCount(Mesh mesh)
+    {
+        long indices=0;
+        for(int sub=0;sub<mesh.subMeshCount;sub++)indices+=mesh.GetIndexCount(sub);
+        return indices/3;
+    }
     public static uint Hash(int seed,int x,int y)
     { unchecked { uint h=(uint)seed ^ (uint)x*0x9e3779b9u ^ (uint)y*0x85ebca6bu ^ 0x6d2b79f5u; h=(h^(h>>16))*0x7feb352du;return h^(h>>15); } }
     public static void PreviewScenery(TileWorldCreator creator,DungeonFloor floor,DungeonTheme theme)
@@ -220,7 +239,7 @@ public static class DungeonPresentation
                 Mesh mesh=model?.Mesh ?? interior?.Mesh;
                 if(id=="CryptRoots") mesh=GameContent.Load<Mesh>("DungeonThemes/CryptRoots");
                 int triangleBudget=250;
-                if(mesh==null || mesh.triangles.Length/3>triangleBudget) continue;
+                if(mesh==null || TriangleCount(mesh)>triangleBudget) continue;
                 if (!DecorationPose(floor, p.x, p.y, p.hash, size, mesh, wall, out var position, out float scale, out float angle)) continue;
                 var material=interior != null && model == null ? interiors.Material(theme.Biome) : theme.DecorationMaterial;
                 batch.Add(mesh,material,position,Vector3.one*scale,angle);

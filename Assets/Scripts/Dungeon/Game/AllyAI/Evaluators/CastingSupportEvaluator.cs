@@ -5,7 +5,7 @@ public sealed class CastingSupportEvaluator : IAllySkillEvaluator
     public AllySkillChoice Evaluate(AllySkillContext context)
     {
         if (context == null) return null;
-        var best = context.WithIntent(SkillIntent.CastingSupport).SelectMany(s => SkillCastOptions.Enumerate(context.Ally, s))
+        var best = context.WithIntent(SkillIntent.CastingSupport).SelectMany(s => context.Options(s))
             .Select(o => new { Option = o, Saved = o.Affected.Count(c => context.Party.Contains(c) && c.PendingCast?.Remaining > 0) })
             .Where(x => x.Saved > 0).OrderByDescending(x => x.Saved).ThenBy(x => x.Option.Skill.ManaCost).FirstOrDefault();
         return best == null ? null : new AllySkillChoice(Name, best.Option, best.Saved, "Reduce charging actions");

@@ -12,7 +12,7 @@ public static class BiomeDecorationMeshMounts
         foreach(var filter in filters) {
             var mesh=filter.sharedMesh;if(mesh==null||!mesh.isReadable)continue;
             var matrix=target.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix;
-            var verts=mesh.vertices;var indices=mesh.triangles;
+            var (verts,indices)=BiomeDecorationSurfaceSet.Geometry(mesh);
             for(int i=0;i<indices.Length;i+=3) {
                 var t=new Triangle{A=matrix.MultiplyPoint3x4(verts[indices[i]]),B=matrix.MultiplyPoint3x4(verts[indices[i+1]]),C=matrix.MultiplyPoint3x4(verts[indices[i+2]])};
                 var min=Vector3.Min(t.A,Vector3.Min(t.B,t.C));var max=Vector3.Max(t.A,Vector3.Max(t.B,t.C));
@@ -21,11 +21,12 @@ public static class BiomeDecorationMeshMounts
                 }
             }
         }
+        var triangles=new List<Triangle>();
         for(int y=0;y<floor.Height;y++)for(int x=0;x<floor.Width;x++) {
             if(!floor.Layers[DungeonLayers.Floor][x,y])continue;
             foreach(var d in BiomeDecorations.Directions) {
                 if(floor.Layers[DungeonLayers.Floor].At(new GridPoint(x+d.x,y+d.y)))continue;
-                var triangles=new List<Triangle>();
+                triangles.Clear();
                 for(int xx=x-1;xx<=x+1;xx++)for(int yy=y-1;yy<=y+1;yy++)if(cells.TryGetValue(new Vector2Int(xx,yy),out var list))triangles.AddRange(list);
                 if(triangles.Count==0)continue;
                 var direction=new Vector3(d.x,d.y,0);var tangent=new Vector3(d.y,-d.x,0);

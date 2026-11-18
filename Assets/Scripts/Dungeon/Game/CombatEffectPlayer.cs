@@ -283,16 +283,26 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     {
         var current = Game.Instance != null && Game.Instance.CurrentDungeon != null ? Game.Instance.CurrentDungeon : null;
         if (!ReferenceEquals(dungeon, current)) { if (hadDungeon) Clear(); dungeon = current; hadDungeon = current != null; }
-        foreach (var c in casting.Keys.ToArray()) if (c == null || c.Vitals.HP <= 0) ClearCasting(c);
-        foreach (var character in statuses.Keys.ToArray())
-            if (character == null) { if (auras.TryGetValue(character, out var effects)) foreach (var effect in effects.Values) Release(effect); auras.Remove(character); statuses.Remove(character); }
-        foreach (var item in active.ToArray())
+        scratchCharacters.Clear();
+        foreach (var c in casting.Keys) if (c == null || c.Vitals.HP <= 0) scratchCharacters.Add(c);
+        foreach (var c in scratchCharacters) ClearCasting(c);
+        scratchCharacters.Clear();
+        foreach (var character in statuses.Keys) if (character == null) scratchCharacters.Add(character);
+        foreach (var character in scratchCharacters)
+        { if (auras.TryGetValue(character, out var effects)) foreach (var effect in effects.Values) Release(effect); auras.Remove(character); statuses.Remove(character); }
+        scratchCharacters.Clear();
+        scratchActive.Clear();
+        scratchActive.AddRange(active);
+        foreach (var item in scratchActive)
         {
             if (item.Object == null || Time.unscaledTime >= item.Expires) { Release(item.Object); continue; }
             if (item.Follow != null) item.Object.transform.position = item.Follow.position + item.Offset;
             SetVisibility(item);
         }
+        scratchActive.Clear();
     }
+    readonly List<Character> scratchCharacters = new();
+    readonly List<Instance> scratchActive = new();
 
     static void SetVisibility(Instance item)
     {

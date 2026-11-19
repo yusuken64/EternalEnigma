@@ -1,0 +1,148 @@
+1. Marcellus
+
+Role: Primary interface font
+
+Use for:
+
+Item names
+NPC names
+Character names
+Ability names
+Quest body text
+Tooltips
+Inventory UI
+Stats and attributes
+Dialogue text
+Buttons
+Menus
+Floating status text
+Rule
+
+If the player needs to read it repeatedly, use Marcellus.
+
+Examples:
+
+Sword of the Ancients
+Strength +12
+Sell Item
+Accept Quest
+2. Uncial Antiqua
+
+Role: Decorative fantasy heading font
+
+Use for:
+
+Quest titles
+Dungeon names
+Region names
+Book chapter titles
+Menu section headers
+Achievement titles
+Loading-screen titles
+Rule
+
+Use only for titles and headings. Never for paragraphs.
+
+Examples:
+
+The Fall of Blackstone Keep
+Forgotten Catacombs
+Northern Wildlands
+
+Avoid:
+
+Tooltips
+Dialogue
+Stat panels
+Long descriptions
+3. Germania One
+
+Role: Combat feedback font
+
+Use for:
+
+Damage numbers
+Critical hits
+Healing numbers
+Buff notifications
+Combat announcements
+Status effects
+Rule
+
+Anything that appears briefly and demands attention uses Germania One.
+
+Examples:
+
+512
+CRITICAL!
+DODGE
+STUNNED
++250 HP
+
+Make it:
+
+Larger
+Bold
+Animated
+4. Roboto Condensed
+
+Role: Utility font
+
+Use for:
+
+Chat windows
+Combat logs
+Guild rosters
+Friends lists
+Settings menus
+Keybind lists
+Debug information
+Quest objectives
+System notifications
+Rule
+
+If readability matters more than atmosphere, use Roboto Condensed.
+
+Examples:
+
+Whisper from Player123
+FPS: 144
+Press E to Interact
+Kill Wolves (3/10)
+Complete Hierarchy
+Tier 1: Atmosphere
+
+Uncial Antiqua
+
+Rare
+Large
+Decorative
+Headings only
+Tier 2: Main UI
+
+Marcellus
+
+Most common font
+70-80% of all visible text
+Core RPG identity
+Tier 3: Information Density
+
+Roboto Condensed
+
+Functional
+Fast to scan
+Lists, logs, and chat
+Tier 4: Immediate Action
+
+Germania One
+
+Combat only
+Short-lived text
+High visual impact
+
+A good rule of thumb:
+
+"Can the player stop and admire it?" → Uncial Antiqua
+ "Is it normal game text?" → Marcellus
+ "Is there a lot of text?" → Roboto Condensed
+ "Does it need to grab attention right now?" → Germania One

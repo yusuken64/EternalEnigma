@@ -33,7 +33,7 @@ public static class DungeonClearAbilities
         skill.ActivationType = ActivationType.Passive;
         skill.MaxRank = 1;
         skill.PassiveStatModification = bonus;
-        skill.Description = "Earned on this dungeon's first clear. Permanently benefits every party member.\n" +
+        skill.Description = "A permanent bonus for the whole party, earned by clearing a dungeon.\n" +
             string.Join("\n", bonus.DescribeEffect());
         definitions[id] = skill;
         return skill;

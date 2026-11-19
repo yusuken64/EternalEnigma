@@ -239,7 +239,9 @@ public sealed class LockFictionTests
     public void GateWithoutFictionFallsBackToTheLegacyHint()
     {
         var route = new CampaignRoute("r", "a", "b", new Requirement(CapabilitySet.Of(Capability.Breach)), LockForm.Obstacle);
-        Assert.Equal("Requires: " + route.Requirement, route.GateHint);
+        Assert.Equal("You need " + Capability.Breach.DisplayName() + " to pass.", route.GateHint);
+        Assert.DoesNotContain("+", route.GateHint);
+        Assert.DoesNotContain("|", route.GateHint);
         Assert.Equal("The way is shut.", route.WithFiction("breach.obstacle.1", "The way is shut.").GateHint);
     }
 }

@@ -15,7 +15,7 @@ public class GameOverScreen : Dialog
     public Sprite VictoryIcon, DefeatIcon;
 	[SerializeField] private Image messageBackdrop;
 	private PlayerController _playerController;
-	private bool _victory;
+	private bool _victory, _loadFailed;
 	private string _defaultButtonText;
 
 	#if UNITY_EDITOR
@@ -64,7 +64,10 @@ public class GameOverScreen : Dialog
 		_victory = victory;
         if(ResultIcon!=null){ResultIcon.sprite=victory?VictoryIcon:DefeatIcon;ResultIcon.enabled=victory&&ResultIcon.sprite!=null;}
 		CloseAction = null;
-		MessageText.text = victory ? $"Victory!\nFinal dungeon cleared\nGold {playerController.Gold:N0}" : "Game Over";
+		_loadFailed = false;
+		bool campaign = Common.Instance.CampaignContext != null;
+		MessageText.text = victory ? $"Victory!\nFinal dungeon cleared\nGold {playerController.Gold:N0}" :
+			"Game Over\n<size=60%>Your party has fallen. " + (campaign ? "You'll wake at your last save." : "You'll return to town without your loot.") + "</size>";
 		// JsonUtility materializes an empty record for saves without a completion.
 		if (victory && Common.Instance.GameSaveData.Completion is { } record && !string.IsNullOrEmpty(record.CompletedUtc))
 			MessageText.text = "Hall of Fame\n" + GameplayText.Format(record.Statistics);
@@ -72,7 +75,7 @@ public class GameOverScreen : Dialog
 		if (label != null)
 		{
 			_defaultButtonText ??= label.text;
-			label.text = victory ? "Save completed campaign" : "Load last save";
+			label.text = victory ? "Save completed campaign" : campaign ? "Load last save" : "Return to town";
 		}
 
 		var nav = OkButton.navigation;
@@ -89,9 +92,18 @@ public class GameOverScreen : Dialog
             else MessageText.text = error;
             return;
         }
-		// A defeat rewinds to the last inn save when there is one.
+		if (_loadFailed) { Common.Instance.Travel.ReturnToMenu(); return; }
+		// A defeat rewinds to the last save when there is one.
 		if (InnCheckpoint.TryRestore(Common.Instance)) return;
-        if (Common.Instance.CampaignContext != null) { MessageText.text = "Last save could not be loaded. Return to the main menu."; return; }
+        if (Common.Instance.CampaignContext != null)
+        {
+            // Never leave the player on a button that can only fail again.
+            _loadFailed = true;
+            MessageText.text = "Game Over\n<size=60%>Your last save could not be loaded.</size>";
+            var label = OkButton.GetComponentInChildren<TMP_Text>();
+            if (label != null) label.text = "Return to main menu";
+            return;
+        }
 		GoBackToTown(false, _playerController);
 	}
 

@@ -405,6 +405,27 @@ namespace EternalEnigma.Tests
             Assert.That(run.Report.Purchases.All(p => p.Success), Is.True, "The changed price after free bread must be re-evaluated.");
             run.Stop();
         }
+
+        [UnityTest] public IEnumerator AutoplayRestsAtHomeAfterTheOpeningClearBeforeLeavingTown()
+        {
+            yield return harness.LoadMainMenu(null);
+            AutoplayRunner.WatchDemo(new AutoplayOptions { Seed = 42, Speed = 32, NoAnimations = true, TimeLimitMinutes = 6,
+                DebugPlaythrough = true, Godmode = true, InfiniteStrength = true, InfiniteResources = true });
+            var run = AutoplayRunner.Active; run.Report.ValidationOnly = true;
+            float timeout = harness.TimeoutSeconds; harness.TimeoutSeconds = 360;
+            try
+            {
+                yield return harness.WaitUntil(() => !run.Running || Context?.Completed.Contains("story-0") == true, "autoplay clearing the opening dungeon");
+                Assert.That(run.Running, Is.True, run.Status);
+                yield return harness.WaitUntil(() => !run.Running || Context.State.Scene == "Overworld", "autoplay leaving the first town");
+            }
+            finally { harness.TimeoutSeconds = timeout; }
+            Assert.That(Context.State.Scene, Is.EqualTo("Overworld"), run.Status);
+            Assert.That(Context.State.OpeningClearNeedsSave, Is.False,
+                "\"The town gate is open! Rest at home\" must not follow the run out of town.");
+            Assert.That(Context.OpeningObjective, Does.Not.Contain("Rest at home"));
+            run.Stop();
+        }
     }
 }
 #endif

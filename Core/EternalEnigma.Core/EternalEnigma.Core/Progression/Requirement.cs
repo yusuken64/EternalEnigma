@@ -23,4 +23,11 @@ public sealed class Requirement
 
     public bool IsSatisfiedBy(CapabilitySet held) => Alternatives.Any(held.ContainsAll);
     public override string ToString() => string.Join("|", Alternatives.Select(a => a.ToString()));
+
+    /// <summary>Player-facing wording, e.g. "Boat, or Climbing Gear and Rope". ToString stays the diagnostic form.</summary>
+    public string Describe(Func<Capability, string>? name = null)
+    {
+        name ??= c => c.DisplayName();
+        return string.Join(", or ", Alternatives.Where(a => a.Count > 0).Select(a => string.Join(" and ", a.Values.Select(name))));
+    }
 }

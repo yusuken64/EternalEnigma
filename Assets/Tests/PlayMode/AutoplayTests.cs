@@ -343,8 +343,12 @@ namespace EternalEnigma.Tests
                 Assert.That(run.Paused, Is.True);
                 yield return Click(mouse, panel.Hide);
                 Assert.That(run.PanelVisible, Is.False);
-                yield return Click(mouse, panel.Show);
-                Assert.That(run.PanelVisible, Is.True);
+                yield return null;
+                Assert.That(panel.Expanded.gameObject.activeSelf || panel.Collapsed.gameObject.activeSelf, Is.False,
+                    "Hiding playback controls leaves nothing on screen; F8 restores them.");
+                run.SetPanelVisible(true);
+                yield return null;
+                Assert.That(panel.Expanded.gameObject.activeSelf, Is.True);
                 yield return Click(mouse, panel.Pause);
                 Assert.That(run.Paused, Is.False);
                 Assert.That(run.ReturnPromptOpen, Is.False, "Playback clicks must not open stop options.");
@@ -492,6 +496,42 @@ namespace EternalEnigma.Tests
                 }
                 finally { InputSystem.RemoveDevice(keyboard); InputSystem.RemoveDevice(mouse); InputSystem.RemoveDevice(pad); InputSystem.RemoveDevice(touch); }
             }
+        }
+
+        [UnityTest]
+        public IEnumerator CinematicDebugStartsWithNothingOnScreenAndF8ShowsControls()
+        {
+            yield return harness.LoadMainMenu(new TestScenario().CreateSave());
+            var options = AutoplayOptions.CinematicDebug();
+            Assert.That(options.Validate(out var reason), Is.True, reason);
+            Assert.That(options.Speed, Is.EqualTo(1));
+            Assert.That(options.NoAnimations || options.DebugCoverage, Is.False);
+            AutoplayRunner.WatchDemo(options);
+            var run = AutoplayRunner.Active;
+            run.Report.ValidationOnly = true;
+            var panel = run.GetComponentInChildren<AutoplayPanel>(true);
+            yield return null;
+            Assert.That(run.PanelVisible, Is.False);
+            Assert.That(panel.Expanded.gameObject.activeSelf || panel.Collapsed.gameObject.activeSelf, Is.False,
+                "Cinematic playback starts without any autoplay controls on screen.");
+            using (new TestInputScope())
+            {
+                var keyboard = InputSystem.AddDevice<Keyboard>();
+                try
+                {
+                    yield return new WaitForSecondsRealtime(.8f); // Past the launch input guard.
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.F8));
+                    yield return null; yield return null;
+                    Assert.That(run.PanelVisible, Is.True);
+                    Assert.That(run.ReturnPromptOpen, Is.False, "F8 toggles controls and never offers to stop.");
+                    Assert.That(panel.Expanded.gameObject.activeSelf, Is.True);
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    yield return null;
+                }
+                finally { InputSystem.RemoveDevice(keyboard); }
+            }
+            run.ExitDemo();
+            yield return harness.WaitUntil(() => AutoplayRunner.Active == null, "cinematic demo cleanup");
         }
 
         [UnityTest]

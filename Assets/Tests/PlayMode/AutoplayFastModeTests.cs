@@ -87,9 +87,13 @@ namespace EternalEnigma.Tests
             Assert.That(setup.Speed.interactable, Is.False);
             setup.Speed.onClick.Invoke();
             Assert.That(setup.SpeedLabel.text, Does.Contain("32"), "A stale disabled speed callback must not change the preset.");
-            setup.FastMode.onClick.Invoke();
-            Assert.That(setup.SpeedLabel.text, Does.Contain("2"));
+            setup.FastMode.onClick.Invoke(); // Fast -> Cinematic: real time with animations.
+            Assert.That(setup.FastModeLabel.text, Does.Contain("Cinematic"));
+            Assert.That(setup.SpeedLabel.text, Does.Contain("1×"));
             Assert.That(setup.Speed.interactable, Is.True);
+            setup.FastMode.onClick.Invoke(); // Cinematic -> Off restores the chosen watch speed.
+            Assert.That(setup.FastModeLabel.text, Is.EqualTo("Fast mode Off"));
+            Assert.That(setup.SpeedLabel.text, Does.Contain("2"));
             setup.FastMode.onClick.Invoke();
             setup.Seed.text = int.MaxValue.ToString(); setup.RunCount.text = "2";
             Assert.That(setup.Launch.interactable, Is.False, "Fast mode still validates the selected seed range.");

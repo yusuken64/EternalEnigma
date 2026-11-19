@@ -30,7 +30,7 @@ public class DungeonTierItem : MonoBehaviour
     {
         FitLabel();
         var floors = EternalEnigma.Core.Progression.CampaignContext.Floors(location.Tier);
-        string kind = location.Kind == EternalEnigma.Core.Progression.LocationKind.RepeatableDungeon ? "Repeatable dungeon" : "Story dungeon";
+        string kind = location.Kind == EternalEnigma.Core.Progression.LocationKind.RepeatableDungeon ? "Replayable dungeon" : "Town dungeon";
         if (location.Variant == EternalEnigma.Core.World.DungeonVariant.Town) kind = "Town district";
         TierText.text = GameplayText.Format($"{kind}\nFloors {floors.Start} - {floors.End}" + (completed ? "\nComplete" : ""));
         Button.interactable = true;

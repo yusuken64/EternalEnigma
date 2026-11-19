@@ -359,7 +359,7 @@ namespace EternalEnigma.Tests
             var benched = CampaignGuidance.Acquired(context).First(capability => !world.Held.Contains(capability));
             yield return UseGateEntry(menu, CampaignRewardNames.Name(context, benched));
             Assert.That(menu.TargetDialog, Is.Null, "An unavailable companion cannot start targeting.");
-            Assert.That(feed.History.Last(), Does.Contain("active party"));
+            Assert.That(feed.History.Last(), Does.Contain("travelling party"));
             menu.PartyMenu.Owner.Current.CloseDialog();
             yield return null;
 
@@ -367,7 +367,7 @@ namespace EternalEnigma.Tests
             Assert.That(menu.TargetDialog.TargetRouteId, Is.EqualTo(route.Id));
             Assert.That(context.Gates.NeedsOpening(route), Is.True, "Use must wait for a target confirmation.");
             menu.TargetDialog.ConfirmTarget();
-            Assert.That(feed.History.Last(), Does.Contain("does not fit"));
+            Assert.That(feed.History.Last(), Does.Contain("doesn't fit"));
             Assert.That(menu.PartyMenu.Owner.Current, Is.SameAs(menu.TargetDialog));
             Assert.That(visual.Portcullis.activeSelf, Is.True);
             InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.East));
@@ -696,8 +696,8 @@ namespace EternalEnigma.Tests
             Assert.That(world.TryMove(blockedGate.Value.X - world.Position.X, blockedGate.Value.Y - world.Position.Y), Is.False);
             Assert.That(world.Position, Is.EqualTo(approach.Value));
             var blockedRoute = world.Campaign.Routes.Single(r => r.Id == world.Map.CurrentGrid.LockAt(blockedGate.Value).RouteId);
-            // Generated gates present as fiction; hand-built ones still fall back to "Requires:".
-            Assert.That(world.Message, blockedRoute.ShortcutKind == ShortcutKind.FarSide ? Does.Contain("Open shortcut") : Does.Contain(blockedRoute.GateHint));
+            // Generated gates present as fiction; hand-built ones fall back to a plain sentence.
+            Assert.That(world.Message, blockedRoute.ShortcutKind == ShortcutKind.FarSide ? Does.Contain("opens from the other side") : Does.Contain(blockedRoute.GateHint));
         }
 
         [UnityTest] public IEnumerator RequiredReturnTripSeedZero() => RequiredReturnTrip(0);
@@ -874,7 +874,7 @@ namespace EternalEnigma.Tests
             yield return null;
             yield return null;
             Assert.That(common.MessageDialog.gameObject.activeSelf, Is.True);
-            Assert.That(common.MessageDialog.PromptText.text, Does.Contain("GATE UNLOCKED!").Or.Contain("KEY ACQUIRED!").Or.Contain("KEYS ACQUIRED!").Or.Contain("CAPABILITY ACQUIRED!").Or.Contain("CAPABILITY USED!").Or.Contain("REWARDS ACQUIRED!"));
+            Assert.That(common.MessageDialog.PromptText.text, Does.Contain("GATE UNLOCKED!").Or.Contain("DUNGEON CLEARED!").Or.Contain("NEW REWARD").Or.Contain("CAPABILITY USED!"));
             common.MessageDialog.Ok_Clicked();
             yield return null;
             yield return null;

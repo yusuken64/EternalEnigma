@@ -27,6 +27,11 @@ public sealed class AutoplayOptions
     public bool DebugPlaythrough, Godmode = true, InfiniteResources = true;
     public bool InfiniteStrength = true;
     public bool NoAnimations;
+    /// <summary>Starts with playback controls hidden (F8 shows them) for recording footage.</summary>
+    public bool Cinematic;
+    // Real-time, fully animated debug run. Coverage is off: trying every item and ability reads as noise on video.
+    public static AutoplayOptions CinematicDebug() => new() { Seed = 42, RunCount = 1, Speed = 1, DebugPlaythrough = true,
+        Godmode = true, InfiniteResources = true, InfiniteStrength = true, DebugCoverage = false, NoAnimations = false, Cinematic = true };
     public static AutoplayOptions FinaleDebug() => new() { Mode = AutoplayMode.Finale, Seed = 42, RunCount = 1,
         Speed = 4, DebugPlaythrough = true, Godmode = true, InfiniteResources = true, InfiniteStrength = false, DebugCoverage = false };
     public bool ExploreAll;
@@ -217,6 +222,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         Application.logMessageReceived += OnLog;
         try { InitializeBalance(); InitializeSweep(); if (!batchCanceled) BeginRun(); }
         catch (Exception error) { FailSession("Unable to initialize run", error); }
+        PanelVisible = !Options.Cinematic;
         var panel = GameContent.Load<AutoplayPanel>("UI/AutoplayPanel");
         if (panel != null) { playbackUI = Instantiate(panel, transform); playbackUI.Bind(this); }
     }
@@ -442,14 +448,17 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             if (player.ControllingTownAlly.TilemapPosition == target)
             { LearnOffer(town,training.ally,training.offer); return; }
         }
-        else if (context.IsPreparingForOpening)
+        else if (context.IsPreparingForOpening ||
+                 // Clearing the town dungeon asks the player to rest at home. Until a bed save
+                 // clears this flag, "The town gate is open!" stays on screen everywhere.
+                 context.State.OpeningClearNeedsSave && town.GetComponentInChildren<HomeBed>() != null)
         {
-            if (!context.ReadyForOpeningDay)
+            if (context.IsPreparingForOpening && !context.ReadyForOpeningDay)
             { Finish("Stalled", "Opening preparations are incomplete: " + context.OpeningPreparationHint); return; }
             var bed = town.GetComponentInChildren<HomeBed>();
             target = bed.Tile - Vector3Int.up;
             if (player.ControllingTownAlly.TilemapPosition == target)
-            { bed.SleepAndSave(); Log("Sleep and save before opening day"); return; }
+            { bed.SleepAndSave(); Log(context.IsPreparingForOpening ? "Sleep and save before opening day" : "Rest at home to save the opening victory"); return; }
         }
         else if (interior != null)
         {
@@ -645,9 +654,17 @@ public sealed partial class AutoplayRunner : MonoBehaviour
                 if(!AttributeSpending.TrySpend(member,member.PrimaryClass?.PreferredAttribute ?? HeroAttribute.Str))break;
             member.AttributePromptPending=false;
         }
-        if (MenuManager.Instance.CurrentDialog is StairConfirm stairsPrompt) { stairsPrompt.YesClicked(); Log("Confirm stairs/exit"); return; }
+        var lesson = game.TryGetComponent<OpeningDungeonLesson>(out var openingLesson) ? openingLesson : null;
+        if (MenuManager.Instance.CurrentDialog is StairConfirm stairsPrompt)
+        {
+            // Finish the lesson's first opponent so its on-screen objective resolves before leaving.
+            if (lesson?.AutoplayOpponent != null) { stairsPrompt.NoClicked(); Log("Stay to fight the lesson opponent"); }
+            else { stairsPrompt.YesClicked(); Log("Confirm stairs/exit"); }
+            return;
+        }
         if (game.Finale != null && MenuManager.Instance.Opened && SelectFinaleDestination(game.Finale)) return;
         if (MenuManager.Instance.Opened) { Finish("Unsupported", "Unhandled dungeon dialog: " + MenuManager.Instance.CurrentDialog.GetType().Name); return; }
+        if (lesson != null && lesson.AutoplayHolds && !game.TurnManager.IsProcessingTurn) return;
         if (IsBalance) { CautiousDungeonTick(game); return; }
         var player = game.PlayerController; var ally = player.ControlledAlly; var dungeon = game.CurrentDungeon;
         if (ally == null) return;
@@ -692,7 +709,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (game.Finale?.IsTransitioning == true) return;
         if (game.Finale?.OnOverworld == true) { FinaleTick(game, ally); return; }
         var skills = new AllySkillPolicy(game, ally, 0) { IncludeControlledAlly = true };
-        var practiceAction = game.GetComponent<OpeningDungeonLesson>()?.AutoplayAction(ally);
+        var practiceAction = lesson?.AutoplayAction(ally);
         if (practiceAction != null) { Act(ally, practiceAction, "Practise opening ability"); return; }
         var puzzleAction = game.Encounter?.AutoplayPuzzleAction(ally);
         if (puzzleAction != null) { Act(ally,puzzleAction,"Solve puzzle through "+puzzleAction.GetType().Name); return; }
@@ -710,7 +727,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         if (mimicInteraction != null) { Act(ally, mimicInteraction, "Open treasure chest disguise"); return; }
         var stairs = dungeon.Interactables.OfType<Stairs>().FirstOrDefault();
         if (stairs == null) { Finish("Unsupported","Ready dungeon has no stairs objective."); return; }
-        if (stairs != null && stairs.Position == ally.TilemapPosition && game.CanExitFloor)
+        if (stairs != null && stairs.Position == ally.TilemapPosition && game.CanExitFloor && lesson?.AutoplayOpponent == null)
         {
             // The regular prompt normally handles this. Re-enter to trigger it if a status effect interrupted arrival.
             ally.currentInteractable = stairs; ally.MovedThisTurn = true; player.StartTurn(); return;
@@ -726,7 +743,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             return grid;
         }
         Vector3Int? RouteTo(Vector3Int target) => dungeonRoute.Next(ally.TilemapPosition,target,DungeonGrid,CanStep);
-        var goal = game.Encounter?.AutoplayDestination(ally) ?? stairs.Position;
+        var goal = lesson?.AutoplayOpponent ?? game.Encounter?.AutoplayDestination(ally) ?? stairs.Position;
         Vector3Int? next = RouteTo(goal);
         if (next.HasValue) { approachRoute.Clear(); combatObjective = null; }
         else if (combatObjective.HasValue && combatObjective.Value != ally.TilemapPosition && CanOccupy(combatObjective.Value))
@@ -900,10 +917,9 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         }
     }
 
-    private Rect CollapsedPanel => new Rect(Mathf.Max(0, Screen.width - 148), 64, 132, 36);
     private Rect PlaybackPanel => new Rect(Mathf.Max(0, Screen.width - 340), 64, Mathf.Min(324, Screen.width), Mathf.Min(470, Screen.height - 80));
     private bool OverPlaybackPanel(Vector2 position) => playbackUI != null ? playbackUI.Contains(position) :
-        (PanelVisible ? PlaybackPanel : CollapsedPanel).Contains(new Vector2(position.x, Screen.height - position.y));
+        PanelVisible && PlaybackPanel.Contains(new Vector2(position.x, Screen.height - position.y));
 
     private bool UserInput()
     {
